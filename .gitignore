@@ -1,3 +1,4 @@
 templates/
 node_modules/
 .claude/project/
+dist/

@@ -1,11 +1,12 @@
 import { cp, mkdir, chmod } from 'fs/promises';
 import path from 'path';
-import readline from 'readline';
+import { askQuestion } from './prompt.js';
 import { mergeHookConfig, mergePermissions } from './settings.js';
+import type { HookEntry } from './settings.js';
 
 // --- Gobbi skill permissions ---
 
-export const GOBBI_PERMISSIONS = [
+export const GOBBI_PERMISSIONS: string[] = [
   'Skill(gobbi)',
   'Skill(gobbi-orchestration)',
   'Skill(gobbi-gotcha)',
@@ -29,9 +30,9 @@ export const GOBBI_PERMISSIONS = [
 
 // --- Core hook definitions ---
 
-const CORE_SCRIPTS = ['reload-gobbi.sh', 'session-metadata.sh'];
+const CORE_SCRIPTS: string[] = ['reload-gobbi.sh', 'session-metadata.sh'];
 
-const CORE_HOOK_ENTRIES = [
+const CORE_HOOK_ENTRIES: HookEntry[] = [
   {
     event: 'PostCompact',
     config: {
@@ -58,7 +59,7 @@ const CORE_HOOK_ENTRIES = [
 
 // --- Notification hook definitions ---
 
-const NOTIFICATION_SCRIPTS = [
+const NOTIFICATION_SCRIPTS: string[] = [
   'load-notification-env.sh',
   'notify-send.sh',
   'notify-completion.sh',
@@ -68,7 +69,7 @@ const NOTIFICATION_SCRIPTS = [
   'notify-session.sh'
 ];
 
-export const NOTIFICATION_HOOK_ENTRIES = [
+export const NOTIFICATION_HOOK_ENTRIES: HookEntry[] = [
   {
     event: 'SessionStart',
     config: {
@@ -154,11 +155,11 @@ export const NOTIFICATION_HOOK_ENTRIES = [
 
 /**
  * Copy hook scripts from source to destination, setting executable permission.
- * @param {string[]} scripts - Script filenames to copy.
- * @param {string} srcDir - Source hooks directory.
- * @param {string} destDir - Destination hooks directory.
+ * @param scripts - Script filenames to copy.
+ * @param srcDir - Source hooks directory.
+ * @param destDir - Destination hooks directory.
  */
-async function copyHookScripts(scripts, srcDir, destDir) {
+async function copyHookScripts(scripts: string[], srcDir: string, destDir: string): Promise<void> {
   await mkdir(destDir, { recursive: true });
 
   for (const script of scripts) {
@@ -172,10 +173,10 @@ async function copyHookScripts(scripts, srcDir, destDir) {
 /**
  * Install core hooks (always installed, written to settings.json).
  * Copies hook scripts and merges config into settings.json.
- * @param {string} templatesDir - Source templates directory.
- * @param {string} targetDir - Target project root.
+ * @param templatesDir - Source templates directory.
+ * @param targetDir - Target project root.
  */
-export async function installCoreHooks(templatesDir, targetDir) {
+export async function installCoreHooks(templatesDir: string, targetDir: string): Promise<void> {
   const srcHooksDir = path.join(templatesDir, 'hooks');
   const destHooksDir = path.join(targetDir, '.claude', 'hooks');
 
@@ -186,15 +187,18 @@ export async function installCoreHooks(templatesDir, targetDir) {
   await mergePermissions(settingsPath, GOBBI_PERMISSIONS);
 }
 
+interface NotificationResult {
+  installed: boolean;
+}
+
 /**
  * Prompt for and optionally install notification hooks.
  * Written to settings.local.json. Skipped in non-interactive mode.
- * @param {string} templatesDir - Source templates directory.
- * @param {string} targetDir - Target project root.
- * @param {boolean} nonInteractive - If true, skip entirely.
- * @returns {Promise<{installed: boolean}>}
+ * @param templatesDir - Source templates directory.
+ * @param targetDir - Target project root.
+ * @param nonInteractive - If true, skip entirely.
  */
-export async function promptNotificationHooks(templatesDir, targetDir, nonInteractive) {
+export async function promptNotificationHooks(templatesDir: string, targetDir: string, nonInteractive: boolean): Promise<NotificationResult> {
   if (nonInteractive) {
     return { installed: false };
   }
@@ -215,23 +219,4 @@ export async function promptNotificationHooks(templatesDir, targetDir, nonIntera
   await mergeHookConfig(settingsPath, NOTIFICATION_HOOK_ENTRIES);
 
   return { installed: true };
-}
-
-/**
- * Ask a question via readline and return the answer.
- * @param {string} prompt - The question to display.
- * @returns {Promise<string>} The user's answer.
- */
-function askQuestion(prompt) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  return new Promise((resolve) => {
-    rl.question(prompt, (answer) => {
-      rl.close();
-      resolve(answer);
-    });
-  });
 }

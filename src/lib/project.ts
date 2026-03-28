@@ -1,6 +1,6 @@
 import { mkdir } from 'fs/promises';
 import path from 'path';
-import readline from 'readline';
+import { askQuestion } from './prompt.js';
 
 const PROJECT_SUBDIRS = [
   'gotchas',
@@ -11,14 +11,18 @@ const PROJECT_SUBDIRS = [
   'note'
 ];
 
+interface ProjectResult {
+  created: boolean;
+  name?: string;
+}
+
 /**
  * Prompt for and optionally create a project directory structure.
  * Skipped in non-interactive mode.
- * @param {string} targetDir - Target project root.
- * @param {boolean} nonInteractive - If true, skip entirely.
- * @returns {Promise<{created: boolean, name?: string}>}
+ * @param targetDir - Target project root.
+ * @param nonInteractive - If true, skip entirely.
  */
-export async function initProjectDir(targetDir, nonInteractive) {
+export async function initProjectDir(targetDir: string, nonInteractive: boolean): Promise<ProjectResult> {
   if (nonInteractive) {
     return { created: false };
   }
@@ -49,23 +53,4 @@ export async function initProjectDir(targetDir, nonInteractive) {
   }
 
   return { created: true, name: trimmedName };
-}
-
-/**
- * Ask a question via readline and return the answer.
- * @param {string} prompt - The question to display.
- * @returns {Promise<string>} The user's answer.
- */
-function askQuestion(prompt) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  return new Promise((resolve) => {
-    rl.question(prompt, (answer) => {
-      rl.close();
-      resolve(answer);
-    });
-  });
 }

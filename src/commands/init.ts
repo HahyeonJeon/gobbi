@@ -6,13 +6,16 @@ import * as claudeMd from '../lib/claude-md.js';
 import * as hooks from '../lib/hooks.js';
 import * as project from '../lib/project.js';
 
+interface InitOptions {
+  nonInteractive: boolean;
+}
+
 /**
  * Run the gobbi init command — install gobbi into the target project.
- * @param {string} targetDir - The project root to install into.
- * @param {object} options
- * @param {boolean} options.nonInteractive - Skip all prompts, use safe defaults.
+ * @param targetDir - The project root to install into.
+ * @param options - Command options.
  */
-export async function runInit(targetDir, options = {}) {
+export async function runInit(targetDir: string, options: InitOptions): Promise<void> {
   const currentDir = path.dirname(fileURLToPath(import.meta.url));
   const templatesDir = path.resolve(currentDir, '..', '..', 'templates');
 

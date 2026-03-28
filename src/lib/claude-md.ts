@@ -1,16 +1,21 @@
 import { readFile, writeFile, mkdir, access } from 'fs/promises';
 import path from 'path';
 
+export interface TriggerResult {
+  created: boolean;
+  modified: boolean;
+  alreadyPresent: boolean;
+}
+
 const TRIGGER_LINE = 'MUST load this at session start, resume, and compaction. MUST reload skills /gobbi';
 const DETECTION_SUBSTRING = 'MUST reload skills /gobbi';
 
 /**
  * Ensure the CLAUDE.md file contains the gobbi trigger line.
  * Creates the file if it doesn't exist, or prepends the trigger line if missing.
- * @param {string} targetDir - The project root directory.
- * @returns {Promise<{created: boolean, modified: boolean, alreadyPresent: boolean}>}
+ * @param targetDir - The project root directory.
  */
-export async function ensureTriggerLine(targetDir) {
+export async function ensureTriggerLine(targetDir: string): Promise<TriggerResult> {
   const claudeDir = path.join(targetDir, '.claude');
   const filePath = path.join(claudeDir, 'CLAUDE.md');
 
@@ -35,7 +40,7 @@ export async function ensureTriggerLine(targetDir) {
     return { created: false, modified: false, alreadyPresent: true };
   }
 
-  let updated;
+  let updated: string;
   if (existing.startsWith('---')) {
     // YAML frontmatter detected — find the closing ---
     const closingIndex = existing.indexOf('---', 3);

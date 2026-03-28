@@ -1,15 +1,15 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { readdir, rm, cp, chmod, access } from 'fs/promises';
-import readline from 'readline';
 import { isInstalled } from '../lib/detect.js';
 import * as claudeMd from '../lib/claude-md.js';
 import * as hooks from '../lib/hooks.js';
-import { mergeHookConfig, mergePermissions } from '../lib/settings.js';
+import { mergeHookConfig } from '../lib/settings.js';
+import { askQuestion } from '../lib/prompt.js';
 
-const CORE_HOOK_SCRIPTS = ['reload-gobbi.sh', 'session-metadata.sh'];
+const CORE_HOOK_SCRIPTS: string[] = ['reload-gobbi.sh', 'session-metadata.sh'];
 
-const KNOWN_NOTIFICATION_SCRIPTS = [
+const KNOWN_NOTIFICATION_SCRIPTS: string[] = [
   'load-notification-env.sh',
   'notify-send.sh',
   'notify-completion.sh',
@@ -19,13 +19,16 @@ const KNOWN_NOTIFICATION_SCRIPTS = [
   'notify-session.sh'
 ];
 
+interface UpdateOptions {
+  nonInteractive: boolean;
+}
+
 /**
  * Run the gobbi update command — update gobbi in an existing installation.
- * @param {string} targetDir - The project root to update.
- * @param {object} options
- * @param {boolean} options.nonInteractive - Skip all prompts, use safe defaults.
+ * @param targetDir - The project root to update.
+ * @param options - Command options.
  */
-export async function runUpdate(targetDir, options = {}) {
+export async function runUpdate(targetDir: string, options: UpdateOptions): Promise<void> {
   const currentDir = path.dirname(fileURLToPath(import.meta.url));
   const templatesDir = path.resolve(currentDir, '..', '..', 'templates');
 
@@ -110,7 +113,7 @@ export async function runUpdate(targetDir, options = {}) {
   const targetHooksDir = path.join(targetDir, '.claude', 'hooks');
   const templateHookEntries = await readdir(templateHooksDir);
 
-  const newHooks = [];
+  const newHooks: string[] = [];
   for (const script of templateHookEntries) {
     if (CORE_HOOK_SCRIPTS.includes(script) || KNOWN_NOTIFICATION_SCRIPTS.includes(script)) {
       continue;
@@ -139,7 +142,8 @@ export async function runUpdate(targetDir, options = {}) {
         // Add settings entries for newly installed hooks
         const settingsPath = path.join(targetDir, '.claude', 'settings.local.json');
         const hookEntries = hooks.NOTIFICATION_HOOK_ENTRIES.filter(entry => {
-          const cmd = entry.config.hooks?.[0]?.command || '';
+          const firstHook = entry.config.hooks[0];
+          const cmd = firstHook?.command ?? '';
           return newHooks.some(script => cmd.includes(script));
         });
         if (hookEntries.length > 0) {
@@ -161,23 +165,4 @@ Preserved:
   - .claude/skills/gobbi-hack/ (user customizations)
   - .claude/project/ (project state)
   - Notification hooks and settings`);
-}
-
-/**
- * Ask a question via readline and return the answer.
- * @param {string} prompt - The question to display.
- * @returns {Promise<string>} The user's answer.
- */
-function askQuestion(prompt) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  return new Promise((resolve) => {
-    rl.question(prompt, (answer) => {
-      rl.close();
-      resolve(answer);
-    });
-  });
 }

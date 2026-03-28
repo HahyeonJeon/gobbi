@@ -14,7 +14,7 @@ Options:
   --version           Show version number
   --non-interactive   Skip all prompts, use safe defaults`;
 
-export async function run() {
+export async function run(): Promise<void> {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
     options: {
@@ -31,13 +31,13 @@ export async function run() {
 
   if (values.version) {
     const pkgPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'package.json');
-    const pkg = JSON.parse(await readFile(pkgPath, 'utf8'));
+    const pkg = JSON.parse(await readFile(pkgPath, 'utf8')) as { version: string };
     console.log(pkg.version);
     process.exit(0);
   }
 
   const command = positionals[0];
-  const nonInteractive = values['non-interactive'];
+  const nonInteractive = values['non-interactive'] ?? false;
 
   switch (command) {
     case 'init': {

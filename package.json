@@ -11,11 +11,16 @@
   },
   "files": [
     "bin",
-    "src",
+    "dist",
     "templates"
   ],
   "scripts": {
-    "prepublishOnly": "bash scripts/build-templates.sh"
+    "build": "tsc",
+    "prepublishOnly": "tsc && bash scripts/build-templates.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.8"
   },
   "license": "MIT"
 }

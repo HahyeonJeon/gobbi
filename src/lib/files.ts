@@ -4,11 +4,11 @@ import path from 'path';
 /**
  * Copy all gobbi skill directories from templates to target.
  * Copies directories starting with "gobbi" (matches both gobbi and gobbi-*).
- * @param {string} templatesDir - Source templates directory.
- * @param {string} targetDir - Target project root.
- * @returns {Promise<number>} Count of skill directories copied.
+ * @param templatesDir - Source templates directory.
+ * @param targetDir - Target project root.
+ * @returns Count of skill directories copied.
  */
-export async function copySkills(templatesDir, targetDir) {
+export async function copySkills(templatesDir: string, targetDir: string): Promise<number> {
   const srcDir = path.join(templatesDir, 'skills');
   const destDir = path.join(targetDir, '.claude', 'skills');
   await mkdir(destDir, { recursive: true });
@@ -31,11 +31,11 @@ export async function copySkills(templatesDir, targetDir) {
 /**
  * Copy all gobbi agent files from templates to target.
  * Copies files matching gobbi-* pattern.
- * @param {string} templatesDir - Source templates directory.
- * @param {string} targetDir - Target project root.
- * @returns {Promise<number>} Count of agent files copied.
+ * @param templatesDir - Source templates directory.
+ * @param targetDir - Target project root.
+ * @returns Count of agent files copied.
  */
-export async function copyAgents(templatesDir, targetDir) {
+export async function copyAgents(templatesDir: string, targetDir: string): Promise<number> {
   const srcDir = path.join(templatesDir, 'agents');
   const destDir = path.join(targetDir, '.claude', 'agents');
   await mkdir(destDir, { recursive: true });
@@ -57,11 +57,11 @@ export async function copyAgents(templatesDir, targetDir) {
 
 /**
  * Copy GOBBI.md from templates to target .claude/ directory.
- * @param {string} templatesDir - Source templates directory.
- * @param {string} targetDir - Target project root.
- * @returns {Promise<number>} Always 1 on success.
+ * @param templatesDir - Source templates directory.
+ * @param targetDir - Target project root.
+ * @returns Always 1 on success.
  */
-export async function copyGobbiMd(templatesDir, targetDir) {
+export async function copyGobbiMd(templatesDir: string, targetDir: string): Promise<number> {
   const src = path.join(templatesDir, 'GOBBI.md');
   const destDir = path.join(targetDir, '.claude');
   await mkdir(destDir, { recursive: true });
