@@ -1,0 +1,21 @@
+{
+  "name": "gobbi",
+  "version": "0.1.0",
+  "description": "An installable harness for Claude Code",
+  "type": "module",
+  "bin": {
+    "gobbi": "./bin/gobbi.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates"
+  ],
+  "scripts": {
+    "prepublishOnly": "bash scripts/build-templates.sh"
+  },
+  "license": "MIT"
+}
