@@ -2,7 +2,7 @@
 
 ## Initial User Prompt
 
-User requested fixing all remaining issues from the doc-review workflow (20260328-0706-doc-review). The review had identified blocking stubs, stale references, recipe violations, and frontmatter name mismatches across gobbi's `.claude/` documentation.
+User requested fixing all remaining issues from the doc-review workflow (20260328-a935d6db-doc-review). The review had identified blocking stubs, stale references, recipe violations, and frontmatter name mismatches across gobbi's `.claude/` documentation.
 
 ## Discussion Points
 

@@ -16,24 +16,33 @@ Notes go in `.claude/project/{project-name}/note/`:
 
 ```
 .claude/project/{project-name}/note/
-  README.md                                — index of all task note directories
-  {YYYYMMDD-HHMM}-{task-slug}/
-    ideation.md                            — ideas explored, trade-offs, chosen approach
-    plan.md                                — plan details, task decomposition, dependencies
-    execution.md                           — execution outcomes, issues encountered
-    feedback.md                            — user feedback rounds, corrections made
-    review.md                              — review findings, verification results
+  README.md                                               — index of all task note directories
+  {YYYYMMDD-HHMM}-{slug}-{session_id}/
+    README.md                                             — session context metadata (YAML frontmatter)
+    ideation.md                                           — ideas explored, trade-offs, chosen approach
+    plan.md                                               — plan details, task decomposition, dependencies
+    execution.md                                          — execution outcomes, issues encountered
+    feedback.md                                           — user feedback rounds, corrections made
+    review.md                                             — review findings, verification results
     subtasks/
-      {NN}-{subtask-slug}.md               — copy of each subagent's task result
+      {NN}-{subtask-slug}.md                              — copy of each subagent's task result
 ```
 
 ### Naming
 
-**Task directory**: `{YYYYMMDD-HHMM}-{slug}` — datetime prefix for ordering, slug for readability. Get the timestamp from `date +"%Y%m%d-%H%M"` when the task starts.
+**Task directory**: `{YYYYMMDD-HHMM}-{slug}-{session_id}` — datetime prefix for chronological ordering with minute precision, slug for readability, full session UUID at the end for machine cross-referencing. The `session_id` is the full session UUID, available via `$CLAUDE_SESSION_ID` (set by the SessionStart hook). Example: `20260328-0706-doc-review-ed5b2db3-7d89-4208-a25b-8ad0889a0c80`.
+
+### Initialization
+
+Use the note-init script at `.claude/skills/gobbi-note/scripts/note-init.sh` to create a new task note directory. It takes the project name and task slug as arguments, then handles metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup. For metadata extraction only (without creating a directory), use `.claude/skills/gobbi-note/scripts/note-metadata.sh`.
 
 ---
 
 ## What to Write at Each Step
+
+### README.md (per task directory)
+
+Session context for the task, created automatically by the note-init script. Contains YAML frontmatter with: session_id, datetime, git_branch, cwd, claude_model, transcript path, and task name. This anchors every note file in the directory to a specific session, making it possible to trace back to the original conversation.
 
 ### ideation.md
 
