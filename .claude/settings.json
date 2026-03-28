@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/reload-gobbi.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
