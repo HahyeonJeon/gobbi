@@ -129,9 +129,11 @@ Installed interactively during `init`. Supports Slack, Telegram, and desktop not
 | `notify-subagent.sh` | SubagentStop | Subagent finished |
 | `notify-session.sh` | SessionStart / SessionEnd | Session started, resumed, or ended |
 
-## Required Permissions
+## Permissions
 
-After installation, add these to `.claude/settings.local.json` to auto-approve gobbi skill loading:
+Skill permissions are auto-configured in `.claude/settings.json` during `init` and `update`. No manual setup needed.
+
+For manual installations, add the following to `.claude/settings.json` alongside the hooks config:
 
 ```json
 {
@@ -151,6 +153,7 @@ After installation, add these to `.claude/settings.local.json` to auto-approve g
       "Skill(gobbi-execution-evaluation)",
       "Skill(gobbi-evaluation)",
       "Skill(gobbi-note)",
+      "Skill(gobbi-note:*)",
       "Skill(gobbi-collection)",
       "Skill(gobbi-notification)",
       "Skill(gobbi-hack)",

@@ -1,7 +1,31 @@
 import { cp, mkdir, chmod } from 'fs/promises';
 import path from 'path';
 import readline from 'readline';
-import { mergeHookConfig } from './settings.js';
+import { mergeHookConfig, mergePermissions } from './settings.js';
+
+// --- Gobbi skill permissions ---
+
+export const GOBBI_PERMISSIONS = [
+  'Skill(gobbi)',
+  'Skill(gobbi-orchestration)',
+  'Skill(gobbi-gotcha)',
+  'Skill(gobbi-claude)',
+  'Skill(gobbi-discuss)',
+  'Skill(gobbi-ideation)',
+  'Skill(gobbi-ideation-evaluation)',
+  'Skill(gobbi-plan)',
+  'Skill(gobbi-plan-evaluation)',
+  'Skill(gobbi-delegation)',
+  'Skill(gobbi-execution)',
+  'Skill(gobbi-execution-evaluation)',
+  'Skill(gobbi-evaluation)',
+  'Skill(gobbi-note)',
+  'Skill(gobbi-note:*)',
+  'Skill(gobbi-collection)',
+  'Skill(gobbi-notification)',
+  'Skill(gobbi-hack)',
+  'WebSearch'
+];
 
 // --- Core hook definitions ---
 
@@ -159,6 +183,7 @@ export async function installCoreHooks(templatesDir, targetDir) {
 
   const settingsPath = path.join(targetDir, '.claude', 'settings.json');
   await mergeHookConfig(settingsPath, CORE_HOOK_ENTRIES);
+  await mergePermissions(settingsPath, GOBBI_PERMISSIONS);
 }
 
 /**

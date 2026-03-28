@@ -48,3 +48,41 @@ export async function mergeHookConfig(settingsPath, hookEntries) {
 
   await writeFile(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf8');
 }
+
+/**
+ * Merge permission strings into a settings JSON file.
+ * Avoids duplicates by checking for exact string matches.
+ * @param {string} settingsPath - Absolute path to the settings JSON file.
+ * @param {string[]} permissions - Permission strings to merge.
+ */
+export async function mergePermissions(settingsPath, permissions) {
+  // Ensure parent directory exists
+  const parentDir = path.dirname(settingsPath);
+  await mkdir(parentDir, { recursive: true });
+
+  // Read existing settings or start fresh
+  let settings = {};
+  try {
+    const raw = await readFile(settingsPath, 'utf8');
+    settings = JSON.parse(raw);
+  } catch {
+    // File doesn't exist or is invalid — start with empty object
+  }
+
+  // Ensure permissions.allow array exists
+  if (!settings.permissions) {
+    settings.permissions = {};
+  }
+  if (!Array.isArray(settings.permissions.allow)) {
+    settings.permissions.allow = [];
+  }
+
+  // Add each permission if not already present
+  for (const perm of permissions) {
+    if (!settings.permissions.allow.includes(perm)) {
+      settings.permissions.allow.push(perm);
+    }
+  }
+
+  await writeFile(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf8');
+}

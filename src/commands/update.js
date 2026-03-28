@@ -5,7 +5,7 @@ import readline from 'readline';
 import { isInstalled } from '../lib/detect.js';
 import * as claudeMd from '../lib/claude-md.js';
 import * as hooks from '../lib/hooks.js';
-import { mergeHookConfig } from '../lib/settings.js';
+import { mergeHookConfig, mergePermissions } from '../lib/settings.js';
 
 const CORE_HOOK_SCRIPTS = ['reload-gobbi.sh', 'session-metadata.sh'];
 
@@ -97,9 +97,10 @@ export async function runUpdate(targetDir, options = {}) {
     console.log('  [ok] Added missing gobbi trigger to CLAUDE.md');
   }
 
-  // --- Replace core hooks ---
+  // --- Replace core hooks and update permissions ---
   await hooks.installCoreHooks(templatesDir, targetDir);
   console.log('  [ok] Updated core hooks (reload-gobbi.sh, session-metadata.sh)');
+  console.log('  [ok] Updated skill permissions');
 
   // --- Preserve notification hooks ---
   console.log('  [--] Preserved notification hooks and settings');

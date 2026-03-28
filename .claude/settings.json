@@ -24,5 +24,28 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Skill(gobbi)",
+      "Skill(gobbi-orchestration)",
+      "Skill(gobbi-gotcha)",
+      "Skill(gobbi-claude)",
+      "Skill(gobbi-discuss)",
+      "Skill(gobbi-ideation)",
+      "Skill(gobbi-ideation-evaluation)",
+      "Skill(gobbi-plan)",
+      "Skill(gobbi-plan-evaluation)",
+      "Skill(gobbi-delegation)",
+      "Skill(gobbi-execution)",
+      "Skill(gobbi-execution-evaluation)",
+      "Skill(gobbi-evaluation)",
+      "Skill(gobbi-note)",
+      "Skill(gobbi-note:*)",
+      "Skill(gobbi-collection)",
+      "Skill(gobbi-notification)",
+      "Skill(gobbi-hack)",
+      "WebSearch"
+    ]
   }
 }

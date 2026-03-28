@@ -46,9 +46,10 @@ export async function runInit(targetDir, options = {}) {
     console.log('  [ok] CLAUDE.md trigger already present');
   }
 
-  // Install core hooks
+  // Install core hooks and permissions
   await hooks.installCoreHooks(templatesDir, targetDir);
   console.log('  [ok] Installed core hooks (reload-gobbi.sh, session-metadata.sh)');
+  console.log('  [ok] Configured skill permissions');
 
   // Notification hooks
   const notifResult = await hooks.promptNotificationHooks(templatesDir, targetDir, options.nonInteractive);
@@ -75,7 +76,5 @@ export async function runInit(targetDir, options = {}) {
 Gobbi installed successfully!
 
 Next steps:
-  1. Configure permissions in .claude/settings.local.json
-     Add Skill() permissions for all gobbi skills you want to auto-approve.
-  2. Start a Claude Code session and type /gobbi to begin.`);
+  1. Start a Claude Code session and type /gobbi to begin.`);
 }
