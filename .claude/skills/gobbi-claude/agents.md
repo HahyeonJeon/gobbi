@@ -1,6 +1,6 @@
 # Writing Agent Definitions
 
-Guide for authoring `.claude/agents/<name>.md` files.
+Guide for authoring `.claude/agents/<name>.md` files. Agent definitions live in `.claude/agents/` â€” read the directory for the current roster. The system currently uses specialized agents for research/ideation, planning/decomposition, 3-stance evaluation (positive, moderate, critical), and code implementation.
 
 ---
 
@@ -25,7 +25,7 @@ This is the universal agent lifecycle. **Study**: actively learn before acting â
 | Pattern | Principle |
 |---------|-----------|
 | **Description is critical** | Answers "when should the orchestrator send work here?" Be specific about domain and task types. If two agents' descriptions match the same task, boundaries need sharpening. |
-| **Frontmatter complete** | Required: `name`, `description`, `tools` (scoped to what's needed). Optional: `model`, `skills` (auto-loaded for domain). |
+| **Frontmatter complete** | Required: `name`, `description`, `tools` (scoped to what's needed). Include `model` to specify the model (all non-evaluator agents currently use `model: opus`). Evaluator agents omit `model` to use the default. |
 | **Role over procedure** | Define expertise domain, boundaries (out of scope), context files to read, quality expectations. |
 | **Front-load identity** | Agent should understand its role within the first 20 lines. |
 
@@ -63,7 +63,7 @@ Before publishing an agent definition:
 
 **Writing Pattern**
 - [ ] `description` answers "when should the orchestrator send work here?"
-- [ ] All required frontmatter fields present (`name`, `description`, `tools`)
+- [ ] All required frontmatter fields present (`name`, `description`, `tools`, `model` for non-evaluator agents)
 - [ ] Role and identity clear within the first 20 lines
 - [ ] "Out of scope" boundaries defined
 

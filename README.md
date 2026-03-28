@@ -24,7 +24,7 @@ For CI or automation:
 npx gobbi init --non-interactive
 ```
 
-This skips all prompts and installs core components only (no notification hooks, no project directory).
+This skips all prompts and installs all components without interactive project directory setup.
 
 ## Git Manual Install
 
@@ -65,16 +65,6 @@ If you want to understand what you're installing before it lands in your project
    ```json
    {
      "hooks": {
-       "PostCompact": [
-         {
-           "matcher": "manual|auto",
-           "hooks": [{
-             "type": "command",
-             "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/reload-gobbi.sh",
-             "timeout": 5
-           }]
-         }
-       ],
        "SessionStart": [
          {
            "matcher": "startup|resume|compact",
@@ -96,17 +86,15 @@ If you want to understand what you're installing before it lands in your project
 Installs gobbi into the current project.
 
 - Detects existing installations and redirects to `update`
-- Interactive mode asks about notification hooks and project name
-- `--non-interactive` skips all prompts, installs core only
+- Interactive mode asks about project name
+- `--non-interactive` skips all prompts
 
 ### `npx gobbi update`
 
 Updates gobbi to the latest version.
 
-- Replaces all skill files, agent definitions, GOBBI.md, and core hooks
-- Preserves `gobbi-hack/` (user customizations), `.claude/project/` (project state), and notification hooks
-- Offers to install any new hooks added since last update
-- `--non-interactive` skips prompts for new hooks
+- Replaces all skill files, agent definitions, GOBBI.md, core hooks, and notification hooks
+- Preserves `gobbi-hack/` (user customizations) and `.claude/project/` (project state)
 
 ## Hooks
 
@@ -114,12 +102,11 @@ Updates gobbi to the latest version.
 
 | Script | Event | Purpose |
 |--------|-------|---------|
-| `reload-gobbi.sh` | PostCompact | Reloads gobbi skills after context compaction |
 | `session-metadata.sh` | SessionStart | Injects session metadata on startup and resume |
 
-### Notification hooks (optional)
+### Notification hooks (always installed)
 
-Installed interactively during `init`. Supports Slack, Telegram, and desktop notifications.
+Supports Slack, Telegram, and desktop notifications. Run `/gobbi-notification` in Claude Code to configure notification credentials (Slack, Telegram, desktop).
 
 | Script | Event | Purpose |
 |--------|-------|---------|

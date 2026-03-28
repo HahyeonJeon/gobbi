@@ -130,9 +130,10 @@ When the user selects FINISH, use AskUserQuestion to ask: commit and compact, co
 
 **Commit** — create a git commit with the changes from this workflow.
 
-**Compact** — the agent cannot run `/compact` directly. Instead, tell the user to run the command themselves. The compact message should start with "abort gobbi" (so the compacted context drops gobbi workflow state that will be auto-reloaded anyway) followed by a summary of the work done. Example:
+**Compact** — the agent cannot run `/compact` directly. Instead, tell the user to run the command themselves. The compact message should start with "abort gobbi" (so the compacted context drops gobbi workflow state) followed by a summary of the work done. After compact completes, the user must manually reload gobbi by running `/gobbi`. Example:
 
 > Please run: `/compact abort gobbi — completed doc-review workflow, findings in .claude/project/gobbi/note/20260328-0706-doc-review/`
+> Then reload gobbi with: `/gobbi`
 
 ---
 
@@ -151,6 +152,7 @@ When the user selects FINISH, use AskUserQuestion to ask: commit and compact, co
 - When evaluation is performed, MUST spawn 3 evaluator agents (positive, moderate, critical)
 - MUST write note via gobbi-note at every workflow step — ideation, plan, execution, feedback, review. Never defer, never skip.
 - MUST use EnterPlanMode when writing or revising plans
+- When using AskUserQuestion, MUST put the recommended option first with "(Recommended)" in the label — give an opinion, don't just present neutral choices
 
 **Never do these:**
 - Never implement complex domain work yourself when a specialist exists

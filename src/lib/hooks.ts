@@ -1,6 +1,5 @@
 import { cp, mkdir, chmod } from 'fs/promises';
 import path from 'path';
-import { askQuestion } from './prompt.js';
 import { mergeHookConfig, mergePermissions } from './settings.js';
 import type { HookEntry } from './settings.js';
 
@@ -30,20 +29,9 @@ export const GOBBI_PERMISSIONS: string[] = [
 
 // --- Core hook definitions ---
 
-const CORE_SCRIPTS: string[] = ['reload-gobbi.sh', 'session-metadata.sh'];
+const CORE_SCRIPTS: string[] = ['session-metadata.sh'];
 
 const CORE_HOOK_ENTRIES: HookEntry[] = [
-  {
-    event: 'PostCompact',
-    config: {
-      matcher: 'manual|auto',
-      hooks: [{
-        type: 'command',
-        command: 'bash $CLAUDE_PROJECT_DIR/.claude/hooks/reload-gobbi.sh',
-        timeout: 5
-      }]
-    }
-  },
   {
     event: 'SessionStart',
     config: {
@@ -187,36 +175,18 @@ export async function installCoreHooks(templatesDir: string, targetDir: string):
   await mergePermissions(settingsPath, GOBBI_PERMISSIONS);
 }
 
-interface NotificationResult {
-  installed: boolean;
-}
-
 /**
- * Prompt for and optionally install notification hooks.
- * Written to settings.local.json. Skipped in non-interactive mode.
+ * Install notification hooks (always installed, written to settings.json).
+ * Copies notification scripts and merges config into settings.json.
  * @param templatesDir - Source templates directory.
  * @param targetDir - Target project root.
- * @param nonInteractive - If true, skip entirely.
  */
-export async function promptNotificationHooks(templatesDir: string, targetDir: string, nonInteractive: boolean): Promise<NotificationResult> {
-  if (nonInteractive) {
-    return { installed: false };
-  }
-
-  const answer = await askQuestion('Install notification hooks? (y/N): ');
-  const wantsNotifications = answer.trim().toLowerCase() === 'y';
-
-  if (!wantsNotifications) {
-    return { installed: false };
-  }
-
+export async function installNotificationHooks(templatesDir: string, targetDir: string): Promise<void> {
   const srcHooksDir = path.join(templatesDir, 'hooks');
   const destHooksDir = path.join(targetDir, '.claude', 'hooks');
 
   await copyHookScripts(NOTIFICATION_SCRIPTS, srcHooksDir, destHooksDir);
 
-  const settingsPath = path.join(targetDir, '.claude', 'settings.local.json');
+  const settingsPath = path.join(targetDir, '.claude', 'settings.json');
   await mergeHookConfig(settingsPath, NOTIFICATION_HOOK_ENTRIES);
-
-  return { installed: true };
 }

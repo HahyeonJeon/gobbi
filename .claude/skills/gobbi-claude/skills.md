@@ -1,64 +1,48 @@
 # Writing Skills
 
-Guide for authoring `.claude/skills/<name>/SKILL.md` files. There are two categories: **skills** (general-purpose domain knowledge) and **project-skills** (project-specific implementation guides with docs, logs, and memory).
+Guide for authoring `.claude/skills/<name>/SKILL.md` files. All skills in this system are gobbi-prefixed and follow a flat structure.
 
 ---
 
 ## Core Principle
 
-> **Two categories: skills teach domains, project-skills own projects.**
+> **Skills teach domains. Each skill owns one area of knowledge.**
 
-A **skill** teaches general domain knowledge reusable across any project — Python best practices, React patterns, Remotion conventions. A **project-skill** owns a specific project — its implementation philosophy, architecture docs, workflow logs, and memory. Both use the same SKILL.md format but serve different purposes and follow different structural rules.
+A skill teaches domain knowledge reusable across any project — orchestration principles, evaluation criteria, documentation standards, execution discipline. Skills are portable. Project-specific context belongs in `.claude/project/{project-name}/`, not in a skill.
 
 > **Skills decompose into hierarchy like everything else.**
 
-A broad domain skill can have child docs for focused subtasks. The parent teaches the mental model; children specialize. This prevents monolithic skills.
+A broad domain skill can have child docs for focused subtasks. The parent teaches the mental model; children specialize. This prevents monolithic skills. Child docs live in the same directory as SKILL.md — no nested subdirectories within a skill directory.
+
+> **All skills are gobbi-prefixed.**
+
+The current ecosystem has 17 skills, all named `gobbi-*`. Each skill directory contains a SKILL.md entry point and optional child `.md` files in the same directory. Read `.claude/skills/` for the current roster.
 
 ---
 
-## Skills (General-Purpose)
+## Skill Structure
 
-Skills like `python`, `react`, `typescript`, `visx`, `remotion`, `motion`, `elt`, `lakehouse`, `spark`, `iceberg`, `airflow`, `youtube`, `claude`, `orchestrate`, `eye`, `git`, `gotcha`.
+Every skill is flat: a directory containing SKILL.md and optional sibling `.md` files. No nested subdirectories within a skill directory.
 
-| Pattern | Principle |
-|---------|-----------|
-| **Portable** | Content applies to any project using the domain. No project-specific code, paths, or conventions. |
-| **SKILL.md + child docs** | SKILL.md is the entry point with "Navigate deeper from here:" table. Child `.md` files cover subtopics. |
-| **No project artifacts** | No log/, memory/, architecture/, or other project directories. Skills are pure knowledge. |
+| Component | Purpose |
+|-----------|---------|
+| `SKILL.md` | Entry point with frontmatter. Lists child docs under "Navigate deeper from here:" if children exist. |
+| Child `.md` files | Subtopic docs in the same directory. Referenced from the parent's navigation table. |
 
----
+Two skills have notable structural variations:
 
-## Project-Skills (Project-Specific)
-
-Project-skills like `playviz`, `playinganalytics`. Each project-skill owns one project's entire context.
-
-| Pattern | Principle |
-|---------|-----------|
-| **Project-specific** | Contains the project's implementation philosophy, architectural decisions, and conventions that don't apply elsewhere. |
-| **SKILL.md + child docs + project directories** | SKILL.md is the entry point. Child docs cover implementation domains (chart.md, graphics.md). Directories hold project artifacts. |
-| **Standard directories** | Project-skills follow a consistent directory structure: |
-
-| Directory | Purpose |
-|---|---|
-| `SKILL.md` | Entry point — project philosophy, implementation guide |
-| Child `.md` files | Domain implementation guides |
-| `architecture/` | Design docs — philosophy, rules, structure |
-| `reference/` | Research findings, external API docs, examination results |
-| `review/` | Code review reports, architecture audits |
-| `validation/` | Checklists and scenarios for verifying updates |
-| `work/` | Workflow records — session directories with prompts, plans, results |
-| `memory/` | Persistent cross-session knowledge, including `gotchas/` |
-| `legacy/` | Archived superseded docs |
+- **gobbi-gotcha** — SKILL.md plus per-skill `.md` gotcha files (e.g., `gobbi-execution.md`, `gobbi-claude.md`). Each gotcha file collects mistakes for one skill domain.
+- **gobbi-note** — SKILL.md plus a `scripts/` subdirectory containing shell scripts for note metadata generation. This is the one exception to the no-subdirectories guideline.
 
 ---
 
-## Writing Pattern (Both Categories)
+## Writing Pattern
 
 | Pattern | Principle |
 |---------|-----------|
 | **Description is critical** | Claude uses it for auto-invocation matching. Write in command tone: "Use when writing or reviewing X" — not "This skill provides X". |
 | **Frontmatter complete** | Required: `name` (matches directory), `description` (single line, specific), `allowed-tools` (scoped). |
-| **Hierarchy for broad domains** | Parent covers the mental model. Children specialize. |
+| **Hierarchy for broad domains** | Parent covers the mental model. Children specialize. "Navigate deeper from here:" table links to children. |
 | **Front-load the mental model** | Core principles in the first ~50 lines. |
 | **Short, descriptive naming** | Directory name = skill name = invocation command. |
 
@@ -71,8 +55,8 @@ Project-skills like `playviz`, `playinganalytics`. Each project-skill owns one p
 | Anti-Pattern | Why It Fails |
 |---|---|
 | **Description too vague** | Auto-invocation misfires. Describe trigger scenarios specifically. |
-| **Project-specific content in a skill** | Skills are portable. Project context belongs in a project-skill. |
-| **Project artifacts in a skill** | log/, memory/, architecture/ directories belong only in project-skills. |
+| **Project-specific content in a skill** | Skills are portable. Project context belongs in `.claude/project/{project-name}/`. |
+| **Nested subdirectories in skill dirs** | Skills are flat. Child docs are sibling `.md` files, not subdirectories. |
 
 ### Should Avoid
 
@@ -85,14 +69,8 @@ Project-skills like `playviz`, `playinganalytics`. Each project-skill owns one p
 
 ## Review Checklist
 
-**For skills (general-purpose):**
 - [ ] Content is portable — no project-specific patterns
-- [ ] No project directories (log/, memory/, architecture/)
+- [ ] Structure is flat — SKILL.md + sibling `.md` files, no nested subdirectories
 - [ ] `description` specific enough for accurate auto-invocation
 - [ ] Core principles in first ~50 lines
-
-**For project-skills:**
-- [ ] Contains project-specific context, not general domain knowledge
-- [ ] Standard directories present (architecture/, log/, memory/)
-- [ ] Each directory has README.md as entry point
-- [ ] `description` identifies the project and when to use it
+- [ ] Under 500 lines (must), targeting under 200 (should)

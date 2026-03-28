@@ -6,78 +6,71 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 # Notification
 
-Help users configure Claude Code notifications through conversation. Users must not study notification setup — gobbi handles it by asking what they need and configuring it for them.
+Help users configure Claude Code notification credentials through conversation. Hooks and settings are already installed by `npx gobbi init` — this skill handles the credential setup that makes them work.
 
 ---
 
 ## When This Skill Loads
 
-Guide the user through notification setup using AskUserQuestion:
-1. Ask which channel they want (Slack, Telegram, desktop, custom webhook)
-2. Walk them through the channel's auth setup step by step
-3. Ask which events should trigger notifications
-4. Write the hook scripts and settings configuration
+Guide the user through credential setup using AskUserQuestion. Follow these steps in order.
+
+### Step 1: Ask which channels to configure
+
+Use AskUserQuestion with multiSelect. Options:
+
+- **Slack** (recommended first) — richest integration, supports threads and formatting
+- **Telegram** — lightweight, good for mobile alerts
+- **Desktop** — OS-native notifications, no account needed
+- **Custom webhook** — any HTTP endpoint
+
+Allow multiple selection. The user may want different channels for different event types (e.g., errors to Slack, completions to desktop).
+
+### Step 2: Collect credentials for each selected channel
+
+For each channel, walk the user through obtaining and providing credentials using AskUserQuestion.
+
+**Slack:**
+1. Guide: Go to https://api.slack.com/apps, Create New App, From Scratch, Enable Incoming Webhooks, Add New Webhook to Workspace, select target channel, copy the Webhook URL
+2. Ask user to paste their `SLACK_WEBHOOK_URL`
+3. Optionally ask for `SLACK_BOT_TOKEN` and `SLACK_USER_ID` (for richer messages with mentions) — these are not required for basic notifications
+
+**Telegram:**
+1. Guide: Open Telegram, search @BotFather, send `/newbot`, follow prompts, copy the bot token
+2. Guide: Start a chat with the new bot, send any message, then get chat ID via `curl https://api.telegram.org/bot<TOKEN>/getUpdates` and find `chat.id` in the response
+3. Ask user to paste `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
+
+**Desktop:**
+- No credentials needed. Set `NOTIFY_DESKTOP=true` in the credentials file.
+- Requires `notify-send` on Linux or `osascript` on macOS (usually pre-installed).
+
+**Custom webhook:**
+- Ask for the webhook URL and any required auth headers. Store as environment variables following the same pattern.
+
+### Step 3: Save credentials
+
+Write the collected values to `.claude/.notification-env` (must be gitignored). This file is read by `load-notification-env.sh` at SessionStart via the `$CLAUDE_ENV_FILE` mechanism.
+
+**Format:** One `KEY=value` per line, no `export` prefix — the hook script adds it. Blank lines and lines starting with `#` are ignored.
+
+After writing, check whether `.claude/.notification-env` is in `.gitignore`. If not, remind the user to add it — credentials must never be committed.
+
+### Step 4: Verify setup
+
+Offer two verification options:
+- **Quick test:** Run the `notify-send.sh` script directly with a test message to confirm the channel receives it
+- **Live test:** Tell the user to trigger a notification event naturally (e.g., ask Claude something short that completes, which fires the Stop hook)
+
+If the test fails, troubleshoot: check that the env file exists, values are correct, and the hook script is executable.
 
 ---
 
-## Supported Channels
+## Events and Matchers
 
-### Slack
-
-**Setup requirements:**
-- Slack Incoming Webhook URL (from Slack App → Incoming Webhooks)
-- Channel name (optional, defaults to webhook's channel)
-
-**Guide the user:**
-1. Go to https://api.slack.com/apps → Create New App → From Scratch
-2. Enable Incoming Webhooks → Add New Webhook to Workspace
-3. Select the target channel → Copy the Webhook URL
-4. Store the webhook URL in environment variable `SLACK_WEBHOOK_URL`
-
-**Hook type:** `http` hook pointing to the webhook URL, or `command` hook using curl script.
-
-### Telegram
-
-**Setup requirements:**
-- Telegram Bot Token (from @BotFather)
-- Chat ID (from @userinfobot or the bot's getUpdates API)
-
-**Guide the user:**
-1. Open Telegram → search @BotFather → `/newbot` → follow prompts
-2. Copy the bot token
-3. Start a chat with the bot, send any message
-4. Get chat ID: `curl https://api.telegram.org/bot<TOKEN>/getUpdates` → find `chat.id`
-5. Store as environment variables `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
-
-**Hook type:** `command` hook using curl script.
-
-### Desktop (Native)
-
-**Setup requirements:** None — uses OS-native notification.
-
-**Linux:** `notify-send`
-**macOS:** `osascript -e 'display notification ...'`
-**Windows:** PowerShell toast notification
-
-**Hook type:** `command` hook with OS-specific command.
-
-### Custom Webhook
-
-**Setup requirements:**
-- Webhook URL
-- Auth headers (if any)
-
-**Hook type:** `http` hook with custom URL and headers.
-
----
-
-## Notification Events and Matchers
-
-After channel setup, ask the user which events they want notifications on. For each event, ask which matcher values to use via AskUserQuestion. The matcher is a regex pattern in the hook config that filters when the hook fires.
+After channel setup, ask the user which events they want notifications on. For each event, ask which matcher values to use via AskUserQuestion. The matcher is a regex pattern that filters when the hook fires.
 
 ### Events with matchers
 
-For each event below, must ask the user which matcher values to include. Build the `matcher` field as a regex pipe (`value1|value2`). Matchers are case-sensitive regex patterns.
+For each event, ask the user which matcher values to include. Build the `matcher` field as a regex pipe (`value1|value2`). Matchers are case-sensitive.
 
 **Notification** — matcher filters on notification type
 - Values: `permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`
@@ -126,7 +119,7 @@ For each event below, must ask the user which matcher values to include. Build t
 
 ### Events without matchers
 
-These events have no matcher support — the hook fires on every occurrence.
+These events fire on every occurrence — no matcher filtering.
 
 | Event | When It Fires |
 |-------|---------------|
@@ -147,72 +140,9 @@ These events have no matcher support — the hook fires on every occurrence.
 
 ---
 
-## Setup
-
-### Make scripts executable
-
-After writing or installing hook scripts, must run:
-
-```
-chmod +x .claude/hooks/*.sh
-```
-
-### Load API keys via `$CLAUDE_ENV_FILE`
-
-API keys and tokens must not be hardcoded. Use a `SessionStart` hook to write credentials into `$CLAUDE_ENV_FILE`, which makes them available as environment variables to all subsequent hooks in the session.
-
-Create `.claude/hooks/load-notification-env.sh`:
-
-```bash
-#!/bin/bash
-# SessionStart hook — loads notification credentials into the session.
-# Reads from a local .env file (gitignored) and writes to $CLAUDE_ENV_FILE.
-
-ENV_FILE="$CLAUDE_PROJECT_DIR/.claude/.notification-env"
-
-if [ -n "$CLAUDE_ENV_FILE" ] && [ -f "$ENV_FILE" ]; then
-  while IFS= read -r line; do
-    [[ -z "$line" || "$line" == \#* ]] && continue
-    echo "export $line" >> "$CLAUDE_ENV_FILE"
-  done < "$ENV_FILE"
-fi
-
-exit 0
-```
-
-The user stores their credentials in `.claude/.notification-env` (must be gitignored):
-
-```
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/T.../B.../xxx
-TELEGRAM_BOT_TOKEN=123456:ABC-DEF...
-TELEGRAM_CHAT_ID=987654321
-NOTIFY_DESKTOP=true
-```
-
-Add the SessionStart hook to settings:
-
-```json
-"SessionStart": [
-  {
-    "matcher": "startup|resume",
-    "hooks": [
-      {
-        "type": "command",
-        "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/load-notification-env.sh",
-        "timeout": 5
-      }
-    ]
-  }
-]
-```
-
-This ensures credentials are loaded at every session start and resume, and available to all notification scripts.
-
----
-
 ## Hook Scripts
 
-All scripts must be in `.claude/hooks/` and executable (`chmod +x`). They use a shared sender (`notify-send.sh`) that routes to all configured channels via environment variables loaded from `$CLAUDE_ENV_FILE`.
+All scripts live in `.claude/hooks/` and must be executable (`chmod +x`). They use a shared sender (`notify-send.sh`) that routes to all configured channels via environment variables loaded from `$CLAUDE_ENV_FILE`.
 
 ### Shared sender: `notify-send.sh`
 
@@ -221,7 +151,7 @@ Routes messages to all configured channels. Channels are enabled by environment 
 - `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` — enables Telegram
 - `NOTIFY_DESKTOP=true` — enables native desktop notifications (Linux notify-send, macOS osascript)
 
-### User case scripts
+### Installed hook scripts
 
 | Script | Hook Event | Matcher | Use Case |
 |--------|-----------|---------|----------|
@@ -233,103 +163,11 @@ Routes messages to all configured channels. Channels are enabled by environment 
 
 ---
 
-## Settings Configuration
-
-Notification hooks go in `.claude/settings.local.json`. Combine user cases by adding multiple events to the `hooks` object.
-
-### Example: all user cases enabled
-
-```json
-{
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-completion.sh",
-            "timeout": 10,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "permission_prompt|idle_prompt|elicitation_dialog",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-attention.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "StopFailure": [
-      {
-        "matcher": "rate_limit|authentication_failed|billing_error|server_error",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-error.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-subagent.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "startup|resume",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-session.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "matcher": "logout|prompt_input_exit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-session.sh",
-            "timeout": 5,
-            "async": true
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-The skill must ask the user which cases they want, then write only those events into settings. Different matcher values per event can be customized based on user answers.
-
----
-
 ## Gotchas
 
 - **Stop hook infinite loop** — always check `stop_hook_active` in the input JSON and exit early if `true`
 - **Missing jq** — scripts depend on `jq` for JSON parsing. Check availability and guide install
 - **Script not executable** — always `chmod +x` after writing hook scripts
-- **Credentials in code** — never hardcode tokens. Use environment variables and `allowedEnvVars` for http hooks
+- **Credentials in code** — never hardcode tokens. Use environment variables and `.claude/.notification-env`
 - **Shell profile noise** — `.bashrc` or `.zshrc` echo statements can corrupt JSON output. Scripts should use `#!/bin/bash` without sourcing profile
+- **No `export` in env file** — `.notification-env` uses bare `KEY=value` format. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE`

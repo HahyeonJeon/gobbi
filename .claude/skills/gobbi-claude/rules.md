@@ -1,6 +1,6 @@
 # Writing Rules
 
-Guide for authoring `.claude/rules/<name>.md` files.
+Guide for authoring rule files. Rules live in `.claude/project/{project-name}/rules/`, alongside other project documentation. Currently no rule files have been written in the codebase — the system supports rules but none exist yet.
 
 ---
 
@@ -8,7 +8,7 @@ Guide for authoring `.claude/rules/<name>.md` files.
 
 > **A rule is a verifiable standard enforced across all work in the project.**
 
-Unlike skills (loaded on demand), rules are always active. They define what's required, what's forbidden, and the boundary conditions.
+Unlike skills (loaded on demand), rules define what's required, what's forbidden, and the boundary conditions for a specific project.
 
 > **If an agent or linter can't check it mechanically, it's guidance — not a rule.**
 

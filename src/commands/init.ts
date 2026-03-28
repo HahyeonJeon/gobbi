@@ -59,18 +59,12 @@ export async function runInit(targetDir: string, options: InitOptions): Promise<
 
   // Install core hooks and permissions
   await hooks.installCoreHooks(templatesDir, targetDir);
-  console.log(ok('Installed core hooks (reload-gobbi.sh, session-metadata.sh)'));
+  console.log(ok('Installed core hooks (session-metadata.sh)'));
   console.log(ok('Configured skill permissions'));
 
   // Notification hooks
-  const notifResult = await hooks.promptNotificationHooks(templatesDir, targetDir, options.nonInteractive);
-  if (notifResult.installed) {
-    console.log(ok('Installed notification hooks'));
-  } else if (options.nonInteractive) {
-    console.log(skip('Skipped notification hooks (non-interactive mode)'));
-  } else {
-    console.log(skip('Skipped notification hooks'));
-  }
+  await hooks.installNotificationHooks(templatesDir, targetDir);
+  console.log(ok('Installed notification hooks'));
 
   // Project directory
   const projectResult = await project.initProjectDir(targetDir, options.nonInteractive);

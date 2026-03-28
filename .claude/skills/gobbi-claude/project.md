@@ -56,7 +56,11 @@ Project-specific gotchas. Mistakes and corrections that apply only to this proje
 
 ### note/
 
-Workflow notes per task, managed by gobbi-note. Each task gets a directory with per-step notes (ideation.md, plan.md, execution.md, feedback.md, review.md).
+Workflow notes per task, managed by gobbi-note. Each task gets a directory named `{YYYYMMDD}-{HHMM}-{slug}-{session_id}` (e.g., `20260328-0951-installation-system-ed5b2db3-7d89-4208-a25b-8ad0889a0c80`). Inside each note directory:
+
+- Per-step notes: ideation.md, plan.md, execution.md, feedback.md, review.md
+- `subtasks/` — per-agent result files from delegated work (e.g., `01-developer-agent.md`)
+- Optional `README.md` — task summary with YAML frontmatter metadata (session_id, datetime, git_branch, task name)
 
 ### reference/
 

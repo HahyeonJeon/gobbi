@@ -8,11 +8,13 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 
 Understand the `.claude/` directory structure and definitions, and write effective documentation that helps agents **think**, not blindly follow orders. Load this skill both when reading `.claude/` files (to understand how they are organized) and when authoring them (to follow the documentation standard).
 
+This skill covers the full `.claude/` directory: CLAUDE.md (session entry point), GOBBI.md (harness identity and principles), skills (`.claude/skills/`), agents (`.claude/agents/`), project documentation (`.claude/project/`), hooks (`.claude/hooks/` — shell scripts triggered by session events), and settings (`.claude/settings.json` for hooks and permissions, `.claude/settings.local.json` for local overrides).
+
 **Navigate deeper from here:**
 
 | Writing... | Read | Covers |
 |------------|------|--------|
-| A skill | [skills.md](skills.md) | Frontmatter, descriptions for auto-invocation, skill vs rule, scoping |
+| A skill | [skills.md](skills.md) | Frontmatter, descriptions for auto-invocation, skill hierarchy, naming |
 | A rule | [rules.md](rules.md) | Verifiability, structure, when to create a rule |
 | An agent definition | [agents.md](agents.md) | Frontmatter, scope boundaries, role vs procedure |
 | Project documentation | [project.md](project.md) | Project docs live in `.claude/project/{project-name}/`, consistent directory structure |

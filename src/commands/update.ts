@@ -1,24 +1,10 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { readFile, readdir, rm, cp, chmod, access } from 'fs/promises';
+import { readFile, readdir, rm, cp } from 'fs/promises';
 import { isInstalled } from '../lib/detect.js';
 import * as claudeMd from '../lib/claude-md.js';
 import * as hooks from '../lib/hooks.js';
-import { mergeHookConfig } from '../lib/settings.js';
-import { askQuestion } from '../lib/prompt.js';
 import { printBanner, header, ok, skip, error, printUpdateSuccess } from '../lib/style.js';
-
-const CORE_HOOK_SCRIPTS: string[] = ['reload-gobbi.sh', 'session-metadata.sh'];
-
-const KNOWN_NOTIFICATION_SCRIPTS: string[] = [
-  'load-notification-env.sh',
-  'notify-send.sh',
-  'notify-completion.sh',
-  'notify-attention.sh',
-  'notify-error.sh',
-  'notify-subagent.sh',
-  'notify-session.sh'
-];
 
 interface UpdateOptions {
   nonInteractive: boolean;
@@ -109,60 +95,12 @@ export async function runUpdate(targetDir: string, options: UpdateOptions): Prom
 
   // --- Replace core hooks and update permissions ---
   await hooks.installCoreHooks(templatesDir, targetDir);
-  console.log(ok('Updated core hooks (reload-gobbi.sh, session-metadata.sh)'));
+  console.log(ok('Updated core hooks (session-metadata.sh)'));
   console.log(ok('Updated skill permissions'));
 
-  // --- Preserve notification hooks ---
-  console.log(skip('Preserved notification hooks and settings'));
-
-  // --- Check for new hooks ---
-  const templateHooksDir = path.join(templatesDir, 'hooks');
-  const targetHooksDir = path.join(targetDir, '.claude', 'hooks');
-  const templateHookEntries = await readdir(templateHooksDir);
-
-  const newHooks: string[] = [];
-  for (const script of templateHookEntries) {
-    if (CORE_HOOK_SCRIPTS.includes(script) || KNOWN_NOTIFICATION_SCRIPTS.includes(script)) {
-      continue;
-    }
-
-    const targetPath = path.join(targetHooksDir, script);
-    try {
-      await access(targetPath);
-    } catch {
-      newHooks.push(script);
-    }
-  }
-
-  if (newHooks.length > 0) {
-    if (!options.nonInteractive) {
-      console.log(`  New hooks available: ${newHooks.join(', ')}`);
-      const answer = await askQuestion('  Install new hooks? (y/N): ');
-      if (answer.trim().toLowerCase() === 'y') {
-        for (const script of newHooks) {
-          const src = path.join(templateHooksDir, script);
-          const dest = path.join(targetHooksDir, script);
-          await cp(src, dest);
-          await chmod(dest, 0o755);
-        }
-
-        // Add settings entries for newly installed hooks
-        const settingsPath = path.join(targetDir, '.claude', 'settings.local.json');
-        const hookEntries = hooks.NOTIFICATION_HOOK_ENTRIES.filter(entry => {
-          const firstHook = entry.config.hooks[0];
-          const cmd = firstHook?.command ?? '';
-          return newHooks.some(script => cmd.includes(script));
-        });
-        if (hookEntries.length > 0) {
-          await mergeHookConfig(settingsPath, hookEntries);
-        }
-
-        console.log(ok(`Installed ${newHooks.length} new hook(s)`));
-      }
-    } else {
-      console.log(skip('New hooks available but skipped (non-interactive mode)'));
-    }
-  }
+  // --- Replace notification hooks ---
+  await hooks.installNotificationHooks(templatesDir, targetDir);
+  console.log(ok('Updated notification hooks'));
 
   // --- Summary ---
   printUpdateSuccess();
