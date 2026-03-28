@@ -3,7 +3,7 @@
 # Reads channel config from environment variables and sends to all configured channels.
 #
 # Usage: echo "message" | bash notify-send.sh "Title"
-# Required env: at least one of SLACK_WEBHOOK_URL, TELEGRAM_BOT_TOKEN+TELEGRAM_CHAT_ID
+# Required env: at least one of SLACK_BOT_TOKEN+SLACK_USER_ID, TELEGRAM_BOT_TOKEN+TELEGRAM_CHAT_ID
 # Optional env: NOTIFY_DESKTOP=true
 
 TITLE="${1:-Claude Code}"
@@ -13,10 +13,14 @@ if [ -z "$MESSAGE" ]; then
   exit 0
 fi
 
-# Slack
-if [ -n "$SLACK_WEBHOOK_URL" ]; then
-  PAYLOAD=$(jq -n --arg text "*${TITLE}*\n${MESSAGE}" '{text: $text}')
-  curl -s -X POST "$SLACK_WEBHOOK_URL" \
+# Slack (Bot API — DM to user)
+if [ -n "$SLACK_BOT_TOKEN" ] && [ -n "$SLACK_USER_ID" ]; then
+  PAYLOAD=$(jq -n \
+    --arg channel "$SLACK_USER_ID" \
+    --arg text "*${TITLE}*\n${MESSAGE}" \
+    '{channel: $channel, text: $text}')
+  curl -s -X POST "https://slack.com/api/chat.postMessage" \
+    -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
     -H 'Content-Type: application/json' \
     -d "$PAYLOAD" > /dev/null 2>&1 &
 fi

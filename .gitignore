@@ -1,4 +1,5 @@
 templates/
 node_modules/
 .claude/project/
+.claude/.env
 dist/

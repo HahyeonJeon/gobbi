@@ -29,10 +29,12 @@ Allow multiple selection. The user may want different channels for different eve
 
 For each channel, walk the user through obtaining and providing credentials using AskUserQuestion.
 
-**Slack:**
-1. Guide: Go to https://api.slack.com/apps, Create New App, From Scratch, Enable Incoming Webhooks, Add New Webhook to Workspace, select target channel, copy the Webhook URL
-2. Ask user to paste their `SLACK_WEBHOOK_URL`
-3. Optionally ask for `SLACK_BOT_TOKEN` and `SLACK_USER_ID` (for richer messages with mentions) — these are not required for basic notifications
+**Slack (Bot API — DM to user):**
+1. Guide: Go to https://api.slack.com/apps, Create New App, From Scratch
+2. Go to OAuth & Permissions, add `chat:write` scope under Bot Token Scopes
+3. Install App to Workspace, copy the Bot User OAuth Token (`xoxb-...`)
+4. Get your Slack User ID: click your profile in Slack → three dots → Copy member ID
+5. Ask user to paste `SLACK_BOT_TOKEN` and `SLACK_USER_ID`
 
 **Telegram:**
 1. Guide: Open Telegram, search @BotFather, send `/newbot`, follow prompts, copy the bot token
@@ -48,11 +50,11 @@ For each channel, walk the user through obtaining and providing credentials usin
 
 ### Step 3: Save credentials
 
-Write the collected values to `.claude/.notification-env` (must be gitignored). This file is read by `load-notification-env.sh` at SessionStart via the `$CLAUDE_ENV_FILE` mechanism.
+Write the collected values to `.claude/.env` (must be gitignored). This file is read by `load-notification-env.sh` at SessionStart via the `$CLAUDE_ENV_FILE` mechanism.
 
 **Format:** One `KEY=value` per line, no `export` prefix — the hook script adds it. Blank lines and lines starting with `#` are ignored.
 
-After writing, check whether `.claude/.notification-env` is in `.gitignore`. If not, remind the user to add it — credentials must never be committed.
+After writing, check whether `.claude/.env` is in `.gitignore`. If not, remind the user to add it — credentials must never be committed.
 
 ### Step 4: Verify setup
 
@@ -147,7 +149,7 @@ All scripts live in `.claude/hooks/` and must be executable (`chmod +x`). They u
 ### Shared sender: `notify-send.sh`
 
 Routes messages to all configured channels. Channels are enabled by environment variables (loaded via `$CLAUDE_ENV_FILE` at session start):
-- `SLACK_WEBHOOK_URL` — enables Slack
+- `SLACK_BOT_TOKEN` + `SLACK_USER_ID` — enables Slack (Bot API, DMs to user)
 - `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` — enables Telegram
 - `NOTIFY_DESKTOP=true` — enables native desktop notifications (Linux notify-send, macOS osascript)
 
@@ -168,6 +170,6 @@ Routes messages to all configured channels. Channels are enabled by environment 
 - **Stop hook infinite loop** — always check `stop_hook_active` in the input JSON and exit early if `true`
 - **Missing jq** — scripts depend on `jq` for JSON parsing. Check availability and guide install
 - **Script not executable** — always `chmod +x` after writing hook scripts
-- **Credentials in code** — never hardcode tokens. Use environment variables and `.claude/.notification-env`
+- **Credentials in code** — never hardcode tokens. Use environment variables and `.claude/.env`
 - **Shell profile noise** — `.bashrc` or `.zshrc` echo statements can corrupt JSON output. Scripts should use `#!/bin/bash` without sourcing profile
-- **No `export` in env file** — `.notification-env` uses bare `KEY=value` format. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE`
+- **No `export` in env file** — `.env` uses bare `KEY=value` format. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE`

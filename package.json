@@ -1,5 +1,5 @@
 {
-  "name": "gobbi",
+  "name": "claude-gobbi",
   "version": "0.1.0",
   "description": "An installable harness for Claude Code",
   "type": "module",
