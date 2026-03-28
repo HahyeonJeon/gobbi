@@ -1,11 +1,12 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { readdir, rm, cp, chmod, access } from 'fs/promises';
+import { readFile, readdir, rm, cp, chmod, access } from 'fs/promises';
 import { isInstalled } from '../lib/detect.js';
 import * as claudeMd from '../lib/claude-md.js';
 import * as hooks from '../lib/hooks.js';
 import { mergeHookConfig } from '../lib/settings.js';
 import { askQuestion } from '../lib/prompt.js';
+import { printBanner, header, ok, skip, error, printUpdateSuccess } from '../lib/style.js';
 
 const CORE_HOOK_SCRIPTS: string[] = ['reload-gobbi.sh', 'session-metadata.sh'];
 
@@ -33,12 +34,18 @@ export async function runUpdate(targetDir: string, options: UpdateOptions): Prom
   const templatesDir = path.resolve(currentDir, '..', '..', 'templates');
 
   if (!(await isInstalled(targetDir))) {
-    console.log('Gobbi is not installed in this project.');
+    console.log(error('Gobbi is not installed in this project.'));
     console.log("Run 'npx gobbi init' to install it first.");
     process.exit(1);
   }
 
-  console.log('\nUpdating gobbi...\n');
+  // Read version and print banner
+  const pkgPath = path.resolve(currentDir, '..', '..', 'package.json');
+  const pkg = JSON.parse(await readFile(pkgPath, 'utf8')) as { version: string };
+  printBanner(pkg.version);
+
+  console.log(header('Updating gobbi...'));
+  console.log('');
 
   // --- Replace skill directories ---
   const skillsSrcDir = path.join(templatesDir, 'skills');
@@ -52,7 +59,7 @@ export async function runUpdate(targetDir: string, options: UpdateOptions): Prom
     }
 
     if (entry.name === 'gobbi-hack') {
-      console.log('  [--] Preserved gobbi-hack/ (user customizations)');
+      console.log(skip('Preserved gobbi-hack/ (user customizations)'));
       continue;
     }
 
@@ -60,11 +67,11 @@ export async function runUpdate(targetDir: string, options: UpdateOptions): Prom
     const dest = path.join(skillsDestDir, entry.name);
     await rm(dest, { recursive: true, force: true });
     await cp(src, dest, { recursive: true });
-    console.log(`  [ok] Updated ${entry.name}`);
+    console.log(ok(`Updated ${entry.name}`));
     skillCount++;
   }
 
-  console.log(`  [ok] Updated ${skillCount} skill directories`);
+  console.log(ok(`Updated ${skillCount} skill directories`));
 
   // --- Replace agent definitions ---
   const agentsSrcDir = path.join(templatesDir, 'agents');
@@ -84,29 +91,29 @@ export async function runUpdate(targetDir: string, options: UpdateOptions): Prom
     agentCount++;
   }
 
-  console.log(`  [ok] Updated ${agentCount} agent definitions`);
+  console.log(ok(`Updated ${agentCount} agent definitions`));
 
   // --- Replace GOBBI.md ---
   const gobbiMdSrc = path.join(templatesDir, 'GOBBI.md');
   const gobbiMdDest = path.join(targetDir, '.claude', 'GOBBI.md');
   await cp(gobbiMdSrc, gobbiMdDest);
-  console.log('  [ok] Updated GOBBI.md');
+  console.log(ok('Updated GOBBI.md'));
 
   // --- Verify CLAUDE.md trigger ---
   const triggerResult = await claudeMd.ensureTriggerLine(targetDir);
   if (triggerResult.alreadyPresent) {
-    console.log('  [ok] CLAUDE.md trigger verified');
+    console.log(ok('CLAUDE.md trigger verified'));
   } else if (triggerResult.modified) {
-    console.log('  [ok] Added missing gobbi trigger to CLAUDE.md');
+    console.log(ok('Added missing gobbi trigger to CLAUDE.md'));
   }
 
   // --- Replace core hooks and update permissions ---
   await hooks.installCoreHooks(templatesDir, targetDir);
-  console.log('  [ok] Updated core hooks (reload-gobbi.sh, session-metadata.sh)');
-  console.log('  [ok] Updated skill permissions');
+  console.log(ok('Updated core hooks (reload-gobbi.sh, session-metadata.sh)'));
+  console.log(ok('Updated skill permissions'));
 
   // --- Preserve notification hooks ---
-  console.log('  [--] Preserved notification hooks and settings');
+  console.log(skip('Preserved notification hooks and settings'));
 
   // --- Check for new hooks ---
   const templateHooksDir = path.join(templatesDir, 'hooks');
@@ -150,19 +157,13 @@ export async function runUpdate(targetDir: string, options: UpdateOptions): Prom
           await mergeHookConfig(settingsPath, hookEntries);
         }
 
-        console.log(`  [ok] Installed ${newHooks.length} new hook(s)`);
+        console.log(ok(`Installed ${newHooks.length} new hook(s)`));
       }
     } else {
-      console.log('  [--] New hooks available but skipped (non-interactive mode)');
+      console.log(skip('New hooks available but skipped (non-interactive mode)'));
     }
   }
 
   // --- Summary ---
-  console.log(`
-Gobbi updated successfully!
-
-Preserved:
-  - .claude/skills/gobbi-hack/ (user customizations)
-  - .claude/project/ (project state)
-  - Notification hooks and settings`);
+  printUpdateSuccess();
 }

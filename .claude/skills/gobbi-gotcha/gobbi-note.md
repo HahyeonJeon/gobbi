@@ -19,3 +19,15 @@ Mistakes in note writing, directory structure, and timing.
 - **feedback.md / review.md** — each round with full context
 
 Notes are the permanent record. A reader should never need to ask "what was the original request?" or "what did they discuss?" — it should all be in the notes.
+
+---
+
+### Must use note-init.sh — never create note directories manually
+
+**Priority:** Critical
+
+**What happened:** The orchestrator tried to create a note directory with `mkdir -p` and manually checked `$CLAUDE_SESSION_ID` (which wasn't set). It bypassed the `note-init.sh` script that handles session metadata extraction, directory creation, README generation, and subtasks/ setup in a single call.
+
+**User feedback:** "Did you use session-metadata.sh? Must run session-metadata.sh first."
+
+**Correct approach:** Always use `bash .claude/skills/gobbi-note/scripts/note-init.sh <project-name> <task-slug>` to create note directories. Never `mkdir` manually, never reference `$CLAUDE_SESSION_ID` directly. The script chains through `note-metadata.sh` which reads from `$CLAUDE_SESSION_ID` (set by the SessionStart hook). If the script fails because `CLAUDE_SESSION_ID` is not set, investigate the hook — don't work around it.

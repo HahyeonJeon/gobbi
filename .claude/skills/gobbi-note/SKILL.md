@@ -34,7 +34,11 @@ Notes go in `.claude/project/{project-name}/note/`:
 
 ### Initialization
 
-Use the note-init script at `.claude/skills/gobbi-note/scripts/note-init.sh` to create a new task note directory. It takes the project name and task slug as arguments, then handles metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup. For metadata extraction only (without creating a directory), use `.claude/skills/gobbi-note/scripts/note-metadata.sh`.
+> **Always use note-init.sh to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.**
+
+Run `bash .claude/skills/gobbi-note/scripts/note-init.sh <project-name> <task-slug>` to create a new task note directory. It handles the full chain: session metadata extraction (via `note-metadata.sh` which reads `$CLAUDE_SESSION_ID`), directory creation, README.md generation with session context, and subtasks/ directory setup. The script outputs the absolute path of the created directory.
+
+If `note-init.sh` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it.
 
 ---
 
