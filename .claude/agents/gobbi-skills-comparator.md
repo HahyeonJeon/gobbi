@@ -1,0 +1,1 @@
+../../plugins/gobbi-core/agents/gobbi-skills-comparator.md
