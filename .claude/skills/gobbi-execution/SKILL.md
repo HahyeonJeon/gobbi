@@ -67,6 +67,8 @@ Check your work before reporting back:
 - Is the change minimal — no scope creep, no bonus refactoring?
 - If you modified anything in `.claude/`, are related docs still accurate?
 
+> **Before committing, re-verify the precondition: correct branch is checked out and no unexpected state changes occurred since verification.** This extends gobbi-git's re-verification principle to the subagent level. A subagent that verifies its work but commits to the wrong branch has produced correct work in the wrong place.
+
 ### Commit (when gobbi-git is active)
 
 This phase applies only when the delegation briefing specifies a worktree workflow (gobbi-git is active). Commit only after verification passes — never commit unverified work. Each subtask should produce one focused commit. Follow Conventional Commits format: the commit type and scope should match what the delegation briefing specifies for the task's domain. See `gobbi-git/conventions.md` for format details. The orchestrator owns pushing and PR creation — subagents commit but never push.
