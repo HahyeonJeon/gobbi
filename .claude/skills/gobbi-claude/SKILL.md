@@ -1,23 +1,26 @@
 ---
 name: gobbi-claude
-description: Understand and author .claude/ documentation (CLAUDE.md, skills, rules, agents, memories). Use when reading .claude/ files to understand their structure and definitions, or when creating and updating any file in the .claude/ directory. Enforces concise, principle-based writing that helps agents think rather than prescriptive instructions that agents blindly follow.
+description: Core writing standard for .claude/ documentation — writing principles, hierarchy, anti-patterns, and review checklist. Use when reading .claude/ files to understand their structure, or when authoring rules and project docs. For creating skills, load gobbi-claude-skills. For creating agent definitions, load gobbi-claude-agents.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Claude Skill
 
-Understand the `.claude/` directory structure and definitions, and write effective documentation that helps agents **think**, not blindly follow orders. Load this skill both when reading `.claude/` files (to understand how they are organized) and when authoring them (to follow the documentation standard).
-
-This skill covers the full `.claude/` directory: CLAUDE.md (session entry point), GOBBI.md (harness identity and principles), skills (`.claude/skills/`), agents (`.claude/agents/`), project documentation (`.claude/project/`), hooks (`.claude/hooks/` — shell scripts triggered by session events), and settings (`.claude/settings.json` for hooks and permissions, `.claude/settings.local.json` for local overrides).
+Core documentation standard for `.claude/` files — writing principles, hierarchy, anti-patterns, and review checklist. Load this skill when reading `.claude/` files to understand their structure, or when authoring rules and project docs. Specialized creation guides exist as separate skills: gobbi-claude-skills for skills, gobbi-claude-agents for agent definitions.
 
 **Navigate deeper from here:**
 
 | Writing... | Read | Covers |
 |------------|------|--------|
-| A skill | [skills.md](skills.md) | Frontmatter, descriptions for auto-invocation, skill hierarchy, naming |
 | A rule | [rules.md](rules.md) | Verifiability, structure, when to create a rule |
-| An agent definition | [agents.md](agents.md) | Frontmatter, scope boundaries, role vs procedure |
 | Project documentation | [project.md](project.md) | Project docs live in `.claude/project/{project-name}/`, consistent directory structure |
+
+**Related skills:**
+
+| Skill | When to load |
+|-------|-------------|
+| gobbi-claude-skills | Creating, reviewing, or modifying skill definitions in `.claude/skills/` |
+| gobbi-claude-agents | Creating, reviewing, or modifying agent definitions in `.claude/agents/` |
 
 ---
 
