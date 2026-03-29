@@ -59,6 +59,47 @@ The orchestrator collects all 3 verdicts and acts:
 
 ---
 
+## Scoring
+
+Every finding from an evaluator carries two independent dimensions: **confidence** and **severity**. These are separate assessments — a finding can be high-severity but low-confidence (a potentially catastrophic issue that might be a false positive), or low-severity but high-confidence (a definite minor issue).
+
+### Confidence
+
+Confidence measures how certain the evaluator is that a finding represents a real issue, scored 0-100.
+
+| Score | Meaning |
+|-------|---------|
+| 0 | False positive — appears like an issue but isn't one on closer inspection |
+| 25 | Possible but unverified — could be an issue, but no evidence confirms it |
+| 50 | Real but minor — the issue exists, though its practical impact is unclear |
+| 75 | Significant and likely — strong reasoning or partial evidence supports this |
+| 100 | Definite — verified by evidence, tool output, or incontrovertible reasoning |
+
+These are definitional anchors for the scale, not thresholds derived from external measurement. They give evaluators a shared vocabulary for expressing certainty.
+
+### Severity
+
+Severity measures how impactful the issue would be if it is real, independent of confidence.
+
+| Level | Meaning |
+|-------|---------|
+| Critical | Blocks progress, breaks correctness, or creates security vulnerability |
+| High | Significant flaw that would cause rework if not addressed now |
+| Medium | Real issue that should be addressed but doesn't block |
+| Low | Minor concern, stylistic, or optimization opportunity |
+
+### Threshold Filtering
+
+Findings with confidence below 80 are suppressed from the evaluation report by default. They are not discarded — the orchestrator or user can request the full unfiltered list. This prevents low-confidence speculation from drowning out high-confidence findings that need action.
+
+The threshold exists because evaluation should drive decisions, not generate noise. An evaluator uncertain about a finding should still record it (it may gain confidence in a future cycle), but it should not compete for attention with findings the evaluator is confident about.
+
+### Cross-Stance Scoring
+
+Each evaluator stance scores confidence and severity independently. When stances disagree on the same finding — one scores confidence 90, another scores 40 — the disagreement is highlighted to the orchestrator as signal. A finding that one stance is confident about and another dismisses reveals a genuine tension worth examining.
+
+---
+
 ## What Evaluators Must Check
 
 ### Ideation Evaluation
