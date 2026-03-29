@@ -60,6 +60,10 @@ The index file lists all task note directories. Must update README.md after crea
 
 ## Phase-Specific Collection
 
+### After TASK phase (standard collection)
+
+When collecting evaluation findings across subtasks, organize by severity tier: Critical findings first (blocking issues that were resolved), then Important (significant issues addressed), then Suggestions (deferred or noted for future work), then Strengths (positive patterns worth preserving). This tiered format surfaces the most actionable information first and gives the user a quick scan of what mattered most.
+
 ### After FEEDBACK phase
 
 Write `feedback.md` to the existing task note directory. Append each feedback round — do not overwrite previous rounds.
