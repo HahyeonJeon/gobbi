@@ -15,7 +15,7 @@ interface InstallOptions {
 }
 
 /**
- * Copy templates/ content into .gobbi/core/ — skills, agents, hooks, and GOBBI.md.
+ * Copy plugins/gobbi-core/ content into .gobbi/core/ — skills, agents, hooks, and GOBBI.md.
  * @returns Counts of items copied.
  */
 async function copyTemplatesToCore(
@@ -79,7 +79,7 @@ async function copyTemplatesToCore(
  */
 export async function runInstall(targetDir: string, options: InstallOptions): Promise<void> {
   const currentDir = path.dirname(fileURLToPath(import.meta.url));
-  const templatesDir = path.resolve(currentDir, '..', '..', 'templates');
+  const templatesDir = path.resolve(currentDir, '..', '..', 'plugins', 'gobbi-core');
 
   // Read version from package.json
   const pkgPath = path.resolve(currentDir, '..', '..', 'package.json');

@@ -1,0 +1,15 @@
+{
+  "name": "gobbi",
+  "owner": {
+    "name": "HahyeonJeon",
+    "email": "jeonhh0061@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "gobbi-core",
+      "source": "./plugins/gobbi-core",
+      "description": "Full gobbi workflow system — structured orchestration with multi-stance evaluation, adaptive planning, and git workflow isolation for Claude Code",
+      "version": "0.2.1"
+    }
+  ]
+}

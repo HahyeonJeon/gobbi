@@ -12,11 +12,11 @@
   "files": [
     "bin",
     "dist",
-    "templates"
+    "plugins"
   ],
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "tsc && bash scripts/build-templates.sh"
+    "prepublishOnly": "tsc"
   },
   "devDependencies": {
     "@types/node": "^18",
