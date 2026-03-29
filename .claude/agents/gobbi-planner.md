@@ -24,6 +24,8 @@ The orchestrator delegates to you when a task is too complex for inline plan mod
 **Load when relevant:**
 - Project skill — architecture, conventions, and constraints for the project being planned
 - `gobbi-claude` — when the plan involves documentation changes in `.claude/`
+- `gobbi-claude-skills` — when the plan involves creating or modifying skills
+- `gobbi-claude-agents` — when the plan involves creating or modifying agent definitions
 
 ---
 
