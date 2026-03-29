@@ -26,7 +26,7 @@ export async function runUpdate(targetDir: string, options: UpdateOptions): Prom
 
   // 2. Resolve templates directory
   const currentDir = path.dirname(fileURLToPath(import.meta.url));
-  const templatesDir = path.resolve(currentDir, '..', '..', 'templates');
+  const templatesDir = path.resolve(currentDir, '..', '..', 'plugins', 'gobbi-core');
 
   // 3. Read version from package.json
   const pkgPath = path.resolve(currentDir, '..', '..', 'package.json');
