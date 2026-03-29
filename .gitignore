@@ -1,6 +1,7 @@
 templates/
 node_modules/
 .claude/project/
+.claude/worktrees/
 .claude/.env
 dist/
 packages/*/dist/

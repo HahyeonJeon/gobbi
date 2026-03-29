@@ -89,6 +89,8 @@ Delegate subtasks to specialist subagents.
 - After all subtasks complete, write execution.md and subtasks/.
 - After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn.
 
+> **When gobbi-git is active** — Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `.claude/project/` is gitignored and does not exist in worktrees.
+
 ### Step 4. Execution — Collection
 
 Persist the workflow trail.
@@ -126,7 +128,19 @@ After REVIEW completes, use AskUserQuestion to ask: FEEDBACK, or FINISH?
 
 ### FINISH
 
-When the user selects FINISH, use AskUserQuestion to ask: commit and compact, commit only, or compact only.
+When the user selects FINISH, use AskUserQuestion to ask:
+
+**When gobbi-git is active (PR exists):**
+- Merge PR and cleanup (squash merge, delete branch, remove worktree), then compact
+- Merge PR and cleanup only (no compact)
+- Compact only (leave PR open for later)
+
+**When gobbi-git is not active (default):**
+- Commit and compact
+- Commit only
+- Compact only
+
+**Merge** — squash merge the PR, delete the remote branch, remove the local worktree, and prune stale worktree references.
 
 **Commit** — create a git commit with the changes from this workflow.
 

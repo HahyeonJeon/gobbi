@@ -145,3 +145,15 @@ Mistakes in following the orchestration workflow (phases, steps, transitions).
 **User feedback:** The agent cannot run compact directly. Suggest the compact command with details so the user can run it themselves.
 
 **Correct approach:** When the user selects compact during FINISH, tell the user to run the command themselves. The compact message should start with "abort gobbi" so the compacted context drops gobbi workflow state (it auto-reloads after compact via the reload hook), followed by a summary of work done. Example: `/compact abort gobbi — completed doc-review, findings in note/20260328-0706-doc-review/`
+
+---
+
+### Concurrent sessions corrupt each other's working tree
+
+**Priority:** Critical
+
+**What happened:** Two gobbi sessions ran simultaneously in the same working tree — one doing a v0.2.0 redesign, the other doing README/presentation improvements. The presentation session's subagents made changes that appeared to be scope violations but were actually from the concurrent session. The orchestrator reverted the concurrent session's legitimate work (src/cli.ts, src/commands/, src/lib/ files) thinking they were scope creep. The concurrent session then committed a README rewrite that overwrote the presentation session's visual improvements. Both sessions' work had to be manually reconciled.
+
+**User feedback:** "We experienced this concurrent mistakes several times." Requested a gobbi-worktree skill to isolate sessions via git worktrees.
+
+**Correct approach:** Never run multiple gobbi sessions in the same working tree. Each session's subagents and the concurrent session's changes are indistinguishable in `git diff`. The orchestrator cannot tell which changes are from its own agents vs another session. Use git worktrees to give each session its own isolated copy of the repo, then merge results explicitly.

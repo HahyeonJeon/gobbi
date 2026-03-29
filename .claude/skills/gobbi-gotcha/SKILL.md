@@ -17,6 +17,7 @@ Record cross-project agent mistakes so they never happen twice. Each gotcha file
 | [gobbi-plan.md](gobbi-plan.md) | gobbi-plan | Task decomposition, dependency ordering |
 | [gobbi-delegation.md](gobbi-delegation.md) | gobbi-delegation | Subagent briefings, context loading, scope boundaries |
 | [gobbi-execution.md](gobbi-execution.md) | gobbi-execution | Implementation, verification |
+| [gobbi-git.md](gobbi-git.md) | gobbi-git | Git/GitHub workflow, worktree management, branch handling |
 | [gobbi-collection.md](gobbi-collection.md) | gobbi-collection | Work trail persistence, README indexing |
 | [gobbi-evaluation.md](gobbi-evaluation.md) | gobbi-evaluation | Quality gates, evaluation criteria |
 | [gobbi-ideation.md](gobbi-ideation.md) | gobbi-ideation | Brainstorming, option generation |
