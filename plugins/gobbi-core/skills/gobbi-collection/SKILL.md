@@ -75,3 +75,19 @@ Write `review.md` to the existing task note directory (or to `{task-slug}-review
 **Always collect** when the workflow involved delegation or produced results worth preserving.
 
 **Skip collecting** when the task was trivial — a single small edit, a quick question, or a direct handle without delegation.
+
+---
+
+## Session Learning Capture
+
+After writing notes and recording gotchas, use AskUserQuestion to ask: **"What non-obvious knowledge was discovered this session?"**
+
+This complements per-agent Memorize steps by capturing orchestrator-level insights that no single agent saw. The user may say "nothing" — the question ensures knowledge doesn't get lost silently.
+
+**Capture categories:**
+
+- **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via gobbi-gotcha.
+- **CLAUDE.md additions** — conventions or patterns discovered that should persist across sessions. Add as one-line entries to CLAUDE.md.
+- **Skill updates** — behavioral patterns identified that a skill should teach. Flag for future skill revision — do not edit the skill inline during collection.
+
+Format: one-line entries, concise, actionable. "Discovery X because Y" — not narrative.

@@ -2,6 +2,7 @@
 name: gobbi-skills-comparator
 description: Blind skill comparator — evaluates two skill versions on equal footing without knowing which is current vs candidate. Use when comparing skill versions to determine which is more effective.
 tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Skill Comparator — Blind A/B

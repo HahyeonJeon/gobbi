@@ -2,6 +2,7 @@
 name: gobbi-skills-grader
 description: Skill quality tester — tests whether a skill triggers correctly on sample prompts and evaluates output quality. Use when verifying a new or modified skill's trigger accuracy and content effectiveness.
 tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Skill Quality Tester

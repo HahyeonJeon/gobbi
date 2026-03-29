@@ -72,3 +72,13 @@ The evaluator decides which of these checks are relevant based on the task. Not 
 | Positive | What's well-implemented? Which patterns are correctly followed? Which decisions show good judgment? |
 | Moderate | Is the implementation complete against the spec? Are safety and integration checks proportional? Are there minor issues that don't block but should be noted? |
 | Critical | Where does the implementation diverge from the spec? What security risks exist? Where did the agent expand scope? What gotchas were violated? |
+
+---
+
+## Scoring Guidance
+
+Execution findings are the most verifiable of all evaluation stages. Tests can be run, patterns can be grepped, files can be checked for syntax, and compilation can be attempted. Tool-based evidence directly supports higher confidence scores — a finding backed by a failing test or a grep result showing a missing pattern should score confidence 80 or above.
+
+Evaluators should lean heavily on their tools at this stage. A concern based purely on reasoning ("this might have a race condition") naturally scores lower confidence than a concern backed by evidence ("grep shows this function is called from two concurrent paths without synchronization"). Both are valid findings, but the tool-backed finding carries more weight in scoring.
+
+When an evaluator cannot verify a finding with tools — for example, a concern about architectural fit or long-term maintainability — the confidence score should reflect that limitation honestly. Execution evaluation is strongest when it produces high-confidence, evidence-backed findings. Speculative findings still belong in the report, but their lower confidence scores correctly signal that they need human judgment rather than automatic action.
