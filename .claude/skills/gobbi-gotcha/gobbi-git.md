@@ -73,3 +73,39 @@ Mistakes in git/GitHub workflow, worktree management, branch handling, and PR li
 **User feedback:** "There are remains like .claude/worktrees/chore."
 
 **Correct approach:** After removing a worktree, clean up any empty parent directories left behind under `.claude/worktrees/`. The cleanup should walk upward from the removed worktree path, removing empty directories until reaching `.claude/worktrees/` itself. This must be part of the worktree removal step, not left as a manual cleanup.
+
+---
+
+### gh pr merge fails when base branch is checked out in main worktree
+
+**Priority:** Critical
+
+**What happened:** During FINISH, `gh pr merge --squash --delete-branch` fails with `fatal: 'develop' is already used by worktree at '/path/to/repo'`. The gh CLI tries to update the local base branch after merging, but git refuses because the branch is checked out in the main working tree. This error has occurred repeatedly across multiple workflow sessions.
+
+**User feedback:** "The merge error repeated many times."
+
+**Correct approach:** Use the GitHub API directly instead of `gh pr merge`. Run `gh api repos/{owner}/{repo}/pulls/{number}/merge -f merge_method=squash` to merge on the remote without touching the local branch. Then handle cleanup separately: delete the remote branch with `gh api repos/{owner}/{repo}/git/refs/heads/{branch} -X DELETE`, close the issue with `gh issue close`, remove the worktree with `git worktree remove`, and pull the merge into the local base branch with `git pull --ff-only origin {base-branch}`. Never use `gh pr merge` when the base branch is checked out locally.
+
+---
+
+### git pull fails with "divergent branches" after squash merge
+
+**Priority:** High
+
+**What happened:** After squash-merging a PR via the GitHub API, `git pull origin develop` fails with `fatal: Need to specify how to reconcile divergent branches`. The local base branch and the remote have diverged because the squash merge created a new commit on the remote that doesn't share history with the local branch's view. Running `git pull` without a strategy flag triggers the divergent branches error repeatedly across sessions.
+
+**User feedback:** "The git pull error repeated too."
+
+**Correct approach:** Always use `git pull --ff-only origin {base-branch}` after a squash merge. The `--ff-only` flag ensures a clean fast-forward. If `--ff-only` fails (local has commits not on remote), the base branch was not properly synced before worktree creation — see the "Unpushed local commits" gotcha above. The FINISH cleanup sequence must always use `--ff-only` to catch sync issues early rather than silently creating merge commits.
+
+---
+
+### Uncommitted gotchas in main tree lost during worktree PR merge
+
+**Priority:** High
+
+**What happened:** During a workflow, gotchas were written to the main tree (correct — `.claude/project/` is gitignored, so gotchas go to the main tree). These gotchas were added to tracked files (e.g., `gobbi-git.md`) but never committed. When the worktree's PR was squash-merged and the orchestrator pulled into the main tree with `git pull --ff-only`, the pull failed because the uncommitted gotcha changes conflicted with the incoming merge. The gotchas had to be manually saved, discarded, pulled, and re-applied.
+
+**User feedback:** (Discovered during symlink reversal migration FINISH phase)
+
+**Correct approach:** Before pulling a squash merge into the main tree, check for uncommitted changes in tracked files using `git status`. If gotchas or other changes exist in tracked files, save the content, discard with `git checkout --`, pull, then re-apply the changes. Alternatively, commit gotchas immediately after writing them to avoid this situation entirely. The safest approach: commit gotchas to the main tree before starting the merge-and-cleanup sequence.
