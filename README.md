@@ -1,14 +1,26 @@
-# gobbi
+<h1 align="center">gobbi</h1>
+<p align="center">An installable harness for Claude Code</p>
+<p align="center"><sub>고삐 (gobbi) — Korean for reins, the essential equipment for handling a horse</sub></p>
 
-> 고삐 (gobbi) — Korean for reins, the essential equipment for handling a horse.
+<p align="center">
+  <a href="https://www.npmjs.com/package/claude-gobbi"><img src="https://img.shields.io/npm/v/claude-gobbi" alt="npm version"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/claude-gobbi" alt="Node version"></a>
+</p>
 
-An installable harness for Claude Code.
+---
 
 ## What is gobbi
 
 Gobbi orchestrates Claude Code's workflow — discussion, planning, execution, evaluation — so you just talk and gobbi handles routing. It detects intent, decides the right workflow for the task, and delegates to specialist agents automatically.
 
-Installation adds 17 skill directories, 5 specialist agents, hook scripts, and project structure to your `.claude/` directory.
+## Features
+
+- **17 workflow skills** — ideation, planning, execution, evaluation, and more
+- **5 specialist agents** — developer, planner, evaluators, explorer
+- **Hook scripts** for session management and notifications (Slack, Telegram, desktop)
+- **Hack system** for user customizations that survive updates
+- **Automatic intent detection** and workflow routing
 
 ## Quick Start
 
@@ -26,13 +38,30 @@ npx gobbi init --non-interactive
 
 This skips all prompts and installs all components without interactive project directory setup.
 
-## Git Manual Install
+## Commands
+
+### `npx gobbi init`
+
+Installs gobbi into the current project.
+
+- Detects existing installations and redirects to `update`
+- Interactive mode asks about project name
+- `--non-interactive` skips all prompts
+
+### `npx gobbi update`
+
+Updates gobbi to the latest version.
+
+- Replaces all skill files, agent definitions, GOBBI.md, core hooks, and notification hooks
+- Preserves `gobbi-hack/` (user customizations) and `.claude/project/` (project state)
+
+## Manual Install
 
 If you want to understand what you're installing before it lands in your project:
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/playinganalytics/gobbi.git
+   git clone https://github.com/HahyeonJeon/gobbi.git
    cd gobbi
    ```
 
@@ -78,23 +107,6 @@ If you want to understand what you're installing before it lands in your project
      }
    }
    ```
-
-## Commands
-
-### `npx gobbi init`
-
-Installs gobbi into the current project.
-
-- Detects existing installations and redirects to `update`
-- Interactive mode asks about project name
-- `--non-interactive` skips all prompts
-
-### `npx gobbi update`
-
-Updates gobbi to the latest version.
-
-- Replaces all skill files, agent definitions, GOBBI.md, core hooks, and notification hooks
-- Preserves `gobbi-hack/` (user customizations) and `.claude/project/` (project state)
 
 ## Hooks
 
@@ -166,4 +178,4 @@ npm publish
 
 ## License
 
-MIT
+[MIT](./LICENSE)

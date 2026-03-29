@@ -22,5 +22,19 @@
     "@types/node": "^18",
     "typescript": "^5.8"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "author": "HahyeonJeon",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HahyeonJeon/gobbi.git"
+  },
+  "homepage": "https://github.com/HahyeonJeon/gobbi#readme",
+  "keywords": [
+    "claude-code",
+    "claude",
+    "harness",
+    "orchestration",
+    "ai-agent",
+    "workflow"
+  ]
 }
