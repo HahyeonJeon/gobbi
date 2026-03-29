@@ -93,6 +93,8 @@ Loop until the plan is solid.
 
 > **Revision follows agreement.** Use EnterPlanMode to revise based on the agreed-upon direction. When the plan is solid, write plan.md and proceed to Step 3.
 
+> **Consider exploration before planning when the task spans unfamiliar territory.** When a task crosses multiple subsystems or touches areas the orchestrator has limited context on, offer exploration to the user via AskUserQuestion before entering the plan loop. If accepted, spawn 2-3 parallel agents with different lenses (architecture, risk, conventions) and synthesize their findings into shared context for planning. If declined, proceed directly to planning. This is a judgment call — straightforward tasks in well-understood areas do not need exploration.
+
 ### Step 3. Execution — Delegation
 
 Delegate subtasks to specialist subagents.
@@ -127,14 +129,11 @@ After TASK completes, use AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?
 
 ### Phase 2. FEEDBACK
 
-The user inspects results and provides iterative feedback. Optimized for speed over structure:
-
-- **Skip planning** — the architecture is established
-- **Fix directly or delegate small scoped tasks** — no full decomposition
-- **Record gotchas from corrections** — user corrections become gotchas via gobbi-gotcha
-- Write feedback.md after each feedback round
+The user inspects results and provides iterative feedback. Optimized for speed over structure — skip planning, fix directly or delegate small scoped tasks, record gotchas from corrections. Write feedback.md after each round.
 
 After FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?
+
+See [feedback.md](feedback.md) for iteration tracking, stagnation detection, round cap, and targeted re-evaluation.
 
 ### Phase 3. REVIEW
 
@@ -144,26 +143,18 @@ After REVIEW completes, use AskUserQuestion to ask: FEEDBACK, or FINISH?
 
 ### FINISH
 
-When the user selects FINISH, use AskUserQuestion to ask:
+Wrap the workflow with merge, commit, and/or compact options. The decision tree depends on whether gobbi-git is active (PR exists) or not. Use AskUserQuestion to present the appropriate options — never assume which the user wants.
 
-**When gobbi-git is active (PR exists):**
-- Merge PR and cleanup (squash merge, delete branch, close issue, remove worktree and empty parent dirs, pull merge into base branch), then compact
-- Merge PR and cleanup only (no compact)
-- Compact only (leave PR open for later)
+> **Before any irreversible operation, verify the expected precondition still holds.** Re-verify at the point of use, not only at session start.
 
-**When gobbi-git is not active (default):**
-- Commit and compact
-- Commit only
-- Compact only
+See [finish.md](finish.md) for the full decision tree, action definitions, and pre-action verification constraints.
 
-**Merge** — squash merge the PR, delete the remote branch, explicitly close the linked issue (closing keywords don't auto-close on non-default branch PRs), remove the local worktree, clean up empty parent directories under `.claude/worktrees/`, pull the merge into the local base branch, and prune stale worktree references.
+**Navigate deeper from here:**
 
-**Commit** — create a git commit with the changes from this workflow.
-
-**Compact** — the agent cannot run `/compact` directly. Instead, tell the user to run the command themselves. The compact message should start with "abort gobbi" (so the compacted context drops gobbi workflow state) followed by a summary of the work done. After compact completes, the user must manually reload gobbi by running `/gobbi`. Example:
-
-> Please run: `/compact abort gobbi — completed doc-review workflow, findings in .claude/project/gobbi/note/20260328-0706-doc-review/`
-> Then reload gobbi with: `/gobbi`
+| Document | Covers |
+|----------|--------|
+| [feedback.md](feedback.md) | FEEDBACK phase: iteration tracking, stagnation detection, targeted re-evaluation |
+| [finish.md](finish.md) | FINISH phase: merge/commit/compact decision tree, pre-action verification |
 
 ---
 
