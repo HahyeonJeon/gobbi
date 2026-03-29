@@ -10,7 +10,6 @@ export interface GitignoreResult {
 
 /**
  * Check if `.claude/` is ignored in `.gitignore` and optionally add it.
- * When adding, also appends `.gobbi/assembled/` (generated content).
  * @param targetDir - The project root directory containing `.gitignore`.
  * @param interactive - Whether to prompt the user to add the entry.
  * @returns The result indicating what action was taken.
@@ -45,7 +44,7 @@ export async function ensureClaudeDirIgnored(
   }
 
   const suffix = content.length > 0 && !content.endsWith('\n') ? '\n' : '';
-  const additions = '.claude/\n.gobbi/assembled/\n';
+  const additions = '.claude/\n';
   await writeFile(gitignorePath, content + suffix + additions, 'utf-8');
 
   return { alreadyIgnored: false, added: true, skipped: false };

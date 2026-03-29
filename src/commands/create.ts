@@ -1,8 +1,6 @@
 import path from 'path';
 import { writeFile, mkdir, chmod } from 'fs/promises';
-import { isV2Installed } from '../lib/detect.js';
-import { sync } from '../lib/sync.js';
-import { SUBDIRS } from '../lib/gobbi-dir.js';
+import { getInstalledVersion } from '../lib/detect.js';
 import { ok, error } from '../lib/style.js';
 import { askQuestion, askChoice } from '../lib/prompt.js';
 
@@ -153,15 +151,17 @@ async function resolveName(docType: DocType, options: CreateOptions): Promise<st
 }
 
 /**
- * Run the gobbi create command — scaffold a new user skill, agent, or hook.
+ * Run the gobbi create command — scaffold a new skill, agent, or hook.
+ * Writes directly to .claude/ — no sync needed.
  * @param targetDir - The project root.
  * @param options - Command options.
  */
 export async function runCreate(targetDir: string, options: CreateOptions): Promise<void> {
-  // 1. Check v2 is installed
-  if (!(await isV2Installed(targetDir))) {
+  // 1. Check installed
+  const version = await getInstalledVersion(targetDir);
+  if (version === 'none') {
     console.log(error('Gobbi is not installed in this project.'));
-    console.log("Run 'npx gobbi init' to install it first.");
+    console.log("Run 'npx @gobbi/core install' to install it first.");
     process.exit(1);
   }
 
@@ -171,40 +171,38 @@ export async function runCreate(targetDir: string, options: CreateOptions): Prom
   // 3. Get name
   const name = await resolveName(docType, options);
 
-  // 4-5. Scaffold based on type
+  // 4. Scaffold directly in .claude/
+  const claudeDir = path.join(targetDir, '.claude');
+
   switch (docType) {
     case 'skill': {
-      const skillDir = path.join(targetDir, SUBDIRS.userSkills, name);
+      const skillDir = path.join(claudeDir, 'skills', name);
       await mkdir(skillDir, { recursive: true });
       const filePath = path.join(skillDir, 'SKILL.md');
       await writeFile(filePath, skillTemplate(name), 'utf8');
-      console.log(ok(`Created skill: ${SUBDIRS.userSkills}/${name}/SKILL.md`));
+      console.log(ok(`Created skill: .claude/skills/${name}/SKILL.md`));
       break;
     }
     case 'agent': {
-      const agentsDir = path.join(targetDir, SUBDIRS.userAgents);
+      const agentsDir = path.join(claudeDir, 'agents');
       await mkdir(agentsDir, { recursive: true });
       const filePath = path.join(agentsDir, `${name}.md`);
       await writeFile(filePath, agentTemplate(name), 'utf8');
-      console.log(ok(`Created agent: ${SUBDIRS.userAgents}/${name}.md`));
+      console.log(ok(`Created agent: .claude/agents/${name}.md`));
       break;
     }
     case 'hook': {
-      const hooksDir = path.join(targetDir, SUBDIRS.userHooks);
+      const hooksDir = path.join(claudeDir, 'hooks');
       await mkdir(hooksDir, { recursive: true });
       const filePath = path.join(hooksDir, `${name}.sh`);
       await writeFile(filePath, hookTemplate(name), 'utf8');
       await chmod(filePath, 0o755);
-      console.log(ok(`Created hook: ${SUBDIRS.userHooks}/${name}.sh`));
+      console.log(ok(`Created hook: .claude/hooks/${name}.sh`));
       break;
     }
   }
 
-  // 6. Run sync
-  await sync(targetDir);
-  console.log(ok('Synced .gobbi/ to .claude/'));
-
-  // 7. Print success
+  // 5. Print success
   console.log('');
   console.log(ok(`Created ${docType} "${name}" successfully.`));
 }
