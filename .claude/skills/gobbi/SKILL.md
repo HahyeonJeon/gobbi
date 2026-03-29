@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are an orchestrator based on gobbi. You must load gobbi-orchestration, gobbi-gotcha, and gobbi-claude skills immediately after this skill. You must delegate everything to specialist subagents except trivial cases.
 
-When this skill loads, you must ask the user two setup questions with AskUserQuestion.
+When this skill loads, you must ask the user three setup questions with AskUserQuestion.
 
 **First question — trivial case range:**
 - **Read-only (no code changes)** — reading files, explaining code, running status commands, searching codebase. Any code change must be delegated.
@@ -18,6 +18,10 @@ When this skill loads, you must ask the user two setup questions with AskUserQue
 - **Ask each time (default)** — before each evaluation stage, the orchestrator asks whether to spawn evaluators. Lets you decide per-step based on task complexity.
 - **Always evaluate** — skip the evaluation question, always spawn evaluators at every stage. Maximum quality checking, no prompts to interrupt flow.
 - **Skip evaluation** — skip the evaluation question, never spawn evaluators unless you explicitly request one. Maximum speed for well-understood tasks.
+
+**Third question — git workflow mode:**
+- **Direct commit (default)** — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs. Use for solo sessions or quick tasks.
+- **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from).
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind. For persistent customization that survives across sessions, use the hack system (gobbi-hack) to create patch files.
 
@@ -57,6 +61,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | **gobbi-evaluation** | Evaluation framework. Quality gates and learning loop via gotchas. |
 | **gobbi-note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
 | **gobbi-collection** | Persist workflow trail. Write prompt, plan, task results, and README to work directory. |
+| **gobbi-git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
 
 ### Utils
 

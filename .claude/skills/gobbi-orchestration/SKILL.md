@@ -34,7 +34,7 @@ Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add
 |------|-------------|
 | Step 1. Ideation Loop | gobbi-discuss, gobbi-ideation-evaluation |
 | Step 2. Plan Loop | gobbi-plan, gobbi-discuss, gobbi-plan-evaluation |
-| Step 3. Execution — Delegation | gobbi-delegation, gobbi-execution-evaluation |
+| Step 3. Execution — Delegation | gobbi-delegation, gobbi-execution-evaluation, gobbi-git (if git workflow mode) |
 | Step 4. Execution — Collection | gobbi-collection, gobbi-note |
 
 **Must write note at every step** — load gobbi-note and write the corresponding note file before leaving each step. Never defer, never skip.
@@ -89,6 +89,8 @@ Delegate subtasks to specialist subagents.
 - After all subtasks complete, write execution.md and subtasks/.
 - After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn.
 
+> **When gobbi-git is active** — Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `.claude/project/` is gitignored and does not exist in worktrees.
+
 ### Step 4. Execution — Collection
 
 Persist the workflow trail.
@@ -126,7 +128,19 @@ After REVIEW completes, use AskUserQuestion to ask: FEEDBACK, or FINISH?
 
 ### FINISH
 
-When the user selects FINISH, use AskUserQuestion to ask: commit and compact, commit only, or compact only.
+When the user selects FINISH, use AskUserQuestion to ask:
+
+**When gobbi-git is active (PR exists):**
+- Merge PR and cleanup (squash merge, delete branch, remove worktree), then compact
+- Merge PR and cleanup only (no compact)
+- Compact only (leave PR open for later)
+
+**When gobbi-git is not active (default):**
+- Commit and compact
+- Commit only
+- Compact only
+
+**Merge** — squash merge the PR, delete the remote branch, remove the local worktree, and prune stale worktree references.
 
 **Commit** — create a git commit with the changes from this workflow.
 
