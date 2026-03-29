@@ -42,11 +42,13 @@ Evaluators have Bash, Grep, Glob, and Read. When the output being evaluated can 
 
 The orchestrator spawns 3 evaluator agents for every evaluation:
 
-| Agent | Stance | Focus |
-|-------|--------|-------|
-| `gobbi-evaluator-positive` | Positive | Finds strengths, validates what works, identifies what must survive revision |
-| `gobbi-evaluator-moderate` | Moderate | Balanced assessment — completeness, proportionality, feasibility, pros and cons |
-| `gobbi-evaluator-critical` | Critical | Adversarial — stress-tests assumptions, finds missing edge cases, hidden risks, scope drift |
+| Agent | Stance | Default Focus | Deep Mode Focus |
+|-------|--------|---------------|-----------------|
+| `gobbi-evaluator-positive` | Strengths across all areas | All areas | Quality — what demonstrates craftsmanship |
+| `gobbi-evaluator-moderate` | Completeness across all areas | All areas | Correctness — does it do what was specified |
+| `gobbi-evaluator-critical` | Adversarial across all areas | All areas | Conventions — alignment with project standards |
+
+**Standard mode: each evaluator covers all areas from its stance. Optional deep mode: each evaluator narrows to a specific focus area.** Deep mode is for high-stakes evaluations where breadth has already been covered by a standard pass. The orchestrator decides the mode based on task risk and prior evaluation results. When deep mode is selected, the focus area is passed to each evaluator agent alongside the work to evaluate.
 
 Each evaluator works independently, loads gobbi-gotcha, and returns a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning.
 
@@ -60,6 +62,8 @@ The orchestrator collects all 3 verdicts and acts:
 ---
 
 ## Scoring
+
+Every finding carries its own confidence and severity scores. Aggregate verdicts (PASS/REVISE/ESCALATE) emerge from the collection of individually scored findings, not from an overall impression.
 
 Every finding from an evaluator carries two independent dimensions: **confidence** and **severity**. These are separate assessments — a finding can be high-severity but low-confidence (a potentially catastrophic issue that might be a false positive), or low-severity but high-confidence (a definite minor issue).
 
@@ -93,6 +97,18 @@ Severity measures how impactful the issue would be if it is real, independent of
 Findings with confidence below 80 are suppressed from the evaluation report by default. They are not discarded — the orchestrator or user can request the full unfiltered list. This prevents low-confidence speculation from drowning out high-confidence findings that need action.
 
 The threshold exists because evaluation should drive decisions, not generate noise. An evaluator uncertain about a finding should still record it (it may gain confidence in a future cycle), but it should not compete for attention with findings the evaluator is confident about.
+
+### False Positive Categories
+
+When scoring confidence, evaluators should check whether a finding falls into a known false positive category before assigning high confidence. A finding matching a false positive category scores confidence 0 unless specific evidence overrides the categorization.
+
+| Category | Definition |
+|----------|------------|
+| Pre-existing | Issue exists in the codebase before this change — not attributable to the evaluated output |
+| Out-of-scope | Real issue, but outside the evaluated task's scope boundary — note for future work |
+| Style preference | Subjective preference, not a convention violation — drop unless project rules mandate it |
+| Linter-catchable | Mechanical issue that automated tooling should catch — note the tooling gap, don't weight as finding |
+| Speculative | Hypothetical concern without supporting evidence — record at low confidence, suppress by default |
 
 ### Cross-Stance Scoring
 

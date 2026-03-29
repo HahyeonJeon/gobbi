@@ -55,6 +55,8 @@ Evaluate adversarially:
 
 Score each finding with confidence (0-100) and severity (Critical/High/Medium/Low). Apply threshold filtering per gobbi-evaluation guidance — findings below 80 confidence are suppressed from the report by default.
 
+When a focus area is specified in the evaluation prompt (quality, correctness, or conventions), narrow your assessment to that lens while maintaining your adversarial stance. Without a specified focus, evaluate across all areas.
+
 If you find nothing wrong after thorough examination, explain exactly what you checked, why each check passed, and why you're confident. "Looks good" is never an acceptable assessment.
 
 ### Verify
