@@ -24,7 +24,7 @@ Create these tasks at the start of every non-trivial workflow:
 | Step 4 | Collection — write notes and persist workflow trail |
 | Phase transition | Ask user: FEEDBACK, REVIEW, or FINISH |
 
-Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add FINISH task when selected.
+Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add FINISH task when selected. When gobbi-git is active, also add a "Merge PR and cleanup" task when the user selects FINISH — merge and cleanup must be a tracked step, not an afterthought.
 
 ---
 
@@ -131,7 +131,7 @@ After REVIEW completes, use AskUserQuestion to ask: FEEDBACK, or FINISH?
 When the user selects FINISH, use AskUserQuestion to ask:
 
 **When gobbi-git is active (PR exists):**
-- Merge PR and cleanup (squash merge, delete branch, remove worktree), then compact
+- Merge PR and cleanup (squash merge, delete branch, close issue, remove worktree and empty parent dirs, pull merge into base branch), then compact
 - Merge PR and cleanup only (no compact)
 - Compact only (leave PR open for later)
 
@@ -140,7 +140,7 @@ When the user selects FINISH, use AskUserQuestion to ask:
 - Commit only
 - Compact only
 
-**Merge** — squash merge the PR, delete the remote branch, remove the local worktree, and prune stale worktree references.
+**Merge** — squash merge the PR, delete the remote branch, explicitly close the linked issue (closing keywords don't auto-close on non-default branch PRs), remove the local worktree, clean up empty parent directories under `.claude/worktrees/`, pull the merge into the local base branch, and prune stale worktree references.
 
 **Commit** — create a git commit with the changes from this workflow.
 

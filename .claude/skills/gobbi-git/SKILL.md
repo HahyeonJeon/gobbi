@@ -69,13 +69,13 @@ The orchestrator passes the worktree's absolute path in every delegation prompt.
 
 This skill loads at session start as a core skill. Prerequisites run during session setup when the user selects the git workflow (worktree + PR). The operational phase — worktree creation, branch setup, and delegation — begins at Step 3 (Execution) when the plan is approved.
 
-**Before delegation** — The orchestrator creates the worktree and branch, re-verifying the base branch exists on the remote before proceeding. The project's install command runs in the worktree so dependencies are ready. The worktree path becomes part of every delegation prompt.
+**Before delegation** — The orchestrator ensures the base branch is pushed to remote and in sync before creating the worktree and branch, re-verifying the base branch exists on the remote before proceeding. This guarantees the PR diff contains only the intended changes and prevents unpushed local commits from being silently absorbed into the PR on merge. The project's install command runs in the worktree so dependencies are ready. The worktree path becomes part of every delegation prompt.
 
 **During delegation** — Subagents cd to the worktree as their first action, then follow Study, Plan, Execute, Verify, Commit. Each subagent commits its verified work before completing. The orchestrator coordinates sequencing between subtasks.
 
 **After all subtasks** — The orchestrator pushes all commits to remote and creates the PR. CI runs against the pushed branch. The orchestrator monitors CI and coordinates any fixes.
 
-**FINISH phase** — When gobbi-git is active, the FINISH phase changes: "merge PR and cleanup" replaces the default commit step. Merging, branch deletion, and worktree removal happen as part of the orchestrator's FINISH responsibilities.
+**FINISH phase** — When gobbi-git is active, the FINISH phase changes: "merge PR and cleanup" replaces the default commit step. Merging, branch deletion, and worktree removal happen as part of the orchestrator's FINISH responsibilities. When the PR targets a non-default branch, the orchestrator must explicitly close linked issues because closing keywords only trigger on PRs merged into the default branch. After removing the worktree, any empty parent directories left behind by nested branch names must be cleaned up. The orchestrator also pulls the merge into the local base branch to keep it in sync with the remote.
 
 **Notes and gotchas always write to the main tree** — The `.claude/project/` directory is gitignored. Subagent notes and gotchas must use the main tree's absolute path, not the worktree path, because worktrees are temporary and get removed after merge.
 
@@ -91,7 +91,7 @@ This skill loads at session start as a core skill. Prerequisites run during sess
 
 **CI failure on the PR** — Fix the issue in the worktree, commit the fix, and push. CI re-runs automatically against the updated branch. The orchestrator monitors until CI passes or the user decides to defer.
 
-**Cleanup failure when removing a worktree** — If normal removal fails (uncommitted changes, locked files), force removal is the fallback, followed by pruning to clean up stale references.
+**Cleanup failure when removing a worktree** — If normal removal fails (uncommitted changes, locked files), force removal is the fallback, followed by pruning to clean up stale references. Nested branch names that use slashes create intermediate directories under `.claude/worktrees/` — git only removes the leaf directory, so empty parent directories must be cleaned up separately after worktree removal.
 
 ---
 
