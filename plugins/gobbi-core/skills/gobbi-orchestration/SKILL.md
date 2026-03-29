@@ -155,6 +155,7 @@ When the user selects FINISH, use AskUserQuestion to ask:
 
 **Mandatory actions — never skip these:**
 - Before planning, MUST check gotchas
+- Before expensive delegation, MUST run lightweight precondition checks — verify the task is well-defined, prerequisites are met, and the scope justifies agent spawning. Use cheap checks (Haiku agents or bash commands) to prevent wasting expensive computation on ineligible or malformed tasks
 - Before delegation, MUST include gotcha context in every subagent prompt
 - Before evaluation, MUST ask user with AskUserQuestion whether to evaluate — evaluation is optional at ideation and planning stages
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with

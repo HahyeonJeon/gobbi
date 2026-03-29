@@ -84,6 +84,24 @@ Every agent follows: **Study → Plan → Execute → Verify**. Your delegation 
 
 ---
 
+## Model Selection
+
+> **Use the cheapest model that can do the job.** Default to the agent's defined model; override when the task clearly maps to a different tier.
+
+Three tiers of capability, from lightest to heaviest:
+
+| Tier | Strength | Suited for |
+|------|----------|------------|
+| **Haiku** | Fast, cheap, reliable on narrow tasks | Eligibility checks, simple validation, gotcha lookups, confidence scoring, format verification |
+| **Sonnet** | Balanced reasoning and cost | Routine development, code review, codebase exploration, standard evaluation, documentation writing |
+| **Opus** | Deep reasoning, handles ambiguity and novelty | Complex ideation, architecture decisions, system design, nuanced evaluation, novel problem solving |
+
+**When to override agent defaults:** Agent definitions declare a default model suited to their typical workload. Override when the specific task is clearly simpler or more complex than what the agent usually handles. A Sonnet-default agent doing a trivial validation can drop to Haiku. A Sonnet-default agent facing a novel architecture problem should escalate to Opus.
+
+This is guidance for the orchestrator's judgment, not a rigid assignment table. The orchestrator considers the task's complexity, the cost, and the consequence of getting it wrong — then picks the tier that fits.
+
+---
+
 ## Judgment Calls
 
 **Specificity vs autonomy** — Over-specified prompts produce rigid work. Under-specified prompts miss requirements. Calibrate based on how well-defined the task is.
