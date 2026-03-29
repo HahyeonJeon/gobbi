@@ -170,10 +170,10 @@ export function printInstallSuccess(): void {
   console.log('');
   console.log(bold(green('Gobbi installed successfully!')));
   console.log('');
+  console.log('Content installed to .claude/');
+  console.log('');
   console.log('Next steps:');
-  console.log(`  1. Run ${bold('gobbi sync')} to sync .gobbi/ to .claude/.`);
-  console.log(`  2. Add ${bold('.gobbi/')} to your ${bold('.gitignore')} if not already present.`);
-  console.log(`  3. Start a Claude Code session and type ${bold('/gobbi')} to begin.`);
+  console.log(`  1. Start a Claude Code session and type ${bold('/gobbi')} to begin.`);
   console.log(`  Run ${bold('/gobbi-notification')} in Claude Code to configure notification credentials.`);
 }
 
@@ -184,17 +184,7 @@ export function printMigrationSummary(skillsMoved: number, agentsMoved: number, 
   console.log('');
   console.log(bold(green('Migration complete!')));
   console.log('');
-  console.log(`  Migrated ${bold(String(skillsMoved))} skills, ${bold(String(agentsMoved))} agents, ${bold(String(hooksMoved))} hooks to .gobbi/`);
-}
-
-/**
- * Print a sync summary showing counts of items copied.
- */
-export function printSyncSummary(skillsCopied: number, agentsCopied: number, hooksCopied: number): void {
-  console.log('');
-  console.log(bold(green('Sync complete!')));
-  console.log('');
-  console.log(`  Synced ${bold(String(skillsCopied))} skills, ${bold(String(agentsCopied))} agents, ${bold(String(hooksCopied))} hooks to .claude/`);
+  console.log(`  Migrated ${bold(String(skillsMoved))} skills, ${bold(String(agentsMoved))} agents, ${bold(String(hooksMoved))} hooks to .claude/`);
 }
 
 /**
@@ -207,15 +197,11 @@ export function printCreateSuccess(docType: string, name: string, filePath: stri
 }
 
 /**
- * Print the styled success message for update with preserved items.
+ * Print the styled success message for update.
  */
 export function printUpdateSuccess(): void {
   console.log('');
   console.log(bold(green('Gobbi updated successfully!')));
   console.log('');
-  console.log('Preserved:');
-  console.log(`  ${dim('-')} .gobbi/user/ (user customizations)`);
-  console.log(`  ${dim('-')} .gobbi/market/ (installed packages)`);
-  console.log('');
-  console.log(`Run ${bold('gobbi sync')} to apply changes to .claude/.`);
+  console.log('Content updated in .claude/');
 }

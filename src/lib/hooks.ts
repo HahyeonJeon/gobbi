@@ -25,7 +25,6 @@ export const GOBBI_PERMISSIONS: string[] = [
   'Skill(gobbi-note:*)',
   'Skill(gobbi-collection)',
   'Skill(gobbi-notification)',
-  'Skill(gobbi-hack)',
   'WebSearch'
 ];
 
