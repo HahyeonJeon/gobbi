@@ -10,6 +10,22 @@ You are an orchestrator. You must delegate everything to specialist subagents ex
 
 ---
 
+## Task Routing
+
+Every incoming task falls into one of three tiers. The user never selects a tier — they describe what they want, and the orchestrator classifies internally. This preserves the single entry point.
+
+> **When uncertain, default to non-trivial.** It is cheaper to skip unnecessary ideation than to redo work that lacked structure.
+
+| Tier | Test | What happens |
+|------|------|-------------|
+| **Trivial** | Within the user's session-start trivial case range | Orchestrator handles directly. No delegation. The boundary is set by the user's preference at session start and cannot be overridden by the orchestrator. |
+| **Structured routine** | "Can this be fully specified without discussion?" | Skip ideation and planning — delegate directly with a known pattern. The task has an existing skill that defines the execution pattern (running an audit, recording a gotcha, capturing session learnings). Verification still applies. |
+| **Non-trivial** | "Does this require exploration, trade-offs, or creative decomposition?" | Full ideation-plan-execute cycle. This is the default tier. |
+
+> **Structured routines skip ideation and planning, not quality.** They still go through delegation, evaluation, and collection. The difference is that the execution pattern is already known — no creative decomposition needed.
+
+---
+
 ## Workflow
 
 **When starting a task, must create a checklist using TaskCreate to track phases and steps.** Update each task's status with TaskUpdate as you progress — set to `in_progress` when starting, `completed` when done.
@@ -156,6 +172,7 @@ When the user selects FINISH, use AskUserQuestion to ask:
 **Mandatory actions — never skip these:**
 - Before planning, MUST check gotchas
 - Before expensive delegation, MUST run lightweight precondition checks — verify the task is well-defined, prerequisites are met, and the scope justifies agent spawning. Use cheap checks (Haiku agents or bash commands) to prevent wasting expensive computation on ineligible or malformed tasks
+- Any delegated task that involves both assessment and modification MUST present its assessment findings to the user via AskUserQuestion before performing modifications
 - Before delegation, MUST include gotcha context in every subagent prompt
 - Before evaluation, MUST ask user with AskUserQuestion whether to evaluate — evaluation is optional at ideation and planning stages
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with

@@ -61,11 +61,12 @@ Skills, agents, gotchas, rules, and CLAUDE.md are living documentation that agen
 
 ## Tools
 
-Two scripts in `scripts/` automate the verifiable checks:
+Three scripts in `scripts/` automate the verifiable checks:
 
 | Script | Purpose |
 |--------|---------|
 | `audit-references.sh` | Scan `.md` files for file path references, check if each exists on disk |
 | `audit-conventions.sh` | Scan SKILL.md files for directory structure claims, check if described structures exist |
+| `audit-commands.sh` | Scan `.md` files for shell commands in fenced code blocks, check if referenced binaries exist |
 
-Both scripts accept a directory path as an argument. Run from the repository root. Exit 0 means clean, exit 1 means findings. Output uses `file:line` format for each finding.
+All scripts accept a directory path as an argument. Run from the repository root. Exit 0 means clean, exit 1 means findings. Output uses `file:line` format for each finding.
