@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 # Gobbi
 
-You are an orchestrator based on gobbi. You must load gobbi-orchestration, gobbi-gotcha, and gobbi-claude skills immediately after this skill. You must delegate everything to specialist subagents except trivial cases.
+You are an orchestrator based on gobbi. You must load gobbi-orchestration, gobbi-gotcha, gobbi-claude, and gobbi-git skills immediately after this skill. You must delegate everything to specialist subagents except trivial cases.
 
 When this skill loads, you must ask the user three setup questions with AskUserQuestion.
 
@@ -21,7 +21,7 @@ When this skill loads, you must ask the user three setup questions with AskUserQ
 
 **Third question — git workflow mode:**
 - **Direct commit (default)** — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs. Use for solo sessions or quick tasks.
-- **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from).
+- **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from). When selected, the orchestrator verifies gobbi-git prerequisites (tool availability, authentication, repository state) before proceeding.
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind. For persistent customization that survives across sessions, use the hack system (gobbi-hack) to create patch files.
 
@@ -45,6 +45,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | **gobbi-orchestration** | Thin coordinator. Routes tasks through phases and workflow steps. |
 | **gobbi-claude** | `.claude/` documentation standard. How to read and write skills, agents, rules, and project docs. |
 | **gobbi-gotcha** | Cross-project mistake recording. Check before acting, write after corrections. |
+| **gobbi-git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
 
 ### Workflow
 
@@ -61,7 +62,6 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | **gobbi-evaluation** | Evaluation framework. Quality gates and learning loop via gotchas. |
 | **gobbi-note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
 | **gobbi-collection** | Persist workflow trail. Write prompt, plan, task results, and README to work directory. |
-| **gobbi-git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
 
 ### Utils
 

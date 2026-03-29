@@ -34,7 +34,7 @@ Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add
 |------|-------------|
 | Step 1. Ideation Loop | gobbi-discuss, gobbi-ideation-evaluation |
 | Step 2. Plan Loop | gobbi-plan, gobbi-discuss, gobbi-plan-evaluation |
-| Step 3. Execution — Delegation | gobbi-delegation, gobbi-execution-evaluation, gobbi-git (if git workflow mode) |
+| Step 3. Execution — Delegation | gobbi-delegation, gobbi-execution-evaluation |
 | Step 4. Execution — Collection | gobbi-collection, gobbi-note |
 
 **Must write note at every step** — load gobbi-note and write the corresponding note file before leaving each step. Never defer, never skip.

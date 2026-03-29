@@ -30,6 +30,20 @@ This separation is the key to controlled integration. Subagents make focused, we
 
 ---
 
+## Prerequisites
+
+Before the git workflow can function, certain conditions must hold. These divide into two severity tiers based on whether they block the workflow entirely or merely risk problems downstream.
+
+**Critical — block until resolved.** The gh CLI must be available and reachable because the entire PR lifecycle depends on it. The gh CLI must be authenticated to the remote because API access is required for issue creation, PR management, and CI monitoring. The repository must have a configured git remote because pushing and PR creation require a remote target. If any of these are missing, the workflow cannot proceed.
+
+**Warning — inform the user, continue.** The configured base branch should exist on the remote — worktree creation will fail later if it doesn't, but the user may intend to create it. The `.claude/worktrees/` directory should be listed in `.gitignore` — without this, worktree contents appear in the main repo's git status. Orphaned worktrees may exist in `.claude/worktrees/` from crashed or abandoned sessions — offer cleanup or recovery.
+
+> **Fallback principle:** If critical prerequisites cannot be resolved — user cannot install gh, cannot authenticate, no remote is available — fall back to Direct commit mode rather than blocking the session entirely.
+
+> **Re-verification principle:** Some prerequisites — particularly base branch existence — should be re-verified at the point of use, not only at session start. Early checks catch problems early; late re-checks catch changes that occurred between setup and execution.
+
+---
+
 ## Workflow Mental Model
 
 The git lifecycle flows through stages with clear ownership at each point. The issue drives everything downstream — it determines the branch name, provides the PR description anchor, and connects the work to the project's tracking. The worktree provides physical isolation so the main working tree stays clean for other sessions. Subagents work sequentially within the worktree, each committing their verified changes. The orchestrator integrates by pushing and opening a PR only when all work is complete.
@@ -53,9 +67,9 @@ The orchestrator passes the worktree's absolute path in every delegation prompt.
 
 ## Integration with Orchestration
 
-This skill activates at Step 3 (Execution) of the orchestration workflow, when the plan is approved and implementation begins.
+This skill loads at session start as a core skill. Prerequisites run during session setup when the user selects the git workflow (worktree + PR). The operational phase — worktree creation, branch setup, and delegation — begins at Step 3 (Execution) when the plan is approved.
 
-**Before delegation** — The orchestrator creates the worktree and branch, ensuring the project's install command runs in the worktree so dependencies are ready. The worktree path becomes part of every delegation prompt.
+**Before delegation** — The orchestrator creates the worktree and branch, re-verifying the base branch exists on the remote before proceeding. The project's install command runs in the worktree so dependencies are ready. The worktree path becomes part of every delegation prompt.
 
 **During delegation** — Subagents cd to the worktree as their first action, then follow Study, Plan, Execute, Verify, Commit. Each subagent commits its verified work before completing. The orchestrator coordinates sequencing between subtasks.
 
@@ -71,9 +85,9 @@ This skill activates at Step 3 (Execution) of the orchestration workflow, when t
 
 **Worktree creation fails because the branch already exists** — The branch may be in use by another session or left over from a previous run. Report the conflict to the user and offer to reuse the existing worktree or rename the branch.
 
-**gh CLI not authenticated** — The PR lifecycle depends on GitHub API access. Check authentication status at workflow start, before any git operations begin. If not authenticated, ask the user to authenticate before proceeding.
+**gh CLI not authenticated** — Covered by prerequisites — verified at session setup.
 
-**Orphaned worktrees from a crashed session** — Sessions can crash or be abandoned, leaving worktrees on disk with no active session managing them. On session start, list existing worktrees to detect stale ones. Offer the user a choice: recover the work (inspect and resume) or clean up (remove the worktree and its branch).
+**Orphaned worktrees from a crashed session** — Detection is covered by prerequisites at session setup. When orphans are found, offer the user a choice: recover the work (inspect the worktree's commits and resume from where it left off) or clean up (remove the worktree and its branch).
 
 **CI failure on the PR** — Fix the issue in the worktree, commit the fix, and push. CI re-runs automatically against the updated branch. The orchestrator monitors until CI passes or the user decides to defer.
 
