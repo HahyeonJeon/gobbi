@@ -114,7 +114,7 @@ The interactive creation process produces:
 ## Constraints
 
 - Must follow gobbi-claude writing principles — principles over procedures, constraints over templates, codebase over examples
-- No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes
+- No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes (skills are teaching docs — step-by-step is context-dependent per gobbi-claude)
 - Under 500 lines per file (must), targeting under 200 (should)
 - Flat directory structure — SKILL.md plus sibling `.md` files, no nested subdirectories
 - Content must be portable — no project-specific patterns in skills
