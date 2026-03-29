@@ -84,6 +84,17 @@ Run the same scenarios before and after modifying a skill. Compare the score dis
 
 ---
 
+## Relationship to Skill Verification
+
+gobbi-benchmark and gobbi-claude-skills verification (see `gobbi-claude-skills/verification.md`) serve different purposes:
+
+- **Benchmark** measures specific skill behaviors quantitatively — numeric scores, variance, delta tracking. Use benchmarks to answer "did this change improve the skill's performance on this specific behavior?"
+- **Verification** assesses holistic skill quality with specialized agents (grader, analyzer, comparator) — trigger accuracy, output quality, blind A/B comparison. Use verification to answer "is this skill well-written and effective overall?"
+
+Benchmark scenarios complement verification agents. Run verification for broad quality assessment. Run benchmarks for targeted measurement of specific behaviors you're actively changing.
+
+---
+
 ## Constraints
 
 - Benchmark execution is manual-trigger only — no automated CI, no pre-commit hooks

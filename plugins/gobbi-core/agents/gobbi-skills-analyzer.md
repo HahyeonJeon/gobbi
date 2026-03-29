@@ -2,6 +2,7 @@
 name: gobbi-skills-analyzer
 description: Skill improvement analyst — synthesizes grading and comparison results into prioritized improvement recommendations. Use after gobbi-skills-grader or gobbi-skills-comparator to turn evaluation data into actionable next steps.
 tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 # Skill Improvement Analyst
