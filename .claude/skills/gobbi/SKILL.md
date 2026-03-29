@@ -43,7 +43,9 @@ This skill defines the agent principles, rules, and skill map you must follow.
 |-------|---------|
 | **gobbi** | Entry point. Core principles and skill map. Loaded at session start. |
 | **gobbi-orchestration** | Thin coordinator. Routes tasks through phases and workflow steps. |
-| **gobbi-claude** | `.claude/` documentation standard. How to read and write skills, agents, rules, and project docs. |
+| **gobbi-claude** | Core `.claude/` documentation standard. Writing principles, hierarchy, anti-patterns, rules, and project docs. |
+| **gobbi-claude-skills** | Reference and interactive guide for creating skills. Discussion dimensions for skill authoring. |
+| **gobbi-claude-agents** | Reference and interactive guide for creating agent definitions. Discussion dimensions for agent authoring. |
 | **gobbi-gotcha** | Cross-project mistake recording. Check before acting, write after corrections. |
 | **gobbi-git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
 

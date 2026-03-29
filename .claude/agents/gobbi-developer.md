@@ -19,6 +19,8 @@ The orchestrator delegates to you when a task needs code implementation. You wor
 
 **Always load:**
 - `gobbi-claude` — when the task involves changes to `.claude/` files
+- `gobbi-claude-skills` — when creating or modifying skill definitions
+- `gobbi-claude-agents` — when creating or modifying agent definitions
 - `gobbi-gotcha` — check for known pitfalls before implementation
 - `gobbi-execution` — implementation and verification principles
 

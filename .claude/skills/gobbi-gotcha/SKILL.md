@@ -21,7 +21,7 @@ Record cross-project agent mistakes so they never happen twice. Each gotcha file
 | [gobbi-collection.md](gobbi-collection.md) | gobbi-collection | Work trail persistence, README indexing |
 | [gobbi-evaluation.md](gobbi-evaluation.md) | gobbi-evaluation | Quality gates, evaluation criteria |
 | [gobbi-ideation.md](gobbi-ideation.md) | gobbi-ideation | Brainstorming, option generation |
-| [gobbi-claude.md](gobbi-claude.md) | gobbi-claude | `.claude/` documentation, skill/agent authoring |
+| [gobbi-claude.md](gobbi-claude.md) | gobbi-claude, gobbi-claude-skills, gobbi-claude-agents | `.claude/` documentation standard, skill and agent authoring |
 | [gobbi-hack.md](gobbi-hack.md) | gobbi-hack | Patch generation, override layer |
 | [gobbi-note.md](gobbi-note.md) | gobbi-note | Note writing, directory structure, timing |
 | [gobbi-notification.md](gobbi-notification.md) | gobbi-notification | Hook setup, credentials, script issues |

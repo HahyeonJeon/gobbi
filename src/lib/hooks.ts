@@ -10,6 +10,8 @@ export const GOBBI_PERMISSIONS: string[] = [
   'Skill(gobbi-orchestration)',
   'Skill(gobbi-gotcha)',
   'Skill(gobbi-claude)',
+  'Skill(gobbi-claude-skills)',
+  'Skill(gobbi-claude-agents)',
   'Skill(gobbi-discuss)',
   'Skill(gobbi-ideation)',
   'Skill(gobbi-ideation-evaluation)',
