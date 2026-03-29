@@ -8,6 +8,12 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 Reference for understanding skill structure and interactive guide for creating new skills through discussion. Load this when creating, reviewing, or modifying any `.claude/skills/` definition. Load gobbi-claude for writing principles and gobbi-discuss for discussion mechanics before using this skill.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [verification.md](verification.md) | Skill verification: trigger testing, output quality, improvement loop, evaluation agents |
+
 ---
 
 ## Core Principles
@@ -48,6 +54,18 @@ Read existing skills in `.claude/skills/` for structural patterns — the codeba
 
 ---
 
+## Skill Verification
+
+> **Skills should be testable.** A skill's trigger accuracy and output quality can be measured. If you can't describe what prompts should trigger a skill and what good output looks like, the skill's purpose isn't clear enough.
+
+> **Improvement is iterative.** The cycle is: grade trigger accuracy and output quality, analyze failures for patterns, improve the skill, re-grade to verify. Each iteration should address the highest-priority findings first.
+
+> **Comparison should be blind.** When comparing two skill versions, remove provenance bias. Present versions as A and B without labeling which is current vs candidate. The blind protocol ensures evaluation is based on quality, not familiarity.
+
+Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. Three evaluation agents execute verification: gobbi-skills-grader (tests trigger accuracy and output quality), gobbi-skills-comparator (blind A/B comparison of skill versions), and gobbi-skills-analyzer (synthesizes results into prioritized improvements).
+
+---
+
 ## Discussion Dimensions
 
 When creating a new skill, use AskUserQuestion to explore these dimensions. Not every skill needs every question — pick the ones that address what is vague or missing.
@@ -74,6 +92,12 @@ When creating a new skill, use AskUserQuestion to explore these dimensions. Not 
 
 - **Non-obvious pitfalls** — What mistakes are agents likely to make in this domain? What behavior seems correct but produces wrong results? These are candidates for gotcha entries.
 - **Gotcha file need** — Should a gotcha file be created alongside the skill? Warranted when the domain has known pitfalls that are not obvious from reading the skill itself.
+
+### Verification Planning
+
+- **Test scenarios** — What prompts should trigger this skill? What prompts should NOT trigger it? Are there edge cases where triggering is ambiguous?
+- **Verification criteria** — What does good output look like for this skill? How would you know if the skill guided the agent correctly vs poorly?
+- **Improvement loop** — How will this skill be iterated after initial creation? What metrics indicate it needs improvement?
 
 ---
 
@@ -114,7 +138,7 @@ The interactive creation process produces:
 ## Constraints
 
 - Must follow gobbi-claude writing principles — principles over procedures, constraints over templates, codebase over examples
-- No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes
+- No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes (skills are teaching docs — step-by-step is context-dependent per gobbi-claude)
 - Under 500 lines per file (must), targeting under 200 (should)
 - Flat directory structure — SKILL.md plus sibling `.md` files, no nested subdirectories
 - Content must be portable — no project-specific patterns in skills

@@ -65,8 +65,15 @@ These directly cause the mimicry problem. Presence of any of these means the doc
 |---|---|
 | **Code examples** | Agent copies verbatim without adapting to context. The codebase has real examples. |
 | **BAD/GOOD comparison blocks** | Agent memorizes the GOOD block as a mandatory template. |
-| **Step-by-step recipes** | Agent follows rigidly, skips steps that matter, adds steps that don't. |
 | **Duplicating codebase patterns** | Creates a second source of truth that drifts from reality. |
+
+### Context-Dependent
+
+Not universally forbidden. The test: "Would deviating from this sequence cause failure?" If yes, the pattern is appropriate.
+
+| Anti-Pattern | When Forbidden | When Allowed |
+|---|---|---|
+| **Step-by-step recipes** | In teaching docs (skills, rules, project docs) where agents should reason from principles. Agent follows rigidly, skips steps that matter, adds steps that don't. | In orchestration flows and agent definitions where a specific sequence must be followed exactly and deviation causes failure. |
 
 ### Should Avoid
 
@@ -97,5 +104,6 @@ Before publishing any `.claude/` documentation:
 - [ ] No duplication with other `.claude/` files
 
 **Anti-Pattern**
-- [ ] Zero code blocks, BAD/GOOD comparisons, or step-by-step recipes (must avoid)
+- [ ] Zero code blocks or BAD/GOOD comparisons (must avoid)
+- [ ] Step-by-step recipes only in orchestration/agent definitions, never in teaching docs (context-dependent)
 - [ ] Minimal interface definitions, exact values, or bash commands in docs (should avoid)
