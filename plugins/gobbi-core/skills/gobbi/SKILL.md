@@ -71,3 +71,6 @@ This skill defines the agent principles, rules, and skill map you must follow.
 |-------|---------|
 | **gobbi-hack** | User override layer. Patch files that modify core skill behavior without touching core files. |
 | **gobbi-notification** | Configure Claude Code notifications (Slack, Telegram, others) via conversation. |
+| **gobbi-validate** | Validate agent definitions, skill docs, and gotcha entries. Bundled scripts for structure and anti-pattern checking. |
+| **gobbi-audit** | Documentation drift detection. Verify .claude/ docs match codebase reality. |
+| **gobbi-benchmark** | Skill benchmarking methodology. Eval scenarios and scoring for measuring skill effectiveness. |
