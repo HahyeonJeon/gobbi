@@ -71,7 +71,7 @@ Confidence measures how certain the evaluator is that a finding represents a rea
 |-------|---------|
 | 0 | False positive — appears like an issue but isn't one on closer inspection |
 | 25 | Possible but unverified — could be an issue, but no evidence confirms it |
-| 50 | Real but minor — the issue exists, though its practical impact is unclear |
+| 50 | Probable — the issue likely exists, but evidence is indirect or incomplete |
 | 75 | Significant and likely — strong reasoning or partial evidence supports this |
 | 100 | Definite — verified by evidence, tool output, or incontrovertible reasoning |
 

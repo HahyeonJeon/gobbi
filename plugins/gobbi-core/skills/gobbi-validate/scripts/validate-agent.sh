@@ -34,7 +34,7 @@ else
   else
     # Extract frontmatter (between the two --- markers)
     fm_end=$((closing_line + 1))
-    frontmatter=$(sed -n "2,${fm_end}p" "$file" | head -n -1)
+    frontmatter=$(sed -n "2,${fm_end}p" "$file" | sed '$d')
 
     # Check required fields: name, description, tools
     for field in name description tools; do

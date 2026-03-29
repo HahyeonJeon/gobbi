@@ -22,7 +22,12 @@ warnings=0
 
 # Check that file has at least one ## or ### heading (gotcha entry title)
 entry_count=$(grep -cE '^#{2,3}\s+[^#]' "$file" || true)
-if [ "$entry_count" -eq 0 ]; then
+file_size=$(wc -c < "$file" | tr -d ' ')
+if [ "$entry_count" -eq 0 ] && [ "$file_size" -le 5 ]; then
+  echo "INFO: $file: Empty stub file (no entries yet)" >&2
+  echo "PASS: $file"
+  exit 0
+elif [ "$entry_count" -eq 0 ]; then
   echo "FAIL: $file: No gotcha entries found (expected ## or ### headings)" >&2
   errors=$((errors + 1))
 fi

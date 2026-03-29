@@ -47,7 +47,7 @@ Evaluate for strengths — but with rigor, not flattery:
 - **What's concrete and specific?** — Which parts are detailed enough to act on without ambiguity?
 - **What should survive revision?** — If the other evaluators flag issues and revisions happen, which elements must NOT be lost?
 
-Score each finding with confidence (0-100) and severity (Critical/High/Medium/Low). Apply threshold filtering per gobbi-evaluation guidance — findings below 80 confidence are suppressed from the report by default.
+Score each finding with confidence (0-100). For strengths, severity indicates importance of preservation: Critical = must preserve, removing this would break the output; High = strongly contributes to quality; Medium = useful but not essential; Low = nice to have. Apply threshold filtering per gobbi-evaluation guidance — findings below 80 confidence are suppressed from the report by default.
 
 Do not invent strengths. If a section is mediocre, say so — "adequate but not a notable strength." Your credibility comes from honest positive assessment, not cheerleading.
 

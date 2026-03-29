@@ -82,7 +82,7 @@ while IFS= read -r line || [ -n "$line" ]; do
 done < "$file"
 
 # --- Check for step-by-step numbered recipes ---
-# Heuristic: 3+ consecutive numbered items with imperative verbs reads like a procedure manual
+# Heuristic: 4+ consecutive numbered items with imperative verbs reads like a procedure manual
 # Only flag when the pattern is clearly a recipe, not a regular numbered list
 consecutive_imperatives=0
 recipe_start=0
