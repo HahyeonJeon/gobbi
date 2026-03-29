@@ -23,7 +23,7 @@ When this skill loads, you must ask the user three setup questions with AskUserQ
 - **Direct commit (default)** — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs. Use for solo sessions or quick tasks.
 - **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from). When selected, the orchestrator verifies gobbi-git prerequisites (tool availability, authentication, repository state) before proceeding.
 
-These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind. For persistent customization that survives across sessions, use the hack system (gobbi-hack) to create patch files.
+These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
 This skill defines the agent principles, rules, and skill map you must follow.
 
@@ -69,7 +69,6 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 | Skill | Purpose |
 |-------|---------|
-| **gobbi-hack** | User override layer. Patch files that modify core skill behavior without touching core files. |
 | **gobbi-notification** | Configure Claude Code notifications (Slack, Telegram, others) via conversation. |
 | **gobbi-validate** | Validate agent definitions, skill docs, and gotcha entries. Bundled scripts for structure and anti-pattern checking. |
 | **gobbi-audit** | Documentation drift detection. Verify .claude/ docs match codebase reality. |
