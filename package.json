@@ -1,7 +1,7 @@
 {
-  "name": "claude-gobbi",
-  "version": "0.1.0",
-  "description": "An installable harness for Claude Code",
+  "name": "@gobbi/core",
+  "version": "0.2.0",
+  "description": "Gobbi — workflow harness and claude docs management for Claude Code",
   "type": "module",
   "bin": {
     "gobbi": "./bin/gobbi.js"
@@ -22,6 +22,9 @@
     "@types/node": "^18",
     "typescript": "^5.8"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "license": "MIT",
   "author": "HahyeonJeon",
   "repository": {

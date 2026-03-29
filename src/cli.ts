@@ -6,8 +6,10 @@ import path from 'path';
 const USAGE = `Usage: gobbi <command> [options]
 
 Commands:
-  init     Install gobbi into the current project
-  update   Update gobbi to the latest version
+  install    Install gobbi into the current project
+  update     Update gobbi core to the latest version
+  create     Create a new skill, agent, or hook
+  sync       Sync .gobbi/ to .claude/
 
 Options:
   --help              Show this help message
@@ -37,17 +39,33 @@ export async function run(): Promise<void> {
   }
 
   const command = positionals[0];
+  const cwd = process.cwd();
   const nonInteractive = values['non-interactive'] ?? false;
 
   switch (command) {
-    case 'init': {
-      const { runInit } = await import('./commands/init.js');
-      await runInit(process.cwd(), { nonInteractive });
+    case 'install': {
+      const { runInstall } = await import('./commands/install.js');
+      await runInstall(cwd, { nonInteractive });
       break;
     }
     case 'update': {
       const { runUpdate } = await import('./commands/update.js');
-      await runUpdate(process.cwd(), { nonInteractive });
+      await runUpdate(cwd, { nonInteractive });
+      break;
+    }
+    case 'create': {
+      const { runCreate } = await import('./commands/create.js');
+      const createOpts: { nonInteractive: boolean; type?: string; name?: string } = { nonInteractive };
+      const typeArg = positionals[1];
+      const nameArg = positionals[2];
+      if (typeArg !== undefined) createOpts.type = typeArg;
+      if (nameArg !== undefined) createOpts.name = nameArg;
+      await runCreate(cwd, createOpts);
+      break;
+    }
+    case 'sync': {
+      const { runSync } = await import('./commands/sync.js');
+      await runSync(cwd);
       break;
     }
     default:

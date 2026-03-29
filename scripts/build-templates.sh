@@ -1,4 +1,7 @@
 #!/bin/bash
+# build-templates.sh — Copy .claude/ source files to templates/ for npm distribution.
+# The templates/ directory is what gets installed into .gobbi/core/ by init.
+# gobbi-hack is excluded — it's user-owned and created empty by install.
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,8 +17,15 @@ mkdir -p templates/skills templates/agents templates/hooks
 echo "Copying entry-point skill (gobbi)..."
 cp -r .claude/skills/gobbi templates/skills/gobbi
 
-echo "Copying gobbi-* skills..."
-cp -r .claude/skills/gobbi-* templates/skills/
+echo "Copying gobbi-* skills (excluding gobbi-hack)..."
+for dir in .claude/skills/gobbi-*; do
+  name="$(basename "$dir")"
+  if [ "$name" = "gobbi-hack" ]; then
+    echo "  Skipping $name (user-owned)"
+    continue
+  fi
+  cp -r "$dir" templates/skills/
+done
 
 echo "Copying agent definitions..."
 cp .claude/agents/gobbi-* templates/agents/

@@ -164,15 +164,46 @@ export function printBanner(version: string): void {
 // ---------------------------------------------------------------------------
 
 /**
- * Print the styled success message for init with next steps.
+ * Print the styled success message for install with next steps.
  */
-export function printInitSuccess(): void {
+export function printInstallSuccess(): void {
   console.log('');
   console.log(bold(green('Gobbi installed successfully!')));
   console.log('');
   console.log('Next steps:');
-  console.log(`  1. Start a Claude Code session and type ${bold('/gobbi')} to begin.`);
+  console.log(`  1. Run ${bold('gobbi sync')} to sync .gobbi/ to .claude/.`);
+  console.log(`  2. Add ${bold('.gobbi/')} to your ${bold('.gitignore')} if not already present.`);
+  console.log(`  3. Start a Claude Code session and type ${bold('/gobbi')} to begin.`);
   console.log(`  Run ${bold('/gobbi-notification')} in Claude Code to configure notification credentials.`);
+}
+
+/**
+ * Print a migration summary showing counts of items moved.
+ */
+export function printMigrationSummary(skillsMoved: number, agentsMoved: number, hooksMoved: number): void {
+  console.log('');
+  console.log(bold(green('Migration complete!')));
+  console.log('');
+  console.log(`  Migrated ${bold(String(skillsMoved))} skills, ${bold(String(agentsMoved))} agents, ${bold(String(hooksMoved))} hooks to .gobbi/`);
+}
+
+/**
+ * Print a sync summary showing counts of items copied.
+ */
+export function printSyncSummary(skillsCopied: number, agentsCopied: number, hooksCopied: number): void {
+  console.log('');
+  console.log(bold(green('Sync complete!')));
+  console.log('');
+  console.log(`  Synced ${bold(String(skillsCopied))} skills, ${bold(String(agentsCopied))} agents, ${bold(String(hooksCopied))} hooks to .claude/`);
+}
+
+/**
+ * Print the styled success message after creating a doc.
+ */
+export function printCreateSuccess(docType: string, name: string, filePath: string): void {
+  console.log('');
+  console.log(bold(green(`Created ${docType} "${name}"`)));
+  console.log(`  ${dim('\u2192')} ${filePath}`);
 }
 
 /**
@@ -183,6 +214,8 @@ export function printUpdateSuccess(): void {
   console.log(bold(green('Gobbi updated successfully!')));
   console.log('');
   console.log('Preserved:');
-  console.log(`  ${dim('-')} .claude/skills/gobbi-hack/ (user customizations)`);
-  console.log(`  ${dim('-')} .claude/project/ (project state)`);
+  console.log(`  ${dim('-')} .gobbi/user/ (user customizations)`);
+  console.log(`  ${dim('-')} .gobbi/market/ (installed packages)`);
+  console.log('');
+  console.log(`Run ${bold('gobbi sync')} to apply changes to .claude/.`);
 }

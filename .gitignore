@@ -3,3 +3,5 @@ node_modules/
 .claude/project/
 .claude/.env
 dist/
+packages/*/dist/
+packages/*/node_modules/

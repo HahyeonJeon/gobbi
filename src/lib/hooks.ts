@@ -29,9 +29,9 @@ export const GOBBI_PERMISSIONS: string[] = [
 
 // --- Core hook definitions ---
 
-const CORE_SCRIPTS: string[] = ['session-metadata.sh'];
+export const CORE_SCRIPTS: string[] = ['session-metadata.sh'];
 
-const CORE_HOOK_ENTRIES: HookEntry[] = [
+export const CORE_HOOK_ENTRIES: HookEntry[] = [
   {
     event: 'SessionStart',
     config: {
@@ -47,7 +47,7 @@ const CORE_HOOK_ENTRIES: HookEntry[] = [
 
 // --- Notification hook definitions ---
 
-const NOTIFICATION_SCRIPTS: string[] = [
+export const NOTIFICATION_SCRIPTS: string[] = [
   'load-notification-env.sh',
   'notify-send.sh',
   'notify-completion.sh',
