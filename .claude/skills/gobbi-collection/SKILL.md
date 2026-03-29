@@ -88,6 +88,6 @@ This complements per-agent Memorize steps by capturing orchestrator-level insigh
 
 - **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via gobbi-gotcha.
 - **CLAUDE.md additions** — conventions or patterns discovered that should persist across sessions. Add as one-line entries to CLAUDE.md.
-- **Skill updates** — behavioral patterns identified that a skill should teach. Flag for future skill revision — do not edit the skill inline during collection.
+- **Skill updates** — behavioral patterns identified that a skill should teach. When a learning is categorized as a skill update, the orchestrator MUST propose a concrete change to the skill rather than merely flagging it for later. MUST load gobbi-claude and gobbi-claude-skills before generating any proposed skill change — writing standards and skill structure constraints apply to proposed changes, not just final edits. MUST run lint-skill.sh on the proposed change to catch anti-patterns before presenting it. This is opt-in: only prompt if skill-update-type learnings were identified during the session. Present proposed changes to the user via AskUserQuestion: "Would you like to review proposed skill updates before finishing?" If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.
 
 Format: one-line entries, concise, actionable. "Discovery X because Y" — not narrative.
