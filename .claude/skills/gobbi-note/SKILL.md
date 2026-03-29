@@ -77,6 +77,10 @@ Record during Step 3 (Execution — Delegation). Must document each subtask in e
 - Issues encountered and how they were resolved
 - Any deviations from the plan and why
 
+When documenting evaluation results in execution.md, organize findings by severity tier — Critical findings first, then Important, then Suggestions, then Strengths — rather than by evaluator stance. Severity-tiered presentation surfaces actionable items first and makes blocking issues visible across all subtasks at a glance.
+
+Record pre-action verification outcomes when they catch a precondition failure (wrong branch, duplicate PR, stale state). Verification that passes silently needs no note — only record when verification catches a real problem, as these are valuable learning inputs for gotchas.
+
 ### subtasks/{NN}-{subtask-slug}.md
 
 Copy of each subagent's task result during Step 3. Subagent outputs exist only in conversation context — if not copied here, the work is lost after the session.
@@ -91,6 +95,8 @@ Record during Phase 2 (FEEDBACK):
 - Each feedback round: what the user said, what changed
 - Gotchas recorded from corrections
 - Append each round — do not overwrite previous rounds
+
+Number each feedback round explicitly (Round 1, Round 2, ...). Numbered rounds enable stagnation detection — if the same finding reappears across 3 rounds without convergence, the pattern becomes visible and actionable. Include what remains unresolved after each round, not just what changed.
 
 ### review.md
 

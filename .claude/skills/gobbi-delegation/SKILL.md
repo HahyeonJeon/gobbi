@@ -53,6 +53,11 @@ Every subagent needs three layers of context:
 - Project docs in the project skill directory — architecture, reference, review docs
 - Existing code in the area they'll modify — the codebase is the source of truth for patterns
 
+**Load when gobbi-git is active:**
+- Current branch and worktree path — so the subagent knows where it's working and can verify branch state before committing
+- Recent commit history relevant to the task area — files the task will modify, so the subagent understands what has already changed in this session
+- Exploration findings from multi-perspective exploration — when exploration was performed before planning, include the synthesized findings for orientation
+
 ### The scope boundary
 
 What the agent should NOT touch. Agents expand scope when they see adjacent improvements. Explicit boundaries prevent drift.
@@ -111,3 +116,5 @@ This is guidance for the orchestrator's judgment, not a rigid assignment table. 
 **When to split vs combine** — If two subtasks need the same agent, same context, and same files, combine them.
 
 **When to emphasize lifecycle phases** — Spell out Study for unfamiliar areas. Spell out Plan for non-trivial tasks. Spell out Verify for shared interfaces.
+
+**When to include exploration context** — If the plan was preceded by multi-perspective exploration, include the synthesized findings in every delegation prompt. Exploration findings are context, not constraints — the subagent uses them to make better-informed decisions but is not bound by the explorers' conclusions. If no exploration was performed, the subagent discovers context during Study as usual.
