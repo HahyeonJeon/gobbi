@@ -4,7 +4,7 @@
 
 An open-source ClaudeX tool for Claude Code. Users just talk — gobbi handles the rest.
 
-ClaudeX (Claude Experience) is the ecosystem of tools, skills, agents, and workflows that shape how humans work with Claude Code. See `docs/vision.md` for the full definition.
+ClaudeX (Claude Experience) is the ecosystem of tools, skills, agents, and workflows that shape how humans work with Claude Code.
 
 ---
 

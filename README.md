@@ -14,7 +14,7 @@
 
 ClaudeX (Claude Experience) is the ecosystem of tools, skills, agents, workflows, and plugins that change how humans work with Claude Code — the same way UX optimizes interfaces and DX optimizes developer tooling. It is infrastructure for human-AI collaboration, not a product or a platform.
 
-Gobbi is an open-source ClaudeX tool. See [docs/vision.md](docs/vision.md) for the full definition and where gobbi fits.
+Gobbi is an open-source ClaudeX tool.
 
 ---
 
