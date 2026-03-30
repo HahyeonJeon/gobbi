@@ -16,8 +16,8 @@
     ".claude/agents",
     ".claude/hooks",
     ".claude/GOBBI.md",
-    "plugins/gobbi-core/.claude-plugin",
-    "plugins/gobbi-core/settings.json"
+    "plugins/gobbi/.claude-plugin",
+    "plugins/gobbi/settings.json"
   ],
   "scripts": {
     "build": "tsc",

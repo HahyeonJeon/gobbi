@@ -81,7 +81,7 @@ Shell scripts in `.claude/hooks/` that execute in response to Claude Code events
 
 ## Claude Code Gobbi Plugin
 
-The `plugins/gobbi-core/` directory packages gobbi as a Claude Code plugin for distribution and installation.
+The `plugins/gobbi/` directory packages gobbi as a Claude Code plugin for distribution and installation.
 
 ### Plugin Structure
 
@@ -98,7 +98,7 @@ The plugin uses symlinks to reference the canonical files in `.claude/`. This me
 
 ### Marketplace Registration
 
-`.claude-plugin/marketplace.json` at the repo root registers gobbi in the Claude Code plugin marketplace. It points to `plugins/gobbi-core/` as the plugin source.
+`.claude-plugin/marketplace.json` at the repo root registers gobbi in the Claude Code plugin marketplace. It points to `plugins/gobbi/` as the plugin source.
 
 ### Templates
 

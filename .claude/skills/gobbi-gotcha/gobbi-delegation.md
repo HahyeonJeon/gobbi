@@ -20,8 +20,8 @@ Mistakes in subagent briefings, context loading, and scope boundaries.
 
 **Priority:** High
 
-**What happened:** An agent created agent definition files directly in `plugins/gobbi-core/agents/` as regular files instead of in `.claude/agents/` (the source of truth). The plugin directory should only contain symlinks pointing back to `.claude/agents/`. Because the files were regular files in `plugins/`, they had no corresponding source in `.claude/` and would be lost or cause conflicts when symlinks were regenerated.
+**What happened:** An agent created agent definition files directly in `plugins/gobbi/agents/` as regular files instead of in `.claude/agents/` (the source of truth). The plugin directory should only contain symlinks pointing back to `.claude/agents/`. Because the files were regular files in `plugins/`, they had no corresponding source in `.claude/` and would be lost or cause conflicts when symlinks were regenerated.
 
 **User feedback:** Source of truth is `.claude/agents/`. Plugin directory gets symlinks only.
 
-**Correct approach:** Always create agent definitions in `.claude/agents/` first — that is the source of truth. Then create a relative symlink in `plugins/gobbi-core/agents/` pointing to `../../../.claude/agents/{name}.md`. Never create regular files directly in `plugins/gobbi-core/agents/`. The same pattern applies to skills and hooks: source in `.claude/`, symlinks in `plugins/`.
+**Correct approach:** Always create agent definitions in `.claude/agents/` first — that is the source of truth. Then create a relative symlink in `plugins/gobbi/agents/` pointing to `../../../.claude/agents/{name}.md`. Never create regular files directly in `plugins/gobbi/agents/`. The same pattern applies to skills and hooks: source in `.claude/`, symlinks in `plugins/`.

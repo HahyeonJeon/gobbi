@@ -37,8 +37,7 @@ Gobbi is an open-source ClaudeX tool.
 In Claude Code:
 
 ```
-/plugin marketplace add HahyeonJeon/gobbi
-/plugin install gobbi-core@gobbi
+/plugin install gobbi
 ```
 
 Then run `/gobbi` to begin.
