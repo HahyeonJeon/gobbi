@@ -42,8 +42,8 @@ function validateName(name: string): string | null {
   if (name !== name.toLowerCase()) {
     return 'Name must be lowercase. Use kebab-case (e.g. "my-skill").';
   }
-  if (name.startsWith('gobbi-') || name === 'gobbi') {
-    return 'The "gobbi" prefix is reserved for core components.';
+  if (name.startsWith('_') || name === 'gobbi') {
+    return 'Names starting with "_" and the name "gobbi" are reserved for core components.';
   }
   return null;
 }

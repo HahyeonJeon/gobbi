@@ -19,8 +19,8 @@ async function pathExists(targetPath: string): Promise<boolean> {
 /**
  * Clear gobbi-managed items from target .claude/ before fresh copy.
  * Removes:
- * - Skill directories starting with "gobbi" in skills/
- * - Agent files starting with "gobbi-" in agents/
+ * - Skill directories starting with "_" or "__", or named exactly "gobbi", in skills/
+ * - Agent files starting with "_" or "__" in agents/
  * - Known hook scripts in hooks/
  *
  * @param claudeDir - Absolute path to the .claude/ directory.
@@ -31,7 +31,7 @@ export async function clearGobbiItems(claudeDir: string): Promise<void> {
   if (await pathExists(skillsDir)) {
     const entries = await readdir(skillsDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && entry.name.startsWith('gobbi')) {
+      if (entry.isDirectory() && (entry.name.startsWith('_') || entry.name === 'gobbi')) {
         await rm(path.join(skillsDir, entry.name), { recursive: true });
       }
     }
@@ -42,7 +42,7 @@ export async function clearGobbiItems(claudeDir: string): Promise<void> {
   if (await pathExists(agentsDir)) {
     const entries = await readdir(agentsDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isFile() && entry.name.startsWith('gobbi-')) {
+      if (entry.isFile() && entry.name.startsWith('_')) {
         await unlink(path.join(agentsDir, entry.name));
       }
     }
@@ -63,7 +63,8 @@ export async function clearGobbiItems(claudeDir: string): Promise<void> {
 }
 
 /**
- * Copy gobbi-prefixed skill directories from source to destination.
+ * Copy gobbi-managed skill directories from source to destination.
+ * Copies directories starting with "_" or "__", or named exactly "gobbi".
  * @param srcDir - Source skills directory.
  * @param destDir - Destination skills directory.
  * @returns Number of skill directories copied.
@@ -78,7 +79,7 @@ export async function copySkills(srcDir: string, destDir: string): Promise<numbe
   let count = 0;
 
   for (const entry of entries) {
-    if (entry.isDirectory() && entry.name.startsWith('gobbi')) {
+    if (entry.isDirectory() && (entry.name.startsWith('_') || entry.name === 'gobbi')) {
       const src = path.join(srcDir, entry.name);
       const dest = path.join(destDir, entry.name);
       await cp(src, dest, { recursive: true });
@@ -90,7 +91,8 @@ export async function copySkills(srcDir: string, destDir: string): Promise<numbe
 }
 
 /**
- * Copy gobbi-prefixed agent files from source to destination.
+ * Copy gobbi-managed agent files from source to destination.
+ * Copies files starting with "_" or "__".
  * @param srcDir - Source agents directory.
  * @param destDir - Destination agents directory.
  * @returns Number of agent files copied.
@@ -105,7 +107,7 @@ export async function copyAgents(srcDir: string, destDir: string): Promise<numbe
   let count = 0;
 
   for (const entry of entries) {
-    if (entry.isFile() && entry.name.startsWith('gobbi-')) {
+    if (entry.isFile() && entry.name.startsWith('_')) {
       const src = path.join(srcDir, entry.name);
       const dest = path.join(destDir, entry.name);
       await cp(src, dest);

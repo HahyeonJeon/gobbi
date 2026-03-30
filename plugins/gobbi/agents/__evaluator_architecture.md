@@ -1,0 +1,1 @@
+../../../.claude/agents/__evaluator_architecture.md

@@ -147,5 +147,5 @@ export async function runInstall(targetDir: string, options: InstallOptions): Pr
   console.log('');
   console.log('Next steps:');
   console.log(`  1. Start a Claude Code session and type ${bold('/gobbi')} to begin.`);
-  console.log(`  Run ${bold('/gobbi-notification')} in Claude Code to configure notifications.`);
+  console.log(`  Run ${bold('/_notification')} in Claude Code to configure notifications.`);
 }

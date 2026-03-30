@@ -174,7 +174,7 @@ export function printInstallSuccess(): void {
   console.log('');
   console.log('Next steps:');
   console.log(`  1. Start a Claude Code session and type ${bold('/gobbi')} to begin.`);
-  console.log(`  Run ${bold('/gobbi-notification')} in Claude Code to configure notification credentials.`);
+  console.log(`  Run ${bold('/_notification')} in Claude Code to configure notification credentials.`);
 }
 
 /**
