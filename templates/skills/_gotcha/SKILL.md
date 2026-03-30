@@ -92,3 +92,14 @@ Gotcha entries may include optional YAML frontmatter for tooling. The frontmatte
 | `event` | bash, file, stop | Only when enforcement: hook | Which hook event triggers the check |
 
 When `enforcement` is `advisory` (or omitted), the entry is informational — agents check it manually. When `enforcement` is `hook`, the `pattern` and `event` fields tell tooling what to intercept and when. See representative examples in _system.md.
+
+---
+
+## Child Skills
+
+| Skill | Covers |
+|-------|--------|
+| `_project-gotcha` | Recording project-specific gotchas in `.claude/project/{project-name}/gotchas/` |
+| `_skills-gotcha` | Recording skill-specific gotchas tied to individual gobbi skills |
+
+**Future direction:** each skill will have its own `gotchas.md` file living alongside its `SKILL.md`. `_project-gotcha` and `_skills-gotcha` will provide the recording guidelines and templates for those per-skill files.

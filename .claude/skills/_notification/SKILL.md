@@ -57,3 +57,13 @@ Message truncation limits are configurable via `.claude/.env`. Defaults are defi
 ## Verification
 
 If a test notification fails to arrive: check that `.claude/.env` exists, values are correct, the hook scripts are executable, and `jq` is available (scripts depend on it for JSON parsing). Delivery failures are logged — check `~/.claude/notification-failures.log` if notifications stop arriving.
+
+---
+
+## Child Skills
+
+| Skill | Covers |
+|-------|--------|
+| `_slack` | Slack notification channel setup — bot token, user ID, workspace configuration |
+| `_telegram` | Telegram notification channel setup — bot creation via @BotFather, chat ID retrieval |
+| `_discord` | Discord notification channel setup — webhook URL configuration |
