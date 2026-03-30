@@ -73,21 +73,21 @@ Every task follows a single workflow. The workflow is sequential — each step c
 └─────────────────────────────────────────────────────────────┘
 
   ┌─────────────┐   eval?   ┌─────────────────────────────┐
-  │  Ideation   │ ────────▶ │  Evaluators (3 stances)     │
-  │             │ ◀──────── │  positive · moderate ·      │
-  └──────┬──────┘  improve  │  critical                   │
+  │  Ideation   │ ────────▶ │  Evaluators (2-5 persp.)    │
+  │             │ ◀──────── │  Project · Overall +        │
+  └──────┬──────┘  improve  │  Arch · Perf · Aesthetics   │
          │                  └─────────────────────────────┘
          ▼
   ┌─────────────┐   eval?   ┌─────────────────────────────┐
-  │  Planning   │ ────────▶ │  Evaluators (3 stances)     │
-  │             │ ◀──────── │  positive · moderate ·      │
-  └──────┬──────┘  improve  │  critical                   │
+  │  Planning   │ ────────▶ │  Evaluators (2-5 persp.)    │
+  │             │ ◀──────── │  Project · Overall +        │
+  └──────┬──────┘  improve  │  Arch · Perf · Aesthetics   │
          │                  └─────────────────────────────┘
          ▼
   ┌─────────────┐ mandatory ┌─────────────────────────────┐
-  │  Execution  │ ────────▶ │  Evaluators (3 stances)     │
-  │             │ ◀──────── │  positive · moderate ·      │
-  └──────┬──────┘   fix     │  critical                   │
+  │  Execution  │ ────────▶ │  Evaluators (2-5 persp.)    │
+  │             │ ◀──────── │  Project · Overall +        │
+  └──────┬──────┘   fix     │  Arch · Perf · Aesthetics   │
          │                  └─────────────────────────────┘
          ▼
   ┌─────────────┐
@@ -120,25 +120,25 @@ The evaluation perspectives span the dimensions of quality that a task can be me
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Evaluation Triad                         │
+│                 Evaluation Perspectives                     │
 └─────────────────────────────────────────────────────────────┘
 
           ┌────────────────────────────────────┐
           │         Output to evaluate         │
-          └────────┬──────────┬───────┬────────┘
-                   │          │       │
-          ┌────────▼──┐  ┌────▼───┐  ┌▼───────────┐
-          │ Positive  │  │Moderate│  │  Critical  │
-          │           │  │        │  │            │
-          │ strengths │  │ comp-  │  │ stress-    │
-          │ to        │  │ lete-  │  │ tests      │
-          │ preserve  │  │ ness & │  │ assump-    │
-          │           │  │balance │  │ tions      │
-          └────────┬──┘  └────┬───┘  └┬───────────┘
-                   │          │        │
-                   └────┬─────┘        │
-                        │   ◀──────────┘
-                        ▼
+          └──┬──────┬──────┬──────┬──────┬────┘
+             │      │      │      │      │
+          ┌──▼──┐ ┌─▼──┐ ┌─▼──┐ ┌▼───┐ ┌▼──────┐
+          │Proj-│ │Arch│ │Perf│ │Aes-│ │Over-  │
+          │ect  │ │itec│ │orm-│ │thet│ │all    │
+          │     │ │ture│ │ance│ │ics │ │       │
+          │scope│ │str-│ │eff-│ │cra-│ │cross- │
+          │reqs │ │uct-│ │ici-│ │ft  │ │dim.   │
+          │goals│ │ure │ │ency│ │qual│ │gaps + │
+          │     │ │    │ │    │ │    │ │preserv│
+          └──┬──┘ └─┬──┘ └─┬──┘ └┬───┘ └┬──────┘
+             │      │      │      │      │
+             └──────┴──┬───┴──────┴──────┘
+                       ▼
           ┌─────────────────────────────────────┐
           │     Orchestrator synthesizes        │
           │     PASS · REVISE · ESCALATE        │
@@ -186,9 +186,11 @@ Three categories of subagents do the actual work.
   ┌───────────────┐             │ Commit          │
   │   Evaluator   │             │                 │
   │               │             │ how to do it    │
-  │ positive      │             └─────────────────┘
-  │ moderate      │
-  │ critical      │
+  │ project       │             └─────────────────┘
+  │ architecture  │
+  │ performance   │
+  │ aesthetics    │
+  │ overall       │
   │               │
   │ is it right   │
   └───────────────┘

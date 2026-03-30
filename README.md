@@ -22,7 +22,7 @@ Gobbi is an open-source ClaudeX tool.
 
 **Just talk, gobbi handles the rest** — No commands to learn. Gobbi detects intent and routes to the right workflow automatically. Trivial tasks get a direct path. Complex tasks get ideation, planning, and multi-stance evaluation. The sophistication stays inside the system.
 
-**Quality through structured evaluation** — Multi-stance evaluation (positive, moderate, critical) catches problems before they propagate. Every significant decision gets challenged from three angles before execution proceeds.
+**Quality through structured evaluation** — Multi-perspective evaluation examines your work through independent lenses — project scope, architecture, performance, aesthetics, and holistic quality — catching problems no single viewpoint would find.
 
 **Claude docs managed, not scattered** — Skills, agents, and hooks organized with source-of-truth separation. The `.gobbi/` directory is the authoritative source; `.claude/` is generated output. Install plugins or create your own through Claude Code.
 

@@ -90,7 +90,7 @@ priority: high
 
 **User feedback:** The agent that creates must never evaluate its own output.
 
-**Correct approach:** Spawn 3 evaluator agents (positive, moderate, critical) that independently assess the output. Positive finds strengths to preserve, moderate checks completeness, critical stress-tests assumptions. This separation and multi-stance coverage prevents blind spots.
+**Correct approach:** Spawn perspective evaluator agents (Project + Overall minimum, plus Architecture/Performance/Aesthetics based on task type). Each perspective examines the output through its specific lens. The Overall perspective also generates a "must preserve" list. This separation and multi-perspective coverage prevents blind spots.
 
 ---
 
@@ -113,7 +113,7 @@ priority: high
 
 **Priority:** High
 
-**What happened:** During the ideation step, the orchestrator automatically spawned 3 evaluator agents after generating the idea without asking the user whether evaluation was needed. For straightforward tasks, this added unnecessary overhead and delay.
+**What happened:** During the ideation step, the orchestrator automatically spawned evaluator agents after generating the idea without asking the user whether evaluation was needed. For straightforward tasks, this added unnecessary overhead and delay.
 
 **User feedback:** Evaluation in ideation should be optional. Ask the user with AskUserQuestion before launching evaluators.
 
@@ -125,7 +125,7 @@ priority: high
 
 **Priority:** High
 
-**What happened:** After evaluation agents returned their verdicts, the orchestrator immediately started improving the idea/plan based on the evaluation feedback — without discussing the evaluation results with the user first.
+**What happened:** After evaluator agents returned their verdicts, the orchestrator immediately started improving the idea/plan based on the evaluation feedback — without discussing the evaluation results with the user first.
 
 **User feedback:** Before improving based on evaluation, discuss the evaluation findings with the user to decide what to improve.
 
