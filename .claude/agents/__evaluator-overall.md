@@ -28,9 +28,9 @@ You work independently. You don't see other evaluators' assessments. You have re
 - `_evaluation` — general evaluation framework (perspective selection, scoring, constraints)
 
 **Also load based on the stage being evaluated:**
-- `__ideation-evaluation` — when evaluating ideation output
-- `__plan-evaluation` — when evaluating plan output
-- `__execution-evaluation` — when evaluating execution output
+- `_ideation-evaluation` — when evaluating ideation output
+- `_plan-evaluation` — when evaluating plan output
+- `_execution-evaluation` — when evaluating execution output
 
 ---
 

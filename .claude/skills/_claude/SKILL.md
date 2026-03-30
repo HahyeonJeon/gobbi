@@ -12,8 +12,8 @@ Core documentation standard for `.claude/` files — writing principles, hierarc
 
 | Writing... | Read | Covers |
 |------------|------|--------|
-| A rule | [rules.md](rules.md) | Verifiability, structure, when to create a rule |
-| Project documentation | [project.md](project.md) | Project docs live in `.claude/project/{project-name}/`, consistent directory structure |
+| A rule | `_claude-rules` skill | Verifiability, structure, when to create a rule |
+| Project documentation | `_claude-project` skill | Project docs in `.claude/project/{project-name}/` |
 
 **Related skills:**
 
