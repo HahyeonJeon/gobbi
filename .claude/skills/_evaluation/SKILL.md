@@ -203,9 +203,9 @@ Where gotchas go:
 ## Navigate deeper from here:
 
 **Stage-specific criteria** — load these based on what stage is being evaluated:
-- `__ideation-evaluation` — criteria for evaluating ideation output
-- `__plan-evaluation` — criteria for evaluating plan output
-- `__execution-evaluation` — criteria for evaluating execution output
+- `_ideation-evaluation` — criteria for evaluating ideation output
+- `_plan-evaluation` — criteria for evaluating plan output
+- `_execution-evaluation` — criteria for evaluating execution output
 
 **Perspective skills** — load these to understand each evaluator's domain:
 - `__evaluation-project` — project-perspective criteria (goal alignment, scope, conventions)

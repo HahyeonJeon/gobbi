@@ -1,5 +1,5 @@
 ---
-name: __execution-evaluation
+name: _execution-evaluation
 description: MUST load when evaluating execution output — code changes, implementations, or task deliverables. Provides stage-specific criteria for assessing correctness, safety, and scope discipline. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---
@@ -29,7 +29,7 @@ Each executed task produces code changes and a subtask document describing what 
 
 ### Safety
 
-- **No security vulnerabilities?** — Check OWASP top 10: injection, broken auth, sensitive data exposure, XXE, broken access control, misconfiguration, XSS, insecure deserialization, known vulnerable components, insufficient logging.
+- **No security vulnerabilities?** — Check OWASP top 10: injection, broken auth, sensitive data exposure, XXE, broken access control, misconfiguration, XSS, insecure deserialization, known vulnerable components, insufficient logging. For concrete security signals by vulnerability class, load _gotcha/_security.md before evaluating.
 - **No secrets in code?** — API keys, passwords, tokens, connection strings — nothing hardcoded or committed.
 - **Error handling appropriate?** — Are errors handled at system boundaries? Internal errors propagated correctly? No swallowed exceptions hiding failures?
 
@@ -65,10 +65,24 @@ The evaluator decides which of these checks are relevant based on the task. Not 
 
 ---
 
-## Stance-Specific Focus
+## Perspective-Specific Focus
 
-| Stance | Primary Focus |
-|--------|--------------|
-| Positive | What's well-implemented? Which patterns are correctly followed? Which decisions show good judgment? |
-| Moderate | Is the implementation complete against the spec? Are safety and integration checks proportional? Are there minor issues that don't block but should be noted? |
-| Critical | Where does the implementation diverge from the spec? What security risks exist? Where did the agent expand scope? What gotchas were violated? |
+| Perspective | Primary Focus |
+|-------------|--------------|
+| Project | Does the output match what was planned? Requirements met? |
+| Architecture | Are changes structurally sound? Abstractions appropriate? |
+| Performance | Is the implementation efficient? No unnecessary overhead? |
+| Aesthetics | Is the code/doc readable? Naming clear? Style consistent? |
+| Overall | What cross-cutting gaps exist? What must be preserved? |
+
+---
+
+## Scoring Guidance
+
+Execution findings are the most verifiable of all evaluation stages. Tests can be run, patterns can be grepped, files can be checked for syntax, and compilation can be attempted. Tool-based evidence directly supports higher confidence scores — a finding backed by a failing test or a grep result showing a missing pattern should score confidence 80 or above.
+
+Evaluators should lean heavily on their tools at this stage. A concern based purely on reasoning ("this might have a race condition") naturally scores lower confidence than a concern backed by evidence ("grep shows this function is called from two concurrent paths without synchronization"). Both are valid findings, but the tool-backed finding carries more weight in scoring.
+
+When an evaluator cannot verify a finding with tools — for example, a concern about architectural fit or long-term maintainability — the confidence score should reflect that limitation honestly. Execution evaluation is strongest when it produces high-confidence, evidence-backed findings. Speculative findings still belong in the report, but their lower confidence scores correctly signal that they need human judgment rather than automatic action.
+
+When presenting findings, group by severity tier (Critical / Important / Suggestions / Strengths) rather than by evaluation category. A critical correctness finding and a critical safety finding both need immediate attention — grouping by severity makes blocking issues visible at a glance, regardless of which evaluation dimension they came from. Note that these presentation tiers are distinct from the scoring severity levels (Critical/High/Medium/Low) used to classify individual finding impact — the tiers organize how findings are shown to the reader, not how individual findings are scored.

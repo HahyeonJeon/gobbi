@@ -1,5 +1,5 @@
 ---
-name: __ideation-evaluation
+name: _ideation-evaluation
 description: MUST load when evaluating ideation output. Provides stage-specific criteria for assessing whether an idea is concrete, well-researched, and ready for planning. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---
@@ -52,10 +52,22 @@ The ideation step produces an idea document that should cover: root problem, pro
 
 ---
 
-## Stance-Specific Focus
+## Perspective-Specific Focus
 
-| Stance | Primary Focus |
-|--------|--------------|
-| Positive | Which parts of the idea are sound and must survive revision? What decisions are well-reasoned? |
-| Moderate | Is the idea complete? Does it cover all dimensions proportionally? Are pros and cons balanced? |
-| Critical | What assumptions are unstated? What failure modes are missing? Where is specificity faked with vague language? |
+| Perspective | Primary Focus |
+|-------------|--------------|
+| Project | Does the idea solve the right problem? Scope and requirements alignment. |
+| Architecture | Is the proposed mechanism structurally sound? Coupling, abstraction level. |
+| Performance | Are efficiency implications considered? Scalability risks identified. |
+| Aesthetics | Is the idea clearly articulated? Would a fresh reader understand it? |
+| Overall | What cross-cutting gaps exist? What must be preserved? |
+
+---
+
+## Scoring Guidance
+
+Ideation findings naturally trend toward lower confidence than plan or execution findings. Ideas are abstract — mechanism descriptions, trade-off assessments, and risk predictions are harder to verify concretely. An evaluator cannot grep for whether a trade-off analysis is complete the way they can grep for whether a function exists.
+
+Expect confidence scores in the 60-70 range for many legitimate ideation concerns. A finding like "this approach may not scale under load X" is a real concern worth surfacing even at confidence 65, because ideation is the cheapest place to catch architectural problems. Suppressing ideation findings at the same threshold as execution findings would silence valuable early warnings.
+
+When scoring ideation findings, severity matters more than confidence for decision-making. A high-severity, moderate-confidence finding ("this architecture may have a fundamental scaling flaw") deserves discussion even if confidence is below the default threshold. Evaluators should flag such findings for the orchestrator rather than letting them be silently filtered.

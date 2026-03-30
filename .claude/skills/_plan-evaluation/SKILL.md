@@ -1,5 +1,5 @@
 ---
-name: __plan-evaluation
+name: _plan-evaluation
 description: MUST load when evaluating a plan. Provides stage-specific criteria for assessing whether tasks are specific, correctly ordered, complete, and ready for delegation. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---
@@ -50,10 +50,22 @@ The plan should contain: a goal statement, numbered tasks with agent assignments
 
 ---
 
-## Stance-Specific Focus
+## Perspective-Specific Focus
 
-| Stance | Primary Focus |
-|--------|--------------|
-| Positive | Which tasks are well-decomposed and clearly scoped? Which dependency decisions are sound? |
-| Moderate | Is the plan complete against the idea? Are tasks proportionally sized? Are dependencies and parallelism balanced? |
-| Critical | Which tasks are too vague to delegate? Where are dependencies wrong or missing? What scope was dropped or added without justification? |
+| Perspective | Primary Focus |
+|-------------|--------------|
+| Project | Does the plan deliver what the user asked for? Scope boundaries clear? |
+| Architecture | Are tasks decomposed at the right granularity? Dependencies sound? |
+| Performance | Does the execution order maximize parallelism? Resource-proportional? |
+| Aesthetics | Are task descriptions clear and specific? Naming consistent? |
+| Overall | What cross-cutting gaps exist? What must be preserved? |
+
+---
+
+## Scoring Guidance
+
+Plan findings are more verifiable than ideation findings. Task specificity, dependency ordering, file overlap, and scope coverage can often be checked against concrete artifacts — the idea document, the codebase structure, existing file paths. This means confidence scores should generally be higher than in ideation evaluation.
+
+A plan evaluator who finds that two parallel tasks modify the same file can verify this by checking the task descriptions — that finding should score confidence 85+. A finding that a dependency is incorrectly ordered can be traced through the task list — also high confidence. In contrast, a concern like "this task might be too large for a single agent" involves more judgment and would naturally score lower.
+
+When a plan finding can be verified against a concrete artifact (the idea document, a file path, a dependency chain), the evaluator should do so and score confidence accordingly. Plan evaluation sits in the middle of the verifiability spectrum — more concrete than ideation, less concrete than execution. Evaluators should use their tools (Grep, Read) to check referenced paths and patterns where possible, and let that evidence drive confidence scores upward.

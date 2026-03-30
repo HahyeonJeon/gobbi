@@ -99,7 +99,7 @@ Ideation produces a single refined, detailed idea — concrete enough that a pla
 - Known risks and trade-offs
 - Success criteria
 
-This output goes to a separate evaluator agent (__ideation-evaluation) for critical assessment before proceeding to planning.
+This output goes to a separate evaluator agent (_ideation-evaluation) for critical assessment before proceeding to planning.
 
 ---
 

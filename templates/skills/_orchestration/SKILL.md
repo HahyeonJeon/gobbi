@@ -32,9 +32,9 @@ Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add
 
 | Step | Load Skills |
 |------|-------------|
-| Step 1. Ideation Loop | _discuss, __ideation-evaluation |
-| Step 2. Plan Loop | _plan, _discuss, __plan-evaluation |
-| Step 3. Execution — Delegation | _delegation, __execution-evaluation |
+| Step 1. Ideation Loop | _discuss, _ideation-evaluation |
+| Step 2. Plan Loop | _plan, _discuss, _plan-evaluation |
+| Step 3. Execution — Delegation | _delegation, _execution-evaluation |
 | Step 4. Execution — Collection | _collection, _note |
 
 **Must write note at every step** — load _note and write the corresponding note file before leaving each step. Never defer, never skip.
