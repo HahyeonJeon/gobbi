@@ -1,12 +1,12 @@
 ---
-name: gobbi-collection
+name: _collection
 description: Persist the workflow trail and write notes at the end of each workflow cycle. Use during Step 4 (Collection) to write all note files and record gotchas.
 allowed-tools: Write, Read, Glob, Bash
 ---
 
 # Collection
 
-Persist the workflow trail at the end of each workflow cycle. Must load gobbi-note to write note files. This step ensures all decisions, outcomes, and subagent results are recorded before proceeding.
+Persist the workflow trail at the end of each workflow cycle. Must load _note to write note files. This step ensures all decisions, outcomes, and subagent results are recorded before proceeding.
 
 ---
 
@@ -14,11 +14,11 @@ Persist the workflow trail at the end of each workflow cycle. Must load gobbi-no
 
 Collection has four responsibilities: **note persistence**, **subtask preservation**, **gotcha recording**, and **phase transition**.
 
-**Note persistence** — Load gobbi-note and write all note files for the current task: `ideation.md`, `plan.md`, `execution.md`, and each subagent's result as `subtasks/{NN}-{subtask-slug}.md`. Every workflow stage that produced output must have a corresponding note file on disk.
+**Note persistence** — Load _note and write all note files for the current task: `ideation.md`, `plan.md`, `execution.md`, and each subagent's result as `subtasks/{NN}-{subtask-slug}.md`. Every workflow stage that produced output must have a corresponding note file on disk.
 
 **Subtask preservation** — Subagent outputs exist only in conversation context and are lost when the conversation ends or compacts. Each wave's outputs must be written to `subtasks/` immediately after that wave completes — never deferred to collection, never summarized. Downstream agents (synthesis, evaluation) depend on these files existing on disk before they run.
 
-**Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via gobbi-gotcha before the cycle closes.
+**Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via _gotcha before the cycle closes.
 
 **Phase transition** — Use AskUserQuestion to ask the user: FEEDBACK, REVIEW, or FINISH?
 
@@ -48,7 +48,7 @@ Notes go in `.claude/project/{project-name}/note/`:
 
 **Subtask files**: `{NN}-{slug}.md` — zero-padded sequence number for ordering, slug for readability.
 
-**Directory initialization**: Initialize the task directory using the note-metadata script at `.claude/skills/gobbi-note/scripts/note-metadata.sh`. This script outputs session metadata (session ID, date, git branch, model, transcript path) as key-value pairs, which should be used to populate the task directory's README.md with session context.
+**Directory initialization**: Initialize the task directory using the note-metadata script at `.claude/skills/_note/scripts/note-metadata.sh`. This script outputs session metadata (session ID, date, git branch, model, transcript path) as key-value pairs, which should be used to populate the task directory's README.md with session context.
 
 ---
 
@@ -90,8 +90,8 @@ This complements per-agent Memorize steps by capturing orchestrator-level insigh
 
 **Capture categories:**
 
-- **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via gobbi-gotcha.
+- **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via _gotcha.
 - **CLAUDE.md additions** — conventions or patterns discovered that should persist across sessions. Add as one-line entries to CLAUDE.md.
-- **Skill updates** — behavioral patterns identified that a skill should teach. When a learning is categorized as a skill update, the orchestrator MUST propose a concrete change to the skill rather than merely flagging it for later. MUST load gobbi-claude and gobbi-claude-skills before generating any proposed skill change — writing standards and skill structure constraints apply to proposed changes, not just final edits. MUST run lint-skill.sh on the proposed change to catch anti-patterns before presenting it. This is opt-in: only prompt if skill-update-type learnings were identified during the session. Present proposed changes to the user via AskUserQuestion: "Would you like to review proposed skill updates before finishing?" If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.
+- **Skill updates** — behavioral patterns identified that a skill should teach. When a learning is categorized as a skill update, the orchestrator MUST propose a concrete change to the skill rather than merely flagging it for later. MUST load _claude and _claude_skills before generating any proposed skill change — writing standards and skill structure constraints apply to proposed changes, not just final edits. MUST run lint-skill.sh on the proposed change to catch anti-patterns before presenting it. This is opt-in: only prompt if skill-update-type learnings were identified during the session. Present proposed changes to the user via AskUserQuestion: "Would you like to review proposed skill updates before finishing?" If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.
 
 Format: one-line entries, concise, actionable. "Discovery X because Y" — not narrative.

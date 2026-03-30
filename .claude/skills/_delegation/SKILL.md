@@ -1,5 +1,5 @@
 ---
-name: gobbi-delegation
+name: _delegation
 description: Hand off work to subagents with the right context so they succeed on the first attempt. Use during the DELEGATE phase to spawn specialists with clear briefings, context layers, and scope boundaries.
 allowed-tools: Agent, Read, Grep, Glob, Bash, Write
 ---
@@ -53,7 +53,7 @@ Every subagent needs three layers of context:
 - Project docs in the project skill directory — architecture, reference, review docs
 - Existing code in the area they'll modify — the codebase is the source of truth for patterns
 
-**Load when gobbi-git is active:**
+**Load when _git is active:**
 - Current branch and worktree path — so the subagent knows where it's working and can verify branch state before committing
 - Recent commit history relevant to the task area — files the task will modify, so the subagent understands what has already changed in this session
 - Exploration findings from multi-perspective exploration — when exploration was performed before planning, include the synthesized findings for orientation
@@ -121,4 +121,4 @@ This is guidance for the orchestrator's judgment, not a rigid assignment table. 
 
 **When to include exploration context** — If the plan was preceded by multi-perspective exploration, include the synthesized findings in every delegation prompt. Exploration findings are context, not constraints — the subagent uses them to make better-informed decisions but is not bound by the explorers' conclusions. If no exploration was performed, the subagent discovers context during Study as usual.
 
-**When to include pre-resolved decisions** — When contribution points were resolved during ideation (via gobbi-ideation's contribution-point mechanism), encode those resolutions as explicit constraints in the delegation prompt. This differs from scope boundaries: scope says what not to touch; pre-resolved decisions say which implementation choices the user has already made and the subagent must honor. A subagent that re-opens a settled decision wastes context and risks contradicting the user's intent.
+**When to include pre-resolved decisions** — When contribution points were resolved during ideation (via _ideation's contribution-point mechanism), encode those resolutions as explicit constraints in the delegation prompt. This differs from scope boundaries: scope says what not to touch; pre-resolved decisions say which implementation choices the user has already made and the subagent must honor. A subagent that re-opens a settled decision wastes context and risks contradicting the user's intent.

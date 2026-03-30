@@ -1,5 +1,5 @@
 ---
-name: gobbi-validate
+name: __validate
 description: Validate gobbi agent definitions, skill files, and gotcha entries for structural correctness. Use after creating or modifying agents, skills, or gotchas.
 allowed-tools: Read, Bash, Glob
 ---
@@ -47,7 +47,7 @@ Run from the repository root or provide absolute paths. Scripts are self-contain
 
 **validate-skill.sh** verifies the structural contract that skill loading depends on: YAML frontmatter with required fields, line budget compliance, and navigation structure when child documents exist.
 
-**lint-skill.sh** detects gobbi-claude anti-patterns that cause agents to mimic instead of think: code examples, BAD/GOOD comparison blocks, step-by-step recipes, and interface definitions. Uses heuristics to distinguish illustrative directory trees (acceptable) from code examples (not acceptable).
+**lint-skill.sh** detects _claude anti-patterns that cause agents to mimic instead of think: code examples, BAD/GOOD comparison blocks, step-by-step recipes, and interface definitions. Uses heuristics to distinguish illustrative directory trees (acceptable) from code examples (not acceptable).
 
 **validate-gotcha.sh** verifies the entry structure that makes gotchas useful: required sections (title, priority, what happened, user feedback, correct approach) and valid priority values.
 

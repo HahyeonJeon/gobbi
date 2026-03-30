@@ -1,5 +1,5 @@
 ---
-name: gobbi-discuss
+name: _discuss
 description: MUST load when discussing with the user at any workflow step. Guides critical, structured discussion that challenges vague thinking, surfaces hidden problems, and pushes ideas toward concrete specificity via AskUserQuestion.
 allowed-tools: AskUserQuestion, Read, Grep, Glob
 ---
@@ -46,7 +46,7 @@ Use AskUserQuestion to explore each unclear dimension. Not every dimension needs
 
 ---
 
-> **gobbi-discuss resolves specification gaps — "what do you want?" when the agent lacks information to act. Contribution points (gobbi-ideation) resolve judgment gaps — "which decisions are yours to make?" when the user's domain knowledge would produce better outcomes than agent discretion. Different problems, different tools.**
+> **_discuss resolves specification gaps — "what do you want?" when the agent lacks information to act. Contribution points (_ideation) resolve judgment gaps — "which decisions are yours to make?" when the user's domain knowledge would produce better outcomes than agent discretion. Different problems, different tools.**
 
 ---
 

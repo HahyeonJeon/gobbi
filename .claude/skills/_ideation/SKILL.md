@@ -1,5 +1,5 @@
 ---
-name: gobbi-ideation
+name: _ideation
 description: MUST load at the start of the Ideation step of workflow. Improves and details the user's idea through structured discussion. Suggests discussion points that challenge vague thinking, uncover hidden requirements, and refine a rough idea into a concrete proposal ready for evaluation.
 allowed-tools: AskUserQuestion, Read, Grep, Glob, Bash
 ---
@@ -76,7 +76,7 @@ Use these as a menu of discussion topics to raise with the user via AskUserQuest
 
 After refining an idea, consider whether any remaining decisions are contribution points — judgment calls where the user's domain knowledge would produce a better outcome than agent discretion.
 
-This is distinct from specification gaps (which gobbi-discuss resolves). Contribution points arise even after the idea is fully specified, where multiple valid approaches exist and the right choice depends on knowledge the user holds but has not transferred through Q&A.
+This is distinct from specification gaps (which _discuss resolves). Contribution points arise even after the idea is fully specified, where multiple valid approaches exist and the right choice depends on knowledge the user holds but has not transferred through Q&A.
 
 Indicators that a decision is a contribution point:
 - Business logic with multiple valid approaches where the user's domain shapes the right choice
@@ -99,7 +99,7 @@ Ideation produces a single refined, detailed idea — concrete enough that a pla
 - Known risks and trade-offs
 - Success criteria
 
-This output goes to a separate evaluator agent (gobbi-ideation-evaluation) for critical assessment before proceeding to planning.
+This output goes to a separate evaluator agent (__ideation_evaluation) for critical assessment before proceeding to planning.
 
 ---
 

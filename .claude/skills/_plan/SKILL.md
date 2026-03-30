@@ -1,5 +1,5 @@
 ---
-name: gobbi-plan
+name: _plan
 description: Decompose complex tasks into small, specific, agent-assigned subtasks. Use during the PLAN phase to explore the codebase, build a systematic plan, and get user approval before delegation.
 allowed-tools: Read, Grep, Glob, Bash
 ---

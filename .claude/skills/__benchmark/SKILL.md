@@ -1,5 +1,5 @@
 ---
-name: gobbi-benchmark
+name: __benchmark
 description: Skill benchmarking methodology — evaluate how well a skill performs against realistic scenarios. Use when measuring skill quality, comparing before/after changes, or tracking skill reliability over time.
 allowed-tools: Read, Grep, Glob, Bash, Agent, AskUserQuestion
 ---
@@ -33,7 +33,7 @@ Each scenario is a self-contained test case: a defined input, expected behavior 
 
 > **Evaluation drives scoring. The evaluator agent scores, not the executor.**
 
-The agent under test never scores itself. The orchestrator spawns the executor with the skill loaded and the test input, captures the output, then spawns a separate evaluator agent with the rubric to score independently. This mirrors gobbi-evaluation's separation principle — the entity that creates must never evaluate its own output.
+The agent under test never scores itself. The orchestrator spawns the executor with the skill loaded and the test input, captures the output, then spawns a separate evaluator agent with the rubric to score independently. This mirrors _evaluation's separation principle — the entity that creates must never evaluate its own output.
 
 ---
 
@@ -87,7 +87,7 @@ Run the same scenarios before and after modifying a skill. Compare the score dis
 
 ## Relationship to Skill Verification
 
-gobbi-benchmark and gobbi-claude-skills verification (see `gobbi-claude-skills/verification.md`) serve different purposes:
+__benchmark and _claude_skills verification (see `_claude_skills/verification.md`) serve different purposes:
 
 - **Benchmark** measures specific skill behaviors quantitatively — numeric scores, variance, delta tracking. Use benchmarks to answer "did this change improve the skill's performance on this specific behavior?"
 - **Verification** assesses holistic skill quality with specialized agents (grader, analyzer, comparator) — trigger accuracy, output quality, blind A/B comparison. Use verification to answer "is this skill well-written and effective overall?"
@@ -100,14 +100,14 @@ Benchmark scenarios complement verification agents. Run verification for broad q
 
 The `scripts/trigger-test.py` script answers a narrow question: does this skill's description reliably identify the prompts it should load for, and reliably exclude the ones it should not?
 
-**Two tracks, two questions.** Script-based trigger testing and agent-based verification are complementary but distinct. The script tests one thing cheaply and repeatably: does the description match the right prompts? Agent-based verification (gobbi-skills-grader) tests something harder and more expensive: does the skill produce good outcomes when loaded? Trigger accuracy is a prerequisite for outcome quality — if the skill never loads for the right prompts, it can never help — but a skill can trigger correctly and still produce poor output. Use the script for the narrow question, the agent for the holistic one.
+**Two tracks, two questions.** Script-based trigger testing and agent-based verification are complementary but distinct. The script tests one thing cheaply and repeatably: does the description match the right prompts? Agent-based verification (__skills_grader) tests something harder and more expensive: does the skill produce good outcomes when loaded? Trigger accuracy is a prerequisite for outcome quality — if the skill never loads for the right prompts, it can never help — but a skill can trigger correctly and still produce poor output. Use the script for the narrow question, the agent for the holistic one.
 
-**Why Python and the anthropic package.** The gobbi-validate scripts are bash-only. This script departs from that pattern deliberately. Trigger testing is a classification problem: given this description, does this prompt warrant loading? That question requires LLM judgment. Grep patterns and heuristics cannot approximate semantic relevance. The dependency cost (Python, `pip install anthropic`, an API key) is the price of getting a meaningful signal rather than a fast but meaningless one.
+**Why Python and the anthropic package.** The __validate scripts are bash-only. This script departs from that pattern deliberately. Trigger testing is a classification problem: given this description, does this prompt warrant loading? That question requires LLM judgment. Grep patterns and heuristics cannot approximate semantic relevance. The dependency cost (Python, `pip install anthropic`, an API key) is the price of getting a meaningful signal rather than a fast but meaningless one.
 
 **Usage.** Prepare a prompts file with one line per prompt, prefixed `+` for prompts that should trigger and `-` for those that should not. Run:
 
 ```
-python3 .claude/skills/gobbi-benchmark/scripts/trigger-test.py <SKILL.md> <prompts.txt>
+python3 .claude/skills/__benchmark/scripts/trigger-test.py <SKILL.md> <prompts.txt>
 ```
 
 Use `--verbose` to see per-prompt results. The script reports true positives, false positives, true negatives, false negatives, precision, recall, and F1 score. A strong description should produce high precision (few false triggers) and high recall (few missed triggers). When F1 is low, revise the description to be more specific or broader, depending on which direction the score leans.
@@ -121,6 +121,6 @@ Use `--verbose` to see per-prompt results. The script reports true positives, fa
 - Benchmark execution is manual-trigger only — no automated CI, no pre-commit hooks
 - The executor agent under test never scores itself — always a separate evaluator agent
 - Each scenario tests one skill — cross-skill interaction benchmarks are out of scope for V1
-- Scenarios are flat in `benchmarks/` — one level of nesting, consistent with the `scripts/` precedent in gobbi-note
+- Scenarios are flat in `benchmarks/` — one level of nesting, consistent with the `scripts/` precedent in _note
 - Benchmark results are ephemeral in V1 — tracked in notes or discussion, not in a persistent store
 - Do not benchmark all skills — benchmark the skills you are actively improving, for the behaviors you are actively changing

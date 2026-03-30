@@ -1,5 +1,5 @@
 ---
-name: gobbi-gotcha
+name: _gotcha
 description: Record and check cross-project agent gotchas, organized by gobbi skill. Check before acting, write after corrections.
 allowed-tools: Read, Grep, Glob, Write, Edit
 ---
@@ -12,20 +12,20 @@ Record cross-project agent mistakes so they never happen twice. Each gotcha file
 
 | Gotcha File | For Skill | Covers |
 |-------------|-----------|--------|
-| [gobbi-orchestration.md](gobbi-orchestration.md) | gobbi-orchestration | Coordination, routing, phase transitions |
-| [gobbi-discuss.md](gobbi-discuss.md) | gobbi-discuss | Prompt clarification, question quality |
-| [gobbi-plan.md](gobbi-plan.md) | gobbi-plan | Task decomposition, dependency ordering |
-| [gobbi-delegation.md](gobbi-delegation.md) | gobbi-delegation | Subagent briefings, context loading, scope boundaries |
-| [gobbi-execution.md](gobbi-execution.md) | gobbi-execution | Implementation, verification |
-| [gobbi-git.md](gobbi-git.md) | gobbi-git | Git/GitHub workflow, worktree management, branch handling |
-| [gobbi-collection.md](gobbi-collection.md) | gobbi-collection | Work trail persistence, README indexing |
-| [gobbi-evaluation.md](gobbi-evaluation.md) | gobbi-evaluation | Quality gates, evaluation criteria |
-| [gobbi-ideation.md](gobbi-ideation.md) | gobbi-ideation | Brainstorming, option generation |
-| [gobbi-claude.md](gobbi-claude.md) | gobbi-claude, gobbi-claude-skills, gobbi-claude-agents | `.claude/` documentation standard, skill and agent authoring |
-| [gobbi-note.md](gobbi-note.md) | gobbi-note | Note writing, directory structure, timing |
-| [gobbi-notification.md](gobbi-notification.md) | gobbi-notification | Hook setup, credentials, script issues |
-| [gobbi-system.md](gobbi-system.md) | (none) | Environment, processes, hooks, infrastructure |
-| [gobbi-security.md](gobbi-security.md) | (none) | Security vulnerability signals for evaluators |
+| [_orchestration.md](_orchestration.md) | _orchestration | Coordination, routing, phase transitions |
+| [_discuss.md](_discuss.md) | _discuss | Prompt clarification, question quality |
+| [_plan.md](_plan.md) | _plan | Task decomposition, dependency ordering |
+| [_delegation.md](_delegation.md) | _delegation | Subagent briefings, context loading, scope boundaries |
+| [_execution.md](_execution.md) | _execution | Implementation, verification |
+| [_git.md](_git.md) | _git | Git/GitHub workflow, worktree management, branch handling |
+| [_collection.md](_collection.md) | _collection | Work trail persistence, README indexing |
+| [_evaluation.md](_evaluation.md) | _evaluation | Quality gates, evaluation criteria |
+| [_ideation.md](_ideation.md) | _ideation | Brainstorming, option generation |
+| [_claude.md](_claude.md) | _claude, _claude_skills, _claude_agents | `.claude/` documentation standard, skill and agent authoring |
+| [_note.md](_note.md) | _note | Note writing, directory structure, timing |
+| [_notification.md](_notification.md) | _notification | Hook setup, credentials, script issues |
+| [_system.md](_system.md) | (none) | Environment, processes, hooks, infrastructure |
+| [_security.md](_security.md) | (none) | Security vulnerability signals for evaluators |
 
 ---
 
@@ -47,7 +47,7 @@ Each entry exists because a user experienced a problem. The user's feedback is t
 
 ## Where to Save
 
-**Cross-project** (applies to any project) → `gobbi-gotcha/{skill}.md`
+**Cross-project** (applies to any project) → `_gotcha/{skill}.md`
 
 **Project-specific** (applies to one project) → `.claude/project/gotchas/{category}.md`
 
@@ -91,4 +91,4 @@ Gotcha entries may include optional YAML frontmatter for tooling. The frontmatte
 | `pattern` | regex string | Only when enforcement: hook | Regex to match against (bash commands, file paths, etc.) |
 | `event` | bash, file, stop | Only when enforcement: hook | Which hook event triggers the check |
 
-When `enforcement` is `advisory` (or omitted), the entry is informational — agents check it manually. When `enforcement` is `hook`, the `pattern` and `event` fields tell tooling what to intercept and when. See representative examples in gobbi-system.md.
+When `enforcement` is `advisory` (or omitted), the entry is informational — agents check it manually. When `enforcement` is `hook`, the `pattern` and `event` fields tell tooling what to intercept and when. See representative examples in _system.md.

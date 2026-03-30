@@ -1,5 +1,5 @@
 ---
-name: gobbi-evaluation-performance
+name: __evaluation_performance
 description: Load when evaluating output that affects performance-sensitive paths — algorithms, data structures, database queries, network calls, caching, or hot-path logic. Examines efficiency, scalability, resource usage, and latency.
 allowed-tools: Read, Grep, Glob, Bash
 ---

@@ -1,12 +1,12 @@
 ---
-name: gobbi-claude-skills
-description: Reference and interactive guide for creating Claude Code skills. MUST load when creating, reviewing, or modifying .claude/skills/ definitions. Must load gobbi-claude and gobbi-discuss before using this skill.
+name: _claude_skills
+description: Reference and interactive guide for creating Claude Code skills. MUST load when creating, reviewing, or modifying .claude/skills/ definitions. Must load _claude and _discuss before using this skill.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 
 # Claude Skills
 
-Reference for understanding skill structure and interactive guide for creating new skills through discussion. Load this when creating, reviewing, or modifying any `.claude/skills/` definition. Load gobbi-claude for writing principles and gobbi-discuss for discussion mechanics before using this skill.
+Reference for understanding skill structure and interactive guide for creating new skills through discussion. Load this when creating, reviewing, or modifying any `.claude/skills/` definition. Load _claude for writing principles and _discuss for discussion mechanics before using this skill.
 
 **Navigate deeper from here:**
 
@@ -49,7 +49,7 @@ Every skill has a flat documentation structure: SKILL.md and optional sibling `.
 
 **Description** drives auto-invocation. Write in command tone: "Use when writing or reviewing X" — not "This skill provides X." Be specific enough to avoid misfiring on unrelated tasks.
 
-**Naming** follows the `gobbi-*` prefix for gobbi skills. Directory name equals skill name equals invocation command.
+**Naming** follows the tier prefix convention: `_` for hidden skills, `__` for internal skills, no prefix for the interface entry point. Directory name equals skill name equals invocation command. See `.claude/rules/__gobbi_convention.md` for the full naming convention.
 
 Read existing skills in `.claude/skills/` for structural patterns — the codebase is the authoritative reference.
 
@@ -63,7 +63,7 @@ Read existing skills in `.claude/skills/` for structural patterns — the codeba
 
 > **Comparison should be blind.** When comparing two skill versions, remove provenance bias. Present versions as A and B without labeling which is current vs candidate. The blind protocol ensures evaluation is based on quality, not familiarity.
 
-Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. Three evaluation agents execute verification: gobbi-skills-grader (tests trigger accuracy and output quality), gobbi-skills-comparator (blind A/B comparison of skill versions), and gobbi-skills-analyzer (synthesizes results into prioritized improvements).
+Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. Three evaluation agents execute verification: __skills_grader (tests trigger accuracy and output quality), __skills_comparator (blind A/B comparison of skill versions), and __skills_analyzer (synthesizes results into prioritized improvements).
 
 ---
 
@@ -117,11 +117,11 @@ Gotcha files record mistakes that agents are likely to repeat because the correc
 - Behavior already documented in the skill or a rule
 - One-off issues unlikely to recur
 
-**Where gotchas live:** Cross-project gotchas are organized by skill in `gobbi-gotcha/{skill-name}.md`. Project-specific gotchas go to `.claude/project/gotchas/`. Read existing gotcha files for the entry format — each entry has a title, priority, what happened, user feedback, and correct approach.
+**Where gotchas live:** Cross-project gotchas are organized by skill in `_gotcha/{skill-name}.md`. Project-specific gotchas go to `.claude/project/gotchas/`. Read existing gotcha files for the entry format — each entry has a title, priority, what happened, user feedback, and correct approach.
 
 **Priority levels:** Critical (breaks environment), High (wrong output looks correct), Medium (rework needed), Low (minor inconvenience).
 
-Read `gobbi-gotcha/SKILL.md` for the full gotcha framework. Read existing gotcha files like `gobbi-gotcha/gobbi-claude.md` for concrete examples of well-structured entries.
+Read `_gotcha/SKILL.md` for the full gotcha framework. Read existing gotcha files like `_gotcha/_claude.md` for concrete examples of well-structured entries.
 
 ---
 
@@ -132,14 +132,14 @@ The interactive creation process produces:
 - A SKILL.md file with valid frontmatter in `.claude/skills/{skill-name}/`
 - Optional child `.md` files for broad domains that exceed the line budget
 - Optional gotcha file if the domain has known non-obvious pitfalls
-- All output reviewed against gobbi-claude's review checklist before publishing
+- All output reviewed against _claude's review checklist before publishing
 
 ---
 
 ## Constraints
 
-- Must follow gobbi-claude writing principles — principles over procedures, constraints over templates, codebase over examples
-- No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes (skills are teaching docs — step-by-step is context-dependent per gobbi-claude)
+- Must follow _claude writing principles — principles over procedures, constraints over templates, codebase over examples
+- No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes (skills are teaching docs — step-by-step is context-dependent per _claude)
 - Under 500 lines per file (must), targeting under 200 (should)
 - Flat documentation structure — SKILL.md plus sibling `.md` files; non-doc subdirectories (`scripts/`, `benchmarks/`, `references/`) are acceptable, nested `.md` hierarchies are not
 - Content must be portable — no project-specific patterns in skills

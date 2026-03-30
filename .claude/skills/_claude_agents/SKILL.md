@@ -1,6 +1,6 @@
 ---
-name: gobbi-claude-agents
-description: Reference and interactive guide for creating Claude Code agent definitions. MUST load when creating, reviewing, or modifying .claude/agents/ files. Must load gobbi-claude and gobbi-discuss before using this skill.
+name: _claude_agents
+description: Reference and interactive guide for creating Claude Code agent definitions. MUST load when creating, reviewing, or modifying .claude/agents/ files. Must load _claude and _discuss before using this skill.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 
@@ -34,7 +34,7 @@ Use AskUserQuestion to understand what the agent should be, what it should not d
 
 The structure of an agent definition establishes identity, context, and quality expectations — in that order.
 
-**Frontmatter** — Required fields: `name`, `description`, `tools` (scoped to what the agent actually needs). All agents carry explicit `model` assignments: evaluators and developer use `sonnet`, PI and planner use `opus`. The orchestrator can override via the Agent tool's model parameter when a specific task warrants a different tier — see gobbi-delegation's model selection guidance. The `description` field is critical — it answers "when should the orchestrator send work here?" If two agents' descriptions match the same task, boundaries need sharpening.
+**Frontmatter** — Required fields: `name`, `description`, `tools` (scoped to what the agent actually needs). All agents carry explicit `model` assignments: evaluators and developer use `sonnet`, PI and planner use `opus`. The orchestrator can override via the Agent tool's model parameter when a specific task warrants a different tier — see _delegation's model selection guidance. The `description` field is critical — it answers "when should the orchestrator send work here?" If two agents' descriptions match the same task, boundaries need sharpening.
 
 **Identity within 20 lines** — The opening paragraph establishes who the agent is ("You are a..."), what it thinks like, and when it receives work. Follow immediately with "Out of scope" — what the agent should NOT do and should defer to other agents.
 
@@ -97,7 +97,7 @@ The interactive creation process produces a single `.md` file in `.claude/agents
 
 ## Constraints
 
-- Must follow gobbi-claude writing principles — principles over procedures, constraints over templates, codebase over examples
+- Must follow _claude writing principles — principles over procedures, constraints over templates, codebase over examples
 - Agent definitions describe roles, not task scripts — if it reads like a procedure, revise it
 - Tools scoped to what the agent actually needs — no "just in case" grants
 - Clear domain boundaries — no overlap with existing agents in `.claude/agents/`

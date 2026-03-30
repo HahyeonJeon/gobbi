@@ -1,5 +1,5 @@
 ---
-name: gobbi-audit
+name: _audit
 description: Detect documentation drift in .claude/ files. Use periodically, after major codebase changes, or before releases to find stale references and structural mismatches.
 allowed-tools: Read, Grep, Glob, Bash
 ---
@@ -54,7 +54,7 @@ Skills, agents, gotchas, rules, and CLAUDE.md are living documentation that agen
 
 **Out of scope:**
 - `.claude/project/` note directories — historical records, not living docs
-- Content quality assessment — that is gobbi-validate's domain
+- Content quality assessment — that is __validate's domain
 - External URLs — network-dependent, separate concern
 
 ---
