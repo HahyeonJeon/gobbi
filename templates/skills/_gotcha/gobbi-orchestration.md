@@ -1,4 +1,4 @@
-# Gotcha: gobbi-orchestration
+# Gotcha: _orchestration
 
 Mistakes in following the orchestration workflow (phases, steps, transitions).
 
@@ -36,7 +36,7 @@ Mistakes in following the orchestration workflow (phases, steps, transitions).
 
 **User feedback:** Write notes in every workflow cycle.
 
-**Correct approach:** Load gobbi-note during Step 4 (Collection). Write ideation.md, plan.md, execution.md, and subtasks/ to the task note directory. Context disappears after the session — notes are the permanent record.
+**Correct approach:** Load _note during Step 4 (Collection). Write ideation.md, plan.md, execution.md, and subtasks/ to the task note directory. Context disappears after the session — notes are the permanent record.
 
 ---
 

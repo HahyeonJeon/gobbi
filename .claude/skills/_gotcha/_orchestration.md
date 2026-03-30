@@ -1,4 +1,4 @@
-# Gotcha: gobbi-orchestration
+# Gotcha: _orchestration
 
 Mistakes in following the orchestration workflow (phases, steps, transitions).
 
@@ -39,7 +39,7 @@ priority: critical
 
 **User feedback:** Write notes in every workflow cycle.
 
-**Correct approach:** Load gobbi-note during Step 4 (Collection). Write ideation.md, plan.md, execution.md, and subtasks/ to the task note directory. Context disappears after the session — notes are the permanent record.
+**Correct approach:** Load _note during Step 4 (Collection). Write ideation.md, plan.md, execution.md, and subtasks/ to the task note directory. Context disappears after the session — notes are the permanent record.
 
 ---
 
@@ -163,6 +163,6 @@ priority: high
 
 **What happened:** Two gobbi sessions ran simultaneously in the same working tree — one doing a v0.2.0 redesign, the other doing README/presentation improvements. The presentation session's subagents made changes that appeared to be scope violations but were actually from the concurrent session. The orchestrator reverted the concurrent session's legitimate work (src/cli.ts, src/commands/, src/lib/ files) thinking they were scope creep. The concurrent session then committed a README rewrite that overwrote the presentation session's visual improvements. Both sessions' work had to be manually reconciled.
 
-**User feedback:** "We experienced this concurrent mistakes several times." Requested a gobbi-worktree skill to isolate sessions via git worktrees.
+**User feedback:** "We experienced this concurrent mistakes several times." Requested a worktree skill to isolate sessions via git worktrees.
 
 **Correct approach:** Never run multiple gobbi sessions in the same working tree. Each session's subagents and the concurrent session's changes are indistinguishable in `git diff`. The orchestrator cannot tell which changes are from its own agents vs another session. Use git worktrees to give each session its own isolated copy of the repo, then merge results explicitly.

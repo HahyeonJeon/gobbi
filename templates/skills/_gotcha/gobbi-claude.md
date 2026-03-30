@@ -1,4 +1,4 @@
-# Gotcha: gobbi-claude
+# Gotcha: _claude
 
 Mistakes in writing `.claude/` documentation. These cause agents to produce rigid, templated output instead of thinking.
 

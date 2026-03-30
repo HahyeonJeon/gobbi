@@ -1,4 +1,4 @@
-# Gotcha: gobbi-collection
+# Gotcha: _collection
 
 Mistakes in work trail persistence, README indexing, and subtask file management.
 

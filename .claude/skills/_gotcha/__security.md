@@ -1,6 +1,6 @@
 # Gotcha: Security
 
-Security patterns evaluators should check during code review. Each entry names a vulnerability class with concrete signals to look for. These complement the OWASP top 10 checklist in gobbi-execution-evaluation — that skill says *what* to check, this file says *how* to spot it.
+Security patterns evaluators should check during code review. Each entry names a vulnerability class with concrete signals to look for. These complement the OWASP top 10 checklist in __execution_evaluation — that skill says *what* to check, this file says *how* to spot it.
 
 ---
 

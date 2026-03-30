@@ -30,7 +30,7 @@ All projects must follow this consistent structure:
   design/               — project design and architecture
   rules/                — project-specific rules and conventions
   gotchas/              — project-specific gotchas (not cross-project)
-  note/                 — workflow notes per task (managed by gobbi-note)
+  note/                 — workflow notes per task (managed by _note)
   reference/            — external references, API docs, research
   docs/                 — other project documents
 ```
@@ -52,11 +52,11 @@ Project-specific rules and conventions. Standards that apply only to this projec
 
 ### gotchas/
 
-Project-specific gotchas. Mistakes and corrections that apply only to this project. Categorized by domain (e.g., `auth.md`, `deployment.md`). Separate from cross-project gotchas in `gobbi-gotcha/`.
+Project-specific gotchas. Mistakes and corrections that apply only to this project. Categorized by domain (e.g., `auth.md`, `deployment.md`). Separate from cross-project gotchas in `_gotcha/`.
 
 ### note/
 
-Workflow notes per task, managed by gobbi-note. Each task gets a directory named `{YYYYMMDD}-{HHMM}-{slug}-{session_id}` (e.g., `20260328-0951-installation-system-ed5b2db3-7d89-4208-a25b-8ad0889a0c80`). Inside each note directory:
+Workflow notes per task, managed by _note. Each task gets a directory named `{YYYYMMDD}-{HHMM}-{slug}-{session_id}` (e.g., `20260328-0951-installation-system-ed5b2db3-7d89-4208-a25b-8ad0889a0c80`). Inside each note directory:
 
 - Per-step notes: ideation.md, plan.md, execution.md, feedback.md, review.md
 - `subtasks/` — per-agent result files from delegated work (e.g., `01-developer-agent.md`)
@@ -90,7 +90,7 @@ Other project documents that don't fit into the above categories.
 |---|---|
 | **Stale docs left in place** | References deleted files, describes "planned" features already built. Agents make wrong assumptions. |
 | **Inconsistent directory structure** | Missing README.md or standard subdirectories. Agents can't navigate reliably. |
-| **Project gotchas in gobbi-gotcha** | Project-specific gotchas must go in `{project-name}/gotchas/`, not in the cross-project gotcha skill. |
+| **Project gotchas in _gotcha** | Project-specific gotchas must go in `{project-name}/gotchas/`, not in the cross-project gotcha skill. |
 
 ### Should Avoid
 

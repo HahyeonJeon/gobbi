@@ -1,4 +1,4 @@
-# Gotcha: gobbi-collection
+# Gotcha: _collection
 
 Mistakes in work trail persistence, README indexing, and subtask file management.
 
@@ -25,8 +25,8 @@ The subtask files are the permanent record of what each specialist agent found o
 
 **Priority:** High
 
-**What happened:** During the gobbi-git skill creation, a developer agent created `gobbi-gotcha/gobbi-git.md` as specified. However, the agent did not update the navigation table in `gobbi-gotcha/SKILL.md` to include the new file. The critical evaluator caught this — an unlisted gotcha file is invisible to agents scanning the table for relevant gotchas before starting work.
+**What happened:** During the _git skill creation, a developer agent created `_gotcha/_git.md` as specified. However, the agent did not update the navigation table in `_gotcha/SKILL.md` to include the new file. The critical evaluator caught this — an unlisted gotcha file is invisible to agents scanning the table for relevant gotchas before starting work.
 
 **User feedback:** (Caught by critical evaluator during execution evaluation)
 
-**Correct approach:** When creating a new gotcha file, always update the `gobbi-gotcha/SKILL.md` navigation table to include the new entry. The gotcha system's discoverability depends on this central index. Include this as an explicit step in any delegation prompt that involves creating a new gotcha file.
+**Correct approach:** When creating a new gotcha file, always update the `_gotcha/SKILL.md` navigation table to include the new entry. The gotcha system's discoverability depends on this central index. Include this as an explicit step in any delegation prompt that involves creating a new gotcha file.

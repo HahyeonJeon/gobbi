@@ -1,4 +1,4 @@
-# Gotcha: gobbi-note
+# Gotcha: _note
 
 Mistakes in note writing, directory structure, and timing.
 
@@ -30,4 +30,4 @@ Notes are the permanent record. A reader should never need to ask "what was the 
 
 **User feedback:** "Did you use session-metadata.sh? Must run session-metadata.sh first."
 
-**Correct approach:** Always use `bash .claude/skills/gobbi-note/scripts/note-init.sh <project-name> <task-slug>` to create note directories. Never `mkdir` manually, never reference `$CLAUDE_SESSION_ID` directly. The script chains through `note-metadata.sh` which reads from `$CLAUDE_SESSION_ID` (set by the SessionStart hook). If the script fails because `CLAUDE_SESSION_ID` is not set, investigate the hook — don't work around it.
+**Correct approach:** Always use `bash .claude/skills/_note/scripts/note-init.sh <project-name> <task-slug>` to create note directories. Never `mkdir` manually, never reference `$CLAUDE_SESSION_ID` directly. The script chains through `note-metadata.sh` which reads from `$CLAUDE_SESSION_ID` (set by the SessionStart hook). If the script fails because `CLAUDE_SESSION_ID` is not set, investigate the hook — don't work around it.

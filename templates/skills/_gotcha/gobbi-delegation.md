@@ -1,4 +1,4 @@
-# Gotcha: gobbi-delegation
+# Gotcha: _delegation
 
 Mistakes in subagent briefings, context loading, and scope boundaries.
 

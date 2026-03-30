@@ -1,4 +1,4 @@
-# Gotcha: gobbi-plan
+# Gotcha: _plan
 
 Mistakes in planning and task decomposition.
 

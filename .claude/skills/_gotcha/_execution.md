@@ -1,4 +1,4 @@
-# Gotcha: gobbi-execution
+# Gotcha: _execution
 
 Mistakes in task implementation and verification.
 
@@ -44,7 +44,7 @@ Mistakes in task implementation and verification.
 
 **Priority:** Medium
 
-**What happened:** A validate-skill.sh check was added to warn when skill descriptions lack trigger-oriented language. The pattern checked for `Use when`, `MUST load when`, `Use this`, `Load when`, `TRIGGER when`, `Load this` — but existing valid skills use phrases like `Use after` (gobbi-validate) and `Use to` (gobbi-note), which weren't in the pattern list. Two of five test skills produced false positives.
+**What happened:** A validate-skill.sh check was added to warn when skill descriptions lack trigger-oriented language. The pattern checked for `Use when`, `MUST load when`, `Use this`, `Load when`, `TRIGGER when`, `Load this` — but existing valid skills use phrases like `Use after` (gobbi-validate) and `Use to` (_note), which weren't in the pattern list. Two of five test skills produced false positives.
 
 **User feedback:** Found during orchestrator verification of agent output.
 
