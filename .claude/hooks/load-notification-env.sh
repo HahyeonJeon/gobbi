@@ -5,9 +5,14 @@
 ENV_FILE="$CLAUDE_PROJECT_DIR/.claude/.env"
 
 if [ -n "$CLAUDE_ENV_FILE" ] && [ -f "$ENV_FILE" ]; then
+  chmod 600 "$ENV_FILE" 2>/dev/null || true
   while IFS= read -r line; do
     [[ -z "$line" || "$line" == \#* ]] && continue
-    echo "export $line" >> "$CLAUDE_ENV_FILE"
+    if [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+      echo "export $line" >> "$CLAUDE_ENV_FILE"
+    else
+      echo "load-notification-env: skipping malformed line: $line" >&2
+    fi
   done < "$ENV_FILE"
 fi
 
