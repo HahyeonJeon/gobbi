@@ -1,5 +1,5 @@
 ---
-name: gobbi-claude
+name: _claude
 description: Understand and author .claude/ documentation (CLAUDE.md, skills, rules, agents, memories). Use when reading .claude/ files to understand their structure and definitions, or when creating and updating any file in the .claude/ directory. Enforces concise, principle-based writing that helps agents think rather than prescriptive instructions that agents blindly follow.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---

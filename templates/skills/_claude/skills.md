@@ -1,6 +1,6 @@
 # Writing Skills
 
-Guide for authoring `.claude/skills/<name>/SKILL.md` files. All skills in this system are gobbi-prefixed and follow a flat structure.
+Guide for authoring `.claude/skills/<name>/SKILL.md` files. All skills in this system use underscore-prefixed naming and follow a flat structure.
 
 ---
 
@@ -14,9 +14,9 @@ A skill teaches domain knowledge reusable across any project — orchestration p
 
 A broad domain skill can have child docs for focused subtasks. The parent teaches the mental model; children specialize. This prevents monolithic skills. Child docs live in the same directory as SKILL.md — no nested subdirectories within a skill directory.
 
-> **All skills are gobbi-prefixed.**
+> **All skills use underscore-prefixed naming.**
 
-The current ecosystem has 17 skills, all named `gobbi-*`. Each skill directory contains a SKILL.md entry point and optional child `.md` files in the same directory. Read `.claude/skills/` for the current roster.
+Skills use Python-style underscore prefixes: hidden skills start with `_` (e.g. `_orchestration`, `_plan`), internal skills start with `__` (e.g. `__evaluation_project`, `__plan_evaluation`), and the entry point is named `gobbi` (no prefix). Each skill directory contains a SKILL.md entry point and optional child `.md` files in the same directory. Read `.claude/skills/` for the current roster.
 
 ---
 
@@ -31,8 +31,8 @@ Every skill is flat: a directory containing SKILL.md and optional sibling `.md` 
 
 Two skills have notable structural variations:
 
-- **gobbi-gotcha** — SKILL.md plus per-skill `.md` gotcha files (e.g., `gobbi-execution.md`, `gobbi-claude.md`). Each gotcha file collects mistakes for one skill domain.
-- **gobbi-note** — SKILL.md plus a `scripts/` subdirectory containing shell scripts for note metadata generation. This is the one exception to the no-subdirectories guideline.
+- **_gotcha** — SKILL.md plus per-skill `.md` gotcha files (e.g., `_execution.md`, `_claude.md`). Each gotcha file collects mistakes for one skill domain.
+- **_note** — SKILL.md plus a `scripts/` subdirectory containing shell scripts for note metadata generation. This is the one exception to the no-subdirectories guideline.
 
 ---
 
