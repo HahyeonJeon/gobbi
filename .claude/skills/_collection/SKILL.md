@@ -26,29 +26,9 @@ Collection has four responsibilities: **note persistence**, **subtask preservati
 
 ## Where to Write
 
-Notes go in `.claude/project/{project-name}/note/`:
+Note directories follow the structure defined in _note. See _note for directory naming, file layout, and the initialization script.
 
-```
-.claude/project/{project-name}/note/
-  README.md                                               — index of all task note directories
-  {YYYYMMDD-HHMM}-{slug}-{session_id}/
-    README.md                                             — session context metadata (YAML frontmatter)
-    ideation.md                                           — ideas explored, trade-offs, chosen approach
-    plan.md                                               — plan details, task decomposition, dependencies
-    execution.md                                          — execution outcomes, issues encountered
-    subtasks/
-      {NN}-{subtask-slug}.md                              — copy of each subagent's task result
-    feedback.md                                           — user feedback rounds (written during FEEDBACK phase)
-    review.md                                             — review findings (written during REVIEW phase)
-```
-
-### Naming
-
-**Task directory**: `{YYYYMMDD-HHMM}-{slug}-{session_id}` — datetime prefix for ordering with minute precision, slug for readability, full session UUID at the end for machine cross-referencing. The `session_id` is the full session UUID, available as `$CLAUDE_SESSION_ID`.
-
-**Subtask files**: `{NN}-{slug}.md` — zero-padded sequence number for ordering, slug for readability.
-
-**Directory initialization**: Initialize the task directory using the note-metadata script at `.claude/skills/_note/scripts/note-metadata.sh`. This script outputs session metadata (session ID, date, git branch, model, transcript path) as key-value pairs, which should be used to populate the task directory's README.md with session context.
+**Directory initialization**: Initialize note directories using the `note-init.sh` script in `_note/scripts/`. It takes the project name and task slug as arguments and handles the full chain: metadata extraction, directory creation, README.md generation, and subtasks/ directory setup.
 
 ---
 
@@ -59,6 +39,8 @@ The index file lists all task note directories. Must update README.md after crea
 ---
 
 ## Phase-Specific Collection
+
+See _note for what to include in each note file (ideation.md, plan.md, execution.md, etc.).
 
 ### After TASK phase (standard collection)
 
@@ -92,6 +74,10 @@ This complements per-agent Memorize steps by capturing orchestrator-level insigh
 
 - **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via _gotcha.
 - **CLAUDE.md additions** — conventions or patterns discovered that should persist across sessions. Add as one-line entries to CLAUDE.md.
-- **Skill updates** — behavioral patterns identified that a skill should teach. When a learning is categorized as a skill update, the orchestrator MUST propose a concrete change to the skill rather than merely flagging it for later. MUST load _claude and _claude_skills before generating any proposed skill change — writing standards and skill structure constraints apply to proposed changes, not just final edits. MUST run lint-skill.sh on the proposed change to catch anti-patterns before presenting it. This is opt-in: only prompt if skill-update-type learnings were identified during the session. Present proposed changes to the user via AskUserQuestion: "Would you like to review proposed skill updates before finishing?" If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.
+- **Skill updates** — behavioral patterns identified that a skill should teach. When a learning is categorized as a skill update, the orchestrator MUST propose a concrete change to the skill rather than merely flagging it for later. This is opt-in: only prompt if skill-update-type learnings were identified during the session. To propose a change:
+  - Load _claude and _claude_skills for authoring standards
+  - Run lint/validation on modified skills (lint-skill.sh) to catch anti-patterns before presenting
+  - Present proposed changes to user via AskUserQuestion: "Would you like to review proposed skill updates before finishing?"
+  - If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.
 
 Format: one-line entries, concise, actionable. "Discovery X because Y" — not narrative.

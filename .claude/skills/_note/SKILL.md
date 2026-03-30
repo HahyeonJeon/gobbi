@@ -30,13 +30,13 @@ Notes go in `.claude/project/{project-name}/note/`:
 
 ### Naming
 
-**Task directory**: `{YYYYMMDD-HHMM}-{slug}-{session_id}` — datetime prefix for chronological ordering with minute precision, slug for readability, full session UUID at the end for machine cross-referencing. The `session_id` is the full session UUID, available via `$CLAUDE_SESSION_ID` (set by the SessionStart hook). Example: `20260328-0706-doc-review-ed5b2db3-7d89-4208-a25b-8ad0889a0c80`.
+**Task directory**: `{YYYYMMDD-HHMM}-{slug}-{session_id}` — datetime prefix for chronological ordering with minute precision, slug for readability, full session UUID at the end for machine cross-referencing. The `session_id` is the full session UUID, available via `$CLAUDE_SESSION_ID`. Example: `20260328-0706-doc-review-ed5b2db3-7d89-4208-a25b-8ad0889a0c80`.
 
 ### Initialization
 
 > **Always use note-init.sh to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.**
 
-Run `bash .claude/skills/_note/scripts/note-init.sh <project-name> <task-slug>` to create a new task note directory. It handles the full chain: session metadata extraction (via `note-metadata.sh` which reads `$CLAUDE_SESSION_ID`), directory creation, README.md generation with session context, and subtasks/ directory setup. The script outputs the absolute path of the created directory.
+Initialize note directories using the `note-init.sh` script in `_note/scripts/`. It takes the project name and task slug as arguments and outputs the created directory path. It handles the full chain: session metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup.
 
 If `note-init.sh` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it.
 
@@ -77,7 +77,7 @@ Record during Step 3 (Execution — Delegation). Must document each subtask in e
 - Issues encountered and how they were resolved
 - Any deviations from the plan and why
 
-When documenting evaluation results in execution.md, organize findings by severity tier — Critical findings first, then Important, then Suggestions, then Strengths — rather than by evaluator stance. Severity-tiered presentation surfaces actionable items first and makes blocking issues visible across all subtasks at a glance.
+When documenting evaluation results in execution.md, organize findings by severity tier — Critical findings first, then Important, then Suggestions, then Strengths — rather than by evaluator perspective. Severity-tiered presentation surfaces actionable items first and makes blocking issues visible across all subtasks at a glance.
 
 Record pre-action verification outcomes when they catch a precondition failure (wrong branch, duplicate PR, stale state). Verification that passes silently needs no note — only record when verification catches a real problem, as these are valuable learning inputs for gotchas.
 
@@ -109,16 +109,7 @@ Record during Phase 3 (REVIEW):
 
 ## README.md
 
-The index file lists all task note directories with one-line summaries:
-
-```
-# Notes
-
-| Date | Task | Summary |
-|------|------|---------|
-| 2026-03-28 14:30 | auth-redesign | Redesigned auth middleware for compliance |
-| 2026-03-29 09:00 | fix-login | Fixed login redirect loop on mobile |
-```
+The index file is a markdown table listing each task directory with its date, session, slug, and a one-line summary of what the task delivered.
 
 Must update README.md after creating each new task note directory.
 
