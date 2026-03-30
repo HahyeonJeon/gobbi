@@ -13,6 +13,7 @@ Reference for understanding skill structure and interactive guide for creating n
 | Document | Covers |
 |----------|--------|
 | [verification.md](verification.md) | Skill verification: trigger testing, output quality, improvement loop, evaluation agents |
+| [authoring.md](authoring.md) | Skill authoring: description craft, instruction writing, content pruning, failure patterns |
 
 ---
 
@@ -38,7 +39,7 @@ Read `.claude/skills/` to understand the current roster. Over-splitting weakens 
 
 ## Skill Structure
 
-Every skill is flat: a directory containing SKILL.md and optional sibling `.md` files. No nested subdirectories within a skill directory.
+Every skill has a flat documentation structure: SKILL.md and optional sibling `.md` files. Non-doc subdirectories (`scripts/`, `benchmarks/`, `references/`) are acceptable for executable or data files. Nested `.md` file hierarchies are not — keep documentation one level deep.
 
 **SKILL.md** is the entry point with YAML frontmatter. If child docs exist, SKILL.md lists them under a "Navigate deeper from here:" heading with short descriptions.
 
@@ -140,7 +141,7 @@ The interactive creation process produces:
 - Must follow gobbi-claude writing principles — principles over procedures, constraints over templates, codebase over examples
 - No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes (skills are teaching docs — step-by-step is context-dependent per gobbi-claude)
 - Under 500 lines per file (must), targeting under 200 (should)
-- Flat directory structure — SKILL.md plus sibling `.md` files, no nested subdirectories
+- Flat documentation structure — SKILL.md plus sibling `.md` files; non-doc subdirectories (`scripts/`, `benchmarks/`, `references/`) are acceptable, nested `.md` hierarchies are not
 - Content must be portable — no project-specific patterns in skills
 - Always discuss with the user before creating — never generate a skill from a vague one-line description
 - Core principles in the first ~50 lines of any skill
