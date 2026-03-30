@@ -87,7 +87,7 @@ Run the same scenarios before and after modifying a skill. Compare the score dis
 
 ## Relationship to Skill Verification
 
-__benchmark and _claude_skills verification (see `_claude_skills/verification.md`) serve different purposes:
+__benchmark and _claude-skills verification (see `_claude-skills/verification.md`) serve different purposes:
 
 - **Benchmark** measures specific skill behaviors quantitatively — numeric scores, variance, delta tracking. Use benchmarks to answer "did this change improve the skill's performance on this specific behavior?"
 - **Verification** assesses holistic skill quality with specialized agents (grader, analyzer, comparator) — trigger accuracy, output quality, blind A/B comparison. Use verification to answer "is this skill well-written and effective overall?"
@@ -100,7 +100,7 @@ Benchmark scenarios complement verification agents. Run verification for broad q
 
 The `scripts/trigger-test.py` script answers a narrow question: does this skill's description reliably identify the prompts it should load for, and reliably exclude the ones it should not?
 
-**Two tracks, two questions.** Script-based trigger testing and agent-based verification are complementary but distinct. The script tests one thing cheaply and repeatably: does the description match the right prompts? Agent-based verification (__skills_grader) tests something harder and more expensive: does the skill produce good outcomes when loaded? Trigger accuracy is a prerequisite for outcome quality — if the skill never loads for the right prompts, it can never help — but a skill can trigger correctly and still produce poor output. Use the script for the narrow question, the agent for the holistic one.
+**Two tracks, two questions.** Script-based trigger testing and agent-based verification are complementary but distinct. The script tests one thing cheaply and repeatably: does the description match the right prompts? Agent-based verification (__skills-grader) tests something harder and more expensive: does the skill produce good outcomes when loaded? Trigger accuracy is a prerequisite for outcome quality — if the skill never loads for the right prompts, it can never help — but a skill can trigger correctly and still produce poor output. Use the script for the narrow question, the agent for the holistic one.
 
 **Why Python and the anthropic package.** The __validate scripts are bash-only. This script departs from that pattern deliberately. Trigger testing is a classification problem: given this description, does this prompt warrant loading? That question requires LLM judgment. Grep patterns and heuristics cannot approximate semantic relevance. The dependency cost (Python, `pip install anthropic`, an API key) is the price of getting a meaningful signal rather than a fast but meaningless one.
 

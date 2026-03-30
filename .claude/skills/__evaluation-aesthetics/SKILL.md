@@ -1,5 +1,5 @@
 ---
-name: __evaluation_aesthetics
+name: __evaluation-aesthetics
 description: Load when evaluating execution output that produces user-facing artifacts — code, documentation, or interfaces. Examines naming clarity, readability, style consistency, and whether a fresh reader would understand it.
 allowed-tools: Read, Grep, Glob, Bash
 ---

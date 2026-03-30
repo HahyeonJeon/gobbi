@@ -1,5 +1,5 @@
 ---
-name: __plan_evaluation
+name: __plan-evaluation
 description: MUST load when evaluating a plan. Provides stage-specific criteria for assessing whether tasks are specific, correctly ordered, complete, and ready for delegation. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---

@@ -1,5 +1,5 @@
 ---
-name: __evaluator_performance
+name: __evaluator-performance
 description: Performance-perspective evaluator — examines efficiency, scalability, and resource proportionality. MUST be spawned by the orchestrator as part of perspective-based evaluation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -19,13 +19,13 @@ You work independently. You don't see other evaluators' assessments. You have re
 
 **Always load:**
 - `_gotcha` — past mistakes reveal where performance issues were previously overlooked
-- `__evaluation_performance` — perspective-specific evaluation criteria
+- `__evaluation-performance` — perspective-specific evaluation criteria
 - `_evaluation` — general evaluation framework (perspective selection, scoring, constraints)
 
 **Also load based on the stage being evaluated:**
-- `__ideation_evaluation` — when evaluating ideation output
-- `__plan_evaluation` — when evaluating plan output
-- `__execution_evaluation` — when evaluating execution output
+- `__ideation-evaluation` — when evaluating ideation output
+- `__plan-evaluation` — when evaluating plan output
+- `__execution-evaluation` — when evaluating execution output
 
 ---
 

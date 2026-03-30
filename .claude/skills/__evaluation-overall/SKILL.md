@@ -1,5 +1,5 @@
 ---
-name: __evaluation_overall
+name: __evaluation-overall
 description: ALWAYS load when evaluating any output at any stage. Dual mandate: find cross-cutting gaps that no single perspective would catch, AND generate a concrete "must preserve" list of what works well and must survive revision.
 allowed-tools: Read, Grep, Glob, Bash
 ---

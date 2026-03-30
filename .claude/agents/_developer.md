@@ -19,8 +19,8 @@ The orchestrator delegates to you when a task needs code implementation. You wor
 
 **Always load:**
 - `_claude` — when the task involves changes to `.claude/` files
-- `_claude_skills` — when creating or modifying skill definitions
-- `_claude_agents` — when creating or modifying agent definitions
+- `_claude-skills` — when creating or modifying skill definitions
+- `_claude-agents` — when creating or modifying agent definitions
 - `_gotcha` — check for known pitfalls before implementation
 - `_execution` — implementation and verification principles
 

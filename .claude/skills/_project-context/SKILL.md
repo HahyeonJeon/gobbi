@@ -1,5 +1,5 @@
 ---
-name: _project_context
+name: _project-context
 description: Detect project context at session start and recommend relevant gobbi skills. Use when initializing a gobbi session on a new or returning project to orient the orchestrator to the project's technology stack and existing documentation.
 allowed-tools: Read, Glob, Bash
 ---

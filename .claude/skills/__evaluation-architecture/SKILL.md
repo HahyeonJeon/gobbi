@@ -1,5 +1,5 @@
 ---
-name: __evaluation_architecture
+name: __evaluation-architecture
 description: Load when evaluating output that creates or modifies code structure, introduces new abstractions, defines interfaces, or changes how components relate. Examines structural coherence, coupling, design principles, and extensibility.
 allowed-tools: Read, Grep, Glob, Bash
 ---

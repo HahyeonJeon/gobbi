@@ -1,12 +1,12 @@
-# Scenario 02: _claude_skills — Skill Creation from a Vague Prompt
+# Scenario 02: _claude-skills — Skill Creation from a Vague Prompt
 
-Tests whether an agent loaded with _claude_skills correctly handles a moderately vague skill creation request by discussing before writing, applying description craft principles, and producing a well-structured skill file.
+Tests whether an agent loaded with _claude-skills correctly handles a moderately vague skill creation request by discussing before writing, applying description craft principles, and producing a well-structured skill file.
 
 ---
 
 ## Context
 
-The user is working in a project that already has several gobbi skills installed. The agent has been loaded with _claude_skills and _discuss. No existing Slack notification skill exists in the project. The agent is asked to create a new skill. No prior context about trigger scenarios, integration points, or scope has been provided.
+The user is working in a project that already has several gobbi skills installed. The agent has been loaded with _claude-skills and _discuss. No existing Slack notification skill exists in the project. The agent is asked to create a new skill. No prior context about trigger scenarios, integration points, or scope has been provided.
 
 ---
 
@@ -20,7 +20,7 @@ The agent should treat this as a task instruction. The prompt has a clear domain
 
 ## Expected Behavior
 
-The agent using _claude_skills should:
+The agent using _claude-skills should:
 
 - **Discuss before writing.** Recognize that the prompt is insufficiently specified to produce a well-targeted skill. Enter discussion mode before drafting anything. Ask about domain ownership, trigger scenarios, scope boundaries, and overlap with existing skills.
 
@@ -78,4 +78,4 @@ Valid SKILL.md with proper frontmatter? Within the 200-line budget? Flat documen
 
 Average score across all four criteria must be **7 or higher** to pass.
 
-A score of 7+ indicates the agent reliably applies _claude_skills principles when creating a skill from a moderately vague prompt. Scores below 7 indicate the skill's guidance is insufficient to prevent the agent from skipping discussion, producing poorly targeted descriptions, or delivering structurally incorrect output.
+A score of 7+ indicates the agent reliably applies _claude-skills principles when creating a skill from a moderately vague prompt. Scores below 7 indicate the skill's guidance is insufficient to prevent the agent from skipping discussion, producing poorly targeted descriptions, or delivering structurally incorrect output.

@@ -1,5 +1,5 @@
 ---
-name: _claude_skills
+name: _claude-skills
 description: Reference and interactive guide for creating Claude Code skills. MUST load when creating, reviewing, or modifying .claude/skills/ definitions. Must load _claude and _discuss before using this skill.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
@@ -49,7 +49,7 @@ Every skill has a flat documentation structure: SKILL.md and optional sibling `.
 
 **Description** drives auto-invocation. Write in command tone: "Use when writing or reviewing X" — not "This skill provides X." Be specific enough to avoid misfiring on unrelated tasks.
 
-**Naming** follows the tier prefix convention: `_` for hidden skills, `__` for internal skills, no prefix for the interface entry point. Directory name equals skill name equals invocation command. See `.claude/rules/__gobbi_convention.md` for the full naming convention.
+**Naming** follows the tier prefix convention: `_` for hidden skills, `__` for internal skills, no prefix for the interface entry point. Directory name equals skill name equals invocation command. See `.claude/rules/__gobbi-convention.md` for the full naming convention.
 
 Read existing skills in `.claude/skills/` for structural patterns — the codebase is the authoritative reference.
 
@@ -63,7 +63,7 @@ Read existing skills in `.claude/skills/` for structural patterns — the codeba
 
 > **Comparison should be blind.** When comparing two skill versions, remove provenance bias. Present versions as A and B without labeling which is current vs candidate. The blind protocol ensures evaluation is based on quality, not familiarity.
 
-Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. Three evaluation agents execute verification: __skills_grader (tests trigger accuracy and output quality), __skills_comparator (blind A/B comparison of skill versions), and __skills_analyzer (synthesizes results into prioritized improvements).
+Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. Three evaluation agents execute verification: __skills-grader (tests trigger accuracy and output quality), __skills-comparator (blind A/B comparison of skill versions), and __skills-analyzer (synthesizes results into prioritized improvements).
 
 ---
 
