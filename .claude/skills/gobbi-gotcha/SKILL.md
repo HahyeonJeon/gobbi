@@ -25,6 +25,7 @@ Record cross-project agent mistakes so they never happen twice. Each gotcha file
 | [gobbi-note.md](gobbi-note.md) | gobbi-note | Note writing, directory structure, timing |
 | [gobbi-notification.md](gobbi-notification.md) | gobbi-notification | Hook setup, credentials, script issues |
 | [gobbi-system.md](gobbi-system.md) | (none) | Environment, processes, hooks, infrastructure |
+| [gobbi-security.md](gobbi-security.md) | (none) | Security vulnerability signals for evaluators |
 
 ---
 
@@ -73,3 +74,20 @@ Each `{skill}.md` file contains multiple gotcha entries. Each entry has:
 **User feedback** — What the user said.
 
 **Correct approach** — What to do instead.
+
+---
+
+## Machine-Readable Metadata
+
+Gotcha entries may include optional YAML frontmatter for tooling. The frontmatter goes between `---` markers immediately after the `###` heading line, before the prose body. Entries without frontmatter continue to work — the prose body (what happened, user feedback, correct approach) remains the primary content.
+
+**Fields:**
+
+| Field | Values | Required | Purpose |
+|-------|--------|----------|---------|
+| `priority` | critical, high, medium, low | Optional | Overrides the prose Priority line for machine readers |
+| `enforcement` | hook, advisory | Optional (default: advisory) | Whether tooling can enforce this automatically |
+| `pattern` | regex string | Only when enforcement: hook | Regex to match against (bash commands, file paths, etc.) |
+| `event` | bash, file, stop | Only when enforcement: hook | Which hook event triggers the check |
+
+When `enforcement` is `advisory` (or omitted), the entry is informational — agents check it manually. When `enforcement` is `hook`, the `pattern` and `event` fields tell tooling what to intercept and when. See representative examples in gobbi-system.md.
