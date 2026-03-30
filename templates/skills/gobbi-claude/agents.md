@@ -1,6 +1,6 @@
 # Writing Agent Definitions
 
-Guide for authoring `.claude/agents/<name>.md` files. Agent definitions live in `.claude/agents/` — read the directory for the current roster. The system currently uses specialized agents for research/ideation, planning/decomposition, 3-stance evaluation (positive, moderate, critical), and code implementation.
+Guide for authoring `.claude/agents/<name>.md` files. Agent definitions live in `.claude/agents/` — read the directory for the current roster. The system currently uses specialized agents for research/ideation, planning/decomposition, 5-perspective evaluation (project, architecture, performance, aesthetics, overall), and code implementation.
 
 ---
 

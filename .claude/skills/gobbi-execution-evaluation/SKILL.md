@@ -1,6 +1,6 @@
 ---
 name: gobbi-execution-evaluation
-description: MUST load when evaluating execution output — code changes, implementations, or task deliverables. Provides stage-specific criteria for assessing correctness, safety, and scope discipline. Used by all 3 evaluator agents (positive, moderate, critical).
+description: MUST load when evaluating execution output — code changes, implementations, or task deliverables. Provides stage-specific criteria for assessing correctness, safety, and scope discipline. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
