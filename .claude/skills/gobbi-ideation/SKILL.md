@@ -72,6 +72,23 @@ Use these as a menu of discussion topics to raise with the user via AskUserQuest
 
 ---
 
+## Contribution Points
+
+After refining an idea, consider whether any remaining decisions are contribution points — judgment calls where the user's domain knowledge would produce a better outcome than agent discretion.
+
+This is distinct from specification gaps (which gobbi-discuss resolves). Contribution points arise even after the idea is fully specified, where multiple valid approaches exist and the right choice depends on knowledge the user holds but has not transferred through Q&A.
+
+Indicators that a decision is a contribution point:
+- Business logic with multiple valid approaches where the user's domain shapes the right choice
+- Architectural trade-offs between competing values the user has not ranked (performance vs. simplicity, flexibility vs. consistency)
+- Error handling and resilience strategies where the user's user base, SLA, or failure tolerance matters
+
+For each identified contribution point, use AskUserQuestion before the plan is written. The user's answer becomes a constraint the plan encodes — not a suggestion for the planner to interpret.
+
+Not every task has contribution points. Context-resolvable decisions — where the codebase, constraints, or prior discussion already determines the right approach — do not need this treatment. Apply judgment.
+
+---
+
 ## Output
 
 Ideation produces a single refined, detailed idea — concrete enough that a planner can decompose it into tasks and an evaluator can assess its quality. The output should include:

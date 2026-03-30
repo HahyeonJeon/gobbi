@@ -46,6 +46,10 @@ Use AskUserQuestion to explore each unclear dimension. Not every dimension needs
 
 ---
 
+> **gobbi-discuss resolves specification gaps — "what do you want?" when the agent lacks information to act. Contribution points (gobbi-ideation) resolve judgment gaps — "which decisions are yours to make?" when the user's domain knowledge would produce better outcomes than agent discretion. Different problems, different tools.**
+
+---
+
 ## What Good Discussion Looks Like
 
 - Addresses one dimension per question — don't combine scope and approach
