@@ -174,7 +174,7 @@ See [finish.md](finish.md) for the full decision tree, action definitions, and p
 - After collection, MUST call AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?
 - After FEEDBACK, MUST call AskUserQuestion to ask: REVIEW, or FINISH?
 - After REVIEW, MUST call AskUserQuestion to ask: FEEDBACK, or FINISH?
-- When evaluation is performed, MUST spawn 3 evaluator agents (positive, moderate, critical)
+- When evaluation is performed, MUST spawn at least 2 perspective evaluators (Project + Overall minimum). Select additional perspectives (Architecture, Performance, Aesthetics) based on task type.
 - MUST write note via gobbi-note at every workflow step — ideation, plan, execution, feedback, review. Never defer, never skip.
 - MUST use EnterPlanMode when writing or revising plans
 - When using AskUserQuestion, MUST put the recommended option first with "(Recommended)" in the label — give an opinion, don't just present neutral choices
