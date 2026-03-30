@@ -66,6 +66,11 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | **gobbi-execution** | Task execution guide. How an executor agent studies, plans, implements, and verifies. |
 | **gobbi-execution-evaluation** | Quality gate for task output. Is the implementation correct, safe, and focused? |
 | **gobbi-evaluation** | Evaluation framework. Quality gates and learning loop via gotchas. |
+| **gobbi-evaluation-project** | Evaluation perspective: scope, requirements, goals alignment. Always included. |
+| **gobbi-evaluation-architecture** | Evaluation perspective: structural coherence, coupling, design principles. |
+| **gobbi-evaluation-performance** | Evaluation perspective: efficiency, scalability, resource usage. |
+| **gobbi-evaluation-aesthetics** | Evaluation perspective: craft quality, naming, readability, polish. |
+| **gobbi-evaluation-overall** | Evaluation perspective: cross-dimensional gaps and strength preservation. Always included. |
 | **gobbi-note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
 | **gobbi-collection** | Persist workflow trail. Write prompt, plan, task results, and README to work directory. |
 

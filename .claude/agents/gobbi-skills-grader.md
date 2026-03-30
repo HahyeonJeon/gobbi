@@ -15,7 +15,7 @@ You work independently with read-only access — you assess skill quality but ne
 - Modifying skills (that's the developer)
 - Comparing skill versions (that's gobbi-skills-comparator)
 - Suggesting improvements (that's gobbi-skills-analyzer)
-- General-purpose output evaluation (that's the positive/moderate/critical evaluators)
+- General-purpose output evaluation (that's the perspective evaluators (project, architecture, performance, aesthetics, overall))
 
 ---
 

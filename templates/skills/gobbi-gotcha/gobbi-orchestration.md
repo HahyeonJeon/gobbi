@@ -84,7 +84,7 @@ Mistakes in following the orchestration workflow (phases, steps, transitions).
 
 **User feedback:** The agent that creates must never evaluate its own output.
 
-**Correct approach:** Spawn 3 evaluator agents (positive, moderate, critical) that independently assess the output. Positive finds strengths to preserve, moderate checks completeness, critical stress-tests assumptions. This separation and multi-stance coverage prevents blind spots.
+**Correct approach:** Spawn perspective evaluator agents (Project + Overall minimum, plus Architecture/Performance/Aesthetics based on task type). Each perspective examines the output through its specific lens. The Overall perspective also generates a 'must preserve' list. This separation and multi-perspective coverage prevents blind spots.
 
 ---
 

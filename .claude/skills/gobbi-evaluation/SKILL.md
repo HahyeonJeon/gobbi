@@ -1,6 +1,6 @@
 ---
 name: gobbi-evaluation
-description: MUST load when evaluating any output — ideation, plan, or execution. Evaluation MUST be performed by 3 separate evaluator agents (positive, moderate, critical). The entity that creates must never evaluate its own output.
+description: MUST load when evaluating any output — ideation, plan, or execution. Evaluation MUST be performed by 2-5 perspective evaluators. The entity that creates must never evaluate its own output.
 allowed-tools: Read, Grep, Glob, Bash, Agent, AskUserQuestion
 ---
 
@@ -12,17 +12,17 @@ Guide for how the orchestrator runs evaluation. Evaluation is not a rubber stamp
 
 ## Core Principles
 
-> **Three evaluator agents with different stances. Always.**
+> **2-5 perspective evaluators. Always at least Project + Overall.**
 
-Every evaluation MUST spawn 3 independent evaluator agents — one positive, one moderate, one critical. Each works in isolation without seeing the others' results. Three stances ensure nothing is missed: the positive evaluator identifies strengths that must survive revision, the moderate evaluator checks completeness and balance, and the critical evaluator stress-tests assumptions and finds hidden flaws. Disagreements between stances are valuable signal — surface them.
+Every evaluation MUST spawn at least 2 independent perspective evaluators — Project and Overall are always included. Additional perspectives are added based on task type. Each works in isolation without seeing the others' results. Multiple perspectives ensure nothing is missed: each perspective brings domain-specific expertise and all evaluators operate from a critical stance. Disagreements between perspectives are valuable signal — surface them.
 
 > **The entity that creates must never evaluate its own output.**
 
 The agent that produced the work cannot assess it. Evaluators are separate agents with fresh context and read-only access. They cannot modify the output — only judge it and provide feedback. This separation prevents blind spots and self-confirmation bias.
 
-> **Each stance has a distinct job. Together they cover the full picture.**
+> **Each perspective has a distinct domain. Together they cover the full picture.**
 
-The positive evaluator finds what works and what must survive revision — without it, good work gets discarded during fixes. The moderate evaluator checks completeness, proportionality, and feasibility — the pragmatic center. The critical evaluator assumes flaws exist and hunts for them — hidden assumptions, missing edge cases, optimism bias. No single stance is sufficient alone.
+The project evaluator checks alignment with project goals, constraints, and conventions. The architecture evaluator assesses structural soundness. The performance evaluator examines efficiency and scalability. The aesthetics evaluator reviews output quality from the user's perspective. The overall evaluator synthesises across all dimensions and identifies what must be preserved. No single perspective is sufficient alone.
 
 > **Evaluate outcomes against goals, not tasks against checklists.**
 
@@ -38,26 +38,52 @@ Evaluators have Bash, Grep, Glob, and Read. When the output being evaluated can 
 
 ---
 
+## Perspective Selection
+
+The orchestrator selects 2-5 perspectives based on what the task involves. All evaluators operate from a critical stance — they look for problems, not confirmation.
+
+**Always include:**
+
+| Perspective | Agent | Always include because |
+|-------------|-------|----------------------|
+| Project | `gobbi-evaluator-project` | Checks goal alignment, conventions, and scope for every task |
+| Overall | `gobbi-evaluator-overall` | Synthesises across dimensions, identifies "must preserve" items |
+
+**Add when relevant:**
+
+| Perspective | Agent | Add when |
+|-------------|-------|----------|
+| Architecture | `gobbi-evaluator-architecture` | Task creates or modifies code structure, module boundaries, data models, or interfaces |
+| Performance | `gobbi-evaluator-performance` | Task affects hot paths, processes significant data volume, or has latency sensitivity |
+| Aesthetics | `gobbi-evaluator-aesthetics` | Task produces user-facing output — code, documentation, CLI text, or UI |
+
+**Perspective count guidance:**
+- Minimum 2 (Project + Overall) — always
+- Most tasks: 3-4 perspectives
+- Complex tasks touching structure, performance, and output: all 5
+
+---
+
 ## How Evaluation Works
 
-The orchestrator spawns 3 evaluator agents for every evaluation:
+The orchestrator spawns the selected perspective evaluators for every evaluation:
 
-| Agent | Stance | Default Focus | Deep Mode Focus |
-|-------|--------|---------------|-----------------|
-| `gobbi-evaluator-positive` | Strengths across all areas | All areas | Quality — what demonstrates craftsmanship |
-| `gobbi-evaluator-moderate` | Completeness across all areas | All areas | Correctness — does it do what was specified |
-| `gobbi-evaluator-critical` | Adversarial across all areas | All areas | Conventions — alignment with project standards |
-
-**Standard mode: each evaluator covers all areas from its stance. Optional deep mode: each evaluator narrows to a specific focus area.** Deep mode is for high-stakes evaluations where breadth has already been covered by a standard pass. The orchestrator decides the mode based on task risk and prior evaluation results. When deep mode is selected, the focus area is passed to each evaluator agent alongside the work to evaluate.
+| Agent | Perspective | Focus |
+|-------|-------------|-------|
+| `gobbi-evaluator-project` | Project | Goal alignment, scope adherence, convention compliance, task specification fidelity |
+| `gobbi-evaluator-architecture` | Architecture | Structural soundness, module boundaries, data model integrity, interface correctness |
+| `gobbi-evaluator-performance` | Performance | Efficiency, scalability, hot path impact, data volume handling, latency risks |
+| `gobbi-evaluator-aesthetics` | Aesthetics | Output quality, clarity, consistency, user-facing correctness and readability |
+| `gobbi-evaluator-overall` | Overall | Cross-dimension synthesis, "must preserve" list, unaddressed gaps, final verdict |
 
 Each evaluator works independently, loads gobbi-gotcha, and returns a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning.
 
-The orchestrator collects all 3 verdicts and acts:
+The orchestrator collects all verdicts and acts:
 
 - **All PASS** → proceed to next stage
-- **Any REVISE** → send back with combined feedback from all three stances. The positive evaluator's "must preserve" list protects good work during revision. Max 3 revision cycles, then escalate.
-- **Any ESCALATE** → surface to user for decision
-- **Stances disagree** → the disagreement is valuable signal. If the positive evaluator says PASS but the critical evaluator says REVISE, the specific tension reveals where the output is borderline — surface this to the orchestrator for judgment.
+- **Any REVISE** → send back with findings presented by perspective. The overall evaluator's "must preserve" list protects good work during revision. User decides priority order for REVISE findings. Max 3 revision cycles, then escalate.
+- **Any ESCALATE** → surface to user for decision immediately
+- **Perspectives disagree** → the disagreement is valuable signal. If one perspective says PASS but another says REVISE, the specific tension reveals where the output is borderline — surface this to the orchestrator for judgment.
 
 ---
 
@@ -110,9 +136,9 @@ When scoring confidence, evaluators should check whether a finding falls into a 
 | Linter-catchable | Mechanical issue that automated tooling should catch — note the tooling gap, don't weight as finding |
 | Speculative | Hypothetical concern without supporting evidence — record at low confidence, suppress by default |
 
-### Cross-Stance Scoring
+### Cross-Perspective Scoring
 
-Each evaluator stance scores confidence and severity independently. When stances disagree on the same finding — one scores confidence 90, another scores 40 — the disagreement is highlighted to the orchestrator as signal. A finding that one stance is confident about and another dismisses reveals a genuine tension worth examining.
+Each evaluator perspective scores confidence and severity independently. When perspectives disagree on the same finding — one scores confidence 90, another scores 40 — the disagreement is highlighted to the orchestrator as signal. A finding that one perspective is confident about and another dismisses reveals a genuine tension worth examining.
 
 ---
 
@@ -165,9 +191,9 @@ Where gotchas go:
 
 ## Constraints
 
-- MUST spawn all 3 evaluator agents (positive, moderate, critical) — never skip a stance
+- MUST spawn at least Project + Overall evaluators — never skip either
 - MUST use separate agents — the creator never evaluates its own output
 - All evaluators MUST load gobbi-gotcha before starting — past mistakes inform what to look for
-- MUST surface stance disagreements — they reveal where the output is borderline
+- MUST surface perspective disagreements — they reveal where the output is borderline
 - Never skip evaluation between workflow stages — an unevaluated idea becomes a flawed plan, a flawed plan becomes wasted execution
 - Max 3 revision cycles per evaluation — then escalate to user

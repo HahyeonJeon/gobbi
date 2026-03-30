@@ -1,6 +1,6 @@
 ---
 name: gobbi-ideation-evaluation
-description: MUST load when evaluating ideation output. Provides stage-specific criteria for assessing whether an idea is concrete, well-researched, and ready for planning. Used by all 3 evaluator agents (positive, moderate, critical).
+description: MUST load when evaluating ideation output. Provides stage-specific criteria for assessing whether an idea is concrete, well-researched, and ready for planning. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---
 

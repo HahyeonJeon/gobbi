@@ -49,9 +49,9 @@ Five rounds is a signal that the scope of changes may warrant a structured pass 
 
 ## Targeted Re-evaluation
 
-> **When a feedback fix is narrow and well-scoped, a single evaluator suffices for verification.** Full 3-evaluator spawn is unnecessary for small targeted fixes.
+> **When a feedback fix is narrow and well-scoped, a single evaluator suffices for verification.** Full perspective spawn is unnecessary for small targeted fixes.
 
-The 3-evaluator model exists for complex, multi-faceted outputs where blind spots are likely. A typo fix, a single-file correction, or a formatting adjustment does not need three independent assessments. Match evaluation cost to fix complexity — use a single evaluator (Haiku or Sonnet tier) for targeted fixes, reserve the full spawn for substantial changes.
+The multi-perspective evaluation model exists for complex, multi-faceted outputs where blind spots are likely. A typo fix, a single-file correction, or a formatting adjustment does not need multiple independent assessments. Match evaluation cost to fix complexity — use a single evaluator (Haiku or Sonnet tier) for targeted fixes, reserve the full perspective spawn (Project + Overall + task-relevant perspectives) for substantial changes.
 
 ---
 
