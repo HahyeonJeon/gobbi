@@ -1,12 +1,12 @@
 ---
-name: gobbi-orchestration
+name: _orchestration
 description: Guide the orchestrator through the adaptive workflow. Use when coordinating multi-agent tasks, routing through workflow stages, or managing phase transitions.
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 ---
 
 # Orchestration
 
-You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load gobbi-gotcha before proceeding.
+You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding.
 
 ---
 
@@ -32,12 +32,12 @@ Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add
 
 | Step | Load Skills |
 |------|-------------|
-| Step 1. Ideation Loop | gobbi-discuss, gobbi-ideation-evaluation |
-| Step 2. Plan Loop | gobbi-plan, gobbi-discuss, gobbi-plan-evaluation |
-| Step 3. Execution — Delegation | gobbi-delegation, gobbi-execution-evaluation |
-| Step 4. Execution — Collection | gobbi-collection, gobbi-note |
+| Step 1. Ideation Loop | _discuss, __ideation_evaluation |
+| Step 2. Plan Loop | _plan, _discuss, __plan_evaluation |
+| Step 3. Execution — Delegation | _delegation, __execution_evaluation |
+| Step 4. Execution — Collection | _collection, _note |
 
-**Must write note at every step** — load gobbi-note and write the corresponding note file before leaving each step. Never defer, never skip.
+**Must write note at every step** — load _note and write the corresponding note file before leaving each step. Never defer, never skip.
 
 ## Resume and Recovery
 
@@ -83,7 +83,7 @@ Delegate subtasks to specialist subagents.
 
 - Each subtask must be delegated to a specialist subagent with fresh context.
 - Every subagent prompt must include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary.
-- Every subagent must load gobbi-gotcha before starting work.
+- Every subagent must load _gotcha before starting work.
 - After each subtask completes, spawn a separate evaluator agent to assess the output.
 - If evaluation fails, fix and re-evaluate before proceeding to the next subtask.
 - After all subtasks complete, write execution.md and subtasks/.
@@ -113,7 +113,7 @@ The user inspects results and provides iterative feedback. Optimized for speed o
 
 - **Skip planning** — the architecture is established
 - **Fix directly or delegate small scoped tasks** — no full decomposition
-- **Record gotchas from corrections** — user corrections become gotchas via gobbi-gotcha
+- **Record gotchas from corrections** — user corrections become gotchas via _gotcha
 - Write feedback.md after each feedback round
 
 After FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?
@@ -145,12 +145,12 @@ When the user selects FINISH, use AskUserQuestion to ask: commit and compact, co
 - Before evaluation, MUST ask user with AskUserQuestion whether to evaluate — evaluation is optional at ideation and planning stages
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with
 - After delegation, MUST write subtask files to disk immediately after each wave — before any downstream agent runs
-- After delegation, MUST write work docs via gobbi-collection — immediately, not deferred
+- After delegation, MUST write work docs via _collection — immediately, not deferred
 - After collection, MUST call AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?
 - After FEEDBACK, MUST call AskUserQuestion to ask: REVIEW, or FINISH?
 - After REVIEW, MUST call AskUserQuestion to ask: FEEDBACK, or FINISH?
 - When evaluation is performed, MUST spawn at least 2 perspective evaluators (Project + Overall minimum). Select additional perspectives (Architecture, Performance, Aesthetics) based on task type.
-- MUST write note via gobbi-note at every workflow step — ideation, plan, execution, feedback, review. Never defer, never skip.
+- MUST write note via _note at every workflow step — ideation, plan, execution, feedback, review. Never defer, never skip.
 - MUST use EnterPlanMode when writing or revising plans
 - When using AskUserQuestion, MUST put the recommended option first with "(Recommended)" in the label — give an opinion, don't just present neutral choices
 

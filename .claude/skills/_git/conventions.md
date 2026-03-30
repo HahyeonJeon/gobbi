@@ -1,6 +1,6 @@
 # Git Conventions
 
-Naming and formatting standards for branches, commits, PRs, issues, and worktree directories. These conventions apply when gobbi-git is active. All formats align with the Conventional Commits v1.0.0 standard.
+Naming and formatting standards for branches, commits, PRs, issues, and worktree directories. These conventions apply when _git is active. All formats align with the Conventional Commits v1.0.0 standard.
 
 ---
 

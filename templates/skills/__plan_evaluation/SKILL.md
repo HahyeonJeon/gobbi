@@ -1,12 +1,12 @@
 ---
-name: gobbi-plan-evaluation
+name: __plan_evaluation
 description: MUST load when evaluating a plan. Provides stage-specific criteria for assessing whether tasks are specific, correctly ordered, complete, and ready for delegation. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Gobbi Plan Evaluation
 
-Stage-specific evaluation criteria for plan output. Load this skill alongside gobbi-evaluation when evaluating the result of a planning step.
+Stage-specific evaluation criteria for plan output. Load this skill alongside _evaluation when evaluating the result of a planning step.
 
 A plan should be a set of narrow, specific, ordered tasks that a delegator can hand off to specialists without ambiguity. If a task requires the agent to guess, the plan isn't ready.
 

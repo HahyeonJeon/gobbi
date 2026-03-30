@@ -1,5 +1,5 @@
 ---
-name: gobbi-note
+name: _note
 description: Write notes at every workflow step. Use to record decisions, outcomes, and context at each stage — ideation, plan, execution, feedback, and review.
 allowed-tools: Write, Read, Glob, Bash
 ---
@@ -36,7 +36,7 @@ Notes go in `.claude/project/{project-name}/note/`:
 
 > **Always use note-init.sh to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.**
 
-Run `bash .claude/skills/gobbi-note/scripts/note-init.sh <project-name> <task-slug>` to create a new task note directory. It handles the full chain: session metadata extraction (via `note-metadata.sh` which reads `$CLAUDE_SESSION_ID`), directory creation, README.md generation with session context, and subtasks/ directory setup. The script outputs the absolute path of the created directory.
+Run `bash .claude/skills/_note/scripts/note-init.sh <project-name> <task-slug>` to create a new task note directory. It handles the full chain: session metadata extraction (via `note-metadata.sh` which reads `$CLAUDE_SESSION_ID`), directory creation, README.md generation with session context, and subtasks/ directory setup. The script outputs the absolute path of the created directory.
 
 If `note-init.sh` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it.
 

@@ -1,5 +1,5 @@
 ---
-name: gobbi-discuss
+name: _discuss
 description: MUST load when discussing with the user at any workflow step. Guides critical, structured discussion that challenges vague thinking, surfaces hidden problems, and pushes ideas toward concrete specificity via AskUserQuestion.
 allowed-tools: AskUserQuestion, Read, Grep, Glob
 ---

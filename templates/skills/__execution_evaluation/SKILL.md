@@ -1,12 +1,12 @@
 ---
-name: gobbi-execution-evaluation
+name: __execution_evaluation
 description: MUST load when evaluating execution output — code changes, implementations, or task deliverables. Provides stage-specific criteria for assessing correctness, safety, and scope discipline. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Gobbi Execution Evaluation
 
-Stage-specific evaluation criteria for execution output. Load this skill alongside gobbi-evaluation when evaluating the result of a task execution step.
+Stage-specific evaluation criteria for execution output. Load this skill alongside _evaluation when evaluating the result of a task execution step.
 
 Execution evaluation checks whether the right thing was done, not just that something was done. "The file exists" is not evidence of correct implementation.
 

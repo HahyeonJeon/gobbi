@@ -1,12 +1,12 @@
 ---
-name: gobbi-ideation-evaluation
+name: __ideation_evaluation
 description: MUST load when evaluating ideation output. Provides stage-specific criteria for assessing whether an idea is concrete, well-researched, and ready for planning. Used by all 5 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall).
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Gobbi Ideation Evaluation
 
-Stage-specific evaluation criteria for ideation output. Load this skill alongside gobbi-evaluation when evaluating the result of an ideation step.
+Stage-specific evaluation criteria for ideation output. Load this skill alongside _evaluation when evaluating the result of an ideation step.
 
 The ideation output should be a refined, detailed idea — not a vague direction. If you can't plan from it, it's not ready.
 

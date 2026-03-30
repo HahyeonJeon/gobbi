@@ -1,5 +1,5 @@
 ---
-name: gobbi-evaluation
+name: _evaluation
 description: MUST load when evaluating any output — ideation, plan, or execution. Evaluation MUST be performed by 2-5 perspective evaluators. The entity that creates must never evaluate its own output.
 allowed-tools: Read, Grep, Glob, Bash, Agent, AskUserQuestion
 ---
@@ -46,16 +46,16 @@ The orchestrator selects 2-5 perspectives based on what the task involves. All e
 
 | Perspective | Agent | Always include because |
 |-------------|-------|----------------------|
-| Project | `gobbi-evaluator-project` | Checks goal alignment, conventions, and scope for every task |
-| Overall | `gobbi-evaluator-overall` | Synthesises across dimensions, identifies "must preserve" items |
+| Project | `__evaluator_project` | Checks goal alignment, conventions, and scope for every task |
+| Overall | `__evaluator_overall` | Synthesises across dimensions, identifies "must preserve" items |
 
 **Add when relevant:**
 
 | Perspective | Agent | Add when |
 |-------------|-------|----------|
-| Architecture | `gobbi-evaluator-architecture` | Task creates or modifies code structure, module boundaries, data models, or interfaces |
-| Performance | `gobbi-evaluator-performance` | Task affects hot paths, processes significant data volume, or has latency sensitivity |
-| Aesthetics | `gobbi-evaluator-aesthetics` | Task produces user-facing output — code, documentation, CLI text, or UI |
+| Architecture | `__evaluator_architecture` | Task creates or modifies code structure, module boundaries, data models, or interfaces |
+| Performance | `__evaluator_performance` | Task affects hot paths, processes significant data volume, or has latency sensitivity |
+| Aesthetics | `__evaluator_aesthetics` | Task produces user-facing output — code, documentation, CLI text, or UI |
 
 **Perspective count guidance:**
 - Minimum 2 (Project + Overall) — always
@@ -70,13 +70,13 @@ The orchestrator spawns the selected perspective evaluators for every evaluation
 
 | Agent | Perspective | Focus |
 |-------|-------------|-------|
-| `gobbi-evaluator-project` | Project | Goal alignment, scope adherence, convention compliance, task specification fidelity |
-| `gobbi-evaluator-architecture` | Architecture | Structural soundness, module boundaries, data model integrity, interface correctness |
-| `gobbi-evaluator-performance` | Performance | Efficiency, scalability, hot path impact, data volume handling, latency risks |
-| `gobbi-evaluator-aesthetics` | Aesthetics | Output quality, clarity, consistency, user-facing correctness and readability |
-| `gobbi-evaluator-overall` | Overall | Cross-dimension synthesis, "must preserve" list, unaddressed gaps, final verdict |
+| `__evaluator_project` | Project | Goal alignment, scope adherence, convention compliance, task specification fidelity |
+| `__evaluator_architecture` | Architecture | Structural soundness, module boundaries, data model integrity, interface correctness |
+| `__evaluator_performance` | Performance | Efficiency, scalability, hot path impact, data volume handling, latency risks |
+| `__evaluator_aesthetics` | Aesthetics | Output quality, clarity, consistency, user-facing correctness and readability |
+| `__evaluator_overall` | Overall | Cross-dimension synthesis, "must preserve" list, unaddressed gaps, final verdict |
 
-Each evaluator works independently, loads gobbi-gotcha, and returns a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning.
+Each evaluator works independently, loads _gotcha, and returns a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning.
 
 The orchestrator collects all verdicts and acts:
 
@@ -181,11 +181,11 @@ Evaluation findings that reveal patterns become gotchas:
 
 - **First occurrence** → just feedback to the creator
 - **Second occurrence** → candidate gotcha — flag it
-- **Recurring pattern** → write gotcha immediately via gobbi-gotcha
+- **Recurring pattern** → write gotcha immediately via _gotcha
 
 Where gotchas go:
 - Project-specific patterns → project skill's `gotchas/{category}.md`
-- Cross-project patterns → gobbi-gotcha's `{category}.md`
+- Cross-project patterns → _gotcha's `{category}.md`
 
 ---
 
@@ -193,7 +193,7 @@ Where gotchas go:
 
 - MUST spawn at least Project + Overall evaluators — never skip either
 - MUST use separate agents — the creator never evaluates its own output
-- All evaluators MUST load gobbi-gotcha before starting — past mistakes inform what to look for
+- All evaluators MUST load _gotcha before starting — past mistakes inform what to look for
 - MUST surface perspective disagreements — they reveal where the output is borderline
 - Never skip evaluation between workflow stages — an unevaluated idea becomes a flawed plan, a flawed plan becomes wasted execution
 - Max 3 revision cycles per evaluation — then escalate to user

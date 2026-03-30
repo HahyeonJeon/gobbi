@@ -1,5 +1,5 @@
 ---
-name: gobbi-execution
+name: _execution
 description: Guide for executing a single well-scoped task with quality. Use when an agent receives a task briefing and needs to study, plan, implement, and verify its work.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---

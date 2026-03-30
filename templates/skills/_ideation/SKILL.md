@@ -1,5 +1,5 @@
 ---
-name: gobbi-ideation
+name: _ideation
 description: MUST load at the start of the Ideation step of workflow. Improves and details the user's idea through structured discussion. Suggests discussion points that challenge vague thinking, uncover hidden requirements, and refine a rough idea into a concrete proposal ready for evaluation.
 allowed-tools: AskUserQuestion, Read, Grep, Glob, Bash
 ---
@@ -82,7 +82,7 @@ Ideation produces a single refined, detailed idea — concrete enough that a pla
 - Known risks and trade-offs
 - Success criteria
 
-This output goes to a separate evaluator agent (gobbi-ideation-evaluation) for critical assessment before proceeding to planning.
+This output goes to a separate evaluator agent (__ideation_evaluation) for critical assessment before proceeding to planning.
 
 ---
 

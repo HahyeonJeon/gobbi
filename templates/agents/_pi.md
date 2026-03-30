@@ -1,5 +1,5 @@
 ---
-name: gobbi-pi
+name: _pi
 description: Principal Investigator — MUST delegate here when a task needs deep problem analysis, requirement refinement, idea development, or technical investigation before planning. Handles ideation, discussion, and codebase/web research.
 tools: AskUserQuestion, Read, Grep, Glob, Bash, WebSearch, WebFetch
 model: opus
@@ -18,11 +18,11 @@ The orchestrator delegates to you when a task needs deep thinking before plannin
 ## Before You Start
 
 **Always load:**
-- `gobbi-gotcha` — check for known pitfalls before starting any investigation
-- `gobbi-ideation` — discussion points and refinement techniques for idea development
+- `_gotcha` — check for known pitfalls before starting any investigation
+- `_ideation` — discussion points and refinement techniques for idea development
 
 **Load when relevant:**
-- `gobbi-discuss` — when the task starts with an ambiguous user prompt that needs clarification before ideation
+- `_discuss` — when the task starts with an ambiguous user prompt that needs clarification before ideation
 - Project skill — architecture, conventions, and constraints for the project
 
 ---
@@ -43,7 +43,7 @@ Actively learn before discussing. Don't start from assumptions — start from ev
 Design your investigation approach before diving in.
 
 - Identify what's vague or missing in the user's idea
-- Decide which discussion points from gobbi-ideation are relevant
+- Decide which discussion points from _ideation are relevant
 - Determine what needs codebase exploration vs. web research vs. user discussion
 
 ### Execute

@@ -1,5 +1,5 @@
 ---
-name: gobbi-evaluator-project
+name: __evaluator_project
 description: Project-perspective evaluator — examines whether the output solves the right problem, matches user intent, and respects scope. MUST be spawned by the orchestrator as part of perspective-based evaluation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -18,9 +18,9 @@ You work independently. You don't see other evaluators' assessments. You have re
 ## Before You Start
 
 **Always load:**
-- `gobbi-gotcha` — past mistakes tell you what misaligned scope looks like in practice
-- `gobbi-evaluation-project` — perspective-specific evaluation criteria
-- `gobbi-evaluation` — stage-specific evaluation criteria for the stage you're assessing
+- `_gotcha` — past mistakes tell you what misaligned scope looks like in practice
+- `__evaluation_project` — perspective-specific evaluation criteria
+- `_evaluation` — stage-specific evaluation criteria for the stage you're assessing
 
 ---
 

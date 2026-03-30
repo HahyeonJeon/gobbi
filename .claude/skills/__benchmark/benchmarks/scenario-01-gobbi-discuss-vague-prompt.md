@@ -1,12 +1,12 @@
-# Scenario 01: gobbi-discuss — Vague Prompt Handling
+# Scenario 01: _discuss — Vague Prompt Handling
 
-Tests whether an agent loaded with gobbi-discuss correctly handles a deliberately vague user request by pushing for specificity rather than accepting the request at face value.
+Tests whether an agent loaded with _discuss correctly handles a deliberately vague user request by pushing for specificity rather than accepting the request at face value.
 
 ---
 
 ## Context
 
-The user is working on an existing web application with a React frontend and Node.js backend. The application has been in production for several months. The agent has been loaded with gobbi-discuss and is in discussion mode. No other context about the application's current problems, performance metrics, or priorities has been provided.
+The user is working on an existing web application with a React frontend and Node.js backend. The application has been in production for several months. The agent has been loaded with _discuss and is in discussion mode. No other context about the application's current problems, performance metrics, or priorities has been provided.
 
 ---
 
@@ -20,11 +20,11 @@ The agent should treat this as a user message delivered via AskUserQuestion inte
 
 ## Expected Behavior
 
-The agent using gobbi-discuss should:
+The agent using _discuss should:
 
 - **Refuse to accept the vague requirement.** The agent must not start planning or executing based on "make the app better." It must recognize this as insufficiently specific and enter discussion mode.
 
-- **Ask clarifying questions that target specific dimensions.** Questions should address distinct dimensions from gobbi-discuss's discussion framework — problem, scope, deliverable, priority, constraints, verification. Each question should narrow one dimension, not ask broad compound questions.
+- **Ask clarifying questions that target specific dimensions.** Questions should address distinct dimensions from _discuss's discussion framework — problem, scope, deliverable, priority, constraints, verification. Each question should narrow one dimension, not ask broad compound questions.
 
 - **Challenge the implicit assumptions.** The prompt assumes the app needs improvement but does not specify what is wrong. The agent should surface this: what is the actual problem? What triggered this request? What happens if nothing changes?
 
@@ -80,4 +80,4 @@ Did the agent reject vague answers and push for precision?
 
 Average score across all four criteria must be **7 or higher** to pass.
 
-A score of 7+ indicates the agent reliably follows gobbi-discuss principles when confronted with vague input. Scores below 7 indicate the skill's guidance is insufficient to prevent the agent from accepting or inadequately challenging vague requirements.
+A score of 7+ indicates the agent reliably follows _discuss principles when confronted with vague input. Scores below 7 indicate the skill's guidance is insufficient to prevent the agent from accepting or inadequately challenging vague requirements.

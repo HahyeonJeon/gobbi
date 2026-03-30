@@ -1,5 +1,5 @@
 ---
-name: gobbi-delegation
+name: _delegation
 description: Hand off work to subagents with the right context so they succeed on the first attempt. Use during the DELEGATE phase to spawn specialists with clear briefings, context layers, and scope boundaries.
 allowed-tools: Agent, Read, Grep, Glob, Bash, Write
 ---

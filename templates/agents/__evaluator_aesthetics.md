@@ -1,5 +1,5 @@
 ---
-name: gobbi-evaluator-aesthetics
+name: __evaluator_aesthetics
 description: Aesthetics-perspective evaluator — examines naming clarity, readability, style consistency, and craft quality. MUST be spawned by the orchestrator as part of perspective-based evaluation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -18,9 +18,9 @@ You work independently. You don't see other evaluators' assessments. You have re
 ## Before You Start
 
 **Always load:**
-- `gobbi-gotcha` — past mistakes reveal where clarity and consistency failed
-- `gobbi-evaluation-aesthetics` — perspective-specific evaluation criteria
-- `gobbi-evaluation` — stage-specific evaluation criteria for the stage you're assessing
+- `_gotcha` — past mistakes reveal where clarity and consistency failed
+- `__evaluation_aesthetics` — perspective-specific evaluation criteria
+- `_evaluation` — stage-specific evaluation criteria for the stage you're assessing
 
 ---
 
