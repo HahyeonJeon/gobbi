@@ -9,7 +9,7 @@ Slack notifications for Claude Code use incoming webhooks — a URL that accepts
 
 ---
 
-## How Webhook Delivery Works
+## How Bot Delivery Works
 
 An incoming webhook is a one-way pipe: your Claude Code hook script sends a JSON payload to a URL, and Slack delivers it to the target. The URL encodes both authentication and destination — anyone with the URL can post to that channel, so treat it as a credential.
 

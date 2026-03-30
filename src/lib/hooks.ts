@@ -32,11 +32,15 @@ export const GOBBI_PERMISSIONS: string[] = [
   'Skill(__evaluation-performance)',
   'Skill(__evaluation-aesthetics)',
   'Skill(__evaluation-overall)',
+  'Skill(_audit)',
+  'Skill(__benchmark)',
+  'Skill(_git)',
   'Skill(_slack)',
   'Skill(_telegram)',
   'Skill(_discord)',
   'Skill(_project-gotcha)',
   'Skill(_skills-gotcha)',
+  'Skill(__validate)',
   'WebSearch'
 ];
 
