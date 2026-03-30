@@ -18,19 +18,19 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 
 ### Skills
 
-All skills live in `.claude/skills/gobbi-*/`, each in its own flat directory with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
+All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `__evaluation_project/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
 
 Skills are organized by function:
 
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
-| **Core** | gobbi, gobbi-orchestration, gobbi-claude, gobbi-gotcha, gobbi-git | Always loaded. Entry point, workflow coordination, doc standard, mistake recording, git lifecycle. |
-| **Workflow** | gobbi-discuss, gobbi-ideation, gobbi-plan, gobbi-delegation, gobbi-execution, gobbi-note, gobbi-collection | Loaded per step. Discussion, idea refinement, task decomposition, agent briefing, implementation, note writing, trail persistence. |
-| **Evaluation** | gobbi-evaluation, gobbi-ideation-evaluation, gobbi-plan-evaluation, gobbi-execution-evaluation | Loaded during evaluation. Framework and stage-specific criteria. |
-| **Authoring** | gobbi-claude-skills, gobbi-claude-agents | Loaded when creating or modifying skill and agent definitions. |
-| **Utilities** | gobbi-notification, gobbi-validate, gobbi-audit, gobbi-benchmark, gobbi-project-context | On-demand. Notifications, structural validation, drift detection, skill benchmarking, project detection. |
+| **Core** | gobbi, _orchestration, _claude, _gotcha, _git | Always loaded. Entry point, workflow coordination, doc standard, mistake recording, git lifecycle. |
+| **Workflow** | _discuss, _ideation, _plan, _delegation, _execution, _note, _collection | Loaded per step. Discussion, idea refinement, task decomposition, agent briefing, implementation, note writing, trail persistence. |
+| **Evaluation** | _evaluation, __ideation_evaluation, __plan_evaluation, __execution_evaluation | Loaded during evaluation. Framework and stage-specific criteria. |
+| **Authoring** | _claude_skills, _claude_agents | Loaded when creating or modifying skill and agent definitions. |
+| **Utilities** | _notification, __validate, _audit, __benchmark, _project_context | On-demand. Notifications, structural validation, drift detection, skill benchmarking, project detection. |
 
-The `gobbi-gotcha/` skill is special — it contains per-skill gotcha files (`gobbi-orchestration.md`, `gobbi-git.md`, etc.) that record cross-project mistakes. Every agent checks the relevant gotcha file before starting work.
+The `_gotcha/` skill is special — it contains per-skill gotcha files (`_orchestration.md`, `_git.md`, etc.) that record cross-project mistakes. Every agent checks the relevant gotcha file before starting work.
 
 ### Agents
 
@@ -38,15 +38,17 @@ Agent definitions live in `.claude/agents/`. Each file defines a specialist suba
 
 | Agent | Role |
 |:------|:-----|
-| gobbi-pi | Principal Investigator — ideation and planning through user discussion |
-| gobbi-planner | Plan decomposition and task structuring |
-| gobbi-developer | Code implementation and verification |
-| gobbi-evaluator-positive | Positive-stance evaluator |
-| gobbi-evaluator-moderate | Moderate-stance evaluator |
-| gobbi-evaluator-critical | Critical-stance evaluator |
-| gobbi-skills-grader | Skill trigger accuracy and output quality testing |
-| gobbi-skills-comparator | Blind comparison of skill versions |
-| gobbi-skills-analyzer | Synthesize grading and comparison into improvement recommendations |
+| _pi | Principal Investigator — ideation and planning through user discussion |
+| _planner | Plan decomposition and task structuring |
+| _developer | Code implementation and verification |
+| __evaluator_project | Project-scope evaluator |
+| __evaluator_architecture | Architecture-level evaluator |
+| __evaluator_performance | Performance-level evaluator |
+| __evaluator_aesthetics | Aesthetics-level evaluator |
+| __evaluator_overall | Overall cross-dimension evaluator |
+| __skills_grader | Skill trigger accuracy and output quality testing |
+| __skills_comparator | Blind comparison of skill versions |
+| __skills_analyzer | Synthesize grading and comparison into improvement recommendations |
 
 ### Hooks
 
@@ -71,7 +73,7 @@ Shell scripts in `.claude/hooks/` that execute in response to Claude Code events
 | `rules/` | Project-specific rules and conventions | Yes |
 | `reference/` | External references, API docs, research materials | Yes |
 | `docs/` | Other project documents | Yes |
-| `note/` | Workflow notes per task session — ephemeral, managed by gobbi-note | No |
+| `note/` | Workflow notes per task session — ephemeral, managed by _note | No |
 
 ### Worktrees
 
@@ -92,8 +94,8 @@ The plugin uses symlinks to reference the canonical files in `.claude/`. This me
 | `.claude-plugin/plugin.json` | File | Plugin manifest — name, version, description, skill path |
 | `settings.json` | File | Plugin settings merged into the target project on install |
 | `README.md` | Symlink | `../../.claude/README.md` |
-| `skills/gobbi-*` | Symlinks | `../../../.claude/skills/gobbi-*` |
-| `agents/gobbi-*.md` | Symlinks | `../../../.claude/agents/gobbi-*.md` |
+| `skills/*/` | Symlinks | `../../../.claude/skills/*/` |
+| `agents/*.md` | Symlinks | `../../../.claude/agents/*.md` |
 | `hooks/*.sh` | Symlinks | `../../../.claude/hooks/*.sh` |
 
 ### Marketplace Registration

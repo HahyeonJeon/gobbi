@@ -8,7 +8,7 @@ How the workflow concludes with merge, commit, and compact options. Load this wh
 
 > **Before any irreversible operation, verify the expected precondition still holds.** Conditions change between when you checked and when you act. Re-verify at the point of use.
 
-gobbi-git establishes the re-verification principle: prerequisites are re-verified at point of use, not only at session start. FINISH extends this to all irreversible actions — committing, pushing, merging, and PR creation. The cost of re-checking is trivial; the cost of acting on a stale assumption is rework or data loss.
+_git establishes the re-verification principle: prerequisites are re-verified at point of use, not only at session start. FINISH extends this to all irreversible actions — committing, pushing, merging, and PR creation. The cost of re-checking is trivial; the cost of acting on a stale assumption is rework or data loss.
 
 ---
 
@@ -16,12 +16,12 @@ gobbi-git establishes the re-verification principle: prerequisites are re-verifi
 
 When the user selects FINISH, use AskUserQuestion to present the appropriate options:
 
-**When gobbi-git is active (PR exists):**
+**When _git is active (PR exists):**
 - Merge PR and cleanup (squash merge, delete branch, close issue, remove worktree and empty parent dirs, pull merge into base branch), then compact
 - Merge PR and cleanup only (no compact)
 - Compact only (leave PR open for later)
 
-**When gobbi-git is not active (default):**
+**When _git is not active (default):**
 - Commit and compact
 - Commit only
 - Compact only
@@ -66,4 +66,4 @@ The following conditions must hold before each irreversible action. These are co
 - MUST pull the merge into the local base branch after squash merge — keep local and remote in sync
 - Never force-push without explicit user approval
 - Never run `/compact` directly — instruct the user to run it themselves
-- When gobbi-git is active, "Merge PR and cleanup" must be a tracked task, not an afterthought
+- When _git is active, "Merge PR and cleanup" must be a tracked task, not an afterthought

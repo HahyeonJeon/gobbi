@@ -16,7 +16,7 @@ The user inspects results and provides corrections. Each correction is a signal:
 
 - **Skip planning** — the architecture is established from TASK
 - **Fix directly or delegate small scoped tasks** — no full decomposition needed
-- **Record gotchas from corrections** — user corrections become gotchas via gobbi-gotcha, preventing the same mistake across sessions
+- **Record gotchas from corrections** — user corrections become gotchas via _gotcha, preventing the same mistake across sessions
 - **Write feedback.md** after each feedback round to persist the iteration trail
 
 After FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?
@@ -58,7 +58,7 @@ The multi-perspective evaluation model exists for complex, multi-faceted outputs
 ## Constraints
 
 - MUST number each feedback round in feedback.md
-- MUST record user corrections as gotchas via gobbi-gotcha
+- MUST record user corrections as gotchas via _gotcha
 - MUST surface stagnation pattern after 3 consecutive rounds on the same finding — via AskUserQuestion, not automatic action
 - MUST recommend REVIEW or FINISH after 5 rounds — via AskUserQuestion, user can override
 - MUST use AskUserQuestion at every phase boundary — never prose transitions
