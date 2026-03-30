@@ -115,4 +115,4 @@ This skill loads at session start as a core skill. Prerequisites run during sess
 
 | Document | Covers |
 |----------|--------|
-| [conventions.md](conventions.md) | Branch naming, commit messages, PR template, issue format, worktree directory naming |
+| [conventions.md](conventions.md) | Branch naming, commit messages, PR template, issue format, sub-issues, labels, worktree directory naming |
