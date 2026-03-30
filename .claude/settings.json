@@ -123,6 +123,11 @@
       "Skill(__evaluation_performance)",
       "Skill(__evaluation_aesthetics)",
       "Skill(__evaluation_overall)",
+      "Skill(_audit)",
+      "Skill(__benchmark)",
+      "Skill(_git)",
+      "Skill(_project_context)",
+      "Skill(__validate)",
       "WebSearch"
     ]
   }

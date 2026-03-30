@@ -120,7 +120,7 @@ Severity measures how impactful the issue would be if it is real, independent of
 
 ### Threshold Filtering
 
-Findings with confidence below 80 are suppressed from the evaluation report by default. They are not discarded — the orchestrator or user can request the full unfiltered list. This prevents low-confidence speculation from drowning out high-confidence findings that need action.
+Low-confidence findings are suppressed from the evaluation report by default to prevent noise from drowning out high-confidence findings that need action. They are not discarded — the orchestrator or user can request the full unfiltered list. The current threshold value is configured in the evaluator agent definitions (see `__evaluator_project`, `__evaluator_architecture`, `__evaluator_performance`, `__evaluator_aesthetics`, `__evaluator_overall`).
 
 The threshold exists because evaluation should drive decisions, not generate noise. An evaluator uncertain about a finding should still record it (it may gain confidence in a future cycle), but it should not compete for attention with findings the evaluator is confident about.
 
@@ -197,3 +197,19 @@ Where gotchas go:
 - MUST surface perspective disagreements — they reveal where the output is borderline
 - Never skip evaluation between workflow stages — an unevaluated idea becomes a flawed plan, a flawed plan becomes wasted execution
 - Max 3 revision cycles per evaluation — then escalate to user
+
+---
+
+## Navigate deeper from here:
+
+**Stage-specific criteria** — load these based on what stage is being evaluated:
+- `__ideation_evaluation` — criteria for evaluating ideation output
+- `__plan_evaluation` — criteria for evaluating plan output
+- `__execution_evaluation` — criteria for evaluating execution output
+
+**Perspective skills** — load these to understand each evaluator's domain:
+- `__evaluation_project` — project-perspective criteria (goal alignment, scope, conventions)
+- `__evaluation_architecture` — architecture-perspective criteria (structure, coupling, extensibility)
+- `__evaluation_performance` — performance-perspective criteria (efficiency, scalability, resource use)
+- `__evaluation_aesthetics` — aesthetics-perspective criteria (naming, readability, style consistency)
+- `__evaluation_overall` — overall-perspective criteria (cross-cutting gaps, must-preserve analysis)
