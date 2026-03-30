@@ -14,6 +14,20 @@ Edge cases matter most. Clear hits and clear misses are easy to get right. The h
 
 ---
 
+## Two-Track Verification
+
+Skill verification has two complementary tracks that answer different questions at different costs. Understanding which question you need to answer determines which track to use.
+
+**Script-based trigger testing** answers a narrow, binary question: does this skill's description accurately identify prompts that should load it, and correctly exclude prompts that shouldn't? The `gobbi-benchmark/scripts/trigger-test.py` script tests this with LLM-powered classification — it needs an `ANTHROPIC_API_KEY` and the `anthropic` Python package, but nothing else. The signal it produces is reproducible, cheap, and focused. Run it when iterating on a description: the feedback loop is tight enough to try several variants and see which produces better precision and recall.
+
+**Agent-based holistic verification** answers a broader, harder question: when this skill loads, does it help agents make good decisions? The three verification agents — gobbi-skills-grader, gobbi-skills-comparator, gobbi-skills-analyzer — assess trigger accuracy *and* output quality together. They can judge teaching effectiveness, mental model clarity, and anti-pattern compliance in ways no script can. This track is expensive (multiple agent calls per cycle), non-deterministic (results vary across runs), and requires more context to set up. It's the right tool for full quality assessment, not for rapid description tuning.
+
+**The decision rule is:** trigger accuracy is a prerequisite, not the goal. If the description is wrong, no amount of content quality matters — the skill never loads. Fix the description first, cheaply, with the script. Once trigger accuracy is solid, use agents to assess whether the skill's content actually produces good outcomes. For a skill approaching shipping, both tracks together provide the most confidence: the script confirms the description is precise, and agents confirm the content is effective.
+
+The tracks are not substitutes — each covers blind spots the other has. A high-precision description measured by the script can still be attached to content that teaches the wrong mental model. Agent-based verification catches that. Conversely, agent evaluation alone may miss subtle trigger edge cases that only emerge with systematic prompt sampling.
+
+---
+
 ## Output Quality Evaluation
 
 Output quality measures whether a skill, once loaded, actually helps the agent make good decisions. A skill can have perfect trigger accuracy and still produce poor outcomes if its content doesn't teach the right mental model.
@@ -67,8 +81,8 @@ Three agents execute skill verification, each with a distinct role:
 
 ## Cost and Reproducibility
 
-Agent-based evaluation is more expensive and non-deterministic than script-based testing. Each verification cycle involves multiple agent calls — grading, analysis, and optionally comparison — each of which costs tokens and may produce slightly different results on repeated runs.
+Agent-based evaluation is expensive and non-deterministic. Each verification cycle involves multiple agent calls — grading, analysis, and optionally comparison — each of which costs tokens and may produce slightly different results on repeated runs. This trade-off is accepted because agents can assess nuanced qualities (teaching effectiveness, mental model clarity) that scripts cannot, keeping the workflow Claude Code native for holistic assessment.
 
-This trade-off is accepted because it keeps the workflow Claude Code native without external tool dependencies. The evaluation agents can assess nuanced qualities (teaching effectiveness, mental model clarity) that scripts cannot.
+For skills where trigger testing is the primary concern — newly written skills, or skills whose descriptions are actively being refined — the `gobbi-benchmark/scripts/trigger-test.py` script provides a lighter-weight alternative. It costs a small number of API calls rather than multiple agent sessions, and its output (precision, recall, F1) is directly comparable across runs. Use the script to stabilize the description, then bring in agents once the trigger surface is correct and the question shifts to output quality.
 
-For skills where trigger testing needs to be highly reproducible, maintain a list of test prompts that can be reused across iterations. Consistent inputs improve comparability even when agent evaluation introduces variance. The test prompt list also serves as documentation of the skill's intended trigger surface.
+For skills where trigger testing needs to be highly reproducible regardless of which track is used, maintain a list of test prompts that can be reused across iterations. Consistent inputs improve comparability even when agent evaluation introduces variance. The test prompt list also serves as documentation of the skill's intended trigger surface.
