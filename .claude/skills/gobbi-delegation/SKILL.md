@@ -69,6 +69,8 @@ Tell the subagent where to write its result and what format to use. Provide:
 - What to include: what was done, what changed, what was learned, any open items
 - Self-contained requirement: a reader should understand the result without reading other files
 
+When a subagent makes a non-obvious choice — where multiple valid approaches existed — the subtask doc should include a brief decision annotation: what was chosen, what was rejected, and why. This externalizes reasoning at decision time, when the context is fresh. Reconstructing rationale at collection time from conversation history is unreliable.
+
 ### Dependencies
 
 If this agent's work depends on another agent's output, or if another agent will consume this output, state the interface expectation.
@@ -118,3 +120,5 @@ This is guidance for the orchestrator's judgment, not a rigid assignment table. 
 **When to emphasize lifecycle phases** — Spell out Study for unfamiliar areas. Spell out Plan for non-trivial tasks. Spell out Verify for shared interfaces.
 
 **When to include exploration context** — If the plan was preceded by multi-perspective exploration, include the synthesized findings in every delegation prompt. Exploration findings are context, not constraints — the subagent uses them to make better-informed decisions but is not bound by the explorers' conclusions. If no exploration was performed, the subagent discovers context during Study as usual.
+
+**When to include pre-resolved decisions** — When contribution points were resolved during ideation (via gobbi-ideation's contribution-point mechanism), encode those resolutions as explicit constraints in the delegation prompt. This differs from scope boundaries: scope says what not to touch; pre-resolved decisions say which implementation choices the user has already made and the subagent must honor. A subagent that re-opens a settled decision wastes context and risks contradicting the user's intent.

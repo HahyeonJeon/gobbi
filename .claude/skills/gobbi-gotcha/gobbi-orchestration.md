@@ -5,6 +5,9 @@ Mistakes in following the orchestration workflow (phases, steps, transitions).
 ---
 
 ### Dropping into implementation mode during REVIEW after long FEEDBACK
+---
+priority: critical
+---
 
 **Priority:** Critical
 
@@ -65,6 +68,9 @@ Mistakes in following the orchestration workflow (phases, steps, transitions).
 ---
 
 ### Skipping collection after delegation
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -89,6 +95,9 @@ Mistakes in following the orchestration workflow (phases, steps, transitions).
 ---
 
 ### Write subtask files to disk BEFORE launching synthesis
+---
+priority: high
+---
 
 **Priority:** High
 

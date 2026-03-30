@@ -29,7 +29,7 @@ Each executed task produces code changes and a subtask document describing what 
 
 ### Safety
 
-- **No security vulnerabilities?** — Check OWASP top 10: injection, broken auth, sensitive data exposure, XXE, broken access control, misconfiguration, XSS, insecure deserialization, known vulnerable components, insufficient logging.
+- **No security vulnerabilities?** — Check OWASP top 10: injection, broken auth, sensitive data exposure, XXE, broken access control, misconfiguration, XSS, insecure deserialization, known vulnerable components, insufficient logging. For concrete security signals by vulnerability class, load gobbi-gotcha/gobbi-security.md before evaluating.
 - **No secrets in code?** — API keys, passwords, tokens, connection strings — nothing hardcoded or committed.
 - **Error handling appropriate?** — Are errors handled at system boundaries? Internal errors propagated correctly? No swallowed exceptions hiding failures?
 

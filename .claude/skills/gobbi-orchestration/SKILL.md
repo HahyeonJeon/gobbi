@@ -79,6 +79,8 @@ Loop until the idea is solid.
 
 > **Improvement follows agreement.** Refine the idea only based on what the user agreed to address. When the idea is solid, write ideation.md and proceed to Step 2.
 
+> **Before moving to Step 2**, consider whether any implementation decisions are contribution points — irreducible user judgment calls that should be resolved via AskUserQuestion before the plan encodes them as constraints. See gobbi-ideation.
+
 ### Step 2. Plan Loop
 
 Loop until the plan is solid.
