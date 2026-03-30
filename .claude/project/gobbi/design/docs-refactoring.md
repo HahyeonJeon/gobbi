@@ -80,12 +80,39 @@ Skills describing how to record gotchas. **New** — created from scratch.
 
 Future direction: each skill will have its own `gotchas.md` file for recording gotchas, replacing the current centralized model where all gotcha files live under `_gotcha/{skill}.md`.
 
-### Remaining (to be categorized)
+### Category: Gobbi (5 skills)
 
-- gobbi (interface entry point)
-- 5 evaluation perspective skills — separate category (details TBD)
-- __validate, __benchmark (dev tooling)
-- _audit, _project-context (session utils)
+Principle: **Gobbi internal implementation** — internal skills that are part of gobbi's own machinery. Currently holds evaluation perspectives; will grow as more internal skills are added.
+
+| Skill | Status |
+|-------|--------|
+| __evaluation-project | Rename from `__evaluation_project`. Keep `__` (internal). |
+| __evaluation-architecture | Rename from `__evaluation_architecture`. Keep `__` (internal). |
+| __evaluation-performance | Rename from `__evaluation_performance`. Keep `__` (internal). |
+| __evaluation-aesthetics | Rename from `__evaluation_aesthetics`. Keep `__` (internal). |
+| __evaluation-overall | Rename from `__evaluation_overall`. Keep `__` (internal). |
+
+### Category: Tool (3 skills)
+
+Principle: **Utility and maintenance tools** — verification, drift detection, benchmarking.
+
+| Skill | Status |
+|-------|--------|
+| __validate | Exists — structural validation of agents, skills, gotchas |
+| _audit | Exists — documentation drift detection |
+| __benchmark | Exists — skill benchmarking methodology |
+
+### Standalone (no category)
+
+| Skill | Status |
+|-------|--------|
+| gobbi | Interface entry point. No category. |
+
+### Demoted from skill to child doc
+
+| Name | New location | Status |
+|------|-------------|--------|
+| _project-context | Child doc of gobbi | **Demoted** — session-start detection becomes a child doc, not a standalone skill |
 
 ---
 
@@ -103,7 +130,7 @@ Affects:
 - The naming convention rule (`__gobbi_convention.md` → `__gobbi-convention.md`)
 - All cross-references in skill docs, agent definitions, gotcha files, CLAUDE.md, and settings.json
 
-> **Note:** Decision 2 was superseded. PR #31 adopted underscore naming instead of hyphens.
+> **Note:** PR #31 adopted underscores, but this refactoring reverses that decision. Hyphens are the final convention. Rule file `__gobbi_convention.md` → `__gobbi-convention.md`.
 
 ---
 
@@ -117,6 +144,6 @@ Future model: each skill has its own `gotchas.md` file in its skill directory. T
 
 ## Pending Decisions
 
-- Categories for remaining skills: gobbi (interface), 5 evaluation perspectives, __validate, __benchmark, _audit, _project-context
 - Whether agents follow the same category system as skills
 - Benchmark scenarios categorization
+- Naming convention confirmed: hyphens as word separators (reverses PR #31)
