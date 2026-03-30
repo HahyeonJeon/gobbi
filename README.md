@@ -62,34 +62,6 @@ This creates the `.gobbi/` directory with gobbi's skill and agent definitions, t
 
 ---
 
-## Directory Structure
-
-Gobbi separates source (`.gobbi/`) from output (`.claude/`).
-
-### `.gobbi/` — source of truth (commit to git)
-
-```
-.gobbi/
-  core/       # gobbi's built-in skills, agents, hooks
-  market/     # installed marketplace packages
-  user/       # your custom skills, agents, hooks
-  gobbi.json  # manifest tracking versions and packages
-```
-
-### `.claude/` — generated output (add to .gitignore)
-
-```
-.claude/
-  skills/     # populated by gobbi sync
-  agents/     # populated by gobbi sync
-  hooks/      # populated by gobbi sync
-  CLAUDE.md   # populated by gobbi sync
-```
-
-`gobbi sync` reads from `.gobbi/` and writes to `.claude/`. Claude Code reads from `.claude/`. You edit in `.gobbi/`, never in `.claude/` directly.
-
----
-
 ## Migration from v0.2.0
 
 ```bash
