@@ -54,6 +54,8 @@ Write the collected values to `.claude/.env` (must be gitignored). This file is 
 
 **Format:** One `KEY=value` per line, no `export` prefix — the hook script adds it. Blank lines and lines starting with `#` are ignored.
 
+Write credentials to `.claude/.env.tmp` first, then move to `.claude/.env` for an atomic update that avoids partial reads. File permissions are enforced to 600 at session start automatically.
+
 After writing, check whether `.claude/.env` is in `.gitignore`. If not, remind the user to add it — credentials must never be committed.
 
 ### Step 4: Verify setup
@@ -153,6 +155,8 @@ Routes messages to all configured channels. Channels are enabled by environment 
 - `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` — enables Telegram
 - `NOTIFY_DESKTOP=true` — enables native desktop notifications (Linux notify-send, macOS osascript)
 
+Messages are automatically truncated at per-platform limits. Override defaults via `.claude/.env`: `TELEGRAM_MAX_CHARS` (default 3900), `SLACK_MAX_CHARS` (default 3500), `DESKTOP_MAX_CHARS` (default 250).
+
 ### Installed hook scripts
 
 | Script | Hook Event | Matcher | Use Case |
@@ -173,3 +177,4 @@ Routes messages to all configured channels. Channels are enabled by environment 
 - **Credentials in code** — never hardcode tokens. Use environment variables and `.claude/.env`
 - **Shell profile noise** — `.bashrc` or `.zshrc` echo statements can corrupt JSON output. Scripts should use `#!/bin/bash` without sourcing profile
 - **No `export` in env file** — `.env` uses bare `KEY=value` format. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE`
+- **Delivery failures silently disappear** — failures are logged to `~/.claude/notification-failures.log`. Check this file if notifications stop arriving. The log grows unboundedly — delete it periodically if it gets large.
