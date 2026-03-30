@@ -22,7 +22,7 @@ The orchestrator creates worktrees, names branches, pushes to remote, creates PR
 
 > **Every task starts from a GitHub issue.**
 
-The issue is the contract between ideation and execution. The orchestrator either creates an issue from ideation output or picks up an existing issue the user provides. The issue number drives branch naming, PR references, and traceability. Without an issue, the work has no anchor.
+The issue is the contract between ideation and execution. The orchestrator either creates an issue from ideation output or picks up an existing issue the user provides. The issue number drives branch naming, PR references, and traceability. Without an issue, the work has no anchor. Multi-task features can use a hierarchical model — a parent issue for the feature and sub-issues for each independent task. See conventions.md for the sub-issue model.
 
 > **Subagents commit. The orchestrator pushes.**
 
@@ -89,7 +89,7 @@ This skill loads at session start as a core skill. Prerequisites run during sess
 
 **Orphaned worktrees from a crashed session** — Detection is covered by prerequisites at session setup. When orphans are found, offer the user a choice: recover the work (inspect the worktree's commits and resume from where it left off) or clean up (remove the worktree and its branch).
 
-**CI failure on the PR** — Fix the issue in the worktree, commit the fix, and push. CI re-runs automatically against the updated branch. The orchestrator monitors until CI passes or the user decides to defer.
+**CI failure on the PR** — Before fixing, the orchestrator retrieves the failing job logs to identify the root cause. The diagnostic sequence is: list the workflow runs for the branch to find the failed run, then view that run's logs to read the failure output. If the repository uses GitHub Actions, this retrieval is fully automated through the gh CLI. If CI is provided by an external system (CircleCI, Jenkins, etc.), the gh CLI commands return nothing useful — in that case, the orchestrator surfaces the status check URL from the PR to the user so they can inspect the failure directly. Once the cause is understood, fix it in the worktree, commit the fix, and push. CI re-runs automatically against the updated branch. The orchestrator monitors until CI passes or the user decides to defer.
 
 **Cleanup failure when removing a worktree** — If normal removal fails (uncommitted changes, locked files), force removal is the fallback, followed by pruning to clean up stale references. Nested branch names that use slashes create intermediate directories under `.claude/worktrees/` — git only removes the leaf directory, so empty parent directories must be cleaned up separately after worktree removal.
 

@@ -74,6 +74,30 @@ Issues are the contract between ideation and execution. They can be created by t
 
 ---
 
+## Sub-issues
+
+When a feature decomposes into three or more independent tasks that each produce their own commit or PR, sub-issues can track them under a parent issue. The parent issue captures the overall feature; each sub-issue is scoped to one deliverable.
+
+The orchestrator creates the parent issue from ideation output, then creates sub-issues during planning — one per task. Sub-issues follow the same naming conventions as regular issues, and the branch for each sub-issue uses the sub-issue number in its name (for example, `feat/{sub-issue-number}-{description}`). The parent issue closes when all sub-issues are resolved.
+
+This is guidance for multi-task features, not a mandate. Simple tasks continue to use a single issue. Use sub-issues when the decomposition is clear, the tasks are genuinely independent, and tracking progress per task would be meaningful.
+
+The `gh issue` CLI does not have native sub-issue support. Sub-issue relationships are managed through the GitHub API directly via `gh api`.
+
+---
+
+## Labels
+
+Labels organize issues along two independent axes: type and status.
+
+**Type labels** mirror the branch prefix taxonomy: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `ci`, `perf`. Apply the matching type label when creating an issue. Type labels are always recommended — they connect the issue to the kind of work it tracks and make filtering straightforward.
+
+**Status labels** reflect where work stands in the lifecycle: `in-progress` (worktree created, delegation started) and `ready-for-review` (PR created). Status labels are optional — apply them when the project uses a label system or when the user has enabled status tracking. Not every project benefits from this level of overhead.
+
+The orchestrator applies labels; subagents never touch them. This is consistent with the role boundary that reserves all issue and PR management for the orchestrator.
+
+---
+
 ## Worktree Directory Naming
 
 Worktrees are created inside `.claude/worktrees/` within the main repository. The directory name preserves the branch name exactly, including slashes — so a branch named feat/42-oauth-login becomes `.claude/worktrees/feat/42-oauth-login/`. This keeps worktrees co-located with the repo rather than scattered as sibling directories, and the preserved branch path makes it easy to identify what each worktree is for without inspecting git state. Naming collisions are prevented because each branch name is unique.
