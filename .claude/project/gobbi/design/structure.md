@@ -1,6 +1,6 @@
 # Structure
 
-This document describes the directory structure of the gobbi repository. The repo serves three distinct purposes — Claude docs that teach agents, a Claude Code plugin for distribution, and a CLI for installation and management — each with its own directory layout.
+This document describes the directory structure of the gobbi repository. Gobbi is an open-source ClaudeX tool for Claude Code. The repo serves three distinct purposes — Claude docs that teach agents, a Claude Code plugin for distribution, and a CLI for installation and management — each with its own directory layout.
 
 ---
 
@@ -26,7 +26,7 @@ Skills are organized by function:
 |:---------|:-------|:--------|
 | **Core** | gobbi, _orchestration, _claude, _gotcha, _git | Always loaded. Entry point, workflow coordination, doc standard, mistake recording, git lifecycle. |
 | **Workflow** | _discuss, _ideation, _plan, _delegation, _execution, _note, _collection | Loaded per step. Discussion, idea refinement, task decomposition, agent briefing, implementation, note writing, trail persistence. |
-| **Evaluation** | _evaluation, __ideation_evaluation, __plan_evaluation, __execution_evaluation | Loaded during evaluation. Framework and stage-specific criteria. |
+| **Evaluation** | _evaluation, __ideation_evaluation, __plan_evaluation, __execution_evaluation, __evaluation_project, __evaluation_architecture, __evaluation_performance, __evaluation_aesthetics, __evaluation_overall | Loaded during evaluation. Framework, stage-specific criteria, and perspective evaluators. |
 | **Authoring** | _claude_skills, _claude_agents | Loaded when creating or modifying skill and agent definitions. |
 | **Utilities** | _notification, __validate, _audit, __benchmark, _project_context | On-demand. Notifications, structural validation, drift detection, skill benchmarking, project detection. |
 

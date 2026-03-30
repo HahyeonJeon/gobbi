@@ -50,13 +50,15 @@ The plan should contain: a goal statement, numbered tasks with agent assignments
 
 ---
 
-## Stance-Specific Focus
+## Perspective-Specific Focus
 
-| Stance | Primary Focus |
-|--------|--------------|
-| Positive | Which tasks are well-decomposed and clearly scoped? Which dependency decisions are sound? |
-| Moderate | Is the plan complete against the idea? Are tasks proportionally sized? Are dependencies and parallelism balanced? |
-| Critical | Which tasks are too vague to delegate? Where are dependencies wrong or missing? What scope was dropped or added without justification? |
+| Perspective | Primary Focus |
+|-------------|--------------|
+| Project | Does the plan deliver what the user asked for? Scope boundaries clear? |
+| Architecture | Are tasks decomposed at the right granularity? Dependencies sound? |
+| Performance | Does the execution order maximize parallelism? Resource-proportional? |
+| Aesthetics | Are task descriptions clear and specific? Naming consistent? |
+| Overall | What cross-cutting gaps exist? What must be preserved? |
 
 ---
 

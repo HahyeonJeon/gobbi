@@ -65,13 +65,15 @@ The evaluator decides which of these checks are relevant based on the task. Not 
 
 ---
 
-## Stance-Specific Focus
+## Perspective-Specific Focus
 
-| Stance | Primary Focus |
-|--------|--------------|
-| Positive | What's well-implemented? Which patterns are correctly followed? Which decisions show good judgment? |
-| Moderate | Is the implementation complete against the spec? Are safety and integration checks proportional? Are there minor issues that don't block but should be noted? |
-| Critical | Where does the implementation diverge from the spec? What security risks exist? Where did the agent expand scope? What gotchas were violated? |
+| Perspective | Primary Focus |
+|-------------|--------------|
+| Project | Does the output match what was planned? Requirements met? |
+| Architecture | Are changes structurally sound? Abstractions appropriate? |
+| Performance | Is the implementation efficient? No unnecessary overhead? |
+| Aesthetics | Is the code/doc readable? Naming clear? Style consistent? |
+| Overall | What cross-cutting gaps exist? What must be preserved? |
 
 ---
 

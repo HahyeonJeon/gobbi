@@ -1,6 +1,6 @@
 # Architecture
 
-Gobbi is an orchestration harness for Claude Code. It transforms a single conversational entry point into a structured workflow of specialist agents, guided by skills and verified by independent evaluators. The user talks naturally; gobbi handles the complexity behind the conversation.
+Gobbi is an open-source ClaudeX tool for Claude Code. It transforms a single conversational entry point into a structured workflow of specialist agents, guided by skills and verified by independent evaluators. The user talks naturally; gobbi handles the complexity behind the conversation.
 
 This document describes the four pillars of gobbi's architecture: how work flows through the system, who does the work, what makes them effective, and how quality is measured objectively.
 

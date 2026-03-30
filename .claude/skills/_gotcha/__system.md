@@ -44,10 +44,8 @@ priority: low
 
 **Priority:** Low
 
-**What it is:** When a hook needs to persist state across invocations within the same session (e.g., tracking start time, accumulating counts, caching decisions), use the naming convention `~/.claude/{purpose}_state_{session_id}.json` or `/tmp/claude-{purpose}-{session_id}` for the state file. The `session_id` is available in every hook payload's stdin JSON.
+**What happened:** Agent stored runtime state in a global variable within a hook script, expecting it to persist across hook invocations. The state was lost because each hook invocation runs in a fresh shell process. A related pattern: agent wrote hook state to `/tmp/claude-state.json` (a fixed filename) expecting it to persist within the session, but a second concurrent Claude session overwrote the file mid-run, corrupting the first session's state.
 
-**Why it matters:** Without session-scoped filenames, concurrent Claude sessions overwrite each other's hook state. The timing approach in "Stop hook has no duration field" (above) already uses this pattern with `/tmp/claude-start-{session_id}`. The security-guidance plugin also uses session-scoped state for caching scan results across hook invocations.
+**User feedback:** Hook state must be persisted to disk with session-scoped filenames. In-memory state and shared filenames both fail under real usage conditions.
 
-**How to use:** Read `session_id` from the hook payload JSON received on stdin. Incorporate it into the state filename. Implement cleanup — either a TTL-based probabilistic approach (each invocation has a small chance of deleting files older than N hours) or a dedicated cleanup in the Stop hook. The Stop hook is the natural place for session teardown since it fires when the session ends.
-
-**Correct approach:** Always scope hook state files by session. Never use a single shared filename like `/tmp/claude-state.json` — it breaks under concurrent sessions.
+**Correct approach:** When a hook needs to persist state across invocations within the same session (e.g., tracking start time, accumulating counts, caching decisions), write it to disk using the naming convention `~/.claude/{purpose}_state_{session_id}.json` or `/tmp/claude-{purpose}-{session_id}`. The `session_id` is available in every hook payload's stdin JSON — read it with `jq .session_id`. Implement cleanup: either a TTL-based probabilistic approach (each invocation has a small chance of deleting files older than N hours) or a dedicated cleanup in the Stop hook. Never use a single shared filename like `/tmp/claude-state.json` — it breaks under concurrent sessions.

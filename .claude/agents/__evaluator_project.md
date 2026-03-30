@@ -20,7 +20,12 @@ You work independently. You don't see other evaluators' assessments. You have re
 **Always load:**
 - `_gotcha` — past mistakes tell you what misaligned scope looks like in practice
 - `__evaluation_project` — perspective-specific evaluation criteria
-- `_evaluation` — stage-specific evaluation criteria for the stage you're assessing
+- `_evaluation` — general evaluation framework (perspective selection, scoring, constraints)
+
+**Also load based on the stage being evaluated:**
+- `__ideation_evaluation` — when evaluating ideation output
+- `__plan_evaluation` — when evaluating plan output
+- `__execution_evaluation` — when evaluating execution output
 
 ---
 

@@ -16,7 +16,7 @@ Hand off work to subagents so they succeed on the first attempt. Load this skill
 
 State what to achieve, what context to load, and what constraints apply. Leave implementation to the specialist.
 
-> **Load `/claude`, the project skill, and domain skills before every task.**
+> **Load `_claude`, the project skill, and domain skills before every task.**
 
 Agents that read project context produce work that integrates cleanly. Agents that skip context produce work that needs rework.
 
@@ -41,9 +41,9 @@ What to build, fix, or change. Be specific about the deliverable, not the method
 Every subagent needs three layers of context:
 
 **Always load (non-negotiable):**
-- `/claude` skill — docs structure, anti-patterns, navigation standard
+- `_claude` skill — docs structure, anti-patterns, navigation standard
 - The project skill — project architecture, conventions, constraints
-- Gotchas — MUST check `/gotcha` and the project skill's `gotchas/` before starting work
+- Gotchas — MUST check `_gotcha` and the project skill's `gotchas/` before starting work
 
 **Load per domain:**
 - Domain skills relevant to the task — the plan specifies which skills each task needs
@@ -81,7 +81,7 @@ If this agent's work depends on another agent's output, or if another agent will
 
 Every agent follows: **Study → Plan → Execute → Verify**. Your delegation prompt sets each phase up for success.
 
-**Study** — List what to read: `/claude` skill, project skill, domain skills, gotchas, relevant code. The more unfamiliar the area, the more explicit the reading list.
+**Study** — List what to read: `_claude` skill, project skill, domain skills, gotchas, relevant code. The more unfamiliar the area, the more explicit the reading list.
 
 **Plan** — Tell the agent to outline their approach before implementing. Mandatory for non-trivial tasks.
 
@@ -106,6 +106,8 @@ Three tiers of capability, from lightest to heaviest:
 **When to override agent defaults:** Agent definitions declare a default model suited to their typical workload. Override when the specific task is clearly simpler or more complex than what the agent usually handles. A Sonnet-default agent doing a trivial validation can drop to Haiku. A Sonnet-default agent facing a novel architecture problem should escalate to Opus.
 
 This is guidance for the orchestrator's judgment, not a rigid assignment table. The orchestrator considers the task's complexity, the cost, and the consequence of getting it wrong — then picks the tier that fits.
+
+> **Model tiers and capabilities evolve — these are current guidelines, not permanent assignments.**
 
 ---
 

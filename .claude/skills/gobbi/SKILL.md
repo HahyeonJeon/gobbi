@@ -1,6 +1,6 @@
 ---
 name: gobbi
-description: Entry point for the gobbi harness. MUST load at session start, session resume, and after compaction. Loads agent principles and skill map.
+description: Entry point for gobbi, an open-source ClaudeX tool for Claude Code. MUST load at session start, session resume, and after compaction. Loads agent principles and skill map.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 ---
 
@@ -38,6 +38,8 @@ This skill defines the agent principles, rules, and skill map you must follow.
 > **Never edit gobbi skills without asking the user with AskUserQuestion.**
 
 ---
+
+**Navigate deeper from here:**
 
 ## Gobbi Skills
 

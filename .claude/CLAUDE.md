@@ -26,7 +26,7 @@ Every non-trivial task must follow this cycle. Each stage produces output, evalu
 12. **Evaluation** — independent perspective evaluator agents (selected by the orchestrator based on task type) assess the output against the task criteria and the original goal.
 13. **Fix or next step** — if evaluation finds issues, fix them before proceeding. If clean, move to the next task.
 
-> **Evaluation must be separated, multi-stance, and discussed.**
+> **Evaluation must be separated, multi-perspective, and discussed.**
 
 The agent that creates must never evaluate its own output. Evaluation MUST be performed by independent perspective evaluator agents — the orchestrator selects 2-5 perspectives based on task type, with Project and Overall always included. The evaluator's job is to find problems, not to confirm success. After evaluation, always discuss the findings with the user before improving — the user decides what to address, defer, or disagree with.
 
@@ -41,3 +41,13 @@ Every agent MUST load _gotcha skill before starting work. When the user corrects
 > **Split into narrow tasks. Execute step by step, not all at once.**
 
 MUST decompose work into small, specific tasks and track them with TaskCreate. Each task must be narrow enough that its scope is unambiguous. Execute tasks one at a time — complete one, verify it, then move to the next. Broad parallel execution produces broad shallow mistakes.
+
+---
+
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
+| [_claude skill](skills/_claude/SKILL.md) | Documentation standard for `.claude/` authoring |
+| [rules/](rules/) | Naming conventions and project rules |

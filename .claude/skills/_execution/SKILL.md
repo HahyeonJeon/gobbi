@@ -32,13 +32,15 @@ Check your work against the task's acceptance criteria and any relevant gotchas.
 
 ## The Lifecycle
 
+> **This sequence reflects the principle that understanding precedes action and verification precedes delivery. Adapt the depth of each phase to the task's complexity.**
+
 ### Study
 
 Build understanding before acting by loading the context layers specified in your briefing. Each layer adds depth — start with standards, then narrow toward the code you'll change:
 
-- **Documentation standard** (`/claude`) — how `.claude/` files work and how to write them
+- **Documentation standard** (`_claude`) — how `.claude/` files work and how to write them
 - **Project skill** — architecture, conventions, and constraints for the project you're working in
-- **Gotchas** — check `/gotcha` and project-specific gotchas. Every gotcha exists because a past agent made that exact mistake
+- **Gotchas** — check `_gotcha` and project-specific gotchas. Every gotcha exists because a past agent made that exact mistake
 - **Domain skills** — any additional skills specified in the briefing that cover the problem domain
 - **Relevant code** — read existing implementations in the area you'll modify. The codebase is the source of truth for patterns and style
 

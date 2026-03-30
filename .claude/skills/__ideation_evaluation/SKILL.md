@@ -52,13 +52,15 @@ The ideation step produces an idea document that should cover: root problem, pro
 
 ---
 
-## Stance-Specific Focus
+## Perspective-Specific Focus
 
-| Stance | Primary Focus |
-|--------|--------------|
-| Positive | Which parts of the idea are sound and must survive revision? What decisions are well-reasoned? |
-| Moderate | Is the idea complete? Does it cover all dimensions proportionally? Are pros and cons balanced? |
-| Critical | What assumptions are unstated? What failure modes are missing? Where is specificity faked with vague language? |
+| Perspective | Primary Focus |
+|-------------|--------------|
+| Project | Does the idea solve the right problem? Scope and requirements alignment. |
+| Architecture | Is the proposed mechanism structurally sound? Coupling, abstraction level. |
+| Performance | Are efficiency implications considered? Scalability risks identified. |
+| Aesthetics | Is the idea clearly articulated? Would a fresh reader understand it? |
+| Overall | What cross-cutting gaps exist? What must be preserved? |
 
 ---
 

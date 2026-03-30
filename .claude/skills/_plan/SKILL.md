@@ -65,7 +65,7 @@ Vague tasks produce vague results. Break work down until each task is small enou
 
 **Keep tasks small.** If a task description uses "and" to join two unrelated concerns, split it. If an agent would need to context-switch between different subsystems, split it.
 
-**Name the agent and skills explicitly.** For each task, state the agent type (from `.claude/CLAUDE.md`), the skills to load, and any project docs to read.
+**Name the agent and skills explicitly.** For each task, state the agent type (from `.claude/agents/`), the skills to load, and any project docs to read.
 
 ---
 

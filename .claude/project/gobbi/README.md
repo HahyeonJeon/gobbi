@@ -2,13 +2,13 @@
 
 > gobbi (고삐) — Korean for reins, the essential equipment for handling a horse.
 
-Gobbi is an installable harness for Claude Code. It benchmarks [GSD (get-shit-done)](https://github.com/gsd-build/get-shit-done) but takes a fundamentally different approach.
+Gobbi is an open-source ClaudeX (Claude Experience) tool for Claude Code. It benchmarks [GSD (get-shit-done)](https://github.com/gsd-build/get-shit-done) but takes a fundamentally different approach.
 
 ## Directory
 
 - [design/](design/) — Design docs: vision, architecture, workflow, agents, evaluation, state, hacks, distribution, GSD analysis
 - [rules/](rules/) — Project-specific rules and conventions
 - [gotchas/](gotchas/) — Project-specific gotchas (not cross-project)
-- [note/](note/) — Workflow notes per task (managed by gobbi-note)
+- [note/](note/) — Workflow notes per task (managed by _note)
 - [reference/](reference/) — External references, API docs, research
 - [docs/](docs/) — Other project documents
