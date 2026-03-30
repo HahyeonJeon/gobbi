@@ -21,7 +21,7 @@ Record cross-project agent mistakes so they never happen twice. Each gotcha file
 | [_collection.md](_collection.md) | _collection | Work trail persistence, README indexing |
 | [_evaluation.md](_evaluation.md) | _evaluation | Quality gates, evaluation criteria |
 | [_ideation.md](_ideation.md) | _ideation | Brainstorming, option generation |
-| [_claude.md](_claude.md) | _claude, _claude_skills, _claude_agents | `.claude/` documentation standard, skill and agent authoring |
+| [_claude.md](_claude.md) | _claude, _claude-skills, _claude-agents | `.claude/` documentation standard, skill and agent authoring |
 | [_note.md](_note.md) | _note | Note writing, directory structure, timing |
 | [_notification.md](_notification.md) | _notification | Hook setup, credentials, script issues |
 | [_system.md](_system.md) | (none) | Environment, processes, hooks, infrastructure |

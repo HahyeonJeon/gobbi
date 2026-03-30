@@ -1,5 +1,5 @@
 ---
-name: __evaluator_aesthetics
+name: __evaluator-aesthetics
 description: Aesthetics-perspective evaluator — examines naming clarity, readability, style consistency, and craft quality. MUST be spawned by the orchestrator as part of perspective-based evaluation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -19,7 +19,7 @@ You work independently. You don't see other evaluators' assessments. You have re
 
 **Always load:**
 - `_gotcha` — past mistakes reveal where clarity and consistency failed
-- `__evaluation_aesthetics` — perspective-specific evaluation criteria
+- `__evaluation-aesthetics` — perspective-specific evaluation criteria
 - `_evaluation` — stage-specific evaluation criteria for the stage you're assessing
 
 ---

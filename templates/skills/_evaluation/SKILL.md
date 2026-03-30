@@ -46,16 +46,16 @@ The orchestrator selects 2-5 perspectives based on what the task involves. All e
 
 | Perspective | Agent | Always include because |
 |-------------|-------|----------------------|
-| Project | `__evaluator_project` | Checks goal alignment, conventions, and scope for every task |
-| Overall | `__evaluator_overall` | Synthesises across dimensions, identifies "must preserve" items |
+| Project | `__evaluator-project` | Checks goal alignment, conventions, and scope for every task |
+| Overall | `__evaluator-overall` | Synthesises across dimensions, identifies "must preserve" items |
 
 **Add when relevant:**
 
 | Perspective | Agent | Add when |
 |-------------|-------|----------|
-| Architecture | `__evaluator_architecture` | Task creates or modifies code structure, module boundaries, data models, or interfaces |
-| Performance | `__evaluator_performance` | Task affects hot paths, processes significant data volume, or has latency sensitivity |
-| Aesthetics | `__evaluator_aesthetics` | Task produces user-facing output — code, documentation, CLI text, or UI |
+| Architecture | `__evaluator-architecture` | Task creates or modifies code structure, module boundaries, data models, or interfaces |
+| Performance | `__evaluator-performance` | Task affects hot paths, processes significant data volume, or has latency sensitivity |
+| Aesthetics | `__evaluator-aesthetics` | Task produces user-facing output — code, documentation, CLI text, or UI |
 
 **Perspective count guidance:**
 - Minimum 2 (Project + Overall) — always
@@ -70,11 +70,11 @@ The orchestrator spawns the selected perspective evaluators for every evaluation
 
 | Agent | Perspective | Focus |
 |-------|-------------|-------|
-| `__evaluator_project` | Project | Goal alignment, scope adherence, convention compliance, task specification fidelity |
-| `__evaluator_architecture` | Architecture | Structural soundness, module boundaries, data model integrity, interface correctness |
-| `__evaluator_performance` | Performance | Efficiency, scalability, hot path impact, data volume handling, latency risks |
-| `__evaluator_aesthetics` | Aesthetics | Output quality, clarity, consistency, user-facing correctness and readability |
-| `__evaluator_overall` | Overall | Cross-dimension synthesis, "must preserve" list, unaddressed gaps, final verdict |
+| `__evaluator-project` | Project | Goal alignment, scope adherence, convention compliance, task specification fidelity |
+| `__evaluator-architecture` | Architecture | Structural soundness, module boundaries, data model integrity, interface correctness |
+| `__evaluator-performance` | Performance | Efficiency, scalability, hot path impact, data volume handling, latency risks |
+| `__evaluator-aesthetics` | Aesthetics | Output quality, clarity, consistency, user-facing correctness and readability |
+| `__evaluator-overall` | Overall | Cross-dimension synthesis, "must preserve" list, unaddressed gaps, final verdict |
 
 Each evaluator works independently, loads _gotcha, and returns a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning.
 
