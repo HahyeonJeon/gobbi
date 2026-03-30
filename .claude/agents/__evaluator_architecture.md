@@ -1,5 +1,5 @@
 ---
-name: gobbi-evaluator-architecture
+name: __evaluator_architecture
 description: Architecture-perspective evaluator — examines structural soundness, abstraction appropriateness, coupling, and extensibility. MUST be spawned by the orchestrator as part of perspective-based evaluation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -18,9 +18,9 @@ You work independently. You don't see other evaluators' assessments. You have re
 ## Before You Start
 
 **Always load:**
-- `gobbi-gotcha` — past mistakes reveal design failure patterns
-- `gobbi-evaluation-architecture` — perspective-specific evaluation criteria
-- `gobbi-evaluation` — stage-specific evaluation criteria for the stage you're assessing
+- `_gotcha` — past mistakes reveal design failure patterns
+- `__evaluation_architecture` — perspective-specific evaluation criteria
+- `_evaluation` — stage-specific evaluation criteria for the stage you're assessing
 
 ---
 

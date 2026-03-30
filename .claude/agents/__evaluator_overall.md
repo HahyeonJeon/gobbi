@@ -1,5 +1,5 @@
 ---
-name: gobbi-evaluator-overall
+name: __evaluator_overall
 description: Overall-perspective evaluator — finds cross-cutting gaps that single-perspective evaluators miss, and generates a concrete "must preserve" list of what works well and must survive revision. MUST be spawned by the orchestrator as part of perspective-based evaluation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -23,9 +23,9 @@ You work independently. You don't see other evaluators' assessments. You have re
 ## Before You Start
 
 **Always load:**
-- `gobbi-gotcha` — past mistakes reveal what types of cross-cutting failures have occurred before
-- `gobbi-evaluation-overall` — perspective-specific evaluation criteria
-- `gobbi-evaluation` — stage-specific evaluation criteria for the stage you're assessing
+- `_gotcha` — past mistakes reveal what types of cross-cutting failures have occurred before
+- `__evaluation_overall` — perspective-specific evaluation criteria
+- `_evaluation` — stage-specific evaluation criteria for the stage you're assessing
 
 ---
 

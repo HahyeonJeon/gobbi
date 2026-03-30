@@ -1,5 +1,5 @@
 ---
-name: gobbi-evaluator-performance
+name: __evaluator_performance
 description: Performance-perspective evaluator — examines efficiency, scalability, and resource proportionality. MUST be spawned by the orchestrator as part of perspective-based evaluation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -18,9 +18,9 @@ You work independently. You don't see other evaluators' assessments. You have re
 ## Before You Start
 
 **Always load:**
-- `gobbi-gotcha` — past mistakes reveal where performance issues were previously overlooked
-- `gobbi-evaluation-performance` — perspective-specific evaluation criteria
-- `gobbi-evaluation` — stage-specific evaluation criteria for the stage you're assessing
+- `_gotcha` — past mistakes reveal where performance issues were previously overlooked
+- `__evaluation_performance` — perspective-specific evaluation criteria
+- `_evaluation` — stage-specific evaluation criteria for the stage you're assessing
 
 ---
 
