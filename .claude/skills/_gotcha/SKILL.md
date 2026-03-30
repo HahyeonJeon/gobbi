@@ -24,8 +24,8 @@ Record cross-project agent mistakes so they never happen twice. Each gotcha file
 | [_claude.md](_claude.md) | _claude, _claude_skills, _claude_agents | `.claude/` documentation standard, skill and agent authoring |
 | [_note.md](_note.md) | _note | Note writing, directory structure, timing |
 | [_notification.md](_notification.md) | _notification | Hook setup, credentials, script issues |
-| [_system.md](_system.md) | (none) | Environment, processes, hooks, infrastructure |
-| [_security.md](_security.md) | (none) | Security vulnerability signals for evaluators |
+| [__system.md](__system.md) | (none) | Environment, processes, hooks, infrastructure |
+| [__security.md](__security.md) | (none) | Security vulnerability signals for evaluators |
 
 ---
 
@@ -49,7 +49,7 @@ Each entry exists because a user experienced a problem. The user's feedback is t
 
 **Cross-project** (applies to any project) → `_gotcha/{skill}.md`
 
-**Project-specific** (applies to one project) → `.claude/project/gotchas/{category}.md`
+**Project-specific** (applies to one project) → `.claude/project/{project-name}/gotchas/{category}.md`
 
 ---
 
