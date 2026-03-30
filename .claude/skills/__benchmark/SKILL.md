@@ -104,11 +104,7 @@ The `scripts/trigger-test.py` script answers a narrow question: does this skill'
 
 **Why Python and the anthropic package.** The __validate scripts are bash-only. This script departs from that pattern deliberately. Trigger testing is a classification problem: given this description, does this prompt warrant loading? That question requires LLM judgment. Grep patterns and heuristics cannot approximate semantic relevance. The dependency cost (Python, `pip install anthropic`, an API key) is the price of getting a meaningful signal rather than a fast but meaningless one.
 
-**Usage.** Prepare a prompts file with one line per prompt, prefixed `+` for prompts that should trigger and `-` for those that should not. Run:
-
-```
-python3 .claude/skills/__benchmark/scripts/trigger-test.py <SKILL.md> <prompts.txt>
-```
+**Usage.** Prepare a prompts file with one line per prompt, prefixed `+` for prompts that should trigger and `-` for those that should not. Run `trigger-test.py` from `__benchmark/scripts/` with two arguments: the path to the SKILL.md under test and the path to a prompts file.
 
 Use `--verbose` to see per-prompt results. The script reports true positives, false positives, true negatives, false negatives, precision, recall, and F1 score. A strong description should produce high precision (few false triggers) and high recall (few missed triggers). When F1 is low, revise the description to be more specific or broader, depending on which direction the score leans.
 

@@ -20,6 +20,9 @@ priority: critical
 ---
 
 ### Skipping structured phase transitions
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -32,6 +35,9 @@ priority: critical
 ---
 
 ### Not writing notes during collection
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -44,6 +50,9 @@ priority: critical
 ---
 
 ### Skipping subtask docs or writing summaries instead of actual content
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -56,6 +65,9 @@ priority: critical
 ---
 
 ### Writing summaries instead of actual content in notes
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -83,6 +95,9 @@ priority: high
 ---
 
 ### Self-evaluating instead of spawning separate evaluator agents
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -110,6 +125,9 @@ priority: high
 ---
 
 ### Evaluation should be optional in ideation — ask user first
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -122,6 +140,9 @@ priority: high
 ---
 
 ### Discuss evaluation results before improving
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -134,6 +155,9 @@ priority: high
 ---
 
 ### Must start workflow when user requests a non-trivial task
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -146,6 +170,9 @@ priority: high
 ---
 
 ### Agent cannot run /compact — must tell user to run it
+---
+priority: high
+---
 
 **Priority:** High
 
@@ -155,9 +182,14 @@ priority: high
 
 **Correct approach:** When the user selects compact during FINISH, tell the user to run the command themselves. The compact message should start with "abort gobbi" so the compacted context drops gobbi workflow state (it auto-reloads after compact via the reload hook), followed by a summary of work done. Example: `/compact abort gobbi — completed doc-review, findings in note/20260328-0706-doc-review/`
 
+Note: `/gobbi` reload works after compact because the SessionStart hook is not affected by compact — the hook triggers on the next message after compact completes, which re-initializes the gobbi workflow state.
+
 ---
 
 ### Concurrent sessions corrupt each other's working tree
+---
+priority: critical
+---
 
 **Priority:** Critical
 

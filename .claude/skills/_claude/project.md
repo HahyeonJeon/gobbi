@@ -35,6 +35,8 @@ All projects must follow this consistent structure:
   docs/                 — other project documents
 ```
 
+Not every project needs every subdirectory. Create only the directories that have content.
+
 ### README.md
 
 Project overview and index. Must list:

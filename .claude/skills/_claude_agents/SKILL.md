@@ -34,7 +34,7 @@ Use AskUserQuestion to understand what the agent should be, what it should not d
 
 The structure of an agent definition establishes identity, context, and quality expectations — in that order.
 
-**Frontmatter** — Required fields: `name`, `description`, `tools` (scoped to what the agent actually needs). All agents carry explicit `model` assignments: evaluators and developer use `sonnet`, PI and planner use `opus`. The orchestrator can override via the Agent tool's model parameter when a specific task warrants a different tier — see _delegation's model selection guidance. The `description` field is critical — it answers "when should the orchestrator send work here?" If two agents' descriptions match the same task, boundaries need sharpening.
+**Frontmatter** — Required fields: `name`, `description`, `tools` (scoped to what the agent actually needs). Model assignments are defined in each agent's YAML frontmatter — refer to the actual agent files in `.claude/agents/` for current assignments rather than maintaining a separate list here. The orchestrator can override via the Agent tool's model parameter when a specific task warrants a different tier — see _delegation's model selection guidance. The `description` field is critical — it answers "when should the orchestrator send work here?" If two agents' descriptions match the same task, boundaries need sharpening.
 
 **Identity within 20 lines** — The opening paragraph establishes who the agent is ("You are a..."), what it thinks like, and when it receives work. Follow immediately with "Out of scope" — what the agent should NOT do and should defer to other agents.
 
@@ -67,7 +67,7 @@ When creating a new agent, use AskUserQuestion to explore these dimensions. Not 
 
 - **Skills to load** — Which skills should "Before You Start" list? Which are always-load vs load-when-relevant? Is the list minimal — no "just in case" entries?
 - **Project context** — What project docs, rules, and memories does this agent need? Which are always relevant and which are situational?
-- **Model selection** — What model should this agent use? Evaluators and developer default to sonnet. PI and planner default to opus. The orchestrator can override per task.
+- **Model selection** — What model should this agent use? Check current assignments in the agent files in `.claude/agents/`. The orchestrator can override per task — see _delegation's model selection guidance.
 
 ### Lifecycle Emphasis
 
