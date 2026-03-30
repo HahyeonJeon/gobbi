@@ -72,22 +72,6 @@ Automatically detects existing `.claude/` gobbi files, migrates them to `.gobbi/
 
 ---
 
-## Development
-
-Build:
-
-```bash
-npm run build
-```
-
-Publish (auto-builds templates):
-
-```bash
-npm publish
-```
-
----
-
 ## License
 
 [MIT](./LICENSE)
