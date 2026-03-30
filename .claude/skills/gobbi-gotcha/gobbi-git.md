@@ -121,3 +121,15 @@ Mistakes in git/GitHub workflow, worktree management, branch handling, and PR li
 **User feedback:** (Discovered during symlink reversal migration FINISH phase)
 
 **Correct approach:** Before pulling a squash merge into the main tree, check for uncommitted changes in tracked files using `git status`. If gotchas or other changes exist in tracked files, save the content, discard with `git checkout --`, pull, then re-apply the changes. Alternatively, commit gotchas immediately after writing them to avoid this situation entirely. The safest approach: commit gotchas to the main tree before starting the merge-and-cleanup sequence.
+
+---
+
+### Stale remote branches accumulate across sessions
+
+**Priority:** High
+
+**What happened:** After multiple gobbi workflow sessions, the GitHub remote accumulated 11+ stale feature branches. Each session's FINISH phase deleted its own branch via the GitHub API, but branches from previous sessions that were merged via the GitHub web UI or through other workflows were never cleaned up. Over time the branch list became cluttered, making it hard to identify active work.
+
+**User feedback:** "In the github there are so many branches remaining. I expected that the branches should be removed after work finished."
+
+**Correct approach:** During the FINISH phase, after merging the current PR and deleting its branch, check for other stale merged branches on the remote. Offer to clean them up via AskUserQuestion — never delete automatically, since some branches may belong to concurrent sessions or be intentionally kept. At minimum, verify the current session's branch was actually deleted (the API call can silently fail). Add remote branch cleanup as a step in the merge-and-cleanup checklist.
