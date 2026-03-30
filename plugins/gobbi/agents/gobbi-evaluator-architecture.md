@@ -1,1 +1,0 @@
-../../../.claude/agents/gobbi-evaluator-architecture.md
