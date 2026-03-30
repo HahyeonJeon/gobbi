@@ -18,17 +18,22 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 
 ### Skills
 
-All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `__evaluation_project/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
+All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `__evaluation-project/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
 
-Skills are organized by function:
+Skills are organized into four categories:
 
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
-| **Core** | gobbi, _orchestration, _claude, _gotcha, _git | Always loaded. Entry point, workflow coordination, doc standard, mistake recording, git lifecycle. |
-| **Workflow** | _discuss, _ideation, _plan, _delegation, _execution, _note, _collection | Loaded per step. Discussion, idea refinement, task decomposition, agent briefing, implementation, note writing, trail persistence. |
-| **Evaluation** | _evaluation, __ideation_evaluation, __plan_evaluation, __execution_evaluation, __evaluation_project, __evaluation_architecture, __evaluation_performance, __evaluation_aesthetics, __evaluation_overall | Loaded during evaluation. Framework, stage-specific criteria, and perspective evaluators. |
-| **Authoring** | _claude_skills, _claude_agents | Loaded when creating or modifying skill and agent definitions. |
-| **Utilities** | _notification, __validate, _audit, __benchmark, _project_context | On-demand. Notifications, structural validation, drift detection, skill benchmarking, project detection. |
+| **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
+| **Docs** | _claude, _claude-skills, _claude-agents, _claude-rules, _claude-project | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
+| **Gobbi** | __evaluation-project, __evaluation-architecture, __evaluation-performance, __evaluation-aesthetics, __evaluation-overall | Internal implementation. Gobbi's own evaluation perspective machinery. |
+| **Tool** | __validate, _audit, __benchmark | Utility and maintenance tools. Verification, drift detection, benchmarking. |
+
+Some Work skills have child skill categories grouping related sub-skills:
+
+- **Evaluation** (child of _evaluation): _ideation-evaluation, _plan-evaluation, _execution-evaluation — stage-specific criteria
+- **Notification** (child of _notification): _slack, _telegram, _discord — channel-specific setup
+- **Gotcha** (child of _gotcha): _project-gotcha, _skills-gotcha — how to record different types of gotchas
 
 The `_gotcha/` skill is special — it contains per-skill gotcha files (`_orchestration.md`, `_git.md`, etc.) that record cross-project mistakes. Every agent checks the relevant gotcha file before starting work.
 
@@ -41,14 +46,14 @@ Agent definitions live in `.claude/agents/`. Each file defines a specialist suba
 | _pi | Principal Investigator — ideation and planning through user discussion |
 | _planner | Plan decomposition and task structuring |
 | _developer | Code implementation and verification |
-| __evaluator_project | Project-scope evaluator |
-| __evaluator_architecture | Architecture-level evaluator |
-| __evaluator_performance | Performance-level evaluator |
-| __evaluator_aesthetics | Aesthetics-level evaluator |
-| __evaluator_overall | Overall cross-dimension evaluator |
-| __skills_grader | Skill trigger accuracy and output quality testing |
-| __skills_comparator | Blind comparison of skill versions |
-| __skills_analyzer | Synthesize grading and comparison into improvement recommendations |
+| __evaluator-project | Project-scope evaluator |
+| __evaluator-architecture | Architecture-level evaluator |
+| __evaluator-performance | Performance-level evaluator |
+| __evaluator-aesthetics | Aesthetics-level evaluator |
+| __evaluator-overall | Overall cross-dimension evaluator |
+| __skills-grader | Skill trigger accuracy and output quality testing |
+| __skills-comparator | Blind comparison of skill versions |
+| __skills-analyzer | Synthesize grading and comparison into improvement recommendations |
 
 ### Hooks
 
