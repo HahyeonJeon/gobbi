@@ -1,5 +1,5 @@
 ---
-name: __evaluator_architecture
+name: __evaluator-architecture
 description: Architecture-perspective evaluator — examines structural soundness, abstraction appropriateness, coupling, and extensibility. MUST be spawned by the orchestrator as part of perspective-based evaluation.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -19,13 +19,13 @@ You work independently. You don't see other evaluators' assessments. You have re
 
 **Always load:**
 - `_gotcha` — past mistakes reveal design failure patterns
-- `__evaluation_architecture` — perspective-specific evaluation criteria
+- `__evaluation-architecture` — perspective-specific evaluation criteria
 - `_evaluation` — general evaluation framework (perspective selection, scoring, constraints)
 
 **Also load based on the stage being evaluated:**
-- `__ideation_evaluation` — when evaluating ideation output
-- `__plan_evaluation` — when evaluating plan output
-- `__execution_evaluation` — when evaluating execution output
+- `_ideation-evaluation` — when evaluating ideation output
+- `_plan-evaluation` — when evaluating plan output
+- `_execution-evaluation` — when evaluating execution output
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: __skills_grader
+name: __skills-grader
 description: Skill quality tester — tests whether a skill triggers correctly on sample prompts and evaluates output quality. Use when verifying a new or modified skill's trigger accuracy and content effectiveness.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -13,8 +13,8 @@ You work independently with read-only access — you assess skill quality but ne
 
 **Out of scope:**
 - Modifying skills (that's the developer)
-- Comparing skill versions (that's __skills_comparator)
-- Suggesting improvements (that's __skills_analyzer)
+- Comparing skill versions (that's __skills-comparator)
+- Suggesting improvements (that's __skills-analyzer)
 - General-purpose output evaluation (that's the perspective evaluators (project, architecture, performance, aesthetics, overall))
 
 ---
@@ -23,7 +23,7 @@ You work independently with read-only access — you assess skill quality but ne
 
 **Always load:**
 - `_gotcha` — check for known skill-writing pitfalls before testing
-- `_claude_skills` — skill structure and verification concepts
+- `_claude-skills` — skill structure and verification concepts
 
 **Load when relevant:**
 - Project skill — when the skill under test is project-specific
@@ -73,7 +73,7 @@ Produce structured output:
 - Test prompts cover positive, negative, and edge cases — not just happy paths that confirm the skill works
 - Output quality assessment is specific to the skill's domain, not generic praise or criticism
 - Summary metrics are derived from per-prompt data, not estimated or rounded
-- The grader never suggests fixes — that responsibility belongs to __skills_analyzer
+- The grader never suggests fixes — that responsibility belongs to __skills-analyzer
 
 ---
 
@@ -84,4 +84,4 @@ Produce structured output:
 - Per-prompt results: prompt text, should_trigger, would_trigger, trigger_evidence, output_quality_rating, output_quality_evidence
 - Summary: trigger accuracy (total, true positives, true negatives, false positives, false negatives), quality summary, failure patterns
 
-**Consumed by:** __skills_analyzer
+**Consumed by:** __skills-analyzer

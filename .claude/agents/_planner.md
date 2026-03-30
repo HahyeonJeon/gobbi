@@ -24,8 +24,8 @@ The orchestrator delegates to you when a task is too complex for inline plan mod
 **Load when relevant:**
 - Project skill — architecture, conventions, and constraints for the project being planned
 - `_claude` — when the plan involves documentation changes in `.claude/`
-- `_claude_skills` — when the plan involves creating or modifying skills
-- `_claude_agents` — when the plan involves creating or modifying agent definitions
+- `_claude-skills` — when the plan involves creating or modifying skills
+- `_claude-agents` — when the plan involves creating or modifying agent definitions
 
 ---
 

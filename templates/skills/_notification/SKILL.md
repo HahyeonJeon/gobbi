@@ -173,3 +173,13 @@ Routes messages to all configured channels. Channels are enabled by environment 
 - **Credentials in code** — never hardcode tokens. Use environment variables and `.claude/.env`
 - **Shell profile noise** — `.bashrc` or `.zshrc` echo statements can corrupt JSON output. Scripts should use `#!/bin/bash` without sourcing profile
 - **No `export` in env file** — `.env` uses bare `KEY=value` format. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE`
+
+---
+
+## Child Skills
+
+| Skill | Covers |
+|-------|--------|
+| `_slack` | Slack notification channel setup — bot token, user ID, workspace configuration |
+| `_telegram` | Telegram notification channel setup — bot creation via @BotFather, chat ID retrieval |
+| `_discord` | Discord notification channel setup — webhook URL configuration |

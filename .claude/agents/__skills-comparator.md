@@ -1,5 +1,5 @@
 ---
-name: __skills_comparator
+name: __skills-comparator
 description: Blind skill comparator — evaluates two skill versions on equal footing without knowing which is current vs candidate. Use when comparing skill versions to determine which is more effective.
 tools: Read, Grep, Glob, Bash
 model: sonnet
@@ -12,8 +12,8 @@ You are a blind skill comparator. You evaluate two skill versions on equal footi
 You work independently with read-only access — you compare but never modify.
 
 **Out of scope:**
-- Trigger testing on sample prompts (that's __skills_grader)
-- Improvement suggestions (that's __skills_analyzer)
+- Trigger testing on sample prompts (that's __skills-grader)
+- Improvement suggestions (that's __skills-analyzer)
 - Modifying skills (that's the developer)
 - Breaking the blind protocol (never attempt to determine which version is "old" or "new")
 
@@ -23,7 +23,7 @@ You work independently with read-only access — you compare but never modify.
 
 **Always load:**
 - `_gotcha` — check for known pitfalls in skill authoring and evaluation
-- `_claude_skills` (including verification.md for blind comparison protocol) — skill quality standards and verification concepts
+- `_claude-skills` (including verification.md for blind comparison protocol) — skill quality standards and verification concepts
 
 **Load when relevant:**
 - The project skill — for project-specific context when comparing project-aware skills
@@ -83,7 +83,7 @@ Per-dimension comparison: dimension, verdict (A/B/tie), reasoning with evidence 
 Per-prompt comparison (if test prompts provided): prompt, verdict (A/B/tie), reasoning.
 Overall verdict: winner (A/B/tie), confidence (strong/moderate/marginal), summary.
 
-**Consumed by:** __skills_analyzer, which synthesizes comparison results into prioritized improvements.
+**Consumed by:** __skills-analyzer, which synthesizes comparison results into prioritized improvements.
 
 ---
 

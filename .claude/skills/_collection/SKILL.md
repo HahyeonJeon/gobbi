@@ -75,7 +75,7 @@ This complements per-agent Memorize steps by capturing orchestrator-level insigh
 - **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via _gotcha.
 - **CLAUDE.md additions** — conventions or patterns discovered that should persist across sessions. Add as one-line entries to CLAUDE.md.
 - **Skill updates** — behavioral patterns identified that a skill should teach. When a learning is categorized as a skill update, the orchestrator MUST propose a concrete change to the skill rather than merely flagging it for later. This is opt-in: only prompt if skill-update-type learnings were identified during the session. To propose a change:
-  - Load _claude and _claude_skills for authoring standards
+  - Load _claude and _claude-skills for authoring standards
   - Run lint/validation on modified skills (lint-skill.sh) to catch anti-patterns before presenting
   - Present proposed changes to user via AskUserQuestion: "Would you like to review proposed skill updates before finishing?"
   - If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.

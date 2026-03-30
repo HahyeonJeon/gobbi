@@ -1,6 +1,6 @@
 # Skill Verification
 
-Concepts and evaluation agents for verifying skill quality — trigger accuracy, output quality, improvement loops, and blind comparison. Loaded from _claude_skills SKILL.md.
+Concepts and evaluation agents for verifying skill quality — trigger accuracy, output quality, improvement loops, and blind comparison. Loaded from _claude-skills SKILL.md.
 
 ---
 
@@ -20,7 +20,7 @@ Skill verification has two complementary tracks that answer different questions 
 
 **Script-based trigger testing** answers a narrow, binary question: does this skill's description accurately identify prompts that should load it, and correctly exclude prompts that shouldn't? The `__benchmark/scripts/trigger-test.py` script tests this with LLM-powered classification — it needs an `ANTHROPIC_API_KEY` and the `anthropic` Python package, but nothing else. The signal it produces is reproducible, cheap, and focused. Run it when iterating on a description: the feedback loop is tight enough to try several variants and see which produces better precision and recall.
 
-**Agent-based holistic verification** answers a broader, harder question: when this skill loads, does it help agents make good decisions? The three verification agents — __skills_grader, __skills_comparator, __skills_analyzer — assess trigger accuracy *and* output quality together. They can judge teaching effectiveness, mental model clarity, and anti-pattern compliance in ways no script can. This track is expensive (multiple agent calls per cycle), non-deterministic (results vary across runs), and requires more context to set up. It's the right tool for full quality assessment, not for rapid description tuning.
+**Agent-based holistic verification** answers a broader, harder question: when this skill loads, does it help agents make good decisions? The three verification agents — __skills-grader, __skills-comparator, __skills-analyzer — assess trigger accuracy *and* output quality together. They can judge teaching effectiveness, mental model clarity, and anti-pattern compliance in ways no script can. This track is expensive (multiple agent calls per cycle), non-deterministic (results vary across runs), and requires more context to set up. It's the right tool for full quality assessment, not for rapid description tuning.
 
 **The decision rule is:** trigger accuracy is a prerequisite, not the goal. If the description is wrong, no amount of content quality matters — the skill never loads. Fix the description first, cheaply, with the script. Once trigger accuracy is solid, use agents to assess whether the skill's content actually produces good outcomes. For a skill approaching shipping, both tracks together provide the most confidence: the script confirms the description is precise, and agents confirm the content is effective.
 
@@ -45,15 +45,15 @@ Dimensions for evaluating output quality:
 
 Skill verification follows gobbi's standard cycle: grade, analyze, improve, re-grade. This is a user-driven loop — the orchestrator suggests next steps, but the user decides when to iterate and when to stop.
 
-**Grade** — Use __skills_grader to test the skill against sample prompts. The grader evaluates trigger accuracy (did the right prompts load the skill?) and output quality (did the skill guide the agent well?). Grading produces structured results with scores and observations.
+**Grade** — Use __skills-grader to test the skill against sample prompts. The grader evaluates trigger accuracy (did the right prompts load the skill?) and output quality (did the skill guide the agent well?). Grading produces structured results with scores and observations.
 
-**Analyze** — Use __skills_analyzer to synthesize grading results into prioritized improvements. The analyzer identifies patterns across multiple grading results — recurring trigger failures, consistent output quality gaps, systematic weaknesses. It produces a ranked list of what to fix first.
+**Analyze** — Use __skills-analyzer to synthesize grading results into prioritized improvements. The analyzer identifies patterns across multiple grading results — recurring trigger failures, consistent output quality gaps, systematic weaknesses. It produces a ranked list of what to fix first.
 
 **Improve** — Apply the highest-priority improvements to the skill. Focus on one or two changes per iteration rather than rewriting everything. Small, targeted changes are easier to verify than broad rewrites.
 
 **Re-grade** — Run the grader again after improvements to verify they helped and didn't regress other areas. A fix to trigger accuracy shouldn't degrade output quality. A content improvement shouldn't break the trigger description.
 
-**Compare (optional)** — Use __skills_comparator for a blind A/B comparison of the old vs new version. Comparison is most valuable when changes are substantial or when grading alone doesn't clearly show whether the new version is better. See the blind comparison protocol below.
+**Compare (optional)** — Use __skills-comparator for a blind A/B comparison of the old vs new version. Comparison is most valuable when changes are substantial or when grading alone doesn't clearly show whether the new version is better. See the blind comparison protocol below.
 
 ---
 
@@ -71,11 +71,11 @@ After the comparator delivers its verdict, the invoker maps A/B back to current/
 
 Three agents execute skill verification, each with a distinct role:
 
-**__skills_grader** is the starting point for any verification cycle. It tests a skill's trigger accuracy against sample prompts and evaluates output quality by assessing how well the skill guides agent behavior. Use it first to establish a baseline, and again after improvements to measure progress.
+**__skills-grader** is the starting point for any verification cycle. It tests a skill's trigger accuracy against sample prompts and evaluates output quality by assessing how well the skill guides agent behavior. Use it first to establish a baseline, and again after improvements to measure progress.
 
-**__skills_comparator** is optional and used specifically when comparing two versions of a skill. It follows the blind comparison protocol — receiving two versions without provenance labels and evaluating which is stronger. Use it when grading alone doesn't clearly differentiate versions, or when changes are substantial enough to warrant side-by-side evaluation.
+**__skills-comparator** is optional and used specifically when comparing two versions of a skill. It follows the blind comparison protocol — receiving two versions without provenance labels and evaluating which is stronger. Use it when grading alone doesn't clearly differentiate versions, or when changes are substantial enough to warrant side-by-side evaluation.
 
-**__skills_analyzer** runs after the grader and/or comparator to synthesize results into actionable priorities. It takes grading scores, observations, and comparison verdicts as input and produces a ranked list of improvements. The data flow is: grader results and comparator results flow into the analyzer, which produces prioritized recommendations.
+**__skills-analyzer** runs after the grader and/or comparator to synthesize results into actionable priorities. It takes grading scores, observations, and comparison verdicts as input and produces a ranked list of improvements. The data flow is: grader results and comparator results flow into the analyzer, which produces prioritized recommendations.
 
 ---
 

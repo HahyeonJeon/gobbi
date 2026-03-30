@@ -1,1 +1,0 @@
-../../../.claude/agents/__evaluator_aesthetics.md

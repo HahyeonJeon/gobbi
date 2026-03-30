@@ -15,9 +15,9 @@ This skill covers the full `.claude/` directory: CLAUDE.md (session entry point)
 | Writing... | Read | Covers |
 |------------|------|--------|
 | A skill | [skills.md](skills.md) | Frontmatter, descriptions for auto-invocation, skill hierarchy, naming |
-| A rule | [rules.md](rules.md) | Verifiability, structure, when to create a rule |
+| A rule | `_claude-rules` skill | Verifiability, structure, when to create a rule |
 | An agent definition | [agents.md](agents.md) | Frontmatter, scope boundaries, role vs procedure |
-| Project documentation | [project.md](project.md) | Project docs live in `.claude/project/{project-name}/`, consistent directory structure |
+| Project documentation | `_claude-project` skill | Project docs in `.claude/project/{project-name}/` |
 
 ---
 

@@ -16,7 +16,7 @@ A broad domain skill can have child docs for focused subtasks. The parent teache
 
 > **All skills use underscore-prefixed naming.**
 
-Skills use Python-style underscore prefixes: hidden skills start with `_` (e.g. `_orchestration`, `_plan`), internal skills start with `__` (e.g. `__evaluation_project`, `__plan_evaluation`), and the entry point is named `gobbi` (no prefix). Each skill directory contains a SKILL.md entry point and optional child `.md` files in the same directory. Read `.claude/skills/` for the current roster.
+Skills use hyphen-separated naming with tier prefixes: hidden skills start with `_` (e.g. `_orchestration`, `_plan`), internal skills start with `__` (e.g. `__evaluation-project`, `__evaluation-architecture`), and the entry point is named `gobbi` (no prefix). Each skill directory contains a SKILL.md entry point and optional child `.md` files in the same directory. Read `.claude/skills/` for the current roster.
 
 ---
 

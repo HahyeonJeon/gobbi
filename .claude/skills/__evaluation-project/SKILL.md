@@ -1,5 +1,5 @@
 ---
-name: __evaluation_project
+name: __evaluation-project
 description: ALWAYS load when evaluating any output at any stage. Examines whether the output solves the right problem — scope alignment, requirements fit, user intent, and project goals. This perspective is mandatory in every evaluation.
 allowed-tools: Read, Grep, Glob, Bash
 ---

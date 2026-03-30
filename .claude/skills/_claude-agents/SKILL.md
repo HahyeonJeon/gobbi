@@ -1,5 +1,5 @@
 ---
-name: _claude_agents
+name: _claude-agents
 description: Reference and interactive guide for creating Claude Code agent definitions. MUST load when creating, reviewing, or modifying .claude/agents/ files. Must load _claude and _discuss before using this skill.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---

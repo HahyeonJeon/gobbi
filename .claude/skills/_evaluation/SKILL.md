@@ -46,16 +46,16 @@ The orchestrator selects 2-5 perspectives based on what the task involves. All e
 
 | Perspective | Agent | Always include because |
 |-------------|-------|----------------------|
-| Project | `__evaluator_project` | Checks goal alignment, conventions, and scope for every task |
-| Overall | `__evaluator_overall` | Synthesises across dimensions, identifies "must preserve" items |
+| Project | `__evaluator-project` | Checks goal alignment, conventions, and scope for every task |
+| Overall | `__evaluator-overall` | Synthesises across dimensions, identifies "must preserve" items |
 
 **Add when relevant:**
 
 | Perspective | Agent | Add when |
 |-------------|-------|----------|
-| Architecture | `__evaluator_architecture` | Task creates or modifies code structure, module boundaries, data models, or interfaces |
-| Performance | `__evaluator_performance` | Task affects hot paths, processes significant data volume, or has latency sensitivity |
-| Aesthetics | `__evaluator_aesthetics` | Task produces user-facing output — code, documentation, CLI text, or UI |
+| Architecture | `__evaluator-architecture` | Task creates or modifies code structure, module boundaries, data models, or interfaces |
+| Performance | `__evaluator-performance` | Task affects hot paths, processes significant data volume, or has latency sensitivity |
+| Aesthetics | `__evaluator-aesthetics` | Task produces user-facing output — code, documentation, CLI text, or UI |
 
 **Perspective count guidance:**
 - Minimum 2 (Project + Overall) — always
@@ -70,11 +70,11 @@ The orchestrator spawns the selected perspective evaluators for every evaluation
 
 | Agent | Perspective | Focus |
 |-------|-------------|-------|
-| `__evaluator_project` | Project | Goal alignment, scope adherence, convention compliance, task specification fidelity |
-| `__evaluator_architecture` | Architecture | Structural soundness, module boundaries, data model integrity, interface correctness |
-| `__evaluator_performance` | Performance | Efficiency, scalability, hot path impact, data volume handling, latency risks |
-| `__evaluator_aesthetics` | Aesthetics | Output quality, clarity, consistency, user-facing correctness and readability |
-| `__evaluator_overall` | Overall | Cross-dimension synthesis, "must preserve" list, unaddressed gaps, final verdict |
+| `__evaluator-project` | Project | Goal alignment, scope adherence, convention compliance, task specification fidelity |
+| `__evaluator-architecture` | Architecture | Structural soundness, module boundaries, data model integrity, interface correctness |
+| `__evaluator-performance` | Performance | Efficiency, scalability, hot path impact, data volume handling, latency risks |
+| `__evaluator-aesthetics` | Aesthetics | Output quality, clarity, consistency, user-facing correctness and readability |
+| `__evaluator-overall` | Overall | Cross-dimension synthesis, "must preserve" list, unaddressed gaps, final verdict |
 
 Each evaluator works independently, loads _gotcha, and returns a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning.
 
@@ -120,7 +120,7 @@ Severity measures how impactful the issue would be if it is real, independent of
 
 ### Threshold Filtering
 
-Low-confidence findings are suppressed from the evaluation report by default to prevent noise from drowning out high-confidence findings that need action. They are not discarded — the orchestrator or user can request the full unfiltered list. The current threshold value is configured in the evaluator agent definitions (see `__evaluator_project`, `__evaluator_architecture`, `__evaluator_performance`, `__evaluator_aesthetics`, `__evaluator_overall`).
+Low-confidence findings are suppressed from the evaluation report by default to prevent noise from drowning out high-confidence findings that need action. They are not discarded — the orchestrator or user can request the full unfiltered list. The current threshold value is configured in the evaluator agent definitions (see `__evaluator-project`, `__evaluator-architecture`, `__evaluator-performance`, `__evaluator-aesthetics`, `__evaluator-overall`).
 
 The threshold exists because evaluation should drive decisions, not generate noise. An evaluator uncertain about a finding should still record it (it may gain confidence in a future cycle), but it should not compete for attention with findings the evaluator is confident about.
 
@@ -203,13 +203,13 @@ Where gotchas go:
 ## Navigate deeper from here:
 
 **Stage-specific criteria** — load these based on what stage is being evaluated:
-- `__ideation_evaluation` — criteria for evaluating ideation output
-- `__plan_evaluation` — criteria for evaluating plan output
-- `__execution_evaluation` — criteria for evaluating execution output
+- `_ideation-evaluation` — criteria for evaluating ideation output
+- `_plan-evaluation` — criteria for evaluating plan output
+- `_execution-evaluation` — criteria for evaluating execution output
 
 **Perspective skills** — load these to understand each evaluator's domain:
-- `__evaluation_project` — project-perspective criteria (goal alignment, scope, conventions)
-- `__evaluation_architecture` — architecture-perspective criteria (structure, coupling, extensibility)
-- `__evaluation_performance` — performance-perspective criteria (efficiency, scalability, resource use)
-- `__evaluation_aesthetics` — aesthetics-perspective criteria (naming, readability, style consistency)
-- `__evaluation_overall` — overall-perspective criteria (cross-cutting gaps, must-preserve analysis)
+- `__evaluation-project` — project-perspective criteria (goal alignment, scope, conventions)
+- `__evaluation-architecture` — architecture-perspective criteria (structure, coupling, extensibility)
+- `__evaluation-performance` — performance-perspective criteria (efficiency, scalability, resource use)
+- `__evaluation-aesthetics` — aesthetics-perspective criteria (naming, readability, style consistency)
+- `__evaluation-overall` — overall-perspective criteria (cross-cutting gaps, must-preserve analysis)
