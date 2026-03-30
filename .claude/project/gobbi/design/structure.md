@@ -13,7 +13,7 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 | File | Purpose |
 |:-----|:--------|
 | `CLAUDE.md` | Session entry point. Core principles and workflow definition. Loaded every session. |
-| `GOBBI.md` | Gobbi identity and principles. Shared across installations via the plugin system. |
+| `README.md` | Gobbi identity and principles. Shared across installations via the plugin system. |
 | `gobbi.json` | Gobbi configuration state. |
 
 ### Skills
@@ -81,7 +81,7 @@ Shell scripts in `.claude/hooks/` that execute in response to Claude Code events
 
 ## Claude Code Gobbi Plugin
 
-The `plugins/gobbi-core/` directory packages gobbi as a Claude Code plugin for distribution and installation.
+The `plugins/gobbi/` directory packages gobbi as a Claude Code plugin for distribution and installation.
 
 ### Plugin Structure
 
@@ -91,18 +91,18 @@ The plugin uses symlinks to reference the canonical files in `.claude/`. This me
 |:-----|:-----|:----------|
 | `.claude-plugin/plugin.json` | File | Plugin manifest — name, version, description, skill path |
 | `settings.json` | File | Plugin settings merged into the target project on install |
-| `GOBBI.md` | Symlink | `../../.claude/GOBBI.md` |
+| `README.md` | Symlink | `../../.claude/README.md` |
 | `skills/gobbi-*` | Symlinks | `../../../.claude/skills/gobbi-*` |
 | `agents/gobbi-*.md` | Symlinks | `../../../.claude/agents/gobbi-*.md` |
 | `hooks/*.sh` | Symlinks | `../../../.claude/hooks/*.sh` |
 
 ### Marketplace Registration
 
-`.claude-plugin/marketplace.json` at the repo root registers gobbi in the Claude Code plugin marketplace. It points to `plugins/gobbi-core/` as the plugin source.
+`.claude-plugin/marketplace.json` at the repo root registers gobbi in the Claude Code plugin marketplace. It points to `plugins/gobbi/` as the plugin source.
 
 ### Templates
 
-`templates/` contains the source files that `gobbi install` copies into a target project's `.claude/` directory. The template structure mirrors the `.claude/` layout — skills, agents, hooks, settings, and GOBBI.md. Templates represent the installable snapshot; the working `.claude/` directory is the development copy.
+`templates/` contains the source files that `gobbi install` copies into a target project's `.claude/` directory. The template structure mirrors the `.claude/` layout — skills, agents, hooks, settings, and README.md. Templates represent the installable snapshot; the working `.claude/` directory is the development copy.
 
 ---
 

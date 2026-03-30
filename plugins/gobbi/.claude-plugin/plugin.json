@@ -1,7 +1,7 @@
 {
-  "name": "gobbi-core",
+  "name": "gobbi",
   "version": "0.2.1",
-  "description": "Gobbi workflow harness for Claude Code — structured orchestration with multi-stance evaluation, adaptive planning, and git workflow isolation",
+  "description": "Open-source ClaudeX tool for Claude Code — structured orchestration with multi-stance evaluation, adaptive planning, and git workflow isolation",
   "author": {
     "name": "HahyeonJeon"
   },

@@ -62,7 +62,7 @@ export async function runUpdate(targetDir: string, options: UpdateOptions): Prom
   console.log(ok(`Updated ${hookCount} hooks`));
 
   await copyGobbiMd(packageClaudeDir, claudeDir);
-  console.log(ok('Updated GOBBI.md'));
+  console.log(ok('Updated README.md'));
 
   // 7. Reassemble settings
   const settingsPath = path.join(claudeDir, 'settings.json');

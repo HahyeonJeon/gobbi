@@ -1,7 +1,7 @@
 {
   "name": "@gobbi/core",
   "version": "0.2.1",
-  "description": "Gobbi — workflow harness and claude docs management for Claude Code",
+  "description": "Open-source ClaudeX tool — workflow orchestration and docs management for Claude Code",
   "type": "module",
   "bin": {
     "gobbi": "./bin/gobbi.js"
@@ -15,9 +15,9 @@
     ".claude/skills",
     ".claude/agents",
     ".claude/hooks",
-    ".claude/GOBBI.md",
-    "plugins/gobbi-core/.claude-plugin",
-    "plugins/gobbi-core/settings.json"
+    ".claude/README.md",
+    "plugins/gobbi/.claude-plugin",
+    "plugins/gobbi/settings.json"
   ],
   "scripts": {
     "build": "tsc",
@@ -43,6 +43,9 @@
     "harness",
     "orchestration",
     "ai-agent",
-    "workflow"
+    "workflow",
+    "claudex",
+    "claude-experience",
+    "claude-docs"
   ]
 }

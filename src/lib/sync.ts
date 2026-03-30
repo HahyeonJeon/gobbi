@@ -145,16 +145,16 @@ export async function copyHooks(srcDir: string, destDir: string): Promise<number
 }
 
 /**
- * Copy GOBBI.md from source to destination.
- * @param srcDir - Source directory containing GOBBI.md.
- * @param destDir - Destination directory for GOBBI.md.
+ * Copy README.md from source to destination.
+ * @param srcDir - Source directory containing README.md.
+ * @param destDir - Destination directory for README.md.
  */
 export async function copyGobbiMd(srcDir: string, destDir: string): Promise<void> {
-  const src = path.join(srcDir, 'GOBBI.md');
+  const src = path.join(srcDir, 'README.md');
   if (!(await pathExists(src))) {
     return;
   }
 
   await mkdir(destDir, { recursive: true });
-  await cp(src, path.join(destDir, 'GOBBI.md'));
+  await cp(src, path.join(destDir, 'README.md'));
 }
