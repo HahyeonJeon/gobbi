@@ -103,8 +103,6 @@
       "Skill(gobbi-orchestration)",
       "Skill(gobbi-gotcha)",
       "Skill(gobbi-claude)",
-      "Skill(gobbi-claude-skills)",
-      "Skill(gobbi-claude-agents)",
       "Skill(gobbi-discuss)",
       "Skill(gobbi-ideation)",
       "Skill(gobbi-ideation-evaluation)",
@@ -118,10 +116,8 @@
       "Skill(gobbi-note:*)",
       "Skill(gobbi-collection)",
       "Skill(gobbi-notification)",
-      "WebSearch",
-      "Read(*)",
-      "Write(.claude/**)",
-      "Edit(.claude/**)"
+      "Skill(gobbi-hack)",
+      "WebSearch"
     ]
   }
 }

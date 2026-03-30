@@ -100,6 +100,18 @@ Mistakes in git/GitHub workflow, worktree management, branch handling, and PR li
 
 ---
 
+### Recommending cleanup of worktrees that may belong to concurrent sessions
+
+**Priority:** High
+
+**What happened:** At session start, the orchestrator found an existing worktree (`20-session5-proposals`) and recommended "Clean up" as the default option. The worktree was actively in use by a concurrent session. Recommending cleanup as default risks destroying another session's in-progress work.
+
+**User feedback:** "You should not recommend clean-up because there will be other concurrent sessions. Recommend Leave it."
+
+**Correct approach:** When orphaned worktrees are found at session start, default to "Leave it" as the recommended option. The orchestrator cannot know whether a worktree is truly orphaned or belongs to a concurrent session. Only recommend cleanup if the user explicitly confirms the worktree is abandoned. "Inspect first" is an acceptable secondary option; "Clean up" should never be the default recommendation.
+
+---
+
 ### Uncommitted gotchas in main tree lost during worktree PR merge
 
 **Priority:** High

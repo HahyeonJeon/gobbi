@@ -37,15 +37,3 @@ Mistakes in task implementation and verification.
 **User feedback:** Found during execution evaluation as a path traversal vulnerability.
 
 **Correct approach:** Validate user-provided strings before using them in path construction. Reject names containing `..`, `/`, `\`, or other path separators. Also verify the resolved path stays within the expected parent directory.
-
----
-
-### Heuristic pattern matching must account for real-world variety
-
-**Priority:** Medium
-
-**What happened:** A validate-skill.sh check was added to warn when skill descriptions lack trigger-oriented language. The pattern checked for `Use when`, `MUST load when`, `Use this`, `Load when`, `TRIGGER when`, `Load this` — but existing valid skills use phrases like `Use after` (gobbi-validate) and `Use to` (gobbi-note), which weren't in the pattern list. Two of five test skills produced false positives.
-
-**User feedback:** Found during orchestrator verification of agent output.
-
-**Correct approach:** When writing heuristic checks for natural language patterns, test against the actual corpus of existing files BEFORE committing. Enumerate the real patterns first (grep for existing descriptions), then build the regex to match all of them. For trigger language specifically, `Use (when|this|after|during|to|for)` captures the full range of "Use ..." patterns found in gobbi skills.
