@@ -4,11 +4,16 @@ trigger-test.py — Test whether a skill's description accurately triggers for t
 
 Usage:
     python3 trigger-test.py <SKILL.md> <prompts.txt> [--verbose]
+    python3 trigger-test.py <SKILL.md> <prompts.txt> [--verbose] [--roster <skills-dir>]
     python3 trigger-test.py --help
 
 Prompts file format: one prompt per line, prefixed with + (should trigger) or - (should not trigger).
     +Create a new skill for notification handling
     -Fix the login bug in auth.ts
+
+--roster: When provided, also tests each positive prompt against all other skills' descriptions
+    found in <skills-dir>/*/SKILL.md. Overlap findings are informational warnings, not failures.
+    Cost: each positive prompt requires one additional API call per roster skill.
 """
 
 import sys
@@ -155,6 +160,78 @@ def ask_claude(description: str, prompt: str) -> bool:
     return response_text.startswith("YES")
 
 
+def scan_roster(roster_dir: str, target_skill_md: str) -> list[tuple[str, str]]:
+    """
+    Scan a directory for */SKILL.md files and extract their descriptions.
+    Skips the target skill itself (by resolved path).
+    Returns list of (skill_name, description) tuples.
+    skill_name is the immediate parent directory name.
+    """
+    target_path = os.path.realpath(target_skill_md)
+    roster: list[tuple[str, str]] = []
+
+    try:
+        entries = sorted(os.listdir(roster_dir))
+    except FileNotFoundError:
+        print(f"Error: Roster directory not found: {roster_dir}", file=sys.stderr)
+        sys.exit(1)
+    except OSError as e:
+        print(f"Error reading roster directory: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    for entry in entries:
+        candidate = os.path.join(roster_dir, entry, "SKILL.md")
+        if not os.path.isfile(candidate):
+            continue
+        if os.path.realpath(candidate) == target_path:
+            continue
+        try:
+            description = extract_description(candidate)
+            roster.append((entry, description))
+        except SystemExit:
+            # extract_description already printed an error; skip this skill
+            print(
+                f"Warning: Skipping {candidate} (could not extract description)",
+                file=sys.stderr,
+            )
+
+    return roster
+
+
+def run_overlap_analysis(
+    positive_prompts: list[str],
+    roster: list[tuple[str, str]],
+    verbose: bool,
+) -> dict[str, list[str]]:
+    """
+    For each positive prompt, test it against all roster skills.
+    Returns a dict mapping prompt_text -> list of skill names that also triggered.
+    Only prompts with at least one overlap are included in the result.
+    """
+    overlap: dict[str, list[str]] = {}
+    total_calls = len(positive_prompts) * len(roster)
+
+    if verbose:
+        print(
+            f"Overlap analysis: {len(positive_prompts)} positive prompt(s) x "
+            f"{len(roster)} roster skill(s) = {total_calls} API call(s)"
+        )
+        print()
+
+    for i, prompt_text in enumerate(positive_prompts, start=1):
+        matches: list[str] = []
+        for skill_name, description in roster:
+            if verbose:
+                print(f"  [overlap {i}/{len(positive_prompts)}] {prompt_text[:60]}... vs {skill_name}")
+            triggered = ask_claude(description, prompt_text)
+            if triggered:
+                matches.append(skill_name)
+        if matches:
+            overlap[prompt_text] = matches
+
+    return overlap
+
+
 def calculate_metrics(
     results: list[tuple[bool, bool, str]],
 ) -> dict[str, float]:
@@ -236,6 +313,28 @@ def print_summary(metrics: dict[str, float]) -> None:
     print(f"F1 score:          {metrics['f1']:.3f}")
 
 
+def print_overlap_summary(
+    overlap: dict[str, list[str]],
+    total_positive: int,
+) -> None:
+    """Print overlap analysis results as informational warnings."""
+    print()
+    print("--- Overlap Analysis ---")
+    if not overlap:
+        print(f"No overlaps found across {total_positive} positive prompt(s). Descriptions are well-differentiated.")
+        return
+
+    print(
+        f"WARNING: {len(overlap)} of {total_positive} positive prompt(s) also triggered other skills."
+    )
+    print("These are informational — they indicate potential description overlap, not test failures.")
+    print()
+    for prompt_text, skills in overlap.items():
+        print(f"  Prompt: {prompt_text[:80]}")
+        for skill_name in skills:
+            print(f"    also triggers: {skill_name}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
@@ -256,7 +355,12 @@ def main() -> None:
             "Metrics:\n"
             "  Precision — of prompts Claude said should trigger, what fraction actually should?\n"
             "  Recall    — of prompts that should trigger, what fraction did Claude identify?\n"
-            "  F1        — harmonic mean of precision and recall"
+            "  F1        — harmonic mean of precision and recall\n"
+            "\n"
+            "Overlap analysis (--roster):\n"
+            "  Tests each positive prompt against all other skills in the roster directory.\n"
+            "  Overlap findings are informational warnings — they do not affect the exit code.\n"
+            "  Cost: O(positive_prompts * roster_size) additional API calls."
         ),
     )
     parser.add_argument("skill_md", help="Path to the SKILL.md file")
@@ -265,6 +369,15 @@ def main() -> None:
         "--verbose",
         action="store_true",
         help="Show per-prompt details (prompt text, expected, actual, pass/fail)",
+    )
+    parser.add_argument(
+        "--roster",
+        metavar="SKILLS_DIR",
+        help=(
+            "Directory containing skill subdirectories (each with a SKILL.md). "
+            "When provided, positive prompts are also tested against all other skills "
+            "to detect description overlap. Findings are informational, not failures."
+        ),
     )
 
     args = parser.parse_args()
@@ -283,7 +396,23 @@ def main() -> None:
     metrics = calculate_metrics(results)
     print_summary(metrics)
 
-    # Exit 1 if any failures
+    # Overlap analysis — runs after normal test, only if --roster is provided
+    if args.roster is not None:
+        roster = scan_roster(args.roster, args.skill_md)
+        positive_prompts = [prompt_text for expected, prompt_text in prompts if expected]
+        if roster and positive_prompts:
+            overlap = run_overlap_analysis(positive_prompts, roster, args.verbose)
+            print_overlap_summary(overlap, len(positive_prompts))
+        elif not roster:
+            print()
+            print("--- Overlap Analysis ---")
+            print("No other skills found in roster directory. Nothing to compare.")
+        else:
+            print()
+            print("--- Overlap Analysis ---")
+            print("No positive prompts in test set. Overlap analysis skipped.")
+
+    # Exit 1 if any failures (overlap findings do not affect exit code)
     if metrics["passed"] < metrics["total"]:
         sys.exit(1)
 
