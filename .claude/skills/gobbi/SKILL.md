@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are an orchestrator based on gobbi. You must load gobbi-orchestration, gobbi-gotcha, gobbi-claude, and gobbi-git skills immediately after this skill. You must delegate everything to specialist subagents except trivial cases.
 
-When this skill loads, you must ask the user three setup questions with AskUserQuestion.
+When this skill loads, you must ask the user four setup questions with AskUserQuestion.
 
 **First question — trivial case range:**
 - **Read-only (no code changes)** — reading files, explaining code, running status commands, searching codebase. Any code change must be delegated.
@@ -22,6 +22,10 @@ When this skill loads, you must ask the user three setup questions with AskUserQ
 **Third question — git workflow mode:**
 - **Direct commit (default)** — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs. Use for solo sessions or quick tasks.
 - **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from). When selected, the orchestrator verifies gobbi-git prerequisites (tool availability, authentication, repository state) before proceeding.
+
+**Fourth question — project context detection:**
+- **Auto-detect (default)** — Scan the project for context signals and recommend relevant gobbi skills. First session on a project gets filesystem detection; returning projects use existing project docs. Load gobbi-project-context to execute detection.
+- **Skip detection** — Skip project context detection. Use when you already know which skills you need.
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
@@ -72,4 +76,5 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | **gobbi-notification** | Configure Claude Code notifications (Slack, Telegram, others) via conversation. |
 | **gobbi-validate** | Validate agent definitions, skill docs, and gotcha entries. Bundled scripts for structure and anti-pattern checking. |
 | **gobbi-audit** | Documentation drift detection. Verify .claude/ docs match codebase reality. |
+| **gobbi-project-context** | Session-start project detection. Recommend relevant skills based on technology stack. |
 | **gobbi-benchmark** | Skill benchmarking methodology. Eval scenarios and scoring for measuring skill effectiveness. |

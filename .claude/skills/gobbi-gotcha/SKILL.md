@@ -86,6 +86,7 @@ Gotcha entries may include optional YAML frontmatter for tooling. The frontmatte
 | Field | Values | Required | Purpose |
 |-------|--------|----------|---------|
 | `priority` | critical, high, medium, low | Optional | Overrides the prose Priority line for machine readers |
+| `tech-stack` | comma-separated lowercase identifiers (e.g., node, python, docker, typescript) | Optional | Tags the entry with technology context — agents working in a specific tech context can filter gotchas by this field |
 | `enforcement` | hook, advisory | Optional (default: advisory) | Whether tooling can enforce this automatically |
 | `pattern` | regex string | Only when enforcement: hook | Regex to match against (bash commands, file paths, etc.) |
 | `event` | bash, file, stop | Only when enforcement: hook | Which hook event triggers the check |

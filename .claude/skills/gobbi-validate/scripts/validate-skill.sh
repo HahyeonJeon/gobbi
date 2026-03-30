@@ -54,6 +54,14 @@ else
     if [ -z "$name_line" ]; then
       echo "FAIL: $file: Missing required frontmatter field: name" >&2
       errors=$((errors + 1))
+    else
+      # Cross-validate: frontmatter name must match parent directory name
+      name_value=$(echo "$name_line" | sed 's/^name:[[:space:]]*//')
+      dir_name=$(basename "$(dirname "$file")")
+      if [ "$name_value" != "$dir_name" ]; then
+        echo "WARN: $file: Frontmatter name '$name_value' does not match directory name '$dir_name' — convention: directory name equals skill name equals invocation command" >&2
+        warnings=$((warnings + 1))
+      fi
     fi
 
     # Check allowed-tools field

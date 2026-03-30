@@ -112,6 +112,8 @@ python3 .claude/skills/gobbi-benchmark/scripts/trigger-test.py <SKILL.md> <promp
 
 Use `--verbose` to see per-prompt results. The script reports true positives, false positives, true negatives, false negatives, precision, recall, and F1 score. A strong description should produce high precision (few false triggers) and high recall (few missed triggers). When F1 is low, revise the description to be more specific or broader, depending on which direction the score leans.
 
+**Overlap analysis (--roster).** For targeted investigation of description overlap — when you suspect a skill's description is too broad and may co-trigger with other skills — pass `--roster <skills-dir>`. The script scans the directory for `*/SKILL.md` files and tests each positive prompt against every other skill's description. Overlap findings print as informational warnings after the main results and do not affect the exit code or test outcome. This is not routine testing: cost scales with roster size (positive_prompts × roster_skills additional API calls). Use it deliberately, when overlap is a specific concern.
+
 ---
 
 ## Constraints
