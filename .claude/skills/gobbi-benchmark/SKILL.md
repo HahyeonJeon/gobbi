@@ -13,6 +13,7 @@ Methodology for measuring how well skills perform. Benchmarks test a skill again
 | Resource | Location | Covers |
 |----------|----------|--------|
 | Benchmark scenarios | `benchmarks/` subdirectory | One file per scenario, named `scenario-NN-{skill}-{description}.md` |
+| Trigger testing scripts | `scripts/` subdirectory | trigger-test.py for description accuracy measurement |
 
 ---
 
@@ -92,6 +93,24 @@ gobbi-benchmark and gobbi-claude-skills verification (see `gobbi-claude-skills/v
 - **Verification** assesses holistic skill quality with specialized agents (grader, analyzer, comparator) — trigger accuracy, output quality, blind A/B comparison. Use verification to answer "is this skill well-written and effective overall?"
 
 Benchmark scenarios complement verification agents. Run verification for broad quality assessment. Run benchmarks for targeted measurement of specific behaviors you're actively changing.
+
+---
+
+## Trigger Testing Script
+
+The `scripts/trigger-test.py` script answers a narrow question: does this skill's description reliably identify the prompts it should load for, and reliably exclude the ones it should not?
+
+**Two tracks, two questions.** Script-based trigger testing and agent-based verification are complementary but distinct. The script tests one thing cheaply and repeatably: does the description match the right prompts? Agent-based verification (gobbi-skills-grader) tests something harder and more expensive: does the skill produce good outcomes when loaded? Trigger accuracy is a prerequisite for outcome quality — if the skill never loads for the right prompts, it can never help — but a skill can trigger correctly and still produce poor output. Use the script for the narrow question, the agent for the holistic one.
+
+**Why Python and the anthropic package.** The gobbi-validate scripts are bash-only. This script departs from that pattern deliberately. Trigger testing is a classification problem: given this description, does this prompt warrant loading? That question requires LLM judgment. Grep patterns and heuristics cannot approximate semantic relevance. The dependency cost (Python, `pip install anthropic`, an API key) is the price of getting a meaningful signal rather than a fast but meaningless one.
+
+**Usage.** Prepare a prompts file with one line per prompt, prefixed `+` for prompts that should trigger and `-` for those that should not. Run:
+
+```
+python3 .claude/skills/gobbi-benchmark/scripts/trigger-test.py <SKILL.md> <prompts.txt>
+```
+
+Use `--verbose` to see per-prompt results. The script reports true positives, false positives, true negatives, false negatives, precision, recall, and F1 score. A strong description should produce high precision (few false triggers) and high recall (few missed triggers). When F1 is low, revise the description to be more specific or broader, depending on which direction the score leans.
 
 ---
 

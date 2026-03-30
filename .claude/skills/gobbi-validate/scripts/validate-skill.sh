@@ -86,6 +86,52 @@ if [ -n "$sibling_mds" ]; then
   fi
 fi
 
+# Check 1: Description max length
+if [ -n "${desc_value:-}" ]; then
+  desc_len=${#desc_value}
+  if [ "$desc_len" -gt 1024 ]; then
+    echo "WARN: $file: Description exceeds 1024 character limit ($desc_len chars) — auto-invocation may truncate" >&2
+    warnings=$((warnings + 1))
+  fi
+fi
+
+# Check 2: Description min length
+if [ -n "${desc_value:-}" ]; then
+  desc_len=${#desc_value}
+  if [ "$desc_len" -lt 20 ]; then
+    echo "WARN: $file: Description is very short ($desc_len chars) — may not provide enough trigger specificity" >&2
+    warnings=$((warnings + 1))
+  fi
+fi
+
+# Check 3: Trigger language heuristic
+if [ -n "${desc_value:-}" ]; then
+  if ! echo "$desc_value" | grep -qiE '(Use (when|this|after|during|to|for)|MUST load when|Load (when|this)|TRIGGER when)'; then
+    echo "WARN: $file: Description may lack trigger-oriented language — consider adding 'Use when...' or 'MUST load when...' phrasing" >&2
+    warnings=$((warnings + 1))
+  fi
+fi
+
+# Check 4: Core principles in first ~50 lines of body
+if [ -n "${fm_end:-}" ]; then
+  body_start=$((fm_end + 1))
+  body_first50=$(tail -n +"$body_start" "$file" | head -n 50)
+  if ! echo "$body_first50" | grep -q '^>'; then
+    echo "WARN: $file: No blockquote (>) found in first 50 lines of body — skills should lead with core principles" >&2
+    warnings=$((warnings + 1))
+  fi
+fi
+
+# Check 5: Empty/stub detection
+if [ -n "${fm_end:-}" ]; then
+  body_start=$((fm_end + 1))
+  nonempty_lines=$(tail -n +"$body_start" "$file" | grep -c '[^[:space:]]' || true)
+  if [ "$nonempty_lines" -lt 10 ]; then
+    echo "WARN: $file: Body has only $nonempty_lines non-empty lines — may be a stub" >&2
+    warnings=$((warnings + 1))
+  fi
+fi
+
 if [ "$errors" -gt 0 ]; then
   echo "FAILED: $file — $errors error(s), $warnings warning(s)" >&2
   exit 1
