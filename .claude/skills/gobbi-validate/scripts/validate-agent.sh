@@ -56,6 +56,12 @@ else
         echo "FAIL: $file: Name '$name_value' must be lowercase with hyphens only" >&2
         errors=$((errors + 1))
       fi
+      # Cross-validate: frontmatter name must match filename (without .md extension)
+      file_basename=$(basename "$file" .md)
+      if [ "$name_value" != "$file_basename" ]; then
+        echo "WARN: $file: Frontmatter name '$name_value' does not match filename '$file_basename' — convention: filename equals agent name" >&2
+        warnings=$((warnings + 1))
+      fi
     fi
 
     # Check description includes trigger language
