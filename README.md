@@ -34,13 +34,22 @@ Gobbi is an open-source ClaudeX tool.
 
 ## Quick Start
 
+In Claude Code:
+
+```
+/plugin marketplace add HahyeonJeon/gobbi
+/plugin install gobbi-core@gobbi
+```
+
+Then run `/gobbi` to begin.
+
+### CLI Install
+
 ```bash
 npx @gobbi/cli install
 ```
 
 This creates the `.gobbi/` directory with gobbi's skill and agent definitions, then syncs everything to `.claude/` where Claude Code reads them.
-
-Start Claude Code and run `/gobbi` to begin.
 
 ---
 
