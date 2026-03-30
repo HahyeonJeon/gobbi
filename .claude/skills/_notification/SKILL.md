@@ -10,171 +10,50 @@ Help users configure Claude Code notification credentials through conversation. 
 
 ---
 
-## When This Skill Loads
+## Credential Setup
 
-Guide the user through credential setup using AskUserQuestion. Follow these steps in order.
+The goal is to collect notification credentials from the user, save them securely, and verify that at least one real notification arrives before confirming success.
 
-### Step 1: Ask which channels to configure
+**Constraints:**
+- Use AskUserQuestion for all credential collection — never assume or prefill values
+- Save credentials to `.claude/.env` — this file is read by `load-notification-env.sh` at session start via the `$CLAUDE_ENV_FILE` mechanism
+- Before finishing, verify that `.claude/.env` is listed in `.gitignore` — credentials must never be committed
+- Test with a real notification before confirming setup is complete — a configuration that looks correct but never delivers is not set up
 
-Use AskUserQuestion with multiSelect. Options:
+**Credentials needed per channel:**
 
-- **Slack** (recommended first) — richest integration, supports threads and formatting
-- **Telegram** — lightweight, good for mobile alerts
-- **Desktop** — OS-native notifications, no account needed
-- **Custom webhook** — any HTTP endpoint
+- **Slack:** A bot token (starts with `xoxb-`) and a user ID or channel ID to receive messages. Obtain from https://api.slack.com/apps — create an app, add `chat:write` scope, install to workspace.
+- **Telegram:** A bot token and a chat ID. Obtain by creating a bot via @BotFather on Telegram.
+- **Desktop:** No credentials — set `NOTIFY_DESKTOP=true`. Requires `notify-send` (Linux) or `osascript` (macOS).
+- **Custom webhook:** A URL and any required auth headers. Follow the same environment variable pattern as the other channels.
 
-Allow multiple selection. The user may want different channels for different event types (e.g., errors to Slack, completions to desktop).
-
-### Step 2: Collect credentials for each selected channel
-
-For each channel, walk the user through obtaining and providing credentials using AskUserQuestion.
-
-**Slack (Bot API — DM to user):**
-1. Guide: Go to https://api.slack.com/apps, Create New App, From Scratch
-2. Go to OAuth & Permissions, add `chat:write` scope under Bot Token Scopes
-3. Install App to Workspace, copy the Bot User OAuth Token (`xoxb-...`)
-4. Get your Slack User ID: click your profile in Slack → three dots → Copy member ID
-5. Ask user to paste `SLACK_BOT_TOKEN` and `SLACK_USER_ID`
-
-**Telegram:**
-1. Guide: Open Telegram, search @BotFather, send `/newbot`, follow prompts, copy the bot token
-2. Guide: Start a chat with the new bot, send any message, then get chat ID via `curl https://api.telegram.org/bot<TOKEN>/getUpdates` and find `chat.id` in the response
-3. Ask user to paste `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
-
-**Desktop:**
-- No credentials needed. Set `NOTIFY_DESKTOP=true` in the credentials file.
-- Requires `notify-send` on Linux or `osascript` on macOS (usually pre-installed).
-
-**Custom webhook:**
-- Ask for the webhook URL and any required auth headers. Store as environment variables following the same pattern.
-
-### Step 3: Save credentials
-
-Write the collected values to `.claude/.env` (must be gitignored). This file is read by `load-notification-env.sh` at SessionStart via the `$CLAUDE_ENV_FILE` mechanism.
-
-**Format:** One `KEY=value` per line, no `export` prefix — the hook script adds it. Blank lines and lines starting with `#` are ignored.
-
-Write credentials to `.claude/.env.tmp` first, then move to `.claude/.env` for an atomic update that avoids partial reads. File permissions are enforced to 600 at session start automatically.
-
-After writing, check whether `.claude/.env` is in `.gitignore`. If not, remind the user to add it — credentials must never be committed.
-
-### Step 4: Verify setup
-
-Offer two verification options:
-- **Quick test:** Run the `notify-send.sh` script directly with a test message to confirm the channel receives it
-- **Live test:** Tell the user to trigger a notification event naturally (e.g., ask Claude something short that completes, which fires the Stop hook)
-
-If the test fails, troubleshoot: check that the env file exists, values are correct, and the hook script is executable.
+**Credentials file format:** One `KEY=value` per line, no `export` prefix — the hook script adds it. Blank lines and `#` comments are ignored. File permissions must be 600 (enforced at session start automatically).
 
 ---
 
 ## Events and Matchers
 
-After channel setup, ask the user which events they want notifications on. For each event, ask which matcher values to use via AskUserQuestion. The matcher is a regex pattern that filters when the hook fires.
+Claude Code hooks fire on named events. Each hook can be filtered by a `matcher` field — a regex pattern that limits when the hook fires. The full event and matcher reference is in the Claude Code hooks documentation — consult that as the authoritative source.
 
-### Events with matchers
+**Most useful events for notifications:**
+- `Stop` — fires when Claude finishes responding; most common for "notify me when done"
+- `SessionEnd` — fires when the session ends; useful for session tracking
+- `Notification` — fires when Claude Code raises a notification (permission prompts, idle prompts); useful for "notify me when you need attention"
 
-For each event, ask the user which matcher values to include. Build the `matcher` field as a regex pipe (`value1|value2`). Matchers are case-sensitive.
-
-**Notification** — matcher filters on notification type
-- Values: `permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`
-- Ask: Which types? e.g., only `permission_prompt|elicitation_dialog` for attention-needed alerts
-
-**PreToolUse / PostToolUse / PostToolUseFailure / PermissionRequest** — matcher filters on tool name
-- Values: `Bash`, `Edit`, `Write`, `Read`, `Glob`, `Grep`, `WebFetch`, `WebSearch`, `Agent`, `ExitPlanMode`
-- MCP tools: `mcp__<server>__<tool>` (e.g., `mcp__github__search_repositories`), regex `mcp__.*`
-- Ask: Which tools? e.g., only `Edit|Write` for code change notifications
-
-**SubagentStart / SubagentStop** — matcher filters on agent type
-- Values: `Bash`, `Explore`, `Plan`, or custom agent names
-- Ask: All subagents or specific types?
-
-**StopFailure** — matcher filters on error type
-- Values: `rate_limit`, `authentication_failed`, `billing_error`, `invalid_request`, `server_error`, `max_output_tokens`, `unknown`
-- Ask: Which error types?
-
-**SessionStart** — matcher filters on session source
-- Values: `startup`, `resume`, `clear`, `compact`
-- Ask: Which session events?
-
-**SessionEnd** — matcher filters on end reason
-- Values: `clear`, `resume`, `logout`, `prompt_input_exit`, `bypass_permissions_disabled`, `other`
-- Ask: Which end reasons?
-
-**ConfigChange** — matcher filters on config source
-- Values: `user_settings`, `project_settings`, `local_settings`, `policy_settings`, `skills`
-- Ask: Which config changes?
-
-**FileChanged** — matcher filters on filename (basename)
-- Values: any filename (e.g., `.env`, `.envrc`, `package.json`)
-- Ask: Which files to watch?
-
-**InstructionsLoaded** — matcher filters on load reason
-- Values: `session_start`, `nested_traversal`, `path_glob_match`, `include`, `compact`
-- Ask: Which load events?
-
-**PreCompact / PostCompact** — matcher filters on compaction trigger
-- Values: `manual`, `auto`
-- Ask: Both or specific trigger?
-
-**Elicitation / ElicitationResult** — matcher filters on MCP server name
-- Values: configured MCP server names
-- Ask: Which MCP servers?
-
-### Events without matchers
-
-These events fire on every occurrence — no matcher filtering.
-
-| Event | When It Fires |
-|-------|---------------|
-| `Stop` | Claude finishes responding |
-| `TaskCreated` | A tracked task is created |
-| `TaskCompleted` | A tracked task is marked done |
-| `UserPromptSubmit` | Before Claude processes input |
-| `TeammateIdle` | Before teammate goes idle |
-| `CwdChanged` | Working directory changes |
-| `WorktreeCreate` | A git worktree is created |
-| `WorktreeRemove` | A git worktree is removed |
-
-### For each event the user selects, must ask:
-
-1. Which matcher values to include (build as regex pipe for the `matcher` field)
-2. Which channel(s) to send to (may differ per event — errors to Slack, completions to desktop)
-3. Whether the hook should run async (`"async": true`, recommended) or blocking
+When configuring event hooks, ask the user which events they want, then ask per-event which matcher values to use and which channels to route to. For each event, also confirm whether the hook should run async (recommended) or blocking.
 
 ---
 
 ## Hook Scripts
 
-All scripts live in `.claude/hooks/` and must be executable (`chmod +x`). They use a shared sender (`notify-send.sh`) that routes to all configured channels via environment variables loaded from `$CLAUDE_ENV_FILE`.
+All scripts live in `.claude/hooks/` and must be executable. They use a shared sender (`notify-send.sh`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.
 
-### Shared sender: `notify-send.sh`
+Hook scripts are installed by the gobbi installation process. Read the installed scripts in `.claude/hooks/` and the hook configuration in `settings.json` for the current setup — these are the authoritative source for what is actually installed.
 
-Routes messages to all configured channels. Channels are enabled by environment variables (loaded via `$CLAUDE_ENV_FILE` at session start):
-- `SLACK_BOT_TOKEN` + `SLACK_USER_ID` — enables Slack (Bot API, DMs to user)
-- `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` — enables Telegram
-- `NOTIFY_DESKTOP=true` — enables native desktop notifications (Linux notify-send, macOS osascript)
-
-Messages are automatically truncated at per-platform limits. Override defaults via `.claude/.env`: `TELEGRAM_MAX_CHARS` (default 3900), `SLACK_MAX_CHARS` (default 3500), `DESKTOP_MAX_CHARS` (default 250).
-
-### Installed hook scripts
-
-| Script | Hook Event | Matcher | Use Case |
-|--------|-----------|---------|----------|
-| `notify-completion.sh` | `Stop` | (none) | "Notify me when Claude is done" |
-| `notify-attention.sh` | `Notification` | `permission_prompt\|idle_prompt\|elicitation_dialog` | "Notify me when Claude needs my input" |
-| `notify-error.sh` | `StopFailure` | `rate_limit\|authentication_failed\|billing_error\|server_error` | "Notify me when something goes wrong" |
-| `notify-subagent.sh` | `SubagentStop` | (all) | "Notify me when a subagent finishes" |
-| `notify-session.sh` | `SessionStart` / `SessionEnd` | `startup\|resume` / `logout\|prompt_input_exit` | "Notify me on session start/end" |
+Message truncation limits are configurable via `.claude/.env`. Defaults are defined in the notification scripts.
 
 ---
 
-## Gotchas
+## Verification
 
-- **Stop hook infinite loop** — always check `stop_hook_active` in the input JSON and exit early if `true`
-- **Missing jq** — scripts depend on `jq` for JSON parsing. Check availability and guide install
-- **Script not executable** — always `chmod +x` after writing hook scripts
-- **Credentials in code** — never hardcode tokens. Use environment variables and `.claude/.env`
-- **Shell profile noise** — `.bashrc` or `.zshrc` echo statements can corrupt JSON output. Scripts should use `#!/bin/bash` without sourcing profile
-- **No `export` in env file** — `.env` uses bare `KEY=value` format. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE`
-- **Delivery failures silently disappear** — failures are logged to `~/.claude/notification-failures.log`. Check this file if notifications stop arriving. The log grows unboundedly — delete it periodically if it gets large.
+If a test notification fails to arrive: check that `.claude/.env` exists, values are correct, the hook scripts are executable, and `jq` is available (scripts depend on it for JSON parsing). Delivery failures are logged — check `~/.claude/notification-failures.log` if notifications stop arriving.
