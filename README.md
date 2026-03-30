@@ -24,7 +24,7 @@ Gobbi is an open-source ClaudeX tool.
 
 **Quality through structured evaluation** — Multi-stance evaluation (positive, moderate, critical) catches problems before they propagate. Every significant decision gets challenged from three angles before execution proceeds.
 
-**Claude docs managed, not scattered** — Skills, agents, and hooks organized with source-of-truth separation. The `.gobbi/` directory is the authoritative source; `.claude/` is generated output. Install from the marketplace or create your own.
+**Claude docs managed, not scattered** — Skills, agents, and hooks organized with source-of-truth separation. The `.gobbi/` directory is the authoritative source; `.claude/` is generated output. Install plugins or create your own through Claude Code.
 
 **Domain expertise built in** — Domain-specific skills (Python, TypeScript, data engineering) bring specialized knowledge to your sessions without requiring you to explain the domain each time.
 
@@ -58,21 +58,7 @@ This creates the `.gobbi/` directory with gobbi's skill and agent definitions, t
 |---------|---------|
 | `npx @gobbi/cli install` | Install gobbi into the current project |
 | `npx @gobbi/cli update` | Update gobbi core to the latest version |
-| `npx @gobbi/cli create` | Create a new skill, agent, or hook (interactive wizard) |
 | `npx @gobbi/cli sync` | Manually sync `.gobbi/` to `.claude/` |
-
----
-
-## Marketplace
-
-Install community packages from the gobbi marketplace.
-
-```bash
-npx @gobbi/market install @gobbi/skill-example
-npx @gobbi/market search <query>
-npx @gobbi/market list
-npx @gobbi/market uninstall @gobbi/skill-example
-```
 
 ---
 
@@ -111,16 +97,6 @@ npx @gobbi/cli install
 ```
 
 Automatically detects existing `.claude/` gobbi files, migrates them to `.gobbi/`, and syncs back. No manual intervention needed.
-
----
-
-## Creating Your Own Docs
-
-```bash
-npx @gobbi/cli create
-```
-
-Interactive wizard guides you through creating skills, agents, or hooks. Files are created in `.gobbi/user/` and synced to `.claude/`.
 
 ---
 
