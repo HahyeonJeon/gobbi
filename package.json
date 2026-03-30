@@ -15,7 +15,7 @@
     ".claude/skills",
     ".claude/agents",
     ".claude/hooks",
-    ".claude/GOBBI.md",
+    ".claude/README.md",
     "plugins/gobbi/.claude-plugin",
     "plugins/gobbi/settings.json"
   ],

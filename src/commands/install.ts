@@ -81,7 +81,7 @@ export async function runInstall(targetDir: string, options: InstallOptions): Pr
   // Clear existing gobbi items to avoid stale files
   await clearGobbiItems(claudeDir);
 
-  // Copy skills, agents, hooks, GOBBI.md from package .claude/ to target .claude/
+  // Copy skills, agents, hooks, README.md from package .claude/ to target .claude/
   const skillCount = await copySkills(path.join(packageClaudeDir, 'skills'), path.join(claudeDir, 'skills'));
   const agentCount = await copyAgents(path.join(packageClaudeDir, 'agents'), path.join(claudeDir, 'agents'));
   const hookCount = await copyHooks(path.join(packageClaudeDir, 'hooks'), path.join(claudeDir, 'hooks'));
@@ -90,7 +90,7 @@ export async function runInstall(targetDir: string, options: InstallOptions): Pr
   console.log(ok(`Copied ${skillCount} skills`));
   console.log(ok(`Copied ${agentCount} agents`));
   console.log(ok(`Copied ${hookCount} hooks`));
-  console.log(ok('Copied GOBBI.md'));
+  console.log(ok('Copied README.md'));
   console.log('');
 
   // Write .claude/gobbi.json with version info
