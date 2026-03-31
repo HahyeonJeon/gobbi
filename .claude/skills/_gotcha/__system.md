@@ -37,6 +37,21 @@ priority: medium
 
 ---
 
+### Plugin hooks in settings.json are silently ignored
+---
+priority: high
+---
+
+**Priority:** High
+
+**What happened:** Gobbi's plugin distribution put all hook configuration (SessionStart, Stop, Notification, etc.) in `plugins/gobbi/settings.json`. Plugin users reported hooks not firing — the SessionStart hook script showed its usage message instead of executing automatically. Investigation revealed that Claude Code's plugin system only supports **agent settings** in plugin `settings.json`. Hooks, permissions, and other config in `settings.json` are silently ignored.
+
+**User feedback:** Confirmed via the official Claude Code plugin reference at `https://code.claude.com/docs/en/plugins-reference`.
+
+**Correct approach:** Plugin hooks must be in `hooks/hooks.json` at the plugin root (auto-discovered) or declared via the `hooks` field in `plugin.json`. The format is `{ "hooks": { "EventName": [...] } }`. Plugin `settings.json` is only for agent settings — do not put hooks or permissions there.
+
+---
+
 ### Session-scoped state in hooks
 ---
 priority: low
