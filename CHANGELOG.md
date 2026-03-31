@@ -7,13 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-03-31
+
 ### Added
 
-- gobbi-project-context skill for session-start project detection
-- gobbi-skills-grader, gobbi-skills-comparator, gobbi-skills-analyzer agents for skill evaluation
+- `gobbi-agent` setup assistant — user-facing onboarding agent for the plugin
+- 5-perspective evaluation model (project, architecture, performance, aesthetics, overall) replacing 3-stance model
+- Underscore naming convention with 3 visibility tiers (interface, hidden, internal)
+- `_memorization` skill for session continuity
+- Telegram and Discord notification channels
+- `_project-context` skill for session-start project detection
+- `__skills-grader`, `__skills-comparator`, `__skills-analyzer` agents for skill evaluation
 - Skill verification system with two-track verification and benchmark scenarios
 - YAML frontmatter for gotcha entries with priority, enforcement, and pattern fields
-- Security gotcha file (gobbi-security.md) for evaluator security signals
+- Security gotcha file for evaluator security signals
 - Contribution point identification at ideation-to-plan boundary
 - Decision annotation and pre-resolved decisions guidance in delegation
 - False positive rubric, stance-focus matrix, and deep mode in evaluation
@@ -27,12 +34,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Renamed `_developer`, `_pi`, `_planner` agents to internal tier (`__` prefix)
+- Plugin now exposes only `gobbi-agent` instead of internal worker agents
+- Added `"agents"` field to `plugin.json` manifest
+- All skills and agents migrated from `gobbi-` prefix to underscore naming convention
 - Reversed symlink direction — `.claude/` is now source of truth, plugins symlink to it
-- Split gobbi-claude into gobbi-claude-skills and gobbi-claude-agents
-- Restructured gobbi-orchestration with child docs (feedback.md, finish.md)
-- Made step-by-step anti-pattern context-dependent in gobbi-claude
-- Improved gobbi-claude-skills with skill-creator knowledge and authoring guide
+- Split `_claude` into `_claude-skills` and `_claude-agents`
+- Restructured `_orchestration` with child docs (feedback.md, finish.md)
+- Made step-by-step anti-pattern context-dependent in `_claude`
+- Improved `_claude-skills` with skill-creator knowledge and authoring guide
 - Hardened notification delivery from channel plugin review
+
+### Removed
+
+- `templates/` directory — dead code, both distribution paths read from `.claude/` directly
+- Unused `installCoreHooks` and `installNotificationHooks` functions from hooks.ts
+- Internal agents (`__evaluator-*`, `__skills-*`) removed from plugin distribution
 
 ### Fixed
 
@@ -81,7 +98,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slack notification hooks
 - Project state directory (`.claude/project/`) with design docs, gotchas, rules, and notes
 
-[Unreleased]: https://github.com/HahyeonJeon/gobbi/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/HahyeonJeon/gobbi/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/HahyeonJeon/gobbi/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/HahyeonJeon/gobbi/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/HahyeonJeon/gobbi/commits/v0.1.0

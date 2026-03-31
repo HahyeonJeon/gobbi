@@ -1,6 +1,6 @@
 {
   "name": "gobbi",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Open-source ClaudeX tool for Claude Code — structured orchestration with multi-stance evaluation, adaptive planning, and git workflow isolation",
   "author": {
     "name": "HahyeonJeon"
