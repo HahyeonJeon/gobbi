@@ -69,6 +69,8 @@ Workflow participant skills — loaded during the ideate-plan-execute-collect cy
 | **_delegation** | Hand off work to subagents with the right context and scope boundaries. |
 | **_execution** | Task execution guide. How an executor agent studies, plans, implements, and verifies. |
 | **_evaluation** | Parent evaluation framework. How to delegate evaluation, select perspectives, and discuss findings. |
+| **_ideation-evaluation** | Stage-specific evaluation criteria for ideation output. Concreteness, trade-offs, completeness. |
+| **_plan-evaluation** | Stage-specific evaluation criteria for plans. Task specificity, dependencies, feasibility. |
 | **_collection** | Persist workflow trail. Write prompt, plan, task results, and README to work directory. |
 | **_memorization** | Save context for session continuity. Persist task details, gotchas, and rules. |
 | **_note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
