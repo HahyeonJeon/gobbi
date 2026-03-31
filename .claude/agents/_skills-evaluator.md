@@ -2,7 +2,7 @@
 name: _skills-evaluator
 description: Skills Evaluator — MUST delegate here when a gobbi skill definition (SKILL.md file) needs evaluation. The orchestrator spawns this agent once per perspective, specifying which perspective skill to load in the delegation prompt.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Skills Evaluator

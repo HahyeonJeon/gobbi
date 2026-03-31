@@ -2,7 +2,7 @@
 name: __executor
 description: Executor — MUST delegate here when a task needs code implementation, file creation/modification, TypeScript development, refactoring, or build system changes. Handles the full development lifecycle from study through verification.
 tools: AskUserQuestion, Read, Grep, Glob, Bash, Write, Edit
-model: sonnet
+model: opus
 ---
 
 # Executor
