@@ -250,6 +250,12 @@ See [finish.md](finish.md) for the full decision tree, action definitions, and p
 - MUST use EnterPlanMode when writing or revising plans
 - When using AskUserQuestion, MUST put the recommended option first with "(Recommended)" in the label — give an opinion, don't just present neutral choices
 
+**Gobbi vs project boundary — understand what gobbi provides vs what the user's project needs:**
+- Gobbi provides workflow orchestration, `.claude/` documentation standards, evaluation framework, and gotcha recording. Users do NOT need to create skills or agents for these — gobbi serves them.
+- Users SHOULD create project-specific skills and agents that are tailored to their language, framework, and domain. For example, a project evaluation skill for a Python FastAPI project should know about Python-specific patterns, SQLAlchemy conventions, and FastAPI middleware — not just generic "check quality."
+- When the user asks to create skills, agents, or rules, determine whether gobbi already covers the need (redirect to the existing gobbi skill) or whether a project-specific artifact is needed (help create one with domain-specific content).
+- Project evaluation perspectives should be concrete and domain-aware — "check for N+1 queries in SQLAlchemy" is useful; "check performance" is not.
+
 **Never do these:**
 - Never implement complex domain work yourself when a specialist exists
 - Never delegate without context — agents without project standards produce work that fails integration

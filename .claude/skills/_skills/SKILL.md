@@ -35,6 +35,10 @@ Never create a skill from a vague description. Discuss the domain, trigger scena
 
 Read `.claude/skills/` to understand the current roster. Over-splitting weakens the agent's mental model — one skill per domain. If an existing skill already covers the knowledge area, extend it rather than creating a new one.
 
+> **Understand the gobbi vs project boundary.**
+
+Gobbi already provides skills for workflow orchestration, `.claude/` documentation, evaluation framework, gotcha recording, and notification setup. Users do NOT need to create skills for these areas — gobbi serves them. Project skills should be domain-specific: language-aware, framework-aware, and project-aware. A project evaluation skill should know about the project's tech stack (e.g., "check for N+1 queries in Django ORM"), not repeat generic guidance that gobbi's evaluation skills already cover. When helping create a skill, first check if gobbi already handles the domain — if it does, redirect rather than duplicate.
+
 ---
 
 ## Skill Structure
