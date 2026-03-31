@@ -24,6 +24,7 @@ Notes go in `.claude/project/{project-name}/note/`:
     execution.md                                          — execution outcomes, issues encountered
     feedback.md                                           — user feedback rounds, corrections made
     review.md                                             — review findings, verification results
+    memorize.md                                           — what was memorized for session continuity
     subtasks/
       {NN}-{subtask-slug}.md                              — copy of each subagent's task result
 ```
@@ -105,6 +106,14 @@ Record during Phase 3 (REVIEW):
 - Verification findings
 - Issues found and resolution status
 
+### memorize.md
+
+Record during Step 5 (Memorization). Must document what was persisted for session continuity:
+- Task details memorized — what was done, what remains, broader plan context
+- Gotchas written to `.claude/project/{project-name}/gotchas/` — list each with a one-line summary
+- Rules written to `.claude/project/{project-name}/rules/` — list each with a one-line summary
+- Project docs updated — which files in `.claude/project/{project-name}/` were created or modified and why
+
 ---
 
 ## README.md
@@ -117,6 +126,6 @@ Must update README.md after creating each new task note directory.
 
 ## When to Write
 
-- **Always write** at the end of each workflow step — ideation, plan, execution, feedback, review.
+- **Always write** at the end of each workflow step — ideation, plan, execution, feedback, review, memorization.
 - **Write immediately** — do not defer note-writing to the end. Each step's note must be written before proceeding to the next step.
 - **Skip only** when the task was trivial and handled directly without delegation.

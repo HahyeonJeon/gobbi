@@ -12,9 +12,13 @@ Hand off work to subagents so they succeed on the first attempt. Load this skill
 
 ## Core Principle
 
-> **Deliver a briefing, not a script.**
+> **Tell specialists what to do, not how to do it.**
 
-State what to achieve, what context to load, and what constraints apply. Leave implementation to the specialist.
+Detailed "how" instructions suppress a specialist agent's ability and potential. Define the goal, the constraints, and what to avoid — then trust the specialist to find the best approach. Guardrails about "not to do" protect quality; prescriptive "how to do" limits it.
+
+> **Promote the specialist's potential.**
+
+Frame the delegation to bring out the specialist's strengths. Provide context that enables good judgment — project rules, gotchas, conventions, relevant domain knowledge. The orchestrator's job is to set the specialist up for success, not to micromanage the execution.
 
 > **Load `_claude`, the project skill, and domain skills before every task.**
 
@@ -93,7 +97,9 @@ Every agent follows: **Study → Plan → Execute → Verify**. Your delegation 
 
 ## Model Selection
 
-> **Use the cheapest model that can do the job.** Default to the agent's defined model; override when the task clearly maps to a different tier.
+> **Use the cheapest model that can do the job.**
+
+Default to the agent's defined model; override when the task clearly maps to a different tier.
 
 Three tiers of capability, from lightest to heaviest:
 
