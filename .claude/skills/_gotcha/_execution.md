@@ -49,3 +49,18 @@ Mistakes in task implementation and verification.
 **User feedback:** Found during orchestrator verification of agent output.
 
 **Correct approach:** When writing heuristic checks for natural language patterns, test against the actual corpus of existing files BEFORE committing. Enumerate the real patterns first (grep for existing descriptions), then build the regex to match all of them. For trigger language specifically, `Use (when|this|after|during|to|for)` captures the full range of "Use ..." patterns found in gobbi skills.
+
+---
+
+### Agent registry is session-cached — renamed agents not recognized until reload
+---
+priority: medium
+---
+
+**Priority:** Medium
+
+**What happened:** Renamed `_developer.md` → `__developer.md` (file + frontmatter) mid-session. When delegating via Agent tool with `subagent_type: "__developer"`, the system returned "Agent type '__developer' not found" because the available agents list was loaded at session start and caches the original filenames.
+
+**User feedback:** Discovered during execution — had to use old name `_developer` for delegation within the same session.
+
+**Correct approach:** When renaming agent files mid-session, continue using the old agent type name for delegation until the session is reloaded. The agent registry reads `.claude/agents/` at session start and does not hot-reload. Plan accordingly: if renaming agents and delegating to them are in the same workflow, use the pre-rename names for delegation.

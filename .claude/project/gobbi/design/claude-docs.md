@@ -27,13 +27,11 @@ Skills are organized into four top-level categories: **Work** (workflow particip
 
 ### Agents
 
-#### Hidden (single `_`)
+#### Interface (no prefix)
 
 | Name | Path | Description |
 |------|------|-------------|
-| _developer | `.claude/agents/_developer.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
-| _pi | `.claude/agents/_pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation. |
-| _planner | `.claude/agents/_planner.md` | Task decomposition via codebase exploration and dependency analysis. |
+| gobbi-agent | `.claude/agents/gobbi-agent.md` | Onboarding and setup assistant. Project directory setup, notification configuration, workflow orientation. |
 
 #### Internal (double `__`)
 
@@ -44,6 +42,9 @@ Skills are organized into four top-level categories: **Work** (workflow particip
 | __evaluator-overall | `.claude/agents/__evaluator-overall.md` | Evaluation perspective: cross-cutting gaps, "must preserve" list generation. |
 | __evaluator-performance | `.claude/agents/__evaluator-performance.md` | Evaluation perspective: efficiency, scalability, resource proportionality. |
 | __evaluator-project | `.claude/agents/__evaluator-project.md` | Evaluation perspective: problem-solution fit, user intent, scope alignment. |
+| __developer | `.claude/agents/__developer.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
+| __pi | `.claude/agents/__pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation. |
+| __planner | `.claude/agents/__planner.md` | Task decomposition via codebase exploration and dependency analysis. |
 | __skills-analyzer | `.claude/agents/__skills-analyzer.md` | Synthesizes grading/comparison results into prioritized improvement recommendations. |
 | __skills-comparator | `.claude/agents/__skills-comparator.md` | Blind comparison of two skill versions without knowing which is current vs candidate. |
 | __skills-grader | `.claude/agents/__skills-grader.md` | Tests skill trigger accuracy and output quality on sample prompts. |

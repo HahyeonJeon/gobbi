@@ -107,6 +107,8 @@ export async function copyAgents(srcDir: string, destDir: string): Promise<numbe
   let count = 0;
 
   for (const entry of entries) {
+    // Only hidden (_) and internal (__) agents are copied. Interface agents (gobbi- prefix)
+    // are distributed exclusively via the plugin, not the CLI install pipeline.
     if (entry.isFile() && entry.name.startsWith('_')) {
       const src = path.join(srcDir, entry.name);
       const dest = path.join(destDir, entry.name);

@@ -1,5 +1,5 @@
 ---
-name: _planner
+name: __planner
 description: Planner — MUST delegate here when a task needs complex decomposition, codebase exploration for planning, dependency analysis, or multi-wave task structuring. Handles plan creation for the orchestrator.
 tools: Read, Grep, Glob, Bash
 model: opus

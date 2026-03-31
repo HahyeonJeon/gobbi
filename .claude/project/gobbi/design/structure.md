@@ -43,9 +43,10 @@ Agent definitions live in `.claude/agents/`. Each file defines a specialist suba
 
 | Agent | Role |
 |:------|:-----|
-| _pi | Principal Investigator — ideation and planning through user discussion |
-| _planner | Plan decomposition and task structuring |
-| _developer | Code implementation and verification |
+| gobbi-agent | Onboarding and setup assistant — helps users configure their Claude Code environment |
+| __pi | Principal Investigator — ideation and planning through user discussion |
+| __planner | Plan decomposition and task structuring |
+| __developer | Code implementation and verification |
 | __evaluator-project | Project-scope evaluator |
 | __evaluator-architecture | Architecture-level evaluator |
 | __evaluator-performance | Performance-level evaluator |

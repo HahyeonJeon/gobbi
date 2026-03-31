@@ -1,5 +1,5 @@
 ---
-name: _pi
+name: __pi
 description: Principal Investigator — MUST delegate here when a task needs deep problem analysis, requirement refinement, idea development, or technical investigation before planning. Handles ideation, discussion, and codebase/web research.
 tools: AskUserQuestion, Read, Grep, Glob, Bash, WebSearch, WebFetch
 model: opus
