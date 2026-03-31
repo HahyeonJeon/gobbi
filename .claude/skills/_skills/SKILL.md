@@ -123,7 +123,7 @@ Gotcha files record mistakes that agents are likely to repeat because the correc
 - Behavior already documented in the skill or a rule
 - One-off issues unlikely to recur
 
-**Where gotchas live:** Cross-project gotchas are organized by skill in `_gotcha/{skill-name}.md`. Project-specific gotchas go to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`. Read existing gotcha files for the entry format — each entry has a title, priority, what happened, user feedback, and correct approach.
+**Where gotchas live:** Skill-specific gotchas live in the skill's own directory at `$CLAUDE_PROJECT_DIR/.claude/skills/{skill-name}/gotchas.md`, colocated with SKILL.md. Cross-cutting gotchas (spanning multiple skills or no single skill) go to `_gotcha/`. Project-specific gotchas go to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`. Read existing gotcha files for the entry format — each entry has a title, priority, what happened, user feedback, and correct approach.
 
 **Priority levels:** Critical (breaks environment), High (wrong output looks correct), Medium (rework needed), Low (minor inconvenience).
 
