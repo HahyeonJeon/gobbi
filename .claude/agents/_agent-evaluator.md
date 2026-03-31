@@ -2,7 +2,7 @@
 name: _agent-evaluator
 description: Agent Evaluator — MUST delegate here when a gobbi agent definition (.md file in .claude/agents/) needs evaluation. The orchestrator spawns this agent once per perspective, specifying which perspective skill to load in the delegation prompt.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Agent Evaluator

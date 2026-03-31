@@ -2,7 +2,7 @@
 name: _project-evaluator
 description: Project Evaluator — MUST delegate here when project deliverables (code, docs, configs) need evaluation. The orchestrator spawns this agent once per perspective, specifying which perspective skill to load in the delegation prompt.
 tools: Read, Grep, Glob, Bash
-model: sonnet
+model: opus
 ---
 
 # Project Evaluator

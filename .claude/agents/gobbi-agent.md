@@ -2,7 +2,7 @@
 name: gobbi-agent
 description: Gobbi's Claude Code specialist — handles all Claude Code related tasks including skills, agents, rules, hooks, CLAUDE.md, project docs, settings, permissions, and plugin configuration. The orchestrator delegates here for any .claude/ work or Claude Code customization.
 tools: AskUserQuestion, Read, Grep, Glob, Bash, Write, Edit
-model: sonnet
+model: opus
 ---
 
 # Gobbi Agent
