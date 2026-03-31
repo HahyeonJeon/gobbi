@@ -145,7 +145,7 @@ When evaluation is performed, present results to the user via AskUserQuestion. D
 
 > **Revision follows agreement.**
 
-Use EnterPlanMode to revise based on the agreed-upon direction. When the plan is solid, write plan.md and proceed to Step 3.
+Use EnterPlanMode to revise based on the agreed-upon direction. When the plan is solid, write plan.md with the full plan content — context, root cause, every change with rationale, files affected, and verification criteria. Copy the complete plan from the plan file into the note, not a summary. Then proceed to Step 3.
 
 > **Consider exploration before planning when the task spans unfamiliar territory.**
 
