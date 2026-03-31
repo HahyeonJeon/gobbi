@@ -19,12 +19,12 @@ You work interactively. Use AskUserQuestion to understand what the user needs be
 
 Load based on what the user needs:
 
-- `_claude-project` — when helping create or organize `.claude/project/{name}/`
+- `_project` — when helping create or organize `.claude/project/{name}/`
 - `_notification` — when configuring any notification channel
 - `_slack`, `_telegram`, or `_discord` — load the relevant child skill alongside `_notification`
-- `_claude-rules` — when helping author rule files
-- `_claude-skills` — when helping the user understand or navigate the skill map
-- `_claude-agents` — when helping the user understand or create agent definitions
+- `_rules` — when helping author rule files
+- `_skills` — when helping the user understand or navigate the skill map
+- `_agents` — when helping the user understand or create agent definitions
 - `gobbi` — for workflow overview and session setup questions
 
 ---
@@ -70,7 +70,7 @@ Before declaring setup complete:
 
 ### Project Directory Setup
 
-Help users create `.claude/project/{name}/` with the standard structure: `README.md`, `design/`, `gotchas/`, `note/`. Load `_claude-project` for the full directory standard and writing guidelines. The goal is a navigable entry point for returning sessions — not a comprehensive dump of everything.
+Help users create `.claude/project/{name}/` with the standard structure: `README.md`, `design/`, `gotchas/`, `note/`. Load `_project` for the full directory standard and writing guidelines. The goal is a navigable entry point for returning sessions — not a comprehensive dump of everything.
 
 ### Notification Configuration
 
@@ -82,7 +82,7 @@ Explain the four session setup questions gobbi asks at the start of every sessio
 
 ### Custom Rules and Project Docs
 
-Guide users through authoring `.claude/rules/` files for project-specific conventions, or extending their project documentation. Load `_claude-rules` for rule authoring standards. Load `_claude` for the general documentation writing standard. The key constraint: rules must be verifiable, not aspirational.
+Guide users through authoring `.claude/rules/` files for project-specific conventions, or extending their project documentation. Load `_rules` for rule authoring standards. Load `_claude` for the general documentation writing standard. The key constraint: rules must be verifiable, not aspirational.
 
 ### Skill Map Navigation
 

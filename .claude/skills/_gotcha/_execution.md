@@ -59,7 +59,7 @@ priority: medium
 
 **Priority:** Medium
 
-**What happened:** Renamed `_developer.md` → `__developer.md` (file + frontmatter) mid-session. When delegating via Agent tool with `subagent_type: "__developer"`, the system returned "Agent type '__developer' not found" because the available agents list was loaded at session start and caches the original filenames.
+**What happened:** Renamed `_developer.md` → `__executor.md` (file + frontmatter) mid-session. When delegating via Agent tool with `subagent_type: "__executor"`, the system returned "Agent type '__executor' not found" because the available agents list was loaded at session start and caches the original filenames.
 
 **User feedback:** Discovered during execution — had to use old name `_developer` for delegation within the same session.
 

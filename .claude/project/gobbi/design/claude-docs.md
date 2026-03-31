@@ -45,9 +45,8 @@ Skills are organized into three top-level categories: **Work** (workflow partici
 
 | Name | Path | Description |
 |------|------|-------------|
-| __developer | `.claude/agents/__developer.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
-| __pi | `.claude/agents/__pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation. |
-| __planner | `.claude/agents/__planner.md` | Task decomposition via codebase exploration and dependency analysis. |
+| __executor | `.claude/agents/__executor.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
+| __pi | `.claude/agents/__pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation, and task decomposition. |
 
 ### Skills
 
@@ -127,15 +126,6 @@ Standalone interface entry point — no category.
 | _telegram | `.claude/skills/_telegram/SKILL.md` | Telegram notification setup and integration. |
 | _discord | `.claude/skills/_discord/SKILL.md` | Discord notification setup and integration. |
 
-##### Gotcha child skills
-
-**Gotcha recording guidance** — skills describing how to record each type of gotcha.
-
-| Name | Path | Description |
-|------|------|-------------|
-| _project-gotcha | `.claude/skills/_project-gotcha/SKILL.md` | How to record project-specific gotchas. |
-| _skills-gotcha | `.claude/skills/_skills-gotcha/SKILL.md` | How to record skill-specific gotchas. |
-
 #### Docs
 
 **`.claude/` documentation authoring** — skills about writing and maintaining claude docs.
@@ -143,10 +133,10 @@ Standalone interface entry point — no category.
 | Name | Path | Description |
 |------|------|-------------|
 | _claude | `.claude/skills/_claude/SKILL.md` | Core `.claude/` writing standard. Principles, hierarchy, anti-patterns, review checklist. |
-| _claude-skills | `.claude/skills/_claude-skills/SKILL.md` | Reference and guide for creating skill definitions. |
-| _claude-agents | `.claude/skills/_claude-agents/SKILL.md` | Reference and guide for creating agent definitions. |
-| _claude-rules | `.claude/skills/_claude-rules/SKILL.md` | Guide for authoring rule files. |
-| _claude-project | `.claude/skills/_claude-project/SKILL.md` | Guide for authoring project docs in `.claude/project/{project-name}/`. |
+| _skills | `.claude/skills/_skills/SKILL.md` | Reference and guide for creating skill definitions. |
+| _agents | `.claude/skills/_agents/SKILL.md` | Reference and guide for creating agent definitions. |
+| _rules | `.claude/skills/_rules/SKILL.md` | Guide for authoring rule files. |
+| _project | `.claude/skills/_project/SKILL.md` | Guide for authoring project docs in `.claude/project/{project-name}/`. |
 
 #### Tool
 
@@ -163,8 +153,8 @@ Standalone interface entry point — no category.
 | Name | Parent Skill | Path | Description |
 |------|-------------|------|-------------|
 | project-context.md | gobbi | `.claude/skills/gobbi/project-context.md` | Session-start project detection. Recommend skills based on technology stack. |
-| authoring.md | _claude-skills | `.claude/skills/_claude-skills/authoring.md` | How to write skill content: description and instruction writing. |
-| verification.md | _claude-skills | `.claude/skills/_claude-skills/verification.md` | Skill quality verification: trigger accuracy, output evaluation. |
+| authoring.md | _skills | `.claude/skills/_skills/authoring.md` | How to write skill content: description and instruction writing. |
+| verification.md | _skills | `.claude/skills/_skills/verification.md` | Skill quality verification: trigger accuracy, output evaluation. |
 | conventions.md | _git | `.claude/skills/_git/conventions.md` | Branch naming, commit messages, PR template, issue format, sub-issues. |
 | feedback.md | _orchestration | `.claude/skills/_orchestration/feedback.md` | FEEDBACK phase: iteration tracking, stagnation detection, round cap. |
 | finish.md | _orchestration | `.claude/skills/_orchestration/finish.md` | FINISH phase: merge/commit/compact decision tree, pre-action verification. |
@@ -193,7 +183,7 @@ Standalone interface entry point — no category.
 | Name | Path | Description |
 |------|------|-------------|
 | scenario-01 | `.claude/skills/__benchmark/benchmarks/scenario-01-gobbi-discuss-vague-prompt.md` | Tests _discuss handling of vague requests. |
-| scenario-02 | `.claude/skills/__benchmark/benchmarks/scenario-02-gobbi-claude-skills-skill-creation.md` | Tests _claude-skills handling of vague skill creation requests. |
+| scenario-02 | `.claude/skills/__benchmark/benchmarks/scenario-02-gobbi-claude-skills-skill-creation.md` | Tests _skills handling of vague skill creation requests. |
 
 ### Project Docs
 
@@ -215,21 +205,20 @@ Standalone interface entry point — no category.
 | Rules | 1 |
 | Agents — Interface | 1 |
 | Agents — Hidden | 3 |
-| Agents — Internal | 3 |
+| Agents — Internal | 2 |
 | Skills — Interface | 1 |
 | Skills — Work | 12 |
 | Skills — Work (child: Skills Evaluation) | 6 |
 | Skills — Work (child: Agent Evaluation) | 6 |
 | Skills — Work (child: Project Evaluation) | 6 |
 | Skills — Work (child: Notification) | 3 |
-| Skills — Work (child: Gotcha) | 2 |
 | Skills — Docs | 5 |
 | Skills — Tool | 3 |
 | Skill child docs | 6 |
 | Benchmark scenarios | 2 |
 | Gotcha files | 14 |
 | Project docs | 5 |
-| **Total** | **81** |
+| **Total** | **78** |
 
 ---
 
@@ -240,16 +229,14 @@ Standalone interface entry point — no category.
 Skill directory names and agent filenames use **hyphens as word separators** with three visibility tiers:
 
 - No prefix — interface (user-invokable). Only `gobbi`.
-- `_` prefix — hidden (system-loaded during workflow). Examples: `_plan`, `_claude-skills`.
+- `_` prefix — hidden (system-loaded during workflow). Examples: `_plan`, `_skills`.
 - `__` prefix — internal (gobbi machinery). Examples: `__validate`, `__benchmark`.
 
 Single-word names are unaffected by the hyphen rule. The tier prefix is part of the name — omitting it changes visibility. The rule file is `__gobbi-convention.md`.
 
-### Gotcha System Redesign
+### Gotcha System
 
-Current model: all gotcha files centralized under `_gotcha/` (`_gotcha/_orchestration.md`, `_gotcha/_git.md`, etc.).
-
-Future model: each skill has its own `gotchas.md` in its skill directory. Two child skills (`_project-gotcha`, `_skills-gotcha`) describe how to record each type.
+All gotcha files are centralized under `_gotcha/` (`_gotcha/_orchestration.md`, `_gotcha/_git.md`, etc.). Guidance on how to record each type of gotcha lives as child docs inside `_gotcha/` rather than as separate child skills.
 
 ### Pending Decisions
 

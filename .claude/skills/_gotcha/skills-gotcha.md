@@ -1,8 +1,3 @@
----
-name: _skills-gotcha
-description: How to record skill-specific gotchas. Covers the per-skill gotchas.md model and how it differs from the centralized _gotcha system.
----
-
 # Skills Gotcha
 
 The future direction for gotcha recording moves ownership to each skill: a `gotchas.md` file lives inside the skill directory it serves, alongside the skill's `SKILL.md`. This is a shift from the current model where all gotchas aggregate in a shared `_gotcha/` skill.

@@ -125,12 +125,12 @@ Placeholder — specific child skills TBD.
 | **_telegram** | Telegram notification setup and integration. |
 | **_discord** | Discord notification setup and integration. |
 
-#### Gotcha (child skills of _gotcha)
+#### Gotcha (child docs of _gotcha)
 
-| Skill | Purpose |
-|-------|---------|
-| **_project-gotcha** | How to record project-specific gotchas. |
-| **_skills-gotcha** | How to record skill-specific gotchas. |
+| Document | Purpose |
+|----------|---------|
+| **project-gotcha.md** | How to record project-specific gotchas. |
+| **skills-gotcha.md** | How to record skill-specific gotchas. |
 
 ### Docs
 
@@ -139,10 +139,10 @@ Placeholder — specific child skills TBD.
 | Skill | Purpose |
 |-------|---------|
 | **_claude** | Core `.claude/` documentation standard. Writing principles, hierarchy, anti-patterns, rules, and project docs. |
-| **_claude-skills** | Reference and interactive guide for creating skills. Discussion dimensions for skill authoring. |
-| **_claude-agents** | Reference and interactive guide for creating agent definitions. Discussion dimensions for agent authoring. |
-| **_claude-rules** | Guide for authoring rule files. Verifiability, structure, when to create a rule. |
-| **_claude-project** | Guide for authoring project documentation. Directory structure, README, design docs, notes. |
+| **_skills** | Reference and interactive guide for creating skills. Discussion dimensions for skill authoring. |
+| **_agents** | Reference and interactive guide for creating agent definitions. Discussion dimensions for agent authoring. |
+| **_rules** | Guide for authoring rule files. Verifiability, structure, when to create a rule. |
+| **_project** | Guide for authoring project documentation. Directory structure, README, design docs, notes. |
 
 ### Tool
 

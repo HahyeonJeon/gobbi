@@ -14,13 +14,13 @@ Only `gobbi` is an interface skill. It is invoked as `/gobbi`.
 
 **Hidden** (single `_` prefix) — Skills and agents used by the system during workflow. The orchestrator and agents load these as needed. Users never invoke them directly.
 
-Skill examples: `_orchestration`, `_discuss`, `_plan`, `_evaluation`, `_skills-evaluation-project`, `_skills-evaluation-user`, `_agent-evaluation-project`, `_project-evaluation-project`, `_git`, `_claude`, `_claude-skills`, `_claude-agents`
+Skill examples: `_orchestration`, `_discuss`, `_plan`, `_evaluation`, `_skills-evaluation-project`, `_skills-evaluation-user`, `_agent-evaluation-project`, `_project-evaluation-project`, `_git`, `_claude`, `_skills`, `_agents`
 
 **Internal** (double `__` prefix) — Deep implementation details: development tooling. Relevant only to gobbi contributors.
 
 Skill examples: `__validate`, `__benchmark`
 
-Agent examples: `__developer`, `__pi`, `__planner`
+Agent examples: `__executor`, `__pi`
 
 ---
 
@@ -57,7 +57,7 @@ Examples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_e
 
 **Docs** — Skills for authoring and maintaining `.claude/` documentation.
 
-Examples: `_claude`, `_claude-skills`, `_claude-agents`, `_claude-rules`, `_claude-project`
+Examples: `_claude`, `_skills`, `_agents`, `_rules`, `_project`
 
 **Tool** — Utility and maintenance tooling for gobbi contributors.
 

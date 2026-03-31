@@ -1,26 +1,26 @@
 ---
 name: _claude
-description: Core writing standard for .claude/ documentation — writing principles, hierarchy, anti-patterns, and review checklist. Use when reading .claude/ files to understand their structure, or when authoring rules and project docs. For creating skills, load _claude-skills. For creating agent definitions, load _claude-agents.
+description: Core writing standard for .claude/ documentation — writing principles, hierarchy, anti-patterns, and review checklist. Use when reading .claude/ files to understand their structure, or when authoring rules and project docs. For creating skills, load _skills. For creating agent definitions, load _agents.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Claude Skill
 
-Core documentation standard for `.claude/` files — writing principles, hierarchy, anti-patterns, and review checklist. Load this skill when reading `.claude/` files to understand their structure, or when authoring rules and project docs. Specialized creation guides exist as separate skills: _claude-skills for skills, _claude-agents for agent definitions.
+Core documentation standard for `.claude/` files — writing principles, hierarchy, anti-patterns, and review checklist. Load this skill when reading `.claude/` files to understand their structure, or when authoring rules and project docs. Specialized creation guides exist as separate skills: _skills for skills, _agents for agent definitions.
 
 **Navigate deeper from here:**
 
 | Writing... | Read | Covers |
 |------------|------|--------|
-| A rule | `_claude-rules` skill | Verifiability, structure, when to create a rule |
-| Project documentation | `_claude-project` skill | Project docs in `.claude/project/{project-name}/` |
+| A rule | `_rules` skill | Verifiability, structure, when to create a rule |
+| Project documentation | `_project` skill | Project docs in `.claude/project/{project-name}/` |
 
 **Related skills:**
 
 | Skill | When to load |
 |-------|-------------|
-| _claude-skills | Creating, reviewing, or modifying skill definitions in `.claude/skills/` |
-| _claude-agents | Creating, reviewing, or modifying agent definitions in `.claude/agents/` |
+| _skills | Creating, reviewing, or modifying skill definitions in `.claude/skills/` |
+| _agents | Creating, reviewing, or modifying agent definitions in `.claude/agents/` |
 
 ---
 

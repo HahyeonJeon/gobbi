@@ -1,8 +1,3 @@
----
-name: _project-gotcha
-description: How to record project-specific gotchas in .claude/project/{project-name}/gotchas/. Covers when a gotcha is project-specific vs cross-project.
----
-
 # Project Gotcha
 
 Project-specific gotchas capture mistakes that only matter in one project's context. They live alongside the project's documentation, not in the shared `_gotcha/` skill files.

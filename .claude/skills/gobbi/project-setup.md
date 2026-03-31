@@ -1,6 +1,6 @@
 # Project Setup
 
-Check for `.claude/project/` at session start. If project documentation exists, read it for context. If not, create the project directory using the _claude-project skill.
+Check for `.claude/project/` at session start. If project documentation exists, read it for context. If not, create the project directory using the _project skill.
 
 ---
 
@@ -32,7 +32,7 @@ Do not read other directories (e.g., `note/`) at setup — they may contain many
 
 ### 2. New Projects
 
-When `.claude/project/` is absent or has no project subdirectory, load the _claude-project skill to create the directory structure.
+When `.claude/project/` is absent or has no project subdirectory, load the _project skill to create the directory structure.
 
 ---
 

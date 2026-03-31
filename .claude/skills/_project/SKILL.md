@@ -1,5 +1,5 @@
 ---
-name: _claude-project
+name: _project
 description: Guide for authoring project documentation in .claude/project/{project-name}/. Covers directory structure, README.md, design docs, and notes.
 ---
 

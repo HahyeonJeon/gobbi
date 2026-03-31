@@ -1,5 +1,5 @@
 ---
-name: _claude-rules
+name: _rules
 description: Guide for authoring rule files in .claude/rules/. Covers verifiability, structure, when to create a rule.
 ---
 

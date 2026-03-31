@@ -87,7 +87,7 @@ Run the same scenarios before and after modifying a skill. Compare the score dis
 
 ## Relationship to Skill Verification
 
-__benchmark and _claude-skills verification (see `_claude-skills/verification.md`) serve different purposes:
+__benchmark and _skills verification (see `_skills/verification.md`) serve different purposes:
 
 - **Benchmark** measures specific skill behaviors quantitatively — numeric scores, variance, delta tracking. Use benchmarks to answer "did this change improve the skill's performance on this specific behavior?"
 - **Verification** assesses holistic skill quality with specialized agents (grader, analyzer, comparator) — trigger accuracy, output quality, blind A/B comparison. Use verification to answer "is this skill well-written and effective overall?"

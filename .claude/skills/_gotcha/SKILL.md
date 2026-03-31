@@ -21,7 +21,7 @@ Record cross-project agent mistakes so they never happen twice. Each gotcha file
 | [_collection.md](_collection.md) | _collection | Work trail persistence, README indexing |
 | [_evaluation.md](_evaluation.md) | evaluation skills | Quality gates, evaluation criteria, evaluator agent selection |
 | [_ideation.md](_ideation.md) | _ideation | Brainstorming, option generation |
-| [_claude.md](_claude.md) | _claude, _claude-skills, _claude-agents | `.claude/` documentation standard, skill and agent authoring |
+| [_claude.md](_claude.md) | _claude, _skills, _agents | `.claude/` documentation standard, skill and agent authoring |
 | [_note.md](_note.md) | _note | Note writing, directory structure, timing |
 | [_notification.md](_notification.md) | _notification | Hook setup, credentials, script issues |
 | [__system.md](__system.md) | (none) | Environment, processes, hooks, infrastructure |
@@ -95,11 +95,9 @@ When `enforcement` is `advisory` (or omitted), the entry is informational — ag
 
 ---
 
-## Child Skills
+## Child Documents
 
-| Skill | Covers |
-|-------|--------|
-| `_project-gotcha` | Recording project-specific gotchas in `.claude/project/{project-name}/gotchas/` |
-| `_skills-gotcha` | Recording skill-specific gotchas tied to individual skills |
-
-**Future direction:** each skill will have its own `gotchas.md` file living alongside its `SKILL.md`. `_project-gotcha` and `_skills-gotcha` will provide the recording guidelines and templates for those per-skill files.
+| Document | Covers |
+|----------|--------|
+| `project-gotcha.md` | Recording project-specific gotchas in `.claude/project/{project-name}/gotchas/` |
+| `skills-gotcha.md` | Recording skill-specific gotchas tied to individual skills |

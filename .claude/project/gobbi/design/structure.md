@@ -25,7 +25,7 @@ Skills are organized into four categories:
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
 | **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _skills-evaluation-{project,architecture,performance,aesthetics,overall,user}, _agent-evaluation-{project,architecture,performance,aesthetics,overall,user}, _project-evaluation-{project,architecture,performance,aesthetics,overall,user}, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
-| **Docs** | _claude, _claude-skills, _claude-agents, _claude-rules, _claude-project | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
+| **Docs** | _claude, _skills, _agents, _rules, _project | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
 | **Tool** | __validate, _audit, __benchmark | Utility and maintenance tools. Verification, drift detection, benchmarking. |
 
 Some Work skills have child skill categories grouping related sub-skills:
@@ -34,7 +34,7 @@ Some Work skills have child skill categories grouping related sub-skills:
 - **Agent Evaluation** (child of _evaluation): _agent-evaluation-project, _agent-evaluation-architecture, _agent-evaluation-performance, _agent-evaluation-aesthetics, _agent-evaluation-overall, _agent-evaluation-user — evaluation criteria for agent definitions
 - **Project Evaluation** (child of _evaluation): _project-evaluation-project, _project-evaluation-architecture, _project-evaluation-performance, _project-evaluation-aesthetics, _project-evaluation-overall, _project-evaluation-user — evaluation criteria for project work output
 - **Notification** (child of _notification): _slack, _telegram, _discord — channel-specific setup
-- **Gotcha** (child of _gotcha): _project-gotcha, _skills-gotcha — how to record different types of gotchas
+- **Gotcha** (child of _gotcha): child docs (not skills) describing how to record each type of gotcha
 
 The `_gotcha/` skill is special — it contains per-skill gotcha files (`_orchestration.md`, `_git.md`, etc.) that record cross-project mistakes. Every agent checks the relevant gotcha file before starting work.
 
@@ -45,9 +45,8 @@ Agent definitions live in `.claude/agents/`. Each file defines a specialist suba
 | Agent | Role |
 |:------|:-----|
 | gobbi-agent | Onboarding and setup assistant — helps users configure their Claude Code environment |
-| __pi | Principal Investigator — ideation and planning through user discussion |
-| __planner | Plan decomposition and task structuring |
-| __developer | Code implementation and verification |
+| __pi | Principal Investigator — ideation, planning, and task decomposition through user discussion |
+| __executor | Code implementation and verification |
 | _skills-evaluator | Runs evaluation of skill definitions across all perspectives |
 | _agent-evaluator | Runs evaluation of agent definitions across all perspectives |
 | _project-evaluator | Runs evaluation of project work output across all perspectives |

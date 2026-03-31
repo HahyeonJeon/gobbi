@@ -7,10 +7,10 @@ export const GOBBI_PERMISSIONS: string[] = [
   'Skill(_orchestration)',
   'Skill(_gotcha)',
   'Skill(_claude)',
-  'Skill(_claude-skills)',
-  'Skill(_claude-agents)',
-  'Skill(_claude-rules)',
-  'Skill(_claude-project)',
+  'Skill(_skills)',
+  'Skill(_agents)',
+  'Skill(_rules)',
+  'Skill(_project)',
   'Skill(_discuss)',
   'Skill(_ideation)',
   'Skill(_ideation-evaluation)',
@@ -35,8 +35,6 @@ export const GOBBI_PERMISSIONS: string[] = [
   'Skill(_slack)',
   'Skill(_telegram)',
   'Skill(_discord)',
-  'Skill(_project-gotcha)',
-  'Skill(_skills-gotcha)',
   'Skill(__validate)',
   'WebSearch'
 ];

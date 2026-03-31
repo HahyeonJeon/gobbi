@@ -1,6 +1,6 @@
 # Skill Verification
 
-Concepts and evaluation agents for verifying skill quality — trigger accuracy, output quality, improvement loops, and blind comparison. Loaded from _claude-skills SKILL.md.
+Concepts and evaluation agents for verifying skill quality — trigger accuracy, output quality, improvement loops, and blind comparison. Loaded from _skills SKILL.md.
 
 ---
 

@@ -40,7 +40,7 @@ Use AskUserQuestion to ask the user:
 
 Record corrections discovered during the workflow. A gotcha exists because something went wrong and the correct approach was non-obvious.
 
-Write to `.claude/project/{project-name}/gotchas/`. Follow the _project-gotcha skill for format and categorization.
+Write to `.claude/project/{project-name}/gotchas/`. Follow the `project-gotcha.md` child doc of _gotcha for format and categorization.
 
 When to write:
 - User corrected an agent's approach
@@ -51,7 +51,7 @@ When to write:
 
 Record conventions and standards discovered or established during the workflow. A rule exists because a consistent pattern should be followed across the project.
 
-Write to `.claude/project/{project-name}/rules/`. Follow the _claude-rules skill for format and structure.
+Write to `.claude/project/{project-name}/rules/`. Follow the _rules skill for format and structure.
 
 When to write:
 - A decision was made about how something should always be done in this project
