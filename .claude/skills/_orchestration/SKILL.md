@@ -55,13 +55,11 @@ Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add
 
 | Step | Load Skills |
 |------|-------------|
-| Step 1. Ideation | _ideation, _discuss |
-| Step 2. Planning | _plan, _discuss |
-| Step 3. Execution | _delegation |
+| Step 1. Ideation | _ideation, _discuss, _evaluation |
+| Step 2. Planning | _plan, _discuss, _evaluation |
+| Step 3. Execution | _delegation, _evaluation |
 | Step 4. Collection | _collection |
 | Step 5. Memorization | _memorization, _gotcha |
-
-Evaluation skills are loaded by the evaluator agents, not by the orchestrator directly. The orchestrator spawns `_skills-evaluator`, `_agent-evaluator`, or `_project-evaluator` with the appropriate domain evaluation perspective skill based on what is being evaluated.
 
 **Must write note at every step** — write the corresponding note file before leaving each step. Never defer, never skip.
 
