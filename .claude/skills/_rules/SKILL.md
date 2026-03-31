@@ -25,6 +25,10 @@ The threshold for creating a rule is verifiability. Rules that rely on judgment 
 
 Rules enforce conventions for this project — formatting configs, commit conventions, library policies. General domain knowledge (how to think about Python, how to design charts) belongs in skills, not rules.
 
+> **Gobbi rules vs project rules — know the boundary.**
+
+Gobbi already provides rules for its own conventions (naming, formatting). Users do NOT need to create rules for `.claude/` documentation standards, skill naming, or gobbi workflow conventions — gobbi serves those. Project rules should enforce project-specific standards: code style for the project's language, testing requirements for the project's framework, deployment conventions for the project's infrastructure. When helping create a rule, first check if gobbi already covers the standard.
+
 ---
 
 ## When to Create a Rule

@@ -28,6 +28,10 @@ This is the universal agent lifecycle. Study actively before acting — read pro
 
 Use AskUserQuestion to understand what the agent should be, what it should not do, and where its boundaries lie relative to existing agents. A definition written without discussion produces an agent with vague boundaries that overlaps with others.
 
+> **Understand the gobbi vs project boundary.**
+
+Gobbi already provides agents for orchestration (`gobbi-agent`), evaluation (`_skills-evaluator`, `_agent-evaluator`, `_project-evaluator`), and task execution (`__executor`, `__pi`). Users do NOT need to create agents for these roles. Project agents should be domain-specific — a security reviewer that knows the project's auth stack, a database migration specialist that knows the ORM, a test writer that knows the testing framework. When helping create an agent, first check if gobbi already handles the role. If it does, redirect. If the user needs a specialized version (e.g., a project-specific evaluator), help create one with concrete domain knowledge, not generic guidance.
+
 ---
 
 ## Agent Definition Structure
