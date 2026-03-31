@@ -1,115 +1,105 @@
 ---
 name: _evaluation
-description: MUST load when evaluating any output — ideation, plan, or execution. Evaluation MUST be performed by 2-5 perspective evaluators. The entity that creates must never evaluate its own output.
+description: Guide for running high-quality evaluation. Teaches orchestrators how to delegate evaluation and evaluators how to assess output rigorously. Load at workflow start.
 allowed-tools: Read, Grep, Glob, Bash, Agent, AskUserQuestion
 ---
 
-# Gobbi Evaluation Skill
+# Evaluation
 
-Guide for how the orchestrator runs evaluation. Evaluation is not a rubber stamp — it is a rigorous, adversarial assessment performed by separate agents whose job is to find problems, not confirm success.
+How to run evaluation that actually finds problems. This skill teaches the orchestrator how to delegate evaluation and evaluator agents how to assess output rigorously. Evaluation is not a rubber stamp — it is an adversarial assessment whose purpose is to find what is wrong, missing, or fragile.
 
 ---
 
-## Core Principles
+## Core Principle
 
-> **2-5 perspective evaluators. Always at least Project + Overall.**
+> **The creator must never evaluate its own output.**
 
-Every evaluation MUST spawn at least 2 independent perspective evaluators — Project and Overall are always included. Additional perspectives are added based on task type. Each works in isolation without seeing the others' results. Multiple perspectives ensure nothing is missed: each perspective brings domain-specific expertise and all evaluators operate from a critical stance. Disagreements between perspectives are valuable signal — surface them.
+Self-evaluation is structurally biased. The creator's mental model prevents them from seeing the work as a fresh reader would. Evaluators must be separate agents with fresh context.
 
-> **The entity that creates must never evaluate its own output.**
+> **At least 2 evaluators with different perspectives.**
 
-The agent that produced the work cannot assess it. Evaluators are separate agents with fresh context and read-only access. They cannot modify the output — only judge it and provide feedback. This separation prevents blind spots and self-confirmation bias.
-
-> **Each perspective has a distinct domain. Together they cover the full picture.**
-
-The project evaluator checks alignment with project goals, constraints, and conventions. The architecture evaluator assesses structural soundness. The performance evaluator examines efficiency and scalability. The aesthetics evaluator reviews output quality from the user's perspective. The overall evaluator synthesises across all dimensions and identifies what must be preserved. No single perspective is sufficient alone.
+A single evaluator catches the problems it is trained to see. Multiple evaluators with genuinely different viewpoints catch problems that fall between any single perspective. Disagreements between evaluators are valuable signal — surface them.
 
 > **Evaluate outcomes against goals, not tasks against checklists.**
 
-Check whether the output achieves what the user actually needs, not just whether individual items were completed. "Existence does not equal implementation." An idea that exists but doesn't solve the root problem fails evaluation. A plan that has all tasks but misses a dependency fails evaluation.
-
-> **Recurring issues become gotchas. Evaluation is the learning mechanism.**
-
-When evaluation reveals a pattern — the same kind of mistake appearing across tasks or sessions — convert it to a gotcha immediately. The gotcha system IS the learning store.
+Check whether the output achieves what the user actually needs, not just whether individual items were completed. An idea that exists but doesn't solve the root problem fails. A plan that has all tasks but misses a dependency fails.
 
 > **Verify by running, not just reading.**
 
-Evaluators have Bash, Grep, Glob, and Read. When the output being evaluated can be verified by running a command — running tests, grepping for expected patterns, checking file existence or syntax — do it. An evaluator that only reasons about output when it could run a verification command misses failures that reasoning alone cannot catch. Not all evaluations need commands: ideation evaluation is mostly reasoning about the quality of ideas, plan evaluation might grep to verify that referenced file paths or patterns actually exist, and execution evaluation should always attempt to verify by running. The principle is simple — when your tools can provide evidence, use them. When they can't, reason rigorously.
+When the output can be verified by running a command — tests, syntax checks, grep for expected patterns, file existence — do it. Reasoning alone misses failures that evidence catches. When tools can provide evidence, use them. When they can't, reason rigorously.
+
+> **Evaluation findings feed into memorization.**
+
+Recurring issues become gotchas. Patterns discovered during evaluation are the highest-value input for the memorization step — they represent non-obvious problems that will recur without explicit recording.
 
 ---
 
 ## Perspective Selection
 
-The orchestrator selects 2-5 perspectives based on what the task involves. All evaluators operate from a critical stance — they look for problems, not confirmation.
+The orchestrator selects which perspectives to evaluate from based on the task's domain and the project's needs. The right perspectives vary by project and task type — there is no fixed set that applies everywhere.
 
-**Always include:**
+Common perspectives (examples, not exhaustive — must adjust these perspectives to be domain-specific for the project):
 
-| Perspective | Agent | Always include because |
-|-------------|-------|----------------------|
-| Project | `__evaluator-project` | Checks goal alignment, conventions, and scope for every task |
-| Overall | `__evaluator-overall` | Synthesises across dimensions, identifies "must preserve" items |
+- **Project-level** — Does the output solve the right problem? Does it fit the project's requirements, constraints, and goals?
+- **Design / Architecture-level** — Is the architecture sound? Are abstractions appropriate? Is coupling managed?
+- **Performance / Optimization-level** — Are there efficiency issues, unnecessary resource usage, or scalability risks?
+- **Aesthetics-level** — Is it readable, well-named, consistent, and polished? Would a fresh reader understand it?
+- **User-level** — Does it meet the end user's needs? Is the experience intuitive, accessible, and correct from the user's perspective?
+- **Overall-level** — What gaps fall between the other perspectives? What works well and must be preserved?
 
-**Add when relevant:**
-
-| Perspective | Agent | Add when |
-|-------------|-------|----------|
-| Architecture | `__evaluator-architecture` | Task creates or modifies code structure, module boundaries, data models, or interfaces |
-| Performance | `__evaluator-performance` | Task affects hot paths, processes significant data volume, or has latency sensitivity |
-| Aesthetics | `__evaluator-aesthetics` | Task produces user-facing output — code, documentation, CLI text, or UI |
-
-**Perspective count guidance:**
-- Minimum 2 (Project + Overall) — always
-- Most tasks: 3-4 perspectives
-- Complex tasks touching structure, performance, and output: all 5
+The orchestrator matches perspectives to the task. A documentation task may need scope and craft quality but not efficiency. A database migration may need scope, structure, and efficiency but not craft quality. Use judgment — more perspectives catch more problems, but each costs time.
 
 ---
 
 ## How Evaluation Works
 
-The orchestrator spawns the selected perspective evaluators for every evaluation:
+### For the Orchestrator
 
-| Agent | Perspective | Focus |
-|-------|-------------|-------|
-| `__evaluator-project` | Project | Goal alignment, scope adherence, convention compliance, task specification fidelity |
-| `__evaluator-architecture` | Architecture | Structural soundness, module boundaries, data model integrity, interface correctness |
-| `__evaluator-performance` | Performance | Efficiency, scalability, hot path impact, data volume handling, latency risks |
-| `__evaluator-aesthetics` | Aesthetics | Output quality, clarity, consistency, user-facing correctness and readability |
-| `__evaluator-overall` | Overall | Cross-dimension synthesis, "must preserve" list, unaddressed gaps, final verdict |
+1. Select the perspectives that match the task's domain
+2. Spawn each evaluator as a separate agent with:
+   - The stage-specific evaluation criteria (what to check at this workflow stage)
+   - Domain context — project rules, gotchas, conventions, and relevant knowledge
+   - The output to evaluate
+   - Read-only access — evaluators assess, they do not modify
+3. Collect all verdicts independently — evaluators should not see each other's results
+4. Act on the results:
+   - **All pass** — proceed to next stage
+   - **Any revision needed** — present findings to the user, discuss what to address, then revise
+   - **Any escalation** — surface to user for decision immediately
+   - **Perspectives disagree** — the disagreement reveals where the output is borderline, surface it
 
-Each evaluator works independently, loads _gotcha, and returns a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning.
+### For the Evaluator
 
-The orchestrator collects all verdicts and acts:
-
-- **All PASS** → proceed to next stage
-- **Any REVISE** → send back with findings presented by perspective. The overall evaluator's "must preserve" list protects good work during revision. User decides priority order for REVISE findings. Max 3 revision cycles, then escalate.
-- **Any ESCALATE** → surface to user for decision immediately
-- **Perspectives disagree** → the disagreement is valuable signal. If one perspective says PASS but another says REVISE, the specific tension reveals where the output is borderline — surface this to the orchestrator for judgment.
+1. Load the evaluation criteria and domain context provided
+2. Read the output thoroughly before forming any judgment
+3. For each finding, assess independently:
+   - **Confidence** (0-100) — how certain are you this is a real issue?
+   - **Severity** (Critical / High / Medium / Low) — how impactful is this if real?
+4. Verify findings with tools when possible — run tests, grep for patterns, check file existence
+5. Check findings against known false positive categories before finalizing
+6. Return a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning
 
 ---
 
 ## Scoring
 
-Every finding carries its own confidence and severity scores. Aggregate verdicts (PASS/REVISE/ESCALATE) emerge from the collection of individually scored findings, not from an overall impression.
-
-Every finding from an evaluator carries two independent dimensions: **confidence** and **severity**. These are separate assessments — a finding can be high-severity but low-confidence (a potentially catastrophic issue that might be a false positive), or low-severity but high-confidence (a definite minor issue).
+Every finding carries two independent dimensions: confidence and severity. These are separate — a finding can be high-severity but low-confidence, or low-severity but high-confidence.
 
 ### Confidence
 
-Confidence measures how certain the evaluator is that a finding represents a real issue, scored 0-100.
+How certain the evaluator is that a finding represents a real issue, scored 0-100.
 
 | Score | Meaning |
 |-------|---------|
-| 0 | False positive — appears like an issue but isn't one on closer inspection |
-| 25 | Possible but unverified — could be an issue, but no evidence confirms it |
-| 50 | Probable — the issue likely exists, but evidence is indirect or incomplete |
-| 75 | Significant and likely — strong reasoning or partial evidence supports this |
+| 0 | False positive — appears like an issue but isn't one |
+| 25 | Possible but unverified — could be an issue, no evidence confirms it |
+| 50 | Probable — likely exists, but evidence is indirect or incomplete |
+| 75 | Significant and likely — strong reasoning or partial evidence supports it |
 | 100 | Definite — verified by evidence, tool output, or incontrovertible reasoning |
-
-These are definitional anchors for the scale, not thresholds derived from external measurement. They give evaluators a shared vocabulary for expressing certainty.
 
 ### Severity
 
-Severity measures how impactful the issue would be if it is real, independent of confidence.
+How impactful the issue would be if it is real, independent of confidence.
 
 | Level | Meaning |
 |-------|---------|
@@ -120,96 +110,55 @@ Severity measures how impactful the issue would be if it is real, independent of
 
 ### Threshold Filtering
 
-Low-confidence findings are suppressed from the evaluation report by default to prevent noise from drowning out high-confidence findings that need action. They are not discarded — the orchestrator or user can request the full unfiltered list. The current threshold value is configured in the evaluator agent definitions (see `__evaluator-project`, `__evaluator-architecture`, `__evaluator-performance`, `__evaluator-aesthetics`, `__evaluator-overall`).
-
-The threshold exists because evaluation should drive decisions, not generate noise. An evaluator uncertain about a finding should still record it (it may gain confidence in a future cycle), but it should not compete for attention with findings the evaluator is confident about.
+Low-confidence findings are suppressed from the evaluation report by default to prevent noise. They are not discarded — the orchestrator or user can request the full unfiltered list. The threshold exists because evaluation should drive decisions, not generate noise.
 
 ### False Positive Categories
 
-When scoring confidence, evaluators should check whether a finding falls into a known false positive category before assigning high confidence. A finding matching a false positive category scores confidence 0 unless specific evidence overrides the categorization.
+Before assigning high confidence, check whether a finding falls into a known false positive category:
 
-| Category | Definition |
-|----------|------------|
-| Pre-existing | Issue exists in the codebase before this change — not attributable to the evaluated output |
-| Out-of-scope | Real issue, but outside the evaluated task's scope boundary — note for future work |
-| Style preference | Subjective preference, not a convention violation — drop unless project rules mandate it |
-| Linter-catchable | Mechanical issue that automated tooling should catch — note the tooling gap, don't weight as finding |
-| Speculative | Hypothetical concern without supporting evidence — record at low confidence, suppress by default |
-
-### Cross-Perspective Scoring
-
-Each evaluator perspective scores confidence and severity independently. When perspectives disagree on the same finding — one scores confidence 90, another scores 40 — the disagreement is highlighted to the orchestrator as signal. A finding that one perspective is confident about and another dismisses reveals a genuine tension worth examining.
+- **Pre-existing** — issue exists before this change, not attributable to the evaluated output
+- **Out-of-scope** — real issue, but outside the task's scope boundary
+- **Style preference** — subjective, not a convention violation
+- **Linter-catchable** — mechanical issue that automated tooling should catch
+- **Speculative** — hypothetical concern without supporting evidence
 
 ---
 
-## What Evaluators Must Check
+## Stage-Specific Focus
 
-### Ideation Evaluation
+### Ideation
 
 - Is the root problem identified, or is the idea solving a symptom?
-- Is the proposed approach concrete enough to plan — mechanisms, interfaces, data flows?
-- Are trade-offs explicitly stated, not hidden?
-- Are constraints and assumptions surfaced and challenged?
-- Are risks identified with severity assessment?
-- Are success criteria measurable?
+- Is the approach concrete enough to plan against?
+- Are trade-offs explicitly stated?
+- Are constraints and assumptions surfaced?
+- Are risks identified with severity?
 - What's missing that should be there?
 
-### Plan Evaluation
+### Planning
 
 - Is every task narrow enough that scope is unambiguous?
-- Are dependencies correctly ordered — would executing in this order actually work?
+- Are dependencies correctly ordered?
 - Does the plan cover the full scope from the approved idea?
 - Are verification criteria defined for each task?
-- Is anything missing that was discussed during ideation?
-- Do any tasks overlap on the same files (merge conflict risk)?
-- Are agent assignments and skill requirements specified for each task?
+- Is anything missing from the ideation discussion?
+- Do any tasks overlap on the same files?
 
-### Execution Evaluation
+### Execution
 
-- Does the implementation match the task specification — not just "something was done" but "the right thing was done"?
-- Does the code compile / pass existing tests?
-- Are there security vulnerabilities (OWASP top 10)?
-- Are gotchas for this domain respected?
-- Is the change minimal and focused — no scope creep, no bonus refactoring?
+- Does the implementation match the task specification?
+- Does the code compile and pass existing tests?
+- Are there security vulnerabilities?
+- Are project-specific gotchas and rules respected?
+- Is the change minimal and focused — no scope creep?
 - Are edge cases handled that were identified during ideation?
-
----
-
-## Learning Loop
-
-Evaluation findings that reveal patterns become gotchas:
-
-- **First occurrence** → just feedback to the creator
-- **Second occurrence** → candidate gotcha — flag it
-- **Recurring pattern** → write gotcha immediately via _gotcha
-
-Where gotchas go:
-- Project-specific patterns → project skill's `gotchas/{category}.md`
-- Cross-project patterns → _gotcha's `{category}.md`
 
 ---
 
 ## Constraints
 
-- MUST spawn at least Project + Overall evaluators — never skip either
 - MUST use separate agents — the creator never evaluates its own output
-- All evaluators MUST load _gotcha before starting — past mistakes inform what to look for
-- MUST surface perspective disagreements — they reveal where the output is borderline
-- Never skip evaluation between workflow stages — an unevaluated idea becomes a flawed plan, a flawed plan becomes wasted execution
+- MUST spawn at least 2 evaluators with different perspectives
+- MUST present evaluation findings to the user before acting on them — the user decides what to address
+- MUST surface disagreements between evaluators — they reveal where the output is borderline
 - Max 3 revision cycles per evaluation — then escalate to user
-
----
-
-## Navigate deeper from here:
-
-**Stage-specific criteria** — load these based on what stage is being evaluated:
-- `_ideation-evaluation` — criteria for evaluating ideation output
-- `_plan-evaluation` — criteria for evaluating plan output
-- `_execution-evaluation` — criteria for evaluating execution output
-
-**Perspective skills** — load these to understand each evaluator's domain:
-- `__evaluation-project` — project-perspective criteria (goal alignment, scope, conventions)
-- `__evaluation-architecture` — architecture-perspective criteria (structure, coupling, extensibility)
-- `__evaluation-performance` — performance-perspective criteria (efficiency, scalability, resource use)
-- `__evaluation-aesthetics` — aesthetics-perspective criteria (naming, readability, style consistency)
-- `__evaluation-overall` — overall-perspective criteria (cross-cutting gaps, must-preserve analysis)
