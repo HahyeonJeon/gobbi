@@ -32,7 +32,17 @@ Do not read other directories (e.g., `note/`) at setup — they may contain many
 
 ### 2. New Projects
 
-When `.claude/project/` is absent or has no project subdirectory, load the _project skill to create the directory structure.
+When `.claude/project/` is absent or has no project subdirectory, ask the user for a project name via AskUserQuestion, then create the full standard structure:
+
+- `.claude/project/{name}/README.md` — project overview and directory index
+- `.claude/project/{name}/design/` — architecture and design decisions
+- `.claude/project/{name}/rules/` — project-specific rules and conventions
+- `.claude/project/{name}/gotchas/` — project-specific gotchas
+- `.claude/project/{name}/note/` — workflow notes per task (managed by _note)
+- `.claude/project/{name}/reference/` — external references, API docs, research
+- `.claude/project/{name}/docs/` — other project documents
+
+Create all directories upfront. The README.md must list each directory with a one-line description. Load `_project` for detailed authoring guidelines if the user wants to populate design docs or rules immediately.
 
 ---
 
