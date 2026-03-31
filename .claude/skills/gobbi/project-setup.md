@@ -20,7 +20,18 @@ Other directories like `note/` may contain many files and are not needed for ses
 
 Runs automatically at every session start, after the setup questions and before the first task.
 
-### 1. Check for Existing Project Directory
+### 1. Scan the Project's `.claude/` Directory
+
+Check what the project already has in `$CLAUDE_PROJECT_DIR/.claude/`:
+
+- **CLAUDE.md** — read it for project-level instructions and context
+- **`rules/`** — list existing rule files and read them for project conventions
+- **`skills/`** — list existing project-specific skills (not gobbi skills). These are the user's domain skills. Read their SKILL.md descriptions to understand what the project has.
+- **`agents/`** — list existing project-specific agents. Read their descriptions to understand available specialists.
+
+This gives the orchestrator context about what the project already provides — avoiding duplicate creation and enabling informed delegation.
+
+### 2. Check for Existing Project Directory
 
 Look for `$CLAUDE_PROJECT_DIR/.claude/project/` and identify any `{project-name}/` subdirectories. If one exists, read only these for context:
 
@@ -30,7 +41,7 @@ Look for `$CLAUDE_PROJECT_DIR/.claude/project/` and identify any `{project-name}
 
 Do not read other directories (e.g., `note/`) at setup — they may contain many files and are not needed for session context.
 
-### 2. New Projects
+### 3. New Projects
 
 When `$CLAUDE_PROJECT_DIR/.claude/project/` is absent or has no project subdirectory, ask the user for a project name via AskUserQuestion, then create the full standard structure:
 
