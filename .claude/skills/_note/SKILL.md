@@ -92,6 +92,7 @@ Copy of each subagent's task result during Step 3. Subagent outputs exist only i
 
 - One file per subtask, zero-padded sequence number for ordering
 - Must contain the full result, not a summary
+- Must include the delegation prompt that was sent to the subagent — the exact instructions, context, and constraints the agent received
 - Written immediately after each subagent completes
 
 ### feedback.md

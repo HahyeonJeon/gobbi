@@ -164,7 +164,7 @@ Define the goal, constraints, and what to avoid. Detailed "how" instructions sup
 - Every subagent must load _gotcha before starting work.
 - After each subtask completes, spawn a separate evaluator agent to assess the output.
 - If evaluation fails, fix and re-evaluate before proceeding to the next subtask.
-- After all subtasks complete, write execution.md and subtasks/.
+- After all subtasks complete, write execution.md and subtasks/. Each subtask file must include the delegation prompt sent to the subagent alongside the subagent's output.
 - After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn.
 
 > **When _git is active**
