@@ -15,7 +15,7 @@ A Telegram bot is a program-controlled account created through @BotFather. Your 
 
 The most common setup is a personal bot that messages you: you create the bot, start a conversation with it, then capture the chat ID that identifies your conversation with it. This chat ID is then stored as a credential alongside the bot token.
 
-**What gets sent:** Each notification includes the event type, a short summary, and a timestamp. Telegram supports basic Markdown formatting, but the gobbi scripts send plain text by default to avoid parsing issues with special characters in event data.
+**What gets sent:** Each notification includes the event type, a short summary, and a timestamp. Telegram supports basic Markdown formatting, but the notification scripts send plain text by default to avoid parsing issues with special characters in event data.
 
 ---
 

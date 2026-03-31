@@ -115,6 +115,8 @@ The plugin uses symlinks to reference the canonical files in `.claude/`. This me
 
 ## Gobbi CLI
 
-> **Planned for v0.3.0.** The CLI will be restructured as a standalone package for managing gobbi installations — creating, installing, updating, and configuring gobbi in target projects.
+> **Planned for v0.3.0.**
+
+The CLI will be restructured as a standalone package for managing gobbi installations — creating, installing, updating, and configuring gobbi in target projects.
 
 The current CLI source lives in `src/` with commands in `src/commands/` and shared libraries in `src/lib/`. The `packages/market/` workspace provides the marketplace client. Both will be reorganized in v0.3.0.

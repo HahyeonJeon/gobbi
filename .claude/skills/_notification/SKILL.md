@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 # Notification
 
-Help users configure Claude Code notification credentials through conversation. Hooks and settings are already installed by `npx gobbi init` — this skill handles the credential setup that makes them work.
+Help users configure Claude Code notification credentials through conversation. Hooks and settings should already be installed in the project — this skill handles the credential setup that makes them work.
 
 ---
 
@@ -48,7 +48,7 @@ When configuring event hooks, ask the user which events they want, then ask per-
 
 All scripts live in `.claude/hooks/` and must be executable. They use a shared sender (`notify-send.sh`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.
 
-Hook scripts are installed by the gobbi installation process. Read the installed scripts in `.claude/hooks/` and the hook configuration in `settings.json` for the current setup — these are the authoritative source for what is actually installed.
+Hook scripts should already be installed in `.claude/hooks/`. Read the installed scripts and the hook configuration in `settings.json` for the current setup — these are the authoritative source for what is actually installed.
 
 Message truncation limits are configurable via `.claude/.env`. Defaults are defined in the notification scripts.
 

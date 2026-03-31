@@ -15,7 +15,7 @@ A Discord webhook is a one-way pipe attached to a specific channel: your Claude 
 
 Unlike Slack's bot token model, Discord webhooks do not require a bot account or OAuth flow. You create the webhook directly from the channel settings, which makes setup faster but ties delivery to that specific channel — changing the destination requires creating a new webhook.
 
-**What gets sent:** Each notification includes the event type, a short summary, and a timestamp. Discord supports rich embeds with color coding, titles, and fields, but the gobbi scripts send plain text content to maximize compatibility across Discord client versions.
+**What gets sent:** Each notification includes the event type, a short summary, and a timestamp. Discord supports rich embeds with color coding, titles, and fields, but the notification scripts send plain text content to maximize compatibility across Discord client versions.
 
 ---
 

@@ -1,12 +1,12 @@
 ---
 name: _gotcha
-description: Record and check cross-project agent gotchas, organized by gobbi skill. Check before acting, write after corrections.
+description: Record and check cross-project agent gotchas. Check before acting, write after corrections.
 allowed-tools: Read, Grep, Glob, Write, Edit
 ---
 
 # Gotcha
 
-Record cross-project agent mistakes so they never happen twice. Each gotcha file matches a gobbi skill. Project-specific gotchas go to `.claude/project/gotchas/`.
+Record cross-project agent mistakes so they never happen twice. Each gotcha file covers a domain area. Project-specific gotchas go to `.claude/project/{project-name}/gotchas/`.
 
 **Cross-project gotchas by skill:**
 
@@ -100,6 +100,6 @@ When `enforcement` is `advisory` (or omitted), the entry is informational — ag
 | Skill | Covers |
 |-------|--------|
 | `_project-gotcha` | Recording project-specific gotchas in `.claude/project/{project-name}/gotchas/` |
-| `_skills-gotcha` | Recording skill-specific gotchas tied to individual gobbi skills |
+| `_skills-gotcha` | Recording skill-specific gotchas tied to individual skills |
 
 **Future direction:** each skill will have its own `gotchas.md` file living alongside its `SKILL.md`. `_project-gotcha` and `_skills-gotcha` will provide the recording guidelines and templates for those per-skill files.

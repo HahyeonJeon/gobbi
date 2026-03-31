@@ -13,7 +13,7 @@ Slack notifications for Claude Code use incoming webhooks — a URL that accepts
 
 An incoming webhook is a one-way pipe: your Claude Code hook script sends a JSON payload to a URL, and Slack delivers it to the target. The URL encodes both authentication and destination — anyone with the URL can post to that channel, so treat it as a credential.
 
-Slack also supports bot tokens, which give more control: you can DM a user by ID rather than a fixed channel, and you can adjust the message format over time without rotating the webhook URL. The gobbi notification scripts use the bot token model so that messages arrive as direct messages to your user ID rather than a shared channel.
+Slack also supports bot tokens, which give more control: you can DM a user by ID rather than a fixed channel, and you can adjust the message format over time without rotating the webhook URL. The notification scripts use the bot token model so that messages arrive as direct messages to your user ID rather than a shared channel.
 
 **What gets sent:** Each notification includes the event type, a short summary of what happened, and a timestamp. Long messages are truncated to stay within Slack's message size limits.
 

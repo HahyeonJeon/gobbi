@@ -48,7 +48,7 @@ Not every project needs every subdirectory. Create only the directories that hav
 
 **design/** — Project design decisions and architecture. How the system is designed, why decisions were made, and what trade-offs were accepted.
 
-**rules/** — Project-specific rules and conventions. Standards that apply only to this project — coding patterns, naming conventions, deployment rules. Separate from gobbi's cross-project rules.
+**rules/** — Project-specific rules and conventions. Standards that apply only to this project — coding patterns, naming conventions, deployment rules. Separate from cross-project rules in `.claude/rules/`.
 
 **gotchas/** — Project-specific gotchas, categorized by domain. Mistakes and corrections that apply only to this project. Separate from cross-project gotchas in `_gotcha/`.
 

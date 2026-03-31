@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write
 
 # Git
 
-Git and GitHub workflow for gobbi. Load this skill when a task involves branching, worktree setup, PR creation, or the full issue-to-merge lifecycle.
+Git and GitHub workflow. Load this skill when a task involves branching, worktree setup, PR creation, or the full issue-to-merge lifecycle.
 
 ---
 
@@ -38,9 +38,13 @@ Before the git workflow can function, certain conditions must hold. These divide
 
 **Warning — inform the user, continue.** The configured base branch should exist on the remote — worktree creation will fail later if it doesn't, but the user may intend to create it. The `.claude/worktrees/` directory should be listed in `.gitignore` — without this, worktree contents appear in the main repo's git status. Orphaned worktrees may exist in `.claude/worktrees/` from crashed or abandoned sessions — offer cleanup or recovery.
 
-> **Fallback principle:** If critical prerequisites cannot be resolved — user cannot install gh, cannot authenticate, no remote is available — fall back to Direct commit mode rather than blocking the session entirely.
+> **Fallback principle:**
 
-> **Re-verification principle:** Some prerequisites — particularly base branch existence — should be re-verified at the point of use, not only at session start. Early checks catch problems early; late re-checks catch changes that occurred between setup and execution.
+If critical prerequisites cannot be resolved — user cannot install gh, cannot authenticate, no remote is available — fall back to Direct commit mode rather than blocking the session entirely.
+
+> **Re-verification principle:**
+
+Some prerequisites — particularly base branch existence — should be re-verified at the point of use, not only at session start. Early checks catch problems early; late re-checks catch changes that occurred between setup and execution.
 
 ---
 

@@ -24,13 +24,21 @@ Vague tasks produce vague results. Break work down until each task is small enou
 
 ## How to Plan
 
-> **Always start in plan mode.** Planning outside of EnterPlanMode means planning without codebase exploration — and plans built on assumptions fail on contact with reality.
+> **Always start in plan mode.**
 
-> **Explore before decomposing.** Understanding the existing codebase, patterns, and architecture is a prerequisite to meaningful task breakdown. A plan that doesn't reflect the codebase will produce work that doesn't fit the codebase.
+Planning outside of EnterPlanMode means planning without codebase exploration — and plans built on assumptions fail on contact with reality.
 
-> **Decomposition is the core act of planning.** The plan's quality is determined by how well tasks are broken down — see "How to Decompose" below. Everything else (goal statement, execution order, collection plan) supports the task list.
+> **Explore before decomposing.**
 
-> **Exit plan mode to present, not to finish.** ExitPlanMode surfaces the plan for user approval. No delegation happens until the user signs off. If the plan needs revision after feedback, re-enter plan mode — revisions deserve the same structured exploration as the original.
+Understanding the existing codebase, patterns, and architecture is a prerequisite to meaningful task breakdown. A plan that doesn't reflect the codebase will produce work that doesn't fit the codebase.
+
+> **Decomposition is the core act of planning.**
+
+The plan's quality is determined by how well tasks are broken down — see "How to Decompose" below. Everything else (goal statement, execution order, collection plan) supports the task list.
+
+> **Exit plan mode to present, not to finish.**
+
+ExitPlanMode surfaces the plan for user approval. No delegation happens until the user signs off. If the plan needs revision after feedback, re-enter plan mode — revisions deserve the same structured exploration as the original.
 
 ---
 

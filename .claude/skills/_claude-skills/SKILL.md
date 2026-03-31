@@ -49,7 +49,7 @@ Every skill has a flat documentation structure: SKILL.md and optional sibling `.
 
 **Description** drives auto-invocation. Write in command tone: "Use when writing or reviewing X" — not "This skill provides X." Be specific enough to avoid misfiring on unrelated tasks.
 
-**Naming** follows the tier prefix convention: `_` for hidden skills, `__` for internal skills, no prefix for the interface entry point. Directory name equals skill name equals invocation command. See `.claude/rules/__gobbi-convention.md` for the full naming convention.
+**Naming** follows the tier prefix convention: `_` for hidden skills, `__` for internal skills, no prefix for the interface entry point. Directory name equals skill name equals invocation command. See the naming convention rule in `.claude/rules/` for the full convention.
 
 Read existing skills in `.claude/skills/` for structural patterns — the codebase is the authoritative reference.
 
@@ -57,11 +57,17 @@ Read existing skills in `.claude/skills/` for structural patterns — the codeba
 
 ## Skill Verification
 
-> **Skills should be testable.** A skill's trigger accuracy and output quality can be measured. If you can't describe what prompts should trigger a skill and what good output looks like, the skill's purpose isn't clear enough.
+> **Skills should be testable.**
 
-> **Improvement is iterative.** The cycle is: grade trigger accuracy and output quality, analyze failures for patterns, improve the skill, re-grade to verify. Each iteration should address the highest-priority findings first.
+A skill's trigger accuracy and output quality can be measured. If you can't describe what prompts should trigger a skill and what good output looks like, the skill's purpose isn't clear enough.
 
-> **Comparison should be blind.** When comparing two skill versions, remove provenance bias. Present versions as A and B without labeling which is current vs candidate. The blind protocol ensures evaluation is based on quality, not familiarity.
+> **Improvement is iterative.**
+
+The cycle is: grade trigger accuracy and output quality, analyze failures for patterns, improve the skill, re-grade to verify. Each iteration should address the highest-priority findings first.
+
+> **Comparison should be blind.**
+
+When comparing two skill versions, remove provenance bias. Present versions as A and B without labeling which is current vs candidate. The blind protocol ensures evaluation is based on quality, not familiarity.
 
 Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. Three evaluation agents execute verification: __skills-grader (tests trigger accuracy and output quality), __skills-comparator (blind A/B comparison of skill versions), and __skills-analyzer (synthesizes results into prioritized improvements).
 

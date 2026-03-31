@@ -69,7 +69,9 @@ Check your work before reporting back:
 - Is the change minimal — no scope creep, no bonus refactoring?
 - If you modified anything in `.claude/`, are related docs still accurate?
 
-> **Before committing, re-verify the precondition: correct branch is checked out and no unexpected state changes occurred since verification.** This extends _git's re-verification principle to the subagent level. A subagent that verifies its work but commits to the wrong branch has produced correct work in the wrong place.
+> **Before committing, re-verify the precondition: correct branch is checked out and no unexpected state changes occurred since verification.**
+
+This extends _git's re-verification principle to the subagent level. A subagent that verifies its work but commits to the wrong branch has produced correct work in the wrong place.
 
 ### Commit (when _git is active)
 
