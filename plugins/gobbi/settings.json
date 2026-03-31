@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-metadata.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-metadata.sh",
             "timeout": 5
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/load-notification-env.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/load-notification-env.sh",
             "timeout": 5
           }
         ]
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-session.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-session.sh",
             "timeout": 5,
             "async": true
           }
@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-completion.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-completion.sh",
             "timeout": 10,
             "async": true
           }
@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-attention.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-attention.sh",
             "timeout": 5,
             "async": true
           }
@@ -64,7 +64,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-error.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-error.sh",
             "timeout": 5,
             "async": true
           }
@@ -76,7 +76,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-subagent.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-subagent.sh",
             "timeout": 5,
             "async": true
           }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-session.sh",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-session.sh",
             "timeout": 5,
             "async": true
           }
