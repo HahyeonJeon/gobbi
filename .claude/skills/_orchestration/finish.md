@@ -6,7 +6,9 @@ How the workflow concludes with merge, commit, and compact options. Load this wh
 
 ## Core Principle
 
-> **Before any irreversible operation, verify the expected precondition still holds.** Conditions change between when you checked and when you act. Re-verify at the point of use.
+> **Before any irreversible operation, verify the expected precondition still holds.**
+
+Conditions change between when you checked and when you act. Re-verify at the point of use.
 
 _git establishes the re-verification principle: prerequisites are re-verified at point of use, not only at session start. FINISH extends this to all irreversible actions — committing, pushing, merging, and PR creation. The cost of re-checking is trivial; the cost of acting on a stale assumption is rework or data loss.
 
@@ -53,7 +55,9 @@ The following conditions must hold before each irreversible action. These are co
 | Merging | CI has passed, PR is still open |
 | Resuming a session | Session ID matches the expected task context |
 
-> **Verify, then act. Never assume a prior check still holds.** A branch can be switched by a concurrent session. A PR can be closed by another contributor. CI can fail on a rebase. Each action's precondition must be true at the moment the action executes.
+> **Verify, then act. Never assume a prior check still holds.**
+
+A branch can be switched by a concurrent session. A PR can be closed by another contributor. CI can fail on a rebase. Each action's precondition must be true at the moment the action executes.
 
 ---
 

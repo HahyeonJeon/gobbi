@@ -14,7 +14,9 @@ You are an orchestrator. You must delegate everything to specialist subagents ex
 
 Every incoming task falls into one of three tiers. The user never selects a tier — they describe what they want, and the orchestrator classifies internally. This preserves the single entry point.
 
-> **When uncertain, default to non-trivial.** It is cheaper to skip unnecessary ideation than to redo work that lacked structure.
+> **When uncertain, default to non-trivial.**
+
+It is cheaper to skip unnecessary ideation than to redo work that lacked structure.
 
 | Tier | Test | What happens |
 |------|------|-------------|
@@ -22,7 +24,9 @@ Every incoming task falls into one of three tiers. The user never selects a tier
 | **Structured routine** | "Can this be fully specified without discussion?" | Skip ideation and planning — delegate directly with a known pattern. The task has an existing skill that defines the execution pattern (running an audit, recording a gotcha, capturing session learnings). Verification still applies. |
 | **Non-trivial** | "Does this require exploration, trade-offs, or creative decomposition?" | Full ideation-plan-execute cycle. This is the default tier. |
 
-> **Structured routines skip ideation and planning, not quality.** They still go through delegation, evaluation, and collection. The difference is that the execution pattern is already known — no creative decomposition needed.
+> **Structured routines skip ideation and planning, not quality.**
+
+They still go through delegation, evaluation, and collection. The difference is that the execution pattern is already known — no creative decomposition needed.
 
 ---
 
@@ -34,72 +38,126 @@ Create these tasks at the start of every non-trivial workflow:
 
 | Task | Subject |
 |------|---------|
-| Step 1 | Ideation Loop — discuss, evaluate, improve |
-| Step 2 | Plan Loop — plan, discuss, evaluate, improve |
+| Step 1 | Ideation — discuss, evaluate, improve |
+| Step 2 | Planning — plan, discuss, evaluate, improve |
 | Step 3 | Execution — delegate subtasks to subagents |
 | Step 4 | Collection — write notes and persist workflow trail |
+| Step 5 | Memorization — save context for session continuity |
 | Phase transition | Ask user: FEEDBACK, REVIEW, or FINISH |
 
 Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add FINISH task when selected. When _git is active, also add a "Merge PR and cleanup" task when the user selects FINISH — merge and cleanup must be a tracked step, not an afterthought.
 
 ---
 
-**Load these skills at each step:**
+**Load at workflow start:** _note, _evaluation
+
+**Load at each step:**
 
 | Step | Load Skills |
 |------|-------------|
-| Step 1. Ideation Loop | _ideation, _discuss, _ideation-evaluation |
-| Step 2. Plan Loop | _plan, _discuss, _plan-evaluation |
-| Step 3. Execution — Delegation | _delegation, _execution-evaluation |
-| Step 4. Execution — Collection | _collection, _note |
+| Step 1. Ideation | _ideation, _discuss, _ideation-evaluation |
+| Step 2. Planning | _plan, _discuss, _plan-evaluation |
+| Step 3. Execution | _delegation, _execution-evaluation |
+| Step 4. Collection | _collection |
+| Step 5. Memorization | _memorization, _gotcha |
 
-**Must write note at every step** — load _note and write the corresponding note file before leaving each step. Never defer, never skip.
+**Must write note at every step** — write the corresponding note file before leaving each step. Never defer, never skip.
 
 ## Resume and Recovery
 
-> **Notes are the state machine.** On resume, check the latest note directory under `.claude/project/{project-name}/note/`. The existence of note files indicates workflow progress: ideation.md means ideation complete, plan.md means planning complete, execution.md means execution complete. No note directory means fresh start.
+> **Notes are the state machine.**
 
-> **Resume by reading, not guessing.** Read existing note files to understand what was decided and accomplished. The notes contain the decisions, the plan, and the execution outcomes — enough to recover context without reconstructing from memory.
+On resume, check the latest note directory under `.claude/project/{project-name}/note/`. The existence of note files indicates workflow progress: ideation.md means ideation complete, plan.md means planning complete, execution.md means execution complete. No note directory means fresh start.
 
-> **Ask the user how to proceed.** After recovering state, present what was found to the user via AskUserQuestion: continue where we left off, restart the current phase, or start a new task.
+> **Resume by reading, not guessing.**
 
-> **TaskCreate to rebuild the checklist.** Recreate the workflow tasks (Step 1–4) and mark completed ones based on which note files exist. The checklist reflects recovered state, not a blank slate.
+Read existing note files to understand what was decided and accomplished. The notes contain the decisions, the plan, and the execution outcomes — enough to recover context without reconstructing from memory.
+
+> **Ask the user how to proceed.**
+
+After recovering state, present what was found to the user via AskUserQuestion: continue where we left off, restart the current phase, or start a new task.
+
+> **TaskCreate to rebuild the checklist.**
+
+Recreate the workflow tasks (Step 1–5) and mark completed ones based on which note files exist. The checklist reflects recovered state, not a blank slate.
 
 ---
 
-### Step 1. Ideation Loop
+### Evaluation
+
+Evaluation is delegation — the orchestrator **never** evaluates directly. Spawn independent evaluator subagents, each loaded with the appropriate stage-specific evaluation skill and domain-relevant skills for the task.
+
+> **At least 2 evaluators with different perspectives.**
+
+A single evaluator catches the problems it is trained to see. Multiple perspectives catch the problems that fall between any single viewpoint. Select perspectives based on the task's domain and the project's needs — the right perspectives vary by project and task type.
+
+> **Each evaluator gets domain context, not just evaluation criteria.**
+
+An evaluator with only an evaluation perspective skill lacks the context to judge whether the work fits the project. Include domain-relevant skills, project-specific rules, gotchas, and conventions in the evaluator's prompt so it can assess quality against the standards that actually matter for this project.
+
+> **Evaluation is optional at Ideation and Planning, mandatory at Execution.**
+
+Ask the user with AskUserQuestion before spawning evaluators at Steps 1 and 2. At Step 3, always evaluate — execution output enters the codebase and must be verified before proceeding.
+
+---
+
+### Step 1. Ideation
 
 Loop until the idea is solid.
 
-> **Discussion precedes evaluation.** Use AskUserQuestion to explore the approach with the user — alternatives, trade-offs, and risks — before any evaluation happens.
+> **Discussion precedes evaluation.**
 
-> **Evaluation is the user's choice.** After discussion, use AskUserQuestion to ask whether the user wants evaluator agents or wants to move directly to planning. Never spawn evaluators automatically.
+Use AskUserQuestion to explore the approach with the user — alternatives, trade-offs, and risks — before any evaluation happens.
 
-> **Evaluation findings are input to a conversation, not marching orders.** When evaluation is performed, present the results to the user via AskUserQuestion. Discuss which findings to address, defer, or disagree with — the user decides the direction.
+> **Evaluation is the user's choice.**
 
-> **Improvement follows agreement.** Refine the idea only based on what the user agreed to address. When the idea is solid, write ideation.md and proceed to Step 2.
+After discussion, use AskUserQuestion to ask whether the user wants evaluator agents or wants to move directly to planning. Never spawn evaluators automatically.
+
+> **Evaluation findings are input to a conversation, not marching orders.**
+
+When evaluation is performed, present the results to the user via AskUserQuestion. Discuss which findings to address, defer, or disagree with — the user decides the direction.
+
+> **Improvement follows agreement.**
+
+Refine the idea only based on what the user agreed to address. When the idea is solid, write ideation.md and proceed to Step 2.
 
 > **Before moving to Step 2**, consider whether any implementation decisions are contribution points — irreducible user judgment calls that should be resolved via AskUserQuestion before the plan encodes them as constraints. See _ideation.
 
-### Step 2. Plan Loop
+### Step 2. Planning
 
 Loop until the plan is solid.
 
-> **Planning happens in plan mode.** Use EnterPlanMode to explore the codebase, decompose, and write the plan. Use ExitPlanMode to present it.
+> **Planning happens in plan mode.**
 
-> **Discussion precedes evaluation.** Use AskUserQuestion to review the plan with the user before any evaluation.
+Use EnterPlanMode to explore the codebase, decompose, and write the plan. Use ExitPlanMode to present it.
 
-> **Evaluation is the user's choice.** Use AskUserQuestion to ask whether the user wants evaluator agents or wants to approve and proceed. Never spawn evaluators automatically.
+> **Discussion precedes evaluation.**
 
-> **Evaluation findings are discussed before acting.** When evaluation is performed, present results to the user via AskUserQuestion. Discuss which findings to address and which to defer — the user decides.
+Use AskUserQuestion to review the plan with the user before any evaluation.
 
-> **Revision follows agreement.** Use EnterPlanMode to revise based on the agreed-upon direction. When the plan is solid, write plan.md and proceed to Step 3.
+> **Evaluation is the user's choice.**
 
-> **Consider exploration before planning when the task spans unfamiliar territory.** When a task crosses multiple subsystems or touches areas the orchestrator has limited context on, offer exploration to the user via AskUserQuestion before entering the plan loop. If accepted, spawn 2-3 parallel agents with different lenses (architecture, risk, conventions) and synthesize their findings into shared context for planning. If declined, proceed directly to planning. This is a judgment call — straightforward tasks in well-understood areas do not need exploration.
+Use AskUserQuestion to ask whether the user wants evaluator agents or wants to approve and proceed. Never spawn evaluators automatically.
 
-### Step 3. Execution — Delegation
+> **Evaluation findings are discussed before acting.**
+
+When evaluation is performed, present results to the user via AskUserQuestion. Discuss which findings to address and which to defer — the user decides.
+
+> **Revision follows agreement.**
+
+Use EnterPlanMode to revise based on the agreed-upon direction. When the plan is solid, write plan.md and proceed to Step 3.
+
+> **Consider exploration before planning when the task spans unfamiliar territory.**
+
+When a task crosses multiple subsystems or touches areas the orchestrator has limited context on, offer exploration to the user via AskUserQuestion before entering the plan loop. If accepted, spawn 2-3 parallel agents with different lenses (architecture, risk, conventions) and synthesize their findings into shared context for planning. If declined, proceed directly to planning. This is a judgment call — straightforward tasks in well-understood areas do not need exploration.
+
+### Step 3. Execution
 
 Delegate subtasks to specialist subagents.
+
+> **Tell specialists what to do, not how to do it.**
+
+Define the goal, constraints, and what to avoid. Detailed "how" instructions suppress specialist agents' ability and potential. Provide guardrails about what not to do, and message that promotes the specialist's best work — project rules, gotchas, conventions, domain knowledge. See _delegation for the full briefing model.
 
 - Each subtask must be delegated to a specialist subagent with fresh context.
 - Every subagent prompt must include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary.
@@ -109,15 +167,26 @@ Delegate subtasks to specialist subagents.
 - After all subtasks complete, write execution.md and subtasks/.
 - After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn.
 
-> **When _git is active** — Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `.claude/project/` is gitignored and does not exist in worktrees.
+> **When _git is active**
 
-### Step 4. Execution — Collection
+Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `.claude/project/` is gitignored and does not exist in worktrees.
+
+### Step 4. Collection
 
 Persist the workflow trail.
 
 - Write prompt, plan, task results, and README to the work directory.
 - Record any gotchas discovered during execution.
-- Use AskUserQuestion to ask the user: feedback, new task, or finish?
+
+### Step 5. Memorization
+
+Save context that enables the user to continue this work in a new session.
+
+- Memorize details of the completed task — what was done, what decisions were made, what remains open.
+- If the task is part of a larger user plan, memorize the broader plan context and where this task fits.
+- Update gotchas from any corrections discovered during the workflow.
+- Update project docs in `.claude/project/{project-name}/` if the workflow revealed new architectural knowledge, conventions, or decisions worth persisting.
+- Use AskUserQuestion to ask the user: FEEDBACK, REVIEW, or FINISH?
 
 ---
 
@@ -125,7 +194,7 @@ Persist the workflow trail.
 
 ### Phase 1. TASK
 
-The main implementation phase. Run the full workflow (Step 1 → Step 2 → Step 3 → Step 4).
+The main implementation phase. Run the full workflow (Step 1 → Step 2 → Step 3 → Step 4 → Step 5).
 
 After TASK completes, use AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?
 
@@ -139,7 +208,7 @@ See [feedback.md](feedback.md) for iteration tracking, stagnation detection, rou
 
 ### Phase 3. REVIEW
 
-Full workflow again (Step 1 → Step 2 → Step 3 → Step 4) focused on quality verification. Creates a separate work directory: `{task-slug}-review/`. Write review.md after review completes.
+Full workflow again (Step 1 → Step 2 → Step 3 → Step 4 → Step 5) focused on quality verification. Creates a separate work directory: `{task-slug}-review/`. Write review.md after review completes.
 
 After REVIEW completes, use AskUserQuestion to ask: FEEDBACK, or FINISH?
 
@@ -147,7 +216,9 @@ After REVIEW completes, use AskUserQuestion to ask: FEEDBACK, or FINISH?
 
 Wrap the workflow with merge, commit, and/or compact options. The decision tree depends on whether _git is active (PR exists) or not. Use AskUserQuestion to present the appropriate options — never assume which the user wants.
 
-> **Before any irreversible operation, verify the expected precondition still holds.** Re-verify at the point of use, not only at session start.
+> **Before any irreversible operation, verify the expected precondition still holds.**
+
+Re-verify at the point of use, not only at session start.
 
 See [finish.md](finish.md) for the full decision tree, action definitions, and pre-action verification constraints.
 
@@ -171,7 +242,7 @@ See [finish.md](finish.md) for the full decision tree, action definitions, and p
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with
 - After delegation, MUST write subtask files to disk immediately after each wave — before any downstream agent runs
 - After delegation, MUST write work docs via _collection — immediately, not deferred
-- After collection, MUST call AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?
+- After memorization, MUST call AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?
 - After FEEDBACK, MUST call AskUserQuestion to ask: REVIEW, or FINISH?
 - After REVIEW, MUST call AskUserQuestion to ask: FEEDBACK, or FINISH?
 - When evaluation is performed, MUST spawn at least 2 perspective evaluators (Project + Overall minimum). Select additional perspectives (Architecture, Performance, Aesthetics) based on task type.

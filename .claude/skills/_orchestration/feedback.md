@@ -6,9 +6,13 @@ How iterative feedback works after TASK or REVIEW completes. Load this when ente
 
 ## Core Principle
 
-> **Speed over structure.** FEEDBACK exists to refine, not to redesign. The architecture is established — skip planning, fix directly or delegate small scoped tasks.
+> **Speed over structure.**
 
-The user inspects results and provides corrections. Each correction is a signal: fix it, record it as a gotcha, and move forward. FEEDBACK is optimized for rapid iteration, not full workflow cycles.
+FEEDBACK exists to refine, not to redesign. The architecture is established — skip planning, fix directly or delegate small scoped tasks.
+
+> **Every correction is a memorization opportunity.**
+
+User feedback is the richest source of gotchas, rules, and project knowledge. Don't just fix the task — record corrections as gotchas in `.claude/project/{project-name}/gotchas/`, stated preferences as rules in `.claude/project/{project-name}/rules/`, and new knowledge in project docs. A feedback round that only fixes code without updating project memory wastes the learning.
 
 ---
 
@@ -16,7 +20,9 @@ The user inspects results and provides corrections. Each correction is a signal:
 
 - **Skip planning** — the architecture is established from TASK
 - **Fix directly or delegate small scoped tasks** — no full decomposition needed
-- **Record gotchas from corrections** — user corrections become gotchas via _gotcha, preventing the same mistake across sessions
+- **Record gotchas from corrections** — user corrections become "must avoid" entries in `.claude/project/{project-name}/gotchas/`
+- **Record rules from preferences** — user-stated standards become "must follow" entries in `.claude/project/{project-name}/rules/`
+- **Update project docs** — if feedback reveals new knowledge about architecture, conventions, or decisions, update `.claude/project/{project-name}/`
 - **Write feedback.md** after each feedback round to persist the iteration trail
 
 After FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?
@@ -25,7 +31,9 @@ After FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?
 
 ## Iteration Tracking
 
-> **Number each feedback round.** Append to feedback.md with the round number, what the user said, what changed, and what remains unresolved.
+> **Number each feedback round.**
+
+Append to feedback.md with the round number, what the user said, what changed, and what remains unresolved.
 
 This makes the iteration history explicit. When feedback spans many rounds, the numbered trail prevents context loss and makes stagnation visible. Without it, the orchestrator loses track of what was already attempted.
 
@@ -33,7 +41,9 @@ This makes the iteration history explicit. When feedback spans many rounds, the 
 
 ## Stagnation Detection
 
-> **If 3 consecutive rounds address the same finding without convergence, surface the stagnation pattern to the user via AskUserQuestion.** The user decides whether to continue iterating, accept the current state, or change approach entirely.
+> **If 3 consecutive rounds address the same finding without convergence, surface the stagnation pattern to the user via AskUserQuestion.**
+
+The user decides whether to continue iterating, accept the current state, or change approach entirely.
 
 Stagnation means the fix strategy is not working — repeating it will not produce a different result. The orchestrator's role is to detect the pattern and surface it, not to decide the resolution. The user may have context the orchestrator lacks about why convergence is difficult or whether "good enough" is acceptable.
 
@@ -41,7 +51,9 @@ Stagnation means the fix strategy is not working — repeating it will not produ
 
 ## Feedback Round Cap
 
-> **After 5 feedback rounds, surface AskUserQuestion recommending REVIEW or FINISH.** The user can override and continue — this is a recommendation, not a hard stop.
+> **After 5 feedback rounds, surface AskUserQuestion recommending REVIEW or FINISH.**
+
+The user can override and continue — this is a recommendation, not a hard stop.
 
 Five rounds is a signal that the scope of changes may warrant a structured pass (REVIEW) rather than continued incremental fixes. The cap exists to prompt reflection, not to gate progress. If the user has clear remaining items, continuing is the right call.
 
@@ -49,7 +61,9 @@ Five rounds is a signal that the scope of changes may warrant a structured pass 
 
 ## Targeted Re-evaluation
 
-> **When a feedback fix is narrow and well-scoped, a single evaluator suffices for verification.** Full perspective spawn is unnecessary for small targeted fixes.
+> **When a feedback fix is narrow and well-scoped, a single evaluator suffices for verification.**
+
+Full perspective spawn is unnecessary for small targeted fixes.
 
 The multi-perspective evaluation model exists for complex, multi-faceted outputs where blind spots are likely. A typo fix, a single-file correction, or a formatting adjustment does not need multiple independent assessments. Match evaluation cost to fix complexity — use a single evaluator (Haiku or Sonnet tier) for targeted fixes, reserve the full perspective spawn (Project + Overall + task-relevant perspectives) for substantial changes.
 
@@ -58,7 +72,9 @@ The multi-perspective evaluation model exists for complex, multi-faceted outputs
 ## Constraints
 
 - MUST number each feedback round in feedback.md
-- MUST record user corrections as gotchas via _gotcha
+- MUST record user corrections as gotchas in `.claude/project/{project-name}/gotchas/`
+- MUST record user-stated standards as rules in `.claude/project/{project-name}/rules/`
+- MUST update project docs when feedback reveals new knowledge worth persisting
 - MUST surface stagnation pattern after 3 consecutive rounds on the same finding — via AskUserQuestion, not automatic action
 - MUST recommend REVIEW or FINISH after 5 rounds — via AskUserQuestion, user can override
 - MUST use AskUserQuestion at every phase boundary — never prose transitions
