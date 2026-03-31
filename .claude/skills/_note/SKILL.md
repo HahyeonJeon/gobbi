@@ -8,6 +8,10 @@ allowed-tools: Write, Read, Glob, Bash
 
 Write notes at every workflow step to persist decisions, outcomes, and context. Notes are the permanent record of what was discussed, decided, and delivered.
 
+> **Notes must contain full content, never summaries.**
+
+Every note file must be detailed enough that a reader who has no access to the conversation can fully reconstruct what happened. Write the actual content — the complete plan, the full evaluation findings, the detailed execution outcomes. A one-paragraph summary is not a note. If it takes 100 lines to capture what happened, write 100 lines. The plan file from EnterPlanMode, the evaluation results, the discussion decisions — all of it goes into the note verbatim or near-verbatim.
+
 ---
 
 ## Where to Write
