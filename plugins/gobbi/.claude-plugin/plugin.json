@@ -1,0 +1,14 @@
+{
+  "name": "gobbi",
+  "version": "0.3.0",
+  "description": "Open-source ClaudeX tool for Claude Code — structured orchestration with multi-stance evaluation, adaptive planning, and git workflow isolation",
+  "author": {
+    "name": "HahyeonJeon"
+  },
+  "repository": "https://github.com/HahyeonJeon/gobbi",
+  "homepage": "https://github.com/HahyeonJeon/gobbi#readme",
+  "license": "MIT",
+  "keywords": ["claude-code", "harness", "orchestration", "workflow", "ai-agent", "evaluation"],
+  "skills": "./skills/",
+  "agents": "./agents/"
+}

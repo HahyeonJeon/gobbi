@@ -1,20 +1,6 @@
 import { readdir, cp, rm, unlink, mkdir, chmod, access } from 'fs/promises';
 import path from 'path';
-import { ensureTriggerLine } from './claude-md.js';
-import { CORE_HOOK_ENTRIES, NOTIFICATION_HOOK_ENTRIES, GOBBI_PERMISSIONS, CORE_SCRIPTS, NOTIFICATION_SCRIPTS } from './hooks.js';
-import { mergeHookConfig, mergePermissions } from './settings.js';
-import { updateSyncTimestamp } from './manifest.js';
-
-/**
- * Result of a sync operation, tracking what was copied and assembled.
- */
-export interface SyncResult {
-  skillsCopied: number;
-  agentsCopied: number;
-  hooksCopied: number;
-  settingsAssembled: boolean;
-  claudeMdUpdated: boolean;
-}
+import { CORE_SCRIPTS, NOTIFICATION_SCRIPTS } from './hooks.js';
 
 /**
  * Check whether a path exists and is accessible.
@@ -31,20 +17,21 @@ async function pathExists(targetPath: string): Promise<boolean> {
 }
 
 /**
- * Step 1: Clear gobbi-managed items from .claude/ before copying fresh versions.
- * - Removes gobbi-prefixed skill directories (except gobbi-hack)
- * - Removes gobbi-prefixed agent files
- * - Removes known hook scripts
+ * Clear gobbi-managed items from target .claude/ before fresh copy.
+ * Removes:
+ * - Skill directories starting with "_" or "__", or named exactly "gobbi", in skills/
+ * - Agent files starting with "_" or "__" in agents/
+ * - Known hook scripts in hooks/
+ *
+ * @param claudeDir - Absolute path to the .claude/ directory.
  */
-async function clearGobbiItems(targetDir: string): Promise<void> {
-  const claudeDir = path.join(targetDir, '.claude');
-
-  // Clear gobbi skills (except gobbi-hack, which is user-owned)
+export async function clearGobbiItems(claudeDir: string): Promise<void> {
+  // Clear gobbi skill directories
   const skillsDir = path.join(claudeDir, 'skills');
   if (await pathExists(skillsDir)) {
     const entries = await readdir(skillsDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && entry.name.startsWith('gobbi') && entry.name !== 'gobbi-hack') {
+      if (entry.isDirectory() && (entry.name.startsWith('_') || entry.name === 'gobbi')) {
         await rm(path.join(skillsDir, entry.name), { recursive: true });
       }
     }
@@ -55,7 +42,7 @@ async function clearGobbiItems(targetDir: string): Promise<void> {
   if (await pathExists(agentsDir)) {
     const entries = await readdir(agentsDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isFile() && entry.name.startsWith('gobbi-')) {
+      if (entry.isFile() && entry.name.startsWith('_')) {
         await unlink(path.join(agentsDir, entry.name));
       }
     }
@@ -76,22 +63,25 @@ async function clearGobbiItems(targetDir: string): Promise<void> {
 }
 
 /**
- * Copy all skill directories from a source skills/ directory to .claude/skills/.
+ * Copy gobbi-managed skill directories from source to destination.
+ * Copies directories starting with "_" or "__", or named exactly "gobbi".
+ * @param srcDir - Source skills directory.
+ * @param destDir - Destination skills directory.
  * @returns Number of skill directories copied.
  */
-async function copySkillsFrom(srcSkillsDir: string, destSkillsDir: string): Promise<number> {
-  if (!(await pathExists(srcSkillsDir))) {
+export async function copySkills(srcDir: string, destDir: string): Promise<number> {
+  if (!(await pathExists(srcDir))) {
     return 0;
   }
 
-  await mkdir(destSkillsDir, { recursive: true });
-  const entries = await readdir(srcSkillsDir, { withFileTypes: true });
+  await mkdir(destDir, { recursive: true });
+  const entries = await readdir(srcDir, { withFileTypes: true });
   let count = 0;
 
   for (const entry of entries) {
-    if (entry.isDirectory()) {
-      const src = path.join(srcSkillsDir, entry.name);
-      const dest = path.join(destSkillsDir, entry.name);
+    if (entry.isDirectory() && (entry.name.startsWith('_') || entry.name === 'gobbi')) {
+      const src = path.join(srcDir, entry.name);
+      const dest = path.join(destDir, entry.name);
       await cp(src, dest, { recursive: true });
       count++;
     }
@@ -101,22 +91,27 @@ async function copySkillsFrom(srcSkillsDir: string, destSkillsDir: string): Prom
 }
 
 /**
- * Copy all agent files from a source agents/ directory to .claude/agents/.
+ * Copy gobbi-managed agent files from source to destination.
+ * Copies files starting with "_" or "__".
+ * @param srcDir - Source agents directory.
+ * @param destDir - Destination agents directory.
  * @returns Number of agent files copied.
  */
-async function copyAgentsFrom(srcAgentsDir: string, destAgentsDir: string): Promise<number> {
-  if (!(await pathExists(srcAgentsDir))) {
+export async function copyAgents(srcDir: string, destDir: string): Promise<number> {
+  if (!(await pathExists(srcDir))) {
     return 0;
   }
 
-  await mkdir(destAgentsDir, { recursive: true });
-  const entries = await readdir(srcAgentsDir, { withFileTypes: true });
+  await mkdir(destDir, { recursive: true });
+  const entries = await readdir(srcDir, { withFileTypes: true });
   let count = 0;
 
   for (const entry of entries) {
-    if (entry.isFile()) {
-      const src = path.join(srcAgentsDir, entry.name);
-      const dest = path.join(destAgentsDir, entry.name);
+    // Only hidden (_) and internal (__) agents are copied. Interface agents (gobbi- prefix)
+    // are distributed exclusively via the plugin, not the CLI install pipeline.
+    if (entry.isFile() && entry.name.startsWith('_')) {
+      const src = path.join(srcDir, entry.name);
+      const dest = path.join(destDir, entry.name);
       await cp(src, dest);
       count++;
     }
@@ -126,23 +121,24 @@ async function copyAgentsFrom(srcAgentsDir: string, destAgentsDir: string): Prom
 }
 
 /**
- * Copy all hook scripts from a source hooks/ directory to .claude/hooks/,
- * setting executable permissions on each.
+ * Copy hook script files from source to destination with chmod 755.
+ * @param srcDir - Source hooks directory.
+ * @param destDir - Destination hooks directory.
  * @returns Number of hook files copied.
  */
-async function copyHooksFrom(srcHooksDir: string, destHooksDir: string): Promise<number> {
-  if (!(await pathExists(srcHooksDir))) {
+export async function copyHooks(srcDir: string, destDir: string): Promise<number> {
+  if (!(await pathExists(srcDir))) {
     return 0;
   }
 
-  await mkdir(destHooksDir, { recursive: true });
-  const entries = await readdir(srcHooksDir, { withFileTypes: true });
+  await mkdir(destDir, { recursive: true });
+  const entries = await readdir(srcDir, { withFileTypes: true });
   let count = 0;
 
   for (const entry of entries) {
     if (entry.isFile()) {
-      const src = path.join(srcHooksDir, entry.name);
-      const dest = path.join(destHooksDir, entry.name);
+      const src = path.join(srcDir, entry.name);
+      const dest = path.join(destDir, entry.name);
       await cp(src, dest);
       await chmod(dest, 0o755);
       count++;
@@ -153,106 +149,16 @@ async function copyHooksFrom(srcHooksDir: string, destHooksDir: string): Promise
 }
 
 /**
- * Step 2: Copy from all .gobbi/ sources (core, market packages, user) to .claude/.
- * @returns Counts of skills, agents, and hooks copied.
+ * Copy README.md from source to destination.
+ * @param srcDir - Source directory containing README.md.
+ * @param destDir - Destination directory for README.md.
  */
-async function copyAllSources(targetDir: string): Promise<{ skills: number; agents: number; hooks: number }> {
-  const gobbiDir = path.join(targetDir, '.gobbi');
-  const claudeDir = path.join(targetDir, '.claude');
-
-  const destSkills = path.join(claudeDir, 'skills');
-  const destAgents = path.join(claudeDir, 'agents');
-  const destHooks = path.join(claudeDir, 'hooks');
-
-  let skills = 0;
-  let agents = 0;
-  let hooks = 0;
-
-  // Core sources
-  skills += await copySkillsFrom(path.join(gobbiDir, 'core', 'skills'), destSkills);
-  agents += await copyAgentsFrom(path.join(gobbiDir, 'core', 'agents'), destAgents);
-  hooks += await copyHooksFrom(path.join(gobbiDir, 'core', 'hooks'), destHooks);
-
-  // Market packages — each subdirectory under .gobbi/market/ is a package
-  const marketDir = path.join(gobbiDir, 'market');
-  if (await pathExists(marketDir)) {
-    const packageDirs = await readdir(marketDir, { withFileTypes: true });
-    for (const pkg of packageDirs) {
-      if (pkg.isDirectory()) {
-        const pkgPath = path.join(marketDir, pkg.name);
-        skills += await copySkillsFrom(path.join(pkgPath, 'skills'), destSkills);
-        agents += await copyAgentsFrom(path.join(pkgPath, 'agents'), destAgents);
-        hooks += await copyHooksFrom(path.join(pkgPath, 'hooks'), destHooks);
-      }
-    }
-  }
-
-  // User sources
-  skills += await copySkillsFrom(path.join(gobbiDir, 'user', 'skills'), destSkills);
-  agents += await copyAgentsFrom(path.join(gobbiDir, 'user', 'agents'), destAgents);
-  hooks += await copyHooksFrom(path.join(gobbiDir, 'user', 'hooks'), destHooks);
-
-  return { skills, agents, hooks };
-}
-
-/**
- * Copy GOBBI.md from .gobbi/core/ to .claude/ if it exists.
- */
-async function copyGobbiMd(targetDir: string): Promise<void> {
-  const src = path.join(targetDir, '.gobbi', 'core', 'GOBBI.md');
+export async function copyGobbiMd(srcDir: string, destDir: string): Promise<void> {
+  const src = path.join(srcDir, 'README.md');
   if (!(await pathExists(src))) {
     return;
   }
 
-  const destDir = path.join(targetDir, '.claude');
   await mkdir(destDir, { recursive: true });
-  await cp(src, path.join(destDir, 'GOBBI.md'));
-}
-
-/**
- * Synchronize .gobbi/ (source of truth) to .claude/ (where Claude Code reads).
- *
- * The sync algorithm:
- * 1. Clear gobbi-managed items from .claude/
- * 2. Copy from .gobbi/ sources (core, market packages, user) to .claude/
- * 3. Copy GOBBI.md
- * 4. Ensure CLAUDE.md trigger line
- * 5. Assemble settings.json (hook config + permissions)
- * 6. Update manifest lastSync timestamp
- *
- * This function is idempotent — running it multiple times produces the same result.
- *
- * @param targetDir - The project root directory containing .gobbi/ and .claude/.
- * @returns Summary of what was synced.
- */
-export async function sync(targetDir: string): Promise<SyncResult> {
-  // Step 1: Clear gobbi-managed items from .claude/
-  await clearGobbiItems(targetDir);
-
-  // Step 2: Copy from all .gobbi/ sources to .claude/
-  const copied = await copyAllSources(targetDir);
-
-  // Step 3: Copy GOBBI.md
-  await copyGobbiMd(targetDir);
-
-  // Step 4: Ensure CLAUDE.md trigger line
-  const triggerResult = await ensureTriggerLine(targetDir);
-  const claudeMdUpdated = triggerResult.created || triggerResult.modified;
-
-  // Step 5: Assemble settings.json
-  const settingsPath = path.join(targetDir, '.claude', 'settings.json');
-  await mergeHookConfig(settingsPath, CORE_HOOK_ENTRIES);
-  await mergeHookConfig(settingsPath, NOTIFICATION_HOOK_ENTRIES);
-  await mergePermissions(settingsPath, GOBBI_PERMISSIONS);
-
-  // Step 6: Update manifest lastSync timestamp
-  await updateSyncTimestamp(path.join(targetDir, '.gobbi'));
-
-  return {
-    skillsCopied: copied.skills,
-    agentsCopied: copied.agents,
-    hooksCopied: copied.hooks,
-    settingsAssembled: true,
-    claudeMdUpdated,
-  };
+  await cp(src, path.join(destDir, 'README.md'));
 }

@@ -9,7 +9,6 @@ Commands:
   install    Install gobbi into the current project
   update     Update gobbi core to the latest version
   create     Create a new skill, agent, or hook
-  sync       Sync .gobbi/ to .claude/
 
 Options:
   --help              Show this help message
@@ -61,11 +60,6 @@ export async function run(): Promise<void> {
       if (typeArg !== undefined) createOpts.type = typeArg;
       if (nameArg !== undefined) createOpts.name = nameArg;
       await runCreate(cwd, createOpts);
-      break;
-    }
-    case 'sync': {
-      const { runSync } = await import('./commands/sync.js');
-      await runSync(cwd);
       break;
     }
     default:

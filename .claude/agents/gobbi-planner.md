@@ -1,1 +1,0 @@
-../../plugins/gobbi-core/agents/gobbi-planner.md

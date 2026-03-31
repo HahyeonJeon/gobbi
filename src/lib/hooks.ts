@@ -1,31 +1,41 @@
-import { cp, mkdir, chmod } from 'fs/promises';
-import path from 'path';
-import { mergeHookConfig, mergePermissions } from './settings.js';
 import type { HookEntry } from './settings.js';
 
 // --- Gobbi skill permissions ---
 
 export const GOBBI_PERMISSIONS: string[] = [
   'Skill(gobbi)',
-  'Skill(gobbi-orchestration)',
-  'Skill(gobbi-gotcha)',
-  'Skill(gobbi-claude)',
-  'Skill(gobbi-claude-skills)',
-  'Skill(gobbi-claude-agents)',
-  'Skill(gobbi-discuss)',
-  'Skill(gobbi-ideation)',
-  'Skill(gobbi-ideation-evaluation)',
-  'Skill(gobbi-plan)',
-  'Skill(gobbi-plan-evaluation)',
-  'Skill(gobbi-delegation)',
-  'Skill(gobbi-execution)',
-  'Skill(gobbi-execution-evaluation)',
-  'Skill(gobbi-evaluation)',
-  'Skill(gobbi-note)',
-  'Skill(gobbi-note:*)',
-  'Skill(gobbi-collection)',
-  'Skill(gobbi-notification)',
-  'Skill(gobbi-hack)',
+  'Skill(_orchestration)',
+  'Skill(_gotcha)',
+  'Skill(_claude)',
+  'Skill(_skills)',
+  'Skill(_agents)',
+  'Skill(_rules)',
+  'Skill(_project)',
+  'Skill(_discuss)',
+  'Skill(_ideation)',
+  'Skill(_ideation-evaluation)',
+  'Skill(_plan)',
+  'Skill(_plan-evaluation)',
+  'Skill(_delegation)',
+  'Skill(_execution)',
+  'Skill(_execution-evaluation)',
+  'Skill(_evaluation)',
+  'Skill(_note)',
+  'Skill(_note:*)',
+  'Skill(_collection)',
+  'Skill(_notification)',
+  'Skill(__evaluation-project)',
+  'Skill(__evaluation-architecture)',
+  'Skill(__evaluation-performance)',
+  'Skill(__evaluation-aesthetics)',
+  'Skill(__evaluation-overall)',
+  'Skill(_audit)',
+  'Skill(__benchmark)',
+  'Skill(_git)',
+  'Skill(_slack)',
+  'Skill(_telegram)',
+  'Skill(_discord)',
+  'Skill(__validate)',
   'WebSearch'
 ];
 
@@ -143,52 +153,3 @@ export const NOTIFICATION_HOOK_ENTRIES: HookEntry[] = [
   }
 ];
 
-/**
- * Copy hook scripts from source to destination, setting executable permission.
- * @param scripts - Script filenames to copy.
- * @param srcDir - Source hooks directory.
- * @param destDir - Destination hooks directory.
- */
-async function copyHookScripts(scripts: string[], srcDir: string, destDir: string): Promise<void> {
-  await mkdir(destDir, { recursive: true });
-
-  for (const script of scripts) {
-    const src = path.join(srcDir, script);
-    const dest = path.join(destDir, script);
-    await cp(src, dest);
-    await chmod(dest, 0o755);
-  }
-}
-
-/**
- * Install core hooks (always installed, written to settings.json).
- * Copies hook scripts and merges config into settings.json.
- * @param templatesDir - Source templates directory.
- * @param targetDir - Target project root.
- */
-export async function installCoreHooks(templatesDir: string, targetDir: string): Promise<void> {
-  const srcHooksDir = path.join(templatesDir, 'hooks');
-  const destHooksDir = path.join(targetDir, '.claude', 'hooks');
-
-  await copyHookScripts(CORE_SCRIPTS, srcHooksDir, destHooksDir);
-
-  const settingsPath = path.join(targetDir, '.claude', 'settings.json');
-  await mergeHookConfig(settingsPath, CORE_HOOK_ENTRIES);
-  await mergePermissions(settingsPath, GOBBI_PERMISSIONS);
-}
-
-/**
- * Install notification hooks (always installed, written to settings.json).
- * Copies notification scripts and merges config into settings.json.
- * @param templatesDir - Source templates directory.
- * @param targetDir - Target project root.
- */
-export async function installNotificationHooks(templatesDir: string, targetDir: string): Promise<void> {
-  const srcHooksDir = path.join(templatesDir, 'hooks');
-  const destHooksDir = path.join(targetDir, '.claude', 'hooks');
-
-  await copyHookScripts(NOTIFICATION_SCRIPTS, srcHooksDir, destHooksDir);
-
-  const settingsPath = path.join(targetDir, '.claude', 'settings.json');
-  await mergeHookConfig(settingsPath, NOTIFICATION_HOOK_ENTRIES);
-}

@@ -1,0 +1,1 @@
+../../../.claude/hooks/load-notification-env.sh

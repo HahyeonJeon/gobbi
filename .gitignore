@@ -1,6 +1,5 @@
-templates/
 node_modules/
-.claude/project/
+.claude/project/*/note/
 .claude/worktrees/
 .claude/.env
 dist/

@@ -1,0 +1,1 @@
+../../../.claude/hooks/session-metadata.sh

@@ -1,1 +1,0 @@
-../plugins/gobbi-core/GOBBI.md

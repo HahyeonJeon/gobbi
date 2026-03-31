@@ -1,0 +1,147 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-metadata.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/load-notification-env.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-session.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-completion.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-attention.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "matcher": "rate_limit|authentication_failed|billing_error|server_error",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-error.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-subagent.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "logout|prompt_input_exit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/notify-session.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Skill(gobbi)",
+      "Skill(_orchestration)",
+      "Skill(_gotcha)",
+      "Skill(_claude)",
+      "Skill(_skills)",
+      "Skill(_agents)",
+      "Skill(_rules)",
+      "Skill(_project)",
+      "Skill(_discuss)",
+      "Skill(_ideation)",
+      "Skill(_plan)",
+      "Skill(_delegation)",
+      "Skill(_execution)",
+      "Skill(_skills-evaluation-project)",
+      "Skill(_skills-evaluation-architecture)",
+      "Skill(_skills-evaluation-performance)",
+      "Skill(_skills-evaluation-aesthetics)",
+      "Skill(_skills-evaluation-overall)",
+      "Skill(_agent-evaluation-project)",
+      "Skill(_agent-evaluation-architecture)",
+      "Skill(_agent-evaluation-performance)",
+      "Skill(_agent-evaluation-aesthetics)",
+      "Skill(_agent-evaluation-overall)",
+      "Skill(_project-evaluation-project)",
+      "Skill(_project-evaluation-architecture)",
+      "Skill(_project-evaluation-performance)",
+      "Skill(_project-evaluation-aesthetics)",
+      "Skill(_project-evaluation-overall)",
+      "Skill(_skills-evaluation-user)",
+      "Skill(_agent-evaluation-user)",
+      "Skill(_project-evaluation-user)",
+      "Skill(_evaluation)",
+      "Skill(_note)",
+      "Skill(_note:*)",
+      "Skill(_collection)",
+      "Skill(_memorization)",
+      "Skill(_notification)",
+      "Skill(_audit)",
+      "Skill(_git)",
+      "Skill(_slack)",
+      "Skill(_telegram)",
+      "Skill(_discord)",
+      "WebSearch"
+    ]
+  }
+}
