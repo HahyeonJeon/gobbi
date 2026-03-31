@@ -27,6 +27,7 @@ if [ -n "$CLAUDE_ENV_FILE" ]; then
   echo "export CLAUDE_TRANSCRIPT_PATH=$transcript_path" >> "$CLAUDE_ENV_FILE"
   echo "export CLAUDE_MODEL=$model" >> "$CLAUDE_ENV_FILE"
   echo "export CLAUDE_SESSION_SOURCE=$source" >> "$CLAUDE_ENV_FILE"
+  echo "export CLAUDE_PROJECT_DIR=$CLAUDE_PROJECT_DIR" >> "$CLAUDE_ENV_FILE"
 fi
 
 exit 0
