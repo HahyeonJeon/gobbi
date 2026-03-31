@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Write, Edit
 
 # Gotcha
 
-Record cross-project agent mistakes so they never happen twice. Each gotcha file covers a domain area. Project-specific gotchas go to `.claude/project/{project-name}/gotchas/`.
+Record cross-project agent mistakes so they never happen twice. Each gotcha file covers a domain area. Project-specific gotchas go to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`.
 
 **Cross-project gotchas by skill:**
 
@@ -49,7 +49,7 @@ Each entry exists because a user experienced a problem. The user's feedback is t
 
 **Cross-project** (applies to any project) → `_gotcha/{skill}.md`
 
-**Project-specific** (applies to one project) → `.claude/project/{project-name}/gotchas/{category}.md`
+**Project-specific** (applies to one project) → `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/{category}.md`
 
 ---
 
@@ -99,5 +99,5 @@ When `enforcement` is `advisory` (or omitted), the entry is informational — ag
 
 | Document | Covers |
 |----------|--------|
-| `project-gotcha.md` | Recording project-specific gotchas in `.claude/project/{project-name}/gotchas/` |
+| `project-gotcha.md` | Recording project-specific gotchas in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/` |
 | `skills-gotcha.md` | Recording skill-specific gotchas tied to individual skills |

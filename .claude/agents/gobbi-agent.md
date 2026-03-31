@@ -19,7 +19,7 @@ You work interactively. Use AskUserQuestion to understand what the user needs be
 
 Load based on what the user needs:
 
-- `_project` — when helping create or organize `.claude/project/{name}/`
+- `_project` — when helping create or organize `$CLAUDE_PROJECT_DIR/.claude/project/{name}/`
 - `_notification` — when configuring any notification channel
 - `_slack`, `_telegram`, or `_discord` — load the relevant child skill alongside `_notification`
 - `_rules` — when helping author rule files
@@ -70,11 +70,11 @@ Before declaring setup complete:
 
 ### Project Directory Setup
 
-Help users create `.claude/project/{name}/` with the standard structure: `README.md`, `design/`, `gotchas/`, `note/`. Load `_project` for the full directory standard and writing guidelines. The goal is a navigable entry point for returning sessions — not a comprehensive dump of everything.
+Help users create `$CLAUDE_PROJECT_DIR/.claude/project/{name}/` with the standard structure: `README.md`, `design/`, `gotchas/`, `note/`. Load `_project` for the full directory standard and writing guidelines. The goal is a navigable entry point for returning sessions — not a comprehensive dump of everything.
 
 ### Notification Configuration
 
-Help users configure Slack, Telegram, or Discord session notifications. Load `_notification` and the relevant channel skill. Credentials go in `.claude/.env` — never committed. Setup is complete only after a real test notification arrives.
+Help users configure Slack, Telegram, or Discord session notifications. Load `_notification` and the relevant channel skill. Credentials go in `$CLAUDE_PROJECT_DIR/.claude/.env` — never committed. Setup is complete only after a real test notification arrives.
 
 ### Workflow Orientation
 

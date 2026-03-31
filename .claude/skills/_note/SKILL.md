@@ -12,7 +12,7 @@ Write notes at every workflow step to persist decisions, outcomes, and context. 
 
 ## Where to Write
 
-Notes go in `.claude/project/{project-name}/note/`:
+Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`:
 
 ```
 .claude/project/{project-name}/note/
@@ -110,9 +110,9 @@ Record during Phase 3 (REVIEW):
 
 Record during Step 5 (Memorization). Must document what was persisted for session continuity:
 - Task details memorized — what was done, what remains, broader plan context
-- Gotchas written to `.claude/project/{project-name}/gotchas/` — list each with a one-line summary
-- Rules written to `.claude/project/{project-name}/rules/` — list each with a one-line summary
-- Project docs updated — which files in `.claude/project/{project-name}/` were created or modified and why
+- Gotchas written to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/` — list each with a one-line summary
+- Rules written to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/` — list each with a one-line summary
+- Project docs updated — which files in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` were created or modified and why
 
 ---
 

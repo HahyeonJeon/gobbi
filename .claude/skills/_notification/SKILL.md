@@ -16,8 +16,8 @@ The goal is to collect notification credentials from the user, save them securel
 
 **Constraints:**
 - Use AskUserQuestion for all credential collection — never assume or prefill values
-- Save credentials to `.claude/.env` — this file is read by `load-notification-env.sh` at session start via the `$CLAUDE_ENV_FILE` mechanism
-- Before finishing, verify that `.claude/.env` is listed in `.gitignore` — credentials must never be committed
+- Save credentials to `$CLAUDE_PROJECT_DIR/.claude/.env` — this file is read by `load-notification-env.sh` at session start via the `$CLAUDE_ENV_FILE` mechanism
+- Before finishing, verify that `$CLAUDE_PROJECT_DIR/.claude/.env` is listed in `.gitignore` — credentials must never be committed
 - Test with a real notification before confirming setup is complete — a configuration that looks correct but never delivers is not set up
 
 **Credentials needed per channel:**
@@ -46,17 +46,17 @@ When configuring event hooks, ask the user which events they want, then ask per-
 
 ## Hook Scripts
 
-All scripts live in `.claude/hooks/` and must be executable. They use a shared sender (`notify-send.sh`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.
+All scripts live in `$CLAUDE_PROJECT_DIR/.claude/hooks/` and must be executable. They use a shared sender (`notify-send.sh`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.
 
-Hook scripts should already be installed in `.claude/hooks/`. Read the installed scripts and the hook configuration in `settings.json` for the current setup — these are the authoritative source for what is actually installed.
+Hook scripts should already be installed in `$CLAUDE_PROJECT_DIR/.claude/hooks/`. Read the installed scripts and the hook configuration in `settings.json` for the current setup — these are the authoritative source for what is actually installed.
 
-Message truncation limits are configurable via `.claude/.env`. Defaults are defined in the notification scripts.
+Message truncation limits are configurable via `$CLAUDE_PROJECT_DIR/.claude/.env`. Defaults are defined in the notification scripts.
 
 ---
 
 ## Verification
 
-If a test notification fails to arrive: check that `.claude/.env` exists, values are correct, the hook scripts are executable, and `jq` is available (scripts depend on it for JSON parsing). Delivery failures are logged — check `~/.claude/notification-failures.log` if notifications stop arriving.
+If a test notification fails to arrive: check that `$CLAUDE_PROJECT_DIR/.claude/.env` exists, values are correct, the hook scripts are executable, and `jq` is available (scripts depend on it for JSON parsing). Delivery failures are logged — check `~/.claude/notification-failures.log` if notifications stop arriving.
 
 ---
 

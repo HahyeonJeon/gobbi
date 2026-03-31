@@ -32,7 +32,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 - **Discord** — Notify via Discord webhook.
 - **Skip notifications** — No notifications this session.
 
-After selection, check `.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and the relevant child skill (_slack, _telegram, _discord) to help the user configure them before proceeding.
+After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and the relevant child skill (_slack, _telegram, _discord) to help the user configure them before proceeding.
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 

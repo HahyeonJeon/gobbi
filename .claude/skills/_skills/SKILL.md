@@ -21,7 +21,7 @@ Reference for understanding skill structure and interactive guide for creating n
 
 > **Skills teach domains. Each skill owns one area of knowledge.**
 
-A skill teaches domain knowledge reusable across any project — orchestration, evaluation, documentation standards, execution discipline. Skills are portable. Project-specific context belongs in `.claude/project/{project-name}/`, not in a skill.
+A skill teaches domain knowledge reusable across any project — orchestration, evaluation, documentation standards, execution discipline. Skills are portable. Project-specific context belongs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`, not in a skill.
 
 > **Skills decompose into hierarchy like everything else.**
 
@@ -80,7 +80,7 @@ When creating a new skill, use AskUserQuestion to explore these dimensions. Not 
 ### Understanding the Domain
 
 - **Domain ownership** — What knowledge domain does this skill own? Is it distinct from existing skills, or does it overlap? If it overlaps, should the existing skill be extended instead?
-- **Portability** — Is this knowledge reusable across projects, or specific to one project? Project-specific content belongs in `.claude/project/`, not a skill.
+- **Portability** — Is this knowledge reusable across projects, or specific to one project? Project-specific content belongs in `$CLAUDE_PROJECT_DIR/.claude/project/`, not a skill.
 - **Existing coverage** — Does an existing skill already cover this domain? Read `.claude/skills/` before creating. Over-splitting weakens the agent's mental model.
 
 ### Defining the Trigger
@@ -123,7 +123,7 @@ Gotcha files record mistakes that agents are likely to repeat because the correc
 - Behavior already documented in the skill or a rule
 - One-off issues unlikely to recur
 
-**Where gotchas live:** Cross-project gotchas are organized by skill in `_gotcha/{skill-name}.md`. Project-specific gotchas go to `.claude/project/gotchas/`. Read existing gotcha files for the entry format — each entry has a title, priority, what happened, user feedback, and correct approach.
+**Where gotchas live:** Cross-project gotchas are organized by skill in `_gotcha/{skill-name}.md`. Project-specific gotchas go to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`. Read existing gotcha files for the entry format — each entry has a title, priority, what happened, user feedback, and correct approach.
 
 **Priority levels:** Critical (breaks environment), High (wrong output looks correct), Medium (rework needed), Low (minor inconvenience).
 

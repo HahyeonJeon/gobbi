@@ -13,7 +13,7 @@ Core documentation standard for `.claude/` files — writing principles, hierarc
 | Writing... | Read | Covers |
 |------------|------|--------|
 | A rule | `_rules` skill | Verifiability, structure, when to create a rule |
-| Project documentation | `_project` skill | Project docs in `.claude/project/{project-name}/` |
+| Project documentation | `_project` skill | Project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` |
 
 **Related skills:**
 

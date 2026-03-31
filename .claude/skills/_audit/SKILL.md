@@ -22,7 +22,7 @@ Auditing checks concrete, machine-verifiable claims: does this file exist? Does 
 
 > **Audit living docs, not historical records.**
 
-Skills, agents, gotchas, rules, and CLAUDE.md are living documentation that agents actively follow. Project notes (`.claude/project/` note directories) are historical records of past sessions — they describe what happened at a point in time and are not expected to stay current. Audit the former, skip the latter.
+Skills, agents, gotchas, rules, and CLAUDE.md are living documentation that agents actively follow. Project notes (`$CLAUDE_PROJECT_DIR/.claude/project/` note directories) are historical records of past sessions — they describe what happened at a point in time and are not expected to stay current. Audit the former, skip the latter.
 
 ---
 
@@ -53,7 +53,7 @@ Skills, agents, gotchas, rules, and CLAUDE.md are living documentation that agen
 - Any scripts referenced from skill docs
 
 **Out of scope:**
-- `.claude/project/` note directories — historical records, not living docs
+- `$CLAUDE_PROJECT_DIR/.claude/project/` note directories — historical records, not living docs
 - Content quality assessment — that is __validate's domain
 - External URLs — network-dependent, separate concern
 

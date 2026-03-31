@@ -38,7 +38,7 @@ Agent examples: `__executor`, `__pi`
 
 ## Formatting Rules
 
-- Use backtick formatting (inline code) for specific file or directory paths — e.g., `.claude/project/{project-name}/`
+- Use backtick formatting (inline code) for specific file or directory paths — e.g., `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`
 - Use backtick formatting for environment variable names — e.g., `SLACK_BOT_TOKEN`
 - Use backtick formatting for command names — e.g., `gh`, `git`, `jq`
 - Blockquotes (`>`) hold only the bold principle point — description goes on a separate non-quoted line below

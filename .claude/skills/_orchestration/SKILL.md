@@ -69,7 +69,7 @@ Evaluation skills are loaded by the evaluator agents, not by the orchestrator di
 
 > **Notes are the state machine.**
 
-On resume, check the latest note directory under `.claude/project/{project-name}/note/`. The existence of note files indicates workflow progress: ideation.md means ideation complete, plan.md means planning complete, execution.md means execution complete. No note directory means fresh start.
+On resume, check the latest note directory under `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. The existence of note files indicates workflow progress: ideation.md means ideation complete, plan.md means planning complete, execution.md means execution complete. No note directory means fresh start.
 
 > **Resume by reading, not guessing.**
 
@@ -171,7 +171,7 @@ Define the goal, constraints, and what to avoid. Detailed "how" instructions sup
 
 > **When _git is active**
 
-Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `.claude/project/` is gitignored and does not exist in worktrees.
+Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `$CLAUDE_PROJECT_DIR/.claude/project/` is gitignored and does not exist in worktrees.
 
 ### Step 4. Collection
 
@@ -187,7 +187,7 @@ Save context that enables the user to continue this work in a new session.
 - Memorize details of the completed task — what was done, what decisions were made, what remains open.
 - If the task is part of a larger user plan, memorize the broader plan context and where this task fits.
 - Update gotchas from any corrections discovered during the workflow.
-- Update project docs in `.claude/project/{project-name}/` if the workflow revealed new architectural knowledge, conventions, or decisions worth persisting.
+- Update project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` if the workflow revealed new architectural knowledge, conventions, or decisions worth persisting.
 - Use AskUserQuestion to ask the user: FEEDBACK, REVIEW, or FINISH?
 
 ---

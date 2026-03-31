@@ -22,7 +22,7 @@ Runs automatically at session start, after the setup questions and before the fi
 
 ### 1. Credential File
 
-Check if `.claude/.env` exists. If it does, read it and identify which channel credentials are present:
+Check if `$CLAUDE_PROJECT_DIR/.claude/.env` exists. If it does, read it and identify which channel credentials are present:
 
 - **Slack** — Look for `SLACK_BOT_TOKEN` and `SLACK_USER_ID` or `SLACK_CHANNEL_ID`
 - **Telegram** — Look for `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
@@ -33,7 +33,7 @@ A channel is "configured" when all its required credentials are present and non-
 
 ### 2. Hook Scripts
 
-Check if notification hook scripts exist in `.claude/hooks/` and are executable. The key scripts:
+Check if notification hook scripts exist in `$CLAUDE_PROJECT_DIR/.claude/hooks/` and are executable. The key scripts:
 - `notify-send.sh` — the shared sender that routes to configured channels
 - Event-specific hook scripts that invoke the sender
 
@@ -49,7 +49,7 @@ Check `settings.json` for hook entries that reference the notification scripts. 
 
 **Partially configured** — Some pieces are in place but others are missing (e.g., credentials exist but hooks aren't registered, or scripts exist but aren't executable). Report what's missing and offer to fix.
 
-**Not configured** — No `.claude/.env` or no notification credentials. If the user selected notification channels at session start, load _notification and the relevant child skill to help set up.
+**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load _notification and the relevant child skill to help set up.
 
 **Degraded** — Credentials exist but a dependency is missing (e.g., `jq` not installed, `notify-send` not available for Desktop). Report the dependency gap.
 
@@ -58,6 +58,6 @@ Check `settings.json` for hook entries that reference the notification scripts. 
 ## Constraints
 
 - Detection must be lightweight — reading a few files, not running network checks or sending test messages
-- Never modify `.claude/.env`, hook scripts, or settings during detection
+- Never modify `$CLAUDE_PROJECT_DIR/.claude/.env`, hook scripts, or settings during detection
 - Never send test notifications during detection — that belongs to the _notification setup flow
-- If `.claude/.env` exists, check file permissions are 600 — warn if not, but do not change them during detection
+- If `$CLAUDE_PROJECT_DIR/.claude/.env` exists, check file permissions are 600 — warn if not, but do not change them during detection

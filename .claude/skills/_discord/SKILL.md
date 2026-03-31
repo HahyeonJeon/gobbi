@@ -43,6 +43,6 @@ Consider Telegram instead when: you want personal mobile push notifications with
 
 ## Credential Storage
 
-Store the webhook URL as `DISCORD_WEBHOOK_URL` in `.claude/.env`. This file is read by `load-notification-env.sh` at session start and must be listed in `.gitignore` — credentials committed to version control are compromised credentials.
+Store the webhook URL as `DISCORD_WEBHOOK_URL` in `$CLAUDE_PROJECT_DIR/.claude/.env`. This file is read by `load-notification-env.sh` at session start and must be listed in `.gitignore` — credentials committed to version control are compromised credentials.
 
 The hook scripts check for the variable before attempting delivery. If it is absent, Discord delivery is silently skipped rather than causing an error.

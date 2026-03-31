@@ -38,7 +38,7 @@ When the user selects FINISH, use AskUserQuestion to present the appropriate opt
 
 **Compact** — the agent cannot run `/compact` directly. Instead, tell the user to run the command themselves. The compact message should start with "abort gobbi" (so the compacted context drops gobbi workflow state) followed by a summary of the work done. After compact completes, the user must manually reload gobbi by running `/gobbi`.
 
-> Please run: `/compact abort gobbi — completed {task-slug} workflow, findings in .claude/project/{project-name}/note/{note-dir}/`
+> Please run: `/compact abort gobbi — completed {task-slug} workflow, findings in $CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/{note-dir}/`
 > Then reload gobbi with: `/gobbi`
 
 ---

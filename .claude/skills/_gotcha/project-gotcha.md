@@ -18,7 +18,7 @@ Choices that are correct in one project and wrong in another are project-specifi
 
 ## Where Project Gotchas Live
 
-Project-specific gotchas go in `.claude/project/{project-name}/gotchas/{category}.md`.
+Project-specific gotchas go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/{category}.md`.
 
 The `{category}` groups related mistakes — use the same categories as the central `_gotcha/` files when the domain matches, or invent a category when the mistake is unique to the project. Read the existing project directory for context before choosing a category name.
 
