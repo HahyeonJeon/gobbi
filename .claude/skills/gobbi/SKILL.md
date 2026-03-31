@@ -23,11 +23,18 @@ When this skill loads, you must ask the user four setup questions with AskUserQu
 - **Direct commit (default)** — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs. Use for solo sessions or quick tasks.
 - **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from). When selected, the orchestrator verifies _git prerequisites (tool availability, authentication, repository state) before proceeding.
 
-**Fourth question — project context detection:**
-- **Auto-detect (default)** — Scan the project for context signals and recommend relevant gobbi skills. First session on a project gets filesystem detection; returning projects use existing project docs. Load project-context.md to execute detection.
-- **Skip detection** — Skip project context detection. Use when you already know which skills you need.
+**Fourth question — notification channels:**
+- Multi-select. If any channel is selected alongside Skip, channels take priority.
+- **Slack** — Notify via Slack bot message.
+- **Telegram** — Notify via Telegram bot message.
+- **Discord** — Notify via Discord webhook.
+- **Skip notifications** — No notifications this session.
+
+After selection, check `.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and the relevant child skill (_slack, _telegram, _discord) to help the user configure them before proceeding.
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
+
+Project context detection runs automatically at session start without asking. Load project-setup.md to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.
 
@@ -41,7 +48,9 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 **Navigate deeper from here:**
 
-- [project-context.md](project-context.md) — Project-specific context and technology stack signals
+- [project-setup.md](project-setup.md) — Project-specific context and technology stack signals
+- [notification-setup.md](notification-setup.md) — Notification channel and credential detection
+- [git-setup.md](git-setup.md) — Git tooling and repository state detection
 
 ## Gobbi Skills
 
@@ -58,6 +67,7 @@ Workflow participant skills — loaded during the ideate-plan-execute-collect cy
 | **_delegation** | Hand off work to subagents with the right context and scope boundaries. |
 | **_execution** | Task execution guide. How an executor agent studies, plans, implements, and verifies. |
 | **_collection** | Persist workflow trail. Write prompt, plan, task results, and README to work directory. |
+| **_memorization** | Save context for session continuity. Persist task details, gotchas, and rules. |
 | **_note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
 | **_evaluation** | Evaluation framework. Quality gates and learning loop via gotchas. |
 | **_git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
