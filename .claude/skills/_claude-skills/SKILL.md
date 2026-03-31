@@ -69,7 +69,7 @@ The cycle is: grade trigger accuracy and output quality, analyze failures for pa
 
 When comparing two skill versions, remove provenance bias. Present versions as A and B without labeling which is current vs candidate. The blind protocol ensures evaluation is based on quality, not familiarity.
 
-Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. Three evaluation agents execute verification: __skills-grader (tests trigger accuracy and output quality), __skills-comparator (blind A/B comparison of skill versions), and __skills-analyzer (synthesizes results into prioritized improvements).
+Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. The `_skills-evaluator` agent executes verification, loaded with different `_skills-evaluation-{perspective}` skills depending on the evaluation focus.
 
 ---
 

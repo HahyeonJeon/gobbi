@@ -14,13 +14,13 @@ Only `gobbi` is an interface skill. It is invoked as `/gobbi`.
 
 **Hidden** (single `_` prefix) — Skills and agents used by the system during workflow. The orchestrator and agents load these as needed. Users never invoke them directly.
 
-Skill examples: `_orchestration`, `_discuss`, `_plan`, `_evaluation`, `_git`, `_claude`, `_claude-skills`, `_claude-agents`
+Skill examples: `_orchestration`, `_discuss`, `_plan`, `_evaluation`, `_skills-evaluation-project`, `_skills-evaluation-user`, `_agent-evaluation-project`, `_project-evaluation-project`, `_git`, `_claude`, `_claude-skills`, `_claude-agents`
 
-**Internal** (double `__` prefix) — Deep implementation details: evaluation plumbing, stage-specific criteria, development tooling. Relevant only to gobbi contributors.
+**Internal** (double `__` prefix) — Deep implementation details: development tooling. Relevant only to gobbi contributors.
 
-Skill examples: `__evaluation-project`, `__evaluation-architecture`, `__validate`, `__benchmark`
+Skill examples: `__validate`, `__benchmark`
 
-Agent examples: `__developer`, `__pi`, `__planner`, `__evaluator-project`, `__evaluator-overall`, `__skills-grader`
+Agent examples: `__developer`, `__pi`, `__planner`
 
 ---
 
@@ -53,15 +53,11 @@ Interface tier items (`gobbi` skill and `gobbi-agent` agent) are not assigned to
 
 **Work** — Workflow participant skills that the orchestrator and agents load during task execution.
 
-Examples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_execution`, `_collection`, `_note`, `_evaluation`, `_git`, `_notification`, `_gotcha`
+Examples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_execution`, `_collection`, `_note`, `_skills-evaluation-*`, `_agent-evaluation-*`, `_project-evaluation-*`, `_git`, `_notification`, `_gotcha`
 
 **Docs** — Skills for authoring and maintaining `.claude/` documentation.
 
 Examples: `_claude`, `_claude-skills`, `_claude-agents`, `_claude-rules`, `_claude-project`
-
-**Gobbi** — Internal implementation skills for the gobbi tool itself.
-
-Examples: `__evaluation-project`, `__evaluation-architecture`
 
 **Tool** — Utility and maintenance tooling for gobbi contributors.
 

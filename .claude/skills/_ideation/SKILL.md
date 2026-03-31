@@ -99,7 +99,7 @@ Ideation produces a single refined, detailed idea — concrete enough that a pla
 - Known risks and trade-offs
 - Success criteria
 
-This output goes to a separate evaluator agent (_ideation-evaluation) for critical assessment before proceeding to planning.
+This output goes to a separate evaluator agent for critical assessment before proceeding to planning. The orchestrator selects the appropriate domain evaluator (`_skills-evaluator`, `_agent-evaluator`, or `_project-evaluator`) and loads the relevant perspective skills based on the nature of the ideation output.
 
 ---
 

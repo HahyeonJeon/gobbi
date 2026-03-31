@@ -66,21 +66,52 @@ Workflow participant skills — loaded during the ideate-plan-execute-collect cy
 | **_plan** | Task decomposition. Break complex work into narrow, ordered, agent-assigned tasks. |
 | **_delegation** | Hand off work to subagents with the right context and scope boundaries. |
 | **_execution** | Task execution guide. How an executor agent studies, plans, implements, and verifies. |
+| **_evaluation** | Parent evaluation framework. How to delegate evaluation, select perspectives, and discuss findings. |
 | **_collection** | Persist workflow trail. Write prompt, plan, task results, and README to work directory. |
 | **_memorization** | Save context for session continuity. Persist task details, gotchas, and rules. |
 | **_note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
-| **_evaluation** | Evaluation framework. Quality gates and learning loop via gotchas. |
 | **_git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
 | **_notification** | Configure Claude Code notifications (Slack, Telegram, others) via conversation. |
 | **_gotcha** | Cross-project mistake recording. Check before acting, write after corrections. |
 
-#### Evaluation (child skills of _evaluation)
+#### Evaluation — Skills
+
+Domain-specific evaluation perspectives for skill quality assessment.
 
 | Skill | Purpose |
 |-------|---------|
-| **_ideation-evaluation** | Quality gate for ideation. Are ideas concrete, feasible, and diverse? |
-| **_plan-evaluation** | Quality gate for plans. Are tasks specific, ordered, and complete? |
-| **_execution-evaluation** | Quality gate for task output. Is the implementation correct, safe, and focused? |
+| **_skills-evaluation-project** | Project perspective for skill evaluation |
+| **_skills-evaluation-architecture** | Architecture perspective for skill evaluation |
+| **_skills-evaluation-performance** | Performance perspective for skill evaluation |
+| **_skills-evaluation-aesthetics** | Aesthetics perspective for skill evaluation |
+| **_skills-evaluation-overall** | Overall cross-dimensional perspective for skill evaluation |
+| **_skills-evaluation-user** | User perspective for skill evaluation |
+
+#### Evaluation — Agents
+
+Domain-specific evaluation perspectives for agent quality assessment.
+
+| Skill | Purpose |
+|-------|---------|
+| **_agent-evaluation-project** | Project perspective for agent evaluation |
+| **_agent-evaluation-architecture** | Architecture perspective for agent evaluation |
+| **_agent-evaluation-performance** | Performance perspective for agent evaluation |
+| **_agent-evaluation-aesthetics** | Aesthetics perspective for agent evaluation |
+| **_agent-evaluation-overall** | Overall cross-dimensional perspective for agent evaluation |
+| **_agent-evaluation-user** | User perspective for agent evaluation |
+
+#### Evaluation — Project
+
+Domain-specific evaluation perspectives for deliverable quality assessment.
+
+| Skill | Purpose |
+|-------|---------|
+| **_project-evaluation-project** | Project perspective for deliverable evaluation |
+| **_project-evaluation-architecture** | Architecture perspective for deliverable evaluation |
+| **_project-evaluation-performance** | Performance perspective for deliverable evaluation |
+| **_project-evaluation-aesthetics** | Aesthetics perspective for deliverable evaluation |
+| **_project-evaluation-overall** | Overall cross-dimensional perspective for deliverable evaluation |
+| **_project-evaluation-user** | User perspective for deliverable evaluation |
 
 #### Git (child skills of _git)
 
@@ -112,18 +143,6 @@ Placeholder — specific child skills TBD.
 | **_claude-agents** | Reference and interactive guide for creating agent definitions. Discussion dimensions for agent authoring. |
 | **_claude-rules** | Guide for authoring rule files. Verifiability, structure, when to create a rule. |
 | **_claude-project** | Guide for authoring project documentation. Directory structure, README, design docs, notes. |
-
-### Gobbi
-
-Internal implementation skills for the gobbi tool itself.
-
-| Skill | Purpose |
-|-------|---------|
-| **__evaluation-project** | Evaluation perspective: scope, requirements, goals alignment. Always included. |
-| **__evaluation-architecture** | Evaluation perspective: structural coherence, coupling, design principles. |
-| **__evaluation-performance** | Evaluation perspective: efficiency, scalability, resource usage. |
-| **__evaluation-aesthetics** | Evaluation perspective: craft quality, naming, readability, polish. |
-| **__evaluation-overall** | Evaluation perspective: cross-dimensional gaps and strength preservation. Always included. |
 
 ### Tool
 

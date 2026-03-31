@@ -18,20 +18,21 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 
 ### Skills
 
-All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `__evaluation-project/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
+All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `_skills-evaluation-project/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
 
 Skills are organized into four categories:
 
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
-| **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
+| **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _skills-evaluation-{project,architecture,performance,aesthetics,overall,user}, _agent-evaluation-{project,architecture,performance,aesthetics,overall,user}, _project-evaluation-{project,architecture,performance,aesthetics,overall,user}, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
 | **Docs** | _claude, _claude-skills, _claude-agents, _claude-rules, _claude-project | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
-| **Gobbi** | __evaluation-project, __evaluation-architecture, __evaluation-performance, __evaluation-aesthetics, __evaluation-overall | Internal implementation. Gobbi's own evaluation perspective machinery. |
 | **Tool** | __validate, _audit, __benchmark | Utility and maintenance tools. Verification, drift detection, benchmarking. |
 
 Some Work skills have child skill categories grouping related sub-skills:
 
-- **Evaluation** (child of _evaluation): _ideation-evaluation, _plan-evaluation, _execution-evaluation — stage-specific criteria
+- **Skills Evaluation** (child of _evaluation): _skills-evaluation-project, _skills-evaluation-architecture, _skills-evaluation-performance, _skills-evaluation-aesthetics, _skills-evaluation-overall, _skills-evaluation-user — evaluation criteria for skill quality
+- **Agent Evaluation** (child of _evaluation): _agent-evaluation-project, _agent-evaluation-architecture, _agent-evaluation-performance, _agent-evaluation-aesthetics, _agent-evaluation-overall, _agent-evaluation-user — evaluation criteria for agent definitions
+- **Project Evaluation** (child of _evaluation): _project-evaluation-project, _project-evaluation-architecture, _project-evaluation-performance, _project-evaluation-aesthetics, _project-evaluation-overall, _project-evaluation-user — evaluation criteria for project work output
 - **Notification** (child of _notification): _slack, _telegram, _discord — channel-specific setup
 - **Gotcha** (child of _gotcha): _project-gotcha, _skills-gotcha — how to record different types of gotchas
 
@@ -47,14 +48,9 @@ Agent definitions live in `.claude/agents/`. Each file defines a specialist suba
 | __pi | Principal Investigator — ideation and planning through user discussion |
 | __planner | Plan decomposition and task structuring |
 | __developer | Code implementation and verification |
-| __evaluator-project | Project-scope evaluator |
-| __evaluator-architecture | Architecture-level evaluator |
-| __evaluator-performance | Performance-level evaluator |
-| __evaluator-aesthetics | Aesthetics-level evaluator |
-| __evaluator-overall | Overall cross-dimension evaluator |
-| __skills-grader | Skill trigger accuracy and output quality testing |
-| __skills-comparator | Blind comparison of skill versions |
-| __skills-analyzer | Synthesize grading and comparison into improvement recommendations |
+| _skills-evaluator | Runs evaluation of skill definitions across all perspectives |
+| _agent-evaluator | Runs evaluation of agent definitions across all perspectives |
+| _project-evaluator | Runs evaluation of project work output across all perspectives |
 
 ### Hooks
 

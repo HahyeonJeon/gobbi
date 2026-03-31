@@ -6,7 +6,7 @@ Inventory of all `.claude/` documentation files in gobbi. Reflects the current s
 
 ## Category System
 
-Skills are organized into four top-level categories: **Work** (workflow participants loaded during the ideate-plan-execute-collect cycle), **Docs** (skills about writing and maintaining `.claude/` docs), **Gobbi** (gobbi's own internal machinery), and **Tool** (utility and maintenance tools). Work skills can have child skill categories that describe more specific principles under the parent. The `gobbi` interface skill stands alone with no category.
+Skills are organized into three top-level categories: **Work** (workflow participants loaded during the ideate-plan-execute-collect cycle), **Docs** (skills about writing and maintaining `.claude/` docs), and **Tool** (utility and maintenance tools). Work skills can have child skill categories that describe more specific principles under the parent. The `gobbi` interface skill stands alone with no category.
 
 ---
 
@@ -33,21 +33,21 @@ Skills are organized into four top-level categories: **Work** (workflow particip
 |------|------|-------------|
 | gobbi-agent | `.claude/agents/gobbi-agent.md` | Onboarding and setup assistant. Project directory setup, notification configuration, workflow orientation. |
 
+#### Hidden (single `_`)
+
+| Name | Path | Description |
+|------|------|-------------|
+| _skills-evaluator | `.claude/agents/_skills-evaluator.md` | Runs evaluation of skill definitions across all perspectives. |
+| _agent-evaluator | `.claude/agents/_agent-evaluator.md` | Runs evaluation of agent definitions across all perspectives. |
+| _project-evaluator | `.claude/agents/_project-evaluator.md` | Runs evaluation of project work output across all perspectives. |
+
 #### Internal (double `__`)
 
 | Name | Path | Description |
 |------|------|-------------|
-| __evaluator-aesthetics | `.claude/agents/__evaluator-aesthetics.md` | Evaluation perspective: naming clarity, readability, style consistency, craft quality. |
-| __evaluator-architecture | `.claude/agents/__evaluator-architecture.md` | Evaluation perspective: structural soundness, abstraction, coupling, extensibility. |
-| __evaluator-overall | `.claude/agents/__evaluator-overall.md` | Evaluation perspective: cross-cutting gaps, "must preserve" list generation. |
-| __evaluator-performance | `.claude/agents/__evaluator-performance.md` | Evaluation perspective: efficiency, scalability, resource proportionality. |
-| __evaluator-project | `.claude/agents/__evaluator-project.md` | Evaluation perspective: problem-solution fit, user intent, scope alignment. |
 | __developer | `.claude/agents/__developer.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
 | __pi | `.claude/agents/__pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation. |
 | __planner | `.claude/agents/__planner.md` | Task decomposition via codebase exploration and dependency analysis. |
-| __skills-analyzer | `.claude/agents/__skills-analyzer.md` | Synthesizes grading/comparison results into prioritized improvement recommendations. |
-| __skills-comparator | `.claude/agents/__skills-comparator.md` | Blind comparison of two skill versions without knowing which is current vs candidate. |
-| __skills-grader | `.claude/agents/__skills-grader.md` | Tests skill trigger accuracy and output quality on sample prompts. |
 
 ### Skills
 
@@ -73,20 +73,49 @@ Standalone interface entry point — no category.
 | _execution | `.claude/skills/_execution/SKILL.md` | Single-task execution guide: study, plan, implement, verify. |
 | _collection | `.claude/skills/_collection/SKILL.md` | Workflow trail persistence. Prompt, plan, task results, README. |
 | _note | `.claude/skills/_note/SKILL.md` | Note writing at every workflow step. Decisions, outcomes, context. |
-| _evaluation | `.claude/skills/_evaluation/SKILL.md` | Evaluation framework. 2-5 perspective evaluators, quality gates, learning loop. |
+| _evaluation | `.claude/skills/_evaluation/SKILL.md` | Evaluation orchestration. Selecting perspectives, spawning evaluators, synthesizing findings. |
 | _git | `.claude/skills/_git/SKILL.md` | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management. |
 | _notification | `.claude/skills/_notification/SKILL.md` | Configure Claude Code notifications (Slack, Telegram, others). |
 | _gotcha | `.claude/skills/_gotcha/SKILL.md` | Cross-project mistake recording. Check before acting, write after corrections. |
 
-##### Evaluation child skills
+##### Skills evaluation child skills
 
-**Stage-specific evaluation criteria** — one skill per workflow stage (hidden tier, not internal).
+**Evaluation criteria for skill definitions** — one skill per evaluation perspective.
 
 | Name | Path | Description |
 |------|------|-------------|
-| _ideation-evaluation | `.claude/skills/_ideation-evaluation/SKILL.md` | Stage criteria: are ideas concrete, well-researched, ready for planning? |
-| _plan-evaluation | `.claude/skills/_plan-evaluation/SKILL.md` | Stage criteria: are tasks specific, correctly ordered, complete? |
-| _execution-evaluation | `.claude/skills/_execution-evaluation/SKILL.md` | Stage criteria: is implementation correct, safe, scope-disciplined? |
+| _skills-evaluation-project | `.claude/skills/_skills-evaluation-project/SKILL.md` | Perspective: scope alignment, requirements fit, user intent for skill quality. |
+| _skills-evaluation-architecture | `.claude/skills/_skills-evaluation-architecture/SKILL.md` | Perspective: structural coherence, coupling, design principles for skill quality. |
+| _skills-evaluation-performance | `.claude/skills/_skills-evaluation-performance/SKILL.md` | Perspective: efficiency, scalability, resource usage for skill quality. |
+| _skills-evaluation-aesthetics | `.claude/skills/_skills-evaluation-aesthetics/SKILL.md` | Perspective: naming clarity, readability, style consistency for skill quality. |
+| _skills-evaluation-overall | `.claude/skills/_skills-evaluation-overall/SKILL.md` | Perspective: cross-cutting gaps, preservation list for skill quality. |
+| _skills-evaluation-user | `.claude/skills/_skills-evaluation-user/SKILL.md` | Perspective: usability, discoverability, and clarity for the agent consuming the skill. |
+
+##### Agent evaluation child skills
+
+**Evaluation criteria for agent definitions** — one skill per evaluation perspective.
+
+| Name | Path | Description |
+|------|------|-------------|
+| _agent-evaluation-project | `.claude/skills/_agent-evaluation-project/SKILL.md` | Perspective: scope alignment, requirements fit, user intent for agent quality. |
+| _agent-evaluation-architecture | `.claude/skills/_agent-evaluation-architecture/SKILL.md` | Perspective: structural coherence, coupling, design principles for agent quality. |
+| _agent-evaluation-performance | `.claude/skills/_agent-evaluation-performance/SKILL.md` | Perspective: efficiency, scalability, resource usage for agent quality. |
+| _agent-evaluation-aesthetics | `.claude/skills/_agent-evaluation-aesthetics/SKILL.md` | Perspective: naming clarity, readability, style consistency for agent quality. |
+| _agent-evaluation-overall | `.claude/skills/_agent-evaluation-overall/SKILL.md` | Perspective: cross-cutting gaps, preservation list for agent quality. |
+| _agent-evaluation-user | `.claude/skills/_agent-evaluation-user/SKILL.md` | Perspective: usability, discoverability, and clarity for the agent being evaluated. |
+
+##### Project evaluation child skills
+
+**Evaluation criteria for project work output** — one skill per evaluation perspective.
+
+| Name | Path | Description |
+|------|------|-------------|
+| _project-evaluation-project | `.claude/skills/_project-evaluation-project/SKILL.md` | Perspective: scope alignment, requirements fit, user intent for project output. |
+| _project-evaluation-architecture | `.claude/skills/_project-evaluation-architecture/SKILL.md` | Perspective: structural coherence, coupling, design principles for project output. |
+| _project-evaluation-performance | `.claude/skills/_project-evaluation-performance/SKILL.md` | Perspective: efficiency, scalability, resource usage for project output. |
+| _project-evaluation-aesthetics | `.claude/skills/_project-evaluation-aesthetics/SKILL.md` | Perspective: naming clarity, readability, style consistency for project output. |
+| _project-evaluation-overall | `.claude/skills/_project-evaluation-overall/SKILL.md` | Perspective: cross-cutting gaps, preservation list for project output. |
+| _project-evaluation-user | `.claude/skills/_project-evaluation-user/SKILL.md` | Perspective: usability, discoverability, and clarity for the end user of the project output. |
 
 ##### Notification child skills
 
@@ -118,18 +147,6 @@ Standalone interface entry point — no category.
 | _claude-agents | `.claude/skills/_claude-agents/SKILL.md` | Reference and guide for creating agent definitions. |
 | _claude-rules | `.claude/skills/_claude-rules/SKILL.md` | Guide for authoring rule files. |
 | _claude-project | `.claude/skills/_claude-project/SKILL.md` | Guide for authoring project docs in `.claude/project/{project-name}/`. |
-
-#### Gobbi
-
-**Gobbi internal implementation** — internal skills that are part of gobbi's own machinery.
-
-| Name | Path | Description |
-|------|------|-------------|
-| __evaluation-project | `.claude/skills/__evaluation-project/SKILL.md` | Perspective: scope alignment, requirements fit, user intent. Always included. |
-| __evaluation-architecture | `.claude/skills/__evaluation-architecture/SKILL.md` | Perspective: structural coherence, coupling, design principles, extensibility. |
-| __evaluation-performance | `.claude/skills/__evaluation-performance/SKILL.md` | Perspective: efficiency, scalability, resource usage, latency. |
-| __evaluation-aesthetics | `.claude/skills/__evaluation-aesthetics/SKILL.md` | Perspective: naming clarity, readability, style consistency, craft. |
-| __evaluation-overall | `.claude/skills/__evaluation-overall/SKILL.md` | Perspective: cross-cutting gaps, preservation list. Always included. |
 
 #### Tool
 
@@ -184,7 +201,7 @@ Standalone interface entry point — no category.
 |------|------|-------------|
 | architecture.md | `.claude/project/gobbi/design/architecture.md` | Four pillars: workflow, workers, effectiveness, quality measurement. |
 | structure.md | `.claude/project/gobbi/design/structure.md` | Directory structure: Claude docs, plugin distribution, CLI. |
-| docs.md | `.claude/project/gobbi/design/docs.md` | This file. Inventory of all `.claude/` documentation. |
+| claude-docs.md | `.claude/project/gobbi/design/claude-docs.md` | This file. Inventory of all `.claude/` documentation. |
 | README.md | `.claude/project/gobbi/README.md` | Gobbi project overview. Open-source ClaudeX tool for Claude Code. |
 | note/README.md | `.claude/project/gobbi/note/README.md` | Index of workflow notes with dates, sessions, and task summaries. |
 
@@ -196,20 +213,23 @@ Standalone interface entry point — no category.
 |----------|-------|
 | Root | 2 |
 | Rules | 1 |
-| Agents | 11 |
+| Agents — Interface | 1 |
+| Agents — Hidden | 3 |
+| Agents — Internal | 3 |
 | Skills — Interface | 1 |
 | Skills — Work | 12 |
-| Skills — Work (child: Evaluation) | 3 |
+| Skills — Work (child: Skills Evaluation) | 6 |
+| Skills — Work (child: Agent Evaluation) | 6 |
+| Skills — Work (child: Project Evaluation) | 6 |
 | Skills — Work (child: Notification) | 3 |
 | Skills — Work (child: Gotcha) | 2 |
 | Skills — Docs | 5 |
-| Skills — Gobbi | 5 |
 | Skills — Tool | 3 |
 | Skill child docs | 6 |
 | Benchmark scenarios | 2 |
 | Gotcha files | 14 |
 | Project docs | 5 |
-| **Total** | **75** |
+| **Total** | **81** |
 
 ---
 
@@ -221,7 +241,7 @@ Skill directory names and agent filenames use **hyphens as word separators** wit
 
 - No prefix — interface (user-invokable). Only `gobbi`.
 - `_` prefix — hidden (system-loaded during workflow). Examples: `_plan`, `_claude-skills`.
-- `__` prefix — internal (gobbi machinery). Examples: `__evaluation-project`, `__validate`.
+- `__` prefix — internal (gobbi machinery). Examples: `__validate`, `__benchmark`.
 
 Single-word names are unaffected by the hyphen rule. The tier prefix is part of the name — omitting it changes visibility. The rule file is `__gobbi-convention.md`.
 
