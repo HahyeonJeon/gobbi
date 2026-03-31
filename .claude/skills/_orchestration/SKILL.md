@@ -55,8 +55,8 @@ Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add
 
 | Step | Load Skills |
 |------|-------------|
-| Step 1. Ideation | _ideation, _discuss, _evaluation |
-| Step 2. Planning | _plan, _discuss, _evaluation |
+| Step 1. Ideation | _ideation, _discuss, _evaluation, _ideation-evaluation |
+| Step 2. Planning | _plan, _discuss, _evaluation, _plan-evaluation |
 | Step 3. Execution | _delegation, _evaluation |
 | Step 4. Collection | _collection |
 | Step 5. Memorization | _memorization, _gotcha |
@@ -95,9 +95,9 @@ A single evaluator catches the problems it is trained to see. Multiple perspecti
 
 An evaluator with only an evaluation perspective skill lacks the context to judge whether the work fits the project. Include domain-relevant skills, project-specific rules, gotchas, and conventions in the evaluator's prompt so it can assess quality against the standards that actually matter for this project.
 
-> **Evaluation is optional at Ideation and Planning, mandatory at Execution.**
+> **Evaluation is the default at every step. The user can opt out, not opt in.**
 
-Ask the user with AskUserQuestion before spawning evaluators at Steps 1 and 2. At Step 3, always evaluate — execution output enters the codebase and must be verified before proceeding.
+Evaluation MUST happen at Steps 1, 2, and 3 by default. Use AskUserQuestion to ask if the user wants to **skip** evaluation — not whether they want to evaluate. Recommend evaluating. Only skip if the user explicitly chooses to. Catching problems at ideation is cheaper than catching them at execution.
 
 ---
 
@@ -109,9 +109,9 @@ Loop until the idea is solid.
 
 Use AskUserQuestion to explore the approach with the user — alternatives, trade-offs, and risks — before any evaluation happens.
 
-> **Evaluation is the user's choice.**
+> **Evaluation is the default — ask to skip, not to evaluate.**
 
-After discussion, use AskUserQuestion to ask whether the user wants evaluator agents or wants to move directly to planning. Never spawn evaluators automatically.
+After discussion, use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out.
 
 > **Evaluation findings are input to a conversation, not marching orders.**
 
@@ -135,9 +135,9 @@ Use EnterPlanMode to explore the codebase, decompose, and write the plan. Use Ex
 
 Use AskUserQuestion to review the plan with the user before any evaluation.
 
-> **Evaluation is the user's choice.**
+> **Evaluation is the default — ask to skip, not to evaluate.**
 
-Use AskUserQuestion to ask whether the user wants evaluator agents or wants to approve and proceed. Never spawn evaluators automatically.
+Use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out.
 
 > **Evaluation findings are discussed before acting.**
 
@@ -238,7 +238,7 @@ See [finish.md](finish.md) for the full decision tree, action definitions, and p
 - Before expensive delegation, MUST run lightweight precondition checks — verify the task is well-defined, prerequisites are met, and the scope justifies agent spawning. Use cheap checks (Haiku agents or bash commands) to prevent wasting expensive computation on ineligible or malformed tasks
 - Any delegated task that involves both assessment and modification MUST present its assessment findings to the user via AskUserQuestion before performing modifications
 - Before delegation, MUST include gotcha context in every subagent prompt
-- Before evaluation, MUST ask user with AskUserQuestion whether to evaluate — evaluation is optional at ideation and planning stages
+- Before evaluation, MUST ask user with AskUserQuestion whether to **skip** evaluation — evaluation is the default at all steps, the user opts out, not in
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with
 - After delegation, MUST write subtask files to disk immediately after each wave — before any downstream agent runs
 - After delegation, MUST write work docs via _collection — immediately, not deferred

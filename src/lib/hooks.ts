@@ -15,6 +15,8 @@ export const GOBBI_PERMISSIONS: string[] = [
   'Skill(_ideation)',
   'Skill(_ideation-evaluation)',
   'Skill(_plan)',
+  'Skill(_ideation-evaluation)',
+  'Skill(_plan-evaluation)',
   'Skill(_plan-evaluation)',
   'Skill(_delegation)',
   'Skill(_execution)',
