@@ -44,11 +44,11 @@ Mistakes in configuring Claude Code notification hooks and credentials.
 
 **Priority:** Critical
 
-**What happened:** Credentials were saved to `.claude/.env` but `.env` was not in `.gitignore`. The file was committed to the repository, exposing bot tokens and chat IDs.
+**What happened:** Credentials were saved to `$CLAUDE_PROJECT_DIR/.claude/.env` but `.env` was not in `.gitignore`. The file was committed to the repository, exposing bot tokens and chat IDs.
 
 **User feedback:** Credentials must never be committed. Always verify `.gitignore` protects `.env` before finishing setup.
 
-**Correct approach:** Before confirming setup complete, verify that `.claude/.env` is listed in `.gitignore`. If it is not, add it immediately and do not proceed until this is confirmed.
+**Correct approach:** Before confirming setup complete, verify that `$CLAUDE_PROJECT_DIR/.claude/.env` is listed in `.gitignore`. If it is not, add it immediately and do not proceed until this is confirmed.
 
 ---
 
@@ -68,11 +68,11 @@ Mistakes in configuring Claude Code notification hooks and credentials.
 
 **Priority:** Medium
 
-**What happened:** Credentials were saved with `export KEY=value` format in `.claude/.env`. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE` — the double prefix caused a syntax error, silently breaking credential loading.
+**What happened:** Credentials were saved with `export KEY=value` format in `$CLAUDE_PROJECT_DIR/.claude/.env`. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE` — the double prefix caused a syntax error, silently breaking credential loading.
 
 **User feedback:** The `.env` file uses bare `KEY=value` format without `export`.
 
-**Correct approach:** Write credentials to `.claude/.env` as bare `KEY=value` lines. The hook script handles the `export` wrapping. Lines starting with `#` and blank lines are safely ignored.
+**Correct approach:** Write credentials to `$CLAUDE_PROJECT_DIR/.claude/.env` as bare `KEY=value` lines. The hook script handles the `export` wrapping. Lines starting with `#` and blank lines are safely ignored.
 
 ---
 

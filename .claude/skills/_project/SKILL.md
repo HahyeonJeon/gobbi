@@ -5,7 +5,7 @@ description: Guide for authoring project documentation in .claude/project/{proje
 
 # Claude Project Documentation
 
-Guide for authoring project-specific documentation in `.claude/project/{project-name}/`. Project docs capture accumulated context — architecture decisions, conventions, technology choices, gotchas — that help agents work effectively on returning sessions. Load this skill when creating, reviewing, or organizing project documentation.
+Guide for authoring project-specific documentation in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`. Project docs capture accumulated context — architecture decisions, conventions, technology choices, gotchas — that help agents work effectively on returning sessions. Load this skill when creating, reviewing, or organizing project documentation.
 
 Load `_claude` for the general documentation writing standard before authoring project docs.
 
@@ -13,9 +13,9 @@ Load `_claude` for the general documentation writing standard before authoring p
 
 ## Core Principle
 
-> **Project docs live in `.claude/project/{project-name}/`.**
+> **Project docs live in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`.**
 
-Each project gets its own directory under `.claude/project/`. All project-specific documentation lives inside that directory — design decisions, architecture, rules, gotchas, notes, references. Co-location makes everything about a project navigable from a single entry point.
+Each project gets its own directory under `$CLAUDE_PROJECT_DIR/.claude/project/`. All project-specific documentation lives inside that directory — design decisions, architecture, rules, gotchas, notes, references. Co-location makes everything about a project navigable from a single entry point.
 
 > **Project docs decay fast — currency matters more than completeness.**
 
@@ -78,7 +78,7 @@ Not every project needs every subdirectory. Create only the directories that hav
 
 **Inconsistent directory structure.** Missing README.md or standard subdirectories breaks agent navigation. Agents rely on the consistent structure to decide what to read.
 
-**Project gotchas in _gotcha.** Project-specific gotchas must go in `{project-name}/gotchas/`, not in the cross-project gotcha skill. Mixing them pollutes the cross-project knowledge base with project-specific content.
+**Project gotchas in _gotcha.** Project-specific gotchas must go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`, not in the cross-project gotcha skill. Mixing them pollutes the cross-project knowledge base with project-specific content.
 
 ### Should Avoid
 
@@ -93,7 +93,7 @@ Not every project needs every subdirectory. Create only the directories that hav
 Before publishing a project doc:
 
 **Core Principle**
-- [ ] Lives inside `.claude/project/{project-name}/`
+- [ ] Lives inside `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`
 - [ ] Contains project-specific context, not general domain knowledge
 - [ ] Content is current — no references to deleted files or outdated architecture
 - [ ] Directory has README.md as entry point

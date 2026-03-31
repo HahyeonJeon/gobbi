@@ -20,7 +20,7 @@ metadata_output=$(bash "$(dirname "$0")/note-metadata.sh") || {
 eval "$metadata_output"
 
 # Build directory path
-note_dir=".claude/project/${project_name}/note/${datetime}-${slug}-${session_id}"
+note_dir="${CLAUDE_PROJECT_DIR}/.claude/project/${project_name}/note/${datetime}-${slug}-${session_id}"
 mkdir -p "${note_dir}/subtasks"
 
 # Format datetime for YAML frontmatter (YYYY-MM-DDTHH:MM)

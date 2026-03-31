@@ -41,7 +41,7 @@ priority: high
 
 **Priority:** High
 
-**What happened:** Summarized results in conversation messages but never wrote note files to `.claude/project/{project-name}/note/`.
+**What happened:** Summarized results in conversation messages but never wrote note files to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`.
 
 **User feedback:** Write notes in every workflow cycle.
 
@@ -208,7 +208,7 @@ priority: high
 
 **Priority:** High
 
-**What happened:** On the first session with a new project, `/gobbi` triggered project setup (creating `.claude/project/{name}/` directories and README.md). After completing the setup, the orchestrator did not load the core skills (`_orchestration`, `_gotcha`, `_claude`, `_git`) that the gobbi skill requires to be loaded "immediately after this skill." The agent proceeded to wait for a task without the workflow machinery loaded.
+**What happened:** On the first session with a new project, `/gobbi` triggered project setup (creating `$CLAUDE_PROJECT_DIR/.claude/project/{name}/` directories and README.md). After completing the setup, the orchestrator did not load the core skills (`_orchestration`, `_gotcha`, `_claude`, `_git`) that the gobbi skill requires to be loaded "immediately after this skill." The agent proceeded to wait for a task without the workflow machinery loaded.
 
 **User feedback:** Core skills were not loaded after first setup.
 

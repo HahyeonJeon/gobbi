@@ -12,7 +12,7 @@ FEEDBACK exists to refine, not to redesign. The architecture is established — 
 
 > **Every correction is a memorization opportunity.**
 
-User feedback is the richest source of gotchas, rules, and project knowledge. Don't just fix the task — record corrections as gotchas in `.claude/project/{project-name}/gotchas/`, stated preferences as rules in `.claude/project/{project-name}/rules/`, and new knowledge in project docs. A feedback round that only fixes code without updating project memory wastes the learning.
+User feedback is the richest source of gotchas, rules, and project knowledge. Don't just fix the task — record corrections as gotchas in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`, stated preferences as rules in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/`, and new knowledge in project docs. A feedback round that only fixes code without updating project memory wastes the learning.
 
 ---
 
@@ -20,9 +20,9 @@ User feedback is the richest source of gotchas, rules, and project knowledge. Do
 
 - **Skip planning** — the architecture is established from TASK
 - **Fix directly or delegate small scoped tasks** — no full decomposition needed
-- **Record gotchas from corrections** — user corrections become "must avoid" entries in `.claude/project/{project-name}/gotchas/`
-- **Record rules from preferences** — user-stated standards become "must follow" entries in `.claude/project/{project-name}/rules/`
-- **Update project docs** — if feedback reveals new knowledge about architecture, conventions, or decisions, update `.claude/project/{project-name}/`
+- **Record gotchas from corrections** — user corrections become "must avoid" entries in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`
+- **Record rules from preferences** — user-stated standards become "must follow" entries in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/`
+- **Update project docs** — if feedback reveals new knowledge about architecture, conventions, or decisions, update `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`
 - **Write feedback.md** after each feedback round to persist the iteration trail
 
 After FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?
@@ -72,8 +72,8 @@ The multi-perspective evaluation model exists for complex, multi-faceted outputs
 ## Constraints
 
 - MUST number each feedback round in feedback.md
-- MUST record user corrections as gotchas in `.claude/project/{project-name}/gotchas/`
-- MUST record user-stated standards as rules in `.claude/project/{project-name}/rules/`
+- MUST record user corrections as gotchas in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`
+- MUST record user-stated standards as rules in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/`
 - MUST update project docs when feedback reveals new knowledge worth persisting
 - MUST surface stagnation pattern after 3 consecutive rounds on the same finding — via AskUserQuestion, not automatic action
 - MUST recommend REVIEW or FINISH after 5 rounds — via AskUserQuestion, user can override
