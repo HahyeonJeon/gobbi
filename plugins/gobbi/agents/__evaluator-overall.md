@@ -1,1 +1,0 @@
-../../../.claude/agents/__evaluator-overall.md
