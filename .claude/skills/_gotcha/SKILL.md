@@ -47,7 +47,9 @@ Each entry exists because a user experienced a problem. The user's feedback is t
 
 ## Where to Save
 
-**Cross-project** (applies to any project) → `_gotcha/{skill}.md`
+**Skill-specific** (applies to a specific skill) → `$CLAUDE_PROJECT_DIR/.claude/skills/{skill-name}/gotchas.md` — colocated with the skill it corrects. An agent loading the skill reads its own gotchas without loading `_gotcha`.
+
+**Cross-cutting** (applies across multiple skills or no single skill) → `_gotcha/{topic}.md` — for infrastructure, environment, security, and cross-skill concerns that cannot be owned by one skill.
 
 **Project-specific** (applies to one project) → `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/{category}.md`
 
