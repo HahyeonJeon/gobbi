@@ -155,6 +155,10 @@ When a task crosses multiple subsystems or touches areas the orchestrator has li
 
 Delegate subtasks to specialist subagents.
 
+> **Delegate Claude Code tasks to gobbi-agent.**
+
+Any subtask involving `.claude/` documentation — creating or improving skills, agents, rules, CLAUDE.md, hooks, settings, or project docs — MUST be delegated to `gobbi-agent` with the appropriate skills loaded (_claude, _skills, _agents, _rules, etc.). `gobbi-agent` is the Claude Code specialist. The `__executor` handles code implementation; `gobbi-agent` handles Claude Code configuration.
+
 > **Tell specialists what to do, not how to do it.**
 
 Define the goal, constraints, and what to avoid. Detailed "how" instructions suppress specialist agents' ability and potential. Provide guardrails about what not to do, and message that promotes the specialist's best work — project rules, gotchas, conventions, domain knowledge. See _delegation for the full briefing model.
