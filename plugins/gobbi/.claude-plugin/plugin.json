@@ -10,5 +10,10 @@
   "license": "MIT",
   "keywords": ["claude-code", "harness", "orchestration", "workflow", "ai-agent", "evaluation"],
   "skills": "./skills/",
-  "agents": ["./agents/gobbi-agent.md"]
+  "agents": [
+    "./agents/gobbi-agent.md",
+    "./agents/_agent-evaluator.md",
+    "./agents/_project-evaluator.md",
+    "./agents/_skills-evaluator.md"
+  ]
 }
