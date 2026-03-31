@@ -36,6 +36,15 @@ Agent examples: `__evaluator-project`, `__evaluator-overall`, `__skills-grader`
 
 ---
 
+## Formatting Rules
+
+- Use backtick formatting (inline code) for specific file or directory paths — e.g., `.claude/project/{project-name}/`
+- Use backtick formatting for environment variable names — e.g., `SLACK_BOT_TOKEN`
+- Use backtick formatting for command names — e.g., `gh`, `git`, `jq`
+- Blockquotes (`>`) hold only the bold principle point — description goes on a separate non-quoted line below
+
+---
+
 ## Categories
 
 Categories organize skills into functional groupings. They are documentary and do not affect naming.

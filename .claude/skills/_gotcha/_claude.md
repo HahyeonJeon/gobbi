@@ -37,3 +37,18 @@ Mistakes in writing `.claude/` documentation. These cause agents to produce rigi
 **User feedback:** Agents misunderstand or just mimic instead of understanding the principles.
 
 **Correct approach:** State the constraint ("never do X because Y") without showing BAD/GOOD examples. The constraint gives the agent a boundary; the BAD/GOOD gives it a template to copy.
+
+---
+
+### Blockquote contains full description instead of just the principle point
+---
+priority: medium
+---
+
+**Priority:** Medium
+
+**What happened:** Core principle sections used blockquotes (`>`) that contained both the bold principle and the full description on the same quoted line. This made the description part of the "principle" visually and semantically, blurring the distinction between the point and its explanation.
+
+**User feedback:** Blockquotes should only hold the bold principle point. The description goes on a separate non-quoted line below.
+
+**Correct approach:** Use `> **Principle statement.**` on its own line. Put the explanation on a separate non-quoted paragraph below. The blockquote highlights the point; the description explains it.
