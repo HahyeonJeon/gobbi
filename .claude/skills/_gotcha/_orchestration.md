@@ -198,3 +198,18 @@ priority: critical
 **User feedback:** "We experienced this concurrent mistakes several times." Requested a worktree skill to isolate sessions via git worktrees.
 
 **Correct approach:** Never run multiple gobbi sessions in the same working tree. Each session's subagents and the concurrent session's changes are indistinguishable in `git diff`. The orchestrator cannot tell which changes are from its own agents vs another session. Use git worktrees to give each session its own isolated copy of the repo, then merge results explicitly.
+
+---
+
+### Core skills not loaded after project setup on first session
+---
+priority: high
+---
+
+**Priority:** High
+
+**What happened:** On the first session with a new project, `/gobbi` triggered project setup (creating `.claude/project/{name}/` directories and README.md). After completing the setup, the orchestrator did not load the core skills (`_orchestration`, `_gotcha`, `_claude`, `_git`) that the gobbi skill requires to be loaded "immediately after this skill." The agent proceeded to wait for a task without the workflow machinery loaded.
+
+**User feedback:** Core skills were not loaded after first setup.
+
+**Correct approach:** The gobbi SKILL.md instruction to load `_orchestration`, `_gotcha`, `_claude`, and `_git` must be followed regardless of whether project setup ran. Project setup is an intermediate step — it does not replace or defer core skill loading. After setup questions and project detection complete, load all four core skills before declaring the session ready. The loading instruction is unconditional.
