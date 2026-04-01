@@ -43,6 +43,9 @@ task: ${slug}
 <!-- Task description goes here -->
 HEREDOC
 
+# Extract Claude Code version from the session transcript (not available as env var)
+claude_code_version=$(head -5 "${CLAUDE_TRANSCRIPT_PATH:-/dev/null}" 2>/dev/null | jq -r 'select(.version) | .version' 2>/dev/null | head -1)
+
 # Write metadata.json — task metadata + all CLAUDE_* env vars
 jq -n \
   --arg sessionId "$session_id" \
@@ -51,6 +54,7 @@ jq -n \
   --arg gitBranch "$git_branch" \
   --arg cwd "$cwd" \
   --arg claudeModel "${CLAUDE_MODEL:-}" \
+  --arg claudeCodeVersion "${claude_code_version:-}" \
   --arg claudeProjectDir "${CLAUDE_PROJECT_DIR:-}" \
   --arg claudeTranscriptPath "${CLAUDE_TRANSCRIPT_PATH:-}" \
   --arg claudeCodeEntrypoint "${CLAUDE_CODE_ENTRYPOINT:-}" \
@@ -65,6 +69,7 @@ jq -n \
       gitBranch: $gitBranch,
       cwd: $cwd,
       CLAUDE_MODEL: $claudeModel,
+      CLAUDE_CODE_VERSION: $claudeCodeVersion,
       CLAUDE_PROJECT_DIR: $claudeProjectDir,
       CLAUDE_TRANSCRIPT_PATH: $claudeTranscriptPath,
       CLAUDE_CODE_ENTRYPOINT: $claudeCodeEntrypoint,
