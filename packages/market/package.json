@@ -1,6 +1,6 @@
 {
   "name": "@gobbi/market",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Marketplace CLI for gobbi — install, search, and manage claude docs packages",
   "type": "module",
   "bin": {
