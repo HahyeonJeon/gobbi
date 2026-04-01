@@ -8,24 +8,26 @@ allowed-tools: Read, Grep, Glob, Write, Edit
 
 Record cross-project agent mistakes so they never happen twice. Each gotcha file covers a domain area. Project-specific gotchas go to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`.
 
-**Cross-project gotchas by skill:**
+**Skill-specific gotchas** live in each skill's directory as `gotchas.md`. Agents loading a skill automatically see its gotchas without loading `_gotcha`:
 
-| Gotcha File | For Skill | Covers |
-|-------------|-----------|--------|
-| [_orchestration.md](_orchestration.md) | _orchestration | Coordination, routing, phase transitions |
-| [_discuss.md](_discuss.md) | _discuss | Prompt clarification, question quality |
-| [_plan.md](_plan.md) | _plan | Task decomposition, dependency ordering |
-| [_delegation.md](_delegation.md) | _delegation | Subagent briefings, context loading, scope boundaries |
-| [_execution.md](_execution.md) | _execution | Implementation, verification |
-| [_git.md](_git.md) | _git | Git/GitHub workflow, worktree management, branch handling |
-| [_collection.md](_collection.md) | _collection | Work trail persistence, README indexing |
-| [_evaluation.md](_evaluation.md) | evaluation skills | Quality gates, evaluation criteria, evaluator agent selection |
-| [_ideation.md](_ideation.md) | _ideation | Brainstorming, option generation |
-| [_claude.md](_claude.md) | _claude, _skills, _agents | `.claude/` documentation standard, skill and agent authoring |
-| [_note.md](_note.md) | _note | Note writing, directory structure, timing |
-| [_notification.md](_notification.md) | _notification | Hook setup, credentials, script issues |
-| [__system.md](__system.md) | (none) | Environment, processes, hooks, infrastructure |
-| [__security.md](__security.md) | (none) | Security vulnerability signals for evaluators |
+| Skill | Gotcha file |
+|-------|-------------|
+| _orchestration | `_orchestration/gotchas.md` |
+| _git | `_git/gotchas.md` |
+| _notification | `_notification/gotchas.md` |
+| _claude | `_claude/gotchas.md` |
+| _execution | `_execution/gotchas.md` |
+| _collection | `_collection/gotchas.md` |
+| _delegation | `_delegation/gotchas.md` |
+| _note | `_note/gotchas.md` |
+| _plan | `_plan/gotchas.md` |
+
+**Cross-cutting gotchas** stay in `_gotcha/` for concerns that span multiple skills:
+
+| Gotcha File | Covers |
+|-------------|--------|
+| [__system.md](__system.md) | Environment, processes, hooks, infrastructure |
+| [__security.md](__security.md) | Security vulnerability signals for evaluators |
 
 ---
 
@@ -47,9 +49,13 @@ Each entry exists because a user experienced a problem. The user's feedback is t
 
 ## Where to Save
 
-**Skill-specific** (applies to a specific skill) → `$CLAUDE_PROJECT_DIR/.claude/skills/{skill-name}/gotchas.md` — colocated with the skill it corrects. An agent loading the skill reads its own gotchas without loading `_gotcha`.
+> **Default: colocate with the skill.**
 
-**Cross-cutting** (applies across multiple skills or no single skill) → `_gotcha/{topic}.md` — for infrastructure, environment, security, and cross-skill concerns that cannot be owned by one skill.
+Most gotchas belong to a specific skill. Write them to `{skill-name}/gotchas.md` so agents loading the skill see them automatically.
+
+**Skill-specific** (default) → `.claude/skills/{skill-name}/gotchas.md` — colocated with the skill it corrects. An agent loading the skill reads its own gotchas without loading `_gotcha`.
+
+**Cross-cutting** (rare) → `_gotcha/{topic}.md` — only for concerns that span multiple skills or belong to no single skill (environment, security, infrastructure).
 
 **Project-specific** (applies to one project) → `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/{category}.md`
 
