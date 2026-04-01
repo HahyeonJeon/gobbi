@@ -14,9 +14,9 @@ Persist the workflow trail at the end of each workflow cycle. Must load _note to
 
 Collection has four responsibilities: **note persistence**, **subtask preservation**, **gotcha recording**, and **phase transition**.
 
-**Note persistence** — Load _note and write all note files for the current task: `ideation.md`, `plan.md`, `execution.md`, and each subagent's result as `subtasks/{NN}-{subtask-slug}.md`. Every workflow stage that produced output must have a corresponding note file on disk.
+**Note persistence** — Load _note and write all note files for the current task: `ideation.md`, `plan.md`, and `execution.md`. Subtask `.json` files are already on disk at this point — they were created during execution (Step 3) via `subtask-collect.sh`. Collection verifies that all expected subtask files exist and writes the remaining note files. Every workflow stage that produced output must have a corresponding note file on disk.
 
-**Subtask preservation** — Subagent outputs exist only in conversation context and are lost when the conversation ends or compacts. Each wave's outputs must be written to `subtasks/` immediately after that wave completes — never deferred to collection, never summarized. Downstream agents (synthesis, evaluation) depend on these files existing on disk before they run.
+**Subtask preservation** — The orchestrator calls `subtask-collect.sh` during execution (Step 3) immediately after each subagent returns to extract the delegation prompt and final result from the subagent's JSONL transcript into a JSON file. This happens during execution, not during collection — downstream agents (synthesis, evaluation) depend on these files existing on disk before they run.
 
 **Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via _gotcha before the cycle closes.
 

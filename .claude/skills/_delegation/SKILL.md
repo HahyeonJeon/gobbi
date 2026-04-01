@@ -28,9 +28,9 @@ Agents that read project context produce work that integrates cleanly. Agents th
 
 Tell subagents to study context, outline their approach, then execute. Agents that plan before coding produce better-structured, more focused work.
 
-> **Require subtask docs written to the work directory.**
+> **Subtask records are collected from transcripts, not written by subagents.**
 
-Subagent outputs exist only in conversation context. If the agent doesn't write its result to a subtask doc, the orchestrator must reconstruct it from memory. Tell subagents where to write and what to include.
+The orchestrator runs `subtask-collect.sh` after each subagent returns to extract the delegation prompt and final result from the JSONL transcript. Subagents do not need subtask doc instructions in their briefing — their final response is the record.
 
 ---
 
@@ -66,15 +66,6 @@ Every subagent needs three layers of context:
 
 What the agent should NOT touch. Agents expand scope when they see adjacent improvements. Explicit boundaries prevent drift.
 
-### The subtask doc
-
-Tell the subagent where to write its result and what format to use. Provide:
-- The file path: `{task-directory}/tasks/{NN}-{subtask-slug}.md`
-- What to include: what was done, what changed, what was learned, any open items
-- Self-contained requirement: a reader should understand the result without reading other files
-
-When a subagent makes a non-obvious choice — where multiple valid approaches existed — the subtask doc should include a brief decision annotation: what was chosen, what was rejected, and why. This externalizes reasoning at decision time, when the context is fresh. Reconstructing rationale at collection time from conversation history is unreliable.
-
 ### Dependencies
 
 If this agent's work depends on another agent's output, or if another agent will consume this output, state the interface expectation.
@@ -89,7 +80,7 @@ Every agent follows: **Study → Plan → Execute → Verify**. Your delegation 
 
 **Plan** — Tell the agent to outline their approach before implementing. Mandatory for non-trivial tasks.
 
-**Execute** — The task itself. Be specific about the deliverable.
+**Execute** — The task itself. Be specific about the deliverable. When a subagent makes a non-obvious choice — where multiple valid approaches existed — their final response should include a brief decision annotation: what was chosen, what was rejected, and why. This externalizes reasoning at decision time, when the context is fresh. The transcript captures the final response automatically.
 
 **Verify** — Remind agents to check their work didn't break other things and that any `.claude/` docs referencing changed code are updated.
 

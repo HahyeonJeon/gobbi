@@ -22,7 +22,7 @@ For non-trivial tasks, form an internal plan: what files to change, what pattern
 
 > **One task, one focus. Stay within scope.**
 
-You handle one task. Do it well. Don't fix adjacent issues, refactor surrounding code, or add improvements outside your scope boundary. If you notice something worth doing, note it in your subtask doc — don't do it.
+You handle one task. Do it well. Don't fix adjacent issues, refactor surrounding code, or add improvements outside your scope boundary. If you notice something worth doing, note it in your final response — don't do it.
 
 > **Verify against criteria, not assumptions.**
 
@@ -73,21 +73,13 @@ Check your work before reporting back:
 
 This extends _git's re-verification principle to the subagent level. A subagent that verifies its work but commits to the wrong branch has produced correct work in the wrong place.
 
+### Final Response
+
+The subagent's final response is automatically captured as the subtask record via `subtask-collect.sh`. Include in your final response: what was done, what changed, what was learned, and any open items. This is the permanent record of your work — make it self-contained.
+
 ### Commit (when _git is active)
 
 This phase applies only when the delegation briefing specifies a worktree workflow (_git is active). Commit only after verification passes — never commit unverified work. Each subtask should produce one focused commit. Follow Conventional Commits format: the commit type and scope should match what the delegation briefing specifies for the task's domain. See `_git/conventions.md` for format details. The orchestrator owns pushing and PR creation — subagents commit but never push.
-
----
-
-## Writing Your Subtask Doc
-
-After completing the task, write your result to the subtask doc path specified in the briefing. Include:
-- What was done — the deliverable, concisely described
-- What changed — which files and why (the code is in the repo, not duplicated here)
-- What was learned — any non-obvious constraints or patterns discovered
-- Open items — anything out of scope that should be addressed later
-
-The doc must be self-contained — a reader should understand your result without reading other subtask docs.
 
 ---
 
