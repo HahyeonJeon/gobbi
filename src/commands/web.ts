@@ -3,7 +3,7 @@ import path from 'path';
 import { mkdir, unlink, writeFile as fsWriteFile } from 'fs/promises';
 
 import { assertPlaywrightAvailable, assertSharpAvailable, getPlaywright } from '../lib/media/deps.js';
-import { resizeImage } from '../lib/media/image-utils.js';
+import { getImageMetadata, resizeImage } from '../lib/media/image-utils.js';
 import { writeManifest } from '../lib/media/manifest.js';
 import { header, ok, error, dim } from '../lib/style.js';
 
@@ -223,8 +223,18 @@ async function runWebScreenshot(args: string[]): Promise<void> {
   }
 
   const maxSize = values['max-size'] !== undefined ? Number(values['max-size']) : 2048;
+  if (isNaN(maxSize) || maxSize <= 0) {
+    console.log(error(`Invalid --max-size: must be a positive number`));
+    process.exit(1);
+  }
+
   const format = (typeof values.format === 'string' ? values.format : 'png') as 'png' | 'jpeg' | 'webp';
   const quality = values.quality !== undefined ? Number(values.quality) : 80;
+  if (isNaN(quality) || quality < 1 || quality > 100) {
+    console.log(error(`Invalid --quality: must be a number between 1 and 100`));
+    process.exit(1);
+  }
+
   const fullPage = values['full-page'] === true;
   const selector = typeof values.selector === 'string' ? values.selector : undefined;
 
@@ -273,26 +283,23 @@ async function runWebScreenshot(args: string[]): Promise<void> {
     }
 
     // Post-process: convert format or resize
-    let resizedWidth = viewport.width;
-    let resizedHeight = viewport.height;
-
     if (needsConversion || maxSize < Math.max(viewport.width, viewport.height)) {
-      const result = await resizeImage(tempPath, outputPath, {
+      await resizeImage(tempPath, outputPath, {
         maxSize,
         format: format === 'jpeg' ? 'jpeg' : format === 'webp' ? 'webp' : 'png',
         quality,
       });
-      resizedWidth = result.resizedWidth;
-      resizedHeight = result.resizedHeight;
 
       // Clean up temp file if it differs from output
       if (tempPath !== outputPath) {
         await unlink(tempPath);
       }
-    } else {
-      resizedWidth = viewport.width;
-      resizedHeight = viewport.height;
     }
+
+    // Read actual dimensions from the saved screenshot file
+    const outputMeta = await getImageMetadata(outputPath);
+    const resizedWidth = outputMeta.width;
+    const resizedHeight = outputMeta.height;
 
     // Write manifest
     const manifestPath = path.join(outDir, 'manifest.json');
@@ -423,7 +430,7 @@ async function runWebCapture(args: string[]): Promise<void> {
     }
 
     // Download each image
-    const downloadedFiles: Array<{ filename: string; size: number }> = [];
+    const downloadedFiles: Array<{ filename: string; size: number; width: number; height: number }> = [];
     let downloadIndex = 0;
 
     for (const imgUrl of filteredSrcs) {
@@ -439,7 +446,19 @@ async function runWebCapture(args: string[]): Promise<void> {
 
         const buffer = Buffer.from(await response.arrayBuffer());
         await fsWriteFile(outputPath, buffer);
-        downloadedFiles.push({ filename, size: buffer.length });
+
+        // Try to get actual image dimensions using sharp (if available)
+        let width = 0;
+        let height = 0;
+        try {
+          const meta = await getImageMetadata(outputPath);
+          width = meta.width;
+          height = meta.height;
+        } catch {
+          // sharp may not be installed — dimensions remain 0
+        }
+
+        downloadedFiles.push({ filename, size: buffer.length, width, height });
         downloadIndex++;
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
@@ -469,8 +488,8 @@ async function runWebCapture(args: string[]): Promise<void> {
         files: downloadedFiles.map((f) => ({
           filename: f.filename,
           type: 'capture',
-          width: 0,
-          height: 0,
+          width: f.width,
+          height: f.height,
           format: path.extname(f.filename).slice(1) || 'unknown',
         })),
       },

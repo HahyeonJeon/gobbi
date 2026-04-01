@@ -36,7 +36,17 @@ Options:
   --cell-width <n>    Cell width in pixels (default: 800)
   --help              Show this help message`;
 
+const VALID_FORMATS = ['webp', 'png', 'jpeg'] as const;
 const VALID_LAYOUTS = ['vertical', 'grid', 'horizontal'] as const;
+
+type ImageFormat = (typeof VALID_FORMATS)[number];
+
+/**
+ * Type guard for valid image format values.
+ */
+function isValidFormat(value: string): value is ImageFormat {
+  return (VALID_FORMATS as readonly string[]).includes(value);
+}
 
 /**
  * Type guard for valid layout values.
@@ -116,10 +126,26 @@ async function runImageAnalyze(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  // Parse optional numeric values
+  // Parse and validate numeric values
   const maxSize = values['max-size'] !== undefined ? Number(values['max-size']) : 2048;
+  if (isNaN(maxSize) || maxSize <= 0) {
+    console.log(error(`Invalid --max-size: must be a positive number`));
+    process.exit(1);
+  }
+
   const quality = values.quality !== undefined ? Number(values.quality) : 80;
-  const format = (values.format as 'webp' | 'png' | 'jpeg' | undefined) ?? 'webp';
+  if (isNaN(quality) || quality < 1 || quality > 100) {
+    console.log(error(`Invalid --quality: must be a number between 1 and 100`));
+    process.exit(1);
+  }
+
+  // Parse and validate format
+  const formatValue = values.format ?? 'webp';
+  if (typeof formatValue !== 'string' || !isValidFormat(formatValue)) {
+    console.log(error(`Invalid format: ${String(formatValue)}. Must be one of: ${VALID_FORMATS.join(', ')}`));
+    process.exit(1);
+  }
+  const format: ImageFormat = formatValue;
 
   // Check sharp availability
   await assertSharpAvailable();
@@ -145,7 +171,7 @@ async function runImageAnalyze(args: string[]): Promise<void> {
     timestamp: new Date().toISOString(),
     source: {
       type: 'image',
-      path: imagePath,
+      path: path.resolve(imagePath),
       width: metadata.width,
       height: metadata.height,
       format: metadata.format,
@@ -223,8 +249,12 @@ async function runImageCompare(args: string[]): Promise<void> {
     }
   }
 
-  // Parse optional values
+  // Parse and validate numeric values
   const cellWidth = values['cell-width'] !== undefined ? Number(values['cell-width']) : 800;
+  if (isNaN(cellWidth) || cellWidth <= 0) {
+    console.log(error(`Invalid --cell-width: must be a positive number`));
+    process.exit(1);
+  }
 
   const layoutValue = values.layout ?? 'vertical';
   if (typeof layoutValue === 'string' && !isValidLayout(layoutValue)) {
@@ -260,7 +290,8 @@ async function runImageCompare(args: string[]): Promise<void> {
     timestamp: new Date().toISOString(),
     source: {
       type: 'image',
-      path: imagePaths.join(', '),
+      path: path.resolve(imagePaths[0]!),
+      paths: imagePaths.map((p) => path.resolve(p)),
       count: imagePaths.length,
     },
     output: {

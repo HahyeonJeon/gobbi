@@ -158,10 +158,24 @@ async function runVideoAnalyze(args: string[]): Promise<void> {
   }
   const layout: Layout = layoutValue;
 
-  // Parse numeric options
+  // Parse and validate numeric options
   const intervalSeconds = values.interval !== undefined ? Number(values.interval) : 5;
+  if (isNaN(intervalSeconds) || intervalSeconds <= 0) {
+    console.log(error(`Invalid --interval: must be a positive number`));
+    process.exit(1);
+  }
+
   const quality = values.quality !== undefined ? Number(values.quality) : 80;
+  if (isNaN(quality) || quality < 1 || quality > 100) {
+    console.log(error(`Invalid --quality: must be a number between 1 and 100`));
+    process.exit(1);
+  }
+
   const cellWidth = values['cell-width'] !== undefined ? Number(values['cell-width']) : 800;
+  if (isNaN(cellWidth) || cellWidth <= 0) {
+    console.log(error(`Invalid --cell-width: must be a positive number`));
+    process.exit(1);
+  }
 
   // Check dependencies
   assertFfmpegAvailable();
