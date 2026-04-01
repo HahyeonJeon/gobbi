@@ -124,6 +124,18 @@ Mistakes in git/GitHub workflow, worktree management, branch handling, and PR li
 
 ---
 
+### git worktree remove fails with "modified or untracked files"
+
+**Priority:** High
+
+**What happened:** After merging a PR, `git worktree remove <path>` fails with `fatal: '<path>' contains modified or untracked files, use --force to delete it`. Subagents left uncommitted changes, build artifacts, or untracked files in the worktree. This blocks the cleanup sequence and has occurred across multiple projects.
+
+**User feedback:** "This error repeated. Why?"
+
+**Correct approach:** Use `git worktree remove --force <path>` when normal removal fails. The worktree's PR is already merged — any uncommitted changes are either already in the PR or intentionally left behind. After force removal, delete the local branch with `git branch -d <branch>`, prune with `git worktree prune`, and clean up empty parent directories. To prevent this: ensure subagents commit all changes before completing, and run `git status` in the worktree before removal to surface any surprises.
+
+---
+
 ### Stale remote branches accumulate across sessions
 
 **Priority:** High

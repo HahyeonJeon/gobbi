@@ -16,6 +16,7 @@ Writing standard for `.claude/` documentation. MUST load when authoring or modif
 | _project | Authoring project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` |
 | _skills | Creating and modifying skill definitions in `.claude/skills/` |
 | _agents | Creating and modifying agent definitions in `.claude/agents/` |
+| [transcripts.md](transcripts.md) | Subagent transcript recovery — location, JSONL schema, extraction paths, plan data |
 
 ---
 
