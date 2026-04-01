@@ -166,7 +166,7 @@ Define the goal, constraints, and what to avoid. Detailed "how" instructions sup
 - Each subtask must be delegated to a specialist subagent with fresh context.
 - Every subagent prompt must include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary.
 - Every subagent must load _gotcha before starting work.
-- After each subtask completes, run `subtask-collect.sh` to extract the subagent's record from its transcript, then spawn a separate evaluator agent to assess the output.
+- After each subtask completes, run `subtask-collect.sh` to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result). Then spawn a separate evaluator agent to assess the output.
 - If evaluation fails, fix and re-evaluate before proceeding to the next subtask.
 - After all subtasks complete, write execution.md. Subtask JSON files are already on disk from the per-subtask `subtask-collect.sh` calls.
 - After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn.
@@ -244,7 +244,7 @@ See [finish.md](finish.md) for the full decision tree, action definitions, and p
 - Before delegation, MUST include gotcha context in every subagent prompt
 - Before evaluation, MUST ask user with AskUserQuestion whether to **skip** evaluation — evaluation is the default at all steps, the user opts out, not in
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with
-- After delegation, MUST write subtask files to disk immediately after each wave — before any downstream agent runs
+- After delegation, MUST run `subtask-collect.sh` for each completed subagent immediately after each wave — before any downstream agent runs
 - After delegation, MUST write work docs via _collection — immediately, not deferred
 - After memorization, MUST call AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?
 - After FEEDBACK, MUST call AskUserQuestion to ask: REVIEW, or FINISH?

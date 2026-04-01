@@ -73,6 +73,10 @@ Check your work before reporting back:
 
 This extends _git's re-verification principle to the subagent level. A subagent that verifies its work but commits to the wrong branch has produced correct work in the wrong place.
 
+### Final Response
+
+The subagent's final response is automatically captured as the subtask record via `subtask-collect.sh`. Include in your final response: what was done, what changed, what was learned, and any open items. This is the permanent record of your work — make it self-contained.
+
 ### Commit (when _git is active)
 
 This phase applies only when the delegation briefing specifies a worktree workflow (_git is active). Commit only after verification passes — never commit unverified work. Each subtask should produce one focused commit. Follow Conventional Commits format: the commit type and scope should match what the delegation briefing specifies for the task's domain. See `_git/conventions.md` for format details. The orchestrator owns pushing and PR creation — subagents commit but never push.
