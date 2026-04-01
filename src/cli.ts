@@ -9,6 +9,9 @@ Commands:
   install    Install gobbi into the current project
   update     Update gobbi core to the latest version
   create     Create a new skill, agent, or hook
+  image      Analyze images or create comparison sheets
+  video      Analyze video files and extract frames
+  web        Take screenshots or capture images from web pages
 
 Options:
   --help              Show this help message
@@ -16,6 +19,35 @@ Options:
   --non-interactive   Skip all prompts, use safe defaults`;
 
 export async function run(): Promise<void> {
+  // Early routing for media commands (they have their own parseArgs)
+  const earlyCommand = process.argv[2];
+
+  if (earlyCommand === '--help' || earlyCommand === undefined) {
+    // Fall through to existing parseArgs handling below
+  } else if (earlyCommand === '--version') {
+    // Fall through to existing parseArgs handling below
+  } else if (earlyCommand === 'image' || earlyCommand === 'video' || earlyCommand === 'web') {
+    const commandArgs = process.argv.slice(3);
+    switch (earlyCommand) {
+      case 'image': {
+        const { runImage } = await import('./commands/image.js');
+        await runImage(commandArgs);
+        return;
+      }
+      case 'video': {
+        const { runVideo } = await import('./commands/video.js');
+        await runVideo(commandArgs);
+        return;
+      }
+      case 'web': {
+        const { runWeb } = await import('./commands/web.js');
+        await runWeb(commandArgs);
+        return;
+      }
+    }
+  }
+
+  // Existing parseArgs handling continues below (unchanged)
   const { values, positionals } = parseArgs({
     allowPositionals: true,
     options: {
