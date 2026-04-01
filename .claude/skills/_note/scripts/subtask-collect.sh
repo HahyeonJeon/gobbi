@@ -71,8 +71,8 @@ jq -n \
   --arg description "$(jq -r '.description' "$meta_file")" \
   --arg timestamp "$(echo "$first_line" | jq -r '.timestamp')" \
   --arg model "$(echo "$last_line" | jq -r '.message.model')" \
-  --arg delegationPrompt "$(echo "$first_line" | jq -r '.message.content')" \
-  --arg finalResult "$(echo "$last_line" | jq -r '.message.content[0].text')" \
+  --arg delegationPrompt "$(echo "$first_line" | jq -r '.message.content | if type == "string" then . else (map(select(.type == "text")) | .[0].text // "") end')" \
+  --arg finalResult "$(echo "$last_line" | jq -r '.message.content | if type == "string" then . else (map(select(.type == "text")) | .[0].text // "") end')" \
   '{
     agentId: $agentId,
     agentType: $agentType,
@@ -82,6 +82,12 @@ jq -n \
     delegationPrompt: $delegationPrompt,
     finalResult: $finalResult
   }' > "$output_file"
+
+# Validate extraction produced non-empty values for key fields
+final_result_value=$(jq -r '.finalResult' "$output_file")
+if [ -z "$final_result_value" ] || [ "$final_result_value" = "null" ]; then
+  echo "Warning: finalResult is empty or null for agent ${agent_id}" >&2
+fi
 
 # Output absolute path of the written file
 echo "$(cd "$(dirname "$output_file")" && pwd)/$(basename "$output_file")"
