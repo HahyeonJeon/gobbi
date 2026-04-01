@@ -38,7 +38,7 @@ The plan should contain: a goal statement, numbered tasks with agent assignments
 
 - **Full scope covered?** — Does the plan address everything from the approved idea? Compare task list against the idea document point by point. Missing scope is the most common plan failure.
 - **Verification criteria defined?** — Does each task specify what "done" looks like? Without criteria, evaluation has nothing to check against.
-- **Collection plan included?** — Does the plan specify where work docs will be written and what subtask files will be created?
+- **Collection plan included?** — Does the plan specify where work docs will be written and what subtask `.json` files will be created?
 - **Nothing added beyond scope?** — Does the plan introduce tasks that weren't in the approved idea? Scope creep starts in planning.
 
 ### Feasibility

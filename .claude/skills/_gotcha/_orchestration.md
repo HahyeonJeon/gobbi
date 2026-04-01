@@ -49,18 +49,18 @@ priority: high
 
 ---
 
-### Skipping subtask docs or writing summaries instead of actual content
+### Skipping `subtask-collect.sh` call after subagent completes
 ---
 priority: high
 ---
 
 **Priority:** High
 
-**What happened:** Skipped subtasks/ directory, or wrote orchestrator summaries instead of preserving subagent output.
+**What happened:** After subagents completed their work, the orchestrator moved on to synthesis or evaluation without running `subtask-collect.sh` to extract results from the JSONL transcripts. The `subtasks/` directory remained empty. Downstream agents (synthesis, evaluation) found nothing on disk and either failed or performed redundant fresh work — losing all findings from the prior agents.
 
-**User feedback:** Subtask docs must contain the actual subagent deliverable, not summaries.
+**User feedback:** Subtask collection must happen after each subagent returns, before any downstream agent runs.
 
-**Correct approach:** Write `subtasks/{NN}-{slug}.md` for every subagent. Copy their actual output — full reports, findings, results. Never summarize. The subagent's words, not yours.
+**Correct approach:** After each subagent completes, run `subtask-collect.sh` to extract the delegation prompt and final result from the JSONL transcript into `subtasks/{NN}-{slug}.json`. Verify the JSON file exists before launching any downstream agent (synthesis, evaluation) that depends on it. The script extracts directly from the transcript, so content quality is guaranteed — the risk is not summary vs actual content, but forgetting to call the script at all.
 
 ---
 
@@ -109,18 +109,18 @@ priority: high
 
 ---
 
-### Write subtask files to disk BEFORE launching synthesis
+### Run `subtask-collect.sh` BEFORE launching synthesis
 ---
 priority: high
 ---
 
 **Priority:** High
 
-**What happened:** During a 10-subtask review workflow, the orchestrator launched Wave 1 and Wave 2 agents, then launched the synthesis agent to combine their outputs. But subtask output files had not been written to disk between waves. The synthesis agent found empty directories, so it performed a fresh independent audit instead of combining the 10 prior agent outputs. This caused the synthesis to miss findings that the individual audits had caught (specifically, step-by-step recipe violations in 5 skill files).
+**What happened:** During a 10-subtask review workflow, the orchestrator launched Wave 1 and Wave 2 agents, then launched the synthesis agent to combine their outputs. But `subtask-collect.sh` had not been run between waves to extract results from the JSONL transcripts. The synthesis agent found an empty `subtasks/` directory, so it performed a fresh independent audit instead of combining the 10 prior agent outputs. This caused the synthesis to miss findings that the individual audits had caught (specifically, step-by-step recipe violations in 5 skill files).
 
 **User feedback:** Subtask files must be written to disk immediately after each agent completes, before any downstream agent that depends on them.
 
-**Correct approach:** After each wave completes, write all subtask output files to the `subtasks/` directory BEFORE launching the next wave or the synthesis agent. The synthesis agent should read files from disk, not receive findings through the prompt. This ensures the synthesis captures all findings from all prior agents and prevents the "fresh audit" fallback that loses coverage.
+**Correct approach:** After each wave completes, run `subtask-collect.sh` to extract all subtask outputs to `subtasks/{NN}-{slug}.json` BEFORE launching the next wave or the synthesis agent. The synthesis agent should read JSON files from disk, not receive findings through the prompt. This ensures the synthesis captures all findings from all prior agents and prevents the "fresh audit" fallback that loses coverage.
 
 ---
 

@@ -71,7 +71,7 @@ ExitPlanMode surfaces the plan for user approval. No delegation happens until th
 
 **Expected outcome** — What the user will have when all tasks complete.
 
-**Collection plan** — Where work docs will be written after delegation completes. Specify the task directory path and list which subtask doc files will be created. This ensures the COLLECT phase has a clear target.
+**Collection plan** — Where work docs will be written after delegation completes. Specify the task directory path and list which subtask `.json` files will be created. This ensures the COLLECT phase has a clear target.
 
 ---
 

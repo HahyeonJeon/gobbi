@@ -4,20 +4,20 @@ Mistakes in work trail persistence, README indexing, and subtask file management
 
 ---
 
-### Original subtask notes not copied to subtasks directory
+### Original subtask results not collected to subtasks directory
 
 **Priority:** High
 
-**What happened:** During the doc-review workflow, 10 subtask agents produced output, but their actual results were never copied to the `subtasks/` directory as individual files. Only the synthesis report (subtask 11) was written because the synthesis agent wrote its own output. The 10 original subtask outputs existed only in conversation context and were lost.
+**What happened:** During the doc-review workflow, 10 subtask agents produced output, but `subtask-collect.sh` was never run to extract their results from the JSONL transcripts into the `subtasks/` directory. Only the synthesis report (subtask 11) was written because the synthesis agent wrote its own output. The 10 original subtask outputs existed only in the transcripts and were lost from the workflow.
 
-**User feedback:** The original subtask notes must be copied to the subtasks directory.
+**User feedback:** The original subtask results must be collected to the subtasks directory.
 
-**Correct approach:** After each wave of subagents completes, immediately write each agent's full output to `subtasks/{NN}-{slug}.md`. This must happen:
+**Correct approach:** After each wave of subagents completes, run `subtask-collect.sh` to extract delegation prompts and final results from the JSONL transcripts into `subtasks/{NN}-{slug}.json`. This must happen:
 1. After every wave completes — not deferred to the end
 2. Before any downstream agent (synthesis, evaluation) that needs those files
-3. With the agent's actual output — not a summary or the orchestrator's interpretation
+3. Verify the JSON files exist on disk before proceeding
 
-The subtask files are the permanent record of what each specialist agent found or produced. If they're not written to disk, the work is lost when the conversation ends or compacts.
+The subtask JSON files are the permanent record of what each specialist agent was asked and what it produced. If `subtask-collect.sh` is not run, the work is trapped in transcripts and invisible to downstream agents.
 
 ---
 

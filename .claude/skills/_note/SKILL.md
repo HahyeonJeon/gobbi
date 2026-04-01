@@ -30,7 +30,7 @@ Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`:
     review.md                                             — review findings, verification results
     memorize.md                                           — what was memorized for session continuity
     subtasks/
-      {NN}-{subtask-slug}.md                              — copy of each subagent's task result
+      {NN}-{subtask-slug}.json                             — extracted subagent record (delegation prompt + final result)
 ```
 
 ### Naming
@@ -42,6 +42,8 @@ Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`:
 > **Always use note-init.sh to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.**
 
 Initialize note directories using the `note-init.sh` script in `_note/scripts/`. It takes the project name and task slug as arguments and outputs the created directory path. It handles the full chain: session metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup.
+
+After each subagent returns, run `subtask-collect.sh` (also in `_note/scripts/`) to extract the delegation prompt and final result from the subagent's JSONL transcript into `subtasks/{NN}-{subtask-slug}.json`. The script handles transcript parsing and JSON formatting — no manual Write calls needed.
 
 If `note-init.sh` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it.
 
@@ -86,14 +88,13 @@ When documenting evaluation results in execution.md, organize findings by severi
 
 Record pre-action verification outcomes when they catch a precondition failure (wrong branch, duplicate PR, stale state). Verification that passes silently needs no note — only record when verification catches a real problem, as these are valuable learning inputs for gotchas.
 
-### subtasks/{NN}-{subtask-slug}.md
+### subtasks/{NN}-{subtask-slug}.json
 
-Copy of each subagent's task result during Step 3. Subagent outputs exist only in conversation context — if not copied here, the work is lost after the session.
+Extracted from subagent JSONL transcripts via `subtask-collect.sh` during Step 3. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered.
 
 - One file per subtask, zero-padded sequence number for ordering
-- Must contain the full result, not a summary
-- Must include the delegation prompt that was sent to the subagent — the exact instructions, context, and constraints the agent received
-- Written immediately after each subagent completes
+- Extracted automatically — the orchestrator calls the script after each subagent returns, not batched at collection
+- Contains the full delegation prompt and full final result as structured JSON, not summaries
 
 ### feedback.md
 
