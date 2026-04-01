@@ -1,38 +1,33 @@
 ---
 name: _claude
-description: Core writing standard for .claude/ documentation — writing principles, hierarchy, anti-patterns, and review checklist. Use when reading .claude/ files to understand their structure, or when authoring rules and project docs. For creating skills, load _skills. For creating agent definitions, load _agents.
+description: Writing standard for .claude/ documentation — principles, hierarchy, and anti-patterns. MUST load when authoring or modifying any .claude/ file. Load optionally when reading .claude/ docs for structural context.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Claude Skill
 
-Core documentation standard for `.claude/` files — writing principles, hierarchy, anti-patterns, and review checklist. Load this skill when reading `.claude/` files to understand their structure, or when authoring rules and project docs. Specialized creation guides exist as separate skills: _skills for skills, _agents for agent definitions.
+Writing standard for `.claude/` documentation. MUST load when authoring or modifying any `.claude/` file. Load optionally when reading `.claude/` docs for structural context.
 
 **Navigate deeper from here:**
 
-| Writing... | Read | Covers |
-|------------|------|--------|
-| A rule | `_rules` skill | Verifiability, structure, when to create a rule |
-| Project documentation | `_project` skill | Project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` |
-
-**Related skills:**
-
-| Skill | When to load |
-|-------|-------------|
-| _skills | Creating, reviewing, or modifying skill definitions in `.claude/skills/` |
-| _agents | Creating, reviewing, or modifying agent definitions in `.claude/agents/` |
+| Document | Covers |
+|----------|--------|
+| _rules | Authoring rule files in `.claude/rules/` |
+| _project | Authoring project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` |
+| _skills | Creating and modifying skill definitions in `.claude/skills/` |
+| _agents | Creating and modifying agent definitions in `.claude/agents/` |
 
 ---
 
 ## Core Principle
 
-> **Claude docs are teaching materials, not command scripts.**
+> **Chain-of-Docs — think deeply first, then decompose into short docs.**
 
-Every `.claude/` file should build the agent's **mental model** — how things work and why — so it makes good decisions in novel situations.
+Agents default to writing short, shallow docs. Chain-of-Docs demands the opposite order: think deeply about the full problem space first — structure, relationships, edge cases, abstraction levels — then decompose that deep understanding into a chain of focused documents. Each file covers one level of abstraction and links to its children via a **"Navigate deeper from here:"** table. The depth of thought produces the quality; the decomposition produces the navigability.
 
-> **Write in hierarchy — decompose top-down, navigate on demand.**
+> **Procedures get detailed steps. Non-procedures get principles, not steps.**
 
-Documents should decompose content like a chain of thought — each file covers one level of abstraction and lists its child documents under a **"Navigate deeper from here:"** heading with short descriptions. The parent gives the agent enough context to decide *which* child to read, so it only loads what's relevant. This keeps each file focused, prevents monolithic docs that agents skim, and lets context scale without bloating any single file. Apply recursively: if a child grows complex, it becomes a parent with its own children.
+When a doc describes a procedure — a sequence where order matters and deviation causes failure — write specific steps with full detail. When a doc describes non-procedural guidance — design principles, conventions, quality standards — write principles and constraints instead. Step-by-step instructions for non-procedures lock agents into rigid paths and suppress their judgment in situations the doc author didn't anticipate.
 
 > **First line tells the agent what this doc is and when to read it.**
 
@@ -73,7 +68,7 @@ Not universally forbidden. The test: "Would deviating from this sequence cause f
 
 | Anti-Pattern | When Forbidden | When Allowed |
 |---|---|---|
-| **Step-by-step recipes** | In teaching docs (skills, rules, project docs) where agents should reason from principles. Agent follows rigidly, skips steps that matter, adds steps that don't. | In orchestration flows and agent definitions where a specific sequence must be followed exactly and deviation causes failure. |
+| **Step-by-step recipes** | In teaching docs (skills, rules, project docs) where agents should reason from principles. Agent follows rigidly, skips steps that matter, adds steps that don't. | In procedures — sequences where order matters and skipping or reordering steps causes failure. Orchestration workflows, setup sequences, git lifecycles, deployment pipelines. The test: if the agent reorders or omits a step, does something break? If yes, write detailed steps. |
 
 ### Should Avoid
 
@@ -94,16 +89,16 @@ These weaken doc quality and lead to subtle issues over time. Acceptable in smal
 Before publishing any `.claude/` documentation:
 
 **Core Principle**
-- [ ] Teaches mental model, not step-by-step commands
-- [ ] Hierarchical — has "Navigate deeper from here:" if children exist
+- [ ] Chain-of-Docs — deep thinking decomposed into focused docs with "Navigate deeper from here:" links
+- [ ] Procedures have detailed steps; non-procedures use principles and constraints, not steps
+- [ ] First line declares what the doc is and when to read it
 
 **Writing Pattern**
-- [ ] States principles and constraints, not procedures
 - [ ] Points to codebase for implementation patterns ("read existing X")
 - [ ] Under 500 lines (must), targeting under 200 (should)
 - [ ] No duplication with other `.claude/` files
 
 **Anti-Pattern**
 - [ ] Zero code blocks or BAD/GOOD comparisons (must avoid)
-- [ ] Step-by-step recipes only in orchestration/agent definitions, never in teaching docs (context-dependent)
+- [ ] Step-by-step recipes only in procedures where reordering or omitting steps causes failure (context-dependent)
 - [ ] Minimal interface definitions, exact values, or bash commands in docs (should avoid)
