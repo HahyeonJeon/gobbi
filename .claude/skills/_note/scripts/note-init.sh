@@ -43,5 +43,34 @@ task: ${slug}
 <!-- Task description goes here -->
 HEREDOC
 
+# Write metadata.json — task metadata + all CLAUDE_* env vars
+jq -n \
+  --arg sessionId "$session_id" \
+  --arg datetime "$formatted_datetime" \
+  --arg taskSlug "$slug" \
+  --arg gitBranch "$git_branch" \
+  --arg cwd "$cwd" \
+  --arg claudeModel "${CLAUDE_MODEL:-}" \
+  --arg claudeProjectDir "${CLAUDE_PROJECT_DIR:-}" \
+  --arg claudeTranscriptPath "${CLAUDE_TRANSCRIPT_PATH:-}" \
+  --arg claudeCodeEntrypoint "${CLAUDE_CODE_ENTRYPOINT:-}" \
+  --arg claudeSessionSource "${CLAUDE_SESSION_SOURCE:-}" \
+  '{
+    task: {
+      sessionId: $sessionId,
+      datetime: $datetime,
+      slug: $taskSlug
+    },
+    env: {
+      gitBranch: $gitBranch,
+      cwd: $cwd,
+      CLAUDE_MODEL: $claudeModel,
+      CLAUDE_PROJECT_DIR: $claudeProjectDir,
+      CLAUDE_TRANSCRIPT_PATH: $claudeTranscriptPath,
+      CLAUDE_CODE_ENTRYPOINT: $claudeCodeEntrypoint,
+      CLAUDE_SESSION_SOURCE: $claudeSessionSource
+    }
+  }' > "${note_dir}/metadata.json"
+
 # Output absolute path
 echo "$(cd "${note_dir}" && pwd)"
