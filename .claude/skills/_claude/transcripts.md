@@ -15,6 +15,8 @@ Subagent transcripts live at `~/.claude/projects/{project-path}/{session-id}/sub
 
 The path can be derived from environment variables: `$(dirname "$CLAUDE_TRANSCRIPT_PATH")/$CLAUDE_SESSION_ID/subagents/`
 
+The main session transcript lives at `$CLAUDE_TRANSCRIPT_PATH` and has a broader set of line types than subagent transcripts.
+
 ---
 
 ## Identifying Subagents
@@ -25,12 +27,41 @@ The `agent-{id}.meta.json` maps agents to their purpose. The `description` field
 
 ## JSONL Line Schema
 
-Each line is a JSON object. The `message.content` field varies by role:
+Each line is a JSON object with two layers: **line-level metadata** and the **message** payload.
+
+### Line-Level Metadata
+
+Every line (both user and assistant) carries these fields:
+
+| Field | Contains |
+|-------|----------|
+| `type` | `user` or `assistant` |
+| `agentId` | The subagent's ID |
+| `sessionId` | Session UUID (matches `$CLAUDE_SESSION_ID`) |
+| `timestamp` | ISO 8601 timestamp |
+| `slug` | Session plan slug (e.g., `swift-coalescing-torvalds`) |
+| `version` | Claude Code version (e.g., `2.1.89`) |
+| `cwd` | Working directory at message time |
+| `gitBranch` | Git branch at message time |
+| `uuid` | Unique ID for this line |
+| `parentUuid` | Parent message UUID (for threading) |
+| `isSidechain` | Always `true` for subagents |
+| `entrypoint` | How Claude Code was started (e.g., `cli`) |
+
+User lines additionally have `promptId`. Assistant lines additionally have `requestId`.
+
+### Message Content
+
+The `message.content` field varies by role:
 
 | Role | `message.content` type | Structure |
 |------|----------------------|-----------|
 | `user` | string or array | When string: the delegation prompt text. When array: blocks with `type` field |
 | `assistant` | array of blocks | Each block has a `type` field — `text`, `tool_use`, or others |
+
+> **A single assistant message can contain multiple blocks of different types.**
+
+For example, `["text", "tool_use", "tool_use", "tool_use"]` — one text block followed by several parallel tool calls. Extraction logic must iterate the array, not assume one block per message.
 
 Content block types within arrays:
 
@@ -38,7 +69,21 @@ Content block types within arrays:
 |------------|----------|------------|
 | `text` | `assistant` | `text` |
 | `tool_use` | `assistant` | `name`, `input`, `id` |
-| `tool_result` | `user` | `tool_use_id`, `content` |
+| `tool_result` | `user` | `tool_use_id`, `content` (string) |
+
+### Token Usage
+
+Assistant messages include `message.usage` with token consumption data:
+
+| Field | Contains |
+|-------|----------|
+| `input_tokens` | Input tokens for this turn |
+| `output_tokens` | Output tokens for this turn |
+| `cache_creation_input_tokens` | Tokens written to cache |
+| `cache_read_input_tokens` | Tokens read from cache |
+| `service_tier` | Service tier used (e.g., `standard`) |
+
+Additional assistant message fields: `message.model` (exact model ID), `message.stop_reason` (e.g., `end_turn`), `message.id` (Anthropic message ID).
 
 ---
 
@@ -54,6 +99,8 @@ Content block types within arrays:
 | Files edited | Line with `Edit` tool_use | `.input.file_path`, `.input.old_string`, `.input.new_string` |
 | Files read | Line with `Read` tool_use | `.input.file_path`; content in next `tool_result` |
 | Shell commands | Line with `Bash` tool_use | `.input.command`; output in next `tool_result` |
+| Token usage | Any assistant line | `.message.usage` |
+| Model used | Any assistant line | `.message.model` |
 
 > **Content type varies by role — always check before extracting.**
 
@@ -68,6 +115,22 @@ Plan content is stored in `ExitPlanMode` tool_use blocks. The `input` object con
 `EnterPlanMode` has empty input — it is only a mode switch. A subagent may call `EnterPlanMode`/`ExitPlanMode` multiple times (plan revisions). Each `ExitPlanMode` captures the plan state at that point.
 
 The plan file at `planFilePath` on disk gets overwritten by subsequent plans. The JSONL transcript is the permanent per-session record.
+
+---
+
+## Main Session Transcript
+
+The main transcript at `$CLAUDE_TRANSCRIPT_PATH` shares the same `user`/`assistant` line format as subagent transcripts, but also contains additional line types:
+
+| Line type | Contains |
+|-----------|----------|
+| `system` | Hook info, stop reasons, tool use IDs |
+| `file-history-snapshot` | File state snapshots (with `snapshot` and `messageId` fields) |
+| `pr-link` | PR number, URL, repository |
+| `agent-name` | Session name |
+| `custom-title` | Custom session title |
+
+When extracting from the main transcript, filter by `type == "user"` or `type == "assistant"` to skip these non-conversation lines.
 
 ---
 
