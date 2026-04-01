@@ -1,6 +1,10 @@
 #!/bin/bash
 # Extracts subagent delegation prompt and final result from Claude Code JSONL transcripts.
 # Usage: bash subtask-collect.sh <agent-id> <subtask-number> <subtask-slug> <note-dir-path>
+#
+# The agent-id is returned in the Agent tool result after the subagent completes:
+#   agentId: a74edda5b7f076239 (use SendMessage with to: 'a74edda5b7f076239' to continue this agent)
+# The orchestrator extracts this ID from the tool result and passes it as the first argument.
 
 set -e
 
@@ -58,6 +62,13 @@ if [ ! -d "$subtasks_dir" ]; then
   exit 1
 fi
 
+# Extract task metadata from note directory name
+# Format: {YYYYMMDD-HHMM}-{slug}-{session_id}
+note_basename=$(basename "$note_dir")
+task_datetime="${note_basename:0:13}"
+task_slug="${note_basename:14}"
+task_slug="${task_slug%-"$CLAUDE_SESSION_ID"}"
+
 # Extract fields from transcript files
 first_line=$(head -1 "$jsonl_file")
 last_line=$(tail -1 "$jsonl_file")
@@ -66,6 +77,9 @@ last_line=$(tail -1 "$jsonl_file")
 output_file="${subtasks_dir}/${subtask_number}-${subtask_slug}.json"
 
 jq -n \
+  --arg sessionId "$CLAUDE_SESSION_ID" \
+  --arg taskDatetime "$task_datetime" \
+  --arg taskSlug "$task_slug" \
   --arg agentId "$agent_id" \
   --arg agentType "$(jq -r '.agentType' "$meta_file")" \
   --arg description "$(jq -r '.description' "$meta_file")" \
@@ -74,6 +88,9 @@ jq -n \
   --arg delegationPrompt "$(echo "$first_line" | jq -r '.message.content | if type == "string" then . else (map(select(.type == "text")) | .[0].text // "") end')" \
   --arg finalResult "$(echo "$last_line" | jq -r '.message.content | if type == "string" then . else (map(select(.type == "text")) | .[0].text // "") end')" \
   '{
+    sessionId: $sessionId,
+    taskDatetime: $taskDatetime,
+    taskSlug: $taskSlug,
     agentId: $agentId,
     agentType: $agentType,
     description: $description,
