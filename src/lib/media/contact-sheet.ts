@@ -1,45 +1,6 @@
 import path from 'path';
 
-import { getSharp } from './deps.js';
-
-// ---------------------------------------------------------------------------
-// Minimal sharp type surface
-// ---------------------------------------------------------------------------
-
-/**
- * Minimal interface for a sharp processing pipeline.
- * Covers only the methods used by this module so we avoid depending on
- * sharp's type declarations (sharp is a peer dependency).
- */
-interface SharpInstance {
-  metadata(): Promise<{ width?: number; height?: number }>;
-  resize(w: number, h: number, opts?: { fit?: string }): SharpInstance;
-  composite(
-    inputs: Array<{ input: Buffer; left: number; top: number }>,
-  ): SharpInstance;
-  webp(opts?: { quality?: number }): SharpInstance;
-  jpeg(opts?: { quality?: number }): SharpInstance;
-  png(): SharpInstance;
-  toFile(
-    path: string,
-  ): Promise<{ width: number; height: number; size: number }>;
-  toBuffer(): Promise<Buffer>;
-}
-
-/**
- * Sharp constructor — supports both file path input and canvas creation.
- */
-interface SharpStatic {
-  (input: string | Buffer): SharpInstance;
-  (options: {
-    create: {
-      width: number;
-      height: number;
-      channels: number;
-      background: { r: number; g: number; b: number; alpha: number };
-    };
-  }): SharpInstance;
-}
+import { loadSharp } from './deps.js';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -80,16 +41,6 @@ export interface ContactSheetResult {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-/**
- * Load sharp's default export and cast to our minimal static type.
- * `getSharp()` returns the module namespace object (`unknown`). For a
- * default-exported function the namespace has a `.default` property.
- */
-async function loadSharp(): Promise<SharpStatic> {
-  const mod = (await getSharp()) as { default: SharpStatic };
-  return mod.default;
-}
 
 /**
  * Escape special XML characters in text content.

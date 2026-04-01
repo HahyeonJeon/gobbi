@@ -1,5 +1,64 @@
 import { execFileSync } from 'child_process';
 
+// ---------------------------------------------------------------------------
+// Minimal sharp type surface (shared across all media modules)
+// ---------------------------------------------------------------------------
+
+/**
+ * Minimal interface for a sharp processing pipeline.
+ * Covers the methods used by image-utils and contact-sheet modules so
+ * we avoid depending on sharp's type declarations (sharp is a peer
+ * dependency).
+ */
+export interface SharpInstance {
+  metadata(): Promise<{
+    width?: number;
+    height?: number;
+    format?: string;
+    space?: string;
+    density?: number;
+    hasAlpha?: boolean;
+    size?: number;
+  }>;
+  resize(
+    width: number,
+    height: number,
+    options?: { fit?: string; withoutEnlargement?: boolean },
+  ): SharpInstance;
+  composite(
+    inputs: Array<{ input: Buffer; left: number; top: number }>,
+  ): SharpInstance;
+  webp(options?: { quality?: number }): SharpInstance;
+  jpeg(options?: { quality?: number }): SharpInstance;
+  png(): SharpInstance;
+  toFile(path: string): Promise<{
+    width: number;
+    height: number;
+    format: string;
+    size: number;
+  }>;
+  toBuffer(): Promise<Buffer>;
+}
+
+interface CreateOptions {
+  width: number;
+  height: number;
+  channels: number;
+  background: { r: number; g: number; b: number; alpha: number };
+}
+
+/**
+ * Sharp constructor — supports both file/buffer input and canvas creation.
+ */
+export interface SharpStatic {
+  (input: string | Buffer): SharpInstance;
+  (options: { create: CreateOptions }): SharpInstance;
+}
+
+// ---------------------------------------------------------------------------
+// Cached module references
+// ---------------------------------------------------------------------------
+
 /**
  * Cached module references for dynamic imports.
  * Stored at module level so subsequent calls skip the import overhead.
@@ -11,12 +70,12 @@ let cachedPlaywright: unknown;
 
 /**
  * Assert that the `sharp` image processing library is available.
- * Attempts a dynamic import and throws a descriptive error with install
- * instructions if the module is not found.
+ * Calls `getSharp()` internally so the import is cached — subsequent
+ * calls to `getSharp()` or `loadSharp()` are instant.
  */
 export async function assertSharpAvailable(): Promise<void> {
   try {
-    await import('sharp' as string);
+    await getSharp();
   } catch {
     throw new Error(
       'sharp is required but not installed.\n' +
@@ -28,12 +87,12 @@ export async function assertSharpAvailable(): Promise<void> {
 
 /**
  * Assert that the `playwright` browser automation library is available.
- * Attempts a dynamic import and throws a descriptive error with install
- * instructions if the module is not found.
+ * Calls `getPlaywright()` internally so the import is cached —
+ * subsequent calls to `getPlaywright()` are instant.
  */
 export async function assertPlaywrightAvailable(): Promise<void> {
   try {
-    await import('playwright' as string);
+    await getPlaywright();
   } catch {
     throw new Error(
       'playwright is required but not installed.\n' +
@@ -164,4 +223,17 @@ export async function getPlaywright(): Promise<unknown> {
       '  npm install playwright && npx playwright install chromium\n',
     );
   }
+}
+
+/**
+ * Load sharp's default export as a typed `SharpStatic` constructor.
+ *
+ * `getSharp()` returns the module namespace object (`unknown`). For a
+ * default-exported function the namespace has a `.default` property.
+ * This helper extracts and types it for consumers that need the
+ * constructor directly.
+ */
+export async function loadSharp(): Promise<SharpStatic> {
+  const mod = (await getSharp()) as { default: SharpStatic };
+  return mod.default;
 }

@@ -1,44 +1,6 @@
 import { stat } from 'fs/promises';
 
-import { getSharp } from './deps.js';
-
-// ---------------------------------------------------------------------------
-// Minimal sharp type surface
-// ---------------------------------------------------------------------------
-
-/**
- * Minimal interface for a sharp processing pipeline.
- * Covers only the methods used by this module so we avoid depending on
- * sharp's type declarations (sharp is a peer dependency).
- */
-interface SharpInstance {
-  metadata(): Promise<{
-    width?: number;
-    height?: number;
-    format?: string;
-    space?: string;
-    density?: number;
-    hasAlpha?: boolean;
-    size?: number;
-  }>;
-  resize(
-    width: number,
-    height: number,
-    options?: { fit?: string; withoutEnlargement?: boolean },
-  ): SharpInstance;
-  webp(options?: { quality?: number }): SharpInstance;
-  jpeg(options?: { quality?: number }): SharpInstance;
-  png(): SharpInstance;
-  toFile(path: string): Promise<{
-    width: number;
-    height: number;
-    format: string;
-    size: number;
-  }>;
-}
-
-/** Constructor function returned by the sharp module's default export. */
-type SharpConstructor = (input: string) => SharpInstance;
+import { loadSharp } from './deps.js';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -80,20 +42,6 @@ export interface ResizeResult {
   resizedHeight: number;
   format: string;
   fileSizeBytes: number;
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Load sharp's default export and cast to our minimal constructor type.
- * `getSharp()` returns the module namespace object (`unknown`). For a
- * default-exported function the namespace has a `.default` property.
- */
-async function loadSharp(): Promise<SharpConstructor> {
-  const mod = (await getSharp()) as { default: SharpConstructor };
-  return mod.default;
 }
 
 // ---------------------------------------------------------------------------
