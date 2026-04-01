@@ -89,6 +89,14 @@ json.dump({
   exit 1
 }
 
+# Sum token usage across all assistant messages in the main session transcript
+usage=$(cat "$CLAUDE_TRANSCRIPT_PATH" | jq -s '[.[] | select(.message.usage) | .message.usage] | {
+  input_tokens: (map(.input_tokens) | add),
+  output_tokens: (map(.output_tokens) | add),
+  cache_creation_input_tokens: (map(.cache_creation_input_tokens) | add),
+  cache_read_input_tokens: (map(.cache_read_input_tokens) | add)
+}')
+
 # Write output JSON using jq for safe construction
 output_file="${note_dir}/plan.json"
 
@@ -96,12 +104,14 @@ echo "$plan_data" | jq \
   --arg sessionId "$CLAUDE_SESSION_ID" \
   --arg taskDatetime "$task_datetime" \
   --arg taskSlug "$task_slug" \
+  --argjson usage "$usage" \
   '{
     sessionId: $sessionId,
     taskDatetime: $taskDatetime,
     taskSlug: $taskSlug,
     timestamp: .timestamp,
     planFilePath: .planFilePath,
+    usage: $usage,
     plan: .plan
   }' > "$output_file"
 

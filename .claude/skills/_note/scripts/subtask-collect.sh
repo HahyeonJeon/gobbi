@@ -73,6 +73,14 @@ task_slug="${task_slug%-"$CLAUDE_SESSION_ID"}"
 first_line=$(head -1 "$jsonl_file")
 last_line=$(tail -1 "$jsonl_file")
 
+# Sum token usage across all assistant messages in the transcript
+usage=$(cat "$jsonl_file" | jq -s '[.[] | select(.message.usage) | .message.usage] | {
+  input_tokens: (map(.input_tokens) | add),
+  output_tokens: (map(.output_tokens) | add),
+  cache_creation_input_tokens: (map(.cache_creation_input_tokens) | add),
+  cache_read_input_tokens: (map(.cache_read_input_tokens) | add)
+}')
+
 # Write output JSON using jq for safe construction
 output_file="${subtasks_dir}/${subtask_number}-${subtask_slug}.json"
 
@@ -87,6 +95,7 @@ jq -n \
   --arg model "$(echo "$last_line" | jq -r '.message.model')" \
   --arg delegationPrompt "$(echo "$first_line" | jq -r '.message.content | if type == "string" then . else (map(select(.type == "text")) | .[0].text // "") end')" \
   --arg finalResult "$(echo "$last_line" | jq -r '.message.content | if type == "string" then . else (map(select(.type == "text")) | .[0].text // "") end')" \
+  --argjson usage "$usage" \
   '{
     sessionId: $sessionId,
     taskDatetime: $taskDatetime,
@@ -96,6 +105,7 @@ jq -n \
     description: $description,
     timestamp: $timestamp,
     model: $model,
+    usage: $usage,
     delegationPrompt: $delegationPrompt,
     finalResult: $finalResult
   }' > "$output_file"
