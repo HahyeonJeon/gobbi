@@ -46,6 +46,22 @@
     "workflow",
     "claudex",
     "claude-experience",
-    "claude-docs"
-  ]
+    "claude-docs",
+    "media",
+    "image-analysis",
+    "video-analysis",
+    "screenshot"
+  ],
+  "peerDependencies": {
+    "playwright": ">=1.40.0",
+    "sharp": ">=0.33.0"
+  },
+  "peerDependenciesMeta": {
+    "sharp": {
+      "optional": true
+    },
+    "playwright": {
+      "optional": true
+    }
+  }
 }
