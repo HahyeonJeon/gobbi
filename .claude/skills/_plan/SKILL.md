@@ -1,12 +1,12 @@
 ---
 name: _plan
-description: Decompose complex tasks into small, specific, agent-assigned subtasks. Use during the PLAN phase to explore the codebase, build a systematic plan, and get user approval before delegation.
+description: Decompose complex tasks into small, specific, agent-assigned subtasks. Use during the PLAN phase to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Planning Skill
 
-Decompose complex tasks into small, specific, executable units. Load this skill when entering the PLAN phase of orchestration.
+Decompose complex tasks into small, specific, agent-assigned subtasks. Use during the PLAN phase to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.
 
 ---
 
@@ -20,6 +20,14 @@ Plan mode lets you explore the codebase with read-only tools, design the approac
 
 Vague tasks produce vague results. Break work down until each task is small enough that a single agent can complete it without losing focus. Name the agent, list the skills to load, and define the expected deliverable.
 
+> **Every task specifies its subagent and skills.**
+
+A task without a named subagent gets routed to the wrong specialist. A task without listed skills gets executed without the knowledge the agent needs. The plan must name which agent from `.claude/agents/` handles each task and which skills from `.claude/skills/` it loads — this is what makes delegation precise instead of hopeful.
+
+> **Research before planning when knowledge is insufficient.**
+
+When a task requires domain expertise, external context, or codebase understanding that the orchestrator lacks, spawn research agents to investigate before decomposing. A plan built on incomplete knowledge produces tasks with wrong assumptions. The research cost is small compared to the rework cost of a misinformed plan.
+
 ---
 
 ## How to Plan
@@ -31,6 +39,10 @@ Planning outside of EnterPlanMode means planning without codebase exploration �
 > **Explore before decomposing.**
 
 Understanding the existing codebase, patterns, and architecture is a prerequisite to meaningful task breakdown. A plan that doesn't reflect the codebase will produce work that doesn't fit the codebase.
+
+> **Spawn PI-level agents when needed.**
+
+If the task crosses unfamiliar territory — new APIs, unfamiliar subsystems, external dependencies — spawn PI-level agents to investigate before writing the plan. They return findings; the orchestrator synthesizes them into planning context. Do not guess what you can investigate.
 
 > **Decomposition is the core act of planning.**
 

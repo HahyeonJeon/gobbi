@@ -52,3 +52,18 @@ priority: medium
 **User feedback:** Blockquotes should only hold the bold principle point. The description goes on a separate non-quoted line below.
 
 **Correct approach:** Use `> **Principle statement.**` on its own line. Put the explanation on a separate non-quoted paragraph below. The blockquote highlights the point; the description explains it.
+
+---
+
+### Referencing internal (`__`) names in non-internal docs
+---
+priority: high
+---
+
+**Priority:** High
+
+**What happened:** A hidden skill (`_plan`) referenced an internal agent (`__pi`) by name. Internal names (double underscore prefix) are implementation details for gobbi contributors — they should not appear in hidden or interface tier docs that end users and workflow agents read.
+
+**User feedback:** "Never use internal skills or internal agents like `__pi`."
+
+**Correct approach:** Hidden (`_`) and interface (no prefix) docs must never reference internal (`__`) names. Use generic terms instead — "research agents" not "`__pi`", "validation tooling" not "`__validate`". Internal names leak implementation details and create coupling between tiers that should be independent.

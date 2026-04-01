@@ -1,12 +1,12 @@
 ---
 name: _evaluation
-description: Guide for running high-quality evaluation. Teaches orchestrators how to delegate evaluation and evaluators how to assess output rigorously. Load at workflow start.
+description: Evaluation framework — perspective selection, evaluator delegation, scoring, and verdicts. MUST load at workflow start by the orchestrator. Evaluator agents load this alongside their perspective skill.
 allowed-tools: Read, Grep, Glob, Bash, Agent, AskUserQuestion
 ---
 
 # Evaluation
 
-How to run evaluation that actually finds problems. This skill teaches the orchestrator how to delegate evaluation and evaluator agents how to assess output rigorously. Evaluation is not a rubber stamp — it is an adversarial assessment whose purpose is to find what is wrong, missing, or fragile.
+Evaluation framework for the gobbi workflow. Orchestrators use this to select perspectives and delegate to evaluator agents. Evaluators use this alongside their perspective skill to assess, score, and verdict.
 
 ---
 
@@ -20,6 +20,10 @@ Self-evaluation is structurally biased. The creator's mental model prevents them
 
 A single evaluator catches the problems it is trained to see. Multiple evaluators with genuinely different viewpoints catch problems that fall between any single perspective. Disagreements between evaluators are valuable signal — surface them.
 
+> **The user's perspective is the most important measure of evaluation.**
+
+Evaluator agents assess from technical perspectives, but the user decides what matters. Evaluation findings are input to a conversation with the user, not autonomous verdicts. An evaluator may flag an issue as critical, but if the user disagrees or defers it, that decision stands. No evaluation outcome bypasses the user.
+
 > **Evaluate outcomes against goals, not tasks against checklists.**
 
 Check whether the output achieves what the user actually needs, not just whether individual items were completed. An idea that exists but doesn't solve the root problem fails. A plan that has all tasks but misses a dependency fails.
@@ -28,9 +32,9 @@ Check whether the output achieves what the user actually needs, not just whether
 
 When the output can be verified by running a command — tests, syntax checks, grep for expected patterns, file existence — do it. Reasoning alone misses failures that evidence catches. When tools can provide evidence, use them. When they can't, reason rigorously.
 
-> **Evaluation findings feed into memorization.**
+> **Recurring issues become gotchas.**
 
-Recurring issues become gotchas. Patterns discovered during evaluation are the highest-value input for the memorization step — they represent non-obvious problems that will recur without explicit recording.
+Patterns discovered during evaluation are the highest-value input for the memorization step — they represent non-obvious problems that will recur without explicit recording.
 
 ---
 
@@ -56,8 +60,9 @@ The orchestrator matches perspectives to the task. A documentation task may need
 ### For the Orchestrator
 
 1. Select the perspectives that match the task's domain
-2. Spawn each evaluator as a separate agent with:
-   - The stage-specific evaluation criteria (what to check at this workflow stage)
+2. Spawn each evaluator as a separate agent with skills:
+   - The stage-specific evaluation skill (what to check at this workflow stage)
+   - The perspective evaluation skill (the lens to assess through)
    - Domain context — project rules, gotchas, conventions, and relevant knowledge
    - The output to evaluate
    - Read-only access — evaluators assess, they do not modify

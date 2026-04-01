@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-04-01
+
+### Improved
+
+- `_claude` skill: rewrite core principles — Chain-of-Docs, procedure vs non-procedure, first-line discoverability
+- `_claude` skill: merge related skills into single Navigate deeper table
+- `_evaluation` skill: add user perspective as core principle, clarify evaluator skill loading
+- `_plan` skill: add core principles for subagent/skill specification and research before planning
+
+### Added
+
+- Gotcha: never reference internal (`__`) names in non-internal docs
+
 ## [0.3.0] - 2026-03-31
 
 ### Added
@@ -98,7 +111,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slack notification hooks
 - Project state directory (`.claude/project/`) with design docs, gotchas, rules, and notes
 
-[Unreleased]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/HahyeonJeon/gobbi/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/HahyeonJeon/gobbi/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/HahyeonJeon/gobbi/compare/v0.1.0...v0.2.0
