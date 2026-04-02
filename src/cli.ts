@@ -6,29 +6,21 @@ import path from 'path';
 const USAGE = `Usage: gobbi <command> [options]
 
 Commands:
-  install    Install gobbi into the current project
-  update     Update gobbi core to the latest version
-  create     Create a new skill, agent, or hook
   image      Analyze images or create comparison sheets
   video      Analyze video files and extract frames
   web        Take screenshots or capture images from web pages
 
 Options:
   --help              Show this help message
-  --version           Show version number
-  --non-interactive   Skip all prompts, use safe defaults`;
+  --version           Show version number`;
 
 export async function run(): Promise<void> {
-  // Early routing for media commands (they have their own parseArgs)
-  const earlyCommand = process.argv[2];
+  const command = process.argv[2];
 
-  if (earlyCommand === '--help' || earlyCommand === undefined) {
-    // Fall through to existing parseArgs handling below
-  } else if (earlyCommand === '--version') {
-    // Fall through to existing parseArgs handling below
-  } else if (earlyCommand === 'image' || earlyCommand === 'video' || earlyCommand === 'web') {
+  // Early routing for media commands (they have their own parseArgs)
+  if (command === 'image' || command === 'video' || command === 'web') {
     const commandArgs = process.argv.slice(3);
-    switch (earlyCommand) {
+    switch (command) {
       case 'image': {
         const { runImage } = await import('./commands/image.js');
         await runImage(commandArgs);
@@ -47,20 +39,14 @@ export async function run(): Promise<void> {
     }
   }
 
-  // Existing parseArgs handling continues below (unchanged)
-  const { values, positionals } = parseArgs({
+  // Global flags
+  const { values } = parseArgs({
     allowPositionals: true,
     options: {
-      'non-interactive': { type: 'boolean', default: false },
       'help': { type: 'boolean', default: false },
       'version': { type: 'boolean', default: false },
     },
   });
-
-  if (values.help) {
-    console.log(USAGE);
-    process.exit(0);
-  }
 
   if (values.version) {
     const pkgPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'package.json');
@@ -69,33 +55,8 @@ export async function run(): Promise<void> {
     process.exit(0);
   }
 
-  const command = positionals[0];
-  const cwd = process.cwd();
-  const nonInteractive = values['non-interactive'] ?? false;
-
-  switch (command) {
-    case 'install': {
-      const { runInstall } = await import('./commands/install.js');
-      await runInstall(cwd, { nonInteractive });
-      break;
-    }
-    case 'update': {
-      const { runUpdate } = await import('./commands/update.js');
-      await runUpdate(cwd, { nonInteractive });
-      break;
-    }
-    case 'create': {
-      const { runCreate } = await import('./commands/create.js');
-      const createOpts: { nonInteractive: boolean; type?: string; name?: string } = { nonInteractive };
-      const typeArg = positionals[1];
-      const nameArg = positionals[2];
-      if (typeArg !== undefined) createOpts.type = typeArg;
-      if (nameArg !== undefined) createOpts.name = nameArg;
-      await runCreate(cwd, createOpts);
-      break;
-    }
-    default:
-      console.log(USAGE);
-      process.exit(command ? 1 : 0);
-  }
+  // --help or no command: show usage and exit 0
+  // Unknown command: show usage and exit 1
+  console.log(USAGE);
+  process.exit(values.help || !command ? 0 : 1);
 }
