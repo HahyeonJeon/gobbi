@@ -14,6 +14,7 @@ Reference for understanding skill structure and interactive guide for creating n
 |----------|--------|
 | [verification.md](verification.md) | Skill verification: trigger testing, output quality, improvement loop, evaluation agents |
 | [authoring.md](authoring.md) | Skill authoring: description craft, instruction writing, content pruning, failure patterns |
+| [evaluation.md](evaluation.md) | Skill evaluation: quality criteria for user-created project-specific skills |
 
 ---
 
@@ -117,12 +118,14 @@ When creating a new skill, use AskUserQuestion to explore these dimensions. Not 
 Gotcha files record mistakes that agents are likely to repeat because the correct behavior is non-obvious. They exist to short-circuit investigation — the next agent skips straight to the right approach.
 
 **When a gotcha is warranted:**
+
 - User corrects a non-obvious approach
 - An error took significant debugging to resolve
 - The same mistake has been made more than once
 - A platform quirk caused unexpected behavior
 
 **When to skip:**
+
 - Simple typos or obvious mistakes
 - Behavior already documented in the skill or a rule
 - One-off issues unlikely to recur

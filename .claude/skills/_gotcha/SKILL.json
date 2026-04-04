@@ -157,6 +157,10 @@
             [
               "`skills-gotcha.md`",
               "Recording skill-specific gotchas tied to individual skills"
+            ],
+            [
+              "`evaluation.md`",
+              "Quality criteria for evaluating user-created gotcha entries"
             ]
           ]
         }

@@ -1,0 +1,193 @@
+{
+  "$schema": "gobbi-docs/child",
+  "parent": "_gotcha",
+  "title": "Gotcha Evaluation",
+  "opening": "Evaluation criteria for user-created gotcha entries. Load when creating, reviewing, or auditing project-specific gotchas.",
+  "sections": [
+    {
+      "heading": "Failure Modes",
+      "content": [
+        {
+          "type": "text",
+          "value": "Ordered by severity. Each failure mode describes a way a gotcha entry can degrade agent performance. Recognizing the mode is the first step — the Evaluation Dimensions section below provides diagnostic questions to detect them."
+        },
+        {
+          "type": "principle",
+          "statement": "Duplication — records a mistake already captured in an existing gotcha, skill, or rule.",
+          "body": "A duplicate gotcha creates two sources of truth that drift apart as one gets updated and the other does not. Before writing, search existing gotcha files, the relevant skill's content, and project rules. If the mistake is already covered, the correct action is to improve the existing entry — not to add a second one."
+        },
+        {
+          "type": "principle",
+          "statement": "Generic content — describes a mistake so broadly that agents cannot act on it.",
+          "body": "A gotcha that says \"be careful with database queries\" does not help an agent avoid a specific mistake. A gotcha that says \"Django ORM `filter()` inside a loop causes N+1 queries — use `prefetch_related` before the loop\" gives the agent a concrete check to perform. Every gotcha must name the specific wrong action and the specific right action."
+        },
+        {
+          "type": "principle",
+          "statement": "Staleness — references a mistake that is no longer possible due to codebase, tooling, or workflow changes.",
+          "body": "Gotchas that warn against patterns the project has structurally prevented (via hooks, linters, or architectural changes) occupy context without value. Worse, they imply the risk still exists, causing agents to work around a problem that is already solved. Stale gotchas should be archived or deleted, not left in place."
+        },
+        {
+          "type": "principle",
+          "statement": "Speculative entry — no real user correction behind it, invented from hypothetical risk.",
+          "body": "Every gotcha must trace to a real incident where an agent made a mistake and a user corrected it. Speculative entries — \"this could go wrong\" — pollute the gotcha file with warnings that may never materialize. The gotcha system records what happened, not what might happen. Hypothetical risks belong in skills or project notes, not gotchas."
+        },
+        {
+          "type": "principle",
+          "statement": "Misscoped entry — project-specific gotcha recorded in cross-project files, or vice versa.",
+          "body": "A gotcha about a project's specific naming convention recorded in `_gotcha/` will mislead agents on other projects. A gotcha about a universally wrong pattern recorded only in one project's files will not protect agents elsewhere. The scope test: would this gotcha confuse agents on unrelated projects? If yes, it is project-specific. If no, it belongs in the skill or cross-cutting file."
+        },
+        {
+          "type": "principle",
+          "statement": "Vague correction — correct approach too abstract to follow without further investigation.",
+          "body": "The \"correct approach\" field is the actionable output of a gotcha — the thing the agent does differently next time. If it says \"handle this more carefully\" or \"consider the edge cases,\" the agent still does not know what to do. The correct approach must be concrete enough that an agent can follow it without guessing: name the specific action, pattern, or check."
+        }
+      ]
+    },
+    {
+      "heading": "Evaluation Dimensions",
+      "content": [
+        {
+          "type": "text",
+          "value": "Each dimension provides diagnostic questions that surface the failure modes above. Not every question applies to every gotcha — select the ones that address what is ambiguous or suspect."
+        },
+        {
+          "type": "subsection",
+          "heading": "Purpose and Scope",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Does this gotcha record a real incident — a mistake that actually happened and was corrected by a user? If no user correction exists, is this a speculative entry that belongs elsewhere?",
+                "Is the gotcha scoped to the right level — project-specific in project files, cross-cutting in `_gotcha/`, skill-specific in the skill's own `gotchas.md`?",
+                "Does an existing gotcha, skill principle, or rule already cover this mistake? If so, would the existing entry benefit from improvement rather than a new duplicate?",
+                "Is the mistake non-obvious — something an agent would reasonably get wrong without this gotcha? If the correct approach is obvious from the codebase or skill content, the gotcha adds no value."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Content Quality",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Does \"what happened\" name the specific wrong action and its observable consequence — not a vague description of the problem domain?",
+                "Does \"user feedback\" capture what the user actually said or directed, preserving the correction's intent?",
+                "Does \"correct approach\" give the agent a concrete, actionable alternative — specific enough that the agent can follow it without further investigation?",
+                "Is the priority calibrated to actual impact? Critical means environment breakage, high means wrong output that looks correct, medium means rework, low means minor friction."
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Structural Compliance",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Does the entry have all required fields: title, priority, what happened, user feedback, correct approach?",
+                "If YAML frontmatter is present, are the fields valid — `priority` matches one of critical/high/medium/low, `tech-stack` uses lowercase identifiers, `enforcement` is hook or advisory?",
+                "Is the entry in the correct file — skill-specific gotchas in `{skill-name}/gotchas.md`, cross-cutting in `_gotcha/{topic}.md`, project-specific in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/{category}.md`?",
+                "Is the title short and descriptive — naming the mistake, not the domain?"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Integration",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Will agents loading the relevant skill encounter this gotcha automatically — or is it filed in a location that requires a separate, easy-to-forget loading step?",
+                "Does the gotcha contradict any existing skill principle, rule, or other gotcha? Contradictions create conflicting guidance that agents cannot resolve.",
+                "Is the gotcha still valid — has the codebase, tooling, or workflow changed in a way that makes this mistake impossible or irrelevant?",
+                "If the gotcha has `enforcement: hook` metadata, does the pattern and event correctly match the mistake it prevents?"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Verification Checklist",
+      "content": [
+        {
+          "type": "text",
+          "value": "Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess and cannot be reduced to a mechanical check."
+        },
+        {
+          "type": "subsection",
+          "heading": "Purpose and Scope",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "`[semantic]` Entry records a real user correction, not a speculative risk",
+                "`[semantic]` Scope matches file location — project-specific entries in project files, cross-cutting entries in `_gotcha/`, skill entries in `{skill-name}/gotchas.md`",
+                "`[semantic]` No duplicate of an existing gotcha, skill principle, or rule"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Content Quality",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "`[semantic]` \"What happened\" names the specific wrong action and its consequence",
+                "`[semantic]` \"User feedback\" preserves the user's actual correction intent",
+                "`[semantic]` \"Correct approach\" is concrete and actionable — an agent can follow it without guessing",
+                "`[semantic]` Priority reflects actual impact severity, not subjective importance"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Structural Compliance",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "`[structural]` Entry has all five required fields: title, priority, what happened, user feedback, correct approach",
+                "`[structural]` Priority value is one of: critical, high, medium, low",
+                "`[structural]` YAML frontmatter fields (if present) use valid values — `tech-stack` lowercase, `enforcement` is hook or advisory",
+                "`[structural]` Entry is located in the correct file path for its scope (skill, cross-cutting, or project)",
+                "`[structural]` JSON source file exists alongside the `.md` and both are in sync"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Integration",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "`[semantic]` Entry does not contradict existing skill principles, rules, or other gotchas",
+                "`[semantic]` Entry is still valid — the mistake it describes has not been structurally prevented",
+                "`[structural]` Hook-enforced entries have valid `pattern` and `event` fields in frontmatter",
+                "`[semantic]` Entry is colocated with the skill it corrects, not filed in a separate location that agents must remember to load"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -7,6 +7,9 @@
   },
   "title": "Best-Practice Stance",
   "opening": "This skill defines the best-practice stance — the thinking lens that PI and Researcher agents adopt when the orchestrator spawns them for proven, community-consensus approaches. The best-practice stance exists to find the approach that documentation, community experience, and production track records agree works best: reliability over novelty, evidence over opinion.\n\nThe orchestrator loads this skill into subagents spawned with the best stance. It shapes how the agent thinks, researches, and reviews — not which tools or lifecycle steps it follows. The agent's base definition (`__pi.json` or `__researcher.json`) governs the lifecycle; this skill governs the lens.\n\nProjects may also define their own `_best-practice` skill to add domain-specific best-practice knowledge that supplements this one.",
+  "navigation": {
+    "[evaluation.md](evaluation.md)": "Evaluation criteria for user-created best-practice stance skills"
+  },
   "sections": [
     {
       "heading": "Core Principles",

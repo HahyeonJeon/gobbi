@@ -9,6 +9,12 @@ Guide for authoring project-specific documentation in `$CLAUDE_PROJECT_DIR/.clau
 
 Load `_claude` for the general documentation writing standard before authoring project docs.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [evaluation.md](evaluation.md) | Evaluation criteria for user-created project documentation |
+
 ---
 
 ## Core Principle
@@ -93,16 +99,19 @@ Not every project needs every subdirectory. Create only the directories that hav
 Before publishing a project doc:
 
 **Core Principle**
+
 - [ ] Lives inside `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`
 - [ ] Contains project-specific context, not general domain knowledge
 - [ ] Content is current — no references to deleted files or outdated architecture
 - [ ] Directory has README.md as entry point
 
 **Writing Pattern**
+
 - [ ] Self-contained — makes sense without reading other docs
 - [ ] Organized by topic with clear first-line summary
 - [ ] Focused on one coherent system or topic
 
 **Anti-Pattern**
+
 - [ ] No stale references to removed code or outdated architecture (must avoid)
 - [ ] No duplicate covering same topic as existing doc (should avoid)

@@ -347,6 +347,10 @@
               ]
             }
           ]
+        },
+        {
+          "type": "text",
+          "value": "#### Evaluation criteria child docs\n\nEight skills include an `evaluation.md` child document that defines quality criteria for artifacts of that type: **_skills**, **_agents**, **_rules**, **_project**, **_gotcha**, **_evaluation**, **_innovation**, **_best-practice**. Each `evaluation.md` specifies what good output looks like, what problems to check for, and how to score quality. These criteria are used during creation (as a quality target), review (as a checklist), and audit (as a verification standard)."
         }
       ]
     }

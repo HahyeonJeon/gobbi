@@ -8,6 +8,12 @@ allowed-tools: Read, Grep, Glob, Bash, Agent, AskUserQuestion
 
 Evaluation framework for the gobbi workflow. Orchestrators use this to select perspectives and delegate to evaluator agents. Evaluators use this alongside their perspective skill to assess, score, and verdict.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [evaluation.md](evaluation.md) | Evaluation criteria for user-created evaluation perspectives |
+
 ---
 
 ## Core Principle
