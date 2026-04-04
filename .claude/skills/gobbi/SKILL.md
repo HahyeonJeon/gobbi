@@ -34,6 +34,15 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and the relevant child skill (_slack, _telegram, _discord) to help the user configure them before proceeding.
 
+**After all four questions — persist session choices.** The orchestrator writes the user's selections to `gobbi.json` via `gobbi-config.sh` so that hooks and subagents can read them without conversation context. Persistence calls use `$CLAUDE_SESSION_ID` as the session key:
+
+- Q1 trivial range: `gobbi-config.sh set $CLAUDE_SESSION_ID trivialRange <value>`
+- Q2 evaluation mode: `gobbi-config.sh set $CLAUDE_SESSION_ID evaluationMode <value>`
+- Q3 git workflow: `gobbi-config.sh set $CLAUDE_SESSION_ID gitWorkflow <value>` — if worktree-pr, also set `baseBranch`
+- Q4 notifications: `gobbi-config.sh set $CLAUDE_SESSION_ID notify.slack true/false` and `notify.telegram true/false`
+
+`gobbi.json` lives at `$CLAUDE_PROJECT_DIR/.claude/gobbi.json`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi-config.sh` at `.claude/hooks/gobbi-config.sh`. The schema is documented in `.claude/project/gobbi/design/gobbi-json-schema.md`. Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions).
+
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
 Project context detection runs automatically at session start without asking. Load project-setup.md to execute detection.
