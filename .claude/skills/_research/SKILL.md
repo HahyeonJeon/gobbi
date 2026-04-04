@@ -1,7 +1,7 @@
 ---
 name: _research
 description: Research step of the workflow — researcher agents investigate how to implement the approved plan. MUST load during Step 3 (Research) to guide researcher agents and orchestrator synthesis.
-allowed-tools: AskUserQuestion, Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
+allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
 ---
 
 # Research

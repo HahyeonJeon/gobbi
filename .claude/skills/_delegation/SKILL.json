@@ -2,11 +2,11 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_delegation",
-    "description": "Hand off work to subagents with the right context so they succeed on the first attempt. Use during the DELEGATE phase to spawn specialists with clear briefings, context layers, and scope boundaries.",
+    "description": "Hand off work to subagents with the right context so they succeed on the first attempt. Use during Step 4 (Execution) to spawn specialists with clear briefings, context layers, and scope boundaries.",
     "allowed-tools": "Agent, Read, Grep, Glob, Bash, Write"
   },
   "title": "Delegation Skill",
-  "opening": "Hand off work to subagents so they succeed on the first attempt. Load this skill when entering the DELEGATE phase of orchestration.",
+  "opening": "Hand off work to subagents so they succeed on the first attempt. Load this skill when entering Step 4 (Execution) of orchestration.",
   "sections": [
     {
       "heading": "Core Principle",
@@ -227,19 +227,19 @@
               "`__executor`",
               "\"Do it\" — code implementation, file changes, concrete deliverables",
               "Step 4 (Execution). Reads research materials before implementing. Commits verified work.",
-              "Sonnet"
+              "Opus"
             ],
             [
               "`gobbi-agent`",
               "Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks",
               "Step 4 (Execution) for any subtask involving `.claude/` configuration. Loaded with _claude, _skills, _agents, _rules as needed.",
-              "Sonnet"
+              "Opus"
             ]
           ]
         },
         {
           "type": "text",
-          "value": "PI agents and researchers are Opus-tier by default because their work requires deep reasoning — creative exploration, cross-domain pattern transfer, and nuanced analysis. Executors and gobbi-agent are Sonnet-tier by default because their work follows established patterns. Override when the specific task demands it (see Model Selection)."
+          "value": "All agents are currently Opus-tier by default. Override when the specific task demands it — a narrow validation task can drop to Haiku, a routine implementation can drop to Sonnet (see Model Selection)."
         }
       ]
     },
