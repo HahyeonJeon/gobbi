@@ -1,6 +1,6 @@
 {
   "name": "@gobbitools/cli",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Gobbi CLI — workflow orchestration and docs management for Claude Code",
   "type": "module",
   "bin": {
