@@ -34,6 +34,26 @@ Skills, agents, gotchas, rules, and CLAUDE.md are living documentation that agen
 
 ---
 
+## Evaluation Criteria as Audit Source
+
+Gobbi's Docs-category skills (`_skills`, `_agents`, `_rules`, `_project`) each have an `evaluation.md` child doc containing a Verification Checklist. Each checklist item is tagged with one of two labels:
+
+- `[structural]` — machine-verifiable. Can be checked by reading the filesystem: file exists, field present, pattern matches, line count under budget. These are `_audit`'s domain.
+- `[semantic]` — requires agent judgment. Assessing whether content is project-specific, whether principles teach mental models, whether descriptions trigger accurately. These belong to evaluator agents during the evaluation workflow and are outside `_audit`'s scope.
+
+When auditing user-created documentation, `_audit` loads the relevant evaluation.md from the corresponding gobbi skill and checks the `[structural]` items against the user's files:
+
+| User docs location | Evaluation criteria source |
+|---|---|
+| `$CLAUDE_PROJECT_DIR/.claude/skills/` | `_skills/evaluation.md` |
+| `$CLAUDE_PROJECT_DIR/.claude/agents/` | `_agents/evaluation.md` |
+| `$CLAUDE_PROJECT_DIR/.claude/rules/` | `_rules/evaluation.md` |
+| `$CLAUDE_PROJECT_DIR/.claude/project/` | `_project/evaluation.md` |
+
+This is not a scope expansion. The `[structural]` items describe exactly the kind of checks `_audit` already performs — file existence, field presence, pattern matching, structural layout. The evaluation.md files provide a standardized, per-doc-type checklist rather than relying on `_audit`'s own heuristics for each doc type.
+
+---
+
 ## When to Audit
 
 - **Periodically** — as part of routine maintenance
