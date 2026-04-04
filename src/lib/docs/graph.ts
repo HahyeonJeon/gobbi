@@ -136,25 +136,45 @@ export function buildGraph(corpus: ScannedDoc[]): DocGraph {
 
     for (const key of Object.keys(nav)) {
       const resolved = resolveNavKey(key, sourceDir, skillPathLookup);
-      const isResolved = resolved !== undefined && nodes.has(resolved);
 
-      const edge: GraphEdge = {
-        from: doc.path,
-        to: isResolved ? resolved : (resolved ?? key),
-        type: 'navigation',
-        resolved: isResolved,
-      };
-      edges.push(edge);
+      // Navigation keys often point to .md files, but corpus nodes are .json files.
+      // Check both the resolved path and its .json equivalent.
+      let target: string | undefined;
+      if (resolved !== undefined) {
+        if (nodes.has(resolved)) {
+          target = resolved;
+        } else if (resolved.endsWith('.md')) {
+          const jsonEquiv = resolved.slice(0, -3) + '.json';
+          if (nodes.has(jsonEquiv)) {
+            target = jsonEquiv;
+          }
+        }
+      }
+      if (target !== undefined) {
+        const edge: GraphEdge = {
+          from: doc.path,
+          to: target,
+          type: 'navigation',
+          resolved: true,
+        };
+        edges.push(edge);
 
-      if (isResolved) {
         const adj = adjacency.get(doc.path);
         if (adj !== undefined) {
-          adj.push(resolved);
+          adj.push(target);
         }
-        const count = incomingCount.get(resolved);
+        const count = incomingCount.get(target);
         if (count !== undefined) {
-          incomingCount.set(resolved, count + 1);
+          incomingCount.set(target, count + 1);
         }
+      } else {
+        const edge: GraphEdge = {
+          from: doc.path,
+          to: resolved ?? key,
+          type: 'navigation',
+          resolved: false,
+        };
+        edges.push(edge);
       }
     }
   }
