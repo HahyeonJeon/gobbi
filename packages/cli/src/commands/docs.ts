@@ -315,7 +315,7 @@ async function runDocsJson2md(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  const markdown = renderDoc(doc);
+  const markdown = renderDoc(doc, jsonPath);
   const dir = path.dirname(jsonPath);
   const basename = path.basename(jsonPath, '.json');
   const mdPath = path.join(dir, `${basename}.md`);
