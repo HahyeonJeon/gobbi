@@ -52,6 +52,30 @@ Read existing agent definitions in `.claude/agents/` for the real patterns — t
 
 ---
 
+## Model and Effort
+
+> **Every agent definition must specify its model tier and effort level.**
+
+The `model` field in YAML frontmatter sets the agent's default model. This is not optional — an agent without a model assignment runs at whatever the parent context uses, which may not match the agent's needs. Set it explicitly.
+
+> **Model tier reflects the agent's cognitive demands, not its importance.**
+
+Opus is for agents that need deep creative reasoning, novel problem-solving, or cross-domain thinking. Sonnet is for agents that follow structured criteria, assess against checklists, or perform well-defined analytical work. Both tiers run at max effort — the difference is the nature of the reasoning, not the quality.
+
+| Role | Model | Rationale |
+|---|---|---|
+| Creative / investigative agents (`__pi`, `__researcher`) | opus | Deep reasoning for ideation, research, and review. Innovative stance especially requires the strongest model for unconventional thinking. |
+| Implementation agents (`__executor`, `gobbi-agent`) | opus | Implementation quality requires strong reasoning about patterns, trade-offs, and correctness. |
+| Evaluator agents (`_agent-evaluator`, `_skills-evaluator`, `_project-evaluator`) | sonnet | Structured assessment against defined criteria. Rigorous but follows evaluation frameworks — does not need creative reasoning. |
+
+> **The orchestrator can override per task — but the default must be right for the common case.**
+
+The Agent tool's `model` parameter lets the orchestrator override at delegation time. Use this for exceptions (e.g., a simple validation task on an opus-default agent can drop to sonnet). But the frontmatter default should match the agent's typical workload so overrides are rare.
+
+When creating a new agent, determine its model tier by asking: "Does this agent need to reason creatively or investigate novel problems?" If yes, opus. "Does this agent assess against structured criteria or follow defined processes?" If yes, sonnet. All agents run at max effort regardless of tier — effort is not a dial to turn down.
+
+---
+
 ## Discussion Dimensions
 
 When creating a new agent, use AskUserQuestion to explore these dimensions. Not every agent needs every question — pick the ones that address what is vague or missing for this specific role.
