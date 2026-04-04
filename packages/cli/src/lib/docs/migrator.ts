@@ -86,7 +86,7 @@ export function parseMarkdown(markdown: string, filePath: string): GobbiDoc {
   cursor++;
 
   // 4. Parse opening + navigation (everything between H1 and first --- or H2)
-  const openingResult = parseOpeningAndNavigation(lines, cursor);
+  const openingResult = parseOpeningAndNavigation(lines, cursor, filePath);
   const opening = openingResult.opening;
   const navigation = openingResult.navigation;
   cursor = openingResult.cursor;
@@ -103,7 +103,7 @@ export function parseMarkdown(markdown: string, filePath: string): GobbiDoc {
   // Post-process: extract navigation from sections if not found in opening
   let finalNavigation = navigation;
   if (finalNavigation === undefined) {
-    const navExtraction = extractNavigationFromSections(sections);
+    const navExtraction = extractNavigationFromSections(sections, filePath);
     finalNavigation = navExtraction.navigation;
     sections = navExtraction.sections;
   }
@@ -378,7 +378,7 @@ interface OpeningAndNavigationResult {
   cursor: number;
 }
 
-function parseOpeningAndNavigation(lines: string[], start: number): OpeningAndNavigationResult {
+function parseOpeningAndNavigation(lines: string[], start: number, filePath: string): OpeningAndNavigationResult {
   let cursor = start;
   let opening: string | undefined;
   let navigation: Navigation | undefined;
@@ -414,7 +414,7 @@ function parseOpeningAndNavigation(lines: string[], start: number): OpeningAndNa
 
   if (contentLines.length > 0) {
     // Detect navigation table within the content
-    const navResult = extractNavigation(contentLines);
+    const navResult = extractNavigation(contentLines, filePath);
     navigation = navResult.navigation;
     const remainingContent = navResult.remainingLines;
 
@@ -449,7 +449,7 @@ interface NavigationExtractResult {
   remainingLines: string[];
 }
 
-function extractNavigation(contentLines: string[]): NavigationExtractResult {
+function extractNavigation(contentLines: string[], filePath: string): NavigationExtractResult {
   // Look for "**Navigate deeper from here:**" pattern
   const navHeaderIdx = contentLines.findIndex(
     (line) => line === '**Navigate deeper from here:**',
@@ -485,7 +485,7 @@ function extractNavigation(contentLines: string[]): NavigationExtractResult {
 
     const cells = parseTableRow(line);
     if (cells.length >= 2 && cells[0] !== undefined && cells[1] !== undefined) {
-      navigation[cells[0]] = cells[1];
+      navigation[resolveNavPath(filePath, stripMarkdownLink(cells[0]))] = cells[1];
     }
     navEnd++;
   }
@@ -533,7 +533,7 @@ interface SectionNavigationResult {
  * Also scans inside subsection blocks recursively.
  * Empty sections are removed entirely.
  */
-function extractNavigationFromSections(sections: Section[]): SectionNavigationResult {
+function extractNavigationFromSections(sections: Section[], filePath: string): SectionNavigationResult {
   const navigation: Navigation = {};
 
   /**
@@ -569,7 +569,7 @@ function extractNavigationFromSections(sections: Section[]): SectionNavigationRe
             const docCell = row[0];
             const descCell = row[1];
             if (docCell !== undefined && descCell !== undefined) {
-              navigation[docCell] = descCell;
+              navigation[resolveNavPath(filePath, stripMarkdownLink(docCell))] = descCell;
             }
           }
           skipNext = true;
@@ -580,7 +580,7 @@ function extractNavigationFromSections(sections: Section[]): SectionNavigationRe
           for (const item of nextBlock.items) {
             const linkMatch = /^\[([^\]]+)\]\(([^)]+)\)\s*—\s*(.+)$/.exec(item);
             if (linkMatch !== null && linkMatch[2] !== undefined && linkMatch[3] !== undefined) {
-              navigation[`[${linkMatch[1]}](${linkMatch[2]})`] = linkMatch[3];
+              navigation[resolveNavPath(filePath, linkMatch[2])] = linkMatch[3];
             }
           }
           skipNext = true;
@@ -610,6 +610,33 @@ function extractNavigationFromSections(sections: Section[]): SectionNavigationRe
     navigation: Object.keys(navigation).length > 0 ? navigation : undefined,
     sections: filteredSections,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Strip markdown link syntax from a string.
+ * `[text](url)` → `url`, plain strings pass through unchanged.
+ */
+function stripMarkdownLink(text: string): string {
+  const match = /^\[([^\]]*)\]\(([^)]+)\)$/.exec(text.trim());
+  return match !== null && match[2] !== undefined ? match[2] : text;
+}
+
+/**
+ * Resolve a file-relative navigation path to a .claude/-relative path.
+ * Given a source file path and a link target (relative to the source file),
+ * returns the path relative to the .claude/ directory.
+ */
+function resolveNavPath(sourceFilePath: string, linkTarget: string): string {
+  const normalized = sourceFilePath.replace(/\\/g, '/');
+  const claudeIdx = normalized.indexOf('.claude/');
+  if (claudeIdx === -1) return linkTarget;
+
+  const sourceDir = path.dirname(normalized.slice(claudeIdx + '.claude/'.length));
+  return path.posix.normalize(path.posix.join(sourceDir, linkTarget));
 }
 
 // ---------------------------------------------------------------------------

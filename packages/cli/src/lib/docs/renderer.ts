@@ -10,6 +10,8 @@
  * - Gotcha type renders entries with `---` separators
  */
 
+import path from 'path';
+
 import type {
   GobbiDoc,
   ContentBlock,
@@ -30,7 +32,7 @@ import type {
 /**
  * Render a GobbiDoc to Markdown string.
  */
-export function renderDoc(doc: GobbiDoc): string {
+export function renderDoc(doc: GobbiDoc, jsonFilePath?: string): string {
   const parts: string[] = [];
 
   // 1. Frontmatter
@@ -51,7 +53,7 @@ export function renderDoc(doc: GobbiDoc): string {
   // 4. Navigation
   if (doc.navigation !== undefined) {
     parts.push('');
-    parts.push(renderNavigation(doc.navigation));
+    parts.push(renderNavigation(doc.navigation, jsonFilePath));
   }
 
   // 5. Sections or Entries
@@ -141,9 +143,20 @@ function renderRuleFrontmatter(fm: RuleFrontmatter): string {
 // Navigation
 // ---------------------------------------------------------------------------
 
-function renderNavigation(nav: Navigation): string {
+function renderNavigation(nav: Navigation, jsonFilePath?: string): string {
   const entries = Object.entries(nav);
   if (entries.length === 0) return '';
+
+  // Compute the directory of the output file relative to .claude/
+  // so we can convert .claude/-relative nav paths to file-relative links
+  let outputDirFromClaude: string | undefined;
+  if (jsonFilePath !== undefined) {
+    const normalized = jsonFilePath.replace(/\\/g, '/');
+    const claudeIdx = normalized.indexOf('.claude/');
+    if (claudeIdx !== -1) {
+      outputDirFromClaude = path.posix.dirname(normalized.slice(claudeIdx + '.claude/'.length));
+    }
+  }
 
   const lines: string[] = [];
   lines.push('**Navigate deeper from here:**');
@@ -151,7 +164,12 @@ function renderNavigation(nav: Navigation): string {
   lines.push('| Document | Covers |');
   lines.push('|----------|--------|');
   for (const [file, description] of entries) {
-    lines.push(`| ${file} | ${description} |`);
+    let linkPath = file;
+    if (outputDirFromClaude !== undefined) {
+      linkPath = path.posix.relative(outputDirFromClaude, file);
+    }
+    const displayName = linkPath.split('/').pop() ?? linkPath;
+    lines.push(`| [${displayName}](${linkPath}) | ${description} |`);
   }
 
   return lines.join('\n');

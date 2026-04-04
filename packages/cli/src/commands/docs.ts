@@ -53,6 +53,7 @@ Subcommands:
   md2json <path>           Migrate Markdown file to JSON template
   validate <path>          Validate a JSON template
   read <path> [--section]  Pretty-print JSON metadata or section
+  spec                     Show the gobbi-docs JSON schema specification
   list [directory]         List all gobbi-docs templates with metadata
   tree [directory]         Show navigation hierarchy as a tree
   search <pattern> [dir]   Search content across all templates
@@ -209,6 +210,9 @@ export async function runDocs(args: string[]): Promise<void> {
     case 'health':
       await runDocsHealth(args.slice(1));
       break;
+    case 'spec':
+      runDocsSpec(args.slice(1));
+      break;
     case '--help':
     case undefined:
       console.log(USAGE);
@@ -218,6 +222,114 @@ export async function runDocs(args: string[]): Promise<void> {
       console.log(USAGE);
       process.exit(1);
   }
+}
+
+// ---------------------------------------------------------------------------
+// spec
+// ---------------------------------------------------------------------------
+
+const SPEC_USAGE = `Usage: gobbi docs spec [name]
+
+Show the gobbi-docs JSON schema specification.
+
+Without arguments, shows the full spec. With a name, shows only that
+doc type, block type, or structural element.
+
+Names:
+  Doc types:    skill, agent, rule, root, child, gotcha
+  Block types:  text, principle, table, constraint-list, list, subsection
+  Structure:    navigation, section
+
+Options:
+  --help    Show this help message`;
+
+function runDocsSpec(args: string[]): void {
+  const name = args[0];
+
+  if (name === '--help') {
+    console.log(SPEC_USAGE);
+    return;
+  }
+
+  const docTypes: Record<string, unknown> = {
+    skill: {
+      $schema: 'gobbi-docs/skill',
+      description: 'Skill definition in .claude/skills/{name}/SKILL.md',
+      frontmatter: { name: 'string', description: 'string', 'allowed-tools': 'string (optional)' },
+      fields: ['title', 'opening?', 'navigation?', 'sections?'],
+    },
+    agent: {
+      $schema: 'gobbi-docs/agent',
+      description: 'Agent definition in .claude/agents/{name}.md',
+      frontmatter: { name: 'string', description: 'string', tools: 'string', model: 'string' },
+      fields: ['title', 'opening?', 'navigation?', 'sections?'],
+    },
+    rule: {
+      $schema: 'gobbi-docs/rule',
+      description: 'Rule file in .claude/rules/{name}.md',
+      frontmatter: 'Record<string, string> (optional)',
+      fields: ['title', 'opening?', 'navigation?', 'sections?'],
+    },
+    root: {
+      $schema: 'gobbi-docs/root',
+      description: 'Root README at .claude/README.md',
+      fields: ['title', 'opening?', 'navigation?', 'sections?'],
+    },
+    child: {
+      $schema: 'gobbi-docs/child',
+      description: 'Child doc of a skill, e.g. .claude/skills/{name}/child.md',
+      fields: ['parent', 'title', 'opening?', 'navigation?', 'sections?'],
+    },
+    gotcha: {
+      $schema: 'gobbi-docs/gotcha',
+      description: 'Gotcha file — known mistakes and corrections',
+      fields: ['parent', 'title', 'opening?', 'navigation?', 'entries[]'],
+      entry: {
+        fields: ['title', 'metadata?', 'body'],
+        metadata: { priority: 'string?', 'tech-stack': 'string?', enforcement: '"hook" | "advisory"', pattern: 'string?', event: '"bash" | "file" | "stop"' },
+        body: { priority: 'string', 'what-happened': 'string', 'user-feedback': 'string', 'correct-approach': 'string' },
+      },
+    },
+  };
+
+  const blockTypes: Record<string, unknown> = {
+    text: { fields: ['value: string'], renders: 'Prose paragraph' },
+    principle: { fields: ['statement: string', 'body?: string'], renders: '> **statement** followed by body text' },
+    table: { fields: ['headers: string[]', 'rows: string[][]'], renders: 'Markdown table' },
+    'constraint-list': { fields: ['items: string[]'], renders: 'Bullet list of constraints (must/should/must-not)' },
+    list: { fields: ['style: "bullet" | "numbered"', 'items: string[]'], renders: 'Bullet or numbered list' },
+    subsection: { fields: ['heading: string', 'content: ContentBlock[]'], renders: '### heading with nested content blocks' },
+  };
+
+  const structure: Record<string, unknown> = {
+    navigation: {
+      format: 'Record<string, string>',
+      keys: '.claude/-relative file paths (e.g., "skills/_git/conventions.md")',
+      values: 'Description string',
+      rendering: 'Rendered as "Navigate deeper from here:" table with file-relative links',
+    },
+    section: {
+      fields: ['heading: string | null', 'content: ContentBlock[]'],
+      rendering: 'Sections separated by --- with ## heading',
+    },
+  };
+
+  // No argument — show full spec
+  if (name === undefined) {
+    console.log(JSON.stringify({ description: 'gobbi-docs JSON schema for .claude/ documentation', docTypes, blockTypes, ...structure }, null, 2));
+    return;
+  }
+
+  // Look up by name
+  const match = docTypes[name] ?? blockTypes[name] ?? structure[name];
+  if (match !== undefined) {
+    console.log(JSON.stringify(match, null, 2));
+    return;
+  }
+
+  console.log(error(`Unknown spec name: ${name}`));
+  console.log(dim('Valid names: ' + [...Object.keys(docTypes), ...Object.keys(blockTypes), ...Object.keys(structure)].join(', ')));
+  process.exit(1);
 }
 
 // ---------------------------------------------------------------------------
@@ -315,7 +427,7 @@ async function runDocsJson2md(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  const markdown = renderDoc(doc);
+  const markdown = renderDoc(doc, jsonPath);
   const dir = path.dirname(jsonPath);
   const basename = path.basename(jsonPath, '.json');
   const mdPath = path.join(dir, `${basename}.md`);
