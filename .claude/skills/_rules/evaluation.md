@@ -74,17 +74,17 @@ Diagnostic questions for assessing rule quality. Each dimension targets a differ
 
 ## Verification Checklist
 
-Tagged checklist for systematic rule evaluation. Structural items can be checked by scanning the file. Semantic items require reading and understanding the content.
+Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
-- [structural] Rule file has a descriptive name by topic, not by action
-- [structural] Flat structure — no deep nesting or multiple subsection levels
-- [structural] Critical constraints appear before supporting detail
-- [structural] Rule stays under 500 lines (must) and targets under 200 (should)
-- [semantic] Standard is mechanically verifiable without subjective judgment
-- [semantic] Forbidden and required behaviors are explicit, not implied
-- [semantic] Rule is project-specific — would not apply identically to any project in the same language
-- [semantic] No duplication with gobbi convention rules in `.claude/rules/`
-- [semantic] No duplication with project linter, formatter, or CI enforcement
-- [semantic] Rule reflects current team practice — not an abandoned or superseded convention
-- [integration] No contradiction with other project rules
-- [integration] Scope is narrow — does not teach a domain (that belongs in a skill)
+- `[structural]` Rule file has a descriptive name by topic, not by action
+- `[structural]` Flat structure — no deep nesting or multiple subsection levels
+- `[structural]` Critical constraints appear before supporting detail
+- `[structural]` Rule stays under 500 lines (must) and targets under 200 (should)
+- `[semantic]` Standard is mechanically verifiable without subjective judgment
+- `[semantic]` Forbidden and required behaviors are explicit, not implied
+- `[semantic]` Rule is project-specific — would not apply identically to any project in the same language
+- `[semantic]` No duplication with gobbi convention rules in `.claude/rules/`
+- `[semantic]` No duplication with project linter, formatter, or CI enforcement
+- `[semantic]` Rule reflects current team practice — not an abandoned or superseded convention
+- `[semantic]` No contradiction with other project rules
+- `[semantic]` Scope is narrow — does not teach a domain (that belongs in a skill)

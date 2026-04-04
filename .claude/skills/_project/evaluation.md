@@ -74,17 +74,17 @@ Does the doc avoid duplicating content from skills or rules? If the same guidanc
 
 ## Verification Checklist
 
-Tagged checklist for systematic evaluation. Tags indicate the type of check: `[structural]` for directory and file organization, `[semantic]` for content quality and accuracy, `[currency]` for staleness and drift, `[boundary]` for scope and integration.
+Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 - `[structural]` README.md exists in each project subdirectory that contains docs
 - `[structural]` Standard subdirectories used where applicable — non-standard dirs are justified
 - `[structural]` Each doc is self-contained — understandable without reading siblings first
+- `[structural]` Referenced file paths and module names exist in the current codebase
+- `[structural]` No duplicate docs covering the same topic within the project
+- `[structural]` Project-specific gotchas live in the project gotchas directory, not in `_gotcha`
 - `[semantic]` Design docs capture rationale and trade-offs, not just inventory of what exists
 - `[semantic]` Every factual claim is falsifiable against the codebase — no aspirational statements presented as current state
 - `[semantic]` Content is project-specific — could not appear in a generic tutorial for the framework
-- `[currency]` Referenced file paths and module names exist in the current codebase
-- `[currency]` Described behaviors match what the code actually does — spot-check at least two references
-- `[currency]` No references to planned features that were already built, abandoned, or changed
-- `[boundary]` Cross-project knowledge lives in skills or rules, not project docs
-- `[boundary]` Project-specific gotchas live in the project gotchas directory, not in `_gotcha`
-- `[boundary]` No duplicate docs covering the same topic within the project
+- `[semantic]` Described behaviors match what the code actually does — spot-check at least two references
+- `[semantic]` No references to planned features that were already built, abandoned, or changed
+- `[semantic]` Cross-project knowledge lives in skills or rules, not project docs
