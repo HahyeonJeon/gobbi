@@ -10,6 +10,8 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 **FIRST — load core skills before anything else.** Load `_orchestration`, `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until all four are loaded.
 
+**SECOND — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, docs authoring, and validation. Without it, the workflow cannot function.
+
 **THEN — ask the user four setup questions** with AskUserQuestion.
 
 **First question — trivial case range:**
@@ -53,6 +55,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 | Document | Covers |
 |----------|--------|
+| [cli-setup.md](cli-setup.md) | Gobbi CLI availability check, installation, and troubleshooting |
 | [project-setup.md](project-setup.md) | Project-specific context and technology stack signals |
 | [notification-setup.md](notification-setup.md) | Notification channel and credential detection |
 | [git-setup.md](git-setup.md) | Git tooling and repository state detection |
