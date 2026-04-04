@@ -215,14 +215,23 @@ export function buildGraph(corpus: ScannedDoc[], claudeDir?: string): DocGraph {
     }
   }
 
-  // Compute orphans: nodes with no incoming edges, excluding entry point files
+  // Compute orphans: nodes with no incoming edges, excluding entry points
+  // and standalone doc types (agents and rules are referenced by settings.json
+  // and the Agent tool, not by navigation hierarchy)
   const orphans: string[] = [];
   for (const [docPath, count] of incomingCount) {
     if (count === 0) {
       const filename = path.basename(docPath);
-      if (!ENTRY_POINT_NAMES.has(filename)) {
-        orphans.push(docPath);
+      if (ENTRY_POINT_NAMES.has(filename)) continue;
+
+      // Agents and rules are standalone — not orphans
+      const doc = nodes.get(docPath);
+      if (doc !== undefined) {
+        const schema = doc.doc.$schema;
+        if (schema === 'gobbi-docs/agent' || schema === 'gobbi-docs/rule') continue;
       }
+
+      orphans.push(docPath);
     }
   }
 
