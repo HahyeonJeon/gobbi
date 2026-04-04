@@ -56,10 +56,11 @@ Design your implementation approach before writing code.
 
 ### Execute
 
-Implement the task according to your plan with focused, minimal changes.
+Implement the task according to your plan with focused, minimal changes. Think about best practice. Research materials provide direction, but you own the implementation quality.
 
 - Follow existing code patterns — the codebase is the style guide
 - Keep changes focused on the delegated scope — no bonus refactoring, no adjacent fixes
+- Consider established patterns, clean code principles, and maintainability — do not just follow research mechanically. Bring your own engineering judgment to produce the best implementation
 - If you discover something worth doing outside scope, note it in your subtask doc
 
 ### Verify
