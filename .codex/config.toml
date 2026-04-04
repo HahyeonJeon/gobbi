@@ -1,0 +1,8 @@
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[features]
+use_legacy_landlock = true
+
+[sandbox_workspace_write]
+writable_roots = ["/playinganalytics/git/gobbi"]
