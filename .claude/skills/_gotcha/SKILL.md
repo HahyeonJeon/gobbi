@@ -8,6 +8,16 @@ allowed-tools: Read, Grep, Glob, Write, Edit
 
 Guide for the gotcha system — recording mistakes so agents never repeat them, and checking mistakes before acting so agents avoid them.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [__security.md](__security.md) | Security vulnerability signals for evaluators |
+| [__system.md](__system.md) | Environment, processes, hooks, infrastructure |
+| [evaluation.md](evaluation.md) | Quality criteria for evaluating gotcha entries |
+| [project-gotcha.md](project-gotcha.md) | How to record project-specific gotchas |
+| [skills-gotcha.md](skills-gotcha.md) | How to record skill-specific gotchas |
+
 ---
 
 ## Core Principle

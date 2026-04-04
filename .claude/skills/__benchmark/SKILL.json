@@ -9,7 +9,9 @@
   "opening": "Methodology for measuring how well skills perform. Benchmarks test a skill against realistic scenarios with structured scoring rubrics, then track results over time to detect improvement or regression.",
   "navigation": {
     "Benchmark scenarios": "`benchmarks/` subdirectory",
-    "Trigger testing scripts": "`scripts/` subdirectory"
+    "Trigger testing scripts": "`scripts/` subdirectory",
+    "skills/__benchmark/benchmarks/scenario-01-gobbi-discuss-vague-prompt.md": "Benchmark scenario: gobbi discuss with vague prompt",
+    "skills/__benchmark/benchmarks/scenario-02-skills-skill-creation.md": "Benchmark scenario: skill creation workflow"
   },
   "sections": [
     {

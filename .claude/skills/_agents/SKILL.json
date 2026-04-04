@@ -62,11 +62,27 @@
         },
         {
           "type": "table",
-          "headers": ["Role", "Model", "Rationale"],
+          "headers": [
+            "Role",
+            "Model",
+            "Rationale"
+          ],
           "rows": [
-            ["Creative / investigative agents (`__pi`, `__researcher`)", "opus", "Deep reasoning for ideation and research. Innovative stance especially requires the strongest model for unconventional thinking."],
-            ["Implementation agents (`__executor`, `gobbi-agent`)", "opus", "Implementation quality requires strong reasoning about patterns, trade-offs, and correctness."],
-            ["Evaluator agents (`_agent-evaluator`, `_skills-evaluator`, `_project-evaluator`)", "sonnet", "Structured assessment against defined criteria. Rigorous but follows evaluation frameworks — does not need creative reasoning."]
+            [
+              "Creative / investigative agents (`__pi`, `__researcher`)",
+              "opus",
+              "Deep reasoning for ideation and research. Innovative stance especially requires the strongest model for unconventional thinking."
+            ],
+            [
+              "Implementation agents (`__executor`, `gobbi-agent`)",
+              "opus",
+              "Implementation quality requires strong reasoning about patterns, trade-offs, and correctness."
+            ],
+            [
+              "Evaluator agents (`_agent-evaluator`, `_skills-evaluator`, `_project-evaluator`)",
+              "sonnet",
+              "Structured assessment against defined criteria. Rigorous but follows evaluation frameworks — does not need creative reasoning."
+            ]
           ]
         },
         {
@@ -210,16 +226,41 @@
       "content": [
         {
           "type": "table",
-          "headers": ["Document", "Covers"],
+          "headers": [
+            "Document",
+            "Covers"
+          ],
           "rows": [
-            ["[pi.md](pi.md)", "PI agent guide — role identity, stances, delegation patterns, model configuration"],
-            ["[researcher.md](researcher.md)", "Researcher agent guide — mission, direction-not-recipes, stances, executor handoff"],
-            ["[executor.md](executor.md)", "Executor agent guide — research-first study, best-practice thinking, delegation patterns"],
-            ["[evaluator.md](evaluator.md)", "Evaluator agent guide — three evaluator types, perspective model, scoring, sonnet tier"],
-            ["[evaluation.md](evaluation.md)", "Evaluation criteria for user-created agent definitions — failure modes, dimensions, checklist"]
+            [
+              "[pi.md](pi.md)",
+              "PI agent guide — role identity, stances, delegation patterns, model configuration"
+            ],
+            [
+              "[researcher.md](researcher.md)",
+              "Researcher agent guide — mission, direction-not-recipes, stances, executor handoff"
+            ],
+            [
+              "[executor.md](executor.md)",
+              "Executor agent guide — research-first study, best-practice thinking, delegation patterns"
+            ],
+            [
+              "[evaluator.md](evaluator.md)",
+              "Evaluator agent guide — three evaluator types, perspective model, scoring, sonnet tier"
+            ],
+            [
+              "[evaluation.md](evaluation.md)",
+              "Evaluation criteria for user-created agent definitions — failure modes, dimensions, checklist"
+            ]
           ]
         }
       ]
     }
-  ]
+  ],
+  "navigation": {
+    "skills/_agents/evaluation.md": "Evaluation criteria for user-created agent definitions",
+    "skills/_agents/evaluator.md": "Agent guide for evaluator agents",
+    "skills/_agents/executor.md": "Agent guide for executor agents",
+    "skills/_agents/pi.md": "Agent guide for PI agents",
+    "skills/_agents/researcher.md": "Agent guide for researcher agents"
+  }
 }

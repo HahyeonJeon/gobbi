@@ -166,5 +166,12 @@
         }
       ]
     }
-  ]
+  ],
+  "navigation": {
+    "skills/_gotcha/__security.md": "Security vulnerability signals for evaluators",
+    "skills/_gotcha/__system.md": "Environment, processes, hooks, infrastructure",
+    "skills/_gotcha/evaluation.md": "Quality criteria for evaluating gotcha entries",
+    "skills/_gotcha/project-gotcha.md": "How to record project-specific gotchas",
+    "skills/_gotcha/skills-gotcha.md": "How to record skill-specific gotchas"
+  }
 }

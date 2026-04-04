@@ -10,10 +10,12 @@ Methodology for measuring how well skills perform. Benchmarks test a skill again
 
 **Navigate deeper from here:**
 
-| Resource | Location | Covers |
-|----------|----------|--------|
-| Benchmark scenarios | `benchmarks/` subdirectory | One file per scenario, named `scenario-NN-{skill}-{description}.md` |
-| Trigger testing scripts | `scripts/` subdirectory | trigger-test.py for description accuracy measurement |
+| Document | Covers |
+|----------|--------|
+| [Benchmark scenarios](../../Benchmark scenarios) | `benchmarks/` subdirectory |
+| [Trigger testing scripts](../../Trigger testing scripts) | `scripts/` subdirectory |
+| [scenario-01-gobbi-discuss-vague-prompt.md](benchmarks/scenario-01-gobbi-discuss-vague-prompt.md) | Benchmark scenario: gobbi discuss with vague prompt |
+| [scenario-02-skills-skill-creation.md](benchmarks/scenario-02-skills-skill-creation.md) | Benchmark scenario: skill creation workflow |
 
 ---
 

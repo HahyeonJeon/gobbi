@@ -8,6 +8,16 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 Reference for understanding agent definition structure and interactive guide for creating new agents through discussion. Load this skill when creating, reviewing, or modifying `.claude/agents/` files. Read existing agent definitions in `.claude/agents/` for real patterns — they are the source of truth.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [evaluation.md](evaluation.md) | Evaluation criteria for user-created agent definitions |
+| [evaluator.md](evaluator.md) | Agent guide for evaluator agents |
+| [executor.md](executor.md) | Agent guide for executor agents |
+| [pi.md](pi.md) | Agent guide for PI agents |
+| [researcher.md](researcher.md) | Agent guide for researcher agents |
+
 ---
 
 ## Core Principles
