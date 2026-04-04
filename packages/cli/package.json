@@ -1,5 +1,5 @@
 {
-  "name": "@gobbi/cli",
+  "name": "@gobbitools/cli",
   "version": "0.4.0",
   "description": "Gobbi CLI — workflow orchestration and docs management for Claude Code",
   "type": "module",

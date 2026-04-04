@@ -31,7 +31,7 @@ There are three ways to install the gobbi CLI, depending on the user's setup:
 Install globally so `gobbi` is available in all terminals:
 
 ```
-npm install -g @gobbi/cli
+npm install -g @gobbitools/cli
 ```
 
 Verify: `gobbi --version`
@@ -96,7 +96,7 @@ The gobbi CLI replaces the shell scripts that were previously in `.claude/skills
 
 | Problem | Cause | Fix |
 |---|---|---|
-| `gobbi: command not found` | Not installed globally or not linked | Run `npm install -g @gobbi/cli` or `npm link` in the gobbi directory |
+| `gobbi: command not found` | Not installed globally or not linked | Run `npm install -g @gobbitools/cli` or `npm link` in the gobbi directory |
 | `gobbi note init` fails with CLAUDE_SESSION_ID not set | SessionStart hook didn't run | Check `.claude/settings.json` hooks — the `gobbi session metadata` hook must fire on startup |
 | `gobbi docs json2md` produces empty output | TypeScript not compiled | Run `npm run build` in the gobbi directory |
 | Hooks fail silently | `gobbi` not in PATH when hooks execute | Ensure global install or link — hooks run in a shell that may not have local node_modules/.bin in PATH |
