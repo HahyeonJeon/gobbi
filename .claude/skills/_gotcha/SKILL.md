@@ -47,7 +47,7 @@ Most gotchas belong to a specific skill. Write them to `{skill-name}/gotchas.md`
 **Cross-cutting** (rare) → `_gotcha/{topic}.md` — only for concerns that span multiple skills or belong to no single skill (environment, security, infrastructure).
 
 | Gotcha File | Covers |
-|-------------|--------|
+|---|---|
 | [__system.md](__system.md) | Environment, processes, hooks, infrastructure |
 | [__security.md](__security.md) | Security vulnerability signals for evaluators |
 
@@ -88,7 +88,7 @@ Gotcha entries may include optional YAML frontmatter for tooling. The frontmatte
 **Fields:**
 
 | Field | Values | Required | Purpose |
-|-------|--------|----------|---------|
+|---|---|---|---|
 | `priority` | critical, high, medium, low | Optional | Overrides the prose Priority line for machine readers |
 | `tech-stack` | comma-separated lowercase identifiers (e.g., node, python, docker, typescript) | Optional | Tags the entry with technology context |
 | `enforcement` | hook, advisory | Optional (default: advisory) | Whether tooling can enforce this automatically |
@@ -100,6 +100,7 @@ Gotcha entries may include optional YAML frontmatter for tooling. The frontmatte
 ## Child Documents
 
 | Document | Covers |
-|----------|--------|
+|---|---|
 | `project-gotcha.md` | Recording project-specific gotchas in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/` |
 | `skills-gotcha.md` | Recording skill-specific gotchas tied to individual skills |
+| `evaluation.md` | Quality criteria for evaluating user-created gotcha entries |

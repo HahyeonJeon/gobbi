@@ -34,6 +34,39 @@ Skills, agents, gotchas, rules, and CLAUDE.md are living documentation that agen
 
 ---
 
+## Evaluation Criteria as Audit Source
+
+Gobbi's Docs-category skills (`_skills`, `_agents`, `_rules`, `_project`) each have an `evaluation.md` child doc containing a Verification Checklist. Each checklist item is tagged with one of two labels:
+
+- `[structural]` — machine-verifiable. Can be checked by reading the filesystem: file exists, field present, pattern matches, line count under budget. These are `_audit`'s domain.
+- `[semantic]` — requires agent judgment. Assessing whether content is project-specific, whether principles teach mental models, whether descriptions trigger accurately. These belong to evaluator agents during the evaluation workflow and are outside `_audit`'s scope.
+
+When auditing user-created documentation, `_audit` loads the relevant evaluation.md from the corresponding gobbi skill and checks the `[structural]` items against the user's files:
+
+| User docs location | Evaluation criteria source |
+|---|---|
+| `$CLAUDE_PROJECT_DIR/.claude/skills/` | `_skills/evaluation.md` (default, see disambiguation below) |
+| `$CLAUDE_PROJECT_DIR/.claude/agents/` | `_agents/evaluation.md` |
+| `$CLAUDE_PROJECT_DIR/.claude/rules/` | `_rules/evaluation.md` |
+| `$CLAUDE_PROJECT_DIR/.claude/project/` | `_project/evaluation.md` |
+| `$CLAUDE_PROJECT_DIR/.claude/project/{project}/gotchas/` | `_gotcha/evaluation.md` |
+| `$CLAUDE_PROJECT_DIR/.claude/skills/{skill}/gotchas.md` | `_gotcha/evaluation.md` |
+
+This is not a scope expansion. The `[structural]` items describe exactly the kind of checks `_audit` already performs — file existence, field presence, pattern matching, structural layout. The evaluation.md files provide a standardized, per-doc-type checklist rather than relying on `_audit`'s own heuristics for each doc type.
+
+### Doc-Type Disambiguation for Skills
+
+Several specialized doc types live under `$CLAUDE_PROJECT_DIR/.claude/skills/` but need their own evaluation.md rather than the generic `_skills/evaluation.md`. When auditing a skill directory, `_audit` checks for these patterns before falling back to `_skills/evaluation.md`:
+
+- **Evaluation perspectives** — if the skill's directory name matches `_*-evaluation-*` (e.g., `_api-evaluation-security`), use `_evaluation/evaluation.md`
+- **Innovation stance skills** — if the skill's SKILL.md description or content indicates an innovation stance, use `_innovation/evaluation.md`
+- **Best-practice stance skills** — if the skill's SKILL.md description or content indicates a best-practice stance, use `_best-practice/evaluation.md`
+- **All other skills** — use `_skills/evaluation.md`
+
+This is an open design area. Doc-type detection is heuristic, not mechanical — name patterns are reliable for evaluation perspectives, but stance detection depends on content inspection. `_audit` should flag ambiguous cases rather than silently applying the wrong checklist.
+
+---
+
 ## When to Audit
 
 - **Periodically** — as part of routine maintenance

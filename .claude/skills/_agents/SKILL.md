@@ -146,3 +146,4 @@ The interactive creation process produces a single `.md` file in `.claude/agents
 | [researcher.md](researcher.md) | Researcher agent guide — mission, direction-not-recipes, stances, executor handoff |
 | [executor.md](executor.md) | Executor agent guide — research-first study, best-practice thinking, delegation patterns |
 | [evaluator.md](evaluator.md) | Evaluator agent guide — three evaluator types, perspective model, scoring, sonnet tier |
+| [evaluation.md](evaluation.md) | Evaluation criteria for user-created agent definitions — failure modes, dimensions, checklist |

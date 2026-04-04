@@ -177,3 +177,7 @@ Utility and maintenance tooling.
 | **__validate** | Validate agent definitions, skill docs, and gotcha entries. Bundled scripts for structure and anti-pattern checking. |
 | **_audit** | Documentation drift detection. Verify .claude/ docs match codebase reality. |
 | **__benchmark** | Skill benchmarking methodology. Eval scenarios and scoring for measuring skill effectiveness. |
+
+#### Evaluation criteria child docs
+
+Eight skills include an `evaluation.md` child document that defines quality criteria for artifacts of that type: **_skills**, **_agents**, **_rules**, **_project**, **_gotcha**, **_evaluation**, **_innovation**, **_best-practice**. Each `evaluation.md` specifies what good output looks like, what problems to check for, and how to score quality. These criteria are used during creation (as a quality target), review (as a checklist), and audit (as a verification standard).
