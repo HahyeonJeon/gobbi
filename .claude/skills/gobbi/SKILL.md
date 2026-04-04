@@ -12,7 +12,9 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 **SECOND — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, docs authoring, and validation. Without it, the workflow cannot function.
 
-**THEN — ask the user four setup questions** with AskUserQuestion.
+**THIRD — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly. If no settings exist for this session, continue to the setup questions.
+
+**THEN — ask the user four setup questions** with AskUserQuestion (only if no existing settings were reused).
 
 **First question — trivial case range:**
 - **Read-only (no code changes)** — reading files, explaining code, running status commands, searching codebase. Any code change must be delegated.
