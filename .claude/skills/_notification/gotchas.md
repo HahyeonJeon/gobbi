@@ -24,7 +24,7 @@ Mistakes in configuring Claude Code notification hooks and credentials.
 
 **User feedback:** Check for `jq` availability before assuming scripts will work.
 
-**Correct approach:** When setting up notifications, verify that `jq` is available. If not, guide the user to install it before testing hooks. Delivery failures are logged to `~/.claude/notification-failures.log` — check this file when notifications stop arriving.
+**Correct approach:** **Resolved — no longer applicable after v0.3.2 CLI migration.** Hooks now invoke `gobbi notify` CLI commands directly; `jq` is no longer required for notification delivery. This gotcha is preserved as historical record only.
 
 ---
 
@@ -36,7 +36,7 @@ Mistakes in configuring Claude Code notification hooks and credentials.
 
 **User feedback:** Always verify hook scripts are executable after writing them.
 
-**Correct approach:** After writing or updating any hook script, confirm it is executable. The gobbi installation process handles this, but manually added scripts need explicit `chmod +x`.
+**Correct approach:** **Resolved — no longer applicable after v0.3.2 CLI migration.** Hook entries in `settings.json` now invoke `gobbi notify` commands directly — there are no standalone shell scripts in `.claude/hooks/` that require `chmod +x`. This gotcha is preserved as historical record only.
 
 ---
 

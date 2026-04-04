@@ -30,18 +30,19 @@ Check if `$CLAUDE_PROJECT_DIR/.claude/.env` exists. If it does, read it and iden
 
 - **Slack** — Look for `SLACK_BOT_TOKEN` and `SLACK_USER_ID` or `SLACK_CHANNEL_ID`
 - **Telegram** — Look for `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
-- **Discord** — Look for `DISCORD_WEBHOOK_URL`
+- **Discord** — Look for `DISCORD_WEBHOOK_URL` (note: Discord delivery is not yet implemented in the CLI — credential detection only)
 - **Desktop** — Look for `NOTIFY_DESKTOP=true`
 
 A channel is "configured" when all its required credentials are present and non-empty.
 
 ### 2. Hook Scripts
 
-Check if notification hook scripts exist in `$CLAUDE_PROJECT_DIR/.claude/hooks/` and are executable. The key scripts:
-- `notify-send.sh` — the shared sender that routes to configured channels
-- Event-specific hook scripts that invoke the sender
+Check `settings.json` (and `settings.local.json`) for hook entries that invoke `gobbi notify` commands. There are no standalone shell scripts in `.claude/hooks/` — hooks are registered directly in the settings files and call the gobbi CLI.
 
-Missing or non-executable scripts indicate an incomplete installation.
+- `gobbi notify send` — the shared sender invoked by hook entries
+- Event-specific entries in `settings.json` hooks array
+
+Missing hook entries indicate an incomplete installation. Verify `gobbi` is in PATH by running `which gobbi`.
 
 ### 3. Hook Configuration
 
@@ -49,19 +50,19 @@ Check `settings.json` for hook entries that reference the notification scripts. 
 
 ### 4. Session Preferences in gobbi.json
 
-The user's notification choices from `/gobbi` setup Q4 are persisted to `gobbi.json` via `gobbi-config.sh`. The `notify-send.sh` hook reads these per-session flags before attempting delivery. Without a session entry, all channels default to `false` — no notifications fire until the user explicitly selects during setup.
+The user's notification choices from `/gobbi` setup Q4 are persisted to `gobbi.json` via `gobbi config`. The `gobbi notify send` command reads these per-session flags before attempting delivery. Without a session entry, all channels default to `false` — no notifications fire until the user explicitly selects during setup.
 
 Only Slack and Telegram have conditional session-level control in v0.3.2. Discord delivery is deferred to a future version. Desktop notifications (`NOTIFY_DESKTOP`) remain environment-level only — they are not gated by `gobbi.json` session flags.
 
 ### 5. Classify State
 
-**Fully configured** — Credentials exist in `.env`, scripts are executable, hooks are registered, and session flags are set in `gobbi.json`. After the user selects channels at setup, the orchestrator persists session flags. Notifications fire for selected channels.
+**Fully configured** — Credentials exist in `.env`, hooks are registered in `settings.json`, and session flags are set in `gobbi.json`. After the user selects channels at setup, the orchestrator persists session flags. Notifications fire for selected channels.
 
-**Partially configured** — Some pieces are in place but others are missing (e.g., credentials exist but hooks aren't registered, or scripts exist but aren't executable). Report what's missing and offer to fix. Session flags alone are not sufficient — credentials and infrastructure must also be present.
+**Partially configured** — Some pieces are in place but others are missing (e.g., credentials exist but hooks aren't registered in `settings.json`). Report what's missing and offer to fix. Session flags alone are not sufficient — credentials and hook registration must also be present.
 
 **Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load _notification and the relevant child skill (_slack, _telegram, _discord) to help set up. Session flags are still written to `gobbi.json` so that notifications activate immediately once credentials are added.
 
-**Degraded** — Credentials exist but a dependency is missing (e.g., `jq` not installed, `notify-send` not available for Desktop). Report the dependency gap.
+**Degraded** — Credentials exist but a dependency is missing (e.g., `gobbi` not in PATH, `notify-send` not available for Desktop). Report the dependency gap.
 
 ---
 

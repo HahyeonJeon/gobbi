@@ -39,13 +39,13 @@ Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`:
 
 ### Initialization
 
-> **Always use note-init.sh to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.**
+> **Always use `gobbi note init` to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.**
 
-Initialize note directories using the `note-init.sh` script in `_note/scripts/`. It takes the project name and task slug as arguments and outputs the created directory path. It handles the full chain: session metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup.
+Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and outputs the created directory path. It handles the full chain: session metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup.
 
-After each subagent returns, run `subtask-collect.sh` (also in `_note/scripts/`) to extract the delegation prompt and final result from the subagent's JSONL transcript into `subtasks/{NN}-{subtask-slug}.json`. The script handles transcript parsing and JSON formatting — no manual Write calls needed.
+After each subagent returns, run `gobbi note collect` to extract the delegation prompt and final result from the subagent's JSONL transcript into `subtasks/{NN}-{subtask-slug}.json`. The command handles transcript parsing and JSON formatting — no manual Write calls needed.
 
-If `note-init.sh` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it.
+If `gobbi note init` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it.
 
 ---
 
@@ -58,6 +58,7 @@ Session context for the task, created automatically by the note-init script. Con
 ### ideation.md
 
 Record during Step 1 (Ideation Loop). Must be detailed enough that a reader can reconstruct the full ideation without reading the conversation:
+
 - The initial user prompt — verbatim or near-verbatim capture of what the user asked for
 - Discussion points — each question asked, options presented, and user's responses
 - Options explored with full trade-off analysis — not just names, but the reasoning
@@ -68,6 +69,7 @@ Record during Step 1 (Ideation Loop). Must be detailed enough that a reader can 
 ### plan.md
 
 Record during Step 2 (Plan Loop). Must contain the complete plan, not a summary:
+
 - The complete decomposed tasks with agent assignments, skills, scope boundaries, and dependencies
 - Execution order with parallelism and wave structure
 - Evaluation feedback from evaluator agents (if evaluation was performed)
@@ -78,6 +80,7 @@ Record during Step 2 (Plan Loop). Must contain the complete plan, not a summary:
 ### execution.md
 
 Record during Step 3 (Execution — Delegation). Must document each subtask in enough detail to understand what happened:
+
 - Which subtasks were delegated to which agents, with the key context provided
 - Per-subtask outcomes — what the agent produced, key findings or changes
 - Execution evaluation results per subtask
@@ -90,7 +93,7 @@ Record pre-action verification outcomes when they catch a precondition failure (
 
 ### subtasks/{NN}-{subtask-slug}.json
 
-Extracted from subagent JSONL transcripts via `subtask-collect.sh` during Step 3. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered.
+Extracted from subagent JSONL transcripts via `gobbi note collect` during Step 3. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered.
 
 - One file per subtask, zero-padded sequence number for ordering
 - Extracted automatically — the orchestrator calls the script after each subagent returns, not batched at collection
@@ -99,6 +102,7 @@ Extracted from subagent JSONL transcripts via `subtask-collect.sh` during Step 3
 ### feedback.md
 
 Record during Phase 2 (FEEDBACK):
+
 - Each feedback round: what the user said, what changed
 - Gotchas recorded from corrections
 - Append each round — do not overwrite previous rounds
@@ -108,6 +112,7 @@ Number each feedback round explicitly (Round 1, Round 2, ...). Numbered rounds e
 ### review.md
 
 Record during Phase 3 (REVIEW):
+
 - Review scope and focus areas
 - Verification findings
 - Issues found and resolution status
@@ -115,6 +120,7 @@ Record during Phase 3 (REVIEW):
 ### memorize.md
 
 Record during Step 5 (Memorization). Must document what was persisted for session continuity:
+
 - Task details memorized — what was done, what remains, broader plan context
 - Gotchas written to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/` — list each with a one-line summary
 - Rules written to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/` — list each with a one-line summary

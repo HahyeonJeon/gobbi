@@ -34,7 +34,7 @@
         {
           "type": "principle",
           "statement": "Subtask records are collected from transcripts, not written by subagents.",
-          "body": "The orchestrator runs `subtask-collect.sh` after each subagent returns to extract the delegation prompt and final result from the JSONL transcript. Subagents do not need subtask doc instructions in their briefing — their final response is the record."
+          "body": "The orchestrator runs `gobbi note collect` after each subagent returns to extract the delegation prompt and final result from the JSONL transcript. Subagents do not need subtask doc instructions in their briefing — their final response is the record."
         }
       ]
     },

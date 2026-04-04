@@ -90,32 +90,32 @@
       "content": [
         {
           "type": "text",
-          "value": "Three scripts in `scripts/` automate the verifiable checks:"
+          "value": "Three CLI commands automate the verifiable checks:"
         },
         {
           "type": "table",
           "headers": [
-            "Script",
+            "Command",
             "Purpose"
           ],
           "rows": [
             [
-              "`audit-references.sh`",
+              "`gobbi audit references`",
               "Scan `.md` files for file path references, check if each exists on disk"
             ],
             [
-              "`audit-conventions.sh`",
+              "`gobbi audit conventions`",
               "Scan SKILL.md files for directory structure claims, check if described structures exist"
             ],
             [
-              "`audit-commands.sh`",
+              "`gobbi audit commands`",
               "Scan `.md` files for shell commands in fenced code blocks, check if referenced binaries exist"
             ]
           ]
         },
         {
           "type": "text",
-          "value": "All scripts accept a directory path as an argument. Run from the repository root. Exit 0 means clean, exit 1 means findings. Output uses `file:line` format for each finding."
+          "value": "All commands accept a directory path as an argument. Run from the repository root. Exit 0 means clean, exit 1 means findings. Output uses `file:line` format for each finding."
         }
       ]
     }

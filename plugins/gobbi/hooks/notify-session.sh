@@ -1,1 +1,0 @@
-../../../.claude/hooks/notify-session.sh

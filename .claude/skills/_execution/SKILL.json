@@ -133,7 +133,7 @@
           "content": [
             {
               "type": "text",
-              "value": "The subagent's final response is automatically captured as the subtask record via `subtask-collect.sh`. Include in your final response: what was done, what changed, what was learned, and any open items. This is the permanent record of your work — make it self-contained."
+              "value": "The subagent's final response is automatically captured as the subtask record via `gobbi note collect`. Include in your final response: what was done, what changed, what was learned, and any open items. This is the permanent record of your work — make it self-contained."
             }
           ]
         },

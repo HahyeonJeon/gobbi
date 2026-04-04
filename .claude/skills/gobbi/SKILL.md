@@ -29,25 +29,33 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 - Multi-select. If any channel is selected alongside Skip, channels take priority.
 - **Slack** — Notify via Slack bot message.
 - **Telegram** — Notify via Telegram bot message.
-- **Discord** — Notify via Discord webhook.
+- **Discord** — Notify via Discord webhook. (coming soon — not yet implemented in the CLI)
 - **Skip notifications** — No notifications this session.
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and the relevant child skill (_slack, _telegram, _discord) to help the user configure them before proceeding.
 
-**After all four questions — persist session choices.** The orchestrator writes the user's selections to `gobbi.json` via `gobbi-config.sh` so that hooks and subagents can read them without conversation context. Persistence calls use `$CLAUDE_SESSION_ID` as the session key:
+**After all four questions — persist session choices.** The orchestrator writes the user's selections to `gobbi.json` via `gobbi config` so that hooks and subagents can read them without conversation context. Persistence calls use `$CLAUDE_SESSION_ID` as the session key:
 
-- Q1 trivial range: `gobbi-config.sh set $CLAUDE_SESSION_ID trivialRange <value>`
-- Q2 evaluation mode: `gobbi-config.sh set $CLAUDE_SESSION_ID evaluationMode <value>`
-- Q3 git workflow: `gobbi-config.sh set $CLAUDE_SESSION_ID gitWorkflow <value>` — if worktree-pr, also set `baseBranch`
-- Q4 notifications: `gobbi-config.sh set $CLAUDE_SESSION_ID notify.slack true/false` and `notify.telegram true/false`
+- Q1 trivial range: `gobbi config set $CLAUDE_SESSION_ID trivialRange <value>`
+- Q2 evaluation mode: `gobbi config set $CLAUDE_SESSION_ID evaluationMode <value>`
+- Q3 git workflow: `gobbi config set $CLAUDE_SESSION_ID gitWorkflow <value>` — if worktree-pr, also set `baseBranch`
+- Q4 notifications: `gobbi config set $CLAUDE_SESSION_ID notify.slack true/false` and `notify.telegram true/false`
 
-`gobbi.json` lives at `$CLAUDE_PROJECT_DIR/.claude/gobbi.json`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi-config.sh` at `.claude/hooks/gobbi-config.sh`. The schema is documented in `.claude/project/gobbi/design/gobbi-json-schema.md`. Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions).
+`gobbi.json` lives at `$CLAUDE_PROJECT_DIR/.claude/gobbi.json`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi config`. The schema is documented in `.claude/project/gobbi/design/gobbi-json-schema.md`. Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions).
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
 Project context detection runs automatically at session start without asking. Load project-setup.md to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.
+
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [project-setup.md](project-setup.md) | Project-specific context and technology stack signals |
+| [notification-setup.md](notification-setup.md) | Notification channel and credential detection |
+| [git-setup.md](git-setup.md) | Git tooling and repository state detection |
 
 ---
 
@@ -57,12 +65,6 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 ---
 
-**Navigate deeper from here:**
-
-- [project-setup.md](project-setup.md) — Project-specific context and technology stack signals
-- [notification-setup.md](notification-setup.md) — Notification channel and credential detection
-- [git-setup.md](git-setup.md) — Git tooling and repository state detection
-
 ## Gobbi Skills
 
 ### Work
@@ -70,7 +72,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 Workflow participant skills — loaded during the ideate-plan-execute-collect cycle.
 
 | Skill | Purpose |
-|-------|---------|
+|---|---|
 | **_orchestration** | Thin coordinator. Routes tasks through phases and workflow steps. |
 | **_discuss** | Clarify and specify user prompts. Break ambiguity into specific questions. |
 | **_ideation** | Brainstorming and option exploration for creative or ambiguous tasks. |
@@ -92,7 +94,7 @@ Workflow participant skills — loaded during the ideate-plan-execute-collect cy
 Domain-specific evaluation perspectives for skill quality assessment.
 
 | Skill | Purpose |
-|-------|---------|
+|---|---|
 | **_skills-evaluation-project** | Project perspective for skill evaluation |
 | **_skills-evaluation-architecture** | Architecture perspective for skill evaluation |
 | **_skills-evaluation-performance** | Performance perspective for skill evaluation |
@@ -105,7 +107,7 @@ Domain-specific evaluation perspectives for skill quality assessment.
 Domain-specific evaluation perspectives for agent quality assessment.
 
 | Skill | Purpose |
-|-------|---------|
+|---|---|
 | **_agent-evaluation-project** | Project perspective for agent evaluation |
 | **_agent-evaluation-architecture** | Architecture perspective for agent evaluation |
 | **_agent-evaluation-performance** | Performance perspective for agent evaluation |
@@ -118,7 +120,7 @@ Domain-specific evaluation perspectives for agent quality assessment.
 Domain-specific evaluation perspectives for deliverable quality assessment.
 
 | Skill | Purpose |
-|-------|---------|
+|---|---|
 | **_project-evaluation-project** | Project perspective for deliverable evaluation |
 | **_project-evaluation-architecture** | Architecture perspective for deliverable evaluation |
 | **_project-evaluation-performance** | Performance perspective for deliverable evaluation |
@@ -133,7 +135,7 @@ Placeholder — specific child skills TBD.
 #### Notification (child skills of _notification)
 
 | Skill | Purpose |
-|-------|---------|
+|---|---|
 | **_slack** | Slack notification setup and integration. |
 | **_telegram** | Telegram notification setup and integration. |
 | **_discord** | Discord notification setup and integration. |
@@ -141,7 +143,7 @@ Placeholder — specific child skills TBD.
 #### Gotcha (child docs of _gotcha)
 
 | Document | Purpose |
-|----------|---------|
+|---|---|
 | **project-gotcha.md** | How to record project-specific gotchas. |
 | **skills-gotcha.md** | How to record skill-specific gotchas. |
 
@@ -150,7 +152,7 @@ Placeholder — specific child skills TBD.
 `.claude/` documentation authoring — skills about writing and maintaining claude docs.
 
 | Skill | Purpose |
-|-------|---------|
+|---|---|
 | **_claude** | Core `.claude/` documentation standard. Writing principles, hierarchy, anti-patterns, rules, and project docs. |
 | **_skills** | Reference and interactive guide for creating skills. Discussion dimensions for skill authoring. |
 | **_agents** | Reference and interactive guide for creating agent definitions. Discussion dimensions for agent authoring. |
@@ -162,7 +164,7 @@ Placeholder — specific child skills TBD.
 Utility and maintenance tooling.
 
 | Skill | Purpose |
-|-------|---------|
+|---|---|
 | **__validate** | Validate agent definitions, skill docs, and gotcha entries. Bundled scripts for structure and anti-pattern checking. |
 | **_audit** | Documentation drift detection. Verify .claude/ docs match codebase reality. |
 | **__benchmark** | Skill benchmarking methodology. Eval scenarios and scoring for measuring skill effectiveness. |

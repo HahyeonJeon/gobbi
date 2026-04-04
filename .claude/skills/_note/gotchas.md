@@ -12,17 +12,11 @@ Mistakes in note writing, directory structure, and timing.
 
 **User feedback:** Note docs should be detailed. ideation.md specifically should include the initial user prompt, discussion points, and final idea.
 
-**Correct approach:** Each note file must be self-contained and detailed enough that someone reading it later can fully understand what happened:
-- **ideation.md** — initial user prompt (verbatim or near-verbatim), discussion questions asked and answers received, options explored with trade-offs, evaluation feedback if performed, the final refined idea with full detail
-- **plan.md** — the complete plan with all tasks, agent assignments, dependencies, evaluation feedback, user adjustments
-- **execution.md** — per-subtask delegation details, agent outputs, evaluation results, issues and resolutions, deviations from plan
-- **feedback.md / review.md** — each round with full context
-
-Notes are the permanent record. A reader should never need to ask "what was the original request?" or "what did they discuss?" — it should all be in the notes.
+**Correct approach:** Each note file must be self-contained and detailed enough that someone reading it later can fully understand what happened: - **ideation.md** — initial user prompt (verbatim or near-verbatim), discussion questions asked and answers received, options explored with trade-offs, evaluation feedback if performed, the final refined idea with full detail - **plan.md** — the complete plan with all tasks, agent assignments, dependencies, evaluation feedback, user adjustments - **execution.md** — per-subtask delegation details, agent outputs, evaluation results, issues and resolutions, deviations from plan - **feedback.md / review.md** — each round with full context Notes are the permanent record. A reader should never need to ask "what was the original request?" or "what did they discuss?" — it should all be in the notes.
 
 ---
 
-### Must use note-init.sh — never create note directories manually
+### Must use `gobbi note init` — never create note directories manually
 
 **Priority:** Critical
 
@@ -30,4 +24,4 @@ Notes are the permanent record. A reader should never need to ask "what was the 
 
 **User feedback:** "Did you use session-metadata.sh? Must run session-metadata.sh first."
 
-**Correct approach:** Always use `bash .claude/skills/_note/scripts/note-init.sh <project-name> <task-slug>` to create note directories. Never `mkdir` manually, never reference `$CLAUDE_SESSION_ID` directly. The script chains through `note-metadata.sh` which reads from `$CLAUDE_SESSION_ID` (set by the SessionStart hook). If the script fails because `CLAUDE_SESSION_ID` is not set, investigate the hook — don't work around it.
+**Correct approach:** Always use `gobbi note init <project-name> <task-slug>` to create note directories. Never `mkdir` manually, never reference `$CLAUDE_SESSION_ID` directly. The command chains through `gobbi note metadata` which reads from `$CLAUDE_SESSION_ID` (set by the SessionStart hook). If the command fails because `CLAUDE_SESSION_ID` is not set, investigate the hook — don't work around it.
