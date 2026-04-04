@@ -126,7 +126,7 @@
           "rows": [
             [
               "Step 1. Ideation",
-              "_ideation, _discuss, _evaluation, _ideation-evaluation"
+              "_ideation, _discuss, _evaluation, _ideation-evaluation. Subagents: _innovation (innovative PI), _best-practice (best PI)"
             ],
             [
               "Step 2. Planning",
@@ -134,7 +134,7 @@
             ],
             [
               "Step 3. Research",
-              "_research, _evaluation, _research-evaluation"
+              "_research, _evaluation, _research-evaluation. Subagents: _innovation (innovative researcher), _best-practice (best researcher)"
             ],
             [
               "Step 4. Execution",
@@ -150,7 +150,7 @@
             ],
             [
               "Step 7. Review",
-              "_ideation (for context), _evaluation"
+              "_ideation (for context), _evaluation. Subagents: _innovation (innovative PI), _best-practice (best PI)"
             ]
           ]
         },

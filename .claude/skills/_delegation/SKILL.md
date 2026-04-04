@@ -50,6 +50,12 @@ Every subagent needs three layers of context:
 - The project skill — project architecture, conventions, constraints
 - Gotchas — MUST check `_gotcha` and the project skill's `gotchas/` before starting work
 
+**Load per stance (PI and Researcher agents):**
+
+- `_innovation` — load when spawning the innovative stance. Defines how the agent thinks creatively, challenges conventions, and explores cross-domain patterns.
+- `_best-practice` — load when spawning the best-practice stance. Defines how the agent follows proven patterns, cites documentation, and applies community standards.
+- Project-specific stance skills — if the project has its own `_innovation` or `_best-practice` skill, load it alongside gobbi's version. Project skills supplement, not replace.
+
 **Load per domain:**
 
 - Domain skills relevant to the task — the plan specifies which skills each task needs
@@ -166,6 +172,7 @@ Researchers need the decomposed plan from Step 2 — specific tasks, files affec
 **What a researcher delegation prompt needs:**
 
 - The approved plan — path to the `plan/` subdirectory or the plan content itself
+- The stance skill — `_innovation` for innovative stance, `_best-practice` for best stance
 - The stance directive — innovative or best
 - The research scope — which parts of the plan need investigation (may be the full plan or specific tasks)
 - The output location — path to the `research/` subdirectory where findings should be written
