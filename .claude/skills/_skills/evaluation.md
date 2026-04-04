@@ -97,6 +97,7 @@ Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can 
 - `[structural]` No code blocks or BAD/GOOD comparison blocks present
 - `[structural]` Child docs are flat siblings, not nested in subdirectories
 - `[structural]` Parent includes "Navigate deeper from here:" table if children exist
+- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 
 ### Integration
 

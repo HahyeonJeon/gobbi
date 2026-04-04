@@ -91,6 +91,7 @@ Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can 
 - `[structural]` File is under 500 lines
 - `[structural]` No code blocks or BAD/GOOD comparison blocks present
 - `[structural]` Follows `_claude` writing standard — principles over procedures, no step-by-step recipes in teaching content
+- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 
 ### Integration
 

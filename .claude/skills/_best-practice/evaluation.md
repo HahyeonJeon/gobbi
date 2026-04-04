@@ -82,6 +82,7 @@ Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can 
 - `[structural]` `name` field matches the skill's directory name
 - `[structural]` File is under 500 lines
 - `[structural]` No code blocks or BAD/GOOD comparison blocks present
+- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 - `[semantic]` Every recommendation cites a source — documentation, community standard, or codebase pattern
 - `[semantic]` Guidance is project-specific — could not apply to any project using the same language without modification
 - `[semantic]` No duplication with gobbi's `_best-practice` core principles (evidence over opinion, context-dependent, proven patterns)

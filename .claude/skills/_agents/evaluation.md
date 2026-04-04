@@ -87,6 +87,7 @@ Two categories of checks. Structural checks are mechanically verifiable -- a lin
 - `[structural]` `tools` field lists only tools the agent actively uses in its defined role
 - `[structural]` Definition is under 500 lines (must), targeting under 200 (should)
 - `[structural]` No code examples, BAD/GOOD comparison blocks, or duplicated codebase patterns
+- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 
 ### Semantic
 
