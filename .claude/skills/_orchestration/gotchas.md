@@ -1,25 +1,25 @@
 # Gotcha: _orchestration
 
-Mistakes in following the orchestration workflow (phases, steps, transitions).
+Mistakes in following the orchestration workflow (steps, transitions, FEEDBACK/FINISH cycle).
 
 ---
 
-### Dropping into implementation mode during REVIEW after long FEEDBACK
+### Dropping into implementation mode during Review after long FEEDBACK
 ---
 priority: critical
 ---
 
 **Priority:** Critical
 
-**What happened:** After a long FEEDBACK phase with many iterative fixes, the user transitioned to REVIEW. The orchestrator treated REVIEW as "more feedback" — it skipped planning, started implementing fixes directly, and did the work itself instead of delegating to specialists. The long feedback phase eroded the workflow discipline.
+**What happened:** After a long FEEDBACK cycle with many iterative fixes, the workflow returned to Review (Step 7). The orchestrator treated Review as "more feedback" — it skipped spawning PI agents and started implementing fixes directly instead of delegating to specialists. The long FEEDBACK cycle eroded the workflow discipline.
 
-**User feedback:** REVIEW is a full workflow phase. Follow it regardless of how long the preceding FEEDBACK was.
+**User feedback:** Review (Step 7) is a full independent assessment. Follow it regardless of how long the preceding FEEDBACK was.
 
-**Correct approach:** REVIEW runs the full workflow (Step 1 → Step 2 → Step 3 → Step 4). No exceptions. No shortcuts. The longer the feedback phase was, the MORE important it is to follow the full REVIEW workflow — because context fatigue makes ad-hoc work sloppy.
+**Correct approach:** Review (Step 7) spawns PI agents with innovative + best stances. No exceptions. No shortcuts. The longer the FEEDBACK cycle was, the MORE important it is to follow the full Review step — because context fatigue makes ad-hoc assessment unreliable.
 
 ---
 
-### Skipping structured phase transitions
+### Skipping structured transitions
 ---
 priority: high
 ---
@@ -28,9 +28,9 @@ priority: high
 
 **What happened:** Asked "Ready for FEEDBACK?" in prose instead of using AskUserQuestion.
 
-**User feedback:** Use structured selections between phases.
+**User feedback:** Use structured selections at every transition point.
 
-**Correct approach:** Call AskUserQuestion with explicit options at every phase boundary. Never prose.
+**Correct approach:** Call AskUserQuestion with explicit options at every transition — after Review (FEEDBACK or FINISH?), after step completions, and at every decision point. Never prose.
 
 ---
 
@@ -45,7 +45,7 @@ priority: high
 
 **User feedback:** Write notes in every workflow cycle.
 
-**Correct approach:** Load _note during Step 4 (Collection). Write ideation.md, plan.md, execution.md, and subtasks/ to the task note directory. Context disappears after the session — notes are the permanent record.
+**Correct approach:** Load _note during Step 5 (Collection). Write notes to the appropriate subdirectories: `ideation/`, `plan/`, `research/`, `execution/`, `review/`. Context disappears after the session — notes are the permanent record.
 
 ---
 
@@ -90,7 +90,7 @@ priority: high
 
 **User feedback:** Write notes immediately after delegation, before any transition.
 
-**Correct approach:** Step 3 completes → Step 4 (Collection: write everything) → Phase transition (AskUserQuestion). Collection is not optional and not deferrable. Write first, ask next.
+**Correct approach:** Step 4 (Execution) completes → Step 5 (Collection: write everything) → Step 6 (Memorization) → Step 7 (Review). Collection is not optional and not deferrable. Write first, proceed next.
 
 ---
 
@@ -124,18 +124,18 @@ priority: high
 
 ---
 
-### Evaluation should be optional in ideation — ask user first
+### Evaluation should be optional at Steps 1-4 — ask user first
 ---
 priority: high
 ---
 
 **Priority:** High
 
-**What happened:** During the ideation step, the orchestrator automatically spawned evaluator agents after generating the idea without asking the user whether evaluation was needed. For straightforward tasks, this added unnecessary overhead and delay.
+**What happened:** During the Ideation step, the orchestrator automatically spawned evaluator agents after generating the idea without asking the user whether evaluation was needed. For straightforward tasks, this added unnecessary overhead and delay.
 
-**User feedback:** Evaluation in ideation should be optional. Ask the user with AskUserQuestion before launching evaluators.
+**User feedback:** Evaluation at Steps 1-4 should be optional. Ask the user with AskUserQuestion before launching evaluators.
 
-**Correct approach:** After generating the idea in Step 1, use AskUserQuestion to ask the user whether they want to evaluate the idea or move directly to planning. Only spawn evaluator agents if the user opts for evaluation. This preserves the quality gate for complex tasks while allowing streamlined flow for simpler ones.
+**Correct approach:** At Steps 1 (Ideation), 2 (Planning), 3 (Research), and 4 (Execution), use AskUserQuestion to ask the user whether they want to **skip** evaluation — evaluation is the default. Only skip if the user explicitly opts out. This preserves the quality gate for complex tasks while allowing streamlined flow for simpler ones.
 
 ---
 
@@ -161,7 +161,7 @@ priority: high
 
 **Priority:** High
 
-**What happened:** The user said "let's move on next step" and selected "all remaining fixes." The orchestrator skipped the workflow — it jumped straight to reading files and was about to implement directly instead of starting the gobbi workflow (ideation → plan → execution → collection).
+**What happened:** The user said "let's move on next step" and selected "all remaining fixes." The orchestrator skipped the workflow — it jumped straight to reading files and was about to implement directly instead of starting the gobbi 7-step workflow.
 
 **User feedback:** "No, we should start new workflow. Why you didn't start with the workflow?"
 
@@ -211,3 +211,18 @@ priority: high
 **User feedback:** Core skills were not loaded after first setup.
 
 **Correct approach:** The gobbi SKILL.md instruction to load `_orchestration`, `_gotcha`, `_claude`, and `_git` must be followed regardless of whether project setup ran. Project setup is an intermediate step — it does not replace or defer core skill loading. After setup questions and project detection complete, load all four core skills before declaring the session ready. The loading instruction is unconditional.
+
+---
+
+### Concurrent agents in same worktree can bundle each other's commits
+---
+priority: critical
+---
+
+**Priority:** Critical
+
+**What happened:** Multiple parallel executor agents were delegated to the same worktree simultaneously. When each agent committed their work, some commits included changes from other agents that happened to be staged or unstaged in the shared working directory. The resulting commit history was a tangled mess — agent A's commit contained agent B's half-finished changes, and agent B's commit was missing files it had written because agent A already committed them.
+
+**User feedback:** Parallel agents in the same worktree corrupt each other's commits.
+
+**Correct approach:** When delegating parallel agents that commit to the same worktree, batch them into sequential waves and run `subtask-collect.sh` between waves. Alternatively, give each parallel agent its own worktree. The key insight: git staging area is shared across all processes in a worktree. Two agents running `git add` and `git commit` concurrently will interleave their changes unpredictably.

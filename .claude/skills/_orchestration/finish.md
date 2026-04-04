@@ -1,6 +1,6 @@
 # FINISH Phase
 
-How the workflow concludes with merge, commit, and compact options. Load this when the user selects FINISH to understand the decision tree, pre-action verification, and cleanup responsibilities.
+How the workflow concludes with merge, commit, and compact options. FINISH comes after Review (Step 7) or after a FEEDBACK → Review loop. Load this when the user selects FINISH to understand the decision tree, pre-action verification, and cleanup responsibilities.
 
 ---
 
@@ -16,14 +16,16 @@ _git establishes the re-verification principle: prerequisites are re-verified at
 
 ## Decision Tree
 
-When the user selects FINISH, use AskUserQuestion to present the appropriate options:
+When the user selects FINISH after Review (or after a FEEDBACK → Review loop), use AskUserQuestion to present the appropriate options:
 
 **When _git is active (PR exists):**
+
 - Merge PR and cleanup (squash merge, delete branch, close issue, remove worktree and empty parent dirs, pull merge into base branch), then compact
 - Merge PR and cleanup only (no compact)
 - Compact only (leave PR open for later)
 
 **When _git is not active (default):**
+
 - Commit and compact
 - Commit only
 - Compact only
@@ -48,7 +50,7 @@ When the user selects FINISH, use AskUserQuestion to present the appropriate opt
 The following conditions must hold before each irreversible action. These are constraints to verify, not steps to execute in order.
 
 | Before... | Verify... |
-|-----------|-----------|
+|---|---|
 | Committing | Correct branch is checked out |
 | Pushing | No force-push without explicit user approval |
 | Creating PR | No duplicate PR already exists for this branch |

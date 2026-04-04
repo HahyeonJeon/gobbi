@@ -1,6 +1,6 @@
 # FEEDBACK Phase
 
-How iterative feedback works after TASK or REVIEW completes. Load this when entering Phase 2 (FEEDBACK) to understand iteration tracking, stagnation detection, and when to escalate.
+How iterative feedback works after Review completes. Load this when entering FEEDBACK to understand iteration tracking, stagnation detection, and when to escalate. FEEDBACK always returns to Review — the cycle is FEEDBACK → Review → (FEEDBACK or FINISH).
 
 ---
 
@@ -8,7 +8,7 @@ How iterative feedback works after TASK or REVIEW completes. Load this when ente
 
 > **Speed over structure.**
 
-FEEDBACK exists to refine, not to redesign. The architecture is established — skip planning, fix directly or delegate small scoped tasks.
+FEEDBACK exists to refine, not to redesign. The architecture and research are established — skip Ideation, Planning, and Research. Fix directly or delegate small scoped tasks.
 
 > **Every correction is a memorization opportunity.**
 
@@ -18,14 +18,30 @@ User feedback is the richest source of gotchas, rules, and project knowledge. Do
 
 ## What FEEDBACK Does
 
-- **Skip planning** — the architecture is established from TASK
+- **Skip Ideation, Planning, and Research** — the architecture and research are established from the main workflow
 - **Fix directly or delegate small scoped tasks** — no full decomposition needed
 - **Record gotchas from corrections** — user corrections become "must avoid" entries in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`
 - **Record rules from preferences** — user-stated standards become "must follow" entries in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/`
 - **Update project docs** — if feedback reveals new knowledge about architecture, conventions, or decisions, update `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`
 - **Write feedback.md** after each feedback round to persist the iteration trail
 
-After FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?
+After FEEDBACK fixes are applied, return to Review (Step 7). PI agents re-review the updated work with innovative + best stances. After the new Review, ask the user again via AskUserQuestion: FEEDBACK or FINISH?
+
+---
+
+## Flow
+
+The FEEDBACK cycle is:
+
+1. User selects FEEDBACK (after Review verdict)
+2. User provides feedback or orchestrator addresses Review findings
+3. Delegate small fixes to executors
+4. Record gotchas from corrections
+5. Write `feedback.md`
+6. Return to Review (Step 7) — PI agents re-review
+7. After Review: ask user FEEDBACK or FINISH?
+
+FEEDBACK never leads directly to FINISH. It always passes through Review first. This ensures that every fix is independently assessed before the workflow concludes.
 
 ---
 
@@ -33,7 +49,7 @@ After FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?
 
 > **Number each feedback round.**
 
-Append to feedback.md with the round number, what the user said, what changed, and what remains unresolved.
+Append to `feedback.md` with the round number, what the user said, what changed, and what remains unresolved.
 
 This makes the iteration history explicit. When feedback spans many rounds, the numbered trail prevents context loss and makes stagnation visible. Without it, the orchestrator loses track of what was already attempted.
 
@@ -51,11 +67,11 @@ Stagnation means the fix strategy is not working — repeating it will not produ
 
 ## Feedback Round Cap
 
-> **After 5 feedback rounds, surface AskUserQuestion recommending REVIEW or FINISH.**
+> **After 5 feedback rounds, surface AskUserQuestion recommending FINISH.**
 
 The user can override and continue — this is a recommendation, not a hard stop.
 
-Five rounds is a signal that the scope of changes may warrant a structured pass (REVIEW) rather than continued incremental fixes. The cap exists to prompt reflection, not to gate progress. If the user has clear remaining items, continuing is the right call.
+Five rounds is a signal that the scope of changes may have grown beyond what incremental fixes can address. The cap exists to prompt reflection, not to gate progress. If the user has clear remaining items, continuing is the right call.
 
 ---
 
@@ -67,16 +83,19 @@ Full perspective spawn is unnecessary for small targeted fixes.
 
 The multi-perspective evaluation model exists for complex, multi-faceted outputs where blind spots are likely. A typo fix, a single-file correction, or a formatting adjustment does not need multiple independent assessments. Match evaluation cost to fix complexity — use a single evaluator (Haiku or Sonnet tier) for targeted fixes, reserve the full perspective spawn (Project + Overall + task-relevant perspectives) for substantial changes.
 
+Note: targeted re-evaluation during FEEDBACK is for verifying individual fixes. The full Review (Step 7) that follows FEEDBACK provides the comprehensive multi-perspective assessment.
+
 ---
 
 ## Constraints
 
-- MUST number each feedback round in feedback.md
+- MUST number each feedback round in `feedback.md`
 - MUST record user corrections as gotchas in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`
 - MUST record user-stated standards as rules in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/`
 - MUST update project docs when feedback reveals new knowledge worth persisting
+- MUST return to Review (Step 7) after FEEDBACK fixes are applied — FEEDBACK never leads directly to FINISH
 - MUST surface stagnation pattern after 3 consecutive rounds on the same finding — via AskUserQuestion, not automatic action
-- MUST recommend REVIEW or FINISH after 5 rounds — via AskUserQuestion, user can override
-- MUST use AskUserQuestion at every phase boundary — never prose transitions
+- MUST recommend FINISH after 5 rounds — via AskUserQuestion, user can override
+- MUST use AskUserQuestion at every transition — never prose transitions
 - Never skip gotcha recording — a correction not recorded is a correction repeated
-- Never run full workflow (Step 1-4) during FEEDBACK — that is what REVIEW is for
+- Never run full workflow (Steps 1–4) during FEEDBACK — that is what the main workflow is for

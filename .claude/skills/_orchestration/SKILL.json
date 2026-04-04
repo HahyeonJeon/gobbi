@@ -2,13 +2,13 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_orchestration",
-    "description": "Guide the orchestrator through the adaptive workflow. Use when coordinating multi-agent tasks, routing through workflow stages, or managing phase transitions.",
+    "description": "Guide the orchestrator through the adaptive workflow. Use when coordinating multi-agent tasks, routing through workflow steps, or managing transitions between steps and post-workflow phases.",
     "allowed-tools": "Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion"
   },
   "title": "Orchestration",
   "opening": "You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding.",
   "navigation": {
-    "[feedback.md](feedback.md)": "FEEDBACK phase: iteration tracking, stagnation detection, targeted re-evaluation",
+    "[feedback.md](feedback.md)": "FEEDBACK phase: lightweight fix cycle after Review, iteration tracking, stagnation detection",
     "[finish.md](finish.md)": "FINISH phase: merge/commit/compact decision tree, pre-action verification"
   },
   "sections": [
@@ -40,19 +40,19 @@
             [
               "**Structured routine**",
               "\"Can this be fully specified without discussion?\"",
-              "Skip ideation and planning — delegate directly with a known pattern. The task has an existing skill that defines the execution pattern (running an audit, recording a gotcha, capturing session learnings). Verification still applies."
+              "Skip Ideation, Planning, and Research — delegate directly with a known pattern. The task has an existing skill that defines the execution pattern (running an audit, recording a gotcha, capturing session learnings). Verification still applies. May skip Research if the execution pattern is fully known."
             ],
             [
               "**Non-trivial**",
               "\"Does this require exploration, trade-offs, or creative decomposition?\"",
-              "Full ideation-plan-execute cycle. This is the default tier."
+              "Full 7-step workflow. This is the default tier."
             ]
           ]
         },
         {
           "type": "principle",
-          "statement": "Structured routines skip ideation and planning, not quality.",
-          "body": "They still go through delegation, evaluation, and collection. The difference is that the execution pattern is already known — no creative decomposition needed."
+          "statement": "Structured routines skip Ideation, Planning, and Research — not quality.",
+          "body": "They still go through Execution, Collection, Memorization, and Review. The difference is that the execution pattern is already known — no creative decomposition or research needed."
         }
       ]
     },
@@ -61,7 +61,7 @@
       "content": [
         {
           "type": "text",
-          "value": "**When starting a task, must create a checklist using TaskCreate to track phases and steps.** Update each task's status with TaskUpdate as you progress — set to `in_progress` when starting, `completed` when done.\n\nCreate these tasks at the start of every non-trivial workflow:"
+          "value": "**When starting a task, must create a checklist using TaskCreate to track steps.** Update each task's status with TaskUpdate as you progress — set to `in_progress` when starting, `completed` when done.\n\nCreate these tasks at the start of every non-trivial workflow:"
         },
         {
           "type": "table",
@@ -72,7 +72,7 @@
           "rows": [
             [
               "Step 1",
-              "Ideation — discuss, evaluate, improve"
+              "Ideation — discuss, spawn PI agents (innovative + best), synthesize"
             ],
             [
               "Step 2",
@@ -80,25 +80,33 @@
             ],
             [
               "Step 3",
-              "Execution — delegate subtasks to subagents"
+              "Research — spawn researchers (innovative + best), synthesize"
             ],
             [
               "Step 4",
-              "Collection — write notes and persist workflow trail"
+              "Execution — delegate subtasks to executors"
             ],
             [
               "Step 5",
+              "Collection — write notes, verify, record gotchas"
+            ],
+            [
+              "Step 6",
               "Memorization — save context for session continuity"
             ],
             [
+              "Step 7",
+              "Review — spawn PI agents (innovative + best), verdict + docs"
+            ],
+            [
               "Phase transition",
-              "Ask user: FEEDBACK, REVIEW, or FINISH"
+              "Ask user: FEEDBACK or FINISH?"
             ]
           ]
         },
         {
           "type": "text",
-          "value": "Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add FINISH task when selected. When _git is active, also add a \"Merge PR and cleanup\" task when the user selects FINISH — merge and cleanup must be a tracked step, not an afterthought."
+          "value": "Add FEEDBACK tasks when the user selects FEEDBACK after Review. Add FINISH task when selected. When _git is active, also add a \"Merge PR and cleanup\" task when the user selects FINISH — merge and cleanup must be a tracked step, not an afterthought."
         }
       ]
     },
@@ -125,16 +133,24 @@
               "_plan, _discuss, _evaluation, _plan-evaluation"
             ],
             [
-              "Step 3. Execution",
+              "Step 3. Research",
+              "_research, _evaluation, _research-evaluation"
+            ],
+            [
+              "Step 4. Execution",
               "_delegation, _evaluation"
             ],
             [
-              "Step 4. Collection",
+              "Step 5. Collection",
               "_collection"
             ],
             [
-              "Step 5. Memorization",
+              "Step 6. Memorization",
               "_memorization, _gotcha"
+            ],
+            [
+              "Step 7. Review",
+              "_ideation (for context), _evaluation"
             ]
           ]
         },
@@ -150,22 +166,22 @@
         {
           "type": "principle",
           "statement": "Notes are the state machine.",
-          "body": "On resume, check the latest note directory under `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. The existence of note files indicates workflow progress: ideation.md means ideation complete, plan.md means planning complete, execution.md means execution complete. No note directory means fresh start."
+          "body": "On resume, check the latest note directory under `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. The existence of subdirectories and note files indicates workflow progress: `ideation/` means Ideation complete, `plan/` means Planning complete, `research/` means Research complete, `execution/` means Execution complete, `review/` means Review complete. No note directory means fresh start."
         },
         {
           "type": "principle",
           "statement": "Resume by reading, not guessing.",
-          "body": "Read existing note files to understand what was decided and accomplished. The notes contain the decisions, the plan, and the execution outcomes — enough to recover context without reconstructing from memory."
+          "body": "Read existing note files to understand what was decided and accomplished. The notes contain the decisions, the plan, the research findings, and the execution outcomes — enough to recover context without reconstructing from memory."
         },
         {
           "type": "principle",
           "statement": "Ask the user how to proceed.",
-          "body": "After recovering state, present what was found to the user via AskUserQuestion: continue where we left off, restart the current phase, or start a new task."
+          "body": "After recovering state, present what was found to the user via AskUserQuestion: continue where we left off, restart the current step, or start a new task."
         },
         {
           "type": "principle",
           "statement": "TaskCreate to rebuild the checklist.",
-          "body": "Recreate the workflow tasks (Step 1–5) and mark completed ones based on which note files exist. The checklist reflects recovered state, not a blank slate."
+          "body": "Recreate the workflow tasks (Step 1–7) and mark completed ones based on which note subdirectories exist. The checklist reflects recovered state, not a blank slate."
         }
       ]
     },
@@ -192,8 +208,8 @@
             },
             {
               "type": "principle",
-              "statement": "Evaluation is the default at every step. The user can opt out, not opt in.",
-              "body": "Evaluation MUST happen at Steps 1, 2, and 3 by default. Use AskUserQuestion to ask if the user wants to **skip** evaluation — not whether they want to evaluate. Recommend evaluating. Only skip if the user explicitly chooses to. Catching problems at ideation is cheaper than catching them at execution."
+              "statement": "Evaluation is optional at Steps 1–4. Ask to skip — default is evaluate.",
+              "body": "Use AskUserQuestion to ask if the user wants to **skip** evaluation — not whether they want to evaluate. Recommend evaluating. Only skip if the user explicitly chooses to. Catching problems early is cheaper than catching them late. Each step loops if evaluation finds issues."
             }
           ]
         }
@@ -212,23 +228,28 @@
             },
             {
               "type": "principle",
-              "statement": "Discussion precedes evaluation.",
-              "body": "Use AskUserQuestion to explore the approach with the user — alternatives, trade-offs, and risks — before any evaluation happens."
+              "statement": "Discussion precedes PI agents.",
+              "body": "Use AskUserQuestion to explore the approach with the user — alternatives, trade-offs, and risks — before spawning any agents. The orchestrator discusses first, then delegates."
             },
             {
               "type": "principle",
-              "statement": "Evaluation is the default — ask to skip, not to evaluate.",
-              "body": "After discussion, use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out."
+              "statement": "Spawn PI agents with innovative + best stances in parallel.",
+              "body": "After discussion, spawn two PI agents: one with the innovative stance and one with the best stance. Each writes their perspective independently. The orchestrator synthesizes their outputs into `ideation.md`."
+            },
+            {
+              "type": "principle",
+              "statement": "Evaluation is optional — ask to skip, not to evaluate.",
+              "body": "After synthesis, use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out."
             },
             {
               "type": "principle",
               "statement": "Evaluation findings are input to a conversation, not marching orders.",
-              "body": "When evaluation is performed, present the results to the user via AskUserQuestion. Discuss which findings to address, defer, or disagree with — the user decides the direction."
+              "body": "When evaluation is performed, present the results to the user via AskUserQuestion. Discuss which findings to address, defer, or disagree with — the user decides the direction. If issues are found, loop back and refine."
             },
             {
               "type": "principle",
               "statement": "Improvement follows agreement.",
-              "body": "Refine the idea only based on what the user agreed to address. When the idea is solid, write ideation.md and proceed to Step 2."
+              "body": "Refine the idea only based on what the user agreed to address. When the idea is solid, write `ideation.md` to the `ideation/` subdirectory and proceed to Step 2."
             },
             {
               "type": "text",
@@ -256,18 +277,18 @@
             },
             {
               "type": "principle",
-              "statement": "Evaluation is the default — ask to skip, not to evaluate.",
+              "statement": "Evaluation is optional — ask to skip, not to evaluate.",
               "body": "Use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out."
             },
             {
               "type": "principle",
               "statement": "Evaluation findings are discussed before acting.",
-              "body": "When evaluation is performed, present results to the user via AskUserQuestion. Discuss which findings to address and which to defer — the user decides."
+              "body": "When evaluation is performed, present results to the user via AskUserQuestion. Discuss which findings to address and which to defer — the user decides. If issues are found, loop back and revise."
             },
             {
               "type": "principle",
               "statement": "Revision follows agreement.",
-              "body": "Use EnterPlanMode to revise based on the agreed-upon direction. When the plan is solid, write plan.md with the full plan content — context, root cause, every change with rationale, files affected, and verification criteria. Copy the complete plan from the plan file into the note, not a summary. Then proceed to Step 3."
+              "body": "Use EnterPlanMode to revise based on the agreed-upon direction. When the plan is solid, write `plan.md` with the full plan content — context, root cause, every change with rationale, files affected, and verification criteria. Copy the complete plan from the plan file into the note, not a summary. Then proceed to Step 3."
             },
             {
               "type": "principle",
@@ -278,11 +299,45 @@
         },
         {
           "type": "subsection",
-          "heading": "Step 3. Execution",
+          "heading": "Step 3. Research",
+          "content": [
+            {
+              "type": "text",
+              "value": "Investigate \"how to do\" for the approved plan. Research is mandatory for non-trivial tasks but may be skipped for structured routines where the execution pattern is fully known."
+            },
+            {
+              "type": "principle",
+              "statement": "Spawn researcher agents with innovative + best stances in parallel.",
+              "body": "Each researcher investigates the approved plan from their stance. The innovative researcher explores novel approaches, alternative implementations, and creative solutions. The best researcher investigates proven patterns, established conventions, and reliable methods. Each writes their findings to the `research/` subdirectory."
+            },
+            {
+              "type": "principle",
+              "statement": "Collect before synthesizing.",
+              "body": "After both researchers complete, run `gobbi note collect` with the `research` phase argument to extract their outputs. The orchestrator then synthesizes both researcher outputs into `research.md` in the `research/` subdirectory."
+            },
+            {
+              "type": "principle",
+              "statement": "Evaluation is optional — ask to skip, not to evaluate.",
+              "body": "After synthesis, use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). If evaluation finds issues, loop back and refine the research. Research quality directly determines execution quality."
+            },
+            {
+              "type": "text",
+              "value": "When the research is solid, proceed to Step 4. Executors MUST read the research materials before implementing."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Step 4. Execution",
           "content": [
             {
               "type": "text",
               "value": "Delegate subtasks to specialist subagents."
+            },
+            {
+              "type": "principle",
+              "statement": "Executors must read research materials before implementing.",
+              "body": "Every executor delegation prompt must include a directive to read the `research/` subdirectory contents before starting implementation. Research findings contain the investigated approaches, trade-offs, and recommended patterns that inform execution decisions."
             },
             {
               "type": "principle",
@@ -301,9 +356,9 @@
                 "Each subtask must be delegated to a specialist subagent with fresh context.",
                 "Every subagent prompt must include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary.",
                 "Every subagent must load _gotcha before starting work.",
-                "After each subtask completes, run `gobbi note collect` to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result). Then spawn a separate evaluator agent to assess the output.",
+                "After each subtask completes, run `gobbi note collect` with the `--phase execution` flag to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result). Then spawn a separate evaluator agent to assess the output.",
                 "If evaluation fails, fix and re-evaluate before proceeding to the next subtask.",
-                "After all subtasks complete, write execution.md. Subtask JSON files are already on disk from the per-subtask `gobbi note collect` calls.",
+                "After all subtasks complete, write `execution.md` to the `execution/` subdirectory. Subtask JSON files are already on disk from the per-subtask `gobbi note collect` calls.",
                 "After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn."
               ]
             },
@@ -316,7 +371,7 @@
         },
         {
           "type": "subsection",
-          "heading": "Step 4. Collection",
+          "heading": "Step 5. Collection",
           "content": [
             {
               "type": "text",
@@ -326,7 +381,8 @@
               "type": "list",
               "style": "bullet",
               "items": [
-                "Write prompt, plan, task results, and README to the work directory.",
+                "Verify all note subdirectories are populated: `ideation/`, `plan/`, `research/`, `execution/` should each contain their respective note files.",
+                "Write the task `README.md` summarizing the workflow: what was decided, what was researched, what was executed, and the outcome.",
                 "Record any gotchas discovered during execution."
               ]
             }
@@ -334,7 +390,7 @@
         },
         {
           "type": "subsection",
-          "heading": "Step 5. Memorization",
+          "heading": "Step 6. Memorization",
           "content": [
             {
               "type": "text",
@@ -347,44 +403,52 @@
                 "Memorize details of the completed task — what was done, what decisions were made, what remains open.",
                 "If the task is part of a larger user plan, memorize the broader plan context and where this task fits.",
                 "Update gotchas from any corrections discovered during the workflow.",
-                "Update project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` if the workflow revealed new architectural knowledge, conventions, or decisions worth persisting.",
-                "Use AskUserQuestion to ask the user: FEEDBACK, REVIEW, or FINISH?"
+                "Update project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` if the workflow revealed new architectural knowledge, conventions, or decisions worth persisting."
               ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Step 7. Review",
+          "content": [
+            {
+              "type": "text",
+              "value": "Independent quality review by PI agents."
+            },
+            {
+              "type": "principle",
+              "statement": "Spawn PI agents with innovative + best stances in parallel.",
+              "body": "Each PI agent reviews the completed work from their stance. The innovative reviewer looks for missed opportunities, alternative approaches that could have been better, and creative improvements. The best reviewer assesses against established quality standards, conventions, and correctness. Each writes their review to the `review/` subdirectory — `innovative.md` and `best.md`."
+            },
+            {
+              "type": "principle",
+              "statement": "Each review includes a verdict: pass, fail, or needs-work.",
+              "body": "The verdict is a clear signal. \"pass\" means the work meets quality standards. \"fail\" means fundamental issues require rework. \"needs-work\" means targeted fixes can bring the work to standard. The orchestrator synthesizes both verdicts to present to the user."
+            },
+            {
+              "type": "principle",
+              "statement": "Reviews produce documentation for future sessions.",
+              "body": "Beyond the verdict, each reviewer documents patterns observed, decisions worth preserving, and lessons learned. This documentation persists in the `review/` subdirectory and informs future work on the same codebase."
+            },
+            {
+              "type": "text",
+              "value": "After Review completes, use AskUserQuestion to ask the user: FEEDBACK or FINISH?\n\nIf either verdict is \"fail\" or \"needs-work\", recommend FEEDBACK. If both verdicts are \"pass\", recommend FINISH."
             }
           ]
         }
       ]
     },
     {
-      "heading": "Three Phases of Work",
+      "heading": "After Review",
       "content": [
         {
           "type": "subsection",
-          "heading": "Phase 1. TASK",
+          "heading": "FEEDBACK",
           "content": [
             {
               "type": "text",
-              "value": "The main implementation phase. Run the full workflow (Step 1 → Step 2 → Step 3 → Step 4 → Step 5).\n\nAfter TASK completes, use AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?"
-            }
-          ]
-        },
-        {
-          "type": "subsection",
-          "heading": "Phase 2. FEEDBACK",
-          "content": [
-            {
-              "type": "text",
-              "value": "The user inspects results and provides iterative feedback. Optimized for speed over structure — skip planning, fix directly or delegate small scoped tasks, record gotchas from corrections. Write feedback.md after each round.\n\nAfter FEEDBACK completes, use AskUserQuestion to ask: REVIEW, or FINISH?\n\nSee [feedback.md](feedback.md) for iteration tracking, stagnation detection, round cap, and targeted re-evaluation."
-            }
-          ]
-        },
-        {
-          "type": "subsection",
-          "heading": "Phase 3. REVIEW",
-          "content": [
-            {
-              "type": "text",
-              "value": "Full workflow again (Step 1 → Step 2 → Step 3 → Step 4 → Step 5) focused on quality verification. Creates a separate work directory: `{task-slug}-review/`. Write review.md after review completes.\n\nAfter REVIEW completes, use AskUserQuestion to ask: FEEDBACK, or FINISH?"
+              "value": "Lightweight fix cycle. FEEDBACK happens after Review when the user wants to address issues found by reviewers or provide their own corrections.\n\nFEEDBACK skips Ideation, Planning, and Research — the architecture and research are established. Delegate small, scoped fixes to executors. Record gotchas from corrections.\n\nAfter FEEDBACK fixes are applied, return to Review (Step 7). PI agents re-review the updated work. After the new Review, ask the user again: FEEDBACK or FINISH?\n\nThe cycle is: FEEDBACK → Review → (FEEDBACK or FINISH).\n\nSee [feedback.md](feedback.md) for iteration tracking, stagnation detection, round cap, and targeted re-evaluation."
             }
           ]
         },
@@ -424,17 +488,18 @@
             "Before expensive delegation, MUST run lightweight precondition checks — verify the task is well-defined, prerequisites are met, and the scope justifies agent spawning. Use cheap checks (Haiku agents or bash commands) to prevent wasting expensive computation on ineligible or malformed tasks",
             "Any delegated task that involves both assessment and modification MUST present its assessment findings to the user via AskUserQuestion before performing modifications",
             "Before delegation, MUST include gotcha context in every subagent prompt",
-            "Before evaluation, MUST ask user with AskUserQuestion whether to **skip** evaluation — evaluation is the default at all steps, the user opts out, not in",
+            "Before evaluation, MUST ask user with AskUserQuestion whether to **skip** evaluation — evaluation is the default at Steps 1–4, the user opts out, not in",
             "After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with",
             "After delegation, MUST run `gobbi note collect` for each completed subagent immediately after each wave — before any downstream agent runs",
             "After delegation, MUST write work docs via _collection — immediately, not deferred",
-            "After memorization, MUST call AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?",
-            "After FEEDBACK, MUST call AskUserQuestion to ask: REVIEW, or FINISH?",
-            "After REVIEW, MUST call AskUserQuestion to ask: FEEDBACK, or FINISH?",
+            "After Step 7 (Review), MUST call AskUserQuestion to ask: FEEDBACK or FINISH?",
+            "After FEEDBACK, MUST return to Review (Step 7) — PI agents re-review",
+            "After FEEDBACK → Review, MUST call AskUserQuestion to ask: FEEDBACK or FINISH?",
             "When evaluation is performed, MUST spawn at least 2 perspective evaluators (Project + Overall minimum). Select additional perspectives (Architecture, Performance, Aesthetics) based on task type.",
-            "MUST write note via _note at every workflow step — ideation, plan, execution, feedback, review. Never defer, never skip.",
+            "MUST write note via _note at every workflow step — ideation, plan, research, execution, review. Never defer, never skip.",
             "MUST use EnterPlanMode when writing or revising plans",
-            "When using AskUserQuestion, MUST put the recommended option first with \"(Recommended)\" in the label — give an opinion, don't just present neutral choices"
+            "When using AskUserQuestion, MUST put the recommended option first with \"(Recommended)\" in the label — give an opinion, don't just present neutral choices",
+            "Executors MUST read research materials from the `research/` subdirectory before implementing"
           ]
         },
         {
