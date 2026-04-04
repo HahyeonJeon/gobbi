@@ -99,9 +99,9 @@ Every agent follows: **Study → Plan → Execute → Verify**. Your delegation 
 
 ## Model Selection
 
-> **Innovative stance always gets opus. Evaluators get sonnet. All agents run at max effort.**
+> **Innovative stance always gets opus. Evaluators and reviewers get sonnet. All agents run at max effort.**
 
-Creative and implementation work demands deep reasoning — opus handles ambiguity, novelty, and quality. Evaluators follow structured criteria against defined standards — sonnet handles this reliably. The orchestrator uses the Agent tool's `model` parameter to override when needed.
+Creative and implementation work demands deep reasoning — opus handles ambiguity, novelty, and quality. Assessment work (evaluation and review) follows structured criteria — sonnet handles this reliably. The orchestrator uses the Agent tool's `model` parameter to set the model at spawn time.
 
 | Agent | Stance | Model | Rationale |
 |---|---|---|---|
@@ -114,6 +114,10 @@ Creative and implementation work demands deep reasoning — opus handles ambigui
 | `_project-evaluator` | — | sonnet | Structured assessment against criteria |
 | `__executor` | — | opus | Implementation quality requires strong reasoning |
 | `gobbi-agent` | — | opus | Documentation quality requires strong reasoning |
+
+> **All review tasks use sonnet — override via the Agent tool's `model` parameter.**
+
+Review is assessment, not creation. When the orchestrator spawns any subagent for a review task — Step 7 Review, code review, PR review, or any other assessment delegation — set `model: "sonnet"` in the Agent tool call. This applies even to agents that default to opus (like `__pi`). The Agent tool's `model` parameter overrides the agent definition's default for that specific invocation. Review at sonnet with max effort provides rigorous assessment without opus cost.
 
 > **Model tiers and capabilities evolve — these are current guidelines, not permanent assignments.**
 
