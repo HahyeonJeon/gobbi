@@ -16,7 +16,7 @@ import { isRecord, isString, isBoolean } from './guards.js';
 // Constants
 // ---------------------------------------------------------------------------
 
-export const GOBBI_VERSION = '0.4.2';
+export const GOBBI_VERSION = '0.4.3';
 export const GOBBI_ARCHITECTURE = 'claude-source';
 export const TTL_DAYS = 7;
 export const MAX_SESSIONS = 10;
