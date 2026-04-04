@@ -286,6 +286,24 @@
         },
         {
           "type": "subsection",
+          "heading": "Research",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Are all plan tasks covered by research findings?",
+                "Are implementation paths concrete enough for executors to act without re-researching?",
+                "Are codebase references accurate (verifiable with Grep/Read)?",
+                "Are external sources cited and relevant?",
+                "Does the synthesis effectively combine innovative and best-practice perspectives?",
+                "Would an executor reading this know exactly what to implement?"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
           "heading": "Execution",
           "content": [
             {
