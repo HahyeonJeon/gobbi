@@ -202,7 +202,17 @@ async function runNoteInit(args: string[]): Promise<void> {
   const dirName = `${datetime}-${slug}-${sessionId}`;
   const noteDir = path.join(claudeProjectDir, '.claude', 'project', projectName, 'note', dirName);
 
-  await mkdir(path.join(noteDir, 'subtasks'), { recursive: true });
+  // Create per-step subdirectories
+  await Promise.all([
+    mkdir(path.join(noteDir, 'ideation', 'evaluation'), { recursive: true }),
+    mkdir(path.join(noteDir, 'plan', 'evaluation'), { recursive: true }),
+    mkdir(path.join(noteDir, 'research', 'results'), { recursive: true }),
+    mkdir(path.join(noteDir, 'research', 'subtasks'), { recursive: true }),
+    mkdir(path.join(noteDir, 'research', 'evaluation'), { recursive: true }),
+    mkdir(path.join(noteDir, 'execution', 'subtasks'), { recursive: true }),
+    mkdir(path.join(noteDir, 'execution', 'evaluation'), { recursive: true }),
+    mkdir(path.join(noteDir, 'review'), { recursive: true }),
+  ]);
 
   // README.md with YAML frontmatter
   const readme = [
@@ -288,15 +298,27 @@ async function runNoteInit(args: string[]): Promise<void> {
 async function runNoteCollect(args: string[]): Promise<void> {
   if (args[0] === '--help') {
     console.log(
-      `Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir>\n\nExtract subagent result from JSONL transcript.`,
+      `Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <research|execution>]\n\nExtract subagent result from JSONL transcript.\n\nOptions:\n  --phase <research|execution>  Route to step-specific subtasks/ subdirectory`,
     );
     return;
   }
 
-  const agentId = args[0];
-  const subtaskNumber = args[1];
-  const subtaskSlug = args[2];
-  const noteDir = args[3];
+  // Parse --phase flag from args
+  let phase: string | undefined;
+  const filteredArgs: string[] = [];
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--phase' && i + 1 < args.length) {
+      phase = args[i + 1];
+      i++; // skip value
+    } else {
+      filteredArgs.push(args[i]!);
+    }
+  }
+
+  const agentId = filteredArgs[0];
+  const subtaskNumber = filteredArgs[1];
+  const subtaskSlug = filteredArgs[2];
+  const noteDir = filteredArgs[3];
 
   if (
     agentId === undefined ||
@@ -306,9 +328,14 @@ async function runNoteCollect(args: string[]): Promise<void> {
   ) {
     console.error(
       error(
-        'Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir>',
+        'Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <research|execution>]',
       ),
     );
+    process.exit(1);
+  }
+
+  if (phase !== undefined && phase !== 'research' && phase !== 'execution') {
+    console.error(error(`Invalid phase: ${phase}. Must be 'research' or 'execution'.`));
     process.exit(1);
   }
 
@@ -340,8 +367,10 @@ async function runNoteCollect(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  // Validate subtasks directory
-  const subtasksDir = path.join(noteDir, 'subtasks');
+  // Resolve subtasks directory based on --phase flag
+  const subtasksDir = phase !== undefined
+    ? path.join(noteDir, phase, 'subtasks')
+    : path.join(noteDir, 'subtasks');
   if (!existsSync(subtasksDir)) {
     console.error(`Error: subtasks/ directory not found: ${subtasksDir}`);
     process.exit(1);
