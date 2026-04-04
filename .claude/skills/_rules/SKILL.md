@@ -9,6 +9,12 @@ Guide for authoring rule files in `.claude/rules/`. Rules live alongside other p
 
 Load `_claude` for the general documentation writing standard before authoring rules.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [evaluation.md](evaluation.md) | Evaluation criteria for user-created rule files — failure modes, diagnostic dimensions, verification checklist |
+
 ---
 
 ## Core Principle
@@ -34,6 +40,7 @@ Gobbi already provides rules for its own conventions (naming, formatting). Users
 ## When to Create a Rule
 
 Create a rule when:
+
 - The standard applies to all code or all work in the project
 - Violation causes real problems that require rework or break things
 - The convention is not obvious from reading the codebase alone
@@ -77,15 +84,18 @@ Do not create rules for preferences, tooling-enforced standards (the tool alread
 Before publishing a rule:
 
 **Core Principle**
+
 - [ ] Standard is mechanically verifiable by agent or linter
 - [ ] Project-specific — not general domain knowledge (that belongs in a skill)
 
 **Writing Pattern**
+
 - [ ] Rule stated as one clear, unambiguous statement
 - [ ] Verifiable criteria, not subjective guidance
 - [ ] Flat structure — no deep nesting
 - [ ] Most critical constraints front-loaded
 
 **Anti-Pattern**
+
 - [ ] Not too vague to enforce (must avoid)
 - [ ] Does not duplicate what linters or tooling already catch (should avoid)

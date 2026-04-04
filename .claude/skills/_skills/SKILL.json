@@ -9,7 +9,8 @@
   "opening": "Reference for understanding skill structure and interactive guide for creating new skills through discussion. Load this when creating, reviewing, or modifying any `.claude/skills/` definition. Load _claude for writing principles and _discuss for discussion mechanics before using this skill.",
   "navigation": {
     "[verification.md](verification.md)": "Skill verification: trigger testing, output quality, improvement loop, evaluation agents",
-    "[authoring.md](authoring.md)": "Skill authoring: description craft, instruction writing, content pruning, failure patterns"
+    "[authoring.md](authoring.md)": "Skill authoring: description craft, instruction writing, content pruning, failure patterns",
+    "[evaluation.md](evaluation.md)": "Skill evaluation: quality criteria for user-created project-specific skills"
   },
   "sections": [
     {
