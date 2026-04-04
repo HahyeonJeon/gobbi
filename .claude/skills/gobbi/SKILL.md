@@ -69,20 +69,22 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 ### Work
 
-Workflow participant skills — loaded during the ideate-plan-execute-collect cycle.
+Workflow participant skills — loaded during the 7-step cycle: Ideation, Plan, Research, Execution, Collection, Memorization, Review.
 
 | Skill | Purpose |
 |---|---|
-| **_orchestration** | Thin coordinator. Routes tasks through phases and workflow steps. |
-| **_discuss** | Clarify and specify user prompts. Break ambiguity into specific questions. |
-| **_ideation** | Brainstorming and option exploration for creative or ambiguous tasks. |
+| **_orchestration** | Adaptive workflow coordinator. Routes tasks through the 7-step workflow and post-workflow phases. |
+| **_discuss** | Critical, structured discussion. Challenge vague thinking, surface hidden problems, push ideas toward concrete specificity. |
+| **_ideation** | Structured idea refinement. PI agents (innovative + best stances) improve the user's idea through discussion and synthesis. |
 | **_plan** | Task decomposition. Break complex work into narrow, ordered, agent-assigned tasks. |
+| **_research** | Research investigation. How researcher agents study codebase patterns, external approaches, and implementation paths for approved plans. |
 | **_delegation** | Hand off work to subagents with the right context and scope boundaries. |
 | **_execution** | Task execution guide. How an executor agent studies, plans, implements, and verifies. |
 | **_evaluation** | Parent evaluation framework. How to delegate evaluation, select perspectives, and discuss findings. |
 | **_ideation-evaluation** | Stage-specific evaluation criteria for ideation output. Concreteness, trade-offs, completeness. |
 | **_plan-evaluation** | Stage-specific evaluation criteria for plans. Task specificity, dependencies, feasibility. |
-| **_collection** | Persist workflow trail. Write prompt, plan, task results, and README to work directory. |
+| **_research-evaluation** | Stage-specific evaluation criteria for research output. Completeness, depth, accuracy, practical utility. |
+| **_collection** | Verify note completeness and write task README. Confirm all per-step subdirectories are populated, then write the summary. |
 | **_memorization** | Save context for session continuity. Persist task details, gotchas, and rules. |
 | **_note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
 | **_git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
