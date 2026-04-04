@@ -3,9 +3,9 @@
 <p align="center"><sub>고삐 (gobbi) — Korean for reins, the essential equipment for handling a horse</sub></p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@gobbitools/cli"><img src="https://img.shields.io/npm/v/@gobbitools/cli" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@gobbi/cli"><img src="https://img.shields.io/npm/v/@gobbi/cli" alt="npm version"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
-  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/@gobbitools/cli" alt="Node version"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/@gobbi/cli" alt="Node version"></a>
 </p>
 
 ---
@@ -45,7 +45,7 @@ Then run `/gobbi` to begin.
 ### CLI Install
 
 ```bash
-npx @gobbitools/cli install
+npx @gobbi/cli install
 ```
 
 This creates the `.gobbi/` directory with gobbi's skill and agent definitions, then syncs everything to `.claude/` where Claude Code reads them.
@@ -56,16 +56,16 @@ This creates the `.gobbi/` directory with gobbi's skill and agent definitions, t
 
 | Command | Purpose |
 |---------|---------|
-| `npx @gobbitools/cli install` | Install gobbi into the current project |
-| `npx @gobbitools/cli update` | Update gobbi core to the latest version |
-| `npx @gobbitools/cli sync` | Manually sync `.gobbi/` to `.claude/` |
+| `npx @gobbi/cli install` | Install gobbi into the current project |
+| `npx @gobbi/cli update` | Update gobbi core to the latest version |
+| `npx @gobbi/cli sync` | Manually sync `.gobbi/` to `.claude/` |
 
 ---
 
 ## Migration from v0.2.0
 
 ```bash
-npx @gobbitools/cli install
+npx @gobbi/cli install
 ```
 
 Automatically detects existing `.claude/` gobbi files, migrates them to `.gobbi/`, and syncs back. No manual intervention needed.

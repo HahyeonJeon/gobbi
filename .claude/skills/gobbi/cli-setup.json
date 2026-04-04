@@ -44,7 +44,7 @@
           "content": [
             {
               "type": "text",
-              "value": "Install globally so `gobbi` is available in all terminals:\n\n```\nnpm install -g @gobbitools/cli\n```\n\nVerify: `gobbi --version`\n\nThis is the recommended approach for users who want `gobbi` available across all projects."
+              "value": "Install globally so `gobbi` is available in all terminals:\n\n```\nnpm install -g @gobbi/cli\n```\n\nVerify: `gobbi --version`\n\nThis is the recommended approach for users who want `gobbi` available across all projects."
             }
           ]
         },
@@ -118,7 +118,7 @@
           "type": "table",
           "headers": ["Problem", "Cause", "Fix"],
           "rows": [
-            ["`gobbi: command not found`", "Not installed globally or not linked", "Run `npm install -g @gobbitools/cli` or `npm link` in the gobbi directory"],
+            ["`gobbi: command not found`", "Not installed globally or not linked", "Run `npm install -g @gobbi/cli` or `npm link` in the gobbi directory"],
             ["`gobbi note init` fails with CLAUDE_SESSION_ID not set", "SessionStart hook didn't run", "Check `.claude/settings.json` hooks — the `gobbi session metadata` hook must fire on startup"],
             ["`gobbi docs json2md` produces empty output", "TypeScript not compiled", "Run `npm run build` in the gobbi directory"],
             ["Hooks fail silently", "`gobbi` not in PATH when hooks execute", "Ensure global install or link — hooks run in a shell that may not have local node_modules/.bin in PATH"]
