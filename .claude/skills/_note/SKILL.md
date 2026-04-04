@@ -1,36 +1,55 @@
 ---
 name: _note
-description: Write notes at every workflow step. Use to record decisions, outcomes, and context at each stage — ideation, plan, execution, feedback, and review.
+description: Write notes at every workflow step using per-step subdirectories. Notes are the permanent record of what was discussed, decided, and delivered.
 allowed-tools: Write, Read, Glob, Bash
 ---
 
 # Note
 
-Write notes at every workflow step to persist decisions, outcomes, and context. Notes are the permanent record of what was discussed, decided, and delivered.
+Write notes at every workflow step using per-step subdirectories. Notes are the permanent record of what was discussed, decided, and delivered.
 
 > **Notes must contain full content, never summaries.**
 
-Every note file must be detailed enough that a reader who has no access to the conversation can fully reconstruct what happened. Write the actual content — the complete plan, the full evaluation findings, the detailed execution outcomes. A one-paragraph summary is not a note. If it takes 100 lines to capture what happened, write 100 lines. The plan file from EnterPlanMode, the evaluation results, the discussion decisions — all of it goes into the note verbatim or near-verbatim.
+Every note file must be detailed enough that a reader who has no access to the conversation can fully reconstruct what happened. Write the actual content — the complete plan, the full evaluation findings, the detailed execution outcomes. A one-paragraph summary is not a note. If it takes 100 lines to capture what happened, write 100 lines.
 
 ---
 
 ## Where to Write
 
-Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`:
+Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. Each task gets a top-level directory containing subdirectories for each workflow step:
 
 ```
-.claude/project/{project-name}/note/
-  README.md                                               — index of all task note directories
-  {YYYYMMDD-HHMM}-{slug}-{session_id}/
-    README.md                                             — session context metadata (YAML frontmatter)
-    ideation.md                                           — ideas explored, trade-offs, chosen approach
-    plan.md                                               — plan details, task decomposition, dependencies
-    execution.md                                          — execution outcomes, issues encountered
-    feedback.md                                           — user feedback rounds, corrections made
-    review.md                                             — review findings, verification results
-    memorize.md                                           — what was memorized for session continuity
+{YYYYMMDD-HHMM}-{slug}-{session_id}/
+  metadata.json
+  README.md
+  ideation/
+    innovative.md
+    best.md
+    ideation.md
+    evaluation/
+      {perspective}.md
+  plan/
+    plan.md
+    evaluation/
+      {perspective}.md
+  research/
+    innovative.md
+    best.md
+    research.md
+    results/
     subtasks/
-      {NN}-{subtask-slug}.json                             — extracted subagent record (delegation prompt + final result)
+      01-{slug}.json
+    evaluation/
+      {perspective}.md
+  execution/
+    execution.md
+    subtasks/
+      01-{slug}.json
+    evaluation/
+      {perspective}.md
+  review/
+    innovative.md
+    best.md
 ```
 
 ### Naming
@@ -41,9 +60,9 @@ Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`:
 
 > **Always use `gobbi note init` to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.**
 
-Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and outputs the created directory path. It handles the full chain: session metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup.
+Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and outputs the created directory path. It handles: session metadata extraction, directory creation with all subdirectories (`ideation/evaluation/`, `plan/evaluation/`, `research/{results,subtasks,evaluation}/`, `execution/{subtasks,evaluation}/`, `review/`), and `metadata.json` generation.
 
-After each subagent returns, run `gobbi note collect` to extract the delegation prompt and final result from the subagent's JSONL transcript into `subtasks/{NN}-{subtask-slug}.json`. The command handles transcript parsing and JSON formatting — no manual Write calls needed.
+After each subagent returns, run `gobbi note collect` to extract the delegation prompt and final result from the subagent's JSONL transcript. Use the `--phase` flag (`research` or `execution`) to route to the correct subtasks subdirectory. The command handles transcript parsing and JSON formatting — no manual Write calls needed.
 
 If `gobbi note init` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it.
 
@@ -51,93 +70,78 @@ If `gobbi note init` fails because `CLAUDE_SESSION_ID` is not set, the SessionSt
 
 ## What to Write at Each Step
 
-### README.md (per task directory)
+### metadata.json
 
-Session context for the task, created automatically by the note-init script. Contains YAML frontmatter with: session_id, datetime, git_branch, cwd, claude_model, transcript path, and task name. This anchors every note file in the directory to a specific session, making it possible to trace back to the original conversation.
+Session context for the task, created automatically by `note-init.sh`. Contains: session_id, datetime, git_branch, cwd, claude_model, transcript path, and task name. Anchors every file in the directory to a specific session for traceability.
 
-### ideation.md
+### ideation/
 
-Record during Step 1 (Ideation Loop). Must be detailed enough that a reader can reconstruct the full ideation without reading the conversation:
+Step 1 output — what was explored and what was chosen.
 
-- The initial user prompt — verbatim or near-verbatim capture of what the user asked for
-- Discussion points — each question asked, options presented, and user's responses
-- Options explored with full trade-off analysis — not just names, but the reasoning
-- Evaluation feedback from evaluator agents (if evaluation was performed)
-- Discussion about evaluation — what was agreed to address vs defer
-- The final refined idea with full detail — concrete enough to plan from
+- `innovative.md` — Written by innovative PI agent. Ideas explored through creative and novel lens.
+- `best.md` — Written by best-practice PI agent. Ideas explored through established patterns lens.
+- `ideation.md` — Written by orchestrator. Synthesis combining both stances and discussion with user.
+- `evaluation/{perspective}.md` — Written by evaluator agents, one file per perspective. Only present if evaluation was performed.
 
-### plan.md
+### plan/
 
-Record during Step 2 (Plan Loop). Must contain the complete plan, not a summary:
+Step 2 output — the complete approved plan.
 
-- The complete decomposed tasks with agent assignments, skills, scope boundaries, and dependencies
-- Execution order with parallelism and wave structure
-- Evaluation feedback from evaluator agents (if evaluation was performed)
-- Discussion about evaluation — what was revised and why
-- What the user adjusted during discussion
-- The final approved plan in full
+- `plan.md` — Complete approved plan with tasks, dependencies, agent assignments, scope boundaries.
+- `evaluation/{perspective}.md` — Written by evaluator agents, one file per perspective. Only present if evaluation was performed.
 
-### execution.md
+### research/
 
-Record during Step 3 (Execution — Delegation). Must document each subtask in enough detail to understand what happened:
+Step 3 output — how to implement the approved plan.
 
-- Which subtasks were delegated to which agents, with the key context provided
-- Per-subtask outcomes — what the agent produced, key findings or changes
-- Execution evaluation results per subtask
-- Issues encountered and how they were resolved
-- Any deviations from the plan and why
+- `innovative.md` — Written by innovative researcher. Creative approaches, cross-domain patterns.
+- `best.md` — Written by best-practice researcher. Proven patterns, community standards.
+- `research.md` — Written by orchestrator. Synthesis organized by plan task.
+- `results/` — Detailed research artifacts saved by researchers: code samples, API docs, pattern analysis.
+- `subtasks/01-{slug}.json` — Extracted from researcher transcripts via `gobbi note collect --phase research`.
+- `evaluation/{perspective}.md` — Written by evaluator agents, one file per perspective. Only present if evaluation was performed.
 
-When documenting evaluation results in execution.md, organize findings by severity tier — Critical findings first, then Important, then Suggestions, then Strengths — rather than by evaluator perspective. Severity-tiered presentation surfaces actionable items first and makes blocking issues visible across all subtasks at a glance.
+### execution/
 
-Record pre-action verification outcomes when they catch a precondition failure (wrong branch, duplicate PR, stale state). Verification that passes silently needs no note — only record when verification catches a real problem, as these are valuable learning inputs for gotchas.
+Step 4 output — what was implemented and what happened.
 
-### subtasks/{NN}-{subtask-slug}.json
+- `execution.md` — Execution outcomes, per-subtask results, issues encountered, deviations from plan.
+- `subtasks/01-{slug}.json` — Extracted from executor transcripts via `gobbi note collect` with `execution` phase.
+- `evaluation/{perspective}.md` — Written by evaluator agents, one file per perspective. Only present if evaluation was performed.
 
-Extracted from subagent JSONL transcripts via `gobbi note collect` during Step 3. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered.
+### review/
+
+Step 7 output — final review and verdict.
+
+- `innovative.md` — Written by innovative PI agent. Review and verdict through creative lens.
+- `best.md` — Written by best-practice PI agent. Review and verdict through best-practice lens.
+
+### README.md
+
+Task summary and index of related docs. Written after Collection (Step 5). Lists all subdirectories and their key files. Not created at initialization — written once the task has enough content to summarize.
+
+---
+
+## Subtask Collection
+
+`gobbi note collect` takes a `<phase>` argument (`research` or `execution`) to write to the correct `subtasks/` subdirectory. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered.
 
 - One file per subtask, zero-padded sequence number for ordering
 - Extracted automatically — the orchestrator calls the script after each subagent returns, not batched at collection
 - Contains the full delegation prompt and full final result as structured JSON, not summaries
 
-### feedback.md
-
-Record during Phase 2 (FEEDBACK):
-
-- Each feedback round: what the user said, what changed
-- Gotchas recorded from corrections
-- Append each round — do not overwrite previous rounds
-
-Number each feedback round explicitly (Round 1, Round 2, ...). Numbered rounds enable stagnation detection — if the same finding reappears across 3 rounds without convergence, the pattern becomes visible and actionable. Include what remains unresolved after each round, not just what changed.
-
-### review.md
-
-Record during Phase 3 (REVIEW):
-
-- Review scope and focus areas
-- Verification findings
-- Issues found and resolution status
-
-### memorize.md
-
-Record during Step 5 (Memorization). Must document what was persisted for session continuity:
-
-- Task details memorized — what was done, what remains, broader plan context
-- Gotchas written to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/` — list each with a one-line summary
-- Rules written to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/` — list each with a one-line summary
-- Project docs updated — which files in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` were created or modified and why
-
 ---
 
-## README.md
+## Feedback and Review Updates
 
-The index file is a markdown table listing each task directory with its date, session, slug, and a one-line summary of what the task delivered.
+If FEEDBACK happens, `feedback.md` is written to the task root directory — not inside any subdirectory. Number each feedback round explicitly (Round 1, Round 2, ...) to enable stagnation detection.
 
-Must update README.md after creating each new task note directory.
+After FEEDBACK, new review files update the `review/` subdirectory. Previous review files are overwritten with the post-feedback assessment.
 
 ---
 
 ## When to Write
 
-- **Always write** at the end of each workflow step — ideation, plan, execution, feedback, review, memorization.
-- **Write immediately** — do not defer note-writing to the end. Each step's note must be written before proceeding to the next step.
+- **Always write** at the end of each workflow step — each step writes to its own subdirectory as it completes.
+- **Write immediately** — do not defer note-writing to the end. Each step's notes must be written before proceeding to the next step.
 - **Skip only** when the task was trivial and handled directly without delegation.
