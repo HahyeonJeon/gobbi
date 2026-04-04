@@ -1,0 +1,116 @@
+# Evaluator Agent Guide
+
+Guide for defining and using Evaluator agents. Evaluators are adversarial assessors — their job is to find problems, not confirm success. They read output, apply perspective-specific criteria, and report findings. They never implement fixes or approve output. Three evaluator types exist, one for each domain gobbi evaluates.
+
+---
+
+## Role Identity
+
+Evaluators come in fresh. The agent that created the output cannot evaluate it — evaluators can. They are structurally separated from creation to eliminate self-evaluation bias.
+
+Three evaluator types, each scoped to a domain:
+
+| Agent | Domain | Evaluates |
+|---|---|---|
+| `_agent-evaluator` | Agent definitions | `.claude/agents/` files — identity, lifecycle, scope, tool grants, constraints |
+| `_skills-evaluator` | Skill definitions | `.claude/skills/` SKILL.md files — purpose, instruction quality, structural consistency |
+| `_project-evaluator` | Project documentation | `$CLAUDE_PROJECT_DIR/.claude/project/{name}/` — README, design docs, gotchas, notes |
+
+All three types share the same lifecycle (Study, Assess, Report) and scoring model. They differ in what they evaluate and which perspective skills they load.
+
+**Out of scope for all evaluators:** Implementing changes, orchestrating work, delegating to other agents, and approving output. If an evaluator finds nothing wrong, it says so and explains why — it does not manufacture findings to justify its existence.
+
+---
+
+## Perspective Model
+
+> **Each evaluator is spawned with ONE perspective. Multiple perspectives require multiple evaluators.**
+
+A single evaluator with one perspective catches problems through that lens thoroughly. Asking one evaluator to cover multiple perspectives produces shallow coverage of each. The orchestrator spawns separate evaluator instances — one per perspective — and collects verdicts independently.
+
+The six standard perspectives:
+
+- **Project** — Does it solve the right problem? Does it fit the project's requirements, constraints, and goals?
+- **Architecture** — Is the structure sound? Are abstractions appropriate? Is coupling managed?
+- **Performance** — Are there efficiency issues, unnecessary resource usage, or scalability risks?
+- **Aesthetics** — Is it readable, well-named, consistent, and polished? Would a fresh reader understand it?
+- **User** — Does it serve the end user? Is the experience intuitive, accessible, and correct from the user's perspective?
+- **Overall** — What gaps fall between the other perspectives? What works well and must be preserved?
+
+The orchestrator selects 2-5 perspectives per evaluation, with Project and Overall as the minimum baseline. Each perspective is loaded as a skill matching the evaluator type: `_skills-evaluation-project`, `_agent-evaluation-architecture`, `_project-evaluation-overall`, and so on. The perspective skill defines the evaluation criteria and angle of attack.
+
+---
+
+## When to Use
+
+Evaluation is optional at every step of the gobbi workflow. The orchestrator asks the user whether to evaluate or skip before spawning evaluators.
+
+| After step | What is evaluated | Why it matters |
+|---|---|---|
+| Ideation (Step 1) | The idea before planning begins | Catches wrong-problem and missing-constraint issues before they propagate into a plan |
+| Planning (Step 2) | The plan before research begins | Catches dependency errors, scope gaps, and task overlap before researchers investigate |
+| Research (Step 3) | Research quality before execution begins | Catches incomplete coverage, inaccurate references, and insufficient executor guidance |
+| Execution (Step 4) | The deliverables before collection | Catches implementation bugs, scope creep, and acceptance criteria misses |
+
+Evaluation at every step is expensive. The orchestrator's judgment — informed by the user — determines which steps warrant evaluation. Low-risk, well-defined tasks may skip evaluation entirely. High-risk or ambiguous tasks benefit from evaluation at multiple steps.
+
+---
+
+## Delegation Pattern
+
+What the orchestrator provides in the delegation prompt:
+
+- **The perspective skill to load** — one of the six perspective skills matching the evaluator type (e.g., `_project-evaluation-project`, `_agent-evaluation-architecture`)
+- **The stage-specific evaluation skill** — defines what to check at this workflow stage (e.g., `_ideation-evaluation`, `_plan-evaluation`, `_research-evaluation`)
+- **The output to evaluate** — the actual content being assessed, either inline or as file paths
+- **Domain context** — project rules, gotchas, conventions, and relevant knowledge that informs whether findings are real issues or false positives
+- **Read-only access** — evaluators assess, they do not modify. Their tool set is `Read, Grep, Glob, Bash` — no Write or Edit
+
+The evaluator follows the lifecycle: Study (read the output and understand its purpose) -> Assess (apply perspective criteria rigorously) -> Report (structured findings with evidence, severity, confidence, and verdict).
+
+---
+
+## Scoring and Verdicts
+
+Every finding carries two independent dimensions:
+
+- **Confidence** (0-100) — how certain the evaluator is that the finding represents a real issue. 0 is a false positive; 100 is verified by evidence or tool output.
+- **Severity** (Critical / High / Medium / Low) — how impactful the issue would be if real. Critical blocks progress or breaks correctness; Low is a minor concern or style preference.
+
+These dimensions are independent — a finding can be high-severity but low-confidence ("this might be a security vulnerability, but I cannot verify it") or low-severity but high-confidence ("this variable name is inconsistent with the naming convention").
+
+**Verdicts:**
+
+- **PASS** — no findings that warrant revision. The evaluator still reports what works well (the must-preserve list).
+- **REVISE** — findings exist that should be addressed before proceeding. The orchestrator presents these to the user for discussion.
+- **ESCALATE** — findings exist that the evaluator cannot resolve or that represent a fundamental issue requiring user decision.
+
+Low-confidence findings are suppressed from the evaluation report by default to prevent noise. They are not discarded — the orchestrator or user can request the full unfiltered list.
+
+**False positive categories** — before assigning high confidence, evaluators check whether a finding falls into: pre-existing (exists before this change), out-of-scope (real but outside the task boundary), style preference (subjective, not a convention violation), linter-catchable (mechanical issue for automated tooling), or speculative (hypothetical concern without supporting evidence).
+
+---
+
+## Model and Effort
+
+All three evaluator agents default to **sonnet**, set in their agent definition frontmatter. This is a deliberate choice — evaluators follow structured criteria and assess against defined frameworks. They do not need opus-level creative reasoning.
+
+The rationale: evaluation is rigorous analytical work. Evaluators load a perspective skill that defines their criteria, read the output, and systematically check it against those criteria. This is structured assessment, not creative problem-solving. Sonnet handles this reliably at max effort.
+
+All evaluator invocations run at max effort — thoroughness matters even at the sonnet tier. The orchestrator sets max effort at delegation time.
+
+The orchestrator rarely overrides evaluator model assignments. Sonnet handles evaluation well across all three evaluator types and all six perspectives. If a future evaluation task genuinely requires creative reasoning (which would be unusual for evaluation), the orchestrator can override to opus — but the default should remain sonnet.
+
+---
+
+## Defining a Custom Evaluator
+
+When a project needs domain-specific evaluation beyond the standard perspectives, create project-specific perspective skills. A custom evaluator is typically a standard evaluator agent with a new perspective skill — not a new agent definition.
+
+- Create project-specific perspective skills — e.g., `_project-evaluation-security` for a security-focused perspective that checks for SQL injection, auth bypass, and secrets exposure
+- Add domain-specific evaluation criteria — "check for N+1 queries in SQLAlchemy", "verify all API endpoints require authentication", "confirm migration is reversible"
+- Keep the adversarial stance — custom evaluators still find problems, not confirm success
+- Keep the sonnet model tier — structured assessment against domain-specific criteria is still structured assessment
+- Keep the scoring model — custom findings still carry confidence and severity independently
+
+If the project needs an entirely new evaluator agent (not just a new perspective), it should follow the same structural pattern as the existing evaluator agents: frontmatter with sonnet model, adversarial identity, Study-Assess-Report lifecycle, and read-only tool grants. The new evaluator should cover a domain that none of the three existing evaluators handle — otherwise, a new perspective skill on an existing evaluator is the right approach.
