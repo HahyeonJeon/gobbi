@@ -8,7 +8,7 @@
   "title": "Evaluation",
   "opening": "Evaluation framework for the gobbi workflow. Orchestrators use this to select perspectives and delegate to evaluator agents. Evaluators use this alongside their perspective skill to assess, score, and verdict.",
   "navigation": {
-    "[evaluation.md](evaluation.md)": "Evaluation criteria for user-created evaluation perspectives"
+    "skills/_evaluation/evaluation.md": "Evaluation criteria for user-created evaluation perspectives"
   },
   "sections": [
     {

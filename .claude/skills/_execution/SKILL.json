@@ -178,6 +178,6 @@
     }
   ],
   "navigation": {
-    "[gotchas.md](gotchas.md)": "Known mistakes and corrections for _execution"
+    "skills/_execution/gotchas.md": "Known mistakes and corrections for _execution"
   }
 }

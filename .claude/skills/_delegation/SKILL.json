@@ -401,6 +401,6 @@
     }
   ],
   "navigation": {
-    "[gotchas.md](gotchas.md)": "Known mistakes and corrections for _delegation"
+    "skills/_delegation/gotchas.md": "Known mistakes and corrections for _delegation"
   }
 }

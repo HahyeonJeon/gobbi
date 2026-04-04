@@ -7,7 +7,7 @@
   "title": "Claude Project Documentation",
   "opening": "Guide for authoring project-specific documentation in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`. Project docs capture accumulated context — architecture decisions, conventions, technology choices, gotchas — that help agents work effectively on returning sessions. Load this skill when creating, reviewing, or organizing project documentation.\n\nLoad `_claude` for the general documentation writing standard before authoring project docs.",
   "navigation": {
-    "[evaluation.md](evaluation.md)": "Evaluation criteria for user-created project documentation"
+    "skills/_project/evaluation.md": "Evaluation criteria for user-created project documentation"
   },
   "sections": [
     {

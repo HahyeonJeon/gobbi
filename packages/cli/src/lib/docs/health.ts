@@ -279,7 +279,7 @@ function compareFindings(a: Finding, b: Finding): number {
 export async function checkHealth(directory: string): Promise<HealthReport> {
   const absDir = path.resolve(directory);
   const corpus = await scanCorpus(absDir);
-  const graph = buildGraph(corpus.docs);
+  const graph = buildGraph(corpus.docs, absDir);
 
   // Run all checks
   const findings: Finding[] = [

@@ -36,10 +36,11 @@ const MD_LINK_RE = /^\[.*?\]\((.+)\)$/;
 /**
  * Attempt to resolve a navigation key to an absolute file path.
  *
- * Navigation keys appear in three formats:
- * 1. Markdown links `[text](path)` — resolve path relative to source doc dir
- * 2. Skill names like `_rules` — resolve to `skills/{name}/SKILL.json` within corpus
- * 3. Descriptive text like `"Benchmark scenarios"` — unresolvable
+ * Navigation keys appear in four formats:
+ * 1. .claude/-relative paths like `skills/_git/conventions.md` — resolve against claudeDir
+ * 2. Markdown links `[text](path)` — resolve path relative to source doc dir (legacy)
+ * 3. Skill names like `_rules` — resolve to `skills/{name}/SKILL.json` within corpus
+ * 4. Descriptive text like `"Benchmark scenarios"` — unresolvable
  *
  * Returns the resolved absolute path if matched, or undefined if unresolvable.
  */
@@ -47,8 +48,14 @@ function resolveNavKey(
   key: string,
   sourceDir: string,
   skillPathLookup: Map<string, string>,
+  claudeDir?: string,
 ): string | undefined {
-  // Format 1: Markdown link [text](path)
+  // Format 1: .claude/-relative path (contains / and looks like a file path)
+  if (claudeDir !== undefined && key.includes('/') && !key.startsWith('[')) {
+    return path.resolve(claudeDir, key);
+  }
+
+  // Format 2: Markdown link [text](path) (legacy)
   const mdMatch = MD_LINK_RE.exec(key);
   if (mdMatch !== null) {
     const linkPath = mdMatch[1];
@@ -58,13 +65,13 @@ function resolveNavKey(
     return undefined;
   }
 
-  // Format 2: Skill name (starts with _ or __ prefix, or matches a known skill directory name)
+  // Format 3: Skill name (starts with _ or __ prefix, or matches a known skill directory name)
   const skillPath = skillPathLookup.get(key);
   if (skillPath !== undefined) {
     return skillPath;
   }
 
-  // Format 3: Descriptive text — unresolvable
+  // Format 4: Descriptive text — unresolvable
   return undefined;
 }
 
@@ -110,7 +117,7 @@ const ENTRY_POINT_NAMES: ReadonlySet<string> = new Set([
  * Resolves navigation links and parent references between documents,
  * builds adjacency lists, and identifies orphan documents.
  */
-export function buildGraph(corpus: ScannedDoc[]): DocGraph {
+export function buildGraph(corpus: ScannedDoc[], claudeDir?: string): DocGraph {
   const nodes = new Map<string, ScannedDoc>();
   for (const doc of corpus) {
     nodes.set(doc.path, doc);
@@ -135,7 +142,7 @@ export function buildGraph(corpus: ScannedDoc[]): DocGraph {
     const sourceDir = path.dirname(doc.path);
 
     for (const key of Object.keys(nav)) {
-      const resolved = resolveNavKey(key, sourceDir, skillPathLookup);
+      const resolved = resolveNavKey(key, sourceDir, skillPathLookup, claudeDir);
 
       // Navigation keys often point to .md files, but corpus nodes are .json files.
       // Check both the resolved path and its .json equivalent.

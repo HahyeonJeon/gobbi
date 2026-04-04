@@ -5,7 +5,7 @@
     "description": "Guide for authoring rule files in .claude/rules/. Covers verifiability, structure, when to create a rule."
   },
   "navigation": {
-    "[evaluation.md](evaluation.md)": "Evaluation criteria for user-created rule files — failure modes, diagnostic dimensions, verification checklist"
+    "skills/_rules/evaluation.md": "Evaluation criteria for user-created rule files — failure modes, diagnostic dimensions, verification checklist"
   },
   "title": "Claude Rules",
   "opening": "Guide for authoring rule files in `.claude/rules/`. Rules live alongside other project documentation and define verifiable standards that apply across all work in the project. Load this skill when creating or reviewing rule files.\n\nLoad `_claude` for the general documentation writing standard before authoring rules.",

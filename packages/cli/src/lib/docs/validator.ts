@@ -162,6 +162,10 @@ function validateNavigation(nav: unknown, errors: string[]): void {
     if (typeof value !== 'string') {
       errors.push(`navigation["${key}"] must be a string`);
     }
+    // Warn if key uses legacy markdown link format instead of .claude/-relative path
+    if (/^\[.*\]\(.*\)$/.test(key)) {
+      errors.push(`navigation key "${key}" uses markdown link syntax — use a .claude/-relative path instead (e.g., "skills/_git/conventions.md")`);
+    }
   }
 }
 

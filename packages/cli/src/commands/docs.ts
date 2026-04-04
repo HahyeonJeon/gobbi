@@ -834,7 +834,7 @@ async function runDocsTree(args: string[]): Promise<void> {
   const fmt = typeof values.format === 'string' ? values.format : 'text';
 
   const corpus = await scanCorpus(directory);
-  const graph = buildGraph(corpus.docs);
+  const graph = buildGraph(corpus.docs, directory);
   const result = buildTree(graph, directory);
 
   if (fmt === 'json') {

@@ -12,10 +12,10 @@ Writing standard for `.claude/` documentation. MUST load when authoring or modif
 
 | Document | Covers |
 |----------|--------|
-| _rules | Authoring rule files in `.claude/rules/` |
-| _project | Authoring project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` |
-| _skills | Creating and modifying skill definitions in `.claude/skills/` |
-| _agents | Creating and modifying agent definitions in `.claude/agents/` |
+| [_rules](../../_rules) | Authoring rule files in `.claude/rules/` |
+| [_project](../../_project) | Authoring project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` |
+| [_skills](../../_skills) | Creating and modifying skill definitions in `.claude/skills/` |
+| [_agents](../../_agents) | Creating and modifying agent definitions in `.claude/agents/` |
 | [transcripts.md](transcripts.md) | Subagent transcript recovery — location, JSONL schema, extraction paths, plan data |
 | [gotchas.md](gotchas.md) | Known mistakes and corrections for _claude |
 

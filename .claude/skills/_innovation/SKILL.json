@@ -8,7 +8,7 @@
   "title": "Innovation Stance",
   "opening": "This skill defines the innovative stance — the thinking lens that PI and Researcher agents adopt when the orchestrator spawns them for creative, unconventional exploration. The innovative stance exists to find approaches that are not obvious: challenge defaults, question established patterns, draw from cross-domain inspiration, and go deep into promising unconventional directions.\n\nThe orchestrator loads this skill into subagents spawned with the innovative stance. It shapes how the agent thinks, researches, and reviews — not which tools or lifecycle steps it follows. The agent's base definition (`__pi.json` or `__researcher.json`) governs the lifecycle; this skill governs the lens.\n\nProjects may also define their own `_innovation` skill to add domain-specific innovative thinking patterns that supplement this one.",
   "navigation": {
-    "[evaluation.md](evaluation.md)": "Evaluation criteria for user-created innovation stance skills"
+    "skills/_innovation/evaluation.md": "Evaluation criteria for user-created innovation stance skills"
   },
   "sections": [
     {
