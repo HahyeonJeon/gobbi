@@ -30,6 +30,7 @@ export interface SearchMatch {
 export interface SearchResult {
   matches: SearchMatch[];
   scannedCount: number;
+  error?: string | undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -44,9 +45,16 @@ function truncate(text: string): string {
   return text.slice(0, MAX_SNIPPET) + '...';
 }
 
-/** Build a case-insensitive regex from a user-supplied pattern string. */
-function toRegex(pattern: string): RegExp {
-  return new RegExp(pattern, 'i');
+/**
+ * Build a case-insensitive regex from a user-supplied pattern string.
+ * Returns the compiled RegExp, or an Error if the pattern is invalid.
+ */
+function toRegex(pattern: string): RegExp | Error {
+  try {
+    return new RegExp(pattern, 'i');
+  } catch (err) {
+    return err instanceof Error ? err : new Error(String(err));
+  }
 }
 
 /** Test whether a blockType string passes the block filter. */
@@ -236,7 +244,11 @@ export async function searchDocs(
   blockFilter?: string,
 ): Promise<SearchResult> {
   const result = await scanCorpus(directory);
-  const regex = toRegex(pattern);
+  const regexOrError = toRegex(pattern);
+  if (regexOrError instanceof Error) {
+    return { matches: [], scannedCount: 0, error: `Invalid regex pattern: ${regexOrError.message}` };
+  }
+  const regex = regexOrError;
   const matches: SearchMatch[] = [];
   const absDir = path.resolve(directory);
 

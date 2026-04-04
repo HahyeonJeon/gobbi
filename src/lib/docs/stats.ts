@@ -28,6 +28,23 @@ export interface CorpusStats {
     maxSections: number;
     avgSections: number;
   };
+  tokens: {
+    total: number;
+    byType: Record<string, number>;
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Token estimation
+// ---------------------------------------------------------------------------
+
+/** Rough characters-per-token ratio for estimating token counts. */
+const CHARS_PER_TOKEN = 4;
+
+/** Estimate token count from a JSON-stringified document's character length. */
+function estimateTokens(doc: unknown): number {
+  const chars = JSON.stringify(doc).length;
+  return Math.ceil(chars / CHARS_PER_TOKEN);
 }
 
 // ---------------------------------------------------------------------------
@@ -88,12 +105,22 @@ export async function computeStats(directory: string): Promise<CorpusStats> {
   // Per-doc section counts for distribution calculation
   const sectionCounts: number[] = [];
 
+  // Token estimation accumulators
+  let totalTokens = 0;
+  const tokensByType: Record<string, number> = {};
+
   for (const scanned of docs) {
     const doc = scanned.doc;
 
     // --- By doc type ---
     const typeCount = byType[scanned.type];
     byType[scanned.type] = typeCount !== undefined ? typeCount + 1 : 1;
+
+    // --- Token estimation ---
+    const docTokens = estimateTokens(doc);
+    totalTokens += docTokens;
+    const existingTokens = tokensByType[scanned.type];
+    tokensByType[scanned.type] = existingTokens !== undefined ? existingTokens + docTokens : docTokens;
 
     // --- Navigation presence ---
     if (doc.navigation !== undefined) {
@@ -150,5 +177,6 @@ export async function computeStats(directory: string): Promise<CorpusStats> {
     navigation: { with: navWith, without: navWithout },
     gotchas: { totalEntries: gotchaTotalEntries, byPriority: gotchaByPriority },
     sizeDistribution: { minSections, maxSections, avgSections },
+    tokens: { total: totalTokens, byType: tokensByType },
   };
 }

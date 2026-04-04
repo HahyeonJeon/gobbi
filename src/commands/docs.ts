@@ -726,14 +726,21 @@ async function runDocsTree(args: string[]): Promise<void> {
   const result = buildTree(graph, directory);
 
   if (fmt === 'json') {
-    console.log(JSON.stringify(result.roots, null, 2));
+    console.log(JSON.stringify({ roots: result.roots, orphans: result.orphans }, null, 2));
   } else {
-    if (result.roots.length === 0) {
+    if (result.roots.length === 0 && result.orphans.length === 0) {
       console.log(dim('  No navigation tree found.'));
     } else {
-      console.log(header('Navigation Tree'));
-      console.log(formatTreeText(result.roots));
-      console.log('');
+      if (result.roots.length > 0) {
+        console.log(header('Navigation Tree'));
+        console.log(formatTreeText(result.roots));
+        console.log('');
+      }
+      if (result.orphans.length > 0) {
+        console.log(header('Orphaned Documents'));
+        console.log(formatTreeText(result.orphans));
+        console.log('');
+      }
       console.log(dim(`  ${result.flatCount} documents total`));
     }
   }
@@ -773,7 +780,17 @@ async function runDocsSearch(args: string[]): Promise<void> {
   const blockFilter = typeof values.block === 'string' ? values.block : undefined;
   const fmt = typeof values.format === 'string' ? values.format : 'text';
 
+  if (typeFilter !== undefined && !isDocType(typeFilter)) {
+    console.log(error(`Invalid doc type: "${typeFilter}". Must be one of: ${VALID_DOC_TYPES.join(', ')}`));
+    process.exit(1);
+  }
+
   const result = await searchDocs(directory, pattern, typeFilter, blockFilter);
+
+  if (result.error !== undefined) {
+    console.log(error(result.error));
+    process.exit(1);
+  }
 
   if (fmt === 'json') {
     console.log(JSON.stringify(result.matches, null, 2));
@@ -797,6 +814,11 @@ async function runDocsSearch(args: string[]): Promise<void> {
         for (const match of matches) {
           console.log(`  ${dim(match.section)} ${dim('[')}${match.blockType}${dim(']')}`);
           console.log(`    ${match.match}`);
+          // Show the extract command for actionable follow-up
+          const extractQuery = match.section !== '(document)'
+            ? `sections.${match.section}`
+            : match.blockType;
+          console.log(dim(`    -> gobbi docs extract ${filePath} "${extractQuery}"`));
         }
         console.log('');
       }
@@ -845,8 +867,9 @@ async function runDocsExtract(args: string[]): Promise<void> {
   let result;
   try {
     result = await extractFromDoc(filePath, query);
-  } catch {
-    console.log(error(`Cannot read or parse file: ${filePath}`));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : `Cannot read or parse file: ${filePath}`;
+    console.log(error(message));
     process.exit(1);
   }
 
@@ -1007,6 +1030,13 @@ async function runDocsStats(args: string[]): Promise<void> {
     console.log(`    Min: ${stats.sizeDistribution.minSections}`);
     console.log(`    Max: ${stats.sizeDistribution.maxSections}`);
     console.log(`    Avg: ${stats.sizeDistribution.avgSections}`);
+    console.log('');
+
+    console.log(`  ${bold('Estimated tokens:')}`);
+    console.log(`    Total: ~${stats.tokens.total.toLocaleString()}`);
+    for (const [type, count] of Object.entries(stats.tokens.byType)) {
+      console.log(`    ${type}: ~${count.toLocaleString()}`);
+    }
   }
 }
 
@@ -1055,6 +1085,7 @@ async function runDocsHealth(args: string[]): Promise<void> {
         console.log(bold('  Errors:'));
         for (const finding of errors) {
           console.log(error(`[${finding.category}] ${finding.path}: ${finding.message}`));
+          console.log(dim(`    -> ${finding.suggestion}`));
         }
         console.log('');
       }
@@ -1063,6 +1094,7 @@ async function runDocsHealth(args: string[]): Promise<void> {
         console.log(bold('  Warnings:'));
         for (const finding of warnings) {
           console.log(yellow(`  ! [${finding.category}] ${finding.path}: ${finding.message}`));
+          console.log(dim(`    -> ${finding.suggestion}`));
         }
         console.log('');
       }
@@ -1071,6 +1103,7 @@ async function runDocsHealth(args: string[]): Promise<void> {
         console.log(bold('  Info:'));
         for (const finding of infos) {
           console.log(dim(`  i [${finding.category}] ${finding.path}: ${finding.message}`));
+          console.log(dim(`    -> ${finding.suggestion}`));
         }
         console.log('');
       }

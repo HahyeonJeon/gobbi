@@ -21,8 +21,9 @@ export interface TreeNode {
 }
 
 export interface TreeResult {
-  roots: TreeNode[];   // top-level nodes (no parent referencing them)
-  flatCount: number;   // total nodes
+  roots: TreeNode[];     // legitimate top-level entry points
+  orphans: TreeNode[];   // nodes with no incoming edges that are not entry points
+  flatCount: number;     // total nodes
 }
 
 // ---------------------------------------------------------------------------
@@ -59,14 +60,21 @@ export function buildTree(graph: DocGraph, scanDir: string): TreeResult {
     }
   }
 
-  // Root nodes: nodes in the graph that have no resolved incoming edges
+  // Separate legitimate roots from orphans using the graph's orphan list
+  const orphanSet = new Set(graph.orphans);
   const rootPaths: string[] = [];
+  const orphanPaths: string[] = [];
   for (const nodePath of graph.nodes.keys()) {
     if (!hasIncoming.has(nodePath)) {
-      rootPaths.push(nodePath);
+      if (orphanSet.has(nodePath)) {
+        orphanPaths.push(nodePath);
+      } else {
+        rootPaths.push(nodePath);
+      }
     }
   }
   rootPaths.sort();
+  orphanPaths.sort();
 
   // Recursive builder with cycle protection
   let flatCount = 0;
@@ -107,7 +115,15 @@ export function buildTree(graph: DocGraph, scanDir: string): TreeResult {
     }
   }
 
-  return { roots, flatCount };
+  const orphanNodes: TreeNode[] = [];
+  for (const orphanPath of orphanPaths) {
+    const node = buildNode(orphanPath);
+    if (node !== undefined) {
+      orphanNodes.push(node);
+    }
+  }
+
+  return { roots, orphans: orphanNodes, flatCount };
 }
 
 // ---------------------------------------------------------------------------

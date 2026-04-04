@@ -157,8 +157,21 @@ export async function extractFromDoc(
   filePath: string,
   query: string,
 ): Promise<ExtractResult> {
-  const raw = await readFile(filePath, 'utf8');
-  const parsed: unknown = JSON.parse(raw);
+  let raw: string;
+  try {
+    raw = await readFile(filePath, 'utf8');
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Cannot read file: ${message}`);
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw) as unknown;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Invalid JSON: ${message}`);
+  }
 
   // Validate schema
   if (typeof parsed !== 'object' || parsed === null) {

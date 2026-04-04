@@ -21,6 +21,7 @@ export interface Finding {
   severity: FindingSeverity;
   category: string;
   message: string;
+  suggestion: string;
 }
 
 export interface HealthReport {
@@ -59,6 +60,7 @@ function checkOrphans(graph: DocGraph, scanDir: string): Finding[] {
       severity: 'warning',
       category: 'orphaned-document',
       message: `No other document references ${path.relative(scanDir, absPath)}`,
+      suggestion: 'Add a navigation link to this document from its parent, or check if it should have a parent field',
     });
   }
   return findings;
@@ -79,6 +81,7 @@ function checkBrokenNavLinks(graph: DocGraph, scanDir: string): Finding[] {
           severity: 'error',
           category: 'broken-navigation',
           message: `${path.relative(scanDir, edge.from)} has navigation link to '${edge.to}' which does not resolve`,
+          suggestion: 'Check the navigation key format — ensure it points to an existing .json or .md file',
         });
       }
     }
@@ -104,6 +107,7 @@ function checkEmptySections(docs: ScannedDoc[], scanDir: string): Finding[] {
           severity: 'warning',
           category: 'empty-section',
           message: `${path.relative(scanDir, scanned.path)} section '${heading}' has no content blocks`,
+          suggestion: 'Add content blocks to this section or remove the empty section',
         });
       }
     }
@@ -140,6 +144,7 @@ function checkIncompleteGotchas(docs: ScannedDoc[], scanDir: string): Finding[] 
           severity: 'error',
           category: 'incomplete-gotcha',
           message: `entries[${i}] '${entry.title}' is missing required body fields: ${missingFields.join(', ')}`,
+          suggestion: 'Add the missing body field(s) to this gotcha entry',
         });
       }
     }
@@ -159,6 +164,7 @@ function checkMissingParents(graph: DocGraph, scanDir: string): Finding[] {
         severity: 'error',
         category: 'missing-parent',
         message: `${path.relative(scanDir, edge.from)} declares parent '${edge.to}' but no matching skill exists`,
+        suggestion: 'Update the parent field to reference an existing skill directory name',
       });
     }
   }
@@ -203,6 +209,7 @@ function checkBidirectionalConsistency(
         severity: 'warning',
         category: 'bidirectional-consistency',
         message: `${path.relative(scanDir, childPath)} claims parent '${path.relative(scanDir, parentPath)}' but parent's navigation does not reference it`,
+        suggestion: 'Add a navigation entry in the parent document pointing back to this child',
       });
     }
   }
@@ -223,6 +230,7 @@ function checkUnresolvableNavKeys(graph: DocGraph, scanDir: string): Finding[] {
         severity: 'info',
         category: 'unresolvable-nav-key',
         message: `Navigation key '${edge.to}' could not be resolved to any file`,
+        suggestion: 'This navigation key uses a descriptive format that cannot be resolved to a file',
       });
     }
   }
