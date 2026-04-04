@@ -64,13 +64,17 @@ Opus is for agents that need deep creative reasoning, novel problem-solving, or 
 
 | Role | Model | Rationale |
 |---|---|---|
-| Creative / investigative agents (`__pi`, `__researcher`) | opus | Deep reasoning for ideation, research, and review. Innovative stance especially requires the strongest model for unconventional thinking. |
+| Creative / investigative agents (`__pi`, `__researcher`) | opus | Deep reasoning for ideation and research. Innovative stance especially requires the strongest model for unconventional thinking. |
 | Implementation agents (`__executor`, `gobbi-agent`) | opus | Implementation quality requires strong reasoning about patterns, trade-offs, and correctness. |
 | Evaluator agents (`_agent-evaluator`, `_skills-evaluator`, `_project-evaluator`) | sonnet | Structured assessment against defined criteria. Rigorous but follows evaluation frameworks — does not need creative reasoning. |
 
 > **The orchestrator can override per task — but the default must be right for the common case.**
 
 The Agent tool's `model` parameter lets the orchestrator override at delegation time. Use this for exceptions (e.g., a simple validation task on an opus-default agent can drop to sonnet). But the frontmatter default should match the agent's typical workload so overrides are rare.
+
+> **All review tasks override to sonnet via the Agent tool's `model` parameter.**
+
+Review is assessment, not creation. When spawning any subagent for review work — Step 7 Review, code review, PR review, or any other assessment task — the orchestrator sets `model: "sonnet"` in the Agent tool call. This overrides the agent definition's default (e.g., `__pi` defaults to opus but runs at sonnet during review). Evaluator agents already default to sonnet, so no override is needed for them.
 
 When creating a new agent, determine its model tier by asking: "Does this agent need to reason creatively or investigate novel problems?" If yes, opus. "Does this agent assess against structured criteria or follow defined processes?" If yes, sonnet. All agents run at max effort regardless of tier — effort is not a dial to turn down.
 

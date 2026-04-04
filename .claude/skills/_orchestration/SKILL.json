@@ -418,8 +418,8 @@
             },
             {
               "type": "principle",
-              "statement": "Spawn PI agents with innovative + best stances in parallel.",
-              "body": "Each PI agent reviews the completed work from their stance. The innovative reviewer looks for missed opportunities, alternative approaches that could have been better, and creative improvements. The best reviewer assesses against established quality standards, conventions, and correctness. Each writes their review to the `review/` subdirectory — `innovative.md` and `best.md`."
+              "statement": "Spawn PI agents with innovative + best stances in parallel, using sonnet model.",
+              "body": "Review is assessment, not creation. Use the Agent tool's `model: \"sonnet\"` parameter to override PI agents to sonnet tier for all review tasks — both Step 7 Review and any other review-type delegation. This applies to every review task, not just Step 7. Sonnet provides rigorous analytical assessment at max effort without the cost of opus. Each PI agent reviews the completed work from their stance. The innovative reviewer looks for missed opportunities and creative improvements. The best reviewer assesses against established quality standards and correctness. Each writes their review to the `review/` subdirectory — `innovative.md` and `best.md`."
             },
             {
               "type": "principle",
