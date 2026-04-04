@@ -355,27 +355,27 @@
       ]
     },
     {
-      "heading": "Extraction Scripts",
+      "heading": "Extraction Commands",
       "content": [
         {
           "type": "text",
-          "value": "Scripts in `_note/scripts/` automate transcript extraction:"
+          "value": "CLI commands automate transcript extraction:"
         },
         {
           "type": "table",
           "headers": [
-            "Script",
+            "Command",
             "Purpose",
             "Input"
           ],
           "rows": [
             [
-              "`subtask-collect.sh`",
+              "`gobbi note collect`",
               "Extract delegation prompt + final result per subagent",
               "`<agent-id> <subtask-number> <subtask-slug> <note-dir-path>`"
             ],
             [
-              "`write-plan.sh`",
+              "`gobbi note plan`",
               "Extract plan content from `ExitPlanMode`",
               "`<note-dir-path>`"
             ]
@@ -383,7 +383,7 @@
         },
         {
           "type": "text",
-          "value": "Both scripts write JSON files to the note directory and require `$CLAUDE_SESSION_ID`, `$CLAUDE_TRANSCRIPT_PATH`, and `jq`."
+          "value": "Both commands write JSON files to the note directory and require `$CLAUDE_SESSION_ID`, `$CLAUDE_TRANSCRIPT_PATH`, and `jq`."
         }
       ]
     },

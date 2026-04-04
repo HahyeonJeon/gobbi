@@ -8,6 +8,13 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 
 You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [feedback.md](feedback.md) | FEEDBACK phase: iteration tracking, stagnation detection, targeted re-evaluation |
+| [finish.md](finish.md) | FINISH phase: merge/commit/compact decision tree, pre-action verification |
+
 ---
 
 ## Task Routing
@@ -19,7 +26,7 @@ Every incoming task falls into one of three tiers. The user never selects a tier
 It is cheaper to skip unnecessary ideation than to redo work that lacked structure.
 
 | Tier | Test | What happens |
-|------|------|-------------|
+|---|---|---|
 | **Trivial** | Within the user's session-start trivial case range | Orchestrator handles directly. No delegation. The boundary is set by the user's preference at session start and cannot be overridden by the orchestrator. |
 | **Structured routine** | "Can this be fully specified without discussion?" | Skip ideation and planning — delegate directly with a known pattern. The task has an existing skill that defines the execution pattern (running an audit, recording a gotcha, capturing session learnings). Verification still applies. |
 | **Non-trivial** | "Does this require exploration, trade-offs, or creative decomposition?" | Full ideation-plan-execute cycle. This is the default tier. |
@@ -37,7 +44,7 @@ They still go through delegation, evaluation, and collection. The difference is 
 Create these tasks at the start of every non-trivial workflow:
 
 | Task | Subject |
-|------|---------|
+|---|---|
 | Step 1 | Ideation — discuss, evaluate, improve |
 | Step 2 | Planning — plan, discuss, evaluate, improve |
 | Step 3 | Execution — delegate subtasks to subagents |
@@ -49,12 +56,13 @@ Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add
 
 ---
 
+
 **Load at workflow start:** _note, _evaluation
 
 **Load at each step:**
 
 | Step | Load Skills |
-|------|-------------|
+|---|---|
 | Step 1. Ideation | _ideation, _discuss, _evaluation, _ideation-evaluation |
 | Step 2. Planning | _plan, _discuss, _evaluation, _plan-evaluation |
 | Step 3. Execution | _delegation, _evaluation |
@@ -62,6 +70,8 @@ Add Phase 2 (FEEDBACK) or Phase 3 (REVIEW) tasks when the user selects them. Add
 | Step 5. Memorization | _memorization, _gotcha |
 
 **Must write note at every step** — write the corresponding note file before leaving each step. Never defer, never skip.
+
+---
 
 ## Resume and Recovery
 
@@ -83,6 +93,7 @@ Recreate the workflow tasks (Step 1–5) and mark completed ones based on which 
 
 ---
 
+
 ### Evaluation
 
 Evaluation is delegation — the orchestrator **never** evaluates directly. Spawn independent evaluator subagents, each loaded with the appropriate stage-specific evaluation skill and domain-relevant skills for the task.
@@ -100,6 +111,7 @@ An evaluator with only an evaluation perspective skill lacks the context to judg
 Evaluation MUST happen at Steps 1, 2, and 3 by default. Use AskUserQuestion to ask if the user wants to **skip** evaluation — not whether they want to evaluate. Recommend evaluating. Only skip if the user explicitly chooses to. Catching problems at ideation is cheaper than catching them at execution.
 
 ---
+
 
 ### Step 1. Ideation
 
@@ -166,9 +178,9 @@ Define the goal, constraints, and what to avoid. Detailed "how" instructions sup
 - Each subtask must be delegated to a specialist subagent with fresh context.
 - Every subagent prompt must include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary.
 - Every subagent must load _gotcha before starting work.
-- After each subtask completes, run `subtask-collect.sh` to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result). Then spawn a separate evaluator agent to assess the output.
+- After each subtask completes, run `gobbi note collect` to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result). Then spawn a separate evaluator agent to assess the output.
 - If evaluation fails, fix and re-evaluate before proceeding to the next subtask.
-- After all subtasks complete, write execution.md. Subtask JSON files are already on disk from the per-subtask `subtask-collect.sh` calls.
+- After all subtasks complete, write execution.md. Subtask JSON files are already on disk from the per-subtask `gobbi note collect` calls.
 - After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn.
 
 > **When _git is active**
@@ -226,25 +238,19 @@ Re-verify at the point of use, not only at session start.
 
 See [finish.md](finish.md) for the full decision tree, action definitions, and pre-action verification constraints.
 
-**Navigate deeper from here:**
-
-| Document | Covers |
-|----------|--------|
-| [feedback.md](feedback.md) | FEEDBACK phase: iteration tracking, stagnation detection, targeted re-evaluation |
-| [finish.md](finish.md) | FINISH phase: merge/commit/compact decision tree, pre-action verification |
-
 ---
 
 ## Constraints
 
 **Mandatory actions — never skip these:**
+
 - Before planning, MUST check gotchas
 - Before expensive delegation, MUST run lightweight precondition checks — verify the task is well-defined, prerequisites are met, and the scope justifies agent spawning. Use cheap checks (Haiku agents or bash commands) to prevent wasting expensive computation on ineligible or malformed tasks
 - Any delegated task that involves both assessment and modification MUST present its assessment findings to the user via AskUserQuestion before performing modifications
 - Before delegation, MUST include gotcha context in every subagent prompt
 - Before evaluation, MUST ask user with AskUserQuestion whether to **skip** evaluation — evaluation is the default at all steps, the user opts out, not in
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with
-- After delegation, MUST run `subtask-collect.sh` for each completed subagent immediately after each wave — before any downstream agent runs
+- After delegation, MUST run `gobbi note collect` for each completed subagent immediately after each wave — before any downstream agent runs
 - After delegation, MUST write work docs via _collection — immediately, not deferred
 - After memorization, MUST call AskUserQuestion to ask: FEEDBACK, REVIEW, or FINISH?
 - After FEEDBACK, MUST call AskUserQuestion to ask: REVIEW, or FINISH?
@@ -255,15 +261,16 @@ See [finish.md](finish.md) for the full decision tree, action definitions, and p
 - When using AskUserQuestion, MUST put the recommended option first with "(Recommended)" in the label — give an opinion, don't just present neutral choices
 
 **Gobbi vs project boundary — understand what gobbi provides vs what the user's project needs:**
+
 - Gobbi provides workflow orchestration, `.claude/` documentation standards, evaluation framework, and gotcha recording. Users do NOT need to create skills or agents for these — gobbi serves them.
 - Users SHOULD create project-specific skills and agents that are tailored to their language, framework, and domain. For example, a project evaluation skill for a Python FastAPI project should know about Python-specific patterns, SQLAlchemy conventions, and FastAPI middleware — not just generic "check quality."
 - When the user asks to create skills, agents, or rules, determine whether gobbi already covers the need (redirect to the existing gobbi skill) or whether a project-specific artifact is needed (help create one with domain-specific content).
 - Project evaluation perspectives should be concrete and domain-aware — "check for N+1 queries in SQLAlchemy" is useful; "check performance" is not.
 
 **Never do these:**
+
 - Never implement complex domain work yourself when a specialist exists
 - Never delegate without context — agents without project standards produce work that fails integration
 - Never self-evaluate — the agent that creates must never judge its own output
 - Never automatically improve based on evaluation without discussing with the user first
 - Never launch more than 8 parallel subagents — batch larger plans into waves
-

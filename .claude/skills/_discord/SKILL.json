@@ -39,7 +39,7 @@
       "content": [
         {
           "type": "text",
-          "value": "Store the webhook URL as `DISCORD_WEBHOOK_URL` in `$CLAUDE_PROJECT_DIR/.claude/.env`. This file is read by `load-notification-env.sh` at session start and must be listed in `.gitignore` — credentials committed to version control are compromised credentials.\n\nThe hook scripts check for the variable before attempting delivery. If it is absent, Discord delivery is silently skipped rather than causing an error."
+          "value": "Store the webhook URL as `DISCORD_WEBHOOK_URL` in `$CLAUDE_PROJECT_DIR/.claude/.env`. This file is read by `gobbi session load-env` at session start and must be listed in `.gitignore` — credentials committed to version control are compromised credentials.\n\nThe hook scripts check for the variable before attempting delivery. If it is absent, Discord delivery is silently skipped rather than causing an error."
         }
       ]
     }

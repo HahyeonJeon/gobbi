@@ -30,7 +30,7 @@ Tell subagents to study context, outline their approach, then execute. Agents th
 
 > **Subtask records are collected from transcripts, not written by subagents.**
 
-The orchestrator runs `subtask-collect.sh` after each subagent returns to extract the delegation prompt and final result from the JSONL transcript. Subagents do not need subtask doc instructions in their briefing — their final response is the record.
+The orchestrator runs `gobbi note collect` after each subagent returns to extract the delegation prompt and final result from the JSONL transcript. Subagents do not need subtask doc instructions in their briefing — their final response is the record.
 
 ---
 
@@ -45,19 +45,23 @@ What to build, fix, or change. Be specific about the deliverable, not the method
 Every subagent needs three layers of context:
 
 **Always load (non-negotiable):**
+
 - `_claude` skill — docs structure, anti-patterns, navigation standard
 - The project skill — project architecture, conventions, constraints
 - Gotchas — MUST check `_gotcha` and the project skill's `gotchas/` before starting work
 
 **Load per domain:**
+
 - Domain skills relevant to the task — the plan specifies which skills each task needs
 - Project rules relevant to the domain
 
 **Load when available:**
+
 - Project docs in the project skill directory — architecture, reference, review docs
 - Existing code in the area they'll modify — the codebase is the source of truth for patterns
 
 **Load when _git is active:**
+
 - Current branch and worktree path — so the subagent knows where it's working and can verify branch state before committing
 - Recent commit history relevant to the task area — files the task will modify, so the subagent understands what has already changed in this session
 - Exploration findings from multi-perspective exploration — when exploration was performed before planning, include the synthesized findings for orientation
@@ -95,7 +99,7 @@ Default to the agent's defined model; override when the task clearly maps to a d
 Three tiers of capability, from lightest to heaviest:
 
 | Tier | Strength | Suited for |
-|------|----------|------------|
+|---|---|---|
 | **Haiku** | Fast, cheap, reliable on narrow tasks | Eligibility checks, simple validation, gotcha lookups, confidence scoring, format verification |
 | **Sonnet** | Balanced reasoning and cost | Routine development, code review, codebase exploration, standard evaluation, documentation writing |
 | **Opus** | Deep reasoning, handles ambiguity and novelty | Complex ideation, architecture decisions, system design, nuanced evaluation, novel problem solving |

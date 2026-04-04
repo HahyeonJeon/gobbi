@@ -43,6 +43,6 @@ Consider desktop notifications instead when: you are at your machine and want ze
 
 ## Credential Storage
 
-Store credentials as `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in `$CLAUDE_PROJECT_DIR/.claude/.env`. This file is read by `load-notification-env.sh` at session start and must be listed in `.gitignore` — credentials committed to version control are compromised credentials.
+Store credentials as `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` in `$CLAUDE_PROJECT_DIR/.claude/.env`. This file is read by `gobbi session load-env` at session start and must be listed in `.gitignore` — credentials committed to version control are compromised credentials.
 
 The hook scripts check for both variables before attempting delivery. If either is absent, Telegram delivery is silently skipped rather than causing an error.

@@ -9,7 +9,7 @@ Claude Code persists every subagent's full conversation to disk automatically. T
 Subagent transcripts live at `~/.claude/projects/{project-path}/{session-id}/subagents/`. The `{session-id}` matches `$CLAUDE_SESSION_ID`. Each subagent produces two files:
 
 | File | Format | Contains |
-|------|--------|----------|
+|---|---|---|
 | `agent-{id}.meta.json` | JSON | `agentType`, `description` |
 | `agent-{id}.jsonl` | JSON Lines | Full conversation — one JSON object per line |
 
@@ -34,7 +34,7 @@ Each line is a JSON object with two layers: **line-level metadata** and the **me
 Every line (both user and assistant) carries these fields:
 
 | Field | Contains |
-|-------|----------|
+|---|---|
 | `type` | `user` or `assistant` |
 | `agentId` | The subagent's ID |
 | `sessionId` | Session UUID (matches `$CLAUDE_SESSION_ID`) |
@@ -55,7 +55,7 @@ User lines additionally have `promptId`. Assistant lines additionally have `requ
 The `message.content` field varies by role:
 
 | Role | `message.content` type | Structure |
-|------|----------------------|-----------|
+|---|---|---|
 | `user` | string or array | When string: the delegation prompt text. When array: blocks with `type` field |
 | `assistant` | array of blocks | Each block has a `type` field — `text`, `tool_use`, or others |
 
@@ -66,7 +66,7 @@ For example, `["text", "tool_use", "tool_use", "tool_use"]` — one text block f
 Content block types within arrays:
 
 | Block type | Found in | Key fields |
-|------------|----------|------------|
+|---|---|---|
 | `text` | `assistant` | `text` |
 | `tool_use` | `assistant` | `name`, `input`, `id` |
 | `tool_result` | `user` | `tool_use_id`, `content` (string) |
@@ -76,7 +76,7 @@ Content block types within arrays:
 Assistant messages include `message.usage` with token consumption data:
 
 | Field | Contains |
-|-------|----------|
+|---|---|
 | `input_tokens` | Input tokens for this turn |
 | `output_tokens` | Output tokens for this turn |
 | `cache_creation_input_tokens` | Tokens written to cache |
@@ -90,7 +90,7 @@ Additional assistant message fields: `message.model` (exact model ID), `message.
 ## What Is Recoverable
 
 | Target | Line selection | Field path |
-|--------|---------------|------------|
+|---|---|---|
 | Delegation prompt | First line | `.message.content` (string or array) |
 | Final result | Last line | Last `text` block in `.message.content` |
 | Plan content | Line with `ExitPlanMode` tool_use | `.message.content[N].input.plan` |
@@ -123,7 +123,7 @@ The plan file at `planFilePath` on disk gets overwritten by subsequent plans. Th
 The main transcript at `$CLAUDE_TRANSCRIPT_PATH` shares the same `user`/`assistant` line format as subagent transcripts, but also contains additional line types:
 
 | Line type | Contains |
-|-----------|----------|
+|---|---|
 | `system` | Hook info, stop reasons, tool use IDs |
 | `file-history-snapshot` | File state snapshots (with `snapshot` and `messageId` fields) |
 | `pr-link` | PR number, URL, repository |
@@ -134,16 +134,16 @@ When extracting from the main transcript, filter by `type == "user"` or `type ==
 
 ---
 
-## Extraction Scripts
+## Extraction Commands
 
-Scripts in `_note/scripts/` automate transcript extraction:
+CLI commands automate transcript extraction:
 
-| Script | Purpose | Input |
-|--------|---------|-------|
-| `subtask-collect.sh` | Extract delegation prompt + final result per subagent | `<agent-id> <subtask-number> <subtask-slug> <note-dir-path>` |
-| `write-plan.sh` | Extract plan content from `ExitPlanMode` | `<note-dir-path>` |
+| Command | Purpose | Input |
+|---|---|---|
+| `gobbi note collect` | Extract delegation prompt + final result per subagent | `<agent-id> <subtask-number> <subtask-slug> <note-dir-path>` |
+| `gobbi note plan` | Extract plan content from `ExitPlanMode` | `<note-dir-path>` |
 
-Both scripts write JSON files to the note directory and require `$CLAUDE_SESSION_ID`, `$CLAUDE_TRANSCRIPT_PATH`, and `jq`.
+Both commands write JSON files to the note directory and require `$CLAUDE_SESSION_ID`, `$CLAUDE_TRANSCRIPT_PATH`, and `jq`.
 
 ---
 

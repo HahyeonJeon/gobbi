@@ -13,7 +13,8 @@
     "bin",
     "dist",
     "plugins/gobbi/.claude-plugin",
-    "plugins/gobbi/settings.json"
+    "plugins/gobbi/settings.json",
+    "plugins/gobbi/hooks"
   ],
   "scripts": {
     "build": "tsc",

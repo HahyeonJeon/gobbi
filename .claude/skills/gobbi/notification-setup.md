@@ -38,7 +38,8 @@ A channel is "configured" when all its required credentials are present and non-
 ### 2. Hook Scripts
 
 Check if notification hook scripts exist in `$CLAUDE_PROJECT_DIR/.claude/hooks/` and are executable. The key scripts:
-- `notify-send.sh` — the shared sender that routes to configured channels
+
+- `gobbi notify send` — the shared sender that routes to configured channels
 - Event-specific hook scripts that invoke the sender
 
 Missing or non-executable scripts indicate an incomplete installation.
@@ -49,7 +50,7 @@ Check `settings.json` for hook entries that reference the notification scripts. 
 
 ### 4. Session Preferences in gobbi.json
 
-The user's notification choices from `/gobbi` setup Q4 are persisted to `gobbi.json` via `gobbi-config.sh`. The `notify-send.sh` hook reads these per-session flags before attempting delivery. Without a session entry, all channels default to `false` — no notifications fire until the user explicitly selects during setup.
+The user's notification choices from `/gobbi` setup Q4 are persisted to `gobbi.json` via `gobbi config`. The `gobbi notify send` command reads these per-session flags before attempting delivery. Without a session entry, all channels default to `false` — no notifications fire until the user explicitly selects during setup.
 
 Only Slack and Telegram have conditional session-level control in v0.3.2. Discord delivery is deferred to a future version. Desktop notifications (`NOTIFY_DESKTOP`) remain environment-level only — they are not gated by `gobbi.json` session flags.
 

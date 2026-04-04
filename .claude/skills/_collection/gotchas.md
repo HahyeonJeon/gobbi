@@ -12,12 +12,7 @@ Mistakes in work trail persistence, README indexing, and subtask file management
 
 **User feedback:** The original subtask results must be collected to the subtasks directory.
 
-**Correct approach:** After each wave of subagents completes, run `subtask-collect.sh` to extract delegation prompts and final results from the JSONL transcripts into `subtasks/{NN}-{slug}.json`. This must happen:
-1. After every wave completes — not deferred to the end
-2. Before any downstream agent (synthesis, evaluation) that needs those files
-3. Verify the JSON files exist on disk before proceeding
-
-The subtask JSON files are the permanent record of what each specialist agent was asked and what it produced. If `subtask-collect.sh` is not run, the work is trapped in transcripts and invisible to downstream agents.
+**Correct approach:** After each wave of subagents completes, run `gobbi note collect` to extract delegation prompts and final results from the JSONL transcripts into `subtasks/{NN}-{slug}.json`. This must happen: 1. After every wave completes — not deferred to the end 2. Before any downstream agent (synthesis, evaluation) that needs those files 3. Verify the JSON files exist on disk before proceeding The subtask JSON files are the permanent record of what each specialist agent was asked and what it produced. If `gobbi note collect` is not run, the work is trapped in transcripts and invisible to downstream agents.
 
 ---
 

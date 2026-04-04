@@ -49,7 +49,7 @@ priority: high
 
 ---
 
-### Skipping `subtask-collect.sh` call after subagent completes
+### Skipping `gobbi note collect` call after subagent completes
 ---
 priority: high
 ---
@@ -60,7 +60,7 @@ priority: high
 
 **User feedback:** Subtask collection must happen after each subagent returns, before any downstream agent runs.
 
-**Correct approach:** After each subagent completes, run `subtask-collect.sh` to extract the delegation prompt and final result from the JSONL transcript into `subtasks/{NN}-{slug}.json`. Verify the JSON file exists before launching any downstream agent (synthesis, evaluation) that depends on it. The script extracts directly from the transcript, so content quality is guaranteed — the risk is not summary vs actual content, but forgetting to call the script at all.
+**Correct approach:** After each subagent completes, run `gobbi note collect` to extract the delegation prompt and final result from the JSONL transcript into `subtasks/{NN}-{slug}.json`. Verify the JSON file exists before launching any downstream agent (synthesis, evaluation) that depends on it. The command extracts directly from the transcript, so content quality is guaranteed — the risk is not summary vs actual content, but forgetting to call the command at all.
 
 ---
 
@@ -109,7 +109,7 @@ priority: high
 
 ---
 
-### Run `subtask-collect.sh` BEFORE launching synthesis
+### Run `gobbi note collect` BEFORE launching synthesis
 ---
 priority: high
 ---
@@ -120,7 +120,7 @@ priority: high
 
 **User feedback:** Subtask files must be written to disk immediately after each agent completes, before any downstream agent that depends on them.
 
-**Correct approach:** After each wave completes, run `subtask-collect.sh` to extract all subtask outputs to `subtasks/{NN}-{slug}.json` BEFORE launching the next wave or the synthesis agent. The synthesis agent should read JSON files from disk, not receive findings through the prompt. This ensures the synthesis captures all findings from all prior agents and prevents the "fresh audit" fallback that loses coverage.
+**Correct approach:** After each wave completes, run `gobbi note collect` to extract all subtask outputs to `subtasks/{NN}-{slug}.json` BEFORE launching the next wave or the synthesis agent. The synthesis agent should read JSON files from disk, not receive findings through the prompt. This ensures the synthesis captures all findings from all prior agents and prevents the "fresh audit" fallback that loses coverage.
 
 ---
 
@@ -180,9 +180,7 @@ priority: high
 
 **User feedback:** The agent cannot run compact directly. Suggest the compact command with details so the user can run it themselves.
 
-**Correct approach:** When the user selects compact during FINISH, tell the user to run the command themselves. The compact message should start with "abort gobbi" so the compacted context drops gobbi workflow state (it auto-reloads after compact via the reload hook), followed by a summary of work done. Example: `/compact abort gobbi — completed doc-review, findings in note/20260328-0706-doc-review/`
-
-Note: `/gobbi` reload works after compact because the SessionStart hook is not affected by compact — the hook triggers on the next message after compact completes, which re-initializes the gobbi workflow state.
+**Correct approach:** When the user selects compact during FINISH, tell the user to run the command themselves. The compact message should start with "abort gobbi" so the compacted context drops gobbi workflow state (it auto-reloads after compact via the reload hook), followed by a summary of work done. Example: `/compact abort gobbi — completed doc-review, findings in note/20260328-0706-doc-review/` Note: `/gobbi` reload works after compact because the SessionStart hook is not affected by compact — the hook triggers on the next message after compact completes, which re-initializes the gobbi workflow state.
 
 ---
 

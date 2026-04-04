@@ -67,7 +67,7 @@
               "type": "list",
               "style": "bullet",
               "items": [
-                "`notify-send.sh` — the shared sender that routes to configured channels",
+                "`gobbi notify send` — the shared sender that routes to configured channels",
                 "Event-specific hook scripts that invoke the sender"
               ]
             },
@@ -93,7 +93,7 @@
           "content": [
             {
               "type": "text",
-              "value": "The user's notification choices from `/gobbi` setup Q4 are persisted to `gobbi.json` via `gobbi-config.sh`. The `notify-send.sh` hook reads these per-session flags before attempting delivery. Without a session entry, all channels default to `false` — no notifications fire until the user explicitly selects during setup.\n\nOnly Slack and Telegram have conditional session-level control in v0.3.2. Discord delivery is deferred to a future version. Desktop notifications (`NOTIFY_DESKTOP`) remain environment-level only — they are not gated by `gobbi.json` session flags."
+              "value": "The user's notification choices from `/gobbi` setup Q4 are persisted to `gobbi.json` via `gobbi config`. The `gobbi notify send` command reads these per-session flags before attempting delivery. Without a session entry, all channels default to `false` — no notifications fire until the user explicitly selects during setup.\n\nOnly Slack and Telegram have conditional session-level control in v0.3.2. Discord delivery is deferred to a future version. Desktop notifications (`NOTIFY_DESKTOP`) remain environment-level only — they are not gated by `gobbi.json` session flags."
             }
           ]
         },

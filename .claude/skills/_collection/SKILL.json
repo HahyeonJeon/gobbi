@@ -13,7 +13,7 @@
       "content": [
         {
           "type": "text",
-          "value": "Collection has four responsibilities: **note persistence**, **subtask preservation**, **gotcha recording**, and **phase transition**.\n\n**Note persistence** — Load _note and write all note files for the current task: `ideation.md`, `plan.md`, and `execution.md`. Subtask `.json` files are already on disk at this point — they were created during execution (Step 3) via `subtask-collect.sh`. Collection verifies that all expected subtask files exist and writes the remaining note files. Every workflow stage that produced output must have a corresponding note file on disk.\n\n**Subtask preservation** — The orchestrator calls `subtask-collect.sh` during execution (Step 3) immediately after each subagent returns to extract the delegation prompt and final result from the subagent's JSONL transcript into a JSON file. This happens during execution, not during collection — downstream agents (synthesis, evaluation) depend on these files existing on disk before they run.\n\n**Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via _gotcha before the cycle closes.\n\n**Phase transition** — Use AskUserQuestion to ask the user: FEEDBACK, REVIEW, or FINISH?"
+          "value": "Collection has four responsibilities: **note persistence**, **subtask preservation**, **gotcha recording**, and **phase transition**.\n\n**Note persistence** — Load _note and write all note files for the current task: `ideation.md`, `plan.md`, and `execution.md`. Subtask `.json` files are already on disk at this point — they were created during execution (Step 3) via `gobbi note collect`. Collection verifies that all expected subtask files exist and writes the remaining note files. Every workflow stage that produced output must have a corresponding note file on disk.\n\n**Subtask preservation** — The orchestrator calls `gobbi note collect` during execution (Step 3) immediately after each subagent returns to extract the delegation prompt and final result from the subagent's JSONL transcript into a JSON file. This happens during execution, not during collection — downstream agents (synthesis, evaluation) depend on these files existing on disk before they run.\n\n**Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via _gotcha before the cycle closes.\n\n**Phase transition** — Use AskUserQuestion to ask the user: FEEDBACK, REVIEW, or FINISH?"
         }
       ]
     },
@@ -22,7 +22,7 @@
       "content": [
         {
           "type": "text",
-          "value": "Note directories follow the structure defined in _note. See _note for directory naming, file layout, and the initialization script.\n\n**Directory initialization**: Initialize note directories using the `note-init.sh` script in `_note/scripts/`. It takes the project name and task slug as arguments and handles the full chain: metadata extraction, directory creation, README.md generation, and subtasks/ directory setup."
+          "value": "Note directories follow the structure defined in _note. See _note for directory naming, file layout, and the initialization script.\n\n**Directory initialization**: Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and handles the full chain: metadata extraction, directory creation, README.md generation, and subtasks/ directory setup."
         }
       ]
     },
@@ -101,7 +101,7 @@
         },
         {
           "type": "text",
-          "value": "  - Load _claude and _skills for authoring standards\n  - Run lint/validation on modified skills (lint-skill.sh) to catch anti-patterns before presenting\n  - Present proposed changes to user via AskUserQuestion: \"Would you like to review proposed skill updates before finishing?\"\n  - If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.\n\nFormat: one-line entries, concise, actionable. \"Discovery X because Y\" — not narrative."
+          "value": "  - Load _claude and _skills for authoring standards\n  - Run lint/validation on modified skills (`gobbi validate lint`) to catch anti-patterns before presenting\n  - Present proposed changes to user via AskUserQuestion: \"Would you like to review proposed skill updates before finishing?\"\n  - If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.\n\nFormat: one-line entries, concise, actionable. \"Discovery X because Y\" — not narrative."
         }
       ]
     }

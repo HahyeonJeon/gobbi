@@ -47,6 +47,7 @@ Build understanding before acting by loading the context layers specified in you
 ### Plan
 
 Outline your approach before implementing:
+
 - Which files will you modify or create?
 - What existing patterns should you follow?
 - What are the gotchas that apply to this domain?
@@ -55,6 +56,7 @@ Outline your approach before implementing:
 ### Execute
 
 Implement the task according to your plan:
+
 - Follow existing code patterns — the codebase is the style guide
 - Keep changes minimal and focused on the task
 - Don't introduce new patterns when existing ones work
@@ -63,6 +65,7 @@ Implement the task according to your plan:
 ### Verify
 
 Check your work before reporting back:
+
 - Does the implementation meet the acceptance criteria from the briefing?
 - Do existing tests still pass?
 - Are the gotchas for this domain respected?
@@ -75,7 +78,7 @@ This extends _git's re-verification principle to the subagent level. A subagent 
 
 ### Final Response
 
-The subagent's final response is automatically captured as the subtask record via `subtask-collect.sh`. Include in your final response: what was done, what changed, what was learned, and any open items. This is the permanent record of your work — make it self-contained.
+The subagent's final response is automatically captured as the subtask record via `gobbi note collect`. Include in your final response: what was done, what changed, what was learned, and any open items. This is the permanent record of your work — make it self-contained.
 
 ### Commit (when _git is active)
 

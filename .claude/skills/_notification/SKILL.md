@@ -15,8 +15,9 @@ Help users configure Claude Code notification credentials through conversation. 
 The goal is to collect notification credentials from the user, save them securely, and verify that at least one real notification arrives before confirming success.
 
 **Constraints:**
+
 - Use AskUserQuestion for all credential collection — never assume or prefill values
-- Save credentials to `$CLAUDE_PROJECT_DIR/.claude/.env` — this file is read by `load-notification-env.sh` at session start via the `$CLAUDE_ENV_FILE` mechanism
+- Save credentials to `$CLAUDE_PROJECT_DIR/.claude/.env` — this file is read by `gobbi session load-env` at session start via the `$CLAUDE_ENV_FILE` mechanism
 - Before finishing, verify that `$CLAUDE_PROJECT_DIR/.claude/.env` is listed in `.gitignore` — credentials must never be committed
 - Test with a real notification before confirming setup is complete — a configuration that looks correct but never delivers is not set up
 
@@ -36,6 +37,7 @@ The goal is to collect notification credentials from the user, save them securel
 Claude Code hooks fire on named events. Each hook can be filtered by a `matcher` field — a regex pattern that limits when the hook fires. The full event and matcher reference is in the Claude Code hooks documentation — consult that as the authoritative source.
 
 **Most useful events for notifications:**
+
 - `Stop` — fires when Claude finishes responding; most common for "notify me when done"
 - `SessionEnd` — fires when the session ends; useful for session tracking
 - `Notification` — fires when Claude Code raises a notification (permission prompts, idle prompts); useful for "notify me when you need attention"
@@ -46,7 +48,7 @@ When configuring event hooks, ask the user which events they want, then ask per-
 
 ## Hook Scripts
 
-All scripts live in `$CLAUDE_PROJECT_DIR/.claude/hooks/` and must be executable. They use a shared sender (`notify-send.sh`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.
+All notification commands are available through the `gobbi notify` CLI. They use a shared sender (`gobbi notify send`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.
 
 Hook scripts should already be installed in `$CLAUDE_PROJECT_DIR/.claude/hooks/`. Read the installed scripts and the hook configuration in `settings.json` for the current setup — these are the authoritative source for what is actually installed.
 
@@ -63,7 +65,7 @@ If a test notification fails to arrive: check that `$CLAUDE_PROJECT_DIR/.claude/
 ## Child Skills
 
 | Skill | Covers |
-|-------|--------|
+|---|---|
 | `_slack` | Slack notification channel setup — bot token, user ID, workspace configuration |
 | `_telegram` | Telegram notification channel setup — bot creation via @BotFather, chat ID retrieval |
 | `_discord` | Discord notification channel setup — webhook URL configuration |
