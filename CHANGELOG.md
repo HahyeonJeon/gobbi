@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2026-04-04
 
+### Breaking
+
+- Restructured as npm workspaces monorepo: `@gobbi/cli` (workflow commands) and `@gobbi/media` (image/video/web analysis)
+- Renamed package from `@gobbi/core` to `@gobbi/cli` — install with `npm install -g @gobbi/cli`
+- Media commands moved to separate `gobbi-media` binary — `gobbi image` is now `gobbi-media image`
+
 ### Added
 
 - 7-step workflow with dedicated Research step and dual-stance agents (innovative + best) (#49)

@@ -24,8 +24,8 @@
           "type": "table",
           "headers": ["Outcome", "Meaning", "Action"],
           "rows": [
-            ["Version prints (e.g., `0.3.2`)", "CLI is installed and in PATH", "Proceed to setup questions"],
-            ["Command outputs version via `node bin/gobbi.js --version`", "CLI is available locally but not installed globally", "Usable for development — proceed, but suggest global install for convenience"],
+            ["Version prints (e.g., `0.4.0`)", "CLI is installed and in PATH", "Proceed to setup questions"],
+            ["Command outputs version via `node packages/cli/bin/gobbi.js --version`", "CLI is available locally but not installed globally", "Usable for development — proceed, but suggest global install for convenience"],
             ["Command not found", "CLI is not installed", "Help the user install before proceeding"]
           ]
         }
@@ -44,7 +44,7 @@
           "content": [
             {
               "type": "text",
-              "value": "Install globally so `gobbi` is available in all terminals:\n\n```\nnpm install -g @gobbi/core\n```\n\nVerify: `gobbi --version`\n\nThis is the recommended approach for users who want `gobbi` available across all projects."
+              "value": "Install globally so `gobbi` is available in all terminals:\n\n```\nnpm install -g @gobbi/cli\n```\n\nVerify: `gobbi --version`\n\nThis is the recommended approach for users who want `gobbi` available across all projects."
             }
           ]
         },
@@ -54,7 +54,7 @@
           "content": [
             {
               "type": "text",
-              "value": "If working on the gobbi repository itself, link the local build:\n\n```\nnpm link\n```\n\nThis creates a global symlink to the local `bin/gobbi.js`. Changes to the source are immediately available after `npm run build`.\n\nVerify: `gobbi --version`"
+              "value": "If working on the gobbi repository itself, link the local builds:\n\n```\nnpm link --workspace=packages/cli\nnpm link --workspace=packages/media\n```\n\nThis creates global symlinks to the local bin scripts. Changes to the source are immediately available after `npm run build`.\n\nVerify: `gobbi --version`"
             }
           ]
         },
@@ -64,7 +64,7 @@
           "content": [
             {
               "type": "text",
-              "value": "Run directly from the project:\n\n```\nnode bin/gobbi.js <command>\n```\n\nThis works without any installation but requires being in the gobbi project directory. Hooks in `settings.json` use the bare `gobbi` command, so this option only works for manual CLI usage — hooks will fail without a global install or link."
+              "value": "Run directly from the project:\n\n```\nnode packages/cli/bin/gobbi.js <command>\n```\n\nThis works without any installation but requires being in the gobbi project root. Hooks in `settings.json` use the bare `gobbi` command, so this option only works for manual CLI usage — hooks will fail without a global install or link."
             }
           ]
         }
@@ -118,7 +118,7 @@
           "type": "table",
           "headers": ["Problem", "Cause", "Fix"],
           "rows": [
-            ["`gobbi: command not found`", "Not installed globally or not linked", "Run `npm install -g @gobbi/core` or `npm link` in the gobbi directory"],
+            ["`gobbi: command not found`", "Not installed globally or not linked", "Run `npm install -g @gobbi/cli` or `npm link` in the gobbi directory"],
             ["`gobbi note init` fails with CLAUDE_SESSION_ID not set", "SessionStart hook didn't run", "Check `.claude/settings.json` hooks — the `gobbi session metadata` hook must fire on startup"],
             ["`gobbi docs json2md` produces empty output", "TypeScript not compiled", "Run `npm run build` in the gobbi directory"],
             ["Hooks fail silently", "`gobbi` not in PATH when hooks execute", "Ensure global install or link — hooks run in a shell that may not have local node_modules/.bin in PATH"]

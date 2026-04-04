@@ -3,9 +3,9 @@
 <p align="center"><sub>고삐 (gobbi) — Korean for reins, the essential equipment for handling a horse</sub></p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@gobbi/core"><img src="https://img.shields.io/npm/v/@gobbi/core" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@gobbi/cli"><img src="https://img.shields.io/npm/v/@gobbi/cli" alt="npm version"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
-  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/@gobbi/core" alt="Node version"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/@gobbi/cli" alt="Node version"></a>
 </p>
 
 ---
