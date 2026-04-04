@@ -10,6 +10,30 @@ Improve and make the user's idea or prompt more detailed through structured disc
 
 The output of ideation is a detailed, improved idea — not a final decision. A separate evaluator assesses the result.
 
+Ideation is performed by two parallel PI agents, each operating with a different stance — innovative and best. The orchestrator discusses with the user first, then spawns both PI agents. Each PI agent writes its perspective independently, and the orchestrator synthesizes their outputs.
+
+---
+
+## PI Stances
+
+The orchestrator spawns two PI agents in parallel during Ideation, each with a different stance. Discussion with the user happens before the PI agents are spawned — the orchestrator explores the approach, alternatives, and trade-offs first, then delegates to both stances with the refined context.
+
+### Innovative Stance
+
+Deep thinking, creative ideas, cross-domain inspiration. Challenges established patterns and asks "What if we did it completely differently?" Explores unconventional solutions, draws from adjacent domains, and questions whether the standard approach is actually the best one. Pushes boundaries while staying grounded in feasibility.
+
+Writes output to `innovative.md` in the `ideation/` subdirectory.
+
+### Best Stance
+
+Best-practice focused, proven patterns, industry standards. Asks "What has worked well for others?" Researches established solutions, references industry standards, and identifies proven patterns that apply. Anchors to what works reliably and explains why.
+
+Writes output to `best.md` in the `ideation/` subdirectory.
+
+### Synthesis
+
+After both PI agents complete, the orchestrator synthesizes their outputs into `ideation.md` — merging the strongest elements from both stances, resolving conflicts, and producing a single refined idea. The synthesis is the primary ideation output that proceeds to evaluation and planning.
+
 ---
 
 ## Core Principles
@@ -79,6 +103,7 @@ After refining an idea, consider whether any remaining decisions are contributio
 This is distinct from specification gaps (which _discuss resolves). Contribution points arise even after the idea is fully specified, where multiple valid approaches exist and the right choice depends on knowledge the user holds but has not transferred through Q&A.
 
 Indicators that a decision is a contribution point:
+
 - Business logic with multiple valid approaches where the user's domain shapes the right choice
 - Architectural trade-offs between competing values the user has not ranked (performance vs. simplicity, flexibility vs. consistency)
 - Error handling and resilience strategies where the user's user base, SLA, or failure tolerance matters
@@ -91,7 +116,13 @@ Not every task has contribution points. Context-resolvable decisions — where t
 
 ## Output
 
-Ideation produces a single refined, detailed idea — concrete enough that a planner can decompose it into tasks and an evaluator can assess its quality. The output should include:
+Ideation produces three files in the `ideation/` subdirectory:
+
+- `innovative.md` — Written by the innovative PI agent. Ideas explored through the creative and novel lens.
+- `best.md` — Written by the best-practice PI agent. Ideas explored through the established patterns lens.
+- `ideation.md` — Written by the orchestrator. Synthesis combining both stances and the discussion with the user.
+
+Each stance file should cover:
 
 - The problem being solved (root cause, not symptom)
 - The proposed approach with concrete mechanism
@@ -99,7 +130,9 @@ Ideation produces a single refined, detailed idea — concrete enough that a pla
 - Known risks and trade-offs
 - Success criteria
 
-This output goes to a separate evaluator agent for critical assessment before proceeding to planning. The orchestrator selects the appropriate domain evaluator (`_skills-evaluator`, `_agent-evaluator`, or `_project-evaluator`) and loads the relevant perspective skills based on the nature of the ideation output.
+The synthesis (`ideation.md`) merges the strongest elements from both stances into a single refined idea — concrete enough that a planner can decompose it into tasks and an evaluator can assess its quality.
+
+When evaluation is performed, evaluator agents write their results to `ideation/evaluation/{perspective}.md` — one file per perspective. Evaluation is optional at ideation; the orchestrator asks the user whether to skip.
 
 ---
 
