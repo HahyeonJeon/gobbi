@@ -131,3 +131,14 @@ The interactive creation process produces a single `.md` file in `.claude/agents
 - Clear domain boundaries — no overlap with existing agents in `.claude/agents/`
 - Under 500 lines per file (must), targeting under 200 (should)
 - Always discuss via AskUserQuestion before writing a new agent definition
+
+---
+
+## Navigate deeper from here:
+
+| Document | Covers |
+|---|---|
+| [pi.md](pi.md) | PI agent guide — role identity, stances, delegation patterns, model configuration |
+| [researcher.md](researcher.md) | Researcher agent guide — mission, direction-not-recipes, stances, executor handoff |
+| [executor.md](executor.md) | Executor agent guide — research-first study, best-practice thinking, delegation patterns |
+| [evaluator.md](evaluator.md) | Evaluator agent guide — three evaluator types, perspective model, scoring, sonnet tier |
