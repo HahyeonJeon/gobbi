@@ -31,7 +31,7 @@
           "content": [
             {
               "type": "text",
-              "value": "Workflow participant skills — loaded during the ideate-plan-execute-collect cycle."
+              "value": "Workflow participant skills — loaded during the 7-step cycle: Ideation, Plan, Research, Execution, Collection, Memorization, Review."
             },
             {
               "type": "table",
@@ -42,19 +42,23 @@
               "rows": [
                 [
                   "**_orchestration**",
-                  "Thin coordinator. Routes tasks through phases and workflow steps."
+                  "Adaptive workflow coordinator. Routes tasks through the 7-step workflow and post-workflow phases."
                 ],
                 [
                   "**_discuss**",
-                  "Clarify and specify user prompts. Break ambiguity into specific questions."
+                  "Critical, structured discussion. Challenge vague thinking, surface hidden problems, push ideas toward concrete specificity."
                 ],
                 [
                   "**_ideation**",
-                  "Brainstorming and option exploration for creative or ambiguous tasks."
+                  "Structured idea refinement. PI agents (innovative + best stances) improve the user's idea through discussion and synthesis."
                 ],
                 [
                   "**_plan**",
                   "Task decomposition. Break complex work into narrow, ordered, agent-assigned tasks."
+                ],
+                [
+                  "**_research**",
+                  "Research investigation. How researcher agents study codebase patterns, external approaches, and implementation paths for approved plans."
                 ],
                 [
                   "**_delegation**",
@@ -77,8 +81,12 @@
                   "Stage-specific evaluation criteria for plans. Task specificity, dependencies, feasibility."
                 ],
                 [
+                  "**_research-evaluation**",
+                  "Stage-specific evaluation criteria for research output. Completeness, depth, accuracy, practical utility."
+                ],
+                [
                   "**_collection**",
-                  "Persist workflow trail. Write prompt, plan, task results, and README to work directory."
+                  "Verify note completeness and write task README. Confirm all per-step subdirectories are populated, then write the summary."
                 ],
                 [
                   "**_memorization**",

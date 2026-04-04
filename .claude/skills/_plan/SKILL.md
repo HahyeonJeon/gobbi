@@ -1,12 +1,12 @@
 ---
 name: _plan
-description: Decompose complex tasks into small, specific, agent-assigned subtasks. Use during the PLAN phase to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.
+description: Decompose complex tasks into small, specific, agent-assigned subtasks. Use during Step 2 (Planning) to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Planning Skill
 
-Decompose complex tasks into small, specific, agent-assigned subtasks. Use during the PLAN phase to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.
+Decompose complex tasks into small, specific, agent-assigned subtasks. Use during Step 2 (Planning) to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.
 
 ---
 
@@ -56,9 +56,10 @@ ExitPlanMode surfaces the plan for user approval. No delegation happens until th
 
 ## What a Good Plan Contains
 
-**Goal** — One sentence restating what the user wants, from the DISCUSS phase.
+**Goal** — One sentence restating what the user wants, from Ideation (Step 1).
 
 **Tasks** — A numbered list of small, specific tasks. Each task specifies:
+
 - What to do (specific deliverable, not vague direction)
 - Which agent handles it
 - Which skills to load
@@ -71,7 +72,7 @@ ExitPlanMode surfaces the plan for user approval. No delegation happens until th
 
 **Expected outcome** — What the user will have when all tasks complete.
 
-**Collection plan** — Where work docs will be written after delegation completes. Specify the task directory path and list which subtask `.json` files will be created. This ensures the COLLECT phase has a clear target.
+**Collection plan** — Where work docs will be written after delegation completes. Specify the task directory path and list which subtask `.json` files will be created. This ensures Collection (Step 5) has a clear target.
 
 ---
 

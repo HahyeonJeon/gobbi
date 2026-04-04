@@ -20,7 +20,7 @@ Skill examples: `_orchestration`, `_discuss`, `_plan`, `_evaluation`, `_skills-e
 
 Skill examples: `__validate`, `__benchmark`
 
-Agent examples: `__executor`, `__pi`
+Agent examples: `__executor`, `__pi`, `__researcher`
 
 ---
 

@@ -8,6 +8,12 @@ allowed-tools: Read, Grep, Glob, Bash, Write
 
 Git and GitHub workflow. Load this skill when a task involves branching, worktree setup, PR creation, or the full issue-to-merge lifecycle.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [conventions.md](conventions.md) | Branch naming, commit messages, PR template, issue format, sub-issues, labels, worktree directory naming |
+
 ---
 
 ## Core Principles
@@ -71,7 +77,7 @@ The orchestrator passes the worktree's absolute path in every delegation prompt.
 
 ## Integration with Orchestration
 
-This skill loads at session start as a core skill. Prerequisites run during session setup when the user selects the git workflow (worktree + PR). The operational phase — worktree creation, branch setup, and delegation — begins at Step 3 (Execution) when the plan is approved.
+This skill loads at session start as a core skill. Prerequisites run during session setup when the user selects the git workflow (worktree + PR). The operational phase — worktree creation, branch setup, and delegation — begins at Step 4 (Execution) when the plan is approved.
 
 **Before delegation** — The orchestrator ensures the base branch is pushed to remote and in sync before creating the worktree and branch, re-verifying the base branch exists on the remote before proceeding. This guarantees the PR diff contains only the intended changes and prevents unpushed local commits from being silently absorbed into the PR on merge. The project's install command runs in the worktree so dependencies are ready. The worktree path becomes part of every delegation prompt.
 
@@ -117,11 +123,3 @@ This skill loads at session start as a core skill. Prerequisites run during sess
 **Requires GitHub and the gh CLI** — This skill assumes GitHub as the hosting platform and gh as the CLI tool for PR operations. Repos not hosted on GitHub should use a local-only workflow with direct commits and no PR lifecycle.
 
 **Base branch is project-specific** — Never hardcode a default base branch. The base branch varies by project and by workflow. Ask the user at session setup which branch to base work on.
-
----
-
-**Navigate deeper from here:**
-
-| Document | Covers |
-|----------|--------|
-| [conventions.md](conventions.md) | Branch naming, commit messages, PR template, issue format, sub-issues, labels, worktree directory naming |

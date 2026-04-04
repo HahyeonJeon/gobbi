@@ -61,13 +61,16 @@ The orchestrator matches perspectives to the task. A documentation task may need
 
 1. Select the perspectives that match the task's domain
 2. Spawn each evaluator as a separate agent with skills:
+
    - The stage-specific evaluation skill (what to check at this workflow stage)
    - The perspective evaluation skill (the lens to assess through)
    - Domain context — project rules, gotchas, conventions, and relevant knowledge
    - The output to evaluate
    - Read-only access — evaluators assess, they do not modify
-3. Collect all verdicts independently — evaluators should not see each other's results
-4. Act on the results:
+
+1. Collect all verdicts independently — evaluators should not see each other's results
+2. Act on the results:
+
    - **All pass** — proceed to next stage
    - **Any revision needed** — present findings to the user, discuss what to address, then revise
    - **Any escalation** — surface to user for decision immediately
@@ -78,11 +81,13 @@ The orchestrator matches perspectives to the task. A documentation task may need
 1. Load the evaluation criteria and domain context provided
 2. Read the output thoroughly before forming any judgment
 3. For each finding, assess independently:
+
    - **Confidence** (0-100) — how certain are you this is a real issue?
    - **Severity** (Critical / High / Medium / Low) — how impactful is this if real?
-4. Verify findings with tools when possible — run tests, grep for patterns, check file existence
-5. Check findings against known false positive categories before finalizing
-6. Return a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning
+
+1. Verify findings with tools when possible — run tests, grep for patterns, check file existence
+2. Check findings against known false positive categories before finalizing
+3. Return a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning
 
 ---
 
@@ -95,7 +100,7 @@ Every finding carries two independent dimensions: confidence and severity. These
 How certain the evaluator is that a finding represents a real issue, scored 0-100.
 
 | Score | Meaning |
-|-------|---------|
+|---|---|
 | 0 | False positive — appears like an issue but isn't one |
 | 25 | Possible but unverified — could be an issue, no evidence confirms it |
 | 50 | Probable — likely exists, but evidence is indirect or incomplete |
@@ -107,7 +112,7 @@ How certain the evaluator is that a finding represents a real issue, scored 0-10
 How impactful the issue would be if it is real, independent of confidence.
 
 | Level | Meaning |
-|-------|---------|
+|---|---|
 | Critical | Blocks progress, breaks correctness, or creates security vulnerability |
 | High | Significant flaw that would cause rework if not addressed now |
 | Medium | Real issue that should be addressed but doesn't block |
@@ -148,6 +153,15 @@ Before assigning high confidence, check whether a finding falls into a known fal
 - Are verification criteria defined for each task?
 - Is anything missing from the ideation discussion?
 - Do any tasks overlap on the same files?
+
+### Research
+
+- Are all plan tasks covered by research findings?
+- Are implementation paths concrete enough for executors to act without re-researching?
+- Are codebase references accurate (verifiable with Grep/Read)?
+- Are external sources cited and relevant?
+- Does the synthesis effectively combine innovative and best-practice perspectives?
+- Would an executor reading this know exactly what to implement?
 
 ### Execution
 
