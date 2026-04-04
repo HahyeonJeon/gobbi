@@ -1,58 +1,109 @@
 ---
 name: _collection
-description: Persist the workflow trail and write notes at the end of each workflow cycle. Use during Step 4 (Collection) to write all note files and record gotchas.
+description: Verify note completeness and write the task README after execution. Use during Step 5 (Collection) to verify all per-step subdirectories contain their expected files, write the task README.md, and record gotchas.
 allowed-tools: Write, Read, Glob, Bash
 ---
 
 # Collection
 
-Persist the workflow trail at the end of each workflow cycle. Must load _note to write note files. This step ensures all decisions, outcomes, and subagent results are recorded before proceeding.
+Verify that all per-step subdirectories contain their expected note files and write the task-level `README.md`. Collection is Step 5 in the 7-step workflow (Ideation, Plan, Research, Execution, Collection, Memorization, Review). Notes are written during their respective steps — Collection verifies completeness, it does not create the notes themselves.
 
 ---
 
 ## What to Do
 
-Collection has four responsibilities: **note persistence**, **subtask preservation**, **gotcha recording**, and **phase transition**.
+Collection has three responsibilities: **note verification**, **README.md writing**, and **gotcha recording**.
 
-**Note persistence** — Load _note and write all note files for the current task: `ideation.md`, `plan.md`, and `execution.md`. Subtask `.json` files are already on disk at this point — they were created during execution (Step 3) via `gobbi note collect`. Collection verifies that all expected subtask files exist and writes the remaining note files. Every workflow stage that produced output must have a corresponding note file on disk.
+**Note verification** — Verify that all expected files exist in their per-step subdirectories. Notes are written during their respective workflow steps (Ideation writes `ideation/`, Plan writes `plan/`, Research writes `research/`, Execution writes `execution/`). Collection does not create these files — it confirms they are present and complete. Required files by subdirectory:
 
-**Subtask preservation** — The orchestrator calls `gobbi note collect` during execution (Step 3) immediately after each subagent returns to extract the delegation prompt and final result from the subagent's JSONL transcript into a JSON file. This happens during execution, not during collection — downstream agents (synthesis, evaluation) depend on these files existing on disk before they run.
+- `ideation/ideation.md` (orchestrator synthesis) — must exist
+- `ideation/innovative.md` and `ideation/best.md` (PI agent notes) — must exist
+- `plan/plan.md` — must exist
+- `research/research.md` (orchestrator synthesis) — must exist for non-trivial tasks
+- `research/innovative.md` and `research/best.md` — must exist for non-trivial tasks
+- `research/subtasks/` — verify subtask JSON files exist for non-trivial tasks
+- `execution/execution.md` — must exist
+- `execution/subtasks/` — verify subtask JSON files exist
+- `ideation/evaluation/`, `plan/evaluation/`, `research/evaluation/`, `execution/evaluation/` — verify evaluation files exist where evaluation was performed
+
+If any required file is missing, report the gap and investigate — do not silently proceed.
+
+**README.md writing** — After verification passes, write the top-level `README.md` for the task directory. See the README.md section below for format.
 
 **Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via _gotcha before the cycle closes.
-
-**Phase transition** — Use AskUserQuestion to ask the user: FEEDBACK, REVIEW, or FINISH?
 
 ---
 
 ## Where to Write
 
-Note directories follow the structure defined in _note. See _note for directory naming, file layout, and the initialization script.
+Task note directories follow the structure defined in _note. Each task directory contains per-step subdirectories:
 
-**Directory initialization**: Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and handles the full chain: metadata extraction, directory creation, README.md generation, and subtasks/ directory setup.
+```
+{YYYYMMDD-HHMM}-{slug}-{session_id}/
+  README.md                         — task-level index (written by Collection)
+  ideation/
+    ideation.md                     — orchestrator synthesis
+    innovative.md                   — Innovative PI stance
+    best.md                         — Best-practice PI stance
+    evaluation/                     — evaluation files (if evaluation performed)
+  plan/
+    plan.md                         — plan details
+    evaluation/                     — evaluation files (if evaluation performed)
+  research/
+    research.md                     — orchestrator synthesis
+    innovative.md                   — Innovative researcher
+    best.md                         — Best-practice researcher
+    subtasks/
+      01-{slug}.json                — research subtask records
+    evaluation/                     — evaluation files (if evaluation performed)
+  execution/
+    execution.md                    — execution outcomes
+    subtasks/
+      01-{slug}.json                — execution subtask records
+    evaluation/                     — evaluation files (if evaluation performed)
+  feedback.md                       — feedback rounds (if FEEDBACK)
+  review/
+    innovative.md                   — Innovative PI review + verdict
+    best.md                         — Best-practice PI review + verdict
+    review.md                       — orchestrator synthesis
+```
+
+The task directory and its subdirectories are initialized by `gobbi note init` and populated during their respective workflow steps. Collection only writes `README.md` at the task root level.
 
 ---
 
 ## README.md
 
-The index file lists all task note directories. Must update README.md after creating each new task note directory.
+Collection writes the task-level `README.md` after verifying all per-step subdirectories. This is the primary artifact Collection creates — everything else was written during earlier steps.
+
+The task `README.md` must include:
+
+- **Subdirectory listing** — each subdirectory (`ideation/`, `plan/`, `research/`, `execution/`) with its key files
+- **Step summaries** — a one-line summary of what each step produced (the chosen approach from ideation, the task count from planning, the key findings from research, the deliverables from execution)
+- **Evaluation status** — which steps had evaluation performed and the verdict (pass/revise)
+- **Links to related docs** — gotchas recorded, project docs updated, or other artifacts created during the workflow
+
+Also update the parent `README.md` (the index file that lists all task note directories) to include this task's entry.
 
 ---
 
 ## Phase-Specific Collection
 
-See _note for what to include in each note file (ideation.md, plan.md, execution.md, etc.).
+Collection runs at different points depending on the workflow phase. The verification checklist adapts to what the phase produced.
 
-### After TASK phase (standard collection)
+### After standard workflow (Steps 1-4)
 
-When collecting evaluation findings across subtasks, organize by severity tier: Critical findings first (blocking issues that were resolved), then Important (significant issues addressed), then Suggestions (deferred or noted for future work), then Strengths (positive patterns worth preserving). This tiered format surfaces the most actionable information first and gives the user a quick scan of what mattered most.
+Verify all four subdirectories: `ideation/`, `plan/`, `research/`, `execution/`. Check that subtask JSON files exist in `research/subtasks/` and `execution/subtasks/`. Check that `evaluation/` subdirectories exist for any step where evaluation was performed.
 
-### After FEEDBACK phase
+Subtask JSON files are written during their respective steps (Step 3 and Step 4) via `subtask-collect.sh` with a `<phase>` argument. Collection verifies they exist, it does not create them.
 
-Write `feedback.md` to the existing task note directory. Append each feedback round — do not overwrite previous rounds.
+### After FEEDBACK
 
-### After REVIEW phase
+Write `feedback.md` to the task root directory. Append each feedback round — do not overwrite previous rounds. Re-verify any subdirectories whose contents were modified during the feedback cycle.
 
-Write `review.md` to the existing task note directory (or to `{task-slug}-review/` if it's a separate review directory).
+### After FEEDBACK then Review
+
+The `review/` subdirectory is updated with new PI review files. Verify that `review/` contains the expected review artifacts. Update the task `README.md` to reflect the review results.
 
 ---
 
