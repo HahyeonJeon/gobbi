@@ -4,6 +4,7 @@
  * Subcommands:
  *   init <type> [name]       Scaffold a new JSON template
  *   json2md <path>           Convert JSON template to Markdown
+ *   md2json <path>           Migrate Markdown file to JSON template
  *   validate <path>          Validate a JSON template
  *   read <path> [--section]  Pretty-print JSON template metadata or section
  */
@@ -14,6 +15,7 @@ import path from 'path';
 
 import { header, ok, error, dim, bold, yellow } from '../lib/style.js';
 import { renderDoc } from '../lib/docs/renderer.js';
+import { parseMarkdown } from '../lib/docs/migrator.js';
 import { validateFile } from '../lib/docs/validator.js';
 import {
   isDocType,
@@ -38,6 +40,7 @@ const USAGE = `Usage: gobbi docs <subcommand> [options]
 Subcommands:
   init <type> [name]       Scaffold a new JSON template
   json2md <path>           Convert JSON template to Markdown
+  md2json <path>           Migrate Markdown file to JSON template
   validate <path>          Validate a JSON template
   read <path> [--section]  Pretty-print JSON metadata or section
 
@@ -58,6 +61,15 @@ Converts a JSON template to Markdown. Writes the .md file alongside the .json.
 
 Options:
   --help    Show this help message`;
+
+const MD2JSON_USAGE = `Usage: gobbi docs md2json <path> [options]
+
+Migrates a Markdown file to its JSON template equivalent. Writes the .json file
+alongside the .md, or outputs to stdout with --stdout.
+
+Options:
+  --stdout    Write JSON to stdout instead of file
+  --help      Show this help message`;
 
 const VALIDATE_USAGE = `Usage: gobbi docs validate <path> [options]
 
@@ -91,6 +103,9 @@ export async function runDocs(args: string[]): Promise<void> {
       break;
     case 'json2md':
       await runDocsJson2md(args.slice(1));
+      break;
+    case 'md2json':
+      await runDocsMd2json(args.slice(1));
       break;
     case 'validate':
       await runDocsValidate(args.slice(1));
@@ -213,6 +228,59 @@ async function runDocsJson2md(args: string[]): Promise<void> {
 
   console.log(header('json2md'));
   console.log(ok(`${jsonPath} -> ${mdPath}`));
+}
+
+// ---------------------------------------------------------------------------
+// md2json
+// ---------------------------------------------------------------------------
+
+async function runDocsMd2json(args: string[]): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    strict: false,
+    options: {
+      'stdout': { type: 'boolean', default: false },
+      'help': { type: 'boolean', default: false },
+    },
+  });
+
+  if (values.help === true) {
+    console.log(MD2JSON_USAGE);
+    return;
+  }
+
+  const mdPath = positionals[0];
+  if (mdPath === undefined) {
+    console.log(error('Missing required argument: Markdown file path'));
+    console.log(MD2JSON_USAGE);
+    process.exit(1);
+  }
+
+  let content: string;
+  try {
+    content = await readFile(mdPath, 'utf8');
+  } catch {
+    console.log(error(`Cannot read file: ${mdPath}`));
+    process.exit(1);
+  }
+
+  const doc = parseMarkdown(content, mdPath);
+  const json = JSON.stringify(doc, null, 2) + '\n';
+
+  if (values.stdout === true) {
+    process.stdout.write(json);
+    return;
+  }
+
+  const dir = path.dirname(mdPath);
+  const basename = path.basename(mdPath, '.md');
+  const jsonPath = path.join(dir, `${basename}.json`);
+
+  await writeFile(jsonPath, json, 'utf8');
+
+  console.log(header('md2json'));
+  console.log(ok(`${mdPath} -> ${jsonPath}`));
 }
 
 // ---------------------------------------------------------------------------
