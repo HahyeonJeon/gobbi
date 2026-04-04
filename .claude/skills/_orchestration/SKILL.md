@@ -65,13 +65,13 @@ Add FEEDBACK tasks when the user selects FEEDBACK after Review. Add FINISH task 
 
 | Step | Load Skills |
 |---|---|
-| Step 1. Ideation | _ideation, _discuss, _evaluation, _ideation-evaluation |
+| Step 1. Ideation | _ideation, _discuss, _evaluation, _ideation-evaluation. Subagents: _innovation (innovative PI), _best-practice (best PI) |
 | Step 2. Planning | _plan, _discuss, _evaluation, _plan-evaluation |
-| Step 3. Research | _research, _evaluation, _research-evaluation |
+| Step 3. Research | _research, _evaluation, _research-evaluation. Subagents: _innovation (innovative researcher), _best-practice (best researcher) |
 | Step 4. Execution | _delegation, _evaluation |
 | Step 5. Collection | _collection |
 | Step 6. Memorization | _memorization, _gotcha |
-| Step 7. Review | _ideation (for context), _evaluation |
+| Step 7. Review | _ideation (for context), _evaluation. Subagents: _innovation (innovative PI), _best-practice (best PI) |
 
 **Must write note at every step** — write the corresponding note file before leaving each step. Never defer, never skip.
 

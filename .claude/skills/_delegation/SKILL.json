@@ -70,6 +70,19 @@
             },
             {
               "type": "text",
+              "value": "**Load per stance (PI and Researcher agents):**"
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "`_innovation` — load when spawning the innovative stance. Defines how the agent thinks creatively, challenges conventions, and explores cross-domain patterns.",
+                "`_best-practice` — load when spawning the best-practice stance. Defines how the agent follows proven patterns, cites documentation, and applies community standards.",
+                "Project-specific stance skills — if the project has its own `_innovation` or `_best-practice` skill, load it alongside gobbi's version. Project skills supplement, not replace."
+              ]
+            },
+            {
+              "type": "text",
               "value": "**Load per domain:**"
             },
             {
@@ -324,7 +337,8 @@
           "style": "bullet",
           "items": [
             "The approved plan — path to the `plan/` subdirectory or the plan content itself",
-            "The stance directive — innovative or best",
+            "The stance skill — `_innovation` for innovative stance, `_best-practice` for best stance",
+                "The stance directive — innovative or best",
             "The research scope — which parts of the plan need investigation (may be the full plan or specific tasks)",
             "The output location — path to the `research/` subdirectory where findings should be written",
             "Context to load — project skill, `_gotcha`, `_research`, domain skills relevant to the investigation",
