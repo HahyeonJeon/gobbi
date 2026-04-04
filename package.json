@@ -25,9 +25,6 @@
     "@types/proper-lockfile": "^4.1.4",
     "typescript": "^5.8"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "license": "MIT",
   "author": "HahyeonJeon",
   "repository": {
