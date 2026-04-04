@@ -37,6 +37,14 @@ At Review: assess whether best practices were followed. Check for standard patte
 
 Both stances follow the same lifecycle but through different lenses. Each stance's output is independent — do not attempt to cover both perspectives.
 
+### Model Tier Guidance
+
+The model tier is set by the orchestrator at delegation time via the Agent tool's `model` parameter — it is not hardcoded in this definition.
+
+When spawning the **innovative** stance, the orchestrator should use `model: opus` override with max effort. Innovative PI needs the deepest reasoning for creative ideation, cross-domain thinking, and unconventional review — this is where the strongest model pays for itself.
+
+The **best** stance keeps its default model. The orchestrator may override at delegation time based on task complexity.
+
 ---
 
 ## Before You Start
