@@ -46,8 +46,20 @@ log_failure() {
     >> "$HOME/.claude/notification-failures.log"
 }
 
+# Session-level notification preferences (gobbi.json)
+# Default: don't notify (safe default)
+GOBBI_ALLOW_SLACK=false
+GOBBI_ALLOW_TELEGRAM=false
+
+# Read gobbi.json session preferences if available
+GOBBI_CONFIG="${CLAUDE_PROJECT_DIR:-.}/.claude/gobbi.json"
+if [ -f "$GOBBI_CONFIG" ] && [ -n "$CLAUDE_SESSION_ID" ] && command -v jq &>/dev/null; then
+  GOBBI_ALLOW_SLACK=$(jq -r --arg sid "$CLAUDE_SESSION_ID" '.sessions[$sid].notify.slack // false' "$GOBBI_CONFIG" 2>/dev/null || echo "false")
+  GOBBI_ALLOW_TELEGRAM=$(jq -r --arg sid "$CLAUDE_SESSION_ID" '.sessions[$sid].notify.telegram // false' "$GOBBI_CONFIG" 2>/dev/null || echo "false")
+fi
+
 # Slack (Bot API — DM to user)
-if [ -n "$SLACK_BOT_TOKEN" ] && [ -n "$SLACK_USER_ID" ]; then
+if [ "$GOBBI_ALLOW_SLACK" = "true" ] && [ -n "$SLACK_BOT_TOKEN" ] && [ -n "$SLACK_USER_ID" ]; then
   RAW_TEXT="*${TITLE}*\n${MESSAGE}"
   TEXT=$(truncate_msg "$RAW_TEXT" "$SLACK_MAX_CHARS")
   PAYLOAD=$(jq -n \
@@ -66,7 +78,7 @@ if [ -n "$SLACK_BOT_TOKEN" ] && [ -n "$SLACK_USER_ID" ]; then
 fi
 
 # Telegram
-if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+if [ "$GOBBI_ALLOW_TELEGRAM" = "true" ] && [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
   RAW_TEXT=$(printf "<b>%s</b>\n%s" "$TITLE" "$MESSAGE")
   TEXT=$(truncate_msg "$RAW_TEXT" "$TELEGRAM_MAX_CHARS")
   (

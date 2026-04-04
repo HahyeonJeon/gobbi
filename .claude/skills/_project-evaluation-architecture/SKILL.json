@@ -1,0 +1,101 @@
+{
+  "$schema": "gobbi-docs/skill",
+  "frontmatter": {
+    "name": "_project-evaluation-architecture",
+    "description": "Perspective skill for evaluating project deliverables for structural soundness. Use when evaluating code changes, refactoring output, or new implementations for coupling, cohesion, pattern consistency, type safety, and fit within the existing design.",
+    "allowed-tools": "Read, Grep, Glob, Bash"
+  },
+  "title": "Project Evaluation — Architecture Perspective",
+  "opening": "This perspective answers one question: is the code structurally sound within the existing system? Load this skill when evaluating project output — implementations, refactoring, configuration changes — from a structural and design angle.\n\nThe evaluator's job is to find design problems, not to propose rewrites.",
+  "sections": [
+    {
+      "heading": "Core Principle",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "Fit within the existing design, or change the design deliberately.",
+          "body": "New code that imports a pattern inconsistent with the rest of the codebase creates drift — two ways of doing the same thing, neither authoritative. This is not always wrong, but it must be intentional and traceable. Unintentional pattern divergence is a structural failure."
+        },
+        {
+          "type": "principle",
+          "statement": "Abstractions should reduce complexity, not create it.",
+          "body": "An abstraction that requires the reader to understand more than the code it replaced has made the codebase harder to work with. The test is whether the abstraction is learnable from existing usage without reading its implementation."
+        }
+      ]
+    },
+    {
+      "heading": "Evaluation Lenses",
+      "content": [
+        {
+          "type": "subsection",
+          "heading": "Pattern Consistency",
+          "content": [
+            {
+              "type": "text",
+              "value": "Does the code follow the patterns established in the surrounding codebase?\n\nRead the existing implementations in the same area. Identify the dominant patterns for error handling, data transformation, component composition, and module boundaries. The deliverable should fit these patterns — or, if it diverges, that divergence should be justified by the nature of the new code and not simply a matter of agent preference or unfamiliarity.\n\nInconsistent patterns are not style issues — they are maintenance costs. Future agents reading this code will be confused about which pattern to follow."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Coupling and Cohesion",
+          "content": [
+            {
+              "type": "text",
+              "value": "Are module boundaries respected? Does each unit do one thing?\n\nCoupling: does the deliverable reach into another module's internals, or rely on implementation details that aren't exposed as a stable interface? Tight coupling makes isolated change impossible — modifying one component cascades unpredictably.\n\nCohesion: does each function, class, or module have a single, clear purpose? Mixed responsibilities make code harder to test, harder to reuse, and harder to understand."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Type Safety",
+          "content": [
+            {
+              "type": "text",
+              "value": "Are types used precisely, or are they working around the type system?\n\nAssess how the code uses the type system in place — whether TypeScript, Go, or another typed language. Look for casts that bypass type checking, `any`-equivalent escapes, type assertions without prior narrowing, or data shapes passed as loose maps when a typed structure would make intent clear.\n\nTypes are documentation the compiler enforces. Where the deliverable weakens type precision, it weakens the compiler's ability to catch future mistakes."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Extensibility",
+          "content": [
+            {
+              "type": "text",
+              "value": "Does the code extend naturally, or does it fight the existing design?\n\nChanges that would make future extension difficult — hard-coded specifics where variability is clearly needed, structural decisions that assume the current shape of the data will never change — are design problems, not just aesthetic ones. Assess whether the deliverable was designed for the immediate case only, when the surrounding code clearly anticipates evolution."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Signals Worth Investigating",
+      "content": [
+        {
+          "type": "text",
+          "value": "These patterns are not automatically failures, but each warrants examination:"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "A new abstraction that duplicates an existing one with slightly different semantics",
+            "Accessing internal state of another module that was not designed to be consumed externally",
+            "Type casts or escape hatches used where a type guard or discriminated union would work",
+            "A function or module that grew to handle two or more unrelated concerns",
+            "A pattern introduced here that no other part of the codebase uses"
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Output Expectations",
+      "content": [
+        {
+          "type": "text",
+          "value": "Report findings as specific, traceable observations. Name the file, the construct, and the structural problem. Distinguish between violations of the existing design (the code fights the codebase) and missing design choices (the code introduces something new without a clear home). Rate severity: whether the issue creates ongoing maintenance costs (significant) or is a localized inconsistency unlikely to spread (minor).\n\nDo not propose alternative implementations. Describe the problem clearly enough that the implementer can reason about the right solution in context."
+        }
+      ]
+    }
+  ]
+}

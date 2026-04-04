@@ -6,6 +6,7 @@ import path from 'path';
 const USAGE = `Usage: gobbi <command> [options]
 
 Commands:
+  docs       Manage gobbi-docs JSON templates and Markdown
   image      Analyze images or create comparison sheets
   video      Analyze video files and extract frames
   web        Take screenshots or capture images from web pages
@@ -17,10 +18,15 @@ Options:
 export async function run(): Promise<void> {
   const command = process.argv[2];
 
-  // Early routing for media commands (they have their own parseArgs)
-  if (command === 'image' || command === 'video' || command === 'web') {
+  // Early routing for commands (they have their own parseArgs)
+  if (command === 'docs' || command === 'image' || command === 'video' || command === 'web') {
     const commandArgs = process.argv.slice(3);
     switch (command) {
+      case 'docs': {
+        const { runDocs } = await import('./commands/docs.js');
+        await runDocs(commandArgs);
+        return;
+      }
       case 'image': {
         const { runImage } = await import('./commands/image.js');
         await runImage(commandArgs);

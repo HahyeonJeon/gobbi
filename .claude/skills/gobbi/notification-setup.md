@@ -10,6 +10,10 @@ Check notification configuration state at session start. Determines which channe
 
 Detection before the first task means the orchestrator can offer credential setup during session start rather than discovering missing credentials when a notification tries to fire.
 
+> **Both session flag AND credentials must be present for notifications to fire.**
+
+Notification delivery requires two independent conditions: the session flag in `gobbi.json` is `true` for the channel, and the channel's credentials exist in `.env`. Missing either one suppresses delivery. This means credentials alone are not sufficient — the user must explicitly opt in per session during `/gobbi` setup.
+
 > **Detection is read-only.**
 
 Never modify credentials, hooks, or settings during detection. Report state; let the user decide what to fix.
@@ -43,13 +47,19 @@ Missing or non-executable scripts indicate an incomplete installation.
 
 Check `settings.json` for hook entries that reference the notification scripts. Hooks must be registered for the desired events (typically `Stop` and `Notification`).
 
-### 4. Classify State
+### 4. Session Preferences in gobbi.json
 
-**Fully configured** — Credentials exist, scripts are executable, hooks are registered. The orchestrator enables notifications for the configured channels without user action.
+The user's notification choices from `/gobbi` setup Q4 are persisted to `gobbi.json` via `gobbi-config.sh`. The `notify-send.sh` hook reads these per-session flags before attempting delivery. Without a session entry, all channels default to `false` — no notifications fire until the user explicitly selects during setup.
 
-**Partially configured** — Some pieces are in place but others are missing (e.g., credentials exist but hooks aren't registered, or scripts exist but aren't executable). Report what's missing and offer to fix.
+Only Slack and Telegram have conditional session-level control in v0.3.2. Discord delivery is deferred to a future version. Desktop notifications (`NOTIFY_DESKTOP`) remain environment-level only — they are not gated by `gobbi.json` session flags.
 
-**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load _notification and the relevant child skill to help set up.
+### 5. Classify State
+
+**Fully configured** — Credentials exist in `.env`, scripts are executable, hooks are registered, and session flags are set in `gobbi.json`. After the user selects channels at setup, the orchestrator persists session flags. Notifications fire for selected channels.
+
+**Partially configured** — Some pieces are in place but others are missing (e.g., credentials exist but hooks aren't registered, or scripts exist but aren't executable). Report what's missing and offer to fix. Session flags alone are not sufficient — credentials and infrastructure must also be present.
+
+**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load _notification and the relevant child skill (_slack, _telegram, _discord) to help set up. Session flags are still written to `gobbi.json` so that notifications activate immediately once credentials are added.
 
 **Degraded** — Credentials exist but a dependency is missing (e.g., `jq` not installed, `notify-send` not available for Desktop). Report the dependency gap.
 

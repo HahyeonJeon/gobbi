@@ -1,0 +1,234 @@
+{
+  "$schema": "gobbi-docs/skill",
+  "frontmatter": {
+    "name": "_note",
+    "description": "Write notes at every workflow step. Use to record decisions, outcomes, and context at each stage — ideation, plan, execution, feedback, and review.",
+    "allowed-tools": "Write, Read, Glob, Bash"
+  },
+  "title": "Note",
+  "opening": "Write notes at every workflow step to persist decisions, outcomes, and context. Notes are the permanent record of what was discussed, decided, and delivered.\n\n> **Notes must contain full content, never summaries.**\n\nEvery note file must be detailed enough that a reader who has no access to the conversation can fully reconstruct what happened. Write the actual content — the complete plan, the full evaluation findings, the detailed execution outcomes. A one-paragraph summary is not a note. If it takes 100 lines to capture what happened, write 100 lines. The plan file from EnterPlanMode, the evaluation results, the discussion decisions — all of it goes into the note verbatim or near-verbatim.",
+  "sections": [
+    {
+      "heading": "Where to Write",
+      "content": [
+        {
+          "type": "text",
+          "value": "Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`:\n\n```\n.claude/project/{project-name}/note/\n  README.md                                               — index of all task note directories\n  {YYYYMMDD-HHMM}-{slug}-{session_id}/\n    README.md                                             — session context metadata (YAML frontmatter)\n    ideation.md                                           — ideas explored, trade-offs, chosen approach\n    plan.md                                               — plan details, task decomposition, dependencies\n    execution.md                                          — execution outcomes, issues encountered\n    feedback.md                                           — user feedback rounds, corrections made\n    review.md                                             — review findings, verification results\n    memorize.md                                           — what was memorized for session continuity\n    subtasks/\n      {NN}-{subtask-slug}.json                             — extracted subagent record (delegation prompt + final result)\n```"
+        },
+        {
+          "type": "subsection",
+          "heading": "Naming",
+          "content": [
+            {
+              "type": "text",
+              "value": "**Task directory**: `{YYYYMMDD-HHMM}-{slug}-{session_id}` — datetime prefix for chronological ordering with minute precision, slug for readability, full session UUID at the end for machine cross-referencing. The `session_id` is the full session UUID, available via `$CLAUDE_SESSION_ID`. Example: `20260328-0706-doc-review-ed5b2db3-7d89-4208-a25b-8ad0889a0c80`."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Initialization",
+          "content": [
+            {
+              "type": "principle",
+              "statement": "Always use note-init.sh to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.",
+              "body": "Initialize note directories using the `note-init.sh` script in `_note/scripts/`. It takes the project name and task slug as arguments and outputs the created directory path. It handles the full chain: session metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup."
+            },
+            {
+              "type": "text",
+              "value": "After each subagent returns, run `subtask-collect.sh` (also in `_note/scripts/`) to extract the delegation prompt and final result from the subagent's JSONL transcript into `subtasks/{NN}-{subtask-slug}.json`. The script handles transcript parsing and JSON formatting — no manual Write calls needed.\n\nIf `note-init.sh` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "What to Write at Each Step",
+      "content": [
+        {
+          "type": "subsection",
+          "heading": "README.md (per task directory)",
+          "content": [
+            {
+              "type": "text",
+              "value": "Session context for the task, created automatically by the note-init script. Contains YAML frontmatter with: session_id, datetime, git_branch, cwd, claude_model, transcript path, and task name. This anchors every note file in the directory to a specific session, making it possible to trace back to the original conversation."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "ideation.md",
+          "content": [
+            {
+              "type": "text",
+              "value": "Record during Step 1 (Ideation Loop). Must be detailed enough that a reader can reconstruct the full ideation without reading the conversation:"
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "The initial user prompt — verbatim or near-verbatim capture of what the user asked for",
+                "Discussion points — each question asked, options presented, and user's responses",
+                "Options explored with full trade-off analysis — not just names, but the reasoning",
+                "Evaluation feedback from evaluator agents (if evaluation was performed)",
+                "Discussion about evaluation — what was agreed to address vs defer",
+                "The final refined idea with full detail — concrete enough to plan from"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "plan.md",
+          "content": [
+            {
+              "type": "text",
+              "value": "Record during Step 2 (Plan Loop). Must contain the complete plan, not a summary:"
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "The complete decomposed tasks with agent assignments, skills, scope boundaries, and dependencies",
+                "Execution order with parallelism and wave structure",
+                "Evaluation feedback from evaluator agents (if evaluation was performed)",
+                "Discussion about evaluation — what was revised and why",
+                "What the user adjusted during discussion",
+                "The final approved plan in full"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "execution.md",
+          "content": [
+            {
+              "type": "text",
+              "value": "Record during Step 3 (Execution — Delegation). Must document each subtask in enough detail to understand what happened:"
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Which subtasks were delegated to which agents, with the key context provided",
+                "Per-subtask outcomes — what the agent produced, key findings or changes",
+                "Execution evaluation results per subtask",
+                "Issues encountered and how they were resolved",
+                "Any deviations from the plan and why"
+              ]
+            },
+            {
+              "type": "text",
+              "value": "When documenting evaluation results in execution.md, organize findings by severity tier — Critical findings first, then Important, then Suggestions, then Strengths — rather than by evaluator perspective. Severity-tiered presentation surfaces actionable items first and makes blocking issues visible across all subtasks at a glance.\n\nRecord pre-action verification outcomes when they catch a precondition failure (wrong branch, duplicate PR, stale state). Verification that passes silently needs no note — only record when verification catches a real problem, as these are valuable learning inputs for gotchas."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "subtasks/{NN}-{subtask-slug}.json",
+          "content": [
+            {
+              "type": "text",
+              "value": "Extracted from subagent JSONL transcripts via `subtask-collect.sh` during Step 3. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered."
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "One file per subtask, zero-padded sequence number for ordering",
+                "Extracted automatically — the orchestrator calls the script after each subagent returns, not batched at collection",
+                "Contains the full delegation prompt and full final result as structured JSON, not summaries"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "feedback.md",
+          "content": [
+            {
+              "type": "text",
+              "value": "Record during Phase 2 (FEEDBACK):"
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Each feedback round: what the user said, what changed",
+                "Gotchas recorded from corrections",
+                "Append each round — do not overwrite previous rounds"
+              ]
+            },
+            {
+              "type": "text",
+              "value": "Number each feedback round explicitly (Round 1, Round 2, ...). Numbered rounds enable stagnation detection — if the same finding reappears across 3 rounds without convergence, the pattern becomes visible and actionable. Include what remains unresolved after each round, not just what changed."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "review.md",
+          "content": [
+            {
+              "type": "text",
+              "value": "Record during Phase 3 (REVIEW):"
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Review scope and focus areas",
+                "Verification findings",
+                "Issues found and resolution status"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "memorize.md",
+          "content": [
+            {
+              "type": "text",
+              "value": "Record during Step 5 (Memorization). Must document what was persisted for session continuity:"
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Task details memorized — what was done, what remains, broader plan context",
+                "Gotchas written to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/` — list each with a one-line summary",
+                "Rules written to `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/rules/` — list each with a one-line summary",
+                "Project docs updated — which files in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` were created or modified and why"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "README.md",
+      "content": [
+        {
+          "type": "text",
+          "value": "The index file is a markdown table listing each task directory with its date, session, slug, and a one-line summary of what the task delivered.\n\nMust update README.md after creating each new task note directory."
+        }
+      ]
+    },
+    {
+      "heading": "When to Write",
+      "content": [
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "**Always write** at the end of each workflow step — ideation, plan, execution, feedback, review, memorization.",
+            "**Write immediately** — do not defer note-writing to the end. Each step's note must be written before proceeding to the next step.",
+            "**Skip only** when the task was trivial and handled directly without delegation."
+          ]
+        }
+      ]
+    }
+  ]
+}
