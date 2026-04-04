@@ -16,8 +16,8 @@ Run `gobbi --version` at session start. Three outcomes:
 
 | Outcome | Meaning | Action |
 |---|---|---|
-| Version prints (e.g., `0.3.2`) | CLI is installed and in PATH | Proceed to setup questions |
-| Command outputs version via `node bin/gobbi.js --version` | CLI is available locally but not installed globally | Usable for development — proceed, but suggest global install for convenience |
+| Version prints (e.g., `0.4.0`) | CLI is installed and in PATH | Proceed to setup questions |
+| Command outputs version via `node packages/cli/bin/gobbi.js --version` | CLI is available locally but not installed globally | Usable for development — proceed, but suggest global install for convenience |
 | Command not found | CLI is not installed | Help the user install before proceeding |
 
 ---
@@ -31,7 +31,7 @@ There are three ways to install the gobbi CLI, depending on the user's setup:
 Install globally so `gobbi` is available in all terminals:
 
 ```
-npm install -g @gobbi/core
+npm install -g @gobbi/cli
 ```
 
 Verify: `gobbi --version`
@@ -40,13 +40,14 @@ This is the recommended approach for users who want `gobbi` available across all
 
 ### Option 2: npm link (for development)
 
-If working on the gobbi repository itself, link the local build:
+If working on the gobbi repository itself, link the local builds:
 
 ```
-npm link
+npm link --workspace=packages/cli
+npm link --workspace=packages/media
 ```
 
-This creates a global symlink to the local `bin/gobbi.js`. Changes to the source are immediately available after `npm run build`.
+This creates global symlinks to the local bin scripts. Changes to the source are immediately available after `npm run build`.
 
 Verify: `gobbi --version`
 
@@ -55,10 +56,10 @@ Verify: `gobbi --version`
 Run directly from the project:
 
 ```
-node bin/gobbi.js <command>
+node packages/cli/bin/gobbi.js <command>
 ```
 
-This works without any installation but requires being in the gobbi project directory. Hooks in `settings.json` use the bare `gobbi` command, so this option only works for manual CLI usage — hooks will fail without a global install or link.
+This works without any installation but requires being in the gobbi project root. Hooks in `settings.json` use the bare `gobbi` command, so this option only works for manual CLI usage — hooks will fail without a global install or link.
 
 ---
 
@@ -95,7 +96,7 @@ The gobbi CLI replaces the shell scripts that were previously in `.claude/skills
 
 | Problem | Cause | Fix |
 |---|---|---|
-| `gobbi: command not found` | Not installed globally or not linked | Run `npm install -g @gobbi/core` or `npm link` in the gobbi directory |
+| `gobbi: command not found` | Not installed globally or not linked | Run `npm install -g @gobbi/cli` or `npm link` in the gobbi directory |
 | `gobbi note init` fails with CLAUDE_SESSION_ID not set | SessionStart hook didn't run | Check `.claude/settings.json` hooks — the `gobbi session metadata` hook must fire on startup |
 | `gobbi docs json2md` produces empty output | TypeScript not compiled | Run `npm run build` in the gobbi directory |
 | Hooks fail silently | `gobbi` not in PATH when hooks execute | Ensure global install or link — hooks run in a shell that may not have local node_modules/.bin in PATH |
