@@ -8,7 +8,8 @@
   "title": "Git",
   "opening": "Git and GitHub workflow. Load this skill when a task involves branching, worktree setup, PR creation, or the full issue-to-merge lifecycle.",
   "navigation": {
-    "[conventions.md](conventions.md)": "Branch naming, commit messages, PR template, issue format, sub-issues, labels, worktree directory naming"
+    "[conventions.md](conventions.md)": "Branch naming, commit messages, PR template, issue format, sub-issues, labels, worktree directory naming",
+    "[gotchas.md](gotchas.md)": "Known mistakes and corrections for _git"
   },
   "sections": [
     {

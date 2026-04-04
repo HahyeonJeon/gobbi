@@ -8,6 +8,12 @@ allowed-tools: Write, Read, Glob, Bash
 
 Verify that all per-step subdirectories contain their expected note files and write the task-level `README.md`. Collection is Step 5 in the 7-step workflow (Ideation, Plan, Research, Execution, Collection, Memorization, Review). Notes are written during their respective steps — Collection verifies completeness, it does not create the notes themselves.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _collection |
+
 ---
 
 ## What to Do

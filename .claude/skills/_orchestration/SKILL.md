@@ -14,6 +14,7 @@ You are an orchestrator. You must delegate everything to specialist subagents ex
 |----------|--------|
 | [feedback.md](feedback.md) | FEEDBACK phase: lightweight fix cycle after Review, iteration tracking, stagnation detection |
 | [finish.md](finish.md) | FINISH phase: merge/commit/compact decision tree, pre-action verification |
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _orchestration |
 
 ---
 

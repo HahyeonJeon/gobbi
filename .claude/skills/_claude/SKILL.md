@@ -17,6 +17,7 @@ Writing standard for `.claude/` documentation. MUST load when authoring or modif
 | _skills | Creating and modifying skill definitions in `.claude/skills/` |
 | _agents | Creating and modifying agent definitions in `.claude/agents/` |
 | [transcripts.md](transcripts.md) | Subagent transcript recovery — location, JSONL schema, extraction paths, plan data |
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _claude |
 
 ---
 
@@ -41,7 +42,7 @@ Every document opens with a clear statement of its purpose and scope. An agent s
 What effective `.claude/` documentation looks like:
 
 | Pattern | Principle |
-|---------|-----------|
+|---|---|
 | **Principles over procedures** | State what matters and why. "Each component decomposes into X, Y, Z — read existing code for the pattern." |
 | **Constraints over templates** | Tell agents what NOT to do (clear boundary) rather than what TO do (rigid path). Constraints leave room for judgment. |
 | **Codebase over examples** | Point agents to read existing implementations. The codebase is the single source of truth. |
@@ -122,21 +123,25 @@ For the full schema specification, see `$CLAUDE_PROJECT_DIR/.claude/project/gobb
 Before publishing any `.claude/` documentation:
 
 **Core Principle**
+
 - [ ] Chain-of-Docs — deep thinking decomposed into focused docs with "Navigate deeper from here:" links
 - [ ] Procedures have detailed steps; non-procedures use principles and constraints, not steps
 - [ ] First line declares what the doc is and when to read it
 
 **Writing Pattern**
+
 - [ ] Points to codebase for implementation patterns ("read existing X")
 - [ ] Under 500 lines (must), targeting under 200 (should)
 - [ ] No duplication with other `.claude/` files
 
 **Anti-Pattern**
+
 - [ ] Zero code blocks or BAD/GOOD comparisons (must avoid)
 - [ ] Step-by-step recipes only in procedures where reordering or omitting steps causes failure (context-dependent)
 - [ ] Minimal interface definitions, exact values, or bash commands in docs (should avoid)
 
 **JSON-First Authoring**
+
 - [ ] JSON source and `.md` output are in sync (`gobbi docs validate`)
 - [ ] Content was edited in the `.json` file, not the `.md` file
 - [ ] Both `.json` and `.md` are committed together

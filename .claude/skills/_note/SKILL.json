@@ -206,5 +206,8 @@
         }
       ]
     }
-  ]
+  ],
+  "navigation": {
+    "[gotchas.md](gotchas.md)": "Known mistakes and corrections for _note"
+  }
 }

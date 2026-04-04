@@ -12,6 +12,12 @@ Write notes at every workflow step using per-step subdirectories. Notes are the 
 
 Every note file must be detailed enough that a reader who has no access to the conversation can fully reconstruct what happened. Write the actual content — the complete plan, the full evaluation findings, the detailed execution outcomes. A one-paragraph summary is not a note. If it takes 100 lines to capture what happened, write 100 lines.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _note |
+
 ---
 
 ## Where to Write
