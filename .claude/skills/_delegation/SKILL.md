@@ -93,21 +93,21 @@ Every agent follows: **Study → Plan → Execute → Verify**. Your delegation 
 
 ## Model Selection
 
-> **Use the cheapest model that can do the job.**
+> **Innovative stance always gets opus. Evaluators get sonnet. All agents run at max effort.**
 
-Default to the agent's defined model; override when the task clearly maps to a different tier.
+Creative and implementation work demands deep reasoning — opus handles ambiguity, novelty, and quality. Evaluators follow structured criteria against defined standards — sonnet handles this reliably. The orchestrator uses the Agent tool's `model` parameter to override when needed.
 
-Three tiers of capability, from lightest to heaviest:
-
-| Tier | Strength | Suited for |
-|---|---|---|
-| **Haiku** | Fast, cheap, reliable on narrow tasks | Eligibility checks, simple validation, gotcha lookups, confidence scoring, format verification |
-| **Sonnet** | Balanced reasoning and cost | Routine development, code review, codebase exploration, standard evaluation, documentation writing |
-| **Opus** | Deep reasoning, handles ambiguity and novelty | Complex ideation, architecture decisions, system design, nuanced evaluation, novel problem solving, deep research (both stances) |
-
-**When to override agent defaults:** Agent definitions declare a default model suited to their typical workload. Override when the specific task is clearly simpler or more complex than what the agent usually handles. A Sonnet-default agent doing a trivial validation can drop to Haiku. A Sonnet-default agent facing a novel architecture problem should escalate to Opus.
-
-This is guidance for the orchestrator's judgment, not a rigid assignment table. The orchestrator considers the task's complexity, the cost, and the consequence of getting it wrong — then picks the tier that fits.
+| Agent | Stance | Model | Rationale |
+|---|---|---|---|
+| `__pi` | innovative | opus | Deep creative thinking, unconventional approaches |
+| `__pi` | best | opus | Deep reasoning about established patterns |
+| `__researcher` | innovative | opus | Creative research across domains |
+| `__researcher` | best | opus | Thorough best-practice investigation |
+| `_agent-evaluator` | — | sonnet | Structured assessment against criteria |
+| `_skills-evaluator` | — | sonnet | Structured assessment against criteria |
+| `_project-evaluator` | — | sonnet | Structured assessment against criteria |
+| `__executor` | — | opus | Implementation quality requires strong reasoning |
+| `gobbi-agent` | — | opus | Documentation quality requires strong reasoning |
 
 > **Model tiers and capabilities evolve — these are current guidelines, not permanent assignments.**
 
@@ -131,16 +131,19 @@ This is guidance for the orchestrator's judgment, not a rigid assignment table. 
 
 ## Agent Roster
 
-The orchestrator delegates to four agent types. Each has a distinct role in the workflow — understanding their boundaries prevents misrouting.
+The orchestrator delegates to these agent types. Each has a distinct role in the workflow — understanding their boundaries prevents misrouting.
 
-| Agent | Role | When to use | Default model |
+| Agent | Role | When to use | Model |
 |---|---|---|---|
 | `__pi` | "What to do" — ideation, review, creative assessment | Step 1 (Ideation) and Step 7 (Review). Spawned in parallel with innovative + best stances. | Opus |
-| `__researcher` | "How to do" — implementation research, pattern investigation, approach analysis | Step 3 (Research). Spawned in parallel with innovative + best stances. Writes findings to `research/` subdirectory. | Opus |
-| `__executor` | "Do it" — code implementation, file changes, concrete deliverables | Step 4 (Execution). Reads research materials before implementing. Commits verified work. | Opus |
+| `__researcher` | "What approach to take" — directional research, best references, architectural guidance | Step 3 (Research). Spawned in parallel with innovative + best stances. Writes findings to `research/` subdirectory. | Opus |
+| `_agent-evaluator` | Structured assessment — evaluates agent output against criteria | After creative or execution steps when evaluation is requested. | Sonnet |
+| `_skills-evaluator` | Structured assessment — evaluates skill documentation quality | After skill authoring when evaluation is requested. | Sonnet |
+| `_project-evaluator` | Structured assessment — evaluates project alignment and conventions | After any step when project-perspective evaluation is requested. | Sonnet |
+| `__executor` | "Do it" — code implementation, file changes, concrete deliverables | Step 4 (Execution). Reads research for direction, then implements with engineering judgment. Commits verified work. | Opus |
 | `gobbi-agent` | Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks | Step 4 (Execution) for any subtask involving `.claude/` configuration. Loaded with _claude, _skills, _agents, _rules as needed. | Opus |
 
-All agents are currently Opus-tier by default. Override when the specific task demands it — a narrow validation task can drop to Haiku, a routine implementation can drop to Sonnet (see Model Selection).
+Creative agents (PI, researcher) and implementation agents (executor, gobbi-agent) run at opus. Evaluators run at sonnet — they follow structured criteria, not creative reasoning. See Model Selection for the full assignment table.
 
 ---
 

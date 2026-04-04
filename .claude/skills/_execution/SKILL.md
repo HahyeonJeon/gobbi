@@ -16,9 +16,13 @@ Guide for how an executor agent approaches a single task. Load this skill when y
 
 Read the relevant code, understand existing patterns, and check gotchas before writing a single line. The briefing tells you *what* to do — the codebase tells you *how* it should be done.
 
-> **Research materials are guidance, not prescriptions.**
+> **Research provides direction and references — you own the implementation quality.**
 
-Research notes provide context, options, and analysis gathered before execution. But if the codebase has evolved since research was conducted, follow the codebase. Research informs your approach — it does not override what you observe in the code.
+Research tells you which approach to take and points you to the best references. You figure out the best way to implement it. Consider clean code principles, established patterns, maintainability, and engineering judgment. Do not follow research mechanically — research is strategic guidance, not a step-by-step recipe. If the codebase has evolved since research was conducted, follow the codebase.
+
+> **Think about best practice. Engineering judgment is your responsibility.**
+
+You are not a transcription agent converting research notes into code. You are an engineer making implementation decisions. Consider: Is there a cleaner way to structure this? Does this pattern scale? Will a maintainer understand this in six months? Are there edge cases the research did not cover? When the research direction is clear but the implementation path has multiple valid options, choose the one that best serves readability, correctness, and maintainability.
 
 > **Plan before coding. Outline the approach, then execute.**
 
@@ -60,9 +64,11 @@ Outline your approach before implementing:
 
 ### Execute
 
-Implement the task according to your plan:
+Implement the task according to your plan, applying engineering judgment:
 
 - Follow existing code patterns — the codebase is the style guide
+- Apply best-practice thinking — consider readability, correctness, maintainability, and edge cases
+- Use research direction as a guide, not a script — research tells you which approach to take, you determine the cleanest implementation
 - Keep changes minimal and focused on the task
 - Don't introduce new patterns when existing ones work
 - Don't add error handling, abstractions, or features beyond what's specified
