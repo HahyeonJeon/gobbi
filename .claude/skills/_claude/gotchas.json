@@ -67,5 +67,6 @@
       }
     }
   ],
-  "opening": "Mistakes in writing `.claude/` documentation. These cause agents to produce rigid, templated output instead of thinking."
+  "opening": "Mistakes in writing `.claude/` documentation. These cause agents to produce rigid, templated output instead of thinking.",
+  "navigation": {}
 }

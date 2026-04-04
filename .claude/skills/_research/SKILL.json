@@ -114,13 +114,37 @@
         },
         {
           "type": "table",
-          "headers": ["File", "Author", "Contains"],
+          "headers": [
+            "File",
+            "Author",
+            "Contains"
+          ],
           "rows": [
-            ["`research/innovative.md`", "Innovative researcher", "Approach direction, architectural ideas, cross-domain patterns, trade-off analysis — organized by plan task"],
-            ["`research/best.md`", "Best-practice researcher", "Approach direction, proven patterns, community standards, key references — organized by plan task"],
-            ["`research/research.md`", "Orchestrator", "Recommended direction per plan task with cited references — which approach to take and why, not how to code it"],
-            ["`research/results/`", "Both researchers", "Reference materials: relevant code snippets from the codebase, API documentation excerpts, comparison tables, pattern analysis"],
-            ["`research/subtasks/01-{slug}.json`", "Post-hook", "Subtask records extracted from researcher transcripts"]
+            [
+              "`research/innovative.md`",
+              "Innovative researcher",
+              "Approach direction, architectural ideas, cross-domain patterns, trade-off analysis — organized by plan task"
+            ],
+            [
+              "`research/best.md`",
+              "Best-practice researcher",
+              "Approach direction, proven patterns, community standards, key references — organized by plan task"
+            ],
+            [
+              "`research/research.md`",
+              "Orchestrator",
+              "Recommended direction per plan task with cited references — which approach to take and why, not how to code it"
+            ],
+            [
+              "`research/results/`",
+              "Both researchers",
+              "Reference materials: relevant code snippets from the codebase, API documentation excerpts, comparison tables, pattern analysis"
+            ],
+            [
+              "`research/subtasks/01-{slug}.json`",
+              "Post-hook",
+              "Subtask records extracted from researcher transcripts"
+            ]
           ]
         }
       ]
@@ -186,5 +210,6 @@
         }
       ]
     }
-  ]
+  ],
+  "navigation": {}
 }

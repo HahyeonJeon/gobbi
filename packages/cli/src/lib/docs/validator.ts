@@ -81,8 +81,10 @@ export async function validateDoc(
     errors.push('"opening" must be a string if present');
   }
 
-  // navigation (optional object)
-  if ('navigation' in obj) {
+  // navigation (required object, may be empty)
+  if (!('navigation' in obj)) {
+    errors.push('"navigation" is required (use empty object {} for leaf documents)');
+  } else {
     validateNavigation(obj['navigation'], errors);
   }
 

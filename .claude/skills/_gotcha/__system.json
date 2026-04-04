@@ -55,5 +55,6 @@
       }
     }
   ],
-  "opening": "Environment, process management, hooks, and infrastructure mistakes that damage the user's setup."
+  "opening": "Environment, process management, hooks, and infrastructure mistakes that damage the user's setup.",
+  "navigation": {}
 }

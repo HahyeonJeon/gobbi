@@ -200,12 +200,10 @@ function buildSkillDoc(
     $schema: 'gobbi-docs/skill',
     frontmatter,
     title,
+    navigation: navigation ?? {},
   };
   if (opening !== undefined) {
     doc.opening = opening;
-  }
-  if (navigation !== undefined) {
-    doc.navigation = navigation;
   }
   if (sections.length > 0) {
     doc.sections = sections;
@@ -224,12 +222,10 @@ function buildAgentDoc(
     $schema: 'gobbi-docs/agent',
     frontmatter,
     title,
+    navigation: navigation ?? {},
   };
   if (opening !== undefined) {
     doc.opening = opening;
-  }
-  if (navigation !== undefined) {
-    doc.navigation = navigation;
   }
   if (sections.length > 0) {
     doc.sections = sections;
@@ -247,15 +243,13 @@ function buildRuleDoc(
   const doc: RuleDoc = {
     $schema: 'gobbi-docs/rule',
     title,
+    navigation: navigation ?? {},
   };
   if (frontmatter !== undefined) {
     doc.frontmatter = frontmatter as RuleFrontmatter;
   }
   if (opening !== undefined) {
     doc.opening = opening;
-  }
-  if (navigation !== undefined) {
-    doc.navigation = navigation;
   }
   if (sections.length > 0) {
     doc.sections = sections;
@@ -272,12 +266,10 @@ function buildRootDoc(
   const doc: RootDoc = {
     $schema: 'gobbi-docs/root',
     title,
+    navigation: navigation ?? {},
   };
   if (opening !== undefined) {
     doc.opening = opening;
-  }
-  if (navigation !== undefined) {
-    doc.navigation = navigation;
   }
   if (sections.length > 0) {
     doc.sections = sections;
@@ -296,12 +288,10 @@ function buildChildDoc(
     $schema: 'gobbi-docs/child',
     parent,
     title,
+    navigation: navigation ?? {},
   };
   if (opening !== undefined) {
     doc.opening = opening;
-  }
-  if (navigation !== undefined) {
-    doc.navigation = navigation;
   }
   if (sections.length > 0) {
     doc.sections = sections;
@@ -320,13 +310,11 @@ function buildGotchaDoc(
     $schema: 'gobbi-docs/gotcha',
     parent,
     title,
+    navigation: navigation ?? {},
     entries,
   };
   if (opening !== undefined) {
     doc.opening = opening;
-  }
-  if (navigation !== undefined) {
-    doc.navigation = navigation;
   }
   return doc;
 }

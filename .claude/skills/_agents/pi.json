@@ -104,10 +104,22 @@
         },
         {
           "type": "table",
-          "headers": ["Stance", "Model", "Rationale"],
+          "headers": [
+            "Stance",
+            "Model",
+            "Rationale"
+          ],
           "rows": [
-            ["Innovative", "opus (max effort)", "Deep creative reasoning, cross-domain thinking, unconventional review -- this is where the strongest model pays for itself."],
-            ["Best", "opus (default)", "Deep reasoning about established patterns. The orchestrator may override to sonnet for simple best-practice assessments."]
+            [
+              "Innovative",
+              "opus (max effort)",
+              "Deep creative reasoning, cross-domain thinking, unconventional review -- this is where the strongest model pays for itself."
+            ],
+            [
+              "Best",
+              "opus (default)",
+              "Deep reasoning about established patterns. The orchestrator may override to sonnet for simple best-practice assessments."
+            ]
           ]
         },
         {
@@ -160,5 +172,6 @@
         }
       ]
     }
-  ]
+  ],
+  "navigation": {}
 }

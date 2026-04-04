@@ -196,5 +196,6 @@
       }
     }
   ],
-  "opening": "Mistakes in following the orchestration workflow (steps, transitions, FEEDBACK/FINISH cycle)."
+  "opening": "Mistakes in following the orchestration workflow (steps, transitions, FEEDBACK/FINISH cycle).",
+  "navigation": {}
 }

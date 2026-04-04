@@ -112,5 +112,6 @@
       }
     }
   ],
-  "opening": "Mistakes in git/GitHub workflow, worktree management, branch handling, and PR lifecycle."
+  "opening": "Mistakes in git/GitHub workflow, worktree management, branch handling, and PR lifecycle.",
+  "navigation": {}
 }

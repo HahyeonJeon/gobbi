@@ -13,11 +13,27 @@
         },
         {
           "type": "table",
-          "headers": ["Agent", "Domain", "Evaluates"],
+          "headers": [
+            "Agent",
+            "Domain",
+            "Evaluates"
+          ],
           "rows": [
-            ["`_agent-evaluator`", "Agent definitions", "`.claude/agents/` files — identity, lifecycle, scope, tool grants, constraints"],
-            ["`_skills-evaluator`", "Skill definitions", "`.claude/skills/` SKILL.md files — purpose, instruction quality, structural consistency"],
-            ["`_project-evaluator`", "Project documentation", "`$CLAUDE_PROJECT_DIR/.claude/project/{name}/` — README, design docs, gotchas, notes"]
+            [
+              "`_agent-evaluator`",
+              "Agent definitions",
+              "`.claude/agents/` files — identity, lifecycle, scope, tool grants, constraints"
+            ],
+            [
+              "`_skills-evaluator`",
+              "Skill definitions",
+              "`.claude/skills/` SKILL.md files — purpose, instruction quality, structural consistency"
+            ],
+            [
+              "`_project-evaluator`",
+              "Project documentation",
+              "`$CLAUDE_PROJECT_DIR/.claude/project/{name}/` — README, design docs, gotchas, notes"
+            ]
           ]
         },
         {
@@ -65,12 +81,32 @@
         },
         {
           "type": "table",
-          "headers": ["After step", "What is evaluated", "Why it matters"],
+          "headers": [
+            "After step",
+            "What is evaluated",
+            "Why it matters"
+          ],
           "rows": [
-            ["Ideation (Step 1)", "The idea before planning begins", "Catches wrong-problem and missing-constraint issues before they propagate into a plan"],
-            ["Planning (Step 2)", "The plan before research begins", "Catches dependency errors, scope gaps, and task overlap before researchers investigate"],
-            ["Research (Step 3)", "Research quality before execution begins", "Catches incomplete coverage, inaccurate references, and insufficient executor guidance"],
-            ["Execution (Step 4)", "The deliverables before collection", "Catches implementation bugs, scope creep, and acceptance criteria misses"]
+            [
+              "Ideation (Step 1)",
+              "The idea before planning begins",
+              "Catches wrong-problem and missing-constraint issues before they propagate into a plan"
+            ],
+            [
+              "Planning (Step 2)",
+              "The plan before research begins",
+              "Catches dependency errors, scope gaps, and task overlap before researchers investigate"
+            ],
+            [
+              "Research (Step 3)",
+              "Research quality before execution begins",
+              "Catches incomplete coverage, inaccurate references, and insufficient executor guidance"
+            ],
+            [
+              "Execution (Step 4)",
+              "The deliverables before collection",
+              "Catches implementation bugs, scope creep, and acceptance criteria misses"
+            ]
           ]
         },
         {
@@ -170,5 +206,6 @@
         }
       ]
     }
-  ]
+  ],
+  "navigation": {}
 }

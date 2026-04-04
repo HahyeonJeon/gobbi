@@ -22,11 +22,27 @@
         },
         {
           "type": "table",
-          "headers": ["Outcome", "Meaning", "Action"],
+          "headers": [
+            "Outcome",
+            "Meaning",
+            "Action"
+          ],
           "rows": [
-            ["Version prints (e.g., `0.4.0`)", "CLI is installed and in PATH", "Proceed to setup questions"],
-            ["Command outputs version via `node packages/cli/bin/gobbi.js --version`", "CLI is available locally but not installed globally", "Usable for development — proceed, but suggest global install for convenience"],
-            ["Command not found", "CLI is not installed", "Help the user install before proceeding"]
+            [
+              "Version prints (e.g., `0.4.0`)",
+              "CLI is installed and in PATH",
+              "Proceed to setup questions"
+            ],
+            [
+              "Command outputs version via `node packages/cli/bin/gobbi.js --version`",
+              "CLI is available locally but not installed globally",
+              "Usable for development — proceed, but suggest global install for convenience"
+            ],
+            [
+              "Command not found",
+              "CLI is not installed",
+              "Help the user install before proceeding"
+            ]
           ]
         }
       ]
@@ -93,20 +109,59 @@
         },
         {
           "type": "table",
-          "headers": ["Command", "Purpose"],
+          "headers": [
+            "Command",
+            "Purpose"
+          ],
           "rows": [
-            ["`gobbi docs init <type> [name]`", "Scaffold a new JSON template for skills, agents, rules, or child docs"],
-            ["`gobbi docs json2md <path>`", "Generate Markdown from JSON source"],
-            ["`gobbi docs validate <path>`", "Validate JSON against the gobbi-docs schema"],
-            ["`gobbi docs read <path>`", "Section-level access to JSON content"],
-            ["`gobbi note init <project> <slug>`", "Initialize a note directory with per-step subdirectories"],
-            ["`gobbi note collect <agent-id> <num> <slug> <dir> [--phase]`", "Extract subagent results from JSONL transcripts"],
-            ["`gobbi config set <session> <key> <value>`", "Set session configuration in gobbi.json"],
-            ["`gobbi config get <session> [key]`", "Read session configuration"],
-            ["`gobbi session metadata`", "Output session metadata (used by SessionStart hook)"],
-            ["`gobbi notify <event>`", "Send notifications (used by hooks)"],
-            ["`gobbi validate <type> <path>`", "Validate agent, skill, or gotcha definitions"],
-            ["`gobbi audit`", "Detect documentation drift in .claude/ files"]
+            [
+              "`gobbi docs init <type> [name]`",
+              "Scaffold a new JSON template for skills, agents, rules, or child docs"
+            ],
+            [
+              "`gobbi docs json2md <path>`",
+              "Generate Markdown from JSON source"
+            ],
+            [
+              "`gobbi docs validate <path>`",
+              "Validate JSON against the gobbi-docs schema"
+            ],
+            [
+              "`gobbi docs read <path>`",
+              "Section-level access to JSON content"
+            ],
+            [
+              "`gobbi note init <project> <slug>`",
+              "Initialize a note directory with per-step subdirectories"
+            ],
+            [
+              "`gobbi note collect <agent-id> <num> <slug> <dir> [--phase]`",
+              "Extract subagent results from JSONL transcripts"
+            ],
+            [
+              "`gobbi config set <session> <key> <value>`",
+              "Set session configuration in gobbi.json"
+            ],
+            [
+              "`gobbi config get <session> [key]`",
+              "Read session configuration"
+            ],
+            [
+              "`gobbi session metadata`",
+              "Output session metadata (used by SessionStart hook)"
+            ],
+            [
+              "`gobbi notify <event>`",
+              "Send notifications (used by hooks)"
+            ],
+            [
+              "`gobbi validate <type> <path>`",
+              "Validate agent, skill, or gotcha definitions"
+            ],
+            [
+              "`gobbi audit`",
+              "Detect documentation drift in .claude/ files"
+            ]
           ]
         }
       ]
@@ -116,15 +171,36 @@
       "content": [
         {
           "type": "table",
-          "headers": ["Problem", "Cause", "Fix"],
+          "headers": [
+            "Problem",
+            "Cause",
+            "Fix"
+          ],
           "rows": [
-            ["`gobbi: command not found`", "Not installed globally or not linked", "Run `npm install -g @gobbi/cli` or `npm link` in the gobbi directory"],
-            ["`gobbi note init` fails with CLAUDE_SESSION_ID not set", "SessionStart hook didn't run", "Check `.claude/settings.json` hooks — the `gobbi session metadata` hook must fire on startup"],
-            ["`gobbi docs json2md` produces empty output", "TypeScript not compiled", "Run `npm run build` in the gobbi directory"],
-            ["Hooks fail silently", "`gobbi` not in PATH when hooks execute", "Ensure global install or link — hooks run in a shell that may not have local node_modules/.bin in PATH"]
+            [
+              "`gobbi: command not found`",
+              "Not installed globally or not linked",
+              "Run `npm install -g @gobbi/cli` or `npm link` in the gobbi directory"
+            ],
+            [
+              "`gobbi note init` fails with CLAUDE_SESSION_ID not set",
+              "SessionStart hook didn't run",
+              "Check `.claude/settings.json` hooks — the `gobbi session metadata` hook must fire on startup"
+            ],
+            [
+              "`gobbi docs json2md` produces empty output",
+              "TypeScript not compiled",
+              "Run `npm run build` in the gobbi directory"
+            ],
+            [
+              "Hooks fail silently",
+              "`gobbi` not in PATH when hooks execute",
+              "Ensure global install or link — hooks run in a shell that may not have local node_modules/.bin in PATH"
+            ]
           ]
         }
       ]
     }
-  ]
+  ],
+  "navigation": {}
 }

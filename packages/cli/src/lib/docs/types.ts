@@ -152,7 +152,7 @@ export interface GotchaEntry {
 interface DocBase {
   title: string;
   opening?: string;
-  navigation?: Navigation;
+  navigation: Navigation;
 }
 
 export interface SkillDoc extends DocBase {

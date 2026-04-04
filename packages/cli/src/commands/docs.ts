@@ -256,34 +256,34 @@ function runDocsSpec(args: string[]): void {
       $schema: 'gobbi-docs/skill',
       description: 'Skill definition in .claude/skills/{name}/SKILL.md',
       frontmatter: { name: 'string', description: 'string', 'allowed-tools': 'string (optional)' },
-      fields: ['title', 'opening?', 'navigation?', 'sections?'],
+      fields: ['title', 'opening?', 'navigation', 'sections?'],
     },
     agent: {
       $schema: 'gobbi-docs/agent',
       description: 'Agent definition in .claude/agents/{name}.md',
       frontmatter: { name: 'string', description: 'string', tools: 'string', model: 'string' },
-      fields: ['title', 'opening?', 'navigation?', 'sections?'],
+      fields: ['title', 'opening?', 'navigation', 'sections?'],
     },
     rule: {
       $schema: 'gobbi-docs/rule',
       description: 'Rule file in .claude/rules/{name}.md',
       frontmatter: 'Record<string, string> (optional)',
-      fields: ['title', 'opening?', 'navigation?', 'sections?'],
+      fields: ['title', 'opening?', 'navigation', 'sections?'],
     },
     root: {
       $schema: 'gobbi-docs/root',
       description: 'Root README at .claude/README.md',
-      fields: ['title', 'opening?', 'navigation?', 'sections?'],
+      fields: ['title', 'opening?', 'navigation', 'sections?'],
     },
     child: {
       $schema: 'gobbi-docs/child',
       description: 'Child doc of a skill, e.g. .claude/skills/{name}/child.md',
-      fields: ['parent', 'title', 'opening?', 'navigation?', 'sections?'],
+      fields: ['parent', 'title', 'opening?', 'navigation', 'sections?'],
     },
     gotcha: {
       $schema: 'gobbi-docs/gotcha',
       description: 'Gotcha file — known mistakes and corrections',
-      fields: ['parent', 'title', 'opening?', 'navigation?', 'entries[]'],
+      fields: ['parent', 'title', 'opening?', 'navigation', 'entries[]'],
       entry: {
         fields: ['title', 'metadata?', 'body'],
         metadata: { priority: 'string?', 'tech-stack': 'string?', enforcement: '"hook" | "advisory"', pattern: 'string?', event: '"bash" | "file" | "stop"' },
@@ -1243,6 +1243,7 @@ function scaffoldTemplate(docType: DocType, name: string): GobbiDoc {
           description: `TODO: describe ${name}`,
         },
         title: titleCase(name),
+        navigation: {},
         sections: [
           {
             heading: 'Core Principle',
@@ -1266,12 +1267,14 @@ function scaffoldTemplate(docType: DocType, name: string): GobbiDoc {
           model: 'opus',
         },
         title: titleCase(name),
+        navigation: {},
         sections: [],
       };
     case 'rule':
       return {
         $schema: schema as 'gobbi-docs/rule',
         title: titleCase(name),
+        navigation: {},
         sections: [
           {
             heading: null,
@@ -1285,6 +1288,7 @@ function scaffoldTemplate(docType: DocType, name: string): GobbiDoc {
       return {
         $schema: schema as 'gobbi-docs/root',
         title: titleCase(name),
+        navigation: {},
         opening: 'TODO: opening paragraph',
         sections: [],
       };
@@ -1293,6 +1297,7 @@ function scaffoldTemplate(docType: DocType, name: string): GobbiDoc {
         $schema: schema as 'gobbi-docs/child',
         parent: 'TODO',
         title: titleCase(name),
+        navigation: {},
         sections: [
           {
             heading: 'Core Principle',
@@ -1311,6 +1316,7 @@ function scaffoldTemplate(docType: DocType, name: string): GobbiDoc {
         $schema: schema as 'gobbi-docs/gotcha',
         parent: 'TODO',
         title: `Gotcha: ${titleCase(name)}`,
+        navigation: {},
         entries: [
           {
             title: 'TODO: gotcha title',

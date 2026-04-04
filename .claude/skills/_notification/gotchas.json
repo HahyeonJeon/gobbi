@@ -67,5 +67,6 @@
       }
     }
   ],
-  "opening": "Mistakes in configuring Claude Code notification hooks and credentials."
+  "opening": "Mistakes in configuring Claude Code notification hooks and credentials.",
+  "navigation": {}
 }

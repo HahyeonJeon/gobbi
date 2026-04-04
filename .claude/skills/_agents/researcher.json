@@ -152,10 +152,22 @@
         },
         {
           "type": "table",
-          "headers": ["Stance", "Model", "Rationale"],
+          "headers": [
+            "Stance",
+            "Model",
+            "Rationale"
+          ],
           "rows": [
-            ["Innovative", "opus (max effort)", "Cross-domain research needs the deepest reasoning for creative approaches, pattern discovery, and unconventional architectural direction."],
-            ["Best", "opus (default)", "Thorough best-practice investigation. The orchestrator may override based on task complexity."]
+            [
+              "Innovative",
+              "opus (max effort)",
+              "Cross-domain research needs the deepest reasoning for creative approaches, pattern discovery, and unconventional architectural direction."
+            ],
+            [
+              "Best",
+              "opus (default)",
+              "Thorough best-practice investigation. The orchestrator may override based on task complexity."
+            ]
           ]
         },
         {
@@ -184,5 +196,6 @@
         }
       ]
     }
-  ]
+  ],
+  "navigation": {}
 }

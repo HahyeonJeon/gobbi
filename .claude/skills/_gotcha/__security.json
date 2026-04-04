@@ -76,5 +76,6 @@
       }
     }
   ],
-  "opening": "Security vulnerabilities that agents can introduce when writing or reviewing code. Each entry describes a concrete scenario where the vulnerability manifests in agent work, what a reviewer would say, and how to avoid it."
+  "opening": "Security vulnerabilities that agents can introduce when writing or reviewing code. Each entry describes a concrete scenario where the vulnerability manifests in agent work, what a reviewer would say, and how to avoid it.",
+  "navigation": {}
 }
