@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-04-04
+
+### Added
+
+- 7-step workflow with dedicated Research step and dual-stance agents (innovative + best) (#49)
+- `_innovation` and `_best-practice` stance skills for PI and Researcher agents
+- Agent guides: `pi.md`, `researcher.md`, `executor.md`, `evaluator.md` in `_agents`
+- 6 `gobbi docs` utility subcommands: `list`, `tree`, `search`, `extract`, `stats`, `health` (#53)
+- `evaluation.md` quality criteria to 8 skills: `_skills`, `_agents`, `_rules`, `_project`, `_gotcha`, `_evaluation`, `_innovation`, `_best-practice` (#52)
+- Session config persistence via `gobbi config set/get` with `$CLAUDE_SESSION_ID` key (#45)
+- Session settings check at startup — reuse saved settings on resume/compact
+- CLI setup check and `cli-setup.md` installation guide
+- Media analysis CLI tools: `image`, `video`, `web` (#41)
+- JSON-template documentation system for `.claude/` authoring (#45)
+- Notification control per session with Slack, Telegram, Discord channels (#45)
+- Note metadata: orchestrator model ID, Claude Code version, token usage tracking
+- `write-plan.sh` and improved `subtask-collect.sh` for note workflow
+- Automated subtask collection via transcript extraction (#37)
+- `transcripts.md` child doc for `_claude` skill
+- Model and Effort section to `_agents` guide
+- Gotchas: JSON-first authoring (`_claude`), `gh api` merge PUT method (`_git`), worktree dirty files
+
+### Changed
+
+- Restructured orchestration from 5-step to 7-step workflow with Research and Stances (#49)
+- All review tasks override to sonnet model via Agent tool `model` parameter
+- Stance skill allocation in `_delegation` and `_orchestration`
+- Updated model tiers in delegation and agent mission guidance
+- Rewritten `_gotcha` skill as general guide with mandatory read rule
+- Migrated gotchas from `_gotcha/` directory to individual skill directories
+
+### Removed
+
+- Legacy npm-managed claude docs code (#43)
+- Legacy market package and workspaces config
+- Shell scripts replaced by TypeScript CLI commands (#48)
+
+### Fixed
+
+- `gh api` merge command requires `-X PUT` method in `_git` gotcha
+
+## [0.3.2] - 2026-04-02
+
+Internal version bump for session config, notification control, and JSON-template docs. Superseded by 0.4.0 — never published to npm.
+
 ## [0.3.1] - 2026-04-01
 
 ### Improved
@@ -111,7 +156,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slack notification hooks
 - Project state directory (`.claude/project/`) with design docs, gotchas, rules, and notes
 
-[Unreleased]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/HahyeonJeon/gobbi/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.1...v0.4.0
+[0.3.2]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/HahyeonJeon/gobbi/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/HahyeonJeon/gobbi/compare/v0.2.0...v0.2.1
