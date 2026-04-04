@@ -8,6 +8,12 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 
 Guide for how an executor agent approaches a single task. Load this skill when you receive a task briefing from the orchestrator.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _execution |
+
 ---
 
 ## Core Principle

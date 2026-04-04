@@ -343,7 +343,7 @@
           "items": [
             "The approved plan — path to the `plan/` subdirectory or the plan content itself",
             "The stance skill — `_innovation` for innovative stance, `_best-practice` for best stance",
-                "The stance directive — innovative or best",
+            "The stance directive — innovative or best",
             "The research scope — which parts of the plan need investigation (may be the full plan or specific tasks)",
             "The output location — path to the `research/` subdirectory where findings should be written",
             "Context to load — project skill, `_gotcha`, `_research`, domain skills relevant to the investigation",
@@ -399,5 +399,8 @@
         }
       ]
     }
-  ]
+  ],
+  "navigation": {
+    "[gotchas.md](gotchas.md)": "Known mistakes and corrections for _delegation"
+  }
 }

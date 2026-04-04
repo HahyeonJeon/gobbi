@@ -8,6 +8,12 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 Help users configure Claude Code notification credentials through conversation. Hooks and settings should already be installed in the project — this skill handles the credential setup that makes them work.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _notification |
+
 ---
 
 ## Credential Setup

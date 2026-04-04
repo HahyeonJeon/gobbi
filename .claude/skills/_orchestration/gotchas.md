@@ -241,3 +241,18 @@ priority: high
 **User feedback:** Review assesses through reading and analysis, not re-execution.
 
 **Correct approach:** Review (Step 7) spawns PI agents with innovative + best stances to assess the completed work and produce verdicts. It does not re-run Ideation, Planning, Research, or Execution. For re-execution of fixes, use FEEDBACK to delegate targeted fixes to executors, then return to Review again.
+
+---
+
+### Loading SKILL.md but not gotchas.md for core skills
+---
+priority: critical
+---
+
+**Priority:** Critical
+
+**What happened:** At session start, the orchestrator loaded `_git/SKILL.md` but never read `_git/gotchas.md`. During FINISH, the orchestrator hit 4 documented gotchas in sequence: `gh pr merge` failing because base branch was checked out, `git worktree remove` failing with untracked files, not cleaning up nested directories, and not verifying base branch sync before worktree creation. All of these were documented in `_git/gotchas.md` and would have been avoided with a 30-second read.
+
+**User feedback:** "Did you not load git gotchas when session start?"
+
+**Correct approach:** When loading any core skill at session start, MUST also read its `gotchas.md` if one exists. The skill SKILL.md describes what to do; the gotchas describe what NOT to do. Loading one without the other guarantees repeating past mistakes. The `_gotcha` skill explicitly states: "MUST read `gotchas.md` when loading any skill that has one." This is not optional — it is the highest-priority read at session start.

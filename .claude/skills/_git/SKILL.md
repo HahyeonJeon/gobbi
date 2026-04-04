@@ -13,6 +13,7 @@ Git and GitHub workflow. Load this skill when a task involves branching, worktre
 | Document | Covers |
 |----------|--------|
 | [conventions.md](conventions.md) | Branch naming, commit messages, PR template, issue format, sub-issues, labels, worktree directory naming |
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _git |
 
 ---
 

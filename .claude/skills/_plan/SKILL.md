@@ -8,6 +8,12 @@ allowed-tools: Read, Grep, Glob, Bash
 
 Decompose complex tasks into small, specific, agent-assigned subtasks. Use during Step 2 (Planning) to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _plan |
+
 ---
 
 ## Core Principle

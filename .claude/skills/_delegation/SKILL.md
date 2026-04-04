@@ -8,6 +8,12 @@ allowed-tools: Agent, Read, Grep, Glob, Bash, Write
 
 Hand off work to subagents so they succeed on the first attempt. Load this skill when entering Step 4 (Execution) of orchestration.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for _delegation |
+
 ---
 
 ## Core Principle

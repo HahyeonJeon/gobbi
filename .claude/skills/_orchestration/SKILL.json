@@ -9,7 +9,8 @@
   "opening": "You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding.",
   "navigation": {
     "[feedback.md](feedback.md)": "FEEDBACK phase: lightweight fix cycle after Review, iteration tracking, stagnation detection",
-    "[finish.md](finish.md)": "FINISH phase: merge/commit/compact decision tree, pre-action verification"
+    "[finish.md](finish.md)": "FINISH phase: merge/commit/compact decision tree, pre-action verification",
+    "[gotchas.md](gotchas.md)": "Known mistakes and corrections for _orchestration"
   },
   "sections": [
     {
