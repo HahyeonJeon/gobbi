@@ -85,6 +85,38 @@ These weaken doc quality and lead to subtle issues over time. Acceptable in smal
 
 ---
 
+## JSON-First Authoring
+
+> **JSON is the source of truth. Markdown is a generated artifact.**
+
+Every `.claude/` document (except `CLAUDE.md`) has a `.json` source file and a `.md` output file. The JSON file is what agents edit; the Markdown file is what agents and humans read. Both files are committed to git. The JSON structure enforces the block types, section hierarchy, and frontmatter schema that the writing principles above describe — making violations structurally impossible rather than merely discouraged.
+
+> **Edit JSON, generate Markdown, validate, commit both.**
+
+The authoring workflow is a procedure where order matters. Edit the `.json` file to change content. Run `gobbi docs json2md <path>` to regenerate the `.md` file. Run `gobbi docs validate <path>` to verify the JSON conforms to the schema. Commit both files together. Editing the `.md` directly creates drift — the next `json2md` run will overwrite the manual change.
+
+`CLAUDE.md` is the exception to JSON-first authoring. It is hand-authored Markdown — a reference card loaded every session that links to skills and rules rather than containing structured content blocks.
+
+### Doc Types and Block Types
+
+The JSON schema supports six doc types, each with a `$schema` field that determines its structure and validation rules: `skill`, `agent`, `rule`, `root`, `child`, `gotcha`. Use `gobbi docs init <type> [name]` to scaffold a new JSON template for any doc type.
+
+Section content is built from six block types: `text` (prose paragraphs), `principle` (blockquote statement with optional body), `table` (headers and rows), `constraint-list` (must/should/must-not items), `list` (bullet or numbered items), `subsection` (nested heading with its own content blocks). These block types map directly to the writing patterns and anti-patterns described above — they make the structure explicit rather than inferred from Markdown formatting.
+
+### CLI Commands
+
+| Command | Purpose |
+|---|---|
+| `gobbi docs init <type> [name]` | Scaffold a new JSON template for the given doc type |
+| `gobbi docs json2md <path>` | Generate `.md` from the `.json` source file |
+| `gobbi docs validate <path>` | Validate JSON against the gobbi-docs schema |
+| `gobbi docs read <path> [--section]` | Section-level access to JSON content without reading the full `.md` |
+| `gobbi docs md2json <path>` | Migrate existing `.md` to JSON (one-time migration, not part of the regular workflow) |
+
+For the full schema specification, see `$CLAUDE_PROJECT_DIR/.claude/project/gobbi/design/gobbi-docs-spec.md`.
+
+---
+
 ## Review Checklist
 
 Before publishing any `.claude/` documentation:
@@ -103,3 +135,8 @@ Before publishing any `.claude/` documentation:
 - [ ] Zero code blocks or BAD/GOOD comparisons (must avoid)
 - [ ] Step-by-step recipes only in procedures where reordering or omitting steps causes failure (context-dependent)
 - [ ] Minimal interface definitions, exact values, or bash commands in docs (should avoid)
+
+**JSON-First Authoring**
+- [ ] JSON source and `.md` output are in sync (`gobbi docs validate`)
+- [ ] Content was edited in the `.json` file, not the `.md` file
+- [ ] Both `.json` and `.md` are committed together

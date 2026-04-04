@@ -1,6 +1,6 @@
 {
   "name": "@gobbi/core",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Open-source ClaudeX tool — workflow orchestration and docs management for Claude Code",
   "type": "module",
   "bin": {
