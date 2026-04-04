@@ -8,8 +8,8 @@
  */
 
 import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
-import { execSync } from 'node:child_process';
 import path from 'node:path';
+import { getRepoRoot } from '../lib/repo.js';
 
 // ---------------------------------------------------------------------------
 // Usage strings
@@ -60,15 +60,6 @@ export async function runAudit(args: string[]): Promise<void> {
 // ---------------------------------------------------------------------------
 // Shared utilities
 // ---------------------------------------------------------------------------
-
-/** Detect git repo root via git rev-parse. Falls back to cwd on failure. */
-function getRepoRoot(): string {
-  try {
-    return execSync('git rev-parse --show-toplevel', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
-  } catch {
-    return process.cwd();
-  }
-}
 
 /** Collect all .md files recursively under a directory. */
 function collectMdFiles(dir: string): string[] {

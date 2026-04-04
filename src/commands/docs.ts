@@ -13,7 +13,7 @@ import { parseArgs } from 'node:util';
 import { readFile, writeFile } from 'fs/promises';
 import path from 'path';
 
-import { header, ok, error, dim, bold, yellow } from '../lib/style.js';
+import { header, ok, error, dim, bold, yellow, formatTable } from '../lib/style.js';
 import { renderDoc } from '../lib/docs/renderer.js';
 import { parseMarkdown } from '../lib/docs/migrator.js';
 import { validateFile } from '../lib/docs/validator.js';
@@ -21,7 +21,17 @@ import {
   isDocType,
   DOC_TYPE_TO_SCHEMA,
   VALID_DOC_TYPES,
+  VALID_BLOCK_TYPES,
 } from '../lib/docs/types.js';
+import { listDocs } from '../lib/docs/lister.js';
+import { buildTree, formatTreeText } from '../lib/docs/tree.js';
+import { searchDocs } from '../lib/docs/search.js';
+import { extractFromDoc, formatExtractMd } from '../lib/docs/extract.js';
+import { computeStats } from '../lib/docs/stats.js';
+import { checkHealth } from '../lib/docs/health.js';
+import { scanCorpus } from '../lib/docs/scanner.js';
+import { buildGraph } from '../lib/docs/graph.js';
+import { getClaudeDir } from '../lib/repo.js';
 
 import type {
   DocType,
@@ -43,6 +53,12 @@ Subcommands:
   md2json <path>           Migrate Markdown file to JSON template
   validate <path>          Validate a JSON template
   read <path> [--section]  Pretty-print JSON metadata or section
+  list [directory]         List all gobbi-docs templates with metadata
+  tree [directory]         Show navigation hierarchy as a tree
+  search <pattern> [dir]   Search content across all templates
+  extract <path> <query>   Extract content by dot-path query
+  stats [directory]        Show aggregate corpus statistics
+  health [directory]       Run cross-document health checks
 
 Options:
   --help    Show this help message`;
@@ -86,6 +102,68 @@ Options:
   --section <name>    Display only the named section
   --help              Show this help message`;
 
+const LIST_USAGE = `Usage: gobbi docs list [directory] [options]
+
+List all gobbi-docs JSON templates with type, title, and content count.
+Defaults to the .claude/ directory in the current repository.
+
+Options:
+  --type <type>       Filter by doc type (${VALID_DOC_TYPES.join(', ')})
+  --format <fmt>      Output format: table (default), json
+  --help              Show this help message`;
+
+const TREE_USAGE = `Usage: gobbi docs tree [directory] [options]
+
+Show the navigation hierarchy of gobbi-docs templates as a tree.
+Defaults to the .claude/ directory in the current repository.
+
+Options:
+  --format <fmt>      Output format: text (default), json
+  --help              Show this help message`;
+
+const SEARCH_USAGE = `Usage: gobbi docs search <pattern> [directory] [options]
+
+Search content across all gobbi-docs JSON templates using a regex pattern.
+Defaults to the .claude/ directory in the current repository.
+
+Options:
+  --type <type>       Filter by doc type (${VALID_DOC_TYPES.join(', ')})
+  --block <type>      Filter by block type (${VALID_BLOCK_TYPES.join(', ')}, title, opening, frontmatter)
+  --format <fmt>      Output format: text (default), json
+  --help              Show this help message`;
+
+const EXTRACT_USAGE = `Usage: gobbi docs extract <path> <query> [options]
+
+Extract content from a JSON template by dot-path query.
+
+Queries: title, $schema, opening, frontmatter, frontmatter.name,
+         sections, sections.Setup, entries, entries.<title>
+
+Options:
+  --format <fmt>      Output format: json (default), md, text
+  --help              Show this help message`;
+
+const STATS_USAGE = `Usage: gobbi docs stats [directory] [options]
+
+Show aggregate statistics for all gobbi-docs templates in a directory.
+Defaults to the .claude/ directory in the current repository.
+
+Options:
+  --format <fmt>      Output format: text (default), json
+  --help              Show this help message`;
+
+const HEALTH_USAGE = `Usage: gobbi docs health [directory] [options]
+
+Run cross-document health checks: orphans, broken links, empty sections,
+incomplete gotchas, missing parents, bidirectional consistency.
+Defaults to the .claude/ directory in the current repository.
+
+Exits with code 1 if any errors are found.
+
+Options:
+  --format <fmt>      Output format: text (default), json
+  --help              Show this help message`;
+
 // ---------------------------------------------------------------------------
 // Top-Level Router
 // ---------------------------------------------------------------------------
@@ -112,6 +190,24 @@ export async function runDocs(args: string[]): Promise<void> {
       break;
     case 'read':
       await runDocsRead(args.slice(1));
+      break;
+    case 'list':
+      await runDocsList(args.slice(1));
+      break;
+    case 'tree':
+      await runDocsTree(args.slice(1));
+      break;
+    case 'search':
+      await runDocsSearch(args.slice(1));
+      break;
+    case 'extract':
+      await runDocsExtract(args.slice(1));
+      break;
+    case 'stats':
+      await runDocsStats(args.slice(1));
+      break;
+    case 'health':
+      await runDocsHealth(args.slice(1));
       break;
     case '--help':
     case undefined:
@@ -546,6 +642,476 @@ function printBlock(block: ContentBlock, indent: string): void {
         printBlock(child, indent + '  ');
       }
       break;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// list
+// ---------------------------------------------------------------------------
+
+async function runDocsList(args: string[]): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    strict: false,
+    options: {
+      'type': { type: 'string' },
+      'format': { type: 'string' },
+      'help': { type: 'boolean', default: false },
+    },
+  });
+
+  if (values.help === true) {
+    console.log(LIST_USAGE);
+    return;
+  }
+
+  const directory = typeof positionals[0] === 'string' ? positionals[0] : getClaudeDir();
+  const typeFilter = typeof values.type === 'string' ? values.type : undefined;
+  const fmt = typeof values.format === 'string' ? values.format : 'table';
+
+  if (typeFilter !== undefined && !isDocType(typeFilter)) {
+    console.log(error(`Invalid doc type: "${typeFilter}". Must be one of: ${VALID_DOC_TYPES.join(', ')}`));
+    process.exit(1);
+  }
+
+  const result = await listDocs(directory, typeFilter);
+
+  if (fmt === 'json') {
+    console.log(JSON.stringify(result.entries, null, 2));
+  } else {
+    if (result.entries.length === 0) {
+      console.log(dim('  No gobbi-docs templates found.'));
+    } else {
+      const headers = ['PATH', 'TYPE', 'TITLE', 'COUNT'];
+      const rows = result.entries.map((e) => [e.path, e.type, e.title, String(e.count)]);
+      console.log(formatTable(headers, rows));
+    }
+  }
+
+  if (result.errors.length > 0) {
+    console.log('');
+    console.log(yellow(`  ${result.errors.length} scan error(s):`));
+    for (const err of result.errors) {
+      console.log(error(`${err.path}: ${err.error}`));
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// tree
+// ---------------------------------------------------------------------------
+
+async function runDocsTree(args: string[]): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    strict: false,
+    options: {
+      'format': { type: 'string' },
+      'help': { type: 'boolean', default: false },
+    },
+  });
+
+  if (values.help === true) {
+    console.log(TREE_USAGE);
+    return;
+  }
+
+  const directory = typeof positionals[0] === 'string' ? positionals[0] : getClaudeDir();
+  const fmt = typeof values.format === 'string' ? values.format : 'text';
+
+  const corpus = await scanCorpus(directory);
+  const graph = buildGraph(corpus.docs);
+  const result = buildTree(graph, directory);
+
+  if (fmt === 'json') {
+    console.log(JSON.stringify({ roots: result.roots, orphans: result.orphans }, null, 2));
+  } else {
+    if (result.roots.length === 0 && result.orphans.length === 0) {
+      console.log(dim('  No navigation tree found.'));
+    } else {
+      if (result.roots.length > 0) {
+        console.log(header('Navigation Tree'));
+        console.log(formatTreeText(result.roots));
+        console.log('');
+      }
+      if (result.orphans.length > 0) {
+        console.log(header('Orphaned Documents'));
+        console.log(formatTreeText(result.orphans));
+        console.log('');
+      }
+      console.log(dim(`  ${result.flatCount} documents total`));
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// search
+// ---------------------------------------------------------------------------
+
+async function runDocsSearch(args: string[]): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    strict: false,
+    options: {
+      'type': { type: 'string' },
+      'block': { type: 'string' },
+      'format': { type: 'string' },
+      'help': { type: 'boolean', default: false },
+    },
+  });
+
+  if (values.help === true) {
+    console.log(SEARCH_USAGE);
+    return;
+  }
+
+  const pattern = positionals[0];
+  if (typeof pattern !== 'string') {
+    console.log(error('Missing required argument: search pattern'));
+    console.log(SEARCH_USAGE);
+    process.exit(1);
+  }
+
+  const directory = typeof positionals[1] === 'string' ? positionals[1] : getClaudeDir();
+  const typeFilter = typeof values.type === 'string' ? values.type : undefined;
+  const blockFilter = typeof values.block === 'string' ? values.block : undefined;
+  const fmt = typeof values.format === 'string' ? values.format : 'text';
+
+  if (typeFilter !== undefined && !isDocType(typeFilter)) {
+    console.log(error(`Invalid doc type: "${typeFilter}". Must be one of: ${VALID_DOC_TYPES.join(', ')}`));
+    process.exit(1);
+  }
+
+  const result = await searchDocs(directory, pattern, typeFilter, blockFilter);
+
+  if (result.error !== undefined) {
+    console.log(error(result.error));
+    process.exit(1);
+  }
+
+  if (fmt === 'json') {
+    console.log(JSON.stringify(result.matches, null, 2));
+  } else {
+    if (result.matches.length === 0) {
+      console.log(dim('  No matches found.'));
+    } else {
+      // Group matches by file path
+      const groups = new Map<string, typeof result.matches>();
+      for (const match of result.matches) {
+        const existing = groups.get(match.path);
+        if (existing !== undefined) {
+          existing.push(match);
+        } else {
+          groups.set(match.path, [match]);
+        }
+      }
+
+      for (const [filePath, matches] of groups) {
+        console.log(bold(filePath));
+        for (const match of matches) {
+          console.log(`  ${dim(match.section)} ${dim('[')}${match.blockType}${dim(']')}`);
+          console.log(`    ${match.match}`);
+          // Show the extract command for actionable follow-up
+          const extractQuery = match.section !== '(document)'
+            ? `sections.${match.section}`
+            : match.blockType;
+          console.log(dim(`    -> gobbi docs extract ${filePath} "${extractQuery}"`));
+        }
+        console.log('');
+      }
+    }
+
+    console.log(dim(`  ${result.matches.length} match(es) in ${result.scannedCount} document(s)`));
+  }
+}
+
+// ---------------------------------------------------------------------------
+// extract
+// ---------------------------------------------------------------------------
+
+async function runDocsExtract(args: string[]): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    strict: false,
+    options: {
+      'format': { type: 'string' },
+      'help': { type: 'boolean', default: false },
+    },
+  });
+
+  if (values.help === true) {
+    console.log(EXTRACT_USAGE);
+    return;
+  }
+
+  const filePath = positionals[0];
+  if (typeof filePath !== 'string') {
+    console.log(error('Missing required argument: JSON file path'));
+    console.log(EXTRACT_USAGE);
+    process.exit(1);
+  }
+
+  const query = positionals[1];
+  if (typeof query !== 'string') {
+    console.log(error('Missing required argument: dot-path query'));
+    console.log(EXTRACT_USAGE);
+    process.exit(1);
+  }
+
+  const fmt = typeof values.format === 'string' ? values.format : 'json';
+
+  let result;
+  try {
+    result = await extractFromDoc(filePath, query);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : `Cannot read or parse file: ${filePath}`;
+    console.log(error(message));
+    process.exit(1);
+  }
+
+  if (!result.found) {
+    console.log(error(`Path not found: "${query}"`));
+    if (result.availablePaths !== undefined && result.availablePaths.length > 0) {
+      console.log(dim('  Available paths:'));
+      for (const p of result.availablePaths) {
+        console.log(`    ${p}`);
+      }
+    }
+    process.exit(1);
+  }
+
+  switch (fmt) {
+    case 'json':
+      console.log(JSON.stringify(result.value, null, 2));
+      break;
+    case 'md':
+      console.log(formatExtractMd(result.value));
+      break;
+    case 'text':
+      printExtractedValue(result.value);
+      break;
+    default:
+      console.log(JSON.stringify(result.value, null, 2));
+      break;
+  }
+}
+
+/**
+ * Print an extracted value in plain text, using `printBlock` for typed
+ * content structures and JSON.stringify for everything else.
+ */
+function printExtractedValue(value: unknown): void {
+  if (value === undefined || value === null) return;
+
+  if (typeof value === 'string') {
+    console.log(value);
+    return;
+  }
+
+  if (typeof value !== 'object') {
+    console.log(String(value));
+    return;
+  }
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      printExtractedValue(item);
+    }
+    return;
+  }
+
+  const record = value as Record<string, unknown>;
+
+  // Section: has heading and content array
+  if ('heading' in record && 'content' in record && Array.isArray(record['content'])) {
+    const heading = record['heading'];
+    if (typeof heading === 'string') {
+      console.log(header(heading));
+    }
+    for (const block of record['content'] as unknown[]) {
+      if (isContentBlock(block)) {
+        printBlock(block, '  ');
+      }
+    }
+    return;
+  }
+
+  // ContentBlock: has type field
+  if ('type' in record && typeof record['type'] === 'string') {
+    if (isContentBlock(value)) {
+      printBlock(value, '');
+    }
+    return;
+  }
+
+  // Fallback
+  console.log(JSON.stringify(value, null, 2));
+}
+
+/** Type guard for ContentBlock. */
+function isContentBlock(value: unknown): value is ContentBlock {
+  if (typeof value !== 'object' || value === null) return false;
+  const record = value as Record<string, unknown>;
+  const type = record['type'];
+  return typeof type === 'string' && (VALID_BLOCK_TYPES as readonly string[]).includes(type);
+}
+
+// ---------------------------------------------------------------------------
+// stats
+// ---------------------------------------------------------------------------
+
+async function runDocsStats(args: string[]): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    strict: false,
+    options: {
+      'format': { type: 'string' },
+      'help': { type: 'boolean', default: false },
+    },
+  });
+
+  if (values.help === true) {
+    console.log(STATS_USAGE);
+    return;
+  }
+
+  const directory = typeof positionals[0] === 'string' ? positionals[0] : getClaudeDir();
+  const fmt = typeof values.format === 'string' ? values.format : 'text';
+
+  const stats = await computeStats(directory);
+
+  if (fmt === 'json') {
+    console.log(JSON.stringify(stats, null, 2));
+  } else {
+    console.log(header('Corpus Statistics'));
+    console.log('');
+    console.log(`  ${bold('Total documents:')} ${stats.total}`);
+    console.log('');
+
+    console.log(`  ${bold('By doc type:')}`);
+    for (const [type, count] of Object.entries(stats.byType)) {
+      console.log(`    ${type}: ${count}`);
+    }
+    console.log('');
+
+    console.log(`  ${bold('Content:')}`);
+    console.log(`    Sections: ${stats.totalSections}`);
+    console.log(`    Blocks: ${stats.totalBlocks}`);
+    console.log('');
+
+    if (Object.keys(stats.byBlockType).length > 0) {
+      console.log(`  ${bold('By block type:')}`);
+      for (const [type, count] of Object.entries(stats.byBlockType)) {
+        console.log(`    ${type}: ${count}`);
+      }
+      console.log('');
+    }
+
+    console.log(`  ${bold('Navigation:')}`);
+    console.log(`    With navigation: ${stats.navigation.with}`);
+    console.log(`    Without navigation: ${stats.navigation.without}`);
+    console.log('');
+
+    if (stats.gotchas.totalEntries > 0) {
+      console.log(`  ${bold('Gotchas:')}`);
+      console.log(`    Total entries: ${stats.gotchas.totalEntries}`);
+      for (const [priority, count] of Object.entries(stats.gotchas.byPriority)) {
+        console.log(`    ${priority}: ${count}`);
+      }
+      console.log('');
+    }
+
+    console.log(`  ${bold('Section size distribution:')}`);
+    console.log(`    Min: ${stats.sizeDistribution.minSections}`);
+    console.log(`    Max: ${stats.sizeDistribution.maxSections}`);
+    console.log(`    Avg: ${stats.sizeDistribution.avgSections}`);
+    console.log('');
+
+    console.log(`  ${bold('Estimated tokens:')}`);
+    console.log(`    Total: ~${stats.tokens.total.toLocaleString()}`);
+    for (const [type, count] of Object.entries(stats.tokens.byType)) {
+      console.log(`    ${type}: ~${count.toLocaleString()}`);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// health
+// ---------------------------------------------------------------------------
+
+async function runDocsHealth(args: string[]): Promise<void> {
+  const { values, positionals } = parseArgs({
+    args,
+    allowPositionals: true,
+    strict: false,
+    options: {
+      'format': { type: 'string' },
+      'help': { type: 'boolean', default: false },
+    },
+  });
+
+  if (values.help === true) {
+    console.log(HEALTH_USAGE);
+    return;
+  }
+
+  const directory = typeof positionals[0] === 'string' ? positionals[0] : getClaudeDir();
+  const fmt = typeof values.format === 'string' ? values.format : 'text';
+
+  const report = await checkHealth(directory);
+
+  if (fmt === 'json') {
+    console.log(JSON.stringify(report, null, 2));
+  } else {
+    console.log(header('Health Check'));
+    console.log('');
+    console.log(`  ${report.summary.errors} error(s), ${report.summary.warnings} warning(s), ${report.summary.info} info`);
+    console.log('');
+
+    if (report.findings.length === 0) {
+      console.log(ok('No issues found'));
+    } else {
+      // Group by severity for display
+      const errors = report.findings.filter((f) => f.severity === 'error');
+      const warnings = report.findings.filter((f) => f.severity === 'warning');
+      const infos = report.findings.filter((f) => f.severity === 'info');
+
+      if (errors.length > 0) {
+        console.log(bold('  Errors:'));
+        for (const finding of errors) {
+          console.log(error(`[${finding.category}] ${finding.path}: ${finding.message}`));
+          console.log(dim(`    -> ${finding.suggestion}`));
+        }
+        console.log('');
+      }
+
+      if (warnings.length > 0) {
+        console.log(bold('  Warnings:'));
+        for (const finding of warnings) {
+          console.log(yellow(`  ! [${finding.category}] ${finding.path}: ${finding.message}`));
+          console.log(dim(`    -> ${finding.suggestion}`));
+        }
+        console.log('');
+      }
+
+      if (infos.length > 0) {
+        console.log(bold('  Info:'));
+        for (const finding of infos) {
+          console.log(dim(`  i [${finding.category}] ${finding.path}: ${finding.message}`));
+          console.log(dim(`    -> ${finding.suggestion}`));
+        }
+        console.log('');
+      }
+    }
+  }
+
+  if (report.summary.errors > 0) {
+    process.exit(1);
   }
 }
 

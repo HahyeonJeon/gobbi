@@ -205,3 +205,62 @@ export function printUpdateSuccess(): void {
   console.log('');
   console.log('Content updated in .claude/');
 }
+
+// ---------------------------------------------------------------------------
+// Table formatting
+// ---------------------------------------------------------------------------
+
+/**
+ * Format tabular data as aligned plain-text columns.
+ *
+ * Calculates max width per column from headers and data, pads each cell,
+ * and separates columns with double spaces. A dashed separator line appears
+ * below the header row.
+ */
+export function formatTable(headers: string[], rows: string[][]): string {
+  // Calculate column widths from headers and all data rows
+  const colWidths: number[] = headers.map((h) => h.length);
+  for (const row of rows) {
+    for (let i = 0; i < headers.length; i++) {
+      const cell = row[i];
+      if (cell !== undefined) {
+        const current = colWidths[i];
+        if (current !== undefined && cell.length > current) {
+          colWidths[i] = cell.length;
+        }
+      }
+    }
+  }
+
+  const sep = '  ';
+
+  function padRow(cells: string[]): string {
+    const parts: string[] = [];
+    for (let i = 0; i < headers.length; i++) {
+      const cell = cells[i] ?? '';
+      const width = colWidths[i] ?? 0;
+      parts.push(cell.padEnd(width));
+    }
+    return parts.join(sep).trimEnd();
+  }
+
+  const lines: string[] = [];
+
+  // Header row
+  lines.push(padRow(headers));
+
+  // Separator line
+  const dashes: string[] = [];
+  for (let i = 0; i < headers.length; i++) {
+    const width = colWidths[i] ?? 0;
+    dashes.push('-'.repeat(width));
+  }
+  lines.push(dashes.join(sep));
+
+  // Data rows
+  for (const row of rows) {
+    lines.push(padRow(row));
+  }
+
+  return lines.join('\n');
+}

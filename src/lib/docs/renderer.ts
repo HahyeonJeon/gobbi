@@ -161,7 +161,7 @@ function renderNavigation(nav: Navigation): string {
 // Sections
 // ---------------------------------------------------------------------------
 
-function renderSection(section: Section): string {
+export function renderSection(section: Section): string {
   const parts: string[] = [];
 
   if (section.heading !== null) {
@@ -180,7 +180,7 @@ function renderSection(section: Section): string {
 // Content Blocks
 // ---------------------------------------------------------------------------
 
-function renderBlock(block: ContentBlock): string {
+export function renderBlock(block: ContentBlock): string {
   switch (block.type) {
     case 'text':
       return block.value;
