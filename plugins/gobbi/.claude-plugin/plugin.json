@@ -9,6 +9,7 @@
   "homepage": "https://github.com/HahyeonJeon/gobbi#readme",
   "license": "MIT",
   "keywords": ["claude-code", "harness", "orchestration", "workflow", "ai-agent", "evaluation"],
+  "hooks": "./hooks/hooks.json",
   "skills": "./skills/",
   "agents": [
     "./agents/gobbi-agent.md",

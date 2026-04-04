@@ -14,9 +14,9 @@ Persist the workflow trail at the end of each workflow cycle. Must load _note to
 
 Collection has four responsibilities: **note persistence**, **subtask preservation**, **gotcha recording**, and **phase transition**.
 
-**Note persistence** — Load _note and write all note files for the current task: `ideation.md`, `plan.md`, and `execution.md`. Subtask `.json` files are already on disk at this point — they were created during execution (Step 3) via `subtask-collect.sh`. Collection verifies that all expected subtask files exist and writes the remaining note files. Every workflow stage that produced output must have a corresponding note file on disk.
+**Note persistence** — Load _note and write all note files for the current task: `ideation.md`, `plan.md`, and `execution.md`. Subtask `.json` files are already on disk at this point — they were created during execution (Step 3) via `gobbi note collect`. Collection verifies that all expected subtask files exist and writes the remaining note files. Every workflow stage that produced output must have a corresponding note file on disk.
 
-**Subtask preservation** — The orchestrator calls `subtask-collect.sh` during execution (Step 3) immediately after each subagent returns to extract the delegation prompt and final result from the subagent's JSONL transcript into a JSON file. This happens during execution, not during collection — downstream agents (synthesis, evaluation) depend on these files existing on disk before they run.
+**Subtask preservation** — The orchestrator calls `gobbi note collect` during execution (Step 3) immediately after each subagent returns to extract the delegation prompt and final result from the subagent's JSONL transcript into a JSON file. This happens during execution, not during collection — downstream agents (synthesis, evaluation) depend on these files existing on disk before they run.
 
 **Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via _gotcha before the cycle closes.
 
@@ -28,7 +28,7 @@ Collection has four responsibilities: **note persistence**, **subtask preservati
 
 Note directories follow the structure defined in _note. See _note for directory naming, file layout, and the initialization script.
 
-**Directory initialization**: Initialize note directories using the `note-init.sh` script in `_note/scripts/`. It takes the project name and task slug as arguments and handles the full chain: metadata extraction, directory creation, README.md generation, and subtasks/ directory setup.
+**Directory initialization**: Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and handles the full chain: metadata extraction, directory creation, README.md generation, and subtasks/ directory setup.
 
 ---
 
@@ -75,8 +75,9 @@ This complements per-agent Memorize steps by capturing orchestrator-level insigh
 - **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via _gotcha.
 - **CLAUDE.md additions** — conventions or patterns discovered that should persist across sessions. Add as one-line entries to CLAUDE.md.
 - **Skill updates** — behavioral patterns identified that a skill should teach. When a learning is categorized as a skill update, the orchestrator MUST propose a concrete change to the skill rather than merely flagging it for later. This is opt-in: only prompt if skill-update-type learnings were identified during the session. To propose a change:
+
   - Load _claude and _skills for authoring standards
-  - Run lint/validation on modified skills (lint-skill.sh) to catch anti-patterns before presenting
+  - Run lint/validation on modified skills (`gobbi validate lint`) to catch anti-patterns before presenting
   - Present proposed changes to user via AskUserQuestion: "Would you like to review proposed skill updates before finishing?"
   - If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.
 

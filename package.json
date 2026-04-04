@@ -13,7 +13,8 @@
     "bin",
     "dist",
     "plugins/gobbi/.claude-plugin",
-    "plugins/gobbi/settings.json"
+    "plugins/gobbi/settings.json",
+    "plugins/gobbi/hooks"
   ],
   "scripts": {
     "build": "tsc",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^18",
+    "@types/proper-lockfile": "^4.1.4",
     "typescript": "^5.8"
   },
   "workspaces": [
@@ -59,5 +61,8 @@
     "playwright": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "proper-lockfile": "^4.1.2"
   }
 }

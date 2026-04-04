@@ -13,12 +13,12 @@
       }
     },
     {
-      "title": "Must use note-init.sh — never create note directories manually",
+      "title": "Must use `gobbi note init` — never create note directories manually",
       "body": {
         "priority": "Critical",
         "what-happened": "The orchestrator tried to create a note directory with `mkdir -p` and manually checked `$CLAUDE_SESSION_ID` (which wasn't set). It bypassed the `note-init.sh` script that handles session metadata extraction, directory creation, README generation, and subtasks/ setup in a single call.",
         "user-feedback": "\"Did you use session-metadata.sh? Must run session-metadata.sh first.\"",
-        "correct-approach": "Always use `bash .claude/skills/_note/scripts/note-init.sh <project-name> <task-slug>` to create note directories. Never `mkdir` manually, never reference `$CLAUDE_SESSION_ID` directly. The script chains through `note-metadata.sh` which reads from `$CLAUDE_SESSION_ID` (set by the SessionStart hook). If the script fails because `CLAUDE_SESSION_ID` is not set, investigate the hook — don't work around it."
+        "correct-approach": "Always use `gobbi note init <project-name> <task-slug>` to create note directories. Never `mkdir` manually, never reference `$CLAUDE_SESSION_ID` directly. The command chains through `gobbi note metadata` which reads from `$CLAUDE_SESSION_ID` (set by the SessionStart hook). If the command fails because `CLAUDE_SESSION_ID` is not set, investigate the hook — don't work around it."
       }
     }
   ],

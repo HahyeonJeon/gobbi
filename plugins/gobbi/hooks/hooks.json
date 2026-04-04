@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-metadata.sh",
+            "command": "gobbi session metadata",
             "timeout": 5
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/load-notification-env.sh",
+            "command": "gobbi session load-env",
             "timeout": 5
           }
         ]
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-session.sh",
+            "command": "gobbi notify session",
             "timeout": 5,
             "async": true
           }
@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-completion.sh",
+            "command": "gobbi notify completion",
             "timeout": 10,
             "async": true
           }
@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-attention.sh",
+            "command": "gobbi notify attention",
             "timeout": 5,
             "async": true
           }
@@ -64,7 +64,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-error.sh",
+            "command": "gobbi notify error",
             "timeout": 5,
             "async": true
           }
@@ -76,7 +76,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-subagent.sh",
+            "command": "gobbi notify subagent",
             "timeout": 5,
             "async": true
           }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/notify-session.sh",
+            "command": "gobbi notify session",
             "timeout": 5,
             "async": true
           }

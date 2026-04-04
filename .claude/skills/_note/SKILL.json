@@ -31,12 +31,12 @@
           "content": [
             {
               "type": "principle",
-              "statement": "Always use note-init.sh to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.",
-              "body": "Initialize note directories using the `note-init.sh` script in `_note/scripts/`. It takes the project name and task slug as arguments and outputs the created directory path. It handles the full chain: session metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup."
+              "statement": "Always use `gobbi note init` to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.",
+              "body": "Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and outputs the created directory path. It handles the full chain: session metadata extraction, directory creation, README.md generation with session context, and subtasks/ directory setup."
             },
             {
               "type": "text",
-              "value": "After each subagent returns, run `subtask-collect.sh` (also in `_note/scripts/`) to extract the delegation prompt and final result from the subagent's JSONL transcript into `subtasks/{NN}-{subtask-slug}.json`. The script handles transcript parsing and JSON formatting — no manual Write calls needed.\n\nIf `note-init.sh` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it."
+              "value": "After each subagent returns, run `gobbi note collect` to extract the delegation prompt and final result from the subagent's JSONL transcript into `subtasks/{NN}-{subtask-slug}.json`. The command handles transcript parsing and JSON formatting — no manual Write calls needed.\n\nIf `gobbi note init` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it."
             }
           ]
         }
@@ -130,7 +130,7 @@
           "content": [
             {
               "type": "text",
-              "value": "Extracted from subagent JSONL transcripts via `subtask-collect.sh` during Step 3. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered."
+              "value": "Extracted from subagent JSONL transcripts via `gobbi note collect` during Step 3. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered."
             },
             {
               "type": "list",
