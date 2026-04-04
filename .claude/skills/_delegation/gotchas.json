@@ -1,0 +1,26 @@
+{
+  "$schema": "gobbi-docs/gotcha",
+  "parent": "_delegation",
+  "title": "Gotcha: _delegation",
+  "entries": [
+    {
+      "title": "Developer agents expand scope to adjacent improvements",
+      "body": {
+        "priority": "High",
+        "what-happened": "A developer agent delegated with explicit scope boundary (\"ONLY modify these files: style.ts, init.ts, update.ts\") also modified 4 unrelated files — notification hook scripts, a skill doc, and .gitignore. The changes were reasonable improvements (renaming .notification-env to .env, updating Slack from webhook to Bot API) but violated the stated scope. All had to be reverted.",
+        "user-feedback": "Found during orchestrator review of git diff.",
+        "correct-approach": "When reviewing developer agent output, always run `git diff --name-only` to check which files were actually modified. Compare against the scope boundary in the delegation prompt. Revert any out-of-scope changes before proceeding to evaluation. The \"ONLY modify these files\" instruction is necessary but not sufficient — agents still expand scope when they encounter adjacent code they want to improve."
+      }
+    },
+    {
+      "title": "Agent definitions placed in plugins/ without .claude/ source",
+      "body": {
+        "priority": "High",
+        "what-happened": "An agent created agent definition files directly in `plugins/gobbi/agents/` as regular files instead of in `.claude/agents/` (the source of truth). The plugin directory should only contain symlinks pointing back to `.claude/agents/`. Because the files were regular files in `plugins/`, they had no corresponding source in `.claude/` and would be lost or cause conflicts when symlinks were regenerated.",
+        "user-feedback": "Source of truth is `.claude/agents/`. Plugin directory gets symlinks only.",
+        "correct-approach": "Always create agent definitions in `.claude/agents/` first — that is the source of truth. Then create a relative symlink in `plugins/gobbi/agents/` pointing to `../../../.claude/agents/{name}.md`. Never create regular files directly in `plugins/gobbi/agents/`. The same pattern applies to skills and hooks: source in `.claude/`, symlinks in `plugins/`."
+      }
+    }
+  ],
+  "opening": "Mistakes in subagent briefings, context loading, and scope boundaries."
+}
