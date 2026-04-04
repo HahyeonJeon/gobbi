@@ -29,7 +29,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 - Multi-select. If any channel is selected alongside Skip, channels take priority.
 - **Slack** — Notify via Slack bot message.
 - **Telegram** — Notify via Telegram bot message.
-- **Discord** — Notify via Discord webhook. (coming soon — not yet implemented in the CLI)
+- **Discord** — Notify via Discord webhook.
 - **Skip notifications** — No notifications this session.
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and the relevant child skill (_slack, _telegram, _discord) to help the user configure them before proceeding.
@@ -89,6 +89,8 @@ Workflow participant skills — loaded during the 7-step cycle: Ideation, Plan, 
 | **_note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
 | **_git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
 | **_notification** | Configure Claude Code notifications (Slack, Telegram, others) via conversation. |
+| **_innovation** | Innovation stance skill. Defines how agents think when spawned as the innovative stance — creative, cross-domain, unconventional. |
+| **_best-practice** | Best-practice stance skill. Defines how agents think when spawned as the best stance — proven patterns, evidence, community consensus. |
 | **_gotcha** | Cross-project mistake recording. Check before acting, write after corrections. |
 
 #### Evaluation — Skills

@@ -146,6 +146,8 @@
       "Skill(_slack)",
       "Skill(_telegram)",
       "Skill(_discord)",
+      "Skill(_innovation)",
+      "Skill(_best-practice)",
       "Skill(__validate)",
       "WebSearch"
     ]

@@ -105,6 +105,14 @@
                   "Configure Claude Code notifications (Slack, Telegram, others) via conversation."
                 ],
                 [
+                  "**_innovation**",
+                  "Innovation stance skill. Defines how agents think when spawned as the innovative stance — creative, cross-domain, unconventional."
+                ],
+                [
+                  "**_best-practice**",
+                  "Best-practice stance skill. Defines how agents think when spawned as the best stance — proven patterns, evidence, community consensus."
+                ],
+                [
                   "**_gotcha**",
                   "Cross-project mistake recording. Check before acting, write after corrections."
                 ]
