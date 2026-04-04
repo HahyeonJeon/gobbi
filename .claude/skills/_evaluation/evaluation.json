@@ -21,13 +21,19 @@
           "heading": "Universal",
           "content": [
             {
-              "type": "list",
-              "style": "bullet",
-              "items": [
-                "**Duplication** — The perspective restates criteria already covered by gobbi's built-in perspectives (Project, Overall, etc.) rather than adding domain-specific knowledge. A duplicated perspective wastes an evaluator slot and produces redundant findings.",
-                "**Generic content** — Criteria that any project could use verbatim. \"Is the code readable?\" applies everywhere and teaches nothing project-specific. Effective perspectives encode the project's own standards, conventions, and failure history.",
-                "**Staleness** — The perspective references conventions, tools, or patterns the project no longer uses. Stale criteria produce false positives or miss real issues because the evaluation lens doesn't match the current codebase."
-              ]
+              "type": "principle",
+              "statement": "Duplication — restates criteria already covered by gobbi's built-in perspectives instead of adding domain-specific knowledge.",
+              "body": "Gobbi provides Project and Overall perspectives as mandatory evaluators, plus optional perspectives selected by the orchestrator. A user perspective that re-evaluates what these built-in perspectives already cover wastes an evaluator slot and produces redundant findings. The test: if gobbi's built-in perspectives were the only evaluators, would the findings this perspective produces already appear? If yes, it is duplicating."
+            },
+            {
+              "type": "principle",
+              "statement": "Generic content — criteria that any project could use verbatim without modification.",
+              "body": "\"Is the code readable?\" applies everywhere and teaches nothing project-specific. Effective perspectives encode the project's own standards, conventions, and failure history. A perspective that could be copy-pasted into a different project without changing a single line is too generic to justify its evaluator slot."
+            },
+            {
+              "type": "principle",
+              "statement": "Staleness — references conventions, tools, or patterns the project no longer uses.",
+              "body": "Stale criteria produce false positives or miss real issues because the evaluation lens doesn't match the current codebase. A perspective checking for jQuery patterns after the project migrated to React actively misleads the evaluator. Stale perspectives are worse than absent ones — evaluators trust loaded criteria."
             }
           ]
         },
@@ -36,13 +42,19 @@
           "heading": "Type-Specific",
           "content": [
             {
-              "type": "list",
-              "style": "bullet",
-              "items": [
-                "**Generic perspective** — Evaluation criteria any project could use add no value. A security perspective that checks \"are inputs validated?\" without naming the project's validation framework, auth stack, or known vulnerability patterns is indistinguishable from a generic checklist.",
-                "**Autonomous verdict** — The framework doesn't acknowledge user authority. Perspectives that produce verdicts without routing findings through the user violate the core principle that the user decides what matters. The evaluation system advises; it does not decide.",
-                "**Stage mismatch** — Criteria that don't match the actual workflow stage being evaluated. Checking code correctness during ideation evaluation, or checking whether the root problem is identified during execution evaluation, produces irrelevant findings that dilute the signal."
-              ]
+              "type": "principle",
+              "statement": "Generic perspective — evaluation criteria any project could use add no value.",
+              "body": "A security perspective that checks \"are inputs validated?\" without naming the project's validation framework, auth stack, or known vulnerability patterns is indistinguishable from a generic checklist. The perspective must encode domain knowledge the evaluator would not have without loading it."
+            },
+            {
+              "type": "principle",
+              "statement": "Autonomous verdict — the framework does not acknowledge user authority.",
+              "body": "Perspectives that produce verdicts without routing findings through the user violate the core principle that the user decides what matters. The evaluation system advises; it does not decide. A perspective that prescribes autonomous action on its findings bypasses the user's role as final arbiter."
+            },
+            {
+              "type": "principle",
+              "statement": "Stage mismatch — criteria that do not match the actual workflow stage being evaluated.",
+              "body": "Checking code correctness during ideation evaluation, or checking whether the root problem is identified during execution evaluation, produces irrelevant findings that dilute the signal. Each workflow stage has different success criteria — a perspective must know which stage it is evaluating and apply stage-appropriate criteria."
             }
           ]
         }
@@ -56,8 +68,14 @@
           "heading": "Purpose and Scope",
           "content": [
             {
-              "type": "text",
-              "value": "Does the perspective own a distinct evaluation domain that gobbi's built-in perspectives don't cover? A well-scoped perspective has a clear reason to exist — it sees problems that no other perspective catches. If removing it would leave no gap, it shouldn't exist."
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Does the perspective own a distinct evaluation domain that gobbi's built-in perspectives (Project, Overall) do not already cover?",
+                "If this perspective were removed, would any category of problems go undetected? If no gap would exist, the perspective does not justify its evaluator slot.",
+                "Is the scope narrow enough that the perspective's criteria stay coherent, yet broad enough that it applies across multiple evaluation sessions?",
+                "Does the perspective complement adjacent perspectives, or does it compete for the same evaluation domain?"
+              ]
             }
           ]
         },
@@ -66,8 +84,14 @@
           "heading": "Content Quality",
           "content": [
             {
-              "type": "text",
-              "value": "Does the perspective encode concrete, project-specific knowledge? Criteria should reference the project's actual tech stack, naming conventions, architectural patterns, and known failure modes. An evaluator loading the perspective should gain domain expertise it wouldn't otherwise have — not receive generic guidance it could derive from first principles."
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Does the perspective encode concrete, project-specific knowledge — actual tech stack, naming conventions, architectural patterns, and known failure modes?",
+                "Would an evaluator loading this perspective gain domain expertise it would not otherwise have, or could it derive the same guidance from first principles?",
+                "Are criteria specific enough that two evaluators would assess the same output consistently?",
+                "Do criteria evaluate outcomes against goals, not tasks against checklists?"
+              ]
             }
           ]
         },
@@ -76,8 +100,14 @@
           "heading": "Structural Compliance",
           "content": [
             {
-              "type": "text",
-              "value": "Does the perspective follow gobbi's documentation standards and evaluation framework conventions? Structural compliance ensures the perspective integrates correctly with the orchestrator's delegation flow and the evaluator's assessment process."
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Does the perspective follow gobbi's documentation standards — `_claude` writing principles, naming convention, file structure?",
+                "Does the description field use command tone (\"Evaluate...\" or \"Use when...\") rather than inventory tone (\"This perspective provides...\")?",
+                "Is the perspective under the line budget — must stay under 500 lines, should target under 200?",
+                "Does the perspective avoid `_claude` anti-patterns: no code examples, no BAD/GOOD comparisons, no step-by-step recipes?"
+              ]
             }
           ]
         },
@@ -86,8 +116,14 @@
           "heading": "Integration",
           "content": [
             {
-              "type": "text",
-              "value": "Does the perspective work within the evaluation system without friction? It should produce findings compatible with the confidence/severity scoring model, respect false positive categories, and generate output the orchestrator can synthesize alongside other perspectives. A perspective that requires special handling or produces incompatible output formats breaks the evaluation pipeline."
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Does the perspective produce findings compatible with the confidence (0-100) and severity (Critical/High/Medium/Low) scoring model?",
+                "Does the output format allow the orchestrator to synthesize findings alongside other perspectives without special handling?",
+                "Does the perspective respect false positive categories and route findings through the user rather than prescribing autonomous action?",
+                "Is stage applicability clear — does the perspective either work across all stages or specify which stages it targets?"
+              ]
             }
           ]
         }
