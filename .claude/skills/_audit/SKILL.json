@@ -1,0 +1,123 @@
+{
+  "$schema": "gobbi-docs/skill",
+  "frontmatter": {
+    "name": "_audit",
+    "description": "Detect documentation drift in .claude/ files. Use periodically, after major codebase changes, or before releases to find stale references and structural mismatches.",
+    "allowed-tools": "Read, Grep, Glob, Bash"
+  },
+  "title": "Audit",
+  "opening": "Detect documentation drift in `.claude/` files — stale file references, broken links, and structural claims that no longer match reality. Documentation drifts silently: a renamed file, a moved directory, a reorganized structure. The docs still read well, but point agents to things that no longer exist.",
+  "sections": [
+    {
+      "heading": "Core Principle",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "Docs that reference nonexistent files are worse than no docs.",
+          "body": "A stale reference sends agents on a hunt for something that does not exist, wasting context and producing confused output. Regular auditing catches these before agents encounter them."
+        },
+        {
+          "type": "principle",
+          "statement": "Audit what is verifiable. Skip what is subjective.",
+          "body": "Auditing checks concrete, machine-verifiable claims: does this file exist? Does this directory exist? It does NOT assess content quality, writing style, or whether a doc's advice is good. Content quality is a human judgment, not an audit finding."
+        },
+        {
+          "type": "principle",
+          "statement": "Audit living docs, not historical records.",
+          "body": "Skills, agents, gotchas, rules, and CLAUDE.md are living documentation that agents actively follow. Project notes (`$CLAUDE_PROJECT_DIR/.claude/project/` note directories) are historical records of past sessions — they describe what happened at a point in time and are not expected to stay current. Audit the former, skip the latter."
+        }
+      ]
+    },
+    {
+      "heading": "What to Audit",
+      "content": [
+        {
+          "type": "text",
+          "value": "**File path references** — Backtick-quoted paths and markdown links in `.md` files. Check whether the referenced file or directory actually exists on disk. Catches: renamed files, moved directories, deleted scripts.\n\n**Structural claims** — Statements about where things live (\"skills are in `.claude/skills/`\", \"agents are defined in `.claude/agents/`\"). Check whether the described directories exist and contain what is claimed. Catches: reorganized directory structures, outdated architecture descriptions."
+        }
+      ]
+    },
+    {
+      "heading": "When to Audit",
+      "content": [
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "**Periodically** — as part of routine maintenance",
+            "**After major restructuring** — file moves, directory reorganizations, renames",
+            "**Before releases** — verify all docs point to real things",
+            "**After skill or agent creation** — confirm new references are valid and navigation tables are updated"
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Scope",
+      "content": [
+        {
+          "type": "text",
+          "value": "**In scope:**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "All `.md` files in `.claude/` root (CLAUDE.md, rules)",
+            "Skill definitions (SKILL.md and child docs)",
+            "Agent definitions",
+            "Gotcha files",
+            "Any scripts referenced from skill docs"
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**Out of scope:**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "`$CLAUDE_PROJECT_DIR/.claude/project/` note directories — historical records, not living docs",
+            "Content quality assessment — that is __validate's domain",
+            "External URLs — network-dependent, separate concern"
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Tools",
+      "content": [
+        {
+          "type": "text",
+          "value": "Three scripts in `scripts/` automate the verifiable checks:"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Script",
+            "Purpose"
+          ],
+          "rows": [
+            [
+              "`audit-references.sh`",
+              "Scan `.md` files for file path references, check if each exists on disk"
+            ],
+            [
+              "`audit-conventions.sh`",
+              "Scan SKILL.md files for directory structure claims, check if described structures exist"
+            ],
+            [
+              "`audit-commands.sh`",
+              "Scan `.md` files for shell commands in fenced code blocks, check if referenced binaries exist"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "value": "All scripts accept a directory path as an argument. Run from the repository root. Exit 0 means clean, exit 1 means findings. Output uses `file:line` format for each finding."
+        }
+      ]
+    }
+  ]
+}
