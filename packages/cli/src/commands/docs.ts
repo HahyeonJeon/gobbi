@@ -53,6 +53,7 @@ Subcommands:
   md2json <path>           Migrate Markdown file to JSON template
   validate <path>          Validate a JSON template
   read <path> [--section]  Pretty-print JSON metadata or section
+  spec                     Show the gobbi-docs JSON schema specification
   list [directory]         List all gobbi-docs templates with metadata
   tree [directory]         Show navigation hierarchy as a tree
   search <pattern> [dir]   Search content across all templates
@@ -209,6 +210,9 @@ export async function runDocs(args: string[]): Promise<void> {
     case 'health':
       await runDocsHealth(args.slice(1));
       break;
+    case 'spec':
+      runDocsSpec();
+      break;
     case '--help':
     case undefined:
       console.log(USAGE);
@@ -218,6 +222,76 @@ export async function runDocs(args: string[]): Promise<void> {
       console.log(USAGE);
       process.exit(1);
   }
+}
+
+// ---------------------------------------------------------------------------
+// spec
+// ---------------------------------------------------------------------------
+
+function runDocsSpec(): void {
+  const spec = {
+    description: 'gobbi-docs JSON schema for .claude/ documentation',
+    docTypes: {
+      skill: {
+        $schema: 'gobbi-docs/skill',
+        description: 'Skill definition in .claude/skills/{name}/SKILL.md',
+        frontmatter: { name: 'string', description: 'string', 'allowed-tools': 'string (optional)' },
+        fields: ['title', 'opening?', 'navigation?', 'sections?'],
+      },
+      agent: {
+        $schema: 'gobbi-docs/agent',
+        description: 'Agent definition in .claude/agents/{name}.md',
+        frontmatter: { name: 'string', description: 'string', tools: 'string', model: 'string' },
+        fields: ['title', 'opening?', 'navigation?', 'sections?'],
+      },
+      rule: {
+        $schema: 'gobbi-docs/rule',
+        description: 'Rule file in .claude/rules/{name}.md',
+        frontmatter: 'Record<string, string> (optional)',
+        fields: ['title', 'opening?', 'navigation?', 'sections?'],
+      },
+      root: {
+        $schema: 'gobbi-docs/root',
+        description: 'Root README at .claude/README.md',
+        fields: ['title', 'opening?', 'navigation?', 'sections?'],
+      },
+      child: {
+        $schema: 'gobbi-docs/child',
+        description: 'Child doc of a skill, e.g. .claude/skills/{name}/child.md',
+        fields: ['parent', 'title', 'opening?', 'navigation?', 'sections?'],
+      },
+      gotcha: {
+        $schema: 'gobbi-docs/gotcha',
+        description: 'Gotcha file — known mistakes and corrections',
+        fields: ['parent', 'title', 'opening?', 'navigation?', 'entries[]'],
+        entry: {
+          fields: ['title', 'metadata?', 'body'],
+          metadata: { priority: 'string?', 'tech-stack': 'string?', enforcement: '"hook" | "advisory"', pattern: 'string?', event: '"bash" | "file" | "stop"' },
+          body: { priority: 'string', 'what-happened': 'string', 'user-feedback': 'string', 'correct-approach': 'string' },
+        },
+      },
+    },
+    blockTypes: {
+      text: { fields: ['value: string'], renders: 'Prose paragraph' },
+      principle: { fields: ['statement: string', 'body?: string'], renders: '> **statement** followed by body text' },
+      table: { fields: ['headers: string[]', 'rows: string[][]'], renders: 'Markdown table' },
+      'constraint-list': { fields: ['items: string[]'], renders: 'Bullet list of constraints (must/should/must-not)' },
+      list: { fields: ['style: "bullet" | "numbered"', 'items: string[]'], renders: 'Bullet or numbered list' },
+      subsection: { fields: ['heading: string', 'content: ContentBlock[]'], renders: '### heading with nested content blocks' },
+    },
+    navigation: {
+      format: 'Record<string, string>',
+      keys: '.claude/-relative file paths (e.g., "skills/_git/conventions.md")',
+      values: 'Description string',
+      rendering: 'Rendered as "Navigate deeper from here:" table with file-relative links',
+    },
+    section: {
+      fields: ['heading: string | null', 'content: ContentBlock[]'],
+      rendering: 'Sections separated by --- with ## heading',
+    },
+  };
+
+  console.log(JSON.stringify(spec, null, 2));
 }
 
 // ---------------------------------------------------------------------------
