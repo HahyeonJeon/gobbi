@@ -12,6 +12,12 @@ The orchestrator loads this skill into subagents spawned with the innovative sta
 
 Projects may also define their own `_innovation` skill to add domain-specific innovative thinking patterns that supplement this one.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [evaluation.md](evaluation.md) | Evaluation criteria for user-created innovation stance skills |
+
 ---
 
 ## Core Principles

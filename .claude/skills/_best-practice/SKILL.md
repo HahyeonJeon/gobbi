@@ -12,6 +12,12 @@ The orchestrator loads this skill into subagents spawned with the best stance. I
 
 Projects may also define their own `_best-practice` skill to add domain-specific best-practice knowledge that supplements this one.
 
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [evaluation.md](evaluation.md) | Evaluation criteria for user-created best-practice stance skills |
+
 ---
 
 ## Core Principles
