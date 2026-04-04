@@ -226,3 +226,18 @@ priority: critical
 **User feedback:** Parallel agents in the same worktree corrupt each other's commits.
 
 **Correct approach:** When delegating parallel agents that commit to the same worktree, batch them into sequential waves and run `subtask-collect.sh` between waves. Alternatively, give each parallel agent its own worktree. The key insight: git staging area is shared across all processes in a worktree. Two agents running `git add` and `git commit` concurrently will interleave their changes unpredictably.
+
+---
+
+### Review (Step 7) is a PI assessment, not a full workflow re-run
+---
+priority: high
+---
+
+**Priority:** High
+
+**What happened:** The old workflow ran a full REVIEW phase (Ideation through Collection). The new Review step only spawns PI agents for assessment and verdict.
+
+**User feedback:** Review assesses through reading and analysis, not re-execution.
+
+**Correct approach:** Review (Step 7) spawns PI agents with innovative + best stances to assess the completed work and produce verdicts. It does not re-run Ideation, Planning, Research, or Execution. For re-execution of fixes, use FEEDBACK to delegate targeted fixes to executors, then return to Review again.

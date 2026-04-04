@@ -13,7 +13,7 @@
       "content": [
         {
           "type": "text",
-          "value": "Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. Each task gets a top-level directory containing subdirectories for each workflow step:\n\n```\n{YYYYMMDD-HHMM}-{slug}-{session_id}/\n  metadata.json\n  README.md\n  ideation/\n    innovative.md\n    best.md\n    ideation.md\n    evaluation/\n      {perspective}.md\n  plan/\n    plan.md\n    evaluation/\n      {perspective}.md\n  research/\n    innovative.md\n    best.md\n    research.md\n    results/\n    subtasks/\n      01-{slug}.json\n    evaluation/\n      {perspective}.md\n  execution/\n    execution.md\n    subtasks/\n      01-{slug}.json\n    evaluation/\n      {perspective}.md\n  review/\n    innovative.md\n    best.md\n```"
+          "value": "Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. Each task gets a top-level directory containing subdirectories for each workflow step:\n\n```\n{YYYYMMDD-HHMM}-{slug}-{session_id}/\n  metadata.json\n  README.md\n  ideation/\n    innovative.md\n    best.md\n    ideation.md\n    evaluation/\n      {perspective}.md\n  plan/\n    plan.md\n    evaluation/\n      {perspective}.md\n  research/\n    innovative.md\n    best.md\n    research.md\n    results/\n    subtasks/\n      01-{slug}.json\n    evaluation/\n      {perspective}.md\n  execution/\n    execution.md\n    subtasks/\n      01-{slug}.json\n    evaluation/\n      {perspective}.md\n  review/\n    innovative.md\n    best.md\n    review.md\n```"
         },
         {
           "type": "subsection",
@@ -147,7 +147,8 @@
               "style": "bullet",
               "items": [
                 "`innovative.md` — Written by innovative PI agent. Review and verdict through creative lens.",
-                "`best.md` — Written by best-practice PI agent. Review and verdict through best-practice lens."
+                "`best.md` — Written by best-practice PI agent. Review and verdict through best-practice lens.",
+                "`review.md` — Written by orchestrator. Synthesizes both PI stance verdicts into a combined verdict and summary for the user."
               ]
             }
           ]
@@ -158,7 +159,7 @@
           "content": [
             {
               "type": "text",
-              "value": "Task summary and index of related docs. Written after Collection (Step 5). Lists all subdirectories and their key files. Not created at initialization — written once the task has enough content to summarize."
+              "value": "Task summary and index of related docs. Created at initialization by `note-init.sh` with session metadata (YAML frontmatter). During Collection (Step 5), it is overwritten with the full task summary including subdirectory listing and step summaries."
             }
           ]
         }

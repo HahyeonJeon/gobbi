@@ -50,6 +50,7 @@ Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. Each tas
   review/
     innovative.md
     best.md
+    review.md
 ```
 
 ### Naming
@@ -115,10 +116,11 @@ Step 7 output — final review and verdict.
 
 - `innovative.md` — Written by innovative PI agent. Review and verdict through creative lens.
 - `best.md` — Written by best-practice PI agent. Review and verdict through best-practice lens.
+- `review.md` — Written by orchestrator. Synthesizes both PI stance verdicts into a combined verdict and summary for the user.
 
 ### README.md
 
-Task summary and index of related docs. Written after Collection (Step 5). Lists all subdirectories and their key files. Not created at initialization — written once the task has enough content to summarize.
+Task summary and index of related docs. Created at initialization by `note-init.sh` with session metadata (YAML frontmatter). During Collection (Step 5), it is overwritten with the full task summary including subdirectory listing and step summaries.
 
 ---
 

@@ -98,4 +98,4 @@ Note: targeted re-evaluation during FEEDBACK is for verifying individual fixes. 
 - MUST recommend FINISH after 5 rounds — via AskUserQuestion, user can override
 - MUST use AskUserQuestion at every transition — never prose transitions
 - Never skip gotcha recording — a correction not recorded is a correction repeated
-- Never run full workflow (Steps 1–4) during FEEDBACK — that is what the main workflow is for
+- Never run full workflow (Steps 1–3) during FEEDBACK — that is what the main workflow is for

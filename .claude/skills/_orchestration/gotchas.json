@@ -182,6 +182,18 @@
       "metadata": {
         "priority": "critical"
       }
+    },
+    {
+      "title": "Review (Step 7) is a PI assessment, not a full workflow re-run",
+      "body": {
+        "priority": "High",
+        "what-happened": "The old workflow ran a full REVIEW phase (Ideation through Collection). The new Review step only spawns PI agents for assessment and verdict.",
+        "user-feedback": "Review assesses through reading and analysis, not re-execution.",
+        "correct-approach": "Review (Step 7) spawns PI agents with innovative + best stances to assess the completed work and produce verdicts. It does not re-run Ideation, Planning, Research, or Execution. For re-execution of fixes, use FEEDBACK to delegate targeted fixes to executors, then return to Review again."
+      },
+      "metadata": {
+        "priority": "high"
+      }
     }
   ],
   "opening": "Mistakes in following the orchestration workflow (steps, transitions, FEEDBACK/FINISH cycle)."

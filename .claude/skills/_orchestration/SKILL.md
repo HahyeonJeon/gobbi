@@ -244,7 +244,7 @@ Each PI agent reviews the completed work from their stance. The innovative revie
 
 > **Each review includes a verdict: pass, fail, or needs-work.**
 
-The verdict is a clear signal. "pass" means the work meets quality standards. "fail" means fundamental issues require rework. "needs-work" means targeted fixes can bring the work to standard. The orchestrator synthesizes both verdicts to present to the user.
+The verdict is a clear signal. "pass" means the work meets quality standards. "fail" means fundamental issues require rework. "needs-work" means targeted fixes can bring the work to standard. After both PI agents complete, the orchestrator synthesizes their verdicts into `review/review.md` — a combined verdict and summary presented to the user.
 
 > **Reviews produce documentation for future sessions.**
 
