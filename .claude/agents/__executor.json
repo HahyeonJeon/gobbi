@@ -35,7 +35,8 @@
           "type": "list",
           "style": "bullet",
           "items": [
-            "Project skill — architecture, conventions, and constraints for the project"
+            "Project skill — architecture, conventions, and constraints for the project",
+            "Research materials — when the task's note directory contains a `research/` subdirectory, read `research/research.md` (orchestrator synthesis — primary reference), `research/innovative.md` and `research/best.md` (individual stance findings), and `research/results/` (detailed artifacts)"
           ]
         }
       ]
@@ -55,11 +56,16 @@
               "type": "list",
               "style": "bullet",
               "items": [
+                "Read research notes from the task's `research/` directory. Research agents have already investigated patterns, codebase areas, and implementation approaches for your task. Start with `research.md` (the synthesis), then check `results/` for detailed files relevant to your specific subtask",
                 "Read existing code in the area you'll modify — follow its patterns, not your assumptions",
                 "Check gotchas for past mistakes in this domain",
                 "Load project skill for architecture and conventions",
                 "Understand the existing type system around your change — what types exist, how they compose"
               ]
+            },
+            {
+              "type": "text",
+              "value": "Research materials are guidance, not prescriptions — the executor uses research to make informed decisions but adapts based on what they find during implementation. If research says \"use pattern X\" but the codebase has evolved since research was done, follow the codebase."
             }
           ]
         },

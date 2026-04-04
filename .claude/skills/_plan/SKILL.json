@@ -2,11 +2,11 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_plan",
-    "description": "Decompose complex tasks into small, specific, agent-assigned subtasks. Use during the PLAN phase to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.",
+    "description": "Decompose complex tasks into small, specific, agent-assigned subtasks. Use during Step 2 (Planning) to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Planning Skill",
-  "opening": "Decompose complex tasks into small, specific, agent-assigned subtasks. Use during the PLAN phase to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.",
+  "opening": "Decompose complex tasks into small, specific, agent-assigned subtasks. Use during Step 2 (Planning) to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.",
   "sections": [
     {
       "heading": "Core Principle",
@@ -68,7 +68,7 @@
       "content": [
         {
           "type": "text",
-          "value": "**Goal** — One sentence restating what the user wants, from the DISCUSS phase.\n\n**Tasks** — A numbered list of small, specific tasks. Each task specifies:"
+          "value": "**Goal** — One sentence restating what the user wants, from Ideation (Step 1).\n\n**Tasks** — A numbered list of small, specific tasks. Each task specifies:"
         },
         {
           "type": "list",
@@ -85,7 +85,7 @@
         },
         {
           "type": "text",
-          "value": "**Execution order** — Which tasks run in parallel (independent) and which run sequentially (dependent). Maximize parallelism — independent tasks launch simultaneously.\n\n**Expected outcome** — What the user will have when all tasks complete.\n\n**Collection plan** — Where work docs will be written after delegation completes. Specify the task directory path and list which subtask `.json` files will be created. This ensures the COLLECT phase has a clear target."
+          "value": "**Execution order** — Which tasks run in parallel (independent) and which run sequentially (dependent). Maximize parallelism — independent tasks launch simultaneously.\n\n**Expected outcome** — What the user will have when all tasks complete.\n\n**Collection plan** — Where work docs will be written after delegation completes. Specify the task directory path and list which subtask `.json` files will be created. This ensures Collection (Step 5) has a clear target."
         }
       ]
     },

@@ -18,6 +18,11 @@
         },
         {
           "type": "principle",
+          "statement": "Research materials are guidance, not prescriptions.",
+          "body": "Research notes provide context, options, and analysis gathered before execution. But if the codebase has evolved since research was conducted, follow the codebase. Research informs your approach — it does not override what you observe in the code."
+        },
+        {
+          "type": "principle",
           "statement": "Plan before coding. Outline the approach, then execute.",
           "body": "For non-trivial tasks, form an internal plan: what files to change, what patterns to follow, what the expected result looks like. A few minutes of planning prevents an hour of rework."
         },
@@ -52,6 +57,7 @@
               "type": "list",
               "style": "bullet",
               "items": [
+                "**Research materials** — read research notes from the task's `research/` directory. Start with `research.md` (synthesis), then check `results/` for detailed files relevant to your subtask",
                 "**Documentation standard** (`_claude`) — how `.claude/` files work and how to write them",
                 "**Project skill** — architecture, conventions, and constraints for the project you're working in",
                 "**Gotchas** — check `_gotcha` and project-specific gotchas. Every gotcha exists because a past agent made that exact mistake",

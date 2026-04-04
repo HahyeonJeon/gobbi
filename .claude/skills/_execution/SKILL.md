@@ -16,6 +16,10 @@ Guide for how an executor agent approaches a single task. Load this skill when y
 
 Read the relevant code, understand existing patterns, and check gotchas before writing a single line. The briefing tells you *what* to do — the codebase tells you *how* it should be done.
 
+> **Research materials are guidance, not prescriptions.**
+
+Research notes provide context, options, and analysis gathered before execution. But if the codebase has evolved since research was conducted, follow the codebase. Research informs your approach — it does not override what you observe in the code.
+
 > **Plan before coding. Outline the approach, then execute.**
 
 For non-trivial tasks, form an internal plan: what files to change, what patterns to follow, what the expected result looks like. A few minutes of planning prevents an hour of rework.
@@ -38,6 +42,7 @@ Check your work against the task's acceptance criteria and any relevant gotchas.
 
 Build understanding before acting by loading the context layers specified in your briefing. Each layer adds depth — start with standards, then narrow toward the code you'll change:
 
+- **Research materials** — read research notes from the task's `research/` directory. Start with `research.md` (synthesis), then check `results/` for detailed files relevant to your subtask
 - **Documentation standard** (`_claude`) — how `.claude/` files work and how to write them
 - **Project skill** — architecture, conventions, and constraints for the project you're working in
 - **Gotchas** — check `_gotcha` and project-specific gotchas. Every gotcha exists because a past agent made that exact mistake

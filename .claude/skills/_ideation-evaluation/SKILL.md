@@ -14,7 +14,9 @@ The ideation output should be a refined, detailed idea — not a vague direction
 
 ## What You're Evaluating
 
-The ideation step produces an idea document that should cover: root problem, proposed approach with concrete mechanism, constraints and scope, research findings, risks and trade-offs, and success criteria. Evaluate against the criteria below.
+Ideation produces three files: `innovative.md` and `best.md` from dual-stance PI agents (spawned in parallel), and `ideation.md` — the orchestrator's synthesis of both stances. The synthesis is the primary evaluation target. It should cover: root problem, proposed approach with concrete mechanism, constraints and scope, research findings, risks and trade-offs, and success criteria.
+
+Evaluators primarily assess `ideation.md` but should verify that both stances contributed meaningfully to the synthesis — if the final idea draws entirely from one stance, the other stance's value was lost, and the synthesis is weaker than it appears. Check that trade-offs between the innovative and best approaches are surfaced, not silently resolved. Evaluate against the criteria below.
 
 ---
 
@@ -55,7 +57,7 @@ The ideation step produces an idea document that should cover: root problem, pro
 ## Perspective-Specific Focus
 
 | Perspective | Primary Focus |
-|-------------|--------------|
+|---|---|
 | Project | Does the idea solve the right problem? Scope and requirements alignment. |
 | Architecture | Is the proposed mechanism structurally sound? Coupling, abstraction level. |
 | Performance | Are efficiency implications considered? Scalability risks identified. |

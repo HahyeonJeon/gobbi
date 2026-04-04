@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/child",
   "parent": "_orchestration",
   "title": "FINISH Phase",
-  "opening": "How the workflow concludes with merge, commit, and compact options. Load this when the user selects FINISH to understand the decision tree, pre-action verification, and cleanup responsibilities.",
+  "opening": "How the workflow concludes with merge, commit, and compact options. FINISH comes after Review (Step 7) or after a FEEDBACK → Review loop. Load this when the user selects FINISH to understand the decision tree, pre-action verification, and cleanup responsibilities.",
   "sections": [
     {
       "heading": "Core Principle",
@@ -23,7 +23,7 @@
       "content": [
         {
           "type": "text",
-          "value": "When the user selects FINISH, use AskUserQuestion to present the appropriate options:\n\n**When _git is active (PR exists):**"
+          "value": "When the user selects FINISH after Review (or after a FEEDBACK → Review loop), use AskUserQuestion to present the appropriate options:\n\n**When _git is active (PR exists):**"
         },
         {
           "type": "list",

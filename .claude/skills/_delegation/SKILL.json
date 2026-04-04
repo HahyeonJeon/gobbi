@@ -2,11 +2,11 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_delegation",
-    "description": "Hand off work to subagents with the right context so they succeed on the first attempt. Use during the DELEGATE phase to spawn specialists with clear briefings, context layers, and scope boundaries.",
+    "description": "Hand off work to subagents with the right context so they succeed on the first attempt. Use during Step 4 (Execution) to spawn specialists with clear briefings, context layers, and scope boundaries.",
     "allowed-tools": "Agent, Read, Grep, Glob, Bash, Write"
   },
   "title": "Delegation Skill",
-  "opening": "Hand off work to subagents so they succeed on the first attempt. Load this skill when entering the DELEGATE phase of orchestration.",
+  "opening": "Hand off work to subagents so they succeed on the first attempt. Load this skill when entering Step 4 (Execution) of orchestration.",
   "sections": [
     {
       "heading": "Core Principle",
@@ -89,7 +89,8 @@
               "style": "bullet",
               "items": [
                 "Project docs in the project skill directory — architecture, reference, review docs",
-                "Existing code in the area they'll modify — the codebase is the source of truth for patterns"
+                "Existing code in the area they'll modify — the codebase is the source of truth for patterns",
+                "Research materials from the `research/` subdirectory — when delegating execution tasks after Step 3 (Research), include the path to the `research/` directory so executors can read it during their Study phase. Research materials are guidance, not prescriptions — executors use them to make better-informed decisions but are not bound by the researchers' conclusions"
               ]
             },
             {
@@ -171,7 +172,7 @@
             [
               "**Opus**",
               "Deep reasoning, handles ambiguity and novelty",
-              "Complex ideation, architecture decisions, system design, nuanced evaluation, novel problem solving"
+              "Complex ideation, architecture decisions, system design, nuanced evaluation, novel problem solving, deep research (both stances)"
             ]
           ]
         },
@@ -191,6 +192,141 @@
         {
           "type": "text",
           "value": "**Specificity vs autonomy** — Over-specified prompts produce rigid work. Under-specified prompts miss requirements. Calibrate based on how well-defined the task is.\n\n**When to include code references** — If the agent needs to follow an existing pattern, point to the reference files. The codebase is the source of truth.\n\n**When to split vs combine** — If two subtasks need the same agent, same context, and same files, combine them.\n\n**When to emphasize lifecycle phases** — Spell out Study for unfamiliar areas. Spell out Plan for non-trivial tasks. Spell out Verify for shared interfaces.\n\n**When to include exploration context** — If the plan was preceded by multi-perspective exploration, include the synthesized findings in every delegation prompt. Exploration findings are context, not constraints — the subagent uses them to make better-informed decisions but is not bound by the explorers' conclusions. If no exploration was performed, the subagent discovers context during Study as usual.\n\n**When to include pre-resolved decisions** — When contribution points were resolved during ideation (via _ideation's contribution-point mechanism), encode those resolutions as explicit constraints in the delegation prompt. This differs from scope boundaries: scope says what not to touch; pre-resolved decisions say which implementation choices the user has already made and the subagent must honor. A subagent that re-opens a settled decision wastes context and risks contradicting the user's intent."
+        }
+      ]
+    },
+    {
+      "heading": "Agent Roster",
+      "content": [
+        {
+          "type": "text",
+          "value": "The orchestrator delegates to four agent types. Each has a distinct role in the workflow — understanding their boundaries prevents misrouting."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Agent",
+            "Role",
+            "When to use",
+            "Default model"
+          ],
+          "rows": [
+            [
+              "`__pi`",
+              "\"What to do\" — ideation, review, creative assessment",
+              "Step 1 (Ideation) and Step 7 (Review). Spawned in parallel with innovative + best stances.",
+              "Opus"
+            ],
+            [
+              "`__researcher`",
+              "\"How to do\" — implementation research, pattern investigation, approach analysis",
+              "Step 3 (Research). Spawned in parallel with innovative + best stances. Writes findings to `research/` subdirectory.",
+              "Opus"
+            ],
+            [
+              "`__executor`",
+              "\"Do it\" — code implementation, file changes, concrete deliverables",
+              "Step 4 (Execution). Reads research materials before implementing. Commits verified work.",
+              "Opus"
+            ],
+            [
+              "`gobbi-agent`",
+              "Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks",
+              "Step 4 (Execution) for any subtask involving `.claude/` configuration. Loaded with _claude, _skills, _agents, _rules as needed.",
+              "Opus"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "value": "All agents are currently Opus-tier by default. Override when the specific task demands it — a narrow validation task can drop to Haiku, a routine implementation can drop to Sonnet (see Model Selection)."
+        }
+      ]
+    },
+    {
+      "heading": "Research Step Delegation",
+      "content": [
+        {
+          "type": "text",
+          "value": "Step 3 (Research) delegates to `__researcher` agents. Research happens after the plan is approved and before execution begins. The goal is to investigate \"how to do\" so executors can implement with confidence."
+        },
+        {
+          "type": "principle",
+          "statement": "Spawn two researchers in parallel — innovative and best stances.",
+          "body": "Each researcher receives the same research brief but with a different stance directive. The innovative researcher explores creative approaches, cross-domain patterns, and unconventional solutions. The best researcher investigates proven patterns, official documentation, and community consensus. Both write their findings independently."
+        },
+        {
+          "type": "principle",
+          "statement": "The delegation prompt specifies the stance.",
+          "body": "Include a clear stance directive in each researcher's prompt: \"Your stance is **innovative**\" or \"Your stance is **best**.\" The stance shapes which sources they prioritize, what patterns they surface, and what they recommend. Do not mix stances in a single prompt."
+        },
+        {
+          "type": "principle",
+          "statement": "Research prompts need the approved plan, not the raw idea.",
+          "body": "Researchers need the decomposed plan from Step 2 — specific tasks, files affected, constraints, and acceptance criteria. The plan is their research scope. Include the path to `plan/` so they can read the full plan, not just a summary in the delegation prompt."
+        },
+        {
+          "type": "text",
+          "value": "**What a researcher delegation prompt needs:**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "The approved plan — path to the `plan/` subdirectory or the plan content itself",
+            "The stance directive — innovative or best",
+            "The research scope — which parts of the plan need investigation (may be the full plan or specific tasks)",
+            "The output location — path to the `research/` subdirectory where findings should be written",
+            "Context to load — project skill, `_gotcha`, `_research`, domain skills relevant to the investigation",
+            "What executors need to know — frame the research around executor readiness: \"what does the executor need to know to implement this correctly?\""
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**After both researchers complete:**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "Run `subtask-collect.sh` with the `research` phase argument to extract each researcher's output from their transcript",
+            "Read both researcher outputs — `research/innovative.md` and `research/best.md`",
+            "Synthesize into `research/research.md` — merge the strongest findings from both stances, resolve contradictions, and produce a unified set of implementation guidance",
+            "Optionally evaluate the research quality before proceeding to execution"
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Subtask Collection Phases",
+      "content": [
+        {
+          "type": "text",
+          "value": "The orchestrator runs `subtask-collect.sh` after each subagent completes to extract the delegation prompt and final result from the JSONL transcript. The phase argument determines which `subtasks/` subdirectory receives the output."
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Phase argument",
+            "Used after",
+            "Writes to"
+          ],
+          "rows": [
+            [
+              "`research`",
+              "Step 3 — after each researcher completes",
+              "`research/subtasks/{NN}-{slug}.json`"
+            ],
+            [
+              "`execution`",
+              "Step 4 — after each executor completes",
+              "`execution/subtasks/{NN}-{slug}.json`"
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Always run `subtask-collect.sh` immediately after each subagent wave completes — before launching synthesis, evaluation, or any downstream agent that depends on the output. Subtask JSON files on disk are the handoff mechanism between agents. An agent that reads from disk gets the full output; an agent that receives a summary in its prompt gets a lossy approximation."
         }
       ]
     }

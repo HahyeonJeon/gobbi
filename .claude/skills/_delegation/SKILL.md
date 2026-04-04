@@ -1,12 +1,12 @@
 ---
 name: _delegation
-description: Hand off work to subagents with the right context so they succeed on the first attempt. Use during the DELEGATE phase to spawn specialists with clear briefings, context layers, and scope boundaries.
+description: Hand off work to subagents with the right context so they succeed on the first attempt. Use during Step 4 (Execution) to spawn specialists with clear briefings, context layers, and scope boundaries.
 allowed-tools: Agent, Read, Grep, Glob, Bash, Write
 ---
 
 # Delegation Skill
 
-Hand off work to subagents so they succeed on the first attempt. Load this skill when entering the DELEGATE phase of orchestration.
+Hand off work to subagents so they succeed on the first attempt. Load this skill when entering Step 4 (Execution) of orchestration.
 
 ---
 
@@ -59,6 +59,7 @@ Every subagent needs three layers of context:
 
 - Project docs in the project skill directory — architecture, reference, review docs
 - Existing code in the area they'll modify — the codebase is the source of truth for patterns
+- Research materials from the `research/` subdirectory — when delegating execution tasks after Step 3 (Research), include the path to the `research/` directory so executors can read it during their Study phase. Research materials are guidance, not prescriptions — executors use them to make better-informed decisions but are not bound by the researchers' conclusions
 
 **Load when _git is active:**
 
@@ -102,7 +103,7 @@ Three tiers of capability, from lightest to heaviest:
 |---|---|---|
 | **Haiku** | Fast, cheap, reliable on narrow tasks | Eligibility checks, simple validation, gotcha lookups, confidence scoring, format verification |
 | **Sonnet** | Balanced reasoning and cost | Routine development, code review, codebase exploration, standard evaluation, documentation writing |
-| **Opus** | Deep reasoning, handles ambiguity and novelty | Complex ideation, architecture decisions, system design, nuanced evaluation, novel problem solving |
+| **Opus** | Deep reasoning, handles ambiguity and novelty | Complex ideation, architecture decisions, system design, nuanced evaluation, novel problem solving, deep research (both stances) |
 
 **When to override agent defaults:** Agent definitions declare a default model suited to their typical workload. Override when the specific task is clearly simpler or more complex than what the agent usually handles. A Sonnet-default agent doing a trivial validation can drop to Haiku. A Sonnet-default agent facing a novel architecture problem should escalate to Opus.
 
@@ -125,3 +126,65 @@ This is guidance for the orchestrator's judgment, not a rigid assignment table. 
 **When to include exploration context** — If the plan was preceded by multi-perspective exploration, include the synthesized findings in every delegation prompt. Exploration findings are context, not constraints — the subagent uses them to make better-informed decisions but is not bound by the explorers' conclusions. If no exploration was performed, the subagent discovers context during Study as usual.
 
 **When to include pre-resolved decisions** — When contribution points were resolved during ideation (via _ideation's contribution-point mechanism), encode those resolutions as explicit constraints in the delegation prompt. This differs from scope boundaries: scope says what not to touch; pre-resolved decisions say which implementation choices the user has already made and the subagent must honor. A subagent that re-opens a settled decision wastes context and risks contradicting the user's intent.
+
+---
+
+## Agent Roster
+
+The orchestrator delegates to four agent types. Each has a distinct role in the workflow — understanding their boundaries prevents misrouting.
+
+| Agent | Role | When to use | Default model |
+|---|---|---|---|
+| `__pi` | "What to do" — ideation, review, creative assessment | Step 1 (Ideation) and Step 7 (Review). Spawned in parallel with innovative + best stances. | Opus |
+| `__researcher` | "How to do" — implementation research, pattern investigation, approach analysis | Step 3 (Research). Spawned in parallel with innovative + best stances. Writes findings to `research/` subdirectory. | Opus |
+| `__executor` | "Do it" — code implementation, file changes, concrete deliverables | Step 4 (Execution). Reads research materials before implementing. Commits verified work. | Opus |
+| `gobbi-agent` | Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks | Step 4 (Execution) for any subtask involving `.claude/` configuration. Loaded with _claude, _skills, _agents, _rules as needed. | Opus |
+
+All agents are currently Opus-tier by default. Override when the specific task demands it — a narrow validation task can drop to Haiku, a routine implementation can drop to Sonnet (see Model Selection).
+
+---
+
+## Research Step Delegation
+
+Step 3 (Research) delegates to `__researcher` agents. Research happens after the plan is approved and before execution begins. The goal is to investigate "how to do" so executors can implement with confidence.
+
+> **Spawn two researchers in parallel — innovative and best stances.**
+
+Each researcher receives the same research brief but with a different stance directive. The innovative researcher explores creative approaches, cross-domain patterns, and unconventional solutions. The best researcher investigates proven patterns, official documentation, and community consensus. Both write their findings independently.
+
+> **The delegation prompt specifies the stance.**
+
+Include a clear stance directive in each researcher's prompt: "Your stance is **innovative**" or "Your stance is **best**." The stance shapes which sources they prioritize, what patterns they surface, and what they recommend. Do not mix stances in a single prompt.
+
+> **Research prompts need the approved plan, not the raw idea.**
+
+Researchers need the decomposed plan from Step 2 — specific tasks, files affected, constraints, and acceptance criteria. The plan is their research scope. Include the path to `plan/` so they can read the full plan, not just a summary in the delegation prompt.
+
+**What a researcher delegation prompt needs:**
+
+- The approved plan — path to the `plan/` subdirectory or the plan content itself
+- The stance directive — innovative or best
+- The research scope — which parts of the plan need investigation (may be the full plan or specific tasks)
+- The output location — path to the `research/` subdirectory where findings should be written
+- Context to load — project skill, `_gotcha`, `_research`, domain skills relevant to the investigation
+- What executors need to know — frame the research around executor readiness: "what does the executor need to know to implement this correctly?"
+
+**After both researchers complete:**
+
+- Run `subtask-collect.sh` with the `research` phase argument to extract each researcher's output from their transcript
+- Read both researcher outputs — `research/innovative.md` and `research/best.md`
+- Synthesize into `research/research.md` — merge the strongest findings from both stances, resolve contradictions, and produce a unified set of implementation guidance
+- Optionally evaluate the research quality before proceeding to execution
+
+---
+
+## Subtask Collection Phases
+
+The orchestrator runs `subtask-collect.sh` after each subagent completes to extract the delegation prompt and final result from the JSONL transcript. The phase argument determines which `subtasks/` subdirectory receives the output.
+
+| Phase argument | Used after | Writes to |
+|---|---|---|
+| `research` | Step 3 — after each researcher completes | `research/subtasks/{NN}-{slug}.json` |
+| `execution` | Step 4 — after each executor completes | `execution/subtasks/{NN}-{slug}.json` |
+
+Always run `subtask-collect.sh` immediately after each subagent wave completes — before launching synthesis, evaluation, or any downstream agent that depends on the output. Subtask JSON files on disk are the handoff mechanism between agents. An agent that reads from disk gets the full output; an agent that receives a summary in its prompt gets a lossy approximation.

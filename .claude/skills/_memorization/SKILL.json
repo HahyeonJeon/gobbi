@@ -2,11 +2,11 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_memorization",
-    "description": "Save context for session continuity at Step 5 of the workflow. Persists task details, gotchas, and rules to .claude/project/{project-name}/.",
+    "description": "Save context for session continuity at Step 6 of the workflow. Persists task details, gotchas, and rules to .claude/project/{project-name}/.",
     "allowed-tools": "Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion"
   },
   "title": "Memorization",
-  "opening": "Save context that enables the user to continue this work in a new session. This is Step 5 of the workflow — runs after Collection, before phase transition.",
+  "opening": "Save context that enables the user to continue this work in a new session. This is Step 6 of the workflow — runs after Collection, before Review.",
   "sections": [
     {
       "heading": "Core Principle",

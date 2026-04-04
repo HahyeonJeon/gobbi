@@ -14,7 +14,7 @@ A plan should be a set of narrow, specific, ordered tasks that a delegator can h
 
 ## What You're Evaluating
 
-The plan should contain: a goal statement, numbered tasks with agent assignments and skill requirements, execution order with dependency reasoning, expected outcome, and collection plan. Evaluate against the criteria below.
+The plan should contain: a goal statement, numbered tasks with agent assignments and skill requirements, execution order with dependency reasoning, expected outcome, and collection plan. The plan precedes a Research step (Step 3) where dual-stance researcher agents investigate "how to do" for each task — plan quality directly determines research quality. Evaluate against the criteria below.
 
 ---
 
@@ -48,12 +48,19 @@ The plan should contain: a goal statement, numbered tasks with agent assignments
 - **Wave size reasonable?** — No more than 8 parallel tasks per wave. Beyond that, coordination overhead exceeds parallelism benefit.
 - **Gotchas respected?** — Does the plan account for known pitfalls in this domain? Check gotchas against planned approach.
 
+### Researchability
+
+- **Research questions clear?** — Can a researcher produce concrete findings for each task in this plan? If a task says "improve the data pipeline" but doesn't specify which pipeline, what aspect to improve, or what constraints apply, the researcher has nothing specific to investigate.
+- **Investigation scope bounded?** — Does each task narrow the research space enough that a researcher can go deep rather than broad? Unbounded tasks produce encyclopedic research that executors can't act on.
+- **Codebase pointers provided?** — Does the plan reference specific files, modules, or patterns that researchers should start from? A researcher without entry points wastes time navigating.
+- **External research needs identified?** — Are there tasks that require investigation of external libraries, APIs, or patterns? These should be flagged explicitly so researchers know to use web search.
+
 ---
 
 ## Perspective-Specific Focus
 
 | Perspective | Primary Focus |
-|-------------|--------------|
+|---|---|
 | Project | Does the plan deliver what the user asked for? Scope boundaries clear? |
 | Architecture | Are tasks decomposed at the right granularity? Dependencies sound? |
 | Performance | Does the execution order maximize parallelism? Resource-proportional? |

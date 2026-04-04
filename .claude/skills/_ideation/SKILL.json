@@ -6,8 +6,47 @@
     "allowed-tools": "AskUserQuestion, Read, Grep, Glob, Bash"
   },
   "title": "Gobbi Ideation Skill",
-  "opening": "Improve and make the user's idea or prompt more detailed through structured discussion. This skill provides discussion points that help the agent challenge vague thinking, uncover hidden requirements, and refine a rough idea into a concrete, fully specified proposal ready for evaluation.\n\nThe output of ideation is a detailed, improved idea — not a final decision. A separate evaluator assesses the result.",
+  "opening": "Improve and make the user's idea or prompt more detailed through structured discussion. This skill provides discussion points that help the agent challenge vague thinking, uncover hidden requirements, and refine a rough idea into a concrete, fully specified proposal ready for evaluation.\n\nThe output of ideation is a detailed, improved idea — not a final decision. A separate evaluator assesses the result.\n\nIdeation is performed by two parallel PI agents, each operating with a different stance — innovative and best. The orchestrator discusses with the user first, then spawns both PI agents. Each PI agent writes its perspective independently, and the orchestrator synthesizes their outputs.",
   "sections": [
+    {
+      "heading": "PI Stances",
+      "content": [
+        {
+          "type": "text",
+          "value": "The orchestrator spawns two PI agents in parallel during Ideation, each with a different stance. Discussion with the user happens before the PI agents are spawned — the orchestrator explores the approach, alternatives, and trade-offs first, then delegates to both stances with the refined context."
+        },
+        {
+          "type": "subsection",
+          "heading": "Innovative Stance",
+          "content": [
+            {
+              "type": "text",
+              "value": "Deep thinking, creative ideas, cross-domain inspiration. Challenges established patterns and asks \"What if we did it completely differently?\" Explores unconventional solutions, draws from adjacent domains, and questions whether the standard approach is actually the best one. Pushes boundaries while staying grounded in feasibility.\n\nWrites output to `innovative.md` in the `ideation/` subdirectory."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Best Stance",
+          "content": [
+            {
+              "type": "text",
+              "value": "Best-practice focused, proven patterns, industry standards. Asks \"What has worked well for others?\" Researches established solutions, references industry standards, and identifies proven patterns that apply. Anchors to what works reliably and explains why.\n\nWrites output to `best.md` in the `ideation/` subdirectory."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Synthesis",
+          "content": [
+            {
+              "type": "text",
+              "value": "After both PI agents complete, the orchestrator synthesizes their outputs into `ideation.md` — merging the strongest elements from both stances, resolving conflicts, and producing a single refined idea. The synthesis is the primary ideation output that proceeds to evaluation and planning."
+            }
+          ]
+        }
+      ]
+    },
     {
       "heading": "Core Principles",
       "content": [
@@ -140,7 +179,20 @@
       "content": [
         {
           "type": "text",
-          "value": "Ideation produces a single refined, detailed idea — concrete enough that a planner can decompose it into tasks and an evaluator can assess its quality. The output should include:"
+          "value": "Ideation produces three files in the `ideation/` subdirectory:"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "`innovative.md` — Written by the innovative PI agent. Ideas explored through the creative and novel lens.",
+            "`best.md` — Written by the best-practice PI agent. Ideas explored through the established patterns lens.",
+            "`ideation.md` — Written by the orchestrator. Synthesis combining both stances and the discussion with the user."
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Each stance file should cover:"
         },
         {
           "type": "list",
@@ -155,7 +207,7 @@
         },
         {
           "type": "text",
-          "value": "This output goes to a separate evaluator agent for critical assessment before proceeding to planning. The orchestrator selects the appropriate domain evaluator (`_skills-evaluator`, `_agent-evaluator`, or `_project-evaluator`) and loads the relevant perspective skills based on the nature of the ideation output."
+          "value": "The synthesis (`ideation.md`) merges the strongest elements from both stances into a single refined idea — concrete enough that a planner can decompose it into tasks and an evaluator can assess its quality.\n\nWhen evaluation is performed, evaluator agents write their results to `ideation/evaluation/{perspective}.md` — one file per perspective. Evaluation is optional at ideation; the orchestrator asks the user whether to skip."
         }
       ]
     },
