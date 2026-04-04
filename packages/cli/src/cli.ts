@@ -13,6 +13,9 @@ Commands:
   note       Workflow note management and transcript extraction
   validate   Validate agent, skill, gotcha, and lint definitions
   audit      Detect documentation drift and stale references
+  image      Analyze images or create comparison sheets
+  video      Analyze video files and extract frames
+  web        Take screenshots or capture images from web pages
 
 Options:
   --help              Show this help message
@@ -22,7 +25,7 @@ export async function run(): Promise<void> {
   const command = process.argv[2];
 
   // Early routing for commands (they have their own parseArgs)
-  const COMMANDS = ['docs', 'config', 'session', 'notify', 'note', 'validate', 'audit'] as const;
+  const COMMANDS = ['docs', 'config', 'session', 'notify', 'note', 'validate', 'audit', 'image', 'video', 'web'] as const;
   if (command !== undefined && (COMMANDS as readonly string[]).includes(command)) {
     const commandArgs = process.argv.slice(3);
     switch (command) {
@@ -59,6 +62,21 @@ export async function run(): Promise<void> {
       case 'audit': {
         const { runAudit } = await import('./commands/audit.js');
         await runAudit(commandArgs);
+        return;
+      }
+      case 'image': {
+        const { runImage } = await import('./commands/image.js');
+        await runImage(commandArgs);
+        return;
+      }
+      case 'video': {
+        const { runVideo } = await import('./commands/video.js');
+        await runVideo(commandArgs);
+        return;
+      }
+      case 'web': {
+        const { runWeb } = await import('./commands/web.js');
+        await runWeb(commandArgs);
         return;
       }
     }

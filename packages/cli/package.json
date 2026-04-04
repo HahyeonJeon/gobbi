@@ -1,5 +1,5 @@
 {
-  "name": "@gobbi/cli",
+  "name": "@gobbitools/cli",
   "version": "0.4.0",
   "description": "Gobbi CLI — workflow orchestration and docs management for Claude Code",
   "type": "module",
@@ -19,6 +19,18 @@
   "dependencies": {
     "proper-lockfile": "^4.1.2"
   },
+  "peerDependencies": {
+    "playwright": ">=1.40.0",
+    "sharp": ">=0.33.0"
+  },
+  "peerDependenciesMeta": {
+    "sharp": {
+      "optional": true
+    },
+    "playwright": {
+      "optional": true
+    }
+  },
   "license": "MIT",
   "author": "HahyeonJeon",
   "repository": {
@@ -36,6 +48,10 @@
     "workflow",
     "claudex",
     "claude-experience",
-    "claude-docs"
+    "claude-docs",
+    "media",
+    "image-analysis",
+    "video-analysis",
+    "screenshot"
   ]
 }
