@@ -29,7 +29,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 - Multi-select. If any channel is selected alongside Skip, channels take priority.
 - **Slack** — Notify via Slack bot message.
 - **Telegram** — Notify via Telegram bot message.
-- **Discord** — Notify via Discord webhook.
+- **Discord** — Notify via Discord webhook. (coming soon — not yet implemented in the CLI)
 - **Skip notifications** — No notifications this session.
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and the relevant child skill (_slack, _telegram, _discord) to help the user configure them before proceeding.

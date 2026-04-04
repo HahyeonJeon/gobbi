@@ -383,7 +383,7 @@
         },
         {
           "type": "text",
-          "value": "Both commands write JSON files to the note directory and require `$CLAUDE_SESSION_ID`, `$CLAUDE_TRANSCRIPT_PATH`, and `jq`."
+          "value": "Both commands write JSON files to the note directory and require `$CLAUDE_SESSION_ID` and `$CLAUDE_TRANSCRIPT_PATH` (handled internally by the gobbi CLI)."
         }
       ]
     },

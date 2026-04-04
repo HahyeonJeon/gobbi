@@ -10,6 +10,8 @@ import { readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
+import { isRecord, isString, isBoolean } from './guards.js';
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -49,18 +51,6 @@ export type JsonValue = string | number | boolean | null;
 // ---------------------------------------------------------------------------
 // Type guards
 // ---------------------------------------------------------------------------
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isString(value: unknown): value is string {
-  return typeof value === 'string';
-}
-
-function isBoolean(value: unknown): value is boolean {
-  return typeof value === 'boolean';
-}
 
 function isNotifyConfig(value: unknown): value is NotifyConfig {
   if (!isRecord(value)) return false;

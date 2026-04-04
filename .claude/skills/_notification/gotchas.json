@@ -18,7 +18,7 @@
         "priority": "High",
         "what-happened": "Notification scripts depend on `jq` for JSON parsing of hook input. On systems without `jq` installed, every hook silently failed. The failures were not obvious because the scripts exited without output.",
         "user-feedback": "Check for `jq` availability before assuming scripts will work.",
-        "correct-approach": "When setting up notifications, verify that `jq` is available. If not, guide the user to install it before testing hooks. Delivery failures are logged to `~/.claude/notification-failures.log` — check this file when notifications stop arriving."
+        "correct-approach": "**Resolved — no longer applicable after v0.3.2 CLI migration.** Hooks now invoke `gobbi notify` CLI commands directly; `jq` is no longer required for notification delivery. This gotcha is preserved as historical record only."
       }
     },
     {
@@ -27,7 +27,7 @@
         "priority": "High",
         "what-happened": "Hook scripts were written to `.claude/hooks/` but never had `chmod +x` applied. Claude Code silently skipped them. The configuration looked correct but no notifications arrived.",
         "user-feedback": "Always verify hook scripts are executable after writing them.",
-        "correct-approach": "After writing or updating any hook script, confirm it is executable. The gobbi installation process handles this, but manually added scripts need explicit `chmod +x`."
+        "correct-approach": "**Resolved — no longer applicable after v0.3.2 CLI migration.** Hook entries in `settings.json` now invoke `gobbi notify` commands directly — there are no standalone shell scripts in `.claude/hooks/` that require `chmod +x`. This gotcha is preserved as historical record only."
       }
     },
     {

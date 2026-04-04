@@ -240,8 +240,7 @@ async function runConfigSet(args: string[]): Promise<void> {
     const session = data.sessions[sessionId];
     if (session === undefined) {
       // Should not happen — we just created it above
-      console.error(error(`Session "${sessionId}" unexpectedly missing`));
-      process.exit(1);
+      throw new Error(`Session "${sessionId}" unexpectedly missing after creation`);
     }
 
     const sessionAsRecord = session as unknown as Record<string, unknown>;

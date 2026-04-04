@@ -7,9 +7,9 @@
  *   commands [directory]     Verify shell commands in code blocks exist
  */
 
-import { readdirSync, readFileSync, existsSync, statSync } from 'fs';
-import { execSync } from 'child_process';
-import path from 'path';
+import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+import path from 'node:path';
 
 // ---------------------------------------------------------------------------
 // Usage strings
@@ -38,13 +38,13 @@ export async function runAudit(args: string[]): Promise<void> {
 
   switch (subcommand) {
     case 'references':
-      runAuditReferences(args.slice(1));
+      await runAuditReferences(args.slice(1));
       break;
     case 'conventions':
-      runAuditConventions(args.slice(1));
+      await runAuditConventions(args.slice(1));
       break;
     case 'commands':
-      runAuditCommands(args.slice(1));
+      await runAuditCommands(args.slice(1));
       break;
     case '--help':
     case undefined:
@@ -148,7 +148,7 @@ function extractBacktickDirTokens(line: string): string[] {
 // audit references
 // ---------------------------------------------------------------------------
 
-function runAuditReferences(args: string[]): void {
+async function runAuditReferences(args: string[]): Promise<void> {
   const repoRoot = getRepoRoot();
   const scanDir = args[0] ?? path.join(repoRoot, '.claude/skills/');
 
@@ -237,7 +237,7 @@ function runAuditReferences(args: string[]): void {
 // audit conventions
 // ---------------------------------------------------------------------------
 
-function runAuditConventions(args: string[]): void {
+async function runAuditConventions(args: string[]): Promise<void> {
   const repoRoot = getRepoRoot();
   const scanDir = args[0] ?? path.join(repoRoot, '.claude/skills/');
 
@@ -389,6 +389,36 @@ function extractFrontmatterName(lines: string[]): string | null {
 // audit commands
 // ---------------------------------------------------------------------------
 
+/**
+ * PATH-based command lookup with caching.
+ *
+ * Replaces `execSync('which ${token}')` to avoid spawning a subprocess per
+ * command token. Splits `process.env.PATH` once, then checks `existsSync`
+ * for each directory entry. Results are cached in a `Map` so each unique
+ * token is resolved at most once.
+ */
+const commandExistsCache = new Map<string, boolean>();
+
+function commandExistsOnPath(token: string): boolean {
+  const cached = commandExistsCache.get(token);
+  if (cached !== undefined) return cached;
+
+  const pathEnv = process.env['PATH'] ?? '';
+  const dirs = pathEnv.split(':');
+  let found = false;
+
+  for (const dir of dirs) {
+    if (dir === '') continue;
+    if (existsSync(path.join(dir, token))) {
+      found = true;
+      break;
+    }
+  }
+
+  commandExistsCache.set(token, found);
+  return found;
+}
+
 const CONTROL_FLOW_KEYWORDS = new Set([
   'if', 'then', 'else', 'elif', 'fi', 'do', 'done',
   'for', 'while', 'until', 'case', 'esac', 'function', 'in', 'select',
@@ -400,7 +430,7 @@ function isSkippableToken(token: string): boolean {
   return /^["'>0-9<]/.test(token);
 }
 
-function runAuditCommands(args: string[]): void {
+async function runAuditCommands(args: string[]): Promise<void> {
   const repoRoot = getRepoRoot();
   const scanDir = args[0] ?? path.join(repoRoot, '.claude/skills/');
 
@@ -577,11 +607,7 @@ function runAuditCommands(args: string[]): void {
           found = false;
         }
       } else {
-        try {
-          execSync(`which ${cleanToken}`, { stdio: ['pipe', 'pipe', 'pipe'] });
-        } catch {
-          found = false;
-        }
+        found = commandExistsOnPath(cleanToken);
       }
 
       if (!found) {

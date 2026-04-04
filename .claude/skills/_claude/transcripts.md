@@ -143,7 +143,7 @@ CLI commands automate transcript extraction:
 | `gobbi note collect` | Extract delegation prompt + final result per subagent | `<agent-id> <subtask-number> <subtask-slug> <note-dir-path>` |
 | `gobbi note plan` | Extract plan content from `ExitPlanMode` | `<note-dir-path>` |
 
-Both commands write JSON files to the note directory and require `$CLAUDE_SESSION_ID`, `$CLAUDE_TRANSCRIPT_PATH`, and `jq`.
+Both commands write JSON files to the note directory and require `$CLAUDE_SESSION_ID` and `$CLAUDE_TRANSCRIPT_PATH` (handled internally by the gobbi CLI).
 
 ---
 

@@ -14,9 +14,26 @@
  *   subagent                 Map SubagentStop payload to subagent message
  */
 
-import path from 'path';
+import path from 'node:path';
 
 import { readStdin, readStdinJson } from '../lib/stdin.js';
+
+// ---------------------------------------------------------------------------
+// Usage strings
+// ---------------------------------------------------------------------------
+
+const USAGE = `Usage: gobbi notify <subcommand> [options]
+
+Subcommands:
+  send [--title "Title"]   Send a plain-text message from stdin
+  attention                Map NotificationEvent payload to attention message
+  error                    Map StopFailure payload to error message
+  completion               Map Stop payload to completion message (with loop guard)
+  session                  Map SessionStart/SessionEnd payload to lifecycle message
+  subagent                 Map SubagentStop payload to subagent message
+
+Options:
+  --help    Show this help message`;
 import { sendNotifications } from '../lib/notify.js';
 
 import type { NotifyOptions } from '../lib/notify.js';
@@ -110,6 +127,12 @@ export async function runNotify(args: string[]): Promise<void> {
         break;
       case 'subagent':
         await runNotifySubagent();
+        break;
+      case '--help':
+        console.log(USAGE);
+        break;
+      case undefined:
+        console.log(USAGE);
         break;
       default:
         // Unknown subcommand — exit silently; hooks must not produce output

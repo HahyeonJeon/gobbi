@@ -9,9 +9,22 @@
  * They are designed to replace shell hook scripts on every session startup.
  */
 
-import { appendFile, readFile, chmod } from 'fs/promises';
+import { appendFile, readFile, chmod } from 'node:fs/promises';
 
 import { readStdinJson } from '../lib/stdin.js';
+
+// ---------------------------------------------------------------------------
+// Usage strings
+// ---------------------------------------------------------------------------
+
+const USAGE = `Usage: gobbi session <subcommand>
+
+Subcommands:
+  metadata    Extract session metadata from stdin JSON and write to CLAUDE_ENV_FILE
+  load-env    Load .claude/.env file and write exports to CLAUDE_ENV_FILE
+
+Options:
+  --help    Show this help message`;
 
 // ---------------------------------------------------------------------------
 // Stdin JSON shape
@@ -42,8 +55,14 @@ export async function runSession(args: string[]): Promise<void> {
     case 'load-env':
       await runSessionLoadEnv();
       break;
+    case '--help':
+      console.log(USAGE);
+      break;
+    case undefined:
+      console.log(USAGE);
+      break;
     default:
-      // Unknown or missing subcommand — exit silently (hook context)
+      // Unknown subcommand — exit silently (hook context must not produce stdout noise)
       break;
   }
 }

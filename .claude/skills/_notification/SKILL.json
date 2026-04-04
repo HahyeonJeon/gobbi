@@ -72,7 +72,7 @@
       "content": [
         {
           "type": "text",
-          "value": "All notification commands are available through the `gobbi notify` CLI. They use a shared sender (`gobbi notify send`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.\n\nHook scripts should already be installed in `$CLAUDE_PROJECT_DIR/.claude/hooks/`. Read the installed scripts and the hook configuration in `settings.json` for the current setup — these are the authoritative source for what is actually installed.\n\nMessage truncation limits are configurable via `$CLAUDE_PROJECT_DIR/.claude/.env`. Defaults are defined in the notification scripts."
+          "value": "All notification commands are available through the `gobbi notify` CLI. They use a shared sender (`gobbi notify send`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.\n\nHook entries are registered in `settings.json` (or `settings.local.json`) and invoke `gobbi notify` commands directly — there are no standalone shell scripts in `.claude/hooks/`. Read the hook configuration in `settings.json` for the current setup — this is the authoritative source for what is actually installed.\n\nMessage truncation limits are configurable via `$CLAUDE_PROJECT_DIR/.claude/.env`. Defaults are defined in the gobbi CLI."
         }
       ]
     },
@@ -81,7 +81,7 @@
       "content": [
         {
           "type": "text",
-          "value": "If a test notification fails to arrive: check that `$CLAUDE_PROJECT_DIR/.claude/.env` exists, values are correct, the hook scripts are executable, and `jq` is available (scripts depend on it for JSON parsing). Delivery failures are logged — check `~/.claude/notification-failures.log` if notifications stop arriving."
+          "value": "If a test notification fails to arrive: check that `$CLAUDE_PROJECT_DIR/.claude/.env` exists, values are correct, and `gobbi` is in PATH (run `which gobbi` to verify). Delivery failures are logged — check `~/.claude/notification-failures.log` if notifications stop arriving."
         }
       ]
     },
@@ -105,7 +105,7 @@
             ],
             [
               "`_discord`",
-              "Discord notification channel setup — webhook URL configuration"
+              "Discord notification channel setup — webhook URL configuration (coming soon — delivery not yet implemented in the CLI)"
             ]
           ]
         }

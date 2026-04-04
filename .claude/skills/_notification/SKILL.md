@@ -50,15 +50,15 @@ When configuring event hooks, ask the user which events they want, then ask per-
 
 All notification commands are available through the `gobbi notify` CLI. They use a shared sender (`gobbi notify send`) that routes to all configured channels based on environment variables loaded from `$CLAUDE_ENV_FILE`.
 
-Hook scripts should already be installed in `$CLAUDE_PROJECT_DIR/.claude/hooks/`. Read the installed scripts and the hook configuration in `settings.json` for the current setup — these are the authoritative source for what is actually installed.
+Hook entries are registered in `settings.json` (or `settings.local.json`) and invoke `gobbi notify` commands directly — there are no standalone shell scripts in `.claude/hooks/`. Read the hook configuration in `settings.json` for the current setup — this is the authoritative source for what is actually installed.
 
-Message truncation limits are configurable via `$CLAUDE_PROJECT_DIR/.claude/.env`. Defaults are defined in the notification scripts.
+Message truncation limits are configurable via `$CLAUDE_PROJECT_DIR/.claude/.env`. Defaults are defined in the gobbi CLI.
 
 ---
 
 ## Verification
 
-If a test notification fails to arrive: check that `$CLAUDE_PROJECT_DIR/.claude/.env` exists, values are correct, the hook scripts are executable, and `jq` is available (scripts depend on it for JSON parsing). Delivery failures are logged — check `~/.claude/notification-failures.log` if notifications stop arriving.
+If a test notification fails to arrive: check that `$CLAUDE_PROJECT_DIR/.claude/.env` exists, values are correct, and `gobbi` is in PATH (run `which gobbi` to verify). Delivery failures are logged — check `~/.claude/notification-failures.log` if notifications stop arriving.
 
 ---
 
@@ -68,4 +68,4 @@ If a test notification fails to arrive: check that `$CLAUDE_PROJECT_DIR/.claude/
 |---|---|
 | `_slack` | Slack notification channel setup — bot token, user ID, workspace configuration |
 | `_telegram` | Telegram notification channel setup — bot creation via @BotFather, chat ID retrieval |
-| `_discord` | Discord notification channel setup — webhook URL configuration |
+| `_discord` | Discord notification channel setup — webhook URL configuration (coming soon — delivery not yet implemented in the CLI) |

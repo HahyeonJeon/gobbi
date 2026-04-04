@@ -8,12 +8,13 @@
  *   plan <note-dir>                             Extract plan from session transcript
  */
 
-import { mkdir, writeFile } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 import { error } from '../lib/style.js';
+import { isRecord, isString } from '../lib/guards.js';
 import {
   aggregateTokenUsage,
   extractMessageContent,
@@ -77,14 +78,17 @@ export async function runNote(args: string[]): Promise<void> {
 // ---------------------------------------------------------------------------
 
 /**
- * Format a Date as `YYYYMMDD-HHMM` in UTC.
+ * Format a Date as `YYYYMMDD-HHMM` in local time.
+ *
+ * Uses local time to match the original `date +%Y%m%d-%H%M` in note-metadata.sh,
+ * preserving backward compatibility with existing note directories.
  */
 function formatDatetime(date: Date): string {
-  const year = date.getUTCFullYear().toString();
-  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
-  const day = date.getUTCDate().toString().padStart(2, '0');
-  const hours = date.getUTCHours().toString().padStart(2, '0');
-  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
   return `${year}${month}${day}-${hours}${minutes}`;
 }
 
@@ -113,16 +117,6 @@ function getGitBranch(): string {
   } catch {
     return '';
   }
-}
-
-/** Type guard for plain objects. */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-/** Type guard for strings. */
-function isString(value: unknown): value is string {
-  return typeof value === 'string';
 }
 
 /**
@@ -358,7 +352,7 @@ async function runNoteCollect(args: string[]): Promise<void> {
   const { taskDatetime, taskSlug } = parseNoteDirName(noteDirBasename, sessionId);
 
   // Read meta.json for agentType and description
-  const { readFile } = await import('fs/promises');
+  const { readFile } = await import('node:fs/promises');
   let metaContent: string;
   try {
     metaContent = await readFile(metaFile, 'utf8');

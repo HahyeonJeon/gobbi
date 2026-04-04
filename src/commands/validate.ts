@@ -13,9 +13,9 @@
  *   Exit 0 for pass (with or without warnings), exit 1 for failures/violations.
  */
 
-import { readFile } from 'fs/promises';
-import { existsSync, statSync } from 'fs';
-import path from 'path';
+import { readFile } from 'node:fs/promises';
+import { existsSync, statSync } from 'node:fs';
+import path from 'node:path';
 
 // ---------------------------------------------------------------------------
 // Usage strings
@@ -339,7 +339,7 @@ async function runValidateSkill(args: string[]): Promise<void> {
   const fileDir = path.dirname(filePath);
   let hasSiblingMds = false;
   try {
-    const { readdirSync } = await import('fs');
+    const { readdirSync } = await import('node:fs');
     const entries = readdirSync(fileDir);
     hasSiblingMds = entries.some(
       (entry) =>

@@ -13,8 +13,10 @@
  * - `readLastLine`         — read and parse the last JSONL line
  */
 
-import { createReadStream } from 'fs';
-import { createInterface } from 'readline';
+import { createReadStream } from 'node:fs';
+import { createInterface } from 'node:readline';
+
+import { isRecord, isArray, isString, isNumber } from './guards.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -32,26 +34,6 @@ export interface TokenUsage {
 export interface ToolUseResult {
   input: unknown;
   timestamp: string;
-}
-
-// ---------------------------------------------------------------------------
-// Internal type guards
-// ---------------------------------------------------------------------------
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function isArray(value: unknown): value is unknown[] {
-  return Array.isArray(value);
-}
-
-function isString(value: unknown): value is string {
-  return typeof value === 'string';
-}
-
-function isNumber(value: unknown): value is number {
-  return typeof value === 'number';
 }
 
 // ---------------------------------------------------------------------------
