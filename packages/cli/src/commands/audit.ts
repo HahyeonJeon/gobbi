@@ -138,9 +138,15 @@ export async function runAudit(args: string[]): Promise<void> {
       await runAuditCommandsCmd(args.slice(1));
       break;
     case '--help':
-    case undefined:
+      console.error('Warning: `gobbi audit` is deprecated. Use `gobbi doctor` instead.');
       console.log(USAGE);
       break;
+    case undefined: {
+      console.error('Warning: `gobbi audit` is deprecated. Use `gobbi doctor` instead.');
+      const { runDoctor } = await import('./doctor.js');
+      await runDoctor(args);
+      return;
+    }
     default:
       console.error(`Unknown subcommand: ${subcommand}`);
       console.log(USAGE);
