@@ -2,6 +2,8 @@
 
 Skills and agents use hyphen-separated naming with three visibility tiers. The tier prefix determines whether a skill or agent is user-facing, system-internal, or deep implementation.
 
+
+
 ---
 
 ## Tiers
@@ -20,14 +22,14 @@ Skill examples: `_orchestration`, `_discuss`, `_plan`, `_evaluation`, `_skills-e
 
 Skill examples: `__validate`, `__benchmark`
 
-Agent examples: `__executor`, `__pi`, `__researcher`
+Agent examples: `__executor`, `__pi`
 
 ---
 
 ## Naming Rules
 
 - Use hyphens `-` as word separators in multi-word names
-- Single-word names are unaffected: `_plan`, `_git`, `_gotcha`, `_note`, `_audit`, `_claude`
+- Single-word names are unaffected: `_plan`, `_git`, `_gotcha`, `_note`, `_doctor`, `_claude`
 - Visibility tier prefixes (`_`, `__`) are not word separators — they are prefix tokens
 - No `gobbi-` prefix for internal names — exception: `gobbi-agent` and other plugin-distributed user-facing agents use `gobbi-` for external identity
 - The interface entry point is named `gobbi` (no prefix, no hyphen)
@@ -53,7 +55,7 @@ Interface tier items (`gobbi` skill and `gobbi-agent` agent) are not assigned to
 
 **Work** — Workflow participant skills that the orchestrator and agents load during task execution.
 
-Examples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_execution`, `_collection`, `_note`, `_skills-evaluation-*`, `_agent-evaluation-*`, `_project-evaluation-*`, `_git`, `_notification`, `_gotcha`
+Examples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_execution`, `_collection`, `_note`, `_skills-evaluation-*`, `_agent-evaluation-*`, `_project-evaluation-*`, `_git`, `_notification`, `_gotcha`, `_doctor`
 
 **Docs** — Skills for authoring and maintaining `.claude/` documentation.
 
@@ -61,7 +63,7 @@ Examples: `_claude`, `_skills`, `_agents`, `_rules`, `_project`
 
 **Tool** — Utility and maintenance tooling for gobbi contributors.
 
-Examples: `__validate`, `_audit`, `__benchmark`
+Examples: `__validate`, `__benchmark`
 
 Some Work skills (Evaluation, Git, Notification, Gotcha) have child categories grouping related sub-skills. Child categories follow the same naming rules and do not introduce additional prefix tiers.
 

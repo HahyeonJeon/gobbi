@@ -126,7 +126,7 @@
       "content": [
         {
           "type": "text",
-          "value": "Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess and cannot be reduced to a mechanical check."
+          "value": "Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess and cannot be reduced to a mechanical check."
         },
         {
           "type": "subsection",

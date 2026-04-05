@@ -49,7 +49,9 @@ After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If cr
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
-Project context detection runs automatically at session start without asking. Load project-setup.md to execute detection.
+**FIFTH — run documentation health check.** Run `gobbi doctor --format json` to check `.claude/` documentation health. If the report status is `clean`, proceed silently. If `attention-needed` or `degraded`, show a brief informational summary (2-3 lines) of the findings to the user — do not ask a question, just inform. The doctor output provides context for the project-setup phase that follows.
+
+**SIXTH — project context detection.** This runs automatically at session start without asking. Load project-setup.md to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.
 
@@ -175,7 +177,7 @@ Utility and maintenance tooling.
 | Skill | Purpose |
 |---|---|
 | **__validate** | Validate agent definitions, skill docs, and gotcha entries. Bundled scripts for structure and anti-pattern checking. |
-| **_audit** | Documentation drift detection. Verify .claude/ docs match codebase reality. |
+| **_doctor** | Unified health check. Verify .claude/ docs match codebase reality, assess maturity, and check completeness. |
 | **__benchmark** | Skill benchmarking methodology. Eval scenarios and scoring for measuring skill effectiveness. |
 
 #### Evaluation criteria child docs

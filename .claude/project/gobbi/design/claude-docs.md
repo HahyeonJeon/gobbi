@@ -145,7 +145,7 @@ Standalone interface entry point — no category.
 | Name | Path | Description |
 |------|------|-------------|
 | __validate | `.claude/skills/__validate/SKILL.md` | Structural validation of agent definitions, skill files, and gotcha entries. |
-| _audit | `.claude/skills/_audit/SKILL.md` | Documentation drift detection. Verify `.claude/` docs match codebase reality. |
+| _doctor | `.claude/skills/_doctor/SKILL.md` | Unified health check. Verify `.claude/` docs match codebase reality, assess maturity, and check completeness. |
 | __benchmark | `.claude/skills/__benchmark/SKILL.md` | Skill benchmarking methodology. Eval scenarios and scoring. |
 
 ### Skill Child Docs

@@ -20,7 +20,7 @@
           "style": "bullet",
           "items": [
             "Use hyphens `-` as word separators in multi-word names",
-            "Single-word names are unaffected: `_plan`, `_git`, `_gotcha`, `_note`, `_audit`, `_claude`",
+            "Single-word names are unaffected: `_plan`, `_git`, `_gotcha`, `_note`, `_doctor`, `_claude`",
             "Visibility tier prefixes (`_`, `__`) are not word separators — they are prefix tokens",
             "No `gobbi-` prefix for internal names — exception: `gobbi-agent` and other plugin-distributed user-facing agents use `gobbi-` for external identity",
             "The interface entry point is named `gobbi` (no prefix, no hyphen)",
@@ -50,7 +50,7 @@
       "content": [
         {
           "type": "text",
-          "value": "Categories organize skills into functional groupings. They are documentary and do not affect naming.\n\nInterface tier items (`gobbi` skill and `gobbi-agent` agent) are not assigned to a category. They are invoked directly by users rather than loaded by the system, so they do not participate in any workflow category.\n\n**Work** — Workflow participant skills that the orchestrator and agents load during task execution.\n\nExamples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_execution`, `_collection`, `_note`, `_skills-evaluation-*`, `_agent-evaluation-*`, `_project-evaluation-*`, `_git`, `_notification`, `_gotcha`\n\n**Docs** — Skills for authoring and maintaining `.claude/` documentation.\n\nExamples: `_claude`, `_skills`, `_agents`, `_rules`, `_project`\n\n**Tool** — Utility and maintenance tooling for gobbi contributors.\n\nExamples: `__validate`, `_audit`, `__benchmark`\n\nSome Work skills (Evaluation, Git, Notification, Gotcha) have child categories grouping related sub-skills. Child categories follow the same naming rules and do not introduce additional prefix tiers."
+          "value": "Categories organize skills into functional groupings. They are documentary and do not affect naming.\n\nInterface tier items (`gobbi` skill and `gobbi-agent` agent) are not assigned to a category. They are invoked directly by users rather than loaded by the system, so they do not participate in any workflow category.\n\n**Work** — Workflow participant skills that the orchestrator and agents load during task execution.\n\nExamples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_execution`, `_collection`, `_note`, `_skills-evaluation-*`, `_agent-evaluation-*`, `_project-evaluation-*`, `_git`, `_notification`, `_gotcha`, `_doctor`\n\n**Docs** — Skills for authoring and maintaining `.claude/` documentation.\n\nExamples: `_claude`, `_skills`, `_agents`, `_rules`, `_project`\n\n**Tool** — Utility and maintenance tooling for gobbi contributors.\n\nExamples: `__validate`, `__benchmark`\n\nSome Work skills (Evaluation, Git, Notification, Gotcha) have child categories grouping related sub-skills. Child categories follow the same naming rules and do not introduce additional prefix tiers."
         }
       ]
     },

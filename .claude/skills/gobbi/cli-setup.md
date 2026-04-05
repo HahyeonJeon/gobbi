@@ -1,5 +1,7 @@
 # CLI Setup
 
+
+
 ---
 
 ## Core Principle
@@ -88,7 +90,8 @@ The gobbi CLI replaces the shell scripts that were previously in `.claude/skills
 | `gobbi session metadata` | Output session metadata (used by SessionStart hook) |
 | `gobbi notify <event>` | Send notifications (used by hooks) |
 | `gobbi validate <type> <path>` | Validate agent, skill, or gotcha definitions |
-| `gobbi audit` | Detect documentation drift in .claude/ files |
+| `gobbi doctor` | Unified health check for .claude/ documentation |
+| `gobbi audit` | Deprecated alias for `gobbi doctor` |
 
 ---
 

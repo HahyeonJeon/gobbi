@@ -2,6 +2,8 @@
 
 Evaluation criteria for user-created skill definitions. Load when creating, reviewing, or auditing project-specific skills.
 
+
+
 ---
 
 ## Failure Modes
@@ -74,7 +76,7 @@ Each dimension provides diagnostic questions that surface the failure modes abov
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess and cannot be reduced to a mechanical check.
+Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess and cannot be reduced to a mechanical check.
 
 ### Purpose and Scope
 

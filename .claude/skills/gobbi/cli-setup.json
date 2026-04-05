@@ -159,8 +159,12 @@
               "Validate agent, skill, or gotcha definitions"
             ],
             [
+              "`gobbi doctor`",
+              "Unified health check for .claude/ documentation"
+            ],
+            [
               "`gobbi audit`",
-              "Detect documentation drift in .claude/ files"
+              "Deprecated alias for `gobbi doctor`"
             ]
           ]
         }
