@@ -211,6 +211,7 @@ export async function auditReferences(opts: AuditOptions): Promise<Finding[]> {
             category: 'stale-reference',
             message: `line ${lineNum}: broken markdown link -> ${ref}`,
             suggestion: 'Check if the file was renamed or moved, update the link path',
+            fixable: 'suggested',
           });
         }
       }
@@ -245,6 +246,7 @@ export async function auditReferences(opts: AuditOptions): Promise<Finding[]> {
             category: 'stale-reference',
             message: `line ${lineNum}: broken backtick path -> ${ref}`,
             suggestion: 'Check if the file was renamed or moved, update the backtick reference',
+            fixable: 'suggested',
           });
         }
       }
@@ -298,6 +300,7 @@ export async function auditConventions(opts: AuditOptions): Promise<Finding[]> {
         category: 'naming-mismatch',
         message: `line 1: frontmatter name '${fmName}' != directory name '${dirName}'`,
         suggestion: 'Update the frontmatter name to match the directory name',
+        fixable: 'auto',
       });
     }
   }
@@ -358,6 +361,7 @@ export async function auditConventions(opts: AuditOptions): Promise<Finding[]> {
             category: 'broken-nav-link',
             message: `line ${lineNum}: navigation link -> ${ref} (not found)`,
             suggestion: 'Check if the referenced file was renamed or moved',
+            fixable: 'manual',
           });
         }
       }
@@ -398,6 +402,7 @@ export async function auditConventions(opts: AuditOptions): Promise<Finding[]> {
             category: 'stale-directory-claim',
             message: `line ${lineNum}: directory claim -> ${ref} (not found)`,
             suggestion: 'Check if the directory was renamed or moved',
+            fixable: 'suggested',
           });
         }
       }
@@ -604,6 +609,7 @@ export async function auditCommands(opts: AuditOptions): Promise<Finding[]> {
           category: 'stale-command',
           message: `line ${lineNum}: command -> ${cleanToken} not found on PATH`,
           suggestion: 'Install the missing command or update the code block',
+          fixable: 'manual',
         });
       }
 

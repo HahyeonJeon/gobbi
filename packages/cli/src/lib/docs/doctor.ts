@@ -11,8 +11,8 @@
 
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
-import type { Finding, FindingSeverity } from './health.js';
-import { checkHealth } from './health.js';
+import type { Finding } from './health.js';
+import { checkHealth, SEVERITY_ORDER } from './health.js';
 import { auditReferences, auditConventions, auditCommands } from './audit.js';
 import { scanCorpus } from './scanner.js';
 import { validateDoc } from './validator.js';
@@ -42,7 +42,7 @@ export interface DoctorReport {
 // Maturity level labels
 // ---------------------------------------------------------------------------
 
-const MATURITY_LABELS: readonly string[] = [
+export const MATURITY_LABELS: readonly string[] = [
   'None',
   'Bootstrap',
   'Structured',
@@ -490,16 +490,6 @@ function getNextStep(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Finding sort order (mirrors health.ts — not exported from there)
-// ---------------------------------------------------------------------------
-
-const SEVERITY_ORDER: Readonly<Record<FindingSeverity, number>> = {
-  error: 0,
-  warning: 1,
-  info: 2,
-};
-
 function compareFindings(a: Finding, b: Finding): number {
   const aOrder = SEVERITY_ORDER[a.severity];
   const bOrder = SEVERITY_ORDER[b.severity];
@@ -595,6 +585,7 @@ export async function runDoctorCheck(repoRoot: string): Promise<DoctorReport> {
         category: 'validation-error',
         message: error,
         suggestion: 'Fix the validation error in the JSON template',
+        fixable: 'manual',
       });
     }
 
@@ -609,6 +600,7 @@ export async function runDoctorCheck(repoRoot: string): Promise<DoctorReport> {
         category: 'validation-warning',
         message: warning,
         suggestion: 'Address the validation warning',
+        fixable: 'manual',
       });
     }
 
@@ -620,6 +612,7 @@ export async function runDoctorCheck(repoRoot: string): Promise<DoctorReport> {
         category: 'sync-out-of-date',
         message: 'JSON and Markdown are out of sync',
         suggestion: 'Run gobbi docs json2md to regenerate the Markdown file',
+        fixable: 'auto',
       });
     }
   }

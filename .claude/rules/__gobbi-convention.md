@@ -55,7 +55,7 @@ Interface tier items (`gobbi` skill and `gobbi-agent` agent) are not assigned to
 
 **Work** — Workflow participant skills that the orchestrator and agents load during task execution.
 
-Examples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_execution`, `_collection`, `_note`, `_skills-evaluation-*`, `_agent-evaluation-*`, `_project-evaluation-*`, `_git`, `_notification`, `_gotcha`
+Examples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_execution`, `_collection`, `_note`, `_skills-evaluation-*`, `_agent-evaluation-*`, `_project-evaluation-*`, `_git`, `_notification`, `_gotcha`, `_doctor`
 
 **Docs** — Skills for authoring and maintaining `.claude/` documentation.
 
@@ -63,7 +63,7 @@ Examples: `_claude`, `_skills`, `_agents`, `_rules`, `_project`
 
 **Tool** — Utility and maintenance tooling for gobbi contributors.
 
-Examples: `__validate`, `_doctor`, `__benchmark`
+Examples: `__validate`, `__benchmark`
 
 Some Work skills (Evaluation, Git, Notification, Gotcha) have child categories grouping related sub-skills. Child categories follow the same naming rules and do not introduce additional prefix tiers.
 

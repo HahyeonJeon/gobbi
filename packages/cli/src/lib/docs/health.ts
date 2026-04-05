@@ -15,6 +15,7 @@ import { isGotchaDoc, hasSections } from './types.js';
 // ---------------------------------------------------------------------------
 
 export type FindingSeverity = 'error' | 'warning' | 'info';
+export type Fixability = 'auto' | 'suggested' | 'manual';
 
 export interface Finding {
   path: string;
@@ -22,6 +23,7 @@ export interface Finding {
   category: string;
   message: string;
   suggestion: string;
+  fixable?: Fixability | undefined;  // Phase 2 prep: how this finding can be remediated
 }
 
 export interface HealthReport {
@@ -38,7 +40,7 @@ export interface HealthReport {
 // Severity sort order
 // ---------------------------------------------------------------------------
 
-const SEVERITY_ORDER: Readonly<Record<FindingSeverity, number>> = {
+export const SEVERITY_ORDER: Readonly<Record<FindingSeverity, number>> = {
   error: 0,
   warning: 1,
   info: 2,

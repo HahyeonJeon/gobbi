@@ -6,7 +6,7 @@
  */
 
 import { parseArgs } from 'node:util';
-import { runDoctorCheck, type DoctorReport } from '../lib/docs/doctor.js';
+import { runDoctorCheck, MATURITY_LABELS, type DoctorReport } from '../lib/docs/doctor.js';
 import { getRepoRoot } from '../lib/repo.js';
 import { header, ok, error, yellow, dim, bold } from '../lib/style.js';
 
@@ -21,18 +21,6 @@ Run unified health checks on .claude/ documentation.
 Options:
   --format <fmt>   Output format: text (default), json
   --help           Show this help message`;
-
-// ---------------------------------------------------------------------------
-// Maturity labels (mirrors doctor library for display)
-// ---------------------------------------------------------------------------
-
-const MATURITY_LABELS: readonly string[] = [
-  'None',
-  'Bootstrap',
-  'Structured',
-  'Active',
-  'Self-Sustaining',
-];
 
 // ---------------------------------------------------------------------------
 // Text report printer
@@ -56,6 +44,9 @@ function printTextReport(report: DoctorReport): void {
   // Completeness
   const pct = Math.round(report.completeness.score * 100);
   console.log(`  Completeness: ${pct}%`);
+  if (report.completeness.missing.length > 0) {
+    console.log(dim(`  Missing: ${report.completeness.missing.join(', ')}`));
+  }
 
   console.log('');
 

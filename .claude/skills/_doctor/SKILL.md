@@ -128,4 +128,4 @@ Doctor is invoked as a single unified command. Internally it calls `checkHealth(
 | `gobbi doctor` | Run unified health check with human-readable text output |
 | `gobbi doctor --format json` | Structured JSON output for programmatic consumption |
 
-JSON output schema: `{ status: "clean" | "attention-needed" | "degraded", maturityLevel: 0-4, findings: Finding[], completeness: { score, missing }, summary: string }`. Exit 0 when status is `clean`, exit 1 otherwise. The `gobbi audit` command remains as a deprecated alias that prints a deprecation warning and forwards to `gobbi doctor`.
+JSON output schema: `{ status: "clean" | "attention-needed" | "degraded", maturityLevel: 0-4, findings: Finding[], completeness: { score, missing }, summary: string }`. Exit code 0 for `clean` or `attention-needed`, exit code 1 for `degraded` (errors present). The `gobbi audit` command remains as a deprecated alias that prints a deprecation warning and forwards to `gobbi doctor`.
