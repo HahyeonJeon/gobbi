@@ -294,13 +294,16 @@ export async function auditConventions(opts: AuditOptions): Promise<Finding[]> {
 
     const fmName = extractFrontmatterName(lines);
     if (fmName !== null && fmName !== dirName) {
+      const jsonPath = path.join(skillDir, 'SKILL.json');
+      const hasJsonPeer = existsSync(jsonPath);
       findings.push({
         path: relativePath,
         severity: 'warning',
         category: 'naming-mismatch',
         message: `line 1: frontmatter name '${fmName}' != directory name '${dirName}'`,
         suggestion: 'Update the frontmatter name to match the directory name',
-        fixable: 'auto',
+        fixable: hasJsonPeer ? 'auto' : 'suggested',
+        context: hasJsonPeer ? { jsonPath, dirName } : undefined,
       });
     }
   }

@@ -16,6 +16,9 @@ import { checkHealth, SEVERITY_ORDER } from './health.js';
 import { auditReferences, auditConventions, auditCommands } from './audit.js';
 import { scanCorpus } from './scanner.js';
 import { validateDoc } from './validator.js';
+import { computeRemediations, applyRemediations, type RemediationPlan, type RemediationResult } from './remediation.js';
+
+export type { RemediationPlan, RemediationResult, Remediation, RemediationAction } from './remediation.js';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -613,6 +616,7 @@ export async function runDoctorCheck(repoRoot: string): Promise<DoctorReport> {
         message: 'JSON and Markdown are out of sync',
         suggestion: 'Run gobbi docs json2md to regenerate the Markdown file',
         fixable: 'auto',
+        context: { jsonPath: scannedDoc.path },
       });
     }
   }
@@ -644,4 +648,50 @@ export async function runDoctorCheck(repoRoot: string): Promise<DoctorReport> {
     completeness,
     summary,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Plan / Fix result types
+// ---------------------------------------------------------------------------
+
+export interface DoctorPlanResult {
+  report: DoctorReport;
+  plan: RemediationPlan;
+}
+
+export interface DoctorFixResult {
+  beforeReport: DoctorReport;
+  results: RemediationResult[];
+  afterReport: DoctorReport;
+}
+
+// ---------------------------------------------------------------------------
+// runDoctorPlan
+// ---------------------------------------------------------------------------
+
+/**
+ * Run doctor checks and compute a remediation plan without applying fixes.
+ * Used by `gobbi doctor --plan`.
+ */
+export async function runDoctorPlan(repoRoot: string): Promise<DoctorPlanResult> {
+  const report = await runDoctorCheck(repoRoot);
+  const plan = computeRemediations(report.findings);
+  return { report, plan };
+}
+
+// ---------------------------------------------------------------------------
+// runDoctorFix
+// ---------------------------------------------------------------------------
+
+/**
+ * Run doctor checks, apply auto-fixable remediations, then re-run doctor.
+ * The double-run mirrors ESLint --fix: apply fixes, then show new state.
+ * Used by `gobbi doctor --fix`.
+ */
+export async function runDoctorFix(repoRoot: string): Promise<DoctorFixResult> {
+  const beforeReport = await runDoctorCheck(repoRoot);
+  const plan = computeRemediations(beforeReport.findings);
+  const results = await applyRemediations(plan);
+  const afterReport = await runDoctorCheck(repoRoot);
+  return { beforeReport, results, afterReport };
 }

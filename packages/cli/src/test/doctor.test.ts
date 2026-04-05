@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   computeStatus,
   computeMaturityLevel,
@@ -324,9 +325,7 @@ describe('generateSummary', () => {
 
 describe('runDoctorCheck integration', () => {
   it('returns a valid DoctorReport shape', async () => {
-    const repoRoot = path.resolve(
-      '/playinganalytics/git/gobbi/.claude/worktrees/54-gobbi-doctor',
-    );
+    const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
     const report = await runDoctorCheck(repoRoot);
 
     assert.ok(
@@ -352,9 +351,7 @@ describe('runDoctorCheck integration', () => {
 // ---------------------------------------------------------------------------
 
 describe('audit library functions', () => {
-  const repoRoot = path.resolve(
-    '/playinganalytics/git/gobbi/.claude/worktrees/54-gobbi-doctor',
-  );
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
   const claudeDir = path.join(repoRoot, '.claude');
 
   it('auditReferences returns well-shaped Finding[]', async () => {
