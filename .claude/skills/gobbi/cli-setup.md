@@ -91,6 +91,8 @@ The gobbi CLI replaces the shell scripts that were previously in `.claude/skills
 | `gobbi notify <event>` | Send notifications (used by hooks) |
 | `gobbi validate <type> <path>` | Validate agent, skill, or gotcha definitions |
 | `gobbi doctor` | Unified health check for .claude/ documentation |
+| `gobbi doctor --plan` | Preview remediations without changing anything (exit code 2 if auto-fixable items exist) |
+| `gobbi doctor --fix` | Auto-apply deterministic fixes and re-run doctor to show new state |
 | `gobbi audit` | Deprecated alias for `gobbi doctor` |
 
 ---

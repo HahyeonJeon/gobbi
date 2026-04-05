@@ -37,7 +37,7 @@ Doctor consolidates six categories of checks into a single unified report. All c
 | File existence and broken references | Backtick-quoted paths and markdown links pointing to files or directories that do not exist on disk | From `gobbi audit references/conventions/commands` |
 | Structural health | Orphan docs (not reachable from navigation), missing navigation entries, empty sections with no content | From `gobbi docs health` |
 | Schema validation | JSON source files that do not conform to the gobbi-docs schema — missing required fields, invalid block types, malformed structure | From `gobbi docs validate` |
-| JSON/MD sync | Pairs where the `.json` source and `.md` output have drifted — the `.md` was edited directly or `json2md` was not re-run after a JSON change | New: mtime comparison between `.json` and `.md` pairs |
+| JSON/MD sync | Pairs where the `.json` source and `.md` output have drifted — the `.md` was edited directly or `json2md` was not re-run after a JSON change | Content-based comparison: renders JSON via `renderDoc` and compares with existing `.md` |
 | Completeness scoring | Inventory of what documentation exists versus a healthy baseline — missing CLAUDE.md, missing rules, missing project directory | New |
 | Maturity level (0-4) | Progressive assessment of documentation adoption from Level 0 (no `.claude/` directory) to Level 4 (fully JSON-first with zero issues) | New |
 
@@ -127,5 +127,40 @@ Doctor is invoked as a single unified command. Internally it calls `checkHealth(
 |---|---|
 | `gobbi doctor` | Run unified health check with human-readable text output |
 | `gobbi doctor --format json` | Structured JSON output for programmatic consumption |
+| `gobbi doctor --plan` | Terraform-plan-style preview of remediations — shows auto-fixable, suggested, and skipped counts without changing anything |
+| `gobbi doctor --fix` | Auto-apply deterministic fixes, then re-run doctor to show new state |
 
-JSON output schema: `{ status: "clean" | "attention-needed" | "degraded", maturityLevel: 0-4, findings: Finding[], completeness: { score, missing }, summary: string }`. Exit code 0 for `clean` or `attention-needed`, exit code 1 for `degraded` (errors present). The `gobbi audit` command remains as a deprecated alias that prints a deprecation warning and forwards to `gobbi doctor`.
+JSON output schema: `{ status: "clean" | "attention-needed" | "degraded", maturityLevel: 0-4, findings: Finding[], completeness: { score, missing }, summary: string }`. The `gobbi audit` command remains as a deprecated alias that prints a deprecation warning and forwards to `gobbi doctor`.
+
+---
+
+## Remediation Layer (--plan / --fix)
+
+> **Show what would change before changing anything.**
+
+The `--plan` flag previews all remediations without modifying the filesystem. This gives the user (and CI) a clear picture of what `--fix` will do. Run `--plan` first, review the output, then run `--fix` to apply.
+
+### Auto-Fixable Categories
+
+These categories have deterministic fixes that `--fix` applies automatically:
+
+| Category | Fix strategy | What it does |
+|---|---|---|
+| `sync-out-of-date` | json2md | Re-generates the `.md` file from its `.json` source to bring the pair back in sync |
+| `bidirectional-consistency` | add-nav-entry | Adds missing navigation entries so child docs are reachable from their parent |
+| `naming-mismatch` | rename-frontmatter | Updates the frontmatter `name` field to match the directory or filename convention |
+
+### Suggested Categories
+
+These categories appear in `--plan` output as suggestions but are not auto-fixed — they require human judgment:
+
+- `stale-reference` — a backtick-quoted path or markdown link points to a file that no longer exists. The fix depends on whether the file was moved, renamed, or intentionally deleted.
+- `stale-directory-claim` — a doc claims a directory contains certain items but the directory contents have changed. Requires understanding the intended scope before updating.
+
+### Exit Codes
+
+| Exit code | Meaning | When |
+|---|---|---|
+| 0 | Clean or attention-needed | `gobbi doctor` — no errors (warnings OK). `gobbi doctor --fix` — all issues resolved after fix. `gobbi doctor --plan` — nothing auto-fixable. |
+| 1 | Degraded | `gobbi doctor` — errors present. `gobbi doctor --fix` — still degraded after applying fixes (non-auto-fixable errors remain). |
+| 2 | Has auto-fixes available | `gobbi doctor --plan` only — auto-fixable items exist. Intended as a CI signal: exit code 2 means `--fix` can improve the state. |

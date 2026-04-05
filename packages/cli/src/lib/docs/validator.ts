@@ -401,7 +401,7 @@ async function checkSync(
     return 'no-md-file';
   }
 
-  const generatedMd = renderDoc(doc);
+  const generatedMd = renderDoc(doc, jsonFilePath);
   return existingMd === generatedMd ? 'in-sync' : 'out-of-sync';
 }
 

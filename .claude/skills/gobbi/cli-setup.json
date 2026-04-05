@@ -163,6 +163,14 @@
               "Unified health check for .claude/ documentation"
             ],
             [
+              "`gobbi doctor --plan`",
+              "Preview remediations without changing anything (exit code 2 if auto-fixable items exist)"
+            ],
+            [
+              "`gobbi doctor --fix`",
+              "Auto-apply deterministic fixes and re-run doctor to show new state"
+            ],
+            [
               "`gobbi audit`",
               "Deprecated alias for `gobbi doctor`"
             ]

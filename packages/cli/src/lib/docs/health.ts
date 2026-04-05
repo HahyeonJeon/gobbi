@@ -24,6 +24,7 @@ export interface Finding {
   message: string;
   suggestion: string;
   fixable?: Fixability | undefined;  // Phase 2 prep: how this finding can be remediated
+  context?: Record<string, string> | undefined;
 }
 
 export interface HealthReport {
@@ -212,6 +213,12 @@ function checkBidirectionalConsistency(
         category: 'bidirectional-consistency',
         message: `${path.relative(scanDir, childPath)} claims parent '${path.relative(scanDir, parentPath)}' but parent's navigation does not reference it`,
         suggestion: 'Add a navigation entry in the parent document pointing back to this child',
+        fixable: 'auto',
+        context: {
+          parentJsonPath: parentPath,
+          childTitle: graph.nodes.get(childPath)?.doc.title ?? path.basename(childPath, '.json'),
+          childNavKey: path.relative(scanDir, childPath).replace(/\.json$/, '.md'),
+        },
       });
     }
   }

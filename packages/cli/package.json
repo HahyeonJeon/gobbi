@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "tsc && node --test dist/test/doctor.test.js"
+    "test": "tsc && node --test dist/test/doctor.test.js dist/test/remediation.test.js"
   },
   "dependencies": {
     "proper-lockfile": "^4.1.2"
