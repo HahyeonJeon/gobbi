@@ -1,5 +1,8 @@
 /**
- * gobbi audit — Documentation drift detection.
+ * gobbi audit — Documentation drift detection (CLI wrapper).
+ *
+ * Thin command layer that delegates to the audit library in
+ * `lib/docs/audit.ts` and formats output for backward compatibility.
  *
  * Subcommands:
  *   references [directory]   Check markdown links and backtick paths resolve
@@ -7,9 +10,14 @@
  *   commands [directory]     Verify shell commands in code blocks exist
  */
 
-import { readdirSync, readFileSync, existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { getRepoRoot } from '../lib/repo.js';
+import {
+  auditReferences,
+  auditConventions,
+  auditCommands,
+} from '../lib/docs/audit.js';
+import type { Finding } from '../lib/docs/health.js';
 
 // ---------------------------------------------------------------------------
 // Usage strings
@@ -26,11 +34,94 @@ Options:
   --help    Show this help message`;
 
 // ---------------------------------------------------------------------------
+// Output formatting helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Map a finding category to the correct CLI output prefix.
+ * Categories from references/commands use `STALE:`, conventions use `MISMATCH:`.
+ */
+function getOutputPrefix(category: string): string {
+  switch (category) {
+    case 'stale-reference':
+    case 'stale-command':
+      return 'STALE:';
+    case 'naming-mismatch':
+    case 'broken-nav-link':
+    case 'stale-directory-claim':
+      return 'MISMATCH:';
+    default:
+      return 'FINDING:';
+  }
+}
+
+/**
+ * Format a finding into the original CLI output line.
+ *
+ * Reconstructs the `STALE:` / `MISMATCH:` line format from structured
+ * Finding data. Uses path.join so the output preserves the caller's path
+ * style (relative in → relative out, absolute in → absolute out).
+ */
+function formatFindingLine(finding: Finding, scanDir: string): string {
+  const prefix = getOutputPrefix(finding.category);
+  // Use path.join (not path.resolve) so the output preserves the caller's
+  // path style: relative scanDir → relative output, absolute → absolute.
+  const filePath = path.join(scanDir, finding.path);
+
+  // Parse "line N: description" from the message
+  const lineMatch = /^line (\d+): (.+)$/.exec(finding.message);
+  if (lineMatch !== null) {
+    const lineNum = lineMatch[1] ?? '0';
+    const desc = lineMatch[2] ?? '';
+
+    // Reconstruct the original format based on category
+    switch (finding.category) {
+      case 'stale-reference': {
+        // desc is "broken markdown link -> ref" or "broken backtick path -> ref"
+        if (desc.startsWith('broken markdown link')) {
+          const ref = desc.replace('broken markdown link -> ', '');
+          return `${prefix} ${filePath}:${lineNum}  link -> ${ref}`;
+        }
+        if (desc.startsWith('broken backtick path')) {
+          const ref = desc.replace('broken backtick path -> ', '');
+          return `${prefix} ${filePath}:${lineNum}  backtick -> ${ref}`;
+        }
+        return `${prefix} ${filePath}:${lineNum}  ${desc}`;
+      }
+      case 'naming-mismatch':
+        // desc is "frontmatter name 'X' != directory name 'Y'"
+        return `${prefix} ${filePath}:${lineNum}  ${desc}`;
+      case 'broken-nav-link':
+        // desc is "navigation link -> ref (not found)"
+        // Original format: "table link -> ref (not found)"
+        return `${prefix} ${filePath}:${lineNum}  ${desc.replace('navigation link', 'table link')}`;
+      case 'stale-directory-claim':
+        // desc is "directory claim -> ref (not found)"
+        return `${prefix} ${filePath}:${lineNum}  ${desc}`;
+      case 'stale-command': {
+        // desc is "command -> cleanToken not found on PATH"
+        const cmdMatch = /^command -> (.+) not found on PATH$/.exec(desc);
+        if (cmdMatch !== null) {
+          const cleanToken = cmdMatch[1] ?? '';
+          return `${prefix} ${filePath}:${lineNum}  command -> ${cleanToken}`;
+        }
+        return `${prefix} ${filePath}:${lineNum}  ${desc}`;
+      }
+      default:
+        return `${prefix} ${filePath}:${lineNum}  ${desc}`;
+    }
+  }
+
+  // Fallback for messages that don't match the pattern
+  return `${prefix} ${filePath}  ${finding.message}`;
+}
+
+// ---------------------------------------------------------------------------
 // Top-level router
 // ---------------------------------------------------------------------------
 
 /**
- * Top-level handler for \`gobbi audit\`. Dispatches to subcommands.
+ * Top-level handler for `gobbi audit`. Dispatches to subcommands.
  * Called from cli.ts with process.argv.slice(3).
  */
 export async function runAudit(args: string[]): Promise<void> {
@@ -38,13 +129,13 @@ export async function runAudit(args: string[]): Promise<void> {
 
   switch (subcommand) {
     case 'references':
-      await runAuditReferences(args.slice(1));
+      await runAuditReferencesCmd(args.slice(1));
       break;
     case 'conventions':
-      await runAuditConventions(args.slice(1));
+      await runAuditConventionsCmd(args.slice(1));
       break;
     case 'commands':
-      await runAuditCommands(args.slice(1));
+      await runAuditCommandsCmd(args.slice(1));
       break;
     case '--help':
     case undefined:
@@ -58,561 +149,78 @@ export async function runAudit(args: string[]): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Shared utilities
+// Subcommand wrappers
 // ---------------------------------------------------------------------------
 
-/** Collect all .md files recursively under a directory. */
-function collectMdFiles(dir: string): string[] {
-  const results: string[] = [];
-  collectMdFilesInto(dir, results);
-  return results;
-}
-
-function collectMdFilesInto(dir: string, results: string[]): void {
-  let entries: string[];
-  try {
-    entries = readdirSync(dir, { encoding: 'utf8' });
-  } catch {
-    return;
-  }
-  for (const name of entries) {
-    const fullPath = path.join(dir, name);
-    let isDir = false;
-    let isFile = false;
-    try {
-      const st = statSync(fullPath);
-      isDir = st.isDirectory();
-      isFile = st.isFile();
-    } catch {
-      continue;
-    }
-    if (isDir) {
-      collectMdFilesInto(fullPath, results);
-    } else if (isFile && name.endsWith('.md')) {
-      results.push(fullPath);
-    }
-  }
-}
-
-/** Check if a path matches the note directory pattern: .claude/project/{name}/note/... */
-function isNotePath(filePath: string): boolean {
-  return /\/.claude\/project\/[^/]+\/note\//.test(filePath);
-}
-
-/** Known repo-root prefixes for backtick path checks. */
-const KNOWN_PREFIXES = ['plugins/', 'src/', 'packages/', 'bin/'];
-
-function hasKnownPrefix(ref: string): boolean {
-  return KNOWN_PREFIXES.some((prefix) => ref.startsWith(prefix));
-}
-
-/** Extract all markdown link targets `[text](path)` from a line. */
-function extractMarkdownLinks(line: string): string[] {
-  const results: string[] = [];
-  const re = /\]\(([^)]+)\)/g;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(line)) !== null) {
-    const ref = match[1];
-    if (ref !== undefined) results.push(ref);
-  }
-  return results;
-}
-
-/** Extract all backtick-quoted tokens from a line. */
-function extractBacktickTokens(line: string): string[] {
-  const results: string[] = [];
-  const re = /`([^`]+)`/g;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(line)) !== null) {
-    const token = match[1];
-    if (token !== undefined) results.push(token);
-  }
-  return results;
-}
-
-/** Extract all backtick-quoted tokens that end with `/` (directories). */
-function extractBacktickDirTokens(line: string): string[] {
-  return extractBacktickTokens(line).filter((t) => t.endsWith('/'));
-}
-
-// ---------------------------------------------------------------------------
-// audit references
-// ---------------------------------------------------------------------------
-
-async function runAuditReferences(args: string[]): Promise<void> {
+async function runAuditReferencesCmd(args: string[]): Promise<void> {
   const repoRoot = getRepoRoot();
   const scanDir = args[0] ?? path.join(repoRoot, '.claude/skills/');
 
-  if (!existsSync(scanDir) || !statSync(scanDir).isDirectory()) {
-    console.error(`Error: Directory does not exist: ${scanDir}`);
+  let findings: Finding[];
+  try {
+    findings = await auditReferences({ directory: scanDir, repoRoot });
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(2);
   }
 
-  const mdFiles = collectMdFiles(scanDir);
-  let staleCount = 0;
-
-  for (const mdFile of mdFiles) {
-    if (isNotePath(mdFile)) continue;
-
-    const fileDir = path.dirname(mdFile);
-    let content: string;
-    try {
-      content = readFileSync(mdFile, 'utf8');
-    } catch {
-      continue;
-    }
-    const lines = content.split('\n');
-
-    // Pass 1: Markdown links [text](path)
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i] ?? '';
-      const lineNum = i + 1;
-      const refs = extractMarkdownLinks(line);
-      for (let ref of refs) {
-        // Skip URLs and pure anchors
-        if (/^(https?|mailto|ftp):/.test(ref)) continue;
-        if (ref.startsWith('#')) continue;
-
-        // Strip anchor from path#anchor references
-        ref = ref.split('#')[0] ?? '';
-        if (ref === '') continue;
-
-        const resolved = path.resolve(fileDir, ref);
-        if (!existsSync(resolved)) {
-          console.log(`STALE: ${mdFile}:${lineNum}  link -> ${ref}`);
-          staleCount++;
-        }
-      }
-    }
-
-    // Pass 2: Backtick-quoted paths with known repo-root prefixes
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i] ?? '';
-      const lineNum = i + 1;
-      const tokens = extractBacktickTokens(line);
-      for (const ref of tokens) {
-        // Skip non-path content: spaces, $, (, =, |, >, <
-        if (/[ $()=|><]/.test(ref)) continue;
-        // Skip URLs
-        if (/^https?:/.test(ref)) continue;
-        // Skip flags
-        if (/^--?[a-zA-Z]/.test(ref)) continue;
-        // Skip templates and globs
-        if (/[{*]/.test(ref)) continue;
-
-        // Only check paths starting with known repo directories
-        if (!hasKnownPrefix(ref)) continue;
-
-        // Must end with a file extension to be a concrete file reference
-        if (!/\.(md|sh|ts|js|json|ya?ml)$/.test(ref)) continue;
-
-        const resolved = path.resolve(repoRoot, ref);
-        if (!existsSync(resolved)) {
-          console.log(`STALE: ${mdFile}:${lineNum}  backtick -> ${ref}`);
-          staleCount++;
-        }
-      }
-    }
+  for (const finding of findings) {
+    console.log(formatFindingLine(finding, scanDir));
   }
 
-  if (staleCount > 0) {
+  if (findings.length > 0) {
     console.log('');
-    console.log(`Found ${staleCount} stale reference(s).`);
+    console.log(`Found ${findings.length} stale reference(s).`);
     process.exit(1);
   } else {
     console.log('All references valid.');
   }
 }
 
-// ---------------------------------------------------------------------------
-// audit conventions
-// ---------------------------------------------------------------------------
-
-async function runAuditConventions(args: string[]): Promise<void> {
+async function runAuditConventionsCmd(args: string[]): Promise<void> {
   const repoRoot = getRepoRoot();
   const scanDir = args[0] ?? path.join(repoRoot, '.claude/skills/');
 
-  if (!existsSync(scanDir) || !statSync(scanDir).isDirectory()) {
-    console.error(`Error: Directory does not exist: ${scanDir}`);
+  let findings: Finding[];
+  try {
+    findings = await auditConventions({ directory: scanDir, repoRoot });
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(2);
   }
 
-  const mdFiles = collectMdFiles(scanDir);
-  // SKILL.md files only
-  const skillFiles = mdFiles.filter((f) => path.basename(f) === 'SKILL.md');
-  let mismatchCount = 0;
-
-  // Check 1: SKILL.md frontmatter `name` matches parent directory name
-  for (const skillFile of skillFiles) {
-    const skillDir = path.dirname(skillFile);
-    const dirName = path.basename(skillDir);
-
-    let content: string;
-    try {
-      content = readFileSync(skillFile, 'utf8');
-    } catch {
-      continue;
-    }
-    const lines = content.split('\n');
-
-    const fmName = extractFrontmatterName(lines);
-    if (fmName !== null && fmName !== dirName) {
-      console.log(`MISMATCH: ${skillFile}:1  frontmatter name '${fmName}' != directory name '${dirName}'`);
-      mismatchCount++;
-    }
+  for (const finding of findings) {
+    console.log(formatFindingLine(finding, scanDir));
   }
 
-  // Check 2: Navigation table link targets exist
-  for (const skillFile of skillFiles) {
-    const skillDir = path.dirname(skillFile);
-
-    let content: string;
-    try {
-      content = readFileSync(skillFile, 'utf8');
-    } catch {
-      continue;
-    }
-    const lines = content.split('\n');
-    let inNavSection = false;
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i] ?? '';
-      const lineNum = i + 1;
-
-      // Detect navigation section headers
-      if (
-        line.includes('Navigate deeper') ||
-        (line.includes('Gotcha') && line.includes('File')) ||
-        line.includes('Cross-project gotchas')
-      ) {
-        inNavSection = true;
-        continue;
-      }
-
-      // End nav section at next heading or horizontal rule
-      if (inNavSection) {
-        if (/^## /.test(line) || /^---/.test(line)) {
-          inNavSection = false;
-          continue;
-        }
-      }
-
-      if (!inNavSection) continue;
-
-      // Check markdown links in nav/table sections
-      const refs = extractMarkdownLinks(line);
-      for (let ref of refs) {
-        // Skip URLs and anchors
-        if (/^(https?|mailto):/.test(ref) || ref.startsWith('#')) continue;
-
-        // Strip anchor
-        ref = ref.split('#')[0] ?? '';
-        if (ref === '') continue;
-
-        const resolved = path.resolve(skillDir, ref);
-        if (!existsSync(resolved)) {
-          console.log(`MISMATCH: ${skillFile}:${lineNum}  table link -> ${ref} (not found)`);
-          mismatchCount++;
-        }
-      }
-    }
-  }
-
-  // Check 3: Backtick-quoted directory paths with known repo prefixes
-  for (const mdFile of mdFiles) {
-    if (isNotePath(mdFile)) continue;
-
-    let content: string;
-    try {
-      content = readFileSync(mdFile, 'utf8');
-    } catch {
-      continue;
-    }
-    const lines = content.split('\n');
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i] ?? '';
-      const lineNum = i + 1;
-      const tokens = extractBacktickDirTokens(line);
-      for (const ref of tokens) {
-        // Skip templates, variables, globs
-        if (/[{$*]/.test(ref) || ref.includes(' ')) continue;
-        if (/^https?:/.test(ref)) continue;
-
-        // Only check paths with known repo-root prefixes
-        if (!hasKnownPrefix(ref)) continue;
-
-        const resolved = path.resolve(repoRoot, ref);
-        if (!existsSync(resolved) || !statSync(resolved).isDirectory()) {
-          console.log(`MISMATCH: ${mdFile}:${lineNum}  directory claim -> ${ref} (not found)`);
-          mismatchCount++;
-        }
-      }
-    }
-  }
-
-  if (mismatchCount > 0) {
+  if (findings.length > 0) {
     console.log('');
-    console.log(`Found ${mismatchCount} structural mismatch(es).`);
+    console.log(`Found ${findings.length} structural mismatch(es).`);
     process.exit(1);
   } else {
     console.log('All structural claims consistent.');
   }
 }
 
-/** Extract frontmatter `name` value from SKILL.md lines. Returns null if not found. */
-function extractFrontmatterName(lines: string[]): string | null {
-  let inFrontmatter = false;
-  for (const line of lines) {
-    if (line === '---') {
-      if (inFrontmatter) break; // closing fence
-      inFrontmatter = true;
-      continue;
-    }
-    if (inFrontmatter && line.startsWith('name:')) {
-      return line.slice('name:'.length).trim();
-    }
-  }
-  return null;
-}
-
-// ---------------------------------------------------------------------------
-// audit commands
-// ---------------------------------------------------------------------------
-
-/**
- * PATH-based command lookup with caching.
- *
- * Replaces `execSync('which ${token}')` to avoid spawning a subprocess per
- * command token. Splits `process.env.PATH` once, then checks `existsSync`
- * for each directory entry. Results are cached in a `Map` so each unique
- * token is resolved at most once.
- */
-const commandExistsCache = new Map<string, boolean>();
-
-function commandExistsOnPath(token: string): boolean {
-  const cached = commandExistsCache.get(token);
-  if (cached !== undefined) return cached;
-
-  const pathEnv = process.env['PATH'] ?? '';
-  const dirs = pathEnv.split(':');
-  let found = false;
-
-  for (const dir of dirs) {
-    if (dir === '') continue;
-    if (existsSync(path.join(dir, token))) {
-      found = true;
-      break;
-    }
-  }
-
-  commandExistsCache.set(token, found);
-  return found;
-}
-
-const CONTROL_FLOW_KEYWORDS = new Set([
-  'if', 'then', 'else', 'elif', 'fi', 'do', 'done',
-  'for', 'while', 'until', 'case', 'esac', 'function', 'in', 'select',
-]);
-
-/** Shell token patterns to skip outright. */
-function isSkippableToken(token: string): boolean {
-  // Quoted strings, redirections, numbers
-  return /^["'>0-9<]/.test(token);
-}
-
-async function runAuditCommands(args: string[]): Promise<void> {
+async function runAuditCommandsCmd(args: string[]): Promise<void> {
   const repoRoot = getRepoRoot();
   const scanDir = args[0] ?? path.join(repoRoot, '.claude/skills/');
 
-  if (!existsSync(scanDir) || !statSync(scanDir).isDirectory()) {
-    console.error(`Error: Directory does not exist: ${scanDir}`);
+  let findings: Finding[];
+  try {
+    findings = await auditCommands({ directory: scanDir, repoRoot });
+  } catch (err) {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(2);
   }
 
-  const mdFiles = collectMdFiles(scanDir);
-  let staleCount = 0;
-
-  for (const mdFile of mdFiles) {
-    if (isNotePath(mdFile)) continue;
-
-    let content: string;
-    try {
-      content = readFileSync(mdFile, 'utf8');
-    } catch {
-      continue;
-    }
-    const lines = content.split('\n');
-
-    let inCodeBlock = false;
-    let isShellBlock = false;
-    let skipBlock = false;
-    let prevLine = '';
-    let heredocDelim: string | null = null;
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i] ?? '';
-      const lineNum = i + 1;
-
-      // Handle heredoc: skip until matching delimiter
-      if (heredocDelim !== null) {
-        const stripped = line.trimStart();
-        if (stripped === heredocDelim) {
-          heredocDelim = null;
-        }
-        prevLine = line;
-        continue;
-      }
-
-      // Detect code block fences
-      if (/^[^\S\n]*```/.test(line)) {
-        if (inCodeBlock) {
-          // Closing fence
-          inCodeBlock = false;
-          isShellBlock = false;
-          skipBlock = false;
-        } else {
-          // Opening fence
-          inCodeBlock = true;
-          isShellBlock = false;
-          skipBlock = false;
-
-          // Check for ignore comment on previous line
-          if (/<!--\s*gobbi-audit:ignore\s*-->/.test(prevLine)) {
-            skipBlock = true;
-          }
-
-          // Check if it's a bash or sh code block
-          if (/^[^\S\n]*```(bash|sh)\s*$/.test(line)) {
-            isShellBlock = true;
-          }
-        }
-        prevLine = line;
-        continue;
-      }
-
-      // Only process lines inside shell code blocks
-      if (!inCodeBlock || !isShellBlock || skipBlock) {
-        prevLine = line;
-        continue;
-      }
-
-      // Strip leading whitespace
-      const stripped = line.trimStart();
-
-      // Skip empty lines
-      if (stripped === '') {
-        prevLine = line;
-        continue;
-      }
-
-      // Skip comment lines
-      if (stripped.startsWith('#')) {
-        prevLine = line;
-        continue;
-      }
-
-      // Skip continuation lines (starting with | || &&)
-      if (/^(\||\|\||&&)/.test(stripped)) {
-        prevLine = line;
-        continue;
-      }
-
-      // Skip lines that are just braces or closing parens
-      if (stripped === '{' || stripped === '}' || stripped === ')') {
-        prevLine = line;
-        continue;
-      }
-
-      // Extract first token
-      const firstToken = stripped.split(/\s+/)[0] ?? '';
-
-      // Skip control flow keywords
-      if (CONTROL_FLOW_KEYWORDS.has(firstToken)) {
-        prevLine = line;
-        continue;
-      }
-
-      // Skip variable assignments (first token contains = before any space)
-      if (firstToken.includes('=')) {
-        prevLine = line;
-        continue;
-      }
-
-      // Skip lines that are clearly variable references
-      if (firstToken.startsWith('$')) {
-        prevLine = line;
-        continue;
-      }
-
-      // Detect heredoc — set delimiter and continue processing the command line itself
-      const heredocMatch = /<<-?\s*'?([A-Za-z_][A-Za-z0-9_]*)'?/.exec(stripped);
-      if (heredocMatch !== null) {
-        heredocDelim = heredocMatch[1] ?? null;
-      }
-
-      // Extract the command token
-      let cmdToken = firstToken;
-
-      // Handle sudo prefix — use the second token instead, skipping flags
-      if (cmdToken === 'sudo') {
-        const parts = stripped.split(/\s+/).slice(1);
-        // Skip flags like -u, -E, etc.
-        let idx = 0;
-        while (idx < parts.length && (parts[idx]?.startsWith('-') ?? false)) {
-          idx++;
-        }
-        const next = parts[idx];
-        if (next === undefined || next === '') {
-          prevLine = line;
-          continue;
-        }
-        cmdToken = next;
-      }
-
-      // Skip variable references as command tokens
-      if (cmdToken.startsWith('$')) {
-        prevLine = line;
-        continue;
-      }
-
-      // Skip tokens that are clearly not commands
-      if (isSkippableToken(cmdToken)) {
-        prevLine = line;
-        continue;
-      }
-
-      // Strip trailing punctuation that isn't part of the command name
-      const cleanToken = cmdToken.replace(/[;|&<>]+$/, '');
-      if (cleanToken === '') {
-        prevLine = line;
-        continue;
-      }
-
-      // Check if the command exists
-      let found = true;
-      if (cleanToken.includes('/')) {
-        // Path-based command — check relative to repo root
-        const resolved = path.resolve(repoRoot, cleanToken);
-        if (!existsSync(resolved)) {
-          found = false;
-        }
-      } else {
-        found = commandExistsOnPath(cleanToken);
-      }
-
-      if (!found) {
-        console.log(`STALE: ${mdFile}:${lineNum}  command -> ${cleanToken}`);
-        staleCount++;
-      }
-
-      prevLine = line;
-    }
+  for (const finding of findings) {
+    console.log(formatFindingLine(finding, scanDir));
   }
 
-  if (staleCount > 0) {
+  if (findings.length > 0) {
     console.log('');
-    console.log(`Found ${staleCount} stale command(s).`);
+    console.log(`Found ${findings.length} stale command(s).`);
     process.exit(1);
   } else {
     console.log('All commands verified.');
