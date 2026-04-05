@@ -1,16 +1,21 @@
 /**
- * Doctor computation library — types and pure functions for the `gobbi doctor`
- * command.
+ * Doctor library — types, computation functions, and orchestration for the
+ * `gobbi doctor` command.
  *
  * Computes project health status, maturity level, completeness inventory,
- * and human-readable summaries from filesystem state and findings. No
- * orchestration, no console output — consumed by the doctor orchestrator
- * and CLI wrapper.
+ * and human-readable summaries from filesystem state and findings. The
+ * `runDoctorCheck` orchestrator collects findings from health, audit, and
+ * validation subsystems and assembles the final `DoctorReport`. No console
+ * output — consumed by the CLI wrapper.
  */
 
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
-import type { Finding } from './health.js';
+import type { Finding, FindingSeverity } from './health.js';
+import { checkHealth } from './health.js';
+import { auditReferences, auditConventions, auditCommands } from './audit.js';
+import { scanCorpus } from './scanner.js';
+import { validateDoc } from './validator.js';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -483,4 +488,167 @@ function getNextStep(
     case 4:
       return undefined;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Finding sort order (mirrors health.ts — not exported from there)
+// ---------------------------------------------------------------------------
+
+const SEVERITY_ORDER: Readonly<Record<FindingSeverity, number>> = {
+  error: 0,
+  warning: 1,
+  info: 2,
+};
+
+function compareFindings(a: Finding, b: Finding): number {
+  const aOrder = SEVERITY_ORDER[a.severity];
+  const bOrder = SEVERITY_ORDER[b.severity];
+  if (aOrder !== bOrder) return aOrder - bOrder;
+  return a.path.localeCompare(b.path);
+}
+
+// ---------------------------------------------------------------------------
+// Sync warning detection
+// ---------------------------------------------------------------------------
+
+/**
+ * The validator emits this warning when syncStatus is `'out-of-sync'`.
+ * We skip it from the warnings array and emit a dedicated `sync-out-of-date`
+ * finding instead, giving it a distinct category for structured consumers.
+ */
+function isSyncWarning(warning: string): boolean {
+  return warning.includes('does not match existing .md file');
+}
+
+// ---------------------------------------------------------------------------
+// runDoctorCheck — main orchestrator
+// ---------------------------------------------------------------------------
+
+/**
+ * Run a unified health check on a repository's `.claude/` documentation.
+ *
+ * Collects findings from:
+ * - Health checks (navigation graph, orphans, gotchas, etc.)
+ * - Audit checks (stale references, naming conventions, shell commands)
+ * - Validation checks (JSON template validity, sync status)
+ *
+ * Assembles all findings into a single `DoctorReport` with status, maturity
+ * level, completeness, and a human-readable summary.
+ */
+export async function runDoctorCheck(repoRoot: string): Promise<DoctorReport> {
+  const claudeDir = path.join(repoRoot, '.claude');
+
+  // Early return for Level 0 — .claude/ directory does not exist
+  if (!existsSync(claudeDir)) {
+    const completeness: CompletenessReport = { score: 0, missing: [], present: [] };
+    return {
+      status: 'clean',
+      maturityLevel: 0,
+      findings: [],
+      completeness,
+      summary: generateSummary('clean', 0, 0, 0, completeness),
+    };
+  }
+
+  const findings: Finding[] = [];
+
+  // --- Health checks ---
+  const healthReport = await checkHealth(claudeDir);
+  findings.push(...healthReport.findings);
+
+  // --- Audit checks (each wrapped in try/catch — skip gracefully if dir missing) ---
+  const auditOpts = { directory: claudeDir, repoRoot };
+
+  try {
+    const refFindings = await auditReferences(auditOpts);
+    findings.push(...refFindings);
+  } catch {
+    // Directory may not exist or be unreadable — skip
+  }
+
+  try {
+    const convFindings = await auditConventions(auditOpts);
+    findings.push(...convFindings);
+  } catch {
+    // Directory may not exist or be unreadable — skip
+  }
+
+  try {
+    const cmdFindings = await auditCommands(auditOpts);
+    findings.push(...cmdFindings);
+  } catch {
+    // Directory may not exist or be unreadable — skip
+  }
+
+  // --- Validation checks ---
+  const scanResult = await scanCorpus(claudeDir);
+
+  for (const scannedDoc of scanResult.docs) {
+    const result = await validateDoc(scannedDoc.doc, scannedDoc.path);
+    const relativePath = path.relative(claudeDir, scannedDoc.path);
+
+    // Errors → findings
+    for (const error of result.errors) {
+      findings.push({
+        path: relativePath,
+        severity: 'error',
+        category: 'validation-error',
+        message: error,
+        suggestion: 'Fix the validation error in the JSON template',
+      });
+    }
+
+    // Warnings → findings (skip sync warning — handled via syncStatus below)
+    for (const warning of result.warnings) {
+      if (isSyncWarning(warning)) {
+        continue;
+      }
+      findings.push({
+        path: relativePath,
+        severity: 'warning',
+        category: 'validation-warning',
+        message: warning,
+        suggestion: 'Address the validation warning',
+      });
+    }
+
+    // Sync status → dedicated finding
+    if (result.syncStatus === 'out-of-sync') {
+      findings.push({
+        path: relativePath,
+        severity: 'warning',
+        category: 'sync-out-of-date',
+        message: 'JSON and Markdown are out of sync',
+        suggestion: 'Run gobbi docs json2md to regenerate the Markdown file',
+      });
+    }
+  }
+
+  // --- Sort findings: error → warning → info, then by path ---
+  findings.sort(compareFindings);
+
+  // --- Compute report fields ---
+  const status = computeStatus(findings);
+  const completeness = await computeCompleteness(claudeDir, repoRoot);
+
+  let errorCount = 0;
+  let warningCount = 0;
+  for (const finding of findings) {
+    if (finding.severity === 'error') {
+      errorCount += 1;
+    } else if (finding.severity === 'warning') {
+      warningCount += 1;
+    }
+  }
+
+  const maturityLevel = await computeMaturityLevel(claudeDir, repoRoot, errorCount, warningCount);
+  const summary = generateSummary(status, maturityLevel, errorCount, warningCount, completeness);
+
+  return {
+    status,
+    maturityLevel,
+    findings,
+    completeness,
+    summary,
+  };
 }
