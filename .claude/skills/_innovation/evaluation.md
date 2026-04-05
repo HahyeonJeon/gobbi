@@ -2,6 +2,8 @@
 
 Evaluation criteria for user-created innovation stance skills. Load when creating, reviewing, or auditing project-specific innovation patterns.
 
+
+
 ---
 
 ## Failure Modes
@@ -71,7 +73,7 @@ Each dimension provides diagnostic questions that surface the failure modes abov
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 ### Purpose and Scope
 

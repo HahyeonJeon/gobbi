@@ -2,11 +2,13 @@
 
 Evaluation criteria for user-created evaluation perspectives. Load when creating, reviewing, or auditing project-specific evaluation frameworks.
 
+
+
 ---
 
 ## Tagging Convention
 
-Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 ---
 

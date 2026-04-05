@@ -2,6 +2,8 @@
 
 Evaluation criteria for user-created best-practice stance skills. Load when creating, reviewing, or auditing project-specific best-practice knowledge.
 
+
+
 ---
 
 ## Failure Modes
@@ -76,7 +78,7 @@ Stance skills are thin structurally — they govern thinking, not tool usage or 
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 - `[structural]` Frontmatter has `name`, `description`, and `allowed-tools` fields
 - `[structural]` `name` field matches the skill's directory name

@@ -2,6 +2,8 @@
 
 Evaluation criteria for user-created project documentation. Load when creating, reviewing, or auditing project-specific docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`.
 
+
+
 ---
 
 ## Failure Modes
@@ -74,7 +76,7 @@ Does the doc avoid duplicating content from skills or rules? If the same guidanc
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 - `[structural]` README.md exists in each project subdirectory that contains docs
 - `[structural]` Standard subdirectories used where applicable — non-standard dirs are justified

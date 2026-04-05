@@ -2,6 +2,8 @@
 
 Evaluation criteria for user-created rule files. Load when creating, reviewing, or auditing project-specific rules.
 
+
+
 ---
 
 ## Failure Modes
@@ -74,7 +76,7 @@ Diagnostic questions for assessing rule quality. Each dimension targets a differ
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_audit` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 - `[structural]` Rule file has a descriptive name by topic, not by action
 - `[structural]` Flat structure — no deep nesting or multiple subsection levels
