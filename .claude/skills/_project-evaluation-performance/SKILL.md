@@ -1,6 +1,6 @@
 ---
 name: _project-evaluation-performance
-description: Perspective skill for evaluating project deliverables for efficiency. Use when evaluating code implementations, database queries, API interactions, or algorithms for computational cost, resource usage, caching patterns, and hot-path awareness.
+description: Performance perspective for deliverable evaluation. Load when evaluating deliverables for efficiency.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 This perspective answers one question: is the implementation efficient relative to the problem it solves? Load this skill when evaluating project output — algorithms, queries, data transformations, network interactions — from an efficiency and resource angle.
 
 The evaluator's job is to find performance problems, not to micro-optimize acceptable code.
+
+
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: _ideation-evaluation
-description: MUST load when evaluating ideation output. Stage-specific criteria for assessing whether an idea is concrete, well-researched, and ready for planning. Used by all 6 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall, User).
+description: Stage-specific evaluation criteria for ideation output. MUST load when evaluating ideation results.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 Stage-specific evaluation criteria for ideation output. Load this skill alongside _evaluation when evaluating the result of an ideation step.
 
 The ideation output should be a refined, detailed idea — not a vague direction. If you can't plan from it, it's not ready.
+
+
 
 ---
 

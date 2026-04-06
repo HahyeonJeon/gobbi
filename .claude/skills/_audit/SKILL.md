@@ -1,6 +1,6 @@
 ---
 name: _audit
-description: DEPRECATED — use _doctor instead. Detect documentation drift in .claude/ files.
+description: DEPRECATED — use _doctor instead.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 

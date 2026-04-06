@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_skills-evaluation-user",
-    "description": "User perspective for evaluating gobbi skill definitions — assesses discoverability, actionability, predictability, and whether the skill actually serves the person invoking it. Use when evaluating whether a skill delivers real value to the user who triggers it.",
+    "description": "User perspective for skill evaluation. Load when evaluating skill definitions for discoverability and actionability.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Skills Evaluation — User Perspective",

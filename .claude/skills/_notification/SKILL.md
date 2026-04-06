@@ -1,6 +1,6 @@
 ---
 name: _notification
-description: Help users configure Claude Code notifications (Slack, Telegram, and others) through conversation. Use when the user wants to set up, modify, or troubleshoot notification settings.
+description: Notification channel configuration guide. Load when setting up or troubleshooting notification settings.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 

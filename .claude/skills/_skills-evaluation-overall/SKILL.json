@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_skills-evaluation-overall",
-    "description": "Evaluate a gobbi skill definition from the overall perspective — cross-cutting gaps across the four domain perspectives, integration concerns with adjacent skills, and a must-preserve list of what works well. Use when synthesizing the full evaluation picture for a skill.",
+    "description": "Overall perspective for skill evaluation. Load when synthesizing cross-cutting gaps across skill evaluation perspectives.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Skills Evaluation — Overall Perspective",

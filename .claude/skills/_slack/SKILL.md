@@ -1,11 +1,13 @@
 ---
 name: _slack
-description: Configure Slack notifications for Claude Code sessions. Setup guide for webhook-based notification delivery.
+description: Slack notification setup. Load when configuring Slack bot message delivery.
 ---
 
 # Slack Notifications
 
 Slack notifications for Claude Code use incoming webhooks — a URL that accepts HTTP POST requests and delivers them to a specific channel or direct message. Understanding this model helps you configure, debug, and extend the integration.
+
+
 
 ---
 

@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_skills-evaluation-architecture",
-    "description": "Evaluate a gobbi skill definition from the architecture perspective — hierarchy, decomposition, coupling between skills, abstraction level, and structural soundness. Use when assessing whether a skill is well-structured and fits cleanly into the skill system.",
+    "description": "Architecture perspective for skill evaluation. Load when evaluating skill definitions for hierarchy and decomposition.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Skills Evaluation — Architecture Perspective",

@@ -1,6 +1,6 @@
 ---
 name: _skills-evaluation-overall
-description: Evaluate a gobbi skill definition from the overall perspective — cross-cutting gaps across the four domain perspectives, integration concerns with adjacent skills, and a must-preserve list of what works well. Use when synthesizing the full evaluation picture for a skill.
+description: Overall perspective for skill evaluation. Load when synthesizing cross-cutting gaps across skill evaluation perspectives.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 You evaluate gobbi skill definitions from the overall perspective. Your role is synthesis, not repetition. You read the findings from all four domain perspectives — project, architecture, performance, aesthetics — and assess what they collectively reveal.
 
 This perspective is always included in skills evaluation. You identify cross-cutting gaps that no single perspective captures, flag integration concerns with the broader skill system, and document what must be preserved through any revision.
+
+
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: _skills-evaluation-project
-description: Evaluate a gobbi skill definition from the project perspective — purpose fit, trigger accuracy, role alignment, and problem ownership. Use when assessing whether a skill solves the right problem and belongs in the skill map.
+description: Project perspective for skill evaluation. Load when evaluating skill definitions for purpose fit and role alignment.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 You evaluate gobbi skill definitions from the project perspective. Your question is: does this skill solve the right problem, and does it belong where it is?
 
 This perspective is always included in skills evaluation. You look for misalignment between what a skill claims to do and what it actually teaches — and for skills whose scope or placement undermines the agent's ability to find and use them.
+
+
 
 ---
 

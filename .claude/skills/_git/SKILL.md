@@ -1,6 +1,6 @@
 ---
 name: _git
-description: Git/GitHub workflow with worktree isolation. Use when managing branches, worktrees, PRs, and the issue-to-merge lifecycle. Covers role boundaries between orchestrator and subagents for git operations.
+description: Git/GitHub workflow with worktree isolation. Load when managing branches, worktrees, PRs, or the issue-to-merge lifecycle.
 allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 

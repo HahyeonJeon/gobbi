@@ -1,12 +1,12 @@
 ---
 name: _orchestration
-description: Guide the orchestrator through the adaptive workflow. Use when coordinating multi-agent tasks, routing through workflow steps, or managing transitions between steps and post-workflow phases. When loading this skill, also load _note, _evaluation, and _discuss immediately — they are needed at every workflow step.
+description: Adaptive workflow coordinator for the 7-step cycle. MUST load at workflow start to route tasks and manage transitions.
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 ---
 
 # Orchestration
 
-You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding.
+You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding. When loading this skill, also load _note, _evaluation, and _discuss — they are needed at every workflow step.
 
 **Navigate deeper from here:**
 

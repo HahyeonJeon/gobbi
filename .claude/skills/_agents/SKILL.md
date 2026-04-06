@@ -1,12 +1,12 @@
 ---
 name: _agents
-description: Reference and interactive guide for creating Claude Code agent definitions. MUST load when creating, reviewing, or modifying .claude/agents/ files. Must load _claude and _discuss before using this skill.
+description: Reference and guide for agent definitions. MUST load when creating, reviewing, or modifying .claude/agents/ files.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 
 # Agent Definitions
 
-Reference for understanding agent definition structure and interactive guide for creating new agents through discussion. Load this skill when creating, reviewing, or modifying `.claude/agents/` files. Read existing agent definitions in `.claude/agents/` for real patterns — they are the source of truth.
+Reference for understanding agent definition structure and interactive guide for creating new agents through discussion. Load this skill when creating, reviewing, or modifying `.claude/agents/` files. Read existing agent definitions in `.claude/agents/` for real patterns — they are the source of truth. Must load _claude and _discuss before using this skill.
 
 **Navigate deeper from here:**
 

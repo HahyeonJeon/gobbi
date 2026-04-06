@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_ideation",
-    "description": "MUST load at the start of the Ideation step of workflow. Improves and details the user's idea through structured discussion. Suggests discussion points that challenge vague thinking, uncover hidden requirements, and refine a rough idea into a concrete proposal ready for evaluation.",
+    "description": "Structured idea refinement through discussion. MUST load at the start of the Ideation step.",
     "allowed-tools": "AskUserQuestion, Read, Grep, Glob, Bash"
   },
   "title": "Gobbi Ideation Skill",

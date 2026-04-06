@@ -1,6 +1,6 @@
 ---
 name: _collection
-description: Verify note completeness and write the task README after execution. Use during Step 5 (Collection) to verify all per-step subdirectories contain their expected files, write the task README.md, and record gotchas.
+description: Note completeness verification and task README. Load during Step 5 (Collection).
 allowed-tools: Write, Read, Glob, Bash
 ---
 

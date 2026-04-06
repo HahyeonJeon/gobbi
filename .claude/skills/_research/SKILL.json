@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_research",
-    "description": "Research step of the workflow — researcher agents investigate how to implement the approved plan. MUST load during Step 3 (Research) to guide researcher agents and orchestrator synthesis.",
+    "description": "Research investigation for approved plans. MUST load during Step 3 (Research).",
     "allowed-tools": "Read, Grep, Glob, Bash, WebSearch, WebFetch, Write"
   },
   "title": "Research",

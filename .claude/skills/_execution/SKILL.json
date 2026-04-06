@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_execution",
-    "description": "Guide for executing a single well-scoped task with quality. Use when an agent receives a task briefing and needs to study, plan, implement, and verify its work.",
+    "description": "Single-task execution guide. Load when an agent receives a task briefing to study, implement, and verify.",
     "allowed-tools": "Read, Grep, Glob, Bash, Write, Edit"
   },
   "title": "Task Execution Skill",

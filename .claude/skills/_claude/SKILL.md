@@ -1,6 +1,6 @@
 ---
 name: _claude
-description: Writing standard for .claude/ documentation — principles, hierarchy, and anti-patterns. MUST load when authoring or modifying any .claude/ file. Load optionally when reading .claude/ docs for structural context.
+description: Writing standard for .claude/ documentation. MUST load when authoring or modifying any .claude/ file.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 

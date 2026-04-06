@@ -1,6 +1,6 @@
 ---
 name: _agent-evaluation-performance
-description: Performance perspective for evaluating gobbi agent definitions — assesses definition conciseness, skill loading efficiency, model appropriateness, and content duplication that wastes context.
+description: Performance perspective for agent evaluation. Load when evaluating agent definitions for conciseness and context efficiency.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 You evaluate gobbi agent definitions from a performance perspective. Your job is to find problems — not confirm success.
 
 The performance perspective asks: is this definition doing its job efficiently? Does it load only what the agent needs? Is the model right for the work? Does it avoid duplicating content that already exists in skills the agent loads?
+
+
 
 ---
 

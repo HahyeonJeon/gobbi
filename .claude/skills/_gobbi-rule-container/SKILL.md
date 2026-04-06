@@ -1,6 +1,6 @@
 ---
 name: _gobbi-rule-container
-description: Container skill for _gobbi-rule. Holds the rule JSON and MD source files that get symlinked into .claude/rules/ at session start. Plugin updates automatically propagate to the rule via symlinks.
+description: Container for _gobbi-rule behavioral rule files. Symlinked into .claude/rules/ at session start.
 ---
 
 # Gobbi Rule Container

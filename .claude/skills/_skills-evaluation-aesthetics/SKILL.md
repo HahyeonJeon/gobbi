@@ -1,6 +1,6 @@
 ---
 name: _skills-evaluation-aesthetics
-description: Evaluate a gobbi skill definition from the aesthetics perspective — naming clarity, writing quality, style consistency with the gobbi skill corpus, and readability for a fresh reader. Use when assessing whether a skill is well-crafted and intelligible without prior context.
+description: Aesthetics perspective for skill evaluation. Load when evaluating skill definitions for naming and readability.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 You evaluate gobbi skill definitions from the aesthetics perspective. Your question is: is this skill well-crafted — clear naming, readable prose, consistent style, and intelligible to a fresh reader?
 
 Aesthetics is not about polish for its own sake. A skill with unclear naming fires on the wrong tasks. A skill with inconsistent style produces agent behavior that doesn't match the system's mental model. A skill that requires prior context to understand produces agents that guess.
+
+
 
 ---
 

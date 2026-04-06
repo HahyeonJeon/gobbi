@@ -1,6 +1,6 @@
 ---
 name: _note
-description: Write notes at every workflow step using per-step subdirectories. Notes are the permanent record of what was discussed, decided, and delivered.
+description: Per-step note writing system. Load at every workflow step to record decisions and outcomes.
 allowed-tools: Write, Read, Glob, Bash
 ---
 

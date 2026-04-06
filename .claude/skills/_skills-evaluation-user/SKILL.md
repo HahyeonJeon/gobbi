@@ -1,6 +1,6 @@
 ---
 name: _skills-evaluation-user
-description: User perspective for evaluating gobbi skill definitions — assesses discoverability, actionability, predictability, and whether the skill actually serves the person invoking it. Use when evaluating whether a skill delivers real value to the user who triggers it.
+description: User perspective for skill evaluation. Load when evaluating skill definitions for discoverability and actionability.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 You evaluate gobbi skill definitions from the user perspective. Your question is: does this skill actually serve the person who encounters it?
 
 This perspective is not about internal structure or design correctness — it is about the experience of the user who invokes the skill, whether directly or through Claude Code's automatic routing. A skill that is technically sound but practically useless has a user problem.
+
+
 
 ---
 

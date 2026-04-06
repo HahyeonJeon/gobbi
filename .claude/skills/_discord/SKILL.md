@@ -1,11 +1,13 @@
 ---
 name: _discord
-description: Configure Discord notifications for Claude Code sessions. Setup guide for webhook-based notification delivery.
+description: Discord notification setup. Load when configuring Discord webhook delivery.
 ---
 
 # Discord Notifications
 
 Discord notifications for Claude Code use incoming webhooks — a URL that accepts HTTP POST requests and delivers them to a specific channel. Understanding this model helps you configure, debug, and extend the integration.
+
+
 
 ---
 

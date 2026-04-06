@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_agent-evaluation-aesthetics",
-    "description": "Aesthetics perspective for evaluating gobbi agent definitions — assesses naming consistency, writing quality, readability, and whether a new contributor could understand the agent's role from reading the definition.",
+    "description": "Aesthetics perspective for agent evaluation. Load when evaluating agent definitions for naming, writing quality, and style.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Agent Evaluation — Aesthetics Perspective",

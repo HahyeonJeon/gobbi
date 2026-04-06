@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_research-evaluation",
-    "description": "MUST load when evaluating research output. Stage-specific criteria for assessing completeness, depth, accuracy, and practical utility of research notes. Used by all 6 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall, User).",
+    "description": "Stage-specific evaluation criteria for research output. MUST load when evaluating research results.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Research Evaluation",

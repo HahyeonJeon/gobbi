@@ -1,6 +1,6 @@
 ---
 name: _skills
-description: Reference and interactive guide for creating Claude Code skills. MUST load when creating, reviewing, or modifying .claude/skills/ definitions. Must load _claude and _discuss before using this skill.
+description: Reference and guide for creating skill definitions. MUST load when creating, reviewing, or modifying .claude/skills/ files.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 

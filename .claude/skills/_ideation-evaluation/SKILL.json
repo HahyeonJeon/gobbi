@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_ideation-evaluation",
-    "description": "MUST load when evaluating ideation output. Stage-specific criteria for assessing whether an idea is concrete, well-researched, and ready for planning. Used by all 6 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall, User).",
+    "description": "Stage-specific evaluation criteria for ideation output. MUST load when evaluating ideation results.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Ideation Evaluation",

@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_project-evaluation-overall",
-    "description": "Perspective skill for synthesizing cross-cutting evaluation of project deliverables. Use after the other four project evaluation perspectives have reported findings — synthesizes gaps, integration concerns, emergent problems, and what must be preserved.",
+    "description": "Overall perspective for deliverable evaluation. Load when synthesizing cross-cutting gaps across deliverable evaluation perspectives.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Project Evaluation — Overall Perspective",

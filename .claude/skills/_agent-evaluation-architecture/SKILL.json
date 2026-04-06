@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_agent-evaluation-architecture",
-    "description": "Architecture perspective for evaluating gobbi agent definitions — assesses structural quality, lifecycle completeness, skill loading discipline, scope boundary sharpness, and abstraction level.",
+    "description": "Architecture perspective for agent evaluation. Load when evaluating agent definitions for structure and lifecycle.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Agent Evaluation — Architecture Perspective",

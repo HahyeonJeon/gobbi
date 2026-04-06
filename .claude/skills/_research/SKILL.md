@@ -1,6 +1,6 @@
 ---
 name: _research
-description: Research step of the workflow — researcher agents investigate how to implement the approved plan. MUST load during Step 3 (Research) to guide researcher agents and orchestrator synthesis.
+description: Research investigation for approved plans. MUST load during Step 3 (Research).
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
 After the plan is approved, researcher agents investigate the best approach for each task. This skill guides the two researcher stances (innovative and best-practice), what they produce, and how the orchestrator synthesizes their findings into directional guidance for executor agents.
 
 Research answers "what approach to take and why" — ideation answers "what to do" and planning answers "in what order." Think of researchers as architects sketching a blueprint: they design the direction and gather the best references, but executors own the implementation details. The output of research is directional guidance with strong references, organized by plan task, stored in note files that executors read before starting work.
+
+
 
 ---
 

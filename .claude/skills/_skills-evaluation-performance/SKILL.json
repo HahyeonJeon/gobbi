@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_skills-evaluation-performance",
-    "description": "Evaluate a gobbi skill definition from the performance perspective — context efficiency, line count, conditional vs always-load patterns, and content duplication. Use when assessing whether a skill loads efficiently and avoids wasting agent context.",
+    "description": "Performance perspective for skill evaluation. Load when evaluating skill definitions for context efficiency.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Skills Evaluation — Performance Perspective",

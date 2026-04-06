@@ -1,12 +1,14 @@
 ---
 name: _discuss
-description: MUST load when discussing with the user at any workflow step. Guides critical, structured discussion that challenges vague thinking, surfaces hidden problems, and pushes ideas toward concrete specificity via AskUserQuestion.
+description: Critical, structured discussion for workflow decisions. MUST load when discussing ideas, requirements, or trade-offs with the user.
 allowed-tools: AskUserQuestion, Read, Grep, Glob
 ---
 
 # Gobbi Discuss Skill
 
 Guide for how agents should discuss with users. Discussion happens at every workflow step — ideation, planning, execution, feedback, review. This skill teaches agents to be critical discussants, not passive question-askers.
+
+
 
 ---
 
@@ -45,6 +47,7 @@ Use AskUserQuestion to explore each unclear dimension. Not every dimension needs
 - **Verification** — How should we verify it works? What does "done" look like?
 
 ---
+
 
 > **_discuss resolves specification gaps — "what do you want?" when the agent lacks information to act. Contribution points (_ideation) resolve judgment gaps — "which decisions are yours to make?" when the user's domain knowledge would produce better outcomes than agent discretion. Different problems, different tools.**
 

@@ -1,12 +1,14 @@
 ---
 name: _memorization
-description: Save context for session continuity at Step 6 of the workflow. Persists task details, gotchas, and rules to .claude/project/{project-name}/.
+description: Session continuity context saving. Load at Step 6 to persist task details and gotchas.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 
 # Memorization
 
 Save context that enables the user to continue this work in a new session. This is Step 6 of the workflow — runs after Collection, before Review.
+
+
 
 ---
 

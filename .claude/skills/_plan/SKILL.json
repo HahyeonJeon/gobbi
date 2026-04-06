@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_plan",
-    "description": "Decompose complex tasks into small, specific, agent-assigned subtasks. Use during Step 2 (Planning) to explore the codebase, build a systematic plan, and get user approval before delegation. MUST load at the planning step.",
+    "description": "Task decomposition into narrow, ordered subtasks. MUST load at the Planning step.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Planning Skill",

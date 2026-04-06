@@ -1,6 +1,6 @@
 ---
 name: _project-evaluation-project
-description: Perspective skill for evaluating project deliverables against requirements. Use when evaluating code changes, documentation updates, configuration modifications, or any codebase output for requirements fit, scope alignment, and goals alignment.
+description: Project perspective for deliverable evaluation. Load when evaluating deliverables for requirements fit and scope.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 This perspective answers one question: does the deliverable solve the right problem? Load this skill when evaluating project output — code implementations, documentation updates, configuration changes, refactoring results — from the requirements and goals angle.
 
 The evaluator's job is to find gaps and misalignments, not to confirm success.
+
+
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: _innovation
-description: Innovation stance skill — defines how agents think and work when spawned as the innovative stance. Load when the orchestrator delegates to a PI or Researcher with the innovative stance. Also guides how to define project-specific innovation skills.
+description: Innovation stance — creative, cross-domain thinking. Load when spawning an agent with the innovative stance.
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: _project-evaluation-overall
-description: Perspective skill for synthesizing cross-cutting evaluation of project deliverables. Use after the other four project evaluation perspectives have reported findings — synthesizes gaps, integration concerns, emergent problems, and what must be preserved.
+description: Overall perspective for deliverable evaluation. Load when synthesizing cross-cutting gaps across deliverable evaluation perspectives.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 This perspective answers one question: what does the full picture look like when the other four perspectives are taken together? Load this skill after the project, architecture, performance, and aesthetics perspectives have reported. The overall evaluator synthesizes, does not re-evaluate.
 
 The overall evaluator's job is to surface what individual perspectives miss — gaps that fall between lenses, emergent problems from the combination of design choices, integration risks, and what must be preserved.
+
+
 
 ---
 

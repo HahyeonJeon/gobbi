@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_rules",
-    "description": "Guide for authoring rule files in .claude/rules/. Covers verifiability, structure, when to create a rule."
+    "description": "Guide for authoring rule files. Load when creating or modifying .claude/rules/ files."
   },
   "navigation": {
     "skills/_rules/evaluation.md": "Evaluation criteria for user-created rule files — failure modes, diagnostic dimensions, verification checklist"

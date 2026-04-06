@@ -1,6 +1,6 @@
 ---
 name: _skills-evaluation-architecture
-description: Evaluate a gobbi skill definition from the architecture perspective — hierarchy, decomposition, coupling between skills, abstraction level, and structural soundness. Use when assessing whether a skill is well-structured and fits cleanly into the skill system.
+description: Architecture perspective for skill evaluation. Load when evaluating skill definitions for hierarchy and decomposition.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 You evaluate gobbi skill definitions from the architecture perspective. Your question is: is this skill structurally sound, and does it compose cleanly with the rest of the skill system?
 
 This perspective focuses on the internal structure of the skill and its relationships with other skills — not on whether it solves the right problem (project perspective) or whether its prose is clear (aesthetics perspective).
+
+
 
 ---
 

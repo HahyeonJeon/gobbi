@@ -1,6 +1,6 @@
 ---
 name: _doctor
-description: Unified health check for .claude/ documentation. Use periodically, after major codebase changes, or before releases to detect drift, validate structure, assess maturity, and check completeness.
+description: Unified health check for .claude/ documentation. Load to detect drift, validate structure, and check completeness.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 

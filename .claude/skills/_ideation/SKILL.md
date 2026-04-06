@@ -1,6 +1,6 @@
 ---
 name: _ideation
-description: MUST load at the start of the Ideation step of workflow. Improves and details the user's idea through structured discussion. Suggests discussion points that challenge vague thinking, uncover hidden requirements, and refine a rough idea into a concrete proposal ready for evaluation.
+description: Structured idea refinement through discussion. MUST load at the start of the Ideation step.
 allowed-tools: AskUserQuestion, Read, Grep, Glob, Bash
 ---
 
@@ -11,6 +11,8 @@ Improve and make the user's idea or prompt more detailed through structured disc
 The output of ideation is a detailed, improved idea — not a final decision. A separate evaluator assesses the result.
 
 Ideation is performed by two parallel PI agents, each operating with a different stance — innovative and best. The orchestrator discusses with the user first, then spawns both PI agents. Each PI agent writes its perspective independently, and the orchestrator synthesizes their outputs.
+
+
 
 ---
 

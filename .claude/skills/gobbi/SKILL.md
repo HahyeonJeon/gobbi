@@ -1,6 +1,6 @@
 ---
 name: gobbi
-description: Entry point for gobbi, an open-source ClaudeX tool for Claude Code. MUST load at session start, session resume, and after compaction. Loads agent principles and skill map.
+description: Entry point for gobbi, an open-source ClaudeX tool. MUST load at session start, session resume, and after compaction.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 ---
 

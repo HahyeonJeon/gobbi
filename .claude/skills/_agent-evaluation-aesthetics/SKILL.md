@@ -1,6 +1,6 @@
 ---
 name: _agent-evaluation-aesthetics
-description: Aesthetics perspective for evaluating gobbi agent definitions — assesses naming consistency, writing quality, readability, and whether a new contributor could understand the agent's role from reading the definition.
+description: Aesthetics perspective for agent evaluation. Load when evaluating agent definitions for naming, writing quality, and style.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 You evaluate gobbi agent definitions from an aesthetics perspective. Your job is to find problems — not confirm success.
 
 The aesthetics perspective asks: is this definition well-written? Is the naming consistent with gobbi's conventions? Is the writing precise enough that a new contributor reading it would immediately understand this agent's role, stance, and boundaries?
+
+
 
 ---
 

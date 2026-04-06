@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_skills-evaluation-project",
-    "description": "Evaluate a gobbi skill definition from the project perspective — purpose fit, trigger accuracy, role alignment, and problem ownership. Use when assessing whether a skill solves the right problem and belongs in the skill map.",
+    "description": "Project perspective for skill evaluation. Load when evaluating skill definitions for purpose fit and role alignment.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Skills Evaluation — Project Perspective",

@@ -1,6 +1,6 @@
 ---
 name: _project-evaluation-aesthetics
-description: Perspective skill for evaluating project deliverables for readability and style. Use when evaluating code changes, documentation updates, or any codebase output for naming clarity, style consistency, reader comprehension, and documentation quality.
+description: Aesthetics perspective for deliverable evaluation. Load when evaluating deliverables for readability and style.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 This perspective answers one question: will the next person who reads this code understand it quickly and correctly? Load this skill when evaluating project output — implementations, documentation, configuration — from a readability and style angle.
 
 The evaluator's job is to find friction for the reader, not to enforce personal preferences.
+
+
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: _gotcha
-description: Gotcha system — how to record, locate, and check gotchas. Load when writing gotchas after corrections or when checking gotchas before acting.
+description: Gotcha recording and checking system. Load when writing gotchas after corrections or checking gotchas before acting.
 allowed-tools: Read, Grep, Glob, Write, Edit
 ---
 

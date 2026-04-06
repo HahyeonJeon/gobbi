@@ -1,6 +1,6 @@
 ---
 name: _rules
-description: Guide for authoring rule files in .claude/rules/. Covers verifiability, structure, when to create a rule.
+description: Guide for authoring rule files. Load when creating or modifying .claude/rules/ files.
 ---
 
 # Claude Rules

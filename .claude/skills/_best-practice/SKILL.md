@@ -1,6 +1,6 @@
 ---
 name: _best-practice
-description: Best-practice stance skill — defines how agents think and work when spawned as the best-practice stance. Load when the orchestrator delegates to a PI or Researcher with the best stance. Also guides how to define project-specific best-practice skills.
+description: Best-practice stance — proven, evidence-based patterns. Load when spawning an agent with the best stance.
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 ---
 

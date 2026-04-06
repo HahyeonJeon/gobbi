@@ -1,6 +1,6 @@
 ---
 name: _project-evaluation-user
-description: User perspective for evaluating project deliverables — assesses whether the output works from the user's viewpoint, whether it introduces friction, and whether the user's workflow is actually improved. Use when evaluating code changes, documentation, or configuration for their real-world impact on the person who encounters them.
+description: User perspective for deliverable evaluation. Load when evaluating deliverables for real-world user impact.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 This perspective answers one question: does this deliverable actually work for the person who will use it?
 
 Load this skill when evaluating project output — implementations, documentation, configuration, interfaces — from the viewpoint of the person who encounters it. The user perspective does not care how clean the internals are. It cares whether the deliverable reduces friction, behaves predictably, and gives the user what they came for.
+
+
 
 ---
 

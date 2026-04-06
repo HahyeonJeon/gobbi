@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_project-evaluation-performance",
-    "description": "Perspective skill for evaluating project deliverables for efficiency. Use when evaluating code implementations, database queries, API interactions, or algorithms for computational cost, resource usage, caching patterns, and hot-path awareness.",
+    "description": "Performance perspective for deliverable evaluation. Load when evaluating deliverables for efficiency.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Project Evaluation — Performance Perspective",

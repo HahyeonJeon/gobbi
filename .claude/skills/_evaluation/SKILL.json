@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_evaluation",
-    "description": "Evaluation framework — perspective selection, evaluator delegation, scoring, and verdicts. MUST load at workflow start by the orchestrator. Evaluator agents load this alongside their perspective skill.",
+    "description": "Evaluation framework — perspective selection, delegation, and verdicts. MUST load at workflow start for evaluation coordination.",
     "allowed-tools": "Read, Grep, Glob, Bash, Agent, AskUserQuestion"
   },
   "title": "Evaluation",

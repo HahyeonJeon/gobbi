@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_memorization",
-    "description": "Save context for session continuity at Step 6 of the workflow. Persists task details, gotchas, and rules to .claude/project/{project-name}/.",
+    "description": "Session continuity context saving. Load at Step 6 to persist task details and gotchas.",
     "allowed-tools": "Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion"
   },
   "title": "Memorization",

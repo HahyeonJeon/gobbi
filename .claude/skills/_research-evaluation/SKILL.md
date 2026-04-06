@@ -1,6 +1,6 @@
 ---
 name: _research-evaluation
-description: MUST load when evaluating research output. Stage-specific criteria for assessing completeness, depth, accuracy, and practical utility of research notes. Used by all 6 evaluator perspectives (Project, Architecture, Performance, Aesthetics, Overall, User).
+description: Stage-specific evaluation criteria for research output. MUST load when evaluating research results.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 Stage-specific evaluation criteria for research output. Load this skill alongside _evaluation when evaluating the result of a research step.
 
 Research output consists of: `innovative.md` (innovative researcher findings), `best.md` (best-practice researcher findings), `research.md` (orchestrator synthesis), and `results/` (detailed artifacts). Evaluate the synthesis primarily, but check that individual stance notes contribute meaningfully.
+
+
 
 ---
 

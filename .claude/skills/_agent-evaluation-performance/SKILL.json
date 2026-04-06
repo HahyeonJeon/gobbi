@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_agent-evaluation-performance",
-    "description": "Performance perspective for evaluating gobbi agent definitions — assesses definition conciseness, skill loading efficiency, model appropriateness, and content duplication that wastes context.",
+    "description": "Performance perspective for agent evaluation. Load when evaluating agent definitions for conciseness and context efficiency.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Agent Evaluation — Performance Perspective",

@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_project-evaluation-project",
-    "description": "Perspective skill for evaluating project deliverables against requirements. Use when evaluating code changes, documentation updates, configuration modifications, or any codebase output for requirements fit, scope alignment, and goals alignment.",
+    "description": "Project perspective for deliverable evaluation. Load when evaluating deliverables for requirements fit and scope.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Project Evaluation — Project Perspective",

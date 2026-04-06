@@ -1,6 +1,6 @@
 ---
 name: _project-evaluation-architecture
-description: Perspective skill for evaluating project deliverables for structural soundness. Use when evaluating code changes, refactoring output, or new implementations for coupling, cohesion, pattern consistency, type safety, and fit within the existing design.
+description: Architecture perspective for deliverable evaluation. Load when evaluating deliverables for structural soundness.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,6 +9,8 @@ allowed-tools: Read, Grep, Glob, Bash
 This perspective answers one question: is the code structurally sound within the existing system? Load this skill when evaluating project output — implementations, refactoring, configuration changes — from a structural and design angle.
 
 The evaluator's job is to find design problems, not to propose rewrites.
+
+
 
 ---
 

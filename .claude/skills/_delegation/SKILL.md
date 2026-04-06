@@ -1,6 +1,6 @@
 ---
 name: _delegation
-description: Hand off work to subagents with the right context so they succeed on the first attempt. Use during Step 4 (Execution) to spawn specialists with clear briefings, context layers, and scope boundaries.
+description: Subagent briefing and context handoff. Load during Step 4 (Execution) to spawn specialists.
 allowed-tools: Agent, Read, Grep, Glob, Bash, Write
 ---
 

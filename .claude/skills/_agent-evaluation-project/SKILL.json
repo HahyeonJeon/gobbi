@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_agent-evaluation-project",
-    "description": "Project perspective for evaluating gobbi agent definitions — assesses purpose clarity, description accuracy, role fit, tool permissions, and scope alignment with the orchestrator's delegation model.",
+    "description": "Project perspective for agent evaluation. Load when evaluating agent definitions for purpose and scope alignment.",
     "allowed-tools": "Read, Grep, Glob, Bash"
   },
   "title": "Agent Evaluation — Project Perspective",

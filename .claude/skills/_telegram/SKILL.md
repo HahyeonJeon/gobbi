@@ -1,11 +1,13 @@
 ---
 name: _telegram
-description: Configure Telegram notifications for Claude Code sessions. Setup guide for bot-based notification delivery.
+description: Telegram notification setup. Load when configuring Telegram bot message delivery.
 ---
 
 # Telegram Notifications
 
 Telegram notifications for Claude Code use a bot token and a chat ID. Understanding the bot model helps you set up the integration correctly and troubleshoot delivery issues.
+
+
 
 ---
 
