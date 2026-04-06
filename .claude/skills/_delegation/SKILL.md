@@ -55,6 +55,7 @@ Every subagent needs three layers of context:
 - `_claude` skill — docs structure, anti-patterns, navigation standard
 - The project skill — project architecture, conventions, constraints
 - Gotchas — MUST check `_gotcha` and the project skill's `gotchas/` before starting work
+- Note directory path — the absolute path to the task's note directory so the subagent can write its output to the appropriate subdirectory (e.g., `ideation/innovative.md`, `research/best.md`, `execution/subtasks/`)
 
 **Load per stance (PI and Researcher agents):**
 

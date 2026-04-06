@@ -40,7 +40,7 @@ They still go through Execution, Collection, Memorization, and Review. The diffe
 
 ## Workflow
 
-**When starting a task, must create a checklist using TaskCreate to track steps.** Update each task's status with TaskUpdate as you progress — set to `in_progress` when starting, `completed` when done.
+**When starting a task, must initialize notes and create a checklist.** Run `gobbi note init {project-name} {task-slug}` immediately after classifying a task as non-trivial. This creates the note directory with all subdirectories before any work begins. The returned path is the **note directory** — pass it to every subagent so they can write directly to it. Then create a checklist using TaskCreate to track steps. Update each task's status with TaskUpdate as you progress — set to `in_progress` when starting, `completed` when done.
 
 Create these tasks at the start of every non-trivial workflow:
 
@@ -291,21 +291,28 @@ See [finish.md](finish.md) for the full decision tree, action definitions, and p
 
 A completed workflow leaves accumulated context that degrades the orchestrator's performance on the next task. The user should start fresh — either with `/clear` in the same session or by opening a new session.
 
-After all FINISH actions are done, present the user with:
+After all FINISH actions are done, present the user with a structured handoff. The output has two parts: a workflow summary and a next-session prompt.
 
-1. A summary of what was completed
-2. A recommendation to start fresh for the next task
-3. A ready-to-use prompt they can paste into the new session
+> **The workflow summary is for the user to read now.**
 
-The prompt should include enough context for the new orchestrator to pick up without re-discovery — the project name, any deferred items, and relevant note paths.
+Include: what was completed (task slug and one-line outcome), what was deferred (explicitly deferred items from discussion or review), and what changed (files modified, PRs merged, branches affected). Keep it scannable — bullet points, not paragraphs.
 
-Example output:
+> **The next-session prompt is for the new orchestrator to read later.**
 
-> **Workflow complete.** For the next task, start a clean session or run `/clear`, then `/gobbi`.
->
-> If continuing related work, paste this prompt:
->
-> `Previous task: {task-slug}. Notes at $CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/{note-dir}/. Deferred items: {list or none}. Next: {user's stated next step if known}.`
+The new session has zero context. The prompt must contain everything the orchestrator needs to orient without re-discovery. Structure it with labeled sections so the new orchestrator can parse each dimension independently.
+
+The next-session prompt must include these sections, each on its own line with a label prefix:
+
+- **Project:** project name — so the orchestrator loads the right project context.
+- **Previous task:** task slug and one-line summary — what was just completed.
+- **Note path:** full path to the note directory — so the orchestrator can read decisions, plan, and review.
+- **Key decisions:** important design or architectural choices made during this task — things the next task should not contradict.
+- **Gotchas discovered:** new gotchas recorded this session — so the next orchestrator checks them immediately.
+- **Git state:** current branch, open PRs, merge status — so the orchestrator knows where the codebase stands.
+- **Deferred items:** what was explicitly deferred during discussion or review — these are candidates for the next task.
+- **Next step:** what the user stated they want to do next, if known — gives the orchestrator a head start on classification.
+
+Omit sections that have nothing to report (e.g., no deferred items, no gotchas). Never fill a section with "none" — just drop it. The prompt should be concise but complete.
 
 ---
 
@@ -316,6 +323,7 @@ Example output:
 - Before planning, MUST check gotchas
 - Before expensive delegation, MUST run lightweight precondition checks — verify the task is well-defined, prerequisites are met, and the scope justifies agent spawning. Use cheap checks (Haiku agents or bash commands) to prevent wasting expensive computation on ineligible or malformed tasks
 - Any delegated task that involves both assessment and modification MUST present its assessment findings to the user via AskUserQuestion before performing modifications
+- Before delegation, MUST include the note directory path in every subagent prompt — subagents write their output directly to the appropriate subdirectory (e.g., PI agents write to `ideation/`, researchers write to `research/`, executors write to `execution/`)
 - Before delegation, MUST include gotcha context in every subagent prompt
 - Before evaluation, MUST ask user with AskUserQuestion whether to **skip** evaluation — evaluation is the default at Steps 1–4, the user opts out, not in
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with

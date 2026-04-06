@@ -32,10 +32,14 @@ Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. Each tas
     innovative.md
     best.md
     ideation.md
+    subtasks/
+      01-{slug}.json
     evaluation/
       {perspective}.md
   plan/
     plan.md
+    subtasks/
+      01-{slug}.json
     evaluation/
       {perspective}.md
   research/
@@ -57,6 +61,8 @@ Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. Each tas
     innovative.md
     best.md
     review.md
+    subtasks/
+      01-{slug}.json
 ```
 
 ### Naming
@@ -67,9 +73,9 @@ Notes go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/`. Each tas
 
 > **Always use `gobbi note init` to create note directories. Never mkdir manually, never reference `$CLAUDE_SESSION_ID` directly.**
 
-Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and outputs the created directory path. It handles: session metadata extraction, directory creation with all subdirectories (`ideation/evaluation/`, `plan/evaluation/`, `research/{results,subtasks,evaluation}/`, `execution/{subtasks,evaluation}/`, `review/`), and `metadata.json` generation.
+Initialize note directories using `gobbi note init`. It takes the project name and task slug as arguments and outputs the created directory path. It handles: session metadata extraction, directory creation with all subdirectories (`ideation/{subtasks,evaluation}/`, `plan/{subtasks,evaluation}/`, `research/{results,subtasks,evaluation}/`, `execution/{subtasks,evaluation}/`, `review/subtasks/`), and `metadata.json` generation.
 
-After each subagent returns, run `gobbi note collect` to extract the delegation prompt and final result from the subagent's JSONL transcript. Use the `--phase` flag (`research` or `execution`) to route to the correct subtasks subdirectory. The command handles transcript parsing and JSON formatting — no manual Write calls needed.
+After each subagent returns, run `gobbi note collect` to extract the delegation prompt and final result from the subagent's JSONL transcript. Use the `--phase` flag (`ideation`, `plan`, `research`, `execution`, or `review`) to route to the correct step's `subtasks/` subdirectory. Every step that spawns subagents should collect their outputs. The command handles transcript parsing and JSON formatting — no manual Write calls needed.
 
 If `gobbi note init` fails because `CLAUDE_SESSION_ID` is not set, the SessionStart hook did not run — investigate the hook configuration, don't work around it.
 
@@ -88,6 +94,7 @@ Step 1 output — what was explored and what was chosen.
 - `innovative.md` — Written by innovative PI agent. Ideas explored through creative and novel lens.
 - `best.md` — Written by best-practice PI agent. Ideas explored through established patterns lens.
 - `ideation.md` — Written by orchestrator. Synthesis combining both stances and discussion with user.
+- `subtasks/01-{slug}.json` — Extracted from PI agent transcripts via `gobbi note collect --phase ideation`.
 - `evaluation/{perspective}.md` — Written by evaluator agents, one file per perspective. Only present if evaluation was performed.
 
 ### plan/
@@ -95,6 +102,7 @@ Step 1 output — what was explored and what was chosen.
 Step 2 output — the complete approved plan.
 
 - `plan.md` — Complete approved plan with tasks, dependencies, agent assignments, scope boundaries.
+- `subtasks/01-{slug}.json` — Extracted from exploration or planning agent transcripts via `gobbi note collect --phase plan`. Only present if exploration agents were spawned.
 - `evaluation/{perspective}.md` — Written by evaluator agents, one file per perspective. Only present if evaluation was performed.
 
 ### research/
@@ -123,6 +131,7 @@ Step 7 output — final review and verdict.
 - `innovative.md` — Written by innovative PI agent. Review and verdict through creative lens.
 - `best.md` — Written by best-practice PI agent. Review and verdict through best-practice lens.
 - `review.md` — Written by orchestrator. Synthesizes both PI stance verdicts into a combined verdict and summary for the user.
+- `subtasks/01-{slug}.json` — Extracted from PI reviewer transcripts via `gobbi note collect --phase review`.
 
 ### README.md
 
@@ -132,7 +141,7 @@ Task summary and index of related docs. Created at initialization by `note-init.
 
 ## Subtask Collection
 
-`gobbi note collect` takes a `<phase>` argument (`research` or `execution`) to write to the correct `subtasks/` subdirectory. Each JSON file contains delegation metadata, the full prompt, and the subagent's final result — everything needed to reconstruct what was asked, how it was delegated, and what was delivered.
+`gobbi note collect` takes a `<phase>` argument (`ideation`, `plan`, `research`, `execution`, or `review`) to write to the correct step's `subtasks/` subdirectory. Every step that spawns subagents should collect their outputs. Each JSON file contains delegation metadata, the full prompt, and the subagent's final result — everything needed to reconstruct what was asked, how it was delegated, and what was delivered.
 
 - One file per subtask, zero-padded sequence number for ordering
 - Extracted automatically — the orchestrator calls the script after each subagent returns, not batched at collection
