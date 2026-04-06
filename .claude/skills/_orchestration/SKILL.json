@@ -2,7 +2,7 @@
   "$schema": "gobbi-docs/skill",
   "frontmatter": {
     "name": "_orchestration",
-    "description": "Guide the orchestrator through the adaptive workflow. Use when coordinating multi-agent tasks, routing through workflow steps, or managing transitions between steps and post-workflow phases.",
+    "description": "Guide the orchestrator through the adaptive workflow. Use when coordinating multi-agent tasks, routing through workflow steps, or managing transitions between steps and post-workflow phases. When loading this skill, also load _note, _evaluation, and _discuss immediately — they are needed at every workflow step.",
     "allowed-tools": "Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion"
   },
   "title": "Orchestration",
@@ -116,7 +116,7 @@
       "content": [
         {
           "type": "text",
-          "value": "**Load at workflow start:** _note, _evaluation\n\n**Load at each step:**"
+          "value": "**Must load at workflow start — these are needed at every step:** _note, _evaluation, _discuss\n\n**Load at each step:**"
         },
         {
           "type": "table",
@@ -127,19 +127,19 @@
           "rows": [
             [
               "Step 1. Ideation",
-              "_ideation, _discuss, _evaluation, _ideation-evaluation. Subagents: _innovation (innovative PI), _best-practice (best PI)"
+              "_ideation + project-specific evaluation skills"
             ],
             [
               "Step 2. Planning",
-              "_plan, _discuss, _evaluation, _plan-evaluation"
+              "_plan + project-specific evaluation skills"
             ],
             [
               "Step 3. Research",
-              "_research, _evaluation, _research-evaluation. Subagents: _innovation (innovative researcher), _best-practice (best researcher)"
+              "_research + project-specific evaluation skills"
             ],
             [
               "Step 4. Execution",
-              "_delegation, _evaluation"
+              "_delegation"
             ],
             [
               "Step 5. Collection",
@@ -147,17 +147,17 @@
             ],
             [
               "Step 6. Memorization",
-              "_memorization, _gotcha"
+              "_memorization"
             ],
             [
               "Step 7. Review",
-              "_ideation (for context), _evaluation. Subagents: _innovation (innovative PI), _best-practice (best PI)"
+              "_ideation (for context)"
             ]
           ]
         },
         {
           "type": "text",
-          "value": "**Must write note at every step** — write the corresponding note file before leaving each step. Never defer, never skip."
+          "value": "**Project-specific evaluation skills** — each step that supports evaluation needs the project's evaluation skills loaded into evaluator agents. Projects define their own evaluation criteria tailored to their domain, tech stack, and quality standards. The orchestrator loads the project's evaluation skills for each step.\n\n**Must write note at every step** — write the corresponding note file before leaving each step. Never defer, never skip."
         }
       ]
     },
@@ -471,6 +471,20 @@
               "value": "See [finish.md](finish.md) for the full decision tree, action definitions, and pre-action verification constraints."
             }
           ]
+        }
+      ]
+    },
+    {
+      "heading": "Next Task Guidance",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "After FINISH completes, guide the user toward a clean start for the next task.",
+          "body": "A completed workflow leaves accumulated context that degrades the orchestrator's performance on the next task. The user should start fresh — either with `/clear` in the same session or by opening a new session."
+        },
+        {
+          "type": "text",
+          "value": "After all FINISH actions are done, present the user with:\n\n1. A summary of what was completed\n2. A recommendation to start fresh for the next task\n3. A ready-to-use prompt they can paste into the new session\n\nThe prompt should include enough context for the new orchestrator to pick up without re-discovery — the project name, any deferred items, and relevant note paths.\n\nExample output:\n\n> **Workflow complete.** For the next task, start a clean session or run `/clear`, then `/gobbi`.\n>\n> If continuing related work, paste this prompt:\n>\n> `Previous task: {task-slug}. Notes at $CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/{note-dir}/. Deferred items: {list or none}. Next: {user's stated next step if known}.`"
         }
       ]
     },

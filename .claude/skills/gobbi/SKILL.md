@@ -10,11 +10,13 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 **FIRST — load core skills before anything else.** Load `_orchestration`, `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until all four are loaded.
 
-**SECOND — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, docs authoring, and validation. Without it, the workflow cannot function.
+**SECOND — ensure `_gobbi-rule` symlinks exist.** Check whether `.claude/rules/_gobbi-rule.json` and `.claude/rules/_gobbi-rule.md` exist in `$CLAUDE_PROJECT_DIR`. If either is missing, create symlinks from `.claude/rules/` pointing to the corresponding files in the `_gobbi-rule-container` skill directory. These symlinks make the core behavioral rules always-active and auto-update when the gobbi plugin is updated.
 
-**THIRD — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly. If no settings exist for this session, continue to the setup questions.
+**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, docs authoring, and validation. Without it, the workflow cannot function.
 
-**THEN — ask the user four setup questions** with AskUserQuestion (only if no existing settings were reused).
+**FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly. If no settings exist for this session, continue to the setup questions.
+
+**FIFTH — ask the user four setup questions** with AskUserQuestion (only if no existing settings were reused).
 
 **First question — trivial case range:**
 - **Read-only (no code changes)** — reading files, explaining code, running status commands, searching codebase. Any code change must be delegated.
@@ -49,9 +51,9 @@ After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If cr
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
-**FIFTH — run documentation health check.** Run `gobbi doctor --format json` to check `.claude/` documentation health. If the report status is `clean`, proceed silently. If `attention-needed` or `degraded`, show a brief informational summary (2-3 lines) of the findings to the user — do not ask a question, just inform. The doctor output provides context for the project-setup phase that follows.
+**SIXTH — SKIP (gobbi doctor not yet available as CLI command).** Run `gobbi doctor --format json` to check `.claude/` documentation health. If the report status is `clean`, proceed silently. If `attention-needed` or `degraded`, show a brief informational summary (2-3 lines) of the findings to the user — do not ask a question, just inform. The doctor output provides context for the project-setup phase that follows.
 
-**SIXTH — project context detection.** This runs automatically at session start without asking. Load project-setup.md to execute detection.
+**SEVENTH — project context detection.** This runs automatically at session start without asking. Load project-setup.md to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.
 
@@ -176,9 +178,8 @@ Utility and maintenance tooling.
 
 | Skill | Purpose |
 |---|---|
-| **__validate** | Validate agent definitions, skill docs, and gotcha entries. Bundled scripts for structure and anti-pattern checking. |
 | **_doctor** | Unified health check. Verify .claude/ docs match codebase reality, assess maturity, and check completeness. |
-| **__benchmark** | Skill benchmarking methodology. Eval scenarios and scoring for measuring skill effectiveness. |
+| **_gobbi-rule-container** | Container for `_gobbi-rule` behavioral rule. Source files symlinked into `.claude/rules/` at session start for auto-update with plugin. |
 
 #### Evaluation criteria child docs
 

@@ -2,6 +2,8 @@
 
 How the workflow concludes with merge, commit, and compact options. FINISH comes after Review (Step 7) or after a FEEDBACK → Review loop. Load this when the user selects FINISH to understand the decision tree, pre-action verification, and cleanup responsibilities.
 
+
+
 ---
 
 ## Core Principle

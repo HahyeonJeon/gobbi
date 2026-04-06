@@ -64,7 +64,7 @@
             ],
             [
               "**Line limit**",
-              "**Must** stay under 500 lines per file. **Should** target under 200 lines. If a file exceeds this, decompose into hierarchy."
+              "**Must** stay under 500 lines per file. **Should** target under 400 lines. If a file exceeds this, decompose into hierarchy."
             ]
           ]
         },
@@ -271,7 +271,7 @@
           "style": "bullet",
           "items": [
             "[ ] Points to codebase for implementation patterns (\"read existing X\")",
-            "[ ] Under 500 lines (must), targeting under 200 (should)",
+            "[ ] Under 500 lines (must), targeting under 400 (should)",
             "[ ] No duplication with other `.claude/` files"
           ]
         },

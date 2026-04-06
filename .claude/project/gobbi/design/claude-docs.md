@@ -144,9 +144,7 @@ Standalone interface entry point — no category.
 
 | Name | Path | Description |
 |------|------|-------------|
-| __validate | `.claude/skills/__validate/SKILL.md` | Structural validation of agent definitions, skill files, and gotcha entries. |
 | _doctor | `.claude/skills/_doctor/SKILL.md` | Unified health check. Verify `.claude/` docs match codebase reality, assess maturity, and check completeness. |
-| __benchmark | `.claude/skills/__benchmark/SKILL.md` | Skill benchmarking methodology. Eval scenarios and scoring. |
 
 ### Skill Child Docs
 
@@ -178,13 +176,6 @@ Standalone interface entry point — no category.
 | __security | `.claude/skills/_gotcha/__security.md` | Security vulnerability signals for evaluators. |
 | __system | `.claude/skills/_gotcha/__system.md` | Environment, processes, hooks, infrastructure. |
 
-### Benchmark Scenarios
-
-| Name | Path | Description |
-|------|------|-------------|
-| scenario-01 | `.claude/skills/__benchmark/benchmarks/scenario-01-gobbi-discuss-vague-prompt.md` | Tests _discuss handling of vague requests. |
-| scenario-02 | `.claude/skills/__benchmark/benchmarks/scenario-02-gobbi-claude-skills-skill-creation.md` | Tests _skills handling of vague skill creation requests. |
-
 ### Project Docs
 
 | Name | Path | Description |
@@ -213,12 +204,11 @@ Standalone interface entry point — no category.
 | Skills — Work (child: Project Evaluation) | 6 |
 | Skills — Work (child: Notification) | 3 |
 | Skills — Docs | 5 |
-| Skills — Tool | 3 |
+| Skills — Tool | 1 |
 | Skill child docs | 6 |
-| Benchmark scenarios | 2 |
 | Gotcha files | 14 |
 | Project docs | 5 |
-| **Total** | **78** |
+| **Total** | **74** |
 
 ---
 
@@ -230,7 +220,7 @@ Skill directory names and agent filenames use **hyphens as word separators** wit
 
 - No prefix — interface (user-invokable). Only `gobbi`.
 - `_` prefix — hidden (system-loaded during workflow). Examples: `_plan`, `_skills`.
-- `__` prefix — internal (gobbi machinery). Examples: `__validate`, `__benchmark`.
+- `__` prefix — internal (gobbi machinery). Examples: `__executor`, `__pi`.
 
 Single-word names are unaffected by the hyphen rule. The tier prefix is part of the name — omitting it changes visibility. The rule file is `__gobbi-convention.md`.
 

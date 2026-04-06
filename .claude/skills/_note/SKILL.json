@@ -170,7 +170,7 @@
       "content": [
         {
           "type": "text",
-          "value": "`gobbi note collect` takes a `<phase>` argument (`research` or `execution`) to write to the correct `subtasks/` subdirectory. Each JSON file contains the delegation prompt and the subagent's final result — the two pieces needed to reconstruct what was asked and what was delivered."
+          "value": "`gobbi note collect` takes a `<phase>` argument (`research` or `execution`) to write to the correct `subtasks/` subdirectory. Each JSON file contains delegation metadata, the full prompt, and the subagent's final result — everything needed to reconstruct what was asked, how it was delegated, and what was delivered."
         },
         {
           "type": "list",
@@ -179,6 +179,34 @@
             "One file per subtask, zero-padded sequence number for ordering",
             "Extracted automatically — the orchestrator calls the script after each subagent returns, not batched at collection",
             "Contains the full delegation prompt and full final result as structured JSON, not summaries"
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Subtask JSON Format",
+          "content": [
+            {
+              "type": "text",
+              "value": "Each subtask file at `{phase}/subtasks/{NN}-{slug}.json` has three sections: delegation metadata, prompt, and result."
+            },
+            {
+              "type": "table",
+              "headers": ["Field", "Source", "Description"],
+              "rows": [
+                ["`agentId`", "Agent tool result", "The subagent's unique ID returned by the Agent tool (e.g., `a74edda5b7f076239`)"],
+                ["`agentType`", "Agent tool `subagent_type`", "Which agent definition was used (e.g., `__executor`, `__researcher`, `__pi`, `gobbi-agent`, `_agent-evaluator`)"],
+                ["`description`", "Agent tool `description`", "Short description passed to the Agent tool (3-5 words)"],
+                ["`model`", "Agent tool `model` or default", "Model used for this delegation (e.g., `claude-opus-4-6`, `claude-sonnet-4-6`)"],
+                ["`effort`", "Agent effort level", "Effort level for this delegation (e.g., `high`, `max`)"],
+                ["`timestamp`", "Transcript", "ISO 8601 timestamp of when the delegation started"],
+                ["`delegationPrompt`", "Transcript first message", "The full delegation prompt sent to the subagent — complete text, not a summary"],
+                ["`finalResult`", "Transcript last message", "The subagent's final response — complete text, not a summary"]
+              ]
+            },
+            {
+              "type": "text",
+              "value": "The `delegationPrompt` and `finalResult` fields contain the full text as strings. They may include markdown, code blocks, and special characters — all properly JSON-escaped by `gobbi note collect`. These fields are the primary record of what was delegated and what was delivered. Downstream agents (synthesis, evaluation) read these files from disk rather than receiving summaries through prompts."
+            }
           ]
         }
       ]

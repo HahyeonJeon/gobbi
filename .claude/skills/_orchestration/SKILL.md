@@ -1,6 +1,6 @@
 ---
 name: _orchestration
-description: Guide the orchestrator through the adaptive workflow. Use when coordinating multi-agent tasks, routing through workflow steps, or managing transitions between steps and post-workflow phases.
+description: Guide the orchestrator through the adaptive workflow. Use when coordinating multi-agent tasks, routing through workflow steps, or managing transitions between steps and post-workflow phases. When loading this skill, also load _note, _evaluation, and _discuss immediately — they are needed at every workflow step.
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 ---
 
@@ -60,19 +60,21 @@ Add FEEDBACK tasks when the user selects FEEDBACK after Review. Add FINISH task 
 ---
 
 
-**Load at workflow start:** _note, _evaluation
+**Must load at workflow start — these are needed at every step:** _note, _evaluation, _discuss
 
 **Load at each step:**
 
 | Step | Load Skills |
 |---|---|
-| Step 1. Ideation | _ideation, _discuss, _evaluation, _ideation-evaluation. Subagents: _innovation (innovative PI), _best-practice (best PI) |
-| Step 2. Planning | _plan, _discuss, _evaluation, _plan-evaluation |
-| Step 3. Research | _research, _evaluation, _research-evaluation. Subagents: _innovation (innovative researcher), _best-practice (best researcher) |
-| Step 4. Execution | _delegation, _evaluation |
+| Step 1. Ideation | _ideation + project-specific evaluation skills |
+| Step 2. Planning | _plan + project-specific evaluation skills |
+| Step 3. Research | _research + project-specific evaluation skills |
+| Step 4. Execution | _delegation |
 | Step 5. Collection | _collection |
-| Step 6. Memorization | _memorization, _gotcha |
-| Step 7. Review | _ideation (for context), _evaluation. Subagents: _innovation (innovative PI), _best-practice (best PI) |
+| Step 6. Memorization | _memorization |
+| Step 7. Review | _ideation (for context) |
+
+**Project-specific evaluation skills** — each step that supports evaluation needs the project's evaluation skills loaded into evaluator agents. Projects define their own evaluation criteria tailored to their domain, tech stack, and quality standards. The orchestrator loads the project's evaluation skills for each step.
 
 **Must write note at every step** — write the corresponding note file before leaving each step. Never defer, never skip.
 
@@ -280,6 +282,30 @@ Wrap the workflow with merge, commit, and/or compact options. The decision tree 
 Re-verify at the point of use, not only at session start.
 
 See [finish.md](finish.md) for the full decision tree, action definitions, and pre-action verification constraints.
+
+---
+
+## Next Task Guidance
+
+> **After FINISH completes, guide the user toward a clean start for the next task.**
+
+A completed workflow leaves accumulated context that degrades the orchestrator's performance on the next task. The user should start fresh — either with `/clear` in the same session or by opening a new session.
+
+After all FINISH actions are done, present the user with:
+
+1. A summary of what was completed
+2. A recommendation to start fresh for the next task
+3. A ready-to-use prompt they can paste into the new session
+
+The prompt should include enough context for the new orchestrator to pick up without re-discovery — the project name, any deferred items, and relevant note paths.
+
+Example output:
+
+> **Workflow complete.** For the next task, start a clean session or run `/clear`, then `/gobbi`.
+>
+> If continuing related work, paste this prompt:
+>
+> `Previous task: {task-slug}. Notes at $CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/{note-dir}/. Deferred items: {list or none}. Next: {user's stated next step if known}.`
 
 ---
 

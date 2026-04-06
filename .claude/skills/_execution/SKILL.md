@@ -50,7 +50,7 @@ Check your work against the task's acceptance criteria and any relevant gotchas.
 
 ### Study
 
-Build understanding before acting by loading the context layers specified in your briefing. Each layer adds depth — start with standards, then narrow toward the code you'll change:
+Build understanding before acting by loading the context layers specified in your briefing. Each layer adds depth — start with standards, then narrow toward the code you'll change. When reading any documentation directory, read its README first — it provides the overview and index that orients you before diving into details.
 
 - **Research materials** — read research notes from the task's `research/` directory. Start with `research.md` (synthesis), then check `results/` for detailed files relevant to your subtask
 - **Documentation standard** (`_claude`) — how `.claude/` files work and how to write them

@@ -171,13 +171,12 @@ Renders as `### {heading}` followed by content blocks.
 - **`allowed-tools` optional** for skills (`_project`, `_rules` omit it).
 - **Cross-cutting gotcha files** (`__system.md`, `__security.md`) are `gotcha` type.
 - **Guidance docs** (`project-gotcha.md`, `skills-gotcha.md`) are `child` type (teach how to write gotchas, don't contain entries).
-- **Benchmark scenarios** are `child` type with `"parent": "__benchmark"`.
 
 ---
 
 ## Authoritative File Inventory
 
-**Total: 87 files**
+**Total: 83 files**
 
 Excluded: `CLAUDE.md`, `project/`, `worktrees/`
 
@@ -189,7 +188,7 @@ Excluded: `CLAUDE.md`, `project/`, `worktrees/`
 | D | Docs cluster | 13 | _claude (SKILL + transcripts + gotchas), _skills (SKILL + authoring + verification + evaluation), _agents (SKILL + evaluation), _rules (SKILL + evaluation), _project (SKILL + evaluation) |
 | E | Orchestration cluster | 10 | _orchestration (SKILL + feedback + finish + gotchas), _plan (SKILL + gotchas), _delegation (SKILL + gotchas), _execution (SKILL + gotchas) |
 | F | Work skills | 17 | _discuss, _ideation, _ideation-eval, _plan-eval, _evaluation (SKILL + evaluation), _collection (SKILL + gotchas), _memorization, _note (SKILL + gotchas), _gotcha (SKILL + project-gotcha + skills-gotcha + __system + __security + evaluation) |
-| G | Tool skills | 8 | _git (SKILL + conventions + gotchas), _doctor, __validate, __benchmark (SKILL + 2 scenarios) |
+| G | Tool skills | 4 | _git (SKILL + conventions + gotchas), _doctor |
 | H | Skills evaluation | 6 | _skills-evaluation-{project,architecture,performance,aesthetics,overall,user} |
 | I | Agent evaluation | 6 | _agent-evaluation-{project,architecture,performance,aesthetics,overall,user} |
 | J | Project evaluation | 6 | _project-evaluation-{project,architecture,performance,aesthetics,overall,user} |
@@ -199,10 +198,10 @@ Excluded: `CLAUDE.md`, `project/`, `worktrees/`
 
 | Type | Count |
 |------|-------|
-| skill | 44 |
-| child | 23 |
+| skill | 42 |
+| child | 21 |
 | gotcha | 12 |
 | agent | 6 |
 | rule | 1 |
 | root | 1 |
-| **Total** | **87** |
+| **Total** | **83** |

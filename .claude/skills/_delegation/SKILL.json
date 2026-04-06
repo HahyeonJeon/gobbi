@@ -157,8 +157,8 @@
       "content": [
         {
           "type": "principle",
-          "statement": "Innovative stance always gets opus. Evaluators and reviewers get sonnet. All agents run at max effort.",
-          "body": "Creative and implementation work demands deep reasoning — opus handles ambiguity, novelty, and quality. Assessment work (evaluation and review) follows structured criteria — sonnet handles this reliably. The orchestrator uses the Agent tool's `model` parameter to set the model at spawn time."
+          "statement": "Innovative stance always gets opus. Evaluators, reviewers, and claude docs agents get sonnet. All agents run at max effort.",
+          "body": "Creative and implementation work demands deep reasoning — opus handles ambiguity, novelty, and quality. Assessment work (evaluation, review) and documentation work (`.claude/` authoring) follow structured criteria and established patterns — sonnet handles this reliably at high effort. The orchestrator uses the Agent tool's `model` parameter to set the model at spawn time."
         },
         {
           "type": "table",
@@ -220,8 +220,8 @@
             [
               "`gobbi-agent`",
               "—",
-              "opus",
-              "Documentation quality requires strong reasoning"
+              "sonnet",
+              "Documentation follows established patterns and structured criteria"
             ]
           ]
         },
@@ -301,13 +301,13 @@
               "`gobbi-agent`",
               "Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks",
               "Step 4 (Execution) for any subtask involving `.claude/` configuration. Loaded with _claude, _skills, _agents, _rules as needed.",
-              "Opus"
+              "Sonnet"
             ]
           ]
         },
         {
           "type": "text",
-          "value": "Creative agents (PI, researcher) and implementation agents (executor, gobbi-agent) run at opus. Evaluators run at sonnet — they follow structured criteria, not creative reasoning. See Model Selection for the full assignment table."
+          "value": "Creative agents (PI, researcher) and implementation agents (executor) run at opus. Evaluators and gobbi-agent run at sonnet — they follow structured criteria and established patterns, not creative reasoning. See Model Selection for the full assignment table."
         }
       ]
     },

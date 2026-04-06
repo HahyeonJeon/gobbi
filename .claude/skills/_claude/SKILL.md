@@ -46,7 +46,7 @@ What effective `.claude/` documentation looks like:
 | **Principles over procedures** | State what matters and why. "Each component decomposes into X, Y, Z — read existing code for the pattern." |
 | **Constraints over templates** | Tell agents what NOT to do (clear boundary) rather than what TO do (rigid path). Constraints leave room for judgment. |
 | **Codebase over examples** | Point agents to read existing implementations. The codebase is the single source of truth. |
-| **Line limit** | **Must** stay under 500 lines per file. **Should** target under 200 lines. If a file exceeds this, decompose into hierarchy. |
+| **Line limit** | **Must** stay under 500 lines per file. **Should** target under 400 lines. If a file exceeds this, decompose into hierarchy. |
 
 **CLAUDE.md specifically**: Reference card, not tutorial. Don't duplicate content from skills or rules — link to them. Loaded every session, so make it scannable.
 
@@ -131,7 +131,7 @@ Before publishing any `.claude/` documentation:
 **Writing Pattern**
 
 - [ ] Points to codebase for implementation patterns ("read existing X")
-- [ ] Under 500 lines (must), targeting under 200 (should)
+- [ ] Under 500 lines (must), targeting under 400 (should)
 - [ ] No duplication with other `.claude/` files
 
 **Anti-Pattern**

@@ -48,7 +48,7 @@
         "priority": "High",
         "what-happened": "A hidden skill (`_plan`) referenced an internal agent (`__pi`) by name. Internal names (double underscore prefix) are implementation details for gobbi contributors — they should not appear in hidden or interface tier docs that end users and workflow agents read.",
         "user-feedback": "\"Never use internal skills or internal agents like `__pi`.\"",
-        "correct-approach": "Hidden (`_`) and interface (no prefix) docs must never reference internal (`__`) names. Use generic terms instead — \"research agents\" not \"`__pi`\", \"validation tooling\" not \"`__validate`\". Internal names leak implementation details and create coupling between tiers that should be independent."
+        "correct-approach": "Hidden (`_`) and interface (no prefix) docs must never reference internal (`__`) names. Use generic terms instead — \"research agents\" not \"`__pi`\", \"executor agents\" not \"`__executor`\". Internal names leak implementation details and create coupling between tiers that should be independent."
       },
       "metadata": {
         "priority": "high"

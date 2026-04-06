@@ -20,8 +20,6 @@ Skill examples: `_orchestration`, `_discuss`, `_plan`, `_evaluation`, `_skills-e
 
 **Internal** (double `__` prefix) — Deep implementation details: development tooling. Relevant only to gobbi contributors.
 
-Skill examples: `__validate`, `__benchmark`
-
 Agent examples: `__executor`, `__pi`
 
 ---
@@ -60,10 +58,6 @@ Examples: `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_delegation`, `_e
 **Docs** — Skills for authoring and maintaining `.claude/` documentation.
 
 Examples: `_claude`, `_skills`, `_agents`, `_rules`, `_project`
-
-**Tool** — Utility and maintenance tooling for gobbi contributors.
-
-Examples: `__validate`, `__benchmark`
 
 Some Work skills (Evaluation, Git, Notification, Gotcha) have child categories grouping related sub-skills. Child categories follow the same naming rules and do not introduce additional prefix tiers.
 

@@ -1,0 +1,1 @@
+../skills/_gobbi-rule-container/_gobbi-rule.md

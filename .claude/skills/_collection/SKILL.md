@@ -101,7 +101,7 @@ Collection runs at different points depending on the workflow phase. The verific
 
 Verify all four subdirectories: `ideation/`, `plan/`, `research/`, `execution/`. Check that subtask JSON files exist in `research/subtasks/` and `execution/subtasks/`. Check that `evaluation/` subdirectories exist for any step where evaluation was performed.
 
-Subtask JSON files are written during their respective steps (Step 3 and Step 4) via `subtask-collect.sh` with a `<phase>` argument. Collection verifies they exist, it does not create them.
+Subtask JSON files are written during their respective steps (Step 3 and Step 4) via `gobbi note collect` with a `--phase` argument. Collection verifies they exist and conform to the subtask JSON format defined in _note — each file must contain the required fields: `agentId`, `agentType`, `description`, `model`, `effort`, `timestamp`, `delegationPrompt`, `finalResult`. Collection does not create these files.
 
 ### After FEEDBACK
 

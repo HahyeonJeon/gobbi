@@ -2,6 +2,8 @@
 
 Mistakes in following the orchestration workflow (steps, transitions, FEEDBACK/FINISH cycle).
 
+
+
 ---
 
 ### Dropping into implementation mode during Review after long FEEDBACK
@@ -244,15 +246,15 @@ priority: high
 
 ---
 
-### Loading SKILL.md but not gotchas.md for core skills
+### Writing notes or note fragments to wrong paths
 ---
-priority: critical
+priority: high
 ---
 
-**Priority:** Critical
+**Priority:** High
 
-**What happened:** At session start, the orchestrator loaded `_git/SKILL.md` but never read `_git/gotchas.md`. During FINISH, the orchestrator hit 4 documented gotchas in sequence: `gh pr merge` failing because base branch was checked out, `git worktree remove` failing with untracked files, not cleaning up nested directories, and not verifying base branch sync before worktree creation. All of these were documented in `_git/gotchas.md` and would have been avoided with a 30-second read.
+**What happened:** The orchestrator wrote note files (ideation.md, plan.md, subtask JSON, evaluation files) to incorrect paths — sometimes to the project root instead of the note directory, sometimes to a sibling step's subdirectory, sometimes to a path missing the session-specific note directory prefix. This caused _collection verification to fail (missing expected files) and downstream agents to read stale or empty directories.
 
-**User feedback:** "Did you not load git gotchas when session start?"
+**User feedback:** Notes are ending up in the wrong path.
 
-**Correct approach:** When loading any core skill at session start, MUST also read its `gotchas.md` if one exists. The skill SKILL.md describes what to do; the gotchas describe what NOT to do. Loading one without the other guarantees repeating past mistakes. The `_gotcha` skill explicitly states: "MUST read `gotchas.md` when loading any skill that has one." This is not optional — it is the highest-priority read at session start.
+**Correct approach:** All note files must be written under the task's note directory initialized by `gobbi note init`. The path format is `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/{YYYYMMDD-HHMM}-{slug}-{session_id}/`. Each step writes to its own subdirectory within this path: `ideation/`, `plan/`, `research/`, `execution/`, `review/`. Always use the note directory path returned by `gobbi note init` as the base — never construct note paths manually or use relative paths. When _git is active, notes must go to the main tree's absolute path, not the worktree.

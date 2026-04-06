@@ -105,9 +105,9 @@ Every agent follows: **Study → Plan → Execute → Verify**. Your delegation 
 
 ## Model Selection
 
-> **Innovative stance always gets opus. Evaluators and reviewers get sonnet. All agents run at max effort.**
+> **Innovative stance always gets opus. Evaluators, reviewers, and claude docs agents get sonnet. All agents run at max effort.**
 
-Creative and implementation work demands deep reasoning — opus handles ambiguity, novelty, and quality. Assessment work (evaluation and review) follows structured criteria — sonnet handles this reliably. The orchestrator uses the Agent tool's `model` parameter to set the model at spawn time.
+Creative and implementation work demands deep reasoning — opus handles ambiguity, novelty, and quality. Assessment work (evaluation, review) and documentation work (`.claude/` authoring) follow structured criteria and established patterns — sonnet handles this reliably at high effort. The orchestrator uses the Agent tool's `model` parameter to set the model at spawn time.
 
 | Agent | Stance | Model | Rationale |
 |---|---|---|---|
@@ -119,7 +119,7 @@ Creative and implementation work demands deep reasoning — opus handles ambigui
 | `_skills-evaluator` | — | sonnet | Structured assessment against criteria |
 | `_project-evaluator` | — | sonnet | Structured assessment against criteria |
 | `__executor` | — | opus | Implementation quality requires strong reasoning |
-| `gobbi-agent` | — | opus | Documentation quality requires strong reasoning |
+| `gobbi-agent` | — | sonnet | Documentation follows established patterns and structured criteria |
 
 > **All review tasks use sonnet — override via the Agent tool's `model` parameter.**
 
@@ -157,9 +157,9 @@ The orchestrator delegates to these agent types. Each has a distinct role in the
 | `_skills-evaluator` | Structured assessment — evaluates skill documentation quality | After skill authoring when evaluation is requested. | Sonnet |
 | `_project-evaluator` | Structured assessment — evaluates project alignment and conventions | After any step when project-perspective evaluation is requested. | Sonnet |
 | `__executor` | "Do it" — code implementation, file changes, concrete deliverables | Step 4 (Execution). Reads research for direction, then implements with engineering judgment. Commits verified work. | Opus |
-| `gobbi-agent` | Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks | Step 4 (Execution) for any subtask involving `.claude/` configuration. Loaded with _claude, _skills, _agents, _rules as needed. | Opus |
+| `gobbi-agent` | Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks | Step 4 (Execution) for any subtask involving `.claude/` configuration. Loaded with _claude, _skills, _agents, _rules as needed. | Sonnet |
 
-Creative agents (PI, researcher) and implementation agents (executor, gobbi-agent) run at opus. Evaluators run at sonnet — they follow structured criteria, not creative reasoning. See Model Selection for the full assignment table.
+Creative agents (PI, researcher) and implementation agents (executor) run at opus. Evaluators and gobbi-agent run at sonnet — they follow structured criteria and established patterns, not creative reasoning. See Model Selection for the full assignment table.
 
 ---
 

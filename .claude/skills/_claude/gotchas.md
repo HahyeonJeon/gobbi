@@ -2,6 +2,8 @@
 
 Mistakes in writing `.claude/` documentation. These cause agents to produce rigid, templated output instead of thinking.
 
+
+
 ---
 
 ### Code examples in .claude/ docs
@@ -66,7 +68,7 @@ priority: high
 
 **User feedback:** "Never use internal skills or internal agents like `__pi`."
 
-**Correct approach:** Hidden (`_`) and interface (no prefix) docs must never reference internal (`__`) names. Use generic terms instead — "research agents" not "`__pi`", "validation tooling" not "`__validate`". Internal names leak implementation details and create coupling between tiers that should be independent.
+**Correct approach:** Hidden (`_`) and interface (no prefix) docs must never reference internal (`__`) names. Use generic terms instead — "research agents" not "`__pi`", "executor agents" not "`__executor`". Internal names leak implementation details and create coupling between tiers that should be independent.
 
 ---
 
