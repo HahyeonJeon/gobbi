@@ -258,3 +258,18 @@ priority: high
 **User feedback:** Notes are ending up in the wrong path.
 
 **Correct approach:** All note files must be written under the task's note directory initialized by `gobbi note init`. The path format is `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/{YYYYMMDD-HHMM}-{slug}-{session_id}/`. Each step writes to its own subdirectory within this path: `ideation/`, `plan/`, `research/`, `execution/`, `review/`. Always use the note directory path returned by `gobbi note init` as the base — never construct note paths manually or use relative paths. When _git is active, notes must go to the main tree's absolute path, not the worktree.
+
+---
+
+### Checking directory existence is NOT collecting — must actually run gobbi note collect
+---
+priority: critical
+---
+
+**Priority:** Critical
+
+**What happened:** The orchestrator initialized the note directory and spawned subagents, but after subagents completed, it only checked whether the step subdirectories existed (ls, glob) instead of running `gobbi note collect` to extract subagent outputs from transcripts. The `subtasks/` directories were empty. The orchestrator treated directory existence as proof of collection, but directories are created at init — they are always empty until `gobbi note collect` populates them.
+
+**User feedback:** The orchestrator just checks directory existence without real collecting.
+
+**Correct approach:** After EVERY subagent returns, run `gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> --phase <step>`. Then VERIFY the subtask JSON file was created by reading it. Directory existence proves nothing — `gobbi note init` creates empty directories at workflow start. Only `gobbi note collect` populates them with extracted transcript content. The sequence is: subagent completes → run gobbi note collect → verify JSON file exists → proceed to next agent or synthesis.

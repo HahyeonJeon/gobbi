@@ -327,7 +327,7 @@ Omit sections that have nothing to report (e.g., no deferred items, no gotchas).
 - Before delegation, MUST include gotcha context in every subagent prompt
 - Before evaluation, MUST ask user with AskUserQuestion whether to **skip** evaluation — evaluation is the default at Steps 1–4, the user opts out, not in
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with
-- After delegation, MUST run `gobbi note collect` for each completed subagent immediately after each wave — before any downstream agent runs
+- After EVERY subagent completes, MUST run `gobbi note collect` with the agent-id and --phase flag to extract output to `subtasks/`. Then VERIFY the JSON file was actually created by reading it. Directory existence is NOT collection — directories are empty at init. Only `gobbi note collect` populates them.
 - After delegation, MUST write work docs via _collection — immediately, not deferred
 - After Step 7 (Review), MUST call AskUserQuestion to ask: FEEDBACK or FINISH?
 - After FEEDBACK, MUST return to Review (Step 7) — PI agents re-review

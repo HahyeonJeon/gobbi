@@ -206,6 +206,18 @@
       "metadata": {
         "priority": "high"
       }
+    },
+    {
+      "title": "Checking directory existence is NOT collecting — must actually run gobbi note collect",
+      "body": {
+        "priority": "Critical",
+        "what-happened": "The orchestrator initialized the note directory and spawned subagents, but after subagents completed, it only checked whether the step subdirectories existed (ls, glob) instead of running `gobbi note collect` to extract subagent outputs from transcripts. The `subtasks/` directories were empty. The orchestrator treated directory existence as proof of collection, but directories are created at init — they are always empty until `gobbi note collect` populates them.",
+        "user-feedback": "The orchestrator just checks directory existence without real collecting.",
+        "correct-approach": "After EVERY subagent returns, run `gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> --phase <step>`. Then VERIFY the subtask JSON file was created by reading it. Directory existence proves nothing — `gobbi note init` creates empty directories at workflow start. Only `gobbi note collect` populates them with extracted transcript content. The sequence is: subagent completes → run gobbi note collect → verify JSON file exists → proceed to next agent or synthesis."
+      },
+      "metadata": {
+        "priority": "critical"
+      }
     }
   ],
   "opening": "Mistakes in following the orchestration workflow (steps, transitions, FEEDBACK/FINISH cycle).",
