@@ -4,7 +4,7 @@
  * Subcommands:
  *   metadata                                    Output session metadata as key=value pairs
  *   init <project-name> <task-slug>             Create note directory structure
- *   collect <agent-id> <n> <slug> <note-dir>    Extract subagent result from JSONL transcript
+ *   collect <agent-id> <n> <slug> <note-dir>    Extract subagent result from JSONL transcript (--phase ideation|plan|research|execution|review)
  *   plan <note-dir>                             Extract plan from session transcript
  */
 
@@ -202,16 +202,18 @@ async function runNoteInit(args: string[]): Promise<void> {
   const dirName = `${datetime}-${slug}-${sessionId}`;
   const noteDir = path.join(claudeProjectDir, '.claude', 'project', projectName, 'note', dirName);
 
-  // Create per-step subdirectories
+  // Create per-step subdirectories — subtasks/ in every step
   await Promise.all([
+    mkdir(path.join(noteDir, 'ideation', 'subtasks'), { recursive: true }),
     mkdir(path.join(noteDir, 'ideation', 'evaluation'), { recursive: true }),
+    mkdir(path.join(noteDir, 'plan', 'subtasks'), { recursive: true }),
     mkdir(path.join(noteDir, 'plan', 'evaluation'), { recursive: true }),
     mkdir(path.join(noteDir, 'research', 'results'), { recursive: true }),
     mkdir(path.join(noteDir, 'research', 'subtasks'), { recursive: true }),
     mkdir(path.join(noteDir, 'research', 'evaluation'), { recursive: true }),
     mkdir(path.join(noteDir, 'execution', 'subtasks'), { recursive: true }),
     mkdir(path.join(noteDir, 'execution', 'evaluation'), { recursive: true }),
-    mkdir(path.join(noteDir, 'review'), { recursive: true }),
+    mkdir(path.join(noteDir, 'review', 'subtasks'), { recursive: true }),
   ]);
 
   // README.md with YAML frontmatter
@@ -298,7 +300,7 @@ async function runNoteInit(args: string[]): Promise<void> {
 async function runNoteCollect(args: string[]): Promise<void> {
   if (args[0] === '--help') {
     console.log(
-      `Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <research|execution>]\n\nExtract subagent result from JSONL transcript.\n\nOptions:\n  --phase <research|execution>  Route to step-specific subtasks/ subdirectory`,
+      `Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <ideation|plan|research|execution|review>]\n\nExtract subagent result from JSONL transcript.\n\nOptions:\n  --phase <ideation|plan|research|execution|review>  Route to step-specific subtasks/ subdirectory`,
     );
     return;
   }
@@ -328,14 +330,15 @@ async function runNoteCollect(args: string[]): Promise<void> {
   ) {
     console.error(
       error(
-        'Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <research|execution>]',
+        'Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <ideation|plan|research|execution|review>]',
       ),
     );
     process.exit(1);
   }
 
-  if (phase !== undefined && phase !== 'research' && phase !== 'execution') {
-    console.error(error(`Invalid phase: ${phase}. Must be 'research' or 'execution'.`));
+  const validPhases = ['ideation', 'plan', 'research', 'execution', 'review'];
+  if (phase !== undefined && !validPhases.includes(phase)) {
+    console.error(error(`Invalid phase: ${phase}. Must be one of: ${validPhases.join(', ')}.`));
     process.exit(1);
   }
 
