@@ -304,7 +304,7 @@
             {
               "type": "principle",
               "statement": "Write notes before leaving this step.",
-              "body": "Write plan.md with the complete approved plan to plan/. If evaluation was performed, evaluation files go to plan/evaluation/. The plan note must contain the full plan — tasks, dependencies, rationale, verification criteria — not a summary."
+              "body": "Write `plan.md` to `plan/` — the Revision follows agreement principle above specifies the content requirements. If evaluation was performed, evaluation files go to `plan/evaluation/`."
             }
           ]
         },
@@ -372,8 +372,8 @@
                 "Each subtask must be delegated to a specialist subagent with fresh context.",
                 "Every subagent prompt must include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary.",
                 "Every subagent must load _gotcha before starting work.",
-                "After each subtask completes, run `gobbi note collect` with the `--phase execution` flag to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result). Then spawn a separate evaluator agent to assess the output.",
-                "If evaluation fails, fix and re-evaluate before proceeding to the next subtask.",
+                "After each subtask completes, run `gobbi note collect` with the `--phase execution` flag to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result).",
+                "If evaluation is performed and fails, fix and re-evaluate before proceeding to the next subtask.",
                 "After all subtasks complete, write `execution.md` to the `execution/` subdirectory. Subtask JSON files are already on disk from the per-subtask `gobbi note collect` calls.",
                 "After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn."
               ]
@@ -385,13 +385,13 @@
             },
             {
               "type": "principle",
-              "statement": "Write notes before leaving this step.",
-              "body": "Write execution.md to execution/ with per-subtask results, issues encountered, and deviations from plan. Subtask JSON files should already be on disk from per-subtask gobbi note collect calls. If evaluation was performed, evaluation files go to execution/evaluation/. Notes must contain full execution outcomes, not summaries."
+              "statement": "MUST ask evaluation via AskUserQuestion after each subtask — default is evaluate.",
+              "body": "After each subtask completes and gobbi note collect extracts the output, MUST call AskUserQuestion to ask whether to evaluate or skip. Spawn evaluator agents unless the user explicitly opts out. If evaluation fails, fix and re-evaluate before proceeding to the next subtask."
             },
             {
               "type": "principle",
-              "statement": "MUST ask evaluation via AskUserQuestion after each subtask.",
-              "body": "After each subtask completes and gobbi note collect extracts the output, MUST call AskUserQuestion to ask whether to evaluate or skip. Spawn evaluator agents unless the user explicitly opts out. If evaluation fails, fix and re-evaluate before proceeding to the next subtask."
+              "statement": "Write notes before leaving this step.",
+              "body": "Write execution.md to execution/ with per-subtask results, issues encountered, and deviations from plan. If evaluation was performed, evaluation files go to execution/evaluation/. Notes must contain full execution outcomes, not summaries."
             }
           ]
         },

@@ -180,7 +180,7 @@ When a task crosses multiple subsystems or touches areas the orchestrator has li
 
 > **Write notes before leaving this step.**
 
-Write plan.md with the complete approved plan to plan/. If evaluation was performed, evaluation files go to plan/evaluation/. The plan note must contain the full plan — tasks, dependencies, rationale, verification criteria — not a summary.
+Write `plan.md` to `plan/` — the Revision follows agreement principle above specifies the content requirements. If evaluation was performed, evaluation files go to `plan/evaluation/`.
 
 ### Step 3. Research
 
@@ -223,8 +223,8 @@ Define the goal, constraints, and what to avoid. Detailed "how" instructions sup
 - Each subtask must be delegated to a specialist subagent with fresh context.
 - Every subagent prompt must include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary.
 - Every subagent must load _gotcha before starting work.
-- After each subtask completes, run `gobbi note collect` with the `--phase execution` flag to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result). Then spawn a separate evaluator agent to assess the output.
-- If evaluation fails, fix and re-evaluate before proceeding to the next subtask.
+- After each subtask completes, run `gobbi note collect` with the `--phase execution` flag to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result).
+- If evaluation is performed and fails, fix and re-evaluate before proceeding to the next subtask.
 - After all subtasks complete, write `execution.md` to the `execution/` subdirectory. Subtask JSON files are already on disk from the per-subtask `gobbi note collect` calls.
 - After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn.
 
@@ -232,13 +232,13 @@ Define the goal, constraints, and what to avoid. Detailed "how" instructions sup
 
 Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `$CLAUDE_PROJECT_DIR/.claude/project/` is gitignored and does not exist in worktrees.
 
-> **Write notes before leaving this step.**
-
-Write execution.md to execution/ with per-subtask results, issues encountered, and deviations from plan. Subtask JSON files should already be on disk from per-subtask gobbi note collect calls. If evaluation was performed, evaluation files go to execution/evaluation/. Notes must contain full execution outcomes, not summaries.
-
-> **MUST ask evaluation via AskUserQuestion after each subtask.**
+> **MUST ask evaluation via AskUserQuestion after each subtask — default is evaluate.**
 
 After each subtask completes and gobbi note collect extracts the output, MUST call AskUserQuestion to ask whether to evaluate or skip. Spawn evaluator agents unless the user explicitly opts out. If evaluation fails, fix and re-evaluate before proceeding to the next subtask.
+
+> **Write notes before leaving this step.**
+
+Write execution.md to execution/ with per-subtask results, issues encountered, and deviations from plan. If evaluation was performed, evaluation files go to execution/evaluation/. Notes must contain full execution outcomes, not summaries.
 
 ### Step 5. Collection
 
