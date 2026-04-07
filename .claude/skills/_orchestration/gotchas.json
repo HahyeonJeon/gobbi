@@ -230,6 +230,18 @@
       "metadata": {
         "priority": "critical"
       }
+    },
+    {
+      "title": "Evaluators must be spawned with perspective evaluation skills — never write ad-hoc criteria inline",
+      "body": {
+        "priority": "High",
+        "what-happened": "During Step 4 evaluation, the orchestrator spawned `_project-evaluator` agents but wrote ad-hoc evaluation criteria directly in the delegation prompt instead of loading the appropriate perspective evaluation skills (`_project-evaluation-project`, `_project-evaluation-overall`). The evaluators assessed using whatever criteria the orchestrator improvised rather than the structured, consistent criteria defined in the evaluation skills.",
+        "user-feedback": "Why are you evaluate inline? You should spawn subagents with appropriate skills.",
+        "correct-approach": "When spawning evaluator agents, always load the appropriate perspective evaluation skills into the delegation prompt. For project deliverable evaluation: `_project-evaluation-project`, `_project-evaluation-overall`, plus `_project-evaluation-architecture`, `_project-evaluation-performance`, or `_project-evaluation-aesthetics` as needed. For skill evaluation: `_skills-evaluation-*` perspectives. For agent evaluation: `_agent-evaluation-*` perspectives. The evaluation skills define the structured criteria — the orchestrator selects which perspectives to use, but never invents criteria."
+      },
+      "metadata": {
+        "priority": "high"
+      }
     }
   ],
   "opening": "Mistakes in following the orchestration workflow (steps, transitions, FEEDBACK/FINISH cycle).",

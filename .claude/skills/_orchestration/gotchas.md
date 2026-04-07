@@ -288,3 +288,18 @@ priority: critical
 **User feedback:** The orchestrator didn't add evaluation results and the subtasks when writing notes. Orchestrator MUST note in every step.
 
 **Correct approach:** Every step note MUST include all outputs produced during that step. For steps with evaluation: include the evaluation findings and the user's decisions about what to address, defer, or disagree with. For steps with subtasks: include or reference the subtask outputs collected via `gobbi note collect`. The note is the complete historical record of what happened at each step — if evaluation happened, it must be in the note. If subtasks ran, their results must be in the note. Writing notes at every step is mandatory, and each note must capture everything that occurred during that step, not just the orchestrator's synthesis.
+
+---
+
+### Evaluators must be spawned with perspective evaluation skills — never write ad-hoc criteria inline
+---
+priority: high
+---
+
+**Priority:** High
+
+**What happened:** During Step 4 evaluation, the orchestrator spawned `_project-evaluator` agents but wrote ad-hoc evaluation criteria directly in the delegation prompt instead of loading the appropriate perspective evaluation skills (`_project-evaluation-project`, `_project-evaluation-overall`). The evaluators assessed using whatever criteria the orchestrator improvised rather than the structured, consistent criteria defined in the evaluation skills.
+
+**User feedback:** Why are you evaluate inline? You should spawn subagents with appropriate skills.
+
+**Correct approach:** When spawning evaluator agents, always load the appropriate perspective evaluation skills into the delegation prompt. For project deliverable evaluation: `_project-evaluation-project`, `_project-evaluation-overall`, plus `_project-evaluation-architecture`, `_project-evaluation-performance`, or `_project-evaluation-aesthetics` as needed. For skill evaluation: `_skills-evaluation-*` perspectives. For agent evaluation: `_agent-evaluation-*` perspectives. The evaluation skills define the structured criteria — the orchestrator selects which perspectives to use, but never invents criteria.
