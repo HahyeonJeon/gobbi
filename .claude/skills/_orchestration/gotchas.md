@@ -126,18 +126,18 @@ priority: high
 
 ---
 
-### Evaluation should be optional at Steps 1-4 — ask user first
+### Evaluation MUST be asked via AskUserQuestion at Steps 1-4 — never skip the question, never ask in prose
 ---
-priority: high
+priority: critical
 ---
 
-**Priority:** High
+**Priority:** Critical
 
-**What happened:** During the Ideation step, the orchestrator automatically spawned evaluator agents after generating the idea without asking the user whether evaluation was needed. For straightforward tasks, this added unnecessary overhead and delay.
+**What happened:** During the Ideation step, the orchestrator automatically spawned evaluator agents after generating the idea without asking the user whether evaluation was needed. The orchestrator either skipped the question entirely or asked in prose text instead of using the AskUserQuestion tool. Both failures bypass the user's decision authority over evaluation.
 
-**User feedback:** Evaluation at Steps 1-4 should be optional. Ask the user with AskUserQuestion before launching evaluators.
+**User feedback:** Orchestrator MUST ask user if do evaluation or not with AskUserQuestion tool. Not in prose, not skipped — the AskUserQuestion call is mandatory.
 
-**Correct approach:** At Steps 1 (Ideation), 2 (Planning), 3 (Research), and 4 (Execution), use AskUserQuestion to ask the user whether they want to **skip** evaluation — evaluation is the default. Only skip if the user explicitly opts out. This preserves the quality gate for complex tasks while allowing streamlined flow for simpler ones.
+**Correct approach:** At Steps 1 (Ideation), 2 (Planning), 3 (Research), and 4 (Execution), the orchestrator MUST call AskUserQuestion with explicit options to ask whether the user wants to evaluate or skip evaluation. This is not optional — the AskUserQuestion call must happen before any evaluator agent is spawned. Never ask the evaluation question in prose text. Never assume the answer. Never skip the question. The default recommendation is to evaluate (put it first with "(Recommended)"), but the user decides.
 
 ---
 
@@ -273,3 +273,18 @@ priority: critical
 **User feedback:** The orchestrator just checks directory existence without real collecting.
 
 **Correct approach:** After EVERY subagent returns, run `gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> --phase <step>`. Then VERIFY the subtask JSON file was created by reading it. Directory existence proves nothing — `gobbi note init` creates empty directories at workflow start. Only `gobbi note collect` populates them with extracted transcript content. The sequence is: subagent completes → run gobbi note collect → verify JSON file exists → proceed to next agent or synthesis.
+
+---
+
+### Notes MUST include evaluation findings and subtask outputs — not just the orchestrator's own summary
+---
+priority: critical
+---
+
+**Priority:** Critical
+
+**What happened:** The orchestrator wrote step notes (ideation.md, plan.md, execution.md) but omitted evaluation findings and subtask outputs. Evaluation results from evaluator agents were discussed in conversation but never recorded in the note. Subtask outputs from executor agents were collected via `gobbi note collect` but not referenced or included in the step's note file. The notes only contained the orchestrator's own summary, losing the detailed findings from specialists.
+
+**User feedback:** The orchestrator didn't add evaluation results and the subtasks when writing notes. Orchestrator MUST note in every step.
+
+**Correct approach:** Every step note MUST include all outputs produced during that step. For steps with evaluation: include the evaluation findings and the user's decisions about what to address, defer, or disagree with. For steps with subtasks: include or reference the subtask outputs collected via `gobbi note collect`. The note is the complete historical record of what happened at each step — if evaluation happened, it must be in the note. If subtasks ran, their results must be in the note. Writing notes at every step is mandatory, and each note must capture everything that occurred during that step, not just the orchestrator's synthesis.
