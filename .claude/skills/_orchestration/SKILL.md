@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 
 # Orchestration
 
-You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding. When loading this skill, also load _note, _evaluation, and _discuss — they are needed at every workflow step.
+You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding. When loading this skill, also load _note, _evaluation, _discuss, and _delegation — they are needed at every workflow step.
 
 **Navigate deeper from here:**
 
@@ -60,7 +60,7 @@ Add FEEDBACK tasks when the user selects FEEDBACK after Review. Add FINISH task 
 ---
 
 
-**Must load at workflow start — these are needed at every step:** _note, _evaluation, _discuss
+**Must load at workflow start — these are needed at every step:** _note, _evaluation, _discuss, _delegation
 
 **Load at each step:**
 
@@ -113,9 +113,9 @@ A single evaluator catches the problems it is trained to see. Multiple perspecti
 
 An evaluator with only an evaluation perspective skill lacks the context to judge whether the work fits the project. Include domain-relevant skills, project-specific rules, gotchas, and conventions in the evaluator's prompt so it can assess quality against the standards that actually matter for this project.
 
-> **Evaluation is optional at Steps 1–4. Ask to skip — default is evaluate.**
+> **MUST ask evaluation via AskUserQuestion at Steps 1–4.**
 
-Use AskUserQuestion to ask if the user wants to **skip** evaluation — not whether they want to evaluate. Recommend evaluating. Only skip if the user explicitly chooses to. Catching problems early is cheaper than catching them late. Each step loops if evaluation finds issues.
+The orchestrator MUST call AskUserQuestion to ask whether to evaluate or skip at every evaluation point. This is mandatory — never skip the question, never ask in prose. Recommend evaluating (put it first with '(Recommended)'). Only skip evaluation if the user explicitly chooses to. Catching problems early is cheaper than catching them late. Each step loops if evaluation finds issues.
 
 ---
 
@@ -132,9 +132,9 @@ Use AskUserQuestion to explore the approach with the user — alternatives, trad
 
 After discussion, spawn two PI agents: one with the innovative stance and one with the best stance. Each writes their perspective independently. The orchestrator synthesizes their outputs into `ideation.md`.
 
-> **Evaluation is optional — ask to skip, not to evaluate.**
+> **MUST ask evaluation via AskUserQuestion — default is evaluate.**
 
-After synthesis, use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out.
+After synthesis, MUST call AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). This call is mandatory — never skip, never ask in prose. Spawn evaluators unless the user explicitly opts out.
 
 > **Evaluation findings are input to a conversation, not marching orders.**
 
@@ -143,6 +143,10 @@ When evaluation is performed, present the results to the user via AskUserQuestio
 > **Improvement follows agreement.**
 
 Refine the idea only based on what the user agreed to address. When the idea is solid, write `ideation.md` to the `ideation/` subdirectory and proceed to Step 2.
+
+> **Write notes before leaving this step.**
+
+Write ideation.md (orchestrator synthesis), innovative.md and best.md (PI agent outputs) to ideation/. If evaluation was performed, evaluation files go to ideation/evaluation/. Notes must contain full content — complete ideas, trade-offs, and evaluation findings — not summaries.
 
 > **Before moving to Step 2**, consider whether any implementation decisions are contribution points — irreducible user judgment calls that should be resolved via AskUserQuestion before the plan encodes them as constraints. See _ideation.
 
@@ -158,9 +162,9 @@ Use EnterPlanMode to explore the codebase, decompose, and write the plan. Use Ex
 
 Use AskUserQuestion to review the plan with the user before any evaluation.
 
-> **Evaluation is optional — ask to skip, not to evaluate.**
+> **MUST ask evaluation via AskUserQuestion — default is evaluate.**
 
-Use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out.
+MUST call AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). This call is mandatory — never skip, never ask in prose. Spawn evaluators unless the user explicitly opts out.
 
 > **Evaluation findings are discussed before acting.**
 
@@ -174,6 +178,10 @@ Use EnterPlanMode to revise based on the agreed-upon direction. When the plan is
 
 When a task crosses multiple subsystems or touches areas the orchestrator has limited context on, offer exploration to the user via AskUserQuestion before entering the plan loop. If accepted, spawn 2-3 parallel agents with different lenses (architecture, risk, conventions) and synthesize their findings into shared context for planning. If declined, proceed directly to planning. This is a judgment call — straightforward tasks in well-understood areas do not need exploration.
 
+> **Write notes before leaving this step.**
+
+Write plan.md with the complete approved plan to plan/. If evaluation was performed, evaluation files go to plan/evaluation/. The plan note must contain the full plan — tasks, dependencies, rationale, verification criteria — not a summary.
+
 ### Step 3. Research
 
 Investigate "how to do" for the approved plan. Research is mandatory for non-trivial tasks but may be skipped for structured routines where the execution pattern is fully known.
@@ -186,9 +194,13 @@ Each researcher investigates the approved plan from their stance. The innovative
 
 After both researchers complete, run `gobbi note collect` with the `research` phase argument to extract their outputs. The orchestrator then synthesizes both researcher outputs into `research.md` in the `research/` subdirectory.
 
-> **Evaluation is optional — ask to skip, not to evaluate.**
+> **MUST ask evaluation via AskUserQuestion — default is evaluate.**
 
-After synthesis, use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). If evaluation finds issues, loop back and refine the research. Research quality directly determines execution quality.
+After synthesis, MUST call AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). This call is mandatory — never skip, never ask in prose. If evaluation finds issues, loop back and refine the research. Research quality directly determines execution quality.
+
+> **Write notes before leaving this step.**
+
+Write research.md (orchestrator synthesis), innovative.md and best.md (researcher outputs) to research/. If evaluation was performed, evaluation files go to research/evaluation/. Notes must contain full research findings — approaches investigated, trade-offs analyzed, recommendations — not summaries.
 
 When the research is solid, proceed to Step 4. Executors MUST read the research materials before implementing.
 
@@ -219,6 +231,14 @@ Define the goal, constraints, and what to avoid. Detailed "how" instructions sup
 > **When _git is active**
 
 Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `$CLAUDE_PROJECT_DIR/.claude/project/` is gitignored and does not exist in worktrees.
+
+> **Write notes before leaving this step.**
+
+Write execution.md to execution/ with per-subtask results, issues encountered, and deviations from plan. Subtask JSON files should already be on disk from per-subtask gobbi note collect calls. If evaluation was performed, evaluation files go to execution/evaluation/. Notes must contain full execution outcomes, not summaries.
+
+> **MUST ask evaluation via AskUserQuestion after each subtask.**
+
+After each subtask completes and gobbi note collect extracts the output, MUST call AskUserQuestion to ask whether to evaluate or skip. Spawn evaluator agents unless the user explicitly opts out. If evaluation fails, fix and re-evaluate before proceeding to the next subtask.
 
 ### Step 5. Collection
 
@@ -252,6 +272,10 @@ The verdict is a clear signal. "pass" means the work meets quality standards. "f
 > **Reviews produce documentation for future sessions.**
 
 Beyond the verdict, each reviewer documents patterns observed, decisions worth preserving, and lessons learned. This documentation persists in the `review/` subdirectory and informs future work on the same codebase.
+
+> **Write notes before leaving this step.**
+
+After both PI agents complete, write review.md (orchestrator synthesis of verdicts) to review/. PI agent outputs go to review/innovative.md and review/best.md. Notes must contain full review findings and verdicts, not summaries.
 
 After Review completes, use AskUserQuestion to ask the user: FEEDBACK or FINISH?
 

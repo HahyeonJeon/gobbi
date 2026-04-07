@@ -6,7 +6,7 @@
     "allowed-tools": "Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion"
   },
   "title": "Orchestration",
-  "opening": "You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding. When loading this skill, also load _note, _evaluation, and _discuss — they are needed at every workflow step.",
+  "opening": "You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding. When loading this skill, also load _note, _evaluation, _discuss, and _delegation — they are needed at every workflow step.",
   "navigation": {
     "skills/_orchestration/feedback.md": "FEEDBACK phase: lightweight fix cycle after Review, iteration tracking, stagnation detection",
     "skills/_orchestration/finish.md": "FINISH phase: merge/commit/compact decision tree, pre-action verification",
@@ -116,7 +116,7 @@
       "content": [
         {
           "type": "text",
-          "value": "**Must load at workflow start — these are needed at every step:** _note, _evaluation, _discuss\n\n**Load at each step:**"
+          "value": "**Must load at workflow start — these are needed at every step:** _note, _evaluation, _discuss, _delegation\n\n**Load at each step:**"
         },
         {
           "type": "table",
@@ -209,8 +209,8 @@
             },
             {
               "type": "principle",
-              "statement": "Evaluation is optional at Steps 1–4. Ask to skip — default is evaluate.",
-              "body": "Use AskUserQuestion to ask if the user wants to **skip** evaluation — not whether they want to evaluate. Recommend evaluating. Only skip if the user explicitly chooses to. Catching problems early is cheaper than catching them late. Each step loops if evaluation finds issues."
+              "statement": "MUST ask evaluation via AskUserQuestion at Steps 1–4.",
+              "body": "The orchestrator MUST call AskUserQuestion to ask whether to evaluate or skip at every evaluation point. This is mandatory — never skip the question, never ask in prose. Recommend evaluating (put it first with '(Recommended)'). Only skip evaluation if the user explicitly chooses to. Catching problems early is cheaper than catching them late. Each step loops if evaluation finds issues."
             }
           ]
         }
@@ -239,8 +239,8 @@
             },
             {
               "type": "principle",
-              "statement": "Evaluation is optional — ask to skip, not to evaluate.",
-              "body": "After synthesis, use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out."
+              "statement": "MUST ask evaluation via AskUserQuestion — default is evaluate.",
+              "body": "After synthesis, MUST call AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). This call is mandatory — never skip, never ask in prose. Spawn evaluators unless the user explicitly opts out."
             },
             {
               "type": "principle",
@@ -251,6 +251,11 @@
               "type": "principle",
               "statement": "Improvement follows agreement.",
               "body": "Refine the idea only based on what the user agreed to address. When the idea is solid, write `ideation.md` to the `ideation/` subdirectory and proceed to Step 2."
+            },
+            {
+              "type": "principle",
+              "statement": "Write notes before leaving this step.",
+              "body": "Write ideation.md (orchestrator synthesis), innovative.md and best.md (PI agent outputs) to ideation/. If evaluation was performed, evaluation files go to ideation/evaluation/. Notes must contain full content — complete ideas, trade-offs, and evaluation findings — not summaries."
             },
             {
               "type": "text",
@@ -278,8 +283,8 @@
             },
             {
               "type": "principle",
-              "statement": "Evaluation is optional — ask to skip, not to evaluate.",
-              "body": "Use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). Spawn evaluators unless the user explicitly opts out."
+              "statement": "MUST ask evaluation via AskUserQuestion — default is evaluate.",
+              "body": "MUST call AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). This call is mandatory — never skip, never ask in prose. Spawn evaluators unless the user explicitly opts out."
             },
             {
               "type": "principle",
@@ -295,6 +300,11 @@
               "type": "principle",
               "statement": "Consider exploration before planning when the task spans unfamiliar territory.",
               "body": "When a task crosses multiple subsystems or touches areas the orchestrator has limited context on, offer exploration to the user via AskUserQuestion before entering the plan loop. If accepted, spawn 2-3 parallel agents with different lenses (architecture, risk, conventions) and synthesize their findings into shared context for planning. If declined, proceed directly to planning. This is a judgment call — straightforward tasks in well-understood areas do not need exploration."
+            },
+            {
+              "type": "principle",
+              "statement": "Write notes before leaving this step.",
+              "body": "Write plan.md with the complete approved plan to plan/. If evaluation was performed, evaluation files go to plan/evaluation/. The plan note must contain the full plan — tasks, dependencies, rationale, verification criteria — not a summary."
             }
           ]
         },
@@ -318,8 +328,13 @@
             },
             {
               "type": "principle",
-              "statement": "Evaluation is optional — ask to skip, not to evaluate.",
-              "body": "After synthesis, use AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). If evaluation finds issues, loop back and refine the research. Research quality directly determines execution quality."
+              "statement": "MUST ask evaluation via AskUserQuestion — default is evaluate.",
+              "body": "After synthesis, MUST call AskUserQuestion to ask whether the user wants to **skip** evaluation or proceed with evaluation (recommended). This call is mandatory — never skip, never ask in prose. If evaluation finds issues, loop back and refine the research. Research quality directly determines execution quality."
+            },
+            {
+              "type": "principle",
+              "statement": "Write notes before leaving this step.",
+              "body": "Write research.md (orchestrator synthesis), innovative.md and best.md (researcher outputs) to research/. If evaluation was performed, evaluation files go to research/evaluation/. Notes must contain full research findings — approaches investigated, trade-offs analyzed, recommendations — not summaries."
             },
             {
               "type": "text",
@@ -367,6 +382,16 @@
               "type": "principle",
               "statement": "When _git is active",
               "body": "Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `$CLAUDE_PROJECT_DIR/.claude/project/` is gitignored and does not exist in worktrees."
+            },
+            {
+              "type": "principle",
+              "statement": "Write notes before leaving this step.",
+              "body": "Write execution.md to execution/ with per-subtask results, issues encountered, and deviations from plan. Subtask JSON files should already be on disk from per-subtask gobbi note collect calls. If evaluation was performed, evaluation files go to execution/evaluation/. Notes must contain full execution outcomes, not summaries."
+            },
+            {
+              "type": "principle",
+              "statement": "MUST ask evaluation via AskUserQuestion after each subtask.",
+              "body": "After each subtask completes and gobbi note collect extracts the output, MUST call AskUserQuestion to ask whether to evaluate or skip. Spawn evaluator agents unless the user explicitly opts out. If evaluation fails, fix and re-evaluate before proceeding to the next subtask."
             }
           ]
         },
@@ -431,6 +456,11 @@
               "type": "principle",
               "statement": "Reviews produce documentation for future sessions.",
               "body": "Beyond the verdict, each reviewer documents patterns observed, decisions worth preserving, and lessons learned. This documentation persists in the `review/` subdirectory and informs future work on the same codebase."
+            },
+            {
+              "type": "principle",
+              "statement": "Write notes before leaving this step.",
+              "body": "After both PI agents complete, write review.md (orchestrator synthesis of verdicts) to review/. PI agent outputs go to review/innovative.md and review/best.md. Notes must contain full review findings and verdicts, not summaries."
             },
             {
               "type": "text",
