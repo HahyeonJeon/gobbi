@@ -6,7 +6,7 @@ allowed-tools: Read, Bash
 
 # Gobbi CLI
 
-Intent-first reference for the `gobbi` CLI. Start from what you need to accomplish, find the command, then follow the cross-reference to the domain skill that teaches the full workflow context.
+Intent-first reference for the `gobbi` CLI. Start from what you need to accomplish, find the command, then follow the cross-reference to the domain skill that teaches the full workflow context. This skill is loaded on-demand when agents need CLI command guidance, not proactively at session start.
 
 This skill answers "which command?" — domain skills answer "when and why?"
 
@@ -15,6 +15,7 @@ This skill answers "which command?" — domain skills answer "when and why?"
 | Document | Covers |
 |----------|--------|
 | [commands.md](commands.md) | Complete CLI syntax reference by command group |
+| [gotchas.md](gotchas.md) | Known CLI usage mistakes and corrections |
 
 ---
 
@@ -44,6 +45,7 @@ Commands for initializing a work session: creating note directories, loading con
 | Read a session config value | `gobbi config get <session-id> [key]` |
 | Write a session config value | `gobbi config set <session-id> <key> <val>` |
 | Create or migrate config file | `gobbi config init` |
+| Output session metadata to stdout | `gobbi note metadata` |
 | Load session metadata into env | `gobbi session metadata` |
 | Load `.claude/.env` into session | `gobbi session load-env` |
 | Check documentation health | `gobbi doctor` |
@@ -58,7 +60,7 @@ After every subagent completes, extract its delegation prompt and final result f
 
 | Intent | Command |
 |---|---|
-| Extract subagent result to note | `gobbi note collect <agent-id> <n> <slug> <note-dir> --phase <phase>` |
+| Extract subagent result to note | `gobbi note collect <agent-id> <n> <slug> <note-dir> [--phase <phase>]` |
 | Extract plan from session transcript | `gobbi note plan <note-dir>` |
 
 Preconditions for `gobbi note collect`: you must have the `agent-id` from the Agent tool result, the subtask number (`n`) for ordering, a descriptive slug, the note directory path from `gobbi note init`, and the `--phase` flag (`ideation`, `plan`, `research`, `execution`, or `review`) to route output to the correct step's `subtasks/` subdirectory.
@@ -100,6 +102,8 @@ Commands for navigating and analyzing the documentation corpus. All default to t
 | Run cross-document health checks | `gobbi docs health [directory]` |
 
 Filtering options: `docs list` and `docs search` accept `--type <type>` to filter by doc type. `docs search` also accepts `--block <type>` to filter by block type. Most exploration commands support `--format json` for programmatic consumption.
+
+`gobbi docs health` checks cross-document consistency only. For the full health check (references, schema, sync, maturity), use `gobbi doctor`.
 
 Cross-reference: `_doctor` for interpreting health check results.
 
@@ -155,6 +159,8 @@ Commands for image analysis, video frame extraction, and web page capture. These
 | Take a screenshot of a web page | `gobbi web screenshot <url>` |
 | Download images from a web page | `gobbi web capture <url>` |
 
+No dedicated domain skill — run `gobbi <command> --help` for detailed options.
+
 ---
 
 ## Common Mistakes
@@ -171,5 +177,5 @@ Commands for image analysis, video frame extraction, and web page capture. These
 
 - `gobbi audit` is deprecated -- use `gobbi doctor` instead
 - This skill documents what commands exist and when to use them; domain skills (`_claude`, `_note`, `_doctor`, `_notification`) teach the full workflow context
-- Installation and troubleshooting are in `gobbi/cli-setup.md`, not here
+- Installation and troubleshooting are in `skills/gobbi/cli-setup.md`, not here
 - Run `gobbi <command> --help` for the most current synopsis if this reference and the CLI disagree -- the CLI is the source of truth

@@ -6,7 +6,7 @@
     "allowed-tools": "Read, Bash"
   },
   "title": "Gobbi CLI",
-  "opening": "Intent-first reference for the `gobbi` CLI. Start from what you need to accomplish, find the command, then follow the cross-reference to the domain skill that teaches the full workflow context.\n\nThis skill answers \"which command?\" — domain skills answer \"when and why?\"",
+  "opening": "Intent-first reference for the `gobbi` CLI. Start from what you need to accomplish, find the command, then follow the cross-reference to the domain skill that teaches the full workflow context. This skill is loaded on-demand when agents need CLI command guidance, not proactively at session start.\n\nThis skill answers \"which command?\" — domain skills answer \"when and why?\"",
   "sections": [
     {
       "heading": "Core Principle",
@@ -43,6 +43,7 @@
             ["Read a session config value", "`gobbi config get <session-id> [key]`"],
             ["Write a session config value", "`gobbi config set <session-id> <key> <val>`"],
             ["Create or migrate config file", "`gobbi config init`"],
+            ["Output session metadata to stdout", "`gobbi note metadata`"],
             ["Load session metadata into env", "`gobbi session metadata`"],
             ["Load `.claude/.env` into session", "`gobbi session load-env`"],
             ["Check documentation health", "`gobbi doctor`"]
@@ -65,7 +66,7 @@
           "type": "table",
           "headers": ["Intent", "Command"],
           "rows": [
-            ["Extract subagent result to note", "`gobbi note collect <agent-id> <n> <slug> <note-dir> --phase <phase>`"],
+            ["Extract subagent result to note", "`gobbi note collect <agent-id> <n> <slug> <note-dir> [--phase <phase>]`"],
             ["Extract plan from session transcript", "`gobbi note plan <note-dir>`"]
           ]
         },
@@ -121,7 +122,7 @@
         },
         {
           "type": "text",
-          "value": "Filtering options: `docs list` and `docs search` accept `--type <type>` to filter by doc type. `docs search` also accepts `--block <type>` to filter by block type. Most exploration commands support `--format json` for programmatic consumption.\n\nCross-reference: `_doctor` for interpreting health check results."
+          "value": "Filtering options: `docs list` and `docs search` accept `--type <type>` to filter by doc type. `docs search` also accepts `--block <type>` to filter by block type. Most exploration commands support `--format json` for programmatic consumption.\n\n`gobbi docs health` checks cross-document consistency only. For the full health check (references, schema, sync, maturity), use `gobbi doctor`.\n\nCross-reference: `_doctor` for interpreting health check results."
         }
       ]
     },
@@ -194,6 +195,10 @@
             ["Take a screenshot of a web page", "`gobbi web screenshot <url>`"],
             ["Download images from a web page", "`gobbi web capture <url>`"]
           ]
+        },
+        {
+          "type": "text",
+          "value": "No dedicated domain skill — run `gobbi <command> --help` for detailed options."
         }
       ]
     },
@@ -221,7 +226,7 @@
           "items": [
             "`gobbi audit` is deprecated -- use `gobbi doctor` instead",
             "This skill documents what commands exist and when to use them; domain skills (`_claude`, `_note`, `_doctor`, `_notification`) teach the full workflow context",
-            "Installation and troubleshooting are in `gobbi/cli-setup.md`, not here",
+            "Installation and troubleshooting are in `skills/gobbi/cli-setup.md`, not here",
             "Run `gobbi <command> --help` for the most current synopsis if this reference and the CLI disagree -- the CLI is the source of truth"
           ]
         }
@@ -229,6 +234,7 @@
     }
   ],
   "navigation": {
-    "skills/_gobbi-cli/commands.md": "Complete CLI syntax reference by command group"
+    "skills/_gobbi-cli/commands.md": "Complete CLI syntax reference by command group",
+    "skills/_gobbi-cli/gotchas.md": "Known CLI usage mistakes and corrections"
   }
 }
