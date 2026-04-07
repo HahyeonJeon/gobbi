@@ -178,6 +178,7 @@ Utility and maintenance tooling.
 
 | Skill | Purpose |
 |---|---|
+| **_gobbi-cli** | Intent-first CLI reference. Maps agent tasks to gobbi commands and cross-references domain skills for workflow context. |
 | **_doctor** | Unified health check. Verify .claude/ docs match codebase reality, assess maturity, and check completeness. |
 | **_gobbi-rule-container** | Container for `_gobbi-rule` behavioral rule. Source files symlinked into `.claude/rules/` at session start for auto-update with plugin. |
 

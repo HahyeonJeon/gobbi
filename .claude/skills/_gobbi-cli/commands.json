@@ -1,0 +1,282 @@
+{
+  "$schema": "gobbi-docs/child",
+  "parent": "_gobbi-cli",
+  "title": "CLI Commands",
+  "opening": "Complete syntax reference for all `gobbi` CLI commands, organized by command group. For intent-based lookup (\"which command do I need?\"), see the parent SKILL.md.",
+  "sections": [
+    {
+      "heading": "note",
+      "content": [
+        {
+          "type": "text",
+          "value": "Workflow note management and transcript extraction. Every task gets a note directory; every subagent's output gets collected into it."
+        },
+        {
+          "type": "table",
+          "headers": ["Command", "Synopsis", "Description"],
+          "rows": [
+            ["`gobbi note metadata`", "`gobbi note metadata`", "Output session metadata as key=value pairs to stdout"],
+            ["`gobbi note init`", "`gobbi note init <project-name> <task-slug>`", "Create note directory structure with all step subdirectories and `metadata.json`"],
+            ["`gobbi note collect`", "`gobbi note collect <agent-id> <n> <slug> <note-dir> [--phase <phase>]`", "Extract subagent delegation prompt and final result from JSONL transcript into `{phase}/subtasks/{n}-{slug}.json`"],
+            ["`gobbi note plan`", "`gobbi note plan <note-dir>`", "Extract plan from session transcript and write `plan.json`"]
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "note collect options",
+          "content": [
+            {
+              "type": "table",
+              "headers": ["Option", "Values", "Description"],
+              "rows": [
+                ["`--phase`", "`ideation`, `plan`, `research`, `execution`, `review`", "Route output to the correct step's `subtasks/` subdirectory. Determines where the extracted JSON file is written."]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Cross-reference: `_note` for note directory structure, subtask JSON format, and when to write at each workflow step."
+        }
+      ]
+    },
+    {
+      "heading": "config",
+      "content": [
+        {
+          "type": "text",
+          "value": "Manage per-session workflow configuration stored in `gobbi.json`. Sessions are identified by session ID and store workflow state such as base branch, notification preferences, and project name."
+        },
+        {
+          "type": "table",
+          "headers": ["Command", "Synopsis", "Description"],
+          "rows": [
+            ["`gobbi config init`", "`gobbi config init`", "Create `gobbi.json` or migrate existing file to current schema version"],
+            ["`gobbi config get`", "`gobbi config get <session-id> [key]`", "Read entire session object or a specific field using dot-path notation"],
+            ["`gobbi config set`", "`gobbi config set <session-id> <key> <val>`", "Write a field using dot-path notation"],
+            ["`gobbi config delete`", "`gobbi config delete <session-id>`", "Remove a session entry"],
+            ["`gobbi config list`", "`gobbi config list`", "List all sessions as tab-separated `id\\tcreatedAt` pairs"],
+            ["`gobbi config cleanup`", "`gobbi config cleanup`", "Run TTL and max-entries cleanup to remove stale sessions"]
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Cross-reference: `gobbi` skill for session setup questions and configuration keys."
+        }
+      ]
+    },
+    {
+      "heading": "docs",
+      "content": [
+        {
+          "type": "text",
+          "value": "Manage gobbi-docs JSON templates and their Markdown output. The JSON-first workflow: edit `.json` source, run `json2md` to generate `.md`, run `validate` to check schema compliance. Never edit `.md` directly."
+        },
+        {
+          "type": "subsection",
+          "heading": "Authoring Commands",
+          "content": [
+            {
+              "type": "table",
+              "headers": ["Command", "Synopsis", "Description"],
+              "rows": [
+                ["`gobbi docs init`", "`gobbi docs init <type> [name] [--out <path>]`", "Scaffold a new JSON template. Types: `skill`, `agent`, `rule`, `root`, `child`, `gotcha`. Writes to stdout by default; use `--out` for file output."],
+                ["`gobbi docs json2md`", "`gobbi docs json2md <path>`", "Convert JSON template to Markdown. Writes the `.md` file alongside the `.json` source."],
+                ["`gobbi docs md2json`", "`gobbi docs md2json <path> [--stdout]`", "Migrate existing Markdown to JSON template. Writes `.json` alongside `.md` by default; use `--stdout` for stdout output."],
+                ["`gobbi docs validate`", "`gobbi docs validate <path>`", "Validate a JSON template against the gobbi-docs schema. Reports schema violations."],
+                ["`gobbi docs read`", "`gobbi docs read <path> [--section <name>]`", "Pretty-print JSON template metadata or a specific section."],
+                ["`gobbi docs spec`", "`gobbi docs spec`", "Show the full gobbi-docs JSON schema specification."]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Exploration Commands",
+          "content": [
+            {
+              "type": "table",
+              "headers": ["Command", "Synopsis", "Description"],
+              "rows": [
+                ["`gobbi docs list`", "`gobbi docs list [directory] [--type <type>] [--format <fmt>]`", "List all JSON templates with type, title, and content count. Formats: `table` (default), `json`."],
+                ["`gobbi docs tree`", "`gobbi docs tree [directory] [--format <fmt>]`", "Show navigation hierarchy as a tree. Formats: `text` (default), `json`."],
+                ["`gobbi docs search`", "`gobbi docs search <pattern> [directory] [--type <type>] [--block <type>] [--format <fmt>]`", "Search content across templates using regex. Filter by doc type or block type. Formats: `text` (default), `json`."],
+                ["`gobbi docs extract`", "`gobbi docs extract <path> <query> [--format <fmt>]`", "Extract content by dot-path query (e.g., `title`, `frontmatter.name`, `sections.Setup`). Formats: `json` (default), `md`, `text`."],
+                ["`gobbi docs stats`", "`gobbi docs stats [directory] [--format <fmt>]`", "Show aggregate corpus statistics. Formats: `text` (default), `json`."],
+                ["`gobbi docs health`", "`gobbi docs health [directory] [--format <fmt>]`", "Run cross-document health checks: orphans, broken links, empty sections, missing parents, bidirectional consistency. Exits with code 1 if errors found. Formats: `text` (default), `json`."]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Cross-reference: `_claude` for the documentation standard, writing guidelines, and block type reference."
+        }
+      ]
+    },
+    {
+      "heading": "doctor",
+      "content": [
+        {
+          "type": "text",
+          "value": "Unified health check for `.claude/` documentation. Consolidates reference checking, structural health, schema validation, JSON/MD sync, and completeness scoring into a single pass."
+        },
+        {
+          "type": "table",
+          "headers": ["Command", "Synopsis", "Description"],
+          "rows": [
+            ["`gobbi doctor`", "`gobbi doctor [--format <fmt>] [--plan] [--fix]`", "Run unified health check. Default output is human-readable text."]
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "doctor options",
+          "content": [
+            {
+              "type": "table",
+              "headers": ["Option", "Description"],
+              "rows": [
+                ["`--format <fmt>`", "Output format: `text` (default), `json` for structured output"],
+                ["`--plan`", "Terraform-plan-style preview of remediations. Shows auto-fixable, suggested, and skipped counts without changing anything. Exits with code 2 if auto-fixes are available."],
+                ["`--fix`", "Auto-apply deterministic fixes (sync-out-of-date, bidirectional-consistency, naming-mismatch), then re-run doctor to show new state."]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Cross-reference: `_doctor` for the maturity model (levels 0-4), check categories, auto-fixable versus suggested categories, and exit codes."
+        }
+      ]
+    },
+    {
+      "heading": "validate",
+      "content": [
+        {
+          "type": "text",
+          "value": "Validate individual documentation files against their expected structure. Unlike `gobbi doctor` which checks the entire corpus, `validate` checks one file at a time."
+        },
+        {
+          "type": "table",
+          "headers": ["Command", "Synopsis", "Description"],
+          "rows": [
+            ["`gobbi validate agent`", "`gobbi validate agent <file.md>`", "Validate an agent definition file"],
+            ["`gobbi validate skill`", "`gobbi validate skill <SKILL.md>`", "Validate a skill definition file"],
+            ["`gobbi validate gotcha`", "`gobbi validate gotcha <file.md>`", "Validate gotcha entries"],
+            ["`gobbi validate lint`", "`gobbi validate lint <file.md>`", "Lint a documentation file for anti-patterns"]
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Cross-reference: `_skills` for skill structure requirements, `_agents` for agent definition requirements, `_gotcha` for gotcha entry format."
+        }
+      ]
+    },
+    {
+      "heading": "notify",
+      "content": [
+        {
+          "type": "text",
+          "value": "Send notifications through configured channels (Slack, Telegram, Desktop). The `send` command is for direct use; the event-specific commands are designed for hook payloads."
+        },
+        {
+          "type": "table",
+          "headers": ["Command", "Synopsis", "Description"],
+          "rows": [
+            ["`gobbi notify send`", "`gobbi notify send [--title \"Title\"]`", "Send a plain-text message. Reads message body from stdin."],
+            ["`gobbi notify attention`", "`gobbi notify attention`", "Map NotificationEvent hook payload (stdin) to an attention message"],
+            ["`gobbi notify error`", "`gobbi notify error`", "Map StopFailure hook payload (stdin) to an error message"],
+            ["`gobbi notify completion`", "`gobbi notify completion`", "Map Stop hook payload (stdin) to a completion message (with loop guard)"],
+            ["`gobbi notify session`", "`gobbi notify session`", "Map SessionStart/SessionEnd hook payload (stdin) to a lifecycle message"],
+            ["`gobbi notify subagent`", "`gobbi notify subagent`", "Map SubagentStop hook payload (stdin) to a subagent completion message"]
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Cross-reference: `_notification` for channel configuration, credentials setup in `.claude/.env`, and hook integration."
+        }
+      ]
+    },
+    {
+      "heading": "session",
+      "content": [
+        {
+          "type": "text",
+          "value": "Session environment setup commands invoked by hooks at session start. These populate `CLAUDE_ENV_FILE` with session metadata and project environment variables."
+        },
+        {
+          "type": "table",
+          "headers": ["Command", "Synopsis", "Description"],
+          "rows": [
+            ["`gobbi session metadata`", "`gobbi session metadata`", "Extract session metadata from stdin JSON and write key=value pairs to `CLAUDE_ENV_FILE`"],
+            ["`gobbi session load-env`", "`gobbi session load-env`", "Load `.claude/.env` file and write exports to `CLAUDE_ENV_FILE`"]
+          ]
+        },
+        {
+          "type": "text",
+          "value": "Cross-reference: `gobbi` skill for session setup questions and the SessionStart hook configuration."
+        }
+      ]
+    },
+    {
+      "heading": "Media Commands",
+      "content": [
+        {
+          "type": "text",
+          "value": "Image analysis, video frame extraction, and web page capture. Standalone utilities without a dedicated domain skill."
+        },
+        {
+          "type": "subsection",
+          "heading": "image",
+          "content": [
+            {
+              "type": "table",
+              "headers": ["Command", "Synopsis", "Description"],
+              "rows": [
+                ["`gobbi image analyze`", "`gobbi image analyze <path>`", "Analyze an image: extract metadata and resize for inspection"],
+                ["`gobbi image compare`", "`gobbi image compare <paths...>`", "Compare multiple images side-by-side via contact sheet"]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "video",
+          "content": [
+            {
+              "type": "table",
+              "headers": ["Command", "Synopsis", "Description"],
+              "rows": [
+                ["`gobbi video analyze`", "`gobbi video analyze <path>`", "Analyze a video: extract frames and generate contact sheet"]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "web",
+          "content": [
+            {
+              "type": "table",
+              "headers": ["Command", "Synopsis", "Description"],
+              "rows": [
+                ["`gobbi web screenshot`", "`gobbi web screenshot <url>`", "Take a screenshot of a web page"],
+                ["`gobbi web capture`", "`gobbi web capture <url>`", "Download images from a web page"]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "audit (Deprecated)",
+      "content": [
+        {
+          "type": "text",
+          "value": "`gobbi audit` is deprecated. It prints a deprecation warning and forwards all subcommands to `gobbi doctor`. Use `gobbi doctor` directly instead.\n\nThe former `audit` subcommands (`references`, `conventions`, `commands`) are now internal check categories within doctor's unified report."
+        }
+      ]
+    }
+  ],
+  "navigation": {}
+}
