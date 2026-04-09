@@ -322,18 +322,21 @@ export function getTransitionNode(phase: PromptPhase): TransitionGraphNode | und
 }
 
 /**
- * Resolve the next phase given a current phase and outcome.
+ * Resolve the next phase given a current phase and a context of variable values.
  *
- * Evaluates each transition choice in order: if the outcome matches a
- * choice's condition, returns that choice's `next` value. Falls back to
- * the node's default transition.
+ * Evaluates each transition choice in order (ASL Choice pattern): for each
+ * choice, checks whether `context[condition.variable] === condition.equals`.
+ * First match wins. Falls back to the node's default transition when no
+ * choice matches.
+ *
+ * The `outcome` value should be passed as `context.outcome`.
  *
  * Returns null for terminal states (`__terminal__`) and parent returns
  * (`__parent__`). Returns null if the phase is not in the graph.
  */
 export function getNextPhase(
   phase: PromptPhase,
-  outcome: string,
+  context: Record<string, string>,
 ): string | null {
   const node = TRANSITION_GRAPH[phase];
   if (!node) return null;
@@ -341,7 +344,8 @@ export function getNextPhase(
   const { transitions } = node;
 
   for (const choice of transitions.choices) {
-    if (choice.condition.variable === 'outcome' && choice.condition.equals === outcome) {
+    const contextValue = context[choice.condition.variable];
+    if (contextValue !== undefined && contextValue === choice.condition.equals) {
       const next = choice.next;
       if (next === '__terminal__' || next === '__parent__') return null;
       return isPromptPhase(next) ? next : null;

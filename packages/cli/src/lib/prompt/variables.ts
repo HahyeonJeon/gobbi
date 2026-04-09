@@ -17,6 +17,7 @@ import { dirname, basename, join } from 'node:path';
 import { isRecord, isString } from '../guards.js';
 import { readGobbiJson, getNestedValue } from '../config.js';
 import { readPromptState, resolvePromptStatePath } from './state.js';
+import type { PromptState } from './state.js';
 import type { VariableDeclaration, VariableSource } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -163,6 +164,26 @@ function resolveCommand(declaration: VariableDeclaration): string | null {
 }
 
 /**
+ * Walk a dot-separated path into a PromptState without type assertions.
+ *
+ * At each step the current value is narrowed through `isRecord` before
+ * indexing, so the traversal is type-safe from `unknown` downward.
+ * Returns `undefined` when any segment fails to resolve.
+ */
+function getPromptStateValue(state: PromptState, dotPath: string): unknown {
+  const parts = dotPath.split('.');
+  // PromptState is a well-known shape — convert to unknown to walk generically
+  let current: unknown = state;
+
+  for (const part of parts) {
+    if (!isRecord(current)) return undefined;
+    current = current[part];
+  }
+
+  return current;
+}
+
+/**
  * Resolve a variable from the `state` source.
  * Reads prompt-state.json and accesses the nested path.
  */
@@ -173,8 +194,7 @@ async function resolveState(declaration: VariableDeclaration): Promise<string | 
   const state = await readPromptState(filePath);
   if (state === null) return null;
 
-  const stateAsRecord = state as unknown as Record<string, unknown>;
-  const value = getNestedValue(stateAsRecord, declaration.path);
+  const value = getPromptStateValue(state, declaration.path);
   if (value === undefined || value === null) return null;
 
   return isString(value) ? value : JSON.stringify(value);

@@ -2,13 +2,14 @@
  * gobbi prompt — render phase-specific orchestrator prompts.
  *
  * Subcommands:
- *   <phase>        Render the prompt for the given phase
- *   validate       Validate all registered prompt templates
- *   status         Show current prompt state and consistency
+ *   <phase>           Render the prompt for the given phase
+ *   validate          Validate all registered prompt templates
+ *   status            Show current prompt state and consistency
+ *   record-outcome    Record a phase outcome and print the next command
  *
  * Options:
- *   --markdown     Output in markdown format (default: plain text)
- *   --help         Show this help message
+ *   --markdown        Output in markdown format (default: plain text)
+ *   --help            Show this help message
  */
 
 import { readFile } from 'node:fs/promises';
@@ -22,6 +23,7 @@ import { readPromptState, resolvePromptStatePath, writePromptStateAtomic, update
 import { resolveAllVariables, PromptResolutionError } from '../lib/prompt/variables.js';
 import { renderPrompt } from '../lib/prompt/renderer.js';
 import { getTemplate } from '../lib/prompt/templates/index.js';
+import { getTransitionNode, getNextPhase } from '../lib/prompt/graph.js';
 import { withLock } from '../lib/lockfile.js';
 
 // ---------------------------------------------------------------------------
@@ -35,8 +37,9 @@ Phases:
   workflow-start     Classify task and start workflow
 
 Subcommands:
-  validate           Validate all registered prompt templates
-  status             Show current prompt state and consistency
+  validate                          Validate all registered prompt templates
+  status                            Show current prompt state and consistency
+  record-outcome <phase> <outcome>  Record a phase outcome and print next command
 
 Options:
   --markdown         Output in markdown format (default: plain text)
@@ -69,6 +72,9 @@ export async function runPrompt(args: string[]): Promise<void> {
       return;
     case 'status':
       await runPromptStatus();
+      return;
+    case 'record-outcome':
+      await runPromptRecordOutcome(args.slice(1));
       return;
     default:
       await runPromptRender(args);
@@ -177,6 +183,70 @@ async function runPromptRender(args: string[]): Promise<void> {
       // State update is best-effort — do not fail the render
       console.error(dim('  (Could not update prompt state)'));
     }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Record Outcome
+// ---------------------------------------------------------------------------
+
+async function runPromptRecordOutcome(args: string[]): Promise<void> {
+  const phaseArg = args[0];
+  const outcomeArg = args[1];
+
+  if (phaseArg === undefined || outcomeArg === undefined) {
+    console.error(error('Usage: gobbi prompt record-outcome <phase> <outcome-id>'));
+    process.exit(1);
+  }
+
+  // Validate phase
+  if (!isPromptPhase(phaseArg)) {
+    console.error(error(`"${phaseArg}" is not a valid prompt phase`));
+    console.error(dim(`  Valid phases: ${VALID_PROMPT_PHASES.join(', ')}`));
+    process.exit(1);
+  }
+
+  // Validate outcome against the transition graph node's completion outcomes
+  const node = getTransitionNode(phaseArg);
+  if (node === undefined) {
+    console.error(error(`No transition graph node for phase "${phaseArg}"`));
+    process.exit(1);
+  }
+
+  const validOutcomeIds = node.completion.outcomes.map((o) => o.id);
+  if (!validOutcomeIds.includes(outcomeArg)) {
+    console.error(error(`"${outcomeArg}" is not a valid outcome for phase "${phaseArg}"`));
+    console.error(dim(`  Valid outcomes: ${validOutcomeIds.join(', ')}`));
+    process.exit(1);
+  }
+
+  // Update prompt state
+  const statePath = resolvePromptStatePath();
+  if (statePath === null) {
+    console.error(error('CLAUDE_PROJECT_DIR is not set — cannot update prompt state'));
+    process.exit(1);
+  }
+
+  await withLock(statePath, async () => {
+    const current = await readPromptState(statePath) ?? emptyPromptState();
+    const withHistory = updatePromptHistory(current, phaseArg, outcomeArg);
+    const updated = {
+      ...withHistory,
+      workflow: {
+        ...withHistory.workflow,
+        currentPhase: phaseArg,
+      },
+    };
+    await writePromptStateAtomic(statePath, updated);
+  });
+
+  // Resolve and print next phase
+  const nextPhase = getNextPhase(phaseArg, { outcome: outcomeArg });
+
+  if (nextPhase === null) {
+    console.log('Terminal — no next phase');
+  } else {
+    console.log(`gobbi prompt ${nextPhase}`);
   }
 }
 

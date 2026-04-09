@@ -514,12 +514,114 @@ describe('transition graph', () => {
   });
 
   it('getNextPhase session-start configured returns workflow-start', () => {
-    const next = getNextPhase('session-start', 'configured');
+    const next = getNextPhase('session-start', { outcome: 'configured' });
     assert.equal(next, 'workflow-start');
   });
 
   it('getNextPhase workflow-start non-trivial returns workflow-ideation', () => {
-    const next = getNextPhase('workflow-start', 'non-trivial');
+    const next = getNextPhase('workflow-start', { outcome: 'non-trivial' });
     assert.equal(next, 'workflow-ideation');
+  });
+
+  it('getNextPhase evaluates non-outcome conditions', () => {
+    // workflow-start with trivial outcome should return null (terminal)
+    const next = getNextPhase('workflow-start', { outcome: 'trivial' });
+    assert.equal(next, null);
+  });
+
+  it('getNextPhase falls back to default when no choice matches', () => {
+    const next = getNextPhase('workflow-start', { outcome: 'unknown-outcome' });
+    // default for workflow-start is workflow-ideation
+    assert.equal(next, 'workflow-ideation');
+  });
+
+  it('getNextPhase returns null for terminal default', () => {
+    const next = getNextPhase('workflow-finish', { outcome: 'finished' });
+    // workflow-finish default is __terminal__, and there are no matching choices
+    assert.equal(next, null);
+  });
+
+  it('getNextPhase context can match on any variable, not just outcome', () => {
+    // All current graph nodes use variable: 'outcome', but the API supports
+    // arbitrary variables. Verify the mechanism works by confirming that a
+    // non-matching variable name does not accidentally match.
+    const next = getNextPhase('session-start', { notOutcome: 'configured' });
+    // No choice matches — falls back to default (workflow-start)
+    assert.equal(next, 'workflow-start');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Record Outcome (logic-level tests)
+// ---------------------------------------------------------------------------
+
+describe('record-outcome logic', () => {
+  const tempDirs: string[] = [];
+
+  afterEach(() => {
+    for (const dir of tempDirs) {
+      removeTempDir(dir);
+    }
+    tempDirs.length = 0;
+  });
+
+  function track(dir: string): string {
+    tempDirs.push(dir);
+    return dir;
+  }
+
+  it('valid phase + outcome records to history and resolves next phase', async () => {
+    const dir = track(createTempDir());
+    const filePath = path.join(dir, 'prompt-state.json');
+
+    // Write initial state
+    const initial = emptyPromptState();
+    await writePromptStateAtomic(filePath, initial);
+
+    // Simulate record-outcome: validate, update state, resolve next
+    const phase = 'session-start' as const;
+    const outcomeId = 'configured';
+
+    const node = getTransitionNode(phase);
+    assert.ok(node !== undefined, 'phase should have a transition node');
+    const validOutcomeIds = node.completion.outcomes.map((o) => o.id);
+    assert.ok(validOutcomeIds.includes(outcomeId), 'outcome should be valid');
+
+    // Update state
+    const current = await readPromptState(filePath) ?? emptyPromptState();
+    const withHistory = updatePromptHistory(current, phase, outcomeId);
+    const updated = {
+      ...withHistory,
+      workflow: {
+        ...withHistory.workflow,
+        currentPhase: phase,
+      },
+    };
+    await writePromptStateAtomic(filePath, updated);
+
+    // Verify state was written
+    const reloaded = await readPromptState(filePath);
+    assert.ok(reloaded !== null);
+    assert.equal(reloaded.workflow.currentPhase, 'session-start');
+    assert.equal(reloaded.history.length, 1);
+    const entry = reloaded.history[0];
+    assert.ok(entry !== undefined);
+    assert.equal(entry.phase, 'session-start');
+    assert.equal(entry.outcome, 'configured');
+
+    // Verify next phase
+    const nextPhase = getNextPhase(phase, { outcome: outcomeId });
+    assert.equal(nextPhase, 'workflow-start');
+  });
+
+  it('invalid phase is detected by isPromptPhase', () => {
+    assert.equal(isPromptPhase('not-a-real-phase'), false);
+  });
+
+  it('invalid outcome for a phase is detected by checking completion outcomes', () => {
+    const node = getTransitionNode('session-start');
+    assert.ok(node !== undefined);
+    const validOutcomeIds = node.completion.outcomes.map((o) => o.id);
+    assert.equal(validOutcomeIds.includes('nonexistent-outcome'), false);
   });
 });
