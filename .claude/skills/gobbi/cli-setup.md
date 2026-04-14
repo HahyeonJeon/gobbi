@@ -8,7 +8,7 @@
 
 > **Gobbi CLI must be available before the workflow can proceed.**
 
-The gobbi CLI (`gobbi` command) powers note initialization, subtask collection, config management, docs authoring, and validation. Without it, hooks fail silently, notes can't be initialized, and JSON-first authoring breaks. Check availability at the start of every session before asking setup questions.
+The gobbi CLI (`gobbi` command) powers note initialization, subtask collection, config management, and validation. Without it, hooks fail silently and notes can't be initialized. Check availability at the start of every session before asking setup questions.
 
 ---
 
@@ -79,10 +79,6 @@ The gobbi CLI replaces the shell scripts that were previously in `.claude/skills
 
 | Command | Purpose |
 |---|---|
-| `gobbi docs init <type> [name]` | Scaffold a new JSON template for skills, agents, rules, or child docs |
-| `gobbi docs json2md <path>` | Generate Markdown from JSON source |
-| `gobbi docs validate <path>` | Validate JSON against the gobbi-docs schema |
-| `gobbi docs read <path>` | Section-level access to JSON content |
 | `gobbi note init <project> <slug>` | Initialize a note directory with per-step subdirectories |
 | `gobbi note collect <agent-id> <num> <slug> <dir> [--phase]` | Extract subagent results from JSONL transcripts |
 | `gobbi config set <session> <key> <value>` | Set session configuration in gobbi.json |
@@ -90,10 +86,6 @@ The gobbi CLI replaces the shell scripts that were previously in `.claude/skills
 | `gobbi session metadata` | Output session metadata (used by SessionStart hook) |
 | `gobbi notify <event>` | Send notifications (used by hooks) |
 | `gobbi validate <type> <path>` | Validate agent, skill, or gotcha definitions |
-| `gobbi doctor` | Unified health check for .claude/ documentation |
-| `gobbi doctor --plan` | Preview remediations without changing anything (exit code 2 if auto-fixable items exist) |
-| `gobbi doctor --fix` | Auto-apply deterministic fixes and re-run doctor to show new state |
-| `gobbi audit` | Deprecated alias for `gobbi doctor` |
 
 ---
 
@@ -103,5 +95,4 @@ The gobbi CLI replaces the shell scripts that were previously in `.claude/skills
 |---|---|---|
 | `gobbi: command not found` | Not installed globally or not linked | Run `npm install -g @gobbi/cli` or `npm link` in the gobbi directory |
 | `gobbi note init` fails with CLAUDE_SESSION_ID not set | SessionStart hook didn't run | Check `.claude/settings.json` hooks — the `gobbi session metadata` hook must fire on startup |
-| `gobbi docs json2md` produces empty output | TypeScript not compiled | Run `npm run build` in the gobbi directory |
 | Hooks fail silently | `gobbi` not in PATH when hooks execute | Ensure global install or link — hooks run in a shell that may not have local node_modules/.bin in PATH |

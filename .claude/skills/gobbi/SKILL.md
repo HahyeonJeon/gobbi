@@ -10,9 +10,9 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 **FIRST — load core skills before anything else.** Load `_orchestration`, `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until all four are loaded.
 
-**SECOND — ensure `_gobbi-rule` symlinks exist.** Check whether `.claude/rules/_gobbi-rule.json` and `.claude/rules/_gobbi-rule.md` exist in `$CLAUDE_PROJECT_DIR`. If either is missing, create symlinks from `.claude/rules/` pointing to the corresponding files in the `_gobbi-rule-container` skill directory. These symlinks make the core behavioral rules always-active and auto-update when the gobbi plugin is updated.
+**SECOND — ensure `_gobbi-rule` symlink exists.** Check whether `.claude/rules/_gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in the `_gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated.
 
-**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, docs authoring, and validation. Without it, the workflow cannot function.
+**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, and validation. Without it, the workflow cannot function.
 
 **FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly. If no settings exist for this session, continue to the setup questions.
 
@@ -47,13 +47,11 @@ After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If cr
 - Q3 git workflow: `gobbi config set $CLAUDE_SESSION_ID gitWorkflow <value>` — if worktree-pr, also set `baseBranch`
 - Q4 notifications: `gobbi config set $CLAUDE_SESSION_ID notify.slack true/false` and `notify.telegram true/false`
 
-`gobbi.json` lives at `$CLAUDE_PROJECT_DIR/.claude/gobbi.json`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi config`. The schema is documented in `.claude/project/gobbi/design/gobbi-json-schema.md`. Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions).
+`gobbi.json` lives at `$CLAUDE_PROJECT_DIR/.claude/gobbi.json`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi config`. Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions).
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
-**SIXTH — SKIP (gobbi doctor not yet available as CLI command).** Run `gobbi doctor --format json` to check `.claude/` documentation health. If the report status is `clean`, proceed silently. If `attention-needed` or `degraded`, show a brief informational summary (2-3 lines) of the findings to the user — do not ask a question, just inform. The doctor output provides context for the project-setup phase that follows.
-
-**SEVENTH — project context detection.** This runs automatically at session start without asking. Load project-setup.md to execute detection.
+**SIXTH — project context detection.** This runs automatically at session start without asking. Load project-setup.md to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.
 
@@ -179,7 +177,6 @@ Utility and maintenance tooling.
 | Skill | Purpose |
 |---|---|
 | **_gobbi-cli** | Intent-first CLI reference. Maps agent tasks to gobbi commands and cross-references domain skills for workflow context. |
-| **_doctor** | Unified health check. Verify .claude/ docs match codebase reality, assess maturity, and check completeness. |
 | **_gobbi-rule-container** | Container for `_gobbi-rule` behavioral rule. Source files symlinked into `.claude/rules/` at session start for auto-update with plugin. |
 
 #### Evaluation criteria child docs

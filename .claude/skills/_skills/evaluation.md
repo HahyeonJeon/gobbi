@@ -76,7 +76,7 @@ Each dimension provides diagnostic questions that surface the failure modes abov
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess and cannot be reduced to a mechanical check.
+Items tagged `[structural]` are machine-verifiable — a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess and cannot be reduced to a mechanical check.
 
 ### Purpose and Scope
 
@@ -99,7 +99,6 @@ Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can
 - `[structural]` No code blocks or BAD/GOOD comparison blocks present
 - `[structural]` Child docs are flat siblings, not nested in subdirectories
 - `[structural]` Parent includes "Navigate deeper from here:" table if children exist
-- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 
 ### Integration
 

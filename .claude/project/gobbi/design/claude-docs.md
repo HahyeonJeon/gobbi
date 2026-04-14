@@ -144,7 +144,7 @@ Standalone interface entry point — no category.
 
 | Name | Path | Description |
 |------|------|-------------|
-| _doctor | `.claude/skills/_doctor/SKILL.md` | Unified health check. Verify `.claude/` docs match codebase reality, assess maturity, and check completeness. |
+| _gobbi-cli | `.claude/skills/_gobbi-cli/SKILL.md` | Intent-first CLI reference. Maps user intentions to gobbi CLI commands. |
 
 ### Skill Child Docs
 

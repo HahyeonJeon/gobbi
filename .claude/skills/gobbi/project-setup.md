@@ -59,7 +59,7 @@ Create all directories upfront. The README.md must list each directory with a on
 
 ### 4. Help Set Up Claude Docs
 
-After project directory setup, check what the project is missing in `$CLAUDE_PROJECT_DIR/.claude/` and offer to help create them via AskUserQuestion. This is the onboarding moment — guide the user toward a well-structured project. Doctor findings from the session-start health check provide context about what is missing or broken in the current documentation — use them to prioritize suggestions.
+After project directory setup, check what the project is missing in `$CLAUDE_PROJECT_DIR/.claude/` and offer to help create them via AskUserQuestion. This is the onboarding moment — guide the user toward a well-structured project.
 
 **CLAUDE.md** — If absent, offer to create one. It should contain project-level instructions, tech stack, and key conventions. This is the first thing Claude reads every session.
 

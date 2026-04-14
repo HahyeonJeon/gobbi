@@ -5,7 +5,7 @@ description: Container for _gobbi-rule behavioral rule files. Symlinked into .cl
 
 # Gobbi Rule Container
 
-Container for the `_gobbi-rule` behavioral rule file. The source files live here; symlinks in `.claude/rules/` point back to this skill directory. When the gobbi plugin is updated, the rule content updates automatically because the symlinks follow the source.
+Container for the `_gobbi-rule` behavioral rule file. The source file lives here; a symlink in `.claude/rules/` points back to this skill directory. When the gobbi plugin is updated, the rule content updates automatically because the symlink follows the source.
 
 This skill is not loaded by agents during workflow. It exists solely to hold the rule files in a plugin-distributable location.
 
@@ -17,11 +17,10 @@ This skill is not loaded by agents during workflow. It exists solely to hold the
 
 | File | Purpose |
 |---|---|
-| `_gobbi-rule.json` | JSON source for the core behavioral rule |
-| `_gobbi-rule.md` | Generated markdown from the JSON source |
+| `_gobbi-rule.md` | Core behavioral rule — always-active invariants for all agents |
 
 ---
 
 ## Symlink Mechanism
 
-At session start, the gobbi skill checks whether `.claude/rules/_gobbi-rule.json` and `.claude/rules/_gobbi-rule.md` exist in `$CLAUDE_PROJECT_DIR`. If either is missing, it creates symlinks from `.claude/rules/` pointing to the files in this skill directory. The plugin installation path varies per user, so the orchestrator resolves the correct path at runtime.
+At session start, the gobbi skill checks whether `.claude/rules/_gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, it creates a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in this skill directory. The plugin installation path varies per user, so the orchestrator resolves the correct path at runtime.

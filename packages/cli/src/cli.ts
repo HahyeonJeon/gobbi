@@ -6,18 +6,14 @@ import path from 'node:path';
 const USAGE = `Usage: gobbi <command> [options]
 
 Commands:
-  docs       Manage gobbi-docs JSON templates and Markdown
   config     Manage per-session workflow configuration
   session    Session environment setup (metadata, env loading)
   notify     Send notifications (Slack, Telegram, Desktop)
   note       Workflow note management and transcript extraction
   validate   Validate agent, skill, gotcha, and lint definitions
-  audit      Detect documentation drift and stale references
-  doctor     Unified health check for .claude/ documentation
   image      Analyze images or create comparison sheets
   video      Analyze video files and extract frames
   web        Take screenshots or capture images from web pages
-  prompt     Deliver phase-specific orchestrator prompts
 
 Options:
   --help              Show this help message
@@ -27,15 +23,10 @@ export async function run(): Promise<void> {
   const command = process.argv[2];
 
   // Early routing for commands (they have their own parseArgs)
-  const COMMANDS = ['docs', 'config', 'session', 'notify', 'note', 'validate', 'audit', 'doctor', 'image', 'video', 'web', 'prompt'] as const;
+  const COMMANDS = ['config', 'session', 'notify', 'note', 'validate', 'image', 'video', 'web'] as const;
   if (command !== undefined && (COMMANDS as readonly string[]).includes(command)) {
     const commandArgs = process.argv.slice(3);
     switch (command) {
-      case 'docs': {
-        const { runDocs } = await import('./commands/docs.js');
-        await runDocs(commandArgs);
-        return;
-      }
       case 'config': {
         const { runConfig } = await import('./commands/config.js');
         await runConfig(commandArgs);
@@ -61,16 +52,6 @@ export async function run(): Promise<void> {
         await runValidate(commandArgs);
         return;
       }
-      case 'audit': {
-        const { runAudit } = await import('./commands/audit.js');
-        await runAudit(commandArgs);
-        return;
-      }
-      case 'doctor': {
-        const { runDoctor } = await import('./commands/doctor.js');
-        await runDoctor(commandArgs);
-        return;
-      }
       case 'image': {
         const { runImage } = await import('./commands/image.js');
         await runImage(commandArgs);
@@ -84,11 +65,6 @@ export async function run(): Promise<void> {
       case 'web': {
         const { runWeb } = await import('./commands/web.js');
         await runWeb(commandArgs);
-        return;
-      }
-      case 'prompt': {
-        const { runPrompt } = await import('./commands/prompt.js');
-        await runPrompt(commandArgs);
         return;
       }
     }

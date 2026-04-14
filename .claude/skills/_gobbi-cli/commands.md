@@ -44,59 +44,9 @@ Cross-reference: `gobbi` skill for session setup questions and configuration key
 
 ---
 
-## docs
-
-Manage gobbi-docs JSON templates and their Markdown output. The JSON-first workflow: edit `.json` source, run `json2md` to generate `.md`, run `validate` to check schema compliance. Never edit `.md` directly.
-
-### Authoring Commands
-
-| Command | Synopsis | Description |
-|---|---|---|
-| `gobbi docs init` | `gobbi docs init <type> [name] [--out <path>]` | Scaffold a new JSON template. Types: `skill`, `agent`, `rule`, `root`, `child`, `gotcha`. Writes to stdout by default; use `--out` for file output. |
-| `gobbi docs json2md` | `gobbi docs json2md <path>` | Convert JSON template to Markdown. Writes the `.md` file alongside the `.json` source. |
-| `gobbi docs md2json` | `gobbi docs md2json <path> [--stdout]` | Migrate existing Markdown to JSON template. Writes `.json` alongside `.md` by default; use `--stdout` for stdout output. |
-| `gobbi docs validate` | `gobbi docs validate <path>` | Validate a JSON template against the gobbi-docs schema. Reports schema violations. |
-| `gobbi docs read` | `gobbi docs read <path> [--section <name>]` | Pretty-print JSON template metadata or a specific section. |
-| `gobbi docs spec` | `gobbi docs spec` | Show the full gobbi-docs JSON schema specification. |
-
-### Exploration Commands
-
-| Command | Synopsis | Description |
-|---|---|---|
-| `gobbi docs list` | `gobbi docs list [directory] [--type <type>] [--format <fmt>]` | List all JSON templates with type, title, and content count. Formats: `table` (default), `json`. |
-| `gobbi docs tree` | `gobbi docs tree [directory] [--format <fmt>]` | Show navigation hierarchy as a tree. Formats: `text` (default), `json`. |
-| `gobbi docs search` | `gobbi docs search <pattern> [directory] [--type <type>] [--block <type>] [--format <fmt>]` | Search content across templates using regex. Filter by doc type or block type. Formats: `text` (default), `json`. |
-| `gobbi docs extract` | `gobbi docs extract <path> <query> [--format <fmt>]` | Extract content by dot-path query (e.g., `title`, `frontmatter.name`, `sections.Setup`). Formats: `json` (default), `md`, `text`. |
-| `gobbi docs stats` | `gobbi docs stats [directory] [--format <fmt>]` | Show aggregate corpus statistics. Formats: `text` (default), `json`. |
-| `gobbi docs health` | `gobbi docs health [directory] [--format <fmt>]` | Run cross-document health checks: orphans, broken links, empty sections, missing parents, bidirectional consistency. Exits with code 1 if errors found. Formats: `text` (default), `json`. |
-
-Cross-reference: `_claude` for the documentation standard, writing guidelines, and block type reference.
-
----
-
-## doctor
-
-Unified health check for `.claude/` documentation. Consolidates reference checking, structural health, schema validation, JSON/MD sync, and completeness scoring into a single pass.
-
-| Command | Synopsis | Description |
-|---|---|---|
-| `gobbi doctor` | `gobbi doctor [--format <fmt>] [--plan] [--fix]` | Run unified health check. Default output is human-readable text. |
-
-### doctor options
-
-| Option | Description |
-|---|---|
-| `--format <fmt>` | Output format: `text` (default), `json` for structured output |
-| `--plan` | Terraform-plan-style preview of remediations. Shows auto-fixable, suggested, and skipped counts without changing anything. Exits with code 2 if auto-fixes are available. |
-| `--fix` | Auto-apply deterministic fixes (sync-out-of-date, bidirectional-consistency, naming-mismatch), then re-run doctor to show new state. |
-
-Cross-reference: `_doctor` for the maturity model (levels 0-4), check categories, auto-fixable versus suggested categories, and exit codes.
-
----
-
 ## validate
 
-Validate individual documentation files against their expected structure. Unlike `gobbi doctor` which checks the entire corpus, `validate` checks one file at a time.
+Validate individual documentation files against their expected structure. Each command checks one file at a time.
 
 | Command | Synopsis | Description |
 |---|---|---|
@@ -163,10 +113,3 @@ Image analysis, video frame extraction, and web page capture. Standalone utiliti
 | `gobbi web screenshot` | `gobbi web screenshot <url>` | Take a screenshot of a web page |
 | `gobbi web capture` | `gobbi web capture <url>` | Download images from a web page |
 
----
-
-## audit (Deprecated)
-
-`gobbi audit` is deprecated. It prints a deprecation warning and forwards all subcommands to `gobbi doctor`. Use `gobbi doctor` directly instead.
-
-The former `audit` subcommands (`references`, `conventions`, `commands`) are now internal check categories within doctor's unified report.

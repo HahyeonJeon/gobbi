@@ -26,7 +26,7 @@ Skills are organized into four categories:
 |:---------|:-------|:--------|
 | **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _skills-evaluation-{project,architecture,performance,aesthetics,overall,user}, _agent-evaluation-{project,architecture,performance,aesthetics,overall,user}, _project-evaluation-{project,architecture,performance,aesthetics,overall,user}, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
 | **Docs** | _claude, _skills, _agents, _rules, _project | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
-| **Tool** | _doctor | Utility and maintenance tools. Health check and drift detection. |
+| **Tool** | _gobbi-cli | Utility and maintenance tools. Intent-first CLI reference. |
 
 Some Work skills have child skill categories grouping related sub-skills:
 

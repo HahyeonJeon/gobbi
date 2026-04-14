@@ -73,7 +73,7 @@ Each dimension provides diagnostic questions that surface the failure modes abov
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 ### Purpose and Scope
 
@@ -93,7 +93,6 @@ Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can
 - `[structural]` File is under 500 lines
 - `[structural]` No code blocks or BAD/GOOD comparison blocks present
 - `[structural]` Follows `_claude` writing standard — principles over procedures, no step-by-step recipes in teaching content
-- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 
 ### Integration
 
