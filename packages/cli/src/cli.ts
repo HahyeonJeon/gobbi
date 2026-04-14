@@ -17,7 +17,6 @@ Commands:
   image      Analyze images or create comparison sheets
   video      Analyze video files and extract frames
   web        Take screenshots or capture images from web pages
-  prompt     Deliver phase-specific orchestrator prompts
 
 Options:
   --help              Show this help message
@@ -27,7 +26,7 @@ export async function run(): Promise<void> {
   const command = process.argv[2];
 
   // Early routing for commands (they have their own parseArgs)
-  const COMMANDS = ['docs', 'config', 'session', 'notify', 'note', 'validate', 'audit', 'doctor', 'image', 'video', 'web', 'prompt'] as const;
+  const COMMANDS = ['docs', 'config', 'session', 'notify', 'note', 'validate', 'audit', 'doctor', 'image', 'video', 'web'] as const;
   if (command !== undefined && (COMMANDS as readonly string[]).includes(command)) {
     const commandArgs = process.argv.slice(3);
     switch (command) {
@@ -84,11 +83,6 @@ export async function run(): Promise<void> {
       case 'web': {
         const { runWeb } = await import('./commands/web.js');
         await runWeb(commandArgs);
-        return;
-      }
-      case 'prompt': {
-        const { runPrompt } = await import('./commands/prompt.js');
-        await runPrompt(commandArgs);
         return;
       }
     }
