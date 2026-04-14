@@ -44,7 +44,6 @@ Always-active behavioral safety net — minimum invariants every agent must foll
 
 - Write notes at every workflow step — never defer, never skip.
 - Write gotchas immediately after corrections — a correction not recorded is a correction repeated.
-- Edit `.json` source and generate `.md` via `gobbi docs json2md` — never edit `.md` directly.
 - Run `gobbi note collect` after every subagent completes — directory existence is not collection, only the command populates subtask files.
 
 ---

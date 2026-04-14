@@ -51,9 +51,7 @@ After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If cr
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
-**SIXTH — SKIP (gobbi doctor not yet available as CLI command).** Run `gobbi doctor --format json` to check `.claude/` documentation health. If the report status is `clean`, proceed silently. If `attention-needed` or `degraded`, show a brief informational summary (2-3 lines) of the findings to the user — do not ask a question, just inform. The doctor output provides context for the project-setup phase that follows.
-
-**SEVENTH — project context detection.** This runs automatically at session start without asking. Load project-setup.md to execute detection.
+**SIXTH — project context detection.** This runs automatically at session start without asking. Load project-setup.md to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.
 
@@ -179,7 +177,6 @@ Utility and maintenance tooling.
 | Skill | Purpose |
 |---|---|
 | **_gobbi-cli** | Intent-first CLI reference. Maps agent tasks to gobbi commands and cross-references domain skills for workflow context. |
-| **_doctor** | Unified health check. Verify .claude/ docs match codebase reality, assess maturity, and check completeness. |
 | **_gobbi-rule-container** | Container for `_gobbi-rule` behavioral rule. Source files symlinked into `.claude/rules/` at session start for auto-update with plugin. |
 
 #### Evaluation criteria child docs

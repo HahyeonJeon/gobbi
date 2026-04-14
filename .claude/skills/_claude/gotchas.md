@@ -70,17 +70,3 @@ priority: high
 
 **Correct approach:** Hidden (`_`) and interface (no prefix) docs must never reference internal (`__`) names. Use generic terms instead — "research agents" not "`__pi`", "executor agents" not "`__executor`". Internal names leak implementation details and create coupling between tiers that should be independent.
 
----
-
-### Editing .md files directly instead of editing .json and running json2md
----
-priority: high
----
-
-**Priority:** High
-
-**What happened:** When updating `.claude/` documentation, agents edited the `.md` file directly instead of editing the `.json` source file and regenerating with `gobbi docs json2md`. This happened during the CLI migration when updating gotcha files and skill docs. Subagents were also instructed to edit `.md` directly in delegation prompts.
-
-**User feedback:** "You and other agent must edit json and create .md file using gobbi-cli, not directly write the .md files."
-
-**Correct approach:** Always edit the `.json` source file, then run `gobbi docs json2md <path-to-json>` to regenerate the `.md`. Never edit `.md` directly — the next `json2md` run will overwrite the manual change. This applies to all `.claude/` docs except `CLAUDE.md` (which is hand-authored). The orchestrator must include this constraint in every delegation prompt that touches `.claude/` docs.
