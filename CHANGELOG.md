@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- `gobbi docs` CLI command and all subcommands (#64)
+- `gobbi doctor` CLI command (#64)
+- `gobbi audit` CLI command (#64)
+- JSON-first documentation authoring system — Markdown is now the directly-editable format (#64)
+- `_doctor` and `_audit` skill directories (#64)
+
 ## [0.4.0] - 2026-04-04
 
 ### Breaking

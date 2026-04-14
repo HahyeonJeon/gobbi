@@ -1,7 +1,7 @@
 /**
  * Shared repository root utilities.
  *
- * Memoized git repo detection used by audit, docs, and other commands.
+ * Memoized git repo detection used by CLI commands.
  */
 
 import { execSync } from 'node:child_process';

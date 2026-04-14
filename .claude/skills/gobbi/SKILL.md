@@ -47,7 +47,7 @@ After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If cr
 - Q3 git workflow: `gobbi config set $CLAUDE_SESSION_ID gitWorkflow <value>` — if worktree-pr, also set `baseBranch`
 - Q4 notifications: `gobbi config set $CLAUDE_SESSION_ID notify.slack true/false` and `notify.telegram true/false`
 
-`gobbi.json` lives at `$CLAUDE_PROJECT_DIR/.claude/gobbi.json`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi config`. The schema is documented in `.claude/project/gobbi/design/gobbi-json-schema.md`. Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions).
+`gobbi.json` lives at `$CLAUDE_PROJECT_DIR/.claude/gobbi.json`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi config`. Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions).
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
