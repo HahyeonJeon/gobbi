@@ -10,9 +10,9 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 **FIRST — load core skills before anything else.** Load `_orchestration`, `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until all four are loaded.
 
-**SECOND — ensure `_gobbi-rule` symlinks exist.** Check whether `.claude/rules/_gobbi-rule.json` and `.claude/rules/_gobbi-rule.md` exist in `$CLAUDE_PROJECT_DIR`. If either is missing, create symlinks from `.claude/rules/` pointing to the corresponding files in the `_gobbi-rule-container` skill directory. These symlinks make the core behavioral rules always-active and auto-update when the gobbi plugin is updated.
+**SECOND — ensure `_gobbi-rule` symlink exists.** Check whether `.claude/rules/_gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in the `_gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated.
 
-**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, docs authoring, and validation. Without it, the workflow cannot function.
+**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, and validation. Without it, the workflow cannot function.
 
 **FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly. If no settings exist for this session, continue to the setup questions.
 
