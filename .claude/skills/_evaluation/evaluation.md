@@ -8,7 +8,7 @@ Evaluation criteria for user-created evaluation perspectives. Load when creating
 
 ## Tagging Convention
 
-Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 ---
 
@@ -96,7 +96,6 @@ Checking code correctness during ideation evaluation, or checking whether the ro
 ### Structural Compliance
 
 - `[structural]` Naming follows the gobbi convention — `_` prefix for hidden tier, hyphens as word separators
-- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 - `[structural]` Description field uses command tone ("Evaluate..." or "Use when...") not inventory tone ("This perspective provides...")
 - `[semantic]` Findings route through the user — the perspective does not prescribe autonomous action on its verdicts
 

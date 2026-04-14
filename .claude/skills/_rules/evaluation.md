@@ -76,13 +76,12 @@ Diagnostic questions for assessing rule quality. Each dimension targets a differ
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 - `[structural]` Rule file has a descriptive name by topic, not by action
 - `[structural]` Flat structure — no deep nesting or multiple subsection levels
 - `[structural]` Critical constraints appear before supporting detail
 - `[structural]` Rule stays under 500 lines (must) and targets under 200 (should)
-- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 - `[semantic]` Standard is mechanically verifiable without subjective judgment
 - `[semantic]` Forbidden and required behaviors are explicit, not implied
 - `[semantic]` Rule is project-specific — would not apply identically to any project in the same language

@@ -76,7 +76,7 @@ Does the doc avoid duplicating content from skills or rules? If the same guidanc
 
 ## Verification Checklist
 
-Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
+Items tagged `[structural]` are machine-verifiable — a linter can check them without understanding the content. Items tagged `[semantic]` require agent judgment to assess.
 
 - `[structural]` README.md exists in each project subdirectory that contains docs
 - `[structural]` Standard subdirectories used where applicable — non-standard dirs are justified
@@ -84,7 +84,6 @@ Items tagged `[structural]` are machine-verifiable — `_doctor` or a linter can
 - `[structural]` Referenced file paths and module names exist in the current codebase
 - `[structural]` No duplicate docs covering the same topic within the project
 - `[structural]` Project-specific gotchas live in the project gotchas directory, not in `_gotcha`
-- `[structural]` JSON source file exists alongside the `.md` and both are in sync
 - `[semantic]` Design docs capture rationale and trade-offs, not just inventory of what exists
 - `[semantic]` Every factual claim is falsifiable against the codebase — no aspirational statements presented as current state
 - `[semantic]` Content is project-specific — could not appear in a generic tutorial for the framework
