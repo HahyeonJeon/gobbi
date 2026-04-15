@@ -212,7 +212,7 @@ This document covers architecture, philosophy, and positioning. It does not cove
 | Document | Covers |
 |----------|--------|
 | `v050-session.md` | Session directory, SQLite event store, state derivation, crash recovery |
-| `v050-state-machine.md` | Workflow transitions, typed reducer, guards, JsonLogic conditions |
+| `v050-state-machine.md` | Workflow transitions, typed reducer, guards, predicate registry |
 | `v050-prompts.md` | Prompt compilation, cache ordering, skills boundary, step specs |
 | `v050-hooks.md` | PreToolUse guards, SubagentStop capture, hook schemas, enforcement |
 | `v050-cli.md` | Bun CLI rewrite, commands, distribution, plugin relationship |

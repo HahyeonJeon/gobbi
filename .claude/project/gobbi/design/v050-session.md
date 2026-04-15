@@ -48,6 +48,12 @@ Each file and directory has a single responsibility. `metadata.json` and `gobbi.
 
 **Step directories** (`ideation/`, `plan/`, `execution/`, `evaluation/`, `memorization/`) are flat directories for step artifacts. An ideation step stores its output notes here; an execution step stores subtask results here. Flat structure is deliberate — no nesting, no hierarchy inside step directories.
 
+### Artifact Filename Versioning
+
+When feedback loops send the workflow back to a prior step, artifacts from each round are preserved through filename-based versioning. Artifact filenames include a round suffix: `execution-r1.md`, `execution-r2.md` for successive feedback rounds. Failed rounds — where a SubagentStop reports failure — get a failure marker: `delegation-fail-r2.md`. This is filename-based versioning, not subdirectory-based. The flat-directory principle is preserved: no `round-1/` or `round-2/` subdirectories exist inside step directories.
+
+The SubagentStop capture hook reads `feedbackRound` from `state.json` to construct the filename suffix using `feedbackRound + 1` as the round number. A round suffix of `r1` means the first pass (`feedbackRound == 0`); `r2` means the first feedback round produced a revision (`feedbackRound == 1`). The CLI's prompt compilation loads the latest round's artifacts — the highest round number — when assembling step context. Earlier rounds remain on disk for audit and for crash recovery briefings but are not included in active prompts.
+
 ---
 
 ## SQLite Event Store
@@ -70,12 +76,15 @@ The events table has one row per event. Its columns are:
 | `data` | text (JSON) | Event-specific payload — structure varies by type |
 | `actor` | text | What produced the event: `cli`, `hook`, `subagent` |
 | `parent_seq` | integer, nullable | References the `seq` of a parent event |
+| `idempotency_key` | text, unique | Deduplication key — see formula below |
 
-Two indexes cover the common access patterns: one on `type` for queries that filter across the full event history by event category, and one on `(step, type)` for queries scoped to a particular workflow step.
+The `idempotency_key` column prevents duplicate events from hook retries. Two formulas cover the two event categories. Tool-call events (guard violations, delegation events) use `session_id + tool_call_id + event_type` — the tool call ID uniquely identifies the action. System events (heartbeat, timeout) have no tool call context, so they use `session_id + timestamp_ms + event_type` — millisecond timestamps are sufficient because the Stop hook fires at most once per conversation turn. A UNIQUE constraint on this column means a retry that produces the same event is silently deduplicated at the storage layer. This is defensive engineering — even if Claude Code hooks do not retry today, future behavior may change. The pattern follows Kafka and EventBridge deduplication semantics: exactly-once append regardless of delivery guarantees.
+
+Three indexes cover the common access patterns: one on `type` for queries that filter across the full event history by event category, one on `(step, type)` for queries scoped to a particular workflow step, and the implicit unique index on `idempotency_key` for deduplication.
 
 ### Event Type Enum
 
-Events are grouped into five categories that reflect the five things that can happen in a session.
+Events are grouped into six categories that reflect the things that can happen in a session.
 
 **Workflow** events track the high-level session progression:
 
@@ -93,8 +102,12 @@ Events are grouped into five categories that reflect the five things that can ha
 | Event | Meaning |
 |-------|---------|
 | `delegation.spawn` | A subagent was launched |
-| `delegation.complete` | A subagent completed and its output was captured |
+| `delegation.complete` | A subagent completed and its output was captured — optional cost fields in data |
 | `delegation.fail` | A subagent failed or was interrupted |
+
+The `delegation.complete` event carries optional cost fields in its `data` payload: `tokensUsed` (billed, cache-adjusted — not raw tokens) and `cacheHitRatio`. These fields are optional because their availability depends on whether the Claude Code API exposes token data in the SubagentStop hook payload. If token data is unavailable, the CLI falls back to transcript file size as a rough proxy and records that in the `data` payload instead. First sessions (cold cache) and subsequent sessions (warm cache) produce different token counts — tracking billed tokens rather than raw tokens captures this difference.
+
+Cost data surfaces via `gobbi workflow status` only. It must NOT appear in compiled prompts or guard conditions. This is a visibility feature, not a control mechanism — cost data informs the operator but does not alter workflow behavior.
 
 **Artifact** events track writes to the step directories:
 
@@ -117,6 +130,12 @@ Events are grouped into five categories that reflect the five things that can ha
 |-------|---------|
 | `guard.violation` | A PreToolUse hook blocked a disallowed tool call |
 | `guard.override` | A user explicitly overrode a guard |
+
+**Session** events track liveness:
+
+| Event | Meaning |
+|-------|---------|
+| `session.heartbeat` | Liveness signal — written by the Stop hook after each turn |
 
 ---
 
@@ -153,19 +172,37 @@ SQLite with WAL mode provides atomic write semantics: a write either completes f
 
 `state.json.backup` handles state-file corruption without full replay. Before each state transition, the current `state.json` is copied to `state.json.backup`. If `state.json` is found to be invalid on startup, the CLI falls back to `state.json.backup`. If both are invalid, the CLI replays `gobbi.db`.
 
-`gobbi workflow resume` is the user-facing recovery command. It reads `gobbi.db`, derives current state via the reducer, and asks the CLI to generate a resume prompt that re-orients the orchestrator to the current step and what has been completed. This is the same mechanism used after context compaction — compact is not crash recovery, but it uses the same rebuild path.
+### Resume Briefing with Pathway Differentiation
+
+`gobbi workflow resume` synthesizes a pathway-specific briefing from the event store. The briefing content differs based on how the workflow arrived at its current state, because different causes require different recovery actions.
+
+**Normal mid-step crash** — The workflow was in an active step when the process terminated. The briefing includes the last active step, the most recent events leading up to the crash, and the artifacts available in the step directory (using filename versioning to identify the latest round). Recovery options: retry the step from where it left off, or force-advance to memorization.
+
+**Error state from step timeout** — A step exceeded its configured timeout and the Stop hook wrote a `workflow.step.timeout` event. The briefing includes which step timed out, the elapsed time at timeout, and what artifacts were in progress. Recovery options: retry the step with a fresh context, force-advance to memorization, or abort.
+
+**Error state from feedback round cap** — The `feedbackRound` exceeded `maxFeedbackRounds` and the evaluation loop transitioned to `error`. The briefing includes the evaluation history across rounds — each round's verdict and findings — and the partial artifacts from the final round. Recovery options: force memorization to save partial work (`gobbi workflow resume --force-memorization`), or abort.
+
+**Error state from invalid transition** — The reducer rejected an event because the transition was not valid from the current state. The briefing includes the rejected event, the reducer error message, and the state at the time of rejection. Recovery options: retry from the last valid state, or abort.
+
+Each pathway's briefing is compiled into the resume prompt by the CLI. This is the same mechanism used after context compaction — compact is not crash recovery, but it uses the same rebuild path. The pathway determines what context is included, but the compilation pipeline is shared.
 
 ---
 
 ## Schema Versioning
 
-Every persisted JSON file includes a `schemaVersion` integer field at the top level. The events table includes a `schema_version` column on each row.
+> **Events are stored in their original schema version and never rewritten. Migrations are applied at read time, not write time.**
 
-The CLI reads `schemaVersion` when loading any JSON file. If the version is older than the current schema, a migration function is applied before the data is used. This pattern is already established in the codebase in `config.ts`'s `migrateIfNeeded` function — v0.5.0 extends it to session files.
+Every persisted JSON file includes a `schemaVersion` integer field at the top level. The events table includes a `schema_version` column on each row — this records the schema version at the time the event was written, and it is never updated.
 
-Migration functions are pure transformations: given a versioned JSON object, return the current-schema equivalent. They are keyed by version number and composed in sequence for multi-version upgrades. A session created at schema version 1 upgraded to a codebase at schema version 3 applies migrations 1→2 and 2→3 in order.
+Events are immutable once written. When the schema evolves, existing events stay in their original format on disk. Migration happens at read time: during reducer replay, each event passes through a migration pipeline keyed by its `schema_version` before the reducer processes it. The reducer always sees events in the current schema format, but the storage layer preserves originals. This is a lazy migration pattern — only the events that are actually replayed are migrated, and only in memory.
 
-The schema version is incremented whenever a breaking change is made to the event table schema, the `state.json` shape, or the `metadata.json` shape. Additive changes that preserve backward compatibility do not require a version increment.
+This design makes corrupted migrations recoverable. If a migration function has a bug, the original events are untouched — fix the migration, replay again, and the correct state emerges. A write-time migration that rewrites events in place would make the original data irrecoverable if the migration is wrong. The pattern follows Greg Young's event sourcing recommendation and EventStoreDB's approach to schema evolution.
+
+Migration functions are pure transformations: given a versioned event, return the current-schema equivalent. They are keyed by version number and composed in sequence for multi-version upgrades. An event written at schema version 1 replayed in a codebase at schema version 3 applies migrations 1→2 and 2→3 in order. This pipeline is already established in the codebase in `config.ts`'s `migrateIfNeeded` function — v0.5.0 extends the same pattern to event replay.
+
+For `state.json` and `metadata.json`, the same lazy approach applies: the CLI reads `schemaVersion` when loading either file and applies migration in memory before use, without rewriting the file on disk.
+
+The schema version is incremented whenever a breaking change is made to the event schema, the `state.json` shape, or the `metadata.json` shape. Additive changes that preserve backward compatibility do not require a version increment.
 
 ---
 
@@ -179,7 +216,7 @@ The schema version is incremented whenever a breaking change is made to the even
 
 **Session end** — The session ends when the user runs `/clear` or opens a new conversation. There is no explicit cleanup event — the session directory remains on disk until the TTL cleanup runs.
 
-**Abandoned session detection** — When `gobbi workflow init` runs, it checks all existing session directories for sessions without a `workflow.finish` event. If a session has been inactive for more than 24 hours — meaning no events have been appended in the last 24 hours — it is marked as abandoned. The `.claude/` write guard checks session freshness before blocking writes: if the session's last event is older than 24 hours and no `workflow.finish` event exists, the guard treats the session as expired and allows `.claude/` writes to proceed. This prevents abandoned sessions from permanently blocking the `.claude/` write protection. A session that was interrupted by a crash or a user closing their terminal without clearing will not hold the write guard indefinitely.
+**Abandoned session detection** — The Stop hook (which fires after each turn) writes a `session.heartbeat` event with a timestamp to `gobbi.db`. When `gobbi workflow init` runs, it checks all existing session directories for sessions without a `workflow.finish` event. If a session has no heartbeat within the last 60 minutes, it is treated as abandoned. The `.claude/` write guard checks heartbeat freshness before blocking writes: if the most recent `session.heartbeat` is older than 60 minutes and no `workflow.finish` event exists, the guard treats the session as expired and allows `.claude/` writes to proceed. This prevents abandoned sessions from permanently blocking the `.claude/` write protection. A session that was interrupted by a crash or a user closing their terminal without clearing will not hold the write guard indefinitely. The 1-hour threshold replaces a 24-hour threshold — stale sessions should release the write guard quickly, not hold it for an entire day.
 
 **Cleanup** — A background cleanup process removes sessions older than 7 days and enforces a maximum entry cap (default 50 sessions). Cleanup targets the oldest sessions first when the cap is exceeded. The cleanup configuration is stored in the user's gobbi config and can be adjusted.
 

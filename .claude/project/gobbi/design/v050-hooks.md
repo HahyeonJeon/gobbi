@@ -1,6 +1,6 @@
 # v0.5.0 Hooks
 
-Enforcement and recording layer for v0.5.0. Read this when implementing or reasoning about PreToolUse guards, SubagentStop capture, PostToolUse signals, or the hook-to-CLI delegation pattern. Assumes familiarity with the event model in `v050-session.md` and guard conditions in `v050-state-machine.md`.
+Enforcement and recording layer for v0.5.0. Read this when implementing or reasoning about PreToolUse guards, SubagentStop capture, PostToolUse signals, Stop hook behaviors, or the hook-to-CLI delegation pattern. Assumes familiarity with the event model in `v050-session.md`, guard conditions and predicate registry in `v050-state-machine.md`, and step spec structure in `v050-prompts.md`.
 
 ---
 
@@ -12,37 +12,7 @@ V0.5.0 hooks divide cleanly into two functional categories based on when they fi
 
 **Guard hooks** (PreToolUse) intercept tool calls before execution. They read the current workflow state and evaluate whether the tool call is valid at this point in the workflow. When a call violates a guard, the hook blocks it — the tool never executes. Guard hooks are the enforcement layer. They cannot be bypassed by model reasoning because they operate at the tool layer, not the prompt layer.
 
-**Capture hooks** (SubagentStop, PostToolUse, Stop) observe actions that have already completed. They do not block — they record. A SubagentStop hook reads the subagent's transcript and writes a `delegation.complete` event to the event store. A PostToolUse hook on ExitPlanMode captures the plan content. A Stop hook flushes pending state changes after each turn. Capture hooks are the recording layer.
-
-```
-  Orchestrator action
-         │
-         ▼
-  ┌─────────────────────────────────────┐
-  │          PreToolUse (Guard)         │
-  │                                     │
-  │  Read state.json                    │
-  │  Evaluate guard conditions          │
-  │         │                           │
-  │    deny? ──── block ──▶ guard.violation event
-  │         │                           │
-  │    allow? ─────────────────────────┐│
-  └─────────────────────────────────────┘
-                                        │
-                                        ▼
-                               Tool executes
-                                        │
-                    ┌───────────────────┼───────────────────┐
-                    ▼                   ▼                   ▼
-           SubagentStop          PostToolUse             Stop
-           (Capture)             (Capture)            (Capture)
-                    │                   │                   │
-                    └───────────────────┴───────────────────┘
-                                        │
-                                        ▼
-                             Event written to gobbi.db
-                             state.json updated
-```
+**Capture hooks** (SubagentStop, PostToolUse, Stop) observe actions that have already completed. They do not block — they record. A SubagentStop hook reads the subagent's transcript and writes a delegation event to the event store. A PostToolUse hook on ExitPlanMode captures the plan content. A Stop hook writes heartbeat events and checks for step timeouts. Capture hooks are the recording layer.
 
 ---
 
@@ -86,11 +56,21 @@ PreToolUse can rewrite the tool's input before execution via the `updatedInput` 
 
 **Agent tool (spawning subagents)** — The guard reads `tool_input.subagent_type` and checks it against the current step's allowed agent types from `state.json`. An orchestrator in the Execution step is allowed to spawn executor-type agents. It is not allowed to spawn evaluator-type agents — evaluation is a separate step and the creating agent must not trigger it. If `subagent_type` is not in the allowed set for the current step, the guard denies.
 
-When the guard allows an Agent tool call, it appends a `delegation.spawn` event to the event store before returning the allow decision. This event records the subagent type, the current step, and the timestamp. The `parent_seq` on the subsequent `delegation.complete` event (written by SubagentStop) references this spawn event, linking the full delegation lifecycle in the event log.
+When the guard allows an Agent tool call, it appends a `delegation.spawn` event to the event store before returning the allow decision. This event records the subagent type, the current step, and the timestamp. The `parent_seq` on the subsequent `delegation.complete` or `delegation.fail` event (written by SubagentStop) references this spawn event, linking the full delegation lifecycle in the event log. All events include `idempotency_key` per the schema in `v050-session.md`.
 
 **Write and Edit tools (`.claude/` protection)** — The guard checks whether `tool_input.file_path` targets any path under `.claude/`. If the session is active (a `workflow.start` event exists and no `workflow.finish` event exists), the guard denies. This enforces the directory split from `v050-overview.md`: `.claude/` is read-only during an active workflow. Writes go to `.gobbi/`.
 
-**Execution precondition guard** — Before an executor subagent is spawned, the guard verifies that a plan artifact exists in `plan/` for the current session. It uses the `event_exists("workflow.step.exit", "plan")` check. If the plan step has not completed, the guard denies. An executor without a plan has no bounded scope and will improvise — which is the failure mode v0.5.0 is designed to prevent.
+**Execution precondition guard** — Before an executor subagent is spawned, the guard verifies that a plan artifact exists in `plan/` for the current session. It uses the predicate that checks for a completed plan step exit event. If the plan step has not completed, the guard denies. An executor without a plan has no bounded scope and will improvise — which is the failure mode v0.5.0 is designed to prevent.
+
+### Secret Pattern Detection Guard
+
+> **Prevent accidental secret leakage in tool outputs without blocking legitimate writes.**
+
+A PreToolUse guard checks Write and Edit tool inputs for common secret patterns — API keys, tokens, credentials, and other sensitive material. The match filter fires only on `Write` and `Edit` tool calls. The guard's effect is `warn`, not `deny`, because false positives are possible and blocking would stall the workflow unnecessarily.
+
+The match filter must exclude paths under `.gobbi/sessions/**`. Gobbi's session artifact writes — subagent results, event data, state files — may contain strings that resemble secret patterns without being actual secrets. The exclusion is narrowed to `sessions/` specifically so that writes to `.gobbi/config.json` or other non-session files are still checked for secrets.
+
+When the guard fires, it injects an `additionalContext` warning into the hook response and writes a `guard.warn` event to the event store with `idempotency_key`. The orchestrator receives the warning and can inspect the flagged content. The `guard.warn` event is distinct from `guard.violation` (which is written by deny guards) — both count toward escalation thresholds, but `guard.warn` does not block the tool call.
 
 ---
 
@@ -98,7 +78,7 @@ When the guard allows an Agent tool call, it appends a `delegation.spawn` event 
 
 ### SubagentStop
 
-> **SubagentStop replaces manual `gobbi note collect` entirely. When a subagent stops, its output is automatically recorded.**
+> **SubagentStop replaces manual `gobbi note collect` entirely. When a subagent stops, its output is automatically recorded — success or failure.**
 
 SubagentStop fires after every subagent completes, regardless of success or failure. The stdin payload fields are:
 
@@ -110,9 +90,33 @@ SubagentStop fires after every subagent completes, regardless of success or fail
 | `last_assistant_message` | string | Final message from the subagent before stopping |
 | `stop_hook_active` | boolean | Whether a Stop hook is currently running |
 
-The hook reads the transcript at `agent_transcript_path`, extracts the result, and writes an artifact file to the current step's directory under `.gobbi/sessions/{session-id}/{step}/`. It then appends a `delegation.complete` event to `gobbi.db` with the artifact path as data. The `parent_seq` field on the event references the `delegation.spawn` event that initiated this subagent, linking the two.
-
 `stop_hook_active` must be checked first. If true, the hook exits immediately. SubagentStop can be called from within a Stop hook context — processing in that condition causes infinite loops.
+
+#### Three-Case Failure Handling
+
+Every SubagentStop produces either a `delegation.complete` or `delegation.fail` event. No subagent completion is silently dropped. The capture hook handles three cases:
+
+**Transcript present and parseable** — The hook reads the transcript at `agent_transcript_path`, extracts the result, and writes an artifact file to the current step's directory under `.gobbi/sessions/{session-id}/{step}/`. It then appends a `delegation.complete` event to `gobbi.db` with the artifact path as data. The `parent_seq` field references the `delegation.spawn` event that initiated this subagent.
+
+**Transcript present but unparseable** — The transcript file exists but the hook cannot extract a structured result from it — malformed content, unexpected format, or extraction logic failure. The hook writes a `delegation.fail` event with the transcript path included as context in the event data, so the operator can inspect the raw transcript. A failure marker artifact (`delegation-fail-r{N}.md`) is written to the step directory.
+
+**Transcript absent** — The transcript file at `agent_transcript_path` does not exist. The subagent may have crashed before producing output, or the path may be stale. The hook writes a `delegation.fail` event with reason "transcript not found" in the event data. A failure marker artifact is written to the step directory.
+
+This defensive approach follows ETL pipeline patterns: every input produces an output record, even if that record is a failure. Silent drops in pipelines cause state inconsistencies that are difficult to diagnose.
+
+#### Artifact Filename Construction
+
+The capture hook reads `feedbackRound` from `state.json` to construct artifact filenames with a round suffix. First-pass artifacts use `r1` (e.g., `execution-r1.md`). After a feedback loop, the next round uses `r2` (e.g., `execution-r2.md`). Failed rounds get a failure marker: `delegation-fail-r2.md`. Cross-reference `v050-session.md` for the full naming scheme and how the CLI's prompt compilation selects the latest round.
+
+#### Cost and Token Capture
+
+When extracting from the transcript, the capture hook captures token usage data if present in the hook payload or transcript — billed tokens (cache-adjusted, not raw), and cache hit ratio. These are included as optional fields on the `delegation.complete` event's data payload. If token data is not available, the hook falls back to transcript file size as a rough proxy and records that instead.
+
+Cost data surfaces via `gobbi workflow status` only — it must NOT appear in compiled prompts or guard conditions. This is a visibility feature for the operator, not a control mechanism. Data availability depends on the Claude Code API — this is a precondition to verify during implementation before designing the full schema. Cross-reference `v050-session.md` for the `delegation.complete` event's cost field definitions.
+
+#### Idempotency
+
+All events written by the SubagentStop hook — `delegation.complete` and `delegation.fail` — include the `idempotency_key` field per the schema in `v050-session.md`. This prevents duplicate events if Claude Code retries the hook.
 
 Output length cap applies. Transcripts can be large. The hook writes results to the artifact file, not to stdout. The stdout response is kept minimal — only the event confirmation.
 
@@ -122,7 +126,7 @@ PostToolUse fires after a tool call completes. The hook is registered specifical
 
 1. Reads `tool_input` from the stdin payload to extract the plan content
 2. Writes the plan as an artifact to `.gobbi/sessions/{session-id}/plan/`
-3. Appends an `artifact.write` event to `gobbi.db`
+3. Appends an `artifact.write` event to `gobbi.db` with `idempotency_key`
 
 This removes the requirement for the orchestrator to explicitly save the plan. The capture is automatic — the orchestrator uses ExitPlanMode as normal and the hook handles persistence.
 
@@ -130,11 +134,31 @@ PostToolUse does not use `permissionDecision` — it cannot block. If the hook f
 
 ### Stop Hook
 
-The Stop hook fires after each turn of the conversation ends. Its primary responsibility in v0.5.0 is flushing any pending state changes that have not yet been persisted — for example, if a state update was computed but not written due to a mid-turn crash, the Stop hook ensures it is applied.
+> **The Stop hook is the continuous observer — heartbeat, timeout detection, and state flush on every turn.**
 
-`stop_hook_active` in the stdin payload must be checked at the start of every Stop hook. If true, the hook exits immediately with a zero exit code and empty output. Claude Code sets `stop_hook_active` when a Stop hook triggers another Stop hook — the reentrance guard prevents cascading. Omitting this check causes infinite loops that stall the session.
+The Stop hook fires after each turn of the conversation ends. It has three responsibilities in v0.5.0:
 
-The Stop hook is a safety net, not the primary persistence mechanism. Events are written to `gobbi.db` during the turn as they occur. The Stop hook only handles the case where a turn ended with pending state that was not flushed inline.
+**Heartbeat writing** — On each firing, the Stop hook writes a `session.heartbeat` event with the current timestamp to `gobbi.db`. This event includes `idempotency_key`. The heartbeat enables abandoned session detection: sessions without a heartbeat for 60 minutes are treated as abandoned, which releases the `.claude/` write guard. Cross-reference `v050-session.md` for the heartbeat event type and the abandoned session threshold.
+
+**Timeout detection** — On each firing, the Stop hook checks elapsed time since the current step's `workflow.step.enter` event. If elapsed time exceeds the step's configured timeout (from the step spec `meta` section), the hook writes a `workflow.step.timeout` event with `idempotency_key`. This event triggers transition to `error` state per the transition table in `v050-state-machine.md`. Default timeouts are generous — 30 minutes for execution steps, 15 minutes for evaluation steps — because human interaction is expected during most steps. Timeout configuration lives in step spec `meta`; cross-reference `v050-prompts.md` for step spec structure.
+
+**State flush** — If any state changes computed during the turn were not yet persisted, the Stop hook ensures they are applied. This is a safety net — events are written to `gobbi.db` during the turn as they occur, and the Stop hook only handles the case where a turn ended with pending state that was not flushed inline.
+
+`stop_hook_active` in the stdin payload must be checked at the start of every Stop hook invocation. If true, the hook exits immediately with a zero exit code and empty output. Claude Code sets `stop_hook_active` when a Stop hook triggers another Stop hook — the reentrance guard prevents cascading. Omitting this check causes infinite loops that stall the session.
+
+---
+
+## Verification Command Integration
+
+> **Mechanical verification after each subtask completion catches regressions before they compound.**
+
+After each subtask completes and the SubagentStop hook captures the result, verification commands can run against the codebase. Verification commands are project-configurable — lint, test, typecheck, or any command the project defines in `.gobbi/` project config.
+
+Verification results are recorded as events in the event store with `idempotency_key`. A passing verification is informational. A failing verification records the failure context — which command failed, the output — so the CLI can include it in the next compiled prompt. This gives the orchestrator or the next subagent concrete error context rather than requiring re-discovery.
+
+Verification commands are not guards — they do not block the SubagentStop capture. The capture always completes first (writing the `delegation.complete` or `delegation.fail` event), and verification runs afterward. This ordering ensures the subagent's output is never lost even if verification itself fails or times out.
+
+Cross-reference `v050-prompts.md` for how verification result blocks appear in step specs and how the CLI includes failure context in the next delegation prompt.
 
 ---
 
@@ -152,9 +176,11 @@ The delegation pattern for each hook type:
 | PreToolUse | `gobbi workflow guard` |
 | SubagentStop | `gobbi workflow capture-subagent` |
 | PostToolUse (ExitPlanMode) | `gobbi workflow capture-plan` |
-| Stop | `gobbi workflow flush-state` |
+| Stop | `gobbi workflow stop` |
 
 Each CLI command reads the full stdin payload, evaluates against the current session state, writes any necessary events, and returns the appropriate JSON response that the hook forwards to stdout. The hook process exits 0 in all cases except unrecoverable startup failures.
+
+The Stop hook now delegates to `gobbi workflow stop` (renamed from `flush-state`) because its responsibilities expanded beyond state flushing to include heartbeat writing and timeout detection.
 
 The SessionStart hook receives a fixed stdin schema:
 
@@ -175,11 +201,11 @@ This means the hooks registered in `hooks/hooks.json` are stable across releases
 
 V0.5.0 implements two enforcement levels that reflect different violation severities.
 
-**Soft nudge** — For edge cases that are unusual but not structurally invalid, the PreToolUse hook returns a response that includes `additionalContext` rather than a denial. The tool call proceeds. The orchestrator receives the additional context and can adjust its behavior. This is appropriate when the action is technically within scope but warrants attention — for example, writing to a step directory that does not match the currently active step.
+**Soft nudge** — For edge cases that are unusual but not structurally invalid, the PreToolUse hook returns a response that includes `additionalContext` rather than a denial. The tool call proceeds. The orchestrator receives the additional context and can adjust its behavior. This is appropriate when the action is technically within scope but warrants attention — for example, writing to a step directory that does not match the currently active step, or when the secret pattern guard detects a potential credential in a Write call.
 
-**Hard block** — For structural violations, the hook returns `permissionDecision: "deny"`. The tool does not execute. A `guard.violation` event is written to `gobbi.db`. The `violations` array in `state.json` is updated. The orchestrator receives the denial and the reason.
+**Hard block** — For structural violations, the hook returns `permissionDecision: "deny"`. The tool does not execute. A `guard.violation` event is written to `gobbi.db` with `idempotency_key`. The `violations` array in `state.json` is updated. The orchestrator receives the denial and the reason.
 
-**Escalation on repeat violations** — The `violations` array in `state.json` tracks every `guard.violation` event. The CLI reads the violation count for a specific guard when generating the next prompt. If the same guard has fired more than a configurable threshold (default 3 times), the CLI escalates — it surfaces a warning to the user via the generated prompt, noting that the orchestrator is repeatedly attempting a blocked action. This is a stagnation signal: the orchestrator is stuck, and human intervention may be needed to resolve the underlying confusion.
+**Escalation on repeat triggers** — The `violations` array in `state.json` tracks both `guard.violation` events (from deny guards) and `guard.warn` events (from warn guards). The CLI reads the trigger count for a specific guard when generating the next prompt. If the same guard has fired more than a configurable threshold (default 3 times), the CLI escalates — it surfaces a warning to the user via the generated prompt. For deny guards, this means the orchestrator is repeatedly attempting a blocked action. For warn guards like the secret pattern detector, this means the orchestrator is repeatedly writing content that triggers the warning. Both are stagnation signals that may require human intervention.
 
 ---
 
@@ -199,12 +225,12 @@ Profile support is planned for v0.5.1 and later. V0.5.0 does not implement enfor
 
 Claude Code v2.1 and later auto-load `hooks/hooks.json` from the plugin directory. Declaring the same hooks in `plugin.json` causes duplicate detection errors at plugin load time. The hook manifest lives in one place — `hooks/hooks.json`. The `plugin.json` manifest does not contain a `hooks` key.
 
-The timeout for command hooks is 600 seconds by default. Guard checks complete in milliseconds — they read `state.json` and evaluate JsonLogic conditions. Capture hooks may take longer if they process large transcripts, but should complete well within the timeout. A hook that approaches the timeout indicates a design problem — the heavy work should be offloaded to an async queue rather than blocking the hook execution path.
+The timeout for command hooks is 600 seconds by default. Guard checks complete in milliseconds — they read `state.json` and evaluate predicate conditions. Capture hooks may take longer if they process large transcripts, but should complete well within the timeout. A hook that approaches the timeout indicates a design problem — the heavy work should be offloaded to an async queue rather than blocking the hook execution path.
 
 ---
 
 ## Boundaries
 
-This document covers the two hook categories and their responsibilities, guard hook mechanics (stdin schema, denial mechanism, input modification, specific guard behaviors), capture hook mechanics (SubagentStop, PostToolUse, Stop), hook-to-CLI delegation, escalating enforcement levels, and plugin hook registration.
+This document covers the two hook categories and their responsibilities, guard hook mechanics (stdin schema, denial mechanism, input modification, specific guard behaviors, secret pattern detection), capture hook mechanics (SubagentStop with three-case failure handling and cost capture, PostToolUse, Stop with heartbeat and timeout detection), verification command integration, hook-to-CLI delegation, escalating enforcement levels, and plugin hook registration.
 
-For the JsonLogic condition language and guard specification format, see `v050-state-machine.md`. For the event types that hooks write and the `state.json` fields they update, see `v050-session.md`. For the CLI commands that hooks delegate to, see `v050-cli.md`.
+For the predicate registry and guard specification format, see `v050-state-machine.md`. For the event types that hooks write and the `state.json` fields they update, see `v050-session.md`. For the CLI commands that hooks delegate to and step spec structure, see `v050-cli.md` and `v050-prompts.md`.

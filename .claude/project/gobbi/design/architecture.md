@@ -281,7 +281,7 @@ The v0.5.0 workflow condenses and formalizes the pre-existing steps:
 
 **Memorization** — Capture decisions, gotchas, and session state so the next session resumes without re-discovery.
 
-Transitions between steps are guarded by JsonLogic rules evaluated against the session state. A step cannot advance until its preconditions are satisfied.
+Transitions between steps are guarded by predicate conditions evaluated against the session state. A step cannot advance until its preconditions are satisfied.
 
 ### Spec Documents
 
@@ -291,7 +291,7 @@ The v0.5.0 design is spread across six spec files in `packages/cli/src/specs/`:
 |----------|--------|
 | `v050-overview.md` | Philosophy, workflow, directory split, architecture |
 | `v050-session.md` | Session directory, SQLite events, state derivation |
-| `v050-state-machine.md` | Workflow transitions, reducer, guards, JsonLogic |
+| `v050-state-machine.md` | Workflow transitions, reducer, guards, predicate registry |
 | `v050-prompts.md` | Step specs, prompt compilation, skills boundary |
 | `v050-hooks.md` | PreToolUse guards, SubagentStop capture, hook schemas |
 | `v050-cli.md` | Bun CLI, commands, distribution, plugin relation |
