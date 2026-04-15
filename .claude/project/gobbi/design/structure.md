@@ -80,6 +80,38 @@ Shell scripts in `.claude/hooks/` that execute in response to Claude Code events
 
 ---
 
+## v0.5.0 Directory Split
+
+> **`.claude/` is read-only during workflow. `.gobbi/` is written freely during workflow.**
+
+v0.5.0 introduces a hard boundary between Claude Code's native directory and gobbi's runtime state. Writing to `.claude/` mid-workflow triggers the Claude Code idle detection heuristic — the model interprets its own file edits as meaningful changes and stalls. The split eliminates this by keeping all workflow writes out of `.claude/`.
+
+### `.gobbi/` Directory
+
+Gobbi's runtime state directory, separate from `.claude/`. Created at the project root alongside `.claude/`.
+
+| Directory | Purpose |
+|:----------|:--------|
+| `sessions/` | Workflow session data — `state.json`, `gobbi.db` (SQLite event store), and one subdirectory per step containing notes, research, and execution output |
+| `worktrees/` | Git worktree isolation — moved from `.claude/worktrees/` to prevent idle false-positives during branch operations |
+| `project/` | Project notes, gotchas, and context — moved from `.claude/project/` so workflow writes do not touch `.claude/` |
+
+`.claude/` retains only static content: skills, agent definitions, hooks, settings, and `CLAUDE.md`. Nothing written during a workflow session goes into `.claude/`.
+
+### Step Spec Files
+
+`packages/cli/src/specs/` contains the step specification files that define the v0.5.0 workflow graph.
+
+| Path | Purpose |
+|:-----|:--------|
+| `index.json` | Workflow graph — step ordering, transition guards, entry points |
+| `{step}/spec.json` | Per-step definition — prompt template, required inputs, output schema, preconditions |
+| `_shared/` | Reusable prompt blocks shared across step specs |
+
+The CLI reads these specs at runtime to compile prompts and enforce transitions. Specs are the source of truth for what each workflow step does and what must be true before it can run.
+
+---
+
 ## Claude Code Gobbi Plugin
 
 The `plugins/gobbi/` directory packages gobbi as a Claude Code plugin for distribution and installation.

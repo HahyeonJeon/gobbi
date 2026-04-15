@@ -258,3 +258,40 @@ The principle is straightforward: when a quality dimension exists that an LLM ca
 Tools transform the evaluator's role. Instead of reasoning abstractly about whether something probably works, the evaluator interprets concrete evidence — test results, screenshots, benchmark numbers, accessibility audit reports. The judgment is still the agent's, but the facts are objective.
 
 The tool ecosystem grows with the project's needs. As new quality dimensions become important — accessibility, security, internationalization — the corresponding measurement tools are added. Each tool closes a specific perceptual gap, making evaluation more accurate, more consistent, and more grounded in reality.
+
+---
+
+## v0.5.0 Architecture
+
+> **Runtime-enforced orchestration replaces skill-guided orchestration.**
+
+Prior to v0.5.0, workflow discipline depended on agents reading and following skills. v0.5.0 makes the workflow mechanical: a CLI drives each step, hooks enforce transitions, and a SQLite event store derives session state. Agents cannot skip steps or deviate from the workflow graph because the runtime prevents it — not because a skill asks them not to.
+
+### Workflow Change
+
+The v0.5.0 workflow condenses and formalizes the pre-existing steps:
+
+**Ideation** — Discussion and research run as a loop. The user discusses with the orchestrator; PI agents explore the problem; researcher agents investigate how to implement. The loop continues until the problem is specific enough to plan.
+
+**Plan** — Decompose the approved idea into narrow, ordered subtasks. Each subtask has scope, dependencies, and verification criteria recorded in the session store.
+
+**Execution** — Implement one subtask at a time. Each subtask is delegated, verified, and committed before the next begins.
+
+**Evaluation** — Independent evaluators assess the completed work from multiple perspectives. Findings are discussed with the user before any improvement.
+
+**Memorization** — Capture decisions, gotchas, and session state so the next session resumes without re-discovery.
+
+Transitions between steps are guarded by JsonLogic rules evaluated against the session state. A step cannot advance until its preconditions are satisfied.
+
+### Spec Documents
+
+The v0.5.0 design is spread across six spec files in `packages/cli/src/specs/`:
+
+| Document | Covers |
+|----------|--------|
+| `v050-overview.md` | Philosophy, workflow, directory split, architecture |
+| `v050-session.md` | Session directory, SQLite events, state derivation |
+| `v050-state-machine.md` | Workflow transitions, reducer, guards, JsonLogic |
+| `v050-prompts.md` | Step specs, prompt compilation, skills boundary |
+| `v050-hooks.md` | PreToolUse guards, SubagentStop capture, hook schemas |
+| `v050-cli.md` | Bun CLI, commands, distribution, plugin relation |
