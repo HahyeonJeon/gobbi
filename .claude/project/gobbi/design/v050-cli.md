@@ -1,51 +1,30 @@
 # v0.5.0 CLI — Integration Point
 
-CLI architecture reference for v0.5.0. Read this when implementing or reasoning about command structure, runtime choices, distribution, or the relationship between the plugin and the CLI. This document treats the CLI as a container — how it binds the event store, state machine, step specs, and hook system into a single executable. For the internals of each subsystem, see the respective doc.
+CLI architecture reference for v0.5.0. Read this when implementing or reasoning about command structure, runtime choices, distribution, or the relationship between the plugin and the CLI. This document treats the CLI as a container — how it binds the event store, state machine, step specs, predicate registry, and hook system into a single executable. For the internals of each subsystem, see the respective doc.
 
 ---
 
 ## The CLI's Role
 
-The CLI is where all v0.5.0 subsystems converge. It is the only component that has read access to every part of the system simultaneously: workflow state from the event store, domain knowledge from `.claude/skills/`, guard specifications, step specs, and project configuration.
+The CLI is where all v0.5.0 subsystems converge. It is the only component that has read access to every part of the system simultaneously: workflow state from the event store, domain knowledge from `.claude/skills/`, step specs with their predicate references, and project configuration.
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         CLI as Integration Hub                       │
-└─────────────────────────────────────────────────────────────────────┘
+> **The CLI is the prompt factory, the guard enforcer, and the predicate registry owner. Hooks are thin wrappers that delegate to it.**
 
-   .claude/                      .gobbi/
-   ────────────────              ─────────────────────────────────
-   skills/          ──read──▶   sessions/{id}/gobbi.db
-   rules/           ──read──▶   sessions/{id}/state.json
-   CLAUDE.md        ──read──▶   sessions/{id}/{step}/
-   agents/          ──read──▶   project/gotchas/
-                                                  │
-                                                  │
-                    ┌─────────────────────────────┘
-                    │
-                    ▼
-          ┌─────────────────────┐
-          │        CLI          │
-          │                     │
-          │  Event store reads  │
-          │  State derivation   │
-          │  Guard evaluation   │
-          │  Prompt compilation │
-          │  Event writes       │
-          └──────────┬──────────┘
-                     │
-          ┌──────────▼──────────┐
-          │   Hook scripts      │──▶  Claude Code (hook delegation)
-          └─────────────────────┘
-                     │
-          ┌──────────▼──────────┐
-          │   Orchestrator      │──▶  receives bounded prompt
-          └─────────────────────┘
-```
+Hook scripts registered in `hooks/hooks.json` contain no logic. Each hook reads stdin and calls the appropriate `gobbi workflow *` command. Guard logic, predicate evaluation, event schemas, and capture behavior all live in the CLI — not in the hooks. Updating workflow behavior means updating the CLI package, not touching the hook scripts.
 
-> **The CLI is the prompt factory and the guard enforcer. Hooks are thin wrappers that delegate to it.**
+---
 
-Hook scripts registered in `hooks/hooks.json` contain no logic. Each hook reads stdin and calls the appropriate `gobbi workflow *` command. Guard logic, event schemas, and capture behavior all live in the CLI — not in the hooks. This means updating workflow behavior means updating the CLI package, not touching the hook scripts.
+## Predicate Registry
+
+> **All guard conditions and transition predicates resolve through a single typed registry owned by the CLI.**
+
+At startup, the CLI loads all step specs from `packages/cli/src/specs/` and extracts every predicate name referenced in `transitions` and guard `condition` fields. Each predicate name maps to a TypeScript function in the registry — a pure function that receives the current workflow state and relevant arguments and returns a boolean.
+
+The registry is the single mapping between spec-level names (strings in JSON data) and TypeScript implementations. Step specs remain pure JSON — they declare which predicate governs a transition or guard, but never contain inline logic. The CLI resolves names to functions at compilation time.
+
+`gobbi workflow validate` checks that every predicate name referenced in any spec or guard has a registered implementation. A misspelled predicate name, a reference to a removed predicate, or an unimplemented predicate is caught at validation time — not at runtime when a guard fires or a transition attempts to evaluate.
+
+Adding a new condition means adding a TypeScript function to the registry and referencing its name from the spec. No expression parser, no custom operator protocol. Cross-reference `v050-state-machine.md` for the predicate model definition, guard specification format, and the task-size validation predicate.
 
 ---
 
@@ -55,15 +34,15 @@ V0.5.0 migrates the CLI from Node.js to Bun. The current `package.json` declares
 
 > **Bun matches Claude Code's own runtime, eliminates the build step, and brings native SQLite — three wins with one dependency choice.**
 
-**Native TypeScript execution** — Bun runs `.ts` files directly. No `tsc` build step during development. `bun run src/cli.ts` executes immediately. The build step for distribution still exists (`bun build`), but the development loop no longer requires it.
+**Native TypeScript execution** — Bun runs `.ts` files directly. No `tsc` build step during development. The build step for distribution still exists (`bun build`), but the development loop no longer requires it.
 
-**`bun:sqlite`** — The event store in `v050-session.md` requires SQLite with WAL mode and atomic write semantics. `bun:sqlite` is native to the runtime — zero additional dependencies, no `better-sqlite3` binding to compile, and 3–6x faster than equivalent Node.js SQLite solutions. This is the primary technical reason for the Bun migration: the event store architecture depends on SQLite, and Bun makes SQLite a first-class runtime capability.
+**`bun:sqlite`** — The event store in `v050-session.md` requires SQLite with WAL mode and atomic write semantics. `bun:sqlite` is native to the runtime — zero additional dependencies, no `better-sqlite3` binding to compile, and significantly faster than equivalent Node.js SQLite solutions. This is the primary technical reason for the Bun migration: the event store architecture depends on SQLite, and Bun makes SQLite a first-class runtime capability.
 
-**`bun:test`** — Jest-compatible test runner built into the runtime. Zero configuration, built-in mocking, snapshot testing support. The testing strategy for step spec compilation relies on snapshots to catch unintended changes — `bun:test` supports this natively without additional tooling.
+**`bun:test`** — Jest-compatible test runner built into the runtime. Zero configuration, built-in mocking, snapshot testing support. The testing strategy for step spec compilation relies on snapshots to catch unintended changes — `bun:test` supports this natively.
 
-**File I/O** — `Bun.file()` and `Bun.write()` replace `node:fs/promises` for the common case. State file writes use the temp+rename pattern: the CLI writes to a `.tmp` file, then renames it atomically over the target. This prevents a partial write from corrupting `state.json` — the rename is atomic at the OS level.
+**File I/O** — `Bun.file()` and `Bun.write()` replace `node:fs/promises` for the common case. State file writes use the temp+rename pattern for atomic persistence.
 
-**Startup time** — Hook scripts are invoked on every tool call. A PreToolUse guard fires before every `Write`, `Edit`, or `Task` tool call during a workflow session. Guard evaluation must be fast — slow hooks stall the session. Bun's startup time (sub-10ms for a simple script) makes per-call invocation practical in a way that a Node.js + tsc compiled CLI struggles to match.
+**Startup time** — Hook scripts are invoked on every tool call. Guard evaluation must complete in single-digit milliseconds. Bun's startup time makes per-call invocation practical in a way that a Node.js + tsc compiled CLI struggles to match.
 
 The `package.json` `name` (`@gobbitools/cli`) and `bin` configuration remain unchanged. The migration is internal — callers invoke `gobbi` the same way.
 
@@ -77,39 +56,50 @@ The CLI expands from its current eight-command surface to add a `workflow` subco
 
 **`gobbi workflow init`** — Creates the session directory under `.gobbi/sessions/{session-id}/`, writes `metadata.json`, initializes `gobbi.db` with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
-During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers (Ideation and Plan eval on/off) are stored immediately as a `workflow.eval.decide` event in `gobbi.db`, populating `evalConfig` in `state.json`. The compiled prompt generated for the first step (Ideation) includes the eval decision in its session section so the orchestrator knows the evaluation configuration from the start without needing to ask mid-workflow.
+During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers are stored immediately as a `workflow.eval.decide` event in `gobbi.db`, populating `evalConfig` in `state.json`. The compiled prompt generated for the first step includes the eval decision in its session section.
 
-**`gobbi workflow next`** — The core command. Reads `state.json` (or replays `gobbi.db` if absent), determines the active step, selects the appropriate step spec, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step. Every other `workflow` command supports this one.
+**`gobbi workflow next`** — The core command. Reads `state.json` (or replays `gobbi.db` if absent), determines the active step, selects the appropriate step spec, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step.
 
-**`gobbi workflow transition <event>`** — Advances the state machine by appending a typed event to `gobbi.db` and updating `state.json`. Validates that the event produces a valid transition from the current step before writing. Returns the new state summary on stdout. Invalid transitions produce an error with the reason — useful for diagnosing stalls.
+When the session is in `error` state, `gobbi workflow next` generates a pathway-specific error prompt instead of the normal step prompt. The error prompt is selected based on which pathway caused the error entry. Four pathways produce distinct prompts:
 
-The orchestrator calls this command via Bash, instructed by the step spec. Each step's compiled prompt ends with an explicit instruction: when this step is complete, run `gobbi workflow transition COMPLETE`. The CLI validates the transition against the state machine and advances state — the orchestrator does not decide when to transition, the step spec instructs it.
+- **Normal crash** — the workflow was active when the process terminated. The prompt includes the last active step, recent events leading up to the crash, and available artifacts in the step directory.
+- **Timeout error** — a step exceeded its configured timeout. The prompt includes which step timed out, elapsed time at timeout, and what artifacts were in progress.
+- **Feedback cap error** — `feedbackRound` exceeded `maxFeedbackRounds`. The prompt includes the evaluation history across rounds — each round's verdict and findings — and partial artifacts from the final round.
+- **Invalid transition error** — the reducer rejected an event. The prompt includes the rejected event, the reducer error message, and the state at rejection time.
 
-The Stop hook can also trigger implicit transitions: after each turn, the Stop hook analyzes the conversation to detect whether the orchestrator's response completed a step. If the response contains a recognized completion signal and no explicit transition was already written, the Stop hook writes the transition event. This handles cases where the orchestrator completed the step work but did not execute the transition command.
+Each error prompt includes the available recovery options: retry from the errored step, force-advance to memorization (`--force-memorization`), or abort. The prompt also includes available artifacts so the orchestrator or user can assess what was produced before the error. Cross-reference `v050-session.md` for pathway definitions and `v050-prompts.md` for resume prompt compilation.
 
-**`gobbi workflow guard`** — Invoked by the PreToolUse hook. Reads the full hook stdin payload, loads `state.json`, evaluates guard conditions using the JsonLogic engine, and writes the appropriate JSON response to stdout. If the call violates a guard, appends a `guard.violation` event and returns `permissionDecision: "deny"`. If the call is valid, returns `permissionDecision: "allow"` or defers to the next hook. Guard evaluation is the hottest code path in the CLI — it must complete in single-digit milliseconds.
+**`gobbi workflow transition <event>`** — Advances the state machine by appending a typed event to `gobbi.db` and updating `state.json`. Validates that the event produces a valid transition from the current step before writing. Returns the new state summary on stdout. Invalid transitions produce an error with the reason.
+
+The orchestrator calls this command via Bash, instructed by the step spec. Each step's compiled prompt ends with an explicit instruction: when this step is complete, run `gobbi workflow transition COMPLETE`. The CLI validates the transition against the state machine and advances state. The Stop hook can also trigger implicit transitions when it detects a completion signal that the orchestrator did not explicitly transition.
+
+**`gobbi workflow guard`** — Invoked by the PreToolUse hook. Reads the full hook stdin payload, loads `state.json`, evaluates guard conditions by resolving predicate names through the registry, and writes the appropriate JSON response to stdout. If the call violates a guard, appends a `guard.violation` event and returns `permissionDecision: "deny"`. If the call is valid, returns `permissionDecision: "allow"` or defers. Guard evaluation is the hottest code path — it must complete in single-digit milliseconds.
 
 **`gobbi workflow capture-subagent`** — Invoked by the SubagentStop hook. Reads the hook stdin payload, extracts the subagent's transcript from `agent_transcript_path`, writes an artifact to the current step directory, and appends a `delegation.complete` event linked to the originating `delegation.spawn` event via `parent_seq`. This replaces manual `gobbi note collect`.
 
-**`gobbi workflow capture-plan`** — Invoked by the PostToolUse hook on ExitPlanMode. Reads the plan content from the hook stdin payload, writes a plan artifact to `.gobbi/sessions/{id}/plan/`, and appends an `artifact.write` event. The orchestrator does not need to explicitly save the plan — this capture is automatic.
+**`gobbi workflow capture-plan`** — Invoked by the PostToolUse hook on ExitPlanMode. Reads the plan content from the hook stdin payload, writes a plan artifact to `.gobbi/sessions/{id}/plan/`, and appends an `artifact.write` event. Capture is automatic — the orchestrator does not need to explicitly save the plan.
 
-**`gobbi workflow flush-state`** — Invoked by the Stop hook. Checks for pending state changes that were not flushed during the turn and applies them. Respects `stop_hook_active` — exits immediately if true to prevent reentrance loops. This is a safety net, not the primary persistence path.
+**`gobbi workflow stop`** — Invoked by the Stop hook. Handles three responsibilities: heartbeat writing, timeout detection, and state flush for pending changes. Respects `stop_hook_active` — exits immediately if true to prevent reentrance loops. Cross-reference `v050-hooks.md` for the full Stop hook behavior.
 
 **`gobbi workflow resume`** — User-facing recovery command. Replays `gobbi.db` through the reducer, writes a fresh `state.json`, and outputs a resume prompt that re-orients the orchestrator to the current step. Used after crash recovery and after context compaction — both cases use the same rebuild path.
 
-**`gobbi workflow status`** — Reads `state.json` and prints the current workflow step, completed steps, active subagent count, evaluation configuration, and feedback round count. Human-readable output. Useful for diagnosing where a session is in the workflow without reading raw JSON.
+**`gobbi workflow status`** — Reads `state.json` and the event store and prints the current workflow step, completed steps, active subagent count, evaluation configuration, feedback round count, and cost summary. Human-readable output.
+
+The cost section displays: cumulative billed tokens (cache-adjusted) across all delegations, per-step token breakdown, and cache hit ratio. Cost data is derived from `delegation.complete` events in the event store (see `v050-session.md` for cost field definitions). When token data was unavailable for some delegations and the CLI fell back to file-size proxy, the output annotates which entries are estimates versus actual measurements. Cost surfaces ONLY in `gobbi workflow status` — it must NOT appear in compiled prompts or guard conditions.
+
+**`gobbi workflow validate`** — Performs static analysis of the spec library and predicate registry. Checks that every predicate name referenced in specs and guards has a registered TypeScript implementation. Also checks the workflow graph for dead steps, cycles, and broken references. This is a build-time check — it catches structural errors before they reach runtime.
 
 ### New: `gobbi session` commands
 
-**`gobbi session events`** — Formats the `events.jsonl` log for human consumption. New in v0.5.0. Provides a readable audit trail of every event in a session without requiring a SQLite client.
+**`gobbi session events`** — Formats the event log from `gobbi.db` for human consumption. Provides a readable audit trail without requiring a SQLite client.
 
 ### New: `gobbi gotcha` commands
 
-**`gobbi gotcha promote`** — Moves gotchas from `.gobbi/project/gotchas/` to the permanent store in `.claude/skills/_gotcha/`. This command runs outside active sessions only — it checks that no session is active (no `workflow.start` event without a corresponding `workflow.finish` in any session directory) before proceeding. Gotchas recorded during a session live in `.gobbi/project/gotchas/` until this promotion step runs. The promotion is the mechanism that turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session itself.
+**`gobbi gotcha promote`** — Moves gotchas from `.gobbi/project/gotchas/` to the permanent store in `.claude/skills/_gotcha/`. Runs outside active sessions only — checks that no session is active before proceeding. The promotion turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session.
 
 ### Existing commands (unchanged)
 
-**`gobbi session list`** — Lists sessions with their IDs, creation timestamps, and current steps. Unchanged in v0.5.0 except the session source moves from the v0.4.x session files to `.gobbi/sessions/`.
+**`gobbi session list`** — Lists sessions with their IDs, creation timestamps, and current steps. Session source moves from v0.4.x session files to `.gobbi/sessions/`.
 
 **`gobbi config`** — Session configuration management. Unchanged.
 
@@ -121,15 +111,29 @@ The Stop hook can also trigger implicit transitions: after each turn, the Stop h
 
 ---
 
+## Verification Command Support
+
+> **Mechanical verification after subtask completion catches regressions before they compound across tasks.**
+
+The CLI runs project-configurable verification commands after each subtask delegation completes. Verification commands — lint, test, typecheck, or any custom command — are specified in `.gobbi/` project configuration.
+
+When the SubagentStop capture hook finishes writing the delegation event, the CLI runs all configured verification commands against the codebase. Results are recorded as events in the event store: which commands ran, their exit codes, and a summary of output. This makes verification history available to all downstream compilation — prompt generation, crash recovery briefings, evaluation context, and status reporting.
+
+Verification does not block the SubagentStop capture. The delegation event is always written first — the subagent's output is never lost even if verification itself fails or times out. Verification runs after capture, as a separate phase.
+
+When verification fails, the CLI includes the failure context in the next compiled prompt. The orchestrator receives concrete error output and can decide whether to re-execute, adjust the approach, or flag for user attention. Verification failure does not automatically trigger re-execution — it provides information; the orchestrator decides the action.
+
+Cross-reference `v050-hooks.md` for how hooks trigger verification after SubagentStop events and `v050-prompts.md` for how verification blocks appear in step specs.
+
+---
+
 ## Argument Parsing
 
-The current CLI uses `node:util` `parseArgs` with manual command routing — the `switch` on `command` in `cli.ts`. This pattern is kept for v0.5.0. It has a manageable cost at the current command count and adding a `workflow` subcommand group is straightforward.
+The current CLI uses `node:util` `parseArgs` with manual command routing — the `switch` on `command` in `cli.ts`. This pattern is kept for v0.5.0.
 
 > **The parsing layer is isolated. Migration to a typed routing library is a contained refactor, not an architectural change.**
 
-The `gobbi workflow <subcommand>` routing follows the same pattern as the existing top-level commands: `process.argv[2]` routes to `workflow`, and `process.argv[3]` routes to the subcommand. The workflow subcommand handler lives in `src/commands/workflow.ts`.
-
-When the command count grows significantly — particularly when workflow subcommands multiply for domain-specific variants — the CLI can migrate the parsing layer to a typed subcommand router without touching the handler implementations. The handlers are isolated from the parsing surface.
+The `gobbi workflow <subcommand>` routing follows the same pattern as existing top-level commands: `process.argv[2]` routes to `workflow`, and `process.argv[3]` routes to the subcommand. The workflow subcommand handler lives in `src/commands/workflow.ts`. When the command count grows significantly, the CLI can migrate the parsing layer to a typed subcommand router without touching the handler implementations.
 
 ---
 
@@ -139,36 +143,25 @@ When the command count grows significantly — particularly when workflow subcom
 
 The gobbi plugin is the Claude Code integration artifact — it is what users install, what registers hooks with Claude Code, and what declares the rules that load into every session. The CLI is the runtime engine that the plugin delegates to.
 
-```
-  Plugin (distribution layer)          CLI (runtime layer)
-  ──────────────────────────           ─────────────────────────────
-  hooks/hooks.json         ──calls──▶  gobbi workflow guard
-  hooks/hooks.json         ──calls──▶  gobbi workflow capture-subagent
-  hooks/hooks.json         ──calls──▶  gobbi workflow capture-plan
-  hooks/hooks.json         ──calls──▶  gobbi workflow flush-state
-  rules/                   ──reads──▶  (loaded by Claude Code directly)
-  agents/                  ──reads──▶  (loaded by Claude Code directly)
-  skills/ (domain only)    ──reads──▶  CLI inlines into generated prompts
-  settings.json            ──declares──▶  hook registration, permissions
-```
-
 **Plugin responsibilities:**
 - Hook registration via `hooks/hooks.json`
 - Always-active behavioral rules in `rules/`
 - Agent definitions for the workflow agents
-- Domain knowledge skills (`_gotcha`, `_claude`, `_git`, and others that survive as materials per `v050-prompts.md`)
+- Domain knowledge skills that survive as materials per `v050-prompts.md`
 - `settings.json` declaring permissions and hook timeouts
 
 **CLI responsibilities:**
 - Workflow engine: event store, state machine, reducer
-- Step specs for all five workflow steps plus their variants
-- Guard specification and JsonLogic evaluation
+- Predicate registry: loading, validation, runtime resolution
+- Step specs for all workflow steps plus their variants
+- Guard specification and predicate evaluation
 - Prompt compilation: selecting artifacts, loading skill materials, applying cache ordering, enforcing token budget
-- Session lifecycle management
+- Verification command execution after subtask completion
+- Session lifecycle management and cost tracking
 
-The plugin does not contain orchestration logic. It contains wiring. When guard behavior changes, the CLI package is updated. The hook scripts in `hooks/hooks.json` remain stable across releases because they contain no logic to change — they only invoke `gobbi workflow *` commands.
+The plugin does not contain orchestration logic. It contains wiring. When guard behavior changes, the CLI package is updated. The hook scripts remain stable across releases because they contain no logic — they only invoke `gobbi workflow *` commands.
 
-**Installation path** — The plugin declares `@gobbitools/cli` as a dependency in its `package.json`. When the plugin is installed, the CLI installs with it. The `gobbi` binary is available as a project-local command, invokable from hook scripts via the standard node_modules path or a resolved absolute path stored in plugin configuration.
+**Installation path** — The plugin declares `@gobbitools/cli` as a dependency in its `package.json`. When the plugin is installed, the CLI installs with it. The `gobbi` binary is available as a project-local command.
 
 ---
 
@@ -176,11 +169,11 @@ The plugin does not contain orchestration logic. It contains wiring. When guard 
 
 > **npm is primary. Single-binary is secondary for environments where npm is unavailable.**
 
-**Primary: npm package** — `@gobbitools/cli` published to the npm registry. This is the current distribution mechanism and it remains correct for v0.5.0. Plugin installation pulls the CLI as a dependency. Users with a standard Node.js or Bun environment install once and update via `npm update` or `bun update`.
+**Primary: npm package** — `@gobbitools/cli` published to the npm registry. Plugin installation pulls the CLI as a dependency. Users with a standard Node.js or Bun environment install once and update via `npm update` or `bun update`.
 
-**Secondary: `bun --compile` binary** — Bun can compile a TypeScript project into a self-contained binary with no runtime dependency. This is the distribution path for users in environments where npm is unavailable — CI systems, restricted corporate environments, or setups where installing a package manager is impractical. The compiled binary includes the Bun runtime and all CLI code. It is larger than the npm package but requires no external tooling to run.
+**Secondary: `bun --compile` binary** — Bun can compile a TypeScript project into a self-contained binary with no runtime dependency. This is the distribution path for environments where npm is unavailable — CI systems, restricted corporate environments. The compiled binary includes the Bun runtime and all CLI code.
 
-The binary build is an additional CI step, not a replacement for the npm build. Both artifacts are produced from the same source. The choice between them is made by the installer, not by the gobbi release process.
+Both artifacts are produced from the same source. The choice between them is made by the installer, not by the gobbi release process.
 
 ---
 
@@ -188,22 +181,26 @@ The binary build is an additional CI step, not a replacement for the npm build. 
 
 `bun:test` is the test runner for all CLI tests. No additional test framework is required.
 
-> **Test the boundaries, not the internals. The event store, state machine, and step specs are the interfaces other subsystems depend on.**
+> **Test the boundaries, not the internals. The event store, state machine, predicate registry, and step specs are the interfaces other subsystems depend on.**
 
-**State machine tests** — The reducer is a pure function and tests cheaply. Each test supplies an initial state and an event and asserts the returned state. Exhaustiveness is validated at compile time via the TypeScript `never` pattern — a new event type without a reducer case is a type error. Transition table compliance is tested by exercising every row in the table and confirming the reducer accepts valid transitions and rejects invalid ones.
+**State machine tests** — The reducer is a pure function and tests cheaply. Each test supplies an initial state and an event and asserts the returned state. Exhaustiveness is validated at compile time via the TypeScript `never` pattern. Transition table compliance is tested by exercising every row in the table.
 
-**Guard evaluation tests** — Each guard specification is a JSON object. Tests supply a mock state and a mock tool call input and assert the output: `deny`, `allow`, or `warn` with the expected reason. The custom JsonLogic operators (`event_exists`, `event_count`) are unit-tested independently with synthetic event logs.
+**Predicate registry tests** — Each predicate is a pure function with a typed signature. Tests supply mock state and arguments and assert the boolean return. `gobbi workflow validate` is itself tested by constructing spec sets with missing or misspelled predicate names and asserting that validation fails with descriptive errors.
 
-**Prompt compilation tests** — Snapshot testing via `bun:test`'s built-in snapshot support. Each step spec is compiled with a representative set of state inputs and the output is committed as a snapshot. CI fails when a compiled prompt changes unexpectedly. This catches unintended prompt changes — the most consequential class of regression in a system where prompt content drives behavior.
+**Guard evaluation tests** — Each guard specification is a JSON object. Tests supply a mock state and a mock tool call input and assert the output: `deny`, `allow`, or `warn` with the expected reason. Predicates referenced by guards are unit-tested independently.
 
-**Hook handler tests** — Hook handlers (`gobbi workflow guard`, `gobbi workflow capture-subagent`, etc.) are tested by supplying mock stdin payloads and asserting stdout output and event store writes. File I/O is mocked via Bun's test mocking support. The event store is tested against a real SQLite in-memory database — this is practical because `bun:sqlite` with an in-memory database has no I/O cost.
+**Prompt compilation tests** — Snapshot testing via `bun:test`. Each step spec is compiled with a representative set of state inputs and the output is committed as a snapshot. CI fails when a compiled prompt changes unexpectedly. Error-state prompts are snapshot-tested for each of the four pathways.
 
-**Integration tests** — A full workflow cycle test initializes a session, transitions through all five steps, and verifies that the final state matches the expected terminal state. Hook delegation is tested end-to-end with mock stdin and a real CLI subprocess. These are slower than unit tests and run in a separate test suite from the fast unit tests.
+**Hook handler tests** — Hook handlers are tested by supplying mock stdin payloads and asserting stdout output and event store writes. The event store is tested against a real SQLite in-memory database — `bun:sqlite` with an in-memory database has no I/O cost.
+
+**Verification tests** — Verification command execution is tested with mock commands that simulate pass, fail, and timeout conditions. Event recording for each verification outcome is asserted.
+
+**Integration tests** — A full workflow cycle test initializes a session, transitions through all steps, and verifies the final state. Hook delegation is tested end-to-end with mock stdin and a real CLI subprocess.
 
 ---
 
 ## Boundaries
 
-This document covers the CLI's role as integration hub, the Bun runtime migration and its rationale, the full command structure for both new `workflow` commands and existing commands, the argument parsing approach, the plugin-CLI boundary, distribution strategy, and testing approach.
+This document covers the CLI's role as integration hub, the predicate registry, the Bun runtime migration and its rationale, the full command structure including error-state prompt generation and cost tracking in status output, verification command support, the argument parsing approach, the plugin-CLI boundary, distribution strategy, and testing approach.
 
-For the event store schema and state fields that `gobbi workflow` commands read and write, see `v050-session.md`. For the state machine transitions that `gobbi workflow transition` validates, see `v050-state-machine.md`. For the prompt compilation logic that `gobbi workflow next` executes, see `v050-prompts.md`. For the hook stdin schemas and output format that `gobbi workflow guard` and capture commands handle, see `v050-hooks.md`.
+For the event store schema and state fields that `gobbi workflow` commands read and write, see `v050-session.md`. For the state machine transitions and the predicate model that guards and transitions reference, see `v050-state-machine.md`. For the prompt compilation logic including resume prompts and verification blocks in step specs, see `v050-prompts.md`. For the hook stdin schemas and output format that `gobbi workflow guard` and capture commands handle, see `v050-hooks.md`.

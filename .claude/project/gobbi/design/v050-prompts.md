@@ -148,7 +148,17 @@ Artifacts written by subagents to their step directories are available to the CL
 
 Each model variant has a fixed context window. The CLI knows the model configured for the session (from `metadata.json`) and computes the available budget before assembling the prompt. Budget is allocated across sections in priority order: static prefix first (it must be complete to preserve cache stability), then gotchas (safety guards must never be truncated), then step instructions, then inlined artifacts, then supplementary materials.
 
-When the available budget is smaller than the sum of all sections, the CLI truncates artifact content at section boundaries. An artifact is included in full or excluded entirely — it is never truncated mid-document. This produces a prompt that is complete and coherent rather than one that ends mid-sentence because the window ran out.
+### Section Minimums
+
+Each prompt section has a minimum token allocation — the floor that section receives regardless of budget pressure. The static prefix must be complete to preserve cache stability. Gotchas must be complete because they are safety guards. Step instructions must be complete because a partial instruction is worse than no instruction.
+
+If the sum of all section minimums exceeds the model's context window, the CLI emits an error rather than silently truncating. The error is descriptive: it identifies which sections' minimums contribute to the overflow and by how many tokens the total exceeds the budget. This makes the problem diagnosable — the operator knows whether the overflow comes from an oversized static prefix, too many gotchas, or step instructions that grew beyond what the model can hold.
+
+Sections whose content exceeds their minimum are subject to the priority-based truncation described below. The minimum guarantees a floor; the priority determines how remaining budget is distributed above that floor.
+
+### Priority-Based Truncation
+
+When the available budget is smaller than the sum of all sections, the CLI truncates at section boundaries. An artifact is included in full or excluded entirely — it is never truncated mid-document. This produces a prompt that is complete and coherent rather than one that ends mid-sentence because the window ran out.
 
 The allocation proportions are configurable per step type. Evaluation steps allocate more budget to inlined execution artifacts. Delegation steps allocate more budget to the delegation block. The defaults are encoded in the `tokenBudget` section of each step's spec.
 
@@ -166,7 +176,7 @@ Each `spec.json` contains five top-level sections:
 
 **`meta`** — Step-level metadata: a short description, the list of valid substates (if any), allowed agent types, maximum parallel agent count, required and optional skills to inject, expected artifacts from this step, and the completion signal the CLI watches for.
 
-**`transitions`** — The valid exit transitions from this step. For steps where the exit depends on runtime conditions (such as whether evaluation is enabled), transition entries may carry JsonLogic conditions. The CLI evaluates these conditions in TypeScript against `state.json`; the spec only declares what the possible transitions are and under what conditions each is taken.
+**`transitions`** — The valid exit transitions from this step. Each transition entry carries a `condition` field that names a predicate from the CLI's predicate registry — a string like `"evalEnabled.ideation"` or `"feedbackCapReached"`, not inline logic. The spec declares what the possible transitions are and which predicate governs each; the CLI resolves predicate names to TypeScript functions at compilation time. `gobbi workflow validate` checks that every predicate name referenced in any spec's `transitions` section exists in the registry. See `v050-state-machine.md` for the full predicate registry model.
 
 **`delegation`** — The agent topology for this step: each agent's role, stance, model tier, effort level, which skills to inject, the artifact target it should write to, and a reference to the block in `blocks.delegation` that contains its prompt content.
 
@@ -181,6 +191,24 @@ Each `spec.json` contains five top-level sections:
 | `delegation` | Per-agent delegation prompt content, keyed by the agent reference in `delegation` |
 | `synthesis` | Post-delegation synthesis instructions for the orchestrator |
 | `completion` | The completion instruction and a human-readable criteria list |
+
+### Plan Step: Task-Size Validation
+
+The Plan step spec includes a validation phase after the plan artifact is written. The CLI estimates the token budget of each task's delegation prompt based on three inputs: the task description length, the artifacts the delegation prompt would reference, and the skill materials that would be injected. If a task's estimated delegation prompt exceeds the model's context budget, the CLI injects a warning into the compiled prompt for the orchestrator.
+
+The warning is informational, not a hard block. The orchestrator sees which tasks are flagged and by how much they exceed the budget, then decides how to respond — typically by decomposing the oversized task into smaller subtasks. This follows the GSD-2 principle: a task must fit in one context window; if it cannot, it is two tasks. The warning gives the orchestrator the data to apply that principle without the CLI making the decomposition decision.
+
+The task-size validation predicate that powers this check is defined in the CLI's predicate registry. See `v050-state-machine.md` for the predicate definition and its typed signature.
+
+### Execution Step: Verification Blocks
+
+Execution step specs can include a `verification` block that specifies commands the CLI should run after each subtask completes. Verification commands are project-configurable — projects specify their lint, test, and typecheck commands in `.gobbi/` config, and the execution step spec references them.
+
+When a subtask's delegation completes, the CLI runs the configured verification commands before proceeding to the next subtask. Verification results are recorded as events in the event store — the event captures which commands ran, their exit codes, and a summary of any failures. This makes verification history available to all downstream compilation: crash recovery briefings, evaluation context, and status reporting.
+
+If verification fails, the execution step's compiled prompt for the next invocation includes the failure context. The orchestrator receives the failing command output and can decide whether to re-execute the subtask, adjust the approach, or flag the failure for user attention. Verification failure does not automatically trigger re-execution — it provides the information; the orchestrator decides the action.
+
+See `v050-hooks.md` for how hooks trigger verification command execution after SubagentStop events.
 
 ### Workflow Graph
 
@@ -206,8 +234,28 @@ The spec model provides four concrete benefits. Guards (`gobbi workflow validate
 
 ---
 
+## Resume Prompt Compilation
+
+> **A resume prompt replaces the normal step prompt. It includes everything a fresh orchestrator needs to understand the session state.**
+
+When `gobbi workflow resume` is invoked, the CLI does not generate a normal step prompt. It compiles a pathway-specific resume prompt based on how the session reached its current state. The resume prompt uses the same three-section structure (static prefix, session section, dynamic section) and the same cache-aware ordering — the difference is in the dynamic section's content, which is tailored to the recovery pathway.
+
+Four pathways produce four different resume prompts. See `v050-session.md` for the pathway definitions and recovery options.
+
+**Normal mid-step crash** — The workflow was active when the process terminated. The resume prompt includes the last active step, the most recent events leading up to the crash, and the artifacts available in the step directory. The CLI uses filename versioning to identify the latest round's artifacts. The orchestrator receives enough context to continue from where the step was interrupted.
+
+**Error from step timeout** — A step exceeded its configured timeout. The resume prompt includes which step timed out, the elapsed time, and the artifacts that were in progress at timeout. Three recovery options: retry the step with fresh context, force-advance to memorization, or abort.
+
+**Error from feedback round cap** — The evaluation loop exceeded `maxFeedbackRounds`. The resume prompt includes the evaluation history across rounds — each round's verdict and the pattern of findings — plus partial artifacts from the final round. The orchestrator sees why the loop did not converge, which informs whether force-memorization is appropriate.
+
+**Error from invalid transition** — The reducer rejected an event. The resume prompt includes the rejected event details, the reducer error message, and the state at rejection time. This pathway is rare — it indicates a structural problem rather than a workflow problem.
+
+The resume prompt replaces the normal step prompt entirely. It is not appended to or merged with a step prompt. The orchestrator that receives a resume prompt is oriented to the recovery situation, not to normal step execution. Context compaction uses the same compilation pipeline — compact is not crash recovery, but the rebuild path is shared.
+
+---
+
 ## Boundaries
 
-This document covers the prompt compilation model, cache-aware section ordering, the skills boundary between CLI-owned step specs and surviving domain skills, stances as CLI-managed configuration, fresh context isolation per subagent task, token budget allocation, and the step spec model including the spec schema, workflow graph, shared blocks, substate overlays, and schema versioning.
+This document covers the prompt compilation model, cache-aware section ordering, the skills boundary between CLI-owned step specs and surviving domain skills, stances as CLI-managed configuration, fresh context isolation per subagent task, token budget allocation with section minimums, the step spec model including the spec schema, task-size validation, verification blocks, workflow graph, shared blocks, substate overlays, schema versioning, and resume prompt compilation for crash recovery pathways.
 
-For how state transitions determine which step is active, see `v050-state-machine.md`. For how hooks write events that the CLI reads to derive state, see `v050-hooks.md`. For the session artifacts that prompts consume, see `v050-session.md`. For CLI command syntax and distribution, see `v050-cli.md`.
+For how state transitions determine which step is active and the predicate registry model, see `v050-state-machine.md`. For how hooks write events that the CLI reads to derive state and trigger verification, see `v050-hooks.md`. For the session artifacts that prompts consume and crash recovery pathway definitions, see `v050-session.md`. For CLI command syntax and distribution, see `v050-cli.md`.
