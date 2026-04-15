@@ -12,7 +12,11 @@ The output of ideation is a detailed, improved idea — not a final decision. A 
 
 Ideation is performed by two parallel PI agents, each operating with a different stance — innovative and best. The orchestrator discusses with the user first, then spawns both PI agents. Each PI agent writes its perspective independently, and the orchestrator synthesizes their outputs.
 
+**Navigate deeper from here:**
 
+| Document | Covers |
+|----------|--------|
+| [evaluation.md](evaluation.md) | Stage-specific evaluation criteria for ideation output |
 
 ---
 

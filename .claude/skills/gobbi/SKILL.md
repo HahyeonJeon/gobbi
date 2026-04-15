@@ -38,7 +38,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 - **Discord** — Notify via Discord webhook.
 - **Skip notifications** — No notifications this session.
 
-After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and the relevant child skill (_slack, _telegram, _discord) to help the user configure them before proceeding.
+After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help the user configure them before proceeding.
 
 **After all four questions — persist session choices.** The orchestrator writes the user's selections to `gobbi.json` via `gobbi config` so that hooks and subagents can read them without conversation context. Persistence calls use `$CLAUDE_SESSION_ID` as the session key:
 
@@ -88,9 +88,6 @@ Workflow participant skills — loaded during the 7-step cycle: Ideation, Plan, 
 | **_delegation** | Hand off work to subagents with the right context and scope boundaries. |
 | **_execution** | Task execution guide. How an executor agent studies, plans, implements, and verifies. |
 | **_evaluation** | Parent evaluation framework. How to delegate evaluation, select perspectives, and discuss findings. |
-| **_ideation-evaluation** | Stage-specific evaluation criteria for ideation output. Concreteness, trade-offs, completeness. |
-| **_plan-evaluation** | Stage-specific evaluation criteria for plans. Task specificity, dependencies, feasibility. |
-| **_research-evaluation** | Stage-specific evaluation criteria for research output. Completeness, depth, accuracy, practical utility. |
 | **_collection** | Verify note completeness and write task README. Confirm all per-step subdirectories are populated, then write the summary. |
 | **_memorization** | Save context for session continuity. Persist task details, gotchas, and rules. |
 | **_note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
@@ -100,56 +97,27 @@ Workflow participant skills — loaded during the 7-step cycle: Ideation, Plan, 
 | **_best-practice** | Best-practice stance skill. Defines how agents think when spawned as the best stance — proven patterns, evidence, community consensus. |
 | **_gotcha** | Cross-project mistake recording. Check before acting, write after corrections. |
 
-#### Evaluation — Skills
+#### Evaluation Perspectives
 
-Domain-specific evaluation perspectives for skill quality assessment.
+Each Docs skill that supports evaluation has an `evaluation/` subdirectory containing perspective docs (project, architecture, performance, aesthetics, overall, user). Evaluator agents read the appropriate perspective doc from the target skill's `evaluation/` directory.
 
-| Skill | Purpose |
-|---|---|
-| **_skills-evaluation-project** | Project perspective for skill evaluation |
-| **_skills-evaluation-architecture** | Architecture perspective for skill evaluation |
-| **_skills-evaluation-performance** | Performance perspective for skill evaluation |
-| **_skills-evaluation-aesthetics** | Aesthetics perspective for skill evaluation |
-| **_skills-evaluation-overall** | Overall cross-dimensional perspective for skill evaluation |
-| **_skills-evaluation-user** | User perspective for skill evaluation |
-
-#### Evaluation — Agents
-
-Domain-specific evaluation perspectives for agent quality assessment.
-
-| Skill | Purpose |
-|---|---|
-| **_agent-evaluation-project** | Project perspective for agent evaluation |
-| **_agent-evaluation-architecture** | Architecture perspective for agent evaluation |
-| **_agent-evaluation-performance** | Performance perspective for agent evaluation |
-| **_agent-evaluation-aesthetics** | Aesthetics perspective for agent evaluation |
-| **_agent-evaluation-overall** | Overall cross-dimensional perspective for agent evaluation |
-| **_agent-evaluation-user** | User perspective for agent evaluation |
-
-#### Evaluation — Project
-
-Domain-specific evaluation perspectives for deliverable quality assessment.
-
-| Skill | Purpose |
-|---|---|
-| **_project-evaluation-project** | Project perspective for deliverable evaluation |
-| **_project-evaluation-architecture** | Architecture perspective for deliverable evaluation |
-| **_project-evaluation-performance** | Performance perspective for deliverable evaluation |
-| **_project-evaluation-aesthetics** | Aesthetics perspective for deliverable evaluation |
-| **_project-evaluation-overall** | Overall cross-dimensional perspective for deliverable evaluation |
-| **_project-evaluation-user** | User perspective for deliverable evaluation |
+| Parent Skill | Evaluation Directory | Evaluates |
+|---|---|---|
+| **_skills** | `_skills/evaluation/` | Skill definitions |
+| **_agents** | `_agents/evaluation/` | Agent definitions |
+| **_project** | `_project/evaluation/` | Project documentation |
 
 #### Git (child skills of _git)
 
 Placeholder — specific child skills TBD.
 
-#### Notification (child skills of _notification)
+#### Notification (child docs of _notification)
 
-| Skill | Purpose |
+| Document | Purpose |
 |---|---|
-| **_slack** | Slack notification setup and integration. |
-| **_telegram** | Telegram notification setup and integration. |
-| **_discord** | Discord notification setup and integration. |
+| **slack.md** | Slack notification setup and integration. |
+| **telegram.md** | Telegram notification setup and integration. |
+| **discord.md** | Discord notification setup and integration. |
 
 #### Gotcha (child docs of _gotcha)
 

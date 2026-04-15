@@ -25,7 +25,7 @@ Load based on what the task requires:
 - `_rules` — when creating, reviewing, or improving rule files
 - `_project` — when creating or organizing `$CLAUDE_PROJECT_DIR/.claude/project/{name}/`
 - `_notification` — when configuring any notification channel
-- `_slack`, `_telegram`, or `_discord` — load the relevant child skill alongside `_notification`
+- `_notification` child docs (`slack.md`, `telegram.md`, `discord.md`) — read the relevant channel doc for setup guidance
 - `_discuss` — when discussing requirements with the user
 - `gobbi` — for workflow overview, session setup questions, and the full skill map
 

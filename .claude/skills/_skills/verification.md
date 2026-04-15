@@ -20,7 +20,7 @@ Edge cases matter most. Clear hits and clear misses are easy to get right. The h
 
 Skill verification uses agent-based holistic evaluation to answer two questions: does the skill's description accurately identify prompts that should load it, and once loaded, does it help agents make good decisions?
 
-The `_skills-evaluator` agent — loaded with different `_skills-evaluation-{perspective}` skills — assesses trigger accuracy and output quality together. It can judge teaching effectiveness, mental model clarity, and anti-pattern compliance. This approach is expensive (multiple agent calls per cycle) and non-deterministic (results vary across runs), but it keeps the workflow Claude Code native and can assess nuanced qualities that automated checks cannot.
+The `_skills-evaluator` agent — loaded with different `_skills/evaluation/{perspective}.md` skills — assesses trigger accuracy and output quality together. It can judge teaching effectiveness, mental model clarity, and anti-pattern compliance. This approach is expensive (multiple agent calls per cycle) and non-deterministic (results vary across runs), but it keeps the workflow Claude Code native and can assess nuanced qualities that automated checks cannot.
 
 **The priority rule is:** trigger accuracy is a prerequisite, not the goal. If the description is wrong, no amount of content quality matters — the skill never loads. Fix the description first. Once trigger accuracy is solid, shift focus to whether the skill's content actually produces good outcomes.
 
@@ -43,7 +43,7 @@ Dimensions for evaluating output quality:
 
 Skill verification follows gobbi's standard cycle: grade, analyze, improve, re-grade. This is a user-driven loop — the orchestrator suggests next steps, but the user decides when to iterate and when to stop.
 
-**Grade** — Spawn `_skills-evaluator` loaded with the relevant `_skills-evaluation-{perspective}` skill(s) to test the skill against sample prompts. The evaluator assesses trigger accuracy (did the right prompts load the skill?) and output quality (did the skill guide the agent well?). Grading produces structured results with scores and observations.
+**Grade** — Spawn `_skills-evaluator` loaded with the relevant `_skills/evaluation/{perspective}.md` skill(s) to test the skill against sample prompts. The evaluator assesses trigger accuracy (did the right prompts load the skill?) and output quality (did the skill guide the agent well?). Grading produces structured results with scores and observations.
 
 **Analyze** — Spawn `_skills-evaluator` loaded with the overall perspective skill to synthesize grading results into prioritized improvements. It identifies patterns across multiple grading results — recurring trigger failures, consistent output quality gaps, systematic weaknesses — and produces a ranked list of what to fix first.
 
@@ -69,7 +69,7 @@ After the comparator delivers its verdict, the invoker maps A/B back to current/
 
 One agent executes skill verification across all verification roles:
 
-**_skills-evaluator** is loaded with different `_skills-evaluation-{perspective}` skills depending on the evaluation focus. For grading, load the perspective skills relevant to the skill domain being assessed. For analysis, load `_skills-evaluation-overall` to synthesize results into prioritized improvements. For blind comparison, load the perspective skills and instruct the agent to evaluate both versions without provenance labels. The data flow is: grading results and comparison verdicts are synthesized by the evaluator into prioritized recommendations.
+**_skills-evaluator** is loaded with different `_skills/evaluation/{perspective}.md` skills depending on the evaluation focus. For grading, load the perspective skills relevant to the skill domain being assessed. For analysis, load `_skills/evaluation/overall.md` to synthesize results into prioritized improvements. For blind comparison, load the perspective skills and instruct the agent to evaluate both versions without provenance labels. The data flow is: grading results and comparison verdicts are synthesized by the evaluator into prioritized recommendations.
 
 ---
 

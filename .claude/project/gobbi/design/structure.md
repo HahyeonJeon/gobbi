@@ -18,22 +18,20 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 
 ### Skills
 
-All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `_skills-evaluation-project/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
+All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `_skills/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
 
 Skills are organized into four categories:
 
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
-| **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _skills-evaluation-{project,architecture,performance,aesthetics,overall,user}, _agent-evaluation-{project,architecture,performance,aesthetics,overall,user}, _project-evaluation-{project,architecture,performance,aesthetics,overall,user}, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
+| **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
 | **Docs** | _claude, _skills, _agents, _rules, _project | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
 | **Tool** | _gobbi-cli | Utility and maintenance tools. Intent-first CLI reference. |
 
-Some Work skills have child skill categories grouping related sub-skills:
+Some skills have child directories grouping related sub-docs:
 
-- **Skills Evaluation** (child of _evaluation): _skills-evaluation-project, _skills-evaluation-architecture, _skills-evaluation-performance, _skills-evaluation-aesthetics, _skills-evaluation-overall, _skills-evaluation-user — evaluation criteria for skill quality
-- **Agent Evaluation** (child of _evaluation): _agent-evaluation-project, _agent-evaluation-architecture, _agent-evaluation-performance, _agent-evaluation-aesthetics, _agent-evaluation-overall, _agent-evaluation-user — evaluation criteria for agent definitions
-- **Project Evaluation** (child of _evaluation): _project-evaluation-project, _project-evaluation-architecture, _project-evaluation-performance, _project-evaluation-aesthetics, _project-evaluation-overall, _project-evaluation-user — evaluation criteria for project work output
-- **Notification** (child of _notification): _slack, _telegram, _discord — channel-specific setup
+- **Evaluation perspectives** — each Docs skill that supports evaluation has an `evaluation/` subdirectory with 6 perspective docs (project, architecture, performance, aesthetics, overall, user): `_skills/evaluation/`, `_agents/evaluation/`, `_project/evaluation/`
+- **Notification** (child of _notification): `slack.md`, `telegram.md`, `discord.md` — channel-specific setup docs
 - **Gotcha** (child of _gotcha): child docs (not skills) describing how to record each type of gotcha
 
 The `_gotcha/` skill is special — it contains per-skill gotcha files (`_orchestration.md`, `_git.md`, etc.) that record cross-project mistakes. Every agent checks the relevant gotcha file before starting work.

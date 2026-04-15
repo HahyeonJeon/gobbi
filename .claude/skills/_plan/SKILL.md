@@ -12,6 +12,7 @@ Decompose complex tasks into small, specific, agent-assigned subtasks. Use durin
 
 | Document | Covers |
 |----------|--------|
+| [evaluation.md](evaluation.md) | Stage-specific evaluation criteria for plans |
 | [gotchas.md](gotchas.md) | Known mistakes and corrections for _plan |
 
 ---

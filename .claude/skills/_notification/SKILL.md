@@ -12,6 +12,9 @@ Help users configure Claude Code notification credentials through conversation. 
 
 | Document | Covers |
 |----------|--------|
+| [slack.md](slack.md) | Slack notification channel — bot token, user ID, workspace configuration |
+| [telegram.md](telegram.md) | Telegram notification channel — bot creation via @BotFather, chat ID retrieval |
+| [discord.md](discord.md) | Discord notification channel — webhook URL configuration |
 | [gotchas.md](gotchas.md) | Known mistakes and corrections for _notification |
 
 ---
@@ -68,10 +71,12 @@ If a test notification fails to arrive: check that `$CLAUDE_PROJECT_DIR/.claude/
 
 ---
 
-## Child Skills
+## Channel Docs
 
-| Skill | Covers |
+Each channel's setup guide is a child document of this skill:
+
+| Document | Covers |
 |---|---|
-| `_slack` | Slack notification channel setup — bot token, user ID, workspace configuration |
-| `_telegram` | Telegram notification channel setup — bot creation via @BotFather, chat ID retrieval |
-| `_discord` | Discord notification channel setup — webhook URL configuration (coming soon — delivery not yet implemented in the CLI) |
+| [slack.md](slack.md) | Bot token, user ID, workspace configuration |
+| [telegram.md](telegram.md) | Bot creation via @BotFather, chat ID retrieval |
+| [discord.md](discord.md) | Webhook URL configuration |

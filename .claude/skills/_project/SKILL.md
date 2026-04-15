@@ -13,7 +13,8 @@ Load `_claude` for the general documentation writing standard before authoring p
 
 | Document | Covers |
 |----------|--------|
-| [evaluation.md](evaluation.md) | Evaluation criteria for user-created project documentation |
+| [evaluation/README.md](evaluation/README.md) | Evaluation criteria for user-created project documentation |
+| [evaluation/](evaluation/) | Project evaluation perspective docs (project, architecture, performance, aesthetics, overall, user) |
 
 ---
 
