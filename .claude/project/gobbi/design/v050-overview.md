@@ -211,8 +211,8 @@ This document covers architecture, philosophy, and positioning. It does not cove
 
 | Document | Covers |
 |----------|--------|
-| `v050-state-machine.md` | Workflow state transitions, step preconditions, event schema |
-| `v050-cli-prompts.md` | Prompt generation, skill material incorporation, template system |
-| `v050-hooks.md` | Hook types, guard patterns, event capture, SubagentStop collection |
-| `v050-event-store.md` | SQLite schema, query patterns, event sourcing design |
-| `v050-directory-layout.md` | `.gobbi/` structure, gotcha promotion, session lifecycle |
+| `v050-session.md` | Session directory, SQLite event store, state derivation, crash recovery |
+| `v050-state-machine.md` | Workflow transitions, typed reducer, guards, JsonLogic conditions |
+| `v050-prompts.md` | Prompt compilation, cache ordering, skills boundary, template format |
+| `v050-hooks.md` | PreToolUse guards, SubagentStop capture, hook schemas, enforcement |
+| `v050-cli.md` | Bun CLI rewrite, commands, distribution, plugin relationship |
