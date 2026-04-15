@@ -1,12 +1,12 @@
 # v0.5.0 CLI — Integration Point
 
-CLI architecture reference for v0.5.0. Read this when implementing or reasoning about command structure, runtime choices, distribution, or the relationship between the plugin and the CLI. This document treats the CLI as a container — how it binds the event store, state machine, prompt templates, and hook system into a single executable. For the internals of each subsystem, see the respective doc.
+CLI architecture reference for v0.5.0. Read this when implementing or reasoning about command structure, runtime choices, distribution, or the relationship between the plugin and the CLI. This document treats the CLI as a container — how it binds the event store, state machine, step specs, and hook system into a single executable. For the internals of each subsystem, see the respective doc.
 
 ---
 
 ## The CLI's Role
 
-The CLI is where all v0.5.0 subsystems converge. It is the only component that has read access to every part of the system simultaneously: workflow state from the event store, domain knowledge from `.claude/skills/`, guard specifications, prompt templates, and project configuration.
+The CLI is where all v0.5.0 subsystems converge. It is the only component that has read access to every part of the system simultaneously: workflow state from the event store, domain knowledge from `.claude/skills/`, guard specifications, step specs, and project configuration.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -59,7 +59,7 @@ V0.5.0 migrates the CLI from Node.js to Bun. The current `package.json` declares
 
 **`bun:sqlite`** — The event store in `v050-session.md` requires SQLite with WAL mode and atomic write semantics. `bun:sqlite` is native to the runtime — zero additional dependencies, no `better-sqlite3` binding to compile, and 3–6x faster than equivalent Node.js SQLite solutions. This is the primary technical reason for the Bun migration: the event store architecture depends on SQLite, and Bun makes SQLite a first-class runtime capability.
 
-**`bun:test`** — Jest-compatible test runner built into the runtime. Zero configuration, built-in mocking, snapshot testing support. The testing strategy for prompt templates relies on snapshots to catch unintended changes — `bun:test` supports this natively without additional tooling.
+**`bun:test`** — Jest-compatible test runner built into the runtime. Zero configuration, built-in mocking, snapshot testing support. The testing strategy for step spec compilation relies on snapshots to catch unintended changes — `bun:test` supports this natively without additional tooling.
 
 **File I/O** — `Bun.file()` and `Bun.write()` replace `node:fs/promises` for the common case. State file writes use the temp+rename pattern: the CLI writes to a `.tmp` file, then renames it atomically over the target. This prevents a partial write from corrupting `state.json` — the rename is atomic at the OS level.
 
@@ -77,13 +77,13 @@ The CLI expands from its current eight-command surface to add a `workflow` subco
 
 **`gobbi workflow init`** — Creates the session directory under `.gobbi/sessions/{session-id}/`, writes `metadata.json`, initializes `gobbi.db` with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
-During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers (Ideation and Plan eval on/off) are stored immediately as a `workflow.eval.decide` event in `gobbi.db`, populating `evalConfig` in `state.json`. The prompt template generated for the first step (Ideation) includes the eval decision in its session section so the orchestrator knows the evaluation configuration from the start without needing to ask mid-workflow.
+During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers (Ideation and Plan eval on/off) are stored immediately as a `workflow.eval.decide` event in `gobbi.db`, populating `evalConfig` in `state.json`. The compiled prompt generated for the first step (Ideation) includes the eval decision in its session section so the orchestrator knows the evaluation configuration from the start without needing to ask mid-workflow.
 
-**`gobbi workflow next`** — The core command. Reads `state.json` (or replays `gobbi.db` if absent), determines the active step, selects the appropriate prompt template, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step. Every other `workflow` command supports this one.
+**`gobbi workflow next`** — The core command. Reads `state.json` (or replays `gobbi.db` if absent), determines the active step, selects the appropriate step spec, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step. Every other `workflow` command supports this one.
 
 **`gobbi workflow transition <event>`** — Advances the state machine by appending a typed event to `gobbi.db` and updating `state.json`. Validates that the event produces a valid transition from the current step before writing. Returns the new state summary on stdout. Invalid transitions produce an error with the reason — useful for diagnosing stalls.
 
-The orchestrator calls this command via Bash, instructed by the prompt template. Each step's generated prompt ends with an explicit instruction: when this step is complete, run `gobbi workflow transition COMPLETE`. The CLI validates the transition against the state machine and advances state — the orchestrator does not decide when to transition, the prompt template instructs it.
+The orchestrator calls this command via Bash, instructed by the step spec. Each step's compiled prompt ends with an explicit instruction: when this step is complete, run `gobbi workflow transition COMPLETE`. The CLI validates the transition against the state machine and advances state — the orchestrator does not decide when to transition, the step spec instructs it.
 
 The Stop hook can also trigger implicit transitions: after each turn, the Stop hook analyzes the conversation to detect whether the orchestrator's response completed a step. If the response contains a recognized completion signal and no explicit transition was already written, the Stop hook writes the transition event. This handles cases where the orchestrator completed the step work but did not execute the transition command.
 
@@ -161,7 +161,7 @@ The gobbi plugin is the Claude Code integration artifact — it is what users in
 
 **CLI responsibilities:**
 - Workflow engine: event store, state machine, reducer
-- Prompt templates for all five workflow steps plus their variants
+- Step specs for all five workflow steps plus their variants
 - Guard specification and JsonLogic evaluation
 - Prompt compilation: selecting artifacts, loading skill materials, applying cache ordering, enforcing token budget
 - Session lifecycle management
@@ -188,13 +188,13 @@ The binary build is an additional CI step, not a replacement for the npm build. 
 
 `bun:test` is the test runner for all CLI tests. No additional test framework is required.
 
-> **Test the boundaries, not the internals. The event store, state machine, and prompt templates are the interfaces other subsystems depend on.**
+> **Test the boundaries, not the internals. The event store, state machine, and step specs are the interfaces other subsystems depend on.**
 
 **State machine tests** — The reducer is a pure function and tests cheaply. Each test supplies an initial state and an event and asserts the returned state. Exhaustiveness is validated at compile time via the TypeScript `never` pattern — a new event type without a reducer case is a type error. Transition table compliance is tested by exercising every row in the table and confirming the reducer accepts valid transitions and rejects invalid ones.
 
 **Guard evaluation tests** — Each guard specification is a JSON object. Tests supply a mock state and a mock tool call input and assert the output: `deny`, `allow`, or `warn` with the expected reason. The custom JsonLogic operators (`event_exists`, `event_count`) are unit-tested independently with synthetic event logs.
 
-**Prompt template tests** — Snapshot testing via `bun:test`'s built-in snapshot support. Each template is rendered with a representative set of state inputs and the output is committed as a snapshot. CI fails when a template render changes unexpectedly. This catches unintended prompt changes — the most consequential class of regression in a system where prompt content drives behavior.
+**Prompt compilation tests** — Snapshot testing via `bun:test`'s built-in snapshot support. Each step spec is compiled with a representative set of state inputs and the output is committed as a snapshot. CI fails when a compiled prompt changes unexpectedly. This catches unintended prompt changes — the most consequential class of regression in a system where prompt content drives behavior.
 
 **Hook handler tests** — Hook handlers (`gobbi workflow guard`, `gobbi workflow capture-subagent`, etc.) are tested by supplying mock stdin payloads and asserting stdout output and event store writes. File I/O is mocked via Bun's test mocking support. The event store is tested against a real SQLite in-memory database — this is practical because `bun:sqlite` with an in-memory database has no I/O cost.
 
