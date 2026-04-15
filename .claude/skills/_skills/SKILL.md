@@ -14,7 +14,7 @@ Reference for understanding skill structure and interactive guide for creating n
 |----------|--------|
 | [verification.md](verification.md) | Skill verification: trigger testing, output quality, improvement loop, evaluation agents |
 | [authoring.md](authoring.md) | Skill authoring: description craft, instruction writing, content pruning, failure patterns |
-| [evaluation.md](evaluation.md) | Skill evaluation: quality criteria for user-created project-specific skills |
+| [evaluation/](evaluation/README.md) | Skill evaluation: quality criteria, failure modes, and perspective-specific evaluation guides |
 
 ---
 
@@ -74,7 +74,7 @@ The cycle is: grade trigger accuracy and output quality, analyze failures for pa
 
 When comparing two skill versions, remove provenance bias. Present versions as A and B without labeling which is current vs candidate. The blind protocol ensures evaluation is based on quality, not familiarity.
 
-Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. The `_skills-evaluator` agent executes verification, loaded with different `_skills-evaluation-{perspective}` skills depending on the evaluation focus.
+Read [verification.md](verification.md) for detailed concepts on trigger testing, output quality evaluation, the improvement loop, and blind comparison. The `_skills-evaluator` agent executes verification, loaded with the perspective-specific guides in [evaluation/](evaluation/README.md) depending on the evaluation focus.
 
 ---
 

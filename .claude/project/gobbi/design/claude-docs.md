@@ -77,54 +77,15 @@ Standalone interface entry point — no category.
 | _notification | `.claude/skills/_notification/SKILL.md` | Configure Claude Code notifications (Slack, Telegram, others). |
 | _gotcha | `.claude/skills/_gotcha/SKILL.md` | Cross-project mistake recording. Check before acting, write after corrections. |
 
-##### Skills evaluation child skills
-
-**Evaluation criteria for skill definitions** — one skill per evaluation perspective.
-
-| Name | Path | Description |
-|------|------|-------------|
-| _skills-evaluation-project | `.claude/skills/_skills-evaluation-project/SKILL.md` | Perspective: scope alignment, requirements fit, user intent for skill quality. |
-| _skills-evaluation-architecture | `.claude/skills/_skills-evaluation-architecture/SKILL.md` | Perspective: structural coherence, coupling, design principles for skill quality. |
-| _skills-evaluation-performance | `.claude/skills/_skills-evaluation-performance/SKILL.md` | Perspective: efficiency, scalability, resource usage for skill quality. |
-| _skills-evaluation-aesthetics | `.claude/skills/_skills-evaluation-aesthetics/SKILL.md` | Perspective: naming clarity, readability, style consistency for skill quality. |
-| _skills-evaluation-overall | `.claude/skills/_skills-evaluation-overall/SKILL.md` | Perspective: cross-cutting gaps, preservation list for skill quality. |
-| _skills-evaluation-user | `.claude/skills/_skills-evaluation-user/SKILL.md` | Perspective: usability, discoverability, and clarity for the agent consuming the skill. |
-
-##### Agent evaluation child skills
-
-**Evaluation criteria for agent definitions** — one skill per evaluation perspective.
-
-| Name | Path | Description |
-|------|------|-------------|
-| _agent-evaluation-project | `.claude/skills/_agent-evaluation-project/SKILL.md` | Perspective: scope alignment, requirements fit, user intent for agent quality. |
-| _agent-evaluation-architecture | `.claude/skills/_agent-evaluation-architecture/SKILL.md` | Perspective: structural coherence, coupling, design principles for agent quality. |
-| _agent-evaluation-performance | `.claude/skills/_agent-evaluation-performance/SKILL.md` | Perspective: efficiency, scalability, resource usage for agent quality. |
-| _agent-evaluation-aesthetics | `.claude/skills/_agent-evaluation-aesthetics/SKILL.md` | Perspective: naming clarity, readability, style consistency for agent quality. |
-| _agent-evaluation-overall | `.claude/skills/_agent-evaluation-overall/SKILL.md` | Perspective: cross-cutting gaps, preservation list for agent quality. |
-| _agent-evaluation-user | `.claude/skills/_agent-evaluation-user/SKILL.md` | Perspective: usability, discoverability, and clarity for the agent being evaluated. |
-
-##### Project evaluation child skills
-
-**Evaluation criteria for project work output** — one skill per evaluation perspective.
-
-| Name | Path | Description |
-|------|------|-------------|
-| _project-evaluation-project | `.claude/skills/_project-evaluation-project/SKILL.md` | Perspective: scope alignment, requirements fit, user intent for project output. |
-| _project-evaluation-architecture | `.claude/skills/_project-evaluation-architecture/SKILL.md` | Perspective: structural coherence, coupling, design principles for project output. |
-| _project-evaluation-performance | `.claude/skills/_project-evaluation-performance/SKILL.md` | Perspective: efficiency, scalability, resource usage for project output. |
-| _project-evaluation-aesthetics | `.claude/skills/_project-evaluation-aesthetics/SKILL.md` | Perspective: naming clarity, readability, style consistency for project output. |
-| _project-evaluation-overall | `.claude/skills/_project-evaluation-overall/SKILL.md` | Perspective: cross-cutting gaps, preservation list for project output. |
-| _project-evaluation-user | `.claude/skills/_project-evaluation-user/SKILL.md` | Perspective: usability, discoverability, and clarity for the end user of the project output. |
-
 ##### Notification child skills
 
 **Channel-specific notification setup** — one skill per notification channel.
 
 | Name | Path | Description |
 |------|------|-------------|
-| _slack | `.claude/skills/_slack/SKILL.md` | Slack notification setup and integration. |
-| _telegram | `.claude/skills/_telegram/SKILL.md` | Telegram notification setup and integration. |
-| _discord | `.claude/skills/_discord/SKILL.md` | Discord notification setup and integration. |
+| slack.md | `.claude/skills/_notification/slack.md` | Slack notification setup — child doc of _notification. |
+| telegram.md | `.claude/skills/_notification/telegram.md` | Telegram notification setup — child doc of _notification. |
+| discord.md | `.claude/skills/_notification/discord.md` | Discord notification setup — child doc of _notification. |
 
 #### Docs
 
@@ -199,16 +160,14 @@ Standalone interface entry point — no category.
 | Agents — Internal | 2 |
 | Skills — Interface | 1 |
 | Skills — Work | 12 |
-| Skills — Work (child: Skills Evaluation) | 6 |
-| Skills — Work (child: Agent Evaluation) | 6 |
-| Skills — Work (child: Project Evaluation) | 6 |
 | Skills — Work (child: Notification) | 3 |
 | Skills — Docs | 5 |
 | Skills — Tool | 1 |
 | Skill child docs | 6 |
+| Evaluation perspective docs | 18 (6 per target: _skills, _agents, _project) |
 | Gotcha files | 14 |
 | Project docs | 5 |
-| **Total** | **74** |
+| **Total** | **56** skills + 18 evaluation child docs |
 
 ---
 

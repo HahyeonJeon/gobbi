@@ -10,7 +10,11 @@ After the plan is approved, researcher agents investigate the best approach for 
 
 Research answers "what approach to take and why" — ideation answers "what to do" and planning answers "in what order." Think of researchers as architects sketching a blueprint: they design the direction and gather the best references, but executors own the implementation details. The output of research is directional guidance with strong references, organized by plan task, stored in note files that executors read before starting work.
 
+**Navigate deeper from here:**
 
+| Document | Covers |
+|----------|--------|
+| [evaluation.md](evaluation.md) | Stage-specific evaluation criteria for research output |
 
 ---
 

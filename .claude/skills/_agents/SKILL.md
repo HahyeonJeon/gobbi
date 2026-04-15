@@ -12,7 +12,7 @@ Reference for understanding agent definition structure and interactive guide for
 
 | Document | Covers |
 |----------|--------|
-| [evaluation.md](evaluation.md) | Evaluation criteria for user-created agent definitions |
+| [evaluation/](evaluation/README.md) | Evaluation criteria and perspective docs for agent definitions |
 | [evaluator.md](evaluator.md) | Agent guide for evaluator agents |
 | [executor.md](executor.md) | Agent guide for executor agents |
 | [pi.md](pi.md) | Agent guide for PI agents |
@@ -156,4 +156,4 @@ The interactive creation process produces a single `.md` file in `.claude/agents
 | [researcher.md](researcher.md) | Researcher agent guide — mission, direction-not-recipes, stances, executor handoff |
 | [executor.md](executor.md) | Executor agent guide — research-first study, best-practice thinking, delegation patterns |
 | [evaluator.md](evaluator.md) | Evaluator agent guide — three evaluator types, perspective model, scoring, sonnet tier |
-| [evaluation.md](evaluation.md) | Evaluation criteria for user-created agent definitions — failure modes, dimensions, checklist |
+| [evaluation/](evaluation/README.md) | Evaluation criteria and perspective docs for agent definitions — failure modes, dimensions, checklist |

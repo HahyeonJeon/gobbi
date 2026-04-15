@@ -37,7 +37,7 @@ The six standard perspectives:
 - **User** — Does it serve the end user? Is the experience intuitive, accessible, and correct from the user's perspective?
 - **Overall** — What gaps fall between the other perspectives? What works well and must be preserved?
 
-The orchestrator selects 2-5 perspectives per evaluation, with Project and Overall as the minimum baseline. Each perspective is loaded as a skill matching the evaluator type: `_skills-evaluation-project`, `_agent-evaluation-architecture`, `_project-evaluation-overall`, and so on. The perspective skill defines the evaluation criteria and angle of attack.
+The orchestrator selects 2-5 perspectives per evaluation, with Project and Overall as the minimum baseline. Each perspective is loaded as a skill matching the evaluator type: `_skills/evaluation/project.md`, `_agents/evaluation/architecture.md`, `_project/evaluation/overall.md`, and so on. The perspective doc defines the evaluation criteria and angle of attack.
 
 ---
 
@@ -60,8 +60,8 @@ Evaluation at every step is expensive. The orchestrator's judgment — informed 
 
 What the orchestrator provides in the delegation prompt:
 
-- **The perspective skill to load** — one of the six perspective skills matching the evaluator type (e.g., `_project-evaluation-project`, `_agent-evaluation-architecture`)
-- **The stage-specific evaluation skill** — defines what to check at this workflow stage (e.g., `_ideation-evaluation`, `_plan-evaluation`, `_research-evaluation`)
+- **The perspective doc to read** — one of the six perspective docs from the target skill's `evaluation/` directory (e.g., `_project/evaluation/project.md`, `_agents/evaluation/architecture.md`)
+- **The stage-specific evaluation doc** — defines what to check at this workflow stage. Each lives as a child doc of its parent skill: `_ideation/evaluation.md`, `_plan/evaluation.md`, `_research/evaluation.md`.
 - **The output to evaluate** — the actual content being assessed, either inline or as file paths
 - **Domain context** — project rules, gotchas, conventions, and relevant knowledge that informs whether findings are real issues or false positives
 - **Read-only access** — evaluators assess, they do not modify. Their tool set is `Read, Grep, Glob, Bash` — no Write or Edit
@@ -107,7 +107,7 @@ The orchestrator rarely overrides evaluator model assignments. Sonnet handles ev
 
 When a project needs domain-specific evaluation beyond the standard perspectives, create project-specific perspective skills. A custom evaluator is typically a standard evaluator agent with a new perspective skill — not a new agent definition.
 
-- Create project-specific perspective skills — e.g., `_project-evaluation-security` for a security-focused perspective that checks for SQL injection, auth bypass, and secrets exposure
+- Create project-specific perspective docs — e.g., `_project/evaluation/security.md` for a security-focused perspective that checks for SQL injection, auth bypass, and secrets exposure
 - Add domain-specific evaluation criteria — "check for N+1 queries in SQLAlchemy", "verify all API endpoints require authentication", "confirm migration is reversible"
 - Keep the adversarial stance — custom evaluators still find problems, not confirm success
 - Keep the sonnet model tier — structured assessment against domain-specific criteria is still structured assessment

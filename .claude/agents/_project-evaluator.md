@@ -25,7 +25,7 @@ The orchestrator's delegation prompt tells you which perspective skill to load. 
 
 **Always load:**
 
-- The perspective skill named in the delegation prompt (one of: `_project-evaluation-project`, `_project-evaluation-architecture`, `_project-evaluation-performance`, `_project-evaluation-aesthetics`, `_project-evaluation-overall`, `_project-evaluation-user`)
+- The perspective doc named in the delegation prompt — read the appropriate file from `_project/evaluation/` (one of: `project.md`, `architecture.md`, `performance.md`, `aesthetics.md`, `overall.md`, `user.md`)
 - `_gotcha` — known pitfalls in this domain
 
 ---

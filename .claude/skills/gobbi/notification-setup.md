@@ -60,7 +60,7 @@ Only Slack and Telegram have conditional session-level control in v0.3.2. Discor
 
 **Partially configured** — Some pieces are in place but others are missing (e.g., credentials exist but hooks aren't registered in `settings.json`). Report what's missing and offer to fix. Session flags alone are not sufficient — credentials and hook registration must also be present.
 
-**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load _notification and the relevant child skill (_slack, _telegram, _discord) to help set up. Session flags are still written to `gobbi.json` so that notifications activate immediately once credentials are added.
+**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load _notification and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help set up. Session flags are still written to `gobbi.json` so that notifications activate immediately once credentials are added.
 
 **Degraded** — Credentials exist but a dependency is missing (e.g., `gobbi` not in PATH, `notify-send` not available for Desktop). Report the dependency gap.
 
