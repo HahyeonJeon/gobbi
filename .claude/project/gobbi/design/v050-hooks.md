@@ -86,6 +86,8 @@ PreToolUse can rewrite the tool's input before execution via the `updatedInput` 
 
 **Agent tool (spawning subagents)** — The guard reads `tool_input.subagent_type` and checks it against the current step's allowed agent types from `state.json`. An orchestrator in the Execution step is allowed to spawn executor-type agents. It is not allowed to spawn evaluator-type agents — evaluation is a separate step and the creating agent must not trigger it. If `subagent_type` is not in the allowed set for the current step, the guard denies.
 
+When the guard allows an Agent tool call, it appends a `delegation.spawn` event to the event store before returning the allow decision. This event records the subagent type, the current step, and the timestamp. The `parent_seq` on the subsequent `delegation.complete` event (written by SubagentStop) references this spawn event, linking the full delegation lifecycle in the event log.
+
 **Write and Edit tools (`.claude/` protection)** — The guard checks whether `tool_input.file_path` targets any path under `.claude/`. If the session is active (a `workflow.start` event exists and no `workflow.finish` event exists), the guard denies. This enforces the directory split from `v050-overview.md`: `.claude/` is read-only during an active workflow. Writes go to `.gobbi/`.
 
 **Execution precondition guard** — Before an executor subagent is spawned, the guard verifies that a plan artifact exists in `plan/` for the current session. It uses the `event_exists("workflow.step.exit", "plan")` check. If the plan step has not completed, the guard denies. An executor without a plan has no bounded scope and will improvise — which is the failure mode v0.5.0 is designed to prevent.
@@ -146,12 +148,24 @@ The delegation pattern for each hook type:
 
 | Hook event | CLI command |
 |------------|-------------|
+| SessionStart | `gobbi workflow init` |
 | PreToolUse | `gobbi workflow guard` |
 | SubagentStop | `gobbi workflow capture-subagent` |
 | PostToolUse (ExitPlanMode) | `gobbi workflow capture-plan` |
 | Stop | `gobbi workflow flush-state` |
 
 Each CLI command reads the full stdin payload, evaluates against the current session state, writes any necessary events, and returns the appropriate JSON response that the hook forwards to stdout. The hook process exits 0 in all cases except unrecoverable startup failures.
+
+The SessionStart hook receives a fixed stdin schema:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `session_id` | string | Claude Code session identifier — becomes the session directory name |
+| `transcript_path` | string | Absolute path to the session transcript file |
+| `cwd` | string | Working directory at session open time — recorded in `metadata.json` |
+| `source` | string | What triggered the session: `user`, `project`, or `api` |
+
+`gobbi workflow init` uses these fields to create the session directory under `.gobbi/sessions/{session-id}/`, write `metadata.json`, initialize `gobbi.db` with the events table schema, and append the first `workflow.start` event. The command is idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
 This means the hooks registered in `hooks/hooks.json` are stable across releases. The CLI evolves; the hook wiring does not.
 
@@ -166,6 +180,16 @@ V0.5.0 implements two enforcement levels that reflect different violation severi
 **Hard block** — For structural violations, the hook returns `permissionDecision: "deny"`. The tool does not execute. A `guard.violation` event is written to `gobbi.db`. The `violations` array in `state.json` is updated. The orchestrator receives the denial and the reason.
 
 **Escalation on repeat violations** — The `violations` array in `state.json` tracks every `guard.violation` event. The CLI reads the violation count for a specific guard when generating the next prompt. If the same guard has fired more than a configurable threshold (default 3 times), the CLI escalates — it surfaces a warning to the user via the generated prompt, noting that the orchestrator is repeatedly attempting a blocked action. This is a stagnation signal: the orchestrator is stuck, and human intervention may be needed to resolve the underlying confusion.
+
+---
+
+## Hook Profiles
+
+V0.5.0 ships with a single enforcement profile. All guards operate at the levels described in the Escalating Enforcement section above — hard blocks for structural violations, soft nudges for edge cases.
+
+Research into the v0.5.0 enforcement model identified a hook profiles concept: configurable enforcement strictness levels (standard, minimal, strict) that would let users tune how aggressively guards block versus warn. This is a meaningful capability — teams with higher trust in their orchestrator or projects with tighter timelines may want a minimal profile that nudges instead of blocks.
+
+Profile support is planned for v0.5.1 and later. V0.5.0 does not implement enforcement profiles. All hooks behave at the standard enforcement level. This is noted explicitly so that contributors do not implement ad-hoc per-guard softening to work around the missing profiles feature — the right place for that flexibility is the profile system, not guard-by-guard overrides.
 
 ---
 

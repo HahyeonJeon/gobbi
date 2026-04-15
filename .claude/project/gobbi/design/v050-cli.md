@@ -77,9 +77,15 @@ The CLI expands from its current eight-command surface to add a `workflow` subco
 
 **`gobbi workflow init`** — Creates the session directory under `.gobbi/sessions/{session-id}/`, writes `metadata.json`, initializes `gobbi.db` with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
+During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers (Ideation and Plan eval on/off) are stored immediately as a `workflow.eval.decide` event in `gobbi.db`, populating `evalConfig` in `state.json`. The prompt template generated for the first step (Ideation) includes the eval decision in its session section so the orchestrator knows the evaluation configuration from the start without needing to ask mid-workflow.
+
 **`gobbi workflow next`** — The core command. Reads `state.json` (or replays `gobbi.db` if absent), determines the active step, selects the appropriate prompt template, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step. Every other `workflow` command supports this one.
 
 **`gobbi workflow transition <event>`** — Advances the state machine by appending a typed event to `gobbi.db` and updating `state.json`. Validates that the event produces a valid transition from the current step before writing. Returns the new state summary on stdout. Invalid transitions produce an error with the reason — useful for diagnosing stalls.
+
+The orchestrator calls this command via Bash, instructed by the prompt template. Each step's generated prompt ends with an explicit instruction: when this step is complete, run `gobbi workflow transition COMPLETE`. The CLI validates the transition against the state machine and advances state — the orchestrator does not decide when to transition, the prompt template instructs it.
+
+The Stop hook can also trigger implicit transitions: after each turn, the Stop hook analyzes the conversation to detect whether the orchestrator's response completed a step. If the response contains a recognized completion signal and no explicit transition was already written, the Stop hook writes the transition event. This handles cases where the orchestrator completed the step work but did not execute the transition command.
 
 **`gobbi workflow guard`** — Invoked by the PreToolUse hook. Reads the full hook stdin payload, loads `state.json`, evaluates guard conditions using the JsonLogic engine, and writes the appropriate JSON response to stdout. If the call violates a guard, appends a `guard.violation` event and returns `permissionDecision: "deny"`. If the call is valid, returns `permissionDecision: "allow"` or defers to the next hook. Guard evaluation is the hottest code path in the CLI — it must complete in single-digit milliseconds.
 
@@ -93,11 +99,17 @@ The CLI expands from its current eight-command surface to add a `workflow` subco
 
 **`gobbi workflow status`** — Reads `state.json` and prints the current workflow step, completed steps, active subagent count, evaluation configuration, and feedback round count. Human-readable output. Useful for diagnosing where a session is in the workflow without reading raw JSON.
 
+### New: `gobbi session` commands
+
+**`gobbi session events`** — Formats the `events.jsonl` log for human consumption. New in v0.5.0. Provides a readable audit trail of every event in a session without requiring a SQLite client.
+
+### New: `gobbi gotcha` commands
+
+**`gobbi gotcha promote`** — Moves gotchas from `.gobbi/project/gotchas/` to the permanent store in `.claude/skills/_gotcha/`. This command runs outside active sessions only — it checks that no session is active (no `workflow.start` event without a corresponding `workflow.finish` in any session directory) before proceeding. Gotchas recorded during a session live in `.gobbi/project/gotchas/` until this promotion step runs. The promotion is the mechanism that turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session itself.
+
 ### Existing commands (unchanged)
 
 **`gobbi session list`** — Lists sessions with their IDs, creation timestamps, and current steps. Unchanged in v0.5.0 except the session source moves from the v0.4.x session files to `.gobbi/sessions/`.
-
-**`gobbi session events`** — Formats the `events.jsonl` log for human consumption. New in v0.5.0. Provides a readable audit trail of every event in a session without requiring a SQLite client.
 
 **`gobbi config`** — Session configuration management. Unchanged.
 

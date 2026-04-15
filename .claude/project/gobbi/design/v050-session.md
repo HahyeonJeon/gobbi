@@ -131,6 +131,7 @@ Events are grouped into five categories that reflect the five things that can ha
 | `schemaVersion` | integer | State schema version |
 | `sessionId` | string | Session identifier |
 | `currentStep` | string, nullable | The active workflow step, or null if none |
+| `currentSubstate` | string, nullable | The active substate within the current step — only set during Ideation (`discussing` or `researching`); null for all other steps |
 | `completedSteps` | array of strings | Steps that have exited normally |
 | `evalConfig` | object | Per-step evaluation decisions made at workflow start |
 | `activeSubagents` | array | Subagents that have spawned but not yet completed or failed |
@@ -177,6 +178,8 @@ The schema version is incremented whenever a breaking change is made to the even
 **Context compaction** — When Claude Code compacts the conversation, it is a mid-session event, not a session boundary. The CLI detects the post-compact state, reads persisted state, and generates a resume prompt that re-orients the orchestrator. No new session is created; the existing session ID persists.
 
 **Session end** — The session ends when the user runs `/clear` or opens a new conversation. There is no explicit cleanup event — the session directory remains on disk until the TTL cleanup runs.
+
+**Abandoned session detection** — When `gobbi workflow init` runs, it checks all existing session directories for sessions without a `workflow.finish` event. If a session has been inactive for more than 24 hours — meaning no events have been appended in the last 24 hours — it is marked as abandoned. The `.claude/` write guard checks session freshness before blocking writes: if the session's last event is older than 24 hours and no `workflow.finish` event exists, the guard treats the session as expired and allows `.claude/` writes to proceed. This prevents abandoned sessions from permanently blocking the `.claude/` write protection. A session that was interrupted by a crash or a user closing their terminal without clearing will not hold the write guard indefinitely.
 
 **Cleanup** — A background cleanup process removes sessions older than 7 days and enforces a maximum entry cap (default 50 sessions). Cleanup targets the oldest sessions first when the cap is exceeded. The cleanup configuration is stored in the user's gobbi config and can be adjusted.
 

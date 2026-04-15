@@ -122,6 +122,8 @@ Key state fields the reducer maintains:
 
 The reducer never mutates state in place. It produces a new state object on every invocation. This makes the state history reconstructable: each event maps to a state snapshot.
 
+**Why not XState v5** — The typed reducer was chosen over XState v5 for one structural reason: the event-sourced model means `events.jsonl` (and `gobbi.db`) IS the state machine — the complete record of what happened and in what order. Introducing XState would create a second state system that must be kept synchronized with the event store. Two state representations means two places to update when a transition changes, and two sources of truth that can diverge. The reducer pattern keeps the state machine in one place: the reducer function, validated by a `deriveState()` equivalent. It is zero-dependency, pure TypeScript, and naturally aligned with event sourcing. XState's primary advantage — visual graph generation — can be replicated with a simple renderer over the transition table defined in this document.
+
 ---
 
 ## Evaluation Gate Model
@@ -130,7 +132,7 @@ The reducer never mutates state in place. It produces a new state object on ever
 
 Evaluation is mandatory after Execution. It is optional at Ideation and Plan. The decision about whether to run optional evaluation steps is made once — at workflow start — and stored in `evalConfig` within `state.json`.
 
-The `workflow.eval.decide` event captures this decision. It is written during the session initialization flow, before Ideation begins. Its `data` payload records `{ ideation: boolean, plan: boolean }`. Once written, the reducer treats `evalConfig` as immutable — no subsequent event overwrites it.
+The `workflow.eval.decide` event captures this decision. It is written during the session initialization flow by `gobbi workflow init`, before Ideation begins. `gobbi workflow init` asks the user four setup questions including whether to evaluate after Ideation and whether to evaluate after Plan. The answers are stored as a `workflow.eval.decide` event immediately, populating `evalConfig` in `state.json`. The first step's generated prompt includes `evalConfig` in its session section. Its `data` payload records `{ ideation: boolean, plan: boolean }`. Once written, the reducer treats `evalConfig` as immutable — no subsequent event overwrites it.
 
 Why this matters: if evaluation were decided per-step, the orchestrator would ask the user at the Ideation exit and again at the Plan exit. These interruptions mid-workflow are exactly the kind of idle-inducing questions v0.5.0 eliminates. Deciding once, storing the result, and reading it at transition time removes two decision points from the active workflow path.
 
