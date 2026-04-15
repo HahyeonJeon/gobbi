@@ -1,6 +1,6 @@
 # v0.5.0 Prompts — Compilation Model
 
-Prompt generation reference for v0.5.0. Read this when implementing or reasoning about how the CLI assembles prompts, how cache ordering works, which skills survive as materials versus which become CLI-owned templates, and the open decision on template format.
+Prompt generation reference for v0.5.0. Read this when implementing or reasoning about how the CLI assembles prompts, how cache ordering works, which skills survive as materials versus which become CLI-owned step specs, and how the spec model encodes each workflow step.
 
 ---
 
@@ -43,7 +43,7 @@ The CLI reads `state.json` first to determine which step is active. It then sele
   │  4. Load gotchas as guards                 │
   │  5. Apply cache-aware section ordering     │
   │  6. Apply token budget allocation          │
-  │  7. Render template with interpolated vars │
+  │  7. Assemble prompt from spec blocks        │
   └───────────────────────┬────────────────────┘
                           │
                           ▼
@@ -76,7 +76,7 @@ Three sections, ordered by how often they change:
 
 **Dynamic section** — Content that changes on every invocation. Step-specific instructions for the current action, the inlined output of the previous step, delegation target configuration, and any per-invocation variables like timestamps or active subagent counts. No cache benefit expected here; this section is always recomputed.
 
-The order is not negotiable. Placing dynamic content before static content destroys cache prefix stability and causes every invocation to be a full-cost API call. The CLI enforces this ordering at the template rendering stage — no template can place a dynamic variable inside the static prefix section.
+The order is not negotiable. Placing dynamic content before static content destroys cache prefix stability and causes every invocation to be a full-cost API call. The CLI enforces this ordering when assembling the prompt from spec blocks — no spec can place a conditional or dynamic block before the static blocks.
 
 ---
 
@@ -84,15 +84,15 @@ The order is not negotiable. Placing dynamic content before static content destr
 
 > **The CLI owns all orchestration. Skills own domain knowledge.**
 
-V0.4.x conflated two concerns: skills taught agents both how the workflow runs and what domain knowledge to apply. In v0.5.0 these are separated. Workflow knowledge moves into CLI-owned prompt templates. Domain knowledge stays in skills as materials the CLI injects.
+V0.4.x conflated two concerns: skills taught agents both how the workflow runs and what domain knowledge to apply. In v0.5.0 these are separated. Workflow knowledge moves into CLI-owned step specs. Domain knowledge stays in skills as materials the CLI injects.
 
-### Skills That Become CLI Prompts
+### Skills That Become Step Specs
 
-These skills encoded orchestration logic — what to do at each step, how to transition, what evaluation means. In v0.5.0, this content lives in the CLI's template library and is never read directly by the orchestrator.
+These skills encoded orchestration logic — what to do at each step, how to transition, what evaluation means. In v0.5.0, this content lives in the CLI's spec library and is never read directly by the orchestrator.
 
 `_orchestration`, `_discuss`, `_ideation`, `_plan`, `_research`, `_delegation`, `_execution`, `_collection`, `_memorization`, `_note`, `_evaluation`, `_innovation`, `_best-practice`
 
-The content of these skills does not disappear — it is translated into prompt templates. The difference is ownership: in v0.4.x, the orchestrator discovers and follows these skills; in v0.5.0, the CLI encodes them and presents the result as step instructions.
+The content of these skills does not disappear — it is translated into step specs. The difference is ownership: in v0.4.x, the orchestrator discovers and follows these skills; in v0.5.0, the CLI encodes them and presents the result as step instructions.
 
 ### Skills That Survive
 
@@ -122,11 +122,11 @@ The CLI does not instruct the orchestrator to "load the `_git` skill." It reads 
 
 In v0.4.x, the orchestrator reads stance guidance and decides how to apply it. In v0.5.0, the CLI encodes stance configuration directly into the delegation prompt for steps that require parallel agents.
 
-For Ideation steps that include a research loop, the CLI generates separate agent prompts — one configured for the innovative stance (depth-first, divergent, challenges constraints), one for the best-practice stance (proven patterns, reliability, established conventions). The stance configuration is part of the template, not a runtime decision.
+For Ideation steps that include a research loop, the CLI generates separate agent prompts — one configured for the innovative stance (depth-first, divergent, challenges constraints), one for the best-practice stance (proven patterns, reliability, established conventions). The stance configuration is encoded in the spec's delegation blocks, not decided at runtime.
 
-For Evaluation steps, each evaluator receives a prompt configured for its assigned perspective. The perspective assignment is part of the CLI's evaluation template. The orchestrator does not select evaluators — it receives a delegation block that lists them with their configured perspectives already set.
+For Evaluation steps, each evaluator receives a prompt configured for its assigned perspective. The perspective assignment is part of the CLI's evaluation step spec. The orchestrator does not select evaluators — it receives a delegation block that lists them with their configured perspectives already set.
 
-Domain-specific stances — project-specific evaluation perspectives, specialist agents for a particular tech stack — remain as skills. The CLI guides loading these during delegation: the delegation prompt template includes a slot for domain-specific stance materials, and the CLI fills that slot from the appropriate project skill if one exists.
+Domain-specific stances — project-specific evaluation perspectives, specialist agents for a particular tech stack — remain as skills. The CLI guides loading these during delegation: the delegation blocks in the spec include a slot for domain-specific stance materials, and the CLI fills that slot from the appropriate project skill if one exists.
 
 ---
 
@@ -150,40 +150,64 @@ Each model variant has a fixed context window. The CLI knows the model configure
 
 When the available budget is smaller than the sum of all sections, the CLI truncates artifact content at section boundaries. An artifact is included in full or excluded entirely — it is never truncated mid-document. This produces a prompt that is complete and coherent rather than one that ends mid-sentence because the window ran out.
 
-The allocation proportions are configurable per step type. Evaluation steps allocate more budget to inlined execution artifacts. Delegation steps allocate more budget to the delegation block. The defaults are encoded in the template definition for each step.
+The allocation proportions are configurable per step type. Evaluation steps allocate more budget to inlined execution artifacts. Delegation steps allocate more budget to the delegation block. The defaults are encoded in the `tokenBudget` section of each step's spec.
 
 ---
 
-## Template Format — Decision Space (Open)
+## Step Specs
 
-> **The template format is an open architectural decision. The constraints are fixed; the implementation is not.**
+> **Each workflow step is defined by a spec file. The spec is the step — not a template the CLI fills in.**
 
-The CLI needs a template format that can express 20-30 prompts for v0.5.0, potentially scaling to 100+ prompts across workflow steps, domain variants, and stance configurations. The format must satisfy four constraints:
+The CLI encodes each workflow step as a `spec.json` file under `packages/cli/src/specs/`. There is one spec per step. Specs contain only static instructional content — no variables, no template engine, no mustache syntax. All dynamic data (session context, inlined artifacts, skill content) is added programmatically by the CLI in TypeScript. The spec describes what the step does; the CLI decides what data to supply.
 
-**Constraint 1 — Conditional sections**: A template must be able to include or exclude blocks based on session state. Evaluation instructions appear only when `evalConfig` enables evaluation for this step. Gotcha loading appears only when the gotcha file is non-empty. These conditions are known at compile time from `state.json`.
+### Spec Schema
 
-**Constraint 2 — Variable interpolation**: Templates reference session variables — session ID, step name, active step count, inlined artifact content. Interpolation must handle multi-line content (artifact body) without breaking the surrounding structure.
+Each `spec.json` contains five top-level sections:
 
-**Constraint 3 — Shared blocks**: Some blocks appear across many templates — the scope boundary warning, the gotcha preamble, the "write artifacts to step directory" instruction. These must be defined once and referenced, not duplicated across templates.
+**`meta`** — Step-level metadata: a short description, the list of valid substates (if any), allowed agent types, maximum parallel agent count, required and optional skills to inject, expected artifacts from this step, and the completion signal the CLI watches for.
 
-**Constraint 4 — Maintainability at scale**: At 100+ templates, a format that requires reading TypeScript to understand a template's structure creates maintenance cost. Templates should be readable as documents, not as data structures that require a runtime to interpret.
+**`transitions`** — The valid exit transitions from this step. For steps where the exit depends on runtime conditions (such as whether evaluation is enabled), transition entries may carry JsonLogic conditions. The CLI evaluates these conditions in TypeScript against `state.json`; the spec only declares what the possible transitions are and under what conditions each is taken.
 
-### The Options
+**`delegation`** — The agent topology for this step: each agent's role, stance, model tier, effort level, which skills to inject, the artifact target it should write to, and a reference to the block in `blocks.delegation` that contains its prompt content.
 
-**Option A — PAL (Prompt Assembly Language)**: JSON block arrays where each block carries a `type`, optional `condition` expressed in JsonLogic, content with mustache-style `{{vars}}`, and optional `ref` for shared blocks. The CLI evaluates conditions against `state.json`, resolves refs from a shared library, and renders blocks in order. The template is fully declarative — all logic is expressed in data. The cost is that JsonLogic conditions are verbose and the block array structure obscures the narrative flow of the prompt.
+**`tokenBudget`** — Allocation proportions across the five prompt sections: static prefix, session, instructions, artifacts, and materials. Evaluation steps allocate more to inlined artifacts; delegation steps allocate more to the delegation block. These proportions are the defaults the CLI uses unless session config overrides them.
 
-**Option B — Simple JSON plus CLI logic**: Flat JSON objects with `{{vars}}` for interpolation. All conditional logic lives in TypeScript — the CLI decides which JSON objects to include based on state, assembles them into a string, and interpolates variables. The template is simple to read but the conditional behavior requires reading TypeScript to understand. At scale, the TypeScript accumulates complexity as each new conditional is added.
+**`blocks`** — The static instructional content for this step, organized into five subsections:
 
-**Option C — Hybrid (JSON manifest plus content files)**: A JSON manifest defines the template structure — section order, which sections are conditional, variable names, shared block references. Long text blocks are stored in separate `.md` or `.txt` files referenced by the manifest. The manifest is readable; the prose is readable; the CLI wires them together. The cost is indirection — understanding a template requires reading both the manifest and its referenced files.
+| Subsection | Purpose |
+|------------|---------|
+| `static` | Always-included blocks — role description, core principles, shared references |
+| `conditional` | Blocks the CLI includes or excludes based on state — loop-back context, eval reminders. The conditions are evaluated in TypeScript; each block carries only an ID the TypeScript code matches on |
+| `delegation` | Per-agent delegation prompt content, keyed by the agent reference in `delegation` |
+| `synthesis` | Post-delegation synthesis instructions for the orchestrator |
+| `completion` | The completion instruction and a human-readable criteria list |
 
-All three options satisfy constraints 1 and 2. Options A and C satisfy constraint 3 natively (refs and shared files); Option B requires TypeScript-managed shared blocks. Options B and C satisfy constraint 4 more readily than Option A at high template counts.
+### Workflow Graph
 
-This decision is documented here as a design constraint, not a final choice. The implementation must select one option and apply it consistently across all prompt templates in the CLI. The selection should be made once and recorded in this document before implementation begins.
+`index.json` at the root of `packages/cli/src/specs/` encodes the full workflow graph: all steps, their transitions, and guard conditions. This file enables `gobbi workflow validate` to perform static analysis — dead step detection, cycle validation, and reference resolution checks — without running the workflow.
+
+### Shared Blocks
+
+Reusable content blocks (scope boundary warning, gotcha preamble, system prompt) live in `_shared/` under the specs directory. Spec files reference shared blocks by ID. The CLI resolves these references at compile time before assembling the prompt. Each shared block is defined once; changes propagate to all specs that reference it.
+
+### Substate Overlays
+
+Steps with substates — Ideation has `discussing` and `researching` — use overlay files rather than separate full specs. An overlay patches a base spec with substate-specific modifications using a Kustomize-style pattern: base plus targeted patches, not full duplication. The CLI loads the base spec and applies the overlay for the active substate before assembling the prompt.
+
+### Schema Versioning
+
+Every spec file carries `$schema` and `version` fields. When the CLI loads a spec whose version is behind the current schema, it applies the migration chain before using the spec. This allows the spec format to evolve without requiring all files to be updated simultaneously.
+
+### Why This Model
+
+> **Adding a workflow step means adding a spec file — no TypeScript modification required for content changes.**
+
+The spec model provides four concrete benefits. Guards (`gobbi workflow validate`) can validate structured delegation data without parsing prose. The `SubagentStop` hook knows expected artifacts from the spec's `delegation` config without introspecting the conversation. Static analysis at build time catches structural errors — missing transitions, broken refs, unreachable steps — before they reach runtime. Cache-aware ordering is enforced by the spec schema: `static` blocks always come before `conditional` blocks, which always come before `delegation` blocks, which preserves the static prefix guarantee described in the Cache-Aware Prompt Ordering section above.
 
 ---
 
 ## Boundaries
 
-This document covers the prompt compilation model, cache-aware section ordering, the skills boundary between CLI-owned templates and surviving domain skills, stances as CLI-managed configuration, fresh context isolation per subagent task, token budget allocation, and the open template format decision.
+This document covers the prompt compilation model, cache-aware section ordering, the skills boundary between CLI-owned step specs and surviving domain skills, stances as CLI-managed configuration, fresh context isolation per subagent task, token budget allocation, and the step spec model including the spec schema, workflow graph, shared blocks, substate overlays, and schema versioning.
 
 For how state transitions determine which step is active, see `v050-state-machine.md`. For how hooks write events that the CLI reads to derive state, see `v050-hooks.md`. For the session artifacts that prompts consume, see `v050-session.md`. For CLI command syntax and distribution, see `v050-cli.md`.
