@@ -154,7 +154,7 @@ Feedback loops from `ideation_eval` and `plan_eval` return only to their immedia
 
 ## Guard Specification with JsonLogic
 
-> **Guards are declarative JSON. The condition language is JsonLogic — the same engine used for prompt template conditionals.**
+> **Guards are declarative JSON. The condition language is JsonLogic — the same engine used for step spec conditional blocks.**
 
 Guards intercept tool calls via the PreToolUse hook. Each guard is a JSON object with five fields:
 

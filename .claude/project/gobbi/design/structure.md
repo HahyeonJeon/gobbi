@@ -92,7 +92,7 @@ Gobbi's runtime state directory, separate from `.claude/`. Created at the projec
 
 | Directory | Purpose |
 |:----------|:--------|
-| `sessions/` | Workflow session data — `state.json`, `gobbi.db` (SQLite event store), and one subdirectory per step containing notes, research, and execution output |
+| `sessions/` | Workflow session data — `state.json`, `state.json.backup`, `gobbi.db` (SQLite event store), `metadata.json`, `events.jsonl` (human-readable event log), and one subdirectory per step containing notes, research, and execution output |
 | `worktrees/` | Git worktree isolation — moved from `.claude/worktrees/` to prevent idle false-positives during branch operations |
 | `project/` | Project notes, gotchas, and context — moved from `.claude/project/` so workflow writes do not touch `.claude/` |
 
@@ -105,7 +105,7 @@ Gobbi's runtime state directory, separate from `.claude/`. Created at the projec
 | Path | Purpose |
 |:-----|:--------|
 | `index.json` | Workflow graph — step ordering, transition guards, entry points |
-| `{step}/spec.json` | Per-step definition — prompt template, required inputs, output schema, preconditions |
+| `{step}/spec.json` | Per-step definition — content blocks, meta, transitions, delegation assignments, preconditions |
 | `_shared/` | Reusable prompt blocks shared across step specs |
 
 The CLI reads these specs at runtime to compile prompts and enforce transitions. Specs are the source of truth for what each workflow step does and what must be true before it can run.
