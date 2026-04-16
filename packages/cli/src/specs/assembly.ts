@@ -48,6 +48,7 @@ import type {
 } from './types.js';
 import { defaultBudgetAllocator } from './budget.js';
 import type { WorkflowState } from '../workflow/state.js';
+import type { WorkflowGraph } from './graph.js';
 
 // Note: `CompiledPrompt`, `CompiledSectionSummary`, `CompiledSectionLike`,
 // `AllocationResult`, and `BudgetAllocator` live in `types.ts` (re-exported
@@ -866,4 +867,108 @@ export function assertOrdered<
   // lifting here; if you need a runtime check on a dynamic-length array,
   // use the internal `assertCacheOrdered` path via `compile()`.
   return sections;
+}
+
+// ---------------------------------------------------------------------------
+// Spec/graph predicate-reference validation
+//
+// The registry's `satisfies Record<PredicateName, Predicate>` clause
+// (workflow/predicates.ts) catches missing registrations at compile time —
+// but only for spec/overlay/graph files that the codegen scanned at the
+// last typecheck. Specs loaded from disk at runtime (for instance via
+// `gobbi workflow validate` pointed at a user spec directory, or a
+// migration-time spec read) bypass that gate. The two validators below
+// cover the runtime case.
+//
+// Both return `string[]` of human-readable error messages; an empty array
+// means the spec/graph references only registered predicates. They do NOT
+// throw — callers decide whether to escalate.
+//
+// Intentional scope: the validators check *that* a predicate is registered,
+// not *what* its body does. Semantic correctness of the predicate's
+// evaluation is a unit-test concern, not a validator concern.
+// ---------------------------------------------------------------------------
+
+/**
+ * Collect every predicate name referenced anywhere in a `StepSpec`.
+ *
+ * Walks:
+ *   - `spec.transitions[*].condition`
+ *   - `spec.blocks.conditional[*].when`
+ *
+ * Returns a deduplicated, insertion-ordered array.
+ */
+export function collectSpecPredicateReferences(
+  spec: StepSpec,
+): readonly string[] {
+  const seen = new Set<string>();
+  for (const t of spec.transitions) {
+    if (typeof t.condition === 'string' && t.condition.length > 0) {
+      seen.add(t.condition);
+    }
+  }
+  for (const cb of spec.blocks.conditional) {
+    if (typeof cb.when === 'string' && cb.when.length > 0) {
+      seen.add(cb.when);
+    }
+  }
+  return [...seen];
+}
+
+/**
+ * Validate that every predicate referenced by a `StepSpec` is present in
+ * the registry. Complements the compile-time `satisfies` gate for
+ * dynamically-loaded specs.
+ *
+ * @param spec - the spec to check
+ * @param registry - the predicate registry to validate against
+ * @param specLabel - optional human-readable label (e.g. the spec file
+ *   path) to include in error messages; defaults to `'<step-spec>'`
+ */
+export function validateSpecPredicateReferences(
+  spec: StepSpec,
+  registry: Readonly<Record<string, unknown>>,
+  specLabel: string = '<step-spec>',
+): string[] {
+  const errors: string[] = [];
+  for (const t of spec.transitions) {
+    if (t.condition !== undefined && !(t.condition in registry)) {
+      errors.push(
+        `${specLabel}: transition -> ${t.to} references unknown predicate "${t.condition}"`,
+      );
+    }
+  }
+  for (const cb of spec.blocks.conditional) {
+    if (cb.when !== undefined && !(cb.when in registry)) {
+      errors.push(
+        `${specLabel}: conditional block "${cb.id}" references unknown predicate "${cb.when}"`,
+      );
+    }
+  }
+  return errors;
+}
+
+/**
+ * Validate that every predicate referenced by a `WorkflowGraph`'s
+ * `transitions[]` is present in the registry. Complements
+ * `validateSpecPredicateReferences` for graph-level edges (index.json).
+ *
+ * `transitions[*].condition` is a non-empty string by schema; missing
+ * registrations are emitted as one error per offending edge.
+ */
+export function validateGraphPredicateReferences(
+  graph: WorkflowGraph,
+  registry: Readonly<Record<string, unknown>>,
+  graphLabel: string = '<workflow-graph>',
+): string[] {
+  const errors: string[] = [];
+  for (const edge of graph.transitions) {
+    if (edge.condition.length === 0) continue;
+    if (!(edge.condition in registry)) {
+      errors.push(
+        `${graphLabel}: edge ${edge.from} -> ${edge.to} references unknown predicate "${edge.condition}"`,
+      );
+    }
+  }
+  return errors;
 }

@@ -47,7 +47,7 @@ Two conditionals, both gated on predicates already registered in `workflow/predi
 - `feedback-context` fires when `feedbackRoundActive` — a prior `plan_eval` returned revise, or `execution_eval` loop-targeted the plan step. The block prepends evaluator-findings reading guidance to the compiled prompt.
 - `evaluation-deciding` fires when `evalPlanEnabled` — the user enabled plan evaluation at session start. The block reminds the orchestrator that the evaluation decision is locked (it was made at workflow init) and must not be re-asked at step exit.
 
-Predicates that are referenced by the transition graph but not yet registered (`verdictPass`, `verdictRevise`, `always`) are tracked in `index.json` — B.3's predicate codegen lands their registration. This spec's conditionals only use predicates that are already firing so the compiled output is meaningful today.
+Graph-level predicates (`verdictPass`, `verdictRevise`, `always`, loop-target and resume-target variants) are also registered in `workflow/predicates.ts` as of B.3. The codegen at `scripts/gen-predicate-names.ts` emits a typed `PredicateName` union from every spec, overlay, and graph reference; the registry satisfies that union so any missing registration fails typecheck.
 
 ---
 
