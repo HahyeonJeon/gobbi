@@ -16,6 +16,7 @@ Evaluation principles:
 Scope boundary:
 
 - This spec is reused for ideation_eval, plan_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
+- The \`transitions\` array in this spec declares ideation_eval defaults. For plan_eval and execution_eval, the graph (\`index.json\`) is authoritative: plan_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
 - Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, plan, or execution), not here.
 - Do not spawn more than \`maxParallelAgents\` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.
 - Stay in evaluation. Do not ask the user to make plan or implementation decisions here — the verdict is what exits the step; the next step handles the response.
@@ -71,6 +72,7 @@ Evaluation principles:
 Scope boundary:
 
 - This spec is reused for ideation_eval, plan_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
+- The \`transitions\` array in this spec declares ideation_eval defaults. For plan_eval and execution_eval, the graph (\`index.json\`) is authoritative: plan_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
 - Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, plan, or execution), not here.
 - Do not spawn more than \`maxParallelAgents\` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.
 - Stay in evaluation. Do not ask the user to make plan or implementation decisions here — the verdict is what exits the step; the next step handles the response.
@@ -136,13 +138,14 @@ Evaluation principles:
 Scope boundary:
 
 - This spec is reused for ideation_eval, plan_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
+- The \`transitions\` array in this spec declares ideation_eval defaults. For plan_eval and execution_eval, the graph (\`index.json\`) is authoritative: plan_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
 - Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, plan, or execution), not here.
 - Do not spawn more than \`maxParallelAgents\` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.
 - Stay in evaluation. Do not ask the user to make plan or implementation decisions here — the verdict is what exits the step; the next step handles the response.
 
 Feedback round context:
 
-This evaluation is running after a prior loop-back — \`feedbackRound > 0\`. The preceding step has been re-attempted and this evaluation decides whether the re-attempt resolved the prior findings. Instruct each evaluator to read the prior round's findings under \`evaluation/round-{N-1}/\` alongside the current artifacts: the question is not "is this good" in isolation, but "did the revision actually address the prior defects." A clean round on the current artifacts but unaddressed prior findings is still a revise verdict.
+This evaluation is running after a prior loop-back — \`feedbackRound > 0\`. The preceding step has been re-attempted and this evaluation decides whether the re-attempt resolved the prior findings. Instruct each evaluator to read the prior round's findings — filename-suffixed artifacts in the flat \`evaluation/\` directory (e.g., \`project-r{N-1}.md\`, \`overall-r{N-1}.md\`, \`evaluation-r{N-1}.md\`) — alongside the current artifacts: the question is not "is this good" in isolation, but "did the revision actually address the prior defects." A clean round on the current artifacts but unaddressed prior findings is still a revise verdict.
 
 Synthesis instructions:
 

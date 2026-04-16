@@ -112,7 +112,7 @@ const StepTransitionSchema = {
     // to a branded `PredicateName` literal union; for A.6 we only check
     // structural form (non-empty string). The branded-type check is the
     // seam documented in `validateStepSpec()` below.
-    condition: { type: 'string', minLength: 1 },
+    condition: { type: 'string', minLength: 1, pattern: '^[a-zA-Z][a-zA-Z0-9_]*$' },
     label: { type: 'string', minLength: 1, nullable: true },
   },
 } as const;
@@ -183,7 +183,7 @@ const ConditionalBlockSchema = {
   properties: {
     id: { type: 'string', minLength: 1 },
     content: { type: 'string' },
-    when: { type: 'string', minLength: 1 },
+    when: { type: 'string', minLength: 1, pattern: '^[a-zA-Z][a-zA-Z0-9_]*$' },
     refs: {
       type: 'array',
       items: { type: 'string', minLength: 1 },

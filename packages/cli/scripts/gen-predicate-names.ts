@@ -151,11 +151,34 @@ function parseJsonFile(path: string): unknown {
 // Rendering — deterministic TypeScript output.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Predicate-name sanitization — defense-in-depth against injection via
+// malformed spec JSON. The schema `pattern` constraint guards spec/overlay
+// authoring; this check guards names from any source the schema cannot
+// reach (e.g., index.json graph transitions).
+// ---------------------------------------------------------------------------
+
+const PREDICATE_NAME_RE = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+
+function assertValidPredicateNames(names: readonly string[]): void {
+  for (const name of names) {
+    if (!PREDICATE_NAME_RE.test(name)) {
+      throw new Error(
+        `[gen-predicate-names] predicate name "${name}" does not match ` +
+          `the required pattern ${PREDICATE_NAME_RE.source}. ` +
+          `This would inject unsanitized content into TypeScript source.`,
+      );
+    }
+  }
+}
+
 /**
  * Produce the TypeScript source for the generated file. Output is stable
  * across runs when `names` is the same sorted array.
  */
 function renderOutput(names: readonly string[], sourceFiles: readonly string[]): string {
+  // Validate all names before interpolating into TypeScript source.
+  assertValidPredicateNames(names);
   const header = [
     '/**',
     ' * GENERATED FILE — DO NOT EDIT BY HAND.',
