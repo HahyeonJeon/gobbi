@@ -1,0 +1,103 @@
+{
+  "$schema": "https://gobbi.dev/schemas/step-spec/v1.json",
+  "version": 1,
+  "meta": {
+    "description": "Evaluation — independent evaluator agents assess the preceding step's output from distinct perspectives. Reused by ideation_eval, plan_eval, and execution_eval via index.json's evalFor indirection. The creating agent never participates.",
+    "allowedAgentTypes": ["_project-evaluator", "_agent-evaluator", "_skills-evaluator"],
+    "maxParallelAgents": 5,
+    "requiredSkills": ["_gotcha"],
+    "optionalSkills": ["_project", "_claude"],
+    "expectedArtifacts": ["project.md", "overall.md", "evaluation.md"],
+    "completionSignal": "SubagentStop"
+  },
+  "transitions": [
+    {
+      "to": "ideation",
+      "condition": "verdictRevise",
+      "label": "evaluation revise → feedback to preceding step"
+    },
+    {
+      "to": "plan",
+      "condition": "verdictPass",
+      "label": "evaluation pass → proceed"
+    }
+  ],
+  "delegation": {
+    "agents": [
+      {
+        "role": "project",
+        "stance": "project",
+        "modelTier": "sonnet",
+        "effort": "max",
+        "skills": [],
+        "artifactTarget": "project.md",
+        "blockRef": "evaluator.project"
+      },
+      {
+        "role": "overall",
+        "stance": "overall",
+        "modelTier": "sonnet",
+        "effort": "max",
+        "skills": [],
+        "artifactTarget": "overall.md",
+        "blockRef": "evaluator.overall"
+      }
+    ]
+  },
+  "tokenBudget": {
+    "staticPrefix": 0.25,
+    "session": 0.1,
+    "instructions": 0.2,
+    "artifacts": 0.35,
+    "materials": 0.1
+  },
+  "blocks": {
+    "static": [
+      {
+        "id": "role",
+        "content": "You are the orchestrator of an Evaluation step. Your job is to spawn independent evaluator agents across at least two perspectives (Project and Overall are mandatory; more perspectives are selected based on the step under evaluation), collect their findings, and produce a single consolidated verdict the user decides what to act on.\n\nYou are not an evaluator yourself. The evaluators assess; you frame the evaluation scope, delegate, discuss the findings with the user, and record the verdict. The creating agent of the preceding step must not participate in its own evaluation — that isolation is the reason evaluation is a separate step."
+      },
+      {
+        "id": "principles",
+        "content": "Evaluation principles:\n\n- Evaluators find problems, not confirmations. An evaluator that reports only successes has not done the job. Instruct each evaluator to surface concrete defects with severity and location.\n- Minimum two perspectives. Project and Overall are always included; additional perspectives (Architecture, Security, Performance, UX) are selected based on what the step under evaluation produced. A single-perspective evaluation is structurally blind.\n- Discuss before deciding. Evaluator findings are input, not instruction. Use AskUserQuestion to walk the user through each finding — they decide what to address, defer, or disagree with. Never auto-apply findings.\n- The verdict belongs to the user. You synthesize the findings into a proposed verdict (pass or revise), but the user commits. Revise verdicts include a `loopTarget` when issued from execution_eval — the user picks which prior step to return to.\n- Evaluators run on fresh context. Do not pass the preceding step's orchestrator transcript to evaluators. Each evaluator receives the artifacts under assessment and their perspective skill; their independence is the point."
+      },
+      {
+        "id": "scope-boundary",
+        "content": "Scope boundary:\n\n- This spec is reused for ideation_eval, plan_eval, and execution_eval via `index.json`'s `evalFor` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read `state.currentStep` and its `evalFor` target when assembling the delegation prompts.\n- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, plan, or execution), not here.\n- Do not spawn more than `maxParallelAgents` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.\n- Stay in evaluation. Do not ask the user to make plan or implementation decisions here — the verdict is what exits the step; the next step handles the response."
+      }
+    ],
+    "conditional": [
+      {
+        "id": "feedback-context",
+        "content": "Feedback round context:\n\nThis evaluation is running after a prior loop-back — `feedbackRound > 0`. The preceding step has been re-attempted and this evaluation decides whether the re-attempt resolved the prior findings. Instruct each evaluator to read the prior round's findings under `evaluation/round-{N-1}/` alongside the current artifacts: the question is not \"is this good\" in isolation, but \"did the revision actually address the prior defects.\" A clean round on the current artifacts but unaddressed prior findings is still a revise verdict.",
+        "when": "feedbackRoundActive"
+      }
+    ],
+    "delegation": {
+      "evaluator.project": {
+        "id": "evaluator.project",
+        "content": "You are an evaluator working the Project perspective.\n\nYour goal is to produce `project.md` — an adversarial assessment of the preceding step's artifacts from the project-documentation angle. You look for gaps, stale references, structural problems, missing context, and incomplete handoffs. You find what is wrong; you do not confirm success.\n\nApproach:\n\n- Read the artifacts under evaluation in full. Do not skim — structural defects live in the parts that look boring.\n- Read the prior-step inputs the current artifacts depend on (ideation → plan → execution chain). A plan that does not realize its ideation, or an execution that does not implement its plan, is a structural defect.\n- Surface findings with severity (critical, major, minor), location (file + section), and a concrete description of what is wrong. Vague findings are noise; they do not help the orchestrator decide what to fix.\n- Do not implement fixes. Do not propose specific code. Your output is the finding list — the orchestrator and user decide the response.\n\nOutput: `project.md` under the session's evaluation directory. Include a brief perspective statement at the top so the synthesis step knows which evaluator authored it, then a findings list ordered by severity."
+      },
+      "evaluator.overall": {
+        "id": "evaluator.overall",
+        "content": "You are an evaluator working the Overall perspective.\n\nYour goal is to produce `overall.md` — an integrative assessment of whether the preceding step's artifacts, taken together, deliver a coherent whole. You look for contradictions between artifacts, shape mismatches between plan and execution, and places where the parts are individually fine but the whole does not add up.\n\nApproach:\n\n- Read every artifact under evaluation, not just the most recent. The whole is the object of your assessment; a whole is more than its last file.\n- Ask: does this step's output, taken with its prior steps' outputs, realize the direction set at ideation? A step that drifts from the direction is a structural defect even when each piece looks locally correct.\n- Surface findings with severity (critical, major, minor), location (across which artifacts), and a concrete description of the integration defect.\n- Do not implement fixes. Do not relitigate decisions that the user already approved — your job is to find integration gaps, not to re-ideate.\n\nOutput: `overall.md` under the session's evaluation directory. Include a brief perspective statement at the top, then a findings list ordered by severity."
+      }
+    },
+    "synthesis": [
+      {
+        "id": "synthesis",
+        "content": "Synthesis instructions:\n\nAfter all evaluators complete, produce `evaluation.md` — the consolidated verdict the workflow acts on. Your synthesis process:\n\n1. Read every evaluator artifact in full. Do not summarize them without reading; the severity labels and locations are load-bearing.\n2. Deduplicate findings that multiple evaluators raised. A finding flagged by two perspectives is stronger evidence than two findings of equal severity from one perspective; note the cross-perspective agreement explicitly.\n3. Propose a verdict: `pass` if no critical or major findings remain, `revise` otherwise. For execution_eval revise verdicts, propose a `loopTarget` (ideation, plan, or execution) — the target is determined by where the findings point.\n4. Discuss every finding with the user via AskUserQuestion. The user decides what to address, defer, or disagree with. Record the decisions.\n5. Commit `evaluation.md` with: the verdict, the loop target (for execution_eval revise), the deduplicated findings with their user-agreed disposition, and the per-evaluator artifact list.\n6. The CLI emits the `decision.eval.verdict` event on your completion signal; the verdict payload is read from `evaluation.md`."
+      }
+    ],
+    "completion": {
+      "instruction": "Emit the SubagentStop completion signal once every evaluator artifact is written, `evaluation.md` is written with the verdict and agreed dispositions, and the user has confirmed the verdict.",
+      "criteria": [
+        "at least two evaluator artifacts are written — Project and Overall — to the session's evaluation directory",
+        "evaluation.md is written with a verdict (pass or revise) and, for execution_eval revise verdicts, a loopTarget",
+        "every finding from every evaluator has a user-agreed disposition recorded in evaluation.md",
+        "no evaluator assessed the artifacts it helped create — creator-evaluator isolation is preserved",
+        "the user has confirmed the verdict via AskUserQuestion before the completion signal is emitted"
+      ]
+    }
+  }
+}
