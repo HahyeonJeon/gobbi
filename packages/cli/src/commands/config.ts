@@ -1,32 +1,22 @@
 /**
- * gobbi config — CRUD command for settings.json session configuration.
+ * gobbi config — CRUD command for session configuration backed by SQLite.
  *
  * Subcommands:
- *   init                          Create settings.json or migrate
+ *   init                          Create config.db or migrate from JSON
  *   get <session-id> [key]        Read session or specific field
- *   set <session-id> <key> <val>  Write field
+ *   set <session-id> <key> <val>  Write field (atomic per-field update)
  *   delete <session-id>           Remove session
  *   list                          List all sessions (tab-separated)
  *   cleanup                       Run TTL + max-entries cleanup
+ *
+ * The backing store is SQLite (config.db) with WAL mode, eliminating the
+ * lost-update race that settings.json suffered from under concurrent writes.
  */
 
-import { join } from 'node:path';
-
 import { error } from '../lib/style.js';
-import {
-  readGobbiJson,
-  writeGobbiJsonAtomic,
-  emptyGobbiJson,
-  defaultSession,
-  migrateIfNeeded,
-  needsMigration,
-  runCleanup,
-  coerceValue,
-  getNestedValue,
-  setNestedValue,
-  nowIso,
-} from '../lib/config.js';
-import type { GobbiJson, Session } from '../lib/config.js';
+import { coerceValue, getNestedValue } from '../lib/config.js';
+import { openConfigStore } from '../lib/config-store.js';
+import type { Session } from '../lib/config.js';
 
 // ---------------------------------------------------------------------------
 // Usage Strings
@@ -35,7 +25,7 @@ import type { GobbiJson, Session } from '../lib/config.js';
 const USAGE = `Usage: gobbi config <subcommand> [args]
 
 Subcommands:
-  init                          Create settings.json or migrate to current version
+  init                          Create config.db or migrate from settings.json
   get <session-id> [key]        Read session object or specific field (dot-path)
   set <session-id> <key> <val>  Write field (dot-path)
   delete <session-id>           Remove session
@@ -46,16 +36,16 @@ Options:
   --help    Show this help message`;
 
 // ---------------------------------------------------------------------------
-// File path resolution
+// Project directory resolution
 // ---------------------------------------------------------------------------
 
-function resolveSettingsPath(): string {
+function resolveProjectDir(): string {
   const projectDir = process.env['CLAUDE_PROJECT_DIR'];
   if (projectDir === undefined || projectDir === '') {
     console.error(error('CLAUDE_PROJECT_DIR is not set'));
     process.exit(1);
   }
-  return join(projectDir, '.gobbi', 'settings.json');
+  return projectDir;
 }
 
 // ---------------------------------------------------------------------------
@@ -71,22 +61,22 @@ export async function runConfig(args: string[]): Promise<void> {
 
   switch (subcommand) {
     case 'init':
-      await runConfigInit();
+      runConfigInit();
       break;
     case 'get':
-      await runConfigGet(args.slice(1));
+      runConfigGet(args.slice(1));
       break;
     case 'set':
-      await runConfigSet(args.slice(1));
+      runConfigSet(args.slice(1));
       break;
     case 'delete':
-      await runConfigDelete(args.slice(1));
+      runConfigDelete(args.slice(1));
       break;
     case 'list':
-      await runConfigList();
+      runConfigList();
       break;
     case 'cleanup':
-      await runConfigCleanup();
+      runConfigCleanup();
       break;
     case '--help':
     case undefined:
@@ -103,31 +93,17 @@ export async function runConfig(args: string[]): Promise<void> {
 // init
 // ---------------------------------------------------------------------------
 
-async function runConfigInit(): Promise<void> {
-  const filePath = resolveSettingsPath();
-  const existing = await readGobbiJson(filePath);
-
-  let data: GobbiJson;
-  if (existing === null) {
-    // File missing or unparseable — create fresh
-    data = emptyGobbiJson();
-  } else if (needsMigration(existing)) {
-    // v0.3.1 format — migrate
-    data = migrateIfNeeded(existing);
-  } else {
-    // Already valid — no write needed
-    return;
-  }
-
-  data = runCleanup(data);
-  await writeGobbiJsonAtomic(filePath, data);
+function runConfigInit(): void {
+  const projectDir = resolveProjectDir();
+  using store = openConfigStore(projectDir);
+  store.cleanup();
 }
 
 // ---------------------------------------------------------------------------
 // get
 // ---------------------------------------------------------------------------
 
-async function runConfigGet(args: string[]): Promise<void> {
+function runConfigGet(args: string[]): void {
   const sessionId = args[0];
   if (sessionId === undefined) {
     console.error(error('get requires session-id'));
@@ -135,24 +111,12 @@ async function runConfigGet(args: string[]): Promise<void> {
   }
 
   const key = args[1];
-  const filePath = resolveSettingsPath();
+  const projectDir = resolveProjectDir();
+  using store = openConfigStore(projectDir);
 
-  let data = await readGobbiJson(filePath);
+  const session: Session | null = store.getSession(sessionId);
 
-  if (data === null) {
-    // File missing — nothing to get
-    return;
-  }
-
-  if (needsMigration(data)) {
-    const migrated = migrateIfNeeded(data);
-    await writeGobbiJsonAtomic(filePath, migrated);
-    data = migrated;
-  }
-
-  const session: Session | undefined = data.sessions[sessionId];
-
-  if (session === undefined) {
+  if (session === null) {
     // Session doesn't exist — no output
     return;
   }
@@ -184,7 +148,7 @@ async function runConfigGet(args: string[]): Promise<void> {
 // set
 // ---------------------------------------------------------------------------
 
-async function runConfigSet(args: string[]): Promise<void> {
+function runConfigSet(args: string[]): void {
   const sessionId = args[0];
   const key = args[1];
   const rawValue = args[2];
@@ -194,121 +158,41 @@ async function runConfigSet(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  const filePath = resolveSettingsPath();
-  const existing = await readGobbiJson(filePath);
+  const projectDir = resolveProjectDir();
+  using store = openConfigStore(projectDir);
 
-  let data: GobbiJson;
-  if (existing === null) {
-    data = emptyGobbiJson();
-  } else if (needsMigration(existing)) {
-    data = migrateIfNeeded(existing);
-  } else {
-    data = existing;
-  }
-
-  // Ensure session exists — create with defaults if missing
-  if (!(sessionId in data.sessions)) {
-    data = {
-      ...data,
-      sessions: {
-        ...data.sessions,
-        [sessionId]: defaultSession(),
-      },
-    };
-  }
-
-  const ts = nowIso();
   const coerced = coerceValue(rawValue);
-
-  // Apply dot-path set to the session
-  const session = data.sessions[sessionId];
-  if (session === undefined) {
-    // Should not happen — we just created it above
-    throw new Error(`Session "${sessionId}" unexpectedly missing after creation`);
-  }
-
-  const sessionAsRecord = session as unknown as Record<string, unknown>;
-  const updated = setNestedValue(sessionAsRecord, key, coerced);
-  // Update lastAccessedAt
-  const withTimestamp = { ...updated, lastAccessedAt: ts };
-
-  data = {
-    ...data,
-    sessions: {
-      ...data.sessions,
-      [sessionId]: withTimestamp as unknown as Session,
-    },
-  };
-
-  data = runCleanup(data);
-  await writeGobbiJsonAtomic(filePath, data);
+  store.setField(sessionId, key, coerced);
 }
 
 // ---------------------------------------------------------------------------
 // delete
 // ---------------------------------------------------------------------------
 
-async function runConfigDelete(args: string[]): Promise<void> {
+function runConfigDelete(args: string[]): void {
   const sessionId = args[0];
   if (sessionId === undefined) {
     console.error(error('delete requires session-id'));
     process.exit(1);
   }
 
-  const filePath = resolveSettingsPath();
-  const existing = await readGobbiJson(filePath);
-
-  if (existing === null) {
-    // Nothing to delete
-    return;
-  }
-
-  let data: GobbiJson;
-  if (needsMigration(existing)) {
-    data = migrateIfNeeded(existing);
-  } else {
-    data = existing;
-  }
-
-  // Remove the session
-  const { [sessionId]: _removed, ...remainingSessions } = data.sessions;
-  data = {
-    ...data,
-    sessions: remainingSessions,
-  };
-
-  await writeGobbiJsonAtomic(filePath, data);
+  const projectDir = resolveProjectDir();
+  using store = openConfigStore(projectDir);
+  store.deleteSession(sessionId);
 }
 
 // ---------------------------------------------------------------------------
 // list
 // ---------------------------------------------------------------------------
 
-async function runConfigList(): Promise<void> {
-  const filePath = resolveSettingsPath();
-  let data = await readGobbiJson(filePath);
+function runConfigList(): void {
+  const projectDir = resolveProjectDir();
+  using store = openConfigStore(projectDir);
 
-  if (data === null) {
-    // File missing — nothing to list
-    return;
-  }
+  const entries = store.listSessions();
 
-  if (needsMigration(data)) {
-    const migrated = migrateIfNeeded(data);
-    await writeGobbiJsonAtomic(filePath, migrated);
-    data = migrated;
-  }
-
-  // Sort by createdAt ascending, then output tab-separated
-  const entries = Object.entries(data.sessions).sort((a, b) => {
-    const aCreated = a[1]?.createdAt ?? '';
-    const bCreated = b[1]?.createdAt ?? '';
-    return aCreated < bCreated ? -1 : aCreated > bCreated ? 1 : 0;
-  });
-
-  for (const [id, session] of entries) {
-    if (session === undefined) continue;
-    process.stdout.write(`${id}\t${session.createdAt}\n`);
+  for (const entry of entries) {
+    process.stdout.write(`${entry.sessionId}\t${entry.session.createdAt}\n`);
   }
 }
 
@@ -316,22 +200,8 @@ async function runConfigList(): Promise<void> {
 // cleanup
 // ---------------------------------------------------------------------------
 
-async function runConfigCleanup(): Promise<void> {
-  const filePath = resolveSettingsPath();
-  const existing = await readGobbiJson(filePath);
-
-  if (existing === null) {
-    // Nothing to clean up
-    return;
-  }
-
-  let data: GobbiJson;
-  if (needsMigration(existing)) {
-    data = migrateIfNeeded(existing);
-  } else {
-    data = existing;
-  }
-
-  data = runCleanup(data);
-  await writeGobbiJsonAtomic(filePath, data);
+function runConfigCleanup(): void {
+  const projectDir = resolveProjectDir();
+  using store = openConfigStore(projectDir);
+  store.cleanup();
 }

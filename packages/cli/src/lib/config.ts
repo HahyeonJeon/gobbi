@@ -132,6 +132,10 @@ export function defaultSession(): Session {
  *
  * Returns null if neither file is found, or the content is invalid JSON /
  * unexpected shape.
+ *
+ * @deprecated Use `ConfigStore` from `config-store.ts` instead. This function
+ * uses unlocked read-modify-write which is subject to lost-update races under
+ * concurrent access. Will be removed in a future version.
  */
 export async function readGobbiJson(filePath: string): Promise<GobbiJson | null> {
   let raw: string;
@@ -187,6 +191,10 @@ export async function readGobbiJson(filePath: string): Promise<GobbiJson | null>
 /**
  * Write settings.json atomically: write to a temp file in the same directory,
  * then rename to the target path. The rename is atomic on same-filesystem writes.
+ *
+ * @deprecated Use `ConfigStore` from `config-store.ts` instead. This function
+ * is part of the JSON-file-based config system which suffers from lost-update
+ * races. Will be removed in a future version.
  */
 export async function writeGobbiJsonAtomic(filePath: string, data: GobbiJson): Promise<void> {
   const dir = dirname(filePath);
@@ -205,6 +213,9 @@ export async function writeGobbiJsonAtomic(filePath: string, data: GobbiJson): P
 /**
  * Detect whether the given data is in v0.3.1 format:
  * has "version" key but does NOT have a "sessions" key.
+ *
+ * @deprecated Use `ConfigStore` from `config-store.ts` instead. Migration is
+ * handled automatically by `openConfigStore()`. Will be removed in a future version.
  */
 export function needsMigration(data: unknown): boolean {
   if (!isRecord(data)) return false;
@@ -216,6 +227,9 @@ export function needsMigration(data: unknown): boolean {
  *
  * v0.3.1 → v0.3.2: preserve all existing fields, set version to current,
  * add empty sessions object.
+ *
+ * @deprecated Use `ConfigStore` from `config-store.ts` instead. Migration is
+ * handled automatically by `openConfigStore()`. Will be removed in a future version.
  */
 export function migrateIfNeeded(data: unknown): GobbiJson {
   if (!needsMigration(data)) {
@@ -247,6 +261,9 @@ export function migrateIfNeeded(data: unknown): GobbiJson {
  *
  * ISO 8601 strings sort correctly as strings (lexicographic order matches chronological).
  * Returns a new GobbiJson — does not mutate input.
+ *
+ * @deprecated Use `ConfigStore.cleanup()` from `config-store.ts` instead. Cleanup
+ * is performed directly in SQLite. Will be removed in a future version.
  */
 export function runCleanup(
   data: GobbiJson,
