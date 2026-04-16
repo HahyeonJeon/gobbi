@@ -541,8 +541,19 @@ describe('staticPrefixHash stability', () => {
 // ===========================================================================
 
 describe('BudgetAllocator integration', () => {
-  test('NOOP_ALLOCATOR keeps every section by default', () => {
+  test('default allocator (defaultBudgetAllocator) keeps every section when content fits in the default window', () => {
+    // With no allocator/contextWindowTokens overrides, compile() now uses
+    // `defaultBudgetAllocator` + `DEFAULT_CONTEXT_WINDOW_TOKENS` (200k).
+    // The baseSpec content is tiny, so every section fits and nothing is
+    // dropped — the observable outcome matches the pre-MINOR-1 NOOP default.
     const outcome = compileWithIssues(baseInput());
+    expect(outcome.dropped).toHaveLength(0);
+  });
+
+  test('NOOP_ALLOCATOR can still be opted into explicitly and keeps every section', () => {
+    const outcome = compileWithIssues(baseInput(), {
+      allocator: NOOP_ALLOCATOR,
+    });
     expect(outcome.dropped).toHaveLength(0);
   });
 

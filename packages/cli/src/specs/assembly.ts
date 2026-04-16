@@ -11,8 +11,9 @@
  *   2. Lint every `StaticSection.content` for patterns that would break
  *      cache-prefix stability (ISO timestamps, UUIDs, absolute paths, …).
  *      See `STATIC_LINT_RULES`.
- *   3. Feed the section list through a `BudgetAllocator` (no-op by default;
- *      A.5 provides the real one) to decide which sections survive.
+ *   3. Feed the section list through a `BudgetAllocator` (A.5's
+ *      `defaultBudgetAllocator` by default; `NOOP_ALLOCATOR` available as
+ *      an opt-in bypass) to decide which sections survive.
  *   4. Emit a `CompiledPrompt` with text, per-section summaries, and both
  *      aggregate and static-prefix-only content hashes.
  *
@@ -45,6 +46,7 @@ import type {
   BudgetAllocator,
   TokenBudget,
 } from './types.js';
+import { defaultBudgetAllocator } from './budget.js';
 import type { WorkflowState } from '../workflow/state.js';
 
 // Note: `CompiledPrompt`, `CompiledSectionSummary`, `CompiledSectionLike`,
@@ -610,17 +612,20 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
 }
 
 // ---------------------------------------------------------------------------
-// No-op BudgetAllocator — the default for `compile()` when A.5 isn't ready.
+// No-op BudgetAllocator — available as an explicit opt-out from budget
+// enforcement.
 //
-// Keeps every section. A.5's real allocator replaces this by being passed
-// explicitly to `compile()`.
+// `compile()`'s default allocator is `defaultBudgetAllocator` from
+// `./budget.js`. Callers that deliberately want pass-through behaviour (no
+// section drops, no token accounting) pass this sentinel explicitly.
 // ---------------------------------------------------------------------------
 
 /**
  * No-op allocator — keeps every section, drops none.
  *
- * Exported so tests and callers that explicitly want pass-through behavior
- * can request it by name.
+ * Exported so tests and callers that explicitly want pass-through behaviour
+ * can request it by name. Not the default for `compile()` — that is
+ * `defaultBudgetAllocator`.
  */
 export const NOOP_ALLOCATOR: BudgetAllocator = {
   allocate(sections) {
@@ -646,21 +651,43 @@ function sha256(content: string): string {
 // `compile()` — the main entry point.
 //
 // The overload pattern:
-//   - `compile(input)` — uses NOOP_ALLOCATOR, no context window
+//   - `compile(input)` — uses `defaultBudgetAllocator` (A.5's two-pass
+//     floor-then-proportional allocator) with a Claude-4-sized default
+//     context window
 //   - `compile(input, { allocator, contextWindowTokens, ... })` — uses the
-//     caller-supplied allocator (A.5 plugs in here)
+//     caller-supplied allocator and window
 //
 // We do NOT overload TypeScript-wise (overloads complicate error messages);
 // instead the second arg is an options record with sensible defaults.
+//
+// The default allocator choice matters: PR C/D/E will call `compile()`
+// without passing an explicit allocator, and the expectation per
+// `v050-prompts.md` §Token Budget Awareness is that the assembled prompt is
+// budget-enforced. `NOOP_ALLOCATOR` is still exported for the (few) callers
+// that explicitly want pass-through behaviour — notably the test suite's
+// allocator-bypass cases.
 // ---------------------------------------------------------------------------
 
 /**
- * Optional compilation knobs. All fields default to sensible no-op values.
+ * Default context window — 200k tokens. Matches the Claude 4 base model
+ * context window and the `GENEROUS_WINDOW` value used in Ideation's snapshot
+ * tests. Callers with a different model (e.g. the 1M-token tier) should set
+ * `contextWindowTokens` explicitly.
+ */
+export const DEFAULT_CONTEXT_WINDOW_TOKENS = 200_000;
+
+/**
+ * Optional compilation knobs. All fields default to production-appropriate
+ * values so `compile(input)` with no options yields a prompt that respects
+ * the step spec's `tokenBudget`.
  *
- * - `allocator` — defaults to `NOOP_ALLOCATOR`. A.5 supplies the real one.
- * - `contextWindowTokens` — required only when `allocator` is non-no-op.
- *   Defaults to `Number.POSITIVE_INFINITY` so the no-op allocator's
- *   indifference to this value is explicit.
+ * - `allocator` — defaults to `defaultBudgetAllocator` (A.5's two-pass
+ *   allocator). Pass `NOOP_ALLOCATOR` to bypass budget enforcement.
+ * - `contextWindowTokens` — defaults to {@link DEFAULT_CONTEXT_WINDOW_TOKENS}
+ *   (200k). The default allocator REQUIRES a finite value; passing
+ *   `Number.POSITIVE_INFINITY` with `defaultBudgetAllocator` will throw. If
+ *   you need unbounded compilation, pass `NOOP_ALLOCATOR` as `allocator`
+ *   explicitly.
  * - `lintRules` — override `STATIC_LINT_RULES`. Useful for tests and for
  *   adding project-specific patterns.
  * - `lintMode` — `'throw'` (default) rejects the compile on any error-severity
@@ -714,8 +741,8 @@ export function compileWithIssues(
   options: CompileOptions = {},
 ): CompileOutcome {
   const {
-    allocator = NOOP_ALLOCATOR,
-    contextWindowTokens = Number.POSITIVE_INFINITY,
+    allocator = defaultBudgetAllocator,
+    contextWindowTokens = DEFAULT_CONTEXT_WINDOW_TOKENS,
     lintRules = STATIC_LINT_RULES,
     lintMode = 'collect',
   } = options;
