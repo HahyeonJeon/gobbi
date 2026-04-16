@@ -1,7 +1,7 @@
 /**
  * Notification dispatch for gobbi — sends messages to Slack, Telegram, and Desktop.
  *
- * Channel gating is controlled by env vars (credentials) AND per-session gobbi.json
+ * Channel gating is controlled by env vars (credentials) AND per-session settings.json
  * config (notify.slack / notify.telegram). All channels fire concurrently via
  * Promise.allSettled so a failure in one never blocks the others.
  *
@@ -168,8 +168,8 @@ async function sendDesktop(title: string, message: string): Promise<void> {
  * Send a notification to all configured channels.
  *
  * Channel gating:
- * - Slack: requires gobbi.json session notify.slack === true AND SLACK_BOT_TOKEN + SLACK_USER_ID
- * - Telegram: requires gobbi.json session notify.telegram === true AND TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID
+ * - Slack: requires settings.json session notify.slack === true AND SLACK_BOT_TOKEN + SLACK_USER_ID
+ * - Telegram: requires settings.json session notify.telegram === true AND TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID
  * - Desktop: requires NOTIFY_DESKTOP === "true"
  *
  * Returns immediately (without sending) when message is empty.
@@ -189,7 +189,7 @@ export async function sendNotifications(
   const telegramChatId = process.env['TELEGRAM_CHAT_ID'];
   const notifyDesktop = process.env['NOTIFY_DESKTOP'];
 
-  // Read gobbi.json session preferences — default to false (safe default)
+  // Read settings.json session preferences — default to false (safe default)
   let allowSlack = false;
   let allowTelegram = false;
 
@@ -197,7 +197,7 @@ export async function sendNotifications(
   const sessionId = options?.sessionId;
 
   if (projectDir !== undefined && sessionId !== undefined) {
-    const gobbiPath = join(projectDir, '.claude', 'gobbi.json');
+    const gobbiPath = join(projectDir, '.claude', 'settings.json');
     try {
       const gobbiJson = await readGobbiJson(gobbiPath);
       if (gobbiJson !== null) {

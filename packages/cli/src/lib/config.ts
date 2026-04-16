@@ -1,12 +1,16 @@
 /**
- * gobbi.json data operations — read, write, migrate, and clean up session config.
+ * settings.json data operations — read, write, migrate, and clean up session config.
  *
- * This module is the pure data layer for gobbi.json. It has no locking — callers
- * are responsible for acquiring a lock (via withLock from lockfile.ts) before
- * calling writeGobbiJsonAtomic or any read-modify-write sequence.
+ * This module is the pure data layer for settings.json (formerly gobbi.json).
+ * Atomic writes use temp-file + rename — no external locking is needed since
+ * config commands run one-at-a-time within a single Claude session.
+ *
+ * Migration: if settings.json is absent but the legacy gobbi.json exists,
+ * it is transparently renamed on first read.
  */
 
-import { readFile, rename, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { existsSync, renameSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
@@ -89,7 +93,7 @@ function isGobbiJson(value: unknown): value is GobbiJson {
 // ---------------------------------------------------------------------------
 
 /**
- * Returns a fresh gobbi.json structure with no sessions.
+ * Returns a fresh settings.json structure with no sessions.
  */
 export function emptyGobbiJson(): GobbiJson {
   return {
@@ -120,8 +124,14 @@ export function defaultSession(): Session {
 // ---------------------------------------------------------------------------
 
 /**
- * Read and parse gobbi.json from disk.
- * Returns null if the file is missing or contains invalid JSON / unexpected shape.
+ * Read and parse settings.json from disk.
+ *
+ * Migration: if the file at `filePath` does not exist, checks for a legacy
+ * `gobbi.json` in the same directory. If found, renames it to `settings.json`
+ * (synchronous rename for simplicity) and then reads the renamed file.
+ *
+ * Returns null if neither file is found, or the content is invalid JSON /
+ * unexpected shape.
  */
 export async function readGobbiJson(filePath: string): Promise<GobbiJson | null> {
   let raw: string;
@@ -129,9 +139,21 @@ export async function readGobbiJson(filePath: string): Promise<GobbiJson | null>
     raw = await readFile(filePath, 'utf8');
   } catch (err: unknown) {
     if (isNodeErrnoException(err) && err.code === 'ENOENT') {
-      return null;
+      // Try legacy gobbi.json migration
+      const legacyPath = join(dirname(filePath), 'gobbi.json');
+      if (existsSync(legacyPath)) {
+        renameSync(legacyPath, filePath);
+        try {
+          raw = await readFile(filePath, 'utf8');
+        } catch {
+          return null;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      throw err;
     }
-    throw err;
   }
 
   let parsed: unknown;
@@ -149,14 +171,13 @@ export async function readGobbiJson(filePath: string): Promise<GobbiJson | null>
 }
 
 /**
- * Write gobbi.json atomically: write to a temp file in the same directory,
+ * Write settings.json atomically: write to a temp file in the same directory,
  * then rename to the target path. The rename is atomic on same-filesystem writes.
- *
- * Callers MUST hold the file lock before calling this.
  */
 export async function writeGobbiJsonAtomic(filePath: string, data: GobbiJson): Promise<void> {
   const dir = dirname(filePath);
-  const tmpPath = join(dir, `gobbi.json.${randomUUID()}.tmp`);
+  await mkdir(dir, { recursive: true });
+  const tmpPath = join(dir, `settings.json.${randomUUID()}.tmp`);
   const serialized = JSON.stringify(data, null, 2);
 
   await writeFile(tmpPath, serialized, 'utf8');
