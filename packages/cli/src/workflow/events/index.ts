@@ -1,5 +1,5 @@
 /**
- * Event type system — 6 categories, 20 event types.
+ * Event type system — 6 categories, 19 event types.
  *
  * Re-exports all category modules and assembles top-level union types.
  */

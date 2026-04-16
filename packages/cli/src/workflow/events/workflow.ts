@@ -1,7 +1,7 @@
 /**
- * Workflow event category — 9 event types tracking session lifecycle.
+ * Workflow event category — 8 event types tracking session lifecycle.
  *
- * Core events: start, step.enter, step.exit, step.skip, eval.decide, finish
+ * Core events: start, step.exit, step.skip, eval.decide, finish
  * Error/recovery events: step.timeout, abort, resume
  */
 
@@ -11,7 +11,6 @@
 
 export const WORKFLOW_EVENTS = {
   START: 'workflow.start',
-  STEP_ENTER: 'workflow.step.enter',
   STEP_EXIT: 'workflow.step.exit',
   STEP_SKIP: 'workflow.step.skip',
   STEP_TIMEOUT: 'workflow.step.timeout',
@@ -40,11 +39,6 @@ export type WorkflowEventType = typeof WORKFLOW_EVENTS[keyof typeof WORKFLOW_EVE
 export interface WorkflowStartData {
   readonly sessionId: string;
   readonly timestamp: string;
-}
-
-export interface StepEnterData {
-  readonly step: string;
-  readonly loopFrom?: string | undefined;
 }
 
 export interface StepExitData {
@@ -83,7 +77,6 @@ export interface ResumeData {
 
 export type WorkflowEvent =
   | { readonly type: typeof WORKFLOW_EVENTS.START; readonly data: WorkflowStartData }
-  | { readonly type: typeof WORKFLOW_EVENTS.STEP_ENTER; readonly data: StepEnterData }
   | { readonly type: typeof WORKFLOW_EVENTS.STEP_EXIT; readonly data: StepExitData }
   | { readonly type: typeof WORKFLOW_EVENTS.STEP_SKIP; readonly data: StepSkipData }
   | { readonly type: typeof WORKFLOW_EVENTS.STEP_TIMEOUT; readonly data: StepTimeoutData }
@@ -106,10 +99,6 @@ export function isWorkflowEvent(event: { type: string }): event is WorkflowEvent
 
 export function createWorkflowStart(data: WorkflowStartData): WorkflowEvent {
   return { type: WORKFLOW_EVENTS.START, data };
-}
-
-export function createStepEnter(data: StepEnterData): WorkflowEvent {
-  return { type: WORKFLOW_EVENTS.STEP_ENTER, data };
 }
 
 export function createStepExit(data: StepExitData): WorkflowEvent {

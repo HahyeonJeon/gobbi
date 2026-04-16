@@ -72,26 +72,6 @@ function reduceWorkflow(
       });
     }
 
-    case WORKFLOW_EVENTS.STEP_ENTER: {
-      const rule = findTransition(
-        state.currentStep,
-        event,
-        state,
-        predicates,
-      );
-      if (rule === null) {
-        return err(
-          `No valid transition from ${state.currentStep} via ${event.type}`,
-        );
-      }
-      const nextStep = rule.to;
-      return ok({
-        ...state,
-        currentStep: nextStep,
-        currentSubstate: nextStep === 'ideation' ? 'discussing' : null,
-      });
-    }
-
     case WORKFLOW_EVENTS.STEP_EXIT: {
       if (event.data.step !== state.currentStep) {
         return err(

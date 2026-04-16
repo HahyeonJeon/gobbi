@@ -49,13 +49,6 @@ function workflowStart(): Event {
   };
 }
 
-function stepEnter(step: string, loopFrom?: string): Event {
-  return {
-    type: WORKFLOW_EVENTS.STEP_ENTER,
-    data: loopFrom !== undefined ? { step, loopFrom } : { step },
-  };
-}
-
 function stepExit(step: string): Event {
   return { type: WORKFLOW_EVENTS.STEP_EXIT, data: { step } };
 }

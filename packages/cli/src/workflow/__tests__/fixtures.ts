@@ -43,16 +43,6 @@ export function createStepExitEvent(step: string): Event {
   return { type: WORKFLOW_EVENTS.STEP_EXIT, data: { step } };
 }
 
-export function createStepEnterEvent(
-  step: string,
-  loopFrom?: string,
-): Event {
-  return {
-    type: WORKFLOW_EVENTS.STEP_ENTER,
-    data: loopFrom !== undefined ? { step, loopFrom } : { step },
-  };
-}
-
 export function createStepSkipEvent(step: string): Event {
   return { type: WORKFLOW_EVENTS.STEP_SKIP, data: { step } };
 }
