@@ -5,7 +5,6 @@ import {
   WORKFLOW_EVENTS,
   isWorkflowEvent,
   createWorkflowStart,
-  createStepEnter,
   createStepExit,
   createStepSkip,
   createStepTimeout,
@@ -57,8 +56,8 @@ import type { Event, EventType } from '../index.js';
 // ===========================================================================
 
 describe('const objects', () => {
-  it('WORKFLOW_EVENTS has 9 entries', () => {
-    expect(Object.values(WORKFLOW_EVENTS)).toHaveLength(9);
+  it('WORKFLOW_EVENTS has 8 entries', () => {
+    expect(Object.values(WORKFLOW_EVENTS)).toHaveLength(8);
   });
 
   it('DELEGATION_EVENTS has 3 entries', () => {
@@ -87,8 +86,8 @@ describe('const objects', () => {
 // ===========================================================================
 
 describe('ALL_EVENT_TYPES', () => {
-  it('contains exactly 20 entries (9 + 3 + 2 + 3 + 2 + 1)', () => {
-    expect(ALL_EVENT_TYPES.size).toBe(20);
+  it('contains exactly 19 entries (8 + 3 + 2 + 3 + 2 + 1)', () => {
+    expect(ALL_EVENT_TYPES.size).toBe(19);
   });
 
   it('contains every workflow event type', () => {
@@ -348,18 +347,6 @@ describe('factory functions', () => {
       expect(event.data).toEqual({ sessionId: 'sess-1', timestamp: '2026-01-01T00:00:00Z' });
     });
 
-    it('createStepEnter without loopFrom', () => {
-      const event = createStepEnter({ step: 'ideation' });
-      expect(event.type).toBe(WORKFLOW_EVENTS.STEP_ENTER);
-      expect(event.data).toEqual({ step: 'ideation' });
-    });
-
-    it('createStepEnter with loopFrom', () => {
-      const event = createStepEnter({ step: 'ideation', loopFrom: 'execution_eval' });
-      expect(event.type).toBe(WORKFLOW_EVENTS.STEP_ENTER);
-      expect(event.data).toEqual({ step: 'ideation', loopFrom: 'execution_eval' });
-    });
-
     it('createStepExit', () => {
       const event = createStepExit({ step: 'plan' });
       expect(event.type).toBe(WORKFLOW_EVENTS.STEP_EXIT);
@@ -562,7 +549,6 @@ describe('type-level correctness', () => {
     // is a subtype of Event. If this file compiles, the assertion holds.
     const events: Event[] = [
       createWorkflowStart({ sessionId: 's', timestamp: 't' }),
-      createStepEnter({ step: 'ideation' }),
       createStepExit({ step: 'ideation' }),
       createStepSkip({ step: 'plan' }),
       createStepTimeout({ step: 'execution', elapsedMs: 1000, configuredTimeoutMs: 500 }),
@@ -584,7 +570,7 @@ describe('type-level correctness', () => {
     ];
 
     // Runtime check: every factory produced a valid event
-    expect(events).toHaveLength(20);
+    expect(events).toHaveLength(19);
     for (const event of events) {
       expect(isValidEventType(event.type)).toBe(true);
     }

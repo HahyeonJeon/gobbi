@@ -1,7 +1,7 @@
 /**
  * Notification dispatch for gobbi — sends messages to Slack, Telegram, and Desktop.
  *
- * Channel gating is controlled by env vars (credentials) AND per-session settings.json
+ * Channel gating is controlled by env vars (credentials) AND per-session config.db
  * config (notify.slack / notify.telegram). All channels fire concurrently via
  * Promise.allSettled so a failure in one never blocks the others.
  *
@@ -11,7 +11,7 @@
 import { execFile } from 'node:child_process';
 import { mkdir, appendFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { readGobbiJson } from './config.js';
+import { openConfigStore } from './config-store.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -168,8 +168,8 @@ async function sendDesktop(title: string, message: string): Promise<void> {
  * Send a notification to all configured channels.
  *
  * Channel gating:
- * - Slack: requires settings.json session notify.slack === true AND SLACK_BOT_TOKEN + SLACK_USER_ID
- * - Telegram: requires settings.json session notify.telegram === true AND TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID
+ * - Slack: requires config.db session notify.slack === true AND SLACK_BOT_TOKEN + SLACK_USER_ID
+ * - Telegram: requires config.db session notify.telegram === true AND TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID
  * - Desktop: requires NOTIFY_DESKTOP === "true"
  *
  * Returns immediately (without sending) when message is empty.
@@ -197,15 +197,12 @@ export async function sendNotifications(
   const sessionId = options?.sessionId;
 
   if (projectDir !== undefined && sessionId !== undefined) {
-    const gobbiPath = join(projectDir, '.gobbi', 'settings.json');
     try {
-      const gobbiJson = await readGobbiJson(gobbiPath);
-      if (gobbiJson !== null) {
-        const session = gobbiJson.sessions[sessionId];
-        if (session !== undefined) {
-          allowSlack = session.notify.slack;
-          allowTelegram = session.notify.telegram;
-        }
+      using store = openConfigStore(projectDir);
+      const session = store.getSession(sessionId);
+      if (session !== null) {
+        allowSlack = session.notify.slack;
+        allowTelegram = session.notify.telegram;
       }
     } catch {
       // Silently skip — notification permission read failure must not crash

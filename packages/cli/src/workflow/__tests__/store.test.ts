@@ -94,7 +94,7 @@ describe('append and read', () => {
     using store = new EventStore(':memory:');
 
     const row1 = store.append(makeInput({ toolCallId: 'tc-001' }));
-    const row2 = store.append(makeInput({ toolCallId: 'tc-002', type: 'workflow.step.enter' }));
+    const row2 = store.append(makeInput({ toolCallId: 'tc-002', type: 'workflow.step.exit' }));
     const row3 = store.append(makeInput({ toolCallId: 'tc-003', type: 'workflow.step.exit' }));
 
     expect(row1!.seq).toBe(1);
@@ -115,7 +115,7 @@ describe('append and read', () => {
     const parent = store.append(makeInput({ toolCallId: 'tc-parent' }));
     const child = store.append(makeInput({
       toolCallId: 'tc-child',
-      type: 'workflow.step.enter',
+      type: 'workflow.step.exit',
       parent_seq: parent!.seq,
     }));
 
@@ -164,8 +164,8 @@ describe('idempotency', () => {
     using store = new EventStore(':memory:');
 
     const r1 = store.append(makeInput({ toolCallId: 'tc-a', type: 'workflow.start' }));
-    const r2 = store.append(makeInput({ toolCallId: 'tc-b', type: 'workflow.step.enter' }));
-    const r3 = store.append(makeInput({ toolCallId: 'tc-a', type: 'workflow.step.enter' }));
+    const r2 = store.append(makeInput({ toolCallId: 'tc-b', type: 'workflow.step.exit' }));
+    const r3 = store.append(makeInput({ toolCallId: 'tc-a', type: 'workflow.step.exit' }));
 
     expect(r1).not.toBeNull();
     expect(r2).not.toBeNull();
@@ -207,14 +207,14 @@ describe('byType', () => {
     using store = new EventStore(':memory:');
 
     store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.start' }));
-    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.enter', step: 'ideation' }));
-    store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.exit', step: 'ideation' }));
-    store.append(makeInput({ toolCallId: 'tc-4', type: 'workflow.step.enter', step: 'plan' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit', step: 'ideation' }));
+    store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.skip', step: 'ideation' }));
+    store.append(makeInput({ toolCallId: 'tc-4', type: 'workflow.step.exit', step: 'plan' }));
 
-    const enters = store.byType('workflow.step.enter');
-    expect(enters).toHaveLength(2);
-    expect(enters[0]!.step).toBe('ideation');
-    expect(enters[1]!.step).toBe('plan');
+    const exits = store.byType('workflow.step.exit');
+    expect(exits).toHaveLength(2);
+    expect(exits[0]!.step).toBe('ideation');
+    expect(exits[1]!.step).toBe('plan');
   });
 
   it('returns empty array when no events match the type', () => {
@@ -235,21 +235,21 @@ describe('byStep', () => {
   it('filters events by step', () => {
     using store = new EventStore(':memory:');
 
-    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.enter', step: 'ideation' }));
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.exit', step: 'ideation' }));
     store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit', step: 'ideation' }));
-    store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.enter', step: 'plan' }));
+    store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.exit', step: 'plan' }));
     store.append(makeInput({ toolCallId: 'tc-4', type: 'delegation.spawn', step: 'plan' }));
 
     const ideation = store.byStep('ideation');
     expect(ideation).toHaveLength(2);
-    expect(ideation[0]!.type).toBe('workflow.step.enter');
+    expect(ideation[0]!.type).toBe('workflow.step.exit');
     expect(ideation[1]!.type).toBe('workflow.step.exit');
   });
 
   it('filters events by step and type', () => {
     using store = new EventStore(':memory:');
 
-    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.enter', step: 'plan' }));
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.exit', step: 'plan' }));
     store.append(makeInput({ toolCallId: 'tc-2', type: 'delegation.spawn', step: 'plan' }));
     store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.exit', step: 'plan' }));
 
@@ -261,7 +261,7 @@ describe('byStep', () => {
   it('returns empty array when no events match', () => {
     using store = new EventStore(':memory:');
 
-    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.enter', step: 'ideation' }));
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.exit', step: 'ideation' }));
 
     const results = store.byStep('plan');
     expect(results).toHaveLength(0);
@@ -277,9 +277,9 @@ describe('since', () => {
     using store = new EventStore(':memory:');
 
     store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.start' }));
-    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.enter' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit' }));
     store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.exit' }));
-    store.append(makeInput({ toolCallId: 'tc-4', type: 'workflow.step.enter' }));
+    store.append(makeInput({ toolCallId: 'tc-4', type: 'workflow.step.exit' }));
     store.append(makeInput({ toolCallId: 'tc-5', type: 'workflow.finish' }));
 
     const tail = store.since(3);
@@ -292,7 +292,7 @@ describe('since', () => {
     using store = new EventStore(':memory:');
 
     store.append(makeInput({ toolCallId: 'tc-1' }));
-    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.enter' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit' }));
 
     const all = store.since(0);
     expect(all).toHaveLength(2);
@@ -316,11 +316,11 @@ describe('last', () => {
   it('returns the most recent event of a given type', () => {
     using store = new EventStore(':memory:');
 
-    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.enter', step: 'ideation' }));
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.exit', step: 'ideation' }));
     store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit', step: 'ideation' }));
-    store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.enter', step: 'plan' }));
+    store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.exit', step: 'plan' }));
 
-    const lastEnter = store.last('workflow.step.enter');
+    const lastEnter = store.last('workflow.step.exit');
     expect(lastEnter).not.toBeNull();
     expect(lastEnter!.step).toBe('plan');
     expect(lastEnter!.seq).toBe(3);
@@ -346,13 +346,13 @@ describe('transaction', () => {
 
     store.transaction(() => {
       store.append(makeInput({ toolCallId: 'tc-tx-1', type: 'workflow.start' }));
-      store.append(makeInput({ toolCallId: 'tc-tx-2', type: 'workflow.step.enter', step: 'ideation' }));
+      store.append(makeInput({ toolCallId: 'tc-tx-2', type: 'workflow.step.exit', step: 'ideation' }));
     });
 
     expect(store.eventCount()).toBe(2);
     const all = store.replayAll();
     expect(all[0]!.type).toBe('workflow.start');
-    expect(all[1]!.type).toBe('workflow.step.enter');
+    expect(all[1]!.type).toBe('workflow.step.exit');
   });
 
   it('rolls back on exception — no events persisted', () => {
@@ -361,7 +361,7 @@ describe('transaction', () => {
     expect(() => {
       store.transaction(() => {
         store.append(makeInput({ toolCallId: 'tc-rb-1', type: 'workflow.start' }));
-        store.append(makeInput({ toolCallId: 'tc-rb-2', type: 'workflow.step.enter' }));
+        store.append(makeInput({ toolCallId: 'tc-rb-2', type: 'workflow.step.exit' }));
         throw new Error('simulated failure');
       });
     }).toThrow('simulated failure');
@@ -423,7 +423,7 @@ describe('eventCount', () => {
     using store = new EventStore(':memory:');
 
     store.append(makeInput({ toolCallId: 'tc-c1' }));
-    store.append(makeInput({ toolCallId: 'tc-c2', type: 'workflow.step.enter' }));
+    store.append(makeInput({ toolCallId: 'tc-c2', type: 'workflow.step.exit' }));
     store.append(makeInput({ toolCallId: 'tc-c3', type: 'workflow.step.exit' }));
 
     expect(store.eventCount()).toBe(3);

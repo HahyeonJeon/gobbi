@@ -110,7 +110,7 @@ Every valid transition in the state machine. Transitions not in this table are i
 
 **Terminal state rule:** `done` accepts no events. A `workflow.resume` from `done` is rejected by the reducer — the workflow must start a new session. This is enforced by the exhaustiveness check: the `done` case handles no event types.
 
-The `loopFrom` field on the `workflow.step.enter` event records which evaluation step triggered the loop. This is what distinguishes a fresh Ideation entry (first time) from a loop-back Ideation entry (triggered by `execution_eval`).
+The `loopTarget` field on the `decision.eval.verdict` event specifies which step to loop back to. The transition table uses this field to route revise verdicts from `execution_eval` to `ideation`, `plan`, or `execution`. The `feedbackRound` counter distinguishes first-time entries from loop-back entries.
 
 ### Skip Semantics
 
@@ -120,7 +120,7 @@ The `workflow.step.skip` transition allows the user to jump the workflow forward
 
 **Artifact preservation** — Artifacts from the skipped step remain in the step directory. They are not deleted or overwritten. The new Ideation entry starts with a clean ideation directory but prior step directories retain their content.
 
-**No `loopFrom`** — Skip does not set a `loopFrom` field on the resulting `workflow.step.enter` event. Skip is user-initiated navigation, not evaluation-triggered feedback. The CLI uses the absence of `loopFrom` to distinguish skip entries from loop-back entries.
+**No loop context** — Skip transitions directly to ideation via the transition table. Skip is user-initiated navigation, not evaluation-triggered feedback. The CLI distinguishes skip entries from loop-back entries because skip transitions do not increment `feedbackRound`.
 
 **Self-skip guard** — Skip from `ideation` to `ideation` is a no-op. The reducer rejects the transition because the target is the current step. Skip from `ideation_eval` or `plan_eval` to `ideation` is valid — it abandons the evaluation and restarts ideation.
 
@@ -134,11 +134,11 @@ The reducer takes the current state and one event, and returns the next state. I
 
 The reducer is structured as a discriminated union switch: the `type` field of the event is the discriminant, and each case handles one event type. The switch has a default branch that assigns to a `never`-typed variable. This TypeScript exhaustiveness pattern means the compiler reports a type error if a new event type is added to the enum without a corresponding reducer case — no event type can be silently ignored. The `error` state is a variant in this discriminated union — its valid events and transitions are handled by the same exhaustiveness mechanism as all other states.
 
-The reducer validates transitions as a side effect of processing events. Before applying a `workflow.step.enter` event, the reducer checks that the target step is reachable from the current step given current state. If the transition is invalid, the reducer returns an error result rather than a new state. This means the reducer and transition table are the same system expressed in two forms — the table is documentation, the reducer is enforcement.
+The reducer validates transitions as a side effect of processing events. For transition-triggering events (`workflow.step.exit`, `decision.eval.verdict`, `workflow.step.skip`), the reducer calls `findTransition()` to check that the target step is reachable from the current step given current state. If the transition is invalid, the reducer returns an error result rather than a new state. This means the reducer and transition table are the same system expressed in two forms — the table is documentation, the reducer is enforcement.
 
 Key state fields the reducer maintains:
 
-- `currentStep` — set on `workflow.step.enter`, cleared on `workflow.step.exit`
+- `currentStep` — advanced by transition-triggering events (`workflow.step.exit`, `decision.eval.verdict`, `workflow.step.skip`)
 - `currentSubstate` — set and cleared within Ideation only
 - `completedSteps` — appended on each `workflow.step.exit`
 - `evalConfig` — set once on `workflow.eval.decide`, never overwritten
@@ -171,7 +171,7 @@ The `execution_eval` step has no guard condition — it is always entered after 
 
 > **Evaluation can send the workflow back to any prior step, not just the immediately preceding one.**
 
-When `execution_eval` produces a revise verdict, the evaluator specifies a loop target: `ideation`, `plan`, or `execution`. The `workflow.step.enter` event that initiates the loop carries a `loopFrom` field in its `data` payload identifying which evaluation step triggered it. This field is how the CLI distinguishes a loop-back step entry from a first-time entry, which affects the prompt it generates — a loop-back prompt includes the evaluation findings as context.
+When `execution_eval` produces a revise verdict, the evaluator specifies a loop target: `ideation`, `plan`, or `execution`. The `decision.eval.verdict` event carries a `loopTarget` field in its `data` payload identifying which step to return to. The transition table routes the verdict to the specified step. The `feedbackRound` counter increments on each loop-back from `execution_eval`, which is how the CLI distinguishes loop-back entries from first-time entries — a loop-back prompt includes the evaluation findings as context.
 
 The `feedbackRound` counter in state tracks how many loop-backs have occurred in this session. It increments each time `execution_eval` routes to a prior step rather than `memorization`.
 

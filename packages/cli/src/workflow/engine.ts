@@ -9,6 +9,9 @@
  * transactions which cannot contain async calls.
  */
 
+import { existsSync, unlinkSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { EventStore } from './store.js';
 import type { AppendInput } from './store.js';
 import { reduce } from './reducer.js';
@@ -16,6 +19,7 @@ import type { ReducerResult } from './reducer.js';
 import {
   writeState,
   backupState,
+  restoreStateFromBackup,
   appendJsonl,
   resolveState,
   deriveState,
@@ -52,11 +56,12 @@ export interface AppendResult {
  * 5. Write new state.json (synchronous atomic write)
  * 6. Append to events.jsonl (human-readable log)
  *
- * If the reducer rejects the event, the transaction rolls back —
- * the SQLite insert, state.json write, and jsonl append are all undone
- * (SQLite rolls back; state.json is restored from backup; jsonl line
- * is the only non-transactional artifact, which is acceptable since
- * it's a diagnostic log, not a source of truth).
+ * If the reducer rejects the event or a filesystem write fails, the
+ * transaction rolls back — the SQLite insert is undone by the
+ * transaction rollback, and state.json is restored from backup via
+ * restoreStateFromBackup(). The jsonl line is the only
+ * non-transactional artifact, which is acceptable since it's a
+ * diagnostic log, not a source of truth.
  */
 export function appendEventAndUpdateState(
   store: EventStore,
@@ -69,6 +74,12 @@ export function appendEventAndUpdateState(
   toolCallId?: string,
 ): AppendResult {
   return store.transaction(() => {
+    // Track whether state.json existed before the operation. When this
+    // is the first event ever, there is no state.json and therefore no
+    // backup — the catch block needs to know so it can delete state.json
+    // instead of restoring from a non-existent backup.
+    const hadPriorState = existsSync(join(dir, 'state.json'));
+
     // 1. Backup current state
     backupState(dir);
 
@@ -97,18 +108,46 @@ export function appendEventAndUpdateState(
       throw new Error(`Reducer rejected event ${event.type}: ${result.error}`);
     }
 
-    // 4. Write new state.json (synchronous atomic write)
-    writeState(dir, result.state);
+    // 4–5. Write state.json and events.jsonl — wrapped in try/catch so
+    // that a filesystem failure restores the backup before re-throwing,
+    // keeping state.json consistent with the SQLite rollback.
+    try {
+      // 4. Write new state.json (synchronous atomic write)
+      writeState(dir, result.state);
 
-    // 5. Append to events.jsonl (diagnostic log)
-    appendJsonl(dir, {
-      seq: row.seq,
-      ts: row.ts,
-      type: row.type,
-      step: row.step,
-      data: row.data,
-      actor: row.actor,
-    });
+      // 5. Append to events.jsonl (diagnostic log)
+      appendJsonl(dir, {
+        seq: row.seq,
+        ts: row.ts,
+        type: row.type,
+        step: row.step,
+        data: row.data,
+        actor: row.actor,
+      });
+    } catch (err: unknown) {
+      // Restore state.json so it matches the rolled-back SQLite state.
+      // Wrap in its own try/catch so a restore failure (disk full,
+      // permissions) does not replace the original error.
+      try {
+        if (hadPriorState) {
+          // Normal case: restore the backup we created in step 1.
+          restoreStateFromBackup(dir);
+        } else {
+          // First-event edge case: no prior state.json existed, so no
+          // backup was created. Delete the newly-written state.json to
+          // return to the no-file state. resolveState() will fall through
+          // to deriveState() which replays from the (now empty) DB.
+          const statePath = join(dir, 'state.json');
+          if (existsSync(statePath)) {
+            unlinkSync(statePath);
+          }
+        }
+      } catch {
+        // Ignore restore/delete failure — the priority is propagating
+        // the original error so the SQLite transaction rolls back.
+      }
+      throw err;
+    }
 
     return { state: result.state, persisted: true };
   });

@@ -62,18 +62,6 @@ function arbitraryWorkflowStart(): fc.Arbitrary<Event> {
   });
 }
 
-function arbitraryStepEnter(): fc.Arbitrary<Event> {
-  return fc.record({
-    type: fc.constant(WORKFLOW_EVENTS.STEP_ENTER),
-    data: fc.record({
-      step: fc.constantFrom(...ALL_STEP_NAMES),
-      loopFrom: fc.option(fc.constantFrom(...ACTIVE_STEP_NAMES), {
-        nil: undefined,
-      }),
-    }),
-  });
-}
-
 function arbitraryStepExit(): fc.Arbitrary<Event> {
   return fc.record({
     type: fc.constant(WORKFLOW_EVENTS.STEP_EXIT),
@@ -291,13 +279,12 @@ function arbitraryHeartbeat(): fc.Arbitrary<Event> {
 
 /**
  * Single random event — may or may not be valid for the current state.
- * Covers all 20 event types with equal weight.
+ * Covers all 19 event types with equal weight.
  */
 function arbitraryEvent(): fc.Arbitrary<Event> {
   return fc.oneof(
-    // Workflow (9)
+    // Workflow (8)
     arbitraryWorkflowStart(),
-    arbitraryStepEnter(),
     arbitraryStepExit(),
     arbitraryStepSkip(),
     arbitraryStepTimeout(),
