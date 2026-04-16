@@ -36,7 +36,7 @@
 
 import { parseArgs } from 'node:util';
 import { readFile, readdir } from 'node:fs/promises';
-import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { validateStepSpec } from '../../specs/_schema/v1.js';
@@ -373,6 +373,20 @@ export async function validate(
   const specCache = new Map<string, StepSpec>();
   for (const step of graph.steps) {
     const specPath = resolveSpecPath(graphPath, step.spec);
+
+    // Path containment — reject spec paths that escape the specs directory.
+    // A crafted index.json at a user-supplied --dir could otherwise point to
+    // arbitrary filesystem paths via absolute or parent-traversal values.
+    if (specPath !== specsDir && !specPath.startsWith(specsDir + sep)) {
+      diagnostics.push({
+        code: 'E003_INVALID_GRAPH',
+        severity: CODE_SEVERITY.E003_INVALID_GRAPH,
+        message: `graph step "${step.id}" spec path "${step.spec}" resolves outside the specs directory`,
+        location: { file: graphPath, pointer: pointerForStep(graph, step.id) },
+      });
+      continue;
+    }
+
     const relLabel = relative(specsDir, specPath);
 
     // (E004) Missing spec file.
@@ -534,8 +548,11 @@ export async function validate(
       overlaySubstates.add(substate);
 
       // (E005) apply the overlay and re-validate the merged spec.
+      // (E002) Predicate refs that the overlay might introduce — reuse the
+      // merged result from the E005 check to avoid a redundant applyOverlay call.
+      let merged: StepSpec | undefined;
       try {
-        applyOverlay(spec, guarded.value);
+        merged = applyOverlay(spec, guarded.value);
       } catch (err) {
         if (err instanceof OverlayError) {
           for (const issue of err.issues) {
@@ -557,11 +574,9 @@ export async function validate(
         }
       }
 
-      // (E002) Predicate refs that the overlay might introduce — merge the
-      // overlay and re-run the spec-reference check against the merged form.
-      // Skip when the merge itself failed (applyOverlay already threw above).
-      try {
-        const merged = applyOverlay(spec, guarded.value);
+      // E002 via overlay — check predicate references in the merged spec.
+      // Skipped when the merge itself failed (merged is undefined).
+      if (merged !== undefined) {
         const errs = validateSpecPredicateReferences(
           merged,
           defaultPredicates,
@@ -575,8 +590,6 @@ export async function validate(
             location: { file: overlayPath, pointer: null },
           });
         }
-      } catch {
-        // Already reported as E005 above.
       }
     }
 
