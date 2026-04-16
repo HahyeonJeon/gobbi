@@ -11,6 +11,7 @@ Commands:
   notify     Send notifications (Slack, Telegram, Desktop)
   note       Workflow note management and transcript extraction
   validate   Validate agent, skill, gotcha, and lint definitions
+  workflow   v0.5.0 workflow engine commands (validate, …)
   image      Analyze images or create comparison sheets
   video      Analyze video files and extract frames
   web        Take screenshots or capture images from web pages
@@ -23,7 +24,7 @@ export async function run(): Promise<void> {
   const command = process.argv[2];
 
   // Early routing for commands (they have their own parseArgs)
-  const COMMANDS = ['config', 'session', 'notify', 'note', 'validate', 'image', 'video', 'web'] as const;
+  const COMMANDS = ['config', 'session', 'notify', 'note', 'validate', 'workflow', 'image', 'video', 'web'] as const;
   if (command !== undefined && (COMMANDS as readonly string[]).includes(command)) {
     const commandArgs = process.argv.slice(3);
     switch (command) {
@@ -50,6 +51,11 @@ export async function run(): Promise<void> {
       case 'validate': {
         const { runValidate } = await import('./commands/validate.js');
         await runValidate(commandArgs);
+        return;
+      }
+      case 'workflow': {
+        const { runWorkflow } = await import('./commands/workflow.js');
+        await runWorkflow(commandArgs);
         return;
       }
       case 'image': {
