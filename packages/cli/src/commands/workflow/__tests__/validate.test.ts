@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   DEFAULT_SPECS_DIR,
+  findDuplicatePredicates,
   renderHuman,
   validate,
   type Diagnostic,
@@ -356,6 +357,109 @@ describe('E008_DUPLICATE_REGISTRATION', () => {
     // table maps E008 to error.
     const { CODE_SEVERITY } = await import('../validate.js');
     expect(CODE_SEVERITY.E008_DUPLICATE_REGISTRATION).toBe('error');
+  });
+
+  test('findDuplicatePredicates detects a duplicate name in a crafted list', () => {
+    // Exercise the duplicate-detection function directly with a crafted
+    // list containing a repeated predicate name.
+    const dupes = findDuplicatePredicates([
+      'always',
+      'verdictPass',
+      'always',
+      'feedbackRoundActive',
+    ]);
+    expect(dupes).toEqual(['always']);
+  });
+
+  test('findDuplicatePredicates returns empty for a deduplicated list', () => {
+    const dupes = findDuplicatePredicates(['always', 'verdictPass', 'feedbackRoundActive']);
+    expect(dupes).toEqual([]);
+  });
+});
+
+// ===========================================================================
+// Cross-subtask seam — E002 via overlay
+// ===========================================================================
+
+describe('E002_UNKNOWN_PREDICATE — via overlay', () => {
+  test('fires when an overlay introduces a predicate reference not in the registry', async () => {
+    const dir = await makeScratchCopy();
+    // The ideation spec declares substates ['discussing', 'researching'].
+    // Write a 'discussing' overlay that introduces a bogus predicate via
+    // an $ops append of a conditional block with an unknown `when` name.
+    const overlayPath = join(dir, 'ideation', 'discussing.overlay.json');
+    const overlay = {
+      $ops: [
+        {
+          op: 'append',
+          path: 'blocks.conditional',
+          value: [
+            {
+              id: 'bogus-predicate-block',
+              content: 'This block tests an unknown predicate.',
+              when: 'nonExistentPredicateXyz',
+            },
+          ],
+        },
+      ],
+    };
+    await writeJson(overlayPath, overlay);
+
+    const report = await validate({ dir });
+    const hit = report.diagnostics.find(
+      (d) =>
+        d.code === 'E002_UNKNOWN_PREDICATE' &&
+        d.message.includes('nonExistentPredicateXyz'),
+    );
+    expect(hit).toBeDefined();
+    expect(hit?.location.file).toBe(overlayPath);
+  });
+});
+
+// ===========================================================================
+// Path containment — spec paths must not escape specsDir
+// ===========================================================================
+
+describe('E003_INVALID_GRAPH — path containment', () => {
+  test('fires when a step spec path resolves outside the specs directory', async () => {
+    const dir = await makeScratchCopy();
+    const graphPath = join(dir, 'index.json');
+    const graph = await readJson(graphPath);
+    const steps = (graph as { steps: Array<Record<string, unknown>> }).steps;
+    // Inject an absolute path that escapes the specs directory.
+    const first = steps[0];
+    if (first !== undefined) {
+      first['spec'] = '/etc/passwd';
+    }
+    await writeJson(graphPath, graph);
+
+    const report = await validate({ dir });
+    const hit = report.diagnostics.find(
+      (d) =>
+        d.code === 'E003_INVALID_GRAPH' &&
+        d.message.includes('resolves outside the specs directory'),
+    );
+    expect(hit).toBeDefined();
+  });
+
+  test('fires when a step spec uses parent traversal to escape', async () => {
+    const dir = await makeScratchCopy();
+    const graphPath = join(dir, 'index.json');
+    const graph = await readJson(graphPath);
+    const steps = (graph as { steps: Array<Record<string, unknown>> }).steps;
+    const first = steps[0];
+    if (first !== undefined) {
+      first['spec'] = '../../../etc/shadow';
+    }
+    await writeJson(graphPath, graph);
+
+    const report = await validate({ dir });
+    const hit = report.diagnostics.find(
+      (d) =>
+        d.code === 'E003_INVALID_GRAPH' &&
+        d.message.includes('resolves outside the specs directory'),
+    );
+    expect(hit).toBeDefined();
   });
 });
 

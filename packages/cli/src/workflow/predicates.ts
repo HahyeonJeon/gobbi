@@ -165,6 +165,12 @@ export const defaultPredicates = {
    *
    * Conservative: returns `false` while the workflow is still inside an
    * eval step or the completed-steps trail has not advanced past it.
+   *
+   * Known limitation (PR C): verdictPass and verdictRevise use
+   * conservative state-only heuristics. A proper fix requires
+   * `lastVerdictOutcome` on WorkflowState + reducer extension to
+   * record the most recent verdict event's outcome. See PR B
+   * evaluation finding #3 (deferred).
    */
   verdictPass: (s) => {
     const step = s.currentStep;

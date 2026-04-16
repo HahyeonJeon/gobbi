@@ -637,7 +637,8 @@ function toReport(diagnostics: readonly Diagnostic[]): ValidateReport {
   return { diagnostics, summary: { errorCount, warningCount } };
 }
 
-function findDuplicatePredicates(names: readonly string[]): readonly string[] {
+/** @internal Exported for test access — not part of the public API. */
+export function findDuplicatePredicates(names: readonly string[]): readonly string[] {
   const seen = new Set<string>();
   const dupes = new Set<string>();
   for (const n of names) {
