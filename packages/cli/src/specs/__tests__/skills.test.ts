@@ -243,8 +243,15 @@ describe('loadSkills — missing files', () => {
     expect(empty).toEqual([]);
   });
 
-  test('default skillsRoot is the documented relative path', () => {
-    expect(DEFAULT_SKILLS_ROOT).toBe('.claude/skills');
+  test('default skillsRoot resolves module-relative to the repo root', () => {
+    // M4 reconciliation (B.3): `loadSkills` now resolves its default root
+    // module-relatively (matching `loadGraph`'s `DEFAULT_GRAPH_PATH`
+    // convention) so the CLI works from any cwd. The concrete value must
+    // be an absolute path ending in `.claude/skills` and must equal the
+    // real skills directory the other tests target.
+    expect(DEFAULT_SKILLS_ROOT).toBe(REAL_SKILLS_ROOT);
+    expect(DEFAULT_SKILLS_ROOT.endsWith('.claude/skills')).toBe(true);
+    expect(DEFAULT_SKILLS_ROOT.startsWith('/')).toBe(true);
   });
 });
 

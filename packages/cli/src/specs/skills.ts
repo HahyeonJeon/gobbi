@@ -37,9 +37,44 @@
  */
 
 import { readFile } from 'node:fs/promises';
-import { join, isAbsolute, posix } from 'node:path';
+import { dirname, join, isAbsolute, posix, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { makeStatic, type StaticSection } from './sections.js';
+
+// ---------------------------------------------------------------------------
+// Default path convention (M4 reconciliation — PR B B.3)
+//
+// `loadGraph()` resolves its default `index.json` path via `import.meta.url`
+// → a module-relative, cwd-independent location. `loadSkills()` originally
+// used a cwd-relative fallback (`.claude/skills`) which broke when the CLI
+// ran from a worktree, from an absolute path, or from outside
+// `packages/cli/`.
+//
+// Both loaders now resolve their defaults module-relatively. The project
+// root sits four levels up from this file:
+//
+//   packages/cli/src/specs/skills.ts
+//     → packages/cli/src/specs/      (dirname of this file)
+//       → packages/cli/src/          (..)
+//         → packages/cli/            (..)
+//           → packages/              (..)
+//             → <repo-root>/         (..)               ← where `.claude/skills/` lives
+//
+// Tests override this via `options.skillsRoot`. Keeping the convention
+// identical across both loaders eliminates the class of failures where
+// `loadGraph()` works and `loadSkills()` silently reads from the wrong
+// directory.
+// ---------------------------------------------------------------------------
+
+const THIS_DIR = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Repository root — four directories above `packages/cli/src/specs/`.
+ * Kept module-relative for cwd independence (matches `loadGraph`'s
+ * `DEFAULT_GRAPH_PATH` convention).
+ */
+const REPO_ROOT = resolve(THIS_DIR, '..', '..', '..', '..');
 
 // ---------------------------------------------------------------------------
 // SkillName — closed union of the nine v0.5.0 surviving skills
@@ -87,11 +122,14 @@ export const SKILL_NAMES: readonly SkillName[] = [
 // ---------------------------------------------------------------------------
 
 /**
- * Default location of the skills tree relative to the project root. Tests
- * override this via `options.skillsRoot` to point at a fixture directory
- * or at the repository's real `.claude/skills/` regardless of cwd.
+ * Default location of the skills tree. Resolved module-relatively so the
+ * loader works regardless of the process's cwd — see the M4 reconciliation
+ * note at the top of this file. Tests override via `options.skillsRoot` to
+ * point at a fixture directory.
+ *
+ * Absolute path under the repository root: `<repo-root>/.claude/skills`.
  */
-export const DEFAULT_SKILLS_ROOT = '.claude/skills';
+export const DEFAULT_SKILLS_ROOT: string = join(REPO_ROOT, '.claude', 'skills');
 
 export interface LoadSkillsOptions {
   /**
