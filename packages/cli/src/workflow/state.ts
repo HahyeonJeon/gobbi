@@ -331,6 +331,23 @@ export function restoreBackup(dir: string): WorkflowState | null {
 }
 
 /**
+ * Restore state.json from state.json.backup on disk.
+ *
+ * Unlike restoreBackup() which reads and returns the backup state,
+ * this function copies the backup file back to state.json so that
+ * subsequent resolveState() calls find the pre-operation state.
+ *
+ * No-op if the backup file does not exist.
+ */
+export function restoreStateFromBackup(dir: string): void {
+  const backup = join(dir, 'state.json.backup');
+  const target = join(dir, 'state.json');
+  if (existsSync(backup)) {
+    copyFileSync(backup, target);
+  }
+}
+
+/**
  * Append one JSON line to events.jsonl.
  * Creates the directory and file if they do not exist.
  *
