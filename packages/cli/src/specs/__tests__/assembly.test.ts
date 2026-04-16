@@ -14,13 +14,16 @@ import {
   compileWithIssues,
   renderSpec,
   lintSectionContent,
+  lintStaticContent,
   STATIC_LINT_RULES,
   NOOP_ALLOCATOR,
   ContentLintError,
   type CompileInput,
   type CompilePredicateRegistry,
   type DynamicContext,
+  type KindedSection,
 } from '../assembly.js';
+import { makeStatic, makeSession, makeDynamic } from '../sections.js';
 import type { StepSpec } from '../types.js';
 import type {
   BudgetAllocator,
@@ -655,6 +658,161 @@ describe('compile — end-to-end smoke', () => {
   test('session state appears in the session section', () => {
     const prompt = compile(baseInput());
     expect(prompt.text).toContain('session.currentStep=idle');
+  });
+});
+
+// ===========================================================================
+// lintStaticContent — KindedSection-aware linter (post-C1 refactor)
+//
+// After removing the module-global `kindMap`, the linter reads kind directly
+// from the KindedSection tuple the caller passes in. These tests exercise
+// that path explicitly — independent of the compile pipeline — to confirm
+// the linter catches blacklisted patterns in static sections and leaves
+// session/dynamic sections alone, with no hidden state between calls.
+// ===========================================================================
+
+describe('lintStaticContent — KindedSection input', () => {
+  test('flags a blacklisted pattern in a static section', () => {
+    const kinded: readonly KindedSection[] = [
+      {
+        kind: 'static',
+        section: makeStatic({
+          id: 'poisoned-static',
+          content: 'Compiled at 2026-04-16T11:00:00Z.',
+        }),
+      },
+    ];
+    const issues = lintStaticContent(kinded);
+    const iso = issues.find((i) => i.ruleId === 'iso8601');
+    expect(iso).toBeDefined();
+    expect(iso?.sectionId).toBe('poisoned-static');
+  });
+
+  test('does NOT flag the same pattern when wrapped in a session or dynamic section', () => {
+    const kinded: readonly KindedSection[] = [
+      {
+        kind: 'session',
+        section: makeSession({
+          id: 'session.with.timestamp',
+          content: 'session.lastUpdated=2026-04-16T11:00:00Z',
+        }),
+      },
+      {
+        kind: 'dynamic',
+        section: makeDynamic({
+          id: 'dynamic.with.timestamp',
+          content: 'dynamic.timestamp=2026-04-16T11:00:00Z',
+        }),
+      },
+    ];
+    const issues = lintStaticContent(kinded);
+    expect(issues).toHaveLength(0);
+  });
+
+  test('pure across repeated calls — no cross-invocation state', () => {
+    // Two independent sections with the same id would have confounded a
+    // WeakMap-based lookup if a prior call's mapping survived. Each call is
+    // self-contained and reads kind from the passed-in tuple only.
+    const mkStatic = (content: string): KindedSection => ({
+      kind: 'static',
+      section: makeStatic({ id: 'reused-id', content }),
+    });
+    const issuesA = lintStaticContent([mkStatic('2026-04-16T11:00:00Z')]);
+    const issuesB = lintStaticContent([mkStatic('no timestamps here')]);
+    const issuesC = lintStaticContent([mkStatic('2026-04-16T11:00:00Z')]);
+    expect(issuesA.some((i) => i.ruleId === 'iso8601')).toBe(true);
+    expect(issuesB).toHaveLength(0);
+    expect(issuesC.some((i) => i.ruleId === 'iso8601')).toBe(true);
+  });
+});
+
+// ===========================================================================
+// CompileInput.skillSections — M1 skill-injection seam
+//
+// Skill sections are caller-supplied StaticSection values that sit at the
+// FRONT of the static prefix, before the spec's block-derived sections.
+// They go through the content linter like any other static content and
+// participate in allocation. `compile()` without `skillSections` is
+// byte-identical to the pre-M1 behaviour.
+// ===========================================================================
+
+describe('compile — skillSections injection', () => {
+  test('prepends skill sections to the compiled text before block-derived content', () => {
+    const skillSection = makeStatic({
+      id: 'skills._gotcha',
+      content: 'GOTCHA SKILL BODY — marker one two three.',
+    });
+    const prompt = compile(baseInput({ skillSections: [skillSection] }));
+    // Skill content must appear, and must appear before the role block.
+    const skillIndex = prompt.text.indexOf('GOTCHA SKILL BODY');
+    const roleIndex = prompt.text.indexOf('You are the orchestrator');
+    expect(skillIndex).toBeGreaterThanOrEqual(0);
+    expect(roleIndex).toBeGreaterThan(skillIndex);
+  });
+
+  test('skill sections appear in the section list as static-kind summaries', () => {
+    const skillSection = makeStatic({
+      id: 'skills._gotcha',
+      content: 'Gotcha skill body.',
+    });
+    const prompt = compile(baseInput({ skillSections: [skillSection] }));
+    const skill = prompt.sections.find((s) => s.id === 'skills._gotcha');
+    expect(skill).toBeDefined();
+    expect(skill?.kind).toBe('static');
+  });
+
+  test('multiple skill sections preserve caller-provided order', () => {
+    const first = makeStatic({ id: 'skills._gotcha', content: 'FIRST.' });
+    const second = makeStatic({ id: 'skills._claude', content: 'SECOND.' });
+    const prompt = compile(
+      baseInput({ skillSections: [first, second] }),
+    );
+    const firstIdx = prompt.text.indexOf('FIRST.');
+    const secondIdx = prompt.text.indexOf('SECOND.');
+    expect(firstIdx).toBeGreaterThanOrEqual(0);
+    expect(secondIdx).toBeGreaterThan(firstIdx);
+  });
+
+  test('omitting skillSections is backwards-compatible — identical to pre-M1 output', () => {
+    // No `skillSections` field at all — the most common caller shape, and
+    // the one that must stay byte-identical to the pre-M1 pipeline.
+    const a = compile(baseInput());
+    // Empty array — explicit opt-in with nothing to inject. Must also yield
+    // byte-identical output to the omitted case.
+    const c = compile(baseInput({ skillSections: [] }));
+    expect(a.text).toBe(c.text);
+    expect(a.contentHash).toBe(c.contentHash);
+    expect(a.staticPrefixHash).toBe(c.staticPrefixHash);
+  });
+
+  test('skill sections are linted — a poisoned skill is caught', () => {
+    const poisoned = makeStatic({
+      id: 'skills._gotcha',
+      content: 'See /home/alice/skills.md for details.',
+    });
+    expect(() =>
+      compile(baseInput({ skillSections: [poisoned] })),
+    ).toThrow(ContentLintError);
+  });
+
+  test('skill sections contribute to staticPrefixHash', () => {
+    const a = compile(baseInput());
+    const skill = makeStatic({
+      id: 'skills._gotcha',
+      content: 'Gotcha skill body.',
+    });
+    const b = compile(baseInput({ skillSections: [skill] }));
+    expect(a.staticPrefixHash).not.toBe(b.staticPrefixHash);
+  });
+
+  test('skill section appears first in the rendered kinded tuple', () => {
+    const skill = makeStatic({
+      id: 'skills._gotcha',
+      content: 'Gotcha body.',
+    });
+    const kinded = renderSpec(baseInput({ skillSections: [skill] }));
+    expect(kinded[0]?.section.id).toBe('skills._gotcha');
+    expect(kinded[0]?.kind).toBe('static');
   });
 });
 

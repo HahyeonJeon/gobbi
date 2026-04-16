@@ -120,6 +120,20 @@ export type CompilePredicateRegistry = Readonly<Record<string, CompilePredicate>
  * included (null → none). The delegation block is rendered as a
  * `StaticSection` because its content is byte-identical per (step, agent)
  * pair across all invocations.
+ *
+ * `skillSections` is the caller-supplied seam for the skills loader
+ * (`specs/skills.ts::loadSkills`). When present, each entry is emitted as a
+ * `StaticSection` at the FRONT of the static prefix — before the
+ * block-derived sections — because skill content is byte-stable across
+ * every invocation of any step that requires the skill, which is the
+ * highest cache-stability tier. Skill sections participate in the
+ * content linter on the same footing as block content: if a `SKILL.md`
+ * contains a timestamp / absolute path / UUID, the linter catches it.
+ * Omit the field (or pass `undefined`) when the caller has no skills to
+ * inject — `compile()` behaves identically to the pre-M1 path.
+ *
+ * @see `.claude/project/gobbi/design/v050-prompts.md` §Skills Boundary
+ * @see `.claude/project/gobbi/design/v050-prompts.md` §Cache-Aware Prompt Ordering
  */
 export interface CompileInput {
   readonly spec: StepSpec;
@@ -127,6 +141,7 @@ export interface CompileInput {
   readonly dynamic: DynamicContext;
   readonly predicates: CompilePredicateRegistry;
   readonly activeAgent: ActiveAgentSelector;
+  readonly skillSections?: readonly StaticSection[];
 }
 
 // ---------------------------------------------------------------------------
@@ -263,20 +278,23 @@ export function lintSectionContent(
 }
 
 /**
- * Run the lint rules over every `StaticSection` in the given list. Session
- * and dynamic sections are intentionally NOT linted — they carry per-call
- * data by design.
+ * Run the lint rules over every static section in the given `KindedSection`
+ * list. Session and dynamic sections are intentionally NOT linted — they
+ * carry per-call data by design.
+ *
+ * Callers pass a `KindedSection[]` (usually the output of `renderSpec`) so
+ * the kind is read directly from the tuple rather than from a module-global
+ * lookup. This keeps the function pure: no cross-invocation state.
  */
 export function lintStaticContent(
-  sections: readonly (StaticSection | SessionSection | DynamicSection)[],
+  sections: readonly KindedSection[],
   rules: readonly ContentLintRule[] = STATIC_LINT_RULES,
 ): readonly ContentLintIssue[] {
   const issues: ContentLintIssue[] = [];
-  for (const s of sections) {
-    if (isStaticSection(s)) {
-      const sectionIssues = lintSectionContent(s.id, s.content, rules);
-      for (const i of sectionIssues) issues.push(i);
-    }
+  for (const k of sections) {
+    if (k.kind !== 'static') continue;
+    const sectionIssues = lintSectionContent(k.section.id, k.section.content, rules);
+    for (const i of sectionIssues) issues.push(i);
   }
   return issues;
 }
@@ -300,21 +318,25 @@ export class ContentLintError extends Error {
 }
 
 // ---------------------------------------------------------------------------
-// Branded-section runtime predicates
+// Kinded-section pairing — the authoritative kind channel
 //
 // `sections.ts` keeps its brand symbols module-private, so external code
-// (including this module) cannot name them to write a type guard. Instead we
-// discriminate on which section interfaces we know exist at call time — the
-// factories are pure, so we can detect their output by structural markers
-// they uniquely produce.
+// (including this module) cannot name them to write a runtime type guard.
+// Instead of inspecting brands at runtime, this module threads a parallel
+// `kind` tag alongside every section produced by the factories.
 //
-// In practice, `compile()` only ever sees sections it itself constructed via
-// `makeStatic`/`makeSession`/`makeDynamic`, so these guards are used for
-// cross-module runtime assertions (the compile-time guard from
-// `CacheOrderedSections<T>` is the primary enforcement).
+// `renderSpec` returns `readonly KindedSection[]` — every consumer that
+// needs to know whether a section is static/session/dynamic reads the tuple
+// rather than interrogating a module-global registry. This keeps `compile()`
+// pure and re-entrant: no state survives between invocations.
 //
-// A.4 keeps per-section kind tracking internally via a parallel `kinds`
-// array so we don't need to interrogate the brand at runtime.
+// Rationale for avoiding a module-level `WeakMap<AnySection, SectionKind>`
+// (the previous design): a long-lived process that calls `compile()`
+// repeatedly would accumulate entries in the map, and a GC'd section's
+// address being reused would cause its kind lookup to return the wrong
+// answer (or fall through to a defensive default, silently skipping the
+// static-content linter). Threading the kind through the tuple removes both
+// hazards.
 // ---------------------------------------------------------------------------
 
 type SectionKind = 'static' | 'session' | 'dynamic';
@@ -342,33 +364,6 @@ function sessionKinded(section: SessionSection): KindedSection {
 }
 function dynamicKinded(section: DynamicSection): KindedSection {
   return { kind: 'dynamic', section };
-}
-
-/**
- * Internal: is this kinded entry a static section? The type narrow lets the
- * linter helper above stay purely structural.
- */
-function isStaticSection(
-  section: AnySection,
-): section is StaticSection {
-  return getKindForSection(section) === 'static';
-}
-
-// `kindMap` is populated at render time (see `renderSpec`) so external
-// section inputs — ones we did not ourselves tag — get their kind deduced
-// once at construction. For sections produced solely by the factories in
-// this module, the map is the authoritative source.
-const kindMap = new WeakMap<AnySection, SectionKind>();
-
-function getKindForSection(section: AnySection): SectionKind {
-  const k = kindMap.get(section);
-  if (k !== undefined) return k;
-  // Defensive fallback: if the section was constructed outside this module
-  // and inserted into the kindMap elsewhere, treat it as dynamic (the most
-  // permissive bucket) so the runtime cache-order assertion below is
-  // conservative. The static-prefix linter will not scan it, which is the
-  // safe default for unclassified content.
-  return 'dynamic';
 }
 
 // ---------------------------------------------------------------------------
@@ -513,13 +508,21 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
   const { spec, state, dynamic, predicates, activeAgent } = input;
   const kinded: KindedSection[] = [];
 
+  // 0) Caller-supplied skill sections — prepended to the static prefix
+  //    before any block-derived static sections. See `CompileInput.skillSections`
+  //    JSDoc for the ordering rationale.
+  if (input.skillSections !== undefined) {
+    for (const s of input.skillSections) {
+      kinded.push(staticKinded(s));
+    }
+  }
+
   // 1) Static blocks — concatenated into one StaticSection.
   if (spec.blocks.static.length > 0) {
     const s = makeStatic({
       id: 'blocks.static',
       content: joinBlocks(spec.blocks.static),
     });
-    kindMap.set(s, 'static');
     kinded.push(staticKinded(s));
   }
 
@@ -533,7 +536,6 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
       id: `blocks.conditional.${cb.id}`,
       content: renderBlockContent(cb),
     });
-    kindMap.set(s, 'static');
     kinded.push(staticKinded(s));
   }
 
@@ -545,7 +547,6 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
         id: `blocks.delegation.${activeAgent}`,
         content: renderBlockContent(block),
       });
-      kindMap.set(s, 'static');
       kinded.push(staticKinded(s));
     }
   }
@@ -556,7 +557,6 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
       id: 'blocks.synthesis',
       content: joinBlocks(spec.blocks.synthesis),
     });
-    kindMap.set(s, 'static');
     kinded.push(staticKinded(s));
   }
 
@@ -567,7 +567,6 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
       .join('\n');
     const completionContent = `${spec.blocks.completion.instruction}\n\nCriteria:\n${criteriaLines}`;
     const s = makeStatic({ id: 'blocks.completion', content: completionContent });
-    kindMap.set(s, 'static');
     kinded.push(staticKinded(s));
   }
 
@@ -577,7 +576,6 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
       id: 'session.state',
       content: renderSessionSummary(state),
     });
-    kindMap.set(s, 'session');
     kinded.push(sessionKinded(s));
   }
 
@@ -587,7 +585,6 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
       id: 'dynamic.context',
       content: renderDynamicContext(dynamic),
     });
-    kindMap.set(s, 'dynamic');
     kinded.push(dynamicKinded(s));
   }
 
@@ -712,15 +709,9 @@ export function compileWithIssues(
   //    `CacheOrderedSections<T>` guard in sections.ts).
   assertCacheOrdered(kinded);
 
-  // 3) Lint static content.
-  const staticSections = kinded
-    .filter((k) => k.kind === 'static')
-    .map((k) => k.section);
-  const lintIssues: ContentLintIssue[] = [];
-  for (const s of staticSections) {
-    const sectionIssues = lintSectionContent(s.id, s.content, lintRules);
-    for (const i of sectionIssues) lintIssues.push(i);
-  }
+  // 3) Lint static content. The linter reads kind directly from the
+  //    KindedSection tuple — no module-global lookup, no brand-interrogation.
+  const lintIssues = lintStaticContent(kinded, lintRules);
 
   const hasError = lintIssues.some((i) => i.severity === 'error');
   if (hasError && lintMode === 'throw') {
