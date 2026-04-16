@@ -119,14 +119,38 @@ describe('loadGraph — canonical index.json', () => {
 
 describe('loadGraph — missing spec files', () => {
   test('emits console.warn per missing spec file, does not throw', async () => {
-    // The canonical graph references spec files that do NOT exist yet
-    // (A.7 creates ideation/spec.json; B.1 creates the rest). So loading
-    // the real graph MUST warn-but-succeed today.
+    // Build a synthetic graph that points at a spec file that does NOT
+    // exist on disk. The loader must warn (not throw) for each missing
+    // reference. Post-B.1 the canonical graph has every spec present, so
+    // the warn path is exercised here against a synthetic fixture rather
+    // than against the real index.json.
+    const dir = await scratchDir();
+    try {
+      const graphPath = await writeGraph(dir, 'index.json', {
+        $schema: 'https://example/schema.json',
+        version: 1,
+        entry: 'only',
+        terminal: ['only'],
+        steps: [{ id: 'only', spec: './does-not-exist.json' }],
+        transitions: [],
+      });
+      await loadGraph(graphPath);
+      // At least one warning emitted — warn-but-succeed contract.
+      expect(warnSpy.mock.calls.length).toBeGreaterThan(0);
+      const joined = warnSpy.mock.calls.map((c) => String(c[0])).join('\n');
+      expect(joined).toContain('[graph]');
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
+
+  test('canonical graph emits no warnings — every referenced spec is present post-B.1', async () => {
+    // Post-B.1 every spec referenced by the canonical index.json is on
+    // disk (ideation in PR A; plan/execution/evaluation/memorization in
+    // PR B.1). Loading the real graph MUST NOT warn — if it does, a spec
+    // file is missing or misreferenced.
     await loadGraph();
-    // At least one warning expected — B.1 is not yet landed.
-    expect(warnSpy.mock.calls.length).toBeGreaterThan(0);
-    const joined = warnSpy.mock.calls.map((c) => String(c[0])).join('\n');
-    expect(joined).toContain('[graph]');
+    expect(warnSpy.mock.calls.length).toBe(0);
   });
 
   test('custom graph with present spec file emits no warning', async () => {
