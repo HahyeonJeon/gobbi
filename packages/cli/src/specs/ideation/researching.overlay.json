@@ -1,0 +1,20 @@
+{
+  "$schema": "https://gobbi.dev/schemas/step-overlay/v1.json",
+  "$ops": [
+    {
+      "op": "append",
+      "path": "blocks.static",
+      "value": [
+        {
+          "id": "substate-researching",
+          "content": "Substate: researching.\n\nYou are in the researching substate of Ideation. The framing was shaped in the discussion substate; researcher-style investigation now grounds the approach in evidence before the PI agents ideate against it. Use the session's research/ directory for any artifacts the investigation produces. Research can loop back into discussion when findings reshape the question, and discussion can loop back into research when refinement exposes a new unknown. Exit the researching substate when the investigation has produced enough evidence that the PI stances can each take a concrete stance on the problem."
+        }
+      ]
+    },
+    {
+      "op": "remove",
+      "path": "blocks.conditional",
+      "match": { "id": "evaluation-deciding" }
+    }
+  ]
+}

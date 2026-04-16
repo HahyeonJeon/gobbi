@@ -14,7 +14,10 @@
     "dist"
   ],
   "scripts": {
+    "gen:predicates": "bun run scripts/gen-predicate-names.ts",
+    "prebuild": "bun run gen:predicates",
     "build": "bun build ./src/cli.ts --outdir ./dist --target bun --external playwright --external sharp",
+    "pretypecheck": "bun run gen:predicates",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },

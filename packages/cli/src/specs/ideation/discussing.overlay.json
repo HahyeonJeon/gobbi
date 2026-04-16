@@ -1,0 +1,20 @@
+{
+  "$schema": "https://gobbi.dev/schemas/step-overlay/v1.json",
+  "$ops": [
+    {
+      "op": "append",
+      "path": "blocks.static",
+      "value": [
+        {
+          "id": "substate-discussing",
+          "content": "Substate: discussing.\n\nYou are in the discussion substate of Ideation. Your focus right now is the orchestrator-user conversation that shapes the problem before any agent is dispatched. Use AskUserQuestion to explore the problem framing, the constraints that matter, the priorities the user has in mind, and the assumptions that should be challenged. Do not spawn PI agents yet — the delegation prompts produced downstream are only as precise as the framing discussed here. When the framing is concrete enough that the PI agents could ideate against it without guessing, the state machine advances to the researching substate; until then, stay in discussion."
+        }
+      ]
+    },
+    {
+      "op": "remove",
+      "path": "blocks.conditional",
+      "match": { "id": "spawn-ready" }
+    }
+  ]
+}

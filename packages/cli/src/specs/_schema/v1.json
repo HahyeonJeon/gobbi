@@ -107,7 +107,8 @@
           },
           "condition": {
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
           },
           "label": {
             "type": "string",
@@ -281,7 +282,8 @@
               },
               "when": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
               },
               "refs": {
                 "type": "array",
@@ -458,7 +460,8 @@
         },
         "condition": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
         },
         "label": {
           "type": "string",
@@ -669,7 +672,8 @@
         },
         "when": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
         },
         "refs": {
           "type": "array",
@@ -761,7 +765,8 @@
               },
               "when": {
                 "type": "string",
-                "minLength": 1
+                "minLength": 1,
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
               },
               "refs": {
                 "type": "array",

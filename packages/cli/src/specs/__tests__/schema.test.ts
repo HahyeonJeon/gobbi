@@ -49,8 +49,8 @@ const validSpec: StepSpec = {
     completionSignal: 'SubagentStop',
   },
   transitions: [
-    { to: 'plan', condition: 'evalEnabled.ideation', label: 'skip evaluation' },
-    { to: 'evaluation', condition: 'evalRequested.ideation' },
+    { to: 'plan', condition: 'evalIdeationDisabled', label: 'skip evaluation' },
+    { to: 'evaluation', condition: 'evalIdeationEnabled' },
   ],
   delegation: {
     agents: [
