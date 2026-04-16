@@ -354,6 +354,95 @@ export interface StepBlocks {
 }
 
 // ---------------------------------------------------------------------------
+// Compile outputs + budget allocator contract
+//
+// These live here (alongside `StepSpec`) rather than in `assembly.ts` so both
+// `assembly.ts` (A.4 — producer) and `budget.ts` (A.5 — consumer) can import
+// them without a circular edge between the two modules.
+// ---------------------------------------------------------------------------
+
+/**
+ * A single section's summary in a `CompiledPrompt`. One entry per included
+ * section (dropped sections do not appear — see `AllocationResult`).
+ *
+ * `byteLength` is the UTF-8 byte length of `content`; downstream budget
+ * reporting (E.3 `gobbi workflow status`) consumes this without re-running a
+ * tokenizer over the final text.
+ */
+export interface CompiledSectionSummary {
+  readonly id: string;
+  readonly kind: 'static' | 'session' | 'dynamic';
+  readonly byteLength: number;
+  readonly contentHash: string;
+}
+
+/**
+ * `CompiledPrompt` — the object `compile()` emits.
+ *
+ * - `text` is the concatenated section content separated by a double newline
+ *   (see `assembly.ts::SECTION_SEPARATOR`). This is what the CLI sends to the
+ *   model as the user prompt.
+ * - `sections` is a read-only list of per-section summaries in emission order.
+ * - `contentHash` is sha256 over `text` — a single aggregate suitable for
+ *   cache-hit reporting in `gobbi workflow status`.
+ * - `staticPrefixHash` is sha256 over the concatenation of ONLY the
+ *   `StaticSection.contentHash` values (in order). This is the byte-level
+ *   cache-prefix signature operators use to verify the static prefix is
+ *   stable across invocations; drift here means a cache miss on Anthropic.
+ */
+export interface CompiledPrompt {
+  readonly text: string;
+  readonly sections: readonly CompiledSectionSummary[];
+  readonly contentHash: string;
+  readonly staticPrefixHash: string;
+}
+
+/**
+ * Minimal structural shape the budget allocator sees — scoped to the fields
+ * the allocation logic needs. Both `StaticSection`, `SessionSection`, and
+ * `DynamicSection` satisfy this (the branded fields are ignored). Keeping
+ * this here (rather than importing the branded types from `sections.ts`)
+ * lets `types.ts` stay free of compile dependencies on `sections.ts`.
+ */
+export interface CompiledSectionLike {
+  readonly id: string;
+  readonly content: string;
+  readonly contentHash: string;
+  readonly minTokens?: number;
+}
+
+/**
+ * Allocator result — which sections survived and which were dropped.
+ *
+ * `compile()` feeds its ordered section list through the allocator before
+ * emission. The default no-op allocator in `assembly.ts` returns
+ * `included = sections` and an empty `dropped`. A.5 replaces this with the
+ * real two-pass floor-then-proportional allocator.
+ */
+export interface AllocationResult {
+  readonly included: readonly CompiledSectionLike[];
+  readonly dropped: readonly CompiledSectionLike[];
+}
+
+/**
+ * `BudgetAllocator` — the interface A.5 implements. A.4 wires this in as an
+ * optional `compile()` argument; when omitted, `compile()` uses a no-op
+ * allocator that keeps every section (lets tests and Phase-1-style pipelines
+ * run without the allocator implementation).
+ *
+ * Whole-section semantics: dropped sections vanish from `included` entirely
+ * — never mid-section truncation. Matches `v050-prompts.md` §Section
+ * Minimums: "An artifact is included in full or excluded entirely."
+ */
+export interface BudgetAllocator {
+  allocate(
+    sections: readonly CompiledSectionLike[],
+    contextWindowTokens: number,
+    proportions: TokenBudget,
+  ): AllocationResult;
+}
+
+// ---------------------------------------------------------------------------
 // Top-level spec shape
 // ---------------------------------------------------------------------------
 
