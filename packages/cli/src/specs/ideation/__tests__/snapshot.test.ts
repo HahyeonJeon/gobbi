@@ -45,6 +45,7 @@ import { defaultBudgetAllocator } from '../../budget.js';
 import { validateStepSpec } from '../../_schema/v1.js';
 import { initialState } from '../../../workflow/state.js';
 import type { WorkflowState } from '../../../workflow/state.js';
+import { defaultPredicates } from '../../../workflow/predicates.js';
 import type { StepSpec } from '../../types.js';
 
 // ---------------------------------------------------------------------------
@@ -70,29 +71,31 @@ function loadSpec(): StepSpec {
 }
 
 // ---------------------------------------------------------------------------
-// Predicate registry used across all three fixtures.
+// Predicate registry — the PRODUCTION registry.
 //
 // `compile()` evaluates every `blocks.conditional[*].when` name via this
 // registry. Fixtures vary in the WorkflowState they pass; each predicate
-// inspects state to decide inclusion. The registry itself is stable so
-// fixture differences drive the snapshot differences, not registry drift.
+// inspects state to decide inclusion. Using `defaultPredicates` directly
+// here (rather than a test-local registry) confirms that the three Ideation
+// predicates — `feedbackRoundActive`, `ideationSynthesized`,
+// `piAgentsToSpawn` — are registered in production and resolve the
+// conditional blocks in `spec.json`. Post-C2: an unregistered predicate
+// would silently drop its conditional block, so snapshotting through the
+// real registry is the integration lock.
 //
-// Predicate semantics:
+// Predicate semantics (see `workflow/predicates.ts` for the registered
+// implementations):
 //   - `feedbackRoundActive` — the feedback loop has pushed us back into
 //     ideation (state.feedbackRound > 0).
 //   - `ideationSynthesized` — the orchestrator has produced ideation.md and
-//     is about to ask the user about evaluation. Modeled via an
-//     `ideation.md` entry in `state.artifacts.ideation`.
+//     is about to ask the user about evaluation. Reads an `ideation.md`
+//     entry in `state.artifacts.ideation`.
 //   - `piAgentsToSpawn` — the orchestrator has registered PI agents in
-//     `activeSubagents` and is about to dispatch. Modeled via the presence
-//     of at least one `__pi` entry in state.activeSubagents.
+//     `activeSubagents` and is about to dispatch. Reads the presence of at
+//     least one `__pi` entry in state.activeSubagents.
 // ---------------------------------------------------------------------------
 
-const predicates: CompilePredicateRegistry = {
-  feedbackRoundActive: (s) => s.feedbackRound > 0,
-  ideationSynthesized: (s) => (s.artifacts['ideation'] ?? []).includes('ideation.md'),
-  piAgentsToSpawn: (s) => s.activeSubagents.some((a) => a.agentType === '__pi'),
-};
+const predicates: CompilePredicateRegistry = defaultPredicates;
 
 // ---------------------------------------------------------------------------
 // Fixture constructors
