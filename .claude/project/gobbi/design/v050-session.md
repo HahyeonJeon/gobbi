@@ -91,8 +91,7 @@ Events are grouped into six categories that reflect the things that can happen i
 | Event | Meaning |
 |-------|---------|
 | `workflow.start` | Session began — first event in every session |
-| `workflow.step.enter` | A workflow step became active |
-| `workflow.step.exit` | A workflow step completed normally |
+| `workflow.step.exit` | A workflow step completed normally — triggers transition to next step |
 | `workflow.step.skip` | A workflow step was bypassed (step field indicates which) |
 | `workflow.eval.decide` | The user decided whether to evaluate at a given step |
 | `workflow.finish` | Workflow reached terminal state |
