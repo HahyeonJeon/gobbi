@@ -816,6 +816,77 @@ describe('compile — skillSections injection', () => {
   });
 });
 
+// ===========================================================================
+// BlockContent.refs — deferred to PR B (MAJOR-3)
+//
+// `BlockContent.refs` declares an ordered list of `_shared/` block IDs whose
+// content should be inlined before the block's own `content`. PR A does NOT
+// resolve these references — the `_shared/` directory and resolver both land
+// in PR B. These tests pin the current behaviour explicitly so a future
+// implementor sees that refs are accepted at the type/schema level but are a
+// no-op at compile time. When PR B wires the resolver, these tests must be
+// updated to assert that resolved shared-block content appears in the output.
+// ===========================================================================
+
+describe('renderBlockContent — BlockContent.refs (deferred to PR B)', () => {
+  test('a static block declaring refs compiles without throwing; referenced content is NOT inlined', () => {
+    const spec = baseSpec();
+    const specWithRefs: StepSpec = {
+      ...spec,
+      blocks: {
+        ...spec.blocks,
+        static: [
+          {
+            id: 'role-with-ref',
+            content: 'Role block body — this IS expected in the output.',
+            refs: ['nonexistent-shared-block-id'],
+          },
+        ],
+      },
+    };
+    // No throw — refs are silently a no-op in PR A.
+    const prompt = compile(baseInput({ spec: specWithRefs }));
+    // The own content DOES appear.
+    expect(prompt.text).toContain('Role block body');
+    // The referenced shared block does NOT get resolved/inlined in PR A:
+    // there is no `_shared/nonexistent-shared-block-id` body to surface, and
+    // no error is raised. If PR B wires the resolver and this test still
+    // passes, either the resolver is missing or the test needs to be
+    // updated to cover the wired behaviour.
+    expect(prompt.text).not.toContain('nonexistent-shared-block-id');
+  });
+
+  test('a conditional block declaring refs also does not inline them in PR A', () => {
+    const spec = baseSpec();
+    const specWithRefs: StepSpec = {
+      ...spec,
+      blocks: {
+        ...spec.blocks,
+        conditional: [
+          {
+            id: 'feedback-context',
+            content: 'Feedback conditional body — this IS expected.',
+            when: 'feedbackActive',
+            refs: ['nonexistent-shared-block-id'],
+          },
+          {
+            id: 'first-entry',
+            content: 'First-entry body.',
+            when: 'firstEntry',
+          },
+        ],
+      },
+    };
+    const predicates: CompilePredicateRegistry = {
+      feedbackActive: () => true,
+      firstEntry: () => false,
+    };
+    const prompt = compile(baseInput({ spec: specWithRefs, predicates }));
+    expect(prompt.text).toContain('Feedback conditional body');
+    expect(prompt.text).not.toContain('nonexistent-shared-block-id');
+  });
+});
+
 // Keep the CompiledSectionLike import alive for type-level guards (the
 // allocator spy tests exercise it).
 const _typeGuard: CompiledSectionLike | null = null;
