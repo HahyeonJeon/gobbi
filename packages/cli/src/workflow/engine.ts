@@ -9,6 +9,9 @@
  * transactions which cannot contain async calls.
  */
 
+import { existsSync, unlinkSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { EventStore } from './store.js';
 import type { AppendInput } from './store.js';
 import { reduce } from './reducer.js';
@@ -71,6 +74,12 @@ export function appendEventAndUpdateState(
   toolCallId?: string,
 ): AppendResult {
   return store.transaction(() => {
+    // Track whether state.json existed before the operation. When this
+    // is the first event ever, there is no state.json and therefore no
+    // backup — the catch block needs to know so it can delete state.json
+    // instead of restoring from a non-existent backup.
+    const hadPriorState = existsSync(join(dir, 'state.json'));
+
     // 1. Backup current state
     backupState(dir);
 
@@ -116,10 +125,27 @@ export function appendEventAndUpdateState(
         actor: row.actor,
       });
     } catch (err: unknown) {
-      // Restore state.json from backup so it matches the rolled-back
-      // SQLite state. The jsonl line (if already written) is acceptable
-      // as a stale diagnostic artifact — it is not a source of truth.
-      restoreStateFromBackup(dir);
+      // Restore state.json so it matches the rolled-back SQLite state.
+      // Wrap in its own try/catch so a restore failure (disk full,
+      // permissions) does not replace the original error.
+      try {
+        if (hadPriorState) {
+          // Normal case: restore the backup we created in step 1.
+          restoreStateFromBackup(dir);
+        } else {
+          // First-event edge case: no prior state.json existed, so no
+          // backup was created. Delete the newly-written state.json to
+          // return to the no-file state. resolveState() will fall through
+          // to deriveState() which replays from the (now empty) DB.
+          const statePath = join(dir, 'state.json');
+          if (existsSync(statePath)) {
+            unlinkSync(statePath);
+          }
+        }
+      } catch {
+        // Ignore restore/delete failure — the priority is propagating
+        // the original error so the SQLite transaction rolls back.
+      }
       throw err;
     }
 

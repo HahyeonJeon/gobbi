@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import { mkdtempSync, mkdirSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -515,6 +515,35 @@ describe('appendEventAndUpdateState crash-safety', () => {
     const restored = readState(testDir);
     expect(restored).not.toBeNull();
     expect(restored!.currentStep).toBe('idle');
+
+    // SQLite transaction should have rolled back — no events persisted
+    expect(store.eventCount()).toBe(0);
+  });
+
+  it('deletes state.json on first-event failure when no prior state existed', () => {
+    using store = new EventStore(':memory:');
+
+    // No state.json written — this simulates the first event ever
+    const state = makeState({ currentStep: 'idle' });
+    const event: Event = {
+      type: WORKFLOW_EVENTS.START,
+      data: { sessionId: 'test-session', timestamp: '2026-01-01T00:00:00Z' },
+    };
+
+    // Create events.jsonl as a directory so appendFileSync throws EISDIR
+    mkdirSync(join(testDir, 'events.jsonl'), { recursive: true });
+
+    // The transaction should throw because appendJsonl fails
+    expect(() =>
+      appendEventAndUpdateState(
+        store, testDir, state, event, 'cli', 'test-session', 'tool-call', 'tc-first',
+      ),
+    ).toThrow();
+
+    // state.json should be absent — deleted by the catch block because
+    // no prior state existed and therefore no backup was created.
+    // resolveState() will fall through to deriveState() on next access.
+    expect(existsSync(join(testDir, 'state.json'))).toBe(false);
 
     // SQLite transaction should have rolled back — no events persisted
     expect(store.eventCount()).toBe(0);
