@@ -139,10 +139,24 @@ export async function readGobbiJson(filePath: string): Promise<GobbiJson | null>
     raw = await readFile(filePath, 'utf8');
   } catch (err: unknown) {
     if (isNodeErrnoException(err) && err.code === 'ENOENT') {
-      // Try legacy gobbi.json migration
-      const legacyPath = join(dirname(filePath), 'gobbi.json');
-      if (existsSync(legacyPath)) {
-        renameSync(legacyPath, filePath);
+      // Try legacy gobbi.json migration from two possible locations:
+      // 1. .gobbi/gobbi.json (same directory, unlikely)
+      // 2. .claude/gobbi.json (original v0.4.x location)
+      const dir = dirname(filePath);
+      const legacyPaths = [
+        join(dir, 'gobbi.json'),
+        join(dirname(dir), '.claude', 'gobbi.json'),
+      ];
+      let migrated = false;
+      for (const legacyPath of legacyPaths) {
+        if (existsSync(legacyPath)) {
+          await mkdir(dir, { recursive: true });
+          renameSync(legacyPath, filePath);
+          migrated = true;
+          break;
+        }
+      }
+      if (migrated) {
         try {
           raw = await readFile(filePath, 'utf8');
         } catch {

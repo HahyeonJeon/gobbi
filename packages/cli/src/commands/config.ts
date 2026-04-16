@@ -55,7 +55,7 @@ function resolveSettingsPath(): string {
     console.error(error('CLAUDE_PROJECT_DIR is not set'));
     process.exit(1);
   }
-  return join(projectDir, '.claude', 'settings.json');
+  return join(projectDir, '.gobbi', 'settings.json');
 }
 
 // ---------------------------------------------------------------------------

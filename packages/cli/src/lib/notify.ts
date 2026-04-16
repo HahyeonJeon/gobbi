@@ -197,7 +197,7 @@ export async function sendNotifications(
   const sessionId = options?.sessionId;
 
   if (projectDir !== undefined && sessionId !== undefined) {
-    const gobbiPath = join(projectDir, '.claude', 'settings.json');
+    const gobbiPath = join(projectDir, '.gobbi', 'settings.json');
     try {
       const gobbiJson = await readGobbiJson(gobbiPath);
       if (gobbiJson !== null) {
