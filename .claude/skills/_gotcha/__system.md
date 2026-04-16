@@ -48,7 +48,9 @@ priority: high
 
 **User feedback:** Confirmed via the official Claude Code plugin reference at `https://code.claude.com/docs/en/plugins-reference`.
 
-**Correct approach:** Plugin hooks must be in `hooks/hooks.json` at the plugin root AND declared via the `hooks` field in `plugin.json` (e.g., `"hooks": "./hooks/hooks.json"`). When `plugin.json` declares any component paths (`skills`, `agents`), auto-discovery of other components is disabled — hooks must be explicitly listed. The format is `{ "hooks": { "EventName": [...] } }`. Plugin `settings.json` is only for agent settings — do not put hooks or permissions there.
+**Correct approach:** Plugin hooks must be in `hooks/hooks.json` at the plugin root. Claude Code auto-loads this standard location unconditionally — declaring `skills` or `agents` in `plugin.json` does NOT disable hook auto-discovery. Do NOT add `"hooks": "./hooks/hooks.json"` to `plugin.json`: the `hooks` field is for additional hook files only, and pointing it at the standard path triggers a duplicate-detection warning recorded against the plugin. Plugin `settings.json` is only for agent settings — do not put hooks or permissions there.
+
+**Empirical verification:** See `.claude/project/gobbi/reference/plugin-hook-registration-v050.md` for the 4-cell matrix and evidence from Claude Code 2.1.87–2.1.110.
 
 ---
 
