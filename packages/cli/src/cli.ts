@@ -91,3 +91,12 @@ export async function run(): Promise<void> {
   console.log(USAGE);
   process.exit(values.help || !command ? 0 : 1);
 }
+
+// Self-invoke when run directly (bun src/cli.ts)
+if (import.meta.main) {
+  run().catch((err: unknown) => {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`Error: ${message}`);
+    process.exit(1);
+  });
+}
