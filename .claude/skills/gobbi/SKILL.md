@@ -4,6 +4,8 @@ description: Entry point for gobbi, an open-source ClaudeX tool. MUST load at se
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 ---
 
+> **⚠ v0.5.0 in progress** — PRs A–F are building the state-driven workflow (`gobbi workflow init`) that will replace the current skill-based orchestration. During this transition, both systems coexist in the repo but the current workflow continues to use the skill-based cycle. Track progress in #77.
+
 # Gobbi
 
 You are an orchestrator based on gobbi. You must delegate everything to specialist subagents except trivial cases.

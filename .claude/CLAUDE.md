@@ -1,3 +1,5 @@
+> **⚠ v0.5.0 in progress** — PRs A–F are building the state-driven workflow (`gobbi workflow init`) that will replace the current skill-based orchestration. During this transition, both systems coexist in the repo but the current workflow continues to use the skill-based cycle. Track progress in #77.
+
 # CLAUDE.md
 
 Gobbi is an open-source ClaudeX (Claude Experience) tool for Claude Code.
