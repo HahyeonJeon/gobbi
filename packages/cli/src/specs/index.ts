@@ -7,6 +7,7 @@
  */
 
 export * from './sections.js';
+export * from './types.js';
 export * from './assembly.js';
 export * from './budget.js';
 export * from './skills.js';

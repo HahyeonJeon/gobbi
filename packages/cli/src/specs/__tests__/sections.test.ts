@@ -14,8 +14,10 @@ import { describe, test, expect } from 'bun:test';
 
 import {
   makeStatic,
+  makeSession,
   makeDynamic,
   type StaticSection,
+  type SessionSection,
   type DynamicSection,
   type CacheOrderedSections,
 } from '../sections.js';
@@ -58,6 +60,35 @@ describe('makeStatic', () => {
 // Factory construction — DynamicSection
 // ===========================================================================
 
+describe('makeSession', () => {
+  test('returns a section with the given id and content', () => {
+    const s = makeSession({
+      id: 'session.state',
+      content: 'step=ideation completed=[]',
+    });
+    expect(s.id).toBe('session.state');
+    expect(s.content).toBe('step=ideation completed=[]');
+  });
+
+  test('computes a 64-character lowercase hex sha256 over the content', () => {
+    const s = makeSession({ id: 'x', content: 'hello' });
+    expect(s.contentHash).toBe(
+      '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824',
+    );
+    expect(s.contentHash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  test('omits the minTokens field when not provided', () => {
+    const s = makeSession({ id: 'x', content: 'hello' });
+    expect('minTokens' in s).toBe(false);
+  });
+
+  test('preserves minTokens when provided', () => {
+    const s = makeSession({ id: 'x', content: 'hello', minTokens: 96 });
+    expect(s.minTokens).toBe(96);
+  });
+});
+
 describe('makeDynamic', () => {
   test('returns a section with the given id and content', () => {
     const d = makeDynamic({ id: 'state.artifacts', content: 'file-a.md\nfile-b.md' });
@@ -96,11 +127,13 @@ describe('contentHash', () => {
     expect(a.contentHash).toBe(b.contentHash);
   });
 
-  test('static and dynamic sections with identical content hash identically', () => {
+  test('static, session, and dynamic sections with identical content hash identically', () => {
     const s = makeStatic({ id: 's', content: 'payload' });
+    const ss = makeSession({ id: 'ss', content: 'payload' });
     const d = makeDynamic({ id: 'd', content: 'payload' });
     // Hashing is over content bytes only — brand does not participate.
     expect(s.contentHash).toBe(d.contentHash);
+    expect(s.contentHash).toBe(ss.contentHash);
   });
 
   test('a single-byte content change changes the hash', () => {
@@ -139,6 +172,16 @@ describe('type-level: brand is not user-constructable', () => {
     expect(typeof s).toBe('object');
   });
 
+  test('plain object without the brand is not assignable to SessionSection', () => {
+    // @ts-expect-error — plain object lacks the module-private brand symbol
+    const s: SessionSection = {
+      id: 'x',
+      content: 'y',
+      contentHash: '0'.repeat(64),
+    };
+    expect(typeof s).toBe('object');
+  });
+
   test('plain object without the brand is not assignable to DynamicSection', () => {
     // @ts-expect-error — plain object lacks the module-private brand symbol
     const d: DynamicSection = {
@@ -158,15 +201,17 @@ describe('type-level: brand is not user-constructable', () => {
 // same thing A.4's downstream call sites will.
 // ===========================================================================
 
-function asOrdered<const T extends readonly (StaticSection | DynamicSection)[]>(
-  sections: T & CacheOrderedSections<T>,
-): T {
+function asOrdered<
+  const T extends readonly (StaticSection | SessionSection | DynamicSection)[],
+>(sections: T & CacheOrderedSections<T>): T {
   return sections;
 }
 
 describe('type-level: CacheOrderedSections', () => {
   const s1 = makeStatic({ id: 's1', content: 'one' });
   const s2 = makeStatic({ id: 's2', content: 'two' });
+  const ss1 = makeSession({ id: 'ss1', content: 'session-one' });
+  const ss2 = makeSession({ id: 'ss2', content: 'session-two' });
   const d1 = makeDynamic({ id: 'd1', content: 'three' });
   const d2 = makeDynamic({ id: 'd2', content: 'four' });
 
@@ -180,20 +225,52 @@ describe('type-level: CacheOrderedSections', () => {
     expect(result.length).toBe(2);
   });
 
+  test('accepts all-session tuple', () => {
+    const result = asOrdered([ss1, ss2]);
+    expect(result.length).toBe(2);
+  });
+
   test('accepts all-dynamic tuple', () => {
     const result = asOrdered([d1, d2]);
     expect(result.length).toBe(2);
   });
 
-  test('accepts static-then-dynamic tuple', () => {
+  test('accepts static-then-dynamic tuple (session omitted)', () => {
     const result = asOrdered([s1, s2, d1, d2]);
     expect(result.length).toBe(4);
+  });
+
+  test('accepts static-then-session tuple (dynamic omitted)', () => {
+    const result = asOrdered([s1, ss1, ss2]);
+    expect(result.length).toBe(3);
+  });
+
+  test('accepts session-then-dynamic tuple (static omitted)', () => {
+    const result = asOrdered([ss1, ss2, d1]);
+    expect(result.length).toBe(3);
+  });
+
+  test('accepts full static-session-dynamic tuple', () => {
+    const result = asOrdered([s1, s2, ss1, ss2, d1, d2]);
+    expect(result.length).toBe(6);
   });
 
   test('rejects dynamic-before-static (type error)', () => {
     // @ts-expect-error — dynamic must not precede static in the cache-ordered tuple
     asOrdered([d1, s1]);
     // Runtime assertion is incidental; the compile-time rejection is the test.
+    expect(true).toBe(true);
+  });
+
+  test('rejects session-before-static (type error)', () => {
+    // @ts-expect-error — SessionSection must not precede StaticSection
+    asOrdered([ss1, s1]);
+    expect(true).toBe(true);
+  });
+
+  test('rejects dynamic-before-session (type error)', () => {
+    // @ts-expect-error — DynamicSection must not precede SessionSection
+    asOrdered([d1, ss1]);
     expect(true).toBe(true);
   });
 
@@ -206,6 +283,24 @@ describe('type-level: CacheOrderedSections', () => {
   test('rejects static sandwiched between dynamics (type error)', () => {
     // @ts-expect-error — StaticSection between DynamicSections violates cache ordering
     asOrdered([d1, s1, d2]);
+    expect(true).toBe(true);
+  });
+
+  test('rejects session-after-dynamic interleaved (type error)', () => {
+    // @ts-expect-error — once a DynamicSection appears, no SessionSection may follow
+    asOrdered([ss1, d1, ss2]);
+    expect(true).toBe(true);
+  });
+
+  test('rejects static-after-session interleaved (type error)', () => {
+    // @ts-expect-error — once a SessionSection appears, no StaticSection may follow
+    asOrdered([s1, ss1, s2]);
+    expect(true).toBe(true);
+  });
+
+  test('rejects full reversed order (type error)', () => {
+    // @ts-expect-error — the cache-ordered tuple requires Static → Session → Dynamic
+    asOrdered([d1, ss1, s1]);
     expect(true).toBe(true);
   });
 });

@@ -2,7 +2,7 @@
  * Section types — symbol-keyed brand fields, factory-only construction,
  * content-hash, optional `minTokens`, and a variadic-tuple type helper that
  * statically enforces cache-ordered section layout (all statics first,
- * all dynamics after).
+ * then all sessions, then all dynamics).
  *
  * Cache-prefix integrity is risk #1 for v0.5.0's prompt compiler: Anthropic
  * prompt caching is byte-level prefix stable. Placing a per-call section
@@ -10,11 +10,17 @@
  * The types in this module are the first line of defense — ordering
  * violations are compile errors, not runtime assertions.
  *
- * The two brand constants (`staticSymbol`, `dynamicSymbol`) are module-private
- * `unique symbol`s. They are NOT exported. External code cannot reach the
- * symbol and therefore cannot author an object that matches the `StaticSection`
- * or `DynamicSection` shape — the factory functions are the sole construction
- * path.
+ * Three section kinds per `v050-prompts.md` §Cache-Aware Prompt Ordering:
+ *
+ * - `StaticSection` — bytes identical across every invocation of the step.
+ * - `SessionSection` — bytes stable within a session but changing when the
+ *   session advances to a new step. Partial cache hits possible.
+ * - `DynamicSection` — bytes change on every invocation. No cache benefit.
+ *
+ * The three brand constants (`staticSymbol`, `sessionSymbol`, `dynamicSymbol`)
+ * are module-private `unique symbol`s. They are NOT exported. External code
+ * cannot reach the symbols and therefore cannot author an object that matches
+ * any section shape — the factory functions are the sole construction path.
  */
 
 // ---------------------------------------------------------------------------
@@ -27,6 +33,7 @@
 // ---------------------------------------------------------------------------
 
 const staticSymbol: unique symbol = Symbol('section.static');
+const sessionSymbol: unique symbol = Symbol('section.session');
 const dynamicSymbol: unique symbol = Symbol('section.dynamic');
 
 // ---------------------------------------------------------------------------
@@ -47,9 +54,26 @@ export interface StaticSection {
 }
 
 /**
- * A section whose rendered bytes vary per call (session state, artifacts,
- * per-invocation timestamps, etc.). Dynamic sections always come after the
- * static prefix; they are not expected to be cache hits.
+ * A section whose rendered bytes are stable within a single session but
+ * change when the session advances to a new step. Session sections carry
+ * per-session context (workflow state, evaluation configuration, completed
+ * step list, session ID) and sit between the static prefix and the dynamic
+ * tail — partial cache hits are possible across invocations within the
+ * same step of the same session.
+ */
+export interface SessionSection {
+  readonly [sessionSymbol]: true;
+  readonly id: string;
+  readonly content: string;
+  readonly contentHash: string;
+  readonly minTokens?: number;
+}
+
+/**
+ * A section whose rendered bytes vary per call (per-invocation artifacts,
+ * active subagent counts, timestamps). Dynamic sections always come after
+ * the static prefix AND the session section; they are not expected to be
+ * cache hits.
  */
 export interface DynamicSection {
   readonly [dynamicSymbol]: true;
@@ -100,6 +124,18 @@ export function makeStatic(input: SectionInput): StaticSection {
     : { ...base, minTokens: input.minTokens };
 }
 
+export function makeSession(input: SectionInput): SessionSection {
+  const base = {
+    [sessionSymbol]: true as const,
+    id: input.id,
+    content: input.content,
+    contentHash: computeContentHash(input.content),
+  };
+  return input.minTokens === undefined
+    ? base
+    : { ...base, minTokens: input.minTokens };
+}
+
 export function makeDynamic(input: SectionInput): DynamicSection {
   const base = {
     [dynamicSymbol]: true as const,
@@ -115,30 +151,66 @@ export function makeDynamic(input: SectionInput): DynamicSection {
 // ---------------------------------------------------------------------------
 // Variadic-tuple type helper — compile-time cache-order guard
 //
-// Peels the tuple one element at a time. Once any element is a DynamicSection,
-// every subsequent element must be a DynamicSection — a StaticSection after a
-// DynamicSection collapses the whole type to `never`, which at a call site
+// Peels the tuple one element at a time and enforces the strict three-kind
+// ordering from `v050-prompts.md` §Cache-Aware Prompt Ordering:
+//
+//     Static*  Session*  Dynamic*
+//
+// Any StaticSection must precede every SessionSection, and any SessionSection
+// must precede every DynamicSection. A SessionSection before a StaticSection,
+// a DynamicSection before a SessionSection, or a StaticSection after a
+// DynamicSection all collapse the type to `never`, which at a call site
 // produces a `Type ... is not assignable to 'never'` error.
 //
 // A.4's `compile()` consumes this helper as `T & CacheOrderedSections<T>` on
-// a `<const T extends readonly (StaticSection | DynamicSection)[]>` parameter.
-// The `const T` modifier preserves tuple positions from the call site.
+// a `<const T extends readonly Section[]>` parameter. The `const T` modifier
+// preserves tuple positions from the call site.
 // ---------------------------------------------------------------------------
 
-export type CacheOrderedSections<
-  T extends readonly (StaticSection | DynamicSection)[],
-> = T extends readonly []
-  ? T
-  : T extends readonly [infer Head, ...infer Rest]
-    ? Head extends StaticSection
-      ? Rest extends readonly (StaticSection | DynamicSection)[]
-        ? CacheOrderedSections<Rest> extends never
-          ? never
-          : T
-        : never
-      : Head extends DynamicSection
-        ? Rest extends readonly DynamicSection[]
-          ? T
+type Section = StaticSection | SessionSection | DynamicSection;
+
+/**
+ * `OnlySessionOrDynamic<T>` — T must be a tuple in which every element is
+ * a SessionSection or DynamicSection, internally ordered Session → Dynamic
+ * (a DynamicSection followed by a SessionSection is rejected). Used by the
+ * main helper after the first SessionSection has been peeled.
+ */
+type OnlySessionOrDynamic<T extends readonly Section[]> =
+  T extends readonly []
+    ? T
+    : T extends readonly [infer Head, ...infer Rest]
+      ? Head extends SessionSection
+        ? Rest extends readonly Section[]
+          ? OnlySessionOrDynamic<Rest> extends never
+            ? never
+            : T
           : never
-        : never
-    : never;
+        : Head extends DynamicSection
+          ? Rest extends readonly DynamicSection[]
+            ? T
+            : never
+          : never
+      : never;
+
+export type CacheOrderedSections<T extends readonly Section[]> =
+  T extends readonly []
+    ? T
+    : T extends readonly [infer Head, ...infer Rest]
+      ? Head extends StaticSection
+        ? Rest extends readonly Section[]
+          ? CacheOrderedSections<Rest> extends never
+            ? never
+            : T
+          : never
+        : Head extends SessionSection
+          ? Rest extends readonly Section[]
+            ? OnlySessionOrDynamic<Rest> extends never
+              ? never
+              : T
+            : never
+          : Head extends DynamicSection
+            ? Rest extends readonly DynamicSection[]
+              ? T
+              : never
+            : never
+      : never;
