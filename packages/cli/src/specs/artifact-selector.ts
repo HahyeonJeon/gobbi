@@ -10,14 +10,40 @@
  * happens downstream in A.4's assembly where budget allocation decides what
  * survives the window.
  *
- * Discovery rules per `v050-prompts.md` §Fresh Context Per Task and
- * `v050-session.md` §Artifact Filename Versioning:
+ * ## Scope — productive step directories only
+ *
+ * `StepId` enumerates the five top-level directories that appear under a
+ * session root per `v050-session.md` §Session Directory Structure:
+ * `ideation/`, `plan/`, `execution/`, `evaluation/`, `memorization/`. These
+ * are the "productive" steps — each step writes authoritative artifacts
+ * into its own flat directory.
+ *
+ * The v0.5.0 state machine (`v050-state-machine.md`) has additional
+ * state-level identifiers that do NOT correspond to their own session
+ * directory:
+ *
+ * - `ideation_eval`, `plan_eval`, `execution_eval` — all three evaluation
+ *   state-machine steps share the single `evaluation/` directory (see
+ *   `specs/index.json`: every `*_eval` entry points at `evaluation/spec.json`).
+ *   Callers transitioning out of an eval state should pass the productive
+ *   step that the eval step follows (`ideation` / `plan` / `execution`) as
+ *   `currentStep`; the selector will include the shared `evaluation/` files
+ *   once that step is crossed. A separate `selectEvalArtifacts()` sibling
+ *   may be added later if a caller needs to read the `evaluation/` dir
+ *   directly mid-loop — see the handoff note in the PR A eval report.
+ * - `research` is a substate of Ideation (`spec.json meta.substates` lists
+ *   it), not a separate top-level step. Research artifacts are written to
+ *   `ideation/` alongside the other ideation output and are surfaced via
+ *   `currentStep: 'ideation'`'s discovery descriptor (+ `includeSources`).
+ *
+ * ## Discovery rules
+ *
+ * Per `v050-prompts.md` §Fresh Context Per Task and `v050-session.md`
+ * §Artifact Filename Versioning:
  *
  * - Ideation → `ideation.md` is authoritative. `innovative.md` / `best.md`
  *   are source inputs (only included when `includeSources: true`).
  * - Plan → `plan.md` is authoritative.
- * - Research → `research.md` is authoritative. `results/` holds source data
- *   (not enumerated here; the caller can walk that subdirectory if needed).
  * - Execution → `execution.md` is authoritative (absent mid-workflow is OK).
  *   Per-subtask files under `execution/subtasks/` are out of scope for the
  *   default selection — the caller can opt in separately.
@@ -49,21 +75,23 @@ import {
 
 /**
  * Closed union of workflow step identifiers that participate in prior-step
- * artifact selection. This matches the canonical workflow ordering declared
- * in `CLAUDE.md` Core Principles — ideate → plan → research → execute →
- * evaluate → memorize.
+ * artifact selection. Each value corresponds to ONE flat top-level directory
+ * under a session root — `ideation/`, `plan/`, `execution/`, `evaluation/`,
+ * `memorization/` — per `v050-session.md` §Session Directory Structure.
  *
- * The `v050-state-machine.md` transition graph folds `research` into
- * `ideation` as a substate, but the session directory still carves out a
- * separate `research/` subdirectory and the ordered-prior-steps contract
- * this selector exposes treats research as its own step for discovery
- * purposes. A.7 (Ideation spec) does not use this selector — Ideation is
- * the first step and has no prior artifacts.
+ * `StepId` is deliberately NARROWER than the state-machine step identifiers
+ * in `specs/index.json`. Callers using `ideation_eval` / `plan_eval` /
+ * `execution_eval` must map those to productive steps before calling the
+ * selector: all three eval steps share the flat `evaluation/` directory,
+ * and research lives inside `ideation/` as an Ideation substate. See the
+ * module header for the mapping rationale.
+ *
+ * A.7 (Ideation spec) does not use this selector — Ideation is the first
+ * step and has no prior artifacts.
  */
 export type StepId =
   | 'ideation'
   | 'plan'
-  | 'research'
   | 'execution'
   | 'evaluation'
   | 'memorization';
@@ -118,14 +146,18 @@ export interface SelectorOptions {
 // ---------------------------------------------------------------------------
 
 /**
- * Canonical step ordering used for prior-step discovery. Mirrors the logic
- * of good work in `CLAUDE.md` Core Principles: ideation → plan → research →
- * execution → evaluation → memorization.
+ * Canonical step ordering used for prior-step discovery. Reflects the five
+ * flat top-level session directories listed in `v050-session.md` §Session
+ * Directory Structure — one `StepId` per productive directory.
+ *
+ * This is intentionally not a 1:1 mirror of `specs/index.json` state-machine
+ * steps: `*_eval` ids all map to the shared `evaluation/` directory, and
+ * `research` is not a directory (it is an Ideation substate whose artifacts
+ * live inside `ideation/`).
  */
 const STEP_ORDER: readonly StepId[] = [
   'ideation',
   'plan',
-  'research',
   'execution',
   'evaluation',
   'memorization',
@@ -192,15 +224,6 @@ const DISCOVERY: Readonly<Record<StepId, StepDiscovery>> = {
     stepId: 'plan',
     subdir: 'plan',
     named: [{ baseName: 'plan', role: 'authoritative' }],
-  },
-  research: {
-    stepId: 'research',
-    subdir: 'research',
-    named: [
-      { baseName: 'research', role: 'authoritative' },
-      { baseName: 'innovative', role: 'source' },
-      { baseName: 'best', role: 'source' },
-    ],
   },
   execution: {
     stepId: 'execution',

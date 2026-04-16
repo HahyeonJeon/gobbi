@@ -54,19 +54,14 @@ describe('getStepOrder', () => {
     expect(getStepOrder('plan')).toEqual(['ideation']);
   });
 
-  test('research is preceded by ideation then plan — canonical order from CLAUDE.md', () => {
-    expect(getStepOrder('research')).toEqual(['ideation', 'plan']);
+  test('execution is preceded by ideation, plan — research is an Ideation substate, not a step', () => {
+    expect(getStepOrder('execution')).toEqual(['ideation', 'plan']);
   });
 
-  test('execution is preceded by ideation, plan, research', () => {
-    expect(getStepOrder('execution')).toEqual(['ideation', 'plan', 'research']);
-  });
-
-  test('evaluation is preceded by ideation, plan, research, execution', () => {
+  test('evaluation is preceded by ideation, plan, execution', () => {
     expect(getStepOrder('evaluation')).toEqual([
       'ideation',
       'plan',
-      'research',
       'execution',
     ]);
   });
@@ -75,7 +70,6 @@ describe('getStepOrder', () => {
     expect(getStepOrder('memorization')).toEqual([
       'ideation',
       'plan',
-      'research',
       'execution',
       'evaluation',
     ]);
@@ -145,14 +139,14 @@ describe('selectPriorArtifacts — plan step', () => {
 });
 
 // ===========================================================================
-// Research step — ideation + plan, in canonical order
+// Execution step — ideation + plan, in canonical order
 // ===========================================================================
 
-describe('selectPriorArtifacts — research step', () => {
+describe('selectPriorArtifacts — execution step', () => {
   test('returns ideation then plan authoritative artifacts in prior-step order', async () => {
     const result = await selectPriorArtifacts({
       sessionDir: FIXTURE.complete,
-      currentStep: 'research',
+      currentStep: 'execution',
     });
     expect(result).toHaveLength(2);
     expect(stepIds(result)).toEqual(['ideation', 'plan']);
@@ -169,7 +163,7 @@ describe('selectPriorArtifacts — filename versioning', () => {
   test('selects only the highest-round artifact when multiple rounds exist', async () => {
     const result = await selectPriorArtifacts({
       sessionDir: FIXTURE.multiRound,
-      currentStep: 'research',
+      currentStep: 'execution',
     });
     // ideation has round-0 ideation.md; plan has plan-r1.md and plan-r2.md.
     expect(basenames(result)).toEqual(['ideation.md', 'plan-r2.md']);
@@ -189,7 +183,7 @@ describe('selectPriorArtifacts — missing artifacts', () => {
   test('skips a step whose authoritative artifact has not been written', async () => {
     const result = await selectPriorArtifacts({
       sessionDir: FIXTURE.partialMissingIdeation,
-      currentStep: 'research',
+      currentStep: 'execution',
     });
     // ideation/ exists but has no ideation.md → skipped.
     // plan/plan.md exists → included.
@@ -255,11 +249,10 @@ describe('selectPriorArtifacts — evaluation perspective files', () => {
       sessionDir: FIXTURE.withEvaluation,
       currentStep: 'memorization',
     });
-    // Canonical order: ideation, plan, research, execution, evaluation (3 files).
+    // Canonical order: ideation, plan, execution, evaluation (3 files).
     expect(stepIds(result)).toEqual([
       'ideation',
       'plan',
-      'research',
       'execution',
       'evaluation',
       'evaluation',
@@ -298,11 +291,11 @@ describe('selectPriorArtifacts — determinism', () => {
   test('output order is stable across multi-round fixture', async () => {
     const one = await selectPriorArtifacts({
       sessionDir: FIXTURE.multiRound,
-      currentStep: 'research',
+      currentStep: 'execution',
     });
     const two = await selectPriorArtifacts({
       sessionDir: FIXTURE.multiRound,
-      currentStep: 'research',
+      currentStep: 'execution',
     });
     expect(basenames(one)).toEqual(basenames(two));
     expect(one.map((a) => a.round)).toEqual(two.map((a) => a.round));
