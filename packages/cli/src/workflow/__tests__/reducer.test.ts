@@ -100,10 +100,11 @@ function delegationSpawn(
   subagentId: string,
   agentType: string = 'executor',
   step: string = 'execution',
+  timestamp: string = '2026-01-01T00:00:00.000Z',
 ): Event {
   return {
     type: DELEGATION_EVENTS.SPAWN,
-    data: { subagentId, agentType, step },
+    data: { subagentId, agentType, step, timestamp },
   };
 }
 
@@ -180,6 +181,7 @@ function guardViolation(guardId: string = 'g-1'): Event {
       toolName: 'Write',
       reason: 'Scope violation',
       step: 'execution',
+      timestamp: '2026-01-01T00:00:00.000Z',
     },
   };
 }

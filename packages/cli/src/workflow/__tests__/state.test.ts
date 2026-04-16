@@ -322,7 +322,7 @@ describe('deriveState', () => {
       toolCallId: 'tc-5',
       type: DELEGATION_EVENTS.SPAWN,
       step: 'execution',
-      data: JSON.stringify({ subagentId: 'agent-1', agentType: 'executor', step: 'execution' }),
+      data: JSON.stringify({ subagentId: 'agent-1', agentType: 'executor', step: 'execution', timestamp: '2026-01-01T00:00:00Z' }),
     }));
 
     const events = store.replayAll();

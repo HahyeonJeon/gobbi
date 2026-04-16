@@ -86,10 +86,11 @@ export function createDelegationSpawnEvent(
   subagentId: string,
   agentType: string = 'executor',
   step: string = 'execution',
+  timestamp: string = '2026-01-01T00:00:00.000Z',
 ): Event {
   return {
     type: DELEGATION_EVENTS.SPAWN,
-    data: { subagentId, agentType, step },
+    data: { subagentId, agentType, step, timestamp },
   };
 }
 
@@ -168,10 +169,11 @@ export function createEvalSkipEvent(step: string): Event {
 export function createGuardViolationEvent(
   guardId: string = 'g-1',
   step: string = 'execution',
+  timestamp: string = '2026-01-01T00:00:00.000Z',
 ): Event {
   return {
     type: GUARD_EVENTS.VIOLATION,
-    data: { guardId, toolName: 'Write', reason: 'Scope violation', step },
+    data: { guardId, toolName: 'Write', reason: 'Scope violation', step, timestamp },
   };
 }
 

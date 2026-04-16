@@ -12,7 +12,7 @@ import type { Event } from './events/index.js';
 import { WORKFLOW_EVENTS } from './events/workflow.js';
 import { DECISION_EVENTS } from './events/decision.js';
 import type { WorkflowState, WorkflowStep } from './state.js';
-import { ACTIVE_STEPS, TERMINAL_STEPS } from './state.js';
+import { ACTIVE_STEPS, TERMINAL_STEPS, isActiveStep } from './state.js';
 import type { PredicateRegistry } from './predicates.js';
 
 // ---------------------------------------------------------------------------
@@ -309,30 +309,28 @@ const SORTED_RULES: readonly TransitionRule[] = [...TRANSITION_TABLE].sort(
 );
 
 // ---------------------------------------------------------------------------
-// Event data extraction helpers
+// Event data extraction helpers — use discriminated union narrowing (no casts)
 // ---------------------------------------------------------------------------
 
 /**
  * Extract the verdict field from a decision.eval.verdict event.
- * Returns undefined if the event is not a verdict event or has no verdict.
+ * Returns undefined if the event is not a verdict event.
+ *
+ * After the type check, TypeScript narrows Event to the EvalVerdictData
+ * variant — verdict and loopTarget are accessed type-safely.
  */
 function extractVerdict(event: Event): 'pass' | 'revise' | 'escalate' | undefined {
   if (event.type !== DECISION_EVENTS.EVAL_VERDICT) return undefined;
-  // The event is typed as a DecisionEvent with EvalVerdictData
-  const data = event.data as { readonly verdict?: string; readonly loopTarget?: string };
-  const v = data.verdict;
-  if (v === 'pass' || v === 'revise' || v === 'escalate') return v;
-  return undefined;
+  return event.data.verdict;
 }
 
 /**
  * Extract the loopTarget field from a decision.eval.verdict event.
- * Returns undefined if absent.
+ * Returns undefined if absent or if the event is not a verdict event.
  */
 function extractLoopTarget(event: Event): string | undefined {
   if (event.type !== DECISION_EVENTS.EVAL_VERDICT) return undefined;
-  const data = event.data as { readonly loopTarget?: string };
-  return data.loopTarget;
+  return event.data.loopTarget;
 }
 
 /**
@@ -341,8 +339,7 @@ function extractLoopTarget(event: Event): string | undefined {
  */
 function extractResumeTarget(event: Event): string | undefined {
   if (event.type !== WORKFLOW_EVENTS.RESUME) return undefined;
-  const data = event.data as { readonly targetStep?: string };
-  return data.targetStep;
+  return event.data.targetStep;
 }
 
 // ---------------------------------------------------------------------------
@@ -377,12 +374,12 @@ export function findTransition(
   if (from === 'error' && event.type === WORKFLOW_EVENTS.RESUME) {
     const targetStep = extractResumeTarget(event);
     if (targetStep === undefined) return null;
-    // Validate the target is a known active step
-    if (!ACTIVE_STEPS.has(targetStep as WorkflowStep)) return null;
+    // Validate the target is a known active step (narrows string to WorkflowStep)
+    if (!isActiveStep(targetStep)) return null;
     // Return a synthetic rule for the dynamic transition
     return {
       from: 'error',
-      to: targetStep as WorkflowStep,
+      to: targetStep,
       trigger: WORKFLOW_EVENTS.RESUME,
       priority: 30,
     };

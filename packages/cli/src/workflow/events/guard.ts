@@ -34,6 +34,7 @@ export interface GuardViolationData {
   readonly toolName: string;
   readonly reason: string;
   readonly step: string;
+  readonly timestamp: string;
 }
 
 export interface GuardOverrideData {

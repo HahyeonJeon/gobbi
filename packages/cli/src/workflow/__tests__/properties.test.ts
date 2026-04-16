@@ -146,6 +146,7 @@ function arbitraryDelegationSpawn(): fc.Arbitrary<Event> {
       agentType: fc.constantFrom('executor', 'researcher', 'evaluator'),
       step: fc.constantFrom(...ACTIVE_STEP_NAMES),
       subagentId: fc.uuid(),
+      timestamp: fc.date().map((d) => d.toISOString()),
     }),
   });
 }
@@ -259,6 +260,7 @@ function arbitraryGuardViolation(): fc.Arbitrary<Event> {
       toolName: fc.constantFrom('Write', 'Read', 'Edit', 'Bash'),
       reason: fc.string({ minLength: 1, maxLength: 100 }),
       step: fc.constantFrom(...ACTIVE_STEP_NAMES),
+      timestamp: fc.date().map((d) => d.toISOString()),
     }),
   });
 }

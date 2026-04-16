@@ -27,14 +27,9 @@ import { TERMINAL_STEPS, ACTIVE_STEPS } from './state.js';
 import { findTransition } from './transitions.js';
 import type { PredicateRegistry } from './predicates.js';
 import { defaultPredicates } from './predicates.js';
+import type { ReducerResult } from './types.js';
 
-// ---------------------------------------------------------------------------
-// Result type
-// ---------------------------------------------------------------------------
-
-export type ReducerResult =
-  | { readonly ok: true; readonly state: WorkflowState }
-  | { readonly ok: false; readonly error: string };
+export type { ReducerResult } from './types.js';
 
 // ---------------------------------------------------------------------------
 // assertNever — compile-time exhaustiveness guard
@@ -237,7 +232,7 @@ function reduceDelegation(
             subagentId: event.data.subagentId,
             agentType: event.data.agentType,
             step: event.data.step,
-            spawnedAt: new Date().toISOString(),
+            spawnedAt: event.data.timestamp,
           },
         ],
       });
@@ -330,7 +325,7 @@ function reduceDecision(
     }
 
     case DECISION_EVENTS.EVAL_VERDICT: {
-      const { verdict, loopTarget } = event.data;
+      const { verdict } = event.data;
 
       if (verdict === 'pass') {
         const rule = findTransition(
@@ -425,7 +420,7 @@ function reduceGuard(
             toolName: event.data.toolName,
             reason: event.data.reason,
             step: event.data.step,
-            timestamp: new Date().toISOString(),
+            timestamp: event.data.timestamp,
           },
         ],
       });

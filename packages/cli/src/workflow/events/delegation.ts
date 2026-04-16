@@ -34,6 +34,7 @@ export interface DelegationSpawnData {
   readonly agentType: string;
   readonly step: string;
   readonly subagentId: string;
+  readonly timestamp: string;
 }
 
 export interface DelegationCompleteData {

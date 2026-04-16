@@ -64,6 +64,14 @@ export const ACTIVE_STEPS: ReadonlySet<WorkflowStep> = new Set<WorkflowStep>([
 ]);
 
 /**
+ * Type guard: checks whether a string is an active WorkflowStep.
+ * Narrows the type from string to WorkflowStep at the call site.
+ */
+export function isActiveStep(value: string): value is WorkflowStep {
+  return (ACTIVE_STEPS as ReadonlySet<string>).has(value);
+}
+
+/**
  * Terminal steps that accept no further events.
  */
 export const TERMINAL_STEPS: ReadonlySet<WorkflowStep> = new Set<WorkflowStep>([
@@ -153,19 +161,12 @@ export function initialState(sessionId: string): WorkflowState {
 }
 
 // ---------------------------------------------------------------------------
-// Reducer result type — duplicated from reducer.ts to avoid circular import
+// Reducer result type — imported from shared types to avoid circular deps
 // ---------------------------------------------------------------------------
 
-/**
- * Result type for the reduce function parameter in deriveState/resolveState.
- * Matches the ReducerResult from reducer.ts without importing it.
- */
-export type ReduceFnResult =
-  | { readonly ok: true; readonly state: WorkflowState }
-  | { readonly ok: false; readonly error: string };
+import type { ReducerResult, ReduceFn } from './types.js';
 
-/** Signature of the reduce function accepted by deriveState and resolveState. */
-export type ReduceFn = (state: WorkflowState, event: Event) => ReduceFnResult;
+export type { ReducerResult, ReduceFn } from './types.js';
 
 // ---------------------------------------------------------------------------
 // Valid workflow step set — for runtime validation

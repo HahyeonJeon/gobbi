@@ -411,9 +411,9 @@ describe('factory functions', () => {
 
   describe('delegation factories', () => {
     it('createDelegationSpawn', () => {
-      const event = createDelegationSpawn({ agentType: 'researcher', step: 'ideation', subagentId: 'sub-1' });
+      const event = createDelegationSpawn({ agentType: 'researcher', step: 'ideation', subagentId: 'sub-1', timestamp: '2026-01-01T00:00:00Z' });
       expect(event.type).toBe(DELEGATION_EVENTS.SPAWN);
-      expect(event.data).toEqual({ agentType: 'researcher', step: 'ideation', subagentId: 'sub-1' });
+      expect(event.data).toEqual({ agentType: 'researcher', step: 'ideation', subagentId: 'sub-1', timestamp: '2026-01-01T00:00:00Z' });
     });
 
     it('createDelegationComplete with all optional fields', () => {
@@ -516,6 +516,7 @@ describe('factory functions', () => {
         toolName: 'Write',
         reason: 'Cannot write to .claude/ during active session',
         step: 'execution',
+        timestamp: '2026-01-01T00:00:00Z',
       });
       expect(event.type).toBe(GUARD_EVENTS.VIOLATION);
       expect(event.data).toEqual({
@@ -523,6 +524,7 @@ describe('factory functions', () => {
         toolName: 'Write',
         reason: 'Cannot write to .claude/ during active session',
         step: 'execution',
+        timestamp: '2026-01-01T00:00:00Z',
       });
     });
 
@@ -568,7 +570,7 @@ describe('type-level correctness', () => {
       createFinish({}),
       createAbort({}),
       createResume({ targetStep: 'execution', fromError: true }),
-      createDelegationSpawn({ agentType: 'executor', step: 'execution', subagentId: 'sub-1' }),
+      createDelegationSpawn({ agentType: 'executor', step: 'execution', subagentId: 'sub-1', timestamp: '2026-01-01T00:00:00Z' }),
       createDelegationComplete({ subagentId: 'sub-1' }),
       createDelegationFail({ subagentId: 'sub-1', reason: 'error' }),
       createArtifactWrite({ step: 'plan', filename: 'plan.md', artifactType: 'markdown' }),
@@ -576,7 +578,7 @@ describe('type-level correctness', () => {
       createDecisionUser({ decision: 'approve' }),
       createEvalVerdict({ verdict: 'pass' }),
       createEvalSkip({ step: 'ideation_eval' }),
-      createGuardViolation({ guardId: 'g1', toolName: 'Write', reason: 'blocked', step: 'execution' }),
+      createGuardViolation({ guardId: 'g1', toolName: 'Write', reason: 'blocked', step: 'execution', timestamp: '2026-01-01T00:00:00Z' }),
       createGuardOverride({ guardId: 'g1', toolName: 'Write', reason: 'allowed' }),
       createSessionHeartbeat({ timestamp: '2026-01-01T00:00:00Z' }),
     ];
