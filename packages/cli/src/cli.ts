@@ -86,6 +86,7 @@ export const COMMAND_ORDER = [
   'note',
   'validate',
   'workflow',
+  'gotcha',
   'image',
   'video',
   'web',
@@ -156,6 +157,14 @@ export const COMMANDS_BY_NAME = {
     run: async (args: string[]): Promise<void> => {
       const { runWorkflow } = await import('./commands/workflow.js');
       await runWorkflow(args);
+    },
+  },
+  gotcha: {
+    name: 'gotcha',
+    summary: 'Manage gobbi gotchas (promote, …)',
+    run: async (args: string[]): Promise<void> => {
+      const { runGotcha } = await import('./commands/gotcha.js');
+      await runGotcha(args);
     },
   },
   image: {

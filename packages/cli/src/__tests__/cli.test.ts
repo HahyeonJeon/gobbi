@@ -251,9 +251,10 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
     expect(registryNames).toEqual(orderNames);
   });
 
-  test('exposes the documented PR B-era command set (no new top-levels yet)', () => {
-    // C.1 refactors dispatch only — no new commands added. `gotcha` is
-    // Wave 9 (C.9); workflow subcommands are Waves 2–8. If this test
+  test('exposes the PR C command set (Wave 9 adds `gotcha`)', () => {
+    // C.1 refactored the dispatch layer; Wave 9 (C.9) adds the top-level
+    // `gotcha` namespace. Workflow subcommands (Waves 2–8) extend the
+    // inner `workflow` registry and do not surface here. If this test
     // fails, verify the change belongs in this PR before updating it.
     const expected: readonly CommandName[] = [
       'config',
@@ -262,6 +263,7 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
       'note',
       'validate',
       'workflow',
+      'gotcha',
       'image',
       'video',
       'web',
