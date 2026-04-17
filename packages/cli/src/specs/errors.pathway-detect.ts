@@ -31,8 +31,8 @@
  *
  * ## Query budget
  *
- * At most 6 indexed store queries per call. `store.replayAll()` is NEVER
- * invoked.
+ * At most 7 indexed store queries per call (including the `eventCount()`
+ * prepared statement). `store.replayAll()` is NEVER invoked.
  *
  * ## Purity
  *
