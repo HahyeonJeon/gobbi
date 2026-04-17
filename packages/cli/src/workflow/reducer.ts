@@ -193,6 +193,21 @@ function reduceWorkflow(
       });
     }
 
+    case WORKFLOW_EVENTS.INVALID_TRANSITION: {
+      // Observational no-op on state. The `workflow.invalid_transition`
+      // event is an AUDIT record of a reducer rejection that ALREADY
+      // happened (the engine's try-catch refactor in PR D.1 emitted this
+      // event OUTSIDE the rolled-back outer transaction). The rejection
+      // itself did not change state — the original reducer error was
+      // re-thrown to the caller, and the outer transaction rolled back
+      // any partial writes. The audit is witness on the event trail; the
+      // state is already correct.
+      //
+      // Replaying a stream containing an `invalid_transition` event must
+      // therefore leave the derived state untouched.
+      return ok(state);
+    }
+
     default:
       return assertNever(event);
   }

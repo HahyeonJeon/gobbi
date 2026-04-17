@@ -647,6 +647,50 @@ describe('workflow.abort', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 15b. workflow.invalid_transition: audit record, state unchanged
+// ---------------------------------------------------------------------------
+
+describe('workflow.invalid_transition', () => {
+  it('is an observational no-op — state does not change', () => {
+    const state = stateAt('error', {
+      feedbackRound: 2,
+      completedSteps: ['ideation', 'plan'],
+    });
+    const event: Event = {
+      type: WORKFLOW_EVENTS.INVALID_TRANSITION,
+      data: {
+        rejectedEventType: 'workflow.abort',
+        rejectedEventSeq: null,
+        stepAtRejection: 'ideation',
+        reducerMessage: 'workflow.abort requires error state, got ideation',
+        timestamp: '2026-01-01T00:00:00.000Z',
+      },
+    };
+    const next = expectOk(reduce(state, event));
+    // Structural equality — every field preserved, no mutation.
+    expect(next).toEqual(state);
+  });
+
+  it('applies cleanly from any active step (replay-safe)', () => {
+    // The audit event is emitted regardless of current step; reducer must
+    // tolerate replay from any non-terminal step.
+    const state = stateAt('execution');
+    const event: Event = {
+      type: WORKFLOW_EVENTS.INVALID_TRANSITION,
+      data: {
+        rejectedEventType: 'workflow.finish',
+        rejectedEventSeq: null,
+        stepAtRejection: 'execution',
+        reducerMessage: 'workflow.finish requires memorization state, got execution',
+        timestamp: '2026-01-01T00:00:00.000Z',
+      },
+    };
+    const next = expectOk(reduce(state, event));
+    expect(next).toEqual(state);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 16. workflow.resume: error -> targetStep
 // ---------------------------------------------------------------------------
 

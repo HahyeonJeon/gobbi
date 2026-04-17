@@ -462,7 +462,7 @@ function joinBlocks(blocks: readonly BlockContent[]): string {
   return blocks.map(renderBlockContent).join(SECTION_SEPARATOR);
 }
 
-function renderSessionSummary(state: WorkflowState): string {
+export function renderSessionSummary(state: WorkflowState): string {
   // Deterministic, ordered keys — the session section's contentHash must be
   // stable for two compiles that see the same WorkflowState.
   const completedSteps = [...state.completedSteps].join(',');

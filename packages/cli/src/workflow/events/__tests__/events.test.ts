@@ -12,6 +12,7 @@ import {
   createFinish,
   createAbort,
   createResume,
+  createWorkflowInvalidTransition,
 
   // Delegation
   DELEGATION_EVENTS,
@@ -56,8 +57,8 @@ import type { Event, EventType } from '../index.js';
 // ===========================================================================
 
 describe('const objects', () => {
-  it('WORKFLOW_EVENTS has 8 entries', () => {
-    expect(Object.values(WORKFLOW_EVENTS)).toHaveLength(8);
+  it('WORKFLOW_EVENTS has 9 entries', () => {
+    expect(Object.values(WORKFLOW_EVENTS)).toHaveLength(9);
   });
 
   it('DELEGATION_EVENTS has 3 entries', () => {
@@ -86,8 +87,8 @@ describe('const objects', () => {
 // ===========================================================================
 
 describe('ALL_EVENT_TYPES', () => {
-  it('contains exactly 20 entries (8 + 3 + 2 + 3 + 3 + 1)', () => {
-    expect(ALL_EVENT_TYPES.size).toBe(20);
+  it('contains exactly 21 entries (9 + 3 + 2 + 3 + 3 + 1)', () => {
+    expect(ALL_EVENT_TYPES.size).toBe(21);
   });
 
   it('contains every workflow event type', () => {
@@ -394,6 +395,31 @@ describe('factory functions', () => {
       expect(event.type).toBe(WORKFLOW_EVENTS.RESUME);
       expect(event.data).toEqual({ targetStep: 'execution', fromError: true });
     });
+
+    it('createWorkflowInvalidTransition — round-trip through type guard', () => {
+      const event = createWorkflowInvalidTransition({
+        rejectedEventType: 'workflow.abort',
+        rejectedEventSeq: null,
+        stepAtRejection: 'ideation',
+        reducerMessage:
+          'workflow.abort requires error state, got ideation',
+        timestamp: '2026-01-01T00:00:00.000Z',
+      });
+      expect(event.type).toBe(WORKFLOW_EVENTS.INVALID_TRANSITION);
+      expect(event.data).toEqual({
+        rejectedEventType: 'workflow.abort',
+        rejectedEventSeq: null,
+        stepAtRejection: 'ideation',
+        reducerMessage:
+          'workflow.abort requires error state, got ideation',
+        timestamp: '2026-01-01T00:00:00.000Z',
+      });
+      // Narrows via the category type guard.
+      expect(isWorkflowEvent(event)).toBe(true);
+      // Round-trips through JSON.stringify (no Date, no Set, no class).
+      const round = JSON.parse(JSON.stringify(event));
+      expect(round).toEqual(event);
+    });
   });
 
   describe('delegation factories', () => {
@@ -556,6 +582,13 @@ describe('type-level correctness', () => {
       createFinish({}),
       createAbort({}),
       createResume({ targetStep: 'execution', fromError: true }),
+      createWorkflowInvalidTransition({
+        rejectedEventType: 'workflow.abort',
+        rejectedEventSeq: null,
+        stepAtRejection: 'ideation',
+        reducerMessage: 'rejected',
+        timestamp: '2026-01-01T00:00:00Z',
+      }),
       createDelegationSpawn({ agentType: 'executor', step: 'execution', subagentId: 'sub-1', timestamp: '2026-01-01T00:00:00Z' }),
       createDelegationComplete({ subagentId: 'sub-1' }),
       createDelegationFail({ subagentId: 'sub-1', reason: 'error' }),
@@ -570,7 +603,7 @@ describe('type-level correctness', () => {
     ];
 
     // Runtime check: every factory produced a valid event
-    expect(events).toHaveLength(19);
+    expect(events).toHaveLength(20);
     for (const event of events) {
       expect(isValidEventType(event.type)).toBe(true);
     }

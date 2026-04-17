@@ -27,6 +27,10 @@ import {
 } from './state.js';
 import type { WorkflowState } from './state.js';
 import type { Event } from './events/index.js';
+import {
+  WORKFLOW_EVENTS,
+  createWorkflowInvalidTransition,
+} from './events/workflow.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -39,6 +43,36 @@ export type Actor = 'cli' | 'hook' | 'subagent';
 export interface AppendResult {
   readonly state: WorkflowState;
   readonly persisted: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// ReducerRejectionError — typed discriminator for the audit-emit branch
+//
+// The engine's `appendEventAndUpdateState` wraps its compound transaction
+// in a try-catch. Inside, the reducer can throw when it returns
+// `{ok: false}`. Filesystem-write failures (writeState, appendJsonl) can
+// also throw. Both surface at the same catch. To emit the
+// `workflow.invalid_transition` audit event ONLY for reducer rejections
+// (not FS failures), the catch needs a typed discriminator.
+//
+// A dedicated class is preferred over a message-prefix check — matches
+// the codebase's `extends Error` precedent and gives downstream tooling
+// a stable `.code` for dispatch without fragile string matching.
+// ---------------------------------------------------------------------------
+
+export class ReducerRejectionError extends Error {
+  readonly code = 'REDUCER_REJECTION' as const;
+  readonly rejectedEvent: Event;
+  readonly stateAtRejection: WorkflowState;
+  readonly reducerMessage: string;
+
+  constructor(reducerMessage: string, event: Event, state: WorkflowState) {
+    super(`Reducer rejected event ${event.type}: ${reducerMessage}`);
+    this.name = 'ReducerRejectionError';
+    this.rejectedEvent = event;
+    this.stateAtRejection = state;
+    this.reducerMessage = reducerMessage;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -96,86 +130,171 @@ export function appendEventAndUpdateState(
   counter?: number,
   ts?: string,
 ): AppendResult {
-  return store.transaction(() => {
-    // Track whether state.json existed before the operation. When this
-    // is the first event ever, there is no state.json and therefore no
-    // backup — the catch block needs to know so it can delete state.json
-    // instead of restoring from a non-existent backup.
-    const hadPriorState = existsSync(join(dir, 'state.json'));
+  // Compute the effective timestamp ONCE — the same wall-clock reading is
+  // used for (a) the rejected event's idempotency key (system/counter kinds
+  // hash the ms) and (b) the audit-emit payload + audit idempotency key, so
+  // the two events share the same millisecond bucket when a rejection
+  // fires. Callers that pass an explicit `ts` keep full determinism.
+  const effectiveTs = ts ?? new Date().toISOString();
 
-    // 1. Backup current state
-    backupState(dir);
+  // ---------------------------------------------------------------------
+  // Outer try/catch WRAPS `store.transaction(...)`.
+  //
+  // CRITICAL structural rule (research §Area 1; bun:sqlite docs): calling
+  // `store.transaction(...)` from INSIDE a failing callback creates a
+  // SQLite SAVEPOINT that rolls back WITH the outer transaction. Opening
+  // a fresh independent transaction requires placing the call OUTSIDE the
+  // rolled-back outer. The try-catch below lives at the outer scope and
+  // runs its audit-emit branch after the outer transaction has fully
+  // rolled back.
+  // ---------------------------------------------------------------------
+  try {
+    return store.transaction(() => {
+      // Track whether state.json existed before the operation. When this
+      // is the first event ever, there is no state.json and therefore no
+      // backup — the catch block needs to know so it can delete state.json
+      // instead of restoring from a non-existent backup.
+      const hadPriorState = existsSync(join(dir, 'state.json'));
 
-    // 2. Append event to SQLite store
-    const effectiveTs = ts ?? new Date().toISOString();
-    const input: AppendInput = buildAppendInput({
-      ts: effectiveTs,
-      type: event.type,
-      step: state.currentStep,
-      data: JSON.stringify(event.data),
-      actor,
-      sessionId,
-      idempotencyKind,
-      toolCallId,
-      parentSeq: parentSeq ?? null,
-      counter,
-    });
-    const row = store.append(input);
+      // 1. Backup current state
+      backupState(dir);
 
-    // Deduplicated — no change
-    if (row === null) {
-      return { state, persisted: false };
-    }
-
-    // 3. Reduce to get new state
-    const result: ReducerResult = reduce(state, event);
-    if (!result.ok) {
-      throw new Error(`Reducer rejected event ${event.type}: ${result.error}`);
-    }
-
-    // 4–5. Write state.json and events.jsonl — wrapped in try/catch so
-    // that a filesystem failure restores the backup before re-throwing,
-    // keeping state.json consistent with the SQLite rollback.
-    try {
-      // 4. Write new state.json (synchronous atomic write)
-      writeState(dir, result.state);
-
-      // 5. Append to events.jsonl (diagnostic log)
-      appendJsonl(dir, {
-        seq: row.seq,
-        ts: row.ts,
-        type: row.type,
-        step: row.step,
-        data: row.data,
-        actor: row.actor,
+      // 2. Append event to SQLite store
+      const input: AppendInput = buildAppendInput({
+        ts: effectiveTs,
+        type: event.type,
+        step: state.currentStep,
+        data: JSON.stringify(event.data),
+        actor,
+        sessionId,
+        idempotencyKind,
+        toolCallId,
+        parentSeq: parentSeq ?? null,
+        counter,
       });
-    } catch (err: unknown) {
-      // Restore state.json so it matches the rolled-back SQLite state.
-      // Wrap in its own try/catch so a restore failure (disk full,
-      // permissions) does not replace the original error.
-      try {
-        if (hadPriorState) {
-          // Normal case: restore the backup we created in step 1.
-          restoreStateFromBackup(dir);
-        } else {
-          // First-event edge case: no prior state.json existed, so no
-          // backup was created. Delete the newly-written state.json to
-          // return to the no-file state. resolveState() will fall through
-          // to deriveState() which replays from the (now empty) DB.
-          const statePath = join(dir, 'state.json');
-          if (existsSync(statePath)) {
-            unlinkSync(statePath);
-          }
-        }
-      } catch {
-        // Ignore restore/delete failure — the priority is propagating
-        // the original error so the SQLite transaction rolls back.
-      }
-      throw err;
-    }
+      const row = store.append(input);
 
-    return { state: result.state, persisted: true };
-  });
+      // Deduplicated — no change
+      if (row === null) {
+        return { state, persisted: false };
+      }
+
+      // 3. Reduce to get new state. On rejection, throw a typed
+      //    ReducerRejectionError — the OUTER catch distinguishes this
+      //    from filesystem failures and fires the audit-emit branch.
+      const result: ReducerResult = reduce(state, event);
+      if (!result.ok) {
+        throw new ReducerRejectionError(result.error, event, state);
+      }
+
+      // 4–5. Write state.json and events.jsonl — wrapped in try/catch so
+      // that a filesystem failure restores the backup before re-throwing,
+      // keeping state.json consistent with the SQLite rollback.
+      try {
+        // 4. Write new state.json (synchronous atomic write)
+        writeState(dir, result.state);
+
+        // 5. Append to events.jsonl (diagnostic log)
+        appendJsonl(dir, {
+          seq: row.seq,
+          ts: row.ts,
+          type: row.type,
+          step: row.step,
+          data: row.data,
+          actor: row.actor,
+        });
+      } catch (err: unknown) {
+        // Restore state.json so it matches the rolled-back SQLite state.
+        // Wrap in its own try/catch so a restore failure (disk full,
+        // permissions) does not replace the original error.
+        try {
+          if (hadPriorState) {
+            // Normal case: restore the backup we created in step 1.
+            restoreStateFromBackup(dir);
+          } else {
+            // First-event edge case: no prior state.json existed, so no
+            // backup was created. Delete the newly-written state.json to
+            // return to the no-file state. resolveState() will fall through
+            // to deriveState() which replays from the (now empty) DB.
+            const statePath = join(dir, 'state.json');
+            if (existsSync(statePath)) {
+              unlinkSync(statePath);
+            }
+          }
+        } catch {
+          // Ignore restore/delete failure — the priority is propagating
+          // the original error so the SQLite transaction rolls back.
+        }
+        throw err;
+      }
+
+      return { state: result.state, persisted: true };
+    });
+  } catch (outerError: unknown) {
+    // Outer transaction has ROLLED BACK. SQLite is in a no-active-
+    // transaction state; the next `store.transaction(...)` opens a fresh
+    // top-level transaction, NOT a savepoint of the rolled-back one.
+    //
+    // Only emit the `workflow.invalid_transition` audit for reducer
+    // rejections — filesystem failures (writeState, appendJsonl) also
+    // land here but those are not "invalid transition" events; auditing
+    // them here would misattribute disk errors as reducer bugs.
+    if (outerError instanceof ReducerRejectionError) {
+      // Best-effort audit-append. If this inner transaction itself
+      // throws (disk full, WAL lock, SQLite busy), swallow the audit
+      // failure with a stderr log — NEVER mask the original reducer
+      // error, which is what callers need to see for their exit code.
+      try {
+        store.transaction(() => {
+          const auditEvent = createWorkflowInvalidTransition({
+            rejectedEventType: outerError.rejectedEvent.type,
+            rejectedEventSeq: null,
+            stepAtRejection: outerError.stateAtRejection.currentStep,
+            reducerMessage: outerError.reducerMessage,
+            timestamp: effectiveTs,
+          });
+          const auditInput: AppendInput = buildAppendInput({
+            ts: effectiveTs,
+            type: auditEvent.type,
+            step: outerError.stateAtRejection.currentStep,
+            data: JSON.stringify(auditEvent.data),
+            actor: 'cli',
+            sessionId,
+            idempotencyKind: 'system',
+            toolCallId: undefined,
+            parentSeq: null,
+            counter: undefined,
+          });
+          store.append(auditInput);
+          // Mirror the audit to events.jsonl when the DB append succeeds.
+          // Best-effort: a mirror failure is logged below and does not
+          // block the audit-append from committing.
+          try {
+            appendJsonl(dir, {
+              ts: effectiveTs,
+              type: auditEvent.type,
+              step: outerError.stateAtRejection.currentStep,
+              data: JSON.stringify(auditEvent.data),
+              actor: 'cli',
+            });
+          } catch {
+            // JSONL mirror is diagnostic only — never throw.
+          }
+        });
+      } catch (auditError: unknown) {
+        const msg =
+          auditError instanceof Error
+            ? auditError.message
+            : String(auditError);
+        process.stderr.write(
+          `gobbi: failed to record ${WORKFLOW_EVENTS.INVALID_TRANSITION} audit — ${msg}\n`,
+        );
+      }
+    }
+    // Always re-throw the ORIGINAL error — callers (CLI commands, hooks)
+    // rely on the error surface for their exit codes and diagnostics.
+    throw outerError;
+  }
 }
 
 // ---------------------------------------------------------------------------
