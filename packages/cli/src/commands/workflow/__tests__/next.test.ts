@@ -7,8 +7,11 @@
  *     a compiled prompt whose text contains the expected section markers.
  *   - compileCurrentStep — substate overlay path (ideation + discussing) applies
  *     the overlay; the compiled prompt's text contains an overlay-added line.
- *   - compileCurrentStep — error branch calls compileErrorPrompt which throws
- *     with "not implemented".
+ *   - compileCurrentStep — error branch dispatches to compileErrorPrompt and
+ *     returns the pathway-specific prompt text (timeout pathway assertion).
+ *   - runNextWithOptions — end-to-end error-branch integration (session driven
+ *     into `error` via STEP_TIMEOUT emits the timeout-pathway error-state
+ *     prompt on stdout).
  *   - runWorkflowWithRegistry — `next` is dispatchable via the registry.
  */
 
@@ -27,7 +30,11 @@ import {
   runWorkflowWithRegistry,
   type WorkflowCommand,
 } from '../../workflow.js';
-import { resolveWorkflowState } from '../../../workflow/engine.js';
+import {
+  appendEventAndUpdateState,
+  resolveWorkflowState,
+} from '../../../workflow/engine.js';
+import { createStepTimeout } from '../../../workflow/events/workflow.js';
 import { initialState } from '../../../workflow/state.js';
 import type { WorkflowState } from '../../../workflow/state.js';
 import { EventStore } from '../../../workflow/store.js';
@@ -200,19 +207,66 @@ describe('compileCurrentStep — substate overlay', () => {
 // ===========================================================================
 
 describe('compileCurrentStep — error branch', () => {
-  test('dispatches to compileErrorPrompt which throws "not implemented"', async () => {
-    const { sessionDir } = await initScratchSession('next-error');
+  test('dispatches to compileErrorPrompt and returns the timeout-pathway prompt text', async () => {
+    const sessionId = 'next-error';
+    const { sessionDir } = await initScratchSession(sessionId);
     const store = openStore(sessionDir);
     try {
-      // Construct a synthetic error state — the reducer path to `error` lives
-      // in C.4/D; here we assemble a WorkflowState literal.
+      // Drive the session into `error` via STEP_TIMEOUT on the current
+      // (active) step — the reducer transitions active → error on timeout.
+      const state = resolveWorkflowState(sessionDir, store, sessionId);
+      const result = appendEventAndUpdateState(
+        store,
+        sessionDir,
+        state,
+        createStepTimeout({
+          step: state.currentStep,
+          elapsedMs: 300_000,
+          configuredTimeoutMs: 120_000,
+        }),
+        'hook',
+        sessionId,
+        'tool-call',
+        'tc-timeout',
+      );
+      expect(result.state.currentStep).toBe('error');
+
+      const text = await compileCurrentStep(
+        result.state,
+        store,
+        DEFAULT_SPECS_DIR,
+      );
+
+      // The timeout-pathway compiler emits a "Timeout evidence:" block —
+      // see `specs/errors.sections.ts::renderTimeoutEvidence`.
+      expect(text).toContain('Timeout evidence:');
+      expect(text).toContain('timedOutStep=');
+    } finally {
+      store.close();
+    }
+  });
+
+  test('classifies an error state with no triggering event as crash (fallback pathway)', async () => {
+    // The dispatcher falls through to the Crash pathway when state is
+    // `error` and the store has events but none of them are triggering
+    // events (timeout / invalid_transition / trailing-revise verdict).
+    // This test asserts the fallback emits a coherent prompt rather than
+    // throwing.
+    const { sessionDir } = await initScratchSession('next-error-fallback');
+    const store = openStore(sessionDir);
+    try {
       const errorState: WorkflowState = {
-        ...initialState('next-error'),
+        ...initialState('next-error-fallback'),
         currentStep: 'error',
       };
-      await expect(
-        compileCurrentStep(errorState, store, DEFAULT_SPECS_DIR),
-      ).rejects.toThrow(/not implemented/);
+      const text = await compileCurrentStep(
+        errorState,
+        store,
+        DEFAULT_SPECS_DIR,
+      );
+      // Crash pathway's evidence block uses this header.
+      expect(text).toContain('Crash evidence:');
+      expect(text).toContain('stepAtCrash=');
     } finally {
       store.close();
     }
@@ -234,6 +288,45 @@ describe('runNextWithOptions', () => {
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toContain('Substate: discussing.');
     expect(captured.stdout).toContain('session.currentStep=ideation');
+  });
+
+  test('emits the timeout-pathway error-state prompt when the session is in error', async () => {
+    const sessionId = 'next-cli-error';
+    const { sessionDir } = await initScratchSession(sessionId);
+
+    // Drive the session into `error` via STEP_TIMEOUT so the detector
+    // classifies the pathway as Timeout.
+    {
+      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      try {
+        const state = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          state,
+          createStepTimeout({
+            step: state.currentStep,
+            elapsedMs: 300_000,
+            configuredTimeoutMs: 120_000,
+          }),
+          'hook',
+          sessionId,
+          'tool-call',
+          'tc-timeout-next',
+        );
+      } finally {
+        store.close();
+      }
+    }
+
+    await captureExit(() =>
+      runNextWithOptions([], { sessionDir, specsDir: DEFAULT_SPECS_DIR }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    // The timeout-pathway compiler's evidence block names the field.
+    expect(captured.stdout).toContain('Timeout evidence:');
+    expect(captured.stdout).toContain('configuredTimeoutMs=120000');
   });
 });
 

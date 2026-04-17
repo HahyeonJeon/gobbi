@@ -37,7 +37,7 @@ Criteria:
   4. the user has approved the chosen direction via AskUserQuestion
   5. the user has decided whether to run ideation_eval (if the eval gate is enabled for this session)
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=ideation
 session.currentSubstate=null
 session.completedSteps=[]
@@ -90,7 +90,7 @@ Criteria:
   4. the user has approved the chosen direction via AskUserQuestion
   5. the user has decided whether to run ideation_eval (if the eval gate is enabled for this session)
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=ideation
 session.currentSubstate=null
 session.completedSteps=[]
@@ -165,7 +165,7 @@ Criteria:
   4. the user has approved the chosen direction via AskUserQuestion
   5. the user has decided whether to run ideation_eval (if the eval gate is enabled for this session)
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=ideation
 session.currentSubstate=null
 session.completedSteps=[]

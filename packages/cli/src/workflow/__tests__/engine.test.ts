@@ -10,6 +10,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
+import fc from 'fast-check';
 import {
   existsSync,
   mkdtempSync,
@@ -20,14 +21,18 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { resolveWorkflowState, appendEventAndUpdateState } from '../engine.js';
+import {
+  resolveWorkflowState,
+  appendEventAndUpdateState,
+  ReducerRejectionError,
+} from '../engine.js';
 import { EventStore } from '../store.js';
 import {
   backupState,
   initialState,
   writeState,
 } from '../state.js';
-import type { WorkflowState } from '../state.js';
+import type { WorkflowState, WorkflowStep } from '../state.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';
 import type { Event } from '../events/index.js';
 
@@ -242,5 +247,224 @@ describe('resolveWorkflowState — state.json corrupt', () => {
     resolveWorkflowState(testDir, store, sessionId);
 
     expect(readFileSync(join(testDir, 'state.json'), 'utf8')).toBe(corrupt);
+  });
+});
+
+// ===========================================================================
+// appendEventAndUpdateState — audit-emit-on-rejection (PR D.1)
+// ===========================================================================
+
+describe('appendEventAndUpdateState — reducer rejection audit', () => {
+  it('emits workflow.invalid_transition AND re-throws the original error', () => {
+    using store = new EventStore(':memory:');
+    const sessionId = 'audit-emit-basic';
+
+    // Seed a valid start so the session is in `ideation`.
+    seedStartEvent(store, testDir, sessionId);
+
+    // Resolve the current state from disk — matches how callers observe
+    // state between appends.
+    const before = resolveWorkflowState(testDir, store, sessionId);
+    expect(before.currentStep).toBe('ideation');
+
+    // Attempt to apply `workflow.abort` from `ideation`. The reducer
+    // rejects (abort requires error state); the engine should roll back
+    // the outer transaction, emit a `workflow.invalid_transition` audit
+    // event in a fresh transaction, and re-throw the original error.
+    const rejectedEvent: Event = {
+      type: WORKFLOW_EVENTS.ABORT,
+      data: { reason: 'synthetic rejection for audit test' },
+    };
+
+    expect(() =>
+      appendEventAndUpdateState(
+        store,
+        testDir,
+        before,
+        rejectedEvent,
+        'cli',
+        sessionId,
+        'tool-call',
+        'tc-reject-abort',
+        null,
+        undefined,
+        '2026-01-02T00:00:00.000Z',
+      ),
+    ).toThrow(ReducerRejectionError);
+
+    // The audit event persisted.
+    const audits = store.byType(WORKFLOW_EVENTS.INVALID_TRANSITION);
+    expect(audits).toHaveLength(1);
+    const audit = audits[0]!;
+    const data = JSON.parse(audit.data);
+    expect(data.rejectedEventType).toBe(WORKFLOW_EVENTS.ABORT);
+    expect(data.rejectedEventSeq).toBeNull();
+    expect(data.stepAtRejection).toBe('ideation');
+    expect(typeof data.reducerMessage).toBe('string');
+    expect(data.reducerMessage).toContain('workflow.abort requires error');
+    expect(data.timestamp).toBe('2026-01-02T00:00:00.000Z');
+  });
+
+  it('state on disk is unchanged after a rejection (backup restore)', () => {
+    using store = new EventStore(':memory:');
+    const sessionId = 'audit-emit-state';
+
+    seedStartEvent(store, testDir, sessionId);
+    const before = resolveWorkflowState(testDir, store, sessionId);
+
+    const rejected: Event = {
+      type: WORKFLOW_EVENTS.ABORT,
+      data: {},
+    };
+    try {
+      appendEventAndUpdateState(
+        store,
+        testDir,
+        before,
+        rejected,
+        'cli',
+        sessionId,
+        'tool-call',
+        'tc-reject-state',
+      );
+    } catch {
+      // Expected.
+    }
+
+    const after = resolveWorkflowState(testDir, store, sessionId);
+    // Every field preserved.
+    expect(after).toEqual(before);
+  });
+
+  it('filesystem-only failures do NOT emit an audit event', () => {
+    using store = new EventStore(':memory:');
+    const sessionId = 'audit-emit-fs';
+
+    seedStartEvent(store, testDir, sessionId);
+    const before = resolveWorkflowState(testDir, store, sessionId);
+
+    // Force writeState to fail by making testDir a non-writable path.
+    // Approach: instrument the store to replicate the FS-failure path by
+    // replacing the event data with an object that JSON-serialises but
+    // triggers `writeState` to throw via a tampered state directory.
+    //
+    // Simpler approach: pass a dir that does not exist and is not
+    // creatable — the mkdirSync call inside writeState throws with an
+    // EACCES/ENOENT surface. We simulate by pointing at a path under a
+    // file (writing through a file path returns ENOTDIR).
+    const blockedFile = join(testDir, 'not-a-dir-file');
+    writeFileSync(blockedFile, 'block');
+    const blockedDir = join(blockedFile, 'subpath'); // writeState → ENOTDIR
+
+    // Valid event — reducer accepts, but FS write fails.
+    const validEvent: Event = {
+      type: WORKFLOW_EVENTS.STEP_EXIT,
+      data: { step: 'ideation' },
+    };
+    expect(() =>
+      appendEventAndUpdateState(
+        store,
+        blockedDir,
+        { ...before, evalConfig: { ideation: false, plan: false } },
+        validEvent,
+        'cli',
+        sessionId,
+        'tool-call',
+        'tc-fs-fail',
+      ),
+    ).toThrow();
+
+    // No audit emitted — this was a FS failure, not a reducer rejection.
+    const audits = store.byType(WORKFLOW_EVENTS.INVALID_TRANSITION);
+    expect(audits).toHaveLength(0);
+  });
+
+  it('property test: reducer rejections always produce exactly one audit + original error', () => {
+    const arbActiveStep = fc.constantFrom<WorkflowStep>(
+      'ideation',
+      'plan',
+      'execution',
+      'memorization',
+    );
+    const arbTs = fc
+      .date({ noInvalidDate: true })
+      .map((d) => d.toISOString());
+
+    fc.assert(
+      fc.property(arbActiveStep, arbTs, (step, ts) => {
+        const store = new EventStore(':memory:');
+        try {
+          const sessionId = `prop-${step}`;
+          const dir = mkdtempSync(join(tmpdir(), `gobbi-prop-${step}-`));
+          try {
+            seedStartEvent(store, dir, sessionId);
+
+            // Fabricate a state where `workflow.abort` is invalid (any
+            // non-error active step triggers rejection).
+            const state: WorkflowState = {
+              ...initialState(sessionId),
+              currentStep: step,
+            };
+            // Overwrite state.json so the engine's backup matches our
+            // synthetic state, keeping the assertion about "state
+            // unchanged post-rejection" meaningful.
+            writeState(dir, state);
+
+            const rejected: Event = {
+              type: WORKFLOW_EVENTS.ABORT,
+              data: {},
+            };
+
+            let thrown: unknown = null;
+            try {
+              appendEventAndUpdateState(
+                store,
+                dir,
+                state,
+                rejected,
+                'cli',
+                sessionId,
+                'tool-call',
+                `tc-prop-${step}-${ts}`,
+                null,
+                undefined,
+                ts,
+              );
+            } catch (err) {
+              thrown = err;
+            }
+
+            // (a) state unchanged — resolveWorkflowState returns the same
+            // record.
+            const resolved = resolveWorkflowState(dir, store, sessionId);
+            if (resolved.currentStep !== step) {
+              throw new Error(
+                `state mutated: expected ${step}, got ${resolved.currentStep}`,
+              );
+            }
+
+            // (b) audit event persisted.
+            const audits = store.byType(WORKFLOW_EVENTS.INVALID_TRANSITION);
+            if (audits.length !== 1) {
+              throw new Error(
+                `expected exactly 1 audit event, got ${audits.length}`,
+              );
+            }
+
+            // (c) original reducer error re-thrown.
+            if (!(thrown instanceof ReducerRejectionError)) {
+              throw new Error(
+                `expected ReducerRejectionError, got ${String(thrown)}`,
+              );
+            }
+          } finally {
+            rmSync(dir, { recursive: true, force: true });
+          }
+        } finally {
+          store.close();
+        }
+      }),
+      { numRuns: 15 },
+    );
   });
 });

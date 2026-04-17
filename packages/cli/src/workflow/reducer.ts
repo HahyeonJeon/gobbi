@@ -93,6 +93,11 @@ function reduceWorkflow(
       // Exiting a productive step closes the verdict window — the next
       // verdict must fire within the new step to count. Clearing avoids
       // stale outcomes leaking across step boundaries.
+      //
+      // TODO(PR E): meta.timeoutMs detection wire-up — PR E attaches a
+      // per-step timeout budget derived from spec metadata so the
+      // heartbeat loop can fire workflow.step.timeout when the budget
+      // elapses.
       return ok({
         ...state,
         currentStep: nextStep,
@@ -191,6 +196,21 @@ function reduceWorkflow(
         currentStep: targetStep,
         currentSubstate: targetStep === 'ideation' ? 'discussing' : null,
       });
+    }
+
+    case WORKFLOW_EVENTS.INVALID_TRANSITION: {
+      // Observational no-op on state. The `workflow.invalid_transition`
+      // event is an AUDIT record of a reducer rejection that ALREADY
+      // happened (the engine's try-catch refactor in PR D.1 emitted this
+      // event OUTSIDE the rolled-back outer transaction). The rejection
+      // itself did not change state — the original reducer error was
+      // re-thrown to the caller, and the outer transaction rolled back
+      // any partial writes. The audit is witness on the event trail; the
+      // state is already correct.
+      //
+      // Replaying a stream containing an `invalid_transition` event must
+      // therefore leave the derived state untouched.
+      return ok(state);
     }
 
     default:
@@ -380,7 +400,19 @@ function reduceDecision(
     }
 
     case DECISION_EVENTS.EVAL_SKIP: {
-      // Informational — no state change
+      // Informational — no state change. The optional `priorError`
+      // payload extension (schema v3, CP11 reversibility) carries a full
+      // `ErrorPathway` snapshot so the skip is auditable and reversible,
+      // but it is NOT reduced into state — it is witness metadata on the
+      // event itself. The caller (typically
+      // `gobbi workflow resume --force-memorization`) emits a
+      // `workflow.resume` alongside this event in the same store
+      // transaction; the `RESUME` case applies the actual step transition.
+      //
+      // Keeping this a no-op preserves the Greg Young discipline: v3 event
+      // payloads may carry additive fields, but the reducer contract for
+      // EVAL_SKIP is unchanged across the schema bump. See v050-design-review.md
+      // and ideation §2.5.2 for the CP11 rationale.
       return ok(state);
     }
 

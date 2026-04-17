@@ -13,6 +13,15 @@
  *   shape is identical across v1→v2, so the registered v1 migration is an
  *   identity. New v2-only fields on state are normalised on read, not
  *   written retroactively (Greg Young discipline — see `v050-session.md`).
+ * - v3 — PR D. Adds `workflow.invalid_transition` event type and the
+ *   optional `EvalSkipData.priorError` field (CP11 reversibility — carries
+ *   a full `ErrorPathway` snapshot on `resume --force-memorization` skip
+ *   events). Event *data* payloads are wire-compatible across v2→v3: the
+ *   new `priorError` field is strictly additive and optional, so existing
+ *   v2 events parse cleanly under v3 and a v3 event without `priorError`
+ *   is indistinguishable from a v2 one. The registered v2 migration is an
+ *   identity on event data; `initialState().schemaVersion` bumps 2→3 in
+ *   lockstep so newly-initialised sessions advertise v3.
  */
 
 // ---------------------------------------------------------------------------
@@ -35,7 +44,7 @@ export interface EventRow {
 // Schema version tracking
 // ---------------------------------------------------------------------------
 
-export const CURRENT_SCHEMA_VERSION = 2;
+export const CURRENT_SCHEMA_VERSION = 3;
 
 // ---------------------------------------------------------------------------
 // Migration registry
@@ -47,14 +56,23 @@ type MigrationFn = (eventData: unknown) => unknown;
  * Maps schema_version N to the function that transforms event data
  * from version N to version N+1.
  *
- * v1→v2 is an explicit identity: event *data* payloads are wire-compatible
- * across the bump (the v2 changes are new event types plus new state fields,
- * not payload transforms). Declaring the identity registers the hop so a
- * future v3 migration inherits a tested composition, rather than falling
- * through to the missing-step error.
+ * Both registered hops are explicit identities:
+ *
+ * - v1→v2: new event types (`guard.warn`) + new state fields, not payload
+ *   transforms.
+ * - v2→v3 (PR D): adds `workflow.invalid_transition` event type + an
+ *   optional `EvalSkipData.priorError` field. `priorError` is strictly
+ *   additive on the existing `eval.skip` payload, so an absent field on a
+ *   v2 row is indistinguishable from a v3 row that happens not to carry
+ *   a snapshot. No payload transform.
+ *
+ * Declaring each identity registers the hop so the composition walks the
+ * full chain (v1→v2→v3) rather than short-circuiting — the walk path is
+ * what a future v4 migration will extend.
  */
 const migrations: Readonly<Record<number, MigrationFn>> = {
   1: (data) => data,
+  2: (data) => data,
 };
 
 // ---------------------------------------------------------------------------

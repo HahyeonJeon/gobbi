@@ -135,6 +135,8 @@ const SQL_LAST = `SELECT * FROM events WHERE type = $type ORDER BY seq DESC LIMI
 
 const SQL_LAST_N = `SELECT * FROM events WHERE type = $type ORDER BY seq DESC LIMIT $n`;
 
+const SQL_LAST_N_ANY = `SELECT * FROM events ORDER BY seq DESC LIMIT $n`;
+
 const SQL_COUNT = `SELECT count(*) as cnt FROM events`;
 
 // ---------------------------------------------------------------------------
@@ -155,6 +157,7 @@ export class EventStore {
   private readonly stmtSince;
   private readonly stmtLast;
   private readonly stmtLastN;
+  private readonly stmtLastNAny;
   private readonly stmtCount;
 
   constructor(pathOrMemory: string) {
@@ -174,6 +177,7 @@ export class EventStore {
     this.stmtSince = this.db.query<EventRow, [SqlBindings]>(SQL_SINCE);
     this.stmtLast = this.db.query<EventRow, [SqlBindings]>(SQL_LAST);
     this.stmtLastN = this.db.query<EventRow, [SqlBindings]>(SQL_LAST_N);
+    this.stmtLastNAny = this.db.query<EventRow, [SqlBindings]>(SQL_LAST_N_ANY);
     this.stmtCount = this.db.query<{ cnt: number }, []>(SQL_COUNT);
   }
 
@@ -300,6 +304,19 @@ export class EventStore {
   lastN(type: string, n: number): readonly EventRow[] {
     if (n <= 0) return [];
     return this.stmtLastN.all({ type, n });
+  }
+
+  /**
+   * Return the `n` most recent events regardless of type, ordered by seq
+   * DESC (newest first). Used by PR D's `detectPathway` Crash branch to
+   * collect the last handful of event seqs for operator-briefing context.
+   *
+   * Bounded by `n` at the SQL layer; `n <= 0` returns an empty array
+   * (matches `lastN`'s non-positive-input contract).
+   */
+  lastNAny(n: number): readonly EventRow[] {
+    if (n <= 0) return [];
+    return this.stmtLastNAny.all({ n });
   }
 
   /** Return total event count (for diagnostics). */

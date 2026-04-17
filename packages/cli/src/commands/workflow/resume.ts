@@ -1,31 +1,30 @@
 /**
- * gobbi workflow resume — skeleton (body deferred to PR D).
+ * gobbi workflow resume — append a `workflow.resume` event and emit the
+ * compiled resume prompt for the target step.
  *
- * PR C lands the flag-parsing, usage help, and session/store plumbing so
- * PR D's error-pathway compilers only replace the body. Today the body
- * throws a structured {@link ResumePendingError} whose `code` matches the
- * diagnostic family scheme — downstream tooling can discriminate the
- * pending state from real failures via `code === 'X001_RESUME_PR_D_PENDING'`.
+ * Resolves the active session, validates that the current state is `error`,
+ * validates the `--target` against the known active-step set, then either:
  *
- * ## Scope (PR C)
+ *   - (default) appends a single `workflow.resume` event via
+ *     `appendEventAndUpdateState`, or
  *
- *   - Flag parsing, help, session resolution, store open — all real.
- *   - Every path that reaches the resume body throws `ResumePendingError`.
+ *   - (`--force-memorization`) detects the pathway, builds a
+ *     {@link PriorErrorSnapshot}, and atomically appends BOTH a
+ *     `decision.eval.skip` (carrying the snapshot for CP11 reversibility)
+ *     AND a `workflow.resume` targeting `memorization` inside ONE raw
+ *     `store.transaction(...)` call. The two appends either both land or
+ *     neither does.
  *
- * ## Exit semantics
+ * After either branch, `resolveWorkflowState` refreshes the on-disk state,
+ * `compileResumePrompt` builds the CompiledPrompt, and the `.text` is
+ * written to stdout.
  *
- *   - `0` — `--help` only.
- *   - `1` — session resolution failed OR the pending throw propagates to
- *           the CLI boundary (PR D swap turns this into the real
- *           error/resume exit codes).
- *   - `2` — argv parsing error (missing `--target`, unknown flag).
+ * ## Exit codes
  *
- * ## Stub shape rationale
- *
- * The structured throw (rather than a silent placeholder `CompiledPrompt`)
- * follows best's discipline: `throw` fails loud when PR D forgets to swap
- * the body. The `X001_RESUME_PR_D_PENDING` code means future tooling can
- * parse the pending signal the same way it parses validate errors.
+ *   0  success — event appended and prompt emitted
+ *   1  runtime failure (invalid target, missing event store, resume from
+ *      non-error state)
+ *   2  argv parsing error (missing --target, unknown flag)
  */
 
 import { parseArgs } from 'node:util';
@@ -33,27 +32,46 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { EventStore } from '../../workflow/store.js';
-import type { DiagnosticCode } from '../../workflow/diagnostics.js';
+import {
+  appendEventAndUpdateState,
+  resolveWorkflowState,
+} from '../../workflow/engine.js';
+import { createResume } from '../../workflow/events/workflow.js';
+import {
+  createEvalSkip,
+  type PriorErrorSnapshot,
+} from '../../workflow/events/decision.js';
+import type { WorkflowState } from '../../workflow/state.js';
+import {
+  compileResumePrompt,
+  detectPathway,
+} from '../../specs/errors.js';
 import { resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
-// Error type — carries the `X001_RESUME_PR_D_PENDING` sentinel.
+// Valid resume targets
+//
+// The reducer's `workflow.resume` case (`workflow/reducer.ts:177-193`)
+// rejects any target that is not in `ACTIVE_STEPS`. The CLI mirrors that
+// rule up-front so operators see a clear error-message path instead of
+// relying on the reducer-rejection audit event for typos.
 // ---------------------------------------------------------------------------
 
 /**
- * Thrown by the resume command while PR D's full-resume compilation is
- * outstanding. The `code` field is structurally identical to `Diagnostic.code`
- * so downstream tooling can parse the pending signal via the same
- * discrimination path it uses for validate errors.
+ * The six active steps `--target` may name. Mirrors `ACTIVE_STEPS` from
+ * `workflow/state.ts` — kept in sync via the reducer's post-append
+ * validation. The CLI check is a fast-fail gate; the reducer is the
+ * authoritative gate.
  */
-export class ResumePendingError extends Error {
-  readonly code: DiagnosticCode = 'X001_RESUME_PR_D_PENDING';
-
-  constructor(message: string) {
-    super(message);
-    this.name = 'ResumePendingError';
-  }
-}
+const VALID_TARGETS: ReadonlySet<string> = new Set<string>([
+  'ideation',
+  'ideation_eval',
+  'plan',
+  'plan_eval',
+  'execution',
+  'execution_eval',
+  'memorization',
+]);
 
 // ---------------------------------------------------------------------------
 // Usage
@@ -61,27 +79,31 @@ export class ResumePendingError extends Error {
 
 const USAGE = `Usage: gobbi workflow resume --target <step> [options]
 
-Resume a workflow from the error state into a named target step. The PR C
-skeleton validates flags and opens the session store but the full resume
-compilation is populated by PR D — invoking this command today throws
-ResumePendingError (code: X001_RESUME_PR_D_PENDING).
+Resume a workflow from the error state into a named target step. Appends a
+workflow.resume event (plus an atomic decision.eval.skip when
+--force-memorization is set) and emits the compiled resume prompt to stdout.
 
 Required:
-  --target <step>        The step to resume into (ideation / plan / execution /
-                         execution_eval / memorization)
+  --target <step>        The step to resume into (ideation / ideation_eval /
+                         plan / plan_eval / execution / execution_eval /
+                         memorization). \`error\` is rejected.
 
 Options:
-  --force-memorization   Force resume into the memorization step regardless of
-                         the pathway detector's preferred target (PR D honours
-                         this flag)
-  --session-id <id>      Override the active session id
-  --json                 Reserved — PR D emits structured output on success
+  --force-memorization   Skip remaining work and resume into memorization
+                         regardless of the pathway. Atomically appends both
+                         decision.eval.skip (with the pathway snapshot for
+                         CP11 reversibility) and workflow.resume under one
+                         store transaction.
+  --session-id <id>      Override the active session id (defaults to
+                         CLAUDE_SESSION_ID or the single session under
+                         .gobbi/sessions/ if only one exists)
+  --json                 Reserved — structured output variant
   --help, -h             Show this help message
 
 Exit codes:
-  0   --help only
-  1   session resolution failed OR the resume body throws (PR D swaps in the
-      real compiler and its exit semantics)
+  0   success — event appended and prompt emitted
+  1   runtime failure (invalid target, missing event store, resume from
+      non-error state)
   2   argv parsing error (missing --target, unknown flag)`;
 
 const PARSE_OPTIONS = {
@@ -142,9 +164,19 @@ export async function runResumeWithOptions(
     process.exit(2);
   }
 
-  // Session + store resolution is real today so PR D's body swap does not
-  // need to re-plumb the filesystem layer. `runResumeWithOptions` reaches
-  // the pending throw only on the happy path through these checks.
+  // TODO(PR E): stepStartedAt state field — on successful resume the
+  // engine will timestamp the target step's entry so the verification
+  // runner can attribute wall-clock durations against configured budgets.
+  if (target === 'error' || !VALID_TARGETS.has(target)) {
+    process.stderr.write(
+      `gobbi workflow resume: invalid --target "${target}" — expected one of ` +
+        `${Array.from(VALID_TARGETS).join(', ')}\n`,
+    );
+    process.exit(1);
+  }
+
+  const forceMemorization = values['force-memorization'] === true;
+
   const sessionDir =
     overrides.sessionDir ??
     resolveSessionDir(
@@ -164,16 +196,151 @@ export async function runResumeWithOptions(
     process.exit(1);
   }
 
+  const sessionId = sessionDirName(sessionDir);
   const store = new EventStore(dbPath);
   try {
-    // Body deferred to PR D — see module docblock. The throw is intentional;
-    // PR D replaces the throw with a real resume-pathway compilation path.
-    // Known limitation (PR D): populate the real body (target-step validation,
-    // compiler invocation, state rewrite, event emission).
-    throw new ResumePendingError(
-      'resume not implemented in PR C — populated in PR D (full resume compilers)',
-    );
+    const state = resolveWorkflowState(sessionDir, store, sessionId);
+
+    if (state.currentStep !== 'error') {
+      process.stderr.write(
+        `gobbi workflow resume: cannot resume from non-error state ` +
+          `(currentStep=${state.currentStep})\n`,
+      );
+      process.exit(1);
+    }
+
+    // Detect pathway once — used in both branches. The detector runs on
+    // the PRE-resume state (still in `error`) because that's the evidence
+    // the resume prompt recaps. Running after the resume event lands
+    // would (a) fail the detector's error-state pre-condition, and (b)
+    // bury the triggering event under the new `workflow.resume` event's
+    // seq so the classifier would fall through to Crash.
+    let pathway;
+    try {
+      pathway = detectPathway(state, store);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      process.stderr.write(`gobbi workflow resume: ${message}\n`);
+      process.exit(1);
+    }
+
+    // Compile the resume prompt on the PRE-resume state + pre-append store
+    // for the same reason as above — the resume prompt recaps the pathway
+    // that triggered the error, and that evidence is only detectable before
+    // the `workflow.resume` event raises the resume-boundary seq.
+    const effectiveTarget = forceMemorization ? 'memorization' : target;
+    const prompt = compileResumePrompt(state, store, {
+      targetStep: effectiveTarget,
+    });
+
+    if (forceMemorization) {
+      const witnessSeqs: number[] = [];
+      if (pathway.kind === 'timeout') {
+        witnessSeqs.push(pathway.timeoutEventSeq);
+      } else if (pathway.kind === 'invalidTransition') {
+        witnessSeqs.push(pathway.invalidTransitionEventSeq);
+      } else if (pathway.kind === 'feedbackCap') {
+        for (const h of pathway.verdictHistory) witnessSeqs.push(h.verdictSeq);
+      } else if (pathway.kind === 'crash') {
+        witnessSeqs.push(...pathway.lastEventSeqs);
+        if (pathway.heartbeatEventSeq !== null) {
+          witnessSeqs.push(pathway.heartbeatEventSeq);
+        }
+      }
+      // Unknown pathway has no witness seqs — empty array is correct.
+
+      const priorError: PriorErrorSnapshot = {
+        pathway,
+        capturedAt: new Date().toISOString(),
+        stepAtError: state.currentStep,
+        witnessEventSeqs: witnessSeqs,
+      };
+
+      // Atomic two-event append. Per research Area 7, raw
+      // `store.transaction(...)` guarantees both events land or neither —
+      // `appendEventAndUpdateState` opens its own transaction per call and
+      // is not a safe substitute here. After the pair commits, refresh
+      // `state.json` once via `resolveWorkflowState` so downstream
+      // readers see the materialised state.
+      const skipEvent = createEvalSkip({
+        step: 'memorization',
+        priorError,
+      });
+      const resumeEvent = createResume({
+        targetStep: 'memorization',
+        fromError: true,
+      });
+
+      const ts = new Date().toISOString();
+      try {
+        store.transaction(() => {
+          store.append({
+            ts,
+            type: skipEvent.type,
+            step: state.currentStep,
+            data: JSON.stringify(skipEvent.data),
+            actor: 'cli',
+            parent_seq: null,
+            idempotencyKind: 'system',
+            sessionId,
+          });
+          store.append({
+            ts,
+            type: resumeEvent.type,
+            step: state.currentStep,
+            data: JSON.stringify(resumeEvent.data),
+            actor: 'cli',
+            parent_seq: null,
+            idempotencyKind: 'system',
+            sessionId,
+          });
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`gobbi workflow resume: ${message}\n`);
+        process.exit(1);
+      }
+
+      // Refresh state. The raw transaction bypassed state.json /
+      // events.jsonl mirroring (those live in `appendEventAndUpdateState`),
+      // so `resolveWorkflowState` falls through to `replayAll` and derives
+      // a fresh state — this materializes the updated state.json.
+      resolveWorkflowState(sessionDir, store, sessionId);
+    } else {
+      const resumeEvent = createResume({
+        targetStep: target,
+        fromError: true,
+      });
+
+      try {
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          state,
+          resumeEvent,
+          'cli',
+          sessionId,
+          'system',
+        );
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`gobbi workflow resume: ${message}\n`);
+        process.exit(1);
+      }
+    }
+
+    process.stdout.write(prompt.text);
+    if (!prompt.text.endsWith('\n')) process.stdout.write('\n');
   } finally {
     store.close();
   }
+}
+
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
+
+function sessionDirName(dir: string): string {
+  const parts = dir.split(/[\\/]+/);
+  return parts[parts.length - 1] ?? dir;
 }

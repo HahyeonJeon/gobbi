@@ -453,6 +453,58 @@ describe('lastN', () => {
 });
 
 // ===========================================================================
+// lastNAny
+// ===========================================================================
+
+describe('lastNAny', () => {
+  it('returns up to n most recent events regardless of type, seq DESC', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.start' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit', step: 'ideation' }));
+    store.append(makeSystemInput({ type: 'session.heartbeat', ts: '2026-01-01T00:00:01.000Z' }));
+    store.append(makeInput({ toolCallId: 'tc-4', type: 'workflow.step.skip' }));
+
+    const tail = store.lastNAny(3);
+    expect(tail).toHaveLength(3);
+    // Newest first, all types mixed.
+    expect(tail[0]!.seq).toBe(4);
+    expect(tail[0]!.type).toBe('workflow.step.skip');
+    expect(tail[1]!.seq).toBe(3);
+    expect(tail[1]!.type).toBe('session.heartbeat');
+    expect(tail[2]!.seq).toBe(2);
+    expect(tail[2]!.type).toBe('workflow.step.exit');
+  });
+
+  it('returns empty array for an empty store', () => {
+    using store = new EventStore(':memory:');
+
+    const tail = store.lastNAny(5);
+    expect(tail).toHaveLength(0);
+  });
+
+  it('returns fewer rows than requested when count < n', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-only', type: 'workflow.start' }));
+
+    const tail = store.lastNAny(10);
+    expect(tail).toHaveLength(1);
+    expect(tail[0]!.seq).toBe(1);
+  });
+
+  it('returns empty array when n <= 0', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit' }));
+
+    expect(store.lastNAny(0)).toHaveLength(0);
+    expect(store.lastNAny(-1)).toHaveLength(0);
+  });
+});
+
+// ===========================================================================
 // transaction
 // ===========================================================================
 

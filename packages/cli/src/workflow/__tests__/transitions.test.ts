@@ -691,7 +691,7 @@ describe('transition table integrity', () => {
 describe('initialState', () => {
   it('creates state at idle with correct defaults', () => {
     const state = initialState('sess-123');
-    expect(state.schemaVersion).toBe(2);
+    expect(state.schemaVersion).toBe(3);
     expect(state.sessionId).toBe('sess-123');
     expect(state.currentStep).toBe('idle');
     expect(state.currentSubstate).toBeNull();

@@ -164,7 +164,7 @@ export interface WorkflowState {
  */
 export function initialState(sessionId: string): WorkflowState {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     sessionId,
     currentStep: 'idle',
     currentSubstate: null,

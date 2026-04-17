@@ -1,8 +1,17 @@
 /**
- * Workflow event category — 8 event types tracking session lifecycle.
+ * Workflow event category — 9 event types tracking session lifecycle.
  *
  * Core events: start, step.exit, step.skip, eval.decide, finish
- * Error/recovery events: step.timeout, abort, resume
+ * Error/recovery events: step.timeout, abort, resume, invalid_transition
+ *
+ * `workflow.invalid_transition` is the audit-emit-on-rejection record
+ * introduced in PR D.1. When `appendEventAndUpdateState`'s reducer rejects
+ * an event, the engine rolls back the outer transaction, then opens a
+ * fresh transaction and appends one `workflow.invalid_transition` with the
+ * rejection context. This turns previously-silent reducer errors into an
+ * observable, CP11-reversible audit trail. See `workflow/engine.ts` for
+ * the refactor details and `specs/errors.pathway-detect.ts` for the
+ * detector branch that reads these events.
  */
 
 // ---------------------------------------------------------------------------
@@ -18,6 +27,7 @@ export const WORKFLOW_EVENTS = {
   FINISH: 'workflow.finish',
   ABORT: 'workflow.abort',
   RESUME: 'workflow.resume',
+  INVALID_TRANSITION: 'workflow.invalid_transition',
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -71,6 +81,31 @@ export interface ResumeData {
   readonly fromError: boolean;
 }
 
+/**
+ * Audit record for a reducer rejection. Emitted by
+ * `engine.ts::appendEventAndUpdateState` when `reduce()` returns
+ * `{ok: false}`. Five fields:
+ *
+ * - `rejectedEventType` — the type string of the event that was rejected.
+ * - `rejectedEventSeq` — always `null` for PR D.1. The rejected event was
+ *   inside a rolled-back SQLite transaction and therefore never persisted,
+ *   so no seq exists for it. The audit event itself has a seq (the row seq
+ *   assigned by `store.append`); downstream tooling can cite that.
+ * - `stepAtRejection` — the current step at the time of rejection.
+ * - `reducerMessage` — human-readable error message from the reducer's
+ *   `{ok: false, error}` return.
+ * - `timestamp` — ISO 8601 timestamp of the audit-emit (same wall-clock
+ *   reading used for the rejected event's idempotency key, so the two
+ *   events share the same millisecond).
+ */
+export interface InvalidTransitionData {
+  readonly rejectedEventType: string;
+  readonly rejectedEventSeq: number | null;
+  readonly stepAtRejection: string;
+  readonly reducerMessage: string;
+  readonly timestamp: string;
+}
+
 // ---------------------------------------------------------------------------
 // 5. Discriminated union for category events
 // ---------------------------------------------------------------------------
@@ -83,7 +118,8 @@ export type WorkflowEvent =
   | { readonly type: typeof WORKFLOW_EVENTS.EVAL_DECIDE; readonly data: EvalDecideData }
   | { readonly type: typeof WORKFLOW_EVENTS.FINISH; readonly data: FinishData }
   | { readonly type: typeof WORKFLOW_EVENTS.ABORT; readonly data: AbortData }
-  | { readonly type: typeof WORKFLOW_EVENTS.RESUME; readonly data: ResumeData };
+  | { readonly type: typeof WORKFLOW_EVENTS.RESUME; readonly data: ResumeData }
+  | { readonly type: typeof WORKFLOW_EVENTS.INVALID_TRANSITION; readonly data: InvalidTransitionData };
 
 // ---------------------------------------------------------------------------
 // 6. Type guard — Set.has() on values, NEVER `in` operator on keys
@@ -127,4 +163,10 @@ export function createAbort(data: AbortData): WorkflowEvent {
 
 export function createResume(data: ResumeData): WorkflowEvent {
   return { type: WORKFLOW_EVENTS.RESUME, data };
+}
+
+export function createWorkflowInvalidTransition(
+  data: InvalidTransitionData,
+): WorkflowEvent {
+  return { type: WORKFLOW_EVENTS.INVALID_TRANSITION, data };
 }

@@ -647,6 +647,50 @@ describe('workflow.abort', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 15b. workflow.invalid_transition: audit record, state unchanged
+// ---------------------------------------------------------------------------
+
+describe('workflow.invalid_transition', () => {
+  it('is an observational no-op — state does not change', () => {
+    const state = stateAt('error', {
+      feedbackRound: 2,
+      completedSteps: ['ideation', 'plan'],
+    });
+    const event: Event = {
+      type: WORKFLOW_EVENTS.INVALID_TRANSITION,
+      data: {
+        rejectedEventType: 'workflow.abort',
+        rejectedEventSeq: null,
+        stepAtRejection: 'ideation',
+        reducerMessage: 'workflow.abort requires error state, got ideation',
+        timestamp: '2026-01-01T00:00:00.000Z',
+      },
+    };
+    const next = expectOk(reduce(state, event));
+    // Structural equality — every field preserved, no mutation.
+    expect(next).toEqual(state);
+  });
+
+  it('applies cleanly from any active step (replay-safe)', () => {
+    // The audit event is emitted regardless of current step; reducer must
+    // tolerate replay from any non-terminal step.
+    const state = stateAt('execution');
+    const event: Event = {
+      type: WORKFLOW_EVENTS.INVALID_TRANSITION,
+      data: {
+        rejectedEventType: 'workflow.finish',
+        rejectedEventSeq: null,
+        stepAtRejection: 'execution',
+        reducerMessage: 'workflow.finish requires memorization state, got execution',
+        timestamp: '2026-01-01T00:00:00.000Z',
+      },
+    };
+    const next = expectOk(reduce(state, event));
+    expect(next).toEqual(state);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 16. workflow.resume: error -> targetStep
 // ---------------------------------------------------------------------------
 
@@ -728,6 +772,62 @@ describe('informational events', () => {
     const state = stateAt('ideation');
     const next = expectOk(reduce(state, evalSkip('ideation')));
     expect(next).toEqual(state);
+  });
+
+  it('decision.eval.skip with priorError is a no-op (CP11 reversibility)', () => {
+    // Schema v3 extension — the `priorError` snapshot carries full
+    // ErrorPathway context for the force-memorization audit trail, but
+    // the reducer MUST NOT project any of it into state. The audit is on
+    // the event itself; state is already correct because the caller emits
+    // a `workflow.resume` in the same transaction which drives the actual
+    // step transition.
+    const state = stateAt('error');
+    const skipWithPriorError: Event = {
+      type: DECISION_EVENTS.EVAL_SKIP,
+      data: {
+        step: 'memorization',
+        priorError: {
+          pathway: {
+            kind: 'crash',
+            stepAtCrash: 'execution',
+            lastEventSeqs: [1, 2, 3],
+            heartbeatEventSeq: null,
+          },
+          capturedAt: '2026-02-01T00:00:00.000Z',
+          stepAtError: 'error',
+          witnessEventSeqs: [1, 2, 3],
+        },
+      },
+    };
+    const next = expectOk(reduce(state, skipWithPriorError));
+    // State is byte-for-byte unchanged — including no new fields derived
+    // from the priorError payload.
+    expect(next).toEqual(state);
+    expect(next).toBe(state);
+  });
+
+  it('decision.eval.skip with priorError round-trips through JSON without loss', () => {
+    // Guards the wire-format invariant that CP11 reconstruction
+    // (later read via `store.lastN('decision.eval.skip', 1)[0].data`) sees
+    // the exact nested ErrorPathway shape the caller emitted.
+    const priorError = {
+      pathway: {
+        kind: 'timeout' as const,
+        timedOutStep: 'execution',
+        elapsedMs: 12_000,
+        configuredTimeoutMs: 10_000,
+        timeoutEventSeq: 42,
+        inProgressArtifacts: ['work.md'],
+      },
+      capturedAt: '2026-02-01T00:00:00.000Z',
+      stepAtError: 'error',
+      witnessEventSeqs: [42],
+    };
+    const payload = { step: 'memorization', priorError };
+    const reparsed = JSON.parse(JSON.stringify(payload)) as typeof payload;
+    expect(reparsed).toEqual(payload);
+    expect(reparsed.priorError.pathway.kind).toBe('timeout');
+    expect(reparsed.priorError.witnessEventSeqs).toEqual([42]);
   });
 });
 
