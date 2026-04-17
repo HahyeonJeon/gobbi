@@ -62,6 +62,11 @@ export interface AppendResult {
  * restoreStateFromBackup(). The jsonl line is the only
  * non-transactional artifact, which is acceptable since it's a
  * diagnostic log, not a source of truth.
+ *
+ * `parentSeq` links the new event to a prior event's `seq` — used by
+ * the capture commands (C.6) to connect `delegation.complete` /
+ * `delegation.fail` to the originating `delegation.spawn`. Omit or
+ * pass `null` when no parent linkage applies.
  */
 export function appendEventAndUpdateState(
   store: EventStore,
@@ -72,6 +77,7 @@ export function appendEventAndUpdateState(
   sessionId: string,
   idempotencyKind: AppendInput['idempotencyKind'],
   toolCallId?: string,
+  parentSeq?: number | null,
 ): AppendResult {
   return store.transaction(() => {
     // Track whether state.json existed before the operation. When this
@@ -94,6 +100,7 @@ export function appendEventAndUpdateState(
       idempotencyKind,
       sessionId,
       toolCallId,
+      parent_seq: parentSeq ?? null,
     };
     const row = store.append(input);
 

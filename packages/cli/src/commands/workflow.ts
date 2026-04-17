@@ -129,6 +129,24 @@ export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
       await runGuard(args);
     },
   },
+  {
+    name: 'capture-subagent',
+    summary:
+      'SubagentStop hook handler — persists subagent output and emits delegation.complete / delegation.fail',
+    run: async (args: string[]): Promise<void> => {
+      const { runCaptureSubagent } = await import('./workflow/capture-subagent.js');
+      await runCaptureSubagent(args);
+    },
+  },
+  {
+    name: 'capture-plan',
+    summary:
+      'PostToolUse(ExitPlanMode) hook handler — writes plan.md and emits artifact.write',
+    run: async (args: string[]): Promise<void> => {
+      const { runCapturePlan } = await import('./workflow/capture-plan.js');
+      await runCapturePlan(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
