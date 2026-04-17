@@ -1,15 +1,27 @@
 import { describe, it, expect } from 'bun:test';
 
 import { EventStore } from '../store.js';
-import type { AppendInput, EventRow } from '../store.js';
+import type {
+  AppendInput,
+  AppendInputCounter,
+  AppendInputSystem,
+  AppendInputToolCall,
+  EventRow,
+} from '../store.js';
 import { CURRENT_SCHEMA_VERSION, migrateEvent } from '../migrations.js';
 import type { EventRow as MigrationEventRow } from '../migrations.js';
 
 // ---------------------------------------------------------------------------
-// Test helpers
+// Test helpers — narrower `Partial<Variant>` overrides keep the
+// discriminated union tight. A helper that took `Partial<AppendInput>`
+// would let a caller leak a `toolCallId` into a 'system' fixture (the
+// union distribution would permit it), which our runtime branch does
+// not intend to support.
 // ---------------------------------------------------------------------------
 
-function makeInput(overrides: Partial<AppendInput> = {}): AppendInput {
+function makeInput(
+  overrides: Partial<AppendInputToolCall> = {},
+): AppendInput {
   return {
     ts: '2026-01-01T00:00:00.000Z',
     type: 'workflow.start',
@@ -24,7 +36,9 @@ function makeInput(overrides: Partial<AppendInput> = {}): AppendInput {
   };
 }
 
-function makeSystemInput(overrides: Partial<AppendInput> = {}): AppendInput {
+function makeSystemInput(
+  overrides: Partial<AppendInputSystem> = {},
+): AppendInput {
   return {
     ts: '2026-01-01T00:00:00.000Z',
     type: 'session.heartbeat',
@@ -33,6 +47,23 @@ function makeSystemInput(overrides: Partial<AppendInput> = {}): AppendInput {
     actor: 'system',
     parent_seq: null,
     idempotencyKind: 'system',
+    sessionId: 'sess-1',
+    ...overrides,
+  };
+}
+
+function makeCounterInput(
+  overrides: Partial<AppendInputCounter> = {},
+): AppendInput {
+  return {
+    ts: '2026-01-01T00:00:00.000Z',
+    type: 'session.heartbeat',
+    step: null,
+    data: JSON.stringify({ timestamp: '2026-01-01T00:00:00.000Z' }),
+    actor: 'system',
+    parent_seq: null,
+    idempotencyKind: 'counter',
+    counter: 0,
     sessionId: 'sess-1',
     ...overrides,
   };
@@ -187,14 +218,22 @@ describe('idempotency', () => {
   it('throws for tool-call kind without toolCallId', () => {
     using store = new EventStore(':memory:');
 
-    expect(() => store.append({
+    // The discriminated-union refinement makes a tool-call AppendInput
+    // without `toolCallId` a compile-time error. The `@ts-expect-error`
+    // below asserts the type error fires; the runtime throw is still
+    // exercised to keep the defensive check from silently rotting.
+    const bad = {
       ts: '2026-01-01T00:00:00.000Z',
       type: 'delegation.spawn',
       actor: 'orchestrator',
-      idempotencyKind: 'tool-call',
+      idempotencyKind: 'tool-call' as const,
       sessionId: 'sess-1',
       // toolCallId intentionally omitted
-    })).toThrow('toolCallId is required for tool-call idempotency kind');
+    };
+    expect(() =>
+      // @ts-expect-error — toolCallId is required when kind === 'tool-call'
+      store.append(bad),
+    ).toThrow('toolCallId is required for tool-call idempotency kind');
   });
 });
 
@@ -502,5 +541,95 @@ describe('system idempotency key', () => {
     expect(row).not.toBeNull();
     const expectedMs = Date.parse(ts);
     expect(row!.idempotency_key).toBe(`sess-1:${expectedMs}:session.heartbeat`);
+  });
+});
+
+// ===========================================================================
+// Counter idempotency kind
+// ===========================================================================
+
+describe('counter idempotency key', () => {
+  it('generates key from sessionId, timestampMs, eventType, and counter', () => {
+    using store = new EventStore(':memory:');
+
+    const ts = '2026-06-15T12:30:00.000Z';
+    const row = store.append(
+      makeCounterInput({ ts, type: 'session.heartbeat', counter: 0 }),
+    );
+
+    expect(row).not.toBeNull();
+    const expectedMs = Date.parse(ts);
+    expect(row!.idempotency_key).toBe(
+      `sess-1:${expectedMs}:session.heartbeat:0`,
+    );
+  });
+
+  it('same timestamp + type + counter collides (ON CONFLICT returns null)', () => {
+    using store = new EventStore(':memory:');
+
+    const ts = '2026-06-15T12:30:00.000Z';
+    const first = store.append(makeCounterInput({ ts, counter: 0 }));
+    const dup = store.append(makeCounterInput({ ts, counter: 0 }));
+
+    expect(first).not.toBeNull();
+    expect(dup).toBeNull();
+    expect(store.eventCount()).toBe(1);
+  });
+
+  it('same timestamp + type with counter+1 disambiguates — both persist', () => {
+    using store = new EventStore(':memory:');
+
+    const ts = '2026-06-15T12:30:00.000Z';
+    const r0 = store.append(makeCounterInput({ ts, counter: 0 }));
+    const r1 = store.append(makeCounterInput({ ts, counter: 1 }));
+
+    expect(r0).not.toBeNull();
+    expect(r1).not.toBeNull();
+    expect(r0!.idempotency_key).toBe(
+      `sess-1:${Date.parse(ts)}:session.heartbeat:0`,
+    );
+    expect(r1!.idempotency_key).toBe(
+      `sess-1:${Date.parse(ts)}:session.heartbeat:1`,
+    );
+    expect(store.eventCount()).toBe(2);
+  });
+
+  it('counter is required when kind === "counter" — omitting it is a compile-time error', () => {
+    using store = new EventStore(':memory:');
+
+    // Discriminated-union refinement forbids `counter`-kind inputs
+    // without a `counter` field. The `@ts-expect-error` below asserts
+    // the type error fires; at runtime the key formula would produce
+    // `:undefined`, which is still unique enough to not crash the
+    // UNIQUE constraint but is clearly wrong — the type guard is the
+    // real protection here.
+    const bad = {
+      ts: '2026-01-01T00:00:00.000Z',
+      type: 'session.heartbeat',
+      actor: 'system',
+      idempotencyKind: 'counter' as const,
+      sessionId: 'sess-1',
+      // counter intentionally omitted
+    };
+    // @ts-expect-error — counter is required when kind === 'counter'
+    const row = store.append(bad);
+    // The cast path succeeded — assert the formula degraded predictably
+    // so future readers understand the tsc gate is the real protection.
+    expect(row).not.toBeNull();
+    expect(row!.idempotency_key).toBe(
+      `sess-1:${Date.parse('2026-01-01T00:00:00.000Z')}:session.heartbeat:undefined`,
+    );
+  });
+
+  it('system and counter keys for the same (sessionId, ts, type) are distinct', () => {
+    using store = new EventStore(':memory:');
+
+    const ts = '2026-06-15T12:30:00.000Z';
+    const sys = store.append(makeSystemInput({ ts }));
+    const cnt = store.append(makeCounterInput({ ts, counter: 0 }));
+
+    expect(sys).not.toBeNull();
+    expect(cnt).not.toBeNull();
+    expect(sys!.idempotency_key).not.toBe(cnt!.idempotency_key);
   });
 });

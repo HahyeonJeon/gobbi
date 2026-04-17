@@ -67,6 +67,20 @@ export interface AppendResult {
  * the capture commands (C.6) to connect `delegation.complete` /
  * `delegation.fail` to the originating `delegation.spawn`. Omit or
  * pass `null` when no parent linkage applies.
+ *
+ * `counter` is REQUIRED when `idempotencyKind === 'counter'` and
+ * FORBIDDEN otherwise. `gobbi workflow stop` supplies it for
+ * same-millisecond heartbeat disambiguation; other callers leave it
+ * `undefined`. The runtime check mirrors the discriminated-union
+ * constraint in `AppendInput` — it is defensive against callers that
+ * cast through `unknown` to bypass tsc.
+ *
+ * `ts` overrides the event timestamp the engine would otherwise generate
+ * from `new Date().toISOString()`. This matters for the `'counter'` kind
+ * because the idempotency key is computed from the timestamp-millisecond:
+ * the caller scans existing heartbeats for the same ms to pick a non-
+ * colliding counter, then passes the same `ts` down so the key uses the
+ * same ms as the scan. When omitted, the engine uses wall-clock time.
  */
 export function appendEventAndUpdateState(
   store: EventStore,
@@ -78,6 +92,8 @@ export function appendEventAndUpdateState(
   idempotencyKind: AppendInput['idempotencyKind'],
   toolCallId?: string,
   parentSeq?: number | null,
+  counter?: number,
+  ts?: string,
 ): AppendResult {
   return store.transaction(() => {
     // Track whether state.json existed before the operation. When this
@@ -90,18 +106,19 @@ export function appendEventAndUpdateState(
     backupState(dir);
 
     // 2. Append event to SQLite store
-    const ts = new Date().toISOString();
-    const input: AppendInput = {
-      ts,
+    const effectiveTs = ts ?? new Date().toISOString();
+    const input: AppendInput = buildAppendInput({
+      ts: effectiveTs,
       type: event.type,
       step: state.currentStep,
       data: JSON.stringify(event.data),
       actor,
-      idempotencyKind,
       sessionId,
+      idempotencyKind,
       toolCallId,
-      parent_seq: parentSeq ?? null,
-    };
+      parentSeq: parentSeq ?? null,
+      counter,
+    });
     const row = store.append(input);
 
     // Deduplicated — no change
@@ -158,6 +175,68 @@ export function appendEventAndUpdateState(
 
     return { state: result.state, persisted: true };
   });
+}
+
+// ---------------------------------------------------------------------------
+// AppendInput construction — maps the compound-operation parameters onto
+// the discriminated-union `AppendInput`. Keeping the variant selection
+// here lets the engine's positional signature stay stable for callers
+// while the store type enforces the per-kind invariants.
+// ---------------------------------------------------------------------------
+
+interface BuildAppendInputArgs {
+  readonly ts: string;
+  readonly type: string;
+  readonly step: string | null;
+  readonly data: string;
+  readonly actor: string;
+  readonly sessionId: string;
+  readonly idempotencyKind: AppendInput['idempotencyKind'];
+  readonly toolCallId: string | undefined;
+  readonly parentSeq: number | null;
+  readonly counter: number | undefined;
+}
+
+function buildAppendInput(args: BuildAppendInputArgs): AppendInput {
+  const base = {
+    ts: args.ts,
+    type: args.type,
+    step: args.step,
+    data: args.data,
+    actor: args.actor,
+    parent_seq: args.parentSeq,
+    sessionId: args.sessionId,
+  } as const;
+
+  switch (args.idempotencyKind) {
+    case 'tool-call': {
+      if (args.toolCallId === undefined) {
+        throw new Error(
+          'appendEventAndUpdateState: toolCallId is required for tool-call idempotency kind',
+        );
+      }
+      return {
+        ...base,
+        idempotencyKind: 'tool-call',
+        toolCallId: args.toolCallId,
+      };
+    }
+    case 'system': {
+      return { ...base, idempotencyKind: 'system' };
+    }
+    case 'counter': {
+      if (args.counter === undefined) {
+        throw new Error(
+          'appendEventAndUpdateState: counter is required for counter idempotency kind',
+        );
+      }
+      return {
+        ...base,
+        idempotencyKind: 'counter',
+        counter: args.counter,
+      };
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------

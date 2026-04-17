@@ -8,10 +8,12 @@
  *
  * ## Scope (PR B / B.4)
  *
- * Only `validate` is wired today. PR C adds `init`, `status`, `events`,
- * `next`, `transition`, `resume`, `guard`, `capture-subagent`, `capture-plan`,
- * and `stop` via new entries in `WORKFLOW_COMMANDS` — the dispatcher does not
- * need to change when those land.
+ * PR C has shipped `init`, `status`, `events`, `next`, `transition`,
+ * `resume`, `guard`, `capture-subagent`, `capture-plan`, and `stop` via
+ * entries in `WORKFLOW_COMMANDS` — the dispatcher itself did not need to
+ * change. `validate` remains the only direct import; the rest use
+ * dynamic `import()` so the hot path does not pay their load cost at
+ * startup.
  *
  * ## Extensibility contract
  *
@@ -145,6 +147,15 @@ export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
     run: async (args: string[]): Promise<void> => {
       const { runCapturePlan } = await import('./workflow/capture-plan.js');
       await runCapturePlan(args);
+    },
+  },
+  {
+    name: 'stop',
+    summary:
+      'Stop hook handler — writes a session.heartbeat event via the counter idempotency kind',
+    run: async (args: string[]): Promise<void> => {
+      const { runStop } = await import('./workflow/stop.js');
+      await runStop(args);
     },
   },
 ];
