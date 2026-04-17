@@ -74,7 +74,7 @@ describe('isValidState', () => {
 
   it('accepts a state with populated fields', () => {
     const state: WorkflowState = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       sessionId: 'sess-1',
       currentStep: 'execution',
       currentSubstate: null,
@@ -89,6 +89,7 @@ describe('isValidState', () => {
       ],
       feedbackRound: 1,
       maxFeedbackRounds: 3,
+      lastVerdictOutcome: null,
     };
     expect(isValidState(state)).toBe(true);
   });

@@ -90,11 +90,15 @@ function reduceWorkflow(
         );
       }
       const nextStep = rule.to;
+      // Exiting a productive step closes the verdict window — the next
+      // verdict must fire within the new step to count. Clearing avoids
+      // stale outcomes leaking across step boundaries.
       return ok({
         ...state,
         currentStep: nextStep,
         currentSubstate: nextStep === 'ideation' ? 'discussing' : null,
         completedSteps: [...state.completedSteps, event.data.step],
+        lastVerdictOutcome: null,
       });
     }
 
@@ -323,6 +327,7 @@ function reduceDecision(
           ...state,
           currentStep: rule.to,
           currentSubstate: rule.to === 'ideation' ? 'discussing' : null,
+          lastVerdictOutcome: 'pass',
         });
       }
 
@@ -338,6 +343,7 @@ function reduceDecision(
             ...state,
             currentStep: 'error',
             currentSubstate: null,
+            lastVerdictOutcome: 'revise',
           });
         }
 
@@ -364,10 +370,12 @@ function reduceDecision(
           currentStep: rule.to,
           currentSubstate: rule.to === 'ideation' ? 'discussing' : null,
           feedbackRound: nextFeedbackRound,
+          lastVerdictOutcome: 'revise',
         });
       }
 
-      // escalate — informational, no state change
+      // escalate — informational, leaves lastVerdictOutcome unchanged so the
+      // prior outcome (if any) stays visible to predicates.
       return ok(state);
     }
 
@@ -401,6 +409,7 @@ function reduceGuard(
             reason: event.data.reason,
             step: event.data.step,
             timestamp: event.data.timestamp,
+            severity: 'error',
           },
         ],
       });
@@ -409,6 +418,26 @@ function reduceGuard(
     case GUARD_EVENTS.OVERRIDE: {
       // Informational — no state change
       return ok(state);
+    }
+
+    case GUARD_EVENTS.WARN: {
+      // Non-gating advisory — records into violations[] with warning
+      // severity so `status` / audit can surface guard activity without
+      // conflating with deny-effect violations.
+      return ok({
+        ...state,
+        violations: [
+          ...state.violations,
+          {
+            guardId: event.data.guardId,
+            toolName: event.data.toolName,
+            reason: event.data.reason,
+            step: event.data.step,
+            timestamp: event.data.timestamp,
+            severity: 'warning',
+          },
+        ],
+      });
     }
 
     default:

@@ -5,7 +5,14 @@
  * CURRENT_SCHEMA_VERSION advances, older events are migrated on read
  * by walking the migration chain from their stored version to the target.
  *
- * Schema v1 is the initial version — no migrations exist yet.
+ * ## Version history
+ *
+ * - v1 — initial release (PR A).
+ * - v2 — adds `guard.warn` event type and the state fields
+ *   `lastVerdictOutcome` + `GuardViolationRecord.severity`. Event *data*
+ *   shape is identical across v1→v2, so the registered v1 migration is an
+ *   identity. New v2-only fields on state are normalised on read, not
+ *   written retroactively (Greg Young discipline — see `v050-session.md`).
  */
 
 // ---------------------------------------------------------------------------
@@ -28,7 +35,7 @@ export interface EventRow {
 // Schema version tracking
 // ---------------------------------------------------------------------------
 
-export const CURRENT_SCHEMA_VERSION = 1;
+export const CURRENT_SCHEMA_VERSION = 2;
 
 // ---------------------------------------------------------------------------
 // Migration registry
@@ -40,10 +47,14 @@ type MigrationFn = (eventData: unknown) => unknown;
  * Maps schema_version N to the function that transforms event data
  * from version N to version N+1.
  *
- * When v2 is needed, add: `1: (data) => transformV1toV2(data)`
+ * v1→v2 is an explicit identity: event *data* payloads are wire-compatible
+ * across the bump (the v2 changes are new event types plus new state fields,
+ * not payload transforms). Declaring the identity registers the hop so a
+ * future v3 migration inherits a tested composition, rather than falling
+ * through to the missing-step error.
  */
 const migrations: Readonly<Record<number, MigrationFn>> = {
-  // No migrations yet — schema v1 is the first version
+  1: (data) => data,
 };
 
 // ---------------------------------------------------------------------------
