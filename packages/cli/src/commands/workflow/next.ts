@@ -11,9 +11,9 @@
  * ## Error branch
  *
  * When `state.currentStep === 'error'`, `next` dispatches to
- * `compileErrorPrompt(state, store)`. PR C lands the typed forward-pin only
- * — the body still throws until PR D populates the four pathway-specific
- * compilers and the pathway detector.
+ * `compileErrorPrompt(state, store)`, which runs the pathway detector and
+ * emits a pathway-specific error-state prompt (crash / timeout /
+ * feedbackCap / invalidTransition / unknown).
  *
  * ## Scope (PR C)
  *
@@ -65,8 +65,9 @@ Options:
   --help, -h          Show this help message
 
 Exits 1 when no active session can be resolved or the event store is
-missing. Throws (exit 1) when the workflow is in the \`error\` step — PR D
-populates the error-pathway compilers.`;
+missing. When the workflow is in the \`error\` step, emits a pathway-specific
+error-state prompt (crash / timeout / feedbackCap / invalidTransition /
+unknown).`;
 
 const PARSE_OPTIONS = {
   help: { type: 'boolean', short: 'h', default: false },
@@ -178,8 +179,8 @@ export async function runNextWithOptions(
 /**
  * Branch on `state.currentStep`:
  *
- *   - `error` → call {@link compileErrorPrompt}. PR C forward-pins the
- *     signature; PR D swaps the body.
+ *   - `error` → call {@link compileErrorPrompt} (pathway detector +
+ *     per-pathway compiler) and return the compiled prompt text directly.
  *   - Anything else → resolve the step's spec, apply the substate overlay
  *     when present, compile, and return `CompiledPrompt.text`.
  *
@@ -192,10 +193,15 @@ export async function compileCurrentStep(
   specsDir: string,
 ): Promise<string> {
   if (state.currentStep === 'error') {
-    // Forward-pinned signature — PR D replaces the throw with a real
-    // pathway-specific CompiledPrompt.
-    compileErrorPrompt(state, store);
+    // Early-return the pathway-specific prompt. The dispatcher runs
+    // `detectPathway` + `visitPathway` against the five pathway compilers
+    // under `specs/errors.pathway-compilers.ts`.
+    const prompt = compileErrorPrompt(state, store);
+    return prompt.text;
   }
+
+  // TODO(PR E): verification runner hooks — post-compile verification of
+  // the emitted prompt against `StepSpec.verification` fires here.
 
   const graphPath = join(specsDir, 'index.json');
   // Suppress the graph loader's best-effort missing-spec warnings — they

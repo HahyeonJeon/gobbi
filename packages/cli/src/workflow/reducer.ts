@@ -93,6 +93,11 @@ function reduceWorkflow(
       // Exiting a productive step closes the verdict window — the next
       // verdict must fire within the new step to count. Clearing avoids
       // stale outcomes leaking across step boundaries.
+      //
+      // TODO(PR E): meta.timeoutMs detection wire-up — PR E attaches a
+      // per-step timeout budget derived from spec metadata so the
+      // heartbeat loop can fire workflow.step.timeout when the budget
+      // elapses.
       return ok({
         ...state,
         currentStep: nextStep,

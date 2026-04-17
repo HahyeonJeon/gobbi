@@ -1,12 +1,21 @@
 /**
- * Unit tests for `gobbi workflow resume` — PR C flag-parsing skeleton.
+ * Unit + integration tests for `gobbi workflow resume`.
  *
  * Coverage:
  *   - Missing `--target` exits 2 with usage on stderr.
  *   - Unknown flag exits 2 with usage on stderr.
- *   - Valid flags reach the deferred body which throws a
- *     ResumePendingError whose code is `X001_RESUME_PR_D_PENDING`.
- *   - CODE_SEVERITY reflects `X001_RESUME_PR_D_PENDING` as 'error' severity.
+ *   - `--target error` is explicitly rejected (exit 1).
+ *   - Non-active-step target (e.g. `done`) exits 1.
+ *   - Resume from non-error state exits 1.
+ *   - `--target plan` from error state appends workflow.resume, emits
+ *     the resume prompt on stdout, exits 0.
+ *   - `--force-memorization` atomically appends BOTH decision.eval.skip
+ *     (carrying priorError) AND workflow.resume under one transaction,
+ *     emits the resume prompt targeting memorization, exits 0.
+ *   - CP11 reversibility: the priorError snapshot round-trips through the
+ *     event store — read it back, parse, and assert the pathway structure
+ *     matches the freshly-detected pathway on the error state (modulo
+ *     `capturedAt`).
  *   - WORKFLOW_COMMANDS registers the `resume` subcommand.
  */
 
@@ -16,12 +25,19 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
-import {
-  ResumePendingError,
-  runResumeWithOptions,
-} from '../resume.js';
+import { runResumeWithOptions } from '../resume.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
-import { CODE_SEVERITY } from '../../../workflow/diagnostics.js';
+import {
+  appendEventAndUpdateState,
+  resolveWorkflowState,
+} from '../../../workflow/engine.js';
+import {
+  createStepExit,
+  createStepTimeout,
+} from '../../../workflow/events/workflow.js';
+import { EventStore } from '../../../workflow/store.js';
+import { detectPathway } from '../../../specs/errors.js';
+import type { ErrorPathway } from '../../../specs/errors.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap
@@ -121,6 +137,37 @@ async function initScratchSession(
   return { sessionDir, repo };
 }
 
+/**
+ * Drive a freshly-initialised session into the `error` state by firing a
+ * `workflow.step.timeout` event against the ideation step. The reducer
+ * transitions `ideation → error` on STEP_TIMEOUT for any active step.
+ */
+async function driveToErrorState(
+  sessionDir: string,
+  sessionId: string,
+): Promise<void> {
+  const store = new EventStore(join(sessionDir, 'gobbi.db'));
+  try {
+    const state = resolveWorkflowState(sessionDir, store, sessionId);
+    appendEventAndUpdateState(
+      store,
+      sessionDir,
+      state,
+      createStepTimeout({
+        step: state.currentStep,
+        elapsedMs: 300_000,
+        configuredTimeoutMs: 120_000,
+      }),
+      'hook',
+      sessionId,
+      'tool-call',
+      'tc-drive-timeout',
+    );
+  } finally {
+    store.close();
+  }
+}
+
 // ===========================================================================
 // Flag parsing — failure paths
 // ===========================================================================
@@ -148,61 +195,204 @@ describe('runResumeWithOptions — argv parsing', () => {
     );
 
     expect(captured.exitCode).toBe(2);
-    // parseArgs surfaces "Unknown option" with the offending flag name.
     expect(captured.stderr).toContain('gobbi workflow resume');
   });
 });
 
 // ===========================================================================
-// Body — deferred throw with the X001 sentinel
+// Target validation — pre-reducer gates
 // ===========================================================================
 
-describe('runResumeWithOptions — body throws ResumePendingError', () => {
-  test('valid flags reach the body which throws X001_RESUME_PR_D_PENDING', async () => {
-    const { sessionDir } = await initScratchSession('resume-throw');
+describe('runResumeWithOptions — target validation', () => {
+  test('--target error is explicitly rejected (exit 1)', async () => {
+    const { sessionDir } = await initScratchSession('resume-target-error');
+    await driveToErrorState(sessionDir, 'resume-target-error');
 
-    let caught: unknown;
-    try {
-      await runResumeWithOptions(
-        ['--target', 'ideation'],
-        { sessionDir },
-      );
-    } catch (err) {
-      caught = err;
-    }
-    expect(caught).toBeInstanceOf(ResumePendingError);
-    expect((caught as ResumePendingError).code).toBe(
-      'X001_RESUME_PR_D_PENDING',
+    await captureExit(() =>
+      runResumeWithOptions(['--target', 'error'], { sessionDir }),
     );
-    expect((caught as ResumePendingError).message).toContain('PR D');
+
+    expect(captured.exitCode).toBe(1);
+    expect(captured.stderr).toContain('invalid --target');
   });
 
-  test('--force-memorization is accepted and still reaches the pending throw', async () => {
-    const { sessionDir } = await initScratchSession('resume-force');
+  test('non-active-step target (e.g. done) exits 1', async () => {
+    const { sessionDir } = await initScratchSession('resume-target-done');
+    await driveToErrorState(sessionDir, 'resume-target-done');
 
-    let caught: unknown;
-    try {
-      await runResumeWithOptions(
-        ['--target', 'memorization', '--force-memorization'],
-        { sessionDir },
-      );
-    } catch (err) {
-      caught = err;
-    }
-    expect(caught).toBeInstanceOf(ResumePendingError);
-    expect((caught as ResumePendingError).code).toBe(
-      'X001_RESUME_PR_D_PENDING',
+    await captureExit(() =>
+      runResumeWithOptions(['--target', 'done'], { sessionDir }),
     );
+
+    expect(captured.exitCode).toBe(1);
+    expect(captured.stderr).toContain('invalid --target');
+  });
+
+  test('resume from non-error state exits 1', async () => {
+    const { sessionDir } = await initScratchSession('resume-nonerror');
+    // No driveToErrorState — fresh init sits at ideation/discussing.
+
+    await captureExit(() =>
+      runResumeWithOptions(['--target', 'plan'], { sessionDir }),
+    );
+
+    expect(captured.exitCode).toBe(1);
+    expect(captured.stderr).toContain('non-error state');
   });
 });
 
 // ===========================================================================
-// Diagnostic code registration — X001 participates in CODE_SEVERITY
+// Normal resume path — exit 0 + workflow.resume event
 // ===========================================================================
 
-describe('CODE_SEVERITY — X001 registration', () => {
-  test('X001_RESUME_PR_D_PENDING is declared as error severity', () => {
-    expect(CODE_SEVERITY['X001_RESUME_PR_D_PENDING']).toBe('error');
+describe('runResumeWithOptions — default resume', () => {
+  test('--target plan from error state appends workflow.resume and emits the resume prompt', async () => {
+    const sessionId = 'resume-plan';
+    const { sessionDir } = await initScratchSession(sessionId);
+    await driveToErrorState(sessionDir, sessionId);
+
+    await captureExit(() =>
+      runResumeWithOptions(['--target', 'plan'], { sessionDir }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+
+    // Resume prompt surface landed on stdout. The compiled prompt's
+    // dynamic block cites the detected pathway's recap for the selected
+    // target — 'Timeout recap:' fires because the session was driven to
+    // error via a STEP_TIMEOUT event.
+    expect(captured.stdout).toContain('Timeout recap:');
+    // Target-entry framing names the target step.
+    expect(captured.stdout).toContain('plan');
+
+    // One workflow.resume event is persisted.
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const resumeRows = store.byType('workflow.resume');
+      expect(resumeRows.length).toBe(1);
+      const row = resumeRows[0];
+      const parsed = JSON.parse(row!.data) as {
+        readonly targetStep: string;
+        readonly fromError: boolean;
+      };
+      expect(parsed.targetStep).toBe('plan');
+      expect(parsed.fromError).toBe(true);
+
+      // No decision.eval.skip on the non-force path.
+      expect(store.byType('decision.eval.skip').length).toBe(0);
+    } finally {
+      store.close();
+    }
+  });
+});
+
+// ===========================================================================
+// Force-memorization — atomic two-event transaction
+// ===========================================================================
+
+describe('runResumeWithOptions — --force-memorization', () => {
+  test('atomically appends decision.eval.skip (with priorError) AND workflow.resume', async () => {
+    const sessionId = 'resume-force';
+    const { sessionDir } = await initScratchSession(sessionId);
+    await driveToErrorState(sessionDir, sessionId);
+
+    await captureExit(() =>
+      runResumeWithOptions(
+        ['--target', 'memorization', '--force-memorization'],
+        { sessionDir },
+      ),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stdout).toContain('Timeout recap:');
+
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const skipRows = store.byType('decision.eval.skip');
+      const resumeRows = store.byType('workflow.resume');
+
+      // Both events landed.
+      expect(skipRows.length).toBe(1);
+      expect(resumeRows.length).toBe(1);
+
+      // Atomicity check: the two events bracket a contiguous seq range.
+      // The skip always precedes the resume (append order) — assert by
+      // seq ordering. Same-millisecond idempotency keys differ because
+      // the 'system' formula encodes `eventType` per the store's
+      // computeIdempotencyKey; so both always persist.
+      const skipSeq = skipRows[0]!.seq;
+      const resumeSeq = resumeRows[0]!.seq;
+      expect(skipSeq).toBeLessThan(resumeSeq);
+
+      // priorError is present on the skip event's data.
+      const skipData = JSON.parse(skipRows[0]!.data) as {
+        readonly step: string;
+        readonly priorError?: {
+          readonly pathway: ErrorPathway;
+          readonly capturedAt: string;
+          readonly stepAtError: string;
+          readonly witnessEventSeqs: readonly number[];
+        };
+      };
+      expect(skipData.step).toBe('memorization');
+      expect(skipData.priorError).toBeDefined();
+      expect(skipData.priorError!.stepAtError).toBe('error');
+      expect(skipData.priorError!.pathway.kind).toBe('timeout');
+      expect(skipData.priorError!.witnessEventSeqs.length).toBeGreaterThan(0);
+    } finally {
+      store.close();
+    }
+  });
+
+  test('CP11 reversibility — priorError snapshot round-trips through the event store', async () => {
+    const sessionId = 'resume-cp11';
+    const { sessionDir } = await initScratchSession(sessionId);
+    await driveToErrorState(sessionDir, sessionId);
+
+    // Snapshot the pathway detected BEFORE the resume — this is the
+    // baseline the CP11 reversibility gate asserts against.
+    let baselinePathway: ErrorPathway;
+    {
+      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      try {
+        const state = resolveWorkflowState(sessionDir, store, sessionId);
+        baselinePathway = detectPathway(state, store);
+      } finally {
+        store.close();
+      }
+    }
+
+    await captureExit(() =>
+      runResumeWithOptions(
+        ['--target', 'memorization', '--force-memorization'],
+        { sessionDir },
+      ),
+    );
+    expect(captured.exitCode).toBeNull();
+
+    // Read the skip event back and reconstruct the pathway snapshot.
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const skipRows = store.byType('decision.eval.skip');
+      expect(skipRows.length).toBe(1);
+      const skipData = JSON.parse(skipRows[0]!.data) as {
+        readonly priorError: {
+          readonly pathway: ErrorPathway;
+          readonly capturedAt: string;
+          readonly stepAtError: string;
+          readonly witnessEventSeqs: readonly number[];
+        };
+      };
+      const reconstructed = skipData.priorError.pathway;
+
+      // Structural equality on the pathway variant — this is the CP11
+      // gate. `capturedAt` is stamped by the resume path, not by
+      // `detectPathway`, so it is NOT part of the baseline; it lives on
+      // the PriorErrorSnapshot envelope rather than the pathway itself.
+      expect(reconstructed).toEqual(baselinePathway);
+    } finally {
+      store.close();
+    }
   });
 });
 

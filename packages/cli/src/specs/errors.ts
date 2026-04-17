@@ -23,14 +23,11 @@
  *   literal).
  * - `detectPathway(state, store, options?)` re-exported from the detect
  *   module for convenience.
- * - `compileErrorPrompt(state, store): CompiledPrompt` — PR D.3 swaps the
- *   body to the `visitPathway` dispatcher; this wave (D.1) ships the typed
- *   signature with a throw body.
- * - `compileUnknownErrorPrompt(state, store): CompiledPrompt` — body swap in
- *   D.2; D.1 only updates the docblock.
- * - `compileResumePrompt` — declared here for export-surface continuity;
- *   real signature + body lands in D.4 (which also deletes the
- *   `specs/resume.ts` stub file wholesale).
+ * - `compileErrorPrompt(state, store): CompiledPrompt` — visitor-dispatch
+ *   body (D.3). Runs `detectPathway` then dispatches via `visitPathway` into
+ *   one of the five pathway compilers in `errors.pathway-compilers.ts`.
+ * - `compileResumePrompt` — D.4 real signature + body. The legacy
+ *   `specs/resume.ts` stub file was deleted in D.4.
  *
  * ## Why the 5 variants
  *
@@ -260,50 +257,45 @@ export { detectPathway } from './errors.pathway-detect.js';
 export type { DetectPathwayOptions } from './errors.pathway-detect.js';
 
 // ---------------------------------------------------------------------------
-// compileErrorPrompt — typed throw-body; D.3 replaces body
+// compileErrorPrompt — visitor-dispatch body (D.3)
 //
-// Signature change from PR C: the return type is now `CompiledPrompt`, not
-// `never`. D.3 swaps the throw for a real body that runs `detectPathway` +
-// `visitPathway` against the five pathway compilers. Callers written against
-// this signature compose naturally once D.3 lands.
+// Signature change from PR C: the return type is `CompiledPrompt` (not
+// `never`). The body runs `detectPathway(state, store)` to classify the
+// error-state evidence, then dispatches via `visitPathway` into one of the
+// five pathway compilers in `errors.pathway-compilers.ts`. Each handler
+// receives the NARROWED pathway variant (via the mapped-type visitor) plus
+// `state` and `store` closed over — no cast-to-narrow at the call site.
 // ---------------------------------------------------------------------------
+
+import {
+  compileCrashPrompt,
+  compileTimeoutPrompt,
+  compileFeedbackCapPrompt,
+  compileInvalidTransitionPrompt,
+  compileUnknownPrompt,
+} from './errors.pathway-compilers.js';
 
 /**
  * Compile a prompt for the workflow's `error` step.
  *
- * D.1 wave: typed signature pins the contract; body still throws so that
- * D.2's pathway compilers and D.3's dispatcher wire-up land into a stable
- * public surface without further signature drift.
+ * Classifies the pathway via `detectPathway(state, store)` then dispatches
+ * through `visitPathway` into the matching pathway compiler. The returned
+ * `CompiledPrompt` has the same shape every other step emits.
  *
- * Consumers call this on the `error` branch of `gobbi workflow next`. The
- * return value is a `CompiledPrompt` — same shape every other step emits.
+ * Consumers call this on the `error` branch of `gobbi workflow next`.
  */
 export function compileErrorPrompt(
-  _state: WorkflowState,
-  _store: EventStore,
+  state: WorkflowState,
+  store: EventStore,
 ): CompiledPrompt {
-  throw new Error(
-    'compileErrorPrompt: not implemented — D.3 swaps body to visitPathway dispatcher',
-  );
-}
-
-/**
- * Compile the "unknown / unclassified" error pathway prompt — the fallback
- * when `detectPathway(state, store)` cannot attribute the error to one of
- * the four observable pathways (Crash, Timeout, FeedbackCap,
- * InvalidTransition).
- *
- * D.1 wave: typed signature only; body still throws. D.2 fills the body
- * alongside the other four pathway compilers. Callers observe no signature
- * change.
- */
-export function compileUnknownErrorPrompt(
-  _state: WorkflowState,
-  _store: EventStore,
-): CompiledPrompt {
-  throw new Error(
-    'compileUnknownErrorPrompt: not implemented — D.2 populates the pathway compilers',
-  );
+  const pathway = detectPathway(state, store);
+  return visitPathway(pathway, {
+    crash: (p) => compileCrashPrompt(p, state, store),
+    timeout: (p) => compileTimeoutPrompt(p, state, store),
+    feedbackCap: (p) => compileFeedbackCapPrompt(p, state, store),
+    invalidTransition: (p) => compileInvalidTransitionPrompt(p, state, store),
+    unknown: (p) => compileUnknownPrompt(p, state, store),
+  });
 }
 
 // ---------------------------------------------------------------------------
