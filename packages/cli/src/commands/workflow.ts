@@ -120,6 +120,15 @@ export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
       await runResume(args);
     },
   },
+  {
+    name: 'guard',
+    summary:
+      'PreToolUse hook handler — evaluates guards and emits a permissionDecision JSON response',
+    run: async (args: string[]): Promise<void> => {
+      const { runGuard } = await import('./workflow/guard.js');
+      await runGuard(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
