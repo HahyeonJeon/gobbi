@@ -1,19 +1,25 @@
 /**
  * Per-pathway error-state prompt compilers.
  *
- * Skeleton file — D.1 lands typed declarations with throw bodies so D.2
- * can fill bodies without widening signatures. D.3's dispatcher
- * (`compileErrorPrompt` in `errors.ts`) calls into these via
- * `visitPathway`, so the 5 signatures are the contract Wave 2 and Wave 3
- * both depend on.
+ * Each exported compiler takes the narrowed `ErrorPathway*` variant plus the
+ * workflow state + event store, and returns a `CompiledPrompt` built via
+ * `buildErrorCompiledPrompt`. `visitPathway` (see `errors.ts`) narrows the
+ * pathway at the call site via the mapped-type visitor, so compilers never
+ * re-discriminate internally.
  *
- * Every compiler takes the narrowed pathway variant as its first argument
- * — `visitPathway` narrows at the call site via the mapped-type visitor
- * (see `errors.ts`), so compilers never re-discriminate internally.
+ * Every compiler assembles the same section layout:
  *
- * All bodies return a `CompiledPrompt` built via `buildErrorCompiledPrompt`
- * (see `errors.sections.ts`). D.2's job is to fill the bodies; this file's
- * surface is frozen in D.1.
+ *   1. Shared static role block  — `STATIC_ROLE_ERROR_RECOVERY`.
+ *   2. Pathway-specific static preamble — `STATIC_PREAMBLE_*`.
+ *   3. Session block              — `renderSessionSummary(state)`.
+ *   4. Pathway-specific evidence dynamic block.
+ *   5. Pathway-specific recovery-options dynamic block.
+ *
+ * The shared role block is the FIRST static section across all 5 compilers.
+ * That placement anchors a shared cache prefix: every error-state prompt has
+ * an identical first-static `contentHash`, which is what lets Anthropic's
+ * prefix cache hit across pathway switches. The cross-pathway invariant test
+ * in `errors.snap.test.ts` locks this property.
  */
 
 import type { WorkflowState } from '../workflow/state.js';
@@ -26,72 +32,276 @@ import type {
   ErrorPathwayInvalidTransition,
   ErrorPathwayUnknown,
 } from './errors.js';
+import { renderSessionSummary } from './assembly.js';
+import {
+  buildErrorCompiledPrompt,
+  makeStatic,
+  makeSession,
+  makeDynamic,
+  STATIC_ROLE_ERROR_RECOVERY,
+  STATIC_PREAMBLE_CRASH,
+  STATIC_PREAMBLE_TIMEOUT,
+  STATIC_PREAMBLE_FEEDBACK_CAP,
+  STATIC_PREAMBLE_INVALID,
+  STATIC_PREAMBLE_UNKNOWN,
+  renderCrashEvidence,
+  renderCrashRecoveryOptions,
+  renderTimeoutEvidence,
+  renderTimeoutRecoveryOptions,
+  renderFeedbackCapEvidence,
+  renderFeedbackCapRecoveryOptions,
+  renderInvalidTransitionEvidence,
+  renderInvalidTransitionRecoveryOptions,
+  renderUnknownEvidence,
+  renderUnknownRecoveryOptions,
+} from './errors.sections.js';
+
+// ---------------------------------------------------------------------------
+// Per-compiler section IDs. Named constants keep the snapshot-test section
+// summaries stable and keep the `slotOverrides` map in the compilers aligned
+// with what `buildErrorCompiledPrompt` actually produces.
+// ---------------------------------------------------------------------------
+
+const ID_ROLE = 'error.role';
+const ID_SESSION = 'session.state';
+
+const ID_CRASH_PREAMBLE = 'error.crash.preamble';
+const ID_CRASH_EVIDENCE = 'error.crash.evidence';
+const ID_CRASH_RECOVERY = 'error.crash.recovery';
+
+const ID_TIMEOUT_PREAMBLE = 'error.timeout.preamble';
+const ID_TIMEOUT_EVIDENCE = 'error.timeout.evidence';
+const ID_TIMEOUT_RECOVERY = 'error.timeout.recovery';
+
+const ID_FEEDBACK_CAP_PREAMBLE = 'error.feedbackCap.preamble';
+const ID_FEEDBACK_CAP_EVIDENCE = 'error.feedbackCap.evidence';
+const ID_FEEDBACK_CAP_RECOVERY = 'error.feedbackCap.recovery';
+
+const ID_INVALID_PREAMBLE = 'error.invalidTransition.preamble';
+const ID_INVALID_EVIDENCE = 'error.invalidTransition.evidence';
+const ID_INVALID_RECOVERY = 'error.invalidTransition.recovery';
+
+const ID_UNKNOWN_PREAMBLE = 'error.unknown.preamble';
+const ID_UNKNOWN_EVIDENCE = 'error.unknown.evidence';
+const ID_UNKNOWN_RECOVERY = 'error.unknown.recovery';
 
 /**
- * Compile a Crash-pathway prompt. Body populated in D.2.
+ * Recovery-options dynamic block should ride the `materials` slot — it is
+ * operator-facing recovery copy rather than pathway artifact evidence. The
+ * evidence block stays on the default `artifacts` slot. L4 (explicit slot
+ * tagging) — the error.* IDs are not covered by `inferSlot`, so every
+ * dynamic block must be routed deliberately.
+ */
+function recoverySlotOverride(recoveryId: string): Readonly<Record<string, 'materials'>> {
+  return { [recoveryId]: 'materials' };
+}
+
+// ---------------------------------------------------------------------------
+// Crash compiler
+// ---------------------------------------------------------------------------
+
+/**
+ * Compile a Crash-pathway prompt.
+ *
+ * Section layout: role → crash preamble → session → crash evidence →
+ * crash recovery options.
  */
 export function compileCrashPrompt(
-  _pathway: ErrorPathwayCrash,
-  _state: WorkflowState,
+  pathway: ErrorPathwayCrash,
+  state: WorkflowState,
   _store: EventStore,
 ): CompiledPrompt {
-  throw new Error(
-    'compileCrashPrompt: body not wired — D.2 populates the pathway compilers',
-  );
+  const staticBlocks = [
+    makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
+    makeStatic({ id: ID_CRASH_PREAMBLE, content: STATIC_PREAMBLE_CRASH }),
+  ];
+  const sessionBlock = makeSession({
+    id: ID_SESSION,
+    content: renderSessionSummary(state),
+  });
+  const dynamicBlocks = [
+    makeDynamic({
+      id: ID_CRASH_EVIDENCE,
+      content: renderCrashEvidence(pathway),
+    }),
+    makeDynamic({
+      id: ID_CRASH_RECOVERY,
+      content: renderCrashRecoveryOptions(pathway),
+    }),
+  ];
+  return buildErrorCompiledPrompt({
+    staticBlocks,
+    sessionBlock,
+    dynamicBlocks,
+    slotOverrides: recoverySlotOverride(ID_CRASH_RECOVERY),
+  });
 }
 
+// ---------------------------------------------------------------------------
+// Timeout compiler
+// ---------------------------------------------------------------------------
+
 /**
- * Compile a Timeout-pathway prompt. Body populated in D.2.
+ * Compile a Timeout-pathway prompt.
+ *
+ * Section layout: role → timeout preamble → session → timeout evidence →
+ * timeout recovery options.
  */
 export function compileTimeoutPrompt(
-  _pathway: ErrorPathwayTimeout,
-  _state: WorkflowState,
+  pathway: ErrorPathwayTimeout,
+  state: WorkflowState,
   _store: EventStore,
 ): CompiledPrompt {
-  throw new Error(
-    'compileTimeoutPrompt: body not wired — D.2 populates the pathway compilers',
-  );
+  const staticBlocks = [
+    makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
+    makeStatic({ id: ID_TIMEOUT_PREAMBLE, content: STATIC_PREAMBLE_TIMEOUT }),
+  ];
+  const sessionBlock = makeSession({
+    id: ID_SESSION,
+    content: renderSessionSummary(state),
+  });
+  const dynamicBlocks = [
+    makeDynamic({
+      id: ID_TIMEOUT_EVIDENCE,
+      content: renderTimeoutEvidence(pathway),
+    }),
+    makeDynamic({
+      id: ID_TIMEOUT_RECOVERY,
+      content: renderTimeoutRecoveryOptions(pathway),
+    }),
+  ];
+  return buildErrorCompiledPrompt({
+    staticBlocks,
+    sessionBlock,
+    dynamicBlocks,
+    slotOverrides: recoverySlotOverride(ID_TIMEOUT_RECOVERY),
+  });
 }
 
+// ---------------------------------------------------------------------------
+// FeedbackCap compiler
+// ---------------------------------------------------------------------------
+
 /**
- * Compile a FeedbackCap-pathway prompt. Body populated in D.2.
+ * Compile a FeedbackCap-pathway prompt.
+ *
+ * Section layout: role → feedbackCap preamble → session → feedbackCap
+ * evidence → feedbackCap recovery options.
  */
 export function compileFeedbackCapPrompt(
-  _pathway: ErrorPathwayFeedbackCap,
-  _state: WorkflowState,
+  pathway: ErrorPathwayFeedbackCap,
+  state: WorkflowState,
   _store: EventStore,
 ): CompiledPrompt {
-  throw new Error(
-    'compileFeedbackCapPrompt: body not wired — D.2 populates the pathway compilers',
-  );
+  const staticBlocks = [
+    makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
+    makeStatic({
+      id: ID_FEEDBACK_CAP_PREAMBLE,
+      content: STATIC_PREAMBLE_FEEDBACK_CAP,
+    }),
+  ];
+  const sessionBlock = makeSession({
+    id: ID_SESSION,
+    content: renderSessionSummary(state),
+  });
+  const dynamicBlocks = [
+    makeDynamic({
+      id: ID_FEEDBACK_CAP_EVIDENCE,
+      content: renderFeedbackCapEvidence(pathway),
+    }),
+    makeDynamic({
+      id: ID_FEEDBACK_CAP_RECOVERY,
+      content: renderFeedbackCapRecoveryOptions(pathway),
+    }),
+  ];
+  return buildErrorCompiledPrompt({
+    staticBlocks,
+    sessionBlock,
+    dynamicBlocks,
+    slotOverrides: recoverySlotOverride(ID_FEEDBACK_CAP_RECOVERY),
+  });
 }
 
+// ---------------------------------------------------------------------------
+// InvalidTransition compiler
+// ---------------------------------------------------------------------------
+
 /**
- * Compile an InvalidTransition-pathway prompt. Body populated in D.2.
+ * Compile an InvalidTransition-pathway prompt.
+ *
+ * Section layout: role → invalidTransition preamble → session →
+ * invalidTransition evidence → invalidTransition recovery options.
  */
 export function compileInvalidTransitionPrompt(
-  _pathway: ErrorPathwayInvalidTransition,
-  _state: WorkflowState,
+  pathway: ErrorPathwayInvalidTransition,
+  state: WorkflowState,
   _store: EventStore,
 ): CompiledPrompt {
-  throw new Error(
-    'compileInvalidTransitionPrompt: body not wired — D.2 populates the pathway compilers',
-  );
+  const staticBlocks = [
+    makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
+    makeStatic({ id: ID_INVALID_PREAMBLE, content: STATIC_PREAMBLE_INVALID }),
+  ];
+  const sessionBlock = makeSession({
+    id: ID_SESSION,
+    content: renderSessionSummary(state),
+  });
+  const dynamicBlocks = [
+    makeDynamic({
+      id: ID_INVALID_EVIDENCE,
+      content: renderInvalidTransitionEvidence(pathway),
+    }),
+    makeDynamic({
+      id: ID_INVALID_RECOVERY,
+      content: renderInvalidTransitionRecoveryOptions(pathway),
+    }),
+  ];
+  return buildErrorCompiledPrompt({
+    staticBlocks,
+    sessionBlock,
+    dynamicBlocks,
+    slotOverrides: recoverySlotOverride(ID_INVALID_RECOVERY),
+  });
 }
 
+// ---------------------------------------------------------------------------
+// Unknown compiler — classifier fallback
+// ---------------------------------------------------------------------------
+
 /**
- * Compile an Unknown-pathway prompt. Body populated in D.2.
+ * Compile an Unknown-pathway prompt.
  *
- * Note: this compiler is also re-exported from `errors.ts` as
- * `compileUnknownErrorPrompt` (PR C named it that for the initial stub);
- * D.2 keeps the alias wiring in `errors.ts`.
+ * Section layout: role → unknown preamble → session → unknown evidence
+ * (diagnosticHint) → unknown recovery options. The unknown evidence block
+ * carries the detector's `diagnosticHint` so the operator can read the
+ * classifier's pathway attempt even when no pathway was chosen.
  */
 export function compileUnknownPrompt(
-  _pathway: ErrorPathwayUnknown,
-  _state: WorkflowState,
+  pathway: ErrorPathwayUnknown,
+  state: WorkflowState,
   _store: EventStore,
 ): CompiledPrompt {
-  throw new Error(
-    'compileUnknownPrompt: body not wired — D.2 populates the pathway compilers',
-  );
+  const staticBlocks = [
+    makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
+    makeStatic({ id: ID_UNKNOWN_PREAMBLE, content: STATIC_PREAMBLE_UNKNOWN }),
+  ];
+  const sessionBlock = makeSession({
+    id: ID_SESSION,
+    content: renderSessionSummary(state),
+  });
+  const dynamicBlocks = [
+    makeDynamic({
+      id: ID_UNKNOWN_EVIDENCE,
+      content: renderUnknownEvidence(pathway),
+    }),
+    makeDynamic({
+      id: ID_UNKNOWN_RECOVERY,
+      content: renderUnknownRecoveryOptions(pathway),
+    }),
+  ];
+  return buildErrorCompiledPrompt({
+    staticBlocks,
+    sessionBlock,
+    dynamicBlocks,
+    slotOverrides: recoverySlotOverride(ID_UNKNOWN_RECOVERY),
+  });
 }
