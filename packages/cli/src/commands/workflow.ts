@@ -8,10 +8,12 @@
  *
  * ## Scope (PR B / B.4)
  *
- * Only `validate` is wired today. PR C adds `init`, `status`, `events`,
- * `next`, `transition`, `resume`, `guard`, `capture-subagent`, `capture-plan`,
- * and `stop` via new entries in `WORKFLOW_COMMANDS` — the dispatcher does not
- * need to change when those land.
+ * PR C has shipped `init`, `status`, `events`, `next`, `transition`,
+ * `resume`, `guard`, `capture-subagent`, `capture-plan`, and `stop` via
+ * entries in `WORKFLOW_COMMANDS` — the dispatcher itself did not need to
+ * change. `validate` remains the only direct import; the rest use
+ * dynamic `import()` so the hot path does not pay their load cost at
+ * startup.
  *
  * ## Extensibility contract
  *
@@ -56,6 +58,10 @@ export interface WorkflowCommand {
  * Canonical list of registered subcommands. Ordering controls `--help` output.
  * Add new subcommands by appending to this array; the dispatcher and help
  * printer pick them up automatically.
+ *
+ * `init` / `status` / `events` use dynamic `import()` so the guard-hook hot
+ * path does not pay their load cost at startup. `validate` retains its
+ * direct import for the existing test surface.
  */
 export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
   {
@@ -63,6 +69,94 @@ export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
     summary:
       'Validate the step-spec library, overlays, predicate references, and workflow graph',
     run: runValidate,
+  },
+  {
+    name: 'init',
+    summary:
+      'Initialise the session directory (metadata.json, gobbi.db, opening events)',
+    run: async (args: string[]): Promise<void> => {
+      const { runInit } = await import('./workflow/init.js');
+      await runInit(args);
+    },
+  },
+  {
+    name: 'status',
+    summary: 'Read-only projection of the current workflow state',
+    run: async (args: string[]): Promise<void> => {
+      const { runStatus } = await import('./workflow/status.js');
+      await runStatus(args);
+    },
+  },
+  {
+    name: 'events',
+    summary:
+      'Replay events from the active session store (alias for `gobbi session events`)',
+    run: async (args: string[]): Promise<void> => {
+      const { runEvents } = await import('./workflow/events.js');
+      await runEvents(args);
+    },
+  },
+  {
+    name: 'next',
+    summary: 'Compile and emit the prompt for the current workflow step',
+    run: async (args: string[]): Promise<void> => {
+      const { runNext } = await import('./workflow/next.js');
+      await runNext(args);
+    },
+  },
+  {
+    name: 'transition',
+    summary:
+      'Append a workflow-progression event (COMPLETE, PASS/REVISE/ESCALATE, SKIP, TIMEOUT, FINISH, ABORT, RESUME)',
+    run: async (args: string[]): Promise<void> => {
+      const { runTransition } = await import('./workflow/transition.js');
+      await runTransition(args);
+    },
+  },
+  {
+    name: 'resume',
+    summary:
+      'Resume a workflow from the error state (PR C skeleton — body populated by PR D)',
+    run: async (args: string[]): Promise<void> => {
+      const { runResume } = await import('./workflow/resume.js');
+      await runResume(args);
+    },
+  },
+  {
+    name: 'guard',
+    summary:
+      'PreToolUse hook handler — evaluates guards and emits a permissionDecision JSON response',
+    run: async (args: string[]): Promise<void> => {
+      const { runGuard } = await import('./workflow/guard.js');
+      await runGuard(args);
+    },
+  },
+  {
+    name: 'capture-subagent',
+    summary:
+      'SubagentStop hook handler — persists subagent output and emits delegation.complete / delegation.fail',
+    run: async (args: string[]): Promise<void> => {
+      const { runCaptureSubagent } = await import('./workflow/capture-subagent.js');
+      await runCaptureSubagent(args);
+    },
+  },
+  {
+    name: 'capture-plan',
+    summary:
+      'PostToolUse(ExitPlanMode) hook handler — writes plan.md and emits artifact.write',
+    run: async (args: string[]): Promise<void> => {
+      const { runCapturePlan } = await import('./workflow/capture-plan.js');
+      await runCapturePlan(args);
+    },
+  },
+  {
+    name: 'stop',
+    summary:
+      'Stop hook handler — writes a session.heartbeat event via the counter idempotency kind',
+    run: async (args: string[]): Promise<void> => {
+      const { runStop } = await import('./workflow/stop.js');
+      await runStop(args);
+    },
   },
 ];
 

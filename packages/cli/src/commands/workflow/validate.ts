@@ -60,6 +60,13 @@ import {
   defaultPredicates,
   PREDICATE_NAMES,
 } from '../../workflow/predicates.js';
+import {
+  CODE_SEVERITY,
+  type Diagnostic,
+  type DiagnosticCode,
+  type DiagnosticLocation,
+  type DiagnosticSeverity,
+} from '../../workflow/diagnostics.js';
 import { bold, dim, red, yellow } from '../../lib/style.js';
 
 // ---------------------------------------------------------------------------
@@ -68,51 +75,23 @@ import { bold, dim, red, yellow } from '../../lib/style.js';
 // Emitted as JSON and consumed by tooling. Every field is stable across
 // versions; adding a field is backwards-compatible, renaming or removing a
 // field is a breaking change.
+//
+// The canonical shapes live in `workflow/diagnostics.ts` — this module
+// re-exports them plus the back-compat `ValidateCode` alias that pre-C.8
+// consumers import.
 // ---------------------------------------------------------------------------
 
-/** Stable error code identifier. */
-export type ValidateCode =
-  | 'E001_INVALID_SCHEMA'
-  | 'E002_UNKNOWN_PREDICATE'
-  | 'E003_INVALID_GRAPH'
-  | 'E004_MISSING_SPEC'
-  | 'E005_INVALID_OVERLAY'
-  | 'E006_UNKNOWN_SUBSTATE'
-  | 'E007_ORPHAN_SUBSTATE'
-  | 'E008_DUPLICATE_REGISTRATION';
-
-/** Default severity for each code; overrides possible where noted below. */
-export const CODE_SEVERITY: Readonly<Record<ValidateCode, DiagnosticSeverity>> =
-  {
-    E001_INVALID_SCHEMA: 'error',
-    E002_UNKNOWN_PREDICATE: 'error',
-    E003_INVALID_GRAPH: 'error',
-    E004_MISSING_SPEC: 'error',
-    E005_INVALID_OVERLAY: 'error',
-    E006_UNKNOWN_SUBSTATE: 'error',
-    E007_ORPHAN_SUBSTATE: 'warning',
-    E008_DUPLICATE_REGISTRATION: 'error',
-  };
-
-export type DiagnosticSeverity = 'error' | 'warning';
+export { CODE_SEVERITY };
+export type { Diagnostic, DiagnosticLocation, DiagnosticSeverity };
 
 /**
- * One diagnostic record. `location.file` is the absolute path to the offending
- * file (spec, overlay, graph). `location.pointer` is a JSON pointer into the
- * file's JSON tree when the violation has a precise location; `null` when the
- * violation is file-scoped (e.g., missing spec).
+ * Back-compat alias for the validate-only subset of `DiagnosticCode`. Kept
+ * so pre-C.8 importers (tests, downstream consumers) continue to type-check.
+ * All validate codes are `E###`-prefixed today and the alias re-exports the
+ * full `DiagnosticCode` union — runtime `W###` / reserved `X###` / `V###`
+ * members are structurally compatible but never produced by validate.
  */
-export interface Diagnostic {
-  readonly code: ValidateCode;
-  readonly severity: DiagnosticSeverity;
-  readonly message: string;
-  readonly location: DiagnosticLocation;
-}
-
-export interface DiagnosticLocation {
-  readonly file: string;
-  readonly pointer: string | null;
-}
+export type ValidateCode = DiagnosticCode;
 
 export interface ValidateSummary {
   readonly errorCount: number;

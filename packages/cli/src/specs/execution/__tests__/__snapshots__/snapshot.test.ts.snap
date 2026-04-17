@@ -48,7 +48,7 @@ Criteria:
   3. gotchas surfaced during execution have been written to the appropriate gotcha location before the step exits
   4. no task was marked complete on a failing verification without explicit user agreement recorded in execution.md
 
-session.schemaVersion=1
+session.schemaVersion=2
 session.currentStep=execution
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
@@ -125,7 +125,7 @@ Criteria:
   3. gotchas surfaced during execution have been written to the appropriate gotcha location before the step exits
   4. no task was marked complete on a failing verification without explicit user agreement recorded in execution.md
 
-session.schemaVersion=1
+session.schemaVersion=2
 session.currentStep=execution
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
@@ -189,7 +189,7 @@ Criteria:
   3. gotchas surfaced during execution have been written to the appropriate gotcha location before the step exits
   4. no task was marked complete on a failing verification without explicit user agreement recorded in execution.md
 
-session.schemaVersion=1
+session.schemaVersion=2
 session.currentStep=execution
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]

@@ -72,8 +72,8 @@ describe('const objects', () => {
     expect(Object.values(DECISION_EVENTS)).toHaveLength(3);
   });
 
-  it('GUARD_EVENTS has 2 entries', () => {
-    expect(Object.values(GUARD_EVENTS)).toHaveLength(2);
+  it('GUARD_EVENTS has 3 entries', () => {
+    expect(Object.values(GUARD_EVENTS)).toHaveLength(3);
   });
 
   it('SESSION_EVENTS has 1 entry', () => {
@@ -86,8 +86,8 @@ describe('const objects', () => {
 // ===========================================================================
 
 describe('ALL_EVENT_TYPES', () => {
-  it('contains exactly 19 entries (8 + 3 + 2 + 3 + 2 + 1)', () => {
-    expect(ALL_EVENT_TYPES.size).toBe(19);
+  it('contains exactly 20 entries (8 + 3 + 2 + 3 + 3 + 1)', () => {
+    expect(ALL_EVENT_TYPES.size).toBe(20);
   });
 
   it('contains every workflow event type', () => {

@@ -18,7 +18,7 @@ import {
 } from '../state.js';
 import type { WorkflowState, ReduceFn } from '../state.js';
 import { EventStore } from '../store.js';
-import type { AppendInput } from '../store.js';
+import type { AppendInput, AppendInputToolCall } from '../store.js';
 import { reduce } from '../reducer.js';
 import type { ReducerResult } from '../reducer.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';
@@ -48,7 +48,9 @@ function makeState(overrides: Partial<WorkflowState> = {}): WorkflowState {
   };
 }
 
-function makeAppendInput(overrides: Partial<AppendInput> = {}): AppendInput {
+function makeAppendInput(
+  overrides: Partial<AppendInputToolCall> = {},
+): AppendInput {
   return {
     ts: '2026-01-01T00:00:00.000Z',
     type: 'workflow.start',
@@ -74,7 +76,7 @@ describe('isValidState', () => {
 
   it('accepts a state with populated fields', () => {
     const state: WorkflowState = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       sessionId: 'sess-1',
       currentStep: 'execution',
       currentSubstate: null,
@@ -89,6 +91,7 @@ describe('isValidState', () => {
       ],
       feedbackRound: 1,
       maxFeedbackRounds: 3,
+      lastVerdictOutcome: null,
     };
     expect(isValidState(state)).toBe(true);
   });

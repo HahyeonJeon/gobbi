@@ -108,12 +108,20 @@ export interface ActiveSubagent {
 // Guard violation record — persisted in state for audit trail
 // ---------------------------------------------------------------------------
 
+/**
+ * One persisted guard record. Both `guard.violation` (error) and `guard.warn`
+ * (warning) events append records here; the `severity` field discriminates
+ * them. `severity` is optional for on-disk v1 backward-compat — pre-schema-v2
+ * files never stored it. `readState` normalises absent severity to `'error'`
+ * so in-memory state always carries the field.
+ */
 export interface GuardViolationRecord {
   readonly guardId: string;
   readonly toolName: string;
   readonly reason: string;
   readonly step: string;
   readonly timestamp: string;
+  readonly severity?: 'error' | 'warning';
 }
 
 // ---------------------------------------------------------------------------
@@ -132,6 +140,16 @@ export interface WorkflowState {
   readonly violations: readonly GuardViolationRecord[];
   readonly feedbackRound: number;
   readonly maxFeedbackRounds: number;
+  /**
+   * The verdict that most recently fired an `EVAL_VERDICT` event, or `null`
+   * when no verdict has fired in the current productive step. `escalate`
+   * verdicts are informational and do not overwrite this field — they leave
+   * the prior outcome in place. Cleared to `null` on `workflow.step.exit`
+   * from a productive step.
+   *
+   * Consumed by `verdictPass` / `verdictRevise` predicates (schema v2+).
+   */
+  readonly lastVerdictOutcome: 'pass' | 'revise' | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -146,7 +164,7 @@ export interface WorkflowState {
  */
 export function initialState(sessionId: string): WorkflowState {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     sessionId,
     currentStep: 'idle',
     currentSubstate: null,
@@ -157,6 +175,7 @@ export function initialState(sessionId: string): WorkflowState {
     violations: [],
     feedbackRound: 0,
     maxFeedbackRounds: 3,
+    lastVerdictOutcome: null,
   };
 }
 
@@ -188,6 +207,17 @@ const VALID_STEPS: ReadonlySet<string> = new Set<string>([
 const VALID_SUBSTATES: ReadonlySet<string | null> = new Set<string | null>([
   'discussing',
   'researching',
+  null,
+]);
+
+const VALID_SEVERITIES: ReadonlySet<string> = new Set<string>([
+  'error',
+  'warning',
+]);
+
+const VALID_VERDICT_OUTCOMES: ReadonlySet<string | null> = new Set<string | null>([
+  'pass',
+  'revise',
   null,
 ]);
 
@@ -258,11 +288,27 @@ export function isValidState(value: unknown): value is WorkflowState {
     if (!isString(v['reason'])) return false;
     if (!isString(v['step'])) return false;
     if (!isString(v['timestamp'])) return false;
+    // severity is optional (schema v2+); `undefined` passes for v1 on-disk
+    // compat and is normalised to `'error'` by readState.
+    const severity = v['severity'];
+    if (severity !== undefined) {
+      if (!isString(severity)) return false;
+      if (!VALID_SEVERITIES.has(severity)) return false;
+    }
   }
 
   // feedbackRound and maxFeedbackRounds
   if (!isNumber(value['feedbackRound'])) return false;
   if (!isNumber(value['maxFeedbackRounds'])) return false;
+
+  // lastVerdictOutcome: 'pass' | 'revise' | null (schema v2+).
+  // `undefined` is tolerated for v1 on-disk compat and is normalised to
+  // `null` by readState.
+  const outcome = value['lastVerdictOutcome'];
+  if (outcome !== undefined) {
+    if (outcome !== null && !isString(outcome)) return false;
+    if (!VALID_VERDICT_OUTCOMES.has(outcome as string | null)) return false;
+  }
 
   return true;
 }
@@ -284,9 +330,35 @@ export function writeState(dir: string, state: WorkflowState): void {
 }
 
 /**
+ * Normalise a validated `WorkflowState` read from disk so in-memory state
+ * always carries the v2 shape:
+ *
+ *   - Absent `lastVerdictOutcome` (v1) → `null`.
+ *   - Absent `severity` on any violation (v1) → `'error'` (the pre-v2
+ *     event `guard.violation` was error-severity by definition).
+ *
+ * We deliberately do NOT rewrite the on-disk file — this is Greg Young
+ * discipline (see `v050-session.md`). Old files stay v1-shaped until the
+ * next writeState() call naturally promotes them.
+ */
+function normaliseReadState(state: WorkflowState): WorkflowState {
+  const violations = state.violations.map((v) =>
+    v.severity === undefined ? { ...v, severity: 'error' as const } : v,
+  );
+  return {
+    ...state,
+    lastVerdictOutcome: state.lastVerdictOutcome ?? null,
+    violations,
+  };
+}
+
+/**
  * Read state.json from disk.
  * Returns null if the file is absent, contains invalid JSON, or has
  * an unexpected shape.
+ *
+ * Normalises v1 on-disk shapes to the v2 in-memory shape (see
+ * `normaliseReadState`) — the file itself is not rewritten.
  */
 export function readState(dir: string): WorkflowState | null {
   const filePath = join(dir, 'state.json');
@@ -295,7 +367,7 @@ export function readState(dir: string): WorkflowState | null {
     const raw = readFileSync(filePath, 'utf8');
     const parsed: unknown = JSON.parse(raw);
     if (!isValidState(parsed)) return null;
-    return parsed;
+    return normaliseReadState(parsed);
   } catch {
     return null;
   }
@@ -316,6 +388,8 @@ export function backupState(dir: string): void {
 /**
  * Restore WorkflowState from the backup file.
  * Returns null if the backup is absent, invalid JSON, or wrong shape.
+ *
+ * Normalises v1 shapes to v2 (see `normaliseReadState`).
  */
 export function restoreBackup(dir: string): WorkflowState | null {
   const filePath = join(dir, 'state.json.backup');
@@ -324,7 +398,7 @@ export function restoreBackup(dir: string): WorkflowState | null {
     const raw = readFileSync(filePath, 'utf8');
     const parsed: unknown = JSON.parse(raw);
     if (!isValidState(parsed)) return null;
-    return parsed;
+    return normaliseReadState(parsed);
   } catch {
     return null;
   }
@@ -371,7 +445,15 @@ export function appendJsonl(dir: string, event: object): void {
  * unrecognized event type or unparseable data.
  */
 export function rowToEvent(row: EventRow): Event | null {
-  const migrated = migrateEvent(row);
+  let migrated: EventRow;
+  try {
+    migrated = migrateEvent(row);
+  } catch {
+    // Migration failure (invalid data JSON, missing hop) is indistinguishable
+    // from the other rowToEvent failure modes — a best-effort replay should
+    // skip the row rather than crash the reducer.
+    return null;
+  }
   if (!isValidEventType(migrated.type)) return null;
 
   let parsedData: unknown;

@@ -143,55 +143,33 @@ export const defaultPredicates = {
   //
   // Graph-level verdict labels. The authoritative runtime dispatch for
   // verdict events is in `workflow/transitions.ts::findTransition`, which
-  // matches on `rule.verdict` against the event payload. These predicates
-  // interpret state conservatively — `verdictPass` answers "is the current
-  // step positioned past a pass-verdict exit?" by checking whether the
-  // preceding eval step completed cleanly. The result is advisory (used by
-  // the validator, the static graph analyzer, and any future state-only
-  // consumer); it is NOT the enforcement path.
+  // matches on `rule.verdict` against the `EvalVerdictData` payload of the
+  // incoming event. These predicate bodies read
+  // `WorkflowState.lastVerdictOutcome` — the bare `'pass' | 'revise' | null`
+  // enum that the reducer populates on each `EVAL_VERDICT` event and clears
+  // on the next productive `workflow.step.exit`. The predicates are used by
+  // the validator, the static graph analyzer, and state-only consumers
+  // (status rendering, dead-code analysis). They are NOT the enforcement
+  // path for transition routing — see the file-level docblock in
+  // `transitions.ts` and the `VerdictPredicateName` type below.
   //
-  // Conservative reading rationale: predicates run against `WorkflowState`,
-  // not against events. An event-less `WorkflowState` cannot observe the
-  // just-fired verdict. Returning `false` by default when the state does
-  // not visibly record a verdict outcome keeps the predicate pure and keeps
-  // the runtime enforcement in the transition table (where it belongs).
+  // `lastVerdictOutcome` is the schema-v2 field added by C.8; it carries no
+  // `loopTarget` discriminator, so the `loopTarget*` predicates below still
+  // read their existing state fields (they would gain no precision from the
+  // bare outcome enum).
   // -------------------------------------------------------------------------
 
   /**
-   * True when the current step shows the shape of a completed
-   * eval step that produced a pass verdict — specifically, the state has
-   * left the eval step (`currentStep` is not an `*_eval` name) AND the
-   * corresponding productive step appears in `completedSteps`.
-   *
-   * Conservative: returns `false` while the workflow is still inside an
-   * eval step or the completed-steps trail has not advanced past it.
-   *
-   * Known limitation (PR C): verdictPass and verdictRevise use
-   * conservative state-only heuristics. A proper fix requires
-   * `lastVerdictOutcome` on WorkflowState + reducer extension to
-   * record the most recent verdict event's outcome. See PR B
-   * evaluation finding #3 (deferred).
+   * True when the most recent `decision.eval.verdict` event carried
+   * `verdict: 'pass'`. Reads `WorkflowState.lastVerdictOutcome`.
    */
-  verdictPass: (s) => {
-    const step = s.currentStep;
-    // Inside an eval step, the verdict has not been recorded yet.
-    if (step === 'ideation_eval' || step === 'plan_eval' || step === 'execution_eval') {
-      return false;
-    }
-    // Post-eval, the corresponding productive step must be in the
-    // completed-steps trail for a pass to have fired.
-    // Short of event-data inspection this is the best state-only signal.
-    return s.completedSteps.length > 0;
-  },
+  verdictPass: (s) => s.lastVerdictOutcome === 'pass',
 
   /**
-   * True when the workflow has looped back via a revise verdict —
-   * `feedbackRound > 0` is the canonical state-level signal for a revise
-   * loop. Distinct from `feedbackRoundActive` only by intent: this name
-   * appears on graph-level transition edges (not on spec conditional
-   * blocks) and aligns with the design-doc naming.
+   * True when the most recent `decision.eval.verdict` event carried
+   * `verdict: 'revise'`. Reads `WorkflowState.lastVerdictOutcome`.
    */
-  verdictRevise: (s) => s.feedbackRound > 0,
+  verdictRevise: (s) => s.lastVerdictOutcome === 'revise',
 
   // ------------------------------------------------------- Loop targets
   //
@@ -271,6 +249,31 @@ export const defaultPredicates = {
 // surface keeps the broader `PredicateRegistry` shape so callers assembling
 // custom registries remain compatible.
 export const DEFAULT_PREDICATES: PredicateRegistry = defaultPredicates;
+
+// ---------------------------------------------------------------------------
+// Verdict predicate exclusion — compile-time gate for `TransitionRule.condition`
+//
+// Transition routing for verdict events routes on `rule.verdict` matched
+// against the `EvalVerdictData` payload, not by evaluating a predicate
+// against state. The two verdict-labelled predicate bodies above read
+// `WorkflowState.lastVerdictOutcome` for state-only consumers — authoring
+// a transition rule with `condition: 'verdictPass'` or `condition:
+// 'verdictRevise'` would bypass the authoritative routing path and produce
+// subtle ordering bugs (the predicate runs against post-reduce state, not
+// the firing event).
+//
+// `transitions.ts` narrows `TransitionRule.condition` to
+// `Exclude<PredicateName, VerdictPredicateName>` so those names fail at
+// `tsc` when used as a rule condition. Keeping the list colocated with the
+// predicate bodies means a maintainer editing this file sees the exclusion
+// set immediately.
+// ---------------------------------------------------------------------------
+
+/**
+ * Predicate names reserved for verdict-routing authority. Never usable as
+ * `TransitionRule.condition` — use `rule.verdict` instead.
+ */
+export type VerdictPredicateName = 'verdictPass' | 'verdictRevise';
 
 // ---------------------------------------------------------------------------
 // Static validation — transitions table

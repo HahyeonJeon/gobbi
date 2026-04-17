@@ -21,7 +21,8 @@ import {
   backupState,
   restoreStateFromBackup,
   appendJsonl,
-  resolveState,
+  readState,
+  restoreBackup,
   deriveState,
 } from './state.js';
 import type { WorkflowState } from './state.js';
@@ -62,6 +63,25 @@ export interface AppendResult {
  * restoreStateFromBackup(). The jsonl line is the only
  * non-transactional artifact, which is acceptable since it's a
  * diagnostic log, not a source of truth.
+ *
+ * `parentSeq` links the new event to a prior event's `seq` — used by
+ * the capture commands (C.6) to connect `delegation.complete` /
+ * `delegation.fail` to the originating `delegation.spawn`. Omit or
+ * pass `null` when no parent linkage applies.
+ *
+ * `counter` is REQUIRED when `idempotencyKind === 'counter'` and
+ * FORBIDDEN otherwise. `gobbi workflow stop` supplies it for
+ * same-millisecond heartbeat disambiguation; other callers leave it
+ * `undefined`. The runtime check mirrors the discriminated-union
+ * constraint in `AppendInput` — it is defensive against callers that
+ * cast through `unknown` to bypass tsc.
+ *
+ * `ts` overrides the event timestamp the engine would otherwise generate
+ * from `new Date().toISOString()`. This matters for the `'counter'` kind
+ * because the idempotency key is computed from the timestamp-millisecond:
+ * the caller scans existing heartbeats for the same ms to pick a non-
+ * colliding counter, then passes the same `ts` down so the key uses the
+ * same ms as the scan. When omitted, the engine uses wall-clock time.
  */
 export function appendEventAndUpdateState(
   store: EventStore,
@@ -72,6 +92,9 @@ export function appendEventAndUpdateState(
   sessionId: string,
   idempotencyKind: AppendInput['idempotencyKind'],
   toolCallId?: string,
+  parentSeq?: number | null,
+  counter?: number,
+  ts?: string,
 ): AppendResult {
   return store.transaction(() => {
     // Track whether state.json existed before the operation. When this
@@ -84,17 +107,19 @@ export function appendEventAndUpdateState(
     backupState(dir);
 
     // 2. Append event to SQLite store
-    const ts = new Date().toISOString();
-    const input: AppendInput = {
-      ts,
+    const effectiveTs = ts ?? new Date().toISOString();
+    const input: AppendInput = buildAppendInput({
+      ts: effectiveTs,
       type: event.type,
       step: state.currentStep,
       data: JSON.stringify(event.data),
       actor,
-      idempotencyKind,
       sessionId,
+      idempotencyKind,
       toolCallId,
-    };
+      parentSeq: parentSeq ?? null,
+      counter,
+    });
     const row = store.append(input);
 
     // Deduplicated — no change
@@ -154,22 +179,104 @@ export function appendEventAndUpdateState(
 }
 
 // ---------------------------------------------------------------------------
+// AppendInput construction — maps the compound-operation parameters onto
+// the discriminated-union `AppendInput`. Keeping the variant selection
+// here lets the engine's positional signature stay stable for callers
+// while the store type enforces the per-kind invariants.
+// ---------------------------------------------------------------------------
+
+interface BuildAppendInputArgs {
+  readonly ts: string;
+  readonly type: string;
+  readonly step: string | null;
+  readonly data: string;
+  readonly actor: string;
+  readonly sessionId: string;
+  readonly idempotencyKind: AppendInput['idempotencyKind'];
+  readonly toolCallId: string | undefined;
+  readonly parentSeq: number | null;
+  readonly counter: number | undefined;
+}
+
+function buildAppendInput(args: BuildAppendInputArgs): AppendInput {
+  const base = {
+    ts: args.ts,
+    type: args.type,
+    step: args.step,
+    data: args.data,
+    actor: args.actor,
+    parent_seq: args.parentSeq,
+    sessionId: args.sessionId,
+  } as const;
+
+  switch (args.idempotencyKind) {
+    case 'tool-call': {
+      if (args.toolCallId === undefined) {
+        throw new Error(
+          'appendEventAndUpdateState: toolCallId is required for tool-call idempotency kind',
+        );
+      }
+      return {
+        ...base,
+        idempotencyKind: 'tool-call',
+        toolCallId: args.toolCallId,
+      };
+    }
+    case 'system': {
+      return { ...base, idempotencyKind: 'system' };
+    }
+    case 'counter': {
+      if (args.counter === undefined) {
+        throw new Error(
+          'appendEventAndUpdateState: counter is required for counter idempotency kind',
+        );
+      }
+      return {
+        ...base,
+        idempotencyKind: 'counter',
+        counter: args.counter,
+      };
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // State resolution — using concrete reduce function
 // ---------------------------------------------------------------------------
 
 /**
  * Resolve workflow state from disk with full fallback chain.
  *
- * Wraps state.ts resolveState() with the concrete reduce function,
- * so callers don't need to pass the reducer themselves.
+ * Warm-path optimisation: state.json is the primary source on every
+ * guard / stop / capture hook invocation. When it exists and parses to
+ * a valid `WorkflowState`, return it directly — skipping the full SQLite
+ * event replay. The replay only materialises on the cold fallback path
+ * (state.json missing or corrupt), preserving PR A's crash-safety
+ * invariants: backup restoration and event-sourced derivation still
+ * cover any state.json that fails validation.
+ *
+ * Avoiding `store.replayAll()` on the happy path saves ~5–10 ms per
+ * guard / stop / capture hook invocation at ~500-event scale and scales
+ * linearly with event count thereafter.
  */
 export function resolveWorkflowState(
   dir: string,
   store: EventStore,
   sessionId: string,
 ): WorkflowState {
+  // Fast path — valid state.json short-circuits the replay.
+  const primary = readState(dir);
+  if (primary !== null) return primary;
+
+  // First fallback — on-disk backup (used when state.json was mid-write
+  // during a crash, or corrupted after write). Still no replay needed.
+  const backup = restoreBackup(dir);
+  if (backup !== null) return backup;
+
+  // Cold fallback — derive from the full event stream. This is the only
+  // branch that pays the replayAll cost.
   const events = store.replayAll();
-  return resolveState(dir, events, sessionId, reduce);
+  return deriveState(sessionId, events, reduce);
 }
 
 /**

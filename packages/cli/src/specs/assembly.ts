@@ -446,27 +446,15 @@ export function assertCacheOrdered(sections: readonly KindedSection[]): void {
 // ---------------------------------------------------------------------------
 
 function renderBlockContent(block: BlockContent): string {
-  // TODO(PR B — shared blocks): `BlockContent.refs` is NOT resolved in PR A.
-  //
-  // The `_shared/` block directory does not exist yet — authoring of shared
-  // blocks plus overlay/inlining is scoped to PR B (substate overlays and
-  // shared-block registry, per the v0.5.0 Phase 2 plan). Until PR B lands a
-  // resolver, any spec that ships with `refs` will silently have the
-  // referenced bodies OMITTED from the compiled prompt: only `block.content`
-  // is rendered. The PR A schema still ACCEPTS `refs` (it is declared in
-  // `types.ts` / `_schema/v1.ts`), which means a future spec could be
-  // authored with refs and pass validation before the resolver is wired.
-  //
-  // A.7's `ideation/spec.json` does not use `refs`, so this is not a silent
-  // regression today. But the contract is: if you add a `refs` array to any
-  // block in a new spec BEFORE PR B implements shared-block resolution, the
-  // compiled prompt will drop the referenced content. `gobbi workflow
-  // validate` (B.4) is the planned integration gate — it will check that
-  // every ref resolves to a real shared block. Do NOT introduce a spec that
-  // uses `refs` until PR B wires both the resolver and the validator.
+  // `BlockContent.refs` is accepted structurally by the schema but is
+  // NOT inlined at compile time. The `_shared/` block directory and
+  // resolver were originally scoped to PR B but shipped with PR B
+  // deferring them; see `assembly.test.ts` (`renderBlockContent —
+  // BlockContent.refs`) which pins the current no-op behaviour. A
+  // future PR that wires the resolver must update those tests to
+  // assert inlined shared-block content.
   //
   // @see `.claude/project/gobbi/design/v050-prompts.md` §Shared Blocks
-  // @see PR A → PR B handoff in the PR A evaluation project.md (MAJOR-3)
   return block.content;
 }
 

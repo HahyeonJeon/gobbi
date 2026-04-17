@@ -6,6 +6,33 @@
  * against current state and incoming event to find the applicable transition.
  * Rules reference predicate names from the predicate registry, keeping this
  * module free of inline condition logic.
+ *
+ * ## Verdict predicates — runtime authority
+ *
+ * Verdict-triggered transitions (rows with `verdict: 'pass'` or
+ * `verdict: 'revise'`) route via the `rule.verdict` field matched against
+ * the `EvalVerdictData` payload of the incoming event. The predicate names
+ * `verdictPass` / `verdictRevise` are NOT the enforcement path — they are
+ * advisory for the validator, graph analyser, and state-only consumers
+ * (status rendering, dead-code analysis).
+ *
+ * As of PR C (C.3 + C.8), those predicate bodies read
+ * `WorkflowState.lastVerdictOutcome` which the reducer populates on each
+ * `decision.eval.verdict` event and clears on the next productive
+ * `workflow.step.exit`. They are advisory-correct for state-only consumers.
+ * Do NOT introduce runtime routing that evaluates these predicates against
+ * state — always match on the event payload via `rule.verdict`.
+ *
+ * The `TransitionRule.condition` field is narrowed to
+ * `Exclude<PredicateName, VerdictPredicateName>` so authoring a rule with
+ * `{ condition: 'verdictPass' }` or `{ condition: 'verdictRevise' }` fails
+ * at `tsc`. This compile-time gate is the enforcement mechanism; a runtime
+ * validator code is deferred (PR E).
+ *
+ * @see `workflow/predicates.ts::verdictPass` / `verdictRevise`
+ * @see `workflow/predicates.ts::VerdictPredicateName`
+ * @see `workflow/reducer.ts` — populates `lastVerdictOutcome` on
+ *      `EVAL_VERDICT`.
  */
 
 import type { Event } from './events/index.js';
@@ -13,18 +40,31 @@ import { WORKFLOW_EVENTS } from './events/workflow.js';
 import { DECISION_EVENTS } from './events/decision.js';
 import type { WorkflowState, WorkflowStep } from './state.js';
 import { ACTIVE_STEPS, TERMINAL_STEPS, isActiveStep } from './state.js';
-import type { PredicateRegistry } from './predicates.js';
+import type { PredicateRegistry, VerdictPredicateName } from './predicates.js';
+import type { PredicateName } from './predicates.generated.js';
 
 // ---------------------------------------------------------------------------
 // Transition rule type
 // ---------------------------------------------------------------------------
 
+/**
+ * Names usable as `TransitionRule.condition` — every registered predicate
+ * EXCEPT the verdict-routing names. See the file docblock for rationale.
+ */
+export type ConditionPredicateName = Exclude<PredicateName, VerdictPredicateName>;
+
 export interface TransitionRule {
   readonly from: WorkflowStep;
   readonly to: WorkflowStep;
   readonly trigger: string;
-  /** Predicate name from registry. When undefined, the rule is unconditional. */
-  readonly condition?: string | undefined;
+  /**
+   * Predicate name from registry. When undefined, the rule is unconditional.
+   *
+   * Narrowed to {@link ConditionPredicateName} — `verdictPass` /
+   * `verdictRevise` cannot appear here. Verdict routing uses `rule.verdict`
+   * matched against the event payload in {@link findTransition}.
+   */
+  readonly condition?: ConditionPredicateName | undefined;
   /**
    * For verdict-triggered transitions, the expected verdict value.
    * When undefined, any verdict matches (subject to other fields).
