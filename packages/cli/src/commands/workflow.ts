@@ -102,6 +102,24 @@ export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
       await runNext(args);
     },
   },
+  {
+    name: 'transition',
+    summary:
+      'Append a workflow-progression event (COMPLETE, PASS/REVISE/ESCALATE, SKIP, TIMEOUT, FINISH, ABORT, RESUME)',
+    run: async (args: string[]): Promise<void> => {
+      const { runTransition } = await import('./workflow/transition.js');
+      await runTransition(args);
+    },
+  },
+  {
+    name: 'resume',
+    summary:
+      'Resume a workflow from the error state (PR C skeleton — body populated by PR D)',
+    run: async (args: string[]): Promise<void> => {
+      const { runResume } = await import('./workflow/resume.js');
+      await runResume(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------

@@ -52,7 +52,15 @@ export type DiagnosticCode =
   // has a valid member during PR C. Guard-spec-specific W### codes (e.g.
   // secret-pattern match, delegation size exceeded) land alongside their
   // guard implementations in later waves / PR F.
-  | 'W001_GUARD_WARN_GENERIC';
+  | 'W001_GUARD_WARN_GENERIC'
+  // X### — runtime errors (PR D).
+  //
+  // X001 is a pending sentinel thrown by the `resume` command skeleton while
+  // PR D's error/resume compilers are still outstanding. PR D replaces the
+  // throw with real resume-pathway compilation; the sentinel code is deleted
+  // at swap time, so callers that parse for X001 must treat its absence as
+  // success, not a downgrade.
+  | 'X001_RESUME_PR_D_PENDING';
 
 /** Severity classification. `error`-severity diagnostics fail exit code 1;
  *  `warning`-severity are informational. */
@@ -72,6 +80,7 @@ export const CODE_SEVERITY: Readonly<Record<DiagnosticCode, DiagnosticSeverity>>
     E007_ORPHAN_SUBSTATE: 'warning',
     E008_DUPLICATE_REGISTRATION: 'error',
     W001_GUARD_WARN_GENERIC: 'warning',
+    X001_RESUME_PR_D_PENDING: 'error',
   };
 
 /**
