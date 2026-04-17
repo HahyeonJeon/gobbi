@@ -247,26 +247,38 @@ function emitHeartbeat(
 }
 
 /**
- * Compute the next counter for a same-millisecond heartbeat. Scans
- * `session.heartbeat` events in reverse order and stops once the event
- * timestamp-millisecond no longer matches `nowMs`. Returns
- * `maxCounter + 1` for the matching bucket, or `0` when no heartbeat has
- * been written at this millisecond yet.
+ * Bound on the heartbeat tail-scan for same-millisecond counter
+ * disambiguation. 32 is a generous ceiling — realistic Stop-hook bursts
+ * write one or two heartbeats per millisecond bucket, and wall-clock
+ * monotonicity means older heartbeats outside the bucket terminate the
+ * scan via early-exit. Raising this above 32 would gain nothing on the
+ * warm path but widen the LIMIT query's materialised window.
+ */
+const HEARTBEAT_COUNTER_TAIL_SCAN = 32;
+
+/**
+ * Compute the next counter for a same-millisecond heartbeat. Queries
+ * the most recent `HEARTBEAT_COUNTER_TAIL_SCAN` heartbeats in DESC
+ * order (newest first) and stops once the event timestamp-millisecond
+ * no longer matches `nowMs`. Returns `maxCounter + 1` for the matching
+ * bucket, or `0` when no heartbeat has been written at this
+ * millisecond yet.
  *
- * Scan bound — we only walk the tail until the bucket boundary is
- * crossed. Wall-clock monotonicity means the bucket is typically either
- * empty (new ms) or has one to two entries (rapid retry). We do not
- * load the full heartbeat history.
+ * Bound — `store.lastN` caps the materialised set at the SQL layer;
+ * the full heartbeat history is never loaded even on long sessions
+ * (1 000+ turns). Wall-clock monotonicity means the bucket is
+ * typically empty (new ms) or has one to two entries (rapid retry),
+ * so the inner loop terminates at the first row whose `ts` differs.
  */
 function computeHeartbeatCounter(store: EventStore, nowMs: number): number {
-  const heartbeats = store.byType('session.heartbeat');
-  // Walk from the tail — heartbeats are seq-ordered, so the tail
-  // contains the most recent millisecond first. Stop as soon as we
-  // leave the `nowMs` bucket; keep the max counter seen within it.
+  const heartbeats = store.lastN(
+    'session.heartbeat',
+    HEARTBEAT_COUNTER_TAIL_SCAN,
+  );
+  // Rows are DESC (newest first). Walk forward, stop once we leave
+  // the `nowMs` bucket, keep the max counter seen inside it.
   let maxCounter = -1;
-  for (let i = heartbeats.length - 1; i >= 0; i -= 1) {
-    const row = heartbeats[i];
-    if (row === undefined) break;
+  for (const row of heartbeats) {
     const rowMs = Date.parse(row.ts);
     if (rowMs !== nowMs) break;
     const rowCounter = extractCounterFromKey(row.idempotency_key);

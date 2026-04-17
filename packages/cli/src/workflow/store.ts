@@ -133,6 +133,8 @@ const SQL_SINCE = `SELECT * FROM events WHERE seq > $seq ORDER BY seq ASC`;
 
 const SQL_LAST = `SELECT * FROM events WHERE type = $type ORDER BY seq DESC LIMIT 1`;
 
+const SQL_LAST_N = `SELECT * FROM events WHERE type = $type ORDER BY seq DESC LIMIT $n`;
+
 const SQL_COUNT = `SELECT count(*) as cnt FROM events`;
 
 // ---------------------------------------------------------------------------
@@ -152,6 +154,7 @@ export class EventStore {
   private readonly stmtByStepType;
   private readonly stmtSince;
   private readonly stmtLast;
+  private readonly stmtLastN;
   private readonly stmtCount;
 
   constructor(pathOrMemory: string) {
@@ -170,6 +173,7 @@ export class EventStore {
     this.stmtByStepType = this.db.query<EventRow, [SqlBindings]>(SQL_BY_STEP_TYPE);
     this.stmtSince = this.db.query<EventRow, [SqlBindings]>(SQL_SINCE);
     this.stmtLast = this.db.query<EventRow, [SqlBindings]>(SQL_LAST);
+    this.stmtLastN = this.db.query<EventRow, [SqlBindings]>(SQL_LAST_N);
     this.stmtCount = this.db.query<{ cnt: number }, []>(SQL_COUNT);
   }
 
@@ -280,6 +284,22 @@ export class EventStore {
   /** Return the most recent event of the given type, or null if none exist. */
   last(type: string): EventRow | null {
     return this.stmtLast.get({ type });
+  }
+
+  /**
+   * Return the `n` most recent events of the given type, ordered by seq
+   * DESC (newest first). Used by hot-path scans that only care about
+   * the tail — e.g. `gobbi workflow stop` walks same-millisecond
+   * heartbeats to pick a non-colliding counter and bails out as soon
+   * as the millisecond bucket changes.
+   *
+   * Bounded by `n` at the SQL layer — the caller never materialises
+   * the full `type` history. `n` must be positive; a non-positive
+   * value returns an empty array (matches SQLite's LIMIT semantics).
+   */
+  lastN(type: string, n: number): readonly EventRow[] {
+    if (n <= 0) return [];
+    return this.stmtLastN.all({ type, n });
   }
 
   /** Return total event count (for diagnostics). */

@@ -318,6 +318,91 @@ describe('runStop — same-millisecond collisions', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Bounded tail-scan — heartbeat counter must not materialise full history
+// ---------------------------------------------------------------------------
+
+describe('runStop — bounded heartbeat tail-scan', () => {
+  test('resolves same-ms counter against a 200-heartbeat history without scanning the full stream', async () => {
+    const { sessionDir } = await initScratchSession('stop-bound');
+
+    // Seed 200 heartbeats across distinct milliseconds so the stop
+    // handler has a long prior stream to walk. The final seeded row
+    // shares the `frozen` bucket to force a same-ms collision at the
+    // tail — the bounded scan must still find counter=0 and assign 1.
+    const frozen = new Date('2026-04-16T12:00:00.000Z');
+    const seedStore = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      seedStore.transaction(() => {
+        for (let i = 0; i < 199; i += 1) {
+          // Unique ms per seeded heartbeat so none collide with each
+          // other (each gets counter=0 in its own bucket).
+          const msOffset = i + 1; // offset into the past
+          const rowTs = new Date(frozen.getTime() - msOffset).toISOString();
+          seedStore.append({
+            ts: rowTs,
+            type: 'session.heartbeat',
+            step: null,
+            data: JSON.stringify({ timestamp: rowTs }),
+            actor: 'hook',
+            parent_seq: null,
+            idempotencyKind: 'counter',
+            counter: 0,
+            sessionId: 'stop-bound',
+          });
+        }
+        // One heartbeat sharing the exact `frozen` ms so the next
+        // invocation collides and must pick counter=1.
+        const rowTs = frozen.toISOString();
+        seedStore.append({
+          ts: rowTs,
+          type: 'session.heartbeat',
+          step: null,
+          data: JSON.stringify({ timestamp: rowTs }),
+          actor: 'hook',
+          parent_seq: null,
+          idempotencyKind: 'counter',
+          counter: 0,
+          sessionId: 'stop-bound',
+        });
+      });
+    } finally {
+      seedStore.close();
+    }
+
+    // Sanity — history is 200 rows deep before the stop fires.
+    const before = new EventStore(join(sessionDir, 'gobbi.db'));
+    const beforeCount = before.byType('session.heartbeat').length;
+    before.close();
+    expect(beforeCount).toBe(200);
+
+    // Fire Stop at the same ms as the tail — counter should resolve to
+    // 1 (the tail already has counter=0 in this bucket). If the scan
+    // walked the full 200-row stream and somehow miscounted, this
+    // assertion would fail.
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        payload: { session_id: 'stop-bound' },
+        now: () => frozen,
+      }),
+    );
+
+    const after = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const heartbeats = after.byType('session.heartbeat');
+      expect(heartbeats).toHaveLength(201);
+      const last = heartbeats[heartbeats.length - 1]!;
+      const expectedMs = frozen.getTime();
+      expect(last.idempotency_key).toBe(
+        `stop-bound:${expectedMs}:session.heartbeat:1`,
+      );
+    } finally {
+      after.close();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Missing session
 // ---------------------------------------------------------------------------
 

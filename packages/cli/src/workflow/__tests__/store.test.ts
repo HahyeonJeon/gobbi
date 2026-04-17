@@ -376,6 +376,83 @@ describe('last', () => {
 });
 
 // ===========================================================================
+// lastN
+// ===========================================================================
+
+describe('lastN', () => {
+  it('returns the n most recent events in DESC order (newest first)', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.exit', step: 'ideation' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit', step: 'plan' }));
+    store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.exit', step: 'execution' }));
+    store.append(makeInput({ toolCallId: 'tc-4', type: 'workflow.step.exit', step: 'memorization' }));
+
+    const tail = store.lastN('workflow.step.exit', 2);
+    expect(tail).toHaveLength(2);
+    // Newest first — seq=4 then seq=3.
+    expect(tail[0]!.seq).toBe(4);
+    expect(tail[0]!.step).toBe('memorization');
+    expect(tail[1]!.seq).toBe(3);
+    expect(tail[1]!.step).toBe('execution');
+  });
+
+  it('caps the materialised set at n even when more events exist', () => {
+    using store = new EventStore(':memory:');
+
+    // Seed 10 heartbeats; ask for 3 — store must return only 3.
+    for (let i = 0; i < 10; i += 1) {
+      const counter = i;
+      store.append({
+        ts: `2026-01-01T00:00:00.${String(i).padStart(3, '0')}Z`,
+        type: 'session.heartbeat',
+        step: null,
+        data: '{}',
+        actor: 'hook',
+        parent_seq: null,
+        idempotencyKind: 'counter',
+        counter,
+        sessionId: 'lastn-session',
+      });
+    }
+
+    const tail = store.lastN('session.heartbeat', 3);
+    expect(tail).toHaveLength(3);
+    // DESC ordering — seq 10, 9, 8.
+    expect(tail[0]!.seq).toBe(10);
+    expect(tail[1]!.seq).toBe(9);
+    expect(tail[2]!.seq).toBe(8);
+  });
+
+  it('returns fewer rows than requested when the type has fewer events', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.start' }));
+
+    const tail = store.lastN('workflow.start', 50);
+    expect(tail).toHaveLength(1);
+  });
+
+  it('returns empty array for unknown type', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1' }));
+
+    const tail = store.lastN('no-such-type', 10);
+    expect(tail).toHaveLength(0);
+  });
+
+  it('returns empty array when n is 0 or negative', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1' }));
+
+    expect(store.lastN('workflow.start', 0)).toHaveLength(0);
+    expect(store.lastN('workflow.start', -5)).toHaveLength(0);
+  });
+});
+
+// ===========================================================================
 // transaction
 // ===========================================================================
 
