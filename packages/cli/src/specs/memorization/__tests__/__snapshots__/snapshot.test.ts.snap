@@ -51,7 +51,7 @@ Criteria:
   3. project README and design docs reflect any convention, precedent, or scope change the session introduced
   4. no prior-step artifacts have been modified by this step — memorization is write-forward only
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=memorization
 session.currentSubstate=null
 session.completedSteps=[ideation,plan,execution,execution_eval]
@@ -117,7 +117,7 @@ Criteria:
   3. project README and design docs reflect any convention, precedent, or scope change the session introduced
   4. no prior-step artifacts have been modified by this step — memorization is write-forward only
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=memorization
 session.currentSubstate=null
 session.completedSteps=[ideation,plan,execution,execution_eval]
@@ -187,7 +187,7 @@ Criteria:
   3. project README and design docs reflect any convention, precedent, or scope change the session introduced
   4. no prior-step artifacts have been modified by this step — memorization is write-forward only
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=memorization
 session.currentSubstate=null
 session.completedSteps=[ideation,plan,execution,execution_eval,error]

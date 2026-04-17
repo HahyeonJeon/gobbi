@@ -4,6 +4,8 @@
  * Events: user, eval.verdict, eval.skip
  */
 
+import type { ErrorPathway } from '../../specs/errors.js';
+
 // ---------------------------------------------------------------------------
 // 1. Const object — single source of truth for event type strings
 // ---------------------------------------------------------------------------
@@ -41,8 +43,51 @@ export interface EvalVerdictData {
   readonly evaluatorId?: string | undefined;
 }
 
+/**
+ * Snapshot of the error pathway that an `eval.skip` event is stepping over.
+ *
+ * CP11 reversibility — when the orchestrator uses
+ * `gobbi workflow resume --force-memorization` to step out of an `error`
+ * state into `memorization`, the skip event carries a full snapshot of the
+ * detected pathway so the skip is auditable and reversible. Downstream
+ * tooling can parse `data.priorError.pathway` and reconstruct the
+ * `ErrorPathway` that was in effect at skip time.
+ *
+ * Every field is `readonly`. Every field is a JSON-safe primitive (or
+ * array of primitives / nested `ErrorPathway` which is itself JSON-safe),
+ * so the whole payload round-trips through the event store's
+ * `JSON.stringify` / `JSON.parse` boundary without loss.
+ *
+ * - `pathway` — the full `ErrorPathway` variant at skip time. Primitives
+ *   only per `specs/errors.ts` discipline.
+ * - `capturedAt` — ISO 8601 timestamp the snapshot was taken. Stamped by
+ *   the caller (the `resume --force-memorization` path), not by
+ *   `detectPathway` itself.
+ * - `stepAtError` — the step the state machine was in when the error
+ *   was observed (typically `'error'`).
+ * - `witnessEventSeqs` — the event seqs that constitute the detector's
+ *   evidence (timeout seq, invalid-transition seq, verdict seqs, etc.).
+ *   Operators can cite these in an audit trail.
+ */
+export interface PriorErrorSnapshot {
+  readonly pathway: ErrorPathway;
+  readonly capturedAt: string;
+  readonly stepAtError: string;
+  readonly witnessEventSeqs: readonly number[];
+}
+
+/**
+ * `decision.eval.skip` event data.
+ *
+ * - `step` — the step being skipped (v2 shape).
+ * - `priorError` — optional CP11 reversibility snapshot (v3+ shape). Absent
+ *   on every pre-PR-D event; present on `resume --force-memorization`
+ *   force-skips. The field is optional so v2-schema events continue to
+ *   round-trip identically through the schema v2 -> v3 identity migration.
+ */
 export interface EvalSkipData {
   readonly step: string;
+  readonly priorError?: PriorErrorSnapshot;
 }
 
 // ---------------------------------------------------------------------------

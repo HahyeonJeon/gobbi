@@ -395,7 +395,19 @@ function reduceDecision(
     }
 
     case DECISION_EVENTS.EVAL_SKIP: {
-      // Informational — no state change
+      // Informational — no state change. The optional `priorError`
+      // payload extension (schema v3, CP11 reversibility) carries a full
+      // `ErrorPathway` snapshot so the skip is auditable and reversible,
+      // but it is NOT reduced into state — it is witness metadata on the
+      // event itself. The caller (typically
+      // `gobbi workflow resume --force-memorization`) emits a
+      // `workflow.resume` alongside this event in the same store
+      // transaction; the `RESUME` case applies the actual step transition.
+      //
+      // Keeping this a no-op preserves the Greg Young discipline: v3 event
+      // payloads may carry additive fields, but the reducer contract for
+      // EVAL_SKIP is unchanged across the schema bump. See v050-design-review.md
+      // and ideation §2.5.2 for the CP11 rationale.
       return ok(state);
     }
 

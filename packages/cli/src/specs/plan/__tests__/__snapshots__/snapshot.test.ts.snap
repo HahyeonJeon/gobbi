@@ -56,7 +56,7 @@ Criteria:
   4. no task is so large that its delegation prompt would overflow a single context window
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=plan
 session.currentSubstate=null
 session.completedSteps=[]
@@ -131,7 +131,7 @@ Criteria:
   4. no task is so large that its delegation prompt would overflow a single context window
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=plan
 session.currentSubstate=null
 session.completedSteps=[]
@@ -206,7 +206,7 @@ Criteria:
   4. no task is so large that its delegation prompt would overflow a single context window
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=plan
 session.currentSubstate=null
 session.completedSteps=[]

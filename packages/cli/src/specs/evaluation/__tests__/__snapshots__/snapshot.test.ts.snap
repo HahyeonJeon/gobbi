@@ -41,7 +41,7 @@ Criteria:
   4. no evaluator assessed the artifacts it helped create — creator-evaluator isolation is preserved
   5. the user has confirmed the verdict via AskUserQuestion before the completion signal is emitted
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=ideation_eval
 session.currentSubstate=null
 session.completedSteps=[ideation]
@@ -110,7 +110,7 @@ Criteria:
   4. no evaluator assessed the artifacts it helped create — creator-evaluator isolation is preserved
   5. the user has confirmed the verdict via AskUserQuestion before the completion signal is emitted
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=execution_eval
 session.currentSubstate=null
 session.completedSteps=[ideation,plan,execution]
@@ -167,7 +167,7 @@ Criteria:
   4. no evaluator assessed the artifacts it helped create — creator-evaluator isolation is preserved
   5. the user has confirmed the verdict via AskUserQuestion before the completion signal is emitted
 
-session.schemaVersion=2
+session.schemaVersion=3
 session.currentStep=plan_eval
 session.currentSubstate=null
 session.completedSteps=[ideation,plan,plan_eval]

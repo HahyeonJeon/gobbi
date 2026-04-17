@@ -520,6 +520,41 @@ describe('factory functions', () => {
       expect(event.type).toBe(DECISION_EVENTS.EVAL_SKIP);
       expect(event.data).toEqual({ step: 'ideation_eval' });
     });
+
+    it('createEvalSkip with priorError (CP11 reversibility)', () => {
+      // Schema v3 extension — the factory accepts an optional PriorErrorSnapshot
+      // on top of the existing `step` field and round-trips it through
+      // isDecisionEvent without mutation.
+      const priorError = {
+        pathway: {
+          kind: 'feedbackCap' as const,
+          feedbackRound: 3,
+          maxFeedbackRounds: 3,
+          verdictHistory: [
+            {
+              round: 3,
+              verdict: 'revise' as const,
+              verdictSeq: 15,
+              loopTarget: null,
+              evaluatorId: null,
+            },
+          ],
+          finalRoundArtifacts: ['exec.md'],
+        },
+        capturedAt: '2026-02-01T00:00:00.000Z',
+        stepAtError: 'error',
+        witnessEventSeqs: [15],
+      };
+      const event = createEvalSkip({ step: 'memorization', priorError });
+      expect(event.type).toBe(DECISION_EVENTS.EVAL_SKIP);
+      expect(isDecisionEvent(event)).toBe(true);
+      // Structural identity — the factory does not clone or re-shape the
+      // nested snapshot.
+      expect(event.data).toEqual({ step: 'memorization', priorError });
+      // JSON round-trip invariant (what the event-store wire format does).
+      const reparsed = JSON.parse(JSON.stringify(event.data)) as unknown;
+      expect(reparsed).toEqual({ step: 'memorization', priorError });
+    });
   });
 
   describe('guard factories', () => {
