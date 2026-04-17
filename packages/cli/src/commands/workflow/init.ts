@@ -43,6 +43,8 @@ import {
   createEvalDecide,
 } from '../../workflow/events/workflow.js';
 
+import { detectTechStack } from './tech-stack.js';
+
 // ---------------------------------------------------------------------------
 // Usage
 // ---------------------------------------------------------------------------
@@ -180,10 +182,7 @@ export async function runInitWithOptions(
     context: typeof values.context === 'string' ? values.context : '',
   };
 
-  // techStack is populated by C.2c in the next commit. PR C Wave 3 lands the
-  // detector in a follow-up commit so this file stays isolated from that
-  // subtask's test fixtures.
-  const techStack: readonly string[] = [];
+  const techStack = detectTechStack(repoRoot);
 
   const metadata: SessionMetadata = {
     schemaVersion: 2,
