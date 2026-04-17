@@ -307,14 +307,237 @@ export function compileUnknownErrorPrompt(
 }
 
 // ---------------------------------------------------------------------------
-// compileResumePrompt — declared here for export continuity; real signature
-// + body land in D.4 (which also deletes `specs/resume.ts` wholesale).
+// compileResumePrompt — conservative standalone form (CP §3.2)
 //
-// TODO(PR D.4): replace this with
-//   export function compileResumePrompt(
-//     state: WorkflowState,
-//     store: EventStore,
-//     options?: { readonly targetStep?: string | undefined },
-//   ): CompiledPrompt
-// plus the mapped-type dispatcher that mirrors compileErrorPrompt.
+// Produces a resume prompt that orients the orchestrator to the recovery
+// pathway + target step ONLY. It does NOT inline the target step's full
+// prompt — the orchestrator calls `gobbi workflow next` immediately
+// afterward to receive the target step's work prompt. This two-invocation
+// shape is the user-locked contract from the session briefing: the resume
+// frame is orientation; the next prompt is work.
+//
+// Body shape:
+//
+//   1. Detect the pathway via `detectPathway(state, store)`.
+//   2. Resolve `targetStep` — explicit option wins; otherwise read from
+//      the most recent `workflow.resume` event's `data.targetStep` field.
+//      If still absent, throw (caller wiring bug).
+//   3. Dispatch via `visitPathway` into five resume-specific compilers —
+//      each builds a CompiledPrompt whose static block list starts with
+//      the shared resume role (first-static cache-prefix anchor), then
+//      the pathway preamble; whose session block is the standard session
+//      summary; and whose dynamic block is the pathway recap + target-
+//      entry framing.
+//
+// Section layout across every pathway:
+//
+//   [static] STATIC_ROLE_RESUME_RECOVERY   — shared cache prefix
+//   [static] STATIC_RESUME_PREAMBLE_{KIND}  — pathway-specific framing
+//   [session] renderSessionSummary(state)   — standard session block
+//   [dynamic] renderResume{Kind}Context(p, targetStep)
+//                                           — pathway recap + target entry
+//
+// The shared role anchors a byte-stable first-static hash across ALL 5
+// pathways — proved by the cache-stability test in `resume.snap.test.ts`.
+// This is the same invariant `compileErrorPrompt` carries via
+// `STATIC_ROLE_ERROR_RECOVERY`, but with a resume-specific role string so
+// the resume cache bucket is distinct from the error-state cache bucket.
 // ---------------------------------------------------------------------------
+
+import {
+  buildErrorCompiledPrompt,
+  makeStatic,
+  makeSession,
+  makeDynamic,
+  STATIC_ROLE_RESUME_RECOVERY,
+  STATIC_RESUME_PREAMBLE_CRASH,
+  STATIC_RESUME_PREAMBLE_TIMEOUT,
+  STATIC_RESUME_PREAMBLE_FEEDBACK_CAP,
+  STATIC_RESUME_PREAMBLE_INVALID,
+  STATIC_RESUME_PREAMBLE_UNKNOWN,
+  renderResumeCrashContext,
+  renderResumeTimeoutContext,
+  renderResumeFeedbackCapContext,
+  renderResumeInvalidTransitionContext,
+  renderResumeUnknownContext,
+} from './errors.sections.js';
+import { renderSessionSummary } from './assembly.js';
+import { detectPathway } from './errors.pathway-detect.js';
+
+// Resume-prompt section IDs — named constants keep snapshot section-summary
+// output stable and keep slot-override maps aligned with the IDs actually
+// emitted by the dynamic block factories below.
+const ID_RESUME_ROLE = 'resume.role';
+const ID_RESUME_SESSION = 'session.state';
+
+const ID_RESUME_CRASH_PREAMBLE = 'resume.crash.preamble';
+const ID_RESUME_CRASH_RECAP = 'resume.crash.recap';
+
+const ID_RESUME_TIMEOUT_PREAMBLE = 'resume.timeout.preamble';
+const ID_RESUME_TIMEOUT_RECAP = 'resume.timeout.recap';
+
+const ID_RESUME_FEEDBACK_CAP_PREAMBLE = 'resume.feedbackCap.preamble';
+const ID_RESUME_FEEDBACK_CAP_RECAP = 'resume.feedbackCap.recap';
+
+const ID_RESUME_INVALID_PREAMBLE = 'resume.invalidTransition.preamble';
+const ID_RESUME_INVALID_RECAP = 'resume.invalidTransition.recap';
+
+const ID_RESUME_UNKNOWN_PREAMBLE = 'resume.unknown.preamble';
+const ID_RESUME_UNKNOWN_RECAP = 'resume.unknown.recap';
+
+/**
+ * Derive the resume target step. An explicit `options.targetStep` always
+ * wins (the caller just appended a `workflow.resume` event and passed its
+ * targetStep down). When absent, read the most recent `workflow.resume`
+ * event from the store — this handles the compact-recovery scenario where
+ * the orchestrator re-opens mid-resume.
+ *
+ * Throws when neither source has a targetStep — that would be a caller
+ * wiring bug (nothing in the codebase should reach the resume compiler
+ * without a resume event or an explicit override).
+ */
+function resolveResumeTargetStep(
+  store: EventStore,
+  options: { readonly targetStep?: string | undefined } | undefined,
+): string {
+  if (options?.targetStep !== undefined) return options.targetStep;
+  const rows = store.lastN('workflow.resume', 1);
+  const last = rows[0];
+  if (last !== undefined) {
+    // EventRow.data is a JSON string; parse to extract targetStep. The
+    // event's schema is stable (workflow.ts::ResumeData) — the migration
+    // pipeline applies to read-time reducers, not here, but the shape for
+    // `targetStep` is identity across every schema version.
+    try {
+      const parsed = JSON.parse(last.data) as { readonly targetStep?: unknown };
+      if (typeof parsed.targetStep === 'string' && parsed.targetStep.length > 0) {
+        return parsed.targetStep;
+      }
+    } catch {
+      // fall through to the throw below
+    }
+  }
+  throw new Error(
+    'compileResumePrompt: targetStep missing — supply options.targetStep or append a workflow.resume event before compiling',
+  );
+}
+
+/**
+ * Compile the resume prompt for a workflow that entered the error step.
+ *
+ * **Conservative standalone form (CP §3.2).** The returned prompt recaps
+ * the pathway and names the target step — it does NOT inline the target
+ * step's work prompt. The orchestrator is expected to run
+ * `gobbi workflow next` immediately after emitting this prompt to receive
+ * the target step's content. This two-invocation shape keeps the resume
+ * surface free of the target-step spec-loading machinery that lives in
+ * `specs/assembly.ts::compile()`.
+ *
+ * @param state Current workflow state — must have `currentStep === 'error'`.
+ * @param store Event store — used by `detectPathway` and for target-step
+ *              fallback resolution when `options.targetStep` is absent.
+ * @param options Optional overrides. `targetStep` is the target of the
+ *              transition; when absent, the compiler reads the most recent
+ *              `workflow.resume` event's `data.targetStep` field. If
+ *              neither source has a targetStep, compilation throws.
+ */
+export function compileResumePrompt(
+  state: WorkflowState,
+  store: EventStore,
+  options?: { readonly targetStep?: string | undefined },
+): CompiledPrompt {
+  const pathway = detectPathway(state, store);
+  const targetStep = resolveResumeTargetStep(store, options);
+  const sessionBlock = makeSession({
+    id: ID_RESUME_SESSION,
+    content: renderSessionSummary(state),
+  });
+
+  return visitPathway(pathway, {
+    crash: (p) =>
+      buildErrorCompiledPrompt({
+        staticBlocks: [
+          makeStatic({ id: ID_RESUME_ROLE, content: STATIC_ROLE_RESUME_RECOVERY }),
+          makeStatic({
+            id: ID_RESUME_CRASH_PREAMBLE,
+            content: STATIC_RESUME_PREAMBLE_CRASH,
+          }),
+        ],
+        sessionBlock,
+        dynamicBlocks: [
+          makeDynamic({
+            id: ID_RESUME_CRASH_RECAP,
+            content: renderResumeCrashContext(p, targetStep),
+          }),
+        ],
+      }),
+    timeout: (p) =>
+      buildErrorCompiledPrompt({
+        staticBlocks: [
+          makeStatic({ id: ID_RESUME_ROLE, content: STATIC_ROLE_RESUME_RECOVERY }),
+          makeStatic({
+            id: ID_RESUME_TIMEOUT_PREAMBLE,
+            content: STATIC_RESUME_PREAMBLE_TIMEOUT,
+          }),
+        ],
+        sessionBlock,
+        dynamicBlocks: [
+          makeDynamic({
+            id: ID_RESUME_TIMEOUT_RECAP,
+            content: renderResumeTimeoutContext(p, targetStep),
+          }),
+        ],
+      }),
+    feedbackCap: (p) =>
+      buildErrorCompiledPrompt({
+        staticBlocks: [
+          makeStatic({ id: ID_RESUME_ROLE, content: STATIC_ROLE_RESUME_RECOVERY }),
+          makeStatic({
+            id: ID_RESUME_FEEDBACK_CAP_PREAMBLE,
+            content: STATIC_RESUME_PREAMBLE_FEEDBACK_CAP,
+          }),
+        ],
+        sessionBlock,
+        dynamicBlocks: [
+          makeDynamic({
+            id: ID_RESUME_FEEDBACK_CAP_RECAP,
+            content: renderResumeFeedbackCapContext(p, targetStep),
+          }),
+        ],
+      }),
+    invalidTransition: (p) =>
+      buildErrorCompiledPrompt({
+        staticBlocks: [
+          makeStatic({ id: ID_RESUME_ROLE, content: STATIC_ROLE_RESUME_RECOVERY }),
+          makeStatic({
+            id: ID_RESUME_INVALID_PREAMBLE,
+            content: STATIC_RESUME_PREAMBLE_INVALID,
+          }),
+        ],
+        sessionBlock,
+        dynamicBlocks: [
+          makeDynamic({
+            id: ID_RESUME_INVALID_RECAP,
+            content: renderResumeInvalidTransitionContext(p, targetStep),
+          }),
+        ],
+      }),
+    unknown: (p) =>
+      buildErrorCompiledPrompt({
+        staticBlocks: [
+          makeStatic({ id: ID_RESUME_ROLE, content: STATIC_ROLE_RESUME_RECOVERY }),
+          makeStatic({
+            id: ID_RESUME_UNKNOWN_PREAMBLE,
+            content: STATIC_RESUME_PREAMBLE_UNKNOWN,
+          }),
+        ],
+        sessionBlock,
+        dynamicBlocks: [
+          makeDynamic({
+            id: ID_RESUME_UNKNOWN_RECAP,
+            content: renderResumeUnknownContext(p, targetStep),
+          }),
+        ],
+      }),
+  });
+}

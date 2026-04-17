@@ -2,21 +2,20 @@
  * Specs barrel — public API for the specs package.
  *
  * Only modules whose exports are intended for consumption outside the
- * specs package are re-exported here. Stub modules (PR D error-pathway
- * compilers, resume compiler) are deliberately omitted so their
- * placeholder symbols do not leak into the public surface — downstream
- * callers can import them directly from their specific file path once
- * PR D populates them.
+ * specs package are re-exported here. The error-state + resume compiler
+ * surface (`errors.ts` + private siblings) is deliberately omitted so
+ * that consumers import from the specific file path — this keeps the
+ * barrel free of the factored pathway-compiler internals.
  *
- * M5 reconciliation (PR B B.3):
+ * M5 reconciliation (PR B B.3, PR D D.4):
  *
- *   - `errors.ts` and `resume.ts` are stub modules today (PR D work);
- *     their `__todoErrors` / `__todoResume` unique symbols and
- *     `compileErrorPrompt` / `compileResumePrompt` throw-stub functions
- *     were previously re-exported from this barrel. Nothing consumes
- *     them yet and the throw-stub calls at runtime would be a cliff.
- *     Removed from the barrel; PR D will add them back when the real
- *     implementations land.
+ *   - `errors.ts` ships the real `compileErrorPrompt` / `compileResumePrompt`
+ *     surface as of PR D. Both live under `specs/errors.ts`; the earlier
+ *     stub file `specs/resume.ts` was removed in PR D.4 — its
+ *     `__todoResume` unique symbol and zero-arg `compileResumePrompt`
+ *     throw-stub were placeholders, and callers now import the real
+ *     `compileResumePrompt(state, store, options?): CompiledPrompt`
+ *     directly from `specs/errors.js`.
  *   - `overlay.ts` (B.2's substate overlay engine) is added here. Its
  *     `applyOverlay` and `OverlayDoc`/`OverlayOp`/`OverlayError` surface
  *     is public — callers outside the specs package compose overlays

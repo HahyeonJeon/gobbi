@@ -554,3 +554,220 @@ export function renderUnknownRecoveryOptions(
 //
 // D.4 executor: append your constants + helpers here. Do NOT edit lines in
 // the SHARED zone or the D.2 zone above.
+
+// ---------------------------------------------------------------------------
+// Resume-specific static role — anchors the first static section of every
+// resume prompt. Distinct from STATIC_ROLE_ERROR_RECOVERY (the error-state
+// role): the resume role tells the orchestrator it is re-entering the
+// workflow from the error step via `gobbi workflow resume --target <step>`
+// (conservative standalone form per CP §3.2 — the resume compiler emits
+// the resume frame + pathway recap only, and `gobbi workflow next` emits
+// the target step's full prompt on the next invocation).
+//
+// STATIC_LINT_RULES gate: no ISO timestamps, UUIDs, absolute paths, PIDs,
+// or step-specific targets. The `targetStep` value is dynamic and lives in
+// the DynamicSection emitted by `renderResume*Context` below.
+// ---------------------------------------------------------------------------
+
+/**
+ * Shared resume-role preamble. Byte-stable across every pathway resume
+ * compiler. Placed FIRST in every resume prompt's static block list so the
+ * first-static `contentHash` is identical for all 5 resume pathways —
+ * anchoring a shared Anthropic prefix-cache hit across resume-pathway
+ * switches.
+ */
+export const STATIC_ROLE_RESUME_RECOVERY = `You are resuming a gobbi workflow that entered the error step. The resume frame below recaps the pathway that triggered the error and names the target step you are transitioning into. After you process this frame, run \`gobbi workflow next\` to receive the target step's full prompt — this resume frame intentionally does not inline the target step's instructions. Treat the resume prompt as orientation, not as a work prompt.`;
+
+// ---------------------------------------------------------------------------
+// Per-pathway static resume preambles — one paragraph of recovery-framing
+// text per pathway kind. No dynamic content (target step name, seqs,
+// timestamps live in the dynamic `renderResume*Context` block below).
+// ---------------------------------------------------------------------------
+
+/**
+ * Resume preamble for the Crash pathway. Mirrors `v050-session.md`
+ * §"Normal mid-step crash" but reframed for the resume surface: the caller
+ * is transitioning OUT of error into the target step, not reading the
+ * error-state briefing.
+ */
+export const STATIC_RESUME_PREAMBLE_CRASH = `Resume from pathway: crash.
+
+You are transitioning out of the error step after a mid-step process crash. The target step below names the step you are re-entering — typically the crashed step (retry) or memorization (force-advance). The pathway recap lists the last observed step and the tail of the event history so you can re-orient to the crash evidence before the target step's prompt arrives.`;
+
+/**
+ * Resume preamble for the Timeout pathway. Mirrors `v050-session.md`
+ * §"Error state from step timeout" reframed for resume.
+ */
+export const STATIC_RESUME_PREAMBLE_TIMEOUT = `Resume from pathway: step timeout.
+
+You are transitioning out of the error step after a workflow.step.timeout event. The target step below names the step you are re-entering — typically the timed-out step (retry with a fresh context) or memorization (force-advance). The pathway recap lists the timed-out step, the elapsed vs configured milliseconds, and the in-progress artifacts so you can decide whether the fresh-context retry is ready to proceed.`;
+
+/**
+ * Resume preamble for the FeedbackCap pathway. Mirrors `v050-session.md`
+ * §"Error state from feedback round cap" reframed for resume. Re-entry
+ * into the evaluation loop is NOT available once the cap has fired, so
+ * the only resume targets are memorization (force-advance) or a fresh
+ * start at an earlier step — the recap flags this constraint explicitly.
+ */
+export const STATIC_RESUME_PREAMBLE_FEEDBACK_CAP = `Resume from pathway: feedback round cap.
+
+You are transitioning out of the error step after the evaluation loop reached its configured maximum feedback rounds. The target step below names the step you are re-entering — typically memorization (force-advance) because re-entry into the evaluation loop is not available once the cap has fired. The pathway recap lists the per-round verdict history and the final-round artifacts so you can re-orient to the partial work being carried forward.`;
+
+/**
+ * Resume preamble for the InvalidTransition pathway. Mirrors
+ * `v050-session.md` §"Error state from invalid transition" reframed for
+ * resume.
+ */
+export const STATIC_RESUME_PREAMBLE_INVALID = `Resume from pathway: invalid transition.
+
+You are transitioning out of the error step after the reducer rejected an event as invalid from the current state. The target step below names the step you are re-entering — typically the step at the time of rejection (retry from the last valid state). The pathway recap lists the rejected event type, the reducer message, and the step at rejection so you can re-orient to the rejection evidence before retrying.`;
+
+/**
+ * Resume preamble for the Unknown pathway — classifier fallback. The
+ * detector could not attribute the error to one of the four observable
+ * pathways; the resume surface reflects that uncertainty to the operator.
+ */
+export const STATIC_RESUME_PREAMBLE_UNKNOWN = `Resume from pathway: unknown.
+
+You are transitioning out of the error step but the classifier could not attribute the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The pathway recap surfaces the classifier's diagnostic hint so you can inspect it before re-entering the target step — the detector has no pathway-specific recommendation for this resume, and the target step below is the operator's chosen re-entry point.`;
+
+// ---------------------------------------------------------------------------
+// Per-pathway dynamic render helpers — pathway recap + target-entry
+// framing. Each helper emits a DynamicSection body. Dynamic sections are
+// NOT subject to STATIC_LINT_RULES — the `targetStep` value, pathway
+// seqs, step names, and artifact filenames live here.
+//
+// The target-entry framing line is the contract-critical boundary between
+// the resume frame and the target step's full prompt: the orchestrator
+// calls `gobbi workflow next` after this resume prompt emits, and the
+// framing tells the orchestrator exactly what to expect.
+// ---------------------------------------------------------------------------
+
+function renderResumeTargetFraming(
+  pathwayLabel: string,
+  targetStep: string,
+): string {
+  return [
+    'Target-entry framing:',
+    `  You are transitioning from error into ${targetStep}.`,
+    `  The pathway recap above names the ${pathwayLabel} evidence you are re-entering with.`,
+    `  Continue with the normal ${targetStep} flow; the full ${targetStep} prompt will be emitted by \`gobbi workflow next\` on the next invocation.`,
+  ].join('\n');
+}
+
+/**
+ * Dynamic pathway-recap block for the Crash resume. Reuses the same
+ * evidence fields as `renderCrashEvidence` (so the resume recap cites the
+ * same seqs the error-state briefing would), and appends a target-entry
+ * framing paragraph naming the target step.
+ */
+export function renderResumeCrashContext(
+  pathway: ErrorPathwayCrash,
+  targetStep: string,
+): string {
+  const heartbeat =
+    pathway.heartbeatEventSeq === null
+      ? 'heartbeat=(none)'
+      : `heartbeat.seq=${pathway.heartbeatEventSeq}`;
+  return [
+    'Crash recap:',
+    `  stepAtCrash=${pathway.stepAtCrash}`,
+    `  lastEventSeqs=[${joinSeqs(pathway.lastEventSeqs)}]`,
+    `  ${heartbeat}`,
+    '',
+    renderResumeTargetFraming('crash', targetStep),
+  ].join('\n');
+}
+
+/**
+ * Dynamic pathway-recap block for the Timeout resume. Same evidence fields
+ * as `renderTimeoutEvidence` plus the target-entry framing.
+ */
+export function renderResumeTimeoutContext(
+  pathway: ErrorPathwayTimeout,
+  targetStep: string,
+): string {
+  return [
+    'Timeout recap:',
+    `  timedOutStep=${pathway.timedOutStep}`,
+    `  elapsedMs=${pathway.elapsedMs}`,
+    `  configuredTimeoutMs=${pathway.configuredTimeoutMs}`,
+    `  timeoutEventSeq=${pathway.timeoutEventSeq}`,
+    `  inProgressArtifacts=[${joinArtifacts(pathway.inProgressArtifacts)}]`,
+    '',
+    renderResumeTargetFraming('timeout', targetStep),
+  ].join('\n');
+}
+
+/**
+ * Dynamic pathway-recap block for the FeedbackCap resume. Same evidence
+ * fields as `renderFeedbackCapEvidence` plus the target-entry framing.
+ */
+export function renderResumeFeedbackCapContext(
+  pathway: ErrorPathwayFeedbackCap,
+  targetStep: string,
+): string {
+  const history =
+    pathway.verdictHistory.length === 0
+      ? '  (none recorded)'
+      : pathway.verdictHistory
+          .map((h) => {
+            const loop = h.loopTarget ?? 'null';
+            const evaluator = h.evaluatorId ?? 'null';
+            return `  round=${h.round} verdict=${h.verdict} seq=${h.verdictSeq} loopTarget=${loop} evaluator=${evaluator}`;
+          })
+          .join('\n');
+  return [
+    'FeedbackCap recap:',
+    `  feedbackRound=${pathway.feedbackRound}/${pathway.maxFeedbackRounds}`,
+    '  verdictHistory:',
+    history,
+    `  finalRoundArtifacts=[${joinArtifacts(pathway.finalRoundArtifacts)}]`,
+    '',
+    renderResumeTargetFraming('feedbackCap', targetStep),
+  ].join('\n');
+}
+
+/**
+ * Dynamic pathway-recap block for the InvalidTransition resume. Same
+ * evidence fields as `renderInvalidTransitionEvidence` plus the
+ * target-entry framing.
+ */
+export function renderResumeInvalidTransitionContext(
+  pathway: ErrorPathwayInvalidTransition,
+  targetStep: string,
+): string {
+  const rejectedSeq =
+    pathway.rejectedEventSeq === null
+      ? 'null (rejected before append)'
+      : String(pathway.rejectedEventSeq);
+  return [
+    'InvalidTransition recap:',
+    `  rejectedEventType=${pathway.rejectedEventType}`,
+    `  rejectedEventSeq=${rejectedSeq}`,
+    `  stepAtRejection=${pathway.stepAtRejection}`,
+    `  reducerMessage=${pathway.reducerMessage}`,
+    `  invalidTransitionEventSeq=${pathway.invalidTransitionEventSeq}`,
+    '',
+    renderResumeTargetFraming('invalidTransition', targetStep),
+  ].join('\n');
+}
+
+/**
+ * Dynamic pathway-recap block for the Unknown resume. Same evidence
+ * fields as `renderUnknownEvidence` plus the target-entry framing.
+ * Operator-facing text explicitly flags that the classifier has no
+ * pathway-specific recommendation for this resume.
+ */
+export function renderResumeUnknownContext(
+  pathway: ErrorPathwayUnknown,
+  targetStep: string,
+): string {
+  return [
+    'Unknown-pathway recap:',
+    `  reason=${pathway.reason}`,
+    `  diagnosticHint=${pathway.diagnosticHint}`,
+    '',
+    renderResumeTargetFraming('unknown', targetStep),
+  ].join('\n');
+}
