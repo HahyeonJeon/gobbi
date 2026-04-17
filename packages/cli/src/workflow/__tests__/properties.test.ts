@@ -57,7 +57,7 @@ function arbitraryWorkflowStart(): fc.Arbitrary<Event> {
     type: fc.constant(WORKFLOW_EVENTS.START),
     data: fc.record({
       sessionId: fc.uuid(),
-      timestamp: fc.date().map((d) => d.toISOString()),
+      timestamp: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
     }),
   });
 }
@@ -134,7 +134,7 @@ function arbitraryDelegationSpawn(): fc.Arbitrary<Event> {
       agentType: fc.constantFrom('executor', 'researcher', 'evaluator'),
       step: fc.constantFrom(...ACTIVE_STEP_NAMES),
       subagentId: fc.uuid(),
-      timestamp: fc.date().map((d) => d.toISOString()),
+      timestamp: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
     }),
   });
 }
@@ -248,7 +248,7 @@ function arbitraryGuardViolation(): fc.Arbitrary<Event> {
       toolName: fc.constantFrom('Write', 'Read', 'Edit', 'Bash'),
       reason: fc.string({ minLength: 1, maxLength: 100 }),
       step: fc.constantFrom(...ACTIVE_STEP_NAMES),
-      timestamp: fc.date().map((d) => d.toISOString()),
+      timestamp: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
     }),
   });
 }
@@ -268,7 +268,7 @@ function arbitraryHeartbeat(): fc.Arbitrary<Event> {
   return fc.record({
     type: fc.constant(SESSION_EVENTS.HEARTBEAT),
     data: fc.record({
-      timestamp: fc.date().map((d) => d.toISOString()),
+      timestamp: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
     }),
   });
 }
