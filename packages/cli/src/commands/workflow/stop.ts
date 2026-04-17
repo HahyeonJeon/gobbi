@@ -52,7 +52,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { readStdin } from '../../lib/stdin.js';
+import { readStdinJson } from '../../lib/stdin.js';
 import { isRecord, isString } from '../../lib/guards.js';
 import { EventStore } from '../../workflow/store.js';
 import {
@@ -128,7 +128,9 @@ export async function runStopWithOptions(
 
   // --- 1. Acquire payload ------------------------------------------------
   const rawPayload =
-    overrides.payload !== undefined ? overrides.payload : await readJsonStdin();
+    overrides.payload !== undefined
+      ? overrides.payload
+      : await readStdinJson<unknown>();
   const payload = asPayload(rawPayload);
 
   // --- 2. Reentrance guard — MUST be the first action ------------------
@@ -303,20 +305,6 @@ function extractCounterFromKey(key: string): number | null {
   const tail = key.slice(lastColon + 1);
   const n = Number.parseInt(tail, 10);
   return Number.isFinite(n) && String(n) === tail ? n : null;
-}
-
-// ---------------------------------------------------------------------------
-// Stdin helpers
-// ---------------------------------------------------------------------------
-
-async function readJsonStdin(): Promise<unknown> {
-  const raw = await readStdin();
-  if (raw === null || raw.trim() === '') return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
 }
 
 // ---------------------------------------------------------------------------

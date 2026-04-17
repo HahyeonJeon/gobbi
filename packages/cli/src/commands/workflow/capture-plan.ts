@@ -24,7 +24,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { readStdin } from '../../lib/stdin.js';
+import { readStdinJson } from '../../lib/stdin.js';
 import { isRecord, isString } from '../../lib/guards.js';
 import { EventStore } from '../../workflow/store.js';
 import {
@@ -107,7 +107,9 @@ export async function runCapturePlanWithOptions(
 
   // --- 1. Acquire payload ------------------------------------------------
   const rawPayload =
-    overrides.payload !== undefined ? overrides.payload : await readJsonStdin();
+    overrides.payload !== undefined
+      ? overrides.payload
+      : await readStdinJson<unknown>();
   const payload = asPayload(rawPayload);
 
   const plan = payload.tool_input?.plan;
@@ -191,16 +193,6 @@ function idempotencyFor(toolCallId: string | undefined): IdempotencyChoice {
     return { kind: 'tool-call', toolCallId };
   }
   return { kind: 'system', toolCallId: undefined };
-}
-
-async function readJsonStdin(): Promise<unknown> {
-  const raw = await readStdin();
-  if (raw === null || raw.trim() === '') return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
 }
 
 function sessionDirName(dir: string): string {

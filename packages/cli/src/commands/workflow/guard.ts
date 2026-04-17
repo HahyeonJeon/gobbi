@@ -52,7 +52,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { readStdin } from '../../lib/stdin.js';
+import { readStdinJson } from '../../lib/stdin.js';
 import { EventStore } from '../../workflow/store.js';
 import {
   appendEventAndUpdateState,
@@ -191,7 +191,9 @@ export async function runGuardWithOptions(
   // Fail-open on every parse/shape failure: emit allow, log nothing, exit 0.
   // A hook that blocks ambiguous input deadlocks the orchestrator.
   const rawPayload =
-    overrides.payload !== undefined ? overrides.payload : await readJsonStdin();
+    overrides.payload !== undefined
+      ? overrides.payload
+      : await readStdinJson<unknown>();
   if (!isPreToolUsePayload(rawPayload)) {
     emitAllow();
     return;
@@ -368,30 +370,6 @@ function idempotencyFor(payload: PreToolUsePayload): IdempotencyChoice {
     return { kind: 'tool-call', toolCallId: payload.tool_call_id };
   }
   return { kind: 'system', toolCallId: undefined };
-}
-
-// ---------------------------------------------------------------------------
-// Stdin helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Read stdin as JSON. Returns `null` on every failure — not piped, empty,
- * malformed JSON, not an object. The caller translates `null` into a
- * fail-open allow.
- *
- * We intentionally avoid `readStdinJson<PreToolUsePayload>()` because the
- * generic cast wouldn't actually narrow the value — we need to run a type
- * guard after parsing. Doing the parse+guard inline keeps the narrowing
- * honest.
- */
-async function readJsonStdin(): Promise<unknown> {
-  const raw = await readStdin();
-  if (raw === null || raw.trim() === '') return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
 }
 
 // ---------------------------------------------------------------------------
