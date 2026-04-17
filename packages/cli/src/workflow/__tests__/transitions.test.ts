@@ -705,3 +705,58 @@ describe('initialState', () => {
     expect(state.lastVerdictOutcome).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Compile-time verdict-predicate exclusion (C.3-d)
+//
+// TransitionRule.condition is narrowed to `Exclude<PredicateName,
+// VerdictPredicateName>`. Authoring a rule with `condition: 'verdictPass'`
+// or `condition: 'verdictRevise'` must fail at `tsc`. The `@ts-expect-error`
+// comments below BOTH assert the error and document the hazard — if the
+// narrowing is ever removed, `@ts-expect-error` flips to a typecheck error
+// because it expected an error that no longer exists.
+//
+// This describe block is intentionally empty of runtime behaviour — it is a
+// type-level test container, exercised by `tsc --noEmit`.
+// ---------------------------------------------------------------------------
+
+describe('TransitionRule.condition — verdict-predicate exclusion (type-level)', () => {
+  it('rejects verdictPass as a condition (compile-time)', () => {
+    const _rule: TransitionRule = {
+      from: 'idle',
+      to: 'ideation',
+      trigger: WORKFLOW_EVENTS.START,
+      // @ts-expect-error — verdictPass is a VerdictPredicateName and is excluded
+      // from TransitionRule.condition. Verdict routing uses rule.verdict against
+      // the event payload in findTransition(), not condition-predicate lookup.
+      condition: 'verdictPass',
+      priority: 0,
+    };
+    // The runtime body is a placeholder — `_rule` reference keeps the binding
+    // from being tree-shaken in strict-unused-locals environments.
+    expect(_rule.from).toBe('idle');
+  });
+
+  it('rejects verdictRevise as a condition (compile-time)', () => {
+    const _rule: TransitionRule = {
+      from: 'idle',
+      to: 'ideation',
+      trigger: WORKFLOW_EVENTS.START,
+      // @ts-expect-error — verdictRevise is excluded; use rule.verdict instead.
+      condition: 'verdictRevise',
+      priority: 0,
+    };
+    expect(_rule.to).toBe('ideation');
+  });
+
+  it('accepts non-verdict predicate names (evalIdeationEnabled)', () => {
+    const rule: TransitionRule = {
+      from: 'ideation',
+      to: 'ideation_eval',
+      trigger: WORKFLOW_EVENTS.STEP_EXIT,
+      condition: 'evalIdeationEnabled',
+      priority: 0,
+    };
+    expect(rule.condition).toBe('evalIdeationEnabled');
+  });
+});

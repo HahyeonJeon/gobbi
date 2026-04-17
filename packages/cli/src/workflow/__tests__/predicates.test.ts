@@ -168,3 +168,62 @@ describe('piAgentsToSpawn', () => {
     expect(pred(state)).toBe(true);
   });
 });
+
+// ---------------------------------------------------------------------------
+// verdictPass / verdictRevise — read state.lastVerdictOutcome (C.3-c)
+// ---------------------------------------------------------------------------
+
+describe('verdictPass', () => {
+  const pred = defaultPredicates['verdictPass'];
+  if (pred === undefined) throw new Error('verdictPass not registered');
+
+  test('true when lastVerdictOutcome is "pass"', () => {
+    const state: WorkflowState = { ...baseState(), lastVerdictOutcome: 'pass' };
+    expect(pred(state)).toBe(true);
+  });
+
+  test('false when lastVerdictOutcome is "revise"', () => {
+    const state: WorkflowState = { ...baseState(), lastVerdictOutcome: 'revise' };
+    expect(pred(state)).toBe(false);
+  });
+
+  test('false when lastVerdictOutcome is null (no verdict recorded yet)', () => {
+    const state: WorkflowState = { ...baseState(), lastVerdictOutcome: null };
+    expect(pred(state)).toBe(false);
+  });
+
+  test('false on a fresh session (initialState)', () => {
+    expect(pred(baseState())).toBe(false);
+  });
+});
+
+describe('verdictRevise', () => {
+  const pred = defaultPredicates['verdictRevise'];
+  if (pred === undefined) throw new Error('verdictRevise not registered');
+
+  test('true when lastVerdictOutcome is "revise"', () => {
+    const state: WorkflowState = { ...baseState(), lastVerdictOutcome: 'revise' };
+    expect(pred(state)).toBe(true);
+  });
+
+  test('false when lastVerdictOutcome is "pass"', () => {
+    const state: WorkflowState = { ...baseState(), lastVerdictOutcome: 'pass' };
+    expect(pred(state)).toBe(false);
+  });
+
+  test('false when lastVerdictOutcome is null', () => {
+    const state: WorkflowState = { ...baseState(), lastVerdictOutcome: null };
+    expect(pred(state)).toBe(false);
+  });
+
+  test('ignores feedbackRound — the old heuristic is gone', () => {
+    // Prior behaviour returned true for feedbackRound > 0. The C.3-c rewrite
+    // drops that coupling: only lastVerdictOutcome drives the result.
+    const state: WorkflowState = {
+      ...baseState(),
+      feedbackRound: 2,
+      lastVerdictOutcome: null,
+    };
+    expect(pred(state)).toBe(false);
+  });
+});

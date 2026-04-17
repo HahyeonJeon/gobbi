@@ -94,6 +94,14 @@ export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
       await runEvents(args);
     },
   },
+  {
+    name: 'next',
+    summary: 'Compile and emit the prompt for the current workflow step',
+    run: async (args: string[]): Promise<void> => {
+      const { runNext } = await import('./workflow/next.js');
+      await runNext(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------

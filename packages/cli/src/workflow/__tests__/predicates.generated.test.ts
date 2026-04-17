@@ -90,28 +90,26 @@ describe('always', () => {
 });
 
 // ---------------------------------------------------------------------------
-// verdictPass / verdictRevise — conservative state-only inference
+// verdictPass / verdictRevise — read state.lastVerdictOutcome (C.3-c)
 // ---------------------------------------------------------------------------
 
 describe('verdictPass / verdictRevise — state-only semantics', () => {
-  test('verdictPass false on a fresh idle session', () => {
+  test('verdictPass false on a fresh idle session (lastVerdictOutcome null)', () => {
     expect(defaultPredicates['verdictPass'](freshState())).toBe(false);
   });
 
-  test('verdictPass false while currentStep is an eval step', () => {
+  test('verdictPass false while lastVerdictOutcome is "revise"', () => {
     const state: WorkflowState = {
       ...freshState(),
-      currentStep: 'ideation_eval',
-      completedSteps: ['ideation'],
+      lastVerdictOutcome: 'revise',
     };
     expect(defaultPredicates['verdictPass'](state)).toBe(false);
   });
 
-  test('verdictPass true once workflow has exited an eval step with completedSteps populated', () => {
+  test('verdictPass true when lastVerdictOutcome is "pass"', () => {
     const state: WorkflowState = {
       ...freshState(),
-      currentStep: 'plan',
-      completedSteps: ['ideation', 'ideation_eval'],
+      lastVerdictOutcome: 'pass',
     };
     expect(defaultPredicates['verdictPass'](state)).toBe(true);
   });
@@ -120,8 +118,11 @@ describe('verdictPass / verdictRevise — state-only semantics', () => {
     expect(defaultPredicates['verdictRevise'](freshState())).toBe(false);
   });
 
-  test('verdictRevise true once feedbackRound advances', () => {
-    const state: WorkflowState = { ...freshState(), feedbackRound: 1 };
+  test('verdictRevise true when lastVerdictOutcome is "revise"', () => {
+    const state: WorkflowState = {
+      ...freshState(),
+      lastVerdictOutcome: 'revise',
+    };
     expect(defaultPredicates['verdictRevise'](state)).toBe(true);
   });
 });
