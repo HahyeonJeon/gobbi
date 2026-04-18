@@ -615,6 +615,35 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
     expect(countHeartbeats(sessionDir)).toBe(1); // heartbeat still fires
   });
 
+  test('clock skew: stepStartedAt in the future does not emit a timeout event', async () => {
+    // Regression lock for the explicit `elapsedMs < 0` guard in
+    // `detectAndEmitTimeout`. A future-stamped `stepStartedAt` (clock
+    // drift between machines, ntp slew, or synthetic fixtures) yields a
+    // negative elapsed and must NOT trigger a spurious timeout — even
+    // if a future refactor flips the `<=` boundary to `<`.
+    const { sessionDir } = await initScratchSession('stop-tm-skew');
+    const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
+
+    const frozen = new Date('2026-04-16T10:00:00.000Z');
+    // Stamp 5 minutes AFTER `frozen` → elapsedMs = -300_000.
+    stampStepStartedAt(sessionDir, new Date(frozen.getTime() + 300_000));
+
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        specsDir,
+        payload: { session_id: 'stop-tm-skew' },
+        now: () => frozen,
+      }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(countTimeoutEvents(sessionDir)).toBe(0);
+    // State remains on the active step — no transition to error.
+    const state = readState(sessionDir);
+    expect(state?.currentStep).toBe('ideation');
+  });
+
   test('regression: default specsDir path leaves heartbeat-only behavior unchanged', async () => {
     // This test pins the regression guarantee from the plan: when the
     // committed specs dir (no step declares meta.timeoutMs today) is

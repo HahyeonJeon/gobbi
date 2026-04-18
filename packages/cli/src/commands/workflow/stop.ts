@@ -389,12 +389,25 @@ async function detectAndEmitTimeout(
   }
 
   const timeoutMs = spec.meta.timeoutMs;
-  if (timeoutMs === undefined) return;
+  // Loose-equality (`== null`) is intentional: the AJV schema declares
+  // `meta.timeoutMs` as `nullable: true` (see `specs/_schema/v1.ts:101`
+  // and the convention note at `_schema/v1.ts:16–20`). Codebase practice
+  // is to OMIT the field rather than emit `null`, so in production the
+  // TS type (`number | undefined`) is accurate — but a future
+  // spec-build or migration path could emit `null` and `=== undefined`
+  // alone would silently pass `null` through to the `<=` comparison.
+  if (timeoutMs == null) return;
 
   const startedMs = Date.parse(state.stepStartedAt);
   if (!Number.isFinite(startedMs)) return;
 
   const elapsedMs = now.getTime() - startedMs;
+  // Clock skew → treat as not-elapsed. `stepStartedAt` in the future
+  // yields a negative `elapsedMs`; today the `<= timeoutMs` check
+  // implicitly covers it (negative ≤ positive), but a refactor to `<`
+  // or `Math.abs` would silently break that safety. Explicit guard
+  // preserves the invariant regardless of the boundary-condition form.
+  if (!Number.isFinite(elapsedMs) || elapsedMs < 0) return;
   if (elapsedMs <= timeoutMs) return;
 
   // Budget exceeded — emit. The reducer's STEP_TIMEOUT case flips the

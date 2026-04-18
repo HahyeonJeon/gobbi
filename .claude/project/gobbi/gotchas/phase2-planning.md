@@ -144,3 +144,29 @@ Orchestration-level mitigations:
 - Specify the canonical source for cross-wave shared types in the plan briefing
 - Include an explicit `grep` verification gate in the plan: exactly one declaration per shared type across all files
 - Flag in executor briefings when a module is expected to be a producer (other waves will import) vs a consumer (must import, never declare)
+
+---
+
+## AJV `nullable: true` ≠ runtime `null` — defensive guard on `== null`, not `=== undefined`
+
+**Priority:** Low
+
+**What happened:** The v0.5.0 step-spec AJV schema declares `meta.timeoutMs` (and similar optional numeric fields) as `nullable: true`. Codebase convention is to OMIT the field rather than emit `null`, so runtime guards written as `x === undefined` work in practice. However, `nullable: true` in AJV permits null values per JSON Schema — future spec build paths, hand-edited project configs, or a migration-from-prev-version pass could emit `null`, and the `=== undefined` guard would silently fail.
+
+**User feedback:** Wave 3b Overall-perspective evaluator self-caught; user approved the defensive tightening during E.11 evaluation discussion 2026-04-18.
+
+**Correct approach:** For any schema-derived type where the AJV field is `nullable: true`, use loose equality `x == null` (catches both `null` and `undefined`) in runtime guards, not `x === undefined`. The TS type remains `number | undefined` per tsc inference — the guard is defense-in-depth against schema-drift. Pattern reference: `packages/cli/src/commands/workflow/stop.ts::detectAndEmitTimeout`.
+
+---
+
+## Clock-skew produces negative `elapsedMs` — always `< 0` early-return, don't rely on `<=` implicit safety
+
+**Priority:** Low
+
+**What happened:** The `stop.ts::detectAndEmitTimeout` branch computes `elapsedMs = now - Date.parse(state.stepStartedAt)`. If `stepStartedAt` is in the future (clock skew between machines, ntp drift, or test fixtures with synthetic future timestamps), `elapsedMs` is negative. The original implementation was implicitly safe because the check was `elapsedMs > timeoutMs` (negative > positive → false, no timeout emitted). But this safety hinges on the `>` / `<=` semantics — a future refactor introducing `Math.abs()` or switching to `< timeoutMs` would break it silently.
+
+**User feedback:** Wave 3b Overall-perspective evaluator identified the latent invariant; user approved adding an explicit guard 2026-04-18.
+
+**Correct approach:** Add an explicit `if (!Number.isFinite(elapsedMs) || elapsedMs < 0) return;` before any timeout comparison. Documents the invariant at the check site and protects against future refactor regressions. Reference: `packages/cli/src/commands/workflow/stop.ts::detectAndEmitTimeout`.
+
+---
