@@ -23,6 +23,9 @@
  */
 
 import { describe, it, test, expect } from 'bun:test';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import fc from 'fast-check';
 
 import {
@@ -36,9 +39,25 @@ import {
   type CompilePredicateRegistry,
   type DynamicContext,
 } from '../assembly.js';
+import { compileVerificationBlock } from '../verification-block.js';
 import type { StepSpec } from '../types.js';
 import { initialState } from '../../workflow/state.js';
 import type { WorkflowState } from '../../workflow/state.js';
+import { EventStore } from '../../workflow/store.js';
+import {
+  aggregateCost,
+  COST_EMPTY_SESSION_MESSAGE,
+} from '../../commands/workflow/status.js';
+import {
+  DEFAULT_CONFIG,
+  loadProjectConfig,
+  type CommandSlot,
+  type ProjectConfigInput,
+} from '../../lib/project-config.js';
+import type {
+  VerificationCommandKind,
+  VerificationResultData,
+} from '../../workflow/events/verification.js';
 
 // ===========================================================================
 // Fixtures — a deterministic base spec/input for properties that don't
@@ -419,6 +438,414 @@ describe('properties: compile idempotency', () => {
         }
       }),
       { numRuns: 100 },
+    );
+  });
+});
+
+// ===========================================================================
+// E.7 properties (per plan §E.7 and research `e7-properties-and-e2e-patterns.md`)
+//
+// Three additional properties exercising PR E cross-cutting surface:
+//
+//   5. Cost-query NULL-safety — for any arbitrary mix of
+//      `delegation.complete` events (tokensUsed present/absent,
+//      sizeProxyBytes present/absent), the aggregator's source counters
+//      fit within the total row count and the cumulative USD is a finite
+//      non-negative number.
+//   6. `loadProjectConfig` default completeness — for any valid partial
+//      config (including `{version:1}`), the returned config is fully
+//      populated with defaults at every nested field.
+//   7. Verification-block chronological-ordering preservation — for any
+//      insertion order of `VerificationResultData` entries, the rendered
+//      block lists commands in the compiler's canonical enum order.
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Property 5 — cost-query NULL-safety.
+//
+// Seeds an in-memory EventStore with an arbitrary mix of delegation.complete
+// events, then invokes `aggregateCost(store)` — the same entry point the
+// CLI uses — and asserts:
+//   (a) sources.tokens + sources.proxy <= totalRows
+//   (b) every per-step bucket's delegation count <= totalRows
+//   (c) cumulativeUsd is a finite non-negative number (no NaN/Infinity
+//       from null arithmetic leaks)
+// Row cap is small (≤ 8) to keep the property fast despite the SQLite
+// bookkeeping overhead per row.
+// ---------------------------------------------------------------------------
+
+interface ArbitraryCostRowShape {
+  readonly subagentId: string;
+  readonly step: string;
+  readonly tokensKind: 'opus' | 'sonnet' | 'unknown-model' | 'absent';
+  readonly bytes: number | null;
+}
+
+function arbitraryCostRows(): fc.Arbitrary<
+  readonly ArbitraryCostRowShape[]
+> {
+  return fc.array(
+    fc.record({
+      subagentId: fc.uuid(),
+      step: fc.constantFrom(
+        'ideation',
+        'plan',
+        'execution',
+        'memorization',
+      ),
+      tokensKind: fc.constantFrom(
+        'opus' as const,
+        'sonnet' as const,
+        'unknown-model' as const,
+        'absent' as const,
+      ),
+      // null models the "no sizeProxyBytes recorded" branch; small
+      // positive integers exercise proxyCost. Skip zero so the proxy
+      // branch's >0 guard lets the row count.
+      bytes: fc.option(fc.integer({ min: 1, max: 100_000 }), { nil: null }),
+    }),
+    { minLength: 0, maxLength: 8 },
+  );
+}
+
+function seedCostRow(
+  store: EventStore,
+  row: ArbitraryCostRowShape,
+  index: number,
+  sessionId: string,
+): void {
+  const data: Record<string, unknown> = { subagentId: row.subagentId };
+  if (row.tokensKind === 'opus') {
+    data['model'] = 'claude-opus-4-7';
+    data['tokensUsed'] = {
+      input_tokens: 1000,
+      output_tokens: 500,
+      cache_read_input_tokens: 0,
+      cache_creation_input_tokens: 0,
+    };
+  } else if (row.tokensKind === 'sonnet') {
+    data['model'] = 'claude-sonnet-4-5';
+    data['tokensUsed'] = {
+      input_tokens: 1000,
+      output_tokens: 500,
+      cache_read_input_tokens: 0,
+      cache_creation_input_tokens: 0,
+    };
+  } else if (row.tokensKind === 'unknown-model') {
+    data['model'] = 'claude-future-99';
+    data['tokensUsed'] = {
+      input_tokens: 1000,
+      output_tokens: 500,
+      cache_read_input_tokens: 0,
+      cache_creation_input_tokens: 0,
+    };
+  }
+  // When tokensKind === 'absent', no model/tokensUsed — the proxy path
+  // or zero path applies.
+  if (row.bytes !== null) {
+    data['sizeProxyBytes'] = row.bytes;
+  }
+  store.append({
+    ts: `2026-04-18T10:00:${String(index).padStart(2, '0')}.000Z`,
+    type: 'delegation.complete',
+    step: row.step,
+    data: JSON.stringify(data),
+    actor: 'orchestrator',
+    parent_seq: null,
+    idempotencyKind: 'tool-call',
+    toolCallId: `tc-prop-${index}`,
+    sessionId,
+  });
+}
+
+describe('properties: cost-query NULL-safety', () => {
+  it('sources.tokens + sources.proxy is bounded by totalRows and cumulativeUsd is finite', () => {
+    fc.assert(
+      fc.property(arbitraryCostRows(), (rows) => {
+        const store = new EventStore(':memory:');
+        try {
+          rows.forEach((row, i) => {
+            seedCostRow(store, row, i, 'prop-cost');
+          });
+          const rollup = aggregateCost(store);
+          if (rows.length === 0) {
+            expect(rollup.message).toBe(COST_EMPTY_SESSION_MESSAGE);
+            expect(rollup.cumulativeUsd).toBe(0);
+            return;
+          }
+          // Invariant 1: source counters fit within the row total.
+          expect(
+            rollup.sources.tokens + rollup.sources.proxy,
+          ).toBeLessThanOrEqual(rows.length);
+          // Invariant 2: cumulativeUsd is finite and non-negative.
+          expect(Number.isFinite(rollup.cumulativeUsd)).toBe(true);
+          expect(rollup.cumulativeUsd).toBeGreaterThanOrEqual(0);
+          // Invariant 3: per-step delegation counts also fit within
+          // the row total (no step row count can exceed the total).
+          for (const bucket of Object.values(rollup.perStep)) {
+            expect(bucket.delegations).toBeLessThanOrEqual(rows.length);
+            expect(Number.isFinite(bucket.usd)).toBe(true);
+            expect(bucket.usd).toBeGreaterThanOrEqual(0);
+          }
+        } finally {
+          store.close();
+        }
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Property 6 — loadProjectConfig default completeness.
+//
+// Writes an arbitrary ProjectConfigInput-shaped partial (always valid —
+// just omits or overrides subsets of the defaults) to a temp `.gobbi/
+// project-config.json` and asserts `loadProjectConfig(tmp)` returns a
+// value with no missing nested fields. The absent fields must be
+// supplied from DEFAULT_CONFIG via the deepMerge path.
+// ---------------------------------------------------------------------------
+
+function arbitraryCommandSlot(): fc.Arbitrary<CommandSlot> {
+  return fc.record({
+    command: fc.string({ minLength: 1, maxLength: 40 }),
+    policy: fc.constantFrom('inform' as const, 'gate' as const),
+    timeoutMs: fc.integer({ min: 0, max: 600_000 }),
+  });
+}
+
+/**
+ * Strip `undefined` leaves from a record so the resulting JSON string
+ * serialises the same as if the key had been omitted. `JSON.stringify`
+ * already drops `undefined` leaves, but we also drop them before the
+ * typed return so the `ProjectConfigInput` shape is satisfied under
+ * `exactOptionalPropertyTypes: true` — optional fields are either
+ * present with a value or absent entirely, never `{ key: undefined }`.
+ */
+function stripUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === undefined) continue;
+    if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+      out[k] = stripUndefined(v as Record<string, unknown>);
+    } else {
+      out[k] = v;
+    }
+  }
+  return out as Partial<T>;
+}
+
+function arbitraryPartialProjectConfig(): fc.Arbitrary<ProjectConfigInput> {
+  // Each nested sub-branch is optional; fast-check picks any mix. We
+  // use `fc.option(..., { nil: undefined })` to drive the "field
+  // absent" branch, then strip `undefined` leaves so the resulting
+  // value actually satisfies `exactOptionalPropertyTypes: true` shape.
+  return fc
+    .record({
+      version: fc.constant(1 as const),
+      verification: fc.option(
+        fc.record({
+          commands: fc.option(
+            fc.record({
+              lint: fc.option(arbitraryCommandSlot(), { nil: undefined }),
+              test: fc.option(arbitraryCommandSlot(), { nil: undefined }),
+              typecheck: fc.option(arbitraryCommandSlot(), { nil: undefined }),
+              build: fc.option(arbitraryCommandSlot(), { nil: undefined }),
+              format: fc.option(arbitraryCommandSlot(), { nil: undefined }),
+              custom: fc.option(arbitraryCommandSlot(), { nil: undefined }),
+            }),
+            { nil: undefined },
+          ),
+          runAfterSubagentStop: fc.option(
+            fc.array(
+              fc.constantFrom(
+                'lint',
+                'test',
+                'typecheck',
+                'build',
+                'format',
+                'custom',
+              ),
+              { maxLength: 4 },
+            ),
+            { nil: undefined },
+          ),
+        }),
+        { nil: undefined },
+      ),
+      cost: fc.option(
+        fc.record({
+          rateTable: fc.option(fc.string({ minLength: 1, maxLength: 30 }), {
+            nil: undefined,
+          }),
+        }),
+        { nil: undefined },
+      ),
+    })
+    .map((raw) => stripUndefined(raw) as ProjectConfigInput);
+}
+
+describe('properties: loadProjectConfig default completeness', () => {
+  it('any valid partial config yields a fully-populated result', () => {
+    fc.assert(
+      fc.property(arbitraryPartialProjectConfig(), (partial) => {
+        const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-cfg-prop-'));
+        try {
+          mkdirSync(join(tmpRoot, '.gobbi'), { recursive: true });
+          writeFileSync(
+            join(tmpRoot, '.gobbi', 'project-config.json'),
+            `${JSON.stringify(partial, null, 2)}\n`,
+            'utf8',
+          );
+          const config = loadProjectConfig(tmpRoot);
+          // Top-level keys must always be present (never undefined).
+          expect(config.version).toBe(1);
+          expect(config.verification).toBeDefined();
+          expect(config.verification.commands).toBeDefined();
+          // `runAfterSubagentStop` must always be an array — arrays
+          // replace under deepMerge, so a partial with `[]` legitimately
+          // yields `[]`. The invariant is shape (array-typed), not
+          // cardinality.
+          expect(Array.isArray(config.verification.runAfterSubagentStop)).toBe(
+            true,
+          );
+          expect(config.cost).toBeDefined();
+          expect(config.cost.rateTable).toBeDefined();
+          // Every command slot key exists (even if null). The partial
+          // might have omitted some slots; defaults must hydrate them.
+          expect('lint' in config.verification.commands).toBe(true);
+          expect('test' in config.verification.commands).toBe(true);
+          expect('typecheck' in config.verification.commands).toBe(true);
+          expect('build' in config.verification.commands).toBe(true);
+          expect('format' in config.verification.commands).toBe(true);
+          expect('custom' in config.verification.commands).toBe(true);
+          // For slots the partial did not set, the returned value must
+          // match DEFAULT_CONFIG — this is the deepMerge contract.
+          const partialCommands = partial.verification?.commands;
+          if (partialCommands?.lint === undefined) {
+            expect(config.verification.commands.lint).toEqual(
+              DEFAULT_CONFIG.verification.commands.lint,
+            );
+          }
+          if (partialCommands?.test === undefined) {
+            expect(config.verification.commands.test).toEqual(
+              DEFAULT_CONFIG.verification.commands.test,
+            );
+          }
+          if (partial.cost?.rateTable === undefined) {
+            expect(config.cost.rateTable).toBe(
+              DEFAULT_CONFIG.cost.rateTable,
+            );
+          }
+        } finally {
+          rmSync(tmpRoot, { recursive: true, force: true });
+        }
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Property 7 — verification-block chronological ordering preservation.
+//
+// The compiler defines COMMAND_KIND_ORDER = ['lint','typecheck','test',
+// 'build','format','custom']. Regardless of the insertion order of
+// entries into `state.verificationResults`, the rendered block must list
+// the commands in canonical order. Present indices in the render must be
+// monotonically non-decreasing in the canonical order.
+// ---------------------------------------------------------------------------
+
+const ALL_COMMAND_KINDS: readonly VerificationCommandKind[] = [
+  'lint',
+  'typecheck',
+  'test',
+  'build',
+  'format',
+  'custom',
+];
+
+function makeResultFixture(
+  subagentId: string,
+  commandKind: VerificationCommandKind,
+): VerificationResultData {
+  return {
+    subagentId,
+    command: `run-${commandKind}`,
+    commandKind,
+    exitCode: 0,
+    durationMs: 100,
+    policy: 'inform',
+    timedOut: false,
+    stdoutDigest:
+      '0000000000000000000000000000000000000000000000000000000000000000',
+    stderrDigest:
+      '1111111111111111111111111111111111111111111111111111111111111111',
+    timestamp: '2026-04-18T10:00:00.000Z',
+  };
+}
+
+function stateWithResultsInInsertOrder(
+  sessionId: string,
+  subagentId: string,
+  kinds: readonly VerificationCommandKind[],
+): WorkflowState {
+  const verificationResults: Record<string, VerificationResultData> = {};
+  for (const k of kinds) {
+    verificationResults[`${subagentId}:${k}`] = makeResultFixture(
+      subagentId,
+      k,
+    );
+  }
+  return {
+    ...initialState(sessionId),
+    verificationResults,
+  };
+}
+
+describe('properties: verification-block canonical ordering', () => {
+  it('renders commands in canonical order regardless of insertion order', () => {
+    // `fc.shuffledSubarray` returns a shuffled subarray of the source,
+    // covering both "all kinds" and "any subset" orderings.
+    fc.assert(
+      fc.property(
+        // `fc.shuffledSubarray` expects a mutable source; pass a copy
+        // so the readonly `ALL_COMMAND_KINDS` constant stays immutable.
+        fc.shuffledSubarray([...ALL_COMMAND_KINDS], {
+          minLength: 1,
+          maxLength: ALL_COMMAND_KINDS.length,
+        }),
+        (insertOrder) => {
+          const state = stateWithResultsInInsertOrder(
+            'prop-order',
+            'sub-order',
+            insertOrder,
+          );
+          const prompt = compileVerificationBlock(state, 'sub-order');
+          // For each canonical kind present in the insert order, find
+          // its index in the rendered text. Absent kinds are filtered.
+          const present = insertOrder.slice().sort((a, b) => {
+            const ia = ALL_COMMAND_KINDS.indexOf(a);
+            const ib = ALL_COMMAND_KINDS.indexOf(b);
+            return ia - ib;
+          });
+          const indices: number[] = [];
+          for (const kind of present) {
+            // Rendered row label starts with the command-kind identifier
+            // padded to 10 chars; `indexOf` finds its position in the
+            // final compiled prompt text.
+            const marker = `  ${kind.padEnd(10, ' ')}`;
+            const idx = prompt.text.indexOf(marker);
+            expect(idx).toBeGreaterThanOrEqual(0);
+            indices.push(idx);
+          }
+          // Monotonic non-decreasing — equivalent to "already sorted
+          // ascending" which is the canonical order invariant.
+          const sorted = [...indices].sort((a, b) => a - b);
+          expect(indices).toEqual(sorted);
+        },
+      ),
+      { numRuns: 50 },
     );
   });
 });
