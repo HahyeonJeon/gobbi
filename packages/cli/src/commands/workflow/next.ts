@@ -42,6 +42,10 @@ import { getStepById, loadGraph, type WorkflowGraph } from '../../specs/graph.js
 import { applyOverlay, validateOverlay } from '../../specs/overlay.js';
 import { validateStepSpec } from '../../specs/_schema/v1.js';
 import type { StepSpec } from '../../specs/types.js';
+import {
+  compileVerificationBlock,
+  hasVerificationResultsFor,
+} from '../../specs/verification-block.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
 import type { WorkflowState } from '../../workflow/state.js';
@@ -218,8 +222,6 @@ export async function compileCurrentStep(
     return prompt.text;
   }
 
-  // E.8 ZONE: verification-block dynamic section insertion (if verificationResults has entries)
-
   const graphPath = join(specsDir, 'index.json');
   // Suppress the graph loader's best-effort missing-spec warnings — they
   // are expected during partial rollouts; `next` is not a validator and
@@ -273,29 +275,28 @@ export async function compileCurrentStep(
   // cancellation would thread its controller.signal through this call.
   await runVerification(sessionDir, store, state, sessionId);
 
-  // E.8 ZONE — verification-block compiler must upgrade this line.
-  //
-  // `runVerification` above has already written `verification.result`
-  // events through `appendEventAndUpdateState`, so the on-disk state is
-  // now ahead of the in-memory `state` binding. Today no reader follows
-  // this call inside `compileCurrentStep` — the compiled prompt was
-  // built above and is already immutable — so the refreshed state is
-  // intentionally discarded via `void`.
-  //
-  // When E.8 lands a verification-block dynamic section compiled AFTER
-  // the runner has written events, any state-reading code added below
-  // MUST consume a refreshed state. `resolveWorkflowState` is a
-  // synchronous call, so E.8 must replace this line with a rebind such
-  // as:
-  //
-  //   state = resolveWorkflowState(sessionDir, store, sessionId);
-  //
-  // and thread `state` into the verification-block compiler. Leaving the
-  // `void` in place while adding a reader below would silently compile
-  // the verification-block against the pre-verification state.
-  void resolveWorkflowState(sessionDir, store, sessionId);
+  // E.8: refresh state after runVerification emits events, then compile
+  // the verification-block dynamic section per active subagent (if any).
+  // `resolveWorkflowState` is synchronous — rebind directly. This rebind
+  // upgrades the Wave 3a placeholder that discarded the refreshed state
+  // via `void`; the compiler below now reads post-verification state.
+  state = resolveWorkflowState(sessionDir, store, sessionId);
 
-  return prompt.text;
+  // One verification-block per active subagent whose `verification.result`
+  // entries landed in `state.verificationResults`. Blocks concatenate onto
+  // the main compiled prompt's text via SECTION_SEPARATOR parity with
+  // `specs/assembly.ts::compile` (double newline). Subagents with no
+  // verification output emit no block — the empty-case render is reserved
+  // for explicit "no outcomes" signalling when the caller passes a
+  // subagent id that genuinely ran but produced nothing.
+  const verificationSections: string[] = [];
+  for (const agent of state.activeSubagents) {
+    if (!hasVerificationResultsFor(state, agent.subagentId)) continue;
+    const block = compileVerificationBlock(state, agent.subagentId);
+    verificationSections.push(block.text);
+  }
+  if (verificationSections.length === 0) return prompt.text;
+  return [prompt.text, ...verificationSections].join('\n\n');
 }
 
 // ---------------------------------------------------------------------------
