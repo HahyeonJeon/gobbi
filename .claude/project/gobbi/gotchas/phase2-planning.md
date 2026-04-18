@@ -59,6 +59,24 @@ Metadata-file assertions that check a hard-coded TypeScript literal (e.g., `meta
 
 ---
 
+## `reduce(state, event)` has no `event.ts` — reducer signature change required for timestamp-derived state
+
+**Priority:** High
+
+**What happened:** The v0.5.0 Phase 2 PR E.10 briefing and research doc both prescribed `stepStartedAt: event.ts` at two reducer sites (STEP_EXIT and RESUME). Pre-execution study revealed that the `Event` discriminated union is `{ type, data }` only — the on-wire timestamp lives on `EventRow.ts` (the store-layer row) and is explicitly dropped by `rowToEvent`, which returns a plain `Event`. The existing reducer signature `reduce(state, event)` has no access to `ts` at all; `WorkflowStartData.timestamp` and `DelegationSpawnData.timestamp` are payload fields, but STEP_EXIT (`StepExitData = { step }`) and RESUME (`ResumeData = { targetStep, fromError }`) carry no timestamp. `event.ts` as written is aspirational rather than present in the codebase.
+
+**User feedback:** Self-caught by the E.10 executor during pre-execution study when grepping for `event.ts` and finding zero hits outside the briefing's aspirational language.
+
+**Correct approach:** When a plan says "derive state field X from `event.ts`", verify the reducer's actual input type before accepting the literal syntax. Options:
+
+1. **Extend reducer signature** (chosen for E.10): change `reduce(state, event, ts?)` with `ts` plumbed in from `engine.ts`'s `effectiveTs` and `state.ts::deriveState` via `row.ts`. Optional param keeps legacy test call sites working (they preserve prior value). Also update `ReduceFn` in `types.ts`.
+2. **Add timestamp field to event data** (rejected — requires schema migration and changes factory callers; breaks additive-identity migration discipline per PR D/E hops).
+3. **Return `Event & { ts: string }` from `rowToEvent`** (rejected — changes `Event` shape and propagates through every type signature).
+
+The signature-extension approach preserves reducer purity (given `state, event, ts`, output is deterministic) and keeps `Event` as a pure on-wire shape. Executors receiving a "from `event.ts`" briefing should pre-check `rg 'event\.ts' packages/cli/src/workflow/` to see whether the field actually exists before planning implementation.
+
+---
+
 ## Parallel executor worktree has in-flight other-task changes — stage by file, not `git add -A`
 
 **Priority:** High
