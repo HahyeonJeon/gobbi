@@ -538,6 +538,17 @@ function reduceSession(
 // try-catch, which emits the `workflow.invalid_transition` audit and
 // re-throws.
 //
+// Key-format invariant (L3): the composite key is
+// `${subagentId}:${commandKind}`, and downstream compilers (e.g.
+// `specs/verification-block.ts`) iterate the map with
+// `key.startsWith(`${subagentId}:`)` to collect a subagent's entries. A
+// subagentId containing `':'` would let one subagent's prefix silently match
+// another subagent's keys — a latent correctness bug. The reducer rejects
+// such events at the write site so the invariant is enforced at the single
+// mutation point, not at every reader. `commandKind` is drawn from a
+// controlled enum today but is guarded symmetrically as defence-in-depth
+// against future enum extensions that embed a separator.
+//
 // Gating discipline: the reducer does NOT branch on `policy` or `exitCode`.
 // Per the ideation lock "Gating is an orchestrator concern, not
 // state-machine", the event is recorded verbatim and downstream consumers
@@ -554,6 +565,20 @@ function reduceVerification(
   // documents the intent and makes adding a second variant a one-line edit.
   if (event.type === VERIFICATION_EVENTS.RESULT) {
     const { subagentId, commandKind } = event.data;
+    // Key-format guard: subagentId and commandKind must not contain ':' —
+    // the composite key `${subagentId}:${commandKind}` depends on colon as
+    // its sole separator, and downstream consumers split/prefix-match on it.
+    // See the block comment above for the full invariant rationale.
+    if (subagentId.includes(':')) {
+      return err(
+        `verification.result: subagentId must not contain ':' — the composite key ${subagentId}:${commandKind} depends on colon as separator`,
+      );
+    }
+    if (commandKind.includes(':')) {
+      return err(
+        `verification.result: commandKind must not contain ':' — the composite key ${subagentId}:${commandKind} depends on colon as separator`,
+      );
+    }
     const isActive = state.activeSubagents.some(
       (a) => a.subagentId === subagentId,
     );

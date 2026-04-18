@@ -621,6 +621,50 @@ describe('reduceVerification — rejection path', () => {
       ),
     ).toThrow(ReducerRejectionError);
   });
+
+  test('reduce returns ok:false when subagentId contains a colon (composite-key collision guard)', () => {
+    // A subagentId containing `:` would let a sibling subagent whose id is
+    // a prefix of this one silently steal its verification rows — the E.8
+    // compiler and the in-reducer key construction both rely on `:` being
+    // the sole separator between the two segments. The reducer rejects at
+    // the single write site so every downstream reader can trust the
+    // invariant.
+    const base = initialState('colon-guard-session');
+    const withSubagent: WorkflowState = {
+      ...base,
+      currentStep: 'execution',
+      activeSubagents: [
+        {
+          subagentId: 'agent:v2',
+          agentType: 'executor',
+          step: 'execution',
+          spawnedAt: '2026-04-18T00:00:00.000Z',
+        },
+      ],
+    };
+    const data: VerificationResultData = {
+      subagentId: 'agent:v2',
+      command: 'true',
+      commandKind: 'lint',
+      exitCode: 0,
+      durationMs: 10,
+      policy: 'gate',
+      timedOut: false,
+      stdoutDigest: `sha256:${'0'.repeat(64)}`,
+      stderrDigest: `sha256:${'0'.repeat(64)}`,
+      timestamp: '2026-04-18T00:00:00.000Z',
+    };
+    const event = createVerificationResult(data);
+
+    const result = reduce(withSubagent, event);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("subagentId must not contain ':'");
+      expect(result.error).toContain('agent:v2:lint');
+      expect(result.error).toContain('depends on colon as separator');
+    }
+  });
 });
 
 // ===========================================================================

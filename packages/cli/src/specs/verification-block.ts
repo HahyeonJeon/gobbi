@@ -85,8 +85,14 @@ const ID_VERIFICATION_FAILURES = 'verification.failures';
  * Module-level static prefix for every verification-block prompt. Byte-stable
  * across every invocation so its `contentHash` anchors a shared Anthropic
  * prefix-cache bucket for all verification-block compiles in a session.
+ *
+ * Wording note: `next.ts` emits ONE block per active subagent that has
+ * verification entries — the static prefix below is shared across those N
+ * emissions, so it speaks of "each active subagent" rather than "the current
+ * subagent". The per-emission session block ("Subagent: ${subagentId} (N
+ * results)") scopes each block to one subagent by id.
  */
-export const STATIC_VERIFICATION_HEADER = `Verification outcomes for the current subagent. Each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.`;
+export const STATIC_VERIFICATION_HEADER = `Verification outcomes per active subagent. Each section below is scoped to one subagent and identifies it by id; each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.`;
 
 // ---------------------------------------------------------------------------
 // Canonical command-kind ordering — deterministic render order so two

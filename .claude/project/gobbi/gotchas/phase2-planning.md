@@ -170,3 +170,15 @@ Orchestration-level mitigations:
 **Correct approach:** Add an explicit `if (!Number.isFinite(elapsedMs) || elapsedMs < 0) return;` before any timeout comparison. Documents the invariant at the check site and protects against future refactor regressions. Reference: `packages/cli/src/commands/workflow/stop.ts::detectAndEmitTimeout`.
 
 ---
+
+## Verification-block uses `CompiledPrompt` directly, bypassing main compile's `allocate()` budget
+
+**Priority:** Low
+
+**What happened:** The E.8 verification-block compiler returns a `CompiledPrompt` (the same type the error-state compiler returns) and is invoked independently of the main step-prompt `compile()`. The main compile runs `assembly.ts::allocate()` against a step budget, but the verification block's `CompiledPrompt` is not threaded into that allocator — its static prefix + dynamic sections use `ERROR_PROMPT_DEFAULT_BUDGET` and its text is concatenated onto the main prompt via `SECTION_SEPARATOR` downstream. Today this is acceptable because digests are small (sha256 hex ± 4KB stream slices) — but if any future enlargement to the verification block's rendered shape (e.g., actionable briefing, full stream capture) raises per-block size, the two compile passes have no unified budget and the total prompt can silently exceed the caller's budget invariant.
+
+**User feedback:** Project + Architecture Wave 4 evaluators convergently flagged; user accepted as MED-level architectural impurity 2026-04-18 (no correctness defect today).
+
+**Correct approach:** When next extending the verification block beyond digest-only rendering — or when E.8's pattern is reused for any compile-stream appendix — re-thread the appendix into the main `compile()` input as a `DynamicSection` so `allocate()` sees the full payload. Alternatively, extract a `joinCompiledPrompts(primary, ...appendices)` primitive that respects the primary's budget. Do NOT add raw text concatenation to compile outputs without either consuming the main budget or establishing a new one.
+
+---

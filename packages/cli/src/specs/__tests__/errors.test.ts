@@ -487,6 +487,15 @@ describe('compileResumePrompt — targetStep fallback', () => {
     // error as the missing-event case.
     using store = new EventStore(':memory:');
     seedStart(store);
+    // Deliberate exception to the research §E.12 recommendation "Do NOT use
+    // raw `store.append`; use `appendEventAndUpdateState` or existing seed
+    // helpers." This test's purpose IS to simulate a corrupted/malformed
+    // `workflow.resume` event reaching the store — precisely the case the
+    // reducer-validating `appendEventAndUpdateState` path would reject
+    // before it could be written. Raw `store.append` is the only seeder
+    // that can deposit a payload the reducer would refuse, so the
+    // resolveResumeTargetStep fallback guard can be exercised against it.
+    // Do not "clean this up" by routing through the validating wrapper.
     store.append({
       ts: '2026-01-01T00:20:00.000Z',
       type: WORKFLOW_EVENTS.RESUME,

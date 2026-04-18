@@ -1,7 +1,7 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`compileVerificationBlock — empty no verification entries renders an explicit "no verification results" section 1`] = `
-"Verification outcomes for the current subagent. Each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
+"Verification outcomes per active subagent. Each section below is scoped to one subagent and identifies it by id; each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
 
 Subagent: sub-missing (0 results)
 
@@ -27,7 +27,7 @@ exports[`compileVerificationBlock — empty no verification entries renders an e
 `;
 
 exports[`compileVerificationBlock — all pass every command passing renders a compact success table 1`] = `
-"Verification outcomes for the current subagent. Each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
+"Verification outcomes per active subagent. Each section below is scoped to one subagent and identifies it by id; each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
 
 Subagent: sub-1 (3 results)
 
@@ -38,7 +38,7 @@ Verification results for subagent sub-1:
 `;
 
 exports[`compileVerificationBlock — mixed pass/fail mixed outcomes render a failure-details block after the pass table 1`] = `
-"Verification outcomes for the current subagent. Each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
+"Verification outcomes per active subagent. Each section below is scoped to one subagent and identifies it by id; each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
 
 Subagent: sub-2 (3 results)
 
@@ -56,7 +56,7 @@ Failure details:
 `;
 
 exports[`compileVerificationBlock — timeout timed-out command renders the "timed out after Xms" marker 1`] = `
-"Verification outcomes for the current subagent. Each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
+"Verification outcomes per active subagent. Each section below is scoped to one subagent and identifies it by id; each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
 
 Subagent: sub-3 (2 results)
 
@@ -73,7 +73,7 @@ Failure details:
 `;
 
 exports[`compileVerificationBlock — gate vs inform policy tag visibly distinguishes gate from inform rows 1`] = `
-"Verification outcomes for the current subagent. Each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
+"Verification outcomes per active subagent. Each section below is scoped to one subagent and identifies it by id; each row names a verification command, its policy (gate or inform), and the pass/fail/timeout result. Gate-policy failures block the workflow's advance; inform-policy failures are advisory only. Stderr and stdout digests are the leading 8 hex characters of the runner's sha256 capture — use them to diff run-to-run without loading the full streams.
 
 Subagent: sub-4 (4 results)
 
