@@ -170,6 +170,25 @@ export interface WorkflowState {
   readonly verificationResults: Readonly<Record<string, VerificationResultData>>;
 
   // E.10 ZONE: stepStartedAt field insertion
+  /**
+   * ISO-8601 timestamp of the current step's entry, or `null` when no
+   * step has been entered yet (fresh-init state, or pre-v4 on-disk
+   * shapes normalised on read).
+   *
+   * Set by the reducer on `workflow.step.exit` (for the next step the
+   * transition advances to) and on `workflow.resume` (for the target
+   * step a resume refocuses on) per L13 — `event.ts` at both sites.
+   * Derived entirely from existing event timestamps; no new event type
+   * carries this field. Consumed by the E.11 timeout detection branch
+   * in `gobbi workflow stop` to compute `elapsedMs = now - stepStartedAt`
+   * against `spec.meta.timeoutMs`.
+   *
+   * Intentionally NOT updated by `decision.eval.verdict` step transitions
+   * (verdicts transition via `reduceDecision`, not STEP_EXIT) — the
+   * timestamp reflects the most recent STEP_EXIT/RESUME entry. Added by
+   * PR E (schema v4).
+   */
+  readonly stepStartedAt: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -197,6 +216,7 @@ export function initialState(sessionId: string): WorkflowState {
     maxFeedbackRounds: 3,
     lastVerdictOutcome: null,
     verificationResults: {},
+    stepStartedAt: null,
   };
 }
 
@@ -355,6 +375,15 @@ export function isValidState(value: unknown): value is WorkflowState {
     }
   }
 
+  // stepStartedAt: string | null (schema v4+).
+  // `undefined` is tolerated for v1/v2/v3 on-disk compat and is normalised
+  // to `null` by readState. When present, must be an ISO timestamp string
+  // or explicit `null` — numbers/objects/booleans are rejected.
+  const startedAt = value['stepStartedAt'];
+  if (startedAt !== undefined) {
+    if (startedAt !== null && !isString(startedAt)) return false;
+  }
+
   return true;
 }
 
@@ -396,6 +425,7 @@ function normaliseReadState(state: WorkflowState): WorkflowState {
     ...state,
     lastVerdictOutcome: state.lastVerdictOutcome ?? null,
     verificationResults: state.verificationResults ?? {},
+    stepStartedAt: state.stepStartedAt ?? null,
     violations,
   };
 }
@@ -545,7 +575,10 @@ export function deriveState(
   for (const row of events) {
     const event = rowToEvent(row);
     if (event === null) continue; // skip unparseable events
-    const result = reduceFn(state, event);
+    // Pass row.ts as the third argument so the reducer can project
+    // timestamp-derived state fields (e.g. stepStartedAt per L13) during
+    // replay — the event itself has no `ts`, but the EventRow does.
+    const result = reduceFn(state, event, row.ts);
     if (result.ok) {
       state = result.state;
     }

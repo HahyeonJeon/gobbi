@@ -93,6 +93,7 @@ describe('isValidState', () => {
       maxFeedbackRounds: 3,
       lastVerdictOutcome: null,
       verificationResults: {},
+      stepStartedAt: null,
     };
     expect(isValidState(state)).toBe(true);
   });

@@ -61,6 +61,7 @@ function reduceWorkflow(
   state: WorkflowState,
   event: WorkflowEvent,
   predicates: PredicateRegistry,
+  ts: string | undefined,
 ): ReducerResult {
   switch (event.type) {
     case WORKFLOW_EVENTS.START: {
@@ -103,12 +104,20 @@ function reduceWorkflow(
       // per-step timeout budget derived from spec metadata so the
       // heartbeat loop can fire workflow.step.timeout when the budget
       // elapses.
+      //
+      // stepStartedAt: when the engine supplies `ts`, stamp the next step's
+      // entry with it so E.11's timeout detector can compute
+      // `elapsedMs = now - stepStartedAt`. `ts` is absent only in legacy
+      // direct `reduce(state, event)` call sites that predate the L13
+      // wire-up (most unit tests); in that case we preserve the prior
+      // value so the field remains a monotonic witness.
       return ok({
         ...state,
         currentStep: nextStep,
         currentSubstate: nextStep === 'ideation' ? 'discussing' : null,
         completedSteps: [...state.completedSteps, event.data.step],
         lastVerdictOutcome: null,
+        stepStartedAt: ts ?? state.stepStartedAt,
       });
     }
 
@@ -197,10 +206,16 @@ function reduceWorkflow(
         );
       }
       // E.10 ZONE: stepStartedAt timestamp on resume target (per L13)
+      //
+      // Mirrors the STEP_EXIT treatment — when the engine supplies `ts`,
+      // the target step's entry is stamped so the timeout budget restarts
+      // from the resume point. Direct test callers that omit `ts` keep the
+      // prior value rather than silently clearing it.
       return ok({
         ...state,
         currentStep: targetStep,
         currentSubstate: targetStep === 'ideation' ? 'discussing' : null,
+        stepStartedAt: ts ?? state.stepStartedAt,
       });
     }
 
@@ -563,10 +578,24 @@ function reduceVerification(
  *
  * Returns a Result type — `{ ok: true, state }` on success,
  * `{ ok: false, error }` on invalid transitions. Never throws.
+ *
+ * `ts` is the event's wall-clock timestamp (ISO-8601 string) supplied
+ * by the engine / replayer. It is optional because many test call sites
+ * predate the L13 wire-up; production call sites (engine.ts,
+ * deriveState) always pass it so `stepStartedAt` is timestamped
+ * correctly on every STEP_EXIT / RESUME. The reducer itself is still
+ * pure — given the same `(state, event, ts, predicates)` it returns
+ * the same result.
+ *
+ * `predicates` retains its default for backward-compatible call sites.
+ * When both optionals are omitted, the reducer falls back to
+ * `defaultPredicates` and preserves `state.stepStartedAt` so legacy
+ * tests continue to pass without modification.
  */
 export function reduce(
   state: WorkflowState,
   event: Event,
+  ts?: string,
   predicates: PredicateRegistry = defaultPredicates,
 ): ReducerResult {
   // Pre-check: terminal state rejection
@@ -577,7 +606,7 @@ export function reduce(
   }
 
   // Category dispatch with exhaustiveness at both levels
-  if (isWorkflowEvent(event)) return reduceWorkflow(state, event, predicates);
+  if (isWorkflowEvent(event)) return reduceWorkflow(state, event, predicates, ts);
   if (isDelegationEvent(event)) return reduceDelegation(state, event);
   if (isArtifactEvent(event)) return reduceArtifact(state, event);
   if (isDecisionEvent(event)) return reduceDecision(state, event, predicates);

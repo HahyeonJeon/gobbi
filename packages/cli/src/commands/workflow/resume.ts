@@ -164,9 +164,6 @@ export async function runResumeWithOptions(
     process.exit(2);
   }
 
-  // TODO(PR E): stepStartedAt state field — on successful resume the
-  // engine will timestamp the target step's entry so the verification
-  // runner can attribute wall-clock durations against configured budgets.
   if (target === 'error' || !VALID_TARGETS.has(target)) {
     process.stderr.write(
       `gobbi workflow resume: invalid --target "${target}" — expected one of ` +
