@@ -56,3 +56,17 @@ grep -rn 'Schema: v[0-9]\|schemaVersion=[0-9]\|schemaVersion: [0-9]' packages/cl
 ```
 
 Metadata-file assertions that check a hard-coded TypeScript literal (e.g., `metadata.json.schemaVersion` pinned to 2 because the file shape is immutable per release) must be explicitly excluded by path in the briefing — otherwise an overly-mechanical flip would break the metadata contract.
+
+---
+
+## Parallel executor worktree has in-flight other-task changes — stage by file, not `git add -A`
+
+**Priority:** High
+
+**What happened:** v0.5.0 Phase 2 PR E Wave 2 runs E.2, E.3, E.4, E.5, E.8, E.9 in parallel on the SAME worktree branch `feat/v050-phase-2-prE`. When the E.5 executor started, `git status` showed 8 modified files and 1 untracked file from other executors still in-flight (validate.ts, reducer.ts, state.ts, events/delegation.ts, etc.). Typecheck on the aggregate state produced 3 errors that were NOT caused by E.5's code. If the executor had used `git add -A` or `git add .` to stage, it would have committed half-finished work from E.2 / E.3 into its commit, poisoning the E.5 commit with another executor's partial state.
+
+**User feedback:** Self-caught during E.5 execution via `git diff` review before commit.
+
+**Correct approach:** On shared worktrees during parallel-wave execution, always stage by explicit file list: `git add packages/cli/src/lib/project-config.ts packages/cli/src/lib/__tests__/project-config.test.ts packages/cli/src/commands/workflow/init.ts`. Run `git diff --staged --stat` before committing to verify only your scope's files are staged. If `git status` shows unexpected files modified, diff them — they're almost certainly other executors' in-flight work. Do not revert them (that destroys their progress); just skip them in your stage.
+
+Also — a `git stash --include-untracked` + `bun test` trick is useful to distinguish pre-existing failures from regressions you introduced. If the suite passes 100% with your code stashed and the same tests fail with it unstashed, those failures are yours. If the same tests fail in both states (or new unrelated tests fail with your code stashed), the failures belong to someone else.
