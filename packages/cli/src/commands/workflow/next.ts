@@ -46,6 +46,7 @@ import { resolveWorkflowState } from '../../workflow/engine.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
 import type { WorkflowState } from '../../workflow/state.js';
 import { EventStore } from '../../workflow/store.js';
+import { runVerification } from '../../workflow/verification-runner.js';
 import { resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
@@ -164,7 +165,13 @@ export async function runNextWithOptions(
   const store = new EventStore(dbPath);
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
-    const text = await compileCurrentStep(state, store, specsDir);
+    const text = await compileCurrentStep(
+      state,
+      store,
+      specsDir,
+      sessionDir,
+      sessionId,
+    );
     process.stdout.write(text);
     if (!text.endsWith('\n')) process.stdout.write('\n');
   } finally {
@@ -184,13 +191,24 @@ export async function runNextWithOptions(
  *   - Anything else → resolve the step's spec, apply the substate overlay
  *     when present, compile, and return `CompiledPrompt.text`.
  *
+ * Post-compile, the verification runner (E.3) fires against
+ * `state.activeSubagents`, writes `verification.result` events through
+ * {@link appendEventAndUpdateState}, and advances `state.verificationResults`
+ * for the E.8 verification-block consumer on the NEXT `next` invocation.
+ * The compiled prompt returned from THIS call reflects the state captured
+ * at compile time — verification feeds the following round-trip.
+ *
  * Exported so tests can drive the compile pipeline from constructed
- * fixtures without rebuilding the CLI surface.
+ * fixtures without rebuilding the CLI surface. `sessionDir` + `sessionId`
+ * are required because the verification runner writes events scoped to
+ * the session.
  */
 export async function compileCurrentStep(
   state: WorkflowState,
   store: EventStore,
   specsDir: string,
+  sessionDir: string,
+  sessionId: string,
 ): Promise<string> {
   if (state.currentStep === 'error') {
     // Early-return the pathway-specific prompt. The dispatcher runs
@@ -200,10 +218,7 @@ export async function compileCurrentStep(
     return prompt.text;
   }
 
-  // E.3 ZONE: verification runner invocation (post-compile, pre-return, per L7)
   // E.8 ZONE: verification-block dynamic section insertion (if verificationResults has entries)
-  // TODO(PR E): verification runner hooks — post-compile verification of
-  // the emitted prompt against `StepSpec.verification` fires here.
 
   const graphPath = join(specsDir, 'index.json');
   // Suppress the graph loader's best-effort missing-spec warnings — they
@@ -245,6 +260,25 @@ export async function compileCurrentStep(
   };
 
   const prompt = compile(input);
+
+  // Post-compile verification runner (E.3 ZONE). Runs the project's
+  // `runAfterSubagentStop` commands for each active subagent and writes
+  // `verification.result` events via `appendEventAndUpdateState`. The
+  // emissions advance `state.verificationResults`, which the NEXT `next`
+  // invocation's compile pass will fold into its prompt via E.8's
+  // verification-block dynamic section.
+  //
+  // Verification runs with no caller abort signal here — `next` is not
+  // cancellable at the CLI surface. A future wrapper that ties SIGINT to
+  // cancellation would thread its controller.signal through this call.
+  await runVerification(sessionDir, store, state, sessionId);
+
+  // Re-resolve state after verification writes so any subsequent reads
+  // below (none today, but defensive against future edits that consume
+  // verificationResults in this same function) see the advanced state.
+  // The compiled prompt above has already been built and does not change.
+  void resolveWorkflowState(sessionDir, store, sessionId);
+
   return prompt.text;
 }
 

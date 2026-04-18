@@ -159,7 +159,13 @@ describe('compileCurrentStep — productive step', () => {
       // no-overlay fixture to exercise the base-spec branch directly.
       const resolved = resolveWorkflowState(sessionDir, store, 'next-ideation');
       const state: WorkflowState = { ...resolved, currentSubstate: null };
-      const text = await compileCurrentStep(state, store, DEFAULT_SPECS_DIR);
+      const text = await compileCurrentStep(
+        state,
+        store,
+        DEFAULT_SPECS_DIR,
+        sessionDir,
+        'next-ideation',
+      );
 
       // The ideation step's `completion` block always emits this header.
       expect(text).toContain('Criteria:');
@@ -189,7 +195,13 @@ describe('compileCurrentStep — substate overlay', () => {
       // so the fixture captures the reducer's authoritative substate.
       expect(resolved.currentSubstate).toBe('discussing');
 
-      const text = await compileCurrentStep(resolved, store, DEFAULT_SPECS_DIR);
+      const text = await compileCurrentStep(
+        resolved,
+        store,
+        DEFAULT_SPECS_DIR,
+        sessionDir,
+        'next-overlay',
+      );
 
       // Overlay-added line — `discussing.overlay.json` appends a static block
       // whose content begins with "Substate: discussing." exactly.
@@ -235,6 +247,8 @@ describe('compileCurrentStep — error branch', () => {
         result.state,
         store,
         DEFAULT_SPECS_DIR,
+        sessionDir,
+        sessionId,
       );
 
       // The timeout-pathway compiler emits a "Timeout evidence:" block —
@@ -263,6 +277,8 @@ describe('compileCurrentStep — error branch', () => {
         errorState,
         store,
         DEFAULT_SPECS_DIR,
+        sessionDir,
+        'next-error-fallback',
       );
       // Crash pathway's evidence block uses this header.
       expect(text).toContain('Crash evidence:');

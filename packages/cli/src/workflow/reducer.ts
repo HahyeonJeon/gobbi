@@ -22,7 +22,8 @@ import type { GuardEvent } from './events/guard.js';
 import { GUARD_EVENTS, isGuardEvent } from './events/guard.js';
 import type { SessionEvent } from './events/session.js';
 import { SESSION_EVENTS, isSessionEvent } from './events/session.js';
-import { isVerificationEvent } from './events/index.js';
+import type { VerificationEvent } from './events/verification.js';
+import { VERIFICATION_EVENTS, isVerificationEvent } from './events/verification.js';
 import type { WorkflowState, WorkflowStep } from './state.js';
 import { TERMINAL_STEPS, ACTIVE_STEPS } from './state.js';
 import { findTransition } from './transitions.js';
@@ -500,6 +501,59 @@ function reduceSession(
 }
 
 // ---------------------------------------------------------------------------
+// Sub-reducer: Verification events
+//
+// Records post-subagent verification outcomes into
+// `state.verificationResults`, keyed by the composite `${subagentId}:${commandKind}`
+// formula locked in L3/L4. The keying mirrors the idempotency formula in
+// `appendEventAndUpdateState`, so a replayed stream rebuilds the same map
+// the runtime constructed.
+//
+// Rejection contract: the runner only emits events for subagents that are
+// still present in `state.activeSubagents` at dispatch time. A
+// `verification.result` event whose `subagentId` does not appear in the
+// active set is a replay-time inconsistency (or a hand-crafted event) and
+// is rejected via `ReducerRejectionError` — surfaced to the engine's outer
+// try-catch, which emits the `workflow.invalid_transition` audit and
+// re-throws.
+//
+// Gating discipline: the reducer does NOT branch on `policy` or `exitCode`.
+// Per the ideation lock "Gating is an orchestrator concern, not
+// state-machine", the event is recorded verbatim and downstream consumers
+// (E.8 verification-block, `status`) decide what to do with a gate failure.
+// ---------------------------------------------------------------------------
+
+function reduceVerification(
+  state: WorkflowState,
+  event: VerificationEvent,
+): ReducerResult {
+  // VerificationEvent currently has a single variant; the isVerificationEvent
+  // category guard at the dispatch level guarantees event.type ===
+  // VERIFICATION_EVENTS.RESULT. Keeping the explicit check-and-branch here
+  // documents the intent and makes adding a second variant a one-line edit.
+  if (event.type === VERIFICATION_EVENTS.RESULT) {
+    const { subagentId, commandKind } = event.data;
+    const isActive = state.activeSubagents.some(
+      (a) => a.subagentId === subagentId,
+    );
+    if (!isActive) {
+      return err(
+        `verification.result subagentId "${subagentId}" is not an active subagent`,
+      );
+    }
+    const key = `${subagentId}:${commandKind}`;
+    return ok({
+      ...state,
+      verificationResults: {
+        ...state.verificationResults,
+        [key]: event.data,
+      },
+    });
+  }
+  return assertNever(event.type);
+}
+
+// ---------------------------------------------------------------------------
 // Top-level reducer
 // ---------------------------------------------------------------------------
 
@@ -529,9 +583,7 @@ export function reduce(
   if (isDecisionEvent(event)) return reduceDecision(state, event, predicates);
   if (isGuardEvent(event)) return reduceGuard(state, event);
   if (isSessionEvent(event)) return reduceSession(state, event);
-  // E.3 ZONE: verification dispatch insertion point
-  // E.3 fills: return reduceVerification(state, event);
-  if (isVerificationEvent(event)) return ok(state);
+  if (isVerificationEvent(event)) return reduceVerification(state, event);
 
   return assertNever(event);
 }
