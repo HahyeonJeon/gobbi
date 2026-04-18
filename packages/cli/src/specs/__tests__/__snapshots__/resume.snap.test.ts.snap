@@ -7,7 +7,7 @@ Resume from pathway: crash.
 
 You are transitioning out of the error step after a mid-step process crash. The target step below names the step you are re-entering — typically the crashed step (retry) or memorization (force-advance). The pathway recap lists the last observed step and the tail of the event history so you can re-orient to the crash evidence before the target step's prompt arrives.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
@@ -56,7 +56,7 @@ Resume from pathway: step timeout.
 
 You are transitioning out of the error step after a workflow.step.timeout event. The target step below names the step you are re-entering — typically the timed-out step (retry with a fresh context) or memorization (force-advance). The pathway recap lists the timed-out step, the elapsed vs configured milliseconds, and the in-progress artifacts so you can decide whether the fresh-context retry is ready to proceed.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
@@ -107,7 +107,7 @@ Resume from pathway: feedback round cap.
 
 You are transitioning out of the error step after the evaluation loop reached its configured maximum feedback rounds. The target step below names the step you are re-entering — typically memorization (force-advance) because re-entry into the evaluation loop is not available once the cap has fired. The pathway recap lists the per-round verdict history and the final-round artifacts so you can re-orient to the partial work being carried forward.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
@@ -159,7 +159,7 @@ Resume from pathway: invalid transition.
 
 You are transitioning out of the error step after the reducer rejected an event as invalid from the current state. The target step below names the step you are re-entering — typically the step at the time of rejection (retry from the last valid state). The pathway recap lists the rejected event type, the reducer message, and the step at rejection so you can re-orient to the rejection evidence before retrying.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation]
@@ -210,7 +210,7 @@ Resume from pathway: unknown.
 
 You are transitioning out of the error step but the classifier could not attribute the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The pathway recap surfaces the classifier's diagnostic hint so you can inspect it before re-entering the target step — the detector has no pathway-specific recommendation for this resume, and the target step below is the operator's chosen re-entry point.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[]

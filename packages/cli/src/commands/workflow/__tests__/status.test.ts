@@ -158,7 +158,7 @@ describe('buildSnapshot', () => {
   test('preserves core state fields', () => {
     const snap = buildSnapshot(initialState('sess-1'));
     expect(snap.sessionId).toBe('sess-1');
-    expect(snap.schemaVersion).toBe(3);
+    expect(snap.schemaVersion).toBe(4);
     expect(snap.currentStep).toBe('idle');
     expect(snap.lastVerdictOutcome).toBeNull();
     expect(snap.violationsTotal).toBe(0);
@@ -186,7 +186,7 @@ describe('runStatusWithOptions', () => {
 
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toContain('Session: status-happy');
-    expect(captured.stdout).toContain('Schema: v3');
+    expect(captured.stdout).toContain('Schema: v4');
     // workflow.start + workflow.eval.decide transitions to ideation/discussing.
     expect(captured.stdout).toContain('Step: ideation');
     expect(captured.stdout).toContain('Violations: none');
@@ -206,7 +206,7 @@ describe('runStatusWithOptions', () => {
     expect(captured.exitCode).toBeNull();
     const snapshot = JSON.parse(captured.stdout) as StatusSnapshot;
     expect(snapshot.sessionId).toBe('status-json');
-    expect(snapshot.schemaVersion).toBe(3);
+    expect(snapshot.schemaVersion).toBe(4);
     expect(snapshot.currentStep).toBe('ideation');
     expect(snapshot.violationsTotal).toBe(0);
     expect(snapshot.evalConfig).toEqual({ ideation: false, plan: false });

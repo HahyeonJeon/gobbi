@@ -22,6 +22,17 @@
  *   is indistinguishable from a v2 one. The registered v2 migration is an
  *   identity on event data; `initialState().schemaVersion` bumps 2→3 in
  *   lockstep so newly-initialised sessions advertise v3.
+ * - v4 — PR E. Adds the `verification.result` event type, the
+ *   `verificationResults` state field, and the optional
+ *   `DelegationCompleteData.sizeProxyBytes` field. Event *data* payloads
+ *   are wire-compatible across v3→v4: `sizeProxyBytes` is strictly
+ *   additive and optional on `delegation.complete`, so existing v3
+ *   events parse cleanly under v4. The registered v3 migration is an
+ *   identity on event data; `initialState().schemaVersion` bumps 3→4 in
+ *   lockstep so newly-initialised sessions advertise v4. The new
+ *   `verificationResults` state field is absent on v3 on-disk shapes and
+ *   is normalised in on read (empty record), mirroring the Greg Young
+ *   discipline applied for `lastVerdictOutcome` at the v1→v2 bump.
  */
 
 // ---------------------------------------------------------------------------
@@ -44,7 +55,7 @@ export interface EventRow {
 // Schema version tracking
 // ---------------------------------------------------------------------------
 
-export const CURRENT_SCHEMA_VERSION = 3;
+export const CURRENT_SCHEMA_VERSION = 4;
 
 // ---------------------------------------------------------------------------
 // Migration registry
@@ -56,7 +67,7 @@ type MigrationFn = (eventData: unknown) => unknown;
  * Maps schema_version N to the function that transforms event data
  * from version N to version N+1.
  *
- * Both registered hops are explicit identities:
+ * All registered hops are explicit identities:
  *
  * - v1→v2: new event types (`guard.warn`) + new state fields, not payload
  *   transforms.
@@ -65,14 +76,20 @@ type MigrationFn = (eventData: unknown) => unknown;
  *   additive on the existing `eval.skip` payload, so an absent field on a
  *   v2 row is indistinguishable from a v3 row that happens not to carry
  *   a snapshot. No payload transform.
+ * - v3→v4 (PR E): adds `verification.result` event type + an optional
+ *   `DelegationCompleteData.sizeProxyBytes` field. `sizeProxyBytes` is
+ *   strictly additive on the existing `delegation.complete` payload, so
+ *   an absent field on a v3 row is indistinguishable from a v4 row that
+ *   happens not to carry a proxy count. No payload transform.
  *
  * Declaring each identity registers the hop so the composition walks the
- * full chain (v1→v2→v3) rather than short-circuiting — the walk path is
- * what a future v4 migration will extend.
+ * full chain (v1→v2→v3→v4) rather than short-circuiting — the walk path
+ * is what a future v5 migration will extend.
  */
 const migrations: Readonly<Record<number, MigrationFn>> = {
   1: (data) => data,
   2: (data) => data,
+  3: (data) => data,
 };
 
 // ---------------------------------------------------------------------------

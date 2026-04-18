@@ -45,6 +45,11 @@ import {
   isSessionEvent,
   createSessionHeartbeat,
 
+  // Verification
+  VERIFICATION_EVENTS,
+  isVerificationEvent,
+  createVerificationResult,
+
   // Top-level
   ALL_EVENT_TYPES,
   isValidEventType,
@@ -80,6 +85,10 @@ describe('const objects', () => {
   it('SESSION_EVENTS has 1 entry', () => {
     expect(Object.values(SESSION_EVENTS)).toHaveLength(1);
   });
+
+  it('VERIFICATION_EVENTS has 1 entry', () => {
+    expect(Object.values(VERIFICATION_EVENTS)).toHaveLength(1);
+  });
 });
 
 // ===========================================================================
@@ -87,8 +96,8 @@ describe('const objects', () => {
 // ===========================================================================
 
 describe('ALL_EVENT_TYPES', () => {
-  it('contains exactly 21 entries (9 + 3 + 2 + 3 + 3 + 1)', () => {
-    expect(ALL_EVENT_TYPES.size).toBe(21);
+  it('contains exactly 22 entries (9 + 3 + 2 + 3 + 3 + 1 + 1)', () => {
+    expect(ALL_EVENT_TYPES.size).toBe(22);
   });
 
   it('contains every workflow event type', () => {
@@ -127,6 +136,12 @@ describe('ALL_EVENT_TYPES', () => {
     }
   });
 
+  it('contains every verification event type', () => {
+    for (const value of Object.values(VERIFICATION_EVENTS)) {
+      expect(ALL_EVENT_TYPES.has(value)).toBe(true);
+    }
+  });
+
   it('does not contain unknown event types', () => {
     expect(ALL_EVENT_TYPES.has('unknown.event')).toBe(false);
     expect(ALL_EVENT_TYPES.has('START')).toBe(false); // key, not value
@@ -145,6 +160,7 @@ describe('cross-category exclusivity', () => {
     Object.values(DECISION_EVENTS),
     Object.values(GUARD_EVENTS),
     Object.values(SESSION_EVENTS),
+    Object.values(VERIFICATION_EVENTS),
   ];
 
   it('no event type string appears in more than one category', () => {
@@ -171,6 +187,7 @@ describe('cross-category exclusivity', () => {
       [Object.values(DECISION_EVENTS), 'decision.'],
       [Object.values(GUARD_EVENTS), 'guard.'],
       [Object.values(SESSION_EVENTS), 'session.'],
+      [Object.values(VERIFICATION_EVENTS), 'verification.'],
     ];
 
     for (const [values, prefix] of prefixMap) {
@@ -297,6 +314,35 @@ describe('type guards', () => {
     });
   });
 
+  describe('isVerificationEvent', () => {
+    const verificationEvent = { type: 'verification.result' };
+
+    it('returns true for all verification event types', () => {
+      for (const value of Object.values(VERIFICATION_EVENTS)) {
+        expect(isVerificationEvent({ type: value })).toBe(true);
+      }
+    });
+
+    it('returns false for non-verification events', () => {
+      expect(isVerificationEvent(workflowEvent)).toBe(false);
+      expect(isVerificationEvent(delegationEvent)).toBe(false);
+      expect(isVerificationEvent(artifactEvent)).toBe(false);
+      expect(isVerificationEvent(decisionEvent)).toBe(false);
+      expect(isVerificationEvent(guardEvent)).toBe(false);
+      expect(isVerificationEvent(sessionEvent)).toBe(false);
+      expect(isVerificationEvent(unknownEvent)).toBe(false);
+    });
+
+    it('no other category guard matches a verification event', () => {
+      expect(isWorkflowEvent(verificationEvent)).toBe(false);
+      expect(isDelegationEvent(verificationEvent)).toBe(false);
+      expect(isArtifactEvent(verificationEvent)).toBe(false);
+      expect(isDecisionEvent(verificationEvent)).toBe(false);
+      expect(isGuardEvent(verificationEvent)).toBe(false);
+      expect(isSessionEvent(verificationEvent)).toBe(false);
+    });
+  });
+
   describe('isValidEventType', () => {
     it('returns true for all known event types', () => {
       for (const value of ALL_EVENT_TYPES) {
@@ -331,6 +377,9 @@ describe('type guards', () => {
       }
       for (const key of Object.keys(SESSION_EVENTS)) {
         expect(isSessionEvent({ type: key })).toBe(false);
+      }
+      for (const key of Object.keys(VERIFICATION_EVENTS)) {
+        expect(isVerificationEvent({ type: key })).toBe(false);
       }
     });
   });
@@ -598,6 +647,89 @@ describe('factory functions', () => {
       expect(event.data).toEqual({ timestamp: '2026-01-01T00:01:00Z' });
     });
   });
+
+  describe('verification factories', () => {
+    const baseData = {
+      subagentId: 'sub-1',
+      command: 'bunx tsc --noEmit',
+      commandKind: 'typecheck' as const,
+      exitCode: 0,
+      durationMs: 4321,
+      policy: 'gate' as const,
+      timedOut: false,
+      stdoutDigest: 'sha256:abc',
+      stderrDigest: 'sha256:def',
+      timestamp: '2026-04-17T14:00:00.000Z',
+    };
+
+    it('createVerificationResult — round-trip through factory', () => {
+      const event = createVerificationResult(baseData);
+      expect(event.type).toBe(VERIFICATION_EVENTS.RESULT);
+      expect(event.data).toEqual(baseData);
+    });
+
+    it('createVerificationResult — narrows via isVerificationEvent', () => {
+      const event = createVerificationResult(baseData);
+      expect(isVerificationEvent(event)).toBe(true);
+      // Every other category guard must reject it.
+      expect(isWorkflowEvent(event)).toBe(false);
+      expect(isDelegationEvent(event)).toBe(false);
+    });
+
+    it('createVerificationResult — round-trips through JSON', () => {
+      const event = createVerificationResult({
+        ...baseData,
+        exitCode: -1,
+        timedOut: true,
+      });
+      const round = JSON.parse(JSON.stringify(event)) as unknown;
+      expect(round).toEqual(event);
+    });
+
+    it('createVerificationResult — each commandKind variant typechecks', () => {
+      const kinds = [
+        'lint',
+        'test',
+        'typecheck',
+        'build',
+        'format',
+        'custom',
+      ] as const;
+      for (const commandKind of kinds) {
+        const event = createVerificationResult({ ...baseData, commandKind });
+        expect(event.data.commandKind).toBe(commandKind);
+        expect(isVerificationEvent(event)).toBe(true);
+      }
+    });
+
+    it('createVerificationResult — inform vs gate policy both round-trip', () => {
+      const gateEvt = createVerificationResult({ ...baseData, policy: 'gate' });
+      const infoEvt = createVerificationResult({ ...baseData, policy: 'inform' });
+      expect(gateEvt.data.policy).toBe('gate');
+      expect(infoEvt.data.policy).toBe('inform');
+    });
+
+    it('createVerificationResult — SIGTERM / SIGKILL encoded as negative exit codes', () => {
+      const sigterm = createVerificationResult({
+        ...baseData,
+        exitCode: -1,
+        timedOut: true,
+      });
+      const sigkill = createVerificationResult({
+        ...baseData,
+        exitCode: -2,
+        timedOut: true,
+      });
+      expect(sigterm.data.exitCode).toBe(-1);
+      expect(sigterm.data.timedOut).toBe(true);
+      expect(sigkill.data.exitCode).toBe(-2);
+      expect(sigkill.data.timedOut).toBe(true);
+    });
+
+    it('VERIFICATION_EVENTS.RESULT matches the prefixed string', () => {
+      expect(VERIFICATION_EVENTS.RESULT).toBe('verification.result');
+    });
+  });
 });
 
 // ===========================================================================
@@ -635,10 +767,22 @@ describe('type-level correctness', () => {
       createGuardViolation({ guardId: 'g1', toolName: 'Write', reason: 'blocked', step: 'execution', timestamp: '2026-01-01T00:00:00Z' }),
       createGuardOverride({ guardId: 'g1', toolName: 'Write', reason: 'allowed' }),
       createSessionHeartbeat({ timestamp: '2026-01-01T00:00:00Z' }),
+      createVerificationResult({
+        subagentId: 'sub-1',
+        command: 'bun test',
+        commandKind: 'test',
+        exitCode: 0,
+        durationMs: 1000,
+        policy: 'gate',
+        timedOut: false,
+        stdoutDigest: 'sha256:a',
+        stderrDigest: 'sha256:b',
+        timestamp: '2026-01-01T00:00:00Z',
+      }),
     ];
 
     // Runtime check: every factory produced a valid event
-    expect(events).toHaveLength(20);
+    expect(events).toHaveLength(21);
     for (const event of events) {
       expect(isValidEventType(event.type)).toBe(true);
     }

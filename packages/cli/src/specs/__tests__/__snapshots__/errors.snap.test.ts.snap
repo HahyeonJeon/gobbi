@@ -7,7 +7,7 @@ Pathway: crash.
 
 The workflow was in an active step when the process terminated. There is no explicit triggering event (no timeout, no invalid transition, no feedback cap) — the evidence points to a mid-step process exit. Recovery means choosing whether to retry the step from where it left off or to force-advance to memorization and end the session.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
@@ -60,7 +60,7 @@ Pathway: step timeout.
 
 A step exceeded its configured timeout and the Stop hook emitted a workflow.step.timeout event. The briefing below names which step timed out, the elapsed time at timeout, the configured timeout value, and the artifacts that were in progress when the Stop hook fired. Recovery means choosing between a fresh-context retry, a force-advance to memorization, or an abort.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
@@ -115,7 +115,7 @@ Pathway: feedback round cap.
 
 The evaluation loop reached its configured maximum feedback rounds with a trailing revise verdict — the reducer transitioned execution_eval to error at the cap-fire moment. The briefing below lists the per-round verdict history and the artifacts captured during the final round. Recovery means force-memorizing partial work (gobbi workflow resume --force-memorization) or aborting. Re-entering the evaluation loop is not available once the cap has fired.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
@@ -170,7 +170,7 @@ Pathway: invalid transition.
 
 The reducer rejected an event because the transition was not valid from the current state. The rejected event itself never landed in the store (it was inside a rolled-back transaction); an audit event of type workflow.invalid_transition carries the witness. The briefing below names the rejected event type, the reducer error message, and the step at the time of rejection. Recovery means retrying from the last valid state or aborting.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation]
@@ -225,7 +225,7 @@ Pathway: unknown.
 
 The workflow is in the error step but the event store carries no evidence that attributes the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The classifier's diagnostic hint appears below — it usually indicates either an empty store (state.json written manually) or a store-read race during classification. Recovery means inspecting the hint to pick between retry-from-last-valid-state, force-memorization, and abort.
 
-session.schemaVersion=3
+session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[]

@@ -22,6 +22,7 @@ import type { GuardEvent } from './events/guard.js';
 import { GUARD_EVENTS, isGuardEvent } from './events/guard.js';
 import type { SessionEvent } from './events/session.js';
 import { SESSION_EVENTS, isSessionEvent } from './events/session.js';
+import { isVerificationEvent } from './events/index.js';
 import type { WorkflowState, WorkflowStep } from './state.js';
 import { TERMINAL_STEPS, ACTIVE_STEPS } from './state.js';
 import { findTransition } from './transitions.js';
@@ -93,6 +94,9 @@ function reduceWorkflow(
       // Exiting a productive step closes the verdict window — the next
       // verdict must fire within the new step to count. Clearing avoids
       // stale outcomes leaking across step boundaries.
+      //
+      // E.10 ZONE: stepStartedAt timestamp for next step (per L13)
+      // E.11 ZONE: meta.timeoutMs detection wire-up (per TODO line 97)
       //
       // TODO(PR E): meta.timeoutMs detection wire-up — PR E attaches a
       // per-step timeout budget derived from spec metadata so the
@@ -191,6 +195,7 @@ function reduceWorkflow(
           `workflow.resume targetStep "${event.data.targetStep}" is not a valid active step`,
         );
       }
+      // E.10 ZONE: stepStartedAt timestamp on resume target (per L13)
       return ok({
         ...state,
         currentStep: targetStep,
@@ -524,6 +529,9 @@ export function reduce(
   if (isDecisionEvent(event)) return reduceDecision(state, event, predicates);
   if (isGuardEvent(event)) return reduceGuard(state, event);
   if (isSessionEvent(event)) return reduceSession(state, event);
+  // E.3 ZONE: verification dispatch insertion point
+  // E.3 fills: return reduceVerification(state, event);
+  if (isVerificationEvent(event)) return ok(state);
 
   return assertNever(event);
 }

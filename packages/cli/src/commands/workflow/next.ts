@@ -200,6 +200,8 @@ export async function compileCurrentStep(
     return prompt.text;
   }
 
+  // E.3 ZONE: verification runner invocation (post-compile, pre-return, per L7)
+  // E.8 ZONE: verification-block dynamic section insertion (if verificationResults has entries)
   // TODO(PR E): verification runner hooks — post-compile verification of
   // the emitted prompt against `StepSpec.verification` fires here.
 
