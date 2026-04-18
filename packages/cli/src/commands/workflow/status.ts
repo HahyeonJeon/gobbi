@@ -26,6 +26,7 @@ import { join } from 'node:path';
 import { derivedCost, proxyCost } from '../../lib/cost-rates.js';
 import { isNumber, isRecord, isString } from '../../lib/guards.js';
 import { EventStore } from '../../workflow/store.js';
+import type { CostAggregateRow } from '../../workflow/store.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
 import type { GuardViolationRecord, WorkflowState } from '../../workflow/state.js';
 import { resolveSessionDir } from '../session.js';
@@ -58,46 +59,6 @@ const PARSE_OPTIONS = {
   json: { type: 'boolean', default: false },
   cost: { type: 'boolean', default: false },
 } as const;
-
-// ---------------------------------------------------------------------------
-// Cost aggregation — module-level SQL constant
-// ---------------------------------------------------------------------------
-
-/**
- * Cost-rollup SELECT over all `delegation.complete` events.
- *
- * Hoisted as a module-level `const` so `bun:sqlite`'s prepared-statement
- * cache (keyed by SQL identity) hits across repeated invocations — per
- * research §E.6 innovative override. Do NOT inline this inside the
- * aggregator function: constructing the SQL on each call defeats the
- * cache.
- *
- * Column shape (one row per `delegation.complete` event, ordered by seq
- * ASC):
- *
- *   step           TEXT      — workflow step the delegation ran under
- *   subagentId     TEXT      — delegation's subagent identifier
- *   tokensJson     TEXT      — json_extract of `data.tokensUsed`; a JSON
- *                              string of the `message.usage` object, or
- *                              NULL when the event predates PR E's usage
- *                              pipeline
- *   model          TEXT      — Anthropic model id from `data.model`
- *   bytes          INTEGER   — `data.sizeProxyBytes` — the byte-proxy
- *                              fallback used when tokensJson is NULL
- *
- * Rows with neither tokensJson nor bytes contribute 0 to the rollup.
- */
-const COST_AGGREGATE_SQL = `
-SELECT
-  step                                            AS step,
-  json_extract(data, '$.subagentId')              AS subagentId,
-  json_extract(data, '$.tokensUsed')              AS tokensJson,
-  json_extract(data, '$.model')                   AS model,
-  json_extract(data, '$.sizeProxyBytes')          AS bytes
-FROM events
-WHERE type = 'delegation.complete'
-ORDER BY seq ASC
-`;
 
 // ---------------------------------------------------------------------------
 // Output shape
@@ -155,15 +116,6 @@ export interface CostRollup {
   readonly sources: { readonly tokens: number; readonly proxy: number };
   readonly perStep: Readonly<Record<string, CostStepBucket>>;
   readonly message?: string;
-}
-
-/** Raw row produced by {@link COST_AGGREGATE_SQL}. */
-interface CostAggregateRow {
-  readonly step: string | null;
-  readonly subagentId: string | null;
-  readonly tokensJson: string | null;
-  readonly model: string | null;
-  readonly bytes: number | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -352,7 +304,7 @@ export const COST_EMPTY_SESSION_MESSAGE = 'no v0.5.0 sessions found';
  * counter (they still count as a delegation for the per-step total).
  */
 export function aggregateCost(store: EventStore): CostRollup {
-  const rawRows = store.queryAll<CostAggregateRow>(COST_AGGREGATE_SQL);
+  const rawRows = store.aggregateDelegationCosts();
   if (rawRows.length === 0) {
     return emptySessionRollup();
   }
@@ -431,12 +383,14 @@ function roundUsd(n: number): number {
 }
 
 /**
- * Read-guard narrowing: rows come back from `bun:sqlite` as `unknown`
- * under `queryAll<T>` — the generic is a convenience hint, not runtime
- * validation. Explicit guard helpers are applied at consumption sites
- * (`row.step`, `row.tokensJson`, etc.) above; this helper centralises
- * the "is this a cost-row shape" check for tests that want to exercise
- * the aggregator against hand-crafted row fixtures.
+ * Read-guard narrowing: rows come back from `bun:sqlite` typed via
+ * {@link EventStore.aggregateDelegationCosts}' declared return shape,
+ * but the typing is a convenience hint — the runtime values are still
+ * whatever SQLite's `json_extract` produced. Explicit guard helpers are
+ * applied at consumption sites (`row.step`, `row.tokensJson`, etc.)
+ * above; this helper centralises the "is this a cost-row shape" check
+ * for tests that want to exercise the aggregator against hand-crafted
+ * row fixtures.
  *
  * Exported for tests only — production code reads store rows directly.
  */

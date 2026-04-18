@@ -139,6 +139,61 @@ const SQL_LAST_N_ANY = `SELECT * FROM events ORDER BY seq DESC LIMIT $n`;
 
 const SQL_COUNT = `SELECT count(*) as cnt FROM events`;
 
+/**
+ * Cost-rollup SELECT over all `delegation.complete` events, ordered by
+ * seq ASC. Powers `gobbi workflow status --cost` aggregation.
+ *
+ * Hoisted as a module-level `const` so `bun:sqlite`'s prepared-statement
+ * cache (keyed by SQL identity) hits across repeated invocations — per
+ * research §E.6 innovative override. Co-located with the other SQL
+ * constants so reviewers see the full set when auditing the schema.
+ *
+ * Column shape (one row per `delegation.complete` event):
+ *
+ *   step           TEXT      — workflow step the delegation ran under
+ *   subagentId     TEXT      — delegation's subagent identifier
+ *   tokensJson     TEXT      — json_extract of `data.tokensUsed`; a JSON
+ *                              string of the `message.usage` object, or
+ *                              NULL when the event predates PR E's usage
+ *                              pipeline
+ *   model          TEXT      — Anthropic model id from `data.model`
+ *   bytes          INTEGER   — `data.sizeProxyBytes` — the byte-proxy
+ *                              fallback used when tokensJson is NULL
+ *
+ * Rows with neither tokensJson nor bytes contribute 0 to the rollup.
+ */
+const SQL_AGGREGATE_DELEGATION_COSTS = `
+SELECT
+  step                                            AS step,
+  json_extract(data, '$.subagentId')              AS subagentId,
+  json_extract(data, '$.tokensUsed')              AS tokensJson,
+  json_extract(data, '$.model')                   AS model,
+  json_extract(data, '$.sizeProxyBytes')          AS bytes
+FROM events
+WHERE type = 'delegation.complete'
+ORDER BY seq ASC
+`;
+
+// ---------------------------------------------------------------------------
+// Analytics row shapes — exported so callers can narrow via shared types
+// rather than redefining the row shape per call site.
+// ---------------------------------------------------------------------------
+
+/**
+ * Raw row shape produced by {@link EventStore.aggregateDelegationCosts}.
+ *
+ * Every field is nullable because `json_extract` returns NULL for missing
+ * paths. Callers narrow each field with `lib/guards.ts` before use — the
+ * generic return type is a typed hint, not runtime validation.
+ */
+export interface CostAggregateRow {
+  readonly step: string | null;
+  readonly subagentId: string | null;
+  readonly tokensJson: string | null;
+  readonly model: string | null;
+  readonly bytes: number | null;
+}
+
 // ---------------------------------------------------------------------------
 // EventStore class
 // ---------------------------------------------------------------------------
@@ -159,6 +214,7 @@ export class EventStore {
   private readonly stmtLastN;
   private readonly stmtLastNAny;
   private readonly stmtCount;
+  private readonly stmtAggregateDelegationCosts;
 
   constructor(pathOrMemory: string) {
     this.db = new Database(pathOrMemory, { strict: true });
@@ -179,6 +235,9 @@ export class EventStore {
     this.stmtLastN = this.db.query<EventRow, [SqlBindings]>(SQL_LAST_N);
     this.stmtLastNAny = this.db.query<EventRow, [SqlBindings]>(SQL_LAST_N_ANY);
     this.stmtCount = this.db.query<{ cnt: number }, []>(SQL_COUNT);
+    this.stmtAggregateDelegationCosts = this.db.query<CostAggregateRow, []>(
+      SQL_AGGREGATE_DELEGATION_COSTS,
+    );
   }
 
   // -------------------------------------------------------------------------
@@ -326,27 +385,26 @@ export class EventStore {
   }
 
   /**
-   * Execute a caller-provided read-only SQL statement and return all rows.
+   * Aggregate all `delegation.complete` events into cost-rollup rows
+   * ordered by seq ASC. Powers `gobbi workflow status --cost`.
    *
-   * The method exists so analytics commands (e.g. `workflow status --cost`)
-   * can hoist a module-level SQL constant — needed for bun:sqlite's
-   * prepared-statement cache to hit across invocations (`db.query()` is
-   * keyed by SQL identity) while still keeping the raw `Database` handle
-   * encapsulated inside `EventStore`. Reuse the same `const` string across
-   * calls to realise the cache benefit; constructing the SQL on each call
-   * defeats it.
+   * The SQL constant lives in this module (not at the call site) so the
+   * query surface on `EventStore` stays named and reviewable — every new
+   * analytics command adds a named method here rather than threading raw
+   * SQL through the public API. The cached prepared statement keeps
+   * bun:sqlite's SQL-identity cache hit across repeated invocations.
    *
-   * Rows are returned untyped (`unknown`) and the caller is responsible for
-   * narrowing each field via `lib/guards.ts` before use — the convention
-   * already applied to `byType` consumers. The generic `T` is a convenience
-   * type hint, not a validation.
+   * Rows are typed as {@link CostAggregateRow} (every field nullable
+   * because `json_extract` returns NULL for missing paths). Callers
+   * narrow each field via `lib/guards.ts` before use — the typing is a
+   * convenience hint, not runtime validation.
    *
-   * Scope: read-only. Callers must not submit INSERT / UPDATE / DELETE /
-   * DDL — the cost aggregator only reads, and `bun:sqlite`'s prepared
-   * statement cache would still execute a mutation if one was passed.
+   * Scope: read-only. New analytics queries should be added as sibling
+   * named methods on `EventStore` rather than re-introducing a generic
+   * raw-SQL surface.
    */
-  queryAll<T>(sql: string): readonly T[] {
-    return this.db.query<T, []>(sql).all();
+  aggregateDelegationCosts(): readonly CostAggregateRow[] {
+    return this.stmtAggregateDelegationCosts.all();
   }
 
   // -------------------------------------------------------------------------

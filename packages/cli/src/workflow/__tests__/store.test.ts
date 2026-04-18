@@ -762,3 +762,176 @@ describe('counter idempotency key', () => {
     expect(sys!.idempotency_key).not.toBe(cnt!.idempotency_key);
   });
 });
+
+// ===========================================================================
+// aggregateDelegationCosts — named cost-rollup query surface
+// ===========================================================================
+
+/**
+ * Seed one `delegation.complete` event into the given store. Mirrors the
+ * `seedDelegationComplete` helper in status.test.ts but writes through the
+ * provided store handle so tests can compose a mixed-type fixture in a
+ * single in-memory database.
+ */
+function appendDelegationComplete(
+  store: EventStore,
+  opts: {
+    readonly sessionId: string;
+    readonly subagentId: string;
+    readonly step: string;
+    readonly ts: string;
+    readonly toolCallId: string;
+    readonly data: Readonly<Record<string, unknown>>;
+  },
+): void {
+  store.append({
+    ts: opts.ts,
+    type: 'delegation.complete',
+    step: opts.step,
+    data: JSON.stringify(opts.data),
+    actor: 'orchestrator',
+    parent_seq: null,
+    idempotencyKind: 'tool-call',
+    toolCallId: opts.toolCallId,
+    sessionId: opts.sessionId,
+  });
+}
+
+describe('aggregateDelegationCosts', () => {
+  it('returns an empty array when the events table has no rows', () => {
+    using store = new EventStore(':memory:');
+
+    const rows = store.aggregateDelegationCosts();
+
+    expect(rows).toEqual([]);
+  });
+
+  it('returns one row per delegation.complete event in seq ASC order', () => {
+    using store = new EventStore(':memory:');
+
+    appendDelegationComplete(store, {
+      sessionId: 'sess-agg',
+      subagentId: 'sub-1',
+      step: 'ideation',
+      ts: '2026-04-18T10:00:00.000Z',
+      toolCallId: 'tc-1',
+      data: {
+        subagentId: 'sub-1',
+        model: 'claude-opus-4-7',
+        tokensUsed: {
+          input_tokens: 1_000_000,
+          output_tokens: 0,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+        },
+      },
+    });
+    appendDelegationComplete(store, {
+      sessionId: 'sess-agg',
+      subagentId: 'sub-2',
+      step: 'plan',
+      ts: '2026-04-18T10:01:00.000Z',
+      toolCallId: 'tc-2',
+      data: {
+        subagentId: 'sub-2',
+        sizeProxyBytes: 10_000,
+      },
+    });
+    appendDelegationComplete(store, {
+      sessionId: 'sess-agg',
+      subagentId: 'sub-3',
+      step: 'execution',
+      ts: '2026-04-18T10:02:00.000Z',
+      toolCallId: 'tc-3',
+      data: {
+        subagentId: 'sub-3',
+        model: 'claude-sonnet-4-5',
+        tokensUsed: {
+          input_tokens: 500_000,
+          output_tokens: 0,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+        },
+      },
+    });
+
+    const rows = store.aggregateDelegationCosts();
+
+    expect(rows).toHaveLength(3);
+    // seq ASC mirrors append order
+    expect(rows[0]?.subagentId).toBe('sub-1');
+    expect(rows[0]?.step).toBe('ideation');
+    expect(rows[0]?.model).toBe('claude-opus-4-7');
+    expect(rows[0]?.tokensJson).not.toBeNull();
+    expect(rows[0]?.bytes).toBeNull();
+
+    expect(rows[1]?.subagentId).toBe('sub-2');
+    expect(rows[1]?.step).toBe('plan');
+    expect(rows[1]?.tokensJson).toBeNull();
+    expect(rows[1]?.bytes).toBe(10_000);
+
+    expect(rows[2]?.subagentId).toBe('sub-3');
+    expect(rows[2]?.step).toBe('execution');
+    expect(rows[2]?.model).toBe('claude-sonnet-4-5');
+  });
+
+  it('filters out events whose type is not delegation.complete', () => {
+    using store = new EventStore(':memory:');
+
+    // One delegation.complete that should appear in the rollup
+    appendDelegationComplete(store, {
+      sessionId: 'sess-filter',
+      subagentId: 'sub-included',
+      step: 'plan',
+      ts: '2026-04-18T11:00:00.000Z',
+      toolCallId: 'tc-included',
+      data: {
+        subagentId: 'sub-included',
+        model: 'claude-opus-4-7',
+        tokensUsed: {
+          input_tokens: 100,
+          output_tokens: 0,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+        },
+      },
+    });
+
+    // Noise: other event types that MUST be filtered out
+    store.append({
+      ts: '2026-04-18T11:01:00.000Z',
+      type: 'workflow.start',
+      step: null,
+      data: JSON.stringify({
+        sessionId: 'sess-filter',
+        timestamp: '2026-04-18T11:01:00.000Z',
+      }),
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-start',
+      sessionId: 'sess-filter',
+    });
+    store.append({
+      ts: '2026-04-18T11:02:00.000Z',
+      type: 'delegation.spawn',
+      step: 'plan',
+      data: JSON.stringify({
+        subagentId: 'sub-other',
+        agentType: 'executor',
+        step: 'plan',
+      }),
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-spawn',
+      sessionId: 'sess-filter',
+    });
+
+    const rows = store.aggregateDelegationCosts();
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.subagentId).toBe('sub-included');
+    expect(rows[0]?.step).toBe('plan');
+  });
+});

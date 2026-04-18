@@ -273,10 +273,26 @@ export async function compileCurrentStep(
   // cancellation would thread its controller.signal through this call.
   await runVerification(sessionDir, store, state, sessionId);
 
-  // Re-resolve state after verification writes so any subsequent reads
-  // below (none today, but defensive against future edits that consume
-  // verificationResults in this same function) see the advanced state.
-  // The compiled prompt above has already been built and does not change.
+  // E.8 ZONE — verification-block compiler must upgrade this line.
+  //
+  // `runVerification` above has already written `verification.result`
+  // events through `appendEventAndUpdateState`, so the on-disk state is
+  // now ahead of the in-memory `state` binding. Today no reader follows
+  // this call inside `compileCurrentStep` — the compiled prompt was
+  // built above and is already immutable — so the refreshed state is
+  // intentionally discarded via `void`.
+  //
+  // When E.8 lands a verification-block dynamic section compiled AFTER
+  // the runner has written events, any state-reading code added below
+  // MUST consume a refreshed state. `resolveWorkflowState` is a
+  // synchronous call, so E.8 must replace this line with a rebind such
+  // as:
+  //
+  //   state = resolveWorkflowState(sessionDir, store, sessionId);
+  //
+  // and thread `state` into the verification-block compiler. Leaving the
+  // `void` in place while adding a reader below would silently compile
+  // the verification-block against the pre-verification state.
   void resolveWorkflowState(sessionDir, store, sessionId);
 
   return prompt.text;

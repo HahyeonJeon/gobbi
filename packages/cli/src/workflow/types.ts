@@ -9,6 +9,7 @@
 
 import type { WorkflowState } from './state.js';
 import type { Event } from './events/index.js';
+import type { PredicateRegistry } from './predicates.js';
 
 // ---------------------------------------------------------------------------
 // Reducer result — returned by the reduce function
@@ -28,10 +29,19 @@ export type ReducerResult =
 // attribute assigned by the store. Reducer cases that need a timestamp
 // (per L13: `stepStartedAt` on STEP_EXIT + RESUME) read it from this
 // argument; cases that do not are unaffected.
+//
+// The optional `predicates` mirrors the concrete `reduce()` fourth
+// parameter so the type contract matches the implementation. Callers
+// may supply a custom registry (e.g. for fixture isolation); when
+// omitted, `reduce()` falls back to `defaultPredicates`. Keeping the
+// parameter on `ReduceFn` means `deriveState`/`resolveState` consumers
+// that swap in an alternative reducer do not silently drop a caller's
+// override.
 // ---------------------------------------------------------------------------
 
 export type ReduceFn = (
   state: WorkflowState,
   event: Event,
   ts?: string,
+  predicates?: PredicateRegistry,
 ) => ReducerResult;

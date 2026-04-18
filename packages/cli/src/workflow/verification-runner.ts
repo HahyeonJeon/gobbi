@@ -228,6 +228,26 @@ async function runOneCommand(
  * Post-compile verification runner. Invoked from `compileCurrentStep` in
  * `commands/workflow/next.ts` after the prompt has been compiled.
  *
+ * ## L17 fail-fast scope — PER-SUBAGENT, NOT GLOBAL (user-confirmed 2026-04-18)
+ *
+ * When a `gate`-policy command fails (non-zero exit OR timeout) for one
+ * subagent, the runner STOPs the remainder of THAT subagent's command
+ * list regardless of command kind. Sibling subagents in
+ * `state.activeSubagents` continue to run their own lists in full. Each
+ * subagent is an independent verification target — CI/CD gate semantics
+ * preserve subagent isolation so one failing target does not mask
+ * another target's diagnostics.
+ *
+ * The implementation materialises this scope via `break` inside the
+ * inner `for (const kind of runAfterSubagentStop)` loop — it exits only
+ * the current subagent's iteration; the outer
+ * `for (const subagent of state.activeSubagents)` loop continues.
+ *
+ * If a future lock ever requires GLOBAL short-circuit semantics, the
+ * change is a one-line refactor: replace the inner `break` with a
+ * boolean flag set before the outer loop's continuation check. Do NOT
+ * change this behaviour without reopening L17.
+ *
  * @param sessionDir   Session directory — `<repoRoot>/.gobbi/sessions/<id>`.
  * @param store        Open {@link EventStore} for the session's SQLite DB.
  * @param state        Current {@link WorkflowState} (usually freshly
