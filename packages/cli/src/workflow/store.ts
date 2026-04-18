@@ -325,6 +325,30 @@ export class EventStore {
     return row?.cnt ?? 0;
   }
 
+  /**
+   * Execute a caller-provided read-only SQL statement and return all rows.
+   *
+   * The method exists so analytics commands (e.g. `workflow status --cost`)
+   * can hoist a module-level SQL constant — needed for bun:sqlite's
+   * prepared-statement cache to hit across invocations (`db.query()` is
+   * keyed by SQL identity) while still keeping the raw `Database` handle
+   * encapsulated inside `EventStore`. Reuse the same `const` string across
+   * calls to realise the cache benefit; constructing the SQL on each call
+   * defeats it.
+   *
+   * Rows are returned untyped (`unknown`) and the caller is responsible for
+   * narrowing each field via `lib/guards.ts` before use — the convention
+   * already applied to `byType` consumers. The generic `T` is a convenience
+   * type hint, not a validation.
+   *
+   * Scope: read-only. Callers must not submit INSERT / UPDATE / DELETE /
+   * DDL — the cost aggregator only reads, and `bun:sqlite`'s prepared
+   * statement cache would still execute a mutation if one was passed.
+   */
+  queryAll<T>(sql: string): readonly T[] {
+    return this.db.query<T, []>(sql).all();
+  }
+
   // -------------------------------------------------------------------------
   // Cleanup
   // -------------------------------------------------------------------------
