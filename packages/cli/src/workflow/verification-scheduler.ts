@@ -15,15 +15,9 @@
 // raw outcome.
 // ---------------------------------------------------------------------------
 
-export type VerificationCommandKind =
-  | 'lint'
-  | 'test'
-  | 'typecheck'
-  | 'build'
-  | 'format'
-  | 'custom';
+import type { VerificationCommandKind, VerificationPolicy } from './events/verification.js';
 
-export type VerificationPolicy = 'inform' | 'gate';
+export type { VerificationCommandKind, VerificationPolicy };
 
 export interface VerificationTask {
   readonly subagentId: string;

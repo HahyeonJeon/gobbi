@@ -31,13 +31,13 @@ import path from 'node:path';
 import Ajv2020, { type JSONSchemaType } from 'ajv/dist/2020.js';
 
 import { isRecord } from './guards.js';
+import type { VerificationPolicy } from '../workflow/events/verification.js';
+
+export type { VerificationPolicy };
 
 // ---------------------------------------------------------------------------
 // Public types
 // ---------------------------------------------------------------------------
-
-/** Verification policy: inform surfaces results, gate blocks on failure. */
-export type VerificationPolicy = 'inform' | 'gate';
 
 /** One verification command slot (lint, test, typecheck, build, format, custom). */
 export interface CommandSlot {
