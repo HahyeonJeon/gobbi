@@ -37,3 +37,22 @@ Gotchas discovered during v0.5.0 Phase 2 planning workflow (session 0f8427c1, 20
 **User feedback:** Flagged by plan evaluator (CRIT-2 project). Addressed by user via AskUserQuestion with explicit approval of adding ajv as first production dep.
 
 **Correct approach:** During research phase, when recommending any library, read the target project's package.json (or equivalent) and explicitly state whether the library is pre-existing or new. For projects with dependency-count opinions, frame any new dependency as an architectural decision requiring user approval. "Use ajv" is not a complete recommendation without "(new production dep — package.json currently has zero)."
+
+---
+
+## Schema-bump flip lists must include rendered-output assertions, not only typed-field assertions
+
+**Priority:** Medium
+
+**What happened:** The PR D.5 plan's "exact 4 assertions to flip" list enumerated four `expect(…schemaVersion).toBe(2)` sites but missed a fifth consequential assertion at `commands/workflow/__tests__/status.test.ts:189` — `expect(captured.stdout).toContain('Schema: v2')`. That line does not reference `schemaVersion` by type; it asserts on the CLI's human-readable rendered output, which the `status` command derives from `state.schemaVersion` via `Schema: v${snapshot.schemaVersion}` at `commands/workflow/status.ts:237`. Bumping `initialState().schemaVersion` 2→3 without flipping the rendered-output assertion would have passed typecheck but failed at runtime.
+
+**User feedback:** Self-caught by the D.5 executor during pre-execution study when grepping `Schema: v2\|Schema: v3` across the test suite.
+
+**Correct approach:** When planning a state-schema bump, the flip list must cover both typed field assertions (`expect(x.schemaVersion).toBe(N)`) AND every rendered/serialized form that passes through a pretty-printer (`Schema: v${n}`, `session.schemaVersion=${n}` in prompt snapshots, etc.). The executor should grep both patterns before committing:
+
+```
+grep -rn 'schemaVersion).toBe(' packages/cli/src/
+grep -rn 'Schema: v[0-9]\|schemaVersion=[0-9]\|schemaVersion: [0-9]' packages/cli/src/
+```
+
+Metadata-file assertions that check a hard-coded TypeScript literal (e.g., `metadata.json.schemaVersion` pinned to 2 because the file shape is immutable per release) must be explicitly excluded by path in the briefing — otherwise an overly-mechanical flip would break the metadata contract.
