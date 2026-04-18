@@ -98,12 +98,18 @@ function reduceWorkflow(
       // stale outcomes leaking across step boundaries.
       //
       // E.10 ZONE: stepStartedAt timestamp for next step (per L13)
-      // E.11 ZONE: meta.timeoutMs detection wire-up (per TODO line 97)
       //
-      // TODO(PR E): meta.timeoutMs detection wire-up — PR E attaches a
-      // per-step timeout budget derived from spec metadata so the
-      // heartbeat loop can fire workflow.step.timeout when the budget
-      // elapses.
+      // E.11 — meta.timeoutMs detection lives entirely in
+      // `commands/workflow/stop.ts`, NOT in the reducer. The reducer is a
+      // pure synchronous function of `(state, event, predicates, ts)` and
+      // has no path to load the step spec from disk; introducing an async
+      // spec-load here would break the purity invariant that lets the
+      // engine replay event streams without I/O. `stop.ts` reads
+      // `state.stepStartedAt` (set below), loads the graph + current-step
+      // spec via the same loader pattern as `next.ts`, and emits
+      // `workflow.step.timeout` when `now - stepStartedAt > spec.meta.timeoutMs`.
+      // The reducer's job on STEP_TIMEOUT is already covered above —
+      // active step → `error` — and needs no per-step metadata to do it.
       //
       // stepStartedAt: when the engine supplies `ts`, stamp the next step's
       // entry with it so E.11's timeout detector can compute
