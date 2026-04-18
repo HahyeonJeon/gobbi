@@ -68,6 +68,10 @@ test(
     const childEnv: Record<string, string> = {
       ...process.env,
       CLAUDE_SESSION_ID: '',
+      // Defensive: current workflow commands don't read
+      // CLAUDE_TRANSCRIPT_PATH, but clearing it here prevents a future
+      // class of env leak if any command starts resolving it implicitly.
+      CLAUDE_TRANSCRIPT_PATH: '',
     };
 
     try {
