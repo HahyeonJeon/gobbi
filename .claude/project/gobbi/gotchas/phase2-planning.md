@@ -70,3 +70,59 @@ Metadata-file assertions that check a hard-coded TypeScript literal (e.g., `meta
 **Correct approach:** On shared worktrees during parallel-wave execution, always stage by explicit file list: `git add packages/cli/src/lib/project-config.ts packages/cli/src/lib/__tests__/project-config.test.ts packages/cli/src/commands/workflow/init.ts`. Run `git diff --staged --stat` before committing to verify only your scope's files are staged. If `git status` shows unexpected files modified, diff them — they're almost certainly other executors' in-flight work. Do not revert them (that destroys their progress); just skip them in your stage.
 
 Also — a `git stash --include-untracked` + `bun test` trick is useful to distinguish pre-existing failures from regressions you introduced. If the suite passes 100% with your code stashed and the same tests fail with it unstashed, those failures are yours. If the same tests fail in both states (or new unrelated tests fail with your code stashed), the failures belong to someone else.
+
+---
+
+## Schema-bump grep must include `CURRENT_SCHEMA_VERSION).toBe(N)` canary assertions
+
+**Priority:** Medium
+
+**What happened:** The PR E E.2 schema v3→v4 flip gate used the canonical `grep schemaVersion).toBe(` pattern (plus `'Schema: v[0-9]'` rendered-literal grep), but a canary test at `packages/cli/src/workflow/__tests__/migrations.test.ts:55` wrote `expect(CURRENT_SCHEMA_VERSION).toBe(3)` — asserting on the exported constant, not on `state.schemaVersion`. The existing grep missed it. Without flipping, the canary would have failed post-bump and locked the schema version in a contradictory state (constant says 4, test pins 3).
+
+**User feedback:** Self-caught by E.2 executor during post-flip `bun test`.
+
+**Correct approach:** Extend the schema-bump pre-flip grep gate to THREE patterns, not two:
+
+```
+grep -rn 'schemaVersion).toBe(' packages/cli/src/
+grep -rn 'CURRENT_SCHEMA_VERSION.*toBe\|toBe.*CURRENT_SCHEMA_VERSION' packages/cli/src/
+grep -rn "'Schema: v[0-9]'\|schemaVersion=[0-9]\|schemaVersion: [0-9]" packages/cli/src/
+```
+
+The first matches typed-field assertions; the second matches exported-constant canary assertions; the third matches rendered-output literals (original PR D miss class). Update the flip manifest to include all three classes.
+
+---
+
+## Parallel executor git-tree-modifying operations silently revert peers
+
+**Priority:** High
+
+**What happened:** During PR E Wave 2, four executors worked concurrently in the same worktree. One executor ran `git stash push --keep-index` to isolate its commit, then discarded the stash without restoring. Another executor's uncommitted in-progress work was wiped. A third executor observed the worktree had been `git reset`-ed mid-task and had to re-apply its change set. The final commit state was eventually correct — but one executor's branch of work was silently lost and had to be re-done.
+
+**User feedback:** Surfaced in three of four Wave 2 executor reports (E.2 stashed/dropped; E.5 observed reversion; E.9 had to re-apply).
+
+**Correct approach:** Parallel executors in a shared worktree MUST NOT run `git stash`, `git reset --hard`, `git rebase`, `git checkout .`, or any other index-modifying / worktree-rewriting operation that touches files outside their own change set. Stage ONLY the files you intentionally modify (use `git add <specific-files>`, never `git add .`). If your intended files conflict with another executor's in-progress work, stop and surface to the orchestrator — do NOT attempt to isolate via stash or reset.
+
+Mitigations at the orchestration level:
+- Batch parallel executors into waves by file-disjoint sets (plan's Wave 2 file-collision map)
+- Pre-allocate zone sentinels in an earlier serial wave (E.2 pattern)
+- Keep wave duration short so the "same worktree, two writers" window is minimal
+
+---
+
+## Parallel waves defining shared types silently diverge
+
+**Priority:** High
+
+**What happened:** PR E Wave 2 had four parallel executors each adding related modules: E.2 authored `events/verification.ts`, E.4 authored `workflow/verification-scheduler.ts`, E.5 authored `lib/project-config.ts`. The types `VerificationCommandKind` (`'lint' | 'test' | 'typecheck' | 'build' | 'format' | 'custom'`) and `VerificationPolicy` (`'inform' | 'gate'`) were each independently declared in ALL THREE modules. TypeScript's structural typing accepted all three as compatible — no compile error, no runtime mismatch. But the types had three authority sites with no import linkage. Adding a new commandKind (e.g. `'security'`) would require three simultaneous, uncoordinated edits; missing any one produces silent divergence invisible to tsc.
+
+**User feedback:** Flagged by Project + Architecture + Overall Wave 2 evaluators (all three caught it independently).
+
+**Correct approach:** When multiple parallel executors need a shared type, designate ONE canonical module up-front in the plan — usually the earliest module to land in the wave — and require subsequent executors to import from that canonical source.
+
+For this project specifically, the canonical source for verification-related closed unions (`VerificationCommandKind`, `VerificationPolicy`) is `packages/cli/src/workflow/events/verification.ts`. Any future module that needs these types MUST `import type { VerificationCommandKind, VerificationPolicy } from '../workflow/events/verification.js';` — never redeclare.
+
+Orchestration-level mitigations:
+- Specify the canonical source for cross-wave shared types in the plan briefing
+- Include an explicit `grep` verification gate in the plan: exactly one declaration per shared type across all files
+- Flag in executor briefings when a module is expected to be a producer (other waves will import) vs a consumer (must import, never declare)
