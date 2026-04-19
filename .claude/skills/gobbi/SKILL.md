@@ -10,7 +10,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the four setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/sessions/{session-id}/` and record the first `workflow.start` event. The 5-step cycle — Ideation, Plan, Execution, Evaluation, Memorization — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
 
-**FIRST — load core skills before anything else.** Load `_gotcha`, `_claude`, and `_git` immediately. Also load `_orchestration` for backwards-compatibility reference if needed, but note it is deprecated in v0.5.0 — see `_orchestration/ARCHIVED.md` for historical reference. Do not ask questions, do not run project setup, do not proceed until skills are loaded.
+**FIRST — load core skills before anything else.** Load `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`_orchestration` is deprecated in v0.5.0 and no longer loads — see `_orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
 
 **SECOND — ensure `_gobbi-rule` symlink exists.** Check whether `.claude/rules/_gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in the `_gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated.
 

@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `gobbi audit` CLI command (#64)
 - JSON-first documentation authoring system — Markdown is now the directly-editable format (#64)
 - `_doctor` and `_audit` skill directories (#64)
-- 6 `gobbi notify *` hook entries in `plugins/gobbi/hooks/hooks.json` + `.claude/settings.json`: SessionStart×1, Stop×1, Notification×1, StopFailure×1, SubagentStop×1, SessionEnd×1 (#83)
+- 8 v0.4.x hook entries in `plugins/gobbi/hooks/hooks.json` + `.claude/settings.json`: SessionStart×3 (`gobbi session metadata`, `gobbi session load-env`, `gobbi notify session`), Stop×1 (`gobbi notify completion`), Notification×1 (`gobbi notify attention`), StopFailure×1 (`gobbi notify error`), SubagentStop×1 (`gobbi notify subagent`), SessionEnd×1 (`gobbi notify session`) (#83)
 
 ### Fixed
 

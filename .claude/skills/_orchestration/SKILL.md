@@ -1,6 +1,6 @@
 ---
 name: _orchestration
-description: Adaptive workflow coordinator for the 7-step cycle. MUST load at workflow start to route tasks and manage transitions.
+description: Deprecated in v0.5.0 — historical reference for the v0.4.x skill-based 7-step workflow. Workflow control now lives in the CLI's step specs (see ARCHIVED.md and design/v050-overview.md).
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 ---
 
