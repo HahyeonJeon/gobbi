@@ -4,19 +4,19 @@ description: Entry point for gobbi, an open-source ClaudeX tool. MUST load at se
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 ---
 
-> **⚠ v0.5.0 in progress** — PRs A–F are building the state-driven workflow (`gobbi workflow init`) that will replace the current skill-based orchestration. During this transition, both systems coexist in the repo but the current workflow continues to use the skill-based cycle. Track progress in #77.
-
 # Gobbi
 
 You are an orchestrator based on gobbi. You must delegate everything to specialist subagents except trivial cases.
 
-**FIRST — load core skills before anything else.** Load `_orchestration`, `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until all four are loaded.
+In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the four setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/sessions/{session-id}/` and record the first `workflow.start` event. The 5-step cycle — Ideation, Plan, Execution, Evaluation, Memorization — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
+
+**FIRST — load core skills before anything else.** Load `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`_orchestration` is deprecated in v0.5.0 and no longer loads — see `_orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
 
 **SECOND — ensure `_gobbi-rule` symlink exists.** Check whether `.claude/rules/_gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in the `_gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated.
 
-**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for note initialization, subtask collection, config management, and validation. Without it, the workflow cannot function.
+**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
 
-**FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly. If no settings exist for this session, continue to the setup questions.
+**FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`. If no settings exist for this session, continue to the setup questions.
 
 **FIFTH — ask the user four setup questions** with AskUserQuestion (only if no existing settings were reused).
 
@@ -31,7 +31,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 **Third question — git workflow mode:**
 - **Direct commit (default)** — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs. Use for solo sessions or quick tasks.
-- **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from). When selected, the orchestrator verifies _git prerequisites (tool availability, authentication, repository state) before proceeding.
+- **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from). When selected, the orchestrator verifies `_git` prerequisites (tool availability, authentication, repository state) before proceeding.
 
 **Fourth question — notification channels:**
 - Multi-select. If any channel is selected alongside Skip, channels take priority.
@@ -40,7 +40,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 - **Discord** — Notify via Discord webhook.
 - **Skip notifications** — No notifications this session.
 
-After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load _notification and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help the user configure them before proceeding.
+After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help the user configure them before proceeding.
 
 **After all four questions — persist session choices.** The orchestrator writes the user's selections to `gobbi.json` via `gobbi config` so that hooks and subagents can read them without conversation context. Persistence calls use `$CLAUDE_SESSION_ID` as the session key:
 
@@ -53,7 +53,7 @@ After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If cr
 
 These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
 
-**SIXTH — project context detection.** This runs automatically at session start without asking. Load project-setup.md to execute detection.
+**SIXTH — project context detection.** This runs automatically at session start without asking. Load [project-setup.md](project-setup.md) to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.
 
@@ -65,6 +65,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | [project-setup.md](project-setup.md) | Project-specific context and technology stack signals |
 | [notification-setup.md](notification-setup.md) | Notification channel and credential detection |
 | [git-setup.md](git-setup.md) | Git tooling and repository state detection |
+| [design/v050-overview.md](../../project/gobbi/design/v050-overview.md) | v0.5.0 state machine, 5-step cycle, directory split — authoritative architecture doc |
 
 ---
 
@@ -78,11 +79,11 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 ### Work
 
-Workflow participant skills — loaded during the 7-step cycle: Ideation, Plan, Research, Execution, Collection, Memorization, Review.
+Workflow participant skills — loaded during the 5-step cycle: Ideation, Plan, Execution, Evaluation, Memorization.
 
 | Skill | Purpose |
 |---|---|
-| **_orchestration** | Adaptive workflow coordinator. Routes tasks through the 7-step workflow and post-workflow phases. |
+| **_orchestration** | Adaptive workflow coordinator for v0.4.x skill-based orchestration — deprecated in v0.5.0. See `_orchestration/ARCHIVED.md` for historical reference and the v0.4.x-to-v0.5.0 step mapping. |
 | **_discuss** | Critical, structured discussion. Challenge vague thinking, surface hidden problems, push ideas toward concrete specificity. |
 | **_ideation** | Structured idea refinement. PI agents (innovative + best stances) improve the user's idea through discussion and synthesis. |
 | **_plan** | Task decomposition. Break complex work into narrow, ordered, agent-assigned tasks. |

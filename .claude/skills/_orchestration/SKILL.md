@@ -1,10 +1,13 @@
 ---
 name: _orchestration
-description: Adaptive workflow coordinator for the 7-step cycle. MUST load at workflow start to route tasks and manage transitions.
+description: Deprecated in v0.5.0 — historical reference for the v0.4.x skill-based 7-step workflow. Workflow control now lives in the CLI's step specs (see ARCHIVED.md and design/v050-overview.md).
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 ---
 
 # Orchestration
+
+> **⚠ Deprecated in v0.5.0** — see [ARCHIVED.md](ARCHIVED.md) for historical reference.
+> Workflow control now lives in the CLI's step specs; see [`design/v050-overview.md`](../../project/gobbi/design/v050-overview.md).
 
 You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding. When loading this skill, also load _note, _evaluation, _discuss, and _delegation — they are needed at every workflow step.
 

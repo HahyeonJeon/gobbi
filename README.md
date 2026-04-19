@@ -3,9 +3,9 @@
 <p align="center"><sub>고삐 (gobbi) — Korean for reins, the essential equipment for handling a horse</sub></p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@gobbi/cli"><img src="https://img.shields.io/npm/v/@gobbi/cli" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@gobbitools/cli"><img src="https://img.shields.io/npm/v/@gobbitools/cli" alt="npm version"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
-  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/@gobbi/cli" alt="Node version"></a>
+  <a href="https://bun.sh"><img src="https://img.shields.io/badge/bun-%3E%3D1.2.0-orange" alt="Bun version"></a>
 </p>
 
 ---
@@ -24,7 +24,7 @@ Gobbi is an open-source ClaudeX tool.
 
 **Quality through structured evaluation** — Multi-perspective evaluation examines your work through independent lenses — project scope, architecture, performance, aesthetics, and holistic quality — catching problems no single viewpoint would find.
 
-**Claude docs managed, not scattered** — Skills, agents, and hooks organized with source-of-truth separation. The `.gobbi/` directory is the authoritative source; `.claude/` is generated output. Install plugins or create your own through Claude Code.
+**Claude docs managed, not scattered** — Skills, agents, and hooks organized with a clear separation between static knowledge and runtime state. `.claude/` is the static knowledge layer — skills, rules, agents, and hooks that Claude Code reads on every session. `.gobbi/` is the runtime layer — active session state, event store, heartbeats, and mid-session notes written during workflow execution.
 
 **Domain expertise built in** — Domain-specific skills (Python, TypeScript, data engineering) bring specialized knowledge to your sessions without requiring you to explain the domain each time.
 
@@ -34,41 +34,27 @@ Gobbi is an open-source ClaudeX tool.
 
 ## Quick Start
 
-In Claude Code:
+Install the plugin from inside Claude Code:
 
 ```
 /plugin install gobbi
 ```
 
+The plugin includes the CLI. Once installed, start a workflow with:
+
+```
+gobbi workflow init
+```
+
 Then run `/gobbi` to begin.
 
-### CLI Install
+### Direct CLI Install
+
+To install the CLI without the plugin:
 
 ```bash
-npx @gobbi/cli install
+npm install -g @gobbitools/cli
 ```
-
-This creates the `.gobbi/` directory with gobbi's skill and agent definitions, then syncs everything to `.claude/` where Claude Code reads them.
-
----
-
-## Commands
-
-| Command | Purpose |
-|---------|---------|
-| `npx @gobbi/cli install` | Install gobbi into the current project |
-| `npx @gobbi/cli update` | Update gobbi core to the latest version |
-| `npx @gobbi/cli sync` | Manually sync `.gobbi/` to `.claude/` |
-
----
-
-## Migration from v0.2.0
-
-```bash
-npx @gobbi/cli install
-```
-
-Automatically detects existing `.claude/` gobbi files, migrates them to `.gobbi/`, and syncs back. No manual intervention needed.
 
 ---
 

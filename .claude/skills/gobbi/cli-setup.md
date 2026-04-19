@@ -1,6 +1,8 @@
 # CLI Setup
 
+> Status: v0.5.0 stable — updated 2026-04-19
 
+Check gobbi CLI availability at session start. If `gobbi --version` succeeds, proceed. If not, use this doc to install.
 
 ---
 
@@ -8,7 +10,7 @@
 
 > **Gobbi CLI must be available before the workflow can proceed.**
 
-The gobbi CLI (`gobbi` command) powers note initialization, subtask collection, config management, and validation. Without it, hooks fail silently and notes can't be initialized. Check availability at the start of every session before asking setup questions.
+The gobbi CLI (`gobbi` command) powers workflow initialization, session management, config management, and validation. Without it, hooks fail silently and `gobbi workflow init` cannot run. Check availability at the start of every session before asking setup questions.
 
 ---
 
@@ -18,8 +20,8 @@ Run `gobbi --version` at session start. Three outcomes:
 
 | Outcome | Meaning | Action |
 |---|---|---|
-| Version prints (e.g., `0.4.0`) | CLI is installed and in PATH | Proceed to setup questions |
-| Command outputs version via `node packages/cli/bin/gobbi.js --version` | CLI is available locally but not installed globally | Usable for development — proceed, but suggest global install for convenience |
+| Version prints (e.g., `0.5.0`) | CLI is installed and in PATH | Proceed to setup questions |
+| Command outputs version via `bun packages/cli/bin/gobbi.js --version` | CLI is available locally but not installed globally | Usable for development — proceed, but suggest global install for convenience |
 | Command not found | CLI is not installed | Help the user install before proceeding |
 
 ---
@@ -30,61 +32,59 @@ There are three ways to install the gobbi CLI, depending on the user's setup:
 
 ### Option 1: npm global install (Recommended)
 
-Install globally so `gobbi` is available in all terminals:
+Install globally via npm so `gobbi` is available in all terminals. npm is the registry; Bun is the runtime. Installing via npm handles both:
 
-```
-npm install -g @gobbi/cli
-```
+`npm install -g @gobbitools/cli`
 
 Verify: `gobbi --version`
 
 This is the recommended approach for users who want `gobbi` available across all projects.
 
-### Option 2: npm link (for development)
+### Option 2: Claude Code plugin install
 
-If working on the gobbi repository itself, link the local builds:
+If using the gobbi plugin for Claude Code, install via the plugin system:
 
-```
-npm link --workspace=packages/cli
-npm link --workspace=packages/media
-```
+`/plugin install gobbi`
 
-This creates global symlinks to the local bin scripts. Changes to the source are immediately available after `npm run build`.
+The plugin registers the CLI and the five v0.5.0 workflow hook entries (`gobbi workflow init`, `gobbi workflow guard`, `gobbi workflow capture-subagent`, `gobbi workflow capture-plan`, `gobbi workflow stop`) automatically.
 
 Verify: `gobbi --version`
 
-### Option 3: Local execution (no install)
+### Option 3: Local execution (development)
 
-Run directly from the project:
+Run directly from the gobbi project root when working on the gobbi repository itself:
 
-```
-node packages/cli/bin/gobbi.js <command>
-```
+`bun packages/cli/bin/gobbi.js <command>`
 
-This works without any installation but requires being in the gobbi project root. Hooks in `settings.json` use the bare `gobbi` command, so this option only works for manual CLI usage — hooks will fail without a global install or link.
+This works without any installation but requires being in the gobbi project root. Hooks in `settings.json` use the bare `gobbi` command, so this option only works for manual CLI usage — hooks will fail without a global install.
 
 ---
 
 ## Prerequisites
 
-- **Node.js >= 18** — required for the TypeScript CLI. Check with `node --version`.
-- **npm** — for installing the package. Bundled with Node.js.
-- **TypeScript build** — if using npm link, run `npm run build` first to compile TypeScript to `dist/`.
+- **Bun >= 1.2.0** — the v0.5.0 CLI runs on Bun, not Node.js. Check with `bun --version`. Install from `bun.sh` if missing.
+- **npm** — for Option 1 global install. Bundled with Node.js or available standalone.
+
+The `@gobbitools/cli` package is published to npm but the runtime is Bun. This means `npm install -g @gobbitools/cli` handles distribution while Bun executes the commands.
 
 ---
 
 ## What the CLI Provides
 
-The gobbi CLI replaces the shell scripts that were previously in `.claude/skills/_note/scripts/` and `.claude/hooks/`. Key commands:
+The gobbi CLI manages workflow state, session configuration, notes, and validation. Key commands:
 
 | Command | Purpose |
 |---|---|
-| `gobbi note init <project> <slug>` | Initialize a note directory with per-step subdirectories |
-| `gobbi note collect <agent-id> <num> <slug> <dir> [--phase]` | Extract subagent results from JSONL transcripts |
-| `gobbi config set <session> <key> <value>` | Set session configuration in gobbi.json |
+| `gobbi workflow init` | Initialize a session directory under `.gobbi/sessions/{id}/`, write `metadata.json`, open `gobbi.db`, emit the first `workflow.start` event |
+| `gobbi workflow guard` | Evaluate guard predicates against current workflow state before each tool call |
+| `gobbi workflow capture-subagent` | Record subagent completion — called by the SubagentStop hook |
+| `gobbi workflow capture-plan` | Record the current plan when ExitPlanMode fires |
+| `gobbi workflow stop` | Write the final session event and flush state on Stop |
+| `gobbi workflow status` | Show current workflow state for the active session |
+| `gobbi workflow resume` | Resume an interrupted session, replaying events from `gobbi.db` |
+| `gobbi config set <session> <key> <value>` | Set session configuration in `gobbi.json` |
 | `gobbi config get <session> [key]` | Read session configuration |
-| `gobbi session metadata` | Output session metadata (used by SessionStart hook) |
-| `gobbi notify <event>` | Send notifications (used by hooks) |
+| `gobbi notify send` | Send a notification (used inline by `gobbi workflow init` when channels are configured) |
 | `gobbi validate <type> <path>` | Validate agent, skill, or gotcha definitions |
 
 ---
@@ -93,6 +93,7 @@ The gobbi CLI replaces the shell scripts that were previously in `.claude/skills
 
 | Problem | Cause | Fix |
 |---|---|---|
-| `gobbi: command not found` | Not installed globally or not linked | Run `npm install -g @gobbi/cli` or `npm link` in the gobbi directory |
-| `gobbi note init` fails with CLAUDE_SESSION_ID not set | SessionStart hook didn't run | Check `.claude/settings.json` hooks — the `gobbi session metadata` hook must fire on startup |
-| Hooks fail silently | `gobbi` not in PATH when hooks execute | Ensure global install or link — hooks run in a shell that may not have local node_modules/.bin in PATH |
+| `gobbi: command not found` | Not installed globally | Run `npm install -g @gobbitools/cli` |
+| `bun: command not found` | Bun not installed | Install from `bun.sh` |
+| `gobbi workflow init` fails | CLI version mismatch or SQLite init error | Verify `gobbi --version` is `0.5.0`; reinstall if stale |
+| Hooks fail silently | `gobbi` not in PATH when hooks execute | Ensure global install — hooks run in a shell that may not have local `node_modules/.bin` in PATH |
