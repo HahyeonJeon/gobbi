@@ -1,5 +1,5 @@
 /**
- * Event type system — 6 categories, 19 event types.
+ * Event type system — 7 categories, 22 event types.
  *
  * Re-exports all category modules and assembles top-level union types.
  */
@@ -11,6 +11,7 @@ export * from './artifact.js';
 export * from './decision.js';
 export * from './guard.js';
 export * from './session.js';
+export * from './verification.js';
 
 // Import const objects for ALL_EVENT_TYPES assembly
 import { WORKFLOW_EVENTS } from './workflow.js';
@@ -19,6 +20,7 @@ import { ARTIFACT_EVENTS } from './artifact.js';
 import { DECISION_EVENTS } from './decision.js';
 import { GUARD_EVENTS } from './guard.js';
 import { SESSION_EVENTS } from './session.js';
+import { VERIFICATION_EVENTS } from './verification.js';
 
 // Import category types for top-level unions
 import type { WorkflowEvent, WorkflowEventType } from './workflow.js';
@@ -27,6 +29,10 @@ import type { ArtifactEvent, ArtifactEventType } from './artifact.js';
 import type { DecisionEvent, DecisionEventType } from './decision.js';
 import type { GuardEvent, GuardEventType } from './guard.js';
 import type { SessionEvent, SessionEventType } from './session.js';
+import type {
+  VerificationEvent,
+  VerificationEventType,
+} from './verification.js';
 
 // ---------------------------------------------------------------------------
 // Top-level Event union — discriminated on `type`
@@ -38,7 +44,8 @@ export type Event =
   | ArtifactEvent
   | DecisionEvent
   | GuardEvent
-  | SessionEvent;
+  | SessionEvent
+  | VerificationEvent;
 
 // ---------------------------------------------------------------------------
 // Top-level EventType union — all valid event type strings
@@ -50,7 +57,8 @@ export type EventType =
   | ArtifactEventType
   | DecisionEventType
   | GuardEventType
-  | SessionEventType;
+  | SessionEventType
+  | VerificationEventType;
 
 // ---------------------------------------------------------------------------
 // All event type values for validation
@@ -63,6 +71,7 @@ export const ALL_EVENT_TYPES: ReadonlySet<string> = new Set<string>([
   ...Object.values(DECISION_EVENTS),
   ...Object.values(GUARD_EVENTS),
   ...Object.values(SESSION_EVENTS),
+  ...Object.values(VERIFICATION_EVENTS),
 ]);
 
 // ---------------------------------------------------------------------------

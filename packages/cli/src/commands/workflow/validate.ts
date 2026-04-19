@@ -14,7 +14,7 @@
  *
  * ## Stable error codes
  *
- * Eight codes are stable across versions — their meanings are documented in
+ * Ten codes are stable across versions — their meanings are documented in
  * `.claude/project/gobbi/reference/validate-codes.md`. Changing a code's
  * meaning is a breaking change.
  *
@@ -26,6 +26,8 @@
  *   E006_UNKNOWN_SUBSTATE      — overlay keyed to a substate the spec does not declare
  *   E007_ORPHAN_SUBSTATE       — spec declares a substate with no overlay file (warning)
  *   E008_DUPLICATE_REGISTRATION — registry exports a predicate name twice
+ *   E009_DEAD_PREDICATE        — registered predicate never referenced in any spec/overlay/graph (warning)
+ *   E010_VERDICT_PREDICATE_AS_CONDITION — verdictPass/verdictRevise used as a step-transition condition (warning)
  *
  * @see `.claude/project/gobbi/reference/validate-codes.md`
  * @see `specs/assembly.ts` — validateSpecPredicateReferences, validateGraphPredicateReferences
@@ -57,6 +59,7 @@ import {
 } from '../../specs/overlay.js';
 import type { StepSpec } from '../../specs/types.js';
 import {
+  ADVISORY_PREDICATE_NAMES,
   defaultPredicates,
   PREDICATE_NAMES,
 } from '../../workflow/predicates.js';
@@ -222,6 +225,12 @@ export async function validate(
   const specsDir = resolveSpecsDir(options.dir);
   const diagnostics: Diagnostic[] = [];
 
+  // (E009) Accumulates every predicate name referenced by any spec, overlay
+  // (base+overlay merged result), or graph edge. Computed globally across
+  // all steps so a predicate used in any one step is never flagged as dead.
+  // Filled by the per-step loop below; consumed after the loop.
+  const referencedPredicateNames = new Set<string>();
+
   // (E008) Defensive check — registry duplication. The `satisfies`
   // clause in workflow/predicates.ts should catch this at compile time,
   // but the runtime check is a safety net for hand-crafted registries.
@@ -257,6 +266,11 @@ export async function validate(
   } finally {
     console.warn = origWarn;
   }
+
+  // (E009) Collect predicate references from graph transitions. The graph
+  // is the authoritative edge list for the workflow state machine; every
+  // edge condition is a "use" for dead-predicate detection.
+  collectPredicateReferencesInValue(graph.transitions, referencedPredicateNames);
 
   // Validate graph against predicate registry (E002).
   {
@@ -448,6 +462,34 @@ export async function validate(
           },
         });
       }
+
+      // (E009 collection) Walk the base spec to harvest every referenced
+      // predicate name. Overlay-introduced references are collected further
+      // down after applyOverlay succeeds. Scoped to the cache-miss branch so
+      // the shared evaluation spec contributes refs exactly once.
+      collectPredicateReferencesInValue(spec, referencedPredicateNames);
+
+      // (E010) Verdict predicate used as a step-transition condition. Walks
+      // the BASE spec's transitions[] — the dynamic-spec safety net for the
+      // `Exclude<PredicateName, VerdictPredicateName>` tsc gate on
+      // `TransitionRule.condition`. Verdict routing belongs in the `verdict`
+      // slot matched against EvalVerdictData payload, not in the condition
+      // predicate. Warning-severity: authoring signal, not exit-code failure.
+      // Scoped to the cache-miss branch to dedupe across the 3 `*_eval`
+      // graph steps that share `evaluation/spec.json`.
+      spec.transitions.forEach((transition, index) => {
+        if (VERDICT_PREDICATE_NAMES.has(transition.condition)) {
+          diagnostics.push({
+            code: 'E010_VERDICT_PREDICATE_AS_CONDITION',
+            severity: CODE_SEVERITY.E010_VERDICT_PREDICATE_AS_CONDITION,
+            message: `transition -> ${transition.to} uses verdict predicate "${transition.condition}" as a condition; verdict predicates must route via the verdict slot, not the condition field`,
+            location: {
+              file: specPath,
+              pointer: `/transitions/${index}/condition`,
+            },
+          });
+        }
+      });
     }
 
     // Overlays — only look when the spec declares substates. Two cross-cutting
@@ -569,6 +611,12 @@ export async function validate(
             location: { file: overlayPath, pointer: null },
           });
         }
+
+        // (E009 collection) Overlay-introduced references — walk the merged
+        // spec so predicates newly named by `$ops` / deep-merge land in the
+        // referenced set. Without this pass, a predicate used ONLY in an
+        // overlay would be flagged as dead.
+        collectPredicateReferencesInValue(merged, referencedPredicateNames);
       }
     }
 
@@ -586,6 +634,29 @@ export async function validate(
         });
       }
     }
+  }
+
+  // (E009) Dead-predicate detection — computed GLOBALLY across every step.
+  // A predicate referenced in any spec, overlay-merge result, or graph edge
+  // is considered live. The diff against the default registry surfaces
+  // predicates that are registered but never used anywhere, minus advisory
+  // names that opt out via `ADVISORY_PREDICATE_NAMES`. Emitted after the
+  // per-step loop so `referencedPredicateNames` has absorbed every source.
+  const deadPredicates = computeDeadPredicates(
+    Object.keys(defaultPredicates),
+    referencedPredicateNames,
+    ADVISORY_PREDICATE_NAMES,
+  );
+  for (const name of deadPredicates) {
+    diagnostics.push({
+      code: 'E009_DEAD_PREDICATE',
+      severity: CODE_SEVERITY.E009_DEAD_PREDICATE,
+      message: `predicate "${name}" is registered in defaultPredicates but is never referenced by any spec, overlay, or graph edge`,
+      location: {
+        file: predicatesSourcePath(),
+        pointer: `/predicates/${name}`,
+      },
+    });
   }
 
   return toReport(diagnostics);
@@ -628,11 +699,94 @@ export function findDuplicatePredicates(names: readonly string[]): readonly stri
 }
 
 /**
+ * Compute dead predicates for E009 — `registered` minus `referenced` minus
+ * `advisory`. Pure set-difference over string names; extracted for direct
+ * test coverage of the advisory-exclusion semantics since
+ * `ADVISORY_PREDICATE_NAMES` starts empty and cannot be exercised end-to-end
+ * by the integration surface alone.
+ *
+ * @internal Exported for test access — not part of the public API.
+ */
+export function computeDeadPredicates(
+  registered: readonly string[],
+  referenced: ReadonlySet<string>,
+  advisory: ReadonlySet<string>,
+): readonly string[] {
+  const dead: string[] = [];
+  for (const name of registered) {
+    if (referenced.has(name)) continue;
+    if (advisory.has(name)) continue;
+    dead.push(name);
+  }
+  return dead;
+}
+
+/**
  * Absolute path to the generated predicates file. Used for E008 diagnostics
  * so the location points at the source of truth.
  */
 function predicatesGeneratedPath(): string {
   return resolve(THIS_DIR, '..', '..', 'workflow', 'predicates.generated.ts');
+}
+
+/**
+ * Absolute path to the hand-authored `workflow/predicates.ts` source. E009
+ * diagnostics point here — the dead predicate lives in the `defaultPredicates`
+ * object declared in that file. The JSON pointer `/predicates/<name>` in the
+ * diagnostic is a stable logical reference into the registry; there is no
+ * literal `/predicates` path in the TS source, but tooling uses it to
+ * identify the offending predicate name deterministically.
+ */
+function predicatesSourcePath(): string {
+  return resolve(THIS_DIR, '..', '..', 'workflow', 'predicates.ts');
+}
+
+/**
+ * Verdict predicates — the only two names the transition routing layer
+ * treats as authoritative via `rule.verdict` (against `EvalVerdictData`) and
+ * therefore must NOT appear in a `transitions[].condition` slot. E010
+ * mirrors the `Exclude<PredicateName, VerdictPredicateName>` compile-time
+ * gate at `workflow/transitions.ts::TransitionRule.condition` for JSON
+ * specs the TypeScript type system never sees.
+ */
+const VERDICT_PREDICATE_NAMES: ReadonlySet<string> = new Set([
+  'verdictPass',
+  'verdictRevise',
+]);
+
+/**
+ * Walk `value` recursively and collect the string contents of every
+ * `condition` and `when` property. Mirrors
+ * `scripts/gen-predicate-names.ts:collectPredicateReferences` — the
+ * codegen's extractor — so E009 dead-predicate analysis uses the same
+ * reference surface that PredicateName discovery does.
+ *
+ * Key discovery happens at any nesting depth. Keys are schema-agnostic; if
+ * a future spec introduces a new `condition`/`when` field this walker
+ * picks it up without edits. The `guards.warn[].condition` slot (when it
+ * lands) is covered by the same logic because the field name matches.
+ */
+function collectPredicateReferencesInValue(
+  value: unknown,
+  sink: Set<string>,
+): void {
+  if (value === null || value === undefined) return;
+  if (typeof value !== 'object') return;
+
+  if (Array.isArray(value)) {
+    for (const element of value) {
+      collectPredicateReferencesInValue(element, sink);
+    }
+    return;
+  }
+
+  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    if ((key === 'condition' || key === 'when') && typeof child === 'string') {
+      if (child.length > 0) sink.add(child);
+      continue;
+    }
+    collectPredicateReferencesInValue(child, sink);
+  }
 }
 
 /**

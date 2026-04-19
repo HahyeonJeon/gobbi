@@ -15,6 +15,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  computeDeadPredicates,
   DEFAULT_SPECS_DIR,
   findDuplicatePredicates,
   renderHuman,
@@ -532,5 +533,282 @@ describe('renderHuman output', () => {
     expect(output).toContain('E007_ORPHAN_SUBSTATE');
     expect(output).toContain('1 error(s), 1 warning(s)');
     expect(output).toContain('/meta/substates/0');
+  });
+});
+
+// ===========================================================================
+// E009 — dead predicate (WARNING, global detection)
+//
+// The canonical spec library references every registered predicate at least
+// once, so happy-path validate() emits zero E009 diagnostics. To exercise
+// the positive branch we remove the sole reference to a predicate in a
+// scratch copy and assert the detector fires against the copy.
+// ===========================================================================
+
+describe('E009_DEAD_PREDICATE', () => {
+  // `piAgentsToSpawn` is referenced exactly once in `ideation/spec.json` as
+  // the `when` field of the `spawn-ready` conditional block. Removing that
+  // block makes the predicate unreferenced anywhere in the library.
+  async function removeSpawnReadyBlock(dir: string): Promise<void> {
+    const specPath = join(dir, 'ideation', 'spec.json');
+    const spec = (await readJson(specPath)) as {
+      blocks: {
+        conditional: Array<{ id: string; when: string; content: string }>;
+      };
+    };
+    spec.blocks.conditional = spec.blocks.conditional.filter(
+      (b) => b.when !== 'piAgentsToSpawn',
+    );
+    await writeJson(specPath, spec);
+  }
+
+  test('fires when a registered predicate is unreferenced in any spec, overlay, or graph', async () => {
+    const dir = await makeScratchCopy();
+    await removeSpawnReadyBlock(dir);
+
+    const report = await validate({ dir });
+    const hit = report.diagnostics.find(
+      (d) =>
+        d.code === 'E009_DEAD_PREDICATE' &&
+        d.message.includes('piAgentsToSpawn'),
+    );
+    expect(hit).toBeDefined();
+    expect(hit?.severity).toBe('warning');
+    expect(hit?.location.pointer).toBe('/predicates/piAgentsToSpawn');
+    // Warning-severity diagnostics do not push the error count.
+    expect(report.summary.errorCount).toBe(0);
+    expect(report.summary.warningCount).toBeGreaterThan(0);
+  });
+
+  test('does not fire when the predicate is referenced only via an overlay', async () => {
+    const dir = await makeScratchCopy();
+    // Remove the base-spec reference to piAgentsToSpawn…
+    await removeSpawnReadyBlock(dir);
+    // …and reintroduce it via an overlay $ops.append so the predicate is
+    // referenced only in the merged spec. The detector walks merged specs
+    // and must treat overlay-introduced references as live.
+    const overlayPath = join(dir, 'ideation', 'discussing.overlay.json');
+    const overlay = (await readJson(overlayPath)) as {
+      $ops?: Array<unknown>;
+    };
+    const ops = overlay.$ops ?? [];
+    ops.push({
+      op: 'append',
+      path: 'blocks.conditional',
+      value: [
+        {
+          id: 'spawn-ready-overlay',
+          content: 'Reintroduced via overlay for E009 coverage.',
+          when: 'piAgentsToSpawn',
+        },
+      ],
+    });
+    overlay.$ops = ops;
+    await writeJson(overlayPath, overlay);
+
+    const report = await validate({ dir });
+    const hit = report.diagnostics.find(
+      (d) =>
+        d.code === 'E009_DEAD_PREDICATE' &&
+        d.message.includes('piAgentsToSpawn'),
+    );
+    expect(hit).toBeUndefined();
+  });
+
+  test('happy path — canonical library has zero dead predicates', async () => {
+    const report = await validate({});
+    const hits = report.diagnostics.filter(
+      (d) => d.code === 'E009_DEAD_PREDICATE',
+    );
+    expect(hits).toEqual([]);
+  });
+
+  // Direct unit-level coverage for advisory exclusion. The end-to-end path
+  // cannot be exercised because `ADVISORY_PREDICATE_NAMES` starts empty and
+  // adding a name there would change production wiring. The exported
+  // `computeDeadPredicates` helper is the same pure-set-difference the
+  // integration path calls.
+  test('computeDeadPredicates — advisory names are excluded regardless of reference', () => {
+    const dead = computeDeadPredicates(
+      ['always', 'advisoryOne', 'trulyDead'],
+      new Set<string>(['always']),
+      new Set<string>(['advisoryOne']),
+    );
+    // `always` is referenced → live. `advisoryOne` is advisory → excluded.
+    // `trulyDead` is neither → flagged.
+    expect(dead).toEqual(['trulyDead']);
+  });
+
+  test('computeDeadPredicates — empty advisory set preserves legacy semantics', () => {
+    const dead = computeDeadPredicates(
+      ['always', 'deadOne', 'deadTwo'],
+      new Set<string>(['always']),
+      new Set<string>(),
+    );
+    expect([...dead].sort()).toEqual(['deadOne', 'deadTwo']);
+  });
+
+  test('does not fire when a predicate is referenced via a nested condition/when field (guards.warn analog)', async () => {
+    const dir = await makeScratchCopy();
+    await removeSpawnReadyBlock(dir);
+    // Stash the predicate under a schema-agnostic path via overlay $ops —
+    // emulating a future `guards.warn[].condition` slot. The overlay merge
+    // places the new conditional block under the standard blocks.conditional
+    // path; the recursive walker treats any `condition`/`when` key as a use,
+    // which proves any future nested field (e.g. under guards.warn) would
+    // be picked up by the same walk.
+    const overlayPath = join(dir, 'ideation', 'discussing.overlay.json');
+    const overlay = (await readJson(overlayPath)) as {
+      $ops?: Array<unknown>;
+    };
+    const ops = overlay.$ops ?? [];
+    ops.push({
+      op: 'append',
+      path: 'blocks.conditional',
+      value: [
+        {
+          id: 'nested-ref-block',
+          content: 'Nested ref content.',
+          when: 'piAgentsToSpawn',
+        },
+      ],
+    });
+    overlay.$ops = ops;
+    await writeJson(overlayPath, overlay);
+
+    const report = await validate({ dir });
+    const hit = report.diagnostics.find(
+      (d) =>
+        d.code === 'E009_DEAD_PREDICATE' &&
+        d.message.includes('piAgentsToSpawn'),
+    );
+    expect(hit).toBeUndefined();
+  });
+});
+
+// ===========================================================================
+// E010 — verdict predicate used as a step-transition condition (WARNING)
+// ===========================================================================
+
+describe('E010_VERDICT_PREDICATE_AS_CONDITION', () => {
+  test('fires when a spec transition uses verdictPass as its condition', async () => {
+    const dir = await makeScratchCopy();
+    const specPath = join(dir, 'plan', 'spec.json');
+    const spec = (await readJson(specPath)) as {
+      transitions: Array<Record<string, unknown>>;
+    };
+    // Flip the plan spec's first transition condition to verdictPass.
+    const first = spec.transitions[0];
+    if (first !== undefined) {
+      first['condition'] = 'verdictPass';
+    }
+    await writeJson(specPath, spec);
+
+    const report = await validate({ dir });
+    const hit = report.diagnostics.find(
+      (d) =>
+        d.code === 'E010_VERDICT_PREDICATE_AS_CONDITION' &&
+        d.location.file === specPath &&
+        d.message.includes('verdictPass'),
+    );
+    expect(hit).toBeDefined();
+    expect(hit?.severity).toBe('warning');
+    expect(hit?.location.pointer).toBe('/transitions/0/condition');
+    // Warning-only — exit code stays 0.
+    expect(report.summary.errorCount).toBe(0);
+  });
+
+  test('does not fire for non-verdict condition predicates', async () => {
+    // A scratch copy without any edits — the plan spec's transitions use
+    // non-verdict predicates (evalPlanDisabled/evalPlanEnabled) and must
+    // not trigger E010 at the plan.spec.json path.
+    const dir = await makeScratchCopy();
+    const report = await validate({ dir });
+    const hit = report.diagnostics.find(
+      (d) =>
+        d.code === 'E010_VERDICT_PREDICATE_AS_CONDITION' &&
+        d.location.file === join(dir, 'plan', 'spec.json'),
+    );
+    expect(hit).toBeUndefined();
+  });
+
+  test('fires per spec-transition occurrence, with deterministic pointers', async () => {
+    // The canonical `evaluation/spec.json` already uses verdictPass and
+    // verdictRevise as condition predicates for its ideation_eval default
+    // routing (see the spec's docblock: graph edges override per-eval
+    // variant routing). E010 surfaces these as warnings — evidence that
+    // the dynamic-spec safety net mirrors the `Exclude<PredicateName,
+    // VerdictPredicateName>` tsc gate.
+    const dir = await makeScratchCopy();
+    const evalSpecPath = join(dir, 'evaluation', 'spec.json');
+
+    const report = await validate({ dir });
+    const evalHits = report.diagnostics.filter(
+      (d) =>
+        d.code === 'E010_VERDICT_PREDICATE_AS_CONDITION' &&
+        d.location.file === evalSpecPath,
+    );
+    // Two transitions in evaluation/spec.json use verdict predicates as
+    // conditions (verdictRevise → ideation, verdictPass → plan). The
+    // per-step loop dedupes against the shared spec cache so the eval
+    // file contributes E010 hits once per unique transition, not once
+    // per `*_eval` graph node.
+    expect(evalHits.length).toBe(2);
+    const pointers = evalHits.map((h) => h.location.pointer).sort();
+    expect(pointers).toEqual(['/transitions/0/condition', '/transitions/1/condition']);
+    for (const hit of evalHits) {
+      expect(hit.severity).toBe('warning');
+    }
+  });
+});
+
+// ===========================================================================
+// E009 + E010 coexistence — both diagnostics emit with correct locations
+// ===========================================================================
+
+describe('E009 + E010 coexistence', () => {
+  test('a single scratch tree can surface both diagnostics with correct attribution', async () => {
+    const dir = await makeScratchCopy();
+    // Trigger E009 by removing the piAgentsToSpawn reference.
+    const ideationPath = join(dir, 'ideation', 'spec.json');
+    const ideationSpec = (await readJson(ideationPath)) as {
+      blocks: {
+        conditional: Array<{ id: string; when: string; content: string }>;
+      };
+    };
+    ideationSpec.blocks.conditional = ideationSpec.blocks.conditional.filter(
+      (b) => b.when !== 'piAgentsToSpawn',
+    );
+    await writeJson(ideationPath, ideationSpec);
+
+    // Trigger E010 by mis-slotting verdictRevise in the plan spec.
+    const planPath = join(dir, 'plan', 'spec.json');
+    const planSpec = (await readJson(planPath)) as {
+      transitions: Array<Record<string, unknown>>;
+    };
+    const firstPlan = planSpec.transitions[0];
+    if (firstPlan !== undefined) {
+      firstPlan['condition'] = 'verdictRevise';
+    }
+    await writeJson(planPath, planSpec);
+
+    const report = await validate({ dir });
+
+    const e009 = report.diagnostics.find(
+      (d) =>
+        d.code === 'E009_DEAD_PREDICATE' &&
+        d.message.includes('piAgentsToSpawn'),
+    );
+    expect(e009).toBeDefined();
+    expect(e009?.location.pointer).toBe('/predicates/piAgentsToSpawn');
+
+    const e010 = report.diagnostics.find(
+      (d) =>
+        d.code === 'E010_VERDICT_PREDICATE_AS_CONDITION' &&
+        d.location.file === planPath &&
+        d.message.includes('verdictRevise'),
+    );
+    expect(e010).toBeDefined();
+    expect(e010?.location.pointer).toBe('/transitions/0/condition');
   });
 });

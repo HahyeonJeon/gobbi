@@ -42,10 +42,15 @@ import { getStepById, loadGraph, type WorkflowGraph } from '../../specs/graph.js
 import { applyOverlay, validateOverlay } from '../../specs/overlay.js';
 import { validateStepSpec } from '../../specs/_schema/v1.js';
 import type { StepSpec } from '../../specs/types.js';
+import {
+  compileVerificationBlock,
+  hasVerificationResultsFor,
+} from '../../specs/verification-block.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
 import type { WorkflowState } from '../../workflow/state.js';
 import { EventStore } from '../../workflow/store.js';
+import { runVerification } from '../../workflow/verification-runner.js';
 import { resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
@@ -164,7 +169,13 @@ export async function runNextWithOptions(
   const store = new EventStore(dbPath);
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
-    const text = await compileCurrentStep(state, store, specsDir);
+    const text = await compileCurrentStep(
+      state,
+      store,
+      specsDir,
+      sessionDir,
+      sessionId,
+    );
     process.stdout.write(text);
     if (!text.endsWith('\n')) process.stdout.write('\n');
   } finally {
@@ -184,13 +195,24 @@ export async function runNextWithOptions(
  *   - Anything else → resolve the step's spec, apply the substate overlay
  *     when present, compile, and return `CompiledPrompt.text`.
  *
+ * Post-compile, the verification runner (E.3) fires against
+ * `state.activeSubagents`, writes `verification.result` events through
+ * {@link appendEventAndUpdateState}, and advances `state.verificationResults`
+ * for the E.8 verification-block consumer on the NEXT `next` invocation.
+ * The compiled prompt returned from THIS call reflects the state captured
+ * at compile time — verification feeds the following round-trip.
+ *
  * Exported so tests can drive the compile pipeline from constructed
- * fixtures without rebuilding the CLI surface.
+ * fixtures without rebuilding the CLI surface. `sessionDir` + `sessionId`
+ * are required because the verification runner writes events scoped to
+ * the session.
  */
 export async function compileCurrentStep(
   state: WorkflowState,
   store: EventStore,
   specsDir: string,
+  sessionDir: string,
+  sessionId: string,
 ): Promise<string> {
   if (state.currentStep === 'error') {
     // Early-return the pathway-specific prompt. The dispatcher runs
@@ -199,9 +221,6 @@ export async function compileCurrentStep(
     const prompt = compileErrorPrompt(state, store);
     return prompt.text;
   }
-
-  // TODO(PR E): verification runner hooks — post-compile verification of
-  // the emitted prompt against `StepSpec.verification` fires here.
 
   const graphPath = join(specsDir, 'index.json');
   // Suppress the graph loader's best-effort missing-spec warnings — they
@@ -243,7 +262,41 @@ export async function compileCurrentStep(
   };
 
   const prompt = compile(input);
-  return prompt.text;
+
+  // Post-compile verification runner (E.3 ZONE). Runs the project's
+  // `runAfterSubagentStop` commands for each active subagent and writes
+  // `verification.result` events via `appendEventAndUpdateState`. The
+  // emissions advance `state.verificationResults`, which the NEXT `next`
+  // invocation's compile pass will fold into its prompt via E.8's
+  // verification-block dynamic section.
+  //
+  // Verification runs with no caller abort signal here — `next` is not
+  // cancellable at the CLI surface. A future wrapper that ties SIGINT to
+  // cancellation would thread its controller.signal through this call.
+  await runVerification(sessionDir, store, state, sessionId);
+
+  // E.8: refresh state after runVerification emits events, then compile
+  // the verification-block dynamic section per active subagent (if any).
+  // `resolveWorkflowState` is synchronous — rebind directly. This rebind
+  // upgrades the Wave 3a placeholder that discarded the refreshed state
+  // via `void`; the compiler below now reads post-verification state.
+  state = resolveWorkflowState(sessionDir, store, sessionId);
+
+  // One verification-block per active subagent whose `verification.result`
+  // entries landed in `state.verificationResults`. Blocks concatenate onto
+  // the main compiled prompt's text via SECTION_SEPARATOR parity with
+  // `specs/assembly.ts::compile` (double newline). Subagents with no
+  // verification output emit no block — the empty-case render is reserved
+  // for explicit "no outcomes" signalling when the caller passes a
+  // subagent id that genuinely ran but produced nothing.
+  const verificationSections: string[] = [];
+  for (const agent of state.activeSubagents) {
+    if (!hasVerificationResultsFor(state, agent.subagentId)) continue;
+    const block = compileVerificationBlock(state, agent.subagentId);
+    verificationSections.push(block.text);
+  }
+  if (verificationSections.length === 0) return prompt.text;
+  return [prompt.text, ...verificationSections].join('\n\n');
 }
 
 // ---------------------------------------------------------------------------

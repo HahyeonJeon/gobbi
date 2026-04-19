@@ -30,6 +30,7 @@ import { randomUUID } from 'node:crypto';
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../lib/guards.js';
 import { isValidEventType } from './events/index.js';
 import type { Event } from './events/index.js';
+import type { VerificationResultData } from './events/verification.js';
 import { migrateEvent } from './migrations.js';
 import type { EventRow } from './migrations.js';
 
@@ -150,6 +151,44 @@ export interface WorkflowState {
    * Consumed by `verdictPass` / `verdictRevise` predicates (schema v2+).
    */
   readonly lastVerdictOutcome: 'pass' | 'revise' | null;
+
+  // E.2 ZONE: verificationResults field insertion (per L3)
+  /**
+   * Per-subagent verification outcomes keyed by
+   * `${subagentId}:${commandKind}` — the composite form locked in L3 that
+   * (a) gives O(1) lookup to the E.8 verification-block compiler and
+   * (b) round-trips cleanly through `JSON.stringify` / `JSON.parse` at the
+   * state-persistence boundary. `commandKind` is the normalised
+   * `VerificationCommandKind` string ("lint" | "test" | ...), so keys take
+   * the form `"sub-123:typecheck"`. Populated by E.3's `reduceVerification`
+   * sub-reducer; read by E.8's verification-block dynamic section.
+   *
+   * Empty record on a fresh state; v3 on-disk shapes are normalised in to
+   * `{}` on read (Greg Young discipline — the persisted file itself is not
+   * rewritten until the next `writeState`). Added by PR E (schema v4).
+   */
+  readonly verificationResults: Readonly<Record<string, VerificationResultData>>;
+
+  // E.10 ZONE: stepStartedAt field insertion
+  /**
+   * ISO-8601 timestamp of the current step's entry, or `null` when no
+   * step has been entered yet (fresh-init state, or pre-v4 on-disk
+   * shapes normalised on read).
+   *
+   * Set by the reducer on `workflow.step.exit` (for the next step the
+   * transition advances to) and on `workflow.resume` (for the target
+   * step a resume refocuses on) per L13 — `event.ts` at both sites.
+   * Derived entirely from existing event timestamps; no new event type
+   * carries this field. Consumed by the E.11 timeout detection branch
+   * in `gobbi workflow stop` to compute `elapsedMs = now - stepStartedAt`
+   * against `spec.meta.timeoutMs`.
+   *
+   * Intentionally NOT updated by `decision.eval.verdict` step transitions
+   * (verdicts transition via `reduceDecision`, not STEP_EXIT) — the
+   * timestamp reflects the most recent STEP_EXIT/RESUME entry. Added by
+   * PR E (schema v4).
+   */
+  readonly stepStartedAt: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -164,7 +203,7 @@ export interface WorkflowState {
  */
 export function initialState(sessionId: string): WorkflowState {
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     sessionId,
     currentStep: 'idle',
     currentSubstate: null,
@@ -176,6 +215,8 @@ export function initialState(sessionId: string): WorkflowState {
     feedbackRound: 0,
     maxFeedbackRounds: 3,
     lastVerdictOutcome: null,
+    verificationResults: {},
+    stepStartedAt: null,
   };
 }
 
@@ -310,6 +351,39 @@ export function isValidState(value: unknown): value is WorkflowState {
     if (!VALID_VERDICT_OUTCOMES.has(outcome as string | null)) return false;
   }
 
+  // verificationResults: Record<string, VerificationResultData> (schema v4+).
+  // `undefined` is tolerated for v1/v2/v3 on-disk compat and is normalised
+  // to `{}` by readState. When present, we validate the outer record shape
+  // and every entry's top-level key/type invariants — nested string/number
+  // fields are spot-checked for corruption detection rather than strict
+  // full-schema conformance (the same approach taken for `violations`).
+  const verifResults = value['verificationResults'];
+  if (verifResults !== undefined) {
+    if (!isRecord(verifResults)) return false;
+    for (const entry of Object.values(verifResults)) {
+      if (!isRecord(entry)) return false;
+      if (!isString(entry['subagentId'])) return false;
+      if (!isString(entry['command'])) return false;
+      if (!isString(entry['commandKind'])) return false;
+      if (!isNumber(entry['exitCode'])) return false;
+      if (!isNumber(entry['durationMs'])) return false;
+      if (!isString(entry['policy'])) return false;
+      if (!isBoolean(entry['timedOut'])) return false;
+      if (!isString(entry['stdoutDigest'])) return false;
+      if (!isString(entry['stderrDigest'])) return false;
+      if (!isString(entry['timestamp'])) return false;
+    }
+  }
+
+  // stepStartedAt: string | null (schema v4+).
+  // `undefined` is tolerated for v1/v2/v3 on-disk compat and is normalised
+  // to `null` by readState. When present, must be an ISO timestamp string
+  // or explicit `null` — numbers/objects/booleans are rejected.
+  const startedAt = value['stepStartedAt'];
+  if (startedAt !== undefined) {
+    if (startedAt !== null && !isString(startedAt)) return false;
+  }
+
   return true;
 }
 
@@ -331,15 +405,17 @@ export function writeState(dir: string, state: WorkflowState): void {
 
 /**
  * Normalise a validated `WorkflowState` read from disk so in-memory state
- * always carries the v2 shape:
+ * always carries the current (v4) shape:
  *
  *   - Absent `lastVerdictOutcome` (v1) → `null`.
  *   - Absent `severity` on any violation (v1) → `'error'` (the pre-v2
  *     event `guard.violation` was error-severity by definition).
+ *   - Absent `verificationResults` (v1/v2/v3) → `{}` (the pre-v4 state had
+ *     no verification channel).
  *
  * We deliberately do NOT rewrite the on-disk file — this is Greg Young
- * discipline (see `v050-session.md`). Old files stay v1-shaped until the
- * next writeState() call naturally promotes them.
+ * discipline (see `v050-session.md`). Old files stay their original shape
+ * until the next writeState() call naturally promotes them.
  */
 function normaliseReadState(state: WorkflowState): WorkflowState {
   const violations = state.violations.map((v) =>
@@ -348,6 +424,8 @@ function normaliseReadState(state: WorkflowState): WorkflowState {
   return {
     ...state,
     lastVerdictOutcome: state.lastVerdictOutcome ?? null,
+    verificationResults: state.verificationResults ?? {},
+    stepStartedAt: state.stepStartedAt ?? null,
     violations,
   };
 }
@@ -497,7 +575,10 @@ export function deriveState(
   for (const row of events) {
     const event = rowToEvent(row);
     if (event === null) continue; // skip unparseable events
-    const result = reduceFn(state, event);
+    // Pass row.ts as the third argument so the reducer can project
+    // timestamp-derived state fields (e.g. stepStartedAt per L13) during
+    // replay — the event itself has no `ts`, but the EventRow does.
+    const result = reduceFn(state, event, row.ts);
     if (result.ok) {
       state = result.state;
     }

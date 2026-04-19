@@ -18,11 +18,12 @@
  *      Metadata) and is deduplicated via the `'counter'` idempotency kind
  *      so two heartbeats in the same millisecond both persist.
  *   2. Timeout detection — when the current step's spec declares
- *      `meta.timeoutMs` and `now - stepStartedAt > timeoutMs`, emit
- *      `workflow.step.timeout`. TODO (PR E) — the current spec library
- *      does not populate `meta.timeoutMs`, and `WorkflowState` does not
- *      carry `stepStartedAt` yet. The branch short-circuits until both
- *      land.
+ *      `meta.timeoutMs` and `now - state.stepStartedAt > timeoutMs`, emit
+ *      `workflow.step.timeout` via `createStepTimeout` under the `'system'`
+ *      idempotency kind. One timeout event per step-ms — the storage-layer
+ *      UNIQUE constraint dedups same-(sessionId, type, ts, step) retries.
+ *      Pre-v0.5.0 sessions whose state lacks `stepStartedAt` (null) and
+ *      specs without `meta.timeoutMs` both short-circuit silently.
  *   3. State flush — handled by `appendEventAndUpdateState` on every
  *      append, so there is no extra logic here beyond the heartbeat.
  *
@@ -49,8 +50,9 @@
  * @see `.claude/project/gobbi/design/v050-session.md` §Event Store Schema
  */
 
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { readStdinJson } from '../../lib/stdin.js';
 import { isRecord, isString } from '../../lib/guards.js';
@@ -60,7 +62,12 @@ import {
   resolveWorkflowState,
 } from '../../workflow/engine.js';
 import { createSessionHeartbeat } from '../../workflow/events/session.js';
+import { createStepTimeout } from '../../workflow/events/workflow.js';
 import type { WorkflowState } from '../../workflow/state.js';
+import { isActiveStep } from '../../workflow/state.js';
+import { getStepById, loadGraph } from '../../specs/graph.js';
+import { validateStepSpec } from '../../specs/_schema/v1.js';
+import type { StepSpec } from '../../specs/types.js';
 import { resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
@@ -92,6 +99,22 @@ function asPayload(value: unknown): StopPayload {
 }
 
 // ---------------------------------------------------------------------------
+// Default spec directory — module-relative for cwd independence. Mirrors
+// the `next.ts` pattern so the timeout-detection branch resolves the same
+// graph + step specs the compile pipeline reads.
+// ---------------------------------------------------------------------------
+
+const THIS_DIR = dirname(fileURLToPath(import.meta.url));
+
+/** Absolute path to the committed `packages/cli/src/specs/` directory. */
+export const DEFAULT_SPECS_DIR: string = resolve(
+  THIS_DIR,
+  '..',
+  '..',
+  'specs',
+);
+
+// ---------------------------------------------------------------------------
 // Entry points
 // ---------------------------------------------------------------------------
 
@@ -107,6 +130,11 @@ export interface StopOverrides {
    * specific ISO strings.
    */
   readonly now?: () => Date;
+  /**
+   * Override the spec directory used by the timeout-detection branch
+   * (tests-only). When omitted, {@link DEFAULT_SPECS_DIR} is used.
+   */
+  readonly specsDir?: string;
 }
 
 export async function runStop(args: string[]): Promise<void> {
@@ -176,23 +204,26 @@ export async function runStopWithOptions(
     emitHeartbeat(store, sessionDir, state, sessionId, now);
 
     // --- 6. Timeout detection (PR E) -----------------------------------
-    // TODO(PR E): wire `meta.timeoutMs` detection. The step-spec schema
-    // reserves `meta.timeoutMs?: number`, but the committed specs do NOT
-    // populate it today, and `WorkflowState` does not carry a
-    // `stepStartedAt` timestamp — both are PR E work. Until they land,
-    // the heartbeat is the only Stop-driven event.
-    //
-    // When implemented:
-    //   - load the graph + spec for `state.currentStep`
-    //   - compute `elapsedMs = now - state.stepStartedAt`
-    //   - if `timeoutMs !== undefined && elapsedMs > timeoutMs`:
-    //       emit `workflow.step.timeout` via `createStepTimeout`
-    //       with idempotency kind `'system'` (one timeout per step-ms)
-    //
-    // The observational contract (no permissionDecision, exit 0) applies
-    // to the timeout branch too — the reducer will flip the step to
-    // `error` and the orchestrator's `next` compile will pick up the
-    // error pathway.
+    // Read `state.stepStartedAt` (E.10) and the current step spec's
+    // `meta.timeoutMs`; when `now - stepStartedAt > timeoutMs`, emit
+    // `workflow.step.timeout` via `createStepTimeout` +
+    // `appendEventAndUpdateState` with idempotency kind `'system'`. The
+    // system kind dedups per (sessionId, type, ts, step) at the SQLite
+    // UNIQUE index, so a same-ms retry from Claude Code writes at most
+    // one timeout event per step-ms. Observational contract still
+    // applies: any failure inside this branch swallows silently; the
+    // reducer will flip the step to `error` on successful emit, and the
+    // orchestrator's next `next` compile renders the timeout-pathway
+    // error prompt.
+    const specsDir = overrides.specsDir ?? DEFAULT_SPECS_DIR;
+    await detectAndEmitTimeout(
+      store,
+      sessionDir,
+      state,
+      sessionId,
+      now,
+      specsDir,
+    );
   } finally {
     store.close();
   }
@@ -305,6 +336,153 @@ function extractCounterFromKey(key: string): number | null {
   const tail = key.slice(lastColon + 1);
   const n = Number.parseInt(tail, 10);
   return Number.isFinite(n) && String(n) === tail ? n : null;
+}
+
+// ---------------------------------------------------------------------------
+// Timeout detection (E.11)
+// ---------------------------------------------------------------------------
+
+/**
+ * Emit a `workflow.step.timeout` event when the current step has exceeded
+ * its configured `meta.timeoutMs` budget. Short-circuits silently when:
+ *
+ *   - `state.stepStartedAt` is null — pre-v0.5.0 session, or the workflow
+ *     has not yet entered an active step (fresh init at `ideation` with
+ *     no prior STEP_EXIT / workflow.resume wire-up).
+ *   - The current step is not an active step — `idle`, `done`, `error`
+ *     all skip because they have no timeout semantics.
+ *   - The graph or spec cannot be loaded — the observational contract
+ *     means we never throw out of the Stop hook.
+ *   - The step spec does not declare `meta.timeoutMs`.
+ *   - `elapsedMs <= timeoutMs` — the budget is not yet exceeded.
+ *
+ * When the budget IS exceeded, `appendEventAndUpdateState` runs inside
+ * its own transaction. The `'system'` idempotency kind hashes
+ * `(sessionId, ts, type, step)` into a UNIQUE key, so a repeat Stop at
+ * the same wall-clock millisecond writes at most one timeout event. A
+ * subsequent Stop at a later millisecond — after the reducer has flipped
+ * the step to `error` — will skip because `error` is not an active step.
+ */
+async function detectAndEmitTimeout(
+  store: EventStore,
+  sessionDir: string,
+  state: WorkflowState,
+  sessionId: string,
+  now: Date,
+  specsDir: string,
+): Promise<void> {
+  // Pre-v0.5.0 session or no step entered yet — no budget to check.
+  if (state.stepStartedAt === null) return;
+
+  // Only active steps carry a timeout budget. `idle`, `done`, `error`
+  // have no `meta.timeoutMs` semantics and the reducer would reject a
+  // STEP_TIMEOUT for them anyway (ACTIVE_STEPS gate in reducer.ts).
+  if (!isActiveStep(state.currentStep)) return;
+
+  // Load the graph + spec for the current step. Any loader failure is
+  // swallowed — the Stop hook is observational and must never propagate.
+  let spec: StepSpec;
+  try {
+    spec = await loadStepSpec(specsDir, state.currentStep);
+  } catch {
+    return;
+  }
+
+  const timeoutMs = spec.meta.timeoutMs;
+  // Loose-equality (`== null`) is intentional: the AJV schema declares
+  // `meta.timeoutMs` as `nullable: true` (see `specs/_schema/v1.ts:101`
+  // and the convention note at `_schema/v1.ts:16–20`). Codebase practice
+  // is to OMIT the field rather than emit `null`, so in production the
+  // TS type (`number | undefined`) is accurate — but a future
+  // spec-build or migration path could emit `null` and `=== undefined`
+  // alone would silently pass `null` through to the `<=` comparison.
+  if (timeoutMs == null) return;
+
+  const startedMs = Date.parse(state.stepStartedAt);
+  if (!Number.isFinite(startedMs)) return;
+
+  const elapsedMs = now.getTime() - startedMs;
+  // Clock skew → treat as not-elapsed. `stepStartedAt` in the future
+  // yields a negative `elapsedMs`; today the `<= timeoutMs` check
+  // implicitly covers it (negative ≤ positive), but a refactor to `<`
+  // or `Math.abs` would silently break that safety. Explicit guard
+  // preserves the invariant regardless of the boundary-condition form.
+  if (!Number.isFinite(elapsedMs) || elapsedMs < 0) return;
+  if (elapsedMs <= timeoutMs) return;
+
+  // Budget exceeded — emit. The reducer's STEP_TIMEOUT case flips the
+  // active step to `error`; the next `next` invocation will compile the
+  // timeout-pathway error prompt. Any append failure (SQLite busy, disk
+  // full, reducer rejection) is swallowed to preserve the observational
+  // contract; the next Stop will retry.
+  try {
+    const event = createStepTimeout({
+      step: state.currentStep,
+      elapsedMs,
+      configuredTimeoutMs: timeoutMs,
+    });
+    appendEventAndUpdateState(
+      store,
+      sessionDir,
+      state,
+      event,
+      'hook',
+      sessionId,
+      'system',
+      undefined, // toolCallId — unused for system kind
+      null, // parentSeq — no parent event
+      undefined, // counter — unused for system kind
+      now.toISOString(),
+    );
+  } catch {
+    // Observational — never propagate. `appendEventAndUpdateState`'s
+    // own audit-emit branch will have logged a reducer-rejection case;
+    // filesystem failures roll back cleanly inside the transaction.
+  }
+}
+
+/**
+ * Load the `StepSpec` for the given step id by mirroring the loader in
+ * `next.ts`. Quiet mode — suppresses `loadGraph`'s best-effort
+ * missing-spec warnings so the Stop hook's stderr stays clean. Throws on
+ * genuine load failures (bad JSON, missing file, invalid spec); the
+ * caller swallows those per the observational contract.
+ */
+async function loadStepSpec(
+  specsDir: string,
+  stepId: string,
+): Promise<StepSpec> {
+  const graphPath = join(specsDir, 'index.json');
+  const origWarn = console.warn;
+  console.warn = (): void => {};
+  let graph;
+  try {
+    graph = await loadGraph(graphPath);
+  } finally {
+    console.warn = origWarn;
+  }
+
+  const stepDef = getStepById(graph, stepId);
+  if (stepDef === undefined) {
+    throw new Error(
+      `gobbi workflow stop: current step "${stepId}" is not declared in ${graphPath}`,
+    );
+  }
+
+  const specPath = resolveSpecPath(graphPath, stepDef.spec);
+  const raw: unknown = JSON.parse(readFileSync(specPath, 'utf8'));
+  const result = validateStepSpec(raw);
+  if (!result.ok) {
+    throw new Error(
+      `gobbi workflow stop: spec ${specPath} failed validation: ${JSON.stringify(result.errors)}`,
+    );
+  }
+  return result.value;
+}
+
+function resolveSpecPath(graphPath: string, stepSpec: string): string {
+  if (isAbsolute(stepSpec)) return stepSpec;
+  return resolve(dirname(graphPath), stepSpec);
 }
 
 // ---------------------------------------------------------------------------

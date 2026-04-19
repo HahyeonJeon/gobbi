@@ -14,8 +14,9 @@
  *      (including `guard.violation`) migrates cleanly and reduces to a
  *      valid v2-shaped WorkflowState with `lastVerdictOutcome: null` and
  *      violations either unannotated or `'error'`-severity. PR D's v3 bump
- *      is an identity on event data, so the same fixture now migrates all
- *      the way to v3 and the reduced state advertises `schemaVersion: 3`.
+ *      and PR E's v4 bump are both identities on event data, so the same
+ *      fixture now migrates all the way to v4 and the reduced state
+ *      advertises `schemaVersion: 4`.
  *   4. v2 → v3 round-trip — a representative v2 event (incl. a PR C-era
  *      `decision.eval.skip` without `priorError`) migrates to v3 with an
  *      identical payload.
@@ -51,8 +52,8 @@ import type { ErrorPathway } from '../../specs/errors.js';
 // ---------------------------------------------------------------------------
 
 describe('CURRENT_SCHEMA_VERSION', () => {
-  test('is 3 — schema v3 landed in PR D (workflow.invalid_transition + EvalSkipData.priorError)', () => {
-    expect(CURRENT_SCHEMA_VERSION).toBe(3);
+  test('is 4 — schema v4 landed in PR E (verification.result + verificationResults state field + DelegationCompleteData.sizeProxyBytes)', () => {
+    expect(CURRENT_SCHEMA_VERSION).toBe(4);
   });
 });
 
@@ -189,9 +190,9 @@ describe('v1 → v2 event round-trip', () => {
     }
   });
 
-  test('each row migrates to CURRENT_SCHEMA_VERSION (v3) with identical event-data payload', () => {
-    // PR D's v2→v3 identity extends the chain — a v1 row still walks to the
-    // current target with an unchanged payload.
+  test('each row migrates to CURRENT_SCHEMA_VERSION (v4) with identical event-data payload', () => {
+    // PR D's v2→v3 identity and PR E's v3→v4 identity extend the chain —
+    // a v1 row still walks to the current target with an unchanged payload.
     for (const row of v1Events) {
       const migrated = migrateEvent(row, CURRENT_SCHEMA_VERSION);
       expect(migrated.schema_version).toBe(CURRENT_SCHEMA_VERSION);
@@ -201,10 +202,10 @@ describe('v1 → v2 event round-trip', () => {
 
   test('replayed v1 events reduce to a valid current-schema WorkflowState', () => {
     const state = deriveState('sess-v1', v1Events, reduce);
-    // Schema v3 in-memory shape — initialState() now advertises v3 in
+    // Schema v4 in-memory shape — initialState() now advertises v4 in
     // lockstep with CURRENT_SCHEMA_VERSION.
     expect(state.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
-    expect(state.schemaVersion).toBe(3);
+    expect(state.schemaVersion).toBe(4);
     // The new field initialises to null and only populates on an EVAL_VERDICT
     // — none of these fixtures fires one, so it must remain null.
     expect(state.lastVerdictOutcome).toBeNull();
@@ -239,16 +240,16 @@ describe('v2 → v3 event round-trip', () => {
     idempotency_key: 'tool-call:tc-042:decision.eval.skip',
   };
 
-  test('v2 decision.eval.skip (no priorError) migrates to v3 unchanged', () => {
-    const migrated = migrateEvent(v2EvalSkip, 3);
-    expect(migrated.schema_version).toBe(3);
+  test('v2 decision.eval.skip (no priorError) migrates to v4 unchanged', () => {
+    const migrated = migrateEvent(v2EvalSkip, 4);
+    expect(migrated.schema_version).toBe(4);
     expect(JSON.parse(migrated.data)).toEqual(JSON.parse(v2EvalSkip.data));
     // The raw JSON string is byte-identical — the identity transform does
     // NOT re-serialise with different whitespace.
     expect(migrated.data).toBe(v2EvalSkip.data);
   });
 
-  test('a v2 guard.warn event migrates to v3 unchanged', () => {
+  test('a v2 guard.warn event migrates to v4 unchanged', () => {
     const v2GuardWarn: EventRow = {
       seq: 7,
       ts: '2026-02-01T00:00:00.000Z',
@@ -266,8 +267,8 @@ describe('v2 → v3 event round-trip', () => {
       parent_seq: null,
       idempotency_key: 'tool-call:tc-007:guard.warn',
     };
-    const migrated = migrateEvent(v2GuardWarn, 3);
-    expect(migrated.schema_version).toBe(3);
+    const migrated = migrateEvent(v2GuardWarn, 4);
+    expect(migrated.schema_version).toBe(4);
     expect(JSON.parse(migrated.data)).toEqual(JSON.parse(v2GuardWarn.data));
   });
 
@@ -313,8 +314,8 @@ describe('v3 decision.eval.skip with priorError (CP11 reversibility)', () => {
       parent_seq: 49,
       idempotency_key: 'tool-call:tc-050:decision.eval.skip',
     };
-    const migrated = migrateEvent(row, 3);
-    expect(migrated.schema_version).toBe(3);
+    const migrated = migrateEvent(row, 4);
+    expect(migrated.schema_version).toBe(4);
     const parsed = JSON.parse(migrated.data) as typeof payload;
     expect(parsed).toEqual(payload);
     // Structural identity — nested ErrorPathway variants survive the trip.

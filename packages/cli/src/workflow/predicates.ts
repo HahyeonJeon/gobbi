@@ -251,6 +251,42 @@ export const defaultPredicates = {
 export const DEFAULT_PREDICATES: PredicateRegistry = defaultPredicates;
 
 // ---------------------------------------------------------------------------
+// Advisory predicate exclusion — opt-out list for the E009 dead-predicate
+// detector (`gobbi workflow validate`, PR E E.9).
+//
+// A predicate is "advisory" when it is intentionally registered for use by
+// `guard.warn` slots or overlay-only advisory paths and is not expected to
+// appear in any spec / overlay / graph `transitions[].condition` or
+// `blocks.conditional[].when`. E009 excludes these from the
+// unreferenced-in-any-spec diagnostic so a deliberately reserved predicate
+// is not flagged as dead.
+//
+// Design notes (PR E L15, refined post-research):
+//
+//   - Sibling `ReadonlySet<PredicateName>` constant — not a flag on the
+//     `Predicate` function type. Zero ripple through existing
+//     `satisfies Record<PredicateName, Predicate>` call sites.
+//   - Typed as `ReadonlySet<PredicateName>` so `.has(name)` is
+//     type-narrowed and a rename/removal in `PredicateName` surfaces as
+//     a typecheck error.
+//   - Empty by default; add a predicate name only when it is genuinely
+//     registered for non-graph, non-spec consumption.
+// ---------------------------------------------------------------------------
+
+/**
+ * Predicates intentionally excluded from E009_DEAD_PREDICATE detection.
+ * Advisory predicates are registered for use by `guard.warn` slots or
+ * overlay-only advisory paths; they do not need to appear in transitions.
+ *
+ * Empty on first landing — future advisory predicates are added here
+ * explicitly. The `satisfies ReadonlySet<PredicateName>` clause keeps the
+ * set from drifting out of sync with the generated `PredicateName` union.
+ */
+export const ADVISORY_PREDICATE_NAMES: ReadonlySet<PredicateName> = new Set<PredicateName>([
+  // Add any genuinely-advisory predicate names here. Start empty.
+]) satisfies ReadonlySet<PredicateName>;
+
+// ---------------------------------------------------------------------------
 // Verdict predicate exclusion — compile-time gate for `TransitionRule.condition`
 //
 // Transition routing for verdict events routes on `rule.verdict` matched

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'bun:test';
 
 import { reduce } from '../reducer.js';
 import type { ReducerResult } from '../reducer.js';
-import { initialState } from '../state.js';
+import { initialState, isValidState } from '../state.js';
 import type { WorkflowState, WorkflowStep, EvalConfig } from '../state.js';
 import { defaultPredicates } from '../predicates.js';
 import type { Event } from '../events/index.js';
@@ -864,5 +864,119 @@ describe('workflow.step.skip', () => {
     const state = stateAt('ideation');
     const error = expectErr(reduce(state, stepSkip('ideation')));
     expect(error).toContain('No valid transition');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// E.10 — stepStartedAt state field (per L13)
+//
+// The reducer stamps `stepStartedAt` with the event's wall-clock timestamp
+// at two transition points:
+//   - `workflow.step.exit` — the entry timestamp of the NEXT step
+//   - `workflow.resume`   — the entry timestamp of the resume TARGET step
+// No new event type carries the timestamp; it is supplied as the third
+// argument to `reduce()` by the engine (`effectiveTs`) and by `deriveState`
+// (EventRow.ts) during replay. Direct test call sites that omit `ts` see
+// the prior value preserved — the field is a monotonic witness.
+// ---------------------------------------------------------------------------
+
+describe('E.10 — stepStartedAt', () => {
+  it('initialState has stepStartedAt === null', () => {
+    const state = initialState('test-session');
+    expect(state.stepStartedAt).toBeNull();
+  });
+
+  it('STEP_EXIT stamps stepStartedAt with the supplied ts for the next step', () => {
+    // From a fresh ideation state with stepStartedAt=null, exit to plan
+    // with an explicit ts. The new state records the ts as the plan
+    // entry time.
+    const state = stateAt('ideation', {
+      evalConfig: { ideation: false, plan: false },
+      stepStartedAt: null,
+    });
+    const exitTs = '2026-04-18T13:35:00.000Z';
+    const next = expectOk(reduce(state, stepExit('ideation'), exitTs));
+    expect(next.currentStep).toBe('plan');
+    expect(next.stepStartedAt).toBe(exitTs);
+  });
+
+  it('subsequent STEP_EXIT overwrites stepStartedAt with the newer ts', () => {
+    // Simulate a session that already had an earlier stepStartedAt stamp
+    // (e.g. from entering plan), then exits plan to execution. The field
+    // advances to the new event's ts — never moves backward.
+    const earlier = '2026-04-18T13:35:00.000Z';
+    const later = '2026-04-18T14:00:00.000Z';
+    const state = stateAt('plan', {
+      evalConfig: { ideation: false, plan: false },
+      stepStartedAt: earlier,
+    });
+    const next = expectOk(reduce(state, stepExit('plan'), later));
+    expect(next.currentStep).toBe('execution');
+    expect(next.stepStartedAt).toBe(later);
+    // Sanity — original state frozen semantics, not mutated.
+    expect(state.stepStartedAt).toBe(earlier);
+  });
+
+  it('workflow.resume stamps stepStartedAt with the supplied ts on the target step', () => {
+    // Error → execution resume. The target step's entry is timestamped
+    // even though the prior state was `error` (which was NOT stamped by
+    // STEP_EXIT — reducer only stamps STEP_EXIT/RESUME productive entries).
+    const resumeTs = '2026-04-18T15:00:00.000Z';
+    const state = stateAt('error', { stepStartedAt: null });
+    const next = expectOk(reduce(state, resume('execution'), resumeTs));
+    expect(next.currentStep).toBe('execution');
+    expect(next.stepStartedAt).toBe(resumeTs);
+  });
+
+  it('reduce with omitted ts preserves prior stepStartedAt on STEP_EXIT', () => {
+    // Legacy call sites that omit `ts` (most unit tests) must not clobber
+    // a previously-stamped stepStartedAt to null — the field stays as a
+    // monotonic witness. This guards the signature's backward-compat.
+    const prior = '2026-04-18T13:35:00.000Z';
+    const state = stateAt('ideation', {
+      evalConfig: { ideation: false, plan: false },
+      stepStartedAt: prior,
+    });
+    const next = expectOk(reduce(state, stepExit('ideation')));
+    expect(next.currentStep).toBe('plan');
+    expect(next.stepStartedAt).toBe(prior);
+  });
+
+  it('stepStartedAt round-trips through JSON.stringify / JSON.parse unchanged', () => {
+    // ISO-string choice (over epoch-number) is explicitly justified for
+    // round-trip safety in state.ts. Guard it at the reducer-output level
+    // so any future switch to epoch-ms is caught here.
+    const ts = '2026-04-18T13:35:00.000Z';
+    const state = stateAt('ideation', {
+      evalConfig: { ideation: false, plan: false },
+    });
+    const next = expectOk(reduce(state, stepExit('ideation'), ts));
+    const reparsed = JSON.parse(JSON.stringify(next)) as WorkflowState;
+    expect(reparsed.stepStartedAt).toBe(ts);
+    expect(reparsed.stepStartedAt).toBe(next.stepStartedAt);
+  });
+
+  it('isValidState accepts null and ISO strings, rejects non-string non-null values', () => {
+    // isValidState is the gate against corrupted on-disk state.json. A
+    // non-null non-string stepStartedAt (numbers, objects, booleans) must
+    // be rejected so restoreBackup / readState fall through to the next
+    // layer rather than handing corrupted state to the reducer.
+    const base = initialState('s1') as unknown as Record<string, unknown>;
+
+    expect(isValidState({ ...base, stepStartedAt: null })).toBe(true);
+    expect(
+      isValidState({ ...base, stepStartedAt: '2026-04-18T13:35:00.000Z' }),
+    ).toBe(true);
+    // `undefined` is tolerated for v1/v2/v3 on-disk compat (normalised to
+    // `null` on read).
+    const withoutField = { ...base };
+    delete withoutField['stepStartedAt'];
+    expect(isValidState(withoutField)).toBe(true);
+
+    // Rejections.
+    expect(isValidState({ ...base, stepStartedAt: 1700000000000 })).toBe(false);
+    expect(isValidState({ ...base, stepStartedAt: {} })).toBe(false);
+    expect(isValidState({ ...base, stepStartedAt: true })).toBe(false);
+    expect(isValidState({ ...base, stepStartedAt: [] })).toBe(false);
   });
 });

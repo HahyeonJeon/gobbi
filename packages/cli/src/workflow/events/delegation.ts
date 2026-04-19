@@ -42,6 +42,14 @@ export interface DelegationCompleteData {
   readonly artifactPath?: string | undefined;
   readonly tokensUsed?: number | undefined;
   readonly cacheHitRatio?: number | undefined;
+  /**
+   * Size-proxy byte count for the subagent's final response, consumed as a
+   * fallback cost-estimation input when `tokensUsed` is absent (older
+   * transcripts, synthetic lines, or future shapes that omit the usage
+   * block). Optional so v3 events that never populated this field continue
+   * to round-trip through v4 cleanly. Added by v0.5.0 Phase 2 PR E (E.2).
+   */
+  readonly sizeProxyBytes?: number | undefined;
 }
 
 export interface DelegationFailData {

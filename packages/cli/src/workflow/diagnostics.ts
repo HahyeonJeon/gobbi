@@ -13,16 +13,13 @@
  *   X### — runtime errors. Reserved for PR D+ (no codes currently).
  *   V### — verification results (reserved for PR E verification runner).
  *
- * TODO(PR E): E009 dead-predicate + E010 verdict-as-condition runtime
- * diagnostic join this family.
- *
- * Existing `E001_*` through `E008_*` codes predate this scheme and already
- * comply with it — the encoding is additive for new codes only. Wire format
- * (`{"code":"E001_..."}`) is preserved across the promotion.
+ * Existing `E001_*` through `E010_*` codes comply with this scheme. Wire
+ * format (`{"code":"E001_..."}`) is preserved across additions.
  *
  * ## Consumers
  *
- *   - `commands/workflow/validate.ts` (static analysis — 8 codes today).
+ *   - `commands/workflow/validate.ts` (static analysis — 10 codes today,
+ *     `E001`–`E010`).
  *   - `workflow/reducer.ts` (runtime `guard.warn` records via `W###`).
  *   - Future: error compilers (PR D, `X###`), verification runner (PR E, `V###`).
  *
@@ -49,6 +46,12 @@ export type DiagnosticCode =
   | 'E006_UNKNOWN_SUBSTATE'
   | 'E007_ORPHAN_SUBSTATE'
   | 'E008_DUPLICATE_REGISTRATION'
+  // E009/E010 — PR E advisory diagnostics. Both warning-severity: they
+  // surface authoring signals (a registered predicate no spec references,
+  // or a verdict predicate miswired into a non-verdict condition slot) but
+  // do not fail the `validate` exit code.
+  | 'E009_DEAD_PREDICATE'
+  | 'E010_VERDICT_PREDICATE_AS_CONDITION'
   // W### — runtime warnings (PR C, `guard.warn`).
   //
   // W001 is a generic placeholder so the `guard.warn` event's `code` field
@@ -74,6 +77,8 @@ export const CODE_SEVERITY: Readonly<Record<DiagnosticCode, DiagnosticSeverity>>
     E006_UNKNOWN_SUBSTATE: 'error',
     E007_ORPHAN_SUBSTATE: 'warning',
     E008_DUPLICATE_REGISTRATION: 'error',
+    E009_DEAD_PREDICATE: 'warning',
+    E010_VERDICT_PREDICATE_AS_CONDITION: 'warning',
     W001_GUARD_WARN_GENERIC: 'warning',
   };
 

@@ -26,6 +26,7 @@ import { DECISION_EVENTS } from '../../workflow/events/decision.js';
 import { SESSION_EVENTS } from '../../workflow/events/session.js';
 
 import {
+  compileResumePrompt,
   detectPathway,
   visitPathway,
   type ErrorPathway,
@@ -435,5 +436,83 @@ describe('visitPathway', () => {
     void incomplete;
     // A runtime assertion so the test body remains meaningful.
     expect(true).toBe(true);
+  });
+});
+
+// ===========================================================================
+// compileResumePrompt — targetStep fallback path (L10 criterion 11)
+//
+// `compileResumePrompt(state, store, options)` uses `options.targetStep`
+// when present and otherwise falls back to the most recent
+// `workflow.resume` event's `data.targetStep` via
+// `store.lastN('workflow.resume', 1)`. `resume.ts` always passes an
+// explicit target, so the fallback path is only exercised by tests —
+// these three cases document the branch's contract: success, missing
+// resume event, and malformed event data.
+// ===========================================================================
+
+describe('compileResumePrompt — targetStep fallback', () => {
+  it('reads targetStep from the most recent workflow.resume event when options.targetStep is undefined', () => {
+    // Store has a crash-classifiable event trail (just start) plus a
+    // resume event carrying targetStep='plan'. Caller passes
+    // { targetStep: undefined } — the compiler must fall back to the
+    // store event's data.targetStep and render the target block for
+    // 'plan'.
+    using store = new EventStore(':memory:');
+    seedStart(store);
+    seedResume(store, 'plan');
+
+    const state = errorState({ completedSteps: ['ideation'] });
+    const prompt = compileResumePrompt(state, store, { targetStep: undefined });
+
+    expect(prompt.text).toContain('transitioning from error into plan');
+  });
+
+  it('throws a descriptive error when options.targetStep is undefined and no workflow.resume event exists in store', () => {
+    // No resume event seeded and no explicit override — the fallback
+    // has nothing to read. The compiler throws a caller-wiring-bug
+    // message naming both recovery paths.
+    using store = new EventStore(':memory:');
+
+    expect(() => compileResumePrompt(errorState(), store, { targetStep: undefined })).toThrow(
+      /compileResumePrompt: targetStep missing/,
+    );
+  });
+
+  it('throws when a workflow.resume event exists but its data.targetStep is missing (malformed event)', () => {
+    // Malformed fallback payload — a resume event whose data object
+    // omits the `targetStep` field entirely (simulating an older
+    // schema version or a faulty producer). The compiler falls through
+    // past the string-length guard and throws the same descriptive
+    // error as the missing-event case.
+    using store = new EventStore(':memory:');
+    seedStart(store);
+    // Deliberate exception to the research §E.12 recommendation "Do NOT use
+    // raw `store.append`; use `appendEventAndUpdateState` or existing seed
+    // helpers." This test's purpose IS to simulate a corrupted/malformed
+    // `workflow.resume` event reaching the store — precisely the case the
+    // reducer-validating `appendEventAndUpdateState` path would reject
+    // before it could be written. Raw `store.append` is the only seeder
+    // that can deposit a payload the reducer would refuse, so the
+    // resolveResumeTargetStep fallback guard can be exercised against it.
+    // Do not "clean this up" by routing through the validating wrapper.
+    store.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      // Intentionally omit targetStep; fromError stays so the payload
+      // round-trips as valid JSON but fails the typeof+length guard
+      // inside resolveResumeTargetStep.
+      data: JSON.stringify({ fromError: true }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-resume-malformed',
+      sessionId: 'detect-pathway-test',
+    });
+
+    expect(() => compileResumePrompt(errorState(), store, { targetStep: undefined })).toThrow(
+      /compileResumePrompt: targetStep missing/,
+    );
   });
 });

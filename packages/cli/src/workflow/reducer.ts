@@ -22,6 +22,8 @@ import type { GuardEvent } from './events/guard.js';
 import { GUARD_EVENTS, isGuardEvent } from './events/guard.js';
 import type { SessionEvent } from './events/session.js';
 import { SESSION_EVENTS, isSessionEvent } from './events/session.js';
+import type { VerificationEvent } from './events/verification.js';
+import { VERIFICATION_EVENTS, isVerificationEvent } from './events/verification.js';
 import type { WorkflowState, WorkflowStep } from './state.js';
 import { TERMINAL_STEPS, ACTIVE_STEPS } from './state.js';
 import { findTransition } from './transitions.js';
@@ -59,6 +61,7 @@ function reduceWorkflow(
   state: WorkflowState,
   event: WorkflowEvent,
   predicates: PredicateRegistry,
+  ts: string | undefined,
 ): ReducerResult {
   switch (event.type) {
     case WORKFLOW_EVENTS.START: {
@@ -94,16 +97,33 @@ function reduceWorkflow(
       // verdict must fire within the new step to count. Clearing avoids
       // stale outcomes leaking across step boundaries.
       //
-      // TODO(PR E): meta.timeoutMs detection wire-up — PR E attaches a
-      // per-step timeout budget derived from spec metadata so the
-      // heartbeat loop can fire workflow.step.timeout when the budget
-      // elapses.
+      // E.10 ZONE: stepStartedAt timestamp for next step (per L13)
+      //
+      // E.11 — meta.timeoutMs detection lives entirely in
+      // `commands/workflow/stop.ts`, NOT in the reducer. The reducer is a
+      // pure synchronous function of `(state, event, predicates, ts)` and
+      // has no path to load the step spec from disk; introducing an async
+      // spec-load here would break the purity invariant that lets the
+      // engine replay event streams without I/O. `stop.ts` reads
+      // `state.stepStartedAt` (set below), loads the graph + current-step
+      // spec via the same loader pattern as `next.ts`, and emits
+      // `workflow.step.timeout` when `now - stepStartedAt > spec.meta.timeoutMs`.
+      // The reducer's job on STEP_TIMEOUT is already covered above —
+      // active step → `error` — and needs no per-step metadata to do it.
+      //
+      // stepStartedAt: when the engine supplies `ts`, stamp the next step's
+      // entry with it so E.11's timeout detector can compute
+      // `elapsedMs = now - stepStartedAt`. `ts` is absent only in legacy
+      // direct `reduce(state, event)` call sites that predate the L13
+      // wire-up (most unit tests); in that case we preserve the prior
+      // value so the field remains a monotonic witness.
       return ok({
         ...state,
         currentStep: nextStep,
         currentSubstate: nextStep === 'ideation' ? 'discussing' : null,
         completedSteps: [...state.completedSteps, event.data.step],
         lastVerdictOutcome: null,
+        stepStartedAt: ts ?? state.stepStartedAt,
       });
     }
 
@@ -191,10 +211,17 @@ function reduceWorkflow(
           `workflow.resume targetStep "${event.data.targetStep}" is not a valid active step`,
         );
       }
+      // E.10 ZONE: stepStartedAt timestamp on resume target (per L13)
+      //
+      // Mirrors the STEP_EXIT treatment — when the engine supplies `ts`,
+      // the target step's entry is stamped so the timeout budget restarts
+      // from the resume point. Direct test callers that omit `ts` keep the
+      // prior value rather than silently clearing it.
       return ok({
         ...state,
         currentStep: targetStep,
         currentSubstate: targetStep === 'ideation' ? 'discussing' : null,
+        stepStartedAt: ts ?? state.stepStartedAt,
       });
     }
 
@@ -495,6 +522,84 @@ function reduceSession(
 }
 
 // ---------------------------------------------------------------------------
+// Sub-reducer: Verification events
+//
+// Records post-subagent verification outcomes into
+// `state.verificationResults`, keyed by the composite `${subagentId}:${commandKind}`
+// formula locked in L3/L4. The keying mirrors the idempotency formula in
+// `appendEventAndUpdateState`, so a replayed stream rebuilds the same map
+// the runtime constructed.
+//
+// Rejection contract: the runner only emits events for subagents that are
+// still present in `state.activeSubagents` at dispatch time. A
+// `verification.result` event whose `subagentId` does not appear in the
+// active set is a replay-time inconsistency (or a hand-crafted event) and
+// is rejected via `ReducerRejectionError` — surfaced to the engine's outer
+// try-catch, which emits the `workflow.invalid_transition` audit and
+// re-throws.
+//
+// Key-format invariant (L3): the composite key is
+// `${subagentId}:${commandKind}`, and downstream compilers (e.g.
+// `specs/verification-block.ts`) iterate the map with
+// `key.startsWith(`${subagentId}:`)` to collect a subagent's entries. A
+// subagentId containing `':'` would let one subagent's prefix silently match
+// another subagent's keys — a latent correctness bug. The reducer rejects
+// such events at the write site so the invariant is enforced at the single
+// mutation point, not at every reader. `commandKind` is drawn from a
+// controlled enum today but is guarded symmetrically as defence-in-depth
+// against future enum extensions that embed a separator.
+//
+// Gating discipline: the reducer does NOT branch on `policy` or `exitCode`.
+// Per the ideation lock "Gating is an orchestrator concern, not
+// state-machine", the event is recorded verbatim and downstream consumers
+// (E.8 verification-block, `status`) decide what to do with a gate failure.
+// ---------------------------------------------------------------------------
+
+function reduceVerification(
+  state: WorkflowState,
+  event: VerificationEvent,
+): ReducerResult {
+  // VerificationEvent currently has a single variant; the isVerificationEvent
+  // category guard at the dispatch level guarantees event.type ===
+  // VERIFICATION_EVENTS.RESULT. Keeping the explicit check-and-branch here
+  // documents the intent and makes adding a second variant a one-line edit.
+  if (event.type === VERIFICATION_EVENTS.RESULT) {
+    const { subagentId, commandKind } = event.data;
+    // Key-format guard: subagentId and commandKind must not contain ':' —
+    // the composite key `${subagentId}:${commandKind}` depends on colon as
+    // its sole separator, and downstream consumers split/prefix-match on it.
+    // See the block comment above for the full invariant rationale.
+    if (subagentId.includes(':')) {
+      return err(
+        `verification.result: subagentId must not contain ':' — the composite key ${subagentId}:${commandKind} depends on colon as separator`,
+      );
+    }
+    if (commandKind.includes(':')) {
+      return err(
+        `verification.result: commandKind must not contain ':' — the composite key ${subagentId}:${commandKind} depends on colon as separator`,
+      );
+    }
+    const isActive = state.activeSubagents.some(
+      (a) => a.subagentId === subagentId,
+    );
+    if (!isActive) {
+      return err(
+        `verification.result subagentId "${subagentId}" is not an active subagent`,
+      );
+    }
+    const key = `${subagentId}:${commandKind}`;
+    return ok({
+      ...state,
+      verificationResults: {
+        ...state.verificationResults,
+        [key]: event.data,
+      },
+    });
+  }
+  return assertNever(event.type);
+}
+
+// ---------------------------------------------------------------------------
 // Top-level reducer
 // ---------------------------------------------------------------------------
 
@@ -504,10 +609,24 @@ function reduceSession(
  *
  * Returns a Result type — `{ ok: true, state }` on success,
  * `{ ok: false, error }` on invalid transitions. Never throws.
+ *
+ * `ts` is the event's wall-clock timestamp (ISO-8601 string) supplied
+ * by the engine / replayer. It is optional because many test call sites
+ * predate the L13 wire-up; production call sites (engine.ts,
+ * deriveState) always pass it so `stepStartedAt` is timestamped
+ * correctly on every STEP_EXIT / RESUME. The reducer itself is still
+ * pure — given the same `(state, event, ts, predicates)` it returns
+ * the same result.
+ *
+ * `predicates` retains its default for backward-compatible call sites.
+ * When both optionals are omitted, the reducer falls back to
+ * `defaultPredicates` and preserves `state.stepStartedAt` so legacy
+ * tests continue to pass without modification.
  */
 export function reduce(
   state: WorkflowState,
   event: Event,
+  ts?: string,
   predicates: PredicateRegistry = defaultPredicates,
 ): ReducerResult {
   // Pre-check: terminal state rejection
@@ -518,12 +637,13 @@ export function reduce(
   }
 
   // Category dispatch with exhaustiveness at both levels
-  if (isWorkflowEvent(event)) return reduceWorkflow(state, event, predicates);
+  if (isWorkflowEvent(event)) return reduceWorkflow(state, event, predicates, ts);
   if (isDelegationEvent(event)) return reduceDelegation(state, event);
   if (isArtifactEvent(event)) return reduceArtifact(state, event);
   if (isDecisionEvent(event)) return reduceDecision(state, event, predicates);
   if (isGuardEvent(event)) return reduceGuard(state, event);
   if (isSessionEvent(event)) return reduceSession(state, event);
+  if (isVerificationEvent(event)) return reduceVerification(state, event);
 
   return assertNever(event);
 }

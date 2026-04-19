@@ -5,8 +5,13 @@
  * a human-readable summary. `--json` returns a structured snapshot for
  * machine consumers.
  *
- * Cost accounting is intentionally omitted from this command — PR E adds
- * it when verification runs land.
+ * `--cost` rolls up cumulative dollar cost from `delegation.complete`
+ * events — token-derived via `lib/cost-rates.ts` when `tokensUsed` is
+ * present, with `sizeProxyBytes` fallback when it is not. Per lock L1
+ * this is the single cost path; `cost_usd` branches are reserved-inert
+ * and never consumed. Per lock L11 an empty-session invocation
+ * (`delegation.complete` count == 0) emits a `no v0.5.0 sessions found`
+ * marker rather than `$0.00` so operators see the gap explicitly.
  *
  * Violation counts are grouped by DiagnosticCode family prefix
  * (`E`/`W`/`X`/`V`), dogfooding C.8-a's letter-prefix scheme. Records without
@@ -18,7 +23,10 @@ import { parseArgs } from 'node:util';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { derivedCost, proxyCost } from '../../lib/cost-rates.js';
+import { isNumber, isRecord, isString } from '../../lib/guards.js';
 import { EventStore } from '../../workflow/store.js';
+import type { CostAggregateRow } from '../../workflow/store.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
 import type { GuardViolationRecord, WorkflowState } from '../../workflow/state.js';
 import { resolveSessionDir } from '../session.js';
@@ -36,12 +44,20 @@ Options:
                       CLAUDE_SESSION_ID or the single session under
                       .gobbi/sessions/ if only one exists)
   --json              Emit a structured JSON snapshot
+  --cost              Include a cumulative dollar-cost rollup aggregated
+                      from delegation.complete events. Combines with
+                      --json to emit the rollup in the structured
+                      snapshot; without --json it appends a prose
+                      'Cost:' section to the human renderer. An empty
+                      session (no delegation.complete events) emits
+                      'no v0.5.0 sessions found' rather than '$0.00'.
   --help, -h          Show this help message`;
 
 const PARSE_OPTIONS = {
   help: { type: 'boolean', short: 'h', default: false },
   'session-id': { type: 'string' },
   json: { type: 'boolean', default: false },
+  cost: { type: 'boolean', default: false },
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -67,6 +83,39 @@ export interface StatusSnapshot {
   /** Violation counts grouped by DiagnosticCode family prefix. */
   readonly violationsByFamily: Readonly<Record<string, number>>;
   readonly violationsTotal: number;
+  /**
+   * Cost rollup; present only when `--cost` is passed. Omitted otherwise
+   * so the existing snapshot wire format stays byte-identical for
+   * pre-`--cost` consumers.
+   */
+  readonly cost?: CostRollup;
+}
+
+/**
+ * Per-step cost bucket — one entry per workflow step that has at least
+ * one `delegation.complete` event. Fields mirror the prose renderer's
+ * per-step line so the JSON and human forms report the same numbers.
+ */
+export interface CostStepBucket {
+  readonly usd: number;
+  readonly delegations: number;
+  readonly tokenSource: number;
+  readonly proxySource: number;
+}
+
+/**
+ * Cost rollup attached to a `StatusSnapshot` when `--cost` is active.
+ *
+ * `message` is populated (with "no v0.5.0 sessions found") when the
+ * session has zero `delegation.complete` events — per L11, we emit the
+ * marker rather than fabricating `$0.00`. When `message` is present all
+ * numeric fields are zero and `perStep` is an empty object.
+ */
+export interface CostRollup {
+  readonly cumulativeUsd: number;
+  readonly sources: { readonly tokens: number; readonly proxy: number };
+  readonly perStep: Readonly<Record<string, CostStepBucket>>;
+  readonly message?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -133,7 +182,8 @@ export async function runStatusWithOptions(
   const store = new EventStore(dbPath);
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
-    const snapshot = buildSnapshot(state);
+    const cost = values.cost === true ? aggregateCost(store) : undefined;
+    const snapshot = buildSnapshot(state, cost);
     if (values.json === true) {
       process.stdout.write(`${JSON.stringify(snapshot, null, 2)}\n`);
     } else {
@@ -150,9 +200,14 @@ export async function runStatusWithOptions(
 
 /**
  * Build a {@link StatusSnapshot} from a {@link WorkflowState}. Exported for
- * unit tests — pure with respect to its input.
+ * unit tests — pure with respect to its input. The optional `cost`
+ * argument is attached verbatim when provided — the aggregator runs
+ * outside this function so the snapshot builder stays pure.
  */
-export function buildSnapshot(state: WorkflowState): StatusSnapshot {
+export function buildSnapshot(
+  state: WorkflowState,
+  cost?: CostRollup,
+): StatusSnapshot {
   const violationsByFamily = countViolationsByFamily(state.violations);
   return {
     sessionId: state.sessionId,
@@ -171,6 +226,7 @@ export function buildSnapshot(state: WorkflowState): StatusSnapshot {
     lastVerdictOutcome: state.lastVerdictOutcome,
     violationsByFamily,
     violationsTotal: state.violations.length,
+    ...(cost !== undefined ? { cost } : {}),
   };
 }
 
@@ -228,6 +284,133 @@ function readOptionalCode(v: GuardViolationRecord): string | undefined {
 }
 
 // ---------------------------------------------------------------------------
+// Cost aggregation
+// ---------------------------------------------------------------------------
+
+/**
+ * Marker emitted when a session carries zero `delegation.complete`
+ * events — per L11. Exported for tests.
+ */
+export const COST_EMPTY_SESSION_MESSAGE = 'no v0.5.0 sessions found';
+
+/**
+ * Query the event store and fold all `delegation.complete` rows into a
+ * {@link CostRollup}. Exported for unit tests — `store` is the only
+ * input, the result is deterministic given the store's contents.
+ *
+ * Token-derived cost is primary (via {@link derivedCost}); the
+ * `sizeProxyBytes` fallback kicks in only when `tokensJson` is NULL.
+ * Rows with neither contribute 0 and do not increment either source
+ * counter (they still count as a delegation for the per-step total).
+ */
+export function aggregateCost(store: EventStore): CostRollup {
+  const rawRows = store.aggregateDelegationCosts();
+  if (rawRows.length === 0) {
+    return emptySessionRollup();
+  }
+
+  let cumulativeUsd = 0;
+  let tokenSource = 0;
+  let proxySource = 0;
+  const perStep = new Map<string, {
+    usd: number;
+    delegations: number;
+    tokenSource: number;
+    proxySource: number;
+  }>();
+
+  for (const row of rawRows) {
+    const step = isString(row.step) && row.step.length > 0 ? row.step : 'untagged';
+    const bucket = perStep.get(step) ?? {
+      usd: 0,
+      delegations: 0,
+      tokenSource: 0,
+      proxySource: 0,
+    };
+    bucket.delegations += 1;
+
+    if (row.tokensJson !== null) {
+      const cost = derivedCost(row.tokensJson, row.model);
+      cumulativeUsd += cost;
+      tokenSource += 1;
+      bucket.usd += cost;
+      bucket.tokenSource += 1;
+    } else if (isNumber(row.bytes) && row.bytes > 0) {
+      const cost = proxyCost(row.bytes);
+      cumulativeUsd += cost;
+      proxySource += 1;
+      bucket.usd += cost;
+      bucket.proxySource += 1;
+    }
+    // else: contributes 0, but still counted as a delegation.
+
+    perStep.set(step, bucket);
+  }
+
+  const perStepOut: Record<string, CostStepBucket> = {};
+  for (const [step, b] of [...perStep.entries()].sort(([a], [c]) => a.localeCompare(c))) {
+    perStepOut[step] = {
+      usd: roundUsd(b.usd),
+      delegations: b.delegations,
+      tokenSource: b.tokenSource,
+      proxySource: b.proxySource,
+    };
+  }
+
+  return {
+    cumulativeUsd: roundUsd(cumulativeUsd),
+    sources: { tokens: tokenSource, proxy: proxySource },
+    perStep: perStepOut,
+  };
+}
+
+function emptySessionRollup(): CostRollup {
+  return {
+    cumulativeUsd: 0,
+    sources: { tokens: 0, proxy: 0 },
+    perStep: {},
+    message: COST_EMPTY_SESSION_MESSAGE,
+  };
+}
+
+/**
+ * Round a dollar amount to 4 decimal places — tight enough to preserve
+ * cache-read precision on small delegations, loose enough to suppress
+ * IEEE-754 add-order drift.
+ */
+function roundUsd(n: number): number {
+  return Math.round(n * 10_000) / 10_000;
+}
+
+/**
+ * Read-guard narrowing: rows come back from `bun:sqlite` typed via
+ * {@link EventStore.aggregateDelegationCosts}' declared return shape,
+ * but the typing is a convenience hint — the runtime values are still
+ * whatever SQLite's `json_extract` produced. Explicit guard helpers are
+ * applied at consumption sites (`row.step`, `row.tokensJson`, etc.)
+ * above; this helper centralises the "is this a cost-row shape" check
+ * for tests that want to exercise the aggregator against hand-crafted
+ * row fixtures.
+ *
+ * Exported for tests only — production code reads store rows directly.
+ */
+export function isCostAggregateRow(value: unknown): value is CostAggregateRow {
+  if (!isRecord(value)) return false;
+  const step = value['step'];
+  const subagentId = value['subagentId'];
+  const tokensJson = value['tokensJson'];
+  const model = value['model'];
+  const bytes = value['bytes'];
+  return (
+    (step === null || isString(step)) &&
+    (subagentId === null || isString(subagentId)) &&
+    (tokensJson === null || isString(tokensJson)) &&
+    (model === null || isString(model)) &&
+    (bytes === null || isNumber(bytes))
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Human rendering
 // ---------------------------------------------------------------------------
 
@@ -269,8 +452,51 @@ function renderHuman(snapshot: StatusSnapshot): string {
       .join(', ');
     lines.push(`Violations: ${snapshot.violationsTotal} (${parts})`);
   }
+  if (snapshot.cost !== undefined) {
+    renderCostSection(lines, snapshot.cost);
+  }
   lines.push('');
   return lines.join('\n');
+}
+
+/**
+ * Append the `--cost` prose block to {@link renderHuman}'s output. When
+ * the rollup carries the empty-session marker, emit a single-line
+ * advisory and skip the numeric breakdown entirely — per L11 we must
+ * never render `$0.00` when no `delegation.complete` events exist.
+ */
+function renderCostSection(lines: string[], cost: CostRollup): void {
+  if (cost.message !== undefined) {
+    lines.push(`Cost: ${cost.message}`);
+    return;
+  }
+  lines.push(`Cumulative cost:    ${formatUsd(cost.cumulativeUsd)}`);
+  lines.push(
+    `  Source: ${cost.sources.tokens} estimated from tokens / ${cost.sources.proxy} estimated from size proxy`,
+  );
+  const stepEntries = Object.entries(cost.perStep);
+  if (stepEntries.length === 0) return;
+  lines.push(`  Per-step:`);
+  for (const [step, bucket] of stepEntries) {
+    const usd = formatUsd(bucket.usd);
+    lines.push(`    ${step}: ${usd}  ${formatDelegationsSuffix(bucket)}`);
+  }
+}
+
+function formatUsd(n: number): string {
+  // Two-decimal prose rendering is sufficient at the CLI surface —
+  // full 4-decimal precision lives in the JSON form (`cumulativeUsd`).
+  const fixed = n.toFixed(2);
+  return `$${fixed}`;
+}
+
+function formatDelegationsSuffix(bucket: CostStepBucket): string {
+  const { delegations, tokenSource, proxySource } = bucket;
+  if (delegations === 1) return `(1 delegation)`;
+  if (tokenSource > 0 && proxySource > 0) {
+    return `(${delegations} delegations: ${tokenSource} tokens-derived / ${proxySource} proxy)`;
+  }
+  return `(${delegations} delegations)`;
 }
 
 // ---------------------------------------------------------------------------

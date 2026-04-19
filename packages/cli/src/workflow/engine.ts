@@ -182,7 +182,10 @@ export function appendEventAndUpdateState(
       // 3. Reduce to get new state. On rejection, throw a typed
       //    ReducerRejectionError — the OUTER catch distinguishes this
       //    from filesystem failures and fires the audit-emit branch.
-      const result: ReducerResult = reduce(state, event);
+      //    `effectiveTs` is passed as the event's wall-clock timestamp so
+      //    the reducer can stamp `stepStartedAt` on STEP_EXIT / RESUME
+      //    per L13 — the same ms that keyed the store-layer idempotency.
+      const result: ReducerResult = reduce(state, event, effectiveTs);
       if (!result.ok) {
         throw new ReducerRejectionError(result.error, event, state);
       }

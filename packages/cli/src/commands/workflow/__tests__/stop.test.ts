@@ -17,16 +17,23 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import {
   existsSync,
+  mkdirSync,
   mkdtempSync,
   rmSync,
+  writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
-import { runStopWithOptions } from '../stop.js';
+import { runStopWithOptions, DEFAULT_SPECS_DIR } from '../stop.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
 import { EventStore } from '../../../workflow/store.js';
+import {
+  readState,
+  writeState,
+  type WorkflowState,
+} from '../../../workflow/state.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap
@@ -443,6 +450,233 @@ describe('runStop — missing session', () => {
 });
 
 // ---------------------------------------------------------------------------
+// E.11 — meta.timeoutMs detection
+//
+// Exercises the timeout-detection branch added to the stop handler. The
+// tests construct a scratch specs directory containing a minimal graph
+// that declares an `ideation` step whose spec carries `meta.timeoutMs`.
+// The session's state.json is mutated in place (via writeState) to stamp
+// `stepStartedAt` so the handler's elapsed computation has a real
+// reference point.
+// ---------------------------------------------------------------------------
+
+describe('runStop — meta.timeoutMs detection (E.11)', () => {
+  test('no timeout event emitted when spec.meta.timeoutMs is unset', async () => {
+    const { sessionDir } = await initScratchSession('stop-tm-unset');
+    // Scratch specs dir whose ideation spec omits timeoutMs entirely.
+    const specsDir = makeTimeoutSpecsDir({
+      omitTimeout: true,
+    });
+
+    // Drive state.stepStartedAt 60s before `frozen` so elapsed would be
+    // 60000 ms — irrelevant here, since the spec has no timeout.
+    const frozen = new Date('2026-04-16T10:00:00.000Z');
+    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 60_000));
+
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        specsDir,
+        payload: { session_id: 'stop-tm-unset' },
+        now: () => frozen,
+      }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(countTimeoutEvents(sessionDir)).toBe(0);
+  });
+
+  test('no timeout event emitted when elapsedMs <= meta.timeoutMs', async () => {
+    const { sessionDir } = await initScratchSession('stop-tm-under');
+    const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
+
+    // 30s elapsed — strictly under 60s budget.
+    const frozen = new Date('2026-04-16T10:00:30.000Z');
+    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 30_000));
+
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        specsDir,
+        payload: { session_id: 'stop-tm-under' },
+        now: () => frozen,
+      }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(countTimeoutEvents(sessionDir)).toBe(0);
+    // State remains on the active step — no transition to error.
+    const state = readState(sessionDir);
+    expect(state?.currentStep).toBe('ideation');
+  });
+
+  test('emits workflow.step.timeout once when elapsedMs > meta.timeoutMs', async () => {
+    const { sessionDir } = await initScratchSession('stop-tm-over');
+    const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
+
+    // 90s elapsed — over the 60s budget.
+    const frozen = new Date('2026-04-16T10:01:30.000Z');
+    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 90_000));
+
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        specsDir,
+        payload: { session_id: 'stop-tm-over' },
+        now: () => frozen,
+      }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const timeouts = store.byType('workflow.step.timeout');
+      expect(timeouts).toHaveLength(1);
+
+      const row = timeouts[0]!;
+      expect(row.actor).toBe('hook');
+      expect(row.step).toBe('ideation');
+      // System idempotency key shape: sess:timestampMs:type.
+      expect(row.idempotency_key).toBe(
+        `stop-tm-over:${frozen.getTime()}:workflow.step.timeout`,
+      );
+
+      const data = JSON.parse(row.data) as {
+        readonly step: string;
+        readonly elapsedMs: number;
+        readonly configuredTimeoutMs: number;
+      };
+      expect(data.step).toBe('ideation');
+      expect(data.elapsedMs).toBe(90_000);
+      expect(data.configuredTimeoutMs).toBe(60_000);
+    } finally {
+      store.close();
+    }
+
+    // Reducer consumed the event — active step → error.
+    const state = readState(sessionDir);
+    expect(state?.currentStep).toBe('error');
+  });
+
+  test('idempotent: two stop invocations at the same ms emit exactly one timeout event', async () => {
+    const { sessionDir } = await initScratchSession('stop-tm-idem');
+    const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
+
+    const frozen = new Date('2026-04-16T10:01:30.000Z');
+    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 90_000));
+
+    // Fire twice at the identical clock. The first invocation flips the
+    // step to `error` (not an active step), so the second short-circuits
+    // on the isActiveStep guard. Even if the second had re-reached the
+    // emit branch, the `'system'` kind's (sessionId, ts-ms, type) UNIQUE
+    // key would dedup at the storage layer.
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        specsDir,
+        payload: { session_id: 'stop-tm-idem' },
+        now: () => frozen,
+      }),
+    );
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        specsDir,
+        payload: { session_id: 'stop-tm-idem' },
+        now: () => frozen,
+      }),
+    );
+
+    expect(countTimeoutEvents(sessionDir)).toBe(1);
+  });
+
+  test('no crash, no event when state.stepStartedAt is null', async () => {
+    const { sessionDir } = await initScratchSession('stop-tm-null');
+    const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
+
+    // Fresh init leaves stepStartedAt === null. Don't stamp it.
+    const pre = readState(sessionDir);
+    expect(pre?.stepStartedAt).toBeNull();
+
+    const frozen = new Date('2026-04-16T10:00:00.000Z');
+
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        specsDir,
+        payload: { session_id: 'stop-tm-null' },
+        now: () => frozen,
+      }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(countTimeoutEvents(sessionDir)).toBe(0);
+    expect(countHeartbeats(sessionDir)).toBe(1); // heartbeat still fires
+  });
+
+  test('clock skew: stepStartedAt in the future does not emit a timeout event', async () => {
+    // Regression lock for the explicit `elapsedMs < 0` guard in
+    // `detectAndEmitTimeout`. A future-stamped `stepStartedAt` (clock
+    // drift between machines, ntp slew, or synthetic fixtures) yields a
+    // negative elapsed and must NOT trigger a spurious timeout — even
+    // if a future refactor flips the `<=` boundary to `<`.
+    const { sessionDir } = await initScratchSession('stop-tm-skew');
+    const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
+
+    const frozen = new Date('2026-04-16T10:00:00.000Z');
+    // Stamp 5 minutes AFTER `frozen` → elapsedMs = -300_000.
+    stampStepStartedAt(sessionDir, new Date(frozen.getTime() + 300_000));
+
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        specsDir,
+        payload: { session_id: 'stop-tm-skew' },
+        now: () => frozen,
+      }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(countTimeoutEvents(sessionDir)).toBe(0);
+    // State remains on the active step — no transition to error.
+    const state = readState(sessionDir);
+    expect(state?.currentStep).toBe('ideation');
+  });
+
+  test('regression: default specsDir path leaves heartbeat-only behavior unchanged', async () => {
+    // This test pins the regression guarantee from the plan: when the
+    // committed specs dir (no step declares meta.timeoutMs today) is
+    // used, the stop handler emits only the heartbeat and no timeout
+    // event — even if stepStartedAt is stamped. Protects against a
+    // future accidental timeoutMs addition to a committed spec.
+    const { sessionDir } = await initScratchSession('stop-tm-default');
+
+    const frozen = new Date('2026-04-16T10:00:00.000Z');
+    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 3_600_000));
+
+    await captureExit(() =>
+      runStopWithOptions([], {
+        sessionDir,
+        payload: { session_id: 'stop-tm-default' },
+        now: () => frozen,
+        // No specsDir override — uses DEFAULT_SPECS_DIR (committed specs).
+      }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(countTimeoutEvents(sessionDir)).toBe(0);
+    expect(countHeartbeats(sessionDir)).toBe(1);
+    // Sanity — state still on the active step.
+    const state = readState(sessionDir);
+    expect(state?.currentStep).toBe('ideation');
+    // DEFAULT_SPECS_DIR export is an absolute path — quick sanity so the
+    // import is load-bearing.
+    expect(DEFAULT_SPECS_DIR.length).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Test helpers
 // ---------------------------------------------------------------------------
 
@@ -455,4 +689,131 @@ function countHeartbeats(sessionDir: string): number {
   } finally {
     store.close();
   }
+}
+
+function countTimeoutEvents(sessionDir: string): number {
+  const dbPath = join(sessionDir, 'gobbi.db');
+  if (!existsSync(dbPath)) return 0;
+  const store = new EventStore(dbPath);
+  try {
+    return store.byType('workflow.step.timeout').length;
+  } finally {
+    store.close();
+  }
+}
+
+/**
+ * Stamp the session's state.json with a `stepStartedAt` timestamp so the
+ * E.11 branch has a real reference point. Mutates the on-disk file in
+ * place — the `resolveWorkflowState` warm path will read it.
+ */
+function stampStepStartedAt(sessionDir: string, startedAt: Date): void {
+  const state = readState(sessionDir);
+  if (state === null) {
+    throw new Error(
+      `stampStepStartedAt: no state.json at ${sessionDir}`,
+    );
+  }
+  const stamped: WorkflowState = {
+    ...state,
+    stepStartedAt: startedAt.toISOString(),
+  };
+  writeState(sessionDir, stamped);
+}
+
+/**
+ * Build a scratch specs directory whose `ideation` step's spec.json
+ * declares the given `timeoutMs`, or omits it entirely when
+ * `omitTimeout` is set. The graph exposes ONLY the `ideation` step —
+ * the stop handler's timeout branch only ever looks up
+ * `state.currentStep`, so a one-step graph is sufficient for these
+ * tests.
+ */
+interface MakeTimeoutSpecsOptions {
+  readonly timeoutMs?: number;
+  readonly omitTimeout?: boolean;
+}
+
+function makeTimeoutSpecsDir(options: MakeTimeoutSpecsOptions): string {
+  const dir = mkdtempSync(join(tmpdir(), 'gobbi-stop-specs-'));
+  scratchDirs.push(dir);
+
+  // Minimal graph — one step, one self-looping transition (kept simple
+  // so `loadGraph` accepts the shape without any real workflow logic).
+  const graph = {
+    $schema: 'https://gobbi.dev/schemas/workflow-graph/v1.json',
+    version: 1,
+    entry: 'ideation',
+    terminal: ['ideation'],
+    steps: [{ id: 'ideation', spec: './ideation/spec.json' }],
+    transitions: [],
+  };
+  writeFileSync(
+    join(dir, 'index.json'),
+    `${JSON.stringify(graph, null, 2)}\n`,
+    'utf8',
+  );
+
+  // Minimal spec — copies the delegation / token-budget shape the
+  // schema validator requires. Only `meta.timeoutMs` matters for E.11.
+  const meta: Record<string, unknown> = {
+    description: 'Ideation test spec',
+    allowedAgentTypes: ['__pi'],
+    maxParallelAgents: 1,
+    requiredSkills: [],
+    optionalSkills: [],
+    expectedArtifacts: ['ideation.md'],
+    completionSignal: 'SubagentStop',
+  };
+  if (options.omitTimeout !== true && options.timeoutMs !== undefined) {
+    meta.timeoutMs = options.timeoutMs;
+  }
+
+  const spec = {
+    $schema: 'https://gobbi.dev/schemas/step-spec/v1.json',
+    version: 1,
+    meta,
+    transitions: [],
+    delegation: {
+      agents: [
+        {
+          role: 'ideator',
+          modelTier: 'opus',
+          effort: 'max',
+          skills: [],
+          artifactTarget: 'ideation.md',
+          blockRef: 'ideator',
+        },
+      ],
+    },
+    tokenBudget: {
+      staticPrefix: 0.3,
+      session: 0.1,
+      instructions: 0.2,
+      artifacts: 0.25,
+      materials: 0.15,
+    },
+    blocks: {
+      static: [{ id: 'role', content: 'ideator role' }],
+      conditional: [],
+      delegation: {
+        ideator: { id: 'ideator', content: 'ideator prompt' },
+      },
+      synthesis: [{ id: 'synthesis', content: 'synthesis' }],
+      completion: {
+        instruction: 'emit',
+        criteria: ['ideation.md is written'],
+      },
+    },
+  };
+
+  const specDir = join(dir, 'ideation');
+  mkdirSync(specDir, { recursive: true });
+  writeFileSync(
+    join(specDir, 'spec.json'),
+    `${JSON.stringify(spec, null, 2)}\n`,
+    'utf8',
+  );
+
+  return dir;
 }
