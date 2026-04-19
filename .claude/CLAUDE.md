@@ -1,5 +1,3 @@
-> **⚠ v0.5.0 in progress** — PRs A–F are building the state-driven workflow (`gobbi workflow init`) that will replace the current skill-based orchestration. During this transition, both systems coexist in the repo but the current workflow continues to use the skill-based cycle. Track progress in #77.
-
 # CLAUDE.md
 
 Gobbi is an open-source ClaudeX (Claude Experience) tool for Claude Code.
@@ -10,17 +8,19 @@ MUST load this at session start, resume, and compaction. MUST follow the core pr
 
 ## Core Principles
 
-> **The logic of good work: ideate (stances) → plan → research (stances) → execute → collect → memorize → review (stances). Evaluate after each creative step.**
+> **The logic of good work: Ideation → Plan → Execution → Evaluation → Memorization.**
 
-Every non-trivial task must follow this cycle. Each stage produces output, evaluation catches problems before they propagate. Evaluation is optional after ideation, planning, research, and execution — always ask before spawning evaluators. Evaluation findings must be discussed with the user before acting on them.
+Every non-trivial task must follow this cycle. Research is absorbed into Ideation's internal loop — it surfaces as discussion and investigation, not as a separate step. Evaluation is a first-class step, mandatory after Execution and optional at earlier steps. The state machine lives in `packages/cli/src/specs/` and is driven by `gobbi workflow init`.
 
-1. **Ideation** — PI agents (innovative + best stances) explore what to do. Orchestrator discusses with user first, then synthesizes options. Optional evaluation.
-2. **Plan** — use EnterPlanMode. Decompose the chosen idea into narrow, specific, ordered tasks with clear scope and verification criteria. Optional evaluation.
-3. **Research** — Researcher agents (innovative + best stances) investigate how to implement the approved plan. Orchestrator synthesizes findings. Optional evaluation.
-4. **Execution** — Executors read research first, then implement one task at a time. Complete, verify, then move to the next. Optional evaluation.
-5. **Collection** — verify notes, write README, record gotchas. Ensure project documentation reflects what was done.
-6. **Memorization** — save context for session continuity. Capture decisions, state, and open questions so the next session can resume without re-discovery.
-7. **Review** — PI agents assess the work with verdict and documentation. Then FEEDBACK (return to earlier step) or FINISH.
+**Ideation** — Explore what to do. PI agents (innovative + best stances) investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
+
+**Plan** — Decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Optional evaluation.
+
+**Execution** — Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Optional evaluation.
+
+**Evaluation** — Assess the work. Mandatory after Execution; optional at Ideation and Plan. Can loop back to any prior step. The creating agent never evaluates its own output.
+
+**Memorization** — Read the conversation log, extract decisions, state, open questions, and gotchas. Write them where the next session can find them. Without Memorization, every session restarts from zero.
 
 > **Evaluation must be separated, multi-perspective, and discussed.**
 
@@ -32,7 +32,7 @@ MUST use AskUserQuestion to discuss with the user at every stage — ideation, p
 
 > **Never repeat the same mistake. Read gotchas before acting, write gotchas after feedback.**
 
-Every agent MUST load _gotcha skill before starting work. When the user corrects any approach, immediately record it as a gotcha. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
+Every agent MUST load `_gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/project/gotchas/` and promoted to permanent storage in `.claude/skills/_gotcha/` via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
 
 > **Split into narrow tasks. Execute step by step, not all at once.**
 
@@ -46,4 +46,6 @@ MUST decompose work into small, specific tasks and track them with TaskCreate. E
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [_claude skill](skills/_claude/SKILL.md) | Documentation standard for `.claude/` authoring |
+| [design/v050-overview.md](project/gobbi/design/v050-overview.md) | v0.5.0 state machine, 5-step cycle, directory split |
+| [design/v050-cli.md](project/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` commands |
 | [rules/](rules/) | Naming conventions and project rules |
