@@ -478,6 +478,42 @@ describe('factory functions', () => {
       expect(event.data).toEqual({ agentType: 'researcher', step: 'ideation', subagentId: 'sub-1', timestamp: '2026-01-01T00:00:00Z' });
     });
 
+    // Issue #92 — optional `claudeCodeVersion` field on DelegationSpawnData.
+    // The field is schema-only until a spawn emitter lands; the factory must
+    // accept it as a pass-through and the omit-branch must keep the data
+    // shape identical to the pre-field behaviour.
+
+    it('createDelegationSpawn passes claudeCodeVersion through when set (issue #92)', () => {
+      const event = createDelegationSpawn({
+        agentType: 'researcher',
+        step: 'ideation',
+        subagentId: 'sub-1',
+        timestamp: '2026-01-01T00:00:00Z',
+        claudeCodeVersion: '2.1.110',
+      });
+      expect(event.data).toEqual({
+        agentType: 'researcher',
+        step: 'ideation',
+        subagentId: 'sub-1',
+        timestamp: '2026-01-01T00:00:00Z',
+        claudeCodeVersion: '2.1.110',
+      });
+      // Round-trips through JSON.stringify — the optional field survives
+      // serialization into the event store's `data` column.
+      const round = JSON.parse(JSON.stringify(event));
+      expect(round).toEqual(event);
+    });
+
+    it('createDelegationSpawn omits claudeCodeVersion when caller omits it (issue #92)', () => {
+      const event = createDelegationSpawn({
+        agentType: 'executor',
+        step: 'execution',
+        subagentId: 'sub-2',
+        timestamp: '2026-01-01T00:00:00Z',
+      });
+      expect('claudeCodeVersion' in event.data).toBe(false);
+    });
+
     it('createDelegationComplete with all optional fields', () => {
       const event = createDelegationComplete({
         subagentId: 'sub-1',

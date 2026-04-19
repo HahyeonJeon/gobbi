@@ -35,6 +35,18 @@ export interface DelegationSpawnData {
   readonly step: string;
   readonly subagentId: string;
   readonly timestamp: string;
+  /**
+   * Claude Code harness version captured from `process.env.CLAUDE_CODE_VERSION`
+   * at spawn time. Enables cross-version debugging — a given trace can be
+   * attributed to the harness that produced it. Optional so v4 events that
+   * never populated this field continue to round-trip cleanly; the field is
+   * also additive, so no schema version bump is required (mirrors the
+   * `DelegationCompleteData.sizeProxyBytes` pattern landed by PR E). Emitters
+   * MUST omit the field entirely when the env var is unset or empty rather
+   * than writing an empty string — keeps events clean. Added by v0.5.0
+   * post-Phase-2 velocity issue #92.
+   */
+  readonly claudeCodeVersion?: string | undefined;
 }
 
 export interface DelegationCompleteData {
