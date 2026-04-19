@@ -27,7 +27,7 @@ v0.4.5 remains installable from npm for archival purposes: `npm install -g @gobb
 | v0.4.x | v0.5.0 | Action required | Data compat |
 |---|---|---|---|
 | Skill-based orchestration (`_orchestration` skill) | CLI state machine (`gobbi workflow init`) | Plugin auto-registers new hooks on install | n/a — conceptual change |
-| 6 `gobbi notify *` hook entries (SessionStart, PreToolUse, Notification, Stop, StopFailure, SubagentStop) | 5 `gobbi workflow *` hook entries (SessionStart, PreToolUse, PostToolUse, SubagentStop, Stop) | Breaking — see below | n/a — hook wiring |
+| 8 v0.4.x hook entries (3×SessionStart + Stop + Notification + StopFailure + SubagentStop + SessionEnd — calling `gobbi notify *` and `gobbi session *`) | 5 `gobbi workflow *` hook entries (SessionStart, PreToolUse, PostToolUse, SubagentStop, Stop) | Breaking — see below | n/a — hook wiring |
 | Notes in `.claude/project/{name}/note/` (retrospective archive) | Active sessions in `.gobbi/sessions/{id}/` (runtime state) | Both coexist; no migration needed | Existing note archives remain valid |
 | 7-step cycle (ideation → plan → research → execute → collect → memorize → review) | 5-step cycle (Ideation → Plan → Execution → Evaluation → Memorization) | Conceptual; no user action needed | n/a |
 | `_orchestration` skill as workflow entry | Deprecated — banner + `ARCHIVED.md` | Skill remains on disk for reference; no deletion | n/a |
@@ -36,9 +36,9 @@ v0.4.5 remains installable from npm for archival purposes: `npm install -g @gobb
 
 ### Breaking change 1 — Notification hooks replaced
 
-**What changed.** v0.4.x registered 6 `gobbi notify *` hook entries in `plugins/gobbi/hooks/hooks.json` and `.claude/settings.json`, covering SessionStart, PreToolUse, Notification, Stop, StopFailure, and SubagentStop events. These entries auto-fired Slack, Telegram, Discord, and Desktop notifications at workflow boundaries.
+**What changed.** v0.4.x registered 8 hook entries in `plugins/gobbi/hooks/hooks.json` and `.claude/settings.json`: three SessionStart handlers (`gobbi session metadata`, `gobbi session load-env`, `gobbi notify session`), plus one each for Stop (`gobbi notify completion`), Notification (`gobbi notify attention`), StopFailure (`gobbi notify error`), SubagentStop (`gobbi notify subagent`), and SessionEnd (`gobbi notify session`). The 6 `gobbi notify *` entries auto-fired Slack, Telegram, Discord, and Desktop notifications at workflow boundaries; the 2 `gobbi session *` entries handled session metadata bootstrapping (now subsumed by `gobbi workflow init`).
 
-v0.5.0 removes all 6 `gobbi notify *` entries and replaces them with 5 `gobbi workflow *` entries (see `design/v050-hooks.md:172-180`):
+v0.5.0 removes all 8 v0.4.x entries and replaces them with 5 `gobbi workflow *` entries (see `design/v050-hooks.md:172-180`):
 
 | Hook event | v0.5.0 command |
 |---|---|
