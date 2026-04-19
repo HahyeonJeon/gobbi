@@ -208,3 +208,39 @@ Orchestration-level mitigations:
 - Applies to any arbitrary feeding an interface with `field?: T` (no explicit undefined) style optionals. Reference: `packages/cli/src/specs/__tests__/properties.test.ts::loadProjectConfig default completeness`.
 
 ---
+
+## Parallel executor broad `git add` absorbs peer executor's untracked new files
+
+**Priority:** Medium
+
+**What happened:** During PR F Wave 2, three parallel executors (F.5, F.7, F.8) worked in the same worktree. The F.8 executor ran `git add` with a path pattern broad enough to include `.claude/project/gobbi/design/v050-phase3-backlog.md` — the new file created by the F.7 executor. The F.7 file was absorbed into the F.8 commit (`d82c4ff`), leaving F.7 with no files to commit. F.7 had to create an attribution commit (`--allow-empty`) to preserve the wave record.
+
+**User feedback:** Self-caught 2026-04-19 by F.7 executor when `git status` showed "nothing to commit" despite having written the file and `git ls-files` confirmed it was already tracked in a peer commit.
+
+**Correct approach:** Parallel executors must stage ONLY their explicitly assigned files (per the existing parallel-executor gotcha above). Any new file created by a parallel executor in a shared directory — even if in a different subdirectory — is at risk of being picked up by a peer executor's broad add. Two mitigations: (1) each executor stages by explicit file path only; (2) executors writing new files in a shared directory should note the full path in their wave briefing so peers can verify their staging commands skip it. If a file lands in a peer commit, create an `--allow-empty` attribution commit for the wave record rather than attempting a file-level revert.
+
+---
+
+## `bun test` count differs between main tree and worktree at same commit
+
+**Priority:** Medium
+
+**What happened:** At commit `047d29f` (PR E squash), `bun test` run from `/playinganalytics/git/gobbi` (main tree) reports `1229 pass / 60 files`, but run from `/playinganalytics/git/gobbi/.claude/worktrees/feat-v050-phase-2-prF` (worktree created from the same commit via `git worktree add -b`) reports `1191 pass / 58 files`. The 38-test / 2-file gap is real and reproducible. Both trees have identical test files on disk (verified by `find . -name '*.test.ts' | diff`). Bun's test discovery produces different results despite identical source. Writing SC18 against the main-tree baseline (1229 → target 1230 after F.9) would fail CI because CI builds from the worktree/feature-branch where the baseline is 1191.
+
+**User feedback:** Self-caught 2026-04-19 during PR F Wave 0 orchestrator smoke test after worktree creation. No user correction; would have caused SC18 gate false-fail if shipped.
+
+**Correct approach:** For any Phase-2 PR that ships test additions, use the **worktree** as the authoritative test-count baseline, not the main tree. The worktree is the tree CI actually builds. Plan verification should run `bun test` inside the worktree directly after worktree creation and record that count. Main-tree count is informational only. When recording the baseline in plan/memory: `1191 pass / 58 files @ 047d29f worktree` (authoritative) plus an informational note that main tree reports differently. Root cause of the discrepancy (Bun discovery divergence despite identical files on disk) is a Phase 3 investigation item — suspect `node_modules` layout or workspace-resolution differences. Does not block PR F; worktree baseline is sufficient.
+
+---
+
+## `gobbi workflow init` pre-seeds events at `seq=1,2` — e2e fixtures must use `seq ≥ 100`
+
+**Priority:** Medium
+
+**What happened:** The F.9 executor tried to seed Phase-1-shape (`schema_version=1`) fixture events directly into a fresh session's `gobbi.db` via `bun:sqlite` after running `gobbi workflow init` in a tempdir. INSERTs at `seq=1` and `seq=2` failed with `SQLITE_CONSTRAINT_PRIMARYKEY`. `gobbi workflow init` pre-populates the events table with `workflow.start` (seq=1) and an initial eval-decision row (seq=2) as part of session bootstrap, so those seq slots are already occupied on disk before any test fixture code runs. The fixture must use `seq ≥ 100` (F.9 chose `seq=100+`) to avoid the collision, and `parent_seq` on fixture rows should be `null` to avoid dangling FK references to init's seq chain.
+
+**User feedback:** Self-caught by F.9 executor 2026-04-19 during Wave 6 execution. Fix was a fixture seq offset + an inline comment at `migration-chain.test.ts:60-65`.
+
+**Correct approach:** Any future e2e test that directly writes to `gobbi.db` after an init call (e.g., the #95 second-e2e-scenario follow-up in the Phase 3 backlog) MUST offset fixture `seq` values past the init-seeded range. Conservative choice: `seq ≥ 100`. Set `parent_seq=null` on fixture rows unless the fixture chain deliberately simulates a session prior to v0.5.0's init surface. The init-seeded row count may change over time; if a future bump to init produces seq=3 or seq=4 at bootstrap, fixtures using seq=3 would silently fail the same way. Assume at most 10 init-seeded rows and use `seq ≥ 100` as the defensive floor.
+
+---
