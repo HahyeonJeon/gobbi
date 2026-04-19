@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-19
+
+### Breaking
+
+- Hook wiring replaced — `gobbi notify *` hooks removed; `gobbi workflow *` hooks registered in `plugins/gobbi/hooks/hooks.json` and `.claude/settings.json` (#83)
+- `_orchestration` skill deprecated — see `.claude/skills/_orchestration/ARCHIVED.md` for the 7-step → 5-step mapping (#83)
+- 7-step cycle replaced by 5-step state machine (Ideation → Plan → Execution → Evaluation → Memorization); see `design/v050-overview.md` (#78, #79, #80, #81, #82, #83)
+- Directory split — `.claude/` is static knowledge (skills, rules, docs, gotchas); `.gobbi/` is runtime state (event store, sessions, heartbeats); `.gobbi/` is gitignored (#78, #83)
+
+### Added
+
+- `gobbi workflow` command group — 11 subcommands: `init`, `next`, `transition`, `guard`, `capture-subagent`, `capture-plan`, `stop`, `resume`, `status`, `validate`, `events` (#78, #80)
+- Predicate registry — typed TS functions replacing JsonLogic; `gobbi workflow validate` enforces coverage (#79)
+- Spec library — 5 step specs as validated JSON under `packages/cli/src/specs/{ideation,plan,execution,evaluation,memorization}/spec.json` (#79)
+- Event store + schema v1→v4 migrations — `packages/cli/src/workflow/migrations.ts` with lazy read-time migration (#78, #80, #81, #82)
+- State reducer — `packages/cli/src/workflow/reducer.ts`, pure function state evolution (#78)
+- Verification runner — synchronous serial execution wired into `next.ts`; results reduce to state (#82)
+- Cost rollup — `gobbi workflow status --cost` aggregates token-derived dollar cost from `delegation.complete` events (#82)
+- `stepStartedAt` state field — enables `workflow.step.timeout` emission from `stop.ts` (#82)
+- `gobbi gotcha promote` — CLI to move session-local gotchas to tracked skill dirs (#80)
+- `gobbi session events` — inspect and export the event log (#80)
+- Error-state + resume compilers — 5 pathway variants (crash, timeout, feedbackCap, invalidTransition, unknown) (#81)
+- `EvalSkipData.priorError` — CP11 reversibility snapshot on `resume --force-memorization` (#81)
+- `workflow.invalid_transition` event + audit-emit refactor in `engine.ts` (#81)
+- Verification-block prompt compiler — `packages/cli/src/specs/verification-block.ts` (#82)
+- Property-based tests — fast-check v4 reducer idempotency + transition exhaustiveness (#82)
+- End-to-end subprocess tests — `workflow-cycle.test.ts` (full cycle) + `migration-chain.test.ts` (v1→v4 replay) (#82, #83)
+- `MIGRATION.md` at repo root — v0.4.x → v0.5.0 upgrade guide (#83)
+- Phase 3 backlog — `.claude/project/gobbi/design/v050-phase3-backlog.md` (#83)
+- `_orchestration/ARCHIVED.md` — pedagogical mapping of 7-step to v0.5.0 equivalents (#83)
+
+### Changed
+
+- Runtime moved from Node to Bun (`engines.bun: ">=1.2.0"` in `packages/cli/package.json`) (#78)
+- `@gobbitools/cli` version 0.4.5 → 0.5.0 (#83)
+- `gobbi` plugin version 0.4.5 → 0.5.0 (`plugins/gobbi/.claude-plugin/plugin.json`) (#83)
+- Directory layout — specs live at `packages/cli/src/specs/` (#79)
+- `ajv` added as first production dependency for spec validation (#79)
+
 ### Removed
 
 - `gobbi docs` CLI command and all subcommands (#64)
@@ -14,6 +53,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `gobbi audit` CLI command (#64)
 - JSON-first documentation authoring system — Markdown is now the directly-editable format (#64)
 - `_doctor` and `_audit` skill directories (#64)
+- 6 `gobbi notify *` hook entries in `plugins/gobbi/hooks/hooks.json` + `.claude/settings.json`: SessionStart×1, Stop×1, Notification×1, StopFailure×1, SubagentStop×1, SessionEnd×1 (#83)
+
+### Fixed
+
+- Plugin config path corrected — `plugins/gobbi/.claude-plugin/plugin.json`, not `plugins/gobbi/plugin.json` (see `phase2-planning.md` gotcha) (#79)
+- Schema-version bump grep gates extended to rendered-output literals (`Schema: v[0-9]`) and `CURRENT_SCHEMA_VERSION).toBe(N)` canary pins (#81, #82)
 
 ## [0.4.0] - 2026-04-04
 
@@ -170,7 +215,8 @@ Internal version bump for session config, notification control, and JSON-templat
 - Slack notification hooks
 - Project state directory (`.claude/project/`) with design docs, gotchas, rules, and notes
 
-[Unreleased]: https://github.com/HahyeonJeon/gobbi/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/HahyeonJeon/gobbi/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/HahyeonJeon/gobbi/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.1...v0.4.0
 [0.3.2]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/HahyeonJeon/gobbi/compare/v0.3.0...v0.3.1
