@@ -1,5 +1,8 @@
 # Gotcha: _orchestration
 
+> **⚠ Deprecated in v0.5.0** — see [ARCHIVED.md](ARCHIVED.md) for historical reference.
+> Workflow control now lives in the CLI's step specs; see [`design/v050-overview.md`](../../project/gobbi/design/v050-overview.md).
+
 Mistakes in following the orchestration workflow (steps, transitions, FEEDBACK/FINISH cycle).
 
 

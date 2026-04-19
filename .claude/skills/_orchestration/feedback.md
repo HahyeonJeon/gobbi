@@ -1,5 +1,8 @@
 # FEEDBACK Phase
 
+> **⚠ Deprecated in v0.5.0** — see [ARCHIVED.md](ARCHIVED.md) for historical reference.
+> Workflow control now lives in the CLI's step specs; see [`design/v050-overview.md`](../../project/gobbi/design/v050-overview.md).
+
 How iterative feedback works after Review completes. Load this when entering FEEDBACK to understand iteration tracking, stagnation detection, and when to escalate. FEEDBACK always returns to Review — the cycle is FEEDBACK → Review → (FEEDBACK or FINISH).
 
 ---
