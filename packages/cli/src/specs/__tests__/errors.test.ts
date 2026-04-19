@@ -516,3 +516,239 @@ describe('compileResumePrompt — targetStep fallback', () => {
     );
   });
 });
+
+// ===========================================================================
+// compileResumePrompt — class-specific diagnostic messages (#94)
+//
+// `resolveResumeTargetStep` distinguishes six failure classes so operators
+// can root-cause without attaching a debugger:
+//
+//   - Options-empty: caller passed `options.targetStep: ''`.
+//   - Class A: no workflow.resume event AND no options.targetStep override.
+//   - Class B: event exists, `data.targetStep` field is absent.
+//   - Class C: event exists, `data.targetStep` is not a string.
+//   - Class D: event exists, `data.targetStep` is `''`.
+//   - Class E: event exists, `data` is not valid JSON.
+//
+// Every class's message starts with `compileResumePrompt: targetStep missing`
+// so the pre-existing regex tests in the "targetStep fallback" suite above
+// still match (backward-compatible with fallback assertions) — the suffix
+// after the em-dash discriminates the class.
+// ===========================================================================
+
+describe('compileResumePrompt — class-specific diagnostic messages (#94)', () => {
+  it('Class A: throws a no-event diagnostic when store has no workflow.resume event and options.targetStep is undefined', () => {
+    using store = new EventStore(':memory:');
+
+    expect(() => compileResumePrompt(errorState(), store, { targetStep: undefined })).toThrow(
+      /no workflow\.resume event found in store; append one or pass options\.targetStep/,
+    );
+  });
+
+  it('Class B: throws a missing-field diagnostic when workflow.resume event data omits targetStep', () => {
+    using store = new EventStore(':memory:');
+    seedStart(store);
+    // Raw store.append bypasses the validating reducer path to deposit a
+    // payload the normal pipeline would refuse — the same approach the
+    // existing malformed-event fallback test uses. See comment at
+    // resolveResumeTargetStep for why the deliberate bypass is necessary.
+    store.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      // targetStep intentionally omitted — payload is valid JSON, shape
+      // exercises Class B.
+      data: JSON.stringify({ fromError: true }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-resume-class-b',
+      sessionId: 'detect-pathway-test',
+    });
+
+    expect(() => compileResumePrompt(errorState(), store, { targetStep: undefined })).toThrow(
+      /workflow\.resume event is missing the targetStep field/,
+    );
+  });
+
+  it('Class C: throws a non-string diagnostic naming the observed type when targetStep is the wrong type', () => {
+    using store = new EventStore(':memory:');
+    seedStart(store);
+    store.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      // targetStep is a number — simulates a producer that forgot to
+      // serialize a step enum as its canonical string form.
+      data: JSON.stringify({ targetStep: 42, fromError: true }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-resume-class-c',
+      sessionId: 'detect-pathway-test',
+    });
+
+    expect(() => compileResumePrompt(errorState(), store, { targetStep: undefined })).toThrow(
+      /workflow\.resume event targetStep must be a string \(got number\)/,
+    );
+  });
+
+  it('Class D: throws an empty-string diagnostic when targetStep is the empty string', () => {
+    using store = new EventStore(':memory:');
+    seedStart(store);
+    store.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      data: JSON.stringify({ targetStep: '', fromError: true }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-resume-class-d',
+      sessionId: 'detect-pathway-test',
+    });
+
+    expect(() => compileResumePrompt(errorState(), store, { targetStep: undefined })).toThrow(
+      /workflow\.resume event targetStep is an empty string/,
+    );
+  });
+
+  it('Class E: throws a malformed-JSON diagnostic when the resume event data column is not valid JSON', () => {
+    using store = new EventStore(':memory:');
+    seedStart(store);
+    store.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      // Not valid JSON — a corrupted/hand-edited row. The reducer path
+      // would never emit this (factories use JSON.stringify), but raw
+      // store.append is unchecked, which is the point of exercising this
+      // class distinctly from class A.
+      data: 'this is not valid json {',
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-resume-class-e',
+      sessionId: 'detect-pathway-test',
+    });
+
+    expect(() => compileResumePrompt(errorState(), store, { targetStep: undefined })).toThrow(
+      /workflow\.resume event data is not valid JSON/,
+    );
+  });
+
+  it('Options-empty: throws an options-is-empty-string diagnostic when the caller passes options.targetStep = ""', () => {
+    // Symmetric with class D on the store path. The caller-supplied
+    // override is honored as-is for non-empty strings (no store lookup),
+    // so this case would otherwise slip past into the prompt body.
+    using store = new EventStore(':memory:');
+
+    expect(() => compileResumePrompt(errorState(), store, { targetStep: '' })).toThrow(
+      /options\.targetStep is an empty string/,
+    );
+  });
+
+  it('discriminates classes: each class produces a distinct suffix after the shared "targetStep missing" prefix', () => {
+    // Meta-assertion: the six malformed-input classes must produce six
+    // distinct diagnostic strings. If a future refactor collapses any
+    // two, this test fails before the downstream per-class tests do.
+    const collect = (thunk: () => void): string => {
+      try {
+        thunk();
+      } catch (err) {
+        return err instanceof Error ? err.message : String(err);
+      }
+      throw new Error('expected thunk to throw');
+    };
+
+    using storeA = new EventStore(':memory:');
+    const msgA = collect(() =>
+      compileResumePrompt(errorState(), storeA, { targetStep: undefined }),
+    );
+
+    using storeB = new EventStore(':memory:');
+    seedStart(storeB);
+    storeB.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      data: JSON.stringify({ fromError: true }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-meta-b',
+      sessionId: 'detect-pathway-test',
+    });
+    const msgB = collect(() =>
+      compileResumePrompt(errorState(), storeB, { targetStep: undefined }),
+    );
+
+    using storeC = new EventStore(':memory:');
+    seedStart(storeC);
+    storeC.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      data: JSON.stringify({ targetStep: 7, fromError: true }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-meta-c',
+      sessionId: 'detect-pathway-test',
+    });
+    const msgC = collect(() =>
+      compileResumePrompt(errorState(), storeC, { targetStep: undefined }),
+    );
+
+    using storeD = new EventStore(':memory:');
+    seedStart(storeD);
+    storeD.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      data: JSON.stringify({ targetStep: '', fromError: true }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-meta-d',
+      sessionId: 'detect-pathway-test',
+    });
+    const msgD = collect(() =>
+      compileResumePrompt(errorState(), storeD, { targetStep: undefined }),
+    );
+
+    using storeE = new EventStore(':memory:');
+    seedStart(storeE);
+    storeE.append({
+      ts: '2026-01-01T00:20:00.000Z',
+      type: WORKFLOW_EVENTS.RESUME,
+      step: null,
+      data: '}{ not json',
+      actor: 'cli',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-meta-e',
+      sessionId: 'detect-pathway-test',
+    });
+    const msgE = collect(() =>
+      compileResumePrompt(errorState(), storeE, { targetStep: undefined }),
+    );
+
+    using storeOpts = new EventStore(':memory:');
+    const msgOpts = collect(() =>
+      compileResumePrompt(errorState(), storeOpts, { targetStep: '' }),
+    );
+
+    const messages = [msgA, msgB, msgC, msgD, msgE, msgOpts];
+
+    // All six must share the orientation prefix so the existing
+    // `/compileResumePrompt: targetStep missing/` regexes still match.
+    for (const m of messages) {
+      expect(m).toMatch(/^compileResumePrompt: targetStep missing/);
+    }
+
+    // All six must be pairwise distinct — no silent collapse.
+    const unique = new Set(messages);
+    expect(unique.size).toBe(messages.length);
+  });
+});

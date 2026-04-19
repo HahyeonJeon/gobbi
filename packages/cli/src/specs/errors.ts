@@ -384,34 +384,97 @@ const ID_RESUME_UNKNOWN_RECAP = 'resume.unknown.recap';
  * event from the store — this handles the compact-recovery scenario where
  * the orchestrator re-opens mid-resume.
  *
- * Throws when neither source has a targetStep — that would be a caller
- * wiring bug (nothing in the codebase should reach the resume compiler
- * without a resume event or an explicit override).
+ * Throws a class-specific diagnostic message for each malformed-input
+ * class so operators (and failing tests) can root-cause without re-running
+ * the compiler under a debugger. The six classes are:
+ *
+ *   - Options-empty: caller passed `options.targetStep: ''`.
+ *   - Class A (no-event): no `workflow.resume` event AND no options override.
+ *   - Class B (missing-field): event exists, `data.targetStep` is absent.
+ *   - Class C (non-string): event exists, `data.targetStep` is not a string.
+ *   - Class D (empty-string): event exists, `data.targetStep` is `''`.
+ *   - Class E (malformed-json): event exists, but `data` is not valid JSON.
+ *
+ * Every thrown message starts with the literal prefix
+ * `compileResumePrompt: targetStep missing` so the existing regex-based
+ * fallback-path tests continue to match while the suffix discriminates
+ * the specific failure class.
  */
 function resolveResumeTargetStep(
   store: EventStore,
   options: { readonly targetStep?: string | undefined } | undefined,
 ): string {
-  if (options?.targetStep !== undefined) return options.targetStep;
+  const override = options?.targetStep;
+  if (override !== undefined) {
+    // Symmetric validation with the workflow.resume event path: the caller
+    // would otherwise inject an empty-string targetStep directly into the
+    // compiled prompt. Non-string is excluded by the TS signature; empty
+    // string is the only realistic runtime degenerate case.
+    if (override === '') {
+      throw new Error(
+        'compileResumePrompt: targetStep missing — options.targetStep is an empty string',
+      );
+    }
+    return override;
+  }
+
   const rows = store.lastN('workflow.resume', 1);
   const last = rows[0];
-  if (last !== undefined) {
-    // EventRow.data is a JSON string; parse to extract targetStep. The
-    // event's schema is stable (workflow.ts::ResumeData) — the migration
-    // pipeline applies to read-time reducers, not here, but the shape for
-    // `targetStep` is identity across every schema version.
-    try {
-      const parsed = JSON.parse(last.data) as { readonly targetStep?: unknown };
-      if (typeof parsed.targetStep === 'string' && parsed.targetStep.length > 0) {
-        return parsed.targetStep;
-      }
-    } catch {
-      // fall through to the throw below
-    }
+  if (last === undefined) {
+    // Class A: no workflow.resume event in the store AND no explicit
+    // options.targetStep override — the compiler has nothing to read.
+    throw new Error(
+      'compileResumePrompt: targetStep missing — no workflow.resume event found in store; append one or pass options.targetStep',
+    );
   }
-  throw new Error(
-    'compileResumePrompt: targetStep missing — supply options.targetStep or append a workflow.resume event before compiling',
-  );
+
+  // EventRow.data is a JSON string; parse to extract targetStep. The
+  // event's schema is stable (workflow.ts::ResumeData) — the migration
+  // pipeline applies to read-time reducers, not here, but the shape for
+  // `targetStep` is identity across every schema version.
+  let parsed: { readonly targetStep?: unknown };
+  try {
+    parsed = JSON.parse(last.data) as { readonly targetStep?: unknown };
+  } catch (err) {
+    // Class E: the store row exists but its `data` column is not valid
+    // JSON. This shouldn't happen for events written through the normal
+    // pipeline (factories emit JSON.stringify output), but raw
+    // store.append callers or a corrupted DB can produce it. A dedicated
+    // class is clearer than silently routing to class A.
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `compileResumePrompt: targetStep missing — workflow.resume event data is not valid JSON (${message})`,
+    );
+  }
+
+  if (parsed.targetStep === undefined) {
+    // Class B: the parsed payload has no `targetStep` field at all. A
+    // distinct class from empty string because the producer is
+    // fundamentally different (omitted vs. explicitly zero-length).
+    throw new Error(
+      'compileResumePrompt: targetStep missing — workflow.resume event is missing the targetStep field',
+    );
+  }
+
+  if (typeof parsed.targetStep !== 'string') {
+    // Class C: the field is present but the wrong type. Surface the
+    // observed `typeof` so the operator can trace back to the producer.
+    throw new Error(
+      `compileResumePrompt: targetStep missing — workflow.resume event targetStep must be a string (got ${typeof parsed.targetStep})`,
+    );
+  }
+
+  if (parsed.targetStep === '') {
+    // Class D: non-null, string-typed, but zero-length. Rejected because
+    // an empty target step would render a syntactically valid but
+    // semantically meaningless resume prompt ("transitioning from error
+    // into ").
+    throw new Error(
+      'compileResumePrompt: targetStep missing — workflow.resume event targetStep is an empty string',
+    );
+  }
+
+  return parsed.targetStep;
 }
 
 /**
