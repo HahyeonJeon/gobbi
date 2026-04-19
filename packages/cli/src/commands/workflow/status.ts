@@ -26,7 +26,7 @@ import { join } from 'node:path';
 import { derivedCost, proxyCost } from '../../lib/cost-rates.js';
 import { isNumber, isRecord, isString } from '../../lib/guards.js';
 import { EventStore } from '../../workflow/store.js';
-import type { CostAggregateRow } from '../../workflow/store.js';
+import type { CostAggregateRow, ReadStore } from '../../workflow/store.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
 import type { GuardViolationRecord, WorkflowState } from '../../workflow/state.js';
 import { resolveSessionDir } from '../session.js';
@@ -303,7 +303,7 @@ export const COST_EMPTY_SESSION_MESSAGE = 'no v0.5.0 sessions found';
  * Rows with neither contribute 0 and do not increment either source
  * counter (they still count as a delegation for the per-step total).
  */
-export function aggregateCost(store: EventStore): CostRollup {
+export function aggregateCost(store: ReadStore): CostRollup {
   const rawRows = store.aggregateDelegationCosts();
   if (rawRows.length === 0) {
     return emptySessionRollup();

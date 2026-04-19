@@ -41,7 +41,7 @@
  */
 
 import type { WorkflowState } from '../workflow/state.js';
-import type { EventStore } from '../workflow/store.js';
+import type { ReadStore } from '../workflow/store.js';
 import type { CompiledPrompt } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -286,7 +286,7 @@ import {
  */
 export function compileErrorPrompt(
   state: WorkflowState,
-  store: EventStore,
+  store: ReadStore,
 ): CompiledPrompt {
   const pathway = detectPathway(state, store);
   return visitPathway(pathway, {
@@ -401,7 +401,7 @@ const ID_RESUME_UNKNOWN_RECAP = 'resume.unknown.recap';
  * the specific failure class.
  */
 function resolveResumeTargetStep(
-  store: EventStore,
+  store: ReadStore,
   options: { readonly targetStep?: string | undefined } | undefined,
 ): string {
   const override = options?.targetStep;
@@ -498,7 +498,7 @@ function resolveResumeTargetStep(
  */
 export function compileResumePrompt(
   state: WorkflowState,
-  store: EventStore,
+  store: ReadStore,
   options?: { readonly targetStep?: string | undefined },
 ): CompiledPrompt {
   const pathway = detectPathway(state, store);

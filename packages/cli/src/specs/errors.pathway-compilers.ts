@@ -23,7 +23,7 @@
  */
 
 import type { WorkflowState } from '../workflow/state.js';
-import type { EventStore } from '../workflow/store.js';
+import type { ReadStore } from '../workflow/store.js';
 import type { CompiledPrompt } from './types.js';
 import type {
   ErrorPathwayCrash,
@@ -109,7 +109,7 @@ function recoverySlotOverride(recoveryId: string): Readonly<Record<string, 'mate
 export function compileCrashPrompt(
   pathway: ErrorPathwayCrash,
   state: WorkflowState,
-  _store: EventStore,
+  _store: ReadStore,
 ): CompiledPrompt {
   const staticBlocks = [
     makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
@@ -150,7 +150,7 @@ export function compileCrashPrompt(
 export function compileTimeoutPrompt(
   pathway: ErrorPathwayTimeout,
   state: WorkflowState,
-  _store: EventStore,
+  _store: ReadStore,
 ): CompiledPrompt {
   const staticBlocks = [
     makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
@@ -191,7 +191,7 @@ export function compileTimeoutPrompt(
 export function compileFeedbackCapPrompt(
   pathway: ErrorPathwayFeedbackCap,
   state: WorkflowState,
-  _store: EventStore,
+  _store: ReadStore,
 ): CompiledPrompt {
   const staticBlocks = [
     makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
@@ -235,7 +235,7 @@ export function compileFeedbackCapPrompt(
 export function compileInvalidTransitionPrompt(
   pathway: ErrorPathwayInvalidTransition,
   state: WorkflowState,
-  _store: EventStore,
+  _store: ReadStore,
 ): CompiledPrompt {
   const staticBlocks = [
     makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),
@@ -278,7 +278,7 @@ export function compileInvalidTransitionPrompt(
 export function compileUnknownPrompt(
   pathway: ErrorPathwayUnknown,
   state: WorkflowState,
-  _store: EventStore,
+  _store: ReadStore,
 ): CompiledPrompt {
   const staticBlocks = [
     makeStatic({ id: ID_ROLE, content: STATIC_ROLE_ERROR_RECOVERY }),

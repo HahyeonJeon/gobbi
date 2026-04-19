@@ -13,7 +13,7 @@ import { existsSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { EventStore } from './store.js';
-import type { AppendInput } from './store.js';
+import type { AppendInput, ReadStore } from './store.js';
 import { reduce } from './reducer.js';
 import type { ReducerResult } from './reducer.js';
 import {
@@ -383,7 +383,7 @@ function buildAppendInput(args: BuildAppendInputArgs): AppendInput {
  */
 export function resolveWorkflowState(
   dir: string,
-  store: EventStore,
+  store: ReadStore,
   sessionId: string,
 ): WorkflowState {
   // Fast path — valid state.json short-circuits the replay.
@@ -408,7 +408,7 @@ export function resolveWorkflowState(
  */
 export function deriveWorkflowState(
   sessionId: string,
-  store: EventStore,
+  store: ReadStore,
 ): WorkflowState {
   const events = store.replayAll();
   return deriveState(sessionId, events, reduce);
