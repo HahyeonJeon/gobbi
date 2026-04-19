@@ -1,8 +1,8 @@
 # Project Setup
 
-Check for `$CLAUDE_PROJECT_DIR/.claude/project/` at session start. If project documentation exists, read it for context. If not, create the project directory using the _project skill.
+> Status: v0.5.0 stable — updated 2026-04-19
 
-
+Check for project directories at session start. Two layers exist in v0.5.0: the static-knowledge layer at `$CLAUDE_PROJECT_DIR/.claude/project/{name}/` and the runtime layer at `$CLAUDE_PROJECT_DIR/.gobbi/sessions/{session-id}/`. This doc covers detection and setup of both.
 
 ---
 
@@ -10,11 +10,23 @@ Check for `$CLAUDE_PROJECT_DIR/.claude/project/` at session start. If project do
 
 > **Every project needs a `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/` directory.**
 
-Notes, gotchas, and project documentation accumulate here across sessions. Without it, workflow output has nowhere to persist.
+Notes, gotchas, and project documentation accumulate here across sessions. Without it, workflow output has nowhere to persist in the permanent record.
 
 > **Read only `README.md`, `design/`, and `gotchas/` at setup.**
 
 Other directories like `note/` may contain many files and are not needed for session context. Keep setup lightweight.
+
+---
+
+## Directory Model in v0.5.0
+
+V0.5.0 splits runtime and static-knowledge into separate root directories:
+
+`.claude/` is the static-knowledge layer. Skills, rules, agents, and project docs live here. This directory is not written to during an active session — it is read-only during workflow.
+
+`.gobbi/` is the runtime layer. Per-session directories (`sessions/{session-id}/`) hold the event store (`gobbi.db`), `metadata.json`, and `state.json`. Notes recorded during an active session write to `.gobbi/sessions/{id}/` via `gobbi workflow capture-subagent`. This directory is gitignored and does not persist across repository clones.
+
+When `gobbi workflow init` runs, it creates `.gobbi/sessions/{session-id}/` automatically. Detection below determines whether the static-knowledge layer is also ready.
 
 ---
 
@@ -43,7 +55,13 @@ Look for `$CLAUDE_PROJECT_DIR/.claude/project/` and identify any `{project-name}
 
 Do not read other directories (e.g., `note/`) at setup — they may contain many files and are not needed for session context.
 
-### 3. New Projects
+### 3. Check for Active Session Runtime Directory
+
+Look for `$CLAUDE_PROJECT_DIR/.gobbi/sessions/` to understand the runtime state. This directory is created by `gobbi workflow init` on the first run. If it does not exist, no sessions have been initialized yet — this is normal for new projects.
+
+Notes written during an active session go to `.gobbi/sessions/{session-id}/` (ephemeral, gitignored). After a session completes, retrospective archive notes land in `.claude/project/{name}/note/` (also gitignored, main-tree only). Do not confuse the two locations — the runtime path is transient; the archive path is persistent.
+
+### 4. New Projects
 
 When `$CLAUDE_PROJECT_DIR/.claude/project/` is absent or has no project subdirectory, ask the user for a project name via AskUserQuestion, then create the full standard structure:
 
@@ -51,13 +69,13 @@ When `$CLAUDE_PROJECT_DIR/.claude/project/` is absent or has no project subdirec
 - `$CLAUDE_PROJECT_DIR/.claude/project/{name}/design/` — architecture and design decisions
 - `$CLAUDE_PROJECT_DIR/.claude/project/{name}/rules/` — project-specific rules and conventions
 - `$CLAUDE_PROJECT_DIR/.claude/project/{name}/gotchas/` — project-specific gotchas
-- `$CLAUDE_PROJECT_DIR/.claude/project/{name}/note/` — workflow notes per task (managed by _note)
+- `$CLAUDE_PROJECT_DIR/.claude/project/{name}/note/` — workflow notes per task (managed by `_note`)
 - `$CLAUDE_PROJECT_DIR/.claude/project/{name}/reference/` — external references, API docs, research
 - `$CLAUDE_PROJECT_DIR/.claude/project/{name}/docs/` — other project documents
 
 Create all directories upfront. The README.md must list each directory with a one-line description. Load `_project` for detailed authoring guidelines if the user wants to populate design docs or rules immediately.
 
-### 4. Help Set Up Claude Docs
+### 5. Help Set Up Claude Docs
 
 After project directory setup, check what the project is missing in `$CLAUDE_PROJECT_DIR/.claude/` and offer to help create them via AskUserQuestion. This is the onboarding moment — guide the user toward a well-structured project.
 
@@ -79,3 +97,4 @@ Do not create all of these at once — ask the user which they want to set up no
 - Never generate a user-facing report or summary document. Output is internal orchestrator context only.
 - Skip setup for gobbi's own repository — `$CLAUDE_PROJECT_DIR/.claude/project/` is already structured
 - When `$CLAUDE_PROJECT_DIR/.claude/project/` docs exist, trust them over filesystem inference
+- Never create `.gobbi/` directories manually — `gobbi workflow init` creates the runtime directory; detection here is read-only

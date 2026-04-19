@@ -1,5 +1,7 @@
 # Git Setup
 
+> Status: v0.5.0 stable — updated 2026-04-19
+
 Check git tooling and repository state at session start. Determines whether the git workflow (worktree + PR) is viable and what issues need attention before work begins.
 
 ---
