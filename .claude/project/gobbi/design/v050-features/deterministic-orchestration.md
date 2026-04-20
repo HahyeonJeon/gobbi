@@ -1,20 +1,54 @@
 # Deterministic Workflow State Machine
 
-Feature description for gobbi's v0.5.0 orchestration model. Read this to understand why the workflow is reproducible, how Ideation and Evaluation are structured, and what it means for the CLI — not the LLM — to control workflow progression.
+Feature description for gobbi's v0.5.0 orchestration model. Read this to understand how the six-step workflow is structured, why the orchestrator's view is bounded by design, and how the CLI enforces progression without relying on the orchestrator's judgment.
 
 ---
 
-> **The orchestrator executes. The CLI decides. Workflow logic is not advice — it is enforcement.**
+> **The workflow is six steps. The orchestrator sees one prompt at a time. That bounded visibility is the enforcement.**
 
-In v0.4.x, the orchestrator reads skills and decides what to do next. This produces drift: steps get skipped when the session feels complete, evaluation is forgotten when the conversation grows long, and the workflow diverges from what was intended. Advice cannot be made reliable.
+In v0.4.x, the orchestrator reads skills and decides what to do next. This produces drift: steps get skipped when the conversation feels complete, evaluation is forgotten as context grows, and the workflow diverges from intent. Advice cannot be made reliable.
 
-V0.5.0 replaces advice with a state machine. The workflow is a typed reducer operating over a SQLite event store: each step transition is a typed event, each guard condition is a predicate in the CLI's registry, and each compiled prompt tells the orchestrator exactly what this step requires and nothing more. Transitions not defined in the state machine are rejected by the reducer before they are written. The orchestrator cannot jump steps, cannot skip evaluation, and cannot see outside the prompt the CLI provides.
+V0.5.0 replaces advice with Just-in-Time Prompt Compilation. The CLI compiles a prompt for the current workflow step and hands it to the orchestrator. The orchestrator cannot skip steps or bypass evaluation because it never receives instructions for any other step. The single enforcement mechanism is the bounded prompt — nothing else.
 
-**Stance-diverse Ideation** is built into the state machine, not left to the orchestrator's judgment. When the Ideation step enters its research substate, the CLI's delegation block configures parallel researcher agents with distinct stances — one optimized for innovative, divergent thinking, and one for proven, best-practice patterns. The orchestrator receives a delegation prompt with these stances already configured; it does not select or configure them. Both approaches run in parallel and their findings converge before the Ideation step exits.
+---
 
-**Evaluation as a first-class workflow step** means evaluation cannot be skipped after Execution. The state machine has `execution_eval` as a mandatory transition — the transition table has no path from `execution` to `memorization` that bypasses it. The creating agent never evaluates its own output: the `execution_eval` step uses a separate delegation block that spawns independent evaluator agents. At minimum, a Project perspective and an Overall perspective are always included. Evaluation for Ideation and Plan is optional but decided once at workflow start, stored in `evalConfig`, and applied automatically — the orchestrator is never asked mid-workflow whether to evaluate.
+## The six-step workflow
 
-The result is a workflow that is reproducible and inspectable. Given the same event log, the same state is always produced. The CLI's `gobbi workflow status` surfaces the current step, completed steps, eval configuration, and feedback round count without needing to parse the conversation.
+1. **Workflow Configuration** — Infrastructure setup and user decision capture. Before entering the loop, the session agent checks whether `gobbi-cli` is installed and current, installing or updating automatically if not. The step then: detects any prior incomplete session and offers resume or new; ensures the `.gobbi/` directory tree exists under `project/sessions/{session-id}/`; ensures three SQLite databases are present — `gobbi.db` (user tier), `gobbi.project.db` (project tier), `gobbi-session.db` (session tier); ensures `settings.json` exists at all three tiers with user → project → session inheritance; and captures user decisions — workflow mode, trivial range, git mode (and base branch if worktree-PR), and notification channels. If git mode is worktree-PR, a tracking issue is created and a worktree and branch are cut. If notifications are enabled, credentials are verified. The final input from the user in this step is the task statement — free text capturing what the session is for. The step closes by emitting `workflow.start` and handing off to the Ideation Loop.
+
+2. **Ideation Loop** — `User Prompt → [Discuss → Work → Evaluate] → Idea`. Two PI agents run in parallel, one with an innovative stance and one with a best-practice stance. PI is a single merged role: each PI agent carries out research as part of the loop — no separate agent type exists for research. The loop continues until an idea is concrete enough to plan against.
+
+3. **Planning Loop** — `Idea → [Discuss (optional) → Plan Draft → Evaluate] → Plan`. The orchestrator receives a delegation prompt with the idea as input. Discussion is optional; evaluation is gated by workflow mode.
+
+4. **Execution Loop** — `Plan → [Discuss (optional) → Execute → Evaluate] → Results`. Tasks are executed one at a time. Evaluation after Execution is mandatory — there is no workflow path from Execution to Memorization that bypasses it.
+
+5. **Memorization Loop** — `Session events → Updated docs, rules, gotchas`. The session event log is the source of record. Decisions, open questions, and corrections are written to design docs, rules, and gotcha files so the next session can resume with full context.
+
+6. **Hand-off** — Triggered by `/compact`, `/clear`, or any session transition. Preserves workflow state in `gobbi-session.db` so the next session can resume cleanly from the last completed step.
+
+---
+
+## Workflow mode
+
+Workflow mode is decided once, in Workflow Configuration, and stored in `settings.json` at the session tier. Three modes:
+
+- `ask-each-time` (default) — the orchestrator prompts the user before each evaluation stage. The user decides at that moment whether to spawn evaluators.
+- `always` — evaluators spawn at every evaluation point without asking.
+- `skip` — no evaluators run unless the user explicitly requests one.
+
+The mode is set at the start of the session and does not change mid-workflow. The orchestrator does not re-ask.
+
+---
+
+## Evaluation as a first-class activity
+
+The creator never evaluates its own output. When evaluation runs, the CLI's compiled prompt configures independent perspective agents — at minimum a Project perspective and an Overall perspective. Evaluation findings are surfaced to the user and discussed before anything is applied. The orchestrator never auto-applies evaluation findings.
+
+---
+
+## Reproducibility
+
+All workflow state is derived from events written to `gobbi-session.db`. Replaying the event log produces the same state. `gobbi workflow status` reads current step, completed steps, and feedback round count directly from the event store — no conversation history parsing needed.
 
 ---
 
@@ -22,5 +56,7 @@ The result is a workflow that is reproducible and inspectable. Given the same ev
 
 | Document | Covers |
 |----------|--------|
-| `../v050-state-machine.md` | Transition table, typed reducer, predicate registry, feedback loops, guard model |
-| `../v050-overview.md` | Philosophy: why guidance-based orchestration fails and what state-driven means |
+| `just-in-time-prompt-injection.md` | How JIT prompt compilation enforces the bounded-prompt model |
+| `gobbi-config.md` | Three-tier `settings.json` that Workflow Configuration populates |
+| `gobbi-memory.md` | The three SQLite databases and how resume reads the event store |
+| `worktree-based-operation.md` | The git side of Workflow Configuration — issue and worktree creation |
