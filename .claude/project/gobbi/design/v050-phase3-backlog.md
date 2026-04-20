@@ -10,7 +10,7 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 
 | Trigger class | Items |
 |---|---|
-| `velocity` — ship when capacity allows | #97, #98, #94, #92 |
+| `velocity` — ship when capacity allows | #98 |
 | `signal` — awaits user/data trigger | async ticker, guard daemon, content-hash, `bun --compile` binary, cross-platform CI, #89, #90, #91, #93, #95, #96, #99, #100, ARCH-P1 |
 | `architecture` — blocked on internal decision | stance-skill, docs-banner, `@gobbitools/cli` dep declaration |
 | `external` — blocked on upstream | `bun --compile` CI gate, npm publish |
@@ -169,30 +169,6 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 
 ---
 
-### `CLAUDE_CODE_VERSION` capture in delegation events
-
-**Source:** #92 (PR E follow-up L12-4)
-
-**Description:** Read `CLAUDE_CODE_VERSION` from the environment at delegation-spawn time and attach it to the `delegation.spawn` event payload, then surface in `gobbi workflow status` and `events` output. Currently no event captures the harness version, making cross-version debugging impossible.
-
-**Trigger:** A version-specific behavior difference between Claude Code releases causes a support case that cannot be diagnosed from the event log.
-
-**Trigger class:** `velocity`
-
----
-
-### `compileResumePrompt` differentiated diagnostic
-
-**Source:** #94 (PR E follow-up NEW-6)
-
-**Description:** `resolveResumeTargetStep` in `packages/cli/src/specs/errors.ts` throws the same error message for four distinct malformed-input classes: missing event, missing `targetStep` field, non-string `targetStep`, and empty-string `targetStep`. Differentiating by sub-class would let callers tell "no event" from "malformed event."
-
-**Trigger:** User reports confusion diagnosing a resume failure — the current uniform message blocks root-cause identification in a real debugging session.
-
-**Trigger class:** `velocity`
-
----
-
 ### Second e2e scenario: `workflow next` + verification runner
 
 **Source:** #95 (PR E follow-up NEW-7); also deferred per L-F10
@@ -216,18 +192,6 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 **Trigger class:** `signal`
 
 **Blocks:** #90 (overlapping scope — coordinate)
-
----
-
-### EventStore read-only query enforcement
-
-**Source:** #97 (PR E follow-up NEW-9)
-
-**Description:** Tighten `EventStore` query methods to reject writes at the type level — either via a class decorator convention, or by splitting into `WriteStore` + `ReadStore` interfaces with distinct method sets enforced via typing. The current `aggregateDelegationCosts()` approach eliminated raw-SQL-anywhere as a pattern but the enforcement is advisory rather than structural.
-
-**Trigger:** A Phase 3 type-system cleanup pass targets `EventStore`, or a new analytics method adds a read path that bypasses the existing transaction and audit machinery.
-
-**Trigger class:** `velocity`
 
 ---
 
