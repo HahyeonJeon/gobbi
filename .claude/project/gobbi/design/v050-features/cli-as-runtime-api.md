@@ -20,7 +20,7 @@ The configuration group reads and writes the three-tier `settings.json` cascade 
 
 ## Memory
 
-The memory group operates on the session event store and the memory stores described in `gobbi-memory.md`. It includes: a command to promote a gotcha from session capture at `.gobbi/projects/{project_name}/gotchas/` into project memory or cross-project plugin memory; a command to extract subagent transcripts from JSONL and write the result into the active step's `rawdata/` directory; and a command to extract plan artifacts from session transcripts. The JSONL schema is not self-evident — the CLI knows the schema and where to look, so agents do not have to parse it.
+The memory group operates on the session event store and the memory stores described in `gobbi-memory.md`. It includes: a command to promote a gotcha from session-level capture (transient) into the project-level gotcha store at `.gobbi/projects/{project_name}/gotchas/`, or into cross-project plugin gotchas at `.claude/skills/_gotcha/`; a command to extract subagent transcripts from JSONL and write the result into the active step's `rawdata/` directory; and a command to extract plan artifacts from session transcripts. The JSONL schema is not self-evident — the CLI knows the schema and where to look, so agents do not have to parse it.
 
 ## Rendering
 
@@ -41,6 +41,8 @@ Some operations require specialized tooling that agents cannot perform with Read
 ---
 
 ## Properties of the redesigned surface
+
+**Agent-oriented** — the CLI is designed for subagents and orchestrators, not for interactive human use. Human-friendly output is not a design goal; structured, parseable output for agent consumption is.
 
 **Deterministic** — the same input always produces the same output. Agents can call workflow or render commands in scripts or retries without unexpected side effects.
 
