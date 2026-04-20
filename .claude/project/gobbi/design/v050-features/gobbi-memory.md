@@ -12,10 +12,11 @@ Gobbi organizes everything that must persist across sessions under a `.gobbi/` d
 
 ## Tier 1 — User (`.gobbi/`)
 
-The outermost scope. Holds two workspace-wide artifacts:
+The outermost scope. Holds workspace-wide artifacts:
 
 - `settings.json` — user-wide preferences (covered in `gobbi-config.md`)
 - `gobbi.db` — the single SQLite event store for the entire workspace. Every workflow event across every project and every session is written here: `workflow.start`, step transitions, delegation events, evaluation verdicts, and artifact writes. Events carry project and session identifiers so they can be filtered and replayed on demand.
+- `skills/`, `agents/`, `rules/` — workspace-level Claude docs that the rendering pipeline uses as JSON source. These are not project-scoped; they apply across all projects in the workspace. How they relate to the plugin-shipped originals is covered in `claude-docs-management.md`.
 
 ---
 
@@ -40,12 +41,7 @@ Project memory splits into three groups:
 - `gotchas/` — per-project corrections agents must check before acting
 - `insights/` — observations and learnings that do not fit the other categories
 
-**Project-level Claude docs** — overrides or additions to the plugin-shipped skills, agents, and rules:
-- `agents/` — project-specific agent definitions
-- `rules/` — project-specific rules
-- `skills/` — project-specific skills
-
-How these project-level Claude docs relate to the plugin-shipped originals is covered in `claude-docs-management.md`.
+Skills, agents, and rules live at the workspace tier (`.gobbi/skills/`, `.gobbi/agents/`, `.gobbi/rules/`) — not the project tier. How workspace-level Claude docs relate to the plugin-shipped originals is covered in `claude-docs-management.md`.
 
 ---
 

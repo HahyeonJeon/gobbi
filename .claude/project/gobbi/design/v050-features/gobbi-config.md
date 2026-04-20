@@ -16,11 +16,11 @@ Gobbi resolves every setting by walking three `settings.json` files under `.gobb
 
 How this user likes gobbi to behave in this project. Session-independent; persists across every workflow run. Typical contents: preferred notification channel, preferred git mode, preferred base branch, UI verbosity level. Because this file is per-user and not per-session, it is the right place for personal defaults that should apply unless something narrower overrides them.
 
-**Tier 2 — Project policy** (`.gobbi/project/settings.json`)
+**Tier 2 — Project policy** (`.gobbi/projects/{project_name}/settings.json`)
 
 What this project requires regardless of who is running the workflow. Typical contents: project name, required install command, mandated base branch, project-specific model preferences, required evaluation perspectives. This file is committed to version control so the same policy applies to every contributor. It overrides user preferences wherever the two conflict.
 
-**Tier 3 — Session-specific** (`.gobbi/project/sessions/{session-id}/settings.json`)
+**Tier 3 — Session-specific** (`.gobbi/projects/{project_name}/sessions/{session_id}/settings.json`)
 
 This workflow's choices. Written during the Workflow Configuration step — the first of the six steps in the deterministic workflow. Typical contents: task statement, trivial range, per-loop `eval_enabled` and `max_iterations`, active notification channels for this session, session-level overrides of user or project defaults. This tier wins over both wider tiers. When the session ends, the file remains as a record of how that run was configured.
 
