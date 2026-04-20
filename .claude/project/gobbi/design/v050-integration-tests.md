@@ -90,7 +90,7 @@ The tier selection mechanism is simple: each scenario file imports `getHarness()
   └────────────────────────────────────────────────────────────────────────┘
 ```
 
-The workspace root is `tests/integration/`, a new Bun workspace member declared in the root `package.json`'s `workspaces` array as `"tests/*"`. It depends on `@gobbitools/cli` for the CLI binary path and declares `@anthropic-ai/claude-agent-sdk` as a peer-optional dep for the live tier (see Appendix A). No file in `packages/cli/src/` is modified as part of creating this workspace, with the single exception of the `GOBBI_TEST_NOW_MS` check in `engine.ts::effectiveTs` described in §4.3.
+The workspace root is `tests/integration/`, a new Bun workspace member declared in the root `package.json`'s `workspaces` array as `"tests/*"`. It depends on `@gobbitools/cli` for the CLI binary path and declares `@anthropic-ai/claude-agent-sdk` as a peer-optional dep for the live tier (see Appendix A). No file in `packages/cli/src/` is modified as part of creating this workspace, with the exception of two time-control touch points described in §4.3: the `GOBBI_TEST_NOW_MS` check in `engine.ts::appendEventAndUpdateState` and the corresponding check in `stop.ts::runStopWithOptions`.
 
 The diagram above represents the **steady-state runtime flow** for a single scenario event in the deterministic tier. Each call to `harness.emit(payload)` triggers one full right-to-left traversal: harness builds stdin JSON → spawns CLI subprocess → CLI writes event + updates state.json → subprocess exits → harness reads assertions → test proceeds to the next event. The `assertions/` layer only runs after all events in the tape have been emitted; it never observes partial state mid-tape. The reducer-replay check (§5.2) runs in teardown, after the test's primary assertions have already passed or failed.
 
@@ -102,9 +102,9 @@ The diagram above represents the **steady-state runtime flow** for a single scen
 | `harness/agent-sdk-harness.ts` | Wraps `@anthropic-ai/claude-agent-sdk`'s `query()`. Maps the SDK's `options.hooks` callbacks to `gobbi workflow` subprocess calls, threading each hook payload as stdin. Live-tier driver. Loaded only when `GOBBI_INTEGRATION_LIVE=1` is set; never imported by the deterministic path. | ~300 |
 | `harness/payloads.ts` | Typed builders for every Claude Code hook payload — `SessionStart`, `PreToolUse`, `PostToolUse`, `SubagentStop`, `Stop`. This is the single canonical module for payload shapes. Guards against the shared-type divergence pattern documented in `phase2-planning.md §"Parallel waves defining shared types silently diverge"` — all other harness files import payload types from here, never redeclare. | ~150 |
 | `harness/clock.ts` | Reads `GOBBI_TEST_NOW_MS` env var for per-subprocess clock override. Exposes `clockEnv(epochMs)` that returns `{ GOBBI_TEST_NOW_MS: String(epochMs) }` for inclusion in the `Bun.spawn` env. Wraps the `effectiveTs` seam PR E.10 introduced in `packages/cli/src/workflow/engine.ts`. | ~30 |
-| `assertions/event-store.ts` | Read-only assertion facade over a session's `gobbi.db`. Exposes `hasEventOfType(type, matchData?)`, `toMatchEventSequence([...types])`, `state()`, and `replayState()`. Imports `ReadStore` from the `@gobbitools/cli` export surface — the `ReadStore` split shipped in PR #97 (issue #103) means `gobbi.db` reads do not require the write-side store. | ~120 |
+| `assertions/event-store.ts` | Read-only assertion facade over a session's `gobbi.db`. Exposes `hasEventOfType(type, matchData?)`, `toMatchEventSequence([...types])`, `state()`, and `replayState()`. Imports `ReadStore` from the `@gobbitools/cli` export surface — the `ReadStore` split shipped in PR #97 (issue #103) means `gobbi.db` reads do not require the write-side store. (This import requires `packages/cli/package.json` to add an `exports` field and a `src/index.ts` re-export module — implementation-phase work scoped to PC-2 and PC-3.) | ~120 |
 | `assertions/prompts.ts` | Invokes `gobbi workflow next` as a subprocess, captures stdout, and calls `expect(stdout).toMatchSnapshot(snapshotName)`. Snapshot files committed to `tests/integration/fixtures/snapshots/`. | ~40 |
-| `assertions/replay.ts` | Implements the reducer-replay determinism check (§5.2). Reads `gobbi.db` event log, replays through `reduce(state, event, ts)` imported from `packages/cli/src/workflow/reducer.ts`, asserts deep equality with the `state.json` on disk. | ~80 |
+| `assertions/replay.ts` | Implements the reducer-replay determinism check (§5.2). Reads `gobbi.db` event log, replays through `reduce(state, event, ts)` imported from `packages/cli/src/workflow/reducer.ts`, asserts deep equality with the `state.json` on disk. (The `reduce` and `deriveState` imports require the `exports` field addition to `packages/cli/package.json` — see PC-2 and PC-3.) | ~80 |
 | `fixtures/temp-session.ts` | `mkdtempSync(tmpdir(), 'gobbi-int-')` lifecycle. Creates the `.gobbi/` root, runs `gobbi workflow init` (which seeds `seq=1,2` per `phase2-planning.md §"gobbi workflow init pre-seeds events at seq=1,2"` — direct fixture writes must use `seq ≥ 100`), returns a `SessionContext`, registers `afterEach` cleanup via `rmSync(tmpRoot, { recursive: true, force: true })`. | ~60 |
 | `fixtures/transcripts/` | Pre-baked subagent transcript JSONL files for F4 scenarios: one parseable, one unparseable, one empty (simulating missing). | static |
 | `fixtures/snapshots/` | Committed `bun:test` snapshot files for F2 prompt-compilation scenarios. These are the "expected output" reference for prompt regressions. | static |
@@ -147,7 +147,16 @@ Building a full fake Claude Code harness was considered and rejected. Anthropic 
 
 **Pick: thread a clock source through `effectiveTs` and read it from `GOBBI_TEST_NOW_MS`.**
 
-PR E.10 introduced `reduce(state, event, ts?)` with the third param plumbed from `engine.ts::effectiveTs`. The full rationale is in `phase2-planning.md §"reduce(state, event) has no event.ts"`. The existing seam is sufficient for clock control: one line added to `engine.ts::effectiveTs` reads `process.env.GOBBI_TEST_NOW_MS` first, falling back to `row.ts` or `Date.now()`. Scenarios set `GOBBI_TEST_NOW_MS=<epoch_ms>` in the `cliEnv` object passed to `Bun.spawn`. The `harness/clock.ts` module wraps this injection point and exposes `clockEnv(epochMs)` for use in scenario tapes. The harness can increment the value between events for multi-turn scenarios that need to simulate elapsed time (the timeout-detection scenarios in particular need the clock advanced past `state.stepStartedAt + configuredTimeoutMs`).
+PR E.10 introduced `reduce(state, event, ts?)` with the third param plumbed from `engine.ts::appendEventAndUpdateState` (local const `effectiveTs`, line ~138). The full rationale is in `phase2-planning.md §"reduce(state, event) has no event.ts"`. Clock control requires modifying two production touch points — both must consult `GOBBI_TEST_NOW_MS` from the environment, either via the env var directly or via a shared helper:
+
+1. **`engine.ts::appendEventAndUpdateState` (local const `effectiveTs`, line ~138)** — one line added reads `process.env.GOBBI_TEST_NOW_MS` first, falling back to `row.ts` or `Date.now()`. This controls the timestamp written for every event appended via `appendEventAndUpdateState`.
+2. **`stop.ts::runStopWithOptions` (line ~204)** — `const now = overrides.now === undefined ? new Date() : overrides.now()` is an in-process override that does not reach the `GOBBI_TEST_NOW_MS` env var when `stop` runs as a CLI subprocess. The same env-var check must be added here to control the heartbeat timestamp and timeout-detection clock in the Stop hook path.
+
+Without both touch points, any scenario that exercises timeout detection or heartbeat emission via the Stop hook will be non-deterministic in the subprocess harness. PC-7 (below) names `stop.ts` as a required edit site alongside `engine.ts`.
+
+`GOBBI_TEST_NOW_MS` is a new env var (not yet present in either file as of 2026-04-20) that must be added during the integration workspace setup phase. It carries the clock value as epoch milliseconds; the CLI converts it via `new Date(Number(process.env.GOBBI_TEST_NOW_MS)).toISOString()` to match the ISO string format the event store and reducer expect. Epoch milliseconds were chosen over an ISO string (the innovative-stance input proposed `GOBBI_TEST_CLOCK` as an ISO string) because: (a) numeric arithmetic is simpler on the CLI side — no parse step needed for elapsed-time comparisons; (b) the round-trip with `Date.now()` is clean — no formatting ambiguity. The CLI converts to ISO when emitting events.
+
+Scenarios set `GOBBI_TEST_NOW_MS=<epoch_ms>` in the `cliEnv` object passed to `Bun.spawn`. The `harness/clock.ts` module wraps this injection point and exposes `clockEnv(epochMs)` for use in scenario tapes. The harness can increment the value between events for multi-turn scenarios that need to simulate elapsed time (the timeout-detection scenarios in particular need the clock advanced past `state.stepStartedAt + configuredTimeoutMs`).
 
 `bun:test` fake timers were considered and rejected: Bun's test runner does not expose `useFakeTimers` primitives (confirmed against the Bun test docs), and even if it did, the CLI runs in a subprocess where in-process fake timers cannot reach. Monkey-patching `Date.now()` at CLI module-load time was rejected: fragile, requires a test-only module hook, and creates a divergence risk between the production `Date.now()` call sites and the reducer's `event.ts` access. Third-party fake-timer libraries were rejected: a new dep for a one-line env-var check violates the architectural constraint of zero new production deps.
 
@@ -242,7 +251,7 @@ The `HooksHarness` emits payloads for specific hook events. If a hook event the 
 
 The drift assertion is a meta-scenario — a test that runs once per suite and verifies the harness and `hooks.json` agree on the full hook event inventory. The scenario loads `plugins/gobbi/hooks/hooks.json`, iterates every hook event name that `harness/payloads.ts` can build (the typed builders are the definitive list of events the harness knows about), and asserts each has a matching `hooks.json` entry with a non-empty `command` field. It also iterates the reverse: every `hooks.json` entry must have a corresponding payload builder in `harness/payloads.ts`.
 
-This is the mechanism that would have caught #102 at the harness level even earlier. When the `delegation.spawn` emitter was missing, the PreToolUse-Task entry in `hooks.json` pointed at `gobbi workflow guard` which returned `allow` without writing the spawn event. The drift assertion would have surfaced "PreToolUse-Task entry present in hooks.json, hook emitted by harness, but `delegation.spawn` never appears in event store" as a failing scenario rather than a silent pass. The F1.1 scenario catches the event-store side; the drift assertion catches the registration side. Both guards are necessary. (Source: innovative-stance ideation §4.2, the hooks.json cross-check innovation.)
+The drift assertion catches a specific, narrow bug class: registration drift between the hook event names the harness knows about (the `harness/payloads.ts` typed builders) and the hook event names declared in `hooks.json`. It does NOT catch event-emission bugs such as #102 — when `delegation.spawn` was missing, `PreToolUse` was registered on both sides (`harness/payloads.ts` has a `PreToolUse` builder; `hooks.json` has a `PreToolUse` entry). The drift assertion would PASS with #102 present because the registration inventory was correct; the emitter-wiring was not. The test that catches the #102 bug class is F1.1 (`spawn-emitter.test.ts`), which asserts that a `delegation.spawn` event actually appears in the event store after the harness emits a `PreToolUse(Task)` payload. The drift assertion and F1.1 are complementary guards catching different failure classes: the drift assertion catches "hook registered in hooks.json but harness cannot build its payload" and vice versa; F1.1 catches "hook fires correctly but the command does not write the expected downstream event." (Source: innovative-stance ideation §4.2, the hooks.json cross-check innovation.)
 
 The drift assertion lives in `tests/integration/scenarios/F1-hook-cli-wiring/hooks-json-drift.test.ts` (labeled F1.0-meta in §6). It is a structural test — it verifies that the inventory of hook events the harness knows about and the inventory `plugins/gobbi/hooks/hooks.json` declares are in sync. It does not verify that individual event payloads are correct (that is the job of the per-scenario assertions). It fires once per suite run before any session-level scenario executes.
 
@@ -271,7 +280,7 @@ The deep-equality assertion should exclude ephemeral fields that the CLI writes 
 
 ---
 
-## 5.3 Fixture Sequencing and Session Lifecycle
+### 5.3 Fixture Sequencing and Session Lifecycle
 
 > **Every scenario starts from `gobbi workflow init`, not from direct database writes.**
 
@@ -285,11 +294,13 @@ For scenarios that need `state.json` to reflect the seeded events before the fir
 
 ---
 
-## 5.4 Planner Preconditions
+### 5.4 Planner Preconditions
 
 Before writing execution tasks for the integration suite, the planner must verify six preconditions. These are planning-time reads, not implementation tasks, but failing to verify them produces briefs that direct executors to wrong locations or wrong API shapes — the class of briefing defect documented in `delegation-discipline.md §"Briefing references non-existent production code path"`.
 
 **PC-1: Issue #102 emitter fix must land before F1.1 can pass green.** The F1.1 scenario (`spawn-emitter.test.ts`) will fail on a red assertion until the `delegation.spawn` emitter is wired in the production code path (the fix for issue #102). The planner must decide whether to sequence the integration suite implementation after the #102 fix or to implement F1.1 first as a "currently-failing" regression guard and the #102 fix second. Either sequencing is valid; the plan must state which is chosen and adjust task ordering accordingly.
+
+> **What the #102 fix consists of:** A new CLI command `packages/cli/src/commands/workflow/capture-spawn.ts` (`gobbi workflow capture-spawn`) that reads a PreToolUse stdin payload, extracts `tool_use_id` and subagent metadata, and writes a `delegation.spawn` event to the event store. This command is wired by a new `PreToolUse` matcher entry in `plugins/gobbi/hooks/hooks.json` and in `.claude/settings.json` that triggers when `tool_name === 'Task'` (or `'Agent'`). The existing blanket `PreToolUse` entry routes to `gobbi workflow guard` for permission decisions; the new matcher entry routes the same task-tool event to `gobbi workflow capture-spawn` for spawn emission — two separate hook entries, each with its own responsibility. **Rejected alternative:** extending `guard.ts` to also emit `delegation.spawn` for task-tool PreToolUse payloads. Rejected because `guard.ts` is the latency-critical hotpath — it runs synchronously before Claude Code proceeds with the tool call. Adding spawn-emission logic to guard conflates permission enforcement (low latency required) with event recording (can be async). The separate `capture-spawn` command keeps guard narrow and its performance budget unaffected.
 
 **PC-2: `reduce` and `deriveState` must be exported from `@gobbitools/cli`.** The reducer-replay check (§5.2) imports these functions from the `@gobbitools/cli` package export. Verify that `packages/cli/src/index.ts` (or the equivalent entry point declared in `packages/cli/package.json`'s `exports` field) exports both. If not, the plan must include a task to add the exports before the replay assertion can be implemented.
 
@@ -299,7 +310,9 @@ Before writing execution tasks for the integration suite, the planner must verif
 
 **PC-5: `gobbi workflow init` event count.** Per `phase2-planning.md §"gobbi workflow init pre-seeds events at seq=1,2"`, init seeds exactly 2 events at `seq=1,2`. Verify this count has not changed since that gotcha was recorded by reading `packages/cli/src/commands/workflow/init.ts`. If init now seeds a different number of events, the `seq ≥ 100` fixture offset floor remains safe (the gotcha recommends ≥ 100 as a conservative buffer), but the briefing for `fixtures/temp-session.ts` should document the actual init event count.
 
-**PC-6: Clock env-var injection point existence.** The `GOBBI_TEST_NOW_MS` env-var check must be added to `engine.ts::effectiveTs` as part of the integration workspace setup (it is the one production-code touch point). Verify the current signature of `effectiveTs` in `packages/cli/src/workflow/engine.ts` and confirm the modification described in §4.3 is still the right location. If `effectiveTs` was refactored since PR E.10 landed, the briefing must reference the updated function name and file path.
+**PC-6: Clock env-var injection point in `engine.ts`.** The `GOBBI_TEST_NOW_MS` env-var check must be added to the local const `effectiveTs` inside `appendEventAndUpdateState` in `packages/cli/src/workflow/engine.ts` (line ~138). Verify the current shape of that local variable by reading the file; if `effectiveTs` was refactored since PR E.10 landed, the briefing must reference the updated location.
+
+**PC-7: Clock env-var injection point in `stop.ts`.** The same `GOBBI_TEST_NOW_MS` env-var check must be added to `packages/cli/src/commands/workflow/stop.ts` at the `const now = ...` line (~204) inside `runStopWithOptions`. The existing `overrides.now` path is an in-process injection (unit-test only); the env-var path is required for subprocess-mode clock control that integration scenarios need for timeout-detection assertions. Both `engine.ts` and `stop.ts` are required edit sites — the integration workspace setup plan must include both as implementation tasks.
 
 ---
 
@@ -347,7 +360,7 @@ Expected wall time: < 3 s total.
 
 **F2.2 — `error-pathway-prompts.test.ts`** (F2 prompt-compilation)
 _Catches resume-prompt drift across the four error pathways documented in `v050-cli.md §gobbi workflow next`._
-- Parameterized via `describe.each` over `['normal_crash', 'timeout', 'feedback_cap', 'invalid_transition']`.
+- Parameterized via `describe.each` over `['crash', 'timeout', 'feedbackCap', 'invalidTransition']` — these are the canonical `ErrorPathwayKind` values from `packages/cli/src/specs/errors.ts:61–66`. The prose names "crash pathway," "timeout pathway," "feedback-cap pathway," and "invalid-transition pathway" map to these identifiers respectively.
 - Given: event sequence and error state seeded for the pathway (clock advanced past timeout for the `timeout` case via `GOBBI_TEST_NOW_MS`).
 - When: `gobbi workflow resume` is invoked.
 - Then: stdout matches committed snapshot at `fixtures/snapshots/<pathway>-resume.snap`.
@@ -356,7 +369,7 @@ Expected wall time: < 3 s total.
 **F3.1 — `eval-revise-loop.test.ts`** (F3 state-machine)
 _Catches reducer regressions in the feedback-loop branch — the most error-prone transition path per the state machine in `v050-state-machine.md`._
 - Given: session at `execution_eval` with `feedbackRound: 1`.
-- When: transition event arrives with `verdict: 'revise'`, `loopTarget: 'plan'`.
+- When: a `decision.eval.verdict` event with `verdict: 'revise'`, `loopTarget: 'plan'` is appended directly to the event store via `store.append` at `seq ≥ 100` (the §5.3/PC-5 direct-append contract). This is not a `gobbi workflow transition` CLI invocation — §5.3 explicitly forbids using `gobbi workflow transition` for fixture state setup because it requires full stdin payloads. In the deterministic test tier, the transition event is seeded as a direct store append; in the live tier, a real evaluation subagent arrives at the verdict organically and the event is written by the SDK harness.
 - Then: `state.currentStep === 'plan'`; `state.feedbackRound === 2`; transition event recorded in event store; reducer-replay check passes.
 Expected wall time: < 1 s.
 
@@ -364,7 +377,7 @@ Expected wall time: < 1 s.
 _Catches the feedbackRound overflow path — the reducer must transition to `error` not loop on the Nth revise._
 - Given: session in `execution_eval` with `feedbackRound === maxFeedbackRounds`.
 - When: transition event arrives with `verdict: 'revise'`.
-- Then: `state.currentStep === 'error'`; `state.error.pathway === 'feedback_cap'`; no further `execution` or `plan` event follows.
+- Then: `state.currentStep === 'error'`; `state.error.pathway === 'feedbackCap'`; no further `execution` or `plan` event follows.
 Expected wall time: < 1 s.
 
 **F4.1 — `spawn-complete-link.test.ts`** (F4 subagent lifecycle)
