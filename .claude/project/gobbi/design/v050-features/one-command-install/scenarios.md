@@ -122,6 +122,33 @@ Evidence: `.claude/skills/gobbi/SKILL.md` §FOURTH ("reuse them or reconfigure")
 
 ---
 
+### O-CI-H-05: Installed CLI version is stale — agent updates before setup
+
+Given `@gobbitools/cli` is installed globally at version N-1
+And the current release is version N
+And `README.md` paragraph 2 claims `/gobbi` checks whether the CLI version is current and updates if outdated
+And `SKILL.md §THIRD` is the authoritative install check
+
+When the user invokes `/gobbi`
+And step THIRD of `gobbi/SKILL.md` runs its version check
+
+Then the session agent detects that the installed version is stale relative to the current release
+And offers to update via `npm install -g @gobbitools/cli@latest`
+And re-verifies `gobbi --version` after update before proceeding to step FOURTH
+
+State trace:
+  - before: stale `gobbi` on PATH (`gobbi --version` exits 0 but returns an older semver); no version-comparison code path in `SKILL.md §THIRD`
+  - after (ASPIRATIONAL): updated `gobbi` on PATH; `gobbi --version` returns the current release's semver; session agent proceeds to step FOURTH (session-config detection) and then step FIFTH (setup questions) as in O-CI-H-01/H-02
+  - negative: agent does NOT silently use the stale CLI; no `gobbi workflow *` invocation runs against a stale binary
+
+Anti-outcome:
+  - agent does NOT skip the version-currency check and proceed with a stale CLI
+  - agent does NOT auto-update without surfacing the old/new versions to the user first
+
+Evidence: `.claude/CLAUDE.md` README feature narrative (via `README.md` paragraph 2: "the session agent checks whether `gobbi-cli` is installed and whether its version is current. If the CLI is missing or outdated, the session agent installs or updates it automatically"); `.claude/skills/gobbi/SKILL.md` §THIRD — note: the entire version-currency branch is `(ASPIRATIONAL — current SKILL.md §THIRD only runs `gobbi --version` to check availability, not to compare the returned semver against a current-release target; the update-when-stale behavior narrated by README.md is not yet implemented)`; review.md should file this as a DRIFT between `README.md` and `SKILL.md §THIRD`, and checklist.md should tag its items for this scenario as blocked on the implementation pass
+
+---
+
 ## Error paths
 
 ### O-CI-E-01: `npm install -g` fails — agent surfaces the error and pauses
@@ -185,7 +212,7 @@ And the second version check still exits non-zero with "command not found"
 
 Then the session agent branches on the "install exit 0 AND version check still failing" condition
 And loads `cli-setup.md §Troubleshooting` row matching `gobbi: command not found`
-And surfaces the PATH diagnosis to the user, naming `npm config get prefix` as the check and `$PREFIX/bin` as the fix
+And surfaces a PATH diagnosis to the user, pointing at `cli-setup.md §Troubleshooting` for remediation
 And pauses the session before any `gobbi workflow init` invocation
 
 State trace:
@@ -198,7 +225,7 @@ Anti-outcome:
   - agent does NOT auto-retry the install (which would exit 0 again and not fix PATH)
   - agent does NOT offer Option 3 (`bun packages/cli/bin/gobbi.js`) as the remedy — the hooks in `plugins/gobbi/hooks/hooks.json` use bare `gobbi` and would still fail
 
-Evidence: `.claude/skills/gobbi/cli-setup.md` §Troubleshooting row 1 (`gobbi: command not found` → `npm install -g @gobbitools/cli`) and row 4 (`Hooks fail silently` → "Ensure global install — hooks run in a shell that may not have local `node_modules/.bin` in PATH"); `plugins/gobbi/hooks/hooks.json` (bare `gobbi` commands, not `bun path/to/gobbi.js`); `.claude/skills/gobbi/cli-setup.md` §Installation Option 3 note
+Evidence: `.claude/skills/gobbi/cli-setup.md` §Troubleshooting row 1 (`gobbi: command not found` → `npm install -g @gobbitools/cli`) and row 4 (`Hooks fail silently` → "Ensure global install — hooks run in a shell that may not have local `node_modules/.bin` in PATH"); `plugins/gobbi/hooks/hooks.json` (bare `gobbi` commands, not `bun path/to/gobbi.js`); `.claude/skills/gobbi/cli-setup.md` §Installation Option 3 note — note: specific remediation guidance naming `npm config get prefix` as the check and `$PREFIX/bin` as the fix is `(ASPIRATIONAL — cli-setup.md §Troubleshooting does not currently contain this specific guidance)`; review.md should file this as a GAP against the existing Troubleshooting table
 
 ---
 
