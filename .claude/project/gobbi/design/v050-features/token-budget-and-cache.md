@@ -4,7 +4,7 @@ Feature description for gobbi's cost efficiency mechanisms. Read this to underst
 
 ---
 
-> **Static content first, always. Cache prefix stability is not a preference — it is an invariant the spec schema enforces.**
+> **Static content first, always. Cache prefix stability is not a preference — it is an invariant the spec model enforces.**
 
 Long workflows are expensive. Every evaluation loop, every feedback round, every subagent delegation is a fresh API call. Gobbi addresses this at two levels: cache-aware prompt ordering that maximizes the prefix shared across calls, and token budget allocation that prevents overflow rather than discovering it at runtime.
 
@@ -14,7 +14,9 @@ The **session section** holds content stable within a session but not across ses
 
 The **dynamic section** holds per-invocation content: step-specific instructions, inlined prior step output, delegation targets, timestamps. No cache benefit is expected here.
 
-The ordering is not configurable by accident. The spec schema enforces that `static` blocks always precede `conditional` blocks, which always precede `delegation` blocks. No spec can place a dynamic or conditional block before the static prefix — the constraint is structural, not advisory. Placing dynamic content before static content destroys prefix stability and turns every call into a full-cost computation.
+The ordering is not configurable by accident. The spec model enforces that `static` blocks always precede `conditional` blocks, which always precede `delegation` blocks. No spec can place a dynamic or conditional block before the static prefix — the constraint is structural, not advisory. Placing dynamic content before static content destroys prefix stability and turns every call into a full-cost computation.
+
+Allocation priority is a separate lens from the physical three-section ordering: sections are laid out `static → session → dynamic` for cache stability, while truncation priority (below) decides what gets kept when the budget is tight.
 
 Token budget allocation runs before rendering. The CLI knows the configured model's context window, allocates tokens across sections in priority order (static prefix → gotchas → step instructions → inlined artifacts → supplementary materials), and truncates at section boundaries — an artifact is included in full or excluded entirely. If the sum of section minimums exceeds the context window, the CLI emits a descriptive error identifying which sections contribute to the overflow.
 
