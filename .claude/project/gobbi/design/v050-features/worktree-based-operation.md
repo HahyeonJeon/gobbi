@@ -6,7 +6,7 @@ Feature description for gobbi's worktree isolation model. Read this to understan
 
 > **One worktree, one branch, one PR. Parallel tasks are parallel repositories — they cannot contaminate each other.**
 
-Gobbi runs each task in its own git worktree under `.claude/worktrees/{branch-path}/`. A worktree is a full working copy of the repository at a specific branch. Two tasks in two worktrees share git history but have independent working trees — a file edited in one worktree does not affect the other until it is merged. This is isolation by construction, not by discipline.
+Gobbi runs each task in its own git worktree under `.gobbi/worktrees/{branch-path}/`. A worktree is a full working copy of the repository at a specific branch. Two tasks in two worktrees share git history but have independent working trees — a file edited in one worktree does not affect the other until it is merged. This is isolation by construction, not by discipline.
 
 The base branch is verified before cutting a worktree: the CLI checks that the base branch is up to date before creating the task branch. This prevents a common failure mode where a task branch is cut from a stale base and later requires a complex rebase before its PR can merge cleanly. Each worktree runs its own install after creation — dependencies are resolved in the task's environment, not inherited from the parent.
 
@@ -22,5 +22,6 @@ After a PR is merged, the worktree is cleaned up. The branch is removed, the wor
 
 | Document | Covers |
 |----------|--------|
-| `../../skills/_git/SKILL.md` | Git workflow conventions, worktree lifecycle, branch naming |
-| `../../skills/_git/conventions.md` | Branch naming, commit messages, PR template, sub-issues |
+| `deterministic-orchestration.md` | How Workflow Configuration creates the worktree when git mode is worktree-PR |
+| `gobbi-memory.md` | How worktree-scoped work writes artifacts into the active session's `rawdata/` directories |
+| `cli-as-runtime-api.md` | The CLI surface that manages the worktree lifecycle (creation, cleanup, base-branch verification) |
