@@ -12,7 +12,7 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 |---|---|
 | `velocity` — ship when capacity allows | #98 |
 | `signal` — awaits user/data trigger | async ticker, guard daemon, content-hash, `bun --compile` binary, cross-platform CI, #89, #90, #91, #93, #95, #96, #99, #100, ARCH-P1 |
-| `architecture` — blocked on internal decision | stance-skill, docs-banner, `@gobbitools/cli` dep declaration |
+| `architecture` — blocked on internal decision | stance-skill, banner, `@gobbitools/cli` dep declaration |
 | `external` — blocked on upstream | `bun --compile` CI gate, npm publish |
 
 ---
@@ -77,7 +77,7 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 
 ---
 
-### Docs-banner CLI helper
+### Banner CLI helper
 
 **Source:** #77 Deferred to Phase 3 (item 6)
 
