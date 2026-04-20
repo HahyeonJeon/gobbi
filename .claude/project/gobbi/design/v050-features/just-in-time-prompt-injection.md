@@ -20,5 +20,6 @@ The contrast with v0.4.x is mechanical: in v0.4.x, a skill loaded for one step s
 
 | Document | Covers |
 |----------|--------|
-| `../v050-prompts.md` | Prompt compilation pipeline, cache-aware ordering, skills boundary, fresh context per task |
-| `../v050-hooks.md` | PreToolUse guard mechanics, SubagentStop capture, Stop hook behavior |
+| `deterministic-orchestration.md` | The state machine whose step transitions trigger prompt emission |
+| `prompts-as-data.md` | The step specs that get compiled into prompts |
+| `token-budget-and-cache.md` | How the assembled prompt is ordered for cache stability |
