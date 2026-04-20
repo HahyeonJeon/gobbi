@@ -6,7 +6,7 @@ Feature description for gobbi's three-tier configuration model. Read this to und
 
 > **Configuration is a cascade: session wins over project, project wins over user. Each tier provides defaults for the narrower tier below it — and the narrower tier can always override.**
 
-Gobbi resolves every setting by walking three `settings.json` files under `.gobbi/`, from narrowest to widest scope. The CLI reads and writes all three through `gobbi config` commands. Direct file edits are not the normal path — the CLI handles validation, cascade semantics, and format consistency.
+Gobbi resolves every setting by walking three `settings.json` files under `.gobbi/`, from narrowest to widest scope. The CLI reads and writes all three through config-management commands (names TBD — the CLI surface is being redesigned). Direct file edits are not the normal path — the CLI handles validation, cascade semantics, and format consistency.
 
 ---
 
@@ -14,11 +14,11 @@ Gobbi resolves every setting by walking three `settings.json` files under `.gobb
 
 **Tier 1 — User preferences** (`.gobbi/settings.json`)
 
-How this user likes gobbi to behave in this project. Session-independent; persists across every workflow run. Typical contents: preferred notification channel, preferred git mode, preferred base branch, UI verbosity level. Because this file is per-user and not per-session, it is the right place for personal defaults that should apply unless something narrower overrides them.
+Workspace-scoped user preferences. This tier applies across every project under this `.gobbi/` root — session-independent, project-independent, persistent across every workflow run in the workspace. Typical contents: preferred notification channel, preferred git mode, preferred base branch, UI verbosity level. It is the right place for personal defaults that should apply unless something narrower overrides them.
 
 **Tier 2 — Project policy** (`.gobbi/projects/{project_name}/settings.json`)
 
-What this project requires regardless of who is running the workflow. Typical contents: project name, required install command, mandated base branch, project-specific model preferences, required evaluation perspectives. This file is committed to version control so the same policy applies to every contributor. It overrides user preferences wherever the two conflict.
+What this project requires regardless of who is running the workflow. Typical contents: project name, required install command, mandated base branch, required test command, project-specific model preferences. This file is committed to version control so the same policy applies to every contributor. It overrides user preferences wherever the two conflict.
 
 **Tier 3 — Session-specific** (`.gobbi/projects/{project_name}/sessions/{session_id}/settings.json`)
 
@@ -34,7 +34,7 @@ When the CLI reads a setting it checks the session file first, then the project 
 
 ## Workflow Configuration and the Session Tier
 
-The session-tier file is not created manually. The Workflow Configuration step (step one of six) collects the user's choices for the upcoming workflow — mode selection expressed as per-loop `eval_enabled` and `max_iterations`, git mode, trivial range, notification channels, and task statement — and writes them to the session file via `gobbi config`. From that point forward, every agent in the workflow reads the session file through the CLI and gets consistent values.
+The session-tier file is not created manually. The Workflow Configuration step (step one of six) collects the user's choices for the upcoming workflow — mode selection expressed as per-loop `eval_enabled` and `max_iterations`, git mode, trivial range, notification channels, and task statement — and writes them to the session file via the CLI's config-management commands. From that point forward, every agent in the workflow reads the session file through the CLI and gets consistent values.
 
 ---
 
