@@ -38,7 +38,7 @@ Think big picture: what approach to take, which architectural decisions to make,
 
 > **Results directory for detailed reference materials.**
 
-Beyond the summary notes, researchers save detailed findings — relevant code snippets found in the codebase, API documentation excerpts, comparison tables, pattern analysis — in the `research/results/` directory. These are reference materials that the synthesis note and executors can draw on.
+Beyond the summary notes, researchers save detailed findings — relevant code snippets found in the codebase, API documentation excerpts, comparison tables, pattern analysis — in the `ideation/results/` directory. These are reference materials that the synthesis note and executors can draw on.
 
 ---
 
@@ -70,28 +70,28 @@ Both stances share a common investigation discipline regardless of their perspec
 - Organize findings by plan task — each task in the approved plan gets a section
 - Include specific file paths, function names, documentation links, and patterns — references are your primary deliverable
 - Focus on approach direction and trade-offs, not step-by-step implementation — executors own the implementation details
-- Save detailed reference materials (comparison tables, API excerpts, code snippets found, pattern analysis) to `research/results/`
+- Save detailed reference materials (comparison tables, API excerpts, code snippets found, pattern analysis) to `ideation/results/`
 - Be explicit about confidence level — distinguish "this is proven in the codebase" from "this is my recommendation based on external reading"
 
 ---
 
 ## What Research Produces
 
-Research writes to the note directory for the current task. The orchestrator initializes the `research/` subdirectory and the `research/results/` directory before spawning researchers.
+Research writes to the note directory for the current task. The orchestrator initializes the `ideation/` subdirectory and the `ideation/results/` directory before spawning researchers.
 
 | File | Author | Contains |
 |---|---|---|
-| `research/innovative.md` | Innovative researcher | Approach direction, architectural ideas, cross-domain patterns, trade-off analysis — organized by plan task |
-| `research/best.md` | Best-practice researcher | Approach direction, proven patterns, community standards, key references — organized by plan task |
-| `research/research.md` | Orchestrator | Recommended direction per plan task with cited references — which approach to take and why, not how to code it |
-| `research/results/` | Both researchers | Reference materials: relevant code snippets from the codebase, API documentation excerpts, comparison tables, pattern analysis |
-| `research/subtasks/01-{slug}.json` | Post-hook | Subtask records extracted from researcher transcripts |
+| `ideation/innovative.md` | Innovative researcher | Approach direction, architectural ideas, cross-domain patterns, trade-off analysis — organized by plan task |
+| `ideation/best.md` | Best-practice researcher | Approach direction, proven patterns, community standards, key references — organized by plan task |
+| `ideation/research.md` | Orchestrator | Recommended direction per plan task with cited references — which approach to take and why, not how to code it |
+| `ideation/results/` | Both researchers | Reference materials: relevant code snippets from the codebase, API documentation excerpts, comparison tables, pattern analysis |
+| `ideation/subtasks/01-{slug}.json` | Post-hook | Subtask records extracted from researcher transcripts |
 
 ---
 
 ## When to Research
 
-Research is the investigation loop within Ideation — after Plan approval, before Execution begins.
+Research is the investigation loop inside the Ideation step — used during Ideation before the approach is locked for planning.
 
 - **Always research** for non-trivial tasks — any task that involves design decisions, unfamiliar code areas, or multiple possible implementation approaches
 - **Skip research** for structured routines where the execution pattern is fully known — applying a well-documented migration, running a standard release process, or following a step-by-step procedure that has been done before
@@ -101,7 +101,7 @@ Research is the investigation loop within Ideation — after Plan approval, befo
 
 ## Orchestrator Synthesis
 
-After both researcher agents complete, the orchestrator reads `innovative.md` and `best.md` and writes `research.md`. The synthesis is not a merge — it is a judgment call that draws from both stances to produce the best implementation guidance.
+After both researcher agents complete, the orchestrator reads `ideation/innovative.md` and `ideation/best.md` and writes `ideation/research.md`. The synthesis is not a merge — it is a judgment call that draws from both stances to produce the best implementation guidance.
 
 - Organize by plan task — each task in the approved plan gets a section in `research.md` with the relevant findings
 - For each task, state the recommended approach and which stance it draws from
