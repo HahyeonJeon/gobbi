@@ -12,7 +12,7 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 |---|---|
 | `velocity` — ship when capacity allows | #98 |
 | `signal` — awaits user/data trigger | async ticker, guard daemon, content-hash, `bun --compile` binary, cross-platform CI, #89, #90, #91, #93, #95, #96, #99, #100, ARCH-P1 |
-| `architecture` — blocked on internal decision | stance-skill, docs-banner, `@gobbitools/cli` dep declaration |
+| `architecture` — blocked on internal decision | stance-skill, banner, `@gobbitools/cli` dep declaration |
 | `external` — blocked on upstream | `bun --compile` CI gate, npm publish |
 
 ---
@@ -77,11 +77,11 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 
 ---
 
-### Docs-banner CLI helper
+### Banner CLI helper
 
 **Source:** #77 Deferred to Phase 3 (item 6)
 
-**Description:** `gobbi docs banner add/remove` command to automate the deprecation-banner workflow used manually in PR F.3. PR F.3 applied banners by hand-editing skill files; a CLI helper would reduce friction for future major deprecations.
+**Description:** `gobbi banner add/remove` command to automate the deprecation-banner workflow used manually in PR F.3. PR F.3 applied banners by hand-editing skill files; a CLI helper would reduce friction for future major deprecations. Named under a new top-level `gobbi banner` namespace — `gobbi docs` was removed in PR #65, so this does not reuse that namespace.
 
 **Trigger:** Another major deprecation event at v0.6.0 or later that would require applying banners to multiple skill files simultaneously.
 
@@ -274,6 +274,6 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 ## Revisit cadence
 
 - Review this backlog before every minor release transition (v0.5.x → v0.6.x). Items whose triggers have fired move into the next release plan.
-- Items in the `velocity` class have no external dependency — they can be picked up whenever capacity allows. Prefer scheduling them alongside structurally related work (e.g., #97 + #98 in the same cleanup pass).
+- Items in the `velocity` class have no external dependency — they can be picked up whenever capacity allows. Prefer scheduling them alongside structurally related work (e.g., #90 + #96 in the same rate-card pass, as both items share overlapping scope).
 - Items that have not triggered after 12 months should be reassessed: either the trigger condition is wrong, the need no longer exists, or the item should be closed as won't-fix.
 - When filing a new follow-up issue, add a backlog entry here with source, description, trigger, and trigger class before the session closes. An issue without a backlog entry has no signal for when to resurface.

@@ -28,7 +28,7 @@ Always-active behavioral safety net — minimum invariants every agent must foll
 - When loading a skill, also load its child `gotchas.md` if one exists.
 - Study existing code and docs before making changes — the codebase is the source of truth.
 - Every subagent prompt must include specific requirements, constraints, and context — never a one-liner.
-- Executors must read research materials from the `research/` subdirectory before implementing.
+- Executors must read investigation materials from the task's note directory before implementing.
 
 ---
 
