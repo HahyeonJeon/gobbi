@@ -6,7 +6,7 @@ Feature description for gobbi's cross-session persistence model. Read this to un
 
 > **Memory and configuration share the same three-tier structure under `.gobbi/` — but memory answers "what did we learn?" while configuration answers "how should this behave?"**
 
-Gobbi organizes everything that must persist across sessions under a `.gobbi/` directory at the project root. The directory mirrors the three scopes of the configuration cascade: user, project, and session. Each tier holds a different class of knowledge, and the Memorization Loop is the mechanism that moves learnings upward from session to project over time.
+Gobbi organizes everything that must persist across sessions under a `.gobbi/` directory at the workspace root. The directory mirrors the three scopes of the configuration cascade: user, project, and session. Each tier holds a different class of knowledge, and the Memorization Loop is the mechanism that moves learnings upward from session to project over time.
 
 ---
 
@@ -66,13 +66,13 @@ The `rawdata/` directories hold high-volume, unsynthesized material. The step's 
 
 ## The Memorization Loop
 
-Step 5 of every workflow is Memorization. It reads the session event log and the per-step `README.md` files and writes the outcomes into the right project-tier directories: decisions into `decisions/`, corrections into `gotchas/`, design changes into `design/`, deferred items into `backlogs/`, and so on. This is how `.gobbi/projects/{project_name}/` grows richer with each session. Without Memorization, every session restarts from zero; with it, each session builds on the last.
+Step 5 of every workflow is Memorization. The loop reads the full record of the session — every event in `.gobbi/gobbi.db`, every `rawdata/` artifact captured by the JIT hooks during Ideation, Planning, and Execution, and every intermediate step `README.md` — and writes the outcomes into the right project-tier directories: decisions into `decisions/`, corrections into `gotchas/`, design changes into `design/`, deferred items into `backlogs/`, and so on. Exactly which classes of session artifact graduate into which project memory directory is a design area still under discussion — the loop guarantees preservation of the raw material and a mechanism for distilling it, without locking to a final extraction policy. This is how `.gobbi/projects/{project_name}/` grows richer with each session. Without Memorization, every session restarts from zero; with it, each session builds on the last.
 
 ---
 
 ## Resume
 
-`.gobbi/gobbi.db` is the authoritative record of what happened across all workflows in the workspace. On resume — after a crash, `/compact`, `/clear`, or a fresh session targeting the same workflow — the CLI queries events for the matching project and session identifiers and replays them through the reducer to reconstruct state. No workflow progress is lost; the event store survives anything short of SQLite file corruption. `gobbi workflow status` reads current step, completed steps, and evaluation rounds directly from the event store, without parsing conversation history.
+`.gobbi/gobbi.db` is the authoritative record of what happened across all workflows in the workspace. On resume — after a crash, `/compact`, `/clear`, or a fresh session targeting the same workflow — the CLI queries events for the matching project and session identifiers and replays them through the reducer to reconstruct state. No workflow progress is lost; the event store survives anything short of SQLite file corruption. a status-read command (name TBD) exposes current step, completed steps, and evaluation rounds directly from the event store, without parsing conversation history.
 
 ---
 
@@ -96,4 +96,4 @@ Configuration and memory share the three-tier structure under `.gobbi/` but hold
 |----------|--------|
 | `gobbi-config.md` | `settings.json` cascade at the same three tiers |
 | `deterministic-orchestration.md` | Memorization Loop (step 5) and how session events promote to project memory |
-| `claude-docs-management.md` | How project-level `agents/`, `rules/`, `skills/` relate to plugin-shipped Claude docs |
+| `claude-docs-management.md` | How workspace-level `agents/`, `rules/`, `skills/` relate to plugin-shipped Claude docs |
