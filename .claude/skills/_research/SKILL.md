@@ -1,12 +1,12 @@
 ---
 name: _research
-description: Research investigation for approved plans. MUST load during Step 3 (Research).
+description: Research investigation within the Ideation step's investigation loop. Load when spawning researcher agents to investigate approach direction before Execution.
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
 ---
 
 # Research
 
-After the plan is approved, researcher agents investigate the best approach for each task. This skill guides the two researcher stances (innovative and best-practice), what they produce, and how the orchestrator synthesizes their findings into directional guidance for executor agents.
+Researcher agents investigate the best approach for each plan task as an internal loop within the Ideation step. This skill guides the two researcher stances (innovative and best-practice), what they produce, and how the orchestrator synthesizes their findings into directional guidance for executor agents.
 
 Research answers "what approach to take and why" — ideation answers "what to do" and planning answers "in what order." Think of researchers as architects sketching a blueprint: they design the direction and gather the best references, but executors own the implementation details. The output of research is directional guidance with strong references, organized by plan task, stored in note files that executors read before starting work.
 
@@ -91,7 +91,7 @@ Research writes to the note directory for the current task. The orchestrator ini
 
 ## When to Research
 
-Research is Step 3 — after Plan approval (Step 2 complete), before Execution (Step 4).
+Research is the investigation loop within Ideation — after Plan approval, before Execution begins.
 
 - **Always research** for non-trivial tasks — any task that involves design decisions, unfamiliar code areas, or multiple possible implementation approaches
 - **Skip research** for structured routines where the execution pattern is fully known — applying a well-documented migration, running a standard release process, or following a step-by-step procedure that has been done before
