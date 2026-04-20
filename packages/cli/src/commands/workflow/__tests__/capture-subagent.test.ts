@@ -679,3 +679,153 @@ describe('runCaptureSubagent — tool-call idempotency', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// Issue #92 — CLAUDE_CODE_VERSION capture on delegation.spawn
+//
+// The spawn-emission site itself is scheduled for a later wave; today this
+// test suite exercises the end-to-end round trip by seeding a spawn event
+// with the `claudeCodeVersion` field populated from `process.env` via the
+// documented read pattern, then asserting the field survives the append →
+// SQLite `data` column → `store.last('delegation.spawn')` path. The two
+// cases mirror the issue #92 env contract: populate when the env var is a
+// non-empty string, omit otherwise (never write an empty string).
+// ---------------------------------------------------------------------------
+
+describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () => {
+  test('env present → spawn event data carries claudeCodeVersion', async () => {
+    const { sessionDir } = await initScratchSession('cap-sub-ccv-present');
+    const sessionId = 'cap-sub-ccv-present';
+
+    const originalVersion = process.env['CLAUDE_CODE_VERSION'];
+    try {
+      process.env['CLAUDE_CODE_VERSION'] = '2.1.110';
+      const envVersion = process.env['CLAUDE_CODE_VERSION'];
+      // Emitters populate the field only when the env var is a non-empty
+      // string — this is the documented pattern (see delegation.ts
+      // DelegationSpawnData.claudeCodeVersion JSDoc).
+      const claudeCodeVersion =
+        envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
+
+      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      try {
+        const state = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          state,
+          createDelegationSpawn({
+            agentType: 'executor',
+            step: state.currentStep,
+            subagentId: 'agent-ccv-1',
+            timestamp: new Date().toISOString(),
+            ...(claudeCodeVersion !== undefined ? { claudeCodeVersion } : {}),
+          }),
+          'cli',
+          sessionId,
+          'system',
+        );
+
+        const spawnRow = store.last('delegation.spawn');
+        expect(spawnRow).not.toBeNull();
+        const data = JSON.parse(spawnRow!.data) as {
+          readonly subagentId: string;
+          readonly claudeCodeVersion?: string;
+        };
+        expect(data.subagentId).toBe('agent-ccv-1');
+        expect(data.claudeCodeVersion).toBe('2.1.110');
+      } finally {
+        store.close();
+      }
+    } finally {
+      if (originalVersion === undefined) {
+        delete process.env['CLAUDE_CODE_VERSION'];
+      } else {
+        process.env['CLAUDE_CODE_VERSION'] = originalVersion;
+      }
+    }
+  });
+
+  test('env unset or empty → spawn event data omits claudeCodeVersion', async () => {
+    const { sessionDir } = await initScratchSession('cap-sub-ccv-absent');
+    const sessionId = 'cap-sub-ccv-absent';
+
+    const originalVersion = process.env['CLAUDE_CODE_VERSION'];
+    try {
+      // Scenario A — env var unset.
+      delete process.env['CLAUDE_CODE_VERSION'];
+      let envVersion = process.env['CLAUDE_CODE_VERSION'];
+      let claudeCodeVersion =
+        envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
+
+      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      try {
+        const state = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          state,
+          createDelegationSpawn({
+            agentType: 'executor',
+            step: state.currentStep,
+            subagentId: 'agent-ccv-absent-1',
+            timestamp: new Date().toISOString(),
+            ...(claudeCodeVersion !== undefined ? { claudeCodeVersion } : {}),
+          }),
+          'cli',
+          sessionId,
+          'system',
+          undefined,
+        );
+
+        const rowA = store.last('delegation.spawn');
+        expect(rowA).not.toBeNull();
+        const dataA = JSON.parse(rowA!.data) as Record<string, unknown>;
+        expect(dataA['subagentId']).toBe('agent-ccv-absent-1');
+        // Emitter MUST omit the field, not write an empty string.
+        expect('claudeCodeVersion' in dataA).toBe(false);
+
+        // Scenario B — env var explicitly empty string. Same contract:
+        // emitter must omit the field rather than writing ''.
+        process.env['CLAUDE_CODE_VERSION'] = '';
+        envVersion = process.env['CLAUDE_CODE_VERSION'];
+        claudeCodeVersion =
+          envVersion !== undefined && envVersion !== ''
+            ? envVersion
+            : undefined;
+
+        const stateB = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          stateB,
+          createDelegationSpawn({
+            agentType: 'executor',
+            step: stateB.currentStep,
+            subagentId: 'agent-ccv-absent-2',
+            timestamp: new Date().toISOString(),
+            ...(claudeCodeVersion !== undefined ? { claudeCodeVersion } : {}),
+          }),
+          'cli',
+          sessionId,
+          'system',
+          undefined,
+        );
+
+        const rowB = store.last('delegation.spawn');
+        expect(rowB).not.toBeNull();
+        const dataB = JSON.parse(rowB!.data) as Record<string, unknown>;
+        expect(dataB['subagentId']).toBe('agent-ccv-absent-2');
+        expect('claudeCodeVersion' in dataB).toBe(false);
+      } finally {
+        store.close();
+      }
+    } finally {
+      if (originalVersion === undefined) {
+        delete process.env['CLAUDE_CODE_VERSION'];
+      } else {
+        process.env['CLAUDE_CODE_VERSION'] = originalVersion;
+      }
+    }
+  });
+});

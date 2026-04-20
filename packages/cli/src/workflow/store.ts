@@ -195,10 +195,63 @@ export interface CostAggregateRow {
 }
 
 // ---------------------------------------------------------------------------
+// Structural read/write interface split
+// ---------------------------------------------------------------------------
+
+/**
+ * Read-only facet of the event store. Every callable on this interface is a
+ * pure query — no INSERT, no transaction boundary, no close. Call sites that
+ * only ever read (prompt compilers, pathway detector, cost rollup, state
+ * derivation) accept this narrow interface so TypeScript rejects accidental
+ * writes at compile time.
+ *
+ * This is the structural (type-level) evolution of what was previously an
+ * advisory "read vs. write" convention in the class docblock. The runtime
+ * class is unchanged — `EventStore` still exposes both facets — but the
+ * declared contract at a callee's boundary now tightens what that callee
+ * can legally do with its `store` parameter.
+ *
+ * To extend: add a new pure-query method signature here AND on the
+ * `EventStore` class body. The class `implements WriteStore` clause (which
+ * extends this interface) closes the loop — adding a query to `ReadStore`
+ * without implementing it on the class is a `tsc` error at the class
+ * declaration, not at the call site.
+ */
+export interface ReadStore {
+  replayAll(): EventRow[];
+  byType(type: string): EventRow[];
+  byStep(step: string, type?: string): EventRow[];
+  since(seq: number): EventRow[];
+  last(type: string): EventRow | null;
+  lastN(type: string, n: number): readonly EventRow[];
+  lastNAny(n: number): readonly EventRow[];
+  eventCount(): number;
+  aggregateDelegationCosts(): readonly CostAggregateRow[];
+}
+
+/**
+ * Full read+write facet of the event store. Extends {@link ReadStore} with
+ * the mutating operations (`append`, `transaction`) and the lifecycle
+ * method (`close`). Call sites that mutate the store — the engine's
+ * `appendEventAndUpdateState`, the CLI command handlers that construct and
+ * tear down the database, the verification runner — keep this wider type.
+ *
+ * Callers SHOULD prefer the narrowest interface that covers their needs:
+ * `ReadStore` for pure queries, `WriteStore` for anything else. `EventStore`
+ * itself remains the concrete construction type — `new EventStore(path)`
+ * returns a value usable as either interface.
+ */
+export interface WriteStore extends ReadStore {
+  append(input: AppendInput): EventRow | null;
+  transaction<T>(fn: () => T): T;
+  close(): void;
+}
+
+// ---------------------------------------------------------------------------
 // EventStore class
 // ---------------------------------------------------------------------------
 
-export class EventStore {
+export class EventStore implements WriteStore {
   private readonly db: Database;
 
   // Cached prepared statements — db.query() returns cached compiled bytecode.

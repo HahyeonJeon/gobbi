@@ -7,6 +7,8 @@ import type {
   AppendInputSystem,
   AppendInputToolCall,
   EventRow,
+  ReadStore,
+  WriteStore,
 } from '../store.js';
 import { CURRENT_SCHEMA_VERSION, migrateEvent } from '../migrations.js';
 import type { EventRow as MigrationEventRow } from '../migrations.js';
@@ -933,5 +935,49 @@ describe('aggregateDelegationCosts', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]?.subagentId).toBe('sub-included');
     expect(rows[0]?.step).toBe('plan');
+  });
+});
+
+// ===========================================================================
+// ReadStore / WriteStore — structural read-only enforcement (#97)
+//
+// The pair of interfaces is the type-level guarantee that read-only callers
+// (prompt compilers, pathway detector, cost rollup, state derivation) cannot
+// accidentally invoke write methods. Runtime behaviour is unchanged — this
+// block only exercises `tsc`'s view of the contract.
+//
+// Each `@ts-expect-error` assertion MUST trigger a real compile error; if it
+// doesn't, `tsc` flags the annotation as unused, which fails the typecheck
+// gate. That "unused-directive" mode is what turns the assertion into an
+// enforceable structural check rather than a static-only comment.
+// ===========================================================================
+
+describe('ReadStore / WriteStore — structural read-only enforcement (#97)', () => {
+  it('rejects write calls on a ReadStore reference at compile time', () => {
+    using store = new EventStore(':memory:');
+    const readOnly: ReadStore = store;
+
+    // A legal read — lastN is part of the ReadStore surface.
+    expect(readOnly.lastN('workflow.start', 1)).toEqual([]);
+
+    // @ts-expect-error — `append` is not part of ReadStore; only WriteStore.
+    readOnly.append;
+
+    // @ts-expect-error — `transaction` is not part of ReadStore.
+    readOnly.transaction;
+
+    // @ts-expect-error — `close` is not part of ReadStore.
+    readOnly.close;
+  });
+
+  it('accepts write calls on a WriteStore reference', () => {
+    using store = new EventStore(':memory:');
+    const writeable: WriteStore = store;
+
+    // Structural assertion — both read and write methods are available.
+    expect(typeof writeable.append).toBe('function');
+    expect(typeof writeable.transaction).toBe('function');
+    expect(typeof writeable.close).toBe('function');
+    expect(typeof writeable.lastN).toBe('function');
   });
 });

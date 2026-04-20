@@ -57,6 +57,7 @@ import { fileURLToPath } from 'node:url';
 import { readStdinJson } from '../../lib/stdin.js';
 import { isRecord, isString } from '../../lib/guards.js';
 import { EventStore } from '../../workflow/store.js';
+import type { ReadStore } from '../../workflow/store.js';
 import {
   appendEventAndUpdateState,
   resolveWorkflowState,
@@ -303,7 +304,7 @@ const HEARTBEAT_COUNTER_TAIL_SCAN = 32;
  * typically empty (new ms) or has one to two entries (rapid retry),
  * so the inner loop terminates at the first row whose `ts` differs.
  */
-function computeHeartbeatCounter(store: EventStore, nowMs: number): number {
+function computeHeartbeatCounter(store: ReadStore, nowMs: number): number {
   const heartbeats = store.lastN(
     'session.heartbeat',
     HEARTBEAT_COUNTER_TAIL_SCAN,

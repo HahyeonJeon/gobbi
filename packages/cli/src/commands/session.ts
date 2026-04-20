@@ -24,7 +24,7 @@ import { join } from 'node:path';
 import { readStdinJson } from '../lib/stdin.js';
 import { getRepoRoot } from '../lib/repo.js';
 import { EventStore } from '../workflow/store.js';
-import type { EventRow } from '../workflow/store.js';
+import type { EventRow, ReadStore } from '../workflow/store.js';
 
 // ---------------------------------------------------------------------------
 // Usage strings
@@ -234,7 +234,7 @@ export interface SessionEventsOptions {
  * in-memory — callers should expect both to take effect.
  */
 export function runSessionEventsWithStore(
-  store: EventStore,
+  store: ReadStore,
   options: SessionEventsOptions = {},
 ): void {
   let rows: readonly EventRow[];

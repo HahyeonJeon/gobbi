@@ -48,7 +48,7 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 import type { WorkflowState } from '../workflow/state.js';
-import type { EventStore } from '../workflow/store.js';
+import type { ReadStore } from '../workflow/store.js';
 import { WORKFLOW_EVENTS } from '../workflow/events/workflow.js';
 import { DECISION_EVENTS } from '../workflow/events/decision.js';
 import { SESSION_EVENTS } from '../workflow/events/session.js';
@@ -227,7 +227,7 @@ function readArtifactFilenames(
  */
 export function detectPathway(
   state: WorkflowState,
-  store: EventStore,
+  store: ReadStore,
   options?: DetectPathwayOptions,
 ): ErrorPathway {
   if (state.currentStep !== 'error') {
