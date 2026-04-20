@@ -10,7 +10,7 @@ Long workflows are expensive. Every evaluation loop, every feedback round, every
 
 The three-section prompt layout is the mechanism. The **static prefix** holds content identical across every invocation of a given step type: system prompt, project rules, CLAUDE.md content, and skill materials that do not vary by session state. This section is the same whether the workflow is on its first run or its fourth feedback round. Anthropic's 5-minute prompt cache fires here — the same prefix submitted within the cache window is served at cache hit cost rather than full recompute cost.
 
-The **session section** holds content stable within a session but not across sessions: workflow state, eval configuration, completed steps, session ID. Partial cache hits are possible when re-entering a step within the same session.
+The **session section** holds content stable within a session but not across sessions: workflow state, per-loop `eval_enabled` and `max_iterations` settings, completed steps, session ID. Partial cache hits are possible when re-entering a step within the same session.
 
 The **dynamic section** holds per-invocation content: step-specific instructions, inlined prior step output, delegation targets, timestamps. No cache benefit is expected here.
 
@@ -24,4 +24,6 @@ Token budget allocation runs before rendering. The CLI knows the configured mode
 
 | Document | Covers |
 |----------|--------|
-| `../v050-prompts.md` | Cache-aware section ordering (lines 65–79), token budget allocation, section minimums, step spec schema |
+| `prompts-as-data.md` | The step-spec schema that enforces static-before-conditional-before-delegation section ordering |
+| `just-in-time-prompt-injection.md` | How compiled prompts are emitted at the moment of need rather than pre-loaded |
+| `deterministic-orchestration.md` | The state machine that drives prompt compilation and step sequencing |
