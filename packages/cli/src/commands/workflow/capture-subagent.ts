@@ -57,7 +57,7 @@ import {
   readLastLine,
 } from '../../lib/jsonl.js';
 import { isRecord, isString, isNumber } from '../../lib/guards.js';
-import { EventStore } from '../../workflow/store.js';
+import { EventStore, type ReadStore } from '../../workflow/store.js';
 import {
   appendEventAndUpdateState,
   resolveWorkflowState,
@@ -342,7 +342,7 @@ async function extractLastAssistantText(
  * linkage.
  */
 function findParentSpawnSeq(
-  store: EventStore,
+  store: ReadStore,
   agentId: string,
 ): number | null {
   if (agentId === '') return null;
