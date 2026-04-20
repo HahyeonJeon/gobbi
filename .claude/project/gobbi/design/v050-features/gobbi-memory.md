@@ -12,7 +12,10 @@ Gobbi organizes everything that must persist across sessions under a `.gobbi/` d
 
 ## Tier 1 — User (`.gobbi/`)
 
-The outermost scope. Holds `settings.json` for user-wide preferences (covered in `gobbi-config.md`). No other memory state lives at this tier in the current design — this level is intentionally minimal.
+The outermost scope. Holds two workspace-wide artifacts:
+
+- `settings.json` — user-wide preferences (covered in `gobbi-config.md`)
+- `gobbi.db` — the single SQLite event store for the entire workspace. Every workflow event across every project and every session is written here: `workflow.start`, step transitions, delegation events, evaluation verdicts, and artifact writes. Events carry project and session identifiers so they can be filtered and replayed on demand.
 
 ---
 
@@ -52,7 +55,6 @@ One directory per workflow run. Contents:
 
 - `README.md` — session overview
 - `settings.json` — session-tier config written during Workflow Configuration (covered in `gobbi-config.md`)
-- `gobbi.db` — SQLite event store holding every workflow event for this session: `workflow.start`, step transitions, delegation events, evaluation verdicts, and artifact writes. This is the only SQLite database in the system; no equivalent exists at the project or user tier.
 
 Per-step subdirectories, one for each of the four middle workflow steps:
 - `ideation/` — Ideation Loop workspace: `README.md` (synthesized summary) and `rawdata/` (subagent transcripts, raw research output)
@@ -60,7 +62,7 @@ Per-step subdirectories, one for each of the four middle workflow steps:
 - `execution/` — Execution Loop workspace: `README.md` and `rawdata/`
 - `memorization/` — Memorization Loop workspace: `README.md` and `rawdata/`
 
-Workflow Configuration (step 1) and Hand-off (step 6) do not produce per-step subdirectories. Configuration's output is the session directory itself plus `settings.json`. Hand-off preserves state in `gobbi.db` without adding new artifacts.
+Workflow Configuration (step 1) and Hand-off (step 6) do not produce per-step subdirectories. Configuration's output is the session directory itself plus `settings.json`. Hand-off writes its final events to `gobbi.db` at `.gobbi/` without adding new artifacts to the session directory.
 
 The `rawdata/` directories hold high-volume, unsynthesized material. The step's `README.md` is the synthesized product the next agent reads.
 
@@ -74,7 +76,7 @@ Step 5 of every workflow is Memorization. It reads the session event log and the
 
 ## Resume
 
-`gobbi.db` at the session tier is the authoritative record of what happened in a workflow. On resume — after a crash, `/compact`, `/clear`, or a fresh session targeting the same workflow — the CLI replays the event log through the reducer to reconstruct state. No workflow progress is lost; the event store survives anything short of SQLite file corruption. `gobbi workflow status` reads current step, completed steps, and evaluation rounds directly from the event store, without parsing conversation history.
+`.gobbi/gobbi.db` is the authoritative record of what happened across all workflows in the workspace. On resume — after a crash, `/compact`, `/clear`, or a fresh session targeting the same workflow — the CLI queries events for the matching project and session identifiers and replays them through the reducer to reconstruct state. No workflow progress is lost; the event store survives anything short of SQLite file corruption. `gobbi workflow status` reads current step, completed steps, and evaluation rounds directly from the event store, without parsing conversation history.
 
 ---
 
