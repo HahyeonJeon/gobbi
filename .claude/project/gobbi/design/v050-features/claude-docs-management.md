@@ -22,7 +22,7 @@ This means `.claude/skills/`, `.claude/agents/`, and `.claude/rules/` should be 
 
 ## Why JSON for the Source
 
-Hand-written markdown is readable but opaque to tooling. JSON source carries metadata fields separate from prose, enforces required sections via schema, and supports programmatic inspection without reparsing markdown. A JSON skill record can be validated on write, merged with overrides without string manipulation, and queried for field values that would require fragile regex against a markdown file. Rendered markdown stays human-readable; JSON source stays machine-workable. The pipeline keeps both in sync.
+Hand-written markdown is readable but opaque to tooling. JSON source carries metadata fields separate from prose, the spec model defines required sections (schema validation is a future deliverable), and it supports programmatic inspection without reparsing markdown. A JSON skill record can be validated on write, merged with overrides without string manipulation, and queried for field values that would require fragile regex against a markdown file. Rendered markdown stays human-readable; JSON source stays machine-workable. The pipeline keeps both in sync.
 
 ---
 
