@@ -1,18 +1,46 @@
 # `.gobbi/` Configuration
 
-Feature description for gobbi's per-session configuration system. Read this to understand where session settings live, what is configurable, and how config differs from long-term memory.
+Feature description for gobbi's three-tier configuration model. Read this to understand where settings live at each scope, how tiers inherit from one another, and how config differs from long-term memory.
 
 ---
 
-> **Session behavior is configured once, stored predictably, and read by the CLI — never re-asked mid-workflow.**
+> **Configuration is a cascade: session wins over project, project wins over user. Each tier provides defaults for the narrower tier below it — and the narrower tier can always override.**
 
-Gobbi stores per-session configuration in `.claude/gobbi.json` — a gitignored file, per-user, scoped to the project. This is not a project-wide settings file; it is a session-keyed record of how each workflow session is configured. The `gobbi config get/set/list` commands are the interface. Direct file edits are not needed.
+Gobbi resolves every setting by walking three `settings.json` files under `.gobbi/`, from narrowest to widest scope. The CLI reads and writes all three through `gobbi config` commands. Direct file edits are not the normal path — the CLI handles validation, cascade semantics, and format consistency.
 
-Configuration entries are indexed by `$CLAUDE_SESSION_ID`. Each entry holds the settings that govern how that session behaves: the trivial range threshold (below which the workflow skips non-mandatory steps), the evaluation mode, the git workflow style, and base branch. Notification settings — channel, verbosity, and target — are stored per session under `notify.*` keys.
+---
 
-The TTL and max-entries cleanup ensures the file does not accumulate indefinitely. Sessions older than the configured TTL are pruned; when the entry count exceeds the cap, the oldest entries are removed first. This cleanup runs automatically so the file stays small and the relevant session's config is always findable.
+## The Three Tiers
 
-**How config differs from memory:** Config is *how this session behaves*. It answers questions like "does this session use strict evaluation mode?" or "which notification channel should fire on completion?" Memory is *what persists across sessions* — gotchas, workflow decisions, open questions. Config is per-session and short-lived. Memory is cross-session and durable. These are stored separately and serve different purposes. The long-term memory system is described in `gobbi-memory.md`.
+**Tier 1 — User preferences** (`.gobbi/settings.json`)
+
+How this user likes gobbi to behave in this project. Session-independent; persists across every workflow run. Typical contents: preferred notification channel, preferred git mode, preferred base branch, UI verbosity level. Because this file is per-user and not per-session, it is the right place for personal defaults that should apply unless something narrower overrides them.
+
+**Tier 2 — Project policy** (`.gobbi/project/settings.json`)
+
+What this project requires regardless of who is running the workflow. Typical contents: project name, required install command, mandated base branch, project-specific model preferences, required evaluation perspectives. This file is committed to version control so the same policy applies to every contributor. It overrides user preferences wherever the two conflict.
+
+**Tier 3 — Session-specific** (`.gobbi/project/sessions/{session-id}/settings.json`)
+
+This workflow's choices. Written during the Workflow Configuration step — the first of the six steps in the deterministic workflow. Typical contents: task statement, trivial range, per-loop `eval_enabled` and `max_iterations`, active notification channels for this session, session-level overrides of user or project defaults. This tier wins over both wider tiers. When the session ends, the file remains as a record of how that run was configured.
+
+---
+
+## Inheritance
+
+When the CLI reads a setting it checks the session file first, then the project file, then the user file, then falls back to a hardcoded default. Any tier may override the tier above it. A setting absent from the session file is resolved from the project file; absent from the project file, from the user file; absent from the user file, from the built-in default. The CLI merges the tiers at read time — no manual merging is needed.
+
+---
+
+## Workflow Configuration and the Session Tier
+
+The session-tier file is not created manually. The Workflow Configuration step (step one of six) collects the user's choices for the upcoming workflow — mode selection expressed as per-loop `eval_enabled` and `max_iterations`, git mode, trivial range, notification channels, and task statement — and writes them to the session file via `gobbi config`. From that point forward, every agent in the workflow reads the session file through the CLI and gets consistent values.
+
+---
+
+## Config vs. Memory
+
+Configuration answers "how does this user / project / session behave?" Memory answers "what persists as knowledge across sessions?" Gotchas, event logs, and session events are memory. Preferred git mode and `eval_enabled` are config. The two are stored separately under `.gobbi/` and serve different purposes. The memory model is described in `gobbi-memory.md`.
 
 ---
 
@@ -20,5 +48,6 @@ The TTL and max-entries cleanup ensures the file does not accumulate indefinitel
 
 | Document | Covers |
 |----------|--------|
-| `../v050-cli.md` | `gobbi config` command surface and session lifecycle |
-| `../v050-session.md` | Session directory structure and `metadata.json` |
+| `deterministic-orchestration.md` | Workflow Configuration step that populates the session-tier file |
+| `gobbi-memory.md` | How config differs from cross-session long-term memory |
+| `cli-as-runtime-api.md` | `gobbi config` command surface and why agents use the CLI rather than direct file writes |
