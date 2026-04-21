@@ -92,6 +92,17 @@ export type IdeationSubstate = 'discussing' | 'researching' | null;
 export interface EvalConfig {
   readonly ideation: boolean;
   readonly plan: boolean;
+  /**
+   * Execution-eval gate. Optional for backward-compat — prior to Wave C.2
+   * the EVAL_DECIDE payload carried only `{ideation, plan}`, and on-disk
+   * state files written under those semantics have no `execution` key.
+   * Under `exactOptionalPropertyTypes`, absence means "field not set" (the
+   * reducer never wrote one); presence means the EVAL_DECIDE payload
+   * carried an explicit boolean. The `execution_eval` step is still
+   * unconditionally reached via the graph — this slot is observational
+   * today and will gate the step in a follow-up Pass.
+   */
+  readonly execution?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -299,6 +310,10 @@ export function isValidState(value: unknown): value is WorkflowState {
     if (!isRecord(evalConfig)) return false;
     if (!isBoolean(evalConfig['ideation'])) return false;
     if (!isBoolean(evalConfig['plan'])) return false;
+    // execution is optional (Wave C.2 additive slot). When present must be
+    // a boolean; when absent the field is simply not set on the record.
+    const execution = evalConfig['execution'];
+    if (execution !== undefined && !isBoolean(execution)) return false;
   }
 
   // activeSubagents: array of objects

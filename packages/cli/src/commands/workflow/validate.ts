@@ -60,6 +60,7 @@ import {
 import type { StepSpec } from '../../specs/types.js';
 import {
   ADVISORY_PREDICATE_NAMES,
+  NON_SPEC_PREDICATE_NAMES,
   defaultPredicates,
   PREDICATE_NAMES,
 } from '../../workflow/predicates.js';
@@ -640,12 +641,18 @@ export async function validate(
   // A predicate referenced in any spec, overlay-merge result, or graph edge
   // is considered live. The diff against the default registry surfaces
   // predicates that are registered but never used anywhere, minus advisory
-  // names that opt out via `ADVISORY_PREDICATE_NAMES`. Emitted after the
+  // names that opt out via `ADVISORY_PREDICATE_NAMES` and non-spec names
+  // in `NON_SPEC_PREDICATE_NAMES` (predicates registered outside the
+  // codegen-derived `PredicateName` union — see Wave C.2). Emitted after the
   // per-step loop so `referencedPredicateNames` has absorbed every source.
+  const excluded = new Set<string>([
+    ...ADVISORY_PREDICATE_NAMES,
+    ...NON_SPEC_PREDICATE_NAMES,
+  ]);
   const deadPredicates = computeDeadPredicates(
     Object.keys(defaultPredicates),
     referencedPredicateNames,
-    ADVISORY_PREDICATE_NAMES,
+    excluded,
   );
   for (const name of deadPredicates) {
     diagnostics.push({

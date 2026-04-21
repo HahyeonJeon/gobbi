@@ -68,6 +68,15 @@ export interface StepTimeoutData {
 export interface EvalDecideData {
   readonly ideation: boolean;
   readonly plan: boolean;
+  /**
+   * Execution-eval gate (Wave C.2). Optional for backward-compat — legacy
+   * emitters and the ~22 existing reducer/state tests carry only
+   * `{ideation, plan}`. When the orchestrator resolves
+   * `workflow.execution.evaluate.mode` via the settings translation layer
+   * (ideation §6.5), the resulting boolean is attached to the EVAL_DECIDE
+   * event and the reducer merges it into `state.evalConfig.execution`.
+   */
+  readonly execution?: boolean;
 }
 
 export type FinishData = Record<string, never>;
