@@ -33,7 +33,7 @@ All 67 checklist items passed verification against the live codebase — 57 item
 - **Proposed fix:**
   - Light (doc-only): Edit `README.md` line 13 to drop the version-currency claim. Replace "checks whether `gobbi-cli` is installed and whether its version is current. If the CLI is missing or outdated, the session agent installs or updates it automatically" with "checks whether `@gobbitools/cli` is installed. If the CLI is missing, the session agent loads `cli-setup.md` and walks the user through `npm install -g @gobbitools/cli`." This makes the README accurately describe `SKILL.md §THIRD` without implementing new behavior.
   - Heavier (code): Implement the version-currency check. Add a `gobbi version --check-latest` subcommand that hits the npm registry (or a cached manifest) and returns a structured "current | stale | unknown" verdict. Wire `SKILL.md §THIRD` to call it after the availability check. Add a Troubleshooting row in `cli-setup.md` covering update failures. Defer unless the user explicitly prioritizes version-check automation over documentation accuracy.
-- **Resolution:** FIX in this pass — will be updated with commit SHA after implementation commits land (Part B / Part C).
+- **Resolution:** FIXED 2026-04-21 — commit e478d00 adds `gobbi --is-latest` CLI flag (`packages/cli/src/lib/version-check.ts` + `cli.ts` dispatch); commit c8c26ea wires it into `SKILL.md §THIRD` and adds a usage paragraph to `cli-setup.md §Installation Option 1`. README version-currency claim preserved per user direction.
 - **Tag:** GAP-01
 
 ---
