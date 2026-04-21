@@ -1,5 +1,7 @@
 # One-Command Install & Auto-Update
 
+> Status: last pass 2026-04-21 (session e78b75d2…). Verdict: PASS (Checkpoint B). PR #TBD (filled at P10).
+
 Feature description for gobbi's plugin-based distribution model. Read this to understand how gobbi installs, what updates automatically, and why no manual `.claude/` file maintenance is required.
 
 ---
@@ -17,6 +19,14 @@ The CLI package `@gobbitools/cli` is the v0.5.0 distribution target. All subsyst
 The zero-config assumption is intentional: gobbi does not require any project-specific `.claude/` file edits to function. Skills, agents, rules, and hooks all come through the plugin. Project-specific knowledge — design notes, decisions, gotchas, backlog items — belongs in `.gobbi/projects/{project_name}/`, which projects own. Gobbi's own layer is self-contained and self-updating.
 
 ---
+
+**Navigate deeper from here:**
+
+| Document | Covers |
+|----------|--------|
+| [scenarios.md](scenarios.md) | Behavior specifications — 15 Gherkin scenarios with state traces (happy / error / edge / others) |
+| [checklist.md](checklist.md) | Verification checklist — 67 ISTQB-tagged items grouped by scenario ID |
+| [review.md](review.md) | Code review — 7 findings (2 DRIFT, 4 GAP, 1 NOTE) with resolutions |
 
 **Read deeper:**
 

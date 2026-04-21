@@ -106,6 +106,11 @@ All 67 checklist items passed verification against the live codebase — 57 item
 
 ---
 
-## Code Improvements (to be filled by P7 after triage)
+## Code Improvements
 
-*P7 populates this section with one entry per finding that triage decided to FIX this pass, showing the commit SHA and short title. Findings triaged as DEFERRED produce backlog issues instead of entries here; findings triaged as DOC UPDATED produce entries citing the documentation change.*
+| Finding | Type | Severity | Commit | Summary |
+|---------|------|----------|--------|---------|
+| GAP-01  | issue | high   | e478d00 | feat(cli): add `gobbi --is-latest` (+ unit tests in version-check.test.ts) |
+| GAP-01  | issue | high   | c8c26ea | docs(skill): wire `gobbi --is-latest` into `/gobbi` §THIRD + brief note in cli-setup.md §Installation |
+
+All other findings in this pass resolved to REJECTED (DRIFT-01 → backlog #112) or DEFERRED (GAP-02/03/04 → #113; DRIFT-02 → #114; NOTE-01 → #115). No other code changes landed in this PR's scope.

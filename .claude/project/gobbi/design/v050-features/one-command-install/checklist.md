@@ -68,10 +68,10 @@ This checklist is the verification harness for the 15 scenarios in `scenarios.md
 
 ## O-CI-H-05: Installed CLI version is stale — agent updates before setup
 
-- [x] [GAP] Verify `SKILL.md §THIRD` contains only an availability check (`gobbi --version` exits 0/non-zero) and no semver comparison logic — the version-currency update branch described in `README.md` paragraph 3 is aspirational. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §THIRD, confirm absence of `semver`, `compare`, `outdated`, or `@latest` text.)
-- [x] [GAP] Verify no version-comparison code path exists in `packages/cli/src/` — the CLI does not implement a "check-for-newer-release" command. (Hint: Run — `rg 'semver|compareVersion|isOutdated|version.*compare' packages/cli/src/ | head`.)
-- [x] [GAP] Verify `cli-setup.md §Troubleshooting` row for `gobbi workflow init fails` cites "CLI version mismatch" as a cause but does not provide an automated update trigger — the update-if-stale behavior is not yet wired. (Hint: Codebase — `.claude/skills/gobbi/cli-setup.md` §Troubleshooting row 3.)
-- [x] [ST] `README.md` paragraph 3 claims "the session agent checks whether `gobbi-cli` is installed and whether its version is current" — this sentence describes aspirational behavior; the actual THIRD step only checks presence, not currency. (Hint: Codebase — `one-command-install/README.md` paragraph 3 vs `SKILL.md §THIRD` wording.)
+- [ ] [ST] `gobbi --is-latest` exits 0 when the installed version equals the npm registry's `@latest`. (Hint: Run — `gobbi --is-latest && echo "$?"`; Trace — `packages/cli/src/lib/__tests__/version-check.test.ts` covers the equal case via `computeVerdict` → `current`.)
+- [ ] [ST] `gobbi --is-latest` exits 1 when the installed version is older than the npm registry's `@latest`. (Hint: Trace — `packages/cli/src/lib/__tests__/version-check.test.ts` covers the older/newer matrix via `computeVerdict` → `stale`.)
+- [ ] [ST] `gobbi --is-latest` exits 2 when the check is indeterminate (network fetch failure, malformed versions, `npm` missing). (Hint: Trace — `packages/cli/src/lib/__tests__/version-check.test.ts` covers `failFetch` + malformed cases via `computeVerdict` → `indeterminate`.)
+- [ ] [ST] `SKILL.md §THIRD` branches on `gobbi --is-latest` exit codes 0/1/2 — exit 0 proceeds, exit 1 offers update, exit 2 is non-blocking. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §THIRD.)
 
 ---
 
