@@ -267,7 +267,7 @@ export async function compileCurrentStep(
   // with `specs/assembly.ts::compile` (double newline). Subagents with no
   // verification output emit no block.
   //
-  // The in-process verification-runner that previously wrote these events
+  // The in-process verification helper that previously wrote these events
   // from within `next` was decommissioned in Pass 3 finalize — executors
   // self-verify per `_delegation`'s Study → Plan → Execute → Verify
   // lifecycle. Events from external emitters still render here.

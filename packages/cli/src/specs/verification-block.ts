@@ -3,10 +3,11 @@
  * `verification.result` events recorded for a single active subagent during
  * the current step.
  *
- * Consumed by `gobbi workflow next` AFTER {@link runVerification} has written
- * `verification.result` events through `appendEventAndUpdateState` and the
- * resulting `state.verificationResults` has been refreshed via a second
- * `resolveWorkflowState` call. The compiler renders nothing but the subset of
+ * Consumed by `gobbi workflow next` AFTER an out-of-band verification
+ * emitter has written `verification.result` events through
+ * `appendEventAndUpdateState` and the resulting `state.verificationResults`
+ * has been refreshed via a second `resolveWorkflowState` call. The
+ * compiler renders nothing but the subset of
  * `verificationResults` entries whose composite key starts with
  * `${subagentId}:` — one block per active subagent is the `next.ts` wiring
  * contract (see the E.8 section of `commands/workflow/next.ts`).
@@ -245,9 +246,10 @@ function renderResultsBody(
  * signal rather than a silent omission.
  *
  * @param state A fully-resolved `WorkflowState` whose `verificationResults`
- *   reflects POST-`runVerification` writes. The `next.ts` wiring calls
- *   `resolveWorkflowState` after `runVerification` so the state this function
- *   reads is the one that carries the just-written events.
+ *   reflects POST-verification-emitter writes. The `next.ts` wiring calls
+ *   `resolveWorkflowState` after any emitter has appended events so the
+ *   state this function reads is the one that carries the just-written
+ *   verification rows.
  * @param subagentId The composite-key prefix to filter by. Must be a member
  *   of `state.activeSubagents[*].subagentId` in a well-formed invocation.
  */

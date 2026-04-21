@@ -443,9 +443,9 @@ describe('properties: compile idempotency', () => {
 //      sizeProxyBytes present/absent), the aggregator's source counters
 //      fit within the total row count and the cumulative USD is a finite
 //      non-negative number.
-//   6. `loadProjectConfig` default completeness — for any valid partial
-//      config (including `{version:1}`), the returned config is fully
-//      populated with defaults at every nested field.
+//   6. (retired) project-config default completeness — superseded by the
+//      unified settings.json cascade in Pass 3 finalize; see the retired-
+//      property note below Property 5.
 //   7. Verification-block chronological-ordering preservation — for any
 //      insertion order of `VerificationResultData` entries, the rendered
 //      block lists commands in the compiler's canonical enum order.
@@ -588,12 +588,12 @@ describe('properties: cost-query NULL-safety', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Property 6 (loadProjectConfig default completeness) was removed in Pass 3
-// finalize — the `loadProjectConfig` function and its Pass-3 shape were
-// replaced by `resolveSettings` in `lib/settings-io.ts` under a different
-// contract (no `verification` / `cost` sections; no default-hydration
-// contract to property-test). Cascade coverage is exercised end-to-end by
-// the `gobbi-config` feature tests instead.
+// Property 6 (project-config default completeness) was retired in Pass 3
+// finalize — the Pass-3 project-config API was replaced by the cascade
+// resolver in `lib/settings-io.ts` under a different contract (no
+// verification / cost sections; no default-hydration contract to
+// property-test). Cascade coverage is exercised end-to-end by the
+// `gobbi-config` feature tests instead.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
