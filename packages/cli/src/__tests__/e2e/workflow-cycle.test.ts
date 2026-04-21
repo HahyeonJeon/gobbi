@@ -88,8 +88,15 @@ test(
       const sessionDir = join(tmpRoot, '.gobbi', 'sessions', sessionId);
       expect(existsSync(join(sessionDir, 'metadata.json'))).toBe(true);
       expect(existsSync(join(sessionDir, 'gobbi.db'))).toBe(true);
-      expect(existsSync(join(tmpRoot, '.gobbi', 'project-config.json'))).toBe(
+      // Pass-3 cascade migration lands the project config at the v2
+      // location (`.gobbi/project/settings.json`). The legacy
+      // `.gobbi/project-config.json` is renamed by `ensureConfigCascade`
+      // during `workflow init`.
+      expect(existsSync(join(tmpRoot, '.gobbi', 'project', 'settings.json'))).toBe(
         true,
+      );
+      expect(existsSync(join(tmpRoot, '.gobbi', 'project-config.json'))).toBe(
+        false,
       );
 
       // -----------------------------------------------------------------

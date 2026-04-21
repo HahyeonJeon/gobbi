@@ -114,7 +114,7 @@ describe('loadProjectConfig', () => {
     expect(cfg).toEqual(full);
   });
 
-  test('hydrates a valid partial config {version: 1} from DEFAULT_CONFIG', () => {
+  test('hydrates a valid partial config {version: 1} from v1 defaults', () => {
     const repo = scratchRepo();
     mkdirSync(join(repo, '.gobbi'), { recursive: true });
     writeFileSync(
@@ -124,7 +124,12 @@ describe('loadProjectConfig', () => {
     );
 
     const cfg = loadProjectConfig(repo);
-    expect(cfg).toEqual(DEFAULT_CONFIG);
+    // V1 files hydrate to a V1-shaped ProjectConfig (version: 1, no v2
+    // cascade sections). DEFAULT_CONFIG is v2; the v1 loader uses a v1
+    // slice of the defaults so the return preserves `version: 1`.
+    expect(cfg.version).toBe(1);
+    expect(cfg.verification).toEqual(DEFAULT_CONFIG.verification);
+    expect(cfg.cost).toEqual(DEFAULT_CONFIG.cost);
   });
 
   test('partial override merges leaf values from user config over defaults', () => {
@@ -241,7 +246,7 @@ describe('loadProjectConfig', () => {
     expect(() => loadProjectConfig(repo)).toThrow(/version/);
   });
 
-  test('throws when version is not the const 1', () => {
+  test('loads a minimal v2 config and hydrates defaults from DEFAULT_CONFIG', () => {
     const repo = scratchRepo();
     mkdirSync(join(repo, '.gobbi'), { recursive: true });
     writeFileSync(
@@ -250,7 +255,22 @@ describe('loadProjectConfig', () => {
       'utf8',
     );
 
-    expect(() => loadProjectConfig(repo)).toThrow(/Invalid .gobbi/);
+    const cfg = loadProjectConfig(repo);
+    expect(cfg.version).toBe(2);
+    // DEFAULT_CONFIG is v2 — hydration fills every v2 section.
+    expect(cfg).toEqual(DEFAULT_CONFIG);
+  });
+
+  test('throws when version is neither 1 nor 2', () => {
+    const repo = scratchRepo();
+    mkdirSync(join(repo, '.gobbi'), { recursive: true });
+    writeFileSync(
+      join(repo, '.gobbi', 'project-config.json'),
+      JSON.stringify({ version: 99 }),
+      'utf8',
+    );
+
+    expect(() => loadProjectConfig(repo)).toThrow(/version/);
   });
 });
 
@@ -259,33 +279,51 @@ describe('loadProjectConfig', () => {
 // ===========================================================================
 
 describe('ensureProjectConfig', () => {
-  test('creates .gobbi/project-config.json and .gitignore on a fresh repo', () => {
+  test('creates project config + .gitignore on a fresh repo (migrated to v2 path)', () => {
     const repo = scratchRepo();
     const { result, stderr } = captureStderr(() => ensureProjectConfig(repo));
 
     expect(result.created).toBe(true);
-    expect(result.path).toBe(join(repo, '.gobbi', 'project-config.json'));
-    expect(existsSync(join(repo, '.gobbi', 'project-config.json'))).toBe(true);
+    // ensureConfigCascade renames the legacy write target to the v2 path,
+    // so the returned `path` and the persisted file are at the v2 location.
+    expect(result.path).toBe(join(repo, '.gobbi', 'project', 'settings.json'));
+    expect(existsSync(join(repo, '.gobbi', 'project', 'settings.json'))).toBe(true);
+    expect(existsSync(join(repo, '.gobbi', 'project-config.json'))).toBe(false);
     expect(existsSync(join(repo, '.gobbi', '.gitignore'))).toBe(true);
     expect(stderr).toContain('created .gobbi/project-config.json');
+    expect(stderr).toContain('migrated: .gobbi/project-config.json → .gobbi/project/settings.json');
 
     // Written file is valid JSON of the default shape.
-    const raw = readFileSync(join(repo, '.gobbi', 'project-config.json'), 'utf8');
+    const raw = readFileSync(join(repo, '.gobbi', 'project', 'settings.json'), 'utf8');
     const parsed = JSON.parse(raw) as unknown;
     expect(parsed).toEqual(DEFAULT_CONFIG);
     expect(raw.endsWith('\n')).toBe(true);
 
-    // .gitignore lists runtime-state subdirs.
+    // .gitignore lists runtime-state subdirs + T1 settings.json.
     const gi = readFileSync(join(repo, '.gobbi', '.gitignore'), 'utf8');
     expect(gi).toContain('sessions/');
     expect(gi).toContain('worktrees/');
     expect(gi).toContain('project/note/');
+    expect(gi).toContain('settings.json');
   });
 
-  test('second invocation is a silent no-op when the config already exists', () => {
+  test('second invocation is a silent no-op when all state is settled', () => {
     const repo = scratchRepo();
-    // Seed an existing file.
-    mkdirSync(join(repo, '.gobbi'), { recursive: true });
+    // First invocation seeds everything (project/settings.json + T1 settings.json + gitignore).
+    captureStderr(() => ensureProjectConfig(repo));
+
+    // Second invocation: nothing to migrate, nothing to write, stderr silent.
+    const { result, stderr } = captureStderr(() => ensureProjectConfig(repo));
+    expect(result.created).toBe(false);
+    expect(stderr).toBe('');
+    // Resolved path points at the v2 location.
+    expect(result.path).toBe(join(repo, '.gobbi', 'project', 'settings.json'));
+  });
+
+  test('second invocation does not rewrite or overwrite an existing v2 config', () => {
+    const repo = scratchRepo();
+    // Seed an existing file at the v2 location directly.
+    mkdirSync(join(repo, '.gobbi', 'project'), { recursive: true });
     const customConfig = {
       version: 1,
       verification: {
@@ -295,21 +333,19 @@ describe('ensureProjectConfig', () => {
       },
     };
     writeFileSync(
-      join(repo, '.gobbi', 'project-config.json'),
+      join(repo, '.gobbi', 'project', 'settings.json'),
       JSON.stringify(customConfig, null, 2),
       'utf8',
     );
 
-    const { result, stderr } = captureStderr(() => ensureProjectConfig(repo));
+    captureStderr(() => ensureProjectConfig(repo));
 
-    expect(result.created).toBe(false);
-    expect(stderr).toBe('');
     // File contents preserved — not overwritten.
-    const raw = readFileSync(join(repo, '.gobbi', 'project-config.json'), 'utf8');
+    const raw = readFileSync(join(repo, '.gobbi', 'project', 'settings.json'), 'utf8');
     expect(JSON.parse(raw)).toEqual(customConfig);
   });
 
-  test('does not overwrite a pre-existing .gitignore', () => {
+  test('does not overwrite a pre-existing .gitignore — only appends settings.json if missing', () => {
     const repo = scratchRepo();
     mkdirSync(join(repo, '.gobbi'), { recursive: true });
     const operatorGitignore = '# operator edits\n*.tmp\nsessions/\n';
@@ -320,7 +356,10 @@ describe('ensureProjectConfig', () => {
     expect(result.created).toBe(true);
 
     const gi = readFileSync(join(repo, '.gobbi', '.gitignore'), 'utf8');
-    expect(gi).toBe(operatorGitignore);
+    // Operator's comment + rules are preserved — only a new `settings.json`
+    // line is appended (ensureConfigCascade Step 4's idempotent append).
+    expect(gi.startsWith(operatorGitignore)).toBe(true);
+    expect(gi).toContain('settings.json');
   });
 });
 

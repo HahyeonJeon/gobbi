@@ -23,6 +23,7 @@ import {
   nowIso,
 } from './config.js';
 import type { Session, GobbiJson, NotifyConfig } from './config.js';
+import type { CascadeShape } from './cascade-shape.js';
 
 // Re-export for convenience
 export type { Session, GobbiJson, NotifyConfig } from './config.js';
@@ -520,4 +521,79 @@ function cutoffIso(ttlDays: number): string {
   const d = new Date();
   d.setUTCDate(d.getUTCDate() - ttlDays);
   return d.toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
+// ---------------------------------------------------------------------------
+// Cascade projection — Pass 3 Task T2
+// ---------------------------------------------------------------------------
+
+/**
+ * Project a T3 session row into a partial {@link CascadeShape} overlay for
+ * the cascade resolver (Pass 3 Task T3).
+ *
+ * Returns `null` if the session does not exist in the store.
+ *
+ * NULL-column handling (per ideation §1f, ARCH-F7): a NULL value in a
+ * nullable SQL column means "not set at this tier"; the returned overlay
+ * OMITS the corresponding cascade path so the resolver delegates to T2.
+ * Operators who need "T3 explicitly unsets base-branch" use an empty-string
+ * sentinel (or a dedicated Pass-4 feature).
+ *
+ * Mapped columns:
+ *   - `notify_slack` (INTEGER 0/1) → `notify.slack` (always present; NOT NULL)
+ *   - `notify_telegram` → `notify.telegram` (always present; NOT NULL)
+ *   - `trivial_range` (TEXT) → `trivialRange` (skipped if not a known enum)
+ *   - `git_workflow` (TEXT) → `git.mode` (skipped if not a known enum)
+ *   - `base_branch` (TEXT NULL) → `git.baseBranch` (skipped when NULL)
+ *
+ * The `git` overlay is included only when BOTH `mode` and `baseBranch` are
+ * known, so the shape satisfies `Partial<CascadeShape>` exactly (CascadeShape
+ * requires both git fields present). This is a conservative choice under
+ * ARCH-F7: partial git overrides are deferred to Pass 4.
+ *
+ * `discord` in `notify` has no SQLite column today, so T3 always pins
+ * `notify.discord = false` when the overlay includes notify. This is a
+ * type-safety compromise for the `Partial<CascadeShape>` signature; the
+ * default is `false` anyway so no current feature is impacted. A future
+ * `notify_discord` column lifts this.
+ *
+ * `evaluation_mode` intentionally does NOT project into the cascade — the
+ * session's ideation/plan/execution flags are driven by a different
+ * mechanism (Pass-4 backlog). The `verification` and `cost` sections have
+ * no T3 representation today (Pass-4 backlog).
+ */
+export function toCascadeProjection(
+  store: ConfigStore,
+  sessionId: string,
+): Partial<CascadeShape> | null {
+  const session = store.getSession(sessionId);
+  if (session === null) return null;
+
+  const out: {
+    -readonly [K in keyof Partial<CascadeShape>]: Partial<CascadeShape>[K];
+  } = {
+    // Notify is always included: slack / telegram from session; discord
+    // pinned to false (no SQLite column). See JSDoc above.
+    notify: {
+      slack: session.notify.slack,
+      telegram: session.notify.telegram,
+      discord: false,
+    },
+  };
+
+  if (session.trivialRange === 'read-only' || session.trivialRange === 'simple-edits') {
+    out.trivialRange = session.trivialRange;
+  }
+
+  if (
+    (session.gitWorkflow === 'direct-commit' || session.gitWorkflow === 'worktree-pr') &&
+    session.baseBranch !== null
+  ) {
+    out.git = {
+      mode: session.gitWorkflow,
+      baseBranch: session.baseBranch,
+    };
+  }
+
+  return out;
 }
