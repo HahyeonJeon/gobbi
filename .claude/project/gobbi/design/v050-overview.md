@@ -120,17 +120,19 @@ V0.5.0 resolves it with a hard directory split:
   ─────────────────────────         ─────────────────────────────
   Read-only during workflow         Runtime state — write freely
 
-  CLAUDE.md                         sessions/
-  rules/                            worktrees/
-  skills/                           project/
-  agents/                             notes/
-  settings.json                       gotchas/
-  hooks/                              context/
+  CLAUDE.md                         settings.json      (T1 user prefs — gitignored)
+  rules/                            project/settings.json  (T2 project config — tracked)
+  skills/                           config.db          (T3 session store — SQLite)
+  agents/                           sessions/
+  settings.json (Claude Code)       worktrees/
+  hooks/                            project/
 ```
 
 `.claude/` is the static knowledge layer. During a workflow session, no agent writes to it. The hooks enforce this at the tool layer — a PreToolUse hook blocks any write to `.claude/` while a session is active.
 
 `.gobbi/` is the runtime layer. Session state, worktree management, notes, gotchas recorded mid-session, and context files all live here. Writing to `.gobbi/` does not trigger context reload. Agents write freely.
+
+The three config files in `.gobbi/` form the cascade: `settings.json` (T1 user preferences, gitignored), `project/settings.json` (T2 project config, tracked, schema v1 or v2), and `config.db` (T3 session store, SQLite). See `gobbi-config/README.md` for cascade resolution semantics.
 
 The implication: gotchas recorded during a session live in `.gobbi/project/gotchas/` until a designated promotion step moves them into `.claude/skills/_gotcha/`. This promotion happens outside an active session. It does not cause idle.
 

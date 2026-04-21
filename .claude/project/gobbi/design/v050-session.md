@@ -16,6 +16,10 @@ Sessions are stored under `.gobbi/sessions/{session-id}/`. The session ID is a t
 
 ```
 .gobbi/
+├── settings.json              T1 user prefs — gitignored, workspace-scoped (see gobbi-config)
+├── config.db                  T3 session store — SQLite, authoritative for cascade overlays
+├── project/
+│   └── settings.json          T2 project config — tracked, AJV-validated, schema v1 or v2
 └── sessions/
     └── {session-id}/
         ├── metadata.json          immutable — written once at session creation

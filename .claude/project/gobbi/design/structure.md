@@ -57,9 +57,11 @@ Shell scripts in `.claude/hooks/` that execute in response to Claude Code events
 
 | File | Purpose |
 |:-----|:--------|
-| `settings.json` | Project-level Claude Code settings. Checked into git. |
-| `settings.local.json` | Local overrides. Not checked into git. |
+| `settings.json` | Claude Code project settings (not gobbi config). Checked into git. |
+| `settings.local.json` | Claude Code local overrides. Not checked into git. |
 | `.env` | Environment variables for hooks. Not checked into git. |
+
+Note: `.gobbi/settings.json` is the gobbi T1 user preference file — separate from `.claude/settings.json` above. See `gobbi-config/README.md` for the full three-tier cascade (T1 `.gobbi/settings.json` → T2 `.gobbi/project/settings.json` → T3 `.gobbi/config.db`).
 
 ### Project State
 
