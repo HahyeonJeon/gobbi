@@ -14,7 +14,15 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the four s
 
 **SECOND — ensure `_gobbi-rule` symlink exists.** Check whether `.claude/rules/_gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in the `_gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated.
 
-**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
+**THIRD — check gobbi CLI availability and version currency.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding.
+
+If `gobbi --version` succeeds, run `gobbi --is-latest` to check whether the installed CLI matches the npm `@latest` tag. Branch on the exit code:
+
+- Exit `0` — CLI is current; proceed to FOURTH.
+- Exit `1` — CLI is stale. Use AskUserQuestion to offer an update (recommend "Update now"). On confirm, run `npm install -g @gobbitools/cli@latest`, re-verify with `gobbi --version`, then proceed to FOURTH. On decline, proceed to FOURTH with the user's choice recorded.
+- Exit `2` — version currency is indeterminate (network or `npm` unavailable). Surface the status to the user with a single-line note but do NOT block; proceed to FOURTH.
+
+The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
 
 **FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`. If no settings exist for this session, continue to the setup questions.
 
