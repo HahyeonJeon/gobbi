@@ -20,7 +20,6 @@ import {
   writeState,
   backupState,
   restoreStateFromBackup,
-  appendJsonl,
   readState,
   restoreBackup,
   deriveState,
@@ -50,8 +49,8 @@ export interface AppendResult {
 //
 // The engine's `appendEventAndUpdateState` wraps its compound transaction
 // in a try-catch. Inside, the reducer can throw when it returns
-// `{ok: false}`. Filesystem-write failures (writeState, appendJsonl) can
-// also throw. Both surface at the same catch. To emit the
+// `{ok: false}`. Filesystem-write failures (writeState) can also throw.
+// Both surface at the same catch. To emit the
 // `workflow.invalid_transition` audit event ONLY for reducer rejections
 // (not FS failures), the catch needs a typed discriminator.
 //
@@ -89,14 +88,11 @@ export class ReducerRejectionError extends Error {
  * 3. If deduplicated (null return), short-circuit — no state change
  * 4. Reduce to compute new state
  * 5. Write new state.json (synchronous atomic write)
- * 6. Append to events.jsonl (human-readable log)
  *
  * If the reducer rejects the event or a filesystem write fails, the
  * transaction rolls back — the SQLite insert is undone by the
  * transaction rollback, and state.json is restored from backup via
- * restoreStateFromBackup(). The jsonl line is the only
- * non-transactional artifact, which is acceptable since it's a
- * diagnostic log, not a source of truth.
+ * restoreStateFromBackup().
  *
  * `parentSeq` links the new event to a prior event's `seq` — used by
  * the capture commands (C.6) to connect `delegation.complete` /
@@ -190,22 +186,11 @@ export function appendEventAndUpdateState(
         throw new ReducerRejectionError(result.error, event, state);
       }
 
-      // 4–5. Write state.json and events.jsonl — wrapped in try/catch so
-      // that a filesystem failure restores the backup before re-throwing,
-      // keeping state.json consistent with the SQLite rollback.
+      // 4. Write new state.json (synchronous atomic write) — wrapped in
+      // try/catch so that a filesystem failure restores the backup before
+      // re-throwing, keeping state.json consistent with the SQLite rollback.
       try {
-        // 4. Write new state.json (synchronous atomic write)
         writeState(dir, result.state);
-
-        // 5. Append to events.jsonl (diagnostic log)
-        appendJsonl(dir, {
-          seq: row.seq,
-          ts: row.ts,
-          type: row.type,
-          step: row.step,
-          data: row.data,
-          actor: row.actor,
-        });
       } catch (err: unknown) {
         // Restore state.json so it matches the rolled-back SQLite state.
         // Wrap in its own try/catch so a restore failure (disk full,
@@ -239,9 +224,9 @@ export function appendEventAndUpdateState(
     // top-level transaction, NOT a savepoint of the rolled-back one.
     //
     // Only emit the `workflow.invalid_transition` audit for reducer
-    // rejections — filesystem failures (writeState, appendJsonl) also
-    // land here but those are not "invalid transition" events; auditing
-    // them here would misattribute disk errors as reducer bugs.
+    // rejections — filesystem failures (writeState) also land here but
+    // those are not "invalid transition" events; auditing them here
+    // would misattribute disk errors as reducer bugs.
     if (outerError instanceof ReducerRejectionError) {
       // Best-effort audit-append. If this inner transaction itself
       // throws (disk full, WAL lock, SQLite busy), swallow the audit
@@ -269,20 +254,6 @@ export function appendEventAndUpdateState(
             counter: undefined,
           });
           store.append(auditInput);
-          // Mirror the audit to events.jsonl when the DB append succeeds.
-          // Best-effort: a mirror failure is logged below and does not
-          // block the audit-append from committing.
-          try {
-            appendJsonl(dir, {
-              ts: effectiveTs,
-              type: auditEvent.type,
-              step: outerError.stateAtRejection.currentStep,
-              data: JSON.stringify(auditEvent.data),
-              actor: 'cli',
-            });
-          } catch {
-            // JSONL mirror is diagnostic only — never throw.
-          }
         });
       } catch (auditError: unknown) {
         const msg =

@@ -298,9 +298,9 @@ export async function runResumeWithOptions(
         process.exit(1);
       }
 
-      // Refresh state. The raw transaction bypassed state.json /
-      // events.jsonl mirroring (those live in `appendEventAndUpdateState`),
-      // so `resolveWorkflowState` falls through to `replayAll` and derives
+      // Refresh state. The raw transaction bypassed the state.json
+      // write (that lives in `appendEventAndUpdateState`), so
+      // `resolveWorkflowState` falls through to `replayAll` and derives
       // a fresh state — this materializes the updated state.json.
       resolveWorkflowState(sessionDir, store, sessionId);
     } else {

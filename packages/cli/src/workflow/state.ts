@@ -5,9 +5,9 @@
  * configuration, active subagent tracking, and guard violation records.
  * State is immutable — all fields use readonly modifiers.
  *
- * Persistence functions are synchronous (writeFileSync, renameSync,
- * appendFileSync) because they execute inside bun:sqlite transactions
- * which cannot contain async calls.
+ * Persistence functions are synchronous (writeFileSync, renameSync)
+ * because they execute inside bun:sqlite transactions which cannot
+ * contain async calls.
  *
  * This module does NOT import from reducer.ts — deriveState and
  * resolveState accept a reduce function as a parameter to avoid
@@ -21,7 +21,6 @@ import {
   renameSync,
   copyFileSync,
   existsSync,
-  appendFileSync,
   mkdirSync,
 } from 'node:fs';
 import { join } from 'node:path';
@@ -512,18 +511,6 @@ export function restoreStateFromBackup(dir: string): void {
   if (existsSync(backup)) {
     copyFileSync(backup, target);
   }
-}
-
-/**
- * Append one JSON line to events.jsonl.
- * Creates the directory and file if they do not exist.
- *
- * Uses appendFileSync because Bun.write does not support append mode.
- */
-export function appendJsonl(dir: string, event: object): void {
-  mkdirSync(dir, { recursive: true });
-  const filePath = join(dir, 'events.jsonl');
-  appendFileSync(filePath, JSON.stringify(event) + '\n', 'utf8');
 }
 
 // ---------------------------------------------------------------------------
