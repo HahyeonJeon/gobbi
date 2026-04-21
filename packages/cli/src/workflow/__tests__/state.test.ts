@@ -226,6 +226,8 @@ describe('rowToEvent', () => {
       actor: 'cli',
       parent_seq: null,
       idempotency_key: 'test:1:workflow.start',
+      session_id: null,
+      project_id: null,
     };
     const event = rowToEvent(row);
     expect(event).not.toBeNull();
@@ -243,6 +245,8 @@ describe('rowToEvent', () => {
       actor: 'cli',
       parent_seq: null,
       idempotency_key: 'test:1:unknown.event',
+      session_id: null,
+      project_id: null,
     };
     expect(rowToEvent(row)).toBeNull();
   });
@@ -258,6 +262,8 @@ describe('rowToEvent', () => {
       actor: 'cli',
       parent_seq: null,
       idempotency_key: 'test:1:workflow.start',
+      session_id: null,
+      project_id: null,
     };
     expect(rowToEvent(row)).toBeNull();
   });

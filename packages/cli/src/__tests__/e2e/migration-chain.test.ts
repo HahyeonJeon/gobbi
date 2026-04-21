@@ -33,10 +33,7 @@ import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import {
-  CURRENT_SCHEMA_VERSION,
-  type EventRow,
-} from '../../workflow/migrations.js';
+import type { EventRow } from '../../workflow/migrations.js';
 
 // CLI entry — mirrors workflow-cycle.test.ts. Two `..` hops land at
 // packages/cli/src/cli.ts.
@@ -66,14 +63,17 @@ function parseStatus(buf: Buffer): Record<string, unknown> {
 const v1Events: readonly EventRow[] = [
   { seq: 100, ts: '2026-01-01T00:00:00.000Z', schema_version: 1, type: 'workflow.step.exit', step: 'ideation',
     data: JSON.stringify({ step: 'ideation' }),
-    actor: 'orchestrator', parent_seq: null, idempotency_key: 'tool-call:tc-mig-001:workflow.step.exit' },
+    actor: 'orchestrator', parent_seq: null, idempotency_key: 'tool-call:tc-mig-001:workflow.step.exit',
+    session_id: null, project_id: null },
   { seq: 101, ts: '2026-01-01T00:00:01.000Z', schema_version: 1, type: 'guard.violation', step: 'plan',
     data: JSON.stringify({ guardId: 'g-scope', toolName: 'Write', reason: 'outside scope', step: 'plan',
       timestamp: '2026-01-01T00:00:01.000Z' }),
-    actor: 'hook', parent_seq: null, idempotency_key: 'tool-call:tc-mig-002:guard.violation' },
+    actor: 'hook', parent_seq: null, idempotency_key: 'tool-call:tc-mig-002:guard.violation',
+    session_id: null, project_id: null },
   { seq: 102, ts: '2026-01-01T00:00:02.000Z', schema_version: 1, type: 'artifact.write', step: 'execution',
     data: JSON.stringify({ step: 'execution', filename: 'research.md', artifactType: 'note' }),
-    actor: 'executor', parent_seq: null, idempotency_key: 'tool-call:tc-mig-003:artifact.write' },
+    actor: 'executor', parent_seq: null, idempotency_key: 'tool-call:tc-mig-003:artifact.write',
+    session_id: null, project_id: null },
 ];
 
 describe('migration chain e2e', () => {
@@ -147,7 +147,14 @@ describe('migration chain e2e', () => {
         expect(statusResult.exitCode).toBe(0);
 
         const snap = parseStatus(statusResult.stdout);
-        expect(snap['schemaVersion']).toBe(CURRENT_SCHEMA_VERSION);
+        // The row-level `CURRENT_SCHEMA_VERSION` is decoupled from the
+        // in-memory `state.schemaVersion` at gobbi-memory Pass 2 — the v5
+        // bump adds `session_id` / `project_id` columns but no state-field
+        // additions, so `initialState().schemaVersion` stays at 4. The
+        // status snapshot exposes the in-memory value, not the row-level
+        // one. A later pass that lifts state-shape fields to v5+ will
+        // realign the two and re-tighten this to CURRENT_SCHEMA_VERSION.
+        expect(snap['schemaVersion']).toBe(4);
         expect(snap['sessionId']).toBe(sessionId);
 
         // Innovative I11 post-triangulation — stored rows still v1.

@@ -635,6 +635,8 @@ describe('migrateEvent', () => {
     actor: 'orchestrator',
     parent_seq: null,
     idempotency_key: 'test:1:workflow.start',
+    session_id: 's1',
+    project_id: null,
   };
 
   it('returns the same row when already at target version', () => {

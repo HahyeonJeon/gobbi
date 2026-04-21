@@ -750,6 +750,12 @@ describe('properties: schema v4 migration idempotence', () => {
         actor: fc.constantFrom('cli', 'hook', 'user', 'system'),
         parent_seq: fc.option(fc.nat({ max: 100_000 }), { nil: null }),
         idempotency_key: fc.string({ minLength: 1, maxLength: 60 }),
+        session_id: fc.option(fc.string({ minLength: 1, maxLength: 40 }), {
+          nil: null,
+        }),
+        project_id: fc.option(fc.string({ minLength: 1, maxLength: 40 }), {
+          nil: null,
+        }),
       });
 
     fc.assert(

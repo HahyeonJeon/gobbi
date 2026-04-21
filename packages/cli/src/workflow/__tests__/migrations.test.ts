@@ -47,13 +47,25 @@ import { reduce } from '../reducer.js';
 import type { PriorErrorSnapshot } from '../events/decision.js';
 import type { ErrorPathway } from '../../specs/errors.js';
 
+/**
+ * Legacy-v4-row partition-key defaults — every fixture in this file
+ * represents a row written under a pre-v5 schema, so `session_id` and
+ * `project_id` start as `null` (the shape pre-backfill). Spread into
+ * each row literal so the strict `EventRow` shape compiles after the
+ * v5 column addition. v5+ rows set these explicitly.
+ */
+const LEGACY_PARTITION: Pick<EventRow, 'session_id' | 'project_id'> = {
+  session_id: null,
+  project_id: null,
+};
+
 // ---------------------------------------------------------------------------
 // 1. Canary pin
 // ---------------------------------------------------------------------------
 
 describe('CURRENT_SCHEMA_VERSION', () => {
-  test('is 4 — schema v4 landed in PR E (verification.result + verificationResults state field + DelegationCompleteData.sizeProxyBytes)', () => {
-    expect(CURRENT_SCHEMA_VERSION).toBe(4);
+  test('is 5 — schema v5 landed in gobbi-memory Pass 2 (session_id + project_id columns on events table)', () => {
+    expect(CURRENT_SCHEMA_VERSION).toBe(5);
   });
 });
 
@@ -80,6 +92,7 @@ describe('migration registry completeness', () => {
       actor: 'orchestrator',
       parent_seq: null,
       idempotency_key: 'tool-call:tc-canary:workflow.start',
+      ...LEGACY_PARTITION,
     };
     for (let v = 2; v <= CURRENT_SCHEMA_VERSION; v++) {
       // Fresh row each iteration to avoid contamination.
@@ -114,6 +127,7 @@ describe('v1 → v2 event round-trip', () => {
       actor: 'orchestrator',
       parent_seq: null,
       idempotency_key: 'tool-call:tc-001:workflow.start',
+      ...LEGACY_PARTITION,
     },
     {
       seq: 2,
@@ -125,6 +139,7 @@ describe('v1 → v2 event round-trip', () => {
       actor: 'orchestrator',
       parent_seq: 1,
       idempotency_key: 'tool-call:tc-002:workflow.eval.decide',
+      ...LEGACY_PARTITION,
     },
     {
       seq: 3,
@@ -136,6 +151,7 @@ describe('v1 → v2 event round-trip', () => {
       actor: 'orchestrator',
       parent_seq: 2,
       idempotency_key: 'tool-call:tc-003:workflow.step.exit',
+      ...LEGACY_PARTITION,
     },
     {
       seq: 4,
@@ -153,6 +169,7 @@ describe('v1 → v2 event round-trip', () => {
       actor: 'hook',
       parent_seq: null,
       idempotency_key: 'tool-call:tc-004:guard.violation',
+      ...LEGACY_PARTITION,
     },
     {
       seq: 5,
@@ -164,6 +181,7 @@ describe('v1 → v2 event round-trip', () => {
       actor: 'orchestrator',
       parent_seq: 4,
       idempotency_key: 'tool-call:tc-005:workflow.step.exit',
+      ...LEGACY_PARTITION,
     },
     {
       seq: 6,
@@ -179,6 +197,7 @@ describe('v1 → v2 event round-trip', () => {
       actor: 'executor',
       parent_seq: 5,
       idempotency_key: 'tool-call:tc-006:artifact.write',
+      ...LEGACY_PARTITION,
     },
   ];
 
@@ -190,9 +209,10 @@ describe('v1 → v2 event round-trip', () => {
     }
   });
 
-  test('each row migrates to CURRENT_SCHEMA_VERSION (v4) with identical event-data payload', () => {
-    // PR D's v2→v3 identity and PR E's v3→v4 identity extend the chain —
-    // a v1 row still walks to the current target with an unchanged payload.
+  test('each row migrates to CURRENT_SCHEMA_VERSION with identical event-data payload', () => {
+    // PR D's v2→v3 identity, PR E's v3→v4 identity, and Pass 2's v4→v5
+    // identity all extend the chain — a v1 row still walks to the current
+    // target with an unchanged payload.
     for (const row of v1Events) {
       const migrated = migrateEvent(row, CURRENT_SCHEMA_VERSION);
       expect(migrated.schema_version).toBe(CURRENT_SCHEMA_VERSION);
@@ -200,11 +220,17 @@ describe('v1 → v2 event round-trip', () => {
     }
   });
 
-  test('replayed v1 events reduce to a valid current-schema WorkflowState', () => {
+  test('replayed v1 events reduce to a valid in-memory WorkflowState', () => {
     const state = deriveState('sess-v1', v1Events, reduce);
-    // Schema v4 in-memory shape — initialState() now advertises v4 in
-    // lockstep with CURRENT_SCHEMA_VERSION.
-    expect(state.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
+    // The in-memory `initialState().schemaVersion` is currently pinned
+    // at 4 in `state.ts`; `CURRENT_SCHEMA_VERSION` at 5 reflects the
+    // row-level schema (new `session_id` / `project_id` columns). The
+    // two values are intentionally decoupled under gobbi-memory Pass 2
+    // because the v5 bump is a pure row-shape change that carries no
+    // in-memory state-field addition, so the reducer has nothing to
+    // normalise. A later pass that lifts state-shape fields to v5+
+    // will bump `initialState().schemaVersion` and re-tighten this
+    // assertion.
     expect(state.schemaVersion).toBe(4);
     // The new field initialises to null and only populates on an EVAL_VERDICT
     // — none of these fixtures fires one, so it must remain null.
@@ -238,9 +264,10 @@ describe('v2 → v3 event round-trip', () => {
     actor: 'orchestrator',
     parent_seq: 41,
     idempotency_key: 'tool-call:tc-042:decision.eval.skip',
+    ...LEGACY_PARTITION,
   };
 
-  test('v2 decision.eval.skip (no priorError) migrates to v4 unchanged', () => {
+  test('v2 decision.eval.skip (no priorError) migrates to v4 unchanged (intermediate hop)', () => {
     const migrated = migrateEvent(v2EvalSkip, 4);
     expect(migrated.schema_version).toBe(4);
     expect(JSON.parse(migrated.data)).toEqual(JSON.parse(v2EvalSkip.data));
@@ -266,6 +293,7 @@ describe('v2 → v3 event round-trip', () => {
       actor: 'hook',
       parent_seq: null,
       idempotency_key: 'tool-call:tc-007:guard.warn',
+      ...LEGACY_PARTITION,
     };
     const migrated = migrateEvent(v2GuardWarn, 4);
     expect(migrated.schema_version).toBe(4);
@@ -313,6 +341,7 @@ describe('v3 decision.eval.skip with priorError (CP11 reversibility)', () => {
       actor: 'orchestrator',
       parent_seq: 49,
       idempotency_key: 'tool-call:tc-050:decision.eval.skip',
+      ...LEGACY_PARTITION,
     };
     const migrated = migrateEvent(row, 4);
     expect(migrated.schema_version).toBe(4);
@@ -409,6 +438,7 @@ describe('v3 decision.eval.skip with priorError (CP11 reversibility)', () => {
       actor: 'orchestrator',
       parent_seq: null,
       idempotency_key: 'tool-call:tc-007:decision.eval.skip',
+      ...LEGACY_PARTITION,
     };
     const migrated = migrateEvent(v2Row, 3);
     const parsed = JSON.parse(migrated.data) as {
