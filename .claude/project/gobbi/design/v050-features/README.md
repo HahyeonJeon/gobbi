@@ -8,7 +8,7 @@ Feature description docs for gobbi v0.5.0 — read these to understand what the 
 |----------|---------|
 | [one-command-install.md](one-command-install.md) | Plugin install + `/gobbi` in a session auto-installs or updates gobbi-cli; rules, agents, skills refresh on plugin update. |
 | [deterministic-orchestration.md](deterministic-orchestration.md) | Six-step workflow driven by the CLI. Bounded prompt per step; stance-diverse PI in the Ideation Loop; per-loop `eval_enabled` + `max_iterations`. |
-| [gobbi-config.md](gobbi-config.md) | Three-tier `settings.json` cascade under `.gobbi/` (user → project → session). Session wins; project wins over user. |
+| [gobbi-config/README.md](gobbi-config/README.md) | Unified `settings.json` cascade under `.gobbi/` (workspace / project / session). Session wins; project wins over workspace. Two-verb CLI: `gobbi config get` + `set`. |
 | [gobbi-memory.md](gobbi-memory.md) | Three-tier memory under `.gobbi/`. Project memory subdirs (design, decisions, gotchas, ...). Workspace-wide `gobbi.db` event store. |
 | [just-in-time-prompt-injection.md](just-in-time-prompt-injection.md) | Prompts emitted at the moment of need, not always-loaded; skills injected per-step. |
 | [claude-docs-management.md](claude-docs-management.md) | JSON source at `.gobbi/skills\|agents\|rules/` rendered to `.claude/` by the CLI. Evaluation rubrics travel with authoring skills. |

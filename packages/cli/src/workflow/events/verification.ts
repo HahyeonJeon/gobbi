@@ -48,12 +48,14 @@ export type VerificationEventType =
 // ---------------------------------------------------------------------------
 
 /**
- * The closed set of verification command kinds recognised by the runner
- * and the project-config loader. Matches the `verification.commands` keys
- * defined in `.gobbi/project-config.json` (see E.5).
+ * The closed set of verification command kinds recognised by the
+ * verification-block compiler (`specs/verification-block.ts`). The
+ * `verification.*` config section and `verification-runner.ts` were removed
+ * in Pass 3 finalization (Wave B, `f9b3925`) — this union type is retained
+ * because `VerificationResultData` events can still be written by external
+ * callers and rendered by the compiler.
  *
- * `custom` is a sink for project-defined one-off commands — the config
- * entry may be `null`, in which case no command runs under that kind.
+ * `custom` is a sink for project-defined one-off commands.
  */
 export type VerificationCommandKind =
   | 'lint'

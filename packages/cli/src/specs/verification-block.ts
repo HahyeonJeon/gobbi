@@ -302,8 +302,8 @@ export function compileVerificationBlock(
  * composite key starts with `${subagentId}:`? Used by `next.ts` to decide
  * whether to invoke the compiler at all (the empty-case render is still
  * valid, but cheap to skip when the subagent produced no verification
- * output — e.g. the project-config has no `verification.runAfterSubagentStop`
- * declared).
+ * output — the `verification.*` config section was removed in Pass 3
+ * finalization; results are now written only by explicit callers).
  */
 export function hasVerificationResultsFor(
   state: WorkflowState,

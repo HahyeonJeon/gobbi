@@ -82,8 +82,8 @@ The gobbi CLI manages workflow state, session configuration, notes, and validati
 | `gobbi workflow stop` | Write the final session event and flush state on Stop |
 | `gobbi workflow status` | Show current workflow state for the active session |
 | `gobbi workflow resume` | Resume an interrupted session, replaying events from `gobbi.db` |
-| `gobbi config set <session> <key> <value>` | Set session configuration in `gobbi.json` |
-| `gobbi config get <session> [key]` | Read session configuration |
+| `gobbi config set <key> <value> [--level workspace|project|session] [--session-id <id>]` | Write a setting to the target level's `settings.json` |
+| `gobbi config get <key> [--level workspace|project|session] [--session-id <id>]` | Read a setting from the cascade or a specific level |
 | `gobbi notify send` | Send a notification (used inline by `gobbi workflow init` when channels are configured) |
 | `gobbi validate <type> <path>` | Validate agent, skill, or gotcha definitions |
 
@@ -95,5 +95,5 @@ The gobbi CLI manages workflow state, session configuration, notes, and validati
 |---|---|---|
 | `gobbi: command not found` | Not installed globally | Run `npm install -g @gobbitools/cli` |
 | `bun: command not found` | Bun not installed | Install from `bun.sh` |
-| `gobbi workflow init` fails | CLI version mismatch or SQLite init error | Verify `gobbi --version` is `0.5.0`; reinstall if stale |
+| `gobbi workflow init` fails | CLI version mismatch or settings cascade error | Verify `gobbi --version` is `0.5.0`; reinstall if stale |
 | Hooks fail silently | `gobbi` not in PATH when hooks execute | Ensure global install — hooks run in a shell that may not have local `node_modules/.bin` in PATH |

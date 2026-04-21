@@ -12,9 +12,9 @@ Check notification configuration state at session start. Determines which channe
 
 Detection before the first task means the orchestrator can offer credential setup during session start rather than discovering missing credentials when a notification tries to fire.
 
-> **Both session flag AND credentials must be present for notifications to fire.**
+> **Both `notify.{channel}.enabled: true` AND credentials must be present for notifications to fire.**
 
-Notification delivery requires two independent conditions: the session flag in `gobbi.json` is `true` for the channel, and the channel's credentials exist in `.env`. Missing either one suppresses delivery. This means credentials alone are not sufficient — the user must explicitly opt in per session during the setup questions in FIFTH.
+Notification delivery requires two independent conditions: `notify.{channel}.enabled` is `true` in the resolved cascade (`settings.json` at workspace / project / session level), and the channel's credentials exist in `.claude/.env`. Missing either one suppresses delivery. This means credentials alone are not sufficient — the user must explicitly opt in per session during the setup questions in FIFTH.
 
 > **Detection is read-only.**
 
@@ -24,9 +24,9 @@ Never modify credentials, hooks, or settings during detection. Report state; let
 
 ## How Notifications Work in v0.5.0
 
-In v0.5.0, the four-channel setup question (Slack / Telegram / Discord / Skip) runs inside `gobbi workflow init` — not as a separate `/gobbi` step. When `gobbi workflow init` fires at SessionStart, it reads the session flags from `gobbi.json` and calls `gobbi notify send` inline at workflow boundaries (session open, step transitions, completion). No plugin hook is registered for notifications: CP3 and L-F3 removed the auto-registered `gobbi notify *` hook entries from the plugin.
+In v0.5.0, the four-channel setup question (Slack / Telegram / Discord / Skip) runs during `/gobbi` FIFTH step. The FIFTH step writes `notify.{channel}.enabled: true` (or `false`) to the session-level `settings.json` via `gobbi config set --level session`. When `gobbi workflow init` fires at SessionStart, it reads session flags from the resolved cascade (`lib/notify.ts::resolveSettings`) and calls `gobbi notify send` inline at workflow boundaries (session open, step transitions, completion).
 
-If you want notifications to auto-fire independently of the workflow CLI (for example, on Stop events outside an active session), see the "Restoring auto-fire notifications" section below.
+No plugin hook is registered for notifications: CP3 and L-F3 removed the auto-registered `gobbi notify *` hook entries from the plugin. If you want notifications to auto-fire independently of the workflow CLI (for example, on Stop events outside an active session), see the "Restoring auto-fire notifications" section below.
 
 ---
 
@@ -45,19 +45,19 @@ Check if `$CLAUDE_PROJECT_DIR/.claude/.env` exists. If it does, read it and iden
 
 A channel is "configured" when all its required credentials are present and non-empty.
 
-### 2. Session Preferences in gobbi.json
+### 2. Session Preferences in `settings.json`
 
-The user's notification choices from the setup questions (FIFTH) are persisted to `gobbi.json` via `gobbi config`. The `gobbi notify send` command reads these per-session flags before attempting delivery. Without a session entry, all channels default to `false` — no notifications fire until the user explicitly selects during setup.
+The user's notification choices from the setup questions (FIFTH) are persisted to `.gobbi/sessions/{id}/settings.json` via `gobbi config set --level session`. The `gobbi notify send` command reads these per-session flags via the cascade (`resolveSettings`) before attempting delivery. Without a session-level setting, channels default to `enabled: false` from the built-in defaults — no notifications fire until the user explicitly selects during setup.
 
-Slack and Telegram have conditional session-level control. Discord delivery is deferred to a future version. Desktop notifications (`NOTIFY_DESKTOP`) remain environment-level only — they are not gated by `gobbi.json` session flags.
+Slack, Telegram, and Discord have `enabled` flags at all three levels (workspace / project / session). Desktop notifications also use `notify.desktop.enabled`. The `events` field (per channel) controls which gobbi workflow events trigger delivery — absent `events` means all events fire; `events: []` means none. Credentials remain in `.claude/.env` only — never in `settings.json`.
 
 ### 3. Classify State
 
-**Fully configured** — Credentials exist in `.env` and session flags are set in `gobbi.json` for the selected channels. After the user selects channels at setup, the orchestrator persists session flags. Notifications fire via `gobbi notify send` at workflow boundaries.
+**Fully configured** — Credentials exist in `.claude/.env` and `notify.{channel}.enabled: true` is set at session level in `.gobbi/sessions/{id}/settings.json`. After the user selects channels at setup, the orchestrator persists `enabled: true` via `gobbi config set`. Notifications fire via `gobbi notify send` at workflow boundaries.
 
-**Partially configured** — Credentials exist but session flags are missing, or flags are set but credentials are absent. Report what's missing and offer to fix. Both conditions must be true for delivery.
+**Partially configured** — Credentials exist but `enabled` flag is missing or false, or the flag is set but credentials are absent. Report what's missing and offer to fix. Both conditions must be true for delivery.
 
-**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help set up. Session flags are still written to `gobbi.json` so that notifications activate immediately once credentials are added.
+**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help set up. The `enabled: true` flag can be written now via `gobbi config set notify.slack.enabled true --level session` so notifications activate immediately once credentials are added.
 
 **Degraded** — Credentials exist but a dependency is missing (e.g., `gobbi` not in PATH, `notify-send` not available for Desktop). Report the dependency gap.
 

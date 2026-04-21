@@ -14,7 +14,7 @@ V0.5.0 replaces advice with Just-in-Time Prompt Compilation. The CLI compiles a 
 
 ## The six-step workflow
 
-1. **Workflow Configuration** — Infrastructure setup and user decision capture. Before entering the loop, the session agent checks whether `gobbi-cli` is installed and current, installing or updating automatically if not. The step then: detects any prior incomplete session and offers resume or new; ensures the `.gobbi/` directory tree exists under `project/{project_name}/sessions/{session_id}/`; ensures the single SQLite event store is present at `.gobbi/gobbi.db` — one database serves every project and every session in the workspace; ensures `settings.json` exists at all three tiers with user → project → session inheritance; and captures user decisions — per-loop `eval_enabled` and `max_iterations`, trivial range, git mode (and base branch if worktree-PR), and notification channels. If git mode is worktree-PR, a tracking issue is created and a worktree and branch are cut. If notifications are enabled, credentials are verified. The final input from the user in this step is the task statement — free text capturing what the session is for. The step closes by emitting `workflow.start` and handing off to the Ideation Loop.
+1. **Workflow Configuration** — Infrastructure setup and user decision capture. Before entering the loop, the session agent checks whether `gobbi-cli` is installed and current, installing or updating automatically if not. The step then: detects any prior incomplete session and offers resume or new; ensures the `.gobbi/` directory tree exists under `project/{project_name}/sessions/{session_id}/`; ensures the single SQLite event store is present at `.gobbi/gobbi.db` — one database serves every project and every session in the workspace; ensures `settings.json` exists at all three levels (workspace / project / session) via `ensureSettingsCascade`; and captures user decisions — per-step `evaluate.mode` and discussion preferences, git workflow mode (and base branch if worktree-PR), and notification channels. If git mode is worktree-PR, a tracking issue is created and a worktree and branch are cut. If notifications are enabled, credentials are verified. The final input from the user in this step is the task statement — free text capturing what the session is for. The step closes by emitting `workflow.start` and handing off to the Ideation Loop. See `gobbi-config/README.md` for the settings cascade and CLI surface.
 
 2. **Ideation Loop** — `User Prompt → [Discuss → Research → Evaluate] → Idea`. Two PI agents run in parallel, one with an innovative stance and one with a best-practice stance. PI is a single merged role: each PI agent carries out research as part of the loop — no separate agent type exists for research. The loop continues until an idea is concrete enough to plan against. Discussion with the user — via `AskUserQuestion` at every decision point — is the loop's driving mechanism. PI agents investigate in parallel, but the user's clarifications shape what they investigate and when the loop exits.
 
@@ -30,17 +30,11 @@ V0.5.0 replaces advice with Just-in-Time Prompt Compilation. The CLI compiles a 
 
 ## Loop configuration
 
-Workflow Configuration captures two settings per loop and writes them to `settings.json` at the session tier. The settings do not change mid-workflow; if the user wants different values for a future workflow, they set them at the next Workflow Configuration.
+Workflow Configuration captures per-step evaluation and discussion settings and writes them to `settings.json` at the session level (via `gobbi config set --level session`). The settings do not change mid-workflow; if the user wants different values for a future workflow, they set them at the next Workflow Configuration.
 
-The two settings are `eval_enabled` (whether evaluation runs inside that loop) and `max_iterations` (how many times the loop body can run before the workflow advances). Defaults:
+Evaluation is governed by `workflow.{step}.evaluate.mode` — one of `'always' | 'ask' | 'skip' | 'auto'`. All three steps default to `'always'` (conservative, maximum quality-checking). Discussion is governed by `workflow.{step}.discuss.mode`. The `max_iterations` iteration cap is tracked in workflow state (not in the settings file).
 
-| Loop      | `eval_enabled` | `max_iterations` |
-|-----------|---------------|-----------------|
-| Ideation  | true          | 1               |
-| Planning  | true          | 1               |
-| Execution | true          | 3               |
-
-Execution's higher default reflects that implementation tasks typically need revise-and-retry cycles that Ideation and Planning do not. Setting `eval_enabled` to false for any loop suppresses evaluation for that loop only — the others are unaffected.
+See `gobbi-config/README.md` for the full settings shape and cascade resolution. The translation from `evaluate.mode` enum to EVAL_DECIDE event booleans is handled by `resolveEvalDecision` in `lib/settings-io.ts`.
 
 ---
 
@@ -61,6 +55,6 @@ All workflow state is derived from events written to `.gobbi/gobbi.db`. Replayin
 | Document | Covers |
 |----------|--------|
 | `just-in-time-prompt-injection.md` | How JIT prompt compilation enforces the bounded-prompt model |
-| `gobbi-config.md` | Three-tier `settings.json` that Workflow Configuration populates |
+| `gobbi-config/README.md` | Unified `settings.json` cascade (workspace / project / session) that Workflow Configuration populates |
 | `gobbi-memory.md` | The single `.gobbi/gobbi.db` event store, three-tier memory layout, and how resume replays events |
 | `worktree-based-operation.md` | The git side of Workflow Configuration — issue and worktree creation |

@@ -1,181 +1,225 @@
-# Review — gobbi-config
+# Review — gobbi-config Pass 3
 
-| Pass date  | Pass ID               | Reviewer | Verdict    | PR     |
-|------------|-----------------------|----------|------------|--------|
-| 2026-04-21 | session `fbffbdb8…`   | executor | needs-work | #120   |
+| Pass date  | Session ID               | Verdict    | PR     |
+|------------|--------------------------|------------|--------|
+| 2026-04-21 | `dfd4ff66-a2d4-456f-8fa4-ddd843e4e58b` | shipped | #123 (draft) |
 
-## Pass 2026-04-21 — Findings
+Pass-3 finalization replaced the T1/T2 JSON + T3 SQLite + provenance architecture with a unified three-level `settings.json` shape and a two-verb CLI. Waves B through D landed on `feat/120-gobbi-config-pass-3` atop 6 prior commits. This review documents what drifted from the originally-shipped Pass-3 design, notable implementation decisions (NOTEs), and open gaps deferred to follow-up Passes (GAPs).
 
-Seven DRIFTs lifted from ideation §2: five resolve to doc rewrites, one resolved by the T6 sibling-doc sweep commit `a344220` (DRIFT-4), one to a cross-ref addition (DRIFT-7). The code changes — schema v2 AJV dispatch, cascade resolver, migration orchestrator, new CLI verb — are cited by SHA. Four NOTE entries document decisions, not defects. All SHAs verified via `git cat-file -e <sha>`.
-
----
-
-### DRIFT-1 — Tier 2 path used plural `projects/{project_name}/`
-
-**Finding:** The flat `gobbi-config.md` described the project tier as `.gobbi/projects/{project_name}/settings.json` (plural `projects`). The shipped code uses singular `.gobbi/project/settings.json` throughout. The plural form was propagated from an early design doc that pre-dated the canonical `.gobbi/project/` convention.
-
-**Evidence:** `packages/cli/src/commands/gotcha/promote.ts:85` (`join('.gobbi', 'project', 'gotchas')` — singular); old flat doc `gobbi-config.md:26` (plural form). Pass-3 migration renames via `ensureConfigCascade` Step 1 (codified at `packages/cli/src/lib/project-config.ts` — the `ensureConfigCascade` function).
-
-**Severity:** Medium — doc misled agents writing cross-refs or creating files at the wrong path. No runtime data path ever used the plural.
-
-**Resolution:** fix doc + code — Commit `8931d0731e8c315e72ff22ad5665b4ae26c6602b` (T2): `ensureConfigCascade` renames `.gobbi/project-config.json` → `.gobbi/project/settings.json` atomically. This README uses singular throughout.
-
-**Owner:** gobbi-config Pass 3.
+All SHAs below exist on the branch (`git log --oneline` verified).
 
 ---
 
-### DRIFT-2 — Tier 3 described as a `settings.json` file under `sessions/{id}/`
+## DRIFT entries
 
-**Finding:** The flat doc described T3 as `.gobbi/projects/{name}/sessions/{session_id}/settings.json` — a JSON file per session. The shipped T3 is a row in `.gobbi/config.db` accessed via `ConfigStore.getSession`. No per-session settings JSON file exists anywhere in the codebase.
+### DRIFT-1 — `trivialRange` field removed entirely
 
-**Evidence:** `packages/cli/src/lib/config-store.ts` — `getSession(sessionId)` reads from SQLite, not a JSON file; `openConfigStore` at the module level opens `config.db` at `.gobbi/config.db`. The old flat doc `gobbi-config.md:33` claims a JSON file location.
+**Finding:** Pass-3 shipped `trivialRange: 'read-only' | 'simple-edits'` in the project-config schema. Pass-3 finalization drops it entirely per explicit user lock: "Drop trivialRange. Now always follow full workflow with configuration." The field has no runtime consumer after the drop; scope-of-inline-edits is now governed by `workflow.execution.discuss.mode`.
 
-**Severity:** Medium — any agent trying to read T3 as a JSON file would not find it; the SQLite path is the only runtime path.
+**Evidence:** ideation.md §3.3 "Fields removed vs Pass-3" — `trivialRange` row; ideation.md §3.4 — `trivialRange → REMOVED` entry; `packages/cli/src/lib/settings.ts` at `f9b3925` has no `trivialRange` field.
 
-**Resolution:** fix doc — This README (T5 commit `b3059b18d1580c45da07cc1a9778afc98c61aeaf`) reframes T3 as the `config.db` session row throughout.
+**Severity:** Medium — documentation and tests referencing `trivialRange` would fail against the new schema.
 
-**Owner:** gobbi-config Pass 3.
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B): `settings.ts` has no `trivialRange`; all CFG-* scenarios rewritten at `ff20702` (Wave D.2).
 
----
-
-### DRIFT-3 — Config-management command names were listed as "TBD"
-
-**Finding:** The flat doc stated "config-management commands (names TBD — the CLI surface is being redesigned)". Pass 3 ships a locked surface: `init`, `get`, `set`, `delete`, `list`, `cleanup` (pre-existing) plus `resolve` (new). No ambiguity remains.
-
-**Evidence:** `packages/cli/src/commands/config.ts:38-51` (`USAGE` string enumerating all subcommands including `resolve <key> [--session-id <id>] [--with-sources]`). Old flat doc `gobbi-config.md:5` (names TBD).
-
-**Severity:** Low — did not block any runtime path; caused doc readers to defer to a "future" CLI that had already shipped.
-
-**Resolution:** fix doc — Commit `b3059b18d1580c45da07cc1a9778afc98c61aeaf` (T4): `gobbi config resolve` wired; this README §CLI surface names all six existing + one new verb.
-
-**Owner:** gobbi-config Pass 3.
+**Owner:** gobbi-config Pass 3 finalization.
 
 ---
 
-### DRIFT-4 — "Step one of six" — v0.5.0 has five steps, not six
+### DRIFT-2 — `cost.*` section removed
 
-**Finding:** The flat doc described the Workflow Configuration step as "step one of six in the deterministic workflow". v0.5.0 has five steps (Ideation, Plan, Execution, Evaluation, Memorization). The six-step model was an earlier design that was superseded.
+**Finding:** Pass-3 schema v2 included `cost: { rateTable, tokenBudget }`. Pass-3 finalization drops it: `MODEL_RATES` is hardcoded in `lib/cost-rates.ts`; no runtime consumer reads `cost.*` from config.
 
-**Evidence:** `packages/cli/src/specs/state.ts` — `WorkflowStep` union contains exactly five productive steps; `.claude/project/gobbi/design/v050-overview.md §5-step cycle` (five steps listed). Old flat doc `gobbi-config.md:43` ("step one of six").
+**Evidence:** ideation.md §3.3 — `cost.*` row ("Re-add when a consumer exists"); `packages/cli/src/lib/settings.ts` at `f9b3925` has no `cost` section.
 
-**Severity:** Low — misinformation about a workflow property that readers use when referencing doc cross-links.
+**Severity:** Medium — cost-related scenarios would fail against the new schema.
 
-**Resolution:** fix doc (partial) — T6 sibling-doc sweep commit `a344220` landed the `projects/` → `project/` plural-path correction in `deterministic-orchestration.md` and the five-step cross-ref from `gobbi-config/README.md`. The six-step framing in `deterministic-orchestration.md` body (lines 3, 7, 15) remains and is deferred to follow-up issue #121 — the six-step reframe is scoped to the deterministic-orchestration reframe work and not in scope for Pass 3.
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B). Deferred re-add to when a real consumer exists.
 
-**Owner:** gobbi-config Pass 3 (T6 commit `a344220`); six-step reframe → #121.
-
----
-
-### DRIFT-5 — T3 described as "written during the Workflow Configuration step"
-
-**Finding:** The flat doc implied the session-tier settings file is written automatically during the Workflow Configuration step of the deterministic workflow. In practice T3 rows are written by the `/gobbi` skill setup via explicit `gobbi config set <session-id> <key> <val>` calls before the workflow starts. There is no workflow step that auto-writes T3.
-
-**Evidence:** `packages/cli/src/commands/config.ts` — `'set'` branch is called explicitly; no workflow step in `packages/cli/src/commands/workflow/` calls `runConfigSet` automatically. `.claude/skills/gobbi/SKILL.md` — skill setup calls `gobbi config set` for each session parameter.
-
-**Severity:** Low — created an incorrect mental model of when T3 is populated. Agents initialising T3 manually would have been confused about whether their writes were redundant.
-
-**Resolution:** fix doc — This README §Tier model — Tier 3 now states T3 rows are written by the `/gobbi` skill setup via `gobbi config set`.
-
-**Owner:** gobbi-config Pass 3.
+**Owner:** gobbi-config Pass 3 finalization.
 
 ---
 
-### DRIFT-6 — Claimed CLI reads and writes all three tiers through config-management commands
+### DRIFT-3 — `evaluationMode` column → per-step `evaluate.mode` enum
 
-**Finding:** The flat doc stated the CLI "reads and writes all three" tiers. Pass 3 ships `resolve` as a read-only cascade view. Explicit-tier writes for T1 (`settings.json`) and T2 (`project/settings.json`) are manual file edits; T3 writes use `gobbi config set <session-id> <key> <val>` which targets T3 only. The claim was optimistic about a symmetrical write surface that does not exist.
+**Finding:** The SQLite `evaluation_mode` column stored a single string (`'always-evaluate'`, `'ask'`, etc.) written by the `/gobbi` skill. Pass-3 finalization replaces it with `workflow.{step}.evaluate.mode` per-step enum (`'ask' | 'always' | 'skip' | 'auto'`). The old contract between `/gobbi`'s Q2 write and the reducer's EVAL_DECIDE consumption was broken (string vs boolean mismatch); the new shape fixes it end-to-end.
 
-**Evidence:** `packages/cli/src/commands/config.ts` — `'set'` branch calls `store.setField(sessionId, ...)` which writes into `config.db` T3 only; no `--tier` flag exists. `packages/cli/src/lib/project-config.ts::ensureProjectConfig` writes T2 but is not exposed as a general-purpose write command.
+**Evidence:** ideation.md §3.4 — `eval.{ideation,plan,execution} (bool) → workflow.{step}.evaluate: StepEvaluate`; plan.md §Wave B — "Fix the `evaluationMode ↔ eval.{ideation,plan}` contract break"; `f9b3925` (Wave B) replaces SQLite path; `08fb3d7` (Wave C.2) extends reducer with optional `execution` slot; `ff20702` (Wave D.2) adds `q2-evalconfig-e2e.test.ts` covering 4×3 combinations.
 
-**Severity:** Low — agents expecting a `gobbi config set --tier user key value` style command would not find it. Explicit-tier CLI writes are Pass-4 backlog.
+**Severity:** High — the old contract break caused silent wrong evalConfig state in the session.
 
-**Resolution:** fix doc — This README §CLI surface and §Tier model are honest: `resolve` reads the cascade; `set` targets T3 only; T1/T2 are edited manually or via init.
+**Resolution:** fix code + doc — resolved across `f9b3925` (Wave B) + `08fb3d7` (Wave C.2) + `cf7733c` (Wave D.1a) + `ff20702` (Wave D.2).
 
-**Owner:** gobbi-config Pass 3.
-
----
-
-### DRIFT-7 — Missing cross-ref to `feature-pass-template.md`
-
-**Finding:** The flat `gobbi-config.md` had no reference to `feature-pass-template.md`, which serves as the canonical pattern for how per-feature passes are structured. All other feature docs in `v050-features/` that have been through a Pass contain this cross-ref.
-
-**Evidence:** `gobbi-memory/README.md` — includes `feature-pass-template.md` in Related docs; `gobbi-config.md` (flat) — no such entry. `feature-pass-template.md` exists on `feat/118-gobbi-memory-pass-2` and will be present on the base branch after PR #119 merges.
-
-**Severity:** Low — documentation navigation gap only; no runtime impact.
-
-**Resolution:** fix doc — This README §Related docs table includes `feature-pass-template.md`.
-
-**Owner:** gobbi-config Pass 3.
+**Owner:** gobbi-config Pass 3 finalization.
 
 ---
 
-### NOTE-1 — No `config.db` schema bump in Pass 3
+### DRIFT-4 — T3 SQLite replaced by per-session `settings.json`
 
-**Finding:** Pass 3 adds `toCascadeProjection` to project the existing `config.db` session columns (`notify_slack`, `notify_telegram`, `trivial_range`, `git_workflow`, `base_branch`) into a `Partial<CascadeShape>`. No new columns are added to the `sessions` table. The existing columns are sufficient; Pass 4 would require new columns for `verification.*` / `cost.*` session overrides.
+**Finding:** Pass-3 shipped T3 as a row in `.gobbi/config.db` via `ConfigStore`. Pass-3 finalization replaces T3 with `.gobbi/sessions/{id}/settings.json` — a JSON file per session directory. The SQLite path (`config-store.ts`, `toCascadeProjection`, `openConfigStore`, WAL handling, TTL cleanup) is deleted.
 
-**Evidence:** `packages/cli/src/lib/config-store.ts::toCascadeProjection` — reads from columns already present in the `sessions` DDL; no `ALTER TABLE` issued by Pass 3 code. `packages/cli/src/lib/__tests__/config-cascade-migration.test.ts` — migration tests confirm no schema bump.
+**Evidence:** plan.md §Wave B — "DELETE `packages/cli/src/lib/config-store.ts`"; `f9b3925` (Wave B) deletes the file; `packages/cli/src/lib/settings-io.ts` at `f9b3925` implements `loadSettingsAtLevel(repoRoot, 'session')` reading from `sessions/{id}/settings.json`.
 
-**Severity:** N/A — informational decision, not a defect.
+**Severity:** High — agents reading from SQLite column names or expecting `ConfigStore` would fail entirely.
 
-**Resolution:** no code change needed. Owner: gobbi-config Pass 3 (this note).
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B). The README (this Pass) uses per-session `settings.json` throughout.
 
-**Owner:** gobbi-config Pass 3.
-
----
-
-### NOTE-2 — V1 and V2 project-config files coexist via two-schema AJV dispatch
-
-**Finding:** Pass 3 adds schema v2 with five new sections. Rather than a single `oneOf` schema (which is incompatible with AJV's `JSONSchemaType<T>` TS wrapper), the implementation uses two separately compiled AJV validators dispatched at runtime by reading the `version` field defensively. V1 files continue to parse and resolve via `validateV1`; new init writes produce v2 via `validateV2`. No auto-upgrade on read.
-
-**Evidence:** `packages/cli/src/lib/project-config.ts::parseProjectConfig` — version dispatch at the function entry point using `isRecord` guard; `validateV1` and `validateV2` compiled at module init. Commit `8931d0731e8c315e72ff22ad5665b4ae26c6602b` (T2): two separate `ajv.compile()` calls with separately typed schemas.
-
-**Severity:** N/A — informational. The design decision to use two schemas rather than `oneOf` is intentional and follows the AJV `JSONSchemaType<T>` constraint documented in `_typescript` skill.
-
-**Resolution:** no defect — design decision. SHA: `8931d0731e8c315e72ff22ad5665b4ae26c6602b` (T2 commit implementing `parseProjectConfig`).
-
-**Owner:** gobbi-config Pass 3.
+**Owner:** gobbi-config Pass 3 finalization.
 
 ---
 
-### NOTE-3 — `__sources` provenance map is internal data; `--with-sources` is its only CLI exposure
+### DRIFT-5 — `gobbi config resolve`, `--with-sources`, `__sources` provenance removed
 
-**Finding:** `ResolvedConfig.__sources` carries a flat dot-path → `TierId` map for every resolved leaf. This map is computed internally by `deepMergeWithProvenance` and exposed via the CLI only when `--with-sources` is passed to `gobbi config resolve`. Future `explain`, `diff`, and `promote` verbs that operate over the full provenance map are Pass-4 backlog items.
+**Finding:** Pass-3 shipped `gobbi config resolve <key> [--with-sources]` and `ResolvedConfig.__sources` (a flat dot-path → tier-id provenance map). Pass-3 finalization drops the entire provenance feature: `__sources`, `TierId`, `deepMergeWithProvenance`, `seedDefaultProvenance`, the `resolve` subcommand, and `--with-sources`. CLI collapses to two verbs: `get` + `set`.
 
-**Evidence:** `packages/cli/src/lib/config-cascade.ts::ResolvedConfig` — `__sources: Readonly<Record<string, TierId>>` field (commit `e2a5a6fe82d3e031ffdcfa62c6bcf140395ec3dd`, T3). `packages/cli/src/commands/config.ts::runConfigResolve` — `--with-sources` flag produces `{value, tier}` output (commit `b3059b18d1580c45da07cc1a9778afc98c61aeaf`, T4).
+**Evidence:** ideation.md §3.3 — `__sources` row + `gobbi config init/delete/list/cleanup/resolve` row + `--with-sources` row; plan.md §Wave B; `f9b3925` (Wave B) + `9bcb227` (Wave C.1) implement two-verb CLI.
 
-**Severity:** N/A — informational scope boundary, not a defect.
+**Severity:** Medium — any skill or agent calling `gobbi config resolve` would get command-not-found.
 
-**Resolution:** no defect. SHAs: `e2a5a6fe82d3e031ffdcfa62c6bcf140395ec3dd` (T3, `ResolvedConfig` type) + `b3059b18d1580c45da07cc1a9778afc98c61aeaf` (T4, `--with-sources` CLI flag).
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B) + `9bcb227` (Wave C.1). The README describes only `get` + `set`.
 
-**Owner:** gobbi-config Pass 3.
+**Owner:** gobbi-config Pass 3 finalization.
 
 ---
 
-### NOTE-4 — `.claude/gobbi.json` legacy file deferred entirely
+### DRIFT-6 — `verification.*` section removed; `verification-runner.ts` decommissioned
 
-**Finding:** `.claude/gobbi.json` is an older config file that predates the `.gobbi/config.db` storage. A deprecation warning and filesystem deletion were considered but explicitly deferred per user Q11 lock. The lazy-migration code path in `config-store.ts` handles it at the data level when `config.db` is first opened. Pass 3 does not add a stderr deprecation notice, does not delete the file, and does not touch the migration code path.
+**Finding:** Pass-3 schema v2 included `verification: { runAfterSubagentStop, runAfterToolStop, commands }`. Pass-3 finalization drops it per user lock. `verification-runner.ts` is deleted (Option A from ideation §6.6: executor subagents self-verify per `_delegation` lifecycle; the post-workflow-next runner was duplicative).
 
-**Evidence:** Ideation §8 (non-scope: "`.claude/gobbi.json` file deletion or stderr deprecation — user-locked deferral"); `packages/cli/src/lib/config-store.ts::openConfigStore` — existing lazy migration reads `.claude/gobbi.json` if present. A surgical edit to `/gobbi` SKILL.md to update its storage-path references is T6 scope, not T5.
+**Evidence:** ideation.md §3.3 — `verification.*` row; plan.md §Wave B — "DELETE `packages/cli/src/workflow/verification-runner.ts`"; `f9b3925` (Wave B) deletes the runner and removes the import from `next.ts`.
 
-**Severity:** N/A — out-of-scope decision, not a defect.
+**Severity:** Medium — `verification.*` config reads would silently return nothing (key not in schema).
 
-**Resolution:** no action in Pass 3 — T6 owns the surgical SKILL.md edit; full deprecation is Pass 4+.
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B). No scenarios or checklist items reference `verification.*`.
 
-**Owner:** gobbi-config Pass 3.
+**Owner:** gobbi-config Pass 3 finalization.
+
+---
+
+### DRIFT-7 — `git.mode`/`git.baseBranch` → `git.workflow.{mode,baseBranch}`
+
+**Finding:** Pass-3 and prior placed `git.mode` and `git.baseBranch` at the top level of the git section. Pass-3 finalization restructures git by concern: `git.workflow.{mode,baseBranch}`, `git.pr.{draft}`, `git.cleanup.{worktree,branch}`.
+
+**Evidence:** ideation.md §3.4 — "Fields renamed / restructured vs Pass-3"; `packages/cli/src/lib/settings.ts` at `f9b3925` — `GitSettings.workflow` sub-object.
+
+**Severity:** Medium — sibling docs and skill files referencing `git.mode` at the top level would describe the wrong path.
+
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B) for code; `cf7733c` (Wave D.1a) rewrites SKILL.md; Wave E sweeps sibling skills and design docs.
+
+**Owner:** gobbi-config Pass 3 finalization.
+
+---
+
+### DRIFT-8 — `notify.{slack,telegram}: boolean` → per-channel `ChannelSettings` dict
+
+**Finding:** Pass-3's T1/T2 schemas used `notify.slack: boolean` and `notify.telegram: boolean`. Pass-3 finalization replaces with per-channel objects (`enabled`, `events`, `triggers`, channel-specific routing). Adds `discord` and `desktop` channels.
+
+**Evidence:** ideation.md §3.4 — `notify.{slack,telegram,discord}: boolean → ChannelSettings`; `packages/cli/src/lib/settings.ts` at `f9b3925` — `NotifySettings` interface.
+
+**Severity:** High — old boolean notify writes would be rejected by the new AJV schema.
+
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B) + `b671b02` (Wave D.1b) wires `notify.ts` to cascade + inverted events semantic.
+
+**Owner:** gobbi-config Pass 3 finalization.
+
+---
+
+## NOTE entries
+
+### NOTE-1 — AJV `JSONSchemaType<Settings>` compiles OK under `exactOptionalPropertyTypes`
+
+**Finding:** Pass-2 hit an AJV `JSONSchemaType<T>` limitation with V1+V2 union under `exactOptionalPropertyTypes`. Wave A spiked the new `Settings` interface (single type, no union) and confirmed it compiles. The two-schema dispatch from Pass 2 is not needed — a single `ajv.compile<Settings>(schema)` suffices.
+
+**Evidence:** plan.md §Wave A decision; plan.md §Wave B AJV decision branch — "If spike PASSES: Wave B uses `JSONSchemaType<Settings>`"; `packages/cli/src/lib/settings-validator.ts` at `f9b3925` — single compiled validator.
+
+**Owner:** gobbi-config Pass 3 finalization (Wave A spike).
+
+---
+
+### NOTE-2 — `lib/repo.ts::getRepoRoot` memoization requires `mock.module` workaround in tests
+
+**Finding:** `getRepoRoot` is memoized at module level. Test files that call it across different temp directories must use `mock.module('../../lib/repo.js', ...)` to reset the memo between tests. Without this, a first test's repo root leaks into subsequent tests.
+
+**Evidence:** plan.md §Wave B gotcha reference — "session-id-discovery.md, code-edits.md"; `ff20702` (Wave D.2) test file comment "judgment call: mock.module for getRepoRoot".
+
+**Owner:** gobbi-config Pass 3 finalization.
+
+---
+
+### NOTE-3 — Per-step `model`/`effort` stored but not yet enforced at spawn time
+
+**Finding:** `workflow.{step}.{discuss,evaluate}.{model,effort}` config allows explicit override of `_delegation`'s model defaults. Values are stored and returned by `resolveSettings`, but the spawn pipeline in the orchestrator skill does not yet read them. `'auto'` (the default) applies `_delegation`'s table unconditionally. A future gobbi-rule update may clamp the ranges.
+
+**Evidence:** ideation.md §10.10 — "model/effort override vs core-rule tension"; `settings.ts` `AgentModel` / `AgentEffort` types exist; no spawn-pipeline reader yet.
+
+**Owner:** deferred to a future Pass when orchestrator reads per-step model/effort overrides.
+
+---
+
+### NOTE-4 — `notify.*.triggers` is schema-only; Claude Code hook-registration wiring deferred
+
+**Finding:** `ChannelBase.triggers: HookTrigger[]` is defined in the schema and accepted by AJV, but the dispatch wiring that registers Claude Code hook events to fire gobbi's notify bridge does not exist yet. Field is reserved to avoid a schema bump when wiring lands.
+
+**Evidence:** ideation.md §6.3 — "Claude-Code hook-trigger integration (`notify.*.triggers`) is schema-only in this Pass"; `settings.ts` `HookTrigger` type; `notify.ts` at `b671b02` does not read `triggers`.
+
+**Owner:** deferred to a follow-up Pass.
+
+---
+
+## GAP entries
+
+### GAP-1 — Claude Code hook-trigger dispatch for `notify.*.triggers` not wired
+
+**Finding:** The schema reserves `notify.{channel}.triggers: HookTrigger[]` for Claude Code session hook events (Stop, SubagentStop, etc.) that should trigger gobbi notify delivery. The registration wiring is not in scope for Pass 3 — it requires hooking into the plugin's hook registration lifecycle.
+
+**Evidence:** ideation.md §6.3; NOTE-4 above; `b671b02` (Wave D.1b) wires gobbi workflow events but not Claude Code hook triggers.
+
+**Deferred to:** a follow-up Pass covering Claude Code hook integration.
+
+**Owner:** Pass 3 finalization (deferred).
+
+---
+
+### GAP-2 — `model`/`effort` config override vs core-rule tension not resolved
+
+**Finding:** `_gobbi-rule` mandates "All agents run at max effort" and `_delegation` mandates model by stance (opus for innovative/executor, sonnet for evaluators). The new `workflow.{step}.{discuss,evaluate}.{model,effort}` config permits explicit override of those defaults. A config setting can currently undercut a core-rule invariant. Mitigation: defaults are `'auto'` which applies core-rule policy unchanged; explicit values are opt-in.
+
+**Evidence:** ideation.md §10.10 — "Documented as tension, not resolved in this Pass."
+
+**Deferred to:** a future gobbi-rule update that may clamp the ranges or forbid certain overrides.
+
+**Owner:** Pass 3 finalization (deferred).
+
+---
+
+### GAP-3 — gobbi-memory/README.md cross-ref sync deferred to post-#119 merge
+
+**Finding:** The `feat/120-gobbi-config-pass-3` branch has `v050-features/gobbi-memory.md` as a flat file. The directory form (`gobbi-memory/README.md`) exists only on `feat/118-gobbi-memory-pass-2` (PR #119, still draft). Cross-ref sync between gobbi-config and gobbi-memory cannot land until #119 merges — doing it now would create a doc pointing to a directory that doesn't exist on this branch.
+
+**Evidence:** plan.md §Wave E plan-eval O-10 decision — "Wave E does NOT touch gobbi-memory docs. #130 stays open with unchanged scope."
+
+**Deferred to:** post-#119 merge; issue #130 remains open with original scope.
+
+**Owner:** issue #130.
 
 ---
 
 ## Summary table
 
-| Finding  | Type  | Severity | SHA(s)                               | Resolution          |
-|----------|-------|----------|--------------------------------------|---------------------|
-| DRIFT-1  | drift | medium   | `8931d07`                            | fix doc + code      |
-| DRIFT-2  | drift | medium   | `b3059b1` (T5 commit)                | fix doc             |
-| DRIFT-3  | drift | low      | `b3059b1` (T4 commit)                | fix doc             |
-| DRIFT-4  | drift | low      | `a344220`                            | fix doc (partial; six-step reframe → #121) |
-| DRIFT-5  | drift | low      | `b3059b1` (T5 commit)                | fix doc             |
-| DRIFT-6  | drift | low      | `b3059b1` (T5 commit)                | fix doc             |
-| DRIFT-7  | drift | low      | `b3059b1` (T5 commit)                | fix doc             |
-| NOTE-1   | note  | —        | — (no code change)                   | decision documented |
-| NOTE-2   | note  | —        | `8931d07`                            | design decision     |
-| NOTE-3   | note  | —        | `e2a5a6f` + `b3059b1`                | scope boundary      |
-| NOTE-4   | note  | —        | — (deferred)                         | out of scope        |
+| Finding | Type | Severity | SHAs | Resolution |
+|---------|------|----------|------|-----------|
+| DRIFT-1 | drift | medium | `f9b3925` + `ff20702` | fix code + doc |
+| DRIFT-2 | drift | medium | `f9b3925` | fix code + doc |
+| DRIFT-3 | drift | high | `f9b3925` + `08fb3d7` + `cf7733c` + `ff20702` | fix code + doc |
+| DRIFT-4 | drift | high | `f9b3925` | fix code + doc |
+| DRIFT-5 | drift | medium | `f9b3925` + `9bcb227` | fix code + doc |
+| DRIFT-6 | drift | medium | `f9b3925` | fix code + doc |
+| DRIFT-7 | drift | medium | `f9b3925` + `cf7733c` + Wave E | fix code + doc |
+| DRIFT-8 | drift | high | `f9b3925` + `b671b02` | fix code + doc |
+| NOTE-1 | note | — | `f9b3925` (Wave A→B decision) | design decision |
+| NOTE-2 | note | — | `ff20702` | test discipline |
+| NOTE-3 | note | — | — (no code change) | scope boundary |
+| NOTE-4 | note | — | `b671b02` (schema-only) | scope boundary |
+| GAP-1 | gap | — | — | deferred; follow-up Pass |
+| GAP-2 | gap | — | — | deferred; gobbi-rule update |
+| GAP-3 | gap | — | — | deferred; issue #130 post-#119 |
