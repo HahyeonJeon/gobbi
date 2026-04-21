@@ -8,14 +8,27 @@
  *   delete <session-id>           Remove session
  *   list                          List all sessions (tab-separated)
  *   cleanup                       Run TTL + max-entries cleanup
+ *   resolve <key> [--session-id]  Pass-3 cascade lookup (T1+T2+T3)
  *
  * The backing store is SQLite (config.db) with WAL mode, eliminating the
  * lost-update race that settings.json suffered from under concurrent writes.
+ *
+ * The `resolve` subcommand routes through the Pass-3 cascade resolver
+ * (`lib/config-cascade.ts::resolveConfig`) which layers T1 user settings,
+ * T2 project settings, and T3 session projections into one frozen shape.
+ * Unlike `get`, `resolve` does not target a single tier — the whole cascade
+ * is computed and a dot-path walks the result.
  */
 
 import { error } from '../lib/style.js';
 import { coerceValue, getNestedValue } from '../lib/config.js';
 import { openConfigStore } from '../lib/config-store.js';
+import {
+  ConfigCascadeError,
+  resolveConfig,
+  type ResolvedConfig,
+  type TierId,
+} from '../lib/config-cascade.js';
 import type { Session } from '../lib/config.js';
 
 // ---------------------------------------------------------------------------
@@ -31,6 +44,8 @@ Subcommands:
   delete <session-id>           Remove session
   list                          List all sessions (tab-separated: id\\tcreatedAt)
   cleanup                       Run TTL + max-entries cleanup
+  resolve <key> [--session-id <id>] [--with-sources]
+                                Resolve <key> through the T1/T2/T3 cascade
 
 Options:
   --help    Show this help message`;
@@ -77,6 +92,9 @@ export async function runConfig(args: string[]): Promise<void> {
       break;
     case 'cleanup':
       runConfigCleanup();
+      break;
+    case 'resolve':
+      runConfigResolve(args.slice(1));
       break;
     case '--help':
     case undefined:
@@ -204,4 +222,146 @@ function runConfigCleanup(): void {
   const projectDir = resolveProjectDir();
   using store = openConfigStore(projectDir);
   store.cleanup();
+}
+
+// ---------------------------------------------------------------------------
+// resolve — Pass-3 cascade lookup
+// ---------------------------------------------------------------------------
+
+const RESOLVE_USAGE =
+  'Usage: gobbi config resolve <key> [--session-id <id>] [--with-sources]';
+
+interface ResolveArgs {
+  readonly key: string;
+  readonly sessionId?: string;
+  readonly withSources: boolean;
+}
+
+/**
+ * Parse the argv for `gobbi config resolve`. Returns `null` on any malformed
+ * input (missing positional, unknown flag, option without value) so the
+ * caller can print USAGE and exit 2.
+ *
+ * Accepted forms:
+ *   resolve <key>
+ *   resolve <key> --session-id <id>
+ *   resolve <key> --with-sources
+ *   resolve <key> --session-id <id> --with-sources
+ *
+ * Any flag variant (ordering, presence of --with-sources before/after
+ * --session-id) is accepted; duplicate flags or unknown options return null.
+ */
+function parseResolveArgs(args: readonly string[]): ResolveArgs | null {
+  let key: string | undefined;
+  let sessionId: string | undefined;
+  let withSources = false;
+
+  let i = 0;
+  while (i < args.length) {
+    const arg = args[i];
+    if (arg === undefined) break;
+
+    if (arg === '--session-id') {
+      if (sessionId !== undefined) return null;
+      const value = args[i + 1];
+      if (value === undefined || value.startsWith('--')) return null;
+      sessionId = value;
+      i += 2;
+      continue;
+    }
+
+    if (arg === '--with-sources') {
+      if (withSources) return null;
+      withSources = true;
+      i += 1;
+      continue;
+    }
+
+    if (arg.startsWith('--')) return null;
+
+    if (key !== undefined) return null;
+    key = arg;
+    i += 1;
+  }
+
+  if (key === undefined) return null;
+
+  const out: { key: string; sessionId?: string; withSources: boolean } = {
+    key,
+    withSources,
+  };
+  if (sessionId !== undefined) out.sessionId = sessionId;
+  return out;
+}
+
+/**
+ * Walk `resolved` against `dotPath` (e.g. `git.mode`,
+ * `verification.commands.test.command`). Returns the leaf value, or
+ * `undefined` when any ancestor is missing or descends into a non-record
+ * leaf (dot-path cannot traverse through a string / number / null).
+ */
+function walkDotPath(resolved: ResolvedConfig, dotPath: string): unknown {
+  const segments = dotPath.split('.');
+  // Treat the resolved object as a plain record for traversal. `__sources`
+  // is intentionally reachable by dot-path — a user asking for it gets the
+  // provenance map; it's an opt-in read.
+  let current: unknown = resolved;
+  for (const segment of segments) {
+    if (
+      current === null ||
+      typeof current !== 'object' ||
+      Array.isArray(current)
+    ) {
+      return undefined;
+    }
+    const rec = current as Record<string, unknown>;
+    if (!(segment in rec)) return undefined;
+    current = rec[segment];
+  }
+  return current;
+}
+
+function runConfigResolve(args: string[]): void {
+  const parsed = parseResolveArgs(args);
+  if (parsed === null) {
+    console.error(RESOLVE_USAGE);
+    process.exit(2);
+  }
+
+  const projectDir = resolveProjectDir();
+
+  let resolved: ResolvedConfig;
+  try {
+    const resolveArgs: { repoRoot: string; sessionId?: string } = {
+      repoRoot: projectDir,
+    };
+    if (parsed.sessionId !== undefined) {
+      resolveArgs.sessionId = parsed.sessionId;
+    }
+    resolved = resolveConfig(resolveArgs);
+  } catch (err) {
+    if (err instanceof ConfigCascadeError) {
+      console.error(error(err.message));
+      process.exit(2);
+    }
+    // Non-cascade error — surface and exit 2 so operators can diagnose.
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(error(message));
+    process.exit(2);
+  }
+
+  const value = walkDotPath(resolved, parsed.key);
+  if (value === undefined) {
+    // Missing key / ancestor absent / descends into a non-record leaf.
+    // Exit 1 silently per ideation §1g CLI exit-code mapping.
+    process.exit(1);
+  }
+
+  if (parsed.withSources) {
+    const tier: TierId = resolved.__sources[parsed.key] ?? 'default';
+    process.stdout.write(JSON.stringify({ value, tier }) + '\n');
+    return;
+  }
+
+  process.stdout.write(JSON.stringify(value) + '\n');
 }
