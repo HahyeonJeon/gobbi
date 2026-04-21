@@ -88,13 +88,17 @@ test(
       const sessionDir = join(tmpRoot, '.gobbi', 'sessions', sessionId);
       expect(existsSync(join(sessionDir, 'metadata.json'))).toBe(true);
       expect(existsSync(join(sessionDir, 'gobbi.db'))).toBe(true);
-      // Pass-3 cascade migration lands the project config at the v2
-      // location (`.gobbi/project/settings.json`). The legacy
-      // `.gobbi/project-config.json` is renamed by `ensureConfigCascade`
-      // during `workflow init`.
-      expect(existsSync(join(tmpRoot, '.gobbi', 'project', 'settings.json'))).toBe(
-        true,
-      );
+      // Pass 3 finalize: `ensureSettingsCascade` seeds a sparse workspace
+      // `.gobbi/settings.json` on first init. The project-level file
+      // `.gobbi/project/settings.json` is only created on legacy upgrade or
+      // when the user writes to it via `gobbi config set --level project`.
+      // The legacy `.gobbi/project-config.json` is upgraded (not renamed)
+      // if present; a fresh tmpdir has no legacy file, so neither v1 nor v2
+      // project-level paths exist after a clean init.
+      expect(existsSync(join(tmpRoot, '.gobbi', 'settings.json'))).toBe(true);
+      expect(
+        existsSync(join(tmpRoot, '.gobbi', 'project', 'settings.json')),
+      ).toBe(false);
       expect(existsSync(join(tmpRoot, '.gobbi', 'project-config.json'))).toBe(
         false,
       );

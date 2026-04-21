@@ -11,7 +11,7 @@
 import { execFile } from 'node:child_process';
 import { mkdir, appendFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { openConfigStore } from './config-store.js';
+import { resolveSettings } from './settings-io.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -189,21 +189,25 @@ export async function sendNotifications(
   const telegramChatId = process.env['TELEGRAM_CHAT_ID'];
   const notifyDesktop = process.env['NOTIFY_DESKTOP'];
 
-  // Read settings.json session preferences — default to false (safe default)
+  // Read cascade-resolved notify preferences. Default safe-silent on any
+  // resolution failure so a malformed settings.json does not crash the
+  // notification pipeline. Wave D.1b replaces this stub with full per-channel
+  // dispatch keyed on the inverted events semantic (absent = all; [] = none;
+  // [...] = exactly listed).
   let allowSlack = false;
   let allowTelegram = false;
 
   const projectDir = options?.projectDir;
   const sessionId = options?.sessionId;
 
-  if (projectDir !== undefined && sessionId !== undefined) {
+  if (projectDir !== undefined) {
     try {
-      using store = openConfigStore(projectDir);
-      const session = store.getSession(sessionId);
-      if (session !== null) {
-        allowSlack = session.notify.slack;
-        allowTelegram = session.notify.telegram;
-      }
+      const resolved = resolveSettings({
+        repoRoot: projectDir,
+        ...(sessionId !== undefined ? { sessionId } : {}),
+      });
+      allowSlack = resolved.notify?.slack?.enabled === true;
+      allowTelegram = resolved.notify?.telegram?.enabled === true;
     } catch {
       // Silently skip — notification permission read failure must not crash
     }
