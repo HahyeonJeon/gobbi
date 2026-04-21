@@ -451,6 +451,221 @@ describe('v3 decision.eval.skip with priorError (CP11 reversibility)', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 2d. v4 → v5 row-level migration (gobbi-memory Pass 2) — column ALTER +
+//     legacy-row backfill. Event data payloads remain unchanged; the
+//     registered v4→v5 hop is an identity.
+// ---------------------------------------------------------------------------
+
+describe('v4 → v5 event round-trip (identity on event data)', () => {
+  test('a v4 delegation.complete migrates to v5 unchanged', () => {
+    const v4Row: EventRow = {
+      seq: 60,
+      ts: '2026-04-01T00:00:00.000Z',
+      schema_version: 4,
+      type: 'delegation.complete',
+      step: 'execution',
+      data: JSON.stringify({
+        subagentId: 'sub-1',
+        model: 'claude-opus-4-7',
+        sizeProxyBytes: 10_000,
+      }),
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotency_key: 'tool-call:tc-060:delegation.complete',
+      ...LEGACY_PARTITION,
+    };
+    const migrated = migrateEvent(v4Row, 5);
+    expect(migrated.schema_version).toBe(5);
+    expect(JSON.parse(migrated.data)).toEqual(JSON.parse(v4Row.data));
+    // Byte-identical data string — the identity transform does NOT
+    // re-serialise with different whitespace.
+    expect(migrated.data).toBe(v4Row.data);
+  });
+
+  test('a v4 row with the full v4 payload surface walks to v5 losslessly', () => {
+    const v4Row: EventRow = {
+      seq: 61,
+      ts: '2026-04-01T00:00:01.000Z',
+      schema_version: 4,
+      type: 'verification.result',
+      step: 'execution',
+      data: JSON.stringify({
+        subagentId: 'sub-2',
+        command: 'bun run typecheck',
+        commandKind: 'typecheck',
+        exitCode: 0,
+        durationMs: 1500,
+        policy: 'gate',
+        timedOut: false,
+        stdoutDigest: '0'.repeat(64),
+        stderrDigest: '0'.repeat(64),
+      }),
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotency_key: 'tool-call:tc-061:verification.result',
+      ...LEGACY_PARTITION,
+    };
+    const migrated = migrateEvent(v4Row, 5);
+    expect(migrated.schema_version).toBe(5);
+    expect(JSON.parse(migrated.data)).toEqual(JSON.parse(v4Row.data));
+  });
+});
+
+describe('v4 → v5 schema ALTER + backfill', () => {
+  // Build a bare v4 `events` table on an in-memory sqlite db, seed rows
+  // with the legacy column set, then open an `EventStore` against the
+  // on-disk path — the constructor runs `ensureSchemaV5` + backfill as
+  // part of `initSchema`, so by the time the test reads back, both
+  // partition-key columns must be present and populated.
+  test('ensureSchemaV5 adds session_id + project_id columns to an existing v4 table', async () => {
+    const { Database } = await import('bun:sqlite');
+    const db = new Database(':memory:');
+    try {
+      // Legacy v4 CREATE TABLE — no session_id / project_id columns.
+      db.run(`
+        CREATE TABLE events (
+          seq INTEGER PRIMARY KEY,
+          ts TEXT NOT NULL,
+          schema_version INTEGER NOT NULL,
+          type TEXT NOT NULL,
+          step TEXT,
+          data TEXT NOT NULL DEFAULT '{}',
+          actor TEXT NOT NULL,
+          parent_seq INTEGER REFERENCES events(seq),
+          idempotency_key TEXT NOT NULL UNIQUE
+        )
+      `);
+
+      const { ensureSchemaV5, getEventsColumnNames } = await import(
+        '../migrations.js'
+      );
+      expect(getEventsColumnNames(db).has('session_id')).toBe(false);
+      expect(getEventsColumnNames(db).has('project_id')).toBe(false);
+
+      ensureSchemaV5(db);
+      const after = getEventsColumnNames(db);
+      expect(after.has('session_id')).toBe(true);
+      expect(after.has('project_id')).toBe(true);
+
+      // Idempotent — a second call must not throw (the columns exist now).
+      ensureSchemaV5(db);
+      expect(getEventsColumnNames(db).size).toBe(after.size);
+    } finally {
+      db.close();
+    }
+  });
+
+  test('backfillSessionAndProjectIds stamps NULL rows without touching pre-populated rows', async () => {
+    const { Database } = await import('bun:sqlite');
+    const db = new Database(':memory:');
+    try {
+      // Create the full v5-shape table upfront so we can drive the
+      // backfill directly without re-exercising ensureSchemaV5.
+      db.run(`
+        CREATE TABLE events (
+          seq INTEGER PRIMARY KEY,
+          ts TEXT NOT NULL,
+          schema_version INTEGER NOT NULL,
+          type TEXT NOT NULL,
+          step TEXT,
+          data TEXT NOT NULL DEFAULT '{}',
+          actor TEXT NOT NULL,
+          parent_seq INTEGER REFERENCES events(seq),
+          idempotency_key TEXT NOT NULL UNIQUE,
+          session_id TEXT,
+          project_id TEXT
+        )
+      `);
+
+      // Seed three rows: two legacy-shape (session_id + project_id NULL)
+      // and one pre-populated (should be left alone by the backfill).
+      const insert = db.prepare(
+        'INSERT INTO events (seq, ts, schema_version, type, step, data, actor, parent_seq, idempotency_key, session_id, project_id) ' +
+          'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      );
+      insert.run(1, '2026-04-01T00:00:00Z', 4, 'workflow.start', null, '{}', 'cli', null, 'k-1', null, null);
+      insert.run(2, '2026-04-01T00:00:01Z', 4, 'workflow.step.exit', 'ideation', '{}', 'cli', 1, 'k-2', null, null);
+      insert.run(3, '2026-04-01T00:00:02Z', 5, 'workflow.step.exit', 'plan', '{}', 'cli', 2, 'k-3', 'pre-existing', 'pre-existing-proj');
+
+      const { backfillSessionAndProjectIds } = await import('../migrations.js');
+      backfillSessionAndProjectIds(db, 'sess-backfill', 'my-repo');
+
+      interface PartitionRow {
+        readonly seq: number;
+        readonly session_id: string | null;
+        readonly project_id: string | null;
+      }
+      const rows = db
+        .query<PartitionRow, []>(
+          'SELECT seq, session_id, project_id FROM events ORDER BY seq ASC',
+        )
+        .all();
+
+      expect(rows).toHaveLength(3);
+      // Legacy rows get stamped with the provided sessionId + projectRoot basename.
+      expect(rows[0]?.session_id).toBe('sess-backfill');
+      expect(rows[0]?.project_id).toBe('my-repo');
+      expect(rows[1]?.session_id).toBe('sess-backfill');
+      expect(rows[1]?.project_id).toBe('my-repo');
+      // Pre-populated row untouched.
+      expect(rows[2]?.session_id).toBe('pre-existing');
+      expect(rows[2]?.project_id).toBe('pre-existing-proj');
+    } finally {
+      db.close();
+    }
+  });
+
+  test('backfillSessionAndProjectIds leaves project_id NULL when basename is null', async () => {
+    const { Database } = await import('bun:sqlite');
+    const db = new Database(':memory:');
+    try {
+      db.run(`
+        CREATE TABLE events (
+          seq INTEGER PRIMARY KEY,
+          ts TEXT NOT NULL,
+          schema_version INTEGER NOT NULL,
+          type TEXT NOT NULL,
+          step TEXT,
+          data TEXT NOT NULL DEFAULT '{}',
+          actor TEXT NOT NULL,
+          parent_seq INTEGER REFERENCES events(seq),
+          idempotency_key TEXT NOT NULL UNIQUE,
+          session_id TEXT,
+          project_id TEXT
+        )
+      `);
+
+      const insert = db.prepare(
+        'INSERT INTO events (seq, ts, schema_version, type, step, data, actor, parent_seq, idempotency_key, session_id, project_id) ' +
+          'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      );
+      insert.run(1, '2026-04-01T00:00:00Z', 4, 'workflow.start', null, '{}', 'cli', null, 'k-1', null, null);
+
+      const { backfillSessionAndProjectIds } = await import('../migrations.js');
+      // Missing metadata.json → projectRootBasename is null.
+      backfillSessionAndProjectIds(db, 'sess-nometa', null);
+
+      interface PartitionRow {
+        readonly session_id: string | null;
+        readonly project_id: string | null;
+      }
+      const row = db
+        .query<PartitionRow, []>(
+          'SELECT session_id, project_id FROM events WHERE seq = 1',
+        )
+        .get();
+
+      expect(row?.session_id).toBe('sess-nometa');
+      // project_id left NULL — absence of metadata is distinguishable from a
+      // real project-root basename.
+      expect(row?.project_id).toBeNull();
+    } finally {
+      db.close();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 3. v1 state.json on-disk compat
 // ---------------------------------------------------------------------------
 

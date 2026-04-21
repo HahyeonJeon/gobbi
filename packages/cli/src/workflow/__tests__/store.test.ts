@@ -1,4 +1,8 @@
 import { describe, it, expect } from 'bun:test';
+import { Database } from 'bun:sqlite';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { EventStore } from '../store.js';
 import type {
@@ -981,5 +985,264 @@ describe('ReadStore / WriteStore — structural read-only enforcement (#97)', ()
     expect(typeof writeable.transaction).toBe('function');
     expect(typeof writeable.close).toBe('function');
     expect(typeof writeable.lastN).toBe('function');
+  });
+});
+
+// ===========================================================================
+// Schema v5 — session_id + project_id column presence and stamping (#118)
+//
+// Pass 2's DRIFT-3 fix lifts the two partition keys out of the
+// `idempotency_key` string. Every fresh-write row must carry both
+// columns; a store opened against a legacy v4 file must ALTER the
+// columns in and backfill known-null rows. These tests exercise the
+// on-disk shape — `:memory:` stores cannot see the session directory
+// so they carry `null` partition keys by design.
+// ===========================================================================
+
+/**
+ * Make a tmpdir-scoped session directory with a valid `metadata.json`,
+ * returning the path to the directory + its `gobbi.db` child. Caller is
+ * responsible for rmSync'ing the tmpdir after the test.
+ */
+function makeSessionDir(
+  sessionId: string,
+  projectRoot: string,
+): { readonly sessionDir: string; readonly dbPath: string } {
+  const sessionDir = join(
+    mkdtempSync(join(tmpdir(), 'gobbi-store-partition-')),
+    sessionId,
+  );
+  mkdirSync(sessionDir, { recursive: true });
+  const metadata = {
+    schemaVersion: 2,
+    sessionId,
+    createdAt: '2026-04-21T00:00:00.000Z',
+    projectRoot,
+    techStack: [],
+    configSnapshot: { task: '', evalIdeation: false, evalPlan: false, context: '' },
+  };
+  writeFileSync(
+    join(sessionDir, 'metadata.json'),
+    JSON.stringify(metadata, null, 2),
+    'utf8',
+  );
+  return { sessionDir, dbPath: join(sessionDir, 'gobbi.db') };
+}
+
+describe('schema v5 — session_id + project_id columns', () => {
+  it('PRAGMA table_info(events) exposes both partition-key columns on a fresh database', () => {
+    using store = new EventStore(':memory:');
+
+    // The EventStore private db is not exposed, but we can re-open the
+    // same `:memory:` connection scope via a sibling Database — except
+    // :memory: databases are per-connection. Instead, open a fresh
+    // connection against a separate :memory: and run the constructor's
+    // schema path through the public EventStore.
+    //
+    // Concretely: append one event to force the stmt cache to prepare
+    // against the v5 schema, then pull the column names via a fresh
+    // introspection query on the same store's db. We cannot reach the
+    // private `db` field, so we open another on-disk path, introspect
+    // it, and rely on the constructor's behaviour being deterministic.
+    const row = store.append(makeInput());
+    expect(row).not.toBeNull();
+
+    // Re-run the column introspection via a freshly-constructed file-
+    // based store to confirm the CREATE TABLE statement on disk matches.
+    const { sessionDir, dbPath } = makeSessionDir('sess-pragma', '/tmp/my-repo');
+    try {
+      using filestore = new EventStore(dbPath);
+      // Append once to keep the store alive and the schema frozen.
+      filestore.append({
+        ts: '2026-04-21T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-pragma',
+          timestamp: '2026-04-21T00:00:00.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-pragma-1',
+        sessionId: 'sess-pragma',
+      });
+
+      // Read the on-disk schema through a sibling connection — the
+      // store holds a writer lock, but PRAGMA is a read-only query and
+      // WAL mode permits a second connection to inspect it.
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface ColumnInfo { readonly name: string }
+        const cols = inspector
+          .query<ColumnInfo, []>('PRAGMA table_info(events)')
+          .all();
+        const names = new Set(cols.map((c) => c.name));
+        expect(names.has('session_id')).toBe(true);
+        expect(names.has('project_id')).toBe(true);
+        // Sanity — the legacy columns must still be present.
+        expect(names.has('seq')).toBe(true);
+        expect(names.has('idempotency_key')).toBe(true);
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('fresh-session append stamps session_id (dir basename) + project_id (basename(projectRoot))', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-stamp',
+      '/home/alice/projects/my-repo',
+    );
+    try {
+      using store = new EventStore(dbPath);
+      store.append({
+        ts: '2026-04-21T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-stamp',
+          timestamp: '2026-04-21T00:00:00.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-stamp-1',
+        sessionId: 'sess-stamp',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly seq: number;
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const rows = inspector
+          .query<PartitionRow, []>(
+            'SELECT seq, session_id, project_id FROM events ORDER BY seq ASC',
+          )
+          .all();
+        // workflow init would normally pre-seed 2 rows, but this raw
+        // EventStore construction does not — only the appended row is
+        // present.
+        expect(rows).toHaveLength(1);
+        expect(rows[0]?.session_id).toBe('sess-stamp');
+        // `basename('/home/alice/projects/my-repo')` — lifted from
+        // metadata.json at store-open time.
+        expect(rows[0]?.project_id).toBe('my-repo');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('missing metadata.json → session_id stamped from dir basename, project_id NULL', () => {
+    // Same shape as `makeSessionDir` but WITHOUT writing metadata.json.
+    const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-store-nometa-'));
+    const sessionDir = join(tmpRoot, 'sess-nometa');
+    mkdirSync(sessionDir, { recursive: true });
+    const dbPath = join(sessionDir, 'gobbi.db');
+    try {
+      using store = new EventStore(dbPath);
+      store.append({
+        ts: '2026-04-21T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-nometa',
+          timestamp: '2026-04-21T00:00:00.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-nometa-1',
+        sessionId: 'sess-nometa',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        // session_id still derives from the directory basename — metadata
+        // absence does not gate it.
+        expect(row?.session_id).toBe('sess-nometa');
+        // project_id left NULL — absence of metadata.json is a legitimate
+        // state during test setup or a partially-initialised session.
+        expect(row?.project_id).toBeNull();
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('malformed metadata.json → project_id NULL (silent, no throw)', () => {
+    const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-store-bad-meta-'));
+    const sessionDir = join(tmpRoot, 'sess-bad-meta');
+    mkdirSync(sessionDir, { recursive: true });
+    const dbPath = join(sessionDir, 'gobbi.db');
+    // Write garbage instead of JSON — the store constructor must not throw.
+    writeFileSync(join(sessionDir, 'metadata.json'), 'not { json at all', 'utf8');
+    try {
+      using store = new EventStore(dbPath);
+      store.append({
+        ts: '2026-04-21T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-bad-meta',
+          timestamp: '2026-04-21T00:00:00.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-bad-meta-1',
+        sessionId: 'sess-bad-meta',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        expect(row?.session_id).toBe('sess-bad-meta');
+        expect(row?.project_id).toBeNull();
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  it(':memory: store leaves both partition keys NULL (no session dir to resolve)', () => {
+    using store = new EventStore(':memory:');
+    const row = store.append(makeSystemInput({ sessionId: 'sess-mem' }));
+    expect(row).not.toBeNull();
+    // The constructor could not resolve a session directory, so
+    // `this.sessionId` and `this.projectRootBasename` are null. The
+    // append fallback uses `input.sessionId` so the row still carries a
+    // sensible value; project_id stays NULL.
+    expect(row!.session_id).toBe('sess-mem');
+    expect(row!.project_id).toBeNull();
   });
 });
