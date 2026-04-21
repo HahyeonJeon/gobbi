@@ -551,11 +551,15 @@ function cutoffIso(ttlDays: number): string {
  * requires both git fields present). This is a conservative choice under
  * ARCH-F7: partial git overrides are deferred to Pass 4.
  *
- * `discord` in `notify` has no SQLite column today, so T3 always pins
- * `notify.discord = false` when the overlay includes notify. This is a
- * type-safety compromise for the `Partial<CascadeShape>` signature; the
- * default is `false` anyway so no current feature is impacted. A future
- * `notify_discord` column lifts this.
+ * `discord` in `notify` has no SQLite column today, so T3 projects only
+ * `slack` and `telegram` — `discord` is omitted from the overlay so the
+ * cascade resolver delegates it to T2 / T1 / default. Earlier versions
+ * pinned `discord: false` unconditionally, which misattributed provenance
+ * (`resolveConfig({sessionId}).__sources['notify.discord']` reported
+ * `'session'` even though the session never wrote discord). Per-field
+ * optional `notify` (see `CascadeShape.notify`) makes the omission
+ * type-safe. A future `notify_discord` column would reinstate `discord`
+ * alongside slack/telegram.
  *
  * `evaluation_mode` intentionally does NOT project into the cascade — the
  * session's ideation/plan/execution flags are driven by a different
@@ -572,12 +576,12 @@ export function toCascadeProjection(
   const out: {
     -readonly [K in keyof Partial<CascadeShape>]: Partial<CascadeShape>[K];
   } = {
-    // Notify is always included: slack / telegram from session; discord
-    // pinned to false (no SQLite column). See JSDoc above.
+    // Notify projects slack + telegram only — discord has no SQLite
+    // column and is intentionally omitted so provenance is not misattributed
+    // to the session tier. See JSDoc above.
     notify: {
       slack: session.notify.slack,
       telegram: session.notify.telegram,
-      discord: false,
     },
   };
 

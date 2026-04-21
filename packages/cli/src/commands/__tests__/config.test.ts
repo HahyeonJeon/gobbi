@@ -313,6 +313,25 @@ describe('runConfig — resolve --with-sources', () => {
     expect(out).toEqual({ value: 'read-only', tier: 'default' });
   });
 
+  test('non-leaf dot-path with --with-sources → exit 2 with stderr guidance', async () => {
+    const repo = makeScratchRepo();
+    writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
+      version: 2,
+      git: { mode: 'worktree-pr', baseBranch: 'main' },
+    });
+
+    // `git` is a non-leaf path — `__sources` only records `git.mode` and
+    // `git.baseBranch` as leaves. `--with-sources` on the group should
+    // refuse rather than mis-report a single tier for the whole subtree.
+    await captureExit(() =>
+      runConfig(['resolve', 'git', '--with-sources']),
+    );
+
+    expect(captured.exitCode).toBe(2);
+    expect(captured.stderr).toContain('--with-sources requires a leaf dot-path');
+    expect(captured.stderr).toContain("'git'");
+  });
+
   test('flag order (--with-sources before --session-id) is accepted', async () => {
     const repo = makeScratchRepo();
     mkdirSync(join(repo, '.gobbi'), { recursive: true });

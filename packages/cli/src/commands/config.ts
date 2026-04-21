@@ -358,7 +358,20 @@ function runConfigResolve(args: string[]): void {
   }
 
   if (parsed.withSources) {
-    const tier: TierId = resolved.__sources[parsed.key] ?? 'default';
+    // `__sources` only records leaf provenance (primitives, arrays, and
+    // explicit `null`). A non-leaf dot-path (e.g. `git`, `verification.commands`)
+    // reaches an intermediate object — there is no single tier that wrote the
+    // whole subtree, so returning `'default'` via fallback would be actively
+    // misleading. Error out explicitly so the operator narrows to a leaf.
+    const tier: TierId | undefined = resolved.__sources[parsed.key];
+    if (tier === undefined) {
+      console.error(
+        error(
+          `--with-sources requires a leaf dot-path; '${parsed.key}' resolves to a non-leaf (object) value. Narrow to a specific leaf key (e.g. '${parsed.key}.<field>').`,
+        ),
+      );
+      process.exit(2);
+    }
     process.stdout.write(JSON.stringify({ value, tier }) + '\n');
     return;
   }

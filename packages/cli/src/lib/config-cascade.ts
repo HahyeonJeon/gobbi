@@ -126,14 +126,19 @@ interface UserSettingsInput {
 }
 
 /**
- * Deep-partial overlay shape accepted by {@link deepMergeWithProvenance}.
- * Each section is independently optional AND admits nested partial records
- * so the T1 / T2 / T3 overlays (which all contribute a subset of keys) type-
- * check without assertions.
+ * Deep-partial overlay shape compatible with {@link deepMergeWithProvenance}.
+ * Each section is independently optional AND admits nested partial records.
  *
- * This is deliberately a local alias rather than a generic `DeepPartial<T>`
- * — the cascade has a fixed shape, so an explicitly written deep-partial
- * is clearer and narrower than a recursively-mapped helper.
+ * {@link deepMergeWithProvenance} accepts `unknown` for the overlay (to
+ * match {@link deepMerge}'s signature), so call sites that already hold a
+ * structurally-compatible input (`UserSettingsInput`, `ProjectConfigInput`,
+ * or the T3 `Partial<CascadeShape>` projection) can pass it through without
+ * a cast. This interface is exported so external callers constructing an
+ * overlay by hand have a single named type to target.
+ *
+ * Deliberately a local alias rather than a generic `DeepPartial<T>` — the
+ * cascade has a fixed shape, so an explicitly written deep-partial is
+ * clearer and narrower than a recursively-mapped helper.
  */
 export interface ConfigOverlay {
   readonly verification?: Partial<CascadeShape['verification']>;
@@ -458,10 +463,18 @@ function recordProvenance(
  *
  * When `overlay` is `null` / `undefined`, returns `base` unchanged and
  * writes no provenance.
+ *
+ * The `overlay` parameter is typed as `unknown` to match {@link deepMerge}'s
+ * overlay parameter — the function already treats any non-record overlay as
+ * a no-op (`deepMerge` guards on `isRecord(overlay)` and
+ * {@link recordProvenance} accepts `unknown`). Callers passing typed
+ * partials like `UserSettingsInput`, `ProjectConfigInput`, `ConfigOverlay`,
+ * or `Partial<CascadeShape>` do not need an `as` cast at the call site; the
+ * structural walk reads only the keys that are present.
  */
 export function deepMergeWithProvenance<T>(
   base: T,
-  overlay: ConfigOverlay | Partial<T> | null | undefined,
+  overlay: unknown,
   tier: TierId,
   sources: Record<string, TierId>,
 ): T {
@@ -548,12 +561,7 @@ export function resolveConfig(args: {
   // the resolver needs only the deltas.
   const t1Input = readUserSettingsInput(repoRoot);
   if (t1Input !== null) {
-    acc = deepMergeWithProvenance(
-      acc,
-      t1Input as unknown as ConfigOverlay,
-      'user',
-      sources,
-    );
+    acc = deepMergeWithProvenance(acc, t1Input, 'user', sources);
   }
 
   // Tier 2 — project settings. Read the on-disk file raw (NOT via
@@ -565,12 +573,7 @@ export function resolveConfig(args: {
   // explicitly declares.
   const t2Input = readProjectConfigInput(repoRoot);
   if (t2Input !== null) {
-    acc = deepMergeWithProvenance(
-      acc,
-      t2Input as unknown as ConfigOverlay,
-      'project',
-      sources,
-    );
+    acc = deepMergeWithProvenance(acc, t2Input, 'project', sources);
   }
 
   // Tier 3 — session projection (optional)
@@ -579,7 +582,7 @@ export function resolveConfig(args: {
       using store = openConfigStore(repoRoot);
       const t3 = toCascadeProjection(store, sessionId);
       if (t3 !== null) {
-        acc = deepMergeWithProvenance(acc, t3 as ConfigOverlay, 'session', sources);
+        acc = deepMergeWithProvenance(acc, t3, 'session', sources);
       }
     } catch (err) {
       if (err instanceof ConfigCascadeError) throw err;

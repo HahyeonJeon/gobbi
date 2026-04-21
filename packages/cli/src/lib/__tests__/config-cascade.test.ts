@@ -438,9 +438,10 @@ describe('resolveConfig — T3 only (session projection)', () => {
     expect(resolved.__sources['git.mode']).toBe('session');
     expect(resolved.__sources['git.baseBranch']).toBe('session');
     expect(resolved.__sources['notify.slack']).toBe('session');
-    // Leaves T3 didn't touch stay at defaults (notify.discord has no T3 column
-    // but the projection pins it; provenance still reflects session since
-    // T3 contributed the notify object).
+    // notify.discord has no T3 column — the projection omits it, so
+    // provenance falls through to the default tier (nothing between default
+    // and session writes it in this test).
+    expect(resolved.__sources['notify.discord']).toBe('default');
   });
 
   test('sessionId that does not exist → projection null → tier skipped', () => {

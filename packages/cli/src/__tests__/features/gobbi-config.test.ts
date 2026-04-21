@@ -620,6 +620,34 @@ describe('CFG-Edge-01: invalid JSON at any tier throws ConfigCascadeError', () =
       }
     }
   });
+
+  // Scenario: CFG-Edge-01 (T3 variant) — corrupt config.db at session tier.
+  // `new ConfigStore(dbPath)` runs `PRAGMA journal_mode = WAL` in its
+  // constructor; bun:sqlite throws `SQLiteError('file is not a database')`
+  // when the file exists but is not a valid SQLite database. The resolver's
+  // session-tier try/catch re-wraps the non-cascade error as
+  // `ConfigCascadeError('read', …, { tier: 'session' })` so the CLI layer
+  // can exit 2 with a uniform error type.
+  test('CFG-Edge-01: T3 corrupt config.db → ConfigCascadeError(read, tier=session)', () => {
+    const repo = scratchRepo();
+    mkdirSync(join(repo, '.gobbi'), { recursive: true });
+    writeFileSync(
+      join(repo, '.gobbi', 'config.db'),
+      'this is not a SQLite database',
+      'utf8',
+    );
+
+    try {
+      resolveConfig({ repoRoot: repo, sessionId: 'sess-edge-t3' });
+      throw new Error('expected ConfigCascadeError');
+    } catch (err) {
+      expect(err).toBeInstanceOf(ConfigCascadeError);
+      if (err instanceof ConfigCascadeError) {
+        expect(err.code).toBe('read');
+        expect(err.tier).toBe('session');
+      }
+    }
+  });
 });
 
 // ===========================================================================

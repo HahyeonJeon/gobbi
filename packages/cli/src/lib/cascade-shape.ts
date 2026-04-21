@@ -22,17 +22,29 @@ import type { VerificationConfig, CostConfig } from './project-config.js';
  * `user`, `project`, and `session` tiers. Every field must have a value; the
  * resolver's contract is to hydrate all missing leaves from tier defaults.
  *
- * The interface mirrors `ProjectConfigV2` with one addition (`ui`) and one
- * refinement (`notify.discord` is always a boolean rather than optional at
- * the input boundary).
+ * The interface mirrors `ProjectConfigV2` with one addition (`ui`).
+ *
+ * ## `notify` sub-shape: per-field optional
+ *
+ * Unlike `verification` / `cost` / `git` / `eval` / `ui`, the `notify` group
+ * is independently optional on a per-field basis (`slack?`, `telegram?`,
+ * `discord?`). T3 (the session tier) only has SQLite columns for `slack` and
+ * `telegram` today — there is no `notify_discord` column. Declaring each
+ * field optional lets the T3 projection return `{notify: {slack, telegram}}`
+ * without synthesizing a `discord` entry that the session never set. This
+ * preserves provenance fidelity: `resolveConfig({sessionId}).__sources['notify.discord']`
+ * correctly reports the tier that actually wrote discord (user / project /
+ * default), never mis-attributing it to the session. The per-field optional
+ * shape also matches the AJV input schemas on T1 and T2, where the same
+ * fields are individually optional.
  */
 export interface CascadeShape {
   readonly verification: VerificationConfig;
   readonly cost: CostConfig;
   readonly notify: {
-    readonly slack: boolean;
-    readonly telegram: boolean;
-    readonly discord: boolean;
+    readonly slack?: boolean;
+    readonly telegram?: boolean;
+    readonly discord?: boolean;
   };
   readonly git: {
     readonly mode: 'direct-commit' | 'worktree-pr';

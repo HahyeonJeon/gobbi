@@ -14,7 +14,7 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 |:-----|:--------|
 | `CLAUDE.md` | Session entry point. Core principles and workflow definition. Loaded every session. |
 | `README.md` | Gobbi identity and principles. Shared across installations via the plugin system. |
-| `gobbi.json` | Gobbi configuration state. |
+| `gobbi.json` | Legacy gobbi configuration state — superseded by `.gobbi/config.db` in v0.5.0 (T3 session store). Retained as a migration source for `openConfigStore`'s lazy-migration path; see `gobbi-config/README.md` for the full three-tier cascade. |
 
 ### Skills
 

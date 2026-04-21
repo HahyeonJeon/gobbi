@@ -622,18 +622,23 @@ export function ensureConfigCascade(repoRoot: string): void {
   // have been copied into config.db by Step 0. The guard requires the
   // legacy shape (all of `version`, `architecture`, `sessions` present)
   // so a hand-written T1 file cannot be accidentally archived.
+  //
+  // The read is attempted unconditionally and ENOENT is swallowed — folding
+  // the existence check into the try/catch eliminates the TOCTOU window
+  // where a concurrent process could delete the file between `existsSync`
+  // and `readFileSync`. If the file is absent (first-time init) or vanishes
+  // mid-read (unlikely cross-process race), `raw` stays null and Step 2 is
+  // a no-op.
   const settingsPath = userSettingsPath(repoRoot);
-  if (existsSync(settingsPath)) {
-    let raw: string | null = null;
-    try {
-      raw = readFileSync(settingsPath, 'utf8');
-    } catch {
-      raw = null;
-    }
-    if (raw !== null && isLegacyGobbiJson(raw)) {
-      renameSync(settingsPath, legacyUserSettingsArchivePath(repoRoot));
-      process.stderr.write('archived legacy settings.json → settings.legacy.json\n');
-    }
+  let raw: string | null = null;
+  try {
+    raw = readFileSync(settingsPath, 'utf8');
+  } catch {
+    raw = null;
+  }
+  if (raw !== null && isLegacyGobbiJson(raw)) {
+    renameSync(settingsPath, legacyUserSettingsArchivePath(repoRoot));
+    process.stderr.write('archived legacy settings.json → settings.legacy.json\n');
   }
 
   // Step 3 — fresh T1 init.

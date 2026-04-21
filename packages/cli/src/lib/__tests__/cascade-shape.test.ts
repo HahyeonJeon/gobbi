@@ -108,7 +108,9 @@ describe('toCascadeProjection — non-NULL sessions project all known paths', ()
     const projection = toCascadeProjection(store, 'sess');
     expect(projection).not.toBeNull();
     expect(projection).toEqual({
-      notify: { slack: true, telegram: true, discord: false },
+      // discord is intentionally omitted — no SQLite column. Provenance
+      // falls through to T2 / T1 / default instead of mis-attributing to T3.
+      notify: { slack: true, telegram: true },
       trivialRange: 'simple-edits',
       git: { mode: 'worktree-pr', baseBranch: 'develop' },
     });
@@ -131,11 +133,11 @@ describe('toCascadeProjection — NULL/unknown columns skip (ARCH-F7)', () => {
     // `git` is omitted — CascadeShape.git requires both mode and baseBranch,
     // so a partial git (mode-only) would violate `Partial<CascadeShape>`.
     expect(projection && 'git' in projection).toBe(false);
-    // `notify` still present.
+    // `notify` still present — slack/telegram projected; discord omitted
+    // so provenance resolves it from T2 / T1 / default, not the session.
     expect(projection?.notify).toEqual({
       slack: false,
       telegram: false,
-      discord: false,
     });
   });
 
@@ -195,7 +197,7 @@ describe('toCascadeProjection — integrates with openConfigStore', () => {
       using store = openConfigStore(repo);
       const projection = toCascadeProjection(store, 'live');
       expect(projection).toEqual({
-        notify: { slack: true, telegram: false, discord: false },
+        notify: { slack: true, telegram: false },
         trivialRange: 'read-only',
         git: { mode: 'direct-commit', baseBranch: 'main' },
       });

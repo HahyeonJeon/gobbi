@@ -16,7 +16,7 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the four s
 
 **THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
 
-**FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`. If no settings exist for this session, continue to the setup questions.
+**FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `.gobbi/config.db`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`. If no settings exist for this session, continue to the setup questions.
 
 **FIFTH — ask the user four setup questions** with AskUserQuestion (only if no existing settings were reused).
 
@@ -42,7 +42,7 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the four s
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help the user configure them before proceeding.
 
-**After all four questions — persist session choices.** The orchestrator writes the user's selections to `gobbi.json` via `gobbi config` so that hooks and subagents can read them without conversation context. Persistence calls use `$CLAUDE_SESSION_ID` as the session key:
+**After all four questions — persist session choices.** The orchestrator writes the user's selections to `.gobbi/config.db` via `gobbi config` so that hooks and subagents can read them without conversation context. Persistence calls use `$CLAUDE_SESSION_ID` as the session key:
 
 - Q1 trivial range: `gobbi config set $CLAUDE_SESSION_ID trivialRange <value>`
 - Q2 evaluation mode: `gobbi config set $CLAUDE_SESSION_ID evaluationMode <value>`

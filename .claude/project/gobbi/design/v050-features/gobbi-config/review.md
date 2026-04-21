@@ -3,9 +3,10 @@
 | Pass date  | Pass ID               | Reviewer | Verdict    | PR     |
 |------------|-----------------------|----------|------------|--------|
 | 2026-04-21 | session `fbffbdb8…`   | executor | needs-work | #120   |
+
 ## Pass 2026-04-21 — Findings
 
-Seven DRIFTs lifted from ideation §2: five resolve to doc rewrites, one to a pending T6 sibling-doc sweep (DRIFT-4), one to a cross-ref addition (DRIFT-7). The code changes — schema v2 AJV dispatch, cascade resolver, migration orchestrator, new CLI verb — are cited by SHA. Four NOTE entries document decisions, not defects. All SHAs verified via `git cat-file -e <sha>`.
+Seven DRIFTs lifted from ideation §2: five resolve to doc rewrites, one resolved by the T6 sibling-doc sweep commit `a344220` (DRIFT-4), one to a cross-ref addition (DRIFT-7). The code changes — schema v2 AJV dispatch, cascade resolver, migration orchestrator, new CLI verb — are cited by SHA. Four NOTE entries document decisions, not defects. All SHAs verified via `git cat-file -e <sha>`.
 
 ---
 
@@ -59,9 +60,9 @@ Seven DRIFTs lifted from ideation §2: five resolve to doc rewrites, one to a pe
 
 **Severity:** Low — misinformation about a workflow property that readers use when referencing doc cross-links.
 
-**Resolution:** fix doc — Pending T6 sibling-doc sweep commit (same PR, #120). This README cross-refs `deterministic-orchestration.md` which carries the authoritative five-step description.
+**Resolution:** fix doc (partial) — T6 sibling-doc sweep commit `a344220` landed the `projects/` → `project/` plural-path correction in `deterministic-orchestration.md` and the five-step cross-ref from `gobbi-config/README.md`. The six-step framing in `deterministic-orchestration.md` body (lines 3, 7, 15) remains and is deferred to follow-up issue #121 — the six-step reframe is scoped to the deterministic-orchestration reframe work and not in scope for Pass 3.
 
-**Owner:** gobbi-config Pass 3 (T6 commit).
+**Owner:** gobbi-config Pass 3 (T6 commit `a344220`); six-step reframe → #121.
 
 ---
 
@@ -170,7 +171,7 @@ Seven DRIFTs lifted from ideation §2: five resolve to doc rewrites, one to a pe
 | DRIFT-1  | drift | medium   | `8931d07`                            | fix doc + code      |
 | DRIFT-2  | drift | medium   | `b3059b1` (T5 commit)                | fix doc             |
 | DRIFT-3  | drift | low      | `b3059b1` (T4 commit)                | fix doc             |
-| DRIFT-4  | drift | low      | pending T6 commit (#120)             | fix doc             |
+| DRIFT-4  | drift | low      | `a344220`                            | fix doc (partial; six-step reframe → #121) |
 | DRIFT-5  | drift | low      | `b3059b1` (T5 commit)                | fix doc             |
 | DRIFT-6  | drift | low      | `b3059b1` (T5 commit)                | fix doc             |
 | DRIFT-7  | drift | low      | `b3059b1` (T5 commit)                | fix doc             |
