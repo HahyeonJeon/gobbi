@@ -2,7 +2,7 @@
 
 | Pass date  | Pass ID             | Reviewer | Verdict      | PR   |
 |------------|---------------------|----------|--------------|------|
-| 2026-04-20 | session `e78b75d2…` | executor | needs-triage | TBD  |
+| 2026-04-20 | session `e78b75d2…` | executor | needs-work   | TBD  |
 
 ## Pass 2026-04-20 — Findings
 
@@ -19,7 +19,7 @@ All 67 checklist items passed verification against the live codebase — 57 item
 - **Proposed fix:**
   - Light: Rewrite `README.md` paragraph 2 to separate the two install paths. Something like: "Installing the plugin registers hook entries, the skills, the agents, and the always-active behavioral rule with every Claude Code session. The CLI binary ships separately via `npm install -g @gobbitools/cli`; the plugin's hooks invoke that binary by bare `gobbi` command. This two-layer split means plugin updates and CLI updates are independent."
   - Heavier: Both the light fix above AND correct `cli-setup.md §Installation Option 2` lines 43–51 to drop the phrase "registers the CLI" (the plugin does not register the CLI binary — only the hook entries that invoke `gobbi`). Optionally add a note: "Installing the plugin does NOT install `@gobbitools/cli` — run Option 1 (`npm install -g @gobbitools/cli`) first."
-- **Resolution:** PENDING TRIAGE
+- **Resolution:** REJECTED 2026-04-21 — user direction: current feature-doc README reflects the new v0.5.0 design; code and legacy docs will be updated to match in a future pass (backlog issue #112).
 - **Tag:** DRIFT-01
 
 ---
@@ -33,7 +33,7 @@ All 67 checklist items passed verification against the live codebase — 57 item
 - **Proposed fix:**
   - Light (doc-only): Edit `README.md` line 13 to drop the version-currency claim. Replace "checks whether `gobbi-cli` is installed and whether its version is current. If the CLI is missing or outdated, the session agent installs or updates it automatically" with "checks whether `@gobbitools/cli` is installed. If the CLI is missing, the session agent loads `cli-setup.md` and walks the user through `npm install -g @gobbitools/cli`." This makes the README accurately describe `SKILL.md §THIRD` without implementing new behavior.
   - Heavier (code): Implement the version-currency check. Add a `gobbi version --check-latest` subcommand that hits the npm registry (or a cached manifest) and returns a structured "current | stale | unknown" verdict. Wire `SKILL.md §THIRD` to call it after the availability check. Add a Troubleshooting row in `cli-setup.md` covering update failures. Defer unless the user explicitly prioritizes version-check automation over documentation accuracy.
-- **Resolution:** PENDING TRIAGE
+- **Resolution:** FIX in this pass — will be updated with commit SHA after implementation commits land (Part B / Part C).
 - **Tag:** GAP-01
 
 ---
@@ -47,7 +47,7 @@ All 67 checklist items passed verification against the live codebase — 57 item
 - **Proposed fix:**
   - Light: Add a fifth Troubleshooting row: `| npm install -g exits 0 but gobbi: command not found | npm global prefix is not on shell PATH | Run npm config get prefix to see the prefix; add $PREFIX/bin to your shell PATH and reload the shell |`.
   - Heavier: Same as light, plus a short "PATH diagnostics" callout under `§Installation Option 1` explaining why nvm/Homebrew/pnpm/corporate setups commonly need this step.
-- **Resolution:** PENDING TRIAGE
+- **Resolution:** DEFERRED 2026-04-21 to backlog issue #113 (bundled with GAP-03 + GAP-04 as skill-doc coverage extensions).
 - **Tag:** GAP-02
 
 ---
@@ -61,7 +61,7 @@ All 67 checklist items passed verification against the live codebase — 57 item
 - **Proposed fix:**
   - Light: Append one sentence to `SKILL.md §SECOND`: "If the symlink cannot be created (e.g., platform does not support symlinks, `.claude/rules/` is read-only), surface the error to the user and pause — do not fall back to copying the file contents, as a copy would become a stale snapshot that does not refresh on plugin updates."
   - Heavier: Same as light, plus a cross-reference in `cli-setup.md §Troubleshooting` with a new row covering "symlink creation fails" → "platform does not support symlinks; see SKILL.md §SECOND failure branch."
-- **Resolution:** PENDING TRIAGE
+- **Resolution:** DEFERRED 2026-04-21 to backlog issue #113 (bundled with GAP-02 + GAP-04).
 - **Tag:** GAP-03
 
 ---
@@ -75,7 +75,7 @@ All 67 checklist items passed verification against the live codebase — 57 item
 - **Proposed fix:**
   - Light: Add one sentence to `SKILL.md §FOURTH` noting partial-entry handling: "If the saved settings are missing a field required by the current gobbi version (e.g., `baseBranch` when `gitWorkflow` is `worktree-pr`), present a three-way AskUserQuestion — 'Patch the missing field', 'Clear and reconfigure', 'Abort' — rather than the binary reuse/reconfigure branch."
   - Heavier: Same as light, plus implement a `gobbi config validate <session-id>` subcommand that returns a structured diff vs the current required-fields schema. Wire `SKILL.md §FOURTH` to call it. Defer unless partial-entry drift becomes a recurring support issue.
-- **Resolution:** PENDING TRIAGE
+- **Resolution:** DEFERRED 2026-04-21 to backlog issue #113 (bundled with GAP-02 + GAP-03).
 - **Tag:** GAP-04
 
 ---
@@ -89,7 +89,7 @@ All 67 checklist items passed verification against the live codebase — 57 item
 - **Proposed fix:**
   - Light (doc-only): Update `SKILL.md §FOURTH` line 19 and the persistence block line 52 to name `config.db` (or at least "session config") rather than `gobbi.json`. One possible phrasing for line 52: "Session config lives at `$CLAUDE_PROJECT_DIR/.gobbi/config.db`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi config`. (Legacy `.claude/gobbi.json` is migrated automatically on first access.) Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions)." Leave scenarios.md and checklist.md as-is unless the user wants a second pass — paths there are load-bearing for the stable-ID trace.
   - Heavier: Light fix plus rewriting the relevant scenario and checklist lines (O-CI-H-04, O-CI-X-01, O-CI-X-02) to cite `config.db` and `config-store.ts`. Breaks the "checklist.md edits are box-flips only" rule for this pass — defer to a scenarios/checklist pass rather than bundling it here.
-- **Resolution:** PENDING TRIAGE
+- **Resolution:** DEFERRED 2026-04-21 to backlog issue #114.
 - **Tag:** DRIFT-02
 
 ---
@@ -101,7 +101,7 @@ All 67 checklist items passed verification against the live codebase — 57 item
 - **Finding type:** NOTE
 - **Impact:** Informational only. The extra three (`__executor`, `__pi`, `__researcher`) are double-underscore internal agents per `.claude/rules/__gobbi-convention.md` — they are filesystem-present in the plugin but not declared in the plugin manifest. Either (a) the manifest is intentionally scoped to externally-identifiable agents and the internals are just colocated for symlink refresh convenience, or (b) the manifest is stale and should include the three internals. No correctness impact — Claude Code's plugin loader reads the manifest, not the filesystem.
 - **Proposed fix:** If (a) — the current state is intentional — leave as-is, and optionally add a one-line comment in `plugin.json` (as a sibling documentation file, since JSON does not support comments) explaining the scope decision. If (b) — the manifest should match the filesystem — extend the `agents` array with `./agents/__executor.md`, `./agents/__pi.md`, `./agents/__researcher.md`. No user-visible triage needed; surface only if the next feature pass (`cli-as-runtime-api` or similar) depends on the full agent set.
-- **Resolution:** PENDING TRIAGE
+- **Resolution:** DEFERRED 2026-04-21 to backlog issue #115.
 - **Tag:** NOTE-01
 
 ---
