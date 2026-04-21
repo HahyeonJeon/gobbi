@@ -60,3 +60,27 @@ store.append({
 The factory functions from `workflow/events/*.ts` (`createResume`, `createStepTimeout`, etc.) return a `{ type, data }` pair suitable for `appendEventAndUpdateState(store, state, event)` — the engine-level wrapper that handles idempotency + state derivation in one call. For raw `store.append`, use the full input struct; existing seeders in `specs/__tests__/errors.test.ts` and `workflow/__tests__/store.test.ts` are the canonical reference.
 
 Briefings that say "append event X with idempotency kind system" mean the AppendInput's `idempotencyKind: 'system'` field, not a second positional argument to `store.append`.
+
+---
+
+### `Bun.spawn` stdio streams need narrowing before `new Response(...)` — type is `ReadableStream<Uint8Array> | number | undefined`
+---
+priority: medium
+tech-stack: typescript, bun
+enforcement: advisory
+---
+
+**Priority:** Medium
+
+**What happened:** The v0.5.0 feature-pass-1 P7 executor (GAP-01 `gobbi --is-latest` implementation) wrote `await new Response(child.stdout).text()` expecting `child.stdout` to be a `ReadableStream<Uint8Array>`. TypeScript `tsc --noEmit` rejected with `TS2345: Argument of type 'ReadableStream<Uint8Array> | number | undefined' is not assignable to parameter of type 'BodyInit'`. Bun's `Subprocess.stdout` field is a discriminated union — it can be a `ReadableStream`, a numeric file descriptor (when stdio was overridden with `"inherit"` / `"ignore"` / `number`), or `undefined` (when the stdio option made the field absent).
+
+**User feedback:** Self-caught by P7 executor during typecheck 2026-04-21; no user correction required.
+
+**Correct approach:** Before passing `child.stdout` to `new Response()` or any other `ReadableStream`-consuming API, narrow the type. Pattern used in `packages/cli/src/workflow/verification-scheduler.ts` (`drainToBuffer` helper):
+
+- Check for `undefined` / `number` cases early; bail or throw with a specific error
+- Only pass the narrowed `ReadableStream<Uint8Array>` to `new Response(...)` or similar
+
+When a utility reads stdout from a `Bun.spawn` subprocess, either reuse the existing `drainToBuffer` helper if the shape matches, or write a local narrowing helper (~6 lines) that throws when the stdio option makes the stream absent. Do NOT cast with `as ReadableStream<Uint8Array>` — that silently accepts the numeric/undefined cases at runtime and will fail later with a confusing error.
+
+Canonical reference: `packages/cli/src/workflow/verification-scheduler.ts` for the narrowing pattern; `packages/cli/src/lib/version-check.ts` for a fresh example.

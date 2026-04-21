@@ -33,3 +33,25 @@ tech-stack: git
 **User feedback:** Discovered self-caught via test discrepancy during C.8 execution.
 
 **Correct approach:** When `_git` is active with a worktree, Write/Edit tool `file_path` parameters must resolve to the worktree's `packages/...` path, not the main tree's. The safe pattern: resolve absolute paths as `$(pwd)/<relative>` using the session's actual `cwd`, or prefix with the full worktree path `/playinganalytics/git/gobbi/.claude/worktrees/<branch>/packages/...`. Briefings that quote main-tree-style absolute paths are a trap — translate them at session start. If edits land in the main tree, `git diff --binary > /tmp/foo.patch`, `git checkout -- <files>`, `rm <untracked>`, then `git apply /tmp/foo.patch` in the worktree.
+
+---
+
+### `git stash` sneaks back into executor workflows during flake-debugging — never, even for a moment
+---
+priority: medium
+tech-stack: git
+---
+
+**Priority:** Medium
+
+**What happened:** The v0.5.0 feature-pass-1 POLISH+TESTS executor was running `bun test` in the worktree and hit a single pre-existing flake in `capture-subagent.test.ts` (issue #92). To rule out whether the executor's own changes had caused the flake, the executor stashed its uncommitted work, re-ran the full suite (still flaked), and then popped the stash. No state leaked this time — the other worktree (`docs/109-v050-feature-docs`) had no pending changes, and the pop returned the work cleanly. But `git stash` is still stored in the shared `.git` directory across all worktrees; a peer worktree could have popped the stash first.
+
+**User feedback:** Self-caught by the POLISH+TESTS executor 2026-04-21; flagged in the executor's report as a gotcha-worthy slip.
+
+**Correct approach:** Never `git stash` inside a worktree, including under time pressure when debugging a flake. Alternatives for "is this flake mine?":
+
+- `git diff` to a patch file (`git diff > /tmp/my-changes.patch`), then `git checkout -- <file>` the specific files you want to revert, run the test, then `git apply /tmp/my-changes.patch` to restore. No shared-state risk.
+- `git commit --amend` or a WIP commit (`git commit -m "wip: testing flake"`) — then `git reset --soft HEAD~1` after verification. State lives on the branch, not in shared stash.
+- Run the test in isolation (`bun test path/to/specific.test.ts`) — usually enough to confirm the flake is unrelated without touching the working tree.
+
+This rule already exists in `_git/gotchas.md` ("Using git stash in a worktree leaks state to other worktrees"). The new wrinkle: the slip happens most often during flake-debugging under time pressure, not during normal feature work. Brief executors explicitly that `git stash` is banned during ANY worktree operation including diagnostic ones.
