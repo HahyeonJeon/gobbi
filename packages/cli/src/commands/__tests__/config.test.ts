@@ -519,7 +519,7 @@ describe('runConfig set argument validation', () => {
     await captureExit(async () => {
       await runConfig([
         'set',
-        'workflow.plan.discuss.mode',
+        'workflow.planning.discuss.mode',
         'agent',
         '--session-id',
         'test-session',
@@ -531,9 +531,9 @@ describe('runConfig set argument validation', () => {
     const filePath = join(repo, '.gobbi', 'sessions', 'test-session', 'settings.json');
     expect(existsSync(filePath)).toBe(true);
     const parsed = JSON.parse(readFileSync(filePath, 'utf8')) as {
-      readonly workflow: { readonly plan: { readonly discuss: { readonly mode: string } } };
+      readonly workflow: { readonly planning: { readonly discuss: { readonly mode: string } } };
     };
-    expect(parsed.workflow.plan.discuss.mode).toBe('agent');
+    expect(parsed.workflow.planning.discuss.mode).toBe('agent');
   });
 
   test('set coerces numeric, boolean, null values', async () => {

@@ -94,9 +94,10 @@ const settingsSchema: JSONSchemaType<Settings> = {
                 effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
               },
             },
+            maxIterations: { type: 'integer', nullable: true, minimum: 1 },
           },
         },
-        plan: {
+        planning: {
           type: 'object',
           nullable: true,
           additionalProperties: false,
@@ -121,6 +122,7 @@ const settingsSchema: JSONSchemaType<Settings> = {
                 effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
               },
             },
+            maxIterations: { type: 'integer', nullable: true, minimum: 1 },
           },
         },
         execution: {
@@ -148,6 +150,7 @@ const settingsSchema: JSONSchemaType<Settings> = {
                 effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
               },
             },
+            maxIterations: { type: 'integer', nullable: true, minimum: 1 },
           },
         },
       },

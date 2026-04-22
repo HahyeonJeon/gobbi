@@ -98,11 +98,26 @@ export interface StepEvaluate {
 export interface StepSettings {
   readonly discuss?: StepDiscuss;
   readonly evaluate?: StepEvaluate;
+  /**
+   * Per-step REVISE-loop iteration cap. Default `3` (matches
+   * `state.maxFeedbackRounds` hardcode prior to this Pass).
+   *
+   * Schema-only this Pass — wiring to `state.maxFeedbackRounds`
+   * initialization is deferred to a follow-up Pass that extends state to
+   * carry per-step caps. See backlog.
+   */
+  readonly maxIterations?: number;
 }
 
+/**
+ * Per-step config keyed by the workflow loop's name. Field name `planning`
+ * matches `deterministic-orchestration.md` ("Planning Loop"); the
+ * state-machine literal remains `'plan'` until a comprehensive rename
+ * Pass — `resolveEvalDecision` accepts both for backward compatibility.
+ */
 export interface WorkflowSettings {
   readonly ideation?: StepSettings;
-  readonly plan?: StepSettings;
+  readonly planning?: StepSettings;
   readonly execution?: StepSettings;
 }
 
@@ -208,14 +223,17 @@ export const DEFAULTS: Settings = {
     ideation: {
       discuss: { mode: 'user', model: 'auto', effort: 'auto' },
       evaluate: { mode: 'always', model: 'auto', effort: 'auto' },
+      maxIterations: 3,
     },
-    plan: {
+    planning: {
       discuss: { mode: 'user', model: 'auto', effort: 'auto' },
       evaluate: { mode: 'always', model: 'auto', effort: 'auto' },
+      maxIterations: 3,
     },
     execution: {
       discuss: { mode: 'agent', model: 'auto', effort: 'auto' },
       evaluate: { mode: 'always', model: 'auto', effort: 'auto' },
+      maxIterations: 3,
     },
   },
   notify: {

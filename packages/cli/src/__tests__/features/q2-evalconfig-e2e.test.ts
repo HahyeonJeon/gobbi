@@ -224,7 +224,7 @@ afterEach(() => {
 // Helper — persist a mode through the CLI + read it back through resolveSettings.
 // ---------------------------------------------------------------------------
 
-type Step = 'ideation' | 'plan' | 'execution';
+type Step = 'ideation' | 'planning' | 'execution';
 type Mode = 'always' | 'skip' | 'ask' | 'auto';
 
 async function persistAndReadBack(
@@ -256,7 +256,7 @@ async function persistAndReadBack(
   const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as {
     readonly workflow?: {
       readonly ideation?: { readonly evaluate?: { readonly mode?: Mode } };
-      readonly plan?: { readonly evaluate?: { readonly mode?: Mode } };
+      readonly planning?: { readonly evaluate?: { readonly mode?: Mode } };
       readonly execution?: { readonly evaluate?: { readonly mode?: Mode } };
     };
   };
@@ -292,9 +292,9 @@ describe("Q2 'always' — evaluator runs unconditionally", () => {
   test("always + plan → {enabled: true, source: 'always'}", async () => {
     const repo = makeScratchRepo();
     const sessionId = 'q2-always-plan';
-    await persistAndReadBack(repo, sessionId, 'plan', 'always');
+    await persistAndReadBack(repo, sessionId, 'planning', 'always');
     const cascade = resolveSettings({ repoRoot: repo, sessionId });
-    const decision = resolveEvalDecision(cascade, 'plan');
+    const decision = resolveEvalDecision(cascade, 'planning');
     expect(decision).toEqual({ enabled: true, source: 'always' });
   });
 
@@ -323,9 +323,9 @@ describe("Q2 'skip' — evaluator is never invoked", () => {
   test("skip + plan → {enabled: false, source: 'skip'}", async () => {
     const repo = makeScratchRepo();
     const sessionId = 'q2-skip-plan';
-    await persistAndReadBack(repo, sessionId, 'plan', 'skip');
+    await persistAndReadBack(repo, sessionId, 'planning', 'skip');
     const cascade = resolveSettings({ repoRoot: repo, sessionId });
-    const decision = resolveEvalDecision(cascade, 'plan');
+    const decision = resolveEvalDecision(cascade, 'planning');
     expect(decision).toEqual({ enabled: false, source: 'skip' });
   });
 
@@ -367,18 +367,18 @@ describe("Q2 'ask' — user answer supplied via context; missing context throws"
   test("ask + plan → {enabled: userAnswer, source: 'ask'} and throws when context absent", async () => {
     const repo = makeScratchRepo();
     const sessionId = 'q2-ask-plan';
-    await persistAndReadBack(repo, sessionId, 'plan', 'ask');
+    await persistAndReadBack(repo, sessionId, 'planning', 'ask');
     const cascade = resolveSettings({ repoRoot: repo, sessionId });
-    expect(resolveEvalDecision(cascade, 'plan', { userAnswer: true })).toEqual({
+    expect(resolveEvalDecision(cascade, 'planning', { userAnswer: true })).toEqual({
       enabled: true,
       source: 'ask',
     });
-    expect(resolveEvalDecision(cascade, 'plan', { userAnswer: false })).toEqual({
+    expect(resolveEvalDecision(cascade, 'planning', { userAnswer: false })).toEqual({
       enabled: false,
       source: 'ask',
     });
-    expect(() => resolveEvalDecision(cascade, 'plan')).toThrow(
-      /eval mode "ask" at step plan requires context\.userAnswer/,
+    expect(() => resolveEvalDecision(cascade, 'planning')).toThrow(
+      /eval mode "ask" at step planning requires context\.userAnswer/,
     );
   });
 
@@ -426,16 +426,16 @@ describe("Q2 'auto' — orchestrator decision supplied via context; missing cont
   test("auto + plan → {enabled: orchestratorDecision, source: 'auto'} and throws when context absent", async () => {
     const repo = makeScratchRepo();
     const sessionId = 'q2-auto-plan';
-    await persistAndReadBack(repo, sessionId, 'plan', 'auto');
+    await persistAndReadBack(repo, sessionId, 'planning', 'auto');
     const cascade = resolveSettings({ repoRoot: repo, sessionId });
     expect(
-      resolveEvalDecision(cascade, 'plan', { orchestratorDecision: true }),
+      resolveEvalDecision(cascade, 'planning', { orchestratorDecision: true }),
     ).toEqual({ enabled: true, source: 'auto' });
     expect(
-      resolveEvalDecision(cascade, 'plan', { orchestratorDecision: false }),
+      resolveEvalDecision(cascade, 'planning', { orchestratorDecision: false }),
     ).toEqual({ enabled: false, source: 'auto' });
-    expect(() => resolveEvalDecision(cascade, 'plan')).toThrow(
-      /eval mode "auto" at step plan requires context\.orchestratorDecision/,
+    expect(() => resolveEvalDecision(cascade, 'planning')).toThrow(
+      /eval mode "auto" at step planning requires context\.orchestratorDecision/,
     );
   });
 
@@ -471,7 +471,7 @@ describe("resolveEvalDecision default — no user override falls through to DEFA
     // 'always' (NOT source: 'default', which is reserved for the case
     // where no default maps either — a future-proofing branch that does
     // not fire today).
-    for (const step of ['ideation', 'plan', 'execution'] as const) {
+    for (const step of ['ideation', 'planning', 'execution'] as const) {
       const decision = resolveEvalDecision(cascade, step);
       expect(decision.enabled).toBe(true);
       expect(decision.source).toBe('always');
@@ -493,12 +493,12 @@ describe("Full e2e — EVAL_DECIDE event lands in state.evalConfig via reducer",
     const repo = makeScratchRepo();
     const sessionId = 'q2-e2e-always';
     await persistAndReadBack(repo, sessionId, 'ideation', 'always');
-    await persistAndReadBack(repo, sessionId, 'plan', 'always');
+    await persistAndReadBack(repo, sessionId, 'planning', 'always');
     await persistAndReadBack(repo, sessionId, 'execution', 'always');
 
     const cascade = resolveSettings({ repoRoot: repo, sessionId });
     const ideationDecision = resolveEvalDecision(cascade, 'ideation');
-    const planDecision = resolveEvalDecision(cascade, 'plan');
+    const planDecision = resolveEvalDecision(cascade, 'planning');
     const executionDecision = resolveEvalDecision(cascade, 'execution');
 
     const evalEvent: Event = {
@@ -525,14 +525,14 @@ describe("Full e2e — EVAL_DECIDE event lands in state.evalConfig via reducer",
     const repo = makeScratchRepo();
     const sessionId = 'q2-e2e-mixed';
     await persistAndReadBack(repo, sessionId, 'ideation', 'ask');
-    await persistAndReadBack(repo, sessionId, 'plan', 'auto');
+    await persistAndReadBack(repo, sessionId, 'planning', 'auto');
     await persistAndReadBack(repo, sessionId, 'execution', 'skip');
 
     const cascade = resolveSettings({ repoRoot: repo, sessionId });
     const ideationDecision = resolveEvalDecision(cascade, 'ideation', {
       userAnswer: false,
     });
-    const planDecision = resolveEvalDecision(cascade, 'plan', {
+    const planDecision = resolveEvalDecision(cascade, 'planning', {
       orchestratorDecision: true,
     });
     const executionDecision = resolveEvalDecision(cascade, 'execution');

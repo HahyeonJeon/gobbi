@@ -251,7 +251,7 @@ And `.gobbi/project/settings.json` does not exist
 **Then** `.gobbi/project/settings.json` exists with:
   - `schemaVersion: 1`
   - `git.workflow.mode: 'worktree-pr'` and `git.workflow.baseBranch: 'main'` (renamed)
-  - `workflow.ideation.evaluate.mode: 'always'` (true → 'always') and `workflow.plan.evaluate.mode: 'ask'` (false → 'ask')
+  - `workflow.ideation.evaluate.mode: 'always'` (true → 'always') and `workflow.planning.evaluate.mode: 'ask'` (legacy `eval.plan` → new `workflow.planning`; false → 'ask')
   - No `trivialRange`, `verification.*`, `cost.*`, or `ui.*` fields
 And `.gobbi/project-config.json` no longer exists
 
@@ -267,7 +267,7 @@ Evidence:
 ### CFG-15 — Q2→evalConfig e2e — evaluate mode flows through to EVAL_DECIDE
 
 **Given** session settings have `workflow.ideation.evaluate.mode: 'always'`
-And `workflow.plan.evaluate.mode: 'ask'`
+And `workflow.planning.evaluate.mode: 'ask'`
 And `workflow.execution.evaluate.mode: 'skip'`
 **When** `resolveEvalDecision(cascade, 'ideation')` is called
 **Then** result is `{ enabled: true, source: 'always' }`

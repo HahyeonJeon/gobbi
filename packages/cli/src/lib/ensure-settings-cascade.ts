@@ -94,17 +94,24 @@ function upgradeLegacyToSettings(legacy: unknown): Settings {
   const root = isRecord(legacy) ? legacy : {};
 
   // Workflow — convert eval booleans to evaluate.mode enums.
+  // Legacy `eval.plan` maps to new `workflow.planning` (the loop name);
+  // state-machine literal stays `'plan'` until a comprehensive rename Pass.
   const legacyEval = isRecord(root['eval']) ? root['eval'] : null;
   const workflow: Settings['workflow'] = legacyEval
     ? (() => {
-        const out: { ideation?: StepSettings; plan?: StepSettings; execution?: StepSettings } = {};
-        for (const step of ['ideation', 'plan', 'execution'] as const) {
-          const value = legacyEval[step];
+        const out: { ideation?: StepSettings; planning?: StepSettings; execution?: StepSettings } = {};
+        const stepMap: ReadonlyArray<readonly [legacy: 'ideation' | 'plan' | 'execution', target: 'ideation' | 'planning' | 'execution']> = [
+          ['ideation', 'ideation'],
+          ['plan', 'planning'],
+          ['execution', 'execution'],
+        ];
+        for (const [legacyKey, targetKey] of stepMap) {
+          const value = legacyEval[legacyKey];
           if (typeof value !== 'boolean') continue;
           const evaluate: StepEvaluate = {
             mode: value ? 'always' : 'ask',
           };
-          out[step] = { evaluate };
+          out[targetKey] = { evaluate };
         }
         return Object.keys(out).length > 0 ? out : undefined;
       })()

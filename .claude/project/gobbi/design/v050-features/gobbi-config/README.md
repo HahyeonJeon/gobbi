@@ -28,10 +28,13 @@ One TypeScript interface. One AJV validator. All levels read and write the same 
 
 ### Schema sections
 
-**`workflow`** — Grouped by step (`ideation`, `plan`, `execution`). Each step carries:
+**`workflow`** — Grouped by step (`ideation`, `planning`, `execution`). Each step carries:
 - `discuss: { mode, model, effort }` — `mode` is `'agent' | 'user' | 'auto' | 'skip'`
 - `evaluate: { mode, model, effort }` — `mode` is `'ask' | 'always' | 'skip' | 'auto'`
 - `model` and `effort` default to `'auto'`, deferring to `_delegation` and core-rule defaults
+- `maxIterations: number` — per-step REVISE-loop iteration cap; default `3`. Schema-only this Pass — wiring to `state.maxFeedbackRounds` is deferred to a follow-up Pass that extends state to carry per-step caps
+
+The `planning` field name matches the loop name in `deterministic-orchestration.md` ("Planning Loop"). The workflow state-machine literal remains `'plan'` until a comprehensive rename Pass — `resolveEvalDecision` accepts both `'plan'` and `'planning'` for the `step` parameter.
 
 **`notify`** — Per-channel dict. Channels: `slack`, `telegram`, `discord`, `desktop`. Each carries:
 - `enabled: boolean`

@@ -89,7 +89,7 @@ Evaluation mode mapping — the same answer applies to all three steps:
 
 ```
 CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.ideation.evaluate.mode ask
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.plan.evaluate.mode ask
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.planning.evaluate.mode ask
 CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.execution.evaluate.mode ask
 ```
 
@@ -106,7 +106,9 @@ Notifications — for each selected channel, set `enabled true`. Do NOT touch `e
 CLAUDE_SESSION_ID=$DISCOVERED gobbi config set notify.slack.enabled true
 ```
 
-Discussion modes are NOT asked. Defaults apply: `workflow.ideation.discuss.mode` = `user`, `workflow.plan.discuss.mode` = `user`, `workflow.execution.discuss.mode` = `agent`. Users override these manually via `gobbi config set` if they want different behavior.
+Discussion modes are NOT asked. Defaults apply: `workflow.ideation.discuss.mode` = `user`, `workflow.planning.discuss.mode` = `user`, `workflow.execution.discuss.mode` = `agent`. Users override these manually via `gobbi config set` if they want different behavior.
+
+Note: the settings field is named `planning` to match the loop name in `deterministic-orchestration.md` ("Planning Loop"); the workflow state-machine literal remains `'plan'` until a comprehensive rename Pass — `resolveEvalDecision` accepts both `'plan'` and `'planning'` for the `step` parameter.
 
 **SIXTH — project context detection.** This runs automatically at session start without asking. Load [project-setup.md](project-setup.md) to execute detection.
 

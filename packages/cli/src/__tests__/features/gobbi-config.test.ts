@@ -294,7 +294,7 @@ describe("CFG-2: gobbi config set writes + round-trips through AJV", () => {
     await captureExit(async () => {
       await runConfig([
         'set',
-        'workflow.plan.discuss.mode',
+        'workflow.planning.discuss.mode',
         'user',
         '--level',
         'workspace',
@@ -308,14 +308,14 @@ describe("CFG-2: gobbi config set writes + round-trips through AJV", () => {
     const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
     expect(onDisk).toEqual({
       schemaVersion: 1,
-      workflow: { plan: { discuss: { mode: 'user' } } },
+      workflow: { planning: { discuss: { mode: 'user' } } },
     });
 
     resetCapture();
     await captureExit(async () => {
       await runConfig([
         'get',
-        'workflow.plan.discuss.mode',
+        'workflow.planning.discuss.mode',
         '--level',
         'workspace',
       ]);
@@ -359,7 +359,7 @@ describe("CFG-3: exit codes — 0 success, 1 missing key, 2 validation/IO/argv",
     // Default write target is session; with no env and no --session-id flag
     // the CLI must exit 2 rather than fall through to a bogus directory.
     await captureExit(async () => {
-      await runConfig(['set', 'workflow.plan.discuss.mode', 'user']);
+      await runConfig(['set', 'workflow.planning.discuss.mode', 'user']);
     });
     expect(captured.stderr).toContain(
       'requires CLAUDE_SESSION_ID env or --session-id',
@@ -513,7 +513,7 @@ describe("CFG-8: absent keys delegate through the cascade to DEFAULTS", () => {
     expect(resolved.git?.workflow?.baseBranch).toBe('develop');
     // Unset keys delegate to DEFAULTS.
     expect(resolved.workflow?.ideation?.discuss?.mode).toBe('user');
-    expect(resolved.workflow?.plan?.evaluate?.mode).toBe('always');
+    expect(resolved.workflow?.planning?.evaluate?.mode).toBe('always');
   });
 });
 
@@ -564,7 +564,7 @@ describe("CFG-9: T2-v1 legacy upgrader writes new-shape settings.json", () => {
 
     // Eval booleans → evaluate.mode enums.
     expect(upgraded.workflow?.ideation?.evaluate?.mode).toBe('always');
-    expect(upgraded.workflow?.plan?.evaluate?.mode).toBe('ask');
+    expect(upgraded.workflow?.planning?.evaluate?.mode).toBe('ask');
     expect(upgraded.workflow?.execution?.evaluate?.mode).toBe('always');
 
     // Dropped sections: not present on the upgraded doc.
