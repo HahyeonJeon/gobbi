@@ -143,10 +143,11 @@ export interface NotifySettings {
 /**
  * Git workflow configuration. `worktree-pr` mode requires a non-null
  * `baseBranch` — the cross-field check in `settings-io.ts::resolveSettings`
- * enforces this post-cascade.
+ * enforces this post-cascade. `'auto'` defers the choice to the orchestrator
+ * (main session agent) at workflow-decision time.
  */
 export interface GitWorkflow {
-  readonly mode?: 'direct-commit' | 'worktree-pr';
+  readonly mode?: 'direct-commit' | 'worktree-pr' | 'auto';
   readonly baseBranch?: string | null;
 }
 

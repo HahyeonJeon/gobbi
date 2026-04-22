@@ -244,7 +244,7 @@ const settingsSchema: JSONSchemaType<Settings> = {
           nullable: true,
           additionalProperties: false,
           properties: {
-            mode: { type: 'string', nullable: true, enum: ['direct-commit', 'worktree-pr'] },
+            mode: { type: 'string', nullable: true, enum: ['direct-commit', 'worktree-pr', 'auto'] },
             baseBranch: { type: 'string', nullable: true },
           },
         },

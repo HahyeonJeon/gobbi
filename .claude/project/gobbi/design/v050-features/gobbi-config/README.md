@@ -40,7 +40,7 @@ One TypeScript interface. One AJV validator. All levels read and write the same 
 - Channel-specific routing: `slack.channel`, `telegram.chatId`, `discord.webhookName` (non-secret; null = unset)
 
 **`git`** — Three sub-objects:
-- `workflow: { mode, baseBranch }` — `mode` is `'direct-commit' | 'worktree-pr'`; `baseBranch: string | null`
+- `workflow: { mode, baseBranch }` — `mode` is `'direct-commit' | 'worktree-pr' | 'auto'` (`'auto'` defers the choice to the orchestrator at workflow-decision time); `baseBranch: string | null`
 - `pr: { draft }` — open PRs as drafts by default
 - `cleanup: { worktree, branch }` — auto-remove worktree/branch after merge
 
