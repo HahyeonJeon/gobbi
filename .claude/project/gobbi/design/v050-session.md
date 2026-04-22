@@ -16,12 +16,12 @@ Sessions are stored under `.gobbi/sessions/{session-id}/`. The session ID is a t
 
 ```
 .gobbi/
-├── settings.json              T1 user prefs — gitignored, workspace-scoped (see gobbi-config)
-├── config.db                  T3 session store — SQLite, authoritative for cascade overlays
+├── settings.json              workspace prefs — gitignored (see gobbi-config/README.md)
 ├── project/
-│   └── settings.json          T2 project config — tracked, AJV-validated, schema v1 or v2
+│   └── settings.json          project config — tracked, AJV-validated, schema v1
 └── sessions/
     └── {session-id}/
+        ├── settings.json          session config — gitignored, overrides workspace + project
         ├── metadata.json          immutable — written once at session creation
         ├── state.json             canonical workflow state — materialized view
         ├── state.json.backup      previous state before last transition
@@ -33,6 +33,8 @@ Sessions are stored under `.gobbi/sessions/{session-id}/`. The session ID is a t
         ├── evaluation/            step artifacts — flat directory
         └── memorization/          step artifacts — flat directory
 ```
+
+Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The event store is `gobbi.db` inside each session directory, which is separate from config. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
 
 Each file and directory has a single responsibility. `metadata.json` and `gobbi.db` are the permanent record. `state.json` and `events.jsonl` are derived views — they can be rebuilt from `gobbi.db` at any time.
 

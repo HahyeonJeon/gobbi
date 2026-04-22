@@ -527,9 +527,17 @@ function parseLevel(raw: unknown): SettingsLevel | undefined | 'invalid' {
 }
 
 /**
- * Pick the session id per the `cli-vs-skill-session-id` gotcha: env var
- * first, then explicit `--session-id` flag (flag wins over env when
- * both are present). `undefined` when neither supplies one.
+ * Resolves session-id with the `--session-id` flag taking precedence over
+ * the `$CLAUDE_SESSION_ID` env var. When both are present, the explicit flag
+ * wins — more specific input overrides the ambient env.
+ *
+ * The CLI is plugin-neutral: it reads `$CLAUDE_SESSION_ID` and accepts
+ * `--session-id` directly. It does NOT know about `$CODEX_COMPANION_SESSION_ID`.
+ * The `/gobbi` orchestrator skill is responsible for env discovery (e.g.
+ * `$CODEX_COMPANION_SESSION_ID`) and passes the discovered id via `--session-id`
+ * per the `cli-vs-skill-session-id` gotcha.
+ *
+ * Returns `undefined` when neither source supplies a value.
  */
 function resolveSessionId(
   flagValue: string | undefined,
