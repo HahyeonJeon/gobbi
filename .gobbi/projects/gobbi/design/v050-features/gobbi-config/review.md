@@ -56,9 +56,9 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 ### DRIFT-4 — T3 SQLite replaced by per-session `settings.json`
 
-**Finding:** Pass-3 shipped T3 as a row in `.gobbi/config.db` via `ConfigStore`. Pass-3 finalization replaces T3 with `.gobbi/sessions/{id}/settings.json` — a JSON file per session directory. The SQLite path (`config-store.ts`, `toCascadeProjection`, `openConfigStore`, WAL handling, TTL cleanup) is deleted.
+**Finding:** Pass-3 shipped T3 as a row in `.gobbi/config.db` via `ConfigStore`. Pass-3 finalization replaces T3 with `.gobbi/projects/<name>/sessions/{id}/settings.json` — a JSON file per session directory. The SQLite path (`config-store.ts`, `toCascadeProjection`, `openConfigStore`, WAL handling, TTL cleanup) is deleted.
 
-**Evidence:** plan.md §Wave B — "DELETE `packages/cli/src/lib/config-store.ts`"; `f9b3925` (Wave B) deletes the file; `packages/cli/src/lib/settings-io.ts` at `f9b3925` implements `loadSettingsAtLevel(repoRoot, 'session')` reading from `sessions/{id}/settings.json`.
+**Evidence:** plan.md §Wave B — "DELETE `packages/cli/src/lib/config-store.ts`"; `f9b3925` (Wave B) deletes the file; `packages/cli/src/lib/settings-io.ts` at `f9b3925` implements `loadSettingsAtLevel(repoRoot, 'session')` reading from `projects/<name>/sessions/{id}/settings.json`.
 
 **Severity:** High — agents reading from SQLite column names or expecting `ConfigStore` would fail entirely.
 

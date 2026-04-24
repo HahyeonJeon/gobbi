@@ -199,7 +199,7 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 
 **Source:** #98 (PR E follow-up NEW-10); also deferred per L-F4
 
-**Description:** Create `.claude/project/gobbi/gotchas/test-tooling.md` and migrate the fast-check v4 and `exactOptionalPropertyTypes` gotcha entries from `phase2-planning.md`. These are generic test-tooling patterns, not phase-specific planning errors. Discoverability for future test authors is lower than it should be at the current location.
+**Description:** Verify that fast-check v4 and `exactOptionalPropertyTypes` gotcha entries from `phase2-planning.md` are present in `.gobbi/projects/gobbi/learnings/gotchas/test-tooling.md`. These are generic test-tooling patterns, not phase-specific planning errors. Discoverability for future test authors is lower than it should be at the current location.
 
 **Trigger:** A third fast-check-related or TS-strict gotcha is filed, making the case for a dedicated test-tooling doc unambiguous.
 

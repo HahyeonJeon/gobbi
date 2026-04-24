@@ -44,7 +44,7 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ## CFG-5 — Set default level writes session
 
-- [EP] `gobbi config set git.workflow.mode worktree-pr` (no `--level`) writes to `.gobbi/sessions/{id}/settings.json`.
+- [EP] `gobbi config set git.workflow.mode worktree-pr` (no `--level`) writes to `.gobbi/projects/<name>/sessions/{id}/settings.json`.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-5'`
 - [ST] Session file uses atomic write (temp+rename) — partial write cannot corrupt the file.
   - Verify: `rg -n 'renameSync\|writeFileSync.*tmp' packages/cli/src/lib/settings-io.ts`

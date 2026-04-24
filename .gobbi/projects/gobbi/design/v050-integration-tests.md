@@ -4,7 +4,7 @@
 
 Design document for the v0.5.0 integration test system. Read this before planning or implementing the `tests/integration/` workspace. It covers the test architecture, the hybrid harness model, the scenario catalog, and CI integration — everything a planner needs to decompose the work into execution tasks. It does not cover implementation of individual scenarios; that belongs in the planning step.
 
-This document synthesises the two PI ideation inputs at `.claude/project/gobbi/note/2026-04-20-integration-test-ideation/innovative.md` and `.claude/project/gobbi/note/2026-04-20-integration-test-ideation/best.md`. All architectural decisions in §4 are locked by user approval (2026-04-20) and must not be re-litigated in the planning step.
+This document synthesises the two PI ideation inputs. All architectural decisions in §4 are locked by user approval (2026-04-20) and must not be re-litigated in the planning step.
 
 ---
 
@@ -76,7 +76,7 @@ The tier selection mechanism is simple: each scenario file imports `getHarness()
                                           │ writes events
                                           ▼
   ┌────────────────────────────────────────────────────────────────────────┐
-  │    tmpRoot/.gobbi/sessions/{id}/gobbi.db  +  state.json                 │
+  │    tmpRoot/.gobbi/projects/<name>/sessions/{id}/gobbi.db  +  state.json  │
   │    (real bun:sqlite WAL, per-test isolated via mkdtempSync)             │
   └───────────────────────────────────────┬────────────────────────────────┘
                                           │ assertions read (read-only)
@@ -131,7 +131,7 @@ Mocking at the `@anthropic-ai/sdk` `baseURL` level was also rejected. Claude Cod
 
 **Pick: hybrid — HooksHarness (~200 LOC) for the deterministic tier, AgentSdkHarness for the live tier.**
 
-The `HooksHarness` is the innovative-stance ideation's core insight (see `note/2026-04-20-integration-test-ideation/innovative.md §4.2`): once the hook protocol is treated as a contract, the harness that speaks it is cheap — ~200 LOC of Bun code — and the real Claude Code harness becomes one of several drivers against the same contract surface.
+The `HooksHarness` is the innovative-stance ideation's core insight: once the hook protocol is treated as a contract, the harness that speaks it is cheap — ~200 LOC of Bun code — and the real Claude Code harness becomes one of several drivers against the same contract surface.
 
 For each scenario event the `HooksHarness` builds the stdin JSON per the hooks reference exact field schema; spawns the CLI subprocess via `Bun.spawn`; pipes JSON to stdin; closes the pipe; collects stdout; asserts exit code 0; moves to the next payload in the scenario tape. The CLI sees the payload as if Claude Code sent it. The test verifies the CLI's response and the event store state. No Claude Code binary, no model calls, no internet.
 
@@ -174,7 +174,7 @@ The assertion model follows EventStoreDB's testing guidance: for event-sourced s
 |---|---|---|
 | F1 hook↔CLI wiring | Event-type presence + `parent_seq` linkage | `store.hasEventOfType('delegation.spawn', { agentType: 'executor' })` |
 | F2 prompt compilation | `bun:test` snapshot of `gobbi workflow next` stdout | `expect(await nextPrompt(ctx)).toMatchSnapshot('execution-step.snap')` |
-| F3 state machine | State-field assertion | `expect(state.currentStep).toBe('plan')`, `expect(state.feedbackRound).toBe(2)` |
+| F3 state machine | State-field assertion | `expect(state.currentStep).toBe('planning')`, `expect(state.feedbackRound).toBe(2)` |
 | F4 subagent lifecycle | Combined: event sequence + `parent_seq` + `state.activeSubagents` | `expect(completeRow.parent_seq).toBe(spawnRow.seq)`, `expect(state.activeSubagents).toHaveLength(0)` |
 
 For F2 snapshots — full compiled prompt vs redacted fingerprint (section headers, token counts, block IDs): start with full snapshots. Full snapshots catch every silent compilation change and are already the discipline `packages/cli/src/specs/__tests__/` enforces. Migrate to fingerprints only if PR snapshot diff volume becomes a review burden; that migration has not been needed in the existing suite.
@@ -229,13 +229,13 @@ Nightly cron was considered and rejected per the user lock. API-contract drift m
 
 **Pick: per-test `mkdtempSync` for the entire `.gobbi/` root; serial within a file; parallel across files.**
 
-Each scenario runs in its own `mkdtempSync(tmpdir(), 'gobbi-int-')` directory. The tempdir is the project root for that test: `gobbi workflow init` creates `.gobbi/sessions/{id}/gobbi.db` inside it, the CLI subprocess's `cwd` option points at it, and teardown is `rmSync(tmpRoot, { recursive: true, force: true })` in `afterEach`. This is the same pattern `packages/cli/src/__tests__/e2e/workflow-cycle.test.ts` uses, validated across all Phase 2 PRs.
+Each scenario runs in its own `mkdtempSync(tmpdir(), 'gobbi-int-')` directory. The tempdir is the project root for that test: `gobbi workflow init` creates `.gobbi/projects/<name>/sessions/{id}/gobbi.db` inside it, the CLI subprocess's `cwd` option points at it, and teardown is `rmSync(tmpRoot, { recursive: true, force: true })` in `afterEach`. This is the same pattern `packages/cli/src/__tests__/e2e/workflow-cycle.test.ts` uses, validated across all Phase 2 PRs.
 
 Per `phase2-planning.md §"gobbi workflow init pre-seeds events at seq=1,2"`, the `fixtures/temp-session.ts` lifecycle MUST always run `gobbi workflow init` before any scenario injects hook payloads. This seeds `seq=1,2` (the `workflow.start` and initial `workflow.eval.decide` events). Any direct writes to `gobbi.db` from fixture code must use `seq ≥ 100` to avoid primary-key collision with init's pre-seeded rows.
 
 SQLite WAL mode raises no parallel-concurrency concern in this regime. Each test has a private DB file — WAL contention matters only when multiple processes hit the same file, which never happens here. Within a single test, the CLI subprocess writes and the test process reads via `assertions/event-store.ts` using the `ReadStore` split from PR #103. WAL handles one writer + one reader correctly.
 
-One tempdir shared across the whole suite was rejected: shared `.gobbi/project-config.json` is not session-scoped; a scenario that writes project config would pollute peers, and debugging the interaction between two scenarios in a shared tempdir is substantially harder than debugging one scenario in isolation. In-memory SQLite (`:memory:`) was rejected: the gobbi CLI hardcodes the on-disk path `.gobbi/sessions/{id}/gobbi.db`; testing against `:memory:` would require a CLI flag that contaminates production code with a test concern. Docker-in-Docker per scenario was rejected: overkill. (Source: innovative-stance ideation §4.8 rejected alternatives; best-stance ideation §4.8.)
+One tempdir shared across the whole suite was rejected: shared `.gobbi/project-config.json` is not session-scoped; a scenario that writes project config would pollute peers, and debugging the interaction between two scenarios in a shared tempdir is substantially harder than debugging one scenario in isolation. In-memory SQLite (`:memory:`) was rejected: the gobbi CLI hardcodes the on-disk path `.gobbi/projects/<name>/sessions/{id}/gobbi.db`; testing against `:memory:` would require a CLI flag that contaminates production code with a test concern. Docker-in-Docker per scenario was rejected: overkill. (Source: innovative-stance ideation §4.8 rejected alternatives; best-stance ideation §4.8.)
 
 There is one Windows-specific WAL gotcha (Bun issue #25964 — WAL lock release on close): closing the DB does not release the lock until the process exits, which can block `rmSync` cleanup. CI runs on Ubuntu where this is moot. Document as a note in `fixtures/temp-session.ts` for local Windows developers.
 
@@ -352,7 +352,7 @@ Expected wall time: < 500 ms.
 
 **F2.1 — `step-prompts.test.ts`** (F2 prompt-compilation)
 _Catches spec drift across the five steps. Any change to a step spec or compiled prompt surface surfaced immediately as a snapshot diff._
-- Parameterized via `describe.each` over `['ideation', 'plan', 'execution', 'execution_eval', 'memorization']`.
+- Parameterized via `describe.each` over `['ideation', 'planning', 'execution', 'planning_eval', 'memorization']`.
 - Given: session seeded at the target step.
 - When: `gobbi workflow next` is invoked.
 - Then: stdout matches the committed snapshot at `fixtures/snapshots/<step>-prompt.snap`.
@@ -369,8 +369,8 @@ Expected wall time: < 3 s total.
 **F3.1 — `eval-revise-loop.test.ts`** (F3 state-machine)
 _Catches reducer regressions in the feedback-loop branch — the most error-prone transition path per the state machine in `v050-state-machine.md`._
 - Given: session at `execution_eval` with `feedbackRound: 1`.
-- When: a `decision.eval.verdict` event with `verdict: 'revise'`, `loopTarget: 'plan'` is appended directly to the event store via `store.append` at `seq ≥ 100` (the §5.3/PC-5 direct-append contract). This is not a `gobbi workflow transition` CLI invocation — §5.3 explicitly forbids using `gobbi workflow transition` for fixture state setup because it requires full stdin payloads. In the deterministic test tier, the transition event is seeded as a direct store append; in the live tier, a real evaluation subagent arrives at the verdict organically and the event is written by the SDK harness.
-- Then: `state.currentStep === 'plan'`; `state.feedbackRound === 2`; transition event recorded in event store; reducer-replay check passes.
+- When: a `decision.eval.verdict` event with `verdict: 'revise'`, `loopTarget: 'planning'` is appended directly to the event store via `store.append` at `seq ≥ 100` (the §5.3/PC-5 direct-append contract). This is not a `gobbi workflow transition` CLI invocation — §5.3 explicitly forbids using `gobbi workflow transition` for fixture state setup because it requires full stdin payloads. In the deterministic test tier, the transition event is seeded as a direct store append; in the live tier, a real evaluation subagent arrives at the verdict organically and the event is written by the SDK harness.
+- Then: `state.currentStep === 'planning'`; `state.feedbackRound === 2`; transition event recorded in event store; reducer-replay check passes.
 Expected wall time: < 1 s.
 
 **F3.2 — `feedback-cap-error.test.ts`** (F3 state-machine)
@@ -585,13 +585,13 @@ The `gobbi workflow guard` command is the most heavily exercised: it handles Pre
 | `SessionStart` | All scenarios (precondition via `gobbi workflow init` in `fixtures/temp-session.ts`) | `gobbi workflow init` |
 | `PreToolUse` (Task / Agent tool) | F1.1 spawn-emitter, F4.1 spawn-complete-link, F4.2 spawn-fail-link | `gobbi workflow guard` + spawn emitter (issue #102 fix) |
 | `PreToolUse` (Write to `.claude/`) | F1.3 claude-write-guard | `gobbi workflow guard` |
-| `PostToolUse` (ExitPlanMode) | Not in initial catalog — add as F1.4 `capture-plan.test.ts` in Phase 3 when the F2 scope expands | `gobbi workflow capture-plan` |
+| `PostToolUse` (ExitPlanMode) | Not in initial catalog — add as F1.4 `capture-planning.test.ts` in Phase 3 when the F2 scope expands | `gobbi workflow capture-planning` |
 | `SubagentStop` | F1.2 capture-subagent-three-cases, F4.1 spawn-complete-link, F4.2 spawn-fail-link | `gobbi workflow capture-subagent` |
 | `Stop` | F3.2 feedback-cap-error (timeout pathway via clock control); add explicit heartbeat scenario in Phase 3 | `gobbi workflow stop` |
 
 **Not exercised in this initial catalog (deferred to Phase 3):** `UserPromptSubmit`, `Notification`, `PreCompact`, `SessionEnd`, `TeammateIdle`, `TaskCompleted`, `WorktreeCreate`, `WorktreeRemove`, `PostToolUse` (ExitPlanMode). All are listed in the Agent SDK hooks reference. The initial catalog prioritizes the four user-locked failure modes; these event classes become Phase 3 additions once the core four are stable.
 
-The `PostToolUse` ExitPlanMode gap is worth noting specifically: `gobbi workflow capture-plan` is wired in `hooks.json` but has no scenario in this catalog. It falls under F1 (hook wiring) as a secondary omission. The planner should decide whether to add `F1.4 capture-plan.test.ts` to the initial catalog or defer it to Phase 3. The scenario would be two events: `SessionStart` + `PostToolUse(ExitPlanMode)` with a plan body in `tool_input`, asserting an `artifact.write` event and a plan file at `.gobbi/sessions/{id}/plan/plan.md`. The implementation cost is low (reuses the `HooksHarness` and `assertions/event-store.ts` patterns). Recommend adding it to the initial catalog to achieve full F1 coverage of the currently-wired hook commands.
+The `PostToolUse` ExitPlanMode gap is worth noting specifically: `gobbi workflow capture-planning` is wired in `hooks.json` but has no scenario in this catalog. It falls under F1 (hook wiring) as a secondary omission. The planner should decide whether to add `F1.4 capture-planning.test.ts` to the initial catalog or defer it to Phase 3. The scenario would be two events: `SessionStart` + `PostToolUse(ExitPlanMode)` with a plan body in `tool_input`, asserting an `artifact.write` event and a plan file at `.gobbi/projects/<name>/sessions/{id}/planning/plan.md`. The implementation cost is low (reuses the `HooksHarness` and `assertions/event-store.ts` patterns). Recommend adding it to the initial catalog to achieve full F1 coverage of the currently-wired hook commands.
 
 ---
 
@@ -607,7 +607,5 @@ This document is the design entry point for the v0.5.0 integration test system. 
 | `v050-prompts.md` | The prompt compilation logic the F2 snapshot scenarios assert against |
 | `v050-session.md` | The SQLite event store schema, `state.json` field definitions, and `ReadStore` / write-store split |
 | `v050-cli.md` | The `gobbi workflow *` command surface — the exact subcommands the harness invokes |
-| `.claude/project/gobbi/note/2026-04-20-integration-test-ideation/innovative.md` | Full innovative-stance PI input — rejected alternatives and "what if" innovations; read if a locked decision is challenged at planning time |
-| `.claude/project/gobbi/note/2026-04-20-integration-test-ideation/best.md` | Full best-practice-stance PI input — EventStoreDB testing patterns, SDK harness justification, Playwright/Prisma layout precedents |
-| `.claude/project/gobbi/gotchas/phase2-planning.md` | Phase 2 planning gotchas — `seq=1,2` init constraint, `reduce(state, event, ts?)` signature, parallel executor file staging; all directly relevant to integration harness implementation |
-| `.claude/project/gobbi/gotchas/test-tooling.md` | Test tooling gotchas — fast-check v4 API changes (`fc.hexaString` removed, `fc.option` + `exactOptionalPropertyTypes` trap); relevant when adding the Phase 3 property-test layer |
+| `.gobbi/projects/gobbi/learnings/gotchas/phase2-planning.md` | Phase 2 planning gotchas — `seq=1,2` init constraint, `reduce(state, event, ts?)` signature, parallel executor file staging; all directly relevant to integration harness implementation |
+| `.gobbi/projects/gobbi/learnings/gotchas/test-tooling.md` | Test tooling gotchas — fast-check v4 API changes (`fc.hexaString` removed, `fc.option` + `exactOptionalPropertyTypes` trap); relevant when adding the Phase 3 property-test layer |

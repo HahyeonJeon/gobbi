@@ -19,7 +19,7 @@ prompt = compile(state, artifacts, skills, gotchas, context)
 | Input | Source | What it contributes |
 |-------|--------|---------------------|
 | `state` | `state.json` from the active session | Current step, completed steps, eval config, active subagents |
-| `artifacts` | Step directories under `.gobbi/sessions/{id}/` | Prior step outputs inlined as context for the current step |
+| `artifacts` | Step directories under `.gobbi/projects/<name>/sessions/{id}/` | Prior step outputs inlined as context for the current step |
 | `skills` | `.claude/skills/` — the surviving domain skills | Domain knowledge injected as materials, not instructions |
 | `gotchas` | `.claude/skills/_gotcha/` and `.gobbi/project/gotchas/` | Known failure patterns prepended as guards |
 | `context` | `metadata.json` plus project root scan | Project path, config snapshot, tech stack context |

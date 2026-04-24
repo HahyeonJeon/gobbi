@@ -18,7 +18,7 @@ This is the spine of orchestration. The workflow group drives the deterministic 
 
 The configuration group reads and writes the three-tier cascade at user, project, and session scopes. It includes commands to get and set individual keys at any scope, to list the merged view an agent sees at runtime, and to set up session environment — loading env vars from the appropriate `.env` file and exposing session metadata so agents do not need to discover it themselves. Re-running environment setup is a no-op when the session is already initialized (idempotent by design). See `gobbi-config/README.md` for the full cascade semantics.
 
-Key commands in this group include `gobbi config resolve <key> [--session-id <id>] [--with-sources]`, which resolves a dot-path key across the three-tier cascade (T1 user `settings.json` → T2 project `settings.json` → T3 session row in `config.db`); exits 1 for key-not-found, 2 for parse/read error. The `--with-sources` flag annotates each resolved value with its winning tier.
+The two verbs are `gobbi config get <key>` (cascade-resolved across workspace → project → session `settings.json` files) and `gobbi config set <key> <value>` (writes to a target level). See `gobbi-config/README.md` for the full cascade semantics and CLI surface.
 
 ## Memory
 

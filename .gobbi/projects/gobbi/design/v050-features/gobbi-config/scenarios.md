@@ -2,7 +2,7 @@
 
 Behaviour specifications for gobbi's unified three-level settings cascade. Covers default resolution, per-level overrides, deep-merge semantics, array replacement, null leaf values, migration, cross-field validation, CLI paths, and notify events semantics.
 
-This file does NOT cover: the gobbi-memory tier wiring (`gobbi-memory.md`), the hook registration for `notify.triggers` (schema-only in Pass 3), or five-step workflow orchestration (`deterministic-orchestration.md`). Every scenario has a stable ID in the `CFG-NN` format — `rg 'CFG-' .claude/project/gobbi/design/v050-features/gobbi-config/` surfaces every reference. Test file: `packages/cli/src/__tests__/features/gobbi-config.test.ts`.
+This file does NOT cover: the gobbi-memory tier wiring (`gobbi-memory.md`), the hook registration for `notify.triggers` (schema-only in Pass 3), or five-step workflow orchestration (`deterministic-orchestration.md`). Every scenario has a stable ID in the `CFG-NN` format — `rg 'CFG-' .gobbi/projects/gobbi/design/v050-features/gobbi-config/` surfaces every reference. Test file: `packages/cli/src/__tests__/features/gobbi-config.test.ts`.
 
 See `README.md` for the feature overview.
 
@@ -12,7 +12,7 @@ See `README.md` for the feature overview.
 
 ### CFG-1 — Cascade get — no `--level` returns session → project → workspace → default
 
-**Given** `.gobbi/sessions/{id}/settings.json` has `git.workflow.mode: 'worktree-pr'`
+**Given** `.gobbi/projects/<name>/sessions/{id}/settings.json` has `git.workflow.mode: 'worktree-pr'`
 And `.gobbi/project/settings.json` has `git.workflow.mode: 'direct-commit'`
 **When** `gobbi config get git.workflow.mode --session-id <id>` runs
 **Then** output is `"worktree-pr"` (session wins) and exit code is `0`
@@ -30,7 +30,7 @@ Evidence:
 ### CFG-2 — Level-scoped get — `--level project` reads only project file
 
 **Given** `.gobbi/project/settings.json` has `notify.slack.enabled: true`
-And `.gobbi/sessions/{id}/settings.json` has `notify.slack.enabled: false`
+And `.gobbi/projects/<name>/sessions/{id}/settings.json` has `notify.slack.enabled: false`
 **When** `gobbi config get notify.slack.enabled --level project` runs
 **Then** output is `true` and exit code is `0`
 And the session level value is NOT used
@@ -83,7 +83,7 @@ Evidence:
 
 **Given** `$CLAUDE_SESSION_ID=abc` is set in env
 **When** `gobbi config set git.workflow.mode worktree-pr` runs (no `--level`)
-**Then** `.gobbi/sessions/abc/settings.json` exists with `git.workflow.mode: 'worktree-pr'`
+**Then** `.gobbi/projects/<name>/sessions/abc/settings.json` exists with `git.workflow.mode: 'worktree-pr'`
 And exit code is `0`
 
 State trace:
@@ -155,7 +155,7 @@ Evidence:
 ### CFG-9 — Arrays replace — narrower level array supersedes wider
 
 **Given** `.gobbi/settings.json` has `notify.slack.events: ['workflow.start', 'workflow.complete']`
-And `.gobbi/sessions/{id}/settings.json` has `notify.slack.events: ['error']`
+And `.gobbi/projects/<name>/sessions/{id}/settings.json` has `notify.slack.events: ['error']`
 **When** `resolveSettings({ repoRoot, sessionId: <id> })` runs
 **Then** resolved `notify.slack.events` is `['error']` — not `['workflow.start', 'workflow.complete', 'error']`
 
@@ -205,7 +205,7 @@ Evidence:
 
 ### CFG-12 — `notify.events` inverted semantic — absent fires all, `[]` fires none
 
-**Given** `.gobbi/sessions/{id}/settings.json` has `notify.slack: { enabled: true }` (no `events` key)
+**Given** `.gobbi/projects/<name>/sessions/{id}/settings.json` has `notify.slack: { enabled: true }` (no `events` key)
 **When** `resolveSettings` runs and notify dispatch checks Slack
 **Then** Slack fires on ALL gobbi workflow events (absent `events` = all)
 And if the session instead has `notify.slack: { enabled: true, events: [] }`, Slack fires on NO events
@@ -271,7 +271,7 @@ And `workflow.planning.evaluate.mode: 'ask'`
 And `workflow.execution.evaluate.mode: 'skip'`
 **When** `resolveEvalDecision(cascade, 'ideation')` is called
 **Then** result is `{ enabled: true, source: 'always' }`
-And `resolveEvalDecision(cascade, 'plan', { userAnswer: true })` is `{ enabled: true, source: 'ask' }`
+And `resolveEvalDecision(cascade, 'planning', { userAnswer: true })` is `{ enabled: true, source: 'ask' }`
 And `resolveEvalDecision(cascade, 'execution')` is `{ enabled: false, source: 'skip' }`
 And an EVAL_DECIDE event with `{ ideation: true, plan: true, execution: false }` advances the state machine
 

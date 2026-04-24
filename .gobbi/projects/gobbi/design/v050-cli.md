@@ -54,7 +54,7 @@ The CLI expands from its current eight-command surface to add a `workflow` subco
 
 ### New: `gobbi workflow` commands
 
-**`gobbi workflow init`** — Creates the session directory under `.gobbi/sessions/{session-id}/`, writes `metadata.json`, initializes `gobbi.db` with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
+**`gobbi workflow init`** — Creates the session directory under `.gobbi/projects/<name>/sessions/{session-id}/`, writes `metadata.json`, initializes `gobbi.db` with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
 During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers are stored immediately as a `workflow.eval.decide` event in `gobbi.db`, populating `evalConfig` in `state.json`. The compiled prompt generated for the first step includes the eval decision in its session section.
 
@@ -77,7 +77,7 @@ The orchestrator calls this command via Bash, instructed by the step spec. Each 
 
 **`gobbi workflow capture-subagent`** — Invoked by the SubagentStop hook. Reads the hook stdin payload, extracts the subagent's transcript from `agent_transcript_path`, writes an artifact to the current step directory, and appends a `delegation.complete` event linked to the originating `delegation.spawn` event via `parent_seq`. This replaces manual `gobbi note collect`.
 
-**`gobbi workflow capture-plan`** — Invoked by the PostToolUse hook on ExitPlanMode. Reads the plan content from the hook stdin payload, writes a plan artifact to `.gobbi/sessions/{id}/plan/`, and appends an `artifact.write` event. Capture is automatic — the orchestrator does not need to explicitly save the plan.
+**`gobbi workflow capture-planning`** — Invoked by the PostToolUse hook on ExitPlanMode. Reads the plan content from the hook stdin payload, writes a plan artifact to `.gobbi/projects/<name>/sessions/{id}/planning/`, and appends an `artifact.write` event. Capture is automatic — the orchestrator does not need to explicitly save the plan.
 
 **`gobbi workflow stop`** — Invoked by the Stop hook. Handles three responsibilities: heartbeat writing, timeout detection, and state flush for pending changes. Respects `stop_hook_active` — exits immediately if true to prevent reentrance loops. Cross-reference `v050-hooks.md` for the full Stop hook behavior.
 
@@ -97,9 +97,23 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 **`gobbi gotcha promote`** — Moves gotchas from `.gobbi/project/gotchas/` to the permanent store in `.claude/skills/_gotcha/`. Runs outside active sessions only — checks that no session is active before proceeding. The promotion turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session.
 
+### New: installation and project management commands
+
+**`gobbi install`** — Installs or upgrades the gobbi skill/agent/rules bundle into the active project's `.gobbi/projects/<name>/` directory. On first install, seeds the three-tier content directories; with `--upgrade`, performs a three-way merge against the previous installed version. The active project is set by `gobbi project switch`.
+
+**`gobbi project list`** — Lists all projects registered under `.gobbi/projects/`.
+
+**`gobbi project create <name>`** — Creates a new project directory under `.gobbi/projects/<name>/` and seeds it from the gobbi templates.
+
+**`gobbi project switch <name>`** — Switches the active project context. Subsequent workflow and config commands target the named project's sessions and settings.
+
+### New: `gobbi maintenance` commands
+
+**`gobbi maintenance wipe-legacy-sessions`** — Removes stale session directories under the pre-multi-project `.gobbi/sessions/` layout. Safe to run after migration to the multi-project layout; sessions under `.gobbi/projects/<name>/sessions/` are never touched.
+
 ### Existing commands (unchanged)
 
-**`gobbi session list`** — Lists sessions with their IDs, creation timestamps, and current steps. Session source moves from v0.4.x session files to `.gobbi/sessions/`.
+**`gobbi session list`** — Lists sessions with their IDs, creation timestamps, and current steps. Sessions are stored under `.gobbi/projects/<name>/sessions/` in the multi-project layout.
 
 **`gobbi config`** — Settings cascade management. Two verbs: `get <key> [--level ...] [--session-id ...]` reads from cascade or a specific level; `set <key> <value> [--level ...] [--session-id ...]` writes to a target level. All three levels use a unified `settings.json` schema — see `gobbi-config/README.md`.
 

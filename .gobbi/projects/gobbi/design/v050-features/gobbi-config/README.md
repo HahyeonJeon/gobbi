@@ -16,7 +16,7 @@ Gobbi resolves every setting by composing three `settings.json` files — worksp
 |---|---|---|---|
 | workspace | `.gobbi/settings.json` | gitignored | `ensureSettingsCascade` seed on first run; manual edit |
 | project | `.gobbi/project/settings.json` | tracked | `ensureSettingsCascade` seed; manual edit |
-| session | `.gobbi/sessions/{id}/settings.json` | gitignored (inherits `.gobbi/sessions/`) | `/gobbi` setup FIFTH step; `gobbi config set` |
+| session | `.gobbi/projects/<name>/sessions/{id}/settings.json` | gitignored (inherits `.gobbi/projects/<name>/sessions/`) | `/gobbi` setup FIFTH step; `gobbi config set` |
 
 Session-id resolution: `$CLAUDE_SESSION_ID` env is the CLI-level primary; `--session-id` flag is the fallback. The `/gobbi` skill discovers the real session id per the `session-id-discovery` gotcha (primary env is `$CODEX_COMPANION_SESSION_ID` at the skill level) and passes `--session-id` explicitly when the env is not populated.
 
