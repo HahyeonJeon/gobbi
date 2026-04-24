@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, existsSync, copyFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, existsSync, copyFileSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -14,6 +14,7 @@ import {
   rowToEvent,
   deriveState,
   resolveState,
+  normaliseToLatestSchema,
 } from '../state.js';
 import type { WorkflowState, ReduceFn } from '../state.js';
 import { EventStore } from '../store.js';
@@ -536,5 +537,337 @@ describe('appendEventAndUpdateState crash-safety', () => {
 
     // SQLite transaction should have rolled back — no events persisted
     expect(store.eventCount()).toBe(0);
+  });
+});
+
+// ===========================================================================
+// normaliseToLatestSchema — Wave 4 backward-compat translation
+// ===========================================================================
+
+describe('normaliseToLatestSchema', () => {
+  it('translates currentStep: "plan" → "planning"', () => {
+    const input = { currentStep: 'plan' };
+    const result = normaliseToLatestSchema(input);
+    expect(result).toEqual({ currentStep: 'planning' });
+  });
+
+  it('translates currentStep: "plan_eval" → "planning_eval"', () => {
+    const input = { currentStep: 'plan_eval' };
+    const result = normaliseToLatestSchema(input);
+    expect(result).toEqual({ currentStep: 'planning_eval' });
+  });
+
+  it('translates completedSteps entries ["ideation", "plan"] → ["ideation", "planning"]', () => {
+    const input = { completedSteps: ['ideation', 'plan'] };
+    const result = normaliseToLatestSchema(input);
+    expect(result).toEqual({ completedSteps: ['ideation', 'planning'] });
+  });
+
+  it('translates completedSteps mixed old/new shapes', () => {
+    const input = { completedSteps: ['ideation', 'plan', 'planning', 'plan_eval'] };
+    const result = normaliseToLatestSchema(input) as { completedSteps: string[] };
+    expect(result.completedSteps).toEqual([
+      'ideation',
+      'planning',
+      'planning',
+      'planning_eval',
+    ]);
+  });
+
+  it('moves evalConfig.plan → evalConfig.planning', () => {
+    const input = { evalConfig: { ideation: false, plan: false } };
+    const result = normaliseToLatestSchema(input) as {
+      evalConfig: Record<string, unknown>;
+    };
+    expect(result.evalConfig).toEqual({ ideation: false, planning: false });
+    expect('plan' in result.evalConfig).toBe(false);
+  });
+
+  it('moves evalConfig.plan when value is true', () => {
+    const input = { evalConfig: { ideation: true, plan: true } };
+    const result = normaliseToLatestSchema(input) as {
+      evalConfig: Record<string, unknown>;
+    };
+    expect(result.evalConfig).toEqual({ ideation: true, planning: true });
+  });
+
+  it('preserves sibling evalConfig keys while renaming plan', () => {
+    const input = {
+      evalConfig: { ideation: false, plan: false, execution: true },
+    };
+    const result = normaliseToLatestSchema(input) as {
+      evalConfig: Record<string, unknown>;
+    };
+    expect(result.evalConfig).toEqual({
+      ideation: false,
+      planning: false,
+      execution: true,
+    });
+  });
+
+  it('is idempotent on already-new-shape input (no double translation)', () => {
+    const input = {
+      currentStep: 'planning',
+      completedSteps: ['ideation', 'planning'],
+      evalConfig: { ideation: false, planning: false },
+    };
+    const result = normaliseToLatestSchema(input);
+    expect(result).toEqual(input);
+  });
+
+  it('handles mixed-version state (some old literals, some new)', () => {
+    const input = {
+      currentStep: 'execution',
+      completedSteps: ['ideation', 'plan'],
+      evalConfig: { ideation: false, plan: false },
+    };
+    const result = normaliseToLatestSchema(input);
+    expect(result).toEqual({
+      currentStep: 'execution',
+      completedSteps: ['ideation', 'planning'],
+      evalConfig: { ideation: false, planning: false },
+    });
+  });
+
+  it('returns non-record input unchanged', () => {
+    expect(normaliseToLatestSchema(null)).toBeNull();
+    expect(normaliseToLatestSchema(42)).toBe(42);
+    expect(normaliseToLatestSchema('string')).toBe('string');
+    expect(normaliseToLatestSchema([1, 2, 3])).toEqual([1, 2, 3]);
+  });
+
+  it('does not touch unrelated fields', () => {
+    const input = {
+      sessionId: 'abc',
+      schemaVersion: 4,
+      artifacts: { plan: ['file.md'] }, // `plan` as artifact key is NOT renamed
+      feedbackRound: 2,
+    };
+    const result = normaliseToLatestSchema(input);
+    expect(result).toEqual(input);
+  });
+
+  it('prefers existing planning key over legacy plan when both present', () => {
+    // Defensive: if somehow both keys exist (only possible via hand-crafted
+    // bad data), the post-rename key wins — we drop the legacy key silently.
+    const input = {
+      evalConfig: { ideation: false, plan: true, planning: false },
+    };
+    const result = normaliseToLatestSchema(input) as {
+      evalConfig: Record<string, unknown>;
+    };
+    expect(result.evalConfig).toEqual({ ideation: false, planning: false });
+    expect('plan' in result.evalConfig).toBe(false);
+  });
+});
+
+// ===========================================================================
+// readState backward-compat — legacy on-disk `plan` literals survive W4
+// ===========================================================================
+
+describe('readState backward-compat (W4 step rename)', () => {
+  it('reads a legacy state.json with currentStep:"plan" + evalConfig.plan', () => {
+    const legacy = {
+      schemaVersion: 4,
+      sessionId: 'legacy-sess-1',
+      currentStep: 'plan',
+      currentSubstate: null,
+      completedSteps: ['ideation'],
+      evalConfig: { ideation: false, plan: false },
+      activeSubagents: [],
+      artifacts: {},
+      violations: [],
+      feedbackRound: 0,
+      maxFeedbackRounds: 3,
+      lastVerdictOutcome: null,
+      verificationResults: {},
+      stepStartedAt: null,
+    };
+    writeFileSync(join(testDir, 'state.json'), JSON.stringify(legacy), 'utf8');
+
+    const resolved = readState(testDir);
+    expect(resolved).not.toBeNull();
+    if (resolved === null) throw new Error('unreachable');
+    expect(resolved.currentStep).toBe('planning');
+    expect(resolved.evalConfig).toEqual({ ideation: false, planning: false });
+  });
+
+  it('reads a state.json with completedSteps containing "plan"', () => {
+    const legacy = {
+      schemaVersion: 4,
+      sessionId: 'legacy-sess-2',
+      currentStep: 'execution',
+      currentSubstate: null,
+      completedSteps: ['ideation', 'plan'],
+      evalConfig: { ideation: false, plan: false },
+      activeSubagents: [],
+      artifacts: {},
+      violations: [],
+      feedbackRound: 0,
+      maxFeedbackRounds: 3,
+      lastVerdictOutcome: null,
+      verificationResults: {},
+      stepStartedAt: null,
+    };
+    writeFileSync(join(testDir, 'state.json'), JSON.stringify(legacy), 'utf8');
+
+    const resolved = readState(testDir);
+    expect(resolved).not.toBeNull();
+    if (resolved === null) throw new Error('unreachable');
+    expect(resolved.currentStep).toBe('execution');
+    expect(resolved.completedSteps).toEqual(['ideation', 'planning']);
+  });
+
+  it('does not rewrite state.json (Greg Young discipline)', () => {
+    const legacy = {
+      schemaVersion: 4,
+      sessionId: 'legacy-sess-3',
+      currentStep: 'plan',
+      currentSubstate: null,
+      completedSteps: ['ideation'],
+      evalConfig: { ideation: false, plan: false },
+      activeSubagents: [],
+      artifacts: {},
+      violations: [],
+      feedbackRound: 0,
+      maxFeedbackRounds: 3,
+      lastVerdictOutcome: null,
+      verificationResults: {},
+      stepStartedAt: null,
+    };
+    const filePath = join(testDir, 'state.json');
+    const raw = JSON.stringify(legacy);
+    writeFileSync(filePath, raw, 'utf8');
+
+    readState(testDir);
+
+    // File unchanged — translation is in-memory-only.
+    const after = readFileSync(filePath, 'utf8');
+    expect(after).toBe(raw);
+  });
+});
+
+// ===========================================================================
+// deriveState backward-compat — legacy `step:"plan"` events replay cleanly
+// ===========================================================================
+
+describe('deriveState backward-compat (W4 step rename)', () => {
+  it('replays mixed old/new STEP_EXIT events producing post-rename completedSteps', () => {
+    // Seed an event stream that mixes legacy `step: "plan"` with post-W4
+    // `step: "planning"`. The normaliser inside rowToEvent translates at
+    // read time so the reducer sees a coherent `planning` literal stream.
+    const events: Event[] = [];
+
+    // Use appendEventAndUpdateState through a store to exercise the full
+    // read path rather than constructing EventRow literals by hand.
+    const store = new EventStore(':memory:');
+    try {
+      const ideationExit: AppendInput = {
+        ts: '2026-04-01T00:00:00.000Z',
+        type: WORKFLOW_EVENTS.STEP_EXIT,
+        step: 'ideation',
+        data: JSON.stringify({ step: 'ideation' }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-exit-ideation',
+        sessionId: 'sess-mix',
+      };
+      // Legacy-shape payload — step: 'plan'.
+      const legacyPlanExit: AppendInput = {
+        ts: '2026-04-01T00:00:01.000Z',
+        type: WORKFLOW_EVENTS.STEP_EXIT,
+        step: 'plan',
+        data: JSON.stringify({ step: 'plan' }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-exit-plan',
+        sessionId: 'sess-mix',
+      };
+      store.append(ideationExit);
+      store.append(legacyPlanExit);
+      const rows = store.replayAll();
+
+      // Drive deriveState through the fresh initial state (emulating cold-path
+      // replay after readState returned null on an old file).
+      // We need to craft a start event first so the reducer is happy.
+      // Actually: with currentStep:'idle', STEP_EXIT requires currentStep to
+      // match `step`. The first exit carries step:'ideation' but initialState
+      // is 'idle', so we need to seed a workflow.start event.
+      const startInput: AppendInput = {
+        ts: '2026-03-31T23:59:59.000Z',
+        type: WORKFLOW_EVENTS.START,
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-mix',
+          timestamp: '2026-03-31T23:59:59.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-start',
+        sessionId: 'sess-mix',
+      };
+      const startRow = store.append(startInput);
+      expect(startRow).not.toBeNull();
+
+      const replayed = store.replayAll();
+      // Reorder: we want start → ideation-exit → plan-exit.
+      // SQLite seq is already ASC, so start is seq 1 only if it was inserted
+      // first. We inserted ideation/plan before start; re-query in order.
+      void replayed;
+      void events;
+    } finally {
+      store.close();
+    }
+
+    // Easier: construct EventRows directly to drive deriveState and assert.
+    const row0: import('../migrations.js').EventRow = {
+      seq: 1,
+      ts: '2026-03-31T23:59:59.000Z',
+      schema_version: 5,
+      type: 'workflow.start',
+      step: null,
+      data: JSON.stringify({
+        sessionId: 'sess-mix',
+        timestamp: '2026-03-31T23:59:59.000Z',
+      }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotency_key: 'k-start',
+      session_id: 'sess-mix',
+      project_id: null,
+    };
+    const row1: import('../migrations.js').EventRow = {
+      seq: 2,
+      ts: '2026-04-01T00:00:00.000Z',
+      schema_version: 5,
+      type: 'workflow.step.exit',
+      step: 'ideation',
+      data: JSON.stringify({ step: 'ideation' }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotency_key: 'k-exit-ideation',
+      session_id: 'sess-mix',
+      project_id: null,
+    };
+    const row2: import('../migrations.js').EventRow = {
+      seq: 3,
+      ts: '2026-04-01T00:00:01.000Z',
+      schema_version: 5,
+      type: 'workflow.step.exit',
+      step: 'plan',
+      // Legacy event payload carries step:'plan' — rowToEvent must translate.
+      data: JSON.stringify({ step: 'plan' }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotency_key: 'k-exit-plan',
+      session_id: 'sess-mix',
+      project_id: null,
+    };
+    const state = deriveState('sess-mix', [row0, row1, row2], reduce);
+    expect(state.currentStep).toBe('execution');
+    expect(state.completedSteps).toEqual(['ideation', 'planning']);
   });
 });
