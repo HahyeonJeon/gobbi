@@ -308,6 +308,7 @@ describe("CFG-2: gobbi config set writes + round-trips through AJV", () => {
     const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
     expect(onDisk).toEqual({
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       workflow: { planning: { discuss: { mode: 'user' } } },
     });
 
@@ -414,6 +415,7 @@ describe("CFG-5: cascade order — narrower level wins", () => {
     // Workspace: mode=user, mode at execution.discuss
     writeJson(join(repo, '.gobbi', 'settings.json'), {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       workflow: {
         execution: { discuss: { mode: 'user' } },
       },
@@ -421,6 +423,7 @@ describe("CFG-5: cascade order — narrower level wins", () => {
     // Project: overrides same key to skip
     writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       workflow: {
         execution: { discuss: { mode: 'skip' } },
       },
@@ -430,6 +433,7 @@ describe("CFG-5: cascade order — narrower level wins", () => {
       join(repo, '.gobbi', 'sessions', 'sess-5', 'settings.json'),
       {
         schemaVersion: 1,
+        projects: { active: null, known: [] },
         workflow: {
           execution: { discuss: { mode: 'agent' } },
         },
@@ -454,12 +458,14 @@ describe("CFG-6: arrays replace on overlay", () => {
     const repo = makeScratchRepo();
     writeJson(join(repo, '.gobbi', 'settings.json'), {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       notify: {
         slack: { events: ['workflow.start', 'workflow.complete', 'error'] },
       },
     });
     writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       notify: {
         slack: { events: ['step.start'] },
       },
@@ -480,10 +486,12 @@ describe("CFG-7: null is an explicit leaf, overrides wider non-null value", () =
     const repo = makeScratchRepo();
     writeJson(join(repo, '.gobbi', 'settings.json'), {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       git: { workflow: { mode: 'direct-commit', baseBranch: 'main' } },
     });
     writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       git: { workflow: { baseBranch: null } },
     });
 
@@ -504,6 +512,7 @@ describe("CFG-8: absent keys delegate through the cascade to DEFAULTS", () => {
     const repo = makeScratchRepo();
     writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       git: { workflow: { mode: 'worktree-pr', baseBranch: 'develop' } },
     });
 
@@ -585,9 +594,13 @@ describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already e
     const repo = makeScratchRepo();
     mkdirSync(join(repo, '.gobbi', 'project'), { recursive: true });
 
-    // Pre-existing new-shape doc at the target path.
+    // Pre-existing new-shape doc at the target path. `projects` is a
+    // required field after the gobbi-memory Pass 2 schema extension;
+    // the fresh-install {active:null, known:[]} pair keeps the fixture
+    // shape minimal.
     const preExisting: Settings = {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       workflow: { ideation: { evaluate: { mode: 'skip' } } },
     };
     writeJson(join(repo, '.gobbi', 'project', 'settings.json'), preExisting);
@@ -758,6 +771,7 @@ describe("CFG-14: cross-field — worktree-pr requires a non-null baseBranch", (
     const repo = makeScratchRepo();
     writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       git: { workflow: { mode: 'worktree-pr', baseBranch: null } },
     });
 

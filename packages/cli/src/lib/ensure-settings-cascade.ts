@@ -11,9 +11,11 @@
  *      `.gobbi/project/settings.json` does not → read v1, upgrade to the new
  *      shape, validate, atomic-write at the v2 path. The legacy file stays
  *      in place (orchestrator / user decides when to delete it).
- *   4. If `.gobbi/settings.json` does not exist → seed workspace with a
- *      minimal `{schemaVersion: 1}`. Full defaults apply at resolve time;
- *      keeping the user file sparse respects the solo-user trust model.
+ *   4. If `.gobbi/settings.json` does not exist → seed workspace with
+ *      `{schemaVersion: 1, projects: {active: null, known: []}}`. The
+ *      `projects` block is required by the unified schema (additive from
+ *      gobbi-memory Pass 2); other defaults apply at resolve time. Keeping
+ *      the user file otherwise sparse respects the solo-user trust model.
  *   5. Ensure `.gobbi/.gitignore` lists `settings.json` and `sessions/`
  *      (append if missing; do not duplicate).
  *
@@ -137,8 +139,12 @@ function upgradeLegacyToSettings(legacy: unknown): Settings {
 
   // Build the upgraded Settings. Only include keys we explicitly populated
   // so AJV's additionalProperties: false never fires on phantom branches.
+  // `projects` is required at the unified Settings level; fresh-install
+  // defaults apply (the upgrader does not know about multi-project —
+  // bootstrap happens later via `gobbi workflow init`).
   const upgraded: Settings = {
     schemaVersion: 1,
+    projects: { active: null, known: [] },
     ...(workflow !== undefined ? { workflow } : {}),
     ...(git !== undefined ? { git } : {}),
   };
@@ -252,10 +258,16 @@ export async function ensureSettingsCascade(repoRoot: string): Promise<void> {
   }
 
   // Step 4 — seed workspace settings.json if absent. Keep sparse — full
-  // DEFAULTS apply at resolve time.
+  // DEFAULTS apply at resolve time. `projects` is required by the unified
+  // schema; seed with the fresh-install shape. A later wave's
+  // `gobbi workflow init` bootstrap flow replaces these fresh-install
+  // values with the real project name.
   const workspacePath = workspaceSettingsFile(repoRoot);
   if (!existsSync(workspacePath)) {
-    const seed: Settings = { schemaVersion: 1 };
+    const seed: Settings = {
+      schemaVersion: 1,
+      projects: { active: null, known: [] },
+    };
     writeSettingsAtLevel(repoRoot, 'workspace', seed);
     process.stderr.write('[ensure-settings-cascade] seeded .gobbi/settings.json\n');
   }

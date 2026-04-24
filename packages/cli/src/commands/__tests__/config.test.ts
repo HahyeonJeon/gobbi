@@ -470,6 +470,7 @@ describe('runConfig set argument validation', () => {
     const parsed = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
     expect(parsed).toEqual({
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       workflow: {
         ideation: {
           discuss: {

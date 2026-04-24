@@ -365,11 +365,17 @@ async function runSet(args: string[]): Promise<void> {
 
   const repoRoot = getRepoRoot();
 
-  // Load the current level file (or seed `{schemaVersion: 1}` when absent).
+  // Load the current level file (or seed the minimum valid shape when
+  // absent). The seed must include `projects` because AJV rejects an
+  // absent block at write time; the `{active: null, known: []}` pair is
+  // the fresh-install default per `Settings.projects` semantics.
   let current: Settings;
   try {
     const loaded = loadSettingsAtLevel(repoRoot, level, sessionId);
-    current = loaded ?? ({ schemaVersion: 1 } satisfies Settings);
+    current = loaded ?? ({
+      schemaVersion: 1,
+      projects: { active: null, known: [] },
+    } satisfies Settings);
   } catch (err) {
     emitCascadeError('set', err);
   }

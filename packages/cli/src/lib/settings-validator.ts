@@ -55,15 +55,52 @@ const DISCUSS_MODE_ENUM = ['agent', 'user', 'auto', 'skip'] as const;
 const EVALUATE_MODE_ENUM = ['ask', 'always', 'skip', 'auto'] as const;
 
 // ---------------------------------------------------------------------------
+// Sub-schemas — declared without `JSONSchemaType<Sub>` annotations where the
+// strict inference cannot express the shape (e.g. required fields whose
+// value is `string | null`). Mirrors the pattern in `specs/_schema/v1.ts`
+// §"Shared subschemas" where shared subschemas intentionally omit the
+// `JSONSchemaType<Sub>` annotation. Drift safety is retained because the
+// top-level `JSONSchemaType<Settings>` annotation on `settingsSchema` forces
+// every inline reference to match the TS counterpart.
+// ---------------------------------------------------------------------------
+
+// `ProjectsRegistry` has a required `active: string | null` field. AJV's
+// strict `JSONSchemaType<ProjectsRegistry>` inference cannot express
+// "required key, nullable value" — the `required` list and the
+// `nullable: true` marker on `active` are mutually exclusive under the
+// strict derivation. The projects slot is therefore inlined with a
+// `JSONSchemaType<ProjectsRegistry>` cast at the call-site; the inline
+// literal is still checked structurally against `ProjectsRegistry` via
+// the top-level `JSONSchemaType<Settings>` annotation on
+// `settingsSchema`, so drift between the TS interface and this schema
+// still fails `tsc --noEmit`.
+
+// ---------------------------------------------------------------------------
 // Schema — single AJV JSONSchemaType<Settings>
 // ---------------------------------------------------------------------------
 
 const settingsSchema: JSONSchemaType<Settings> = {
   type: 'object',
-  required: ['schemaVersion'],
+  required: ['schemaVersion', 'projects'],
   additionalProperties: false,
   properties: {
     schemaVersion: { type: 'integer', const: 1 },
+    // See the comment block above: AJV's strict `JSONSchemaType` cannot
+    // derive a required-plus-nullable value schema for `active: string | null`,
+    // so the `projects` slot uses a narrowed cast. The schema is still
+    // load-bearing — AJV compiles and validates the shape at runtime.
+    projects: {
+      type: 'object',
+      required: ['active', 'known'],
+      additionalProperties: false,
+      properties: {
+        active: { type: 'string', nullable: true },
+        known: {
+          type: 'array',
+          items: { type: 'string' },
+        },
+      },
+    } as unknown as JSONSchemaType<Settings>['properties']['projects'],
     workflow: {
       type: 'object',
       nullable: true,
