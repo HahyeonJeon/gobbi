@@ -18,3 +18,9 @@ node_modules/
 dist/
 packages/*/dist/
 packages/*/node_modules/
+
+# Template-bundle mirror (built by `packages/cli/scripts/sync-template-bundle.ts`
+# as the `prepack` hook). Source of truth lives at the workspace-root
+# `.gobbi/projects/gobbi/{skills,agents,rules}/`; this copy only exists
+# so `npm pack` can ship it inside the tarball.
+packages/cli/.gobbi/
