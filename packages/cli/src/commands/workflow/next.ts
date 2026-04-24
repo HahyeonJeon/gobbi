@@ -50,7 +50,6 @@ import { resolveWorkflowState } from '../../workflow/engine.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
 import type { WorkflowState } from '../../workflow/state.js';
 import { EventStore } from '../../workflow/store.js';
-import { runVerification } from '../../workflow/verification-runner.js';
 import { resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
@@ -195,17 +194,15 @@ export async function runNextWithOptions(
  *   - Anything else → resolve the step's spec, apply the substate overlay
  *     when present, compile, and return `CompiledPrompt.text`.
  *
- * Post-compile, the verification runner (E.3) fires against
- * `state.activeSubagents`, writes `verification.result` events through
- * {@link appendEventAndUpdateState}, and advances `state.verificationResults`
- * for the E.8 verification-block consumer on the NEXT `next` invocation.
- * The compiled prompt returned from THIS call reflects the state captured
- * at compile time — verification feeds the following round-trip.
+ * Post-compile, if any active subagent has `verification.result` entries on
+ * `state.verificationResults` (emitted out-of-band by hooks outside this
+ * command), {@link compileVerificationBlock} appends per-subagent blocks
+ * via SECTION_SEPARATOR parity with `specs/assembly.ts::compile`.
  *
  * Exported so tests can drive the compile pipeline from constructed
  * fixtures without rebuilding the CLI surface. `sessionDir` + `sessionId`
- * are required because the verification runner writes events scoped to
- * the session.
+ * remain on the signature because future wiring (e.g. post-compile
+ * emitters) may scope events to the session.
  */
 export async function compileCurrentStep(
   state: WorkflowState,
@@ -263,32 +260,17 @@ export async function compileCurrentStep(
 
   const prompt = compile(input);
 
-  // Post-compile verification runner (E.3 ZONE). Runs the project's
-  // `runAfterSubagentStop` commands for each active subagent and writes
-  // `verification.result` events via `appendEventAndUpdateState`. The
-  // emissions advance `state.verificationResults`, which the NEXT `next`
-  // invocation's compile pass will fold into its prompt via E.8's
-  // verification-block dynamic section.
+  // Verification-block rendering (E.8). Emits one block per active subagent
+  // whose `verification.result` entries landed in `state.verificationResults`
+  // via an out-of-band emitter (e.g. a post-SubagentStop hook). Blocks
+  // concatenate onto the main compiled prompt via SECTION_SEPARATOR parity
+  // with `specs/assembly.ts::compile` (double newline). Subagents with no
+  // verification output emit no block.
   //
-  // Verification runs with no caller abort signal here — `next` is not
-  // cancellable at the CLI surface. A future wrapper that ties SIGINT to
-  // cancellation would thread its controller.signal through this call.
-  await runVerification(sessionDir, store, state, sessionId);
-
-  // E.8: refresh state after runVerification emits events, then compile
-  // the verification-block dynamic section per active subagent (if any).
-  // `resolveWorkflowState` is synchronous — rebind directly. This rebind
-  // upgrades the Wave 3a placeholder that discarded the refreshed state
-  // via `void`; the compiler below now reads post-verification state.
-  state = resolveWorkflowState(sessionDir, store, sessionId);
-
-  // One verification-block per active subagent whose `verification.result`
-  // entries landed in `state.verificationResults`. Blocks concatenate onto
-  // the main compiled prompt's text via SECTION_SEPARATOR parity with
-  // `specs/assembly.ts::compile` (double newline). Subagents with no
-  // verification output emit no block — the empty-case render is reserved
-  // for explicit "no outcomes" signalling when the caller passes a
-  // subagent id that genuinely ran but produced nothing.
+  // The in-process verification helper that previously wrote these events
+  // from within `next` was decommissioned in Pass 3 finalize — executors
+  // self-verify per `_delegation`'s Study → Plan → Execute → Verify
+  // lifecycle. Events from external emitters still render here.
   const verificationSections: string[] = [];
   for (const agent of state.activeSubagents) {
     if (!hasVerificationResultsFor(state, agent.subagentId)) continue;

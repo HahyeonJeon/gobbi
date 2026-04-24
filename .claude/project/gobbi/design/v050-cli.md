@@ -101,7 +101,7 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 **`gobbi session list`** — Lists sessions with their IDs, creation timestamps, and current steps. Session source moves from v0.4.x session files to `.gobbi/sessions/`.
 
-**`gobbi config`** — Session configuration management. Unchanged.
+**`gobbi config`** — Settings cascade management. Two verbs: `get <key> [--level ...] [--session-id ...]` reads from cascade or a specific level; `set <key> <value> [--level ...] [--session-id ...]` writes to a target level. All three levels use a unified `settings.json` schema — see `gobbi-config/README.md`.
 
 **`gobbi notify`** — Notification commands (Slack, Telegram, Desktop). Unchanged.
 
@@ -111,19 +111,15 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 ---
 
-## Verification Command Support
+## Verification
 
-> **Mechanical verification after subtask completion catches regressions before they compound across tasks.**
+> **Executor subagents self-verify. The CLI records the verification block for prompt compilation.**
 
-The CLI runs project-configurable verification commands after each subtask delegation completes. Verification commands — lint, test, typecheck, or any custom command — are specified in `.gobbi/` project configuration.
+Pass-3 finalization removed the configurable `verification.*` section from the settings schema and decommissioned `verification-runner.ts`. Executor subagents are responsible for their own verify phase per `_delegation`'s Study→Plan→Execute→Verify lifecycle — the post-subagent-stop runner was duplicative.
 
-When the SubagentStop capture hook finishes writing the delegation event, the CLI runs all configured verification commands against the codebase. Results are recorded as events in the event store: which commands ran, their exit codes, and a summary of output. This makes verification history available to all downstream compilation — prompt generation, crash recovery briefings, evaluation context, and status reporting.
+The `verification-block.ts` prompt compiler remains: it renders `verification.result` events already present in `state.verificationResults` into a compiled prompt block. The events are written by any code path that calls `appendEventAndUpdateState` with a `verification.result` event (currently the specs-layer tests and future wiring). The compiler is not spec-driven and is not called by `next.ts` unless verification result events are present.
 
-Verification does not block the SubagentStop capture. The delegation event is always written first — the subagent's output is never lost even if verification itself fails or times out. Verification runs after capture, as a separate phase.
-
-When verification fails, the CLI includes the failure context in the next compiled prompt. The orchestrator receives concrete error output and can decide whether to re-execute, adjust the approach, or flag for user attention. Verification failure does not automatically trigger re-execution — it provides information; the orchestrator decides the action.
-
-Cross-reference `v050-hooks.md` for how hooks trigger verification after SubagentStop events and `v050-prompts.md` for how verification blocks appear in step specs.
+Cross-reference `v050-prompts.md` for how verification blocks appear in step specs.
 
 ---
 

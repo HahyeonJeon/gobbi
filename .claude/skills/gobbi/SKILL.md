@@ -8,50 +8,107 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are an orchestrator based on gobbi. You must delegate everything to specialist subagents except trivial cases.
 
-In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the four setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/sessions/{session-id}/` and record the first `workflow.start` event. The 5-step cycle — Ideation, Plan, Execution, Evaluation, Memorization — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
+In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/sessions/{session-id}/` and record the first `workflow.start` event. The 5-step cycle — Ideation, Plan, Execution, Evaluation, Memorization — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
 
 **FIRST — load core skills before anything else.** Load `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`_orchestration` is deprecated in v0.5.0 and no longer loads — see `_orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
 
 **SECOND — ensure `_gobbi-rule` symlink exists.** Check whether `.claude/rules/_gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in the `_gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated.
 
+#### Discovering the real session ID
+
+`$CLAUDE_SESSION_ID` is **not** populated in the orchestrator's Bash-tool environment. You must discover the real session ID before any `gobbi config` or `gobbi workflow` call:
+
+1. **Primary:** check `$CODEX_COMPANION_SESSION_ID` — the Codex companion plugin exports the real Claude session ID into this env var. Run `env | grep CODEX_COMPANION_SESSION_ID` to test.
+2. **Fallback:** if `$CODEX_COMPANION_SESSION_ID` is empty, list `~/.claude/projects/{slug}/*.jsonl` and take the most recently modified file. The filename minus `.jsonl` is the session ID. The slug is derived from the project path (e.g., `-playinganalytics-git-gobbi` for `/playinganalytics/git/gobbi`).
+3. **Do NOT generate a `manual-*` fallback.** A fake session ID writes orphan entries under `.gobbi/sessions/manual-*/` that need manual cleanup.
+
+Once discovered, store the ID in a local variable (`DISCOVERED`). Pass it to every CLI call via inline env assignment or the explicit flag — the CLI is plugin-neutral and reads only `$CLAUDE_SESSION_ID` and `--session-id`:
+
+```
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config get workflow --level session
+```
+
+or equivalently:
+
+```
+gobbi config get workflow --level session --session-id $DISCOVERED
+```
+
+The CLI does NOT know about `$CODEX_COMPANION_SESSION_ID`. Discovery belongs here in the skill; the CLI only consumes the resolved ID. See `cli-vs-skill-session-id.md` in the project gotchas for the full boundary rationale.
+
 **THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
 
-**FOURTH — check for existing session settings.** Run `gobbi config get $CLAUDE_SESSION_ID` to check if this session already has saved settings in `gobbi.json`. If settings exist (e.g., after a resume or compact), present the saved settings to the user and ask whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`. If no settings exist for this session, continue to the setup questions.
+**FOURTH — check for existing session settings.** Run:
 
-**FIFTH — ask the user four setup questions** with AskUserQuestion (only if no existing settings were reused).
+```
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config get workflow --level session
+```
 
-**First question — trivial case range:**
-- **Read-only (no code changes)** — reading files, explaining code, running status commands, searching codebase. Any code change must be delegated.
-- **Simple code edits included** — the above, plus single-file obvious changes (fix a typo, rename a variable, toggle a config value). Anything beyond must be delegated.
+This reads `.gobbi/sessions/{id}/settings.json` at the session level without cascade fallthrough.
 
-**Second question — evaluation mode:**
-- **Ask each time (default)** — before each evaluation stage, the orchestrator asks whether to spawn evaluators. Lets you decide per-step based on task complexity.
+- **Exit 0** — session settings exist (this is a resume or compact). Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`.
+- **Exit 1** — no prior session settings. Proceed to the setup questions in FIFTH.
+- **Exit 2** — a parse or I/O error occurred. Surface the stderr diagnostic to the user before proceeding.
+
+**FIFTH — ask the user three setup questions** with AskUserQuestion (only if no existing settings were reused).
+
+**First question — evaluation mode:**
+
+How should gobbi handle evaluation stages by default this session? (A single answer applies to all three workflow steps — ideation, plan, execution.)
+
+- **Ask each time (default, Recommended)** — before each evaluation stage, the orchestrator asks whether to spawn evaluators. Lets you decide per-step based on task complexity.
 - **Always evaluate** — skip the evaluation question, always spawn evaluators at every stage. Maximum quality checking, no prompts to interrupt flow.
 - **Skip evaluation** — skip the evaluation question, never spawn evaluators unless you explicitly request one. Maximum speed for well-understood tasks.
+- **Let orchestrator decide** — the orchestrator decides per step based on context, without prompting. Corresponds to `'auto'` in config.
 
-**Third question — git workflow mode:**
+**Second question — git workflow mode:**
+
 - **Direct commit (default)** — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs. Use for solo sessions or quick tasks.
 - **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch (what branch to create feature branches from). When selected, the orchestrator verifies `_git` prerequisites (tool availability, authentication, repository state) before proceeding.
 
-**Fourth question — notification channels:**
-- Multi-select. If any channel is selected alongside Skip, channels take priority.
+**Third question — notification channels:**
+
+Multi-select. If any channel is selected alongside Skip, channels take priority.
+
 - **Slack** — Notify via Slack bot message.
 - **Telegram** — Notify via Telegram bot message.
 - **Discord** — Notify via Discord webhook.
+- **Desktop** — Notify via OS desktop notifications.
 - **Skip notifications** — No notifications this session.
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help the user configure them before proceeding.
 
-**After all four questions — persist session choices.** The orchestrator writes the user's selections to `gobbi.json` via `gobbi config` so that hooks and subagents can read them without conversation context. Persistence calls use `$CLAUDE_SESSION_ID` as the session key:
+**After all three questions — persist session choices.** Write the user's selections to `.gobbi/sessions/{id}/settings.json` via `gobbi config set`. All writes target `--level session` (the default); pass the discovered ID via inline env or `--session-id`. Session settings set defaults for this session only; either can be overridden at any specific step.
 
-- Q1 trivial range: `gobbi config set $CLAUDE_SESSION_ID trivialRange <value>`
-- Q2 evaluation mode: `gobbi config set $CLAUDE_SESSION_ID evaluationMode <value>`
-- Q3 git workflow: `gobbi config set $CLAUDE_SESSION_ID gitWorkflow <value>` — if worktree-pr, also set `baseBranch`
-- Q4 notifications: `gobbi config set $CLAUDE_SESSION_ID notify.slack true/false` and `notify.telegram true/false`
+Evaluation mode mapping — the same answer applies to all three steps:
 
-`gobbi.json` lives at `$CLAUDE_PROJECT_DIR/.claude/gobbi.json`, is gitignored (runtime-only, per-user), and is managed exclusively through `gobbi config`. Sessions are automatically cleaned up by TTL (7 days) and max-entries cap (10 sessions).
+- "Ask each time" writes `ask` for each step
+- "Always evaluate" writes `always` for each step
+- "Skip evaluation" writes `skip` for each step
+- "Let orchestrator decide" writes `auto` for each step
 
-These session choices set defaults for the orchestrator. Either default can be overridden at any specific step if you change your mind.
+```
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.ideation.evaluate.mode ask
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.planning.evaluate.mode ask
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.execution.evaluate.mode ask
+```
+
+Git workflow mode:
+
+```
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set git.workflow.mode worktree-pr
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set git.workflow.baseBranch phase/v050-phase-2
+```
+
+Notifications — for each selected channel, set `enabled true`. Do NOT touch `events` or `triggers` (those are advanced config users edit manually):
+
+```
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set notify.slack.enabled true
+```
+
+Discussion modes are NOT asked. Defaults apply: `workflow.ideation.discuss.mode` = `user`, `workflow.planning.discuss.mode` = `user`, `workflow.execution.discuss.mode` = `agent`. Users override these manually via `gobbi config set` if they want different behavior.
+
+Note: the settings field is named `planning` to match the loop name in `deterministic-orchestration.md` ("Planning Loop"); the workflow state-machine literal remains `'plan'` until a comprehensive rename Pass — `resolveEvalDecision` accepts both `'plan'` and `'planning'` for the `step` parameter.
 
 **SIXTH — project context detection.** This runs automatically at session start without asking. Load [project-setup.md](project-setup.md) to execute detection.
 

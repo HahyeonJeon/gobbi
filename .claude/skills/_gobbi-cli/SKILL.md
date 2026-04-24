@@ -37,19 +37,19 @@ Each intent map section cross-references the domain skill that owns the workflow
 
 ## Start a Workflow
 
-Commands for initializing a work session: creating note directories, loading configuration, setting up session environment, and checking documentation health before starting.
+Commands for initializing a work session: creating note directories, reading or writing configuration, and checking session environment.
 
 | Intent | Command |
 |---|---|
 | Create a note directory for a new task | `gobbi note init <project-name> <task-slug>` |
-| Read a session config value | `gobbi config get <session-id> [key]` |
-| Write a session config value | `gobbi config set <session-id> <key> <val>` |
-| Create or migrate config file | `gobbi config init` |
+| Read a cascade-resolved config value | `gobbi config get <key>` |
+| Read a config value from a specific level | `gobbi config get <key> --level workspace\|project\|session [--session-id <id>]` |
+| Write a config value (defaults to session level) | `gobbi config set <key> <value> [--level workspace\|project\|session] [--session-id <id>]` |
 | Output session metadata to stdout | `gobbi note metadata` |
 | Load session metadata into env | `gobbi session metadata` |
 | Load `.claude/.env` into session | `gobbi session load-env` |
 
-Cross-reference: `_orchestration`, `_note` for workflow setup context. `gobbi` skill for session setup questions.
+Cross-reference: `_orchestration`, `_note` for workflow setup context. `gobbi` skill for session setup questions. `gobbi-config/README.md` for the full three-level cascade.
 
 ---
 
@@ -123,6 +123,8 @@ No dedicated domain skill — run `gobbi <command> --help` for detailed options.
 - Not running `gobbi note collect` after a subagent completes -- directory existence is not collection, only the command parses the transcript and populates subtask files
 - Using `mkdir` to create note directories instead of `gobbi note init` -- manual creation misses `metadata.json`, session ID embedding, and the full subdirectory structure
 - Checking whether a directory exists as proof that collection happened -- the directory is created by `gobbi note init`, but the subtask files inside it are only created by `gobbi note collect`
+- Invoking stale config verbs (`gobbi config init`, `gobbi config delete`, `gobbi config list`, `gobbi config cleanup`, `gobbi config resolve`) -- these do not exist; only `get` and `set` are implemented
+- Passing session-id as a positional argument (old syntax was `gobbi config get <session-id> [key]`) -- session-id is now a flag: `--session-id <id>`
 
 ---
 

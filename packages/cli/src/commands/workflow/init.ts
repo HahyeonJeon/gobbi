@@ -35,7 +35,7 @@ import { randomUUID } from 'node:crypto';
 
 import { getRepoRoot } from '../../lib/repo.js';
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../../lib/guards.js';
-import { ensureProjectConfig } from '../../lib/project-config.js';
+import { ensureSettingsCascade } from '../../lib/ensure-settings-cascade.js';
 import { EventStore } from '../../workflow/store.js';
 import { appendEventAndUpdateState, resolveWorkflowState } from '../../workflow/engine.js';
 import { initialState } from '../../workflow/state.js';
@@ -158,12 +158,11 @@ export async function runInitWithOptions(
   const sessionDir = join(repoRoot, '.gobbi', 'sessions', sessionId);
   const metadataPath = join(sessionDir, 'metadata.json');
 
-  // Ensure the per-repo `.gobbi/project-config.json` + `.gobbi/.gitignore`
-  // exist. Idempotent: silent on already-exists, writes defaults on fresh
-  // repos. Runs before the session idempotency check so an init re-entry
-  // on a fresh repo still seeds the config files — matches PR E §E.5 L9
-  // ("skip-if-exists on second init").
-  ensureProjectConfig(repoRoot);
+  // Ensure the unified settings cascade is ready — deletes legacy config
+  // sources (.gobbi/config.db, .claude/gobbi.json), upgrades legacy T2-v1
+  // project-config.json → project/settings.json, seeds workspace defaults,
+  // and updates .gobbi/.gitignore. Idempotent; safe to call every init.
+  await ensureSettingsCascade(repoRoot);
 
   // Idempotent fast-path — if the metadata file already exists AND validates,
   // init is a silent no-op. An existing-but-malformed metadata.json is fatal

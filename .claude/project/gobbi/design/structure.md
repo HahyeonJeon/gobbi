@@ -14,7 +14,7 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 |:-----|:--------|
 | `CLAUDE.md` | Session entry point. Core principles and workflow definition. Loaded every session. |
 | `README.md` | Gobbi identity and principles. Shared across installations via the plugin system. |
-| `gobbi.json` | Gobbi configuration state. |
+| `gobbi.json` | Legacy gobbi configuration state — superseded by the three-level `settings.json` cascade in v0.5.0. Deleted by `ensureSettingsCascade` on first run; see `v050-features/gobbi-config/README.md` for the full cascade model. |
 
 ### Skills
 
@@ -57,9 +57,11 @@ Shell scripts in `.claude/hooks/` that execute in response to Claude Code events
 
 | File | Purpose |
 |:-----|:--------|
-| `settings.json` | Project-level Claude Code settings. Checked into git. |
-| `settings.local.json` | Local overrides. Not checked into git. |
+| `settings.json` | Claude Code project settings (not gobbi config). Checked into git. |
+| `settings.local.json` | Claude Code local overrides. Not checked into git. |
 | `.env` | Environment variables for hooks. Not checked into git. |
+
+Note: `.gobbi/settings.json` is the gobbi workspace-level preference file — separate from `.claude/settings.json` above. The three-level gobbi cascade is: workspace `.gobbi/settings.json` → project `.gobbi/project/settings.json` → session `.gobbi/sessions/{id}/settings.json`. See `v050-features/gobbi-config/README.md` for the full cascade model. Note: `.gobbi/config.db` no longer exists — it was the SQLite session store used in an earlier design and is deleted by `ensureSettingsCascade` on first run of v0.5.0.
 
 ### Project State
 

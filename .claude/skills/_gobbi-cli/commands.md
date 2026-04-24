@@ -29,18 +29,33 @@ Cross-reference: `_note` for note directory structure, subtask JSON format, and 
 
 ## config
 
-Manage per-session workflow configuration stored in `gobbi.json`. Sessions are identified by session ID and store workflow state such as base branch, notification preferences, and project name.
+Read and write gobbi settings across the three-level cascade: workspace (`.gobbi/settings.json`), project (`.gobbi/project/settings.json`), and session (`.gobbi/sessions/{id}/settings.json`). Two verbs only — `get` and `set`. Keys use dot-path notation (e.g. `git.workflow.mode`, `notify.slack.enabled`).
 
 | Command | Synopsis | Description |
 |---|---|---|
-| `gobbi config init` | `gobbi config init` | Create `gobbi.json` or migrate existing file to current schema version |
-| `gobbi config get` | `gobbi config get <session-id> [key]` | Read entire session object or a specific field using dot-path notation |
-| `gobbi config set` | `gobbi config set <session-id> <key> <val>` | Write a field using dot-path notation |
-| `gobbi config delete` | `gobbi config delete <session-id>` | Remove a session entry |
-| `gobbi config list` | `gobbi config list` | List all sessions as tab-separated `id\tcreatedAt` pairs |
-| `gobbi config cleanup` | `gobbi config cleanup` | Run TTL and max-entries cleanup to remove stale sessions |
+| `gobbi config get` | `gobbi config get <key> [--level workspace\|project\|session] [--session-id <id>]` | Read a config value. Without `--level`, returns the cascade-resolved value (session overrides project overrides workspace). With `--level`, reads only that level's file — exits 1 if key absent at that level. |
+| `gobbi config set` | `gobbi config set <key> <value> [--level workspace\|project\|session] [--session-id <id>]` | Write a config value. Without `--level`, defaults to session. Deep-path writes create intermediate objects as needed and validate against the AJV schema before writing. |
 
-Cross-reference: `gobbi` skill for session setup questions and configuration keys.
+### config options
+
+| Option | Values | Description |
+|---|---|---|
+| `--level` | `workspace`, `project`, `session` | Target a specific level for reads or writes. Omit to use cascade-resolved (get) or session (set). |
+| `--session-id` | string | Override the session id. CLI falls back to `$CLAUDE_SESSION_ID` env when absent. The `/gobbi` orchestrator supplies this via flag; the CLI is plugin-neutral. |
+
+### config exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Success — `get`: value found, JSON on stdout; `set`: written |
+| `1` | `get` only — key absent at the selected level; silent stdout |
+| `2` | Parse, validation, I/O, or invalid-argument error; diagnostic on stderr |
+
+### config value coercion
+
+`set` coerces the string argument: `"true"` / `"false"` → boolean; `"null"` → null; leading `[` or `{` → `JSON.parse`; integer / decimal string → number; anything else passes through as string.
+
+Cross-reference: `gobbi` skill for session setup questions. `v050-features/gobbi-config/README.md` for cascade semantics, schema shape, and migration details.
 
 ---
 
