@@ -10,6 +10,17 @@
  *      contract: even if a path's content matches a future secret regex,
  *      `isAllowlistedPath` is the gate the PR F hook will consult before
  *      emitting `guard.warn`. No real tokens; placeholders match shape only.
+ *
+ * ## Multi-project layout (Pass-2 W2.1)
+ *
+ * The allowlist was migrated from the old singular layout
+ * (`.gobbi/sessions/`, `.gobbi/project/…`, `.gobbi/worktrees/`) to the
+ * multi-project layout (`.gobbi/projects/<name>/…`). The runtime does a
+ * literal string-prefix match — it does NOT glob-expand the `*` segment.
+ * Project-name resolution lands with `projects.active` in W2.3; until then
+ * the entries contain a literal `*` and admit only paths whose literal
+ * prefix matches. These tests therefore use a literal `*` in the admit
+ * strings — that is intentional and matches the runtime shape.
  */
 
 import { describe, expect, test } from 'bun:test';
@@ -24,12 +35,12 @@ import {
 // ---------------------------------------------------------------------------
 
 describe('SECRET_PATTERN_ALLOWLIST', () => {
-  test('contains the four C.12 subtree entries', () => {
+  test('contains the four C.12 subtree entries under the multi-project layout', () => {
     expect(SECRET_PATTERN_ALLOWLIST).toEqual([
-      '.gobbi/project/gotchas/**',
-      '.gobbi/project/notes/**',
-      '.gobbi/sessions/**',
-      '.gobbi/worktrees/**',
+      '.gobbi/projects/*/learnings/**',
+      '.gobbi/projects/*/notes/**',
+      '.gobbi/projects/*/sessions/**',
+      '.gobbi/projects/*/worktrees/**',
     ]);
   });
 
@@ -45,10 +56,10 @@ describe('SECRET_PATTERN_ALLOWLIST', () => {
 
 describe('isAllowlistedPath — admit', () => {
   test.each([
-    '.gobbi/sessions/foo/state.json',
-    '.gobbi/worktrees/feat-x/node_modules/something',
-    '.gobbi/project/gotchas/bar.md',
-    '.gobbi/project/notes/plan.md',
+    '.gobbi/projects/*/sessions/foo/state.json',
+    '.gobbi/projects/*/worktrees/feat-x/node_modules/something',
+    '.gobbi/projects/*/learnings/gotchas/bar.md',
+    '.gobbi/projects/*/notes/plan.md',
   ])('admits %s', (path) => {
     expect(isAllowlistedPath(path)).toBe(true);
   });
@@ -64,6 +75,12 @@ describe('isAllowlistedPath — block', () => {
     '/home/me/.aws/credentials',
     'packages/cli/src/.env.local',
     '.gobbi/other-dir/foo',
+    // Old singular paths are no longer admitted after the W2.1 migration —
+    // the allowlist uses `.gobbi/projects/<name>/…` exclusively.
+    '.gobbi/sessions/foo/state.json',
+    '.gobbi/project/gotchas/bar.md',
+    '.gobbi/project/notes/plan.md',
+    '.gobbi/worktrees/feat-x/node_modules/something',
   ])('blocks %s', (path) => {
     expect(isAllowlistedPath(path)).toBe(false);
   });
@@ -83,7 +100,7 @@ describe('isAllowlistedPath — fake-secret content (PR F placeholder)', () => {
   test('AWS-like placeholder in allowlisted path is admitted', () => {
     // Even when content contains a regex-shaped secret, an allowlisted path
     // suppresses the warn — that is the whole point of C.12.
-    const path = '.gobbi/project/notes/has-fake-key.md';
+    const path = '.gobbi/projects/*/notes/has-fake-key.md';
     const _content = `example: ${FAKE_AWS}`;
     expect(isAllowlistedPath(path)).toBe(true);
   });

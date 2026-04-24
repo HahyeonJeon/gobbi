@@ -25,7 +25,7 @@
  * Adding either would require a real glob library and a corresponding
  * trust-model review (allowlist patterns are PreToolUse-fast-path data).
  *
- * @see `.claude/project/gobbi/design/v050-hooks.md` §Secret Pattern Detection Guard
+ * @see `.gobbi/projects/gobbi/design/v050-hooks.md` §Secret Pattern Detection Guard
  * @see `./guards.ts` — Guard spec / matcher (C.5); SECRET_PATTERN entries arrive in PR F
  */
 
@@ -61,7 +61,7 @@ const ALLOWLIST_PREFIXES: readonly string[] = SECRET_PATTERN_ALLOWLIST.map(
 /**
  * Return true when `path` falls under any allowlist prefix.
  *
- * `path` may be relative (e.g. `.gobbi/sessions/foo/state.json`) or
+ * `path` may be relative (e.g. `.gobbi/projects/<name>/sessions/foo/state.json`) or
  * absolute. Containment is a string-prefix check anchored at the platform
  * separator — exactly the pattern used by `commands/workflow/validate.ts`
  * for spec-path containment. No glob matching beyond `/**`-suffix stripping.
