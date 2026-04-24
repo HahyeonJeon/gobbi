@@ -5,8 +5,8 @@
  * provenance era to the unified `settings.json` three-level cascade:
  *
  *   workspace → `.gobbi/settings.json`
- *   project   → `.gobbi/project/settings.json`
- *   session   → `.gobbi/sessions/<id>/settings.json`
+ *   project   → `.gobbi/projects/<projectName>/settings.json`
+ *   session   → `.gobbi/projects/<projectName>/sessions/<id>/settings.json`
  *
  * Scenario mapping:
  *
@@ -50,6 +50,18 @@ import {
 import { execSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+
+import {
+  projectDir as projectDirForName,
+  sessionDir as sessionDirForProject,
+} from '../../lib/workspace-paths.js';
+
+// `runConfig` / `resolveSettings` fall back to this project name when the
+// workspace `.gobbi/settings.json` has no `projects.active` entry (see
+// `settings-io.ts::resolveProjectName`). These tests never seed a
+// `projects.active` value, so every on-disk path composes through this
+// fallback and we centralise it here.
+const FALLBACK_PROJECT_NAME = 'gobbi';
 
 // Override getRepoRoot BEFORE importing anything that captures it — the
 // module-level memoization in `lib/repo.ts` is shared across every test
@@ -269,7 +281,11 @@ describe("CFG-1: gobbi config get returns cascade-resolved value", () => {
     });
     // DEFAULTS.workflow.ideation.discuss.mode === 'user'.
     expect(captured.stdout).toBe('"user"\n');
-    expect(captured.stderr).toBe('');
+    // Post-W2 redesign: `resolveProjectName` emits a one-shot stderr
+    // warning when the workspace settings file lacks `projects.active` and
+    // no explicit `projectName` is passed. The warning is informational,
+    // not a failure — resolution continues with the `'gobbi'` fallback.
+    expect(captured.stderr).toMatch(/^(?:\[settings-io\] no projects\.active[^\n]*\n)?$/);
     expect(captured.exitCode).toBeNull();
   });
 
@@ -395,7 +411,10 @@ describe("CFG-4: --level flag reads/writes ONLY that level's file", () => {
     expect(captured.exitCode).toBeNull();
     expect(captured.stderr).toBe('');
 
-    const filePath = join(repo, '.gobbi', 'sessions', 'cfg-4-session', 'settings.json');
+    const filePath = join(
+      sessionDirForProject(repo, FALLBACK_PROJECT_NAME, 'cfg-4-session'),
+      'settings.json',
+    );
     expect(existsSync(filePath)).toBe(true);
     const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as {
       readonly workflow: { readonly ideation: { readonly discuss: { readonly mode: string } } };
@@ -421,7 +440,7 @@ describe("CFG-5: cascade order — narrower level wins", () => {
       },
     });
     // Project: overrides same key to skip
-    writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
+    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
       schemaVersion: 1,
       projects: { active: null, known: [] },
       workflow: {
@@ -430,7 +449,10 @@ describe("CFG-5: cascade order — narrower level wins", () => {
     });
     // Session: overrides same key to agent
     writeJson(
-      join(repo, '.gobbi', 'sessions', 'sess-5', 'settings.json'),
+      join(
+        sessionDirForProject(repo, FALLBACK_PROJECT_NAME, 'sess-5'),
+        'settings.json',
+      ),
       {
         schemaVersion: 1,
         projects: { active: null, known: [] },
@@ -463,7 +485,7 @@ describe("CFG-6: arrays replace on overlay", () => {
         slack: { events: ['workflow.start', 'workflow.complete', 'error'] },
       },
     });
-    writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
+    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
       schemaVersion: 1,
       projects: { active: null, known: [] },
       notify: {
@@ -489,7 +511,7 @@ describe("CFG-7: null is an explicit leaf, overrides wider non-null value", () =
       projects: { active: null, known: [] },
       git: { workflow: { mode: 'direct-commit', baseBranch: 'main' } },
     });
-    writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
+    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
       schemaVersion: 1,
       projects: { active: null, known: [] },
       git: { workflow: { baseBranch: null } },
@@ -510,7 +532,7 @@ describe("CFG-7: null is an explicit leaf, overrides wider non-null value", () =
 describe("CFG-8: absent keys delegate through the cascade to DEFAULTS", () => {
   test('CFG-8: project sets git only; workflow.*.discuss.mode falls to DEFAULTS', () => {
     const repo = makeScratchRepo();
-    writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
+    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
       schemaVersion: 1,
       projects: { active: null, known: [] },
       git: { workflow: { mode: 'worktree-pr', baseBranch: 'develop' } },
@@ -563,7 +585,7 @@ describe("CFG-9: T2-v1 legacy upgrader writes new-shape settings.json", () => {
       process.stderr.write = origErr;
     }
 
-    const newProjectPath = join(repo, '.gobbi', 'project', 'settings.json');
+    const newProjectPath = join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json');
     expect(existsSync(newProjectPath)).toBe(true);
     const upgraded = JSON.parse(readFileSync(newProjectPath, 'utf8')) as Settings;
 
@@ -592,7 +614,7 @@ describe("CFG-9: T2-v1 legacy upgrader writes new-shape settings.json", () => {
 describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already exists", () => {
   test('CFG-10: new-shape file is preserved even if legacy file is also present', async () => {
     const repo = makeScratchRepo();
-    mkdirSync(join(repo, '.gobbi', 'project'), { recursive: true });
+    mkdirSync(projectDirForName(repo, FALLBACK_PROJECT_NAME), { recursive: true });
 
     // Pre-existing new-shape doc at the target path. `projects` is a
     // required field after the gobbi-memory Pass 2 schema extension;
@@ -603,7 +625,7 @@ describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already e
       projects: { active: null, known: [] },
       workflow: { ideation: { evaluate: { mode: 'skip' } } },
     };
-    writeJson(join(repo, '.gobbi', 'project', 'settings.json'), preExisting);
+    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), preExisting);
 
     // Also drop a legacy v1 file beside it. Upgrader must skip the rewrite.
     writeFileSync(
@@ -626,7 +648,7 @@ describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already e
 
     // New-shape file preserved verbatim.
     const stillThere = JSON.parse(
-      readFileSync(join(repo, '.gobbi', 'project', 'settings.json'), 'utf8'),
+      readFileSync(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), 'utf8'),
     ) as Settings;
     expect(stillThere.workflow?.ideation?.evaluate?.mode).toBe('skip');
   });
@@ -716,9 +738,9 @@ describe("CFG-13: malformed JSON at any level → ConfigCascadeError('parse')", 
 
   test('CFG-13b: project settings.json malformed → parse error tagged project', () => {
     const repo = makeScratchRepo();
-    mkdirSync(join(repo, '.gobbi', 'project'), { recursive: true });
+    mkdirSync(projectDirForName(repo, FALLBACK_PROJECT_NAME), { recursive: true });
     writeFileSync(
-      join(repo, '.gobbi', 'project', 'settings.json'),
+      join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'),
       '{ still-not-json',
       'utf8',
     );
@@ -769,7 +791,7 @@ describe("CFG-13: malformed JSON at any level → ConfigCascadeError('parse')", 
 describe("CFG-14: cross-field — worktree-pr requires a non-null baseBranch", () => {
   test('CFG-14: cascade resolves git.workflow.mode=worktree-pr + baseBranch=null → parse error', () => {
     const repo = makeScratchRepo();
-    writeJson(join(repo, '.gobbi', 'project', 'settings.json'), {
+    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
       schemaVersion: 1,
       projects: { active: null, known: [] },
       git: { workflow: { mode: 'worktree-pr', baseBranch: null } },
