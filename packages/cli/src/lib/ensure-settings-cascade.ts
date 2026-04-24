@@ -105,8 +105,16 @@ function upgradeLegacyToSettings(legacy: unknown): Settings {
   const root = isRecord(legacy) ? legacy : {};
 
   // Workflow — convert eval booleans to evaluate.mode enums.
-  // Legacy `eval.plan` maps to new `workflow.planning` (the loop name);
-  // state-machine literal stays `'plan'` until a comprehensive rename Pass.
+  //
+  // The `stepMap` below retains BOTH the legacy `'plan'` key and the
+  // post-W4 target `'planning'` because this upgrader translates
+  // T2-v1-era `.gobbi/project-config.json` files that were written
+  // BEFORE the state-machine rename Pass. The mapping array is required
+  // code (not a stale literal): it reads the legacy `eval.plan` boolean
+  // off the pre-rename config and writes it to the post-rename
+  // `workflow.planning` setting. Do not remove the `'plan'` legacy key
+  // here — removing it would silently drop the evaluation preference
+  // when upgrading a pre-W4 project-config.json.
   const legacyEval = isRecord(root['eval']) ? root['eval'] : null;
   const workflow: Settings['workflow'] = legacyEval
     ? (() => {

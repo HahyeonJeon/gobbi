@@ -627,8 +627,8 @@ describe('validatePredicateReferences', () => {
     // Should reference the specific missing predicate names
     expect(errors.some((e) => e.includes('evalIdeationEnabled'))).toBe(true);
     expect(errors.some((e) => e.includes('evalIdeationDisabled'))).toBe(true);
-    expect(errors.some((e) => e.includes('evalPlanEnabled'))).toBe(true);
-    expect(errors.some((e) => e.includes('evalPlanDisabled'))).toBe(true);
+    expect(errors.some((e) => e.includes('evalPlanningEnabled'))).toBe(true);
+    expect(errors.some((e) => e.includes('evalPlanningDisabled'))).toBe(true);
     expect(errors.some((e) => e.includes('feedbackCapExceeded'))).toBe(true);
   });
 
@@ -636,8 +636,8 @@ describe('validatePredicateReferences', () => {
     const partialRegistry: PredicateRegistry = {
       evalIdeationEnabled: () => false,
       evalIdeationDisabled: () => true,
-      evalPlanEnabled: () => false,
-      evalPlanDisabled: () => true,
+      evalPlanningEnabled: () => false,
+      evalPlanningDisabled: () => true,
       // feedbackCapExceeded intentionally missing
     };
     const errors = validatePredicateReferences(TRANSITION_TABLE, partialRegistry);

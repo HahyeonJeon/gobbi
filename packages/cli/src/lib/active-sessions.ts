@@ -27,6 +27,13 @@
  *
  * ## Why raw-string `currentStep` reads (not `isValidState`)
  *
+ * W8.2 gate: the `'plan'` references in the paragraphs below are
+ * INTENTIONAL design prose documenting the pre-Wave-4 literal name and
+ * why this module decouples from `VALID_STEPS`. They must survive the
+ * W8.2 grep (`rg "'plan'" packages/cli/src/ -g '!**\/__tests__\/**'`) as
+ * known exceptions — a future gate refinement can exclude files carrying
+ * this anchor.
+ *
  * Per the v0.5.0 Pass-2 `plan-remediation.md` §"W3.3 wipe order vs W4
  * rename" (Arch F3), using `isValidState` for state-mode detection is
  * unsafe across the `'plan'` → `'planning'` rename: after W4 lands,

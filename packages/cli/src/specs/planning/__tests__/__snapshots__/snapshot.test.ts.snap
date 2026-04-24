@@ -57,10 +57,10 @@ Criteria:
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
 
 session.schemaVersion=4
-session.currentStep=plan
+session.currentStep=planning
 session.currentSubstate=null
 session.completedSteps=[]
-session.evalConfig=ideation=false,planning=undefined
+session.evalConfig=ideation=false,planning=false
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3}
 
@@ -108,6 +108,10 @@ Write \`plan.md\` with the following structure so Execution and downstream evalu
 
 The shape is stable on purpose: \`gobbi workflow validate\` and downstream compilation read it structurally.
 
+Evaluation pre-exit check:
+
+The user enabled Planning evaluation at session start (\`evalConfig.planning == true\`). Before emitting the completion signal, confirm the plan artifact is complete and the user has approved its shape. The CLI will transition to \`planning_eval\` on exit; do not ask the user again about running evaluation — that decision is locked. Your job at exit is to ensure \`plan.md\` is ready to be assessed by independent evaluator agents.
+
 Synthesis instructions:
 
 Plan is orchestrator-authored — there are no delegated agents whose output you merge. Your synthesis is the plan itself:
@@ -128,10 +132,10 @@ Criteria:
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
 
 session.schemaVersion=4
-session.currentStep=plan
+session.currentStep=planning
 session.currentSubstate=null
 session.completedSteps=[]
-session.evalConfig=ideation=false,planning=undefined
+session.evalConfig=ideation=false,planning=true
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3}
 
@@ -203,12 +207,12 @@ Criteria:
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
 
 session.schemaVersion=4
-session.currentStep=plan
+session.currentStep=planning
 session.currentSubstate=null
 session.completedSteps=[]
-session.evalConfig=ideation=false,planning=undefined
+session.evalConfig=ideation=false,planning=false
 session.feedbackRound=1/3
-session.artifactCounts={ideation=3,plan=1}
+session.artifactCounts={ideation=3,planning=1}
 
 dynamic.timestamp=2026-04-16T12:00:00.000Z
 dynamic.activeSubagentCount=0

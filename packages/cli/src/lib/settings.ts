@@ -110,10 +110,12 @@ export interface StepSettings {
 }
 
 /**
- * Per-step config keyed by the workflow loop's name. Field name `planning`
- * matches `deterministic-orchestration.md` ("Planning Loop"); the
- * state-machine literal remains `'plan'` until a comprehensive rename
- * Pass — `resolveEvalDecision` accepts both for backward compatibility.
+ * Per-step config keyed by the workflow loop's name. Post-Wave-4 the
+ * settings field name (`planning`) and the state-machine literal
+ * (`'planning'`) are aligned; `resolveEvalDecision` in `settings-io.ts`
+ * accepts only the post-rename literal — the Pass-3 backward-compat
+ * bridge that also accepted `'plan'` was removed in W4.3. Callers that
+ * still pass the legacy literal now fail at compile time.
  */
 export interface WorkflowSettings {
   readonly ideation?: StepSettings;

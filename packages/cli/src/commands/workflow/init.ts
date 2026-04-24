@@ -84,7 +84,7 @@ Options:
   --project <name>      Bind this session to project <name> (per-invocation override)
   --task <text>         Free-text description of the task
   --eval-ideation       Enable evaluation after ideation (default: off)
-  --eval-plan           Enable evaluation after plan (default: off)
+  --eval-planning       Enable evaluation after planning (default: off)
   --context <text>      Free-text session context / constraints
   --help, -h            Show this help message
 
@@ -97,7 +97,7 @@ const PARSE_OPTIONS = {
   project: { type: 'string' },
   task: { type: 'string' },
   'eval-ideation': { type: 'boolean', default: false },
-  'eval-plan': { type: 'boolean', default: false },
+  'eval-planning': { type: 'boolean', default: false },
   context: { type: 'string' },
 } as const;
 
@@ -136,7 +136,7 @@ export interface SessionMetadata {
 export interface SessionConfigSnapshot {
   readonly task: string;
   readonly evalIdeation: boolean;
-  readonly evalPlan: boolean;
+  readonly evalPlanning: boolean;
   readonly context: string;
 }
 
@@ -255,7 +255,7 @@ export async function runInitWithOptions(
   const configSnapshot: SessionConfigSnapshot = {
     task: typeof values.task === 'string' ? values.task : '',
     evalIdeation: values['eval-ideation'] === true,
-    evalPlan: values['eval-plan'] === true,
+    evalPlanning: values['eval-planning'] === true,
     context: typeof values.context === 'string' ? values.context : '',
   };
 
@@ -310,7 +310,7 @@ export async function runInitWithOptions(
 
       const decideEvent = createEvalDecide({
         ideation: configSnapshot.evalIdeation,
-        plan: configSnapshot.evalPlan,
+        plan: configSnapshot.evalPlanning,
       });
       appendEventAndUpdateState(
         store,
@@ -509,7 +509,7 @@ export function isValidMetadata(value: unknown): value is SessionMetadata {
   if (!isRecord(snapshot)) return false;
   if (!isString(snapshot['task'])) return false;
   if (!isBoolean(snapshot['evalIdeation'])) return false;
-  if (!isBoolean(snapshot['evalPlan'])) return false;
+  if (!isBoolean(snapshot['evalPlanning'])) return false;
   if (!isString(snapshot['context'])) return false;
   return true;
 }

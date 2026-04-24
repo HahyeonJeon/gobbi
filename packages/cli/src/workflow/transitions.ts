@@ -146,14 +146,14 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     from: 'planning',
     to: 'planning_eval',
     trigger: WORKFLOW_EVENTS.STEP_EXIT,
-    condition: 'evalPlanEnabled',
+    condition: 'evalPlanningEnabled',
     priority: 0,
   },
   {
     from: 'planning',
     to: 'execution',
     trigger: WORKFLOW_EVENTS.STEP_EXIT,
-    condition: 'evalPlanDisabled',
+    condition: 'evalPlanningDisabled',
     priority: 0,
   },
 

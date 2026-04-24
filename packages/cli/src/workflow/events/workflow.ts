@@ -67,6 +67,22 @@ export interface StepTimeoutData {
 
 export interface EvalDecideData {
   readonly ideation: boolean;
+  /**
+   * Planning-evaluation gate.
+   *
+   * Event payloads are immutable wire-format history; the field name
+   * remains `plan` (matching the pre-Wave-4 state-machine literal) even
+   * though the state-level field was renamed to `EvalConfig.planning` in
+   * W4. The two sides meet in `reducer.ts:184`, which maps
+   * `planning: event.data.plan` — the CQRS asymmetry. See the file-level
+   * JSDoc block in `reducer.ts` for the rationale and the plan-remediation
+   * doc (v050-features/gobbi-memory) for the migration history.
+   *
+   * Do NOT rename this field — doing so would require an event schema
+   * migration (events on disk under the old name) and break the
+   * payload-stability invariant. The state field `EvalConfig.planning`
+   * is the post-rename canonical read site.
+   */
   readonly plan: boolean;
   /**
    * Execution-eval gate (Wave C.2). Optional for backward-compat — legacy

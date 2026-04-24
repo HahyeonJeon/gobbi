@@ -9,7 +9,7 @@
  *   - Re-running against an existing directory is a silent no-op (no new
  *     events, no rewrite of metadata.json).
  *   - Malformed existing metadata.json exits 1.
- *   - CLI flags --task / --eval-ideation / --eval-plan / --context land on
+ *   - CLI flags --task / --eval-ideation / --eval-planning / --context land on
  *     metadata.configSnapshot.
  *
  * Tests use the `runInitWithOptions({ repoRoot })` test hook so we never
@@ -168,7 +168,7 @@ describe('runInit — fresh session', () => {
     expect(meta!.techStack).toEqual([]);
     expect(meta!.configSnapshot.task).toBe('demo task');
     expect(meta!.configSnapshot.evalIdeation).toBe(true);
-    expect(meta!.configSnapshot.evalPlan).toBe(false);
+    expect(meta!.configSnapshot.evalPlanning).toBe(false);
     expect(meta!.configSnapshot.context).toBe('ctx line');
   });
 

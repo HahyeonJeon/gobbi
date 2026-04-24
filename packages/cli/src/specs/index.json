@@ -70,14 +70,14 @@
     {
       "from": "planning",
       "to": "planning_eval",
-      "condition": "evalPlanEnabled",
+      "condition": "evalPlanningEnabled",
       "trigger": "workflow.step.exit",
       "label": "planning exit → optional planning_eval"
     },
     {
       "from": "planning",
       "to": "execution",
-      "condition": "evalPlanDisabled",
+      "condition": "evalPlanningDisabled",
       "trigger": "workflow.step.exit",
       "label": "planning exit → execution (eval skipped)"
     },

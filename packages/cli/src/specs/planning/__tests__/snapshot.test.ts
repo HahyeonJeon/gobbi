@@ -81,14 +81,14 @@ const predicates: CompilePredicateRegistry = defaultPredicates;
 const FIXED_TIMESTAMP = '2026-04-16T12:00:00.000Z';
 
 function firstEntryFixture(spec: StepSpec): CompileInput {
-  // First entry: user declined plan evaluation at session start
-  // (`evalConfig.plan = false`). `evalPlanEnabled` does NOT fire, so the
-  // `evaluation-deciding` conditional stays out. `feedbackRound = 0` keeps
-  // `feedbackRoundActive` out too.
+  // First entry: user declined planning evaluation at session start
+  // (`evalConfig.planning = false`). `evalPlanningEnabled` does NOT fire,
+  // so the `evaluation-deciding` conditional stays out. `feedbackRound = 0`
+  // keeps `feedbackRoundActive` out too.
   const state: WorkflowState = {
     ...initialState('session-plan-first'),
-    currentStep: 'plan',
-    evalConfig: { ideation: false, plan: false },
+    currentStep: 'planning',
+    evalConfig: { ideation: false, planning: false },
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
     },
@@ -108,12 +108,12 @@ function firstEntryFixture(spec: StepSpec): CompileInput {
 }
 
 function evaluationEnabledFixture(spec: StepSpec): CompileInput {
-  // User enabled plan evaluation at session start. `evalPlanEnabled` fires
-  // the pre-exit reminder conditional.
+  // User enabled planning evaluation at session start. `evalPlanningEnabled`
+  // fires the pre-exit reminder conditional.
   const state: WorkflowState = {
     ...initialState('session-plan-eval'),
-    currentStep: 'plan',
-    evalConfig: { ideation: false, plan: true },
+    currentStep: 'planning',
+    evalConfig: { ideation: false, planning: true },
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
     },
@@ -133,17 +133,18 @@ function evaluationEnabledFixture(spec: StepSpec): CompileInput {
 }
 
 function feedbackRoundFixture(spec: StepSpec): CompileInput {
-  // A prior plan_eval returned revise (or an execution_eval loop-targeted
-  // plan). `feedbackRoundActive` fires the feedback-context conditional.
-  // Eval stays disabled here — the loop-back does not change `evalConfig`.
+  // A prior planning_eval returned revise (or an execution_eval
+  // loop-targeted planning). `feedbackRoundActive` fires the
+  // feedback-context conditional. Eval stays disabled here — the loop-back
+  // does not change `evalConfig`.
   const state: WorkflowState = {
     ...initialState('session-plan-feedback'),
-    currentStep: 'plan',
-    evalConfig: { ideation: false, plan: false },
+    currentStep: 'planning',
+    evalConfig: { ideation: false, planning: false },
     feedbackRound: 1,
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
-      plan: ['plan.md'],
+      planning: ['plan.md'],
     },
   };
   const dynamic: DynamicContext = {

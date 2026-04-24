@@ -73,7 +73,7 @@ export type PredicateRegistry = Readonly<Record<string, Predicate>>;
 const corePredicates = {
   // ------------------------------------------------------------------- Eval
   //
-  // Gate ideation/plan evaluation on `evalConfig`. Missing config defaults
+  // Gate ideation/planning evaluation on `evalConfig`. Missing config defaults
   // to "evaluation disabled" — the reducer only populates `evalConfig` once
   // `workflow.eval.decide` has fired.
   // -------------------------------------------------------------------------
@@ -85,10 +85,10 @@ const corePredicates = {
   evalIdeationDisabled: (s) => s.evalConfig?.ideation !== true,
 
   /** Planning evaluation is enabled in evalConfig. */
-  evalPlanEnabled: (s) => s.evalConfig?.planning === true,
+  evalPlanningEnabled: (s) => s.evalConfig?.planning === true,
 
   /** Planning evaluation is disabled or evalConfig not yet set. */
-  evalPlanDisabled: (s) => s.evalConfig?.planning !== true,
+  evalPlanningDisabled: (s) => s.evalConfig?.planning !== true,
 
   // --------------------------------------------------------------- Feedback
   //

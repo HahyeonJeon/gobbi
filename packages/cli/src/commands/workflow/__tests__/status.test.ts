@@ -182,7 +182,7 @@ describe('runStatusWithOptions', () => {
     const repo = makeScratchRepo();
     await captureExit(() =>
       runInitWithOptions(
-        ['--session-id', 'status-happy', '--task', 'demo', '--eval-plan'],
+        ['--session-id', 'status-happy', '--task', 'demo', '--eval-planning'],
         { repoRoot: repo },
       ),
     );

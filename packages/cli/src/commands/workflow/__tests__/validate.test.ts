@@ -719,9 +719,9 @@ describe('E010_VERDICT_PREDICATE_AS_CONDITION', () => {
   });
 
   test('does not fire for non-verdict condition predicates', async () => {
-    // A scratch copy without any edits — the plan spec's transitions use
-    // non-verdict predicates (evalPlanDisabled/evalPlanEnabled) and must
-    // not trigger E010 at the plan.spec.json path.
+    // A scratch copy without any edits — the planning spec's transitions use
+    // non-verdict predicates (evalPlanningDisabled/evalPlanningEnabled) and
+    // must not trigger E010 at the planning spec.json path.
     const dir = await makeScratchCopy();
     const report = await validate({ dir });
     const hit = report.diagnostics.find(

@@ -45,7 +45,7 @@ Plan emits `Stop` rather than `SubagentStop` because it is orchestrator-only. Th
 Two conditionals, both gated on predicates already registered in `workflow/predicates.ts`:
 
 - `feedback-context` fires when `feedbackRoundActive` — a prior `planning_eval` returned revise, or `execution_eval` loop-targeted the planning step. The block prepends evaluator-findings reading guidance to the compiled prompt.
-- `evaluation-deciding` fires when `evalPlanEnabled` — the user enabled planning evaluation at session start. The block reminds the orchestrator that the evaluation decision is locked (it was made at workflow init) and must not be re-asked at step exit.
+- `evaluation-deciding` fires when `evalPlanningEnabled` — the user enabled planning evaluation at session start. The block reminds the orchestrator that the evaluation decision is locked (it was made at workflow init) and must not be re-asked at step exit.
 
 Graph-level predicates (`verdictPass`, `verdictRevise`, `always`, loop-target and resume-target variants) are also registered in `workflow/predicates.ts` as of B.3. The codegen at `scripts/gen-predicate-names.ts` emits a typed `PredicateName` union from every spec, overlay, and graph reference; the registry satisfies that union so any missing registration fails typecheck.
 
