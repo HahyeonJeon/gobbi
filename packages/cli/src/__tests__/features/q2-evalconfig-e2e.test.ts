@@ -34,6 +34,15 @@ import {
 import { execSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
+
+// `runConfig set --level session` resolves the project name via
+// `settings-io.ts::resolveProjectName`. With no workspace `projects.active`
+// set (this test file never seeds one), the resolver falls through to the
+// `DEFAULT_PROJECT_NAME` transition-period fallback. Pin the same literal
+// here so the on-disk path the test inspects matches the path `runConfig`
+// actually wrote to.
+const FALLBACK_PROJECT_NAME = 'gobbi';
 
 // Mock `lib/repo.ts::getRepoRoot` to read from a `globalThis` pointer
 // this file owns during its test run. Same strategy as the sibling
@@ -251,7 +260,13 @@ async function persistAndReadBack(
   }
 
   // On-disk verification — the session settings file should carry the enum.
-  const filePath = join(repo, '.gobbi', 'sessions', sessionId, 'settings.json');
+  // Post-W2 redesign: sessions live under `.gobbi/projects/<name>/sessions/<id>/`.
+  // `<name>` here is the fallback literal `runConfig` resolved at write time
+  // because no workspace `projects.active` has been seeded.
+  const filePath = join(
+    sessionDirForProject(repo, FALLBACK_PROJECT_NAME, sessionId),
+    'settings.json',
+  );
   expect(existsSync(filePath)).toBe(true);
   const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as {
     readonly workflow?: {
@@ -277,7 +292,7 @@ async function persistAndReadBack(
 // failing-test output names the exact combination.
 // ===========================================================================
 
-// --- `always` × {ideation, plan, execution} --------------------------------
+// --- `always` × {ideation, planning, execution} ----------------------------
 
 describe("Q2 'always' — evaluator runs unconditionally", () => {
   test("always + ideation → {enabled: true, source: 'always'}", async () => {
@@ -289,7 +304,7 @@ describe("Q2 'always' — evaluator runs unconditionally", () => {
     expect(decision).toEqual({ enabled: true, source: 'always' });
   });
 
-  test("always + plan → {enabled: true, source: 'always'}", async () => {
+  test("always + planning → {enabled: true, source: 'always'}", async () => {
     const repo = makeScratchRepo();
     const sessionId = 'q2-always-plan';
     await persistAndReadBack(repo, sessionId, 'planning', 'always');
@@ -308,7 +323,7 @@ describe("Q2 'always' — evaluator runs unconditionally", () => {
   });
 });
 
-// --- `skip` × {ideation, plan, execution} ----------------------------------
+// --- `skip` × {ideation, planning, execution} ------------------------------
 
 describe("Q2 'skip' — evaluator is never invoked", () => {
   test("skip + ideation → {enabled: false, source: 'skip'}", async () => {
@@ -320,7 +335,7 @@ describe("Q2 'skip' — evaluator is never invoked", () => {
     expect(decision).toEqual({ enabled: false, source: 'skip' });
   });
 
-  test("skip + plan → {enabled: false, source: 'skip'}", async () => {
+  test("skip + planning → {enabled: false, source: 'skip'}", async () => {
     const repo = makeScratchRepo();
     const sessionId = 'q2-skip-plan';
     await persistAndReadBack(repo, sessionId, 'planning', 'skip');
@@ -339,7 +354,7 @@ describe("Q2 'skip' — evaluator is never invoked", () => {
   });
 });
 
-// --- `ask` × {ideation, plan, execution} -----------------------------------
+// --- `ask` × {ideation, planning, execution} -------------------------------
 //
 // `ask` requires a user answer to be supplied via context. The translation
 // helper intentionally throws when context is missing — emitting a boolean
@@ -364,7 +379,7 @@ describe("Q2 'ask' — user answer supplied via context; missing context throws"
     );
   });
 
-  test("ask + plan → {enabled: userAnswer, source: 'ask'} and throws when context absent", async () => {
+  test("ask + planning → {enabled: userAnswer, source: 'ask'} and throws when context absent", async () => {
     const repo = makeScratchRepo();
     const sessionId = 'q2-ask-plan';
     await persistAndReadBack(repo, sessionId, 'planning', 'ask');
@@ -401,7 +416,7 @@ describe("Q2 'ask' — user answer supplied via context; missing context throws"
   });
 });
 
-// --- `auto` × {ideation, plan, execution} ----------------------------------
+// --- `auto` × {ideation, planning, execution} ------------------------------
 //
 // `auto` defers to the orchestrator. The helper insists the caller pass the
 // orchestrator's decision through context — symmetric discipline with `ask`.
@@ -423,7 +438,7 @@ describe("Q2 'auto' — orchestrator decision supplied via context; missing cont
     );
   });
 
-  test("auto + plan → {enabled: orchestratorDecision, source: 'auto'} and throws when context absent", async () => {
+  test("auto + planning → {enabled: orchestratorDecision, source: 'auto'} and throws when context absent", async () => {
     const repo = makeScratchRepo();
     const sessionId = 'q2-auto-plan';
     await persistAndReadBack(repo, sessionId, 'planning', 'auto');
@@ -516,7 +531,7 @@ describe("Full e2e — EVAL_DECIDE event lands in state.evalConfig via reducer",
     if (!result.ok) return;
     expect(result.state.evalConfig).toEqual({
       ideation: true,
-      plan: true,
+      planning: true,
       execution: true,
     });
   });
@@ -556,7 +571,7 @@ describe("Full e2e — EVAL_DECIDE event lands in state.evalConfig via reducer",
     if (!result.ok) return;
     expect(result.state.evalConfig).toEqual({
       ideation: false,
-      plan: true,
+      planning: true,
       execution: false,
     });
   });
