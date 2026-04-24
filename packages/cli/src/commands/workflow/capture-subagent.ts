@@ -527,7 +527,7 @@ function sessionDirName(dir: string): string {
 function asStepId(step: string): StepId | null {
   if (
     step === 'ideation' ||
-    step === 'plan' ||
+    step === 'planning' ||
     step === 'execution' ||
     step === 'evaluation' ||
     step === 'memorization'

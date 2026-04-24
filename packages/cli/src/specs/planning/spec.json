@@ -14,12 +14,12 @@
     {
       "to": "execution",
       "condition": "evalPlanDisabled",
-      "label": "plan exit → execution (eval skipped)"
+      "label": "planning exit → execution (eval skipped)"
     },
     {
-      "to": "plan_eval",
+      "to": "planning_eval",
       "condition": "evalPlanEnabled",
-      "label": "plan exit → optional plan_eval"
+      "label": "planning exit → optional planning_eval"
     }
   ],
   "delegation": {

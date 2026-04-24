@@ -9,7 +9,7 @@
  * subdirs materialise on first write rather than eagerly at session init.
  *
  * The `step` parameter is typed as the narrow `StepId` union from
- * `specs/artifact-selector.ts` — `'ideation' | 'plan' | 'execution' |
+ * `specs/artifact-selector.ts` — `'ideation' | 'planning' | 'execution' |
  * 'evaluation' | 'memorization'`. Callers holding a wider `WorkflowStep`
  * (which includes `idle`, `ideation_eval`, etc.) must narrow before
  * invoking.
