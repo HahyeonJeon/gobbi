@@ -87,6 +87,7 @@ export const COMMAND_ORDER = [
   'validate',
   'workflow',
   'gotcha',
+  'maintenance',
   'image',
   'video',
   'web',
@@ -165,6 +166,14 @@ export const COMMANDS_BY_NAME = {
     run: async (args: string[]): Promise<void> => {
       const { runGotcha } = await import('./commands/gotcha.js');
       await runGotcha(args);
+    },
+  },
+  maintenance: {
+    name: 'maintenance',
+    summary: 'Operator-only cleanup tasks (wipe-legacy-sessions, …)',
+    run: async (args: string[]): Promise<void> => {
+      const { runMaintenance } = await import('./commands/maintenance.js');
+      await runMaintenance(args);
     },
   },
   image: {
