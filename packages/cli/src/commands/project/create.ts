@@ -21,22 +21,22 @@
  *
  * ## Seeding
  *
- * W5.3's `gobbi install` command owns the template-seeding logic. This
- * command CHECKS whether that machinery is available (by dynamic-import
- * guard) and:
+ * The install module's `seedProjectFromTemplates` helper owns the
+ * template-copy logic. `project create` invokes it by dynamic import
+ * so the install module stays a peer command (no static circular
+ * dependency) and a forward-compat shape mismatch degrades to a
+ * stderr warning rather than a crash.
  *
- *   - If `gobbi install` has landed: reuses its per-file template copy
- *     + sha256 manifest so new projects start with the same skills,
- *     agents, and rules the default project ships with.
- *   - If `gobbi install` has NOT landed yet (current W5.4 reality):
- *     creates the directories empty and emits a stderr warning pointing
- *     at `gobbi install`. No templates are synthesised inline here —
- *     duplicating W5.3's copy logic would drift.
+ *   - Expected shape: `install.ts` exports
+ *     `seedProjectFromTemplates({repoRoot, projectName}): SeedResult`.
+ *     Landed as part of the W5-eval F1+F2 remediation.
+ *   - Fallback (shape drifts): stderr warning pointing at
+ *     `gobbi install`; scaffold directories stay empty.
  *
- * This behaviour is intentional: the fall-back path lets W5.4 land
- * before W5.3 without blocking on ordering, and a post-W5.3 run of
- * `gobbi project create` + `gobbi install` produces the same state as
- * if `gobbi install` had seeded directly.
+ * The seed helper is content-only. It writes templates and the install
+ * manifest, but does NOT touch `settings.json` or build the `.claude/`
+ * symlink farm — the farm and activation belong to fresh-install + the
+ * `gobbi project switch` path respectively.
  *
  * ## settings.json update
  *
@@ -328,24 +328,25 @@ export async function runProjectCreateWithOptions(
 // ---------------------------------------------------------------------------
 
 /**
- * Best-effort template seeding. Dynamic-imports the W5.3 install module
- * and calls its seed-into-project helper if present. Falls through to
- * a stderr warning on any import/execution failure — `gobbi project
- * create` is expected to succeed even without W5.3 landed.
+ * Best-effort template seeding. Dynamic-imports the install module and
+ * calls its `seedProjectFromTemplates` helper. The dynamic-import guard
+ * is retained for forward compatibility — if a future refactor renames
+ * the export, the guard falls through to a stderr warning rather than
+ * crashing `gobbi project create`. For the current shape (the W5-eval
+ * remediation of W5.3 landed `seedProjectFromTemplates` as a named
+ * export), the guard always succeeds.
  *
- * The expected install-module shape is an exported
- * `seedProjectFromTemplates({repoRoot, projectName})` function. If the
- * real W5.3 shape differs, this function falls through and the
- * operator is pointed at `gobbi install` by the fall-back warning.
+ * The install seed function is content-only: it copies templates into
+ * `.gobbi/projects/<projectName>/{skills,agents,rules}/` and writes the
+ * install manifest. It does NOT touch `settings.json` or build the
+ * `.claude/` farm — those are fresh-install-only concerns and do not
+ * apply to project creation.
  */
 async function trySeedFromInstallTemplates(
   repoRoot: string,
   projectName: string,
 ): Promise<void> {
   try {
-    // `as` narrowing here is load-bearing: `import()` typing would
-    // otherwise bleed `any` from the runtime module shape. We restrict
-    // the surface to the single expected export.
     const mod: unknown = await import('../install.js');
     if (
       typeof mod === 'object' &&
@@ -359,18 +360,29 @@ async function trySeedFromInstallTemplates(
       ] as (args: {
         readonly repoRoot: string;
         readonly projectName: string;
-      }) => Promise<void> | void;
-      await seed({ repoRoot, projectName });
+      }) => { filesCopied: number };
+      const result = seed({ repoRoot, projectName });
+      process.stdout.write(
+        `Seeded ${String(result.filesCopied)} template file(s) into .gobbi/projects/${projectName}/.\n`,
+      );
       return;
     }
-  } catch {
-    // Install module not present yet (W5.3 hasn't landed) or import
-    // failed. Fall through to the warning path — creating empty dirs
-    // is the documented fallback.
+  } catch (err) {
+    // Install module present but seed helper threw — surface the error
+    // so the operator can diagnose (e.g. "already-populated" when the
+    // target project happens to have content on disk from a prior
+    // partial run).
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(
+      `gobbi project create: template seeding failed: ${message}\n`,
+    );
+    return;
   }
+  // Import succeeded but the expected export was missing — a forward-
+  // compat shape mismatch. Warn so the operator knows to re-run install.
   process.stderr.write(
-    `gobbi project create: install templates unavailable; skills/agents/rules/ are empty.\n` +
-      `                      Run 'gobbi install' to seed templates into '${projectName}'.\n`,
+    `gobbi project create: install templates unavailable (export shape mismatch);\n` +
+      `                      run 'gobbi install' to seed templates into '${projectName}'.\n`,
   );
 }
 

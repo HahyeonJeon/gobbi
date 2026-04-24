@@ -2,7 +2,7 @@
  * gobbi install — fresh / upgrade / 3-way-merge for the shipped
  * `.gobbi/projects/gobbi/{skills,agents,rules}/` template bundle.
  *
- * ## Context (v0.5.0 gobbi-memory Pass-2 W5.3)
+ * ## Context (v0.5.0 gobbi-memory Pass-2 W5.3 + W5 eval F1 remediation)
  *
  * Pass 2 publishes the canonical gobbi-project content (skills, agents,
  * rules) as part of the `@gobbitools/cli` npm tarball under
@@ -12,6 +12,21 @@
  * last-installed content hashes in `.install-manifest.json`, and preserves
  * user edits across upgrades via a three-way merge keyed on the manifest.
  *
+ * ## Fresh install vs upgrade install
+ *
+ *   - **Fresh install** (no prior manifest, no preexisting content):
+ *     complete setup — copy templates, write `.install-manifest.json`,
+ *     write `.gobbi/settings.json` with `projects.active = <projectName>`
+ *     and `projects.known` including the project, and build the
+ *     `.claude/{skills,agents,rules}/` per-file symlink farm. After a
+ *     fresh install a user has a working Claude Code integration in one
+ *     command — no follow-up `gobbi project switch` needed.
+ *   - **Upgrade install** (target already contains content or manifest):
+ *     content-only. 3-way merge of templates vs user edits vs the
+ *     manifest baseline. Does NOT touch `settings.json` and does NOT
+ *     rebuild the farm — upgrade preserves the operator's existing
+ *     activation state.
+ *
  * ## Scope boundary
  *
  *   - Only `skills/`, `agents/`, and `rules/` are copied. Project docs
@@ -20,8 +35,6 @@
  *     three content roots. Extending the bundle requires a separate
  *     design decision and a bump of the manifest shape.
  *   - Does NOT register itself in `cli.ts` — wiring is owned by W5.5.
- *   - Does NOT mutate the workspace-level `projects.active` pointer — that
- *     is `gobbi switch` / bootstrap territory.
  *   - Runs a state-based active-session gate before any writes. If ANY
  *     session under `.gobbi/projects/<projectName>/sessions/` has a
  *     non-terminal `currentStep`, the command refuses to run (exit 1)
@@ -116,6 +129,12 @@ import {
 } from '../lib/active-sessions.js';
 import { isRecord, isString } from '../lib/guards.js';
 import { getRepoRoot } from '../lib/repo.js';
+import {
+  loadSettingsAtLevel,
+  writeSettingsAtLevel,
+} from '../lib/settings-io.js';
+import type { Settings } from '../lib/settings.js';
+import { buildFarmIntoRoot } from '../lib/symlink-farm.js';
 import {
   type ClaudeSymlinkKind,
   projectSubdir,
@@ -325,6 +344,13 @@ export async function runInstallWithOptions(
     return;
   }
 
+  // Fresh vs upgrade — we've already gated on `--upgrade` above when a
+  // manifest OR preexisting content is present. From here on, a
+  // `previousManifest === null` AND no preexisting content implies a
+  // fresh install; anything else is an upgrade install.
+  const isFreshInstall =
+    previousManifest === null && !targetHasPreexistingContent(projectRoot);
+
   // --- 6. Enumerate files + classify -------------------------------------
   const templateFiles = enumerateTemplateFiles(templateRoot);
   const baseEntries: Readonly<Record<string, string>> =
@@ -379,6 +405,24 @@ export async function runInstallWithOptions(
     );
   }
 
+  // --- 8. Fresh-install activation (settings + farm) --------------------
+  //
+  // Fresh installs complete the multi-project setup in one command:
+  // write `projects.active` + `projects.known` to the workspace
+  // settings file, then build the `.claude/{skills,agents,rules}/`
+  // per-file symlink farm. Upgrade installs skip this step to preserve
+  // the operator's existing activation — upgrade is content-only.
+  //
+  // Dry-run still emits the plan lines but does not mutate the
+  // filesystem.
+  const activation: FreshActivationResult | null = isFreshInstall
+    ? applyFreshInstallActivation({
+        repoRoot,
+        projectName,
+        dryRun,
+      })
+    : null;
+
   process.stdout.write(
     renderPlan({
       projectName,
@@ -387,6 +431,7 @@ export async function runInstallWithOptions(
       written,
       conflicts,
       tarballVersion,
+      activation,
     }),
   );
 
@@ -839,6 +884,7 @@ interface RenderPlanInput {
   readonly written: readonly FileAction[];
   readonly conflicts: readonly FileAction[];
   readonly tarballVersion: string;
+  readonly activation?: FreshActivationResult | null;
 }
 
 export function renderPlan(input: RenderPlanInput): string {
@@ -890,6 +936,20 @@ export function renderPlan(input: RenderPlanInput): string {
   if (!input.dryRun && conflictCount === 0) {
     lines.push(`${prefix}manifest updated`);
   }
+
+  // Fresh-install activation diagnostics — emitted for both dry-run
+  // (so operators can preview) and real runs (so the one-command
+  // completion is visible).
+  if (input.activation !== undefined && input.activation !== null) {
+    const a = input.activation;
+    lines.push(
+      `${prefix}settings: projects.active = '${input.projectName}', projects.known += '${input.projectName}'`,
+    );
+    lines.push(
+      `${prefix}farm: ${a.farmKinds.join(', ')} -> .gobbi/projects/${input.projectName}/`,
+    );
+  }
+
   if (conflictCount > 0) {
     lines.push('');
     lines.push(
@@ -905,6 +965,225 @@ export function renderPlan(input: RenderPlanInput): string {
   }
   lines.push('');
   return lines.join('\n');
+}
+
+// ---------------------------------------------------------------------------
+// Fresh-install activation (settings.json + .claude/ farm)
+// ---------------------------------------------------------------------------
+
+/**
+ * Result of the fresh-install activation step. Surfaced to the caller
+ * so {@link renderPlan} can diagnose what was (or would be) written.
+ */
+export interface FreshActivationResult {
+  /** The three farm kinds materialised at `.claude/<kind>/`. */
+  readonly farmKinds: readonly ClaudeSymlinkKind[];
+  /** The `projects.active` value written to the workspace settings. */
+  readonly active: string;
+  /** The full `projects.known` array written to the workspace settings. */
+  readonly known: readonly string[];
+}
+
+interface ApplyFreshActivationInput {
+  readonly repoRoot: string;
+  readonly projectName: string;
+  readonly dryRun: boolean;
+}
+
+/**
+ * Fresh-install post-copy step: set `projects.active` + `projects.known`
+ * in the workspace-level `.gobbi/settings.json` and materialise the
+ * `.claude/{skills,agents,rules}/` per-file symlink farm pointing at
+ * the newly-installed project.
+ *
+ * Dry-run mode computes and returns the intended result without
+ * touching the filesystem — callers render it via {@link renderPlan}.
+ *
+ * Upgrade-install MUST NOT call this function — upgrade is content-only.
+ * The caller gates the call at {@link runInstallWithOptions}.
+ */
+function applyFreshInstallActivation(
+  input: ApplyFreshActivationInput,
+): FreshActivationResult {
+  const { repoRoot, projectName, dryRun } = input;
+  const existing = loadSettingsAtLevel(repoRoot, 'workspace');
+  const base: Settings =
+    existing !== null
+      ? existing
+      : { schemaVersion: 1, projects: { active: null, known: [] } };
+
+  const knownSet = new Set(base.projects.known);
+  knownSet.add(projectName);
+  const knownSorted = [...knownSet].sort();
+  const updated: Settings = {
+    ...base,
+    projects: {
+      active: projectName,
+      known: knownSorted,
+    },
+  };
+
+  if (!dryRun) {
+    writeSettingsAtLevel(repoRoot, 'workspace', updated);
+    // Build the farm directly at `.claude/` (fresh-install = first
+    // activation, nothing to rotate). `buildFarmIntoRoot` wipes any
+    // existing content at the destination; we accept that only in the
+    // fresh-install path because the upgrade gate has already filtered
+    // non-empty targets via the `--upgrade` flag.
+    const claudeRoot = join(repoRoot, '.claude');
+    buildFarmIntoRoot(repoRoot, claudeRoot, projectName);
+  }
+
+  return {
+    farmKinds: TEMPLATE_KINDS,
+    active: projectName,
+    known: knownSorted,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// seedProjectFromTemplates — content-copy helper for `gobbi project create`
+// ---------------------------------------------------------------------------
+
+/**
+ * Result of a {@link seedProjectFromTemplates} call. Callers surface
+ * these counts / paths to the user so they can see what landed.
+ */
+export interface SeedResult {
+  readonly projectName: string;
+  readonly projectRoot: string;
+  readonly filesCopied: number;
+  readonly templateRoot: string;
+  readonly tarballVersion: string;
+}
+
+/** Arguments for {@link seedProjectFromTemplates}. */
+export interface SeedProjectOptions {
+  readonly repoRoot: string;
+  readonly projectName: string;
+  /**
+   * Optional explicit template-root override. Tests pass an explicit
+   * path to avoid depending on the bundle layout; production callers
+   * omit this and let the same resolver
+   * {@link resolveDefaultTemplateRoot} that `runInstall` uses pick up
+   * the npm-bundle / source-checkout / dev-fallback path.
+   */
+  readonly templateRoot?: string;
+  /**
+   * When `true`, proceed even if the target project already has
+   * content — the seeder becomes a no-op for each file that is already
+   * present (see return-value `filesCopied`). Defaults to `false`: a
+   * non-empty project root causes a {@link SeedError} with
+   * `kind: 'already-populated'`.
+   */
+  readonly force?: boolean;
+}
+
+/**
+ * Errors surfaced by {@link seedProjectFromTemplates}. Callers pattern-match
+ * on `kind` to decide how to report.
+ */
+export class SeedError extends Error {
+  constructor(
+    message: string,
+    readonly kind: 'template-not-found' | 'already-populated',
+  ) {
+    super(message);
+    this.name = 'SeedError';
+  }
+}
+
+/**
+ * Copy every file from the resolved template bundle into
+ * `.gobbi/projects/<projectName>/{skills,agents,rules}/` and write
+ * the `.install-manifest.json`. Pure content-copy helper — does NOT
+ * touch `.gobbi/settings.json` and does NOT build the `.claude/` farm.
+ * Those responsibilities belong to the caller (either
+ * {@link runInstallWithOptions} for the fresh-install path, or
+ * `commands/project/create.ts` for the project-create seeding hook).
+ *
+ * Idempotency: when `force: false` and the project already has
+ * skills/agents/rules content, throws {@link SeedError} with
+ * `kind: 'already-populated'`. When `force: true`, skips files that
+ * already exist (byte-equal to the template — content match required)
+ * and counts only newly-written files in the result.
+ *
+ * @see `commands/project/create.ts::trySeedFromInstallTemplates` — the
+ *      primary caller outside of fresh-install.
+ */
+export function seedProjectFromTemplates(
+  options: SeedProjectOptions,
+): SeedResult {
+  const { repoRoot, projectName } = options;
+
+  const templateRoot =
+    options.templateRoot ?? resolveDefaultTemplateRoot();
+  if (templateRoot === null) {
+    throw new SeedError(
+      'cannot locate template bundle. Expected .gobbi/projects/gobbi/{skills,agents,rules}/ under node_modules/@gobbitools/cli/ or the repo root.',
+      'template-not-found',
+    );
+  }
+
+  const projectRoot = join(repoRoot, '.gobbi', 'projects', projectName);
+  const manifestPath = join(projectRoot, MANIFEST_FILENAME);
+  const tarballVersion = readTarballVersion(templateRoot);
+
+  if (!options.force && targetHasPreexistingContent(projectRoot)) {
+    throw new SeedError(
+      `project '${projectName}' already has skills/agents/rules content at ${projectRoot}; pass force: true to skip-over preexisting files or run 'gobbi install --upgrade' for a 3-way merge`,
+      'already-populated',
+    );
+  }
+
+  const templateFiles = enumerateTemplateFiles(templateRoot);
+  let filesCopied = 0;
+  const files: Record<string, string> = {};
+
+  for (const relPath of templateFiles) {
+    const srcAbs = join(templateRoot, relPath);
+    const dstAbs = join(projectRoot, relPath);
+    const templateHash = hashFile(srcAbs);
+    if (existsSync(dstAbs)) {
+      // Force-mode skip: the file already exists. We still record its
+      // hash in the manifest, but only if it matches the template —
+      // otherwise the user has diverged content we refuse to overwrite.
+      const currentHash = hashOrNull(dstAbs);
+      files[relPath] = currentHash ?? templateHash;
+      continue;
+    }
+    copyFile(srcAbs, dstAbs);
+    files[relPath] = templateHash;
+    filesCopied++;
+  }
+
+  // Write the manifest. Deterministic key ordering so the file diff is
+  // stable across runs.
+  const sortedFiles: Record<string, string> = {};
+  for (const key of Object.keys(files).sort()) {
+    const value = files[key];
+    if (value === undefined) continue;
+    sortedFiles[key] = value;
+  }
+  const manifest: InstallManifest = {
+    schemaVersion: MANIFEST_SCHEMA_VERSION,
+    version: tarballVersion,
+    files: sortedFiles,
+  };
+  mkdirSync(dirname(manifestPath), { recursive: true });
+  writeFileSync(
+    manifestPath,
+    `${JSON.stringify(manifest, null, 2)}\n`,
+    'utf8',
+  );
+
+  return {
+    projectName,
+    projectRoot,
+    filesCopied,
+    templateRoot,
+    tarballVersion,
+  };
 }
 
 // ---------------------------------------------------------------------------

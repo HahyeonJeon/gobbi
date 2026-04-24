@@ -265,16 +265,31 @@ describe('gobbi project create — happy path', () => {
     expect(settings.projects.known).toEqual(['foo']);
   });
 
-  test('emits a warning when install templates are unavailable', async () => {
+  test('seeds templates from install module when the helper is exported', async () => {
     const repo = makeRepo();
     await captureExit(() =>
       runProjectCreateWithOptions(['foo'], { repoRoot: repo }),
     );
-    // In the test harness, the install module's
-    // `seedProjectFromTemplates` export does not exist (W5.3 landed
-    // `install.ts` but its seed function is not named that way). The
-    // fallback path emits the "run gobbi install" stderr warning.
-    expect(captured.stderr).toContain('gobbi install');
+    // Post-W5-eval-remediation: `install.ts` exports
+    // `seedProjectFromTemplates`, so `project create` successfully
+    // seeds the new project from the template bundle. The harness
+    // runs inside the repo worktree, so the default template-root
+    // walk finds `.gobbi/projects/gobbi/`.
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stdout).toContain('Seeded');
+    expect(captured.stdout).toContain('template file');
+    // Manifest landed under the new project.
+    const manifestPath = join(
+      repo,
+      '.gobbi',
+      'projects',
+      'foo',
+      '.install-manifest.json',
+    );
+    expect(existsSync(manifestPath)).toBe(true);
+    // The "run gobbi install" fallback warning must NOT fire when the
+    // helper is wired correctly.
+    expect(captured.stderr).not.toContain('install templates unavailable');
   });
 });
 

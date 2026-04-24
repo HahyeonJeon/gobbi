@@ -71,11 +71,9 @@
 import {
   existsSync,
   mkdirSync,
-  readdirSync,
   renameSync,
   rmSync,
   statSync,
-  symlinkSync,
 } from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
@@ -91,9 +89,11 @@ import {
 } from '../../lib/settings-io.js';
 import type { Settings } from '../../lib/settings.js';
 import {
-  claudeSymlinkTarget,
+  buildFarmIntoRoot,
+  CLAUDE_FARM_KINDS,
+} from '../../lib/symlink-farm.js';
+import {
   projectDir,
-  projectSubdir,
   type ClaudeSymlinkKind,
 } from '../../lib/workspace-paths.js';
 
@@ -122,11 +122,12 @@ Options:
 // ---------------------------------------------------------------------------
 
 /**
- * The three kinds swapped by the rotation. Matches
- * {@link ClaudeSymlinkKind} exactly — re-declared locally so the array
- * order is a stable iteration sequence the rollback path can rely on.
+ * The three kinds swapped by the rotation. Re-exports the shared
+ * {@link CLAUDE_FARM_KINDS} constant so callers of this module (and
+ * tests) can import `FARM_KINDS` without reaching across the
+ * command/lib boundary for an unrelated helper.
  */
-const FARM_KINDS: readonly ClaudeSymlinkKind[] = ['skills', 'agents', 'rules'];
+const FARM_KINDS: readonly ClaudeSymlinkKind[] = CLAUDE_FARM_KINDS;
 
 // ---------------------------------------------------------------------------
 // Overrides (for tests)
@@ -235,7 +236,7 @@ export async function runProjectSwitchWithOptions(
   // --- Build the new farm in a temp location ----------------------------
   const tempRoot = path.join(repoRoot, `.claude.tmp-farm-${pidTag}`);
   try {
-    buildFarm(repoRoot, tempRoot, targetName);
+    buildFarmIntoRoot(repoRoot, tempRoot, targetName);
   } catch (err) {
     safeRmTree(tempRoot);
     const message = err instanceof Error ? err.message : String(err);
@@ -362,125 +363,6 @@ export function renderActiveSessionError(
   lines.push('  3. Bypass the gate:            gobbi project switch <name> --force');
   lines.push('');
   return lines.join('\n');
-}
-
-// ---------------------------------------------------------------------------
-// Farm build
-// ---------------------------------------------------------------------------
-
-/**
- * Materialise the new `.claude/{skills,agents,rules}/` farm under the
- * temp root. Every leaf file in the project's source tree becomes a
- * symlink from `<tempRoot>/<kind>/<relPath>` → `<source>`, using the
- * relative form produced by `claudeSymlinkTarget` for portability.
- *
- * `buildFarm` REPLACES anything at `tempRoot` — callers pass a fresh
- * path. If any file create / symlink call throws, the error propagates
- * and the caller is expected to `safeRmTree(tempRoot)` before exiting.
- */
-function buildFarm(
-  repoRoot: string,
-  tempRoot: string,
-  projectName: string,
-): void {
-  // Ensure the temp root itself is fresh — if a previous aborted run
-  // left it behind, wipe before we start.
-  safeRmTree(tempRoot);
-  mkdirSync(tempRoot, { recursive: true });
-
-  for (const kind of FARM_KINDS) {
-    const srcRoot = projectSubdir(repoRoot, projectName, kind);
-    const dstRoot = path.join(tempRoot, kind);
-    mkdirSync(dstRoot, { recursive: true });
-    // Silently skip when the source dir is absent — a newly created
-    // project may not have scaffolded every kind yet. The destination
-    // stays as an empty dir, which is exactly the pre-swap state.
-    if (!existsSync(srcRoot)) continue;
-
-    mirrorTreeAsSymlinks(srcRoot, dstRoot, kind, projectName, repoRoot);
-  }
-}
-
-/**
- * Walk `srcRoot` recursively and create, for every regular file found,
- * a symlink at the mirrored path under `dstRoot`. Directories are
- * recreated; symlinks in the source are dereferenced once (the
- * destination symlink points at the resolved file, not at the source
- * symlink — avoiding double-indirection). Any other file type
- * (character device, socket, etc.) causes a throw — the farm should
- * only ever contain regular files and directories.
- *
- * `claudeSymlinkTarget` gives us the canonical relative-link form for
- * the ROOT `.claude/<kind>/<fileName>` location; for nested files we
- * compute the relative form directly via `path.relative` so the link
- * works regardless of how deep the tree goes. The root-level helper is
- * still used as a correctness check — the relative form it produces
- * must match what we compute here for files directly under the kind
- * root. (The caller does not enforce this equality today; the helper
- * call path exists because it lets `workspace-paths.ts` stay the
- * single source of truth for symlink-target derivation as the farm
- * evolves.)
- */
-function mirrorTreeAsSymlinks(
-  srcRoot: string,
-  dstRoot: string,
-  kind: ClaudeSymlinkKind,
-  projectName: string,
-  repoRoot: string,
-): void {
-  const stack: Array<{ src: string; dst: string }> = [
-    { src: srcRoot, dst: dstRoot },
-  ];
-  while (stack.length > 0) {
-    const entry = stack.pop();
-    if (entry === undefined) break;
-
-    const entries = readdirSync(entry.src, { withFileTypes: true });
-    for (const child of entries) {
-      const srcPath = path.join(entry.src, child.name);
-      const dstPath = path.join(entry.dst, child.name);
-
-      if (child.isDirectory()) {
-        mkdirSync(dstPath, { recursive: true });
-        stack.push({ src: srcPath, dst: dstPath });
-        continue;
-      }
-      if (child.isFile() || child.isSymbolicLink()) {
-        // Compute the relative link string pointing at the source. For
-        // files directly under the kind root we can cross-check against
-        // `claudeSymlinkTarget`'s canonical form, but for nested files
-        // (e.g. skills/<skill>/evaluation/<file>.md) the helper does
-        // not model the nested case, so we compute the relative path
-        // directly.
-        const linkTarget = path.relative(path.dirname(dstPath), srcPath);
-        // Sanity-probe the helper for the root-level case so any future
-        // change to `claudeSymlinkTarget` surfaces as a divergence error
-        // rather than silently producing mismatched links.
-        if (path.dirname(srcPath) === srcRoot) {
-          const canonical = claudeSymlinkTarget(
-            kind,
-            child.name,
-            projectName,
-            repoRoot,
-          );
-          // The canonical helper targets `.claude/<kind>/<name>`; the
-          // relative form from `<tempRoot>/<kind>/<name>` may differ
-          // (tempRoot depth differs from .claude/). We only assert that
-          // the SOURCE side matches — the `target` differs by design.
-          if (canonical.source !== srcPath) {
-            throw new Error(
-              `buildFarm internal drift: ${canonical.source} !== ${srcPath}`,
-            );
-          }
-        }
-        symlinkSync(linkTarget, dstPath);
-        continue;
-      }
-      throw new Error(
-        `buildFarm: unsupported file type at ${srcPath} (kind=${kind})`,
-      );
-    }
-  }
 }
 
 // ---------------------------------------------------------------------------
