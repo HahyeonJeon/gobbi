@@ -408,3 +408,141 @@ describe('resolveSettings — session path uses resolved project name', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Cross-project cascade precedence (W6.3) — workspace > project > session
+// precedence is preserved when the caller switches projectName.
+// ---------------------------------------------------------------------------
+//
+// The tests above cover:
+//
+//   • resolveSettings reads the right named slot             (tests 1, 2)
+//   • projectName override beats workspace `projects.active` (tests 1, 3)
+//   • workspace `projects.active` is the fallback            (test 3)
+//   • 4-level cascade merges in a single project             (test 4)
+//   • project A does not bleed into project B                (test 5)
+//   • writeSettingsAtLevel honours projectName               (test 9)
+//   • session path is project-scoped                         (test 12)
+//
+// This suite closes the remaining W6.3 gap — asserting that the full
+// cascade precedence (workspace → project → session, narrower wins) is
+// preserved per-project when the caller switches projectName. Two projects
+// with parallel-shape settings files must resolve to two independent
+// cascaded `Settings` objects; the session tier of project A must never
+// leak into project B even when the session id collides.
+// ---------------------------------------------------------------------------
+
+describe('resolveSettings — cross-project cascade precedence (W6.3)', () => {
+  test('per-project workspace > project > session precedence holds in parallel', () => {
+    // Workspace sets the workflow mode + baseBranch (satisfies the
+    // `worktree-pr` invariant) and `pr.draft = true`.
+    writeJson(workspaceSettingsPath(scratchDir), {
+      schemaVersion: 1,
+      projects: { active: null, known: ['foo', 'bar'] },
+      git: { workflow: { mode: 'worktree-pr', baseBranch: 'main' }, pr: { draft: true } },
+    });
+
+    // Project `foo` overrides pr.draft → false; leaves cleanup alone.
+    writeJson(
+      projectSettingsPath(scratchDir, 'foo'),
+      minimal({ git: { pr: { draft: false } } }),
+    );
+    // Project `bar` leaves pr.draft alone (→ inherits workspace=true); overrides cleanup.branch → false.
+    writeJson(
+      projectSettingsPath(scratchDir, 'bar'),
+      minimal({ git: { cleanup: { branch: false } } }),
+    );
+
+    // Shared session id intentionally — the session tier is project-scoped
+    // per `sessionSettingsPath`, so the same id under two projects is two
+    // independent files.
+    const sessionId = 'sess-shared';
+    // foo/<sess-shared> overrides cleanup.worktree → false.
+    writeJson(
+      sessionSettingsPath(scratchDir, 'foo', sessionId),
+      minimal({ git: { cleanup: { worktree: false } } }),
+    );
+    // bar/<sess-shared> overrides pr.draft → false (narrower than workspace=true).
+    writeJson(
+      sessionSettingsPath(scratchDir, 'bar', sessionId),
+      minimal({ git: { pr: { draft: false } } }),
+    );
+
+    const fooResolved = resolveSettings({ repoRoot: scratchDir, projectName: 'foo', sessionId });
+    const barResolved = resolveSettings({ repoRoot: scratchDir, projectName: 'bar', sessionId });
+
+    // foo cascade — workspace (mode+baseBranch+draft=true) → project (draft=false) → session (worktree=false)
+    expect(fooResolved.git?.workflow?.mode).toBe('worktree-pr');
+    expect(fooResolved.git?.workflow?.baseBranch).toBe('main');
+    // Project-foo narrowed draft; session didn't touch it → project wins.
+    expect(fooResolved.git?.pr?.draft).toBe(false);
+    // Session-foo narrowed worktree → session wins.
+    expect(fooResolved.git?.cleanup?.worktree).toBe(false);
+    // Neither project-foo nor session-foo touched cleanup.branch → DEFAULTS (true).
+    expect(fooResolved.git?.cleanup?.branch).toBe(true);
+
+    // bar cascade — workspace (mode+baseBranch+draft=true) → project (cleanup.branch=false) → session (draft=false)
+    expect(barResolved.git?.workflow?.mode).toBe('worktree-pr');
+    expect(barResolved.git?.workflow?.baseBranch).toBe('main');
+    // Workspace-draft=true would have stood, but session-bar narrowed to false → session wins.
+    expect(barResolved.git?.pr?.draft).toBe(false);
+    // Project-bar narrowed cleanup.branch → project-bar wins (session didn't touch it).
+    expect(barResolved.git?.cleanup?.branch).toBe(false);
+    // Neither project-bar nor session-bar touched cleanup.worktree → DEFAULTS (true).
+    expect(barResolved.git?.cleanup?.worktree).toBe(true);
+  });
+
+  test('session-tier override in project foo does not leak into project bar (same sessionId)', () => {
+    writeJson(workspaceSettingsPath(scratchDir), minimal());
+    // Only project-foo has a session file; project-bar has none.
+    const sessionId = 'sess-leak-check';
+    writeJson(
+      sessionSettingsPath(scratchDir, 'foo', sessionId),
+      minimal({ notify: { desktop: { enabled: true } } }),
+    );
+
+    const fooResolved = resolveSettings({ repoRoot: scratchDir, projectName: 'foo', sessionId });
+    const barResolved = resolveSettings({ repoRoot: scratchDir, projectName: 'bar', sessionId });
+
+    // foo sees its session-tier override.
+    expect(fooResolved.notify?.desktop?.enabled).toBe(true);
+    // bar — same sessionId, but no session file under projects/bar/ →
+    // DEFAULTS leaf (false). Assertion proves the session path is
+    // namespaced by projectName, not by sessionId alone.
+    expect(barResolved.notify?.desktop?.enabled).toBe(false);
+  });
+
+  test('writes via `projectName: "foo"` land only in projects/foo/, not in projects/bar/ or workspace', () => {
+    // W6.3 scenario 4 — settings written via projectName land at the
+    // correct slot. Write at project level for foo, confirm bar's slot
+    // stays empty AND the workspace file stays untouched.
+    const fooSettings = minimal({ git: { pr: { draft: false } } });
+    writeSettingsAtLevel(scratchDir, 'project', fooSettings, undefined, 'foo');
+
+    // foo's slot populated.
+    expect(loadSettingsAtLevel(scratchDir, 'project', undefined, 'foo')).toEqual(fooSettings);
+    // bar's slot empty.
+    expect(loadSettingsAtLevel(scratchDir, 'project', undefined, 'bar')).toBeNull();
+    // Workspace file untouched (the write never targeted workspace).
+    expect(loadSettingsAtLevel(scratchDir, 'workspace')).toBeNull();
+  });
+
+  test('session writes via `projectName: "foo"` land only in projects/foo/sessions/<id>/', () => {
+    const sessionId = 'sess-write-isolation';
+    const fooSessionSettings = minimal({ git: { cleanup: { branch: false } } });
+    writeSettingsAtLevel(
+      scratchDir,
+      'session',
+      fooSessionSettings,
+      sessionId,
+      'foo',
+    );
+
+    // foo's session slot populated.
+    expect(loadSettingsAtLevel(scratchDir, 'session', sessionId, 'foo')).toEqual(
+      fooSessionSettings,
+    );
+    // bar's session slot (same sessionId) empty — writes did not leak.
+    expect(loadSettingsAtLevel(scratchDir, 'session', sessionId, 'bar')).toBeNull();
+  });
+});
+
