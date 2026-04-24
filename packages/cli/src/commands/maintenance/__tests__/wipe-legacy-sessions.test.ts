@@ -13,7 +13,8 @@
  *   - Happy path: inactive legacy sessions are deleted; `.gobbi/projects/`
  *     is never touched, even when a per-project session is active.
  *   - `--dry-run`: prints the plan and deletes nothing.
- *   - Summary line: `"N session(s) wiped, M active session(s) protected"`.
+ *   - Summary line: `"N session(s) wiped"` (no "protected" clause — the
+ *     refuse-all safety model means the clause would always be 0).
  *
  * All tests operate against scratch directories in the OS temp dir.
  */
@@ -382,9 +383,7 @@ describe('runWipeLegacySessions — deletes inactive legacy sessions', () => {
     expect(existsSync(another)).toBe(false);
 
     // Summary reflects the 3 deletions.
-    expect(captured.stdout).toContain(
-      '3 sessions wiped, 0 active sessions protected',
-    );
+    expect(captured.stdout).toContain('3 sessions wiped');
   });
 
   test('does NOT touch .gobbi/projects/ even when it contains terminal sessions', async () => {
@@ -411,9 +410,9 @@ describe('runWipeLegacySessions — deletes inactive legacy sessions', () => {
       runWipeLegacySessionsWithOptions([], { repoRoot: repo }),
     );
     expect(captured.exitCode).toBeNull();
-    expect(captured.stdout).toContain(
-      '0 sessions wiped, 0 active sessions protected',
-    );
+    expect(captured.stdout).toContain('0 sessions wiped');
+    // No "protected" clause under the refuse-all safety model.
+    expect(captured.stdout).not.toContain('protected');
   });
 
   test('singular pluralization for exactly one session', async () => {
@@ -423,9 +422,7 @@ describe('runWipeLegacySessions — deletes inactive legacy sessions', () => {
       runWipeLegacySessionsWithOptions([], { repoRoot: repo }),
     );
     expect(captured.exitCode).toBeNull();
-    expect(captured.stdout).toContain(
-      '1 session wiped, 0 active sessions protected',
-    );
+    expect(captured.stdout).toContain('1 session wiped');
   });
 });
 
@@ -448,9 +445,7 @@ describe('runWipeLegacySessions — --dry-run', () => {
     expect(captured.stdout).toContain('done-1');
     expect(captured.stdout).toContain('err-1');
     expect(captured.stdout).toContain('[dry-run]');
-    expect(captured.stdout).toContain(
-      '2 sessions wiped, 0 active sessions protected',
-    );
+    expect(captured.stdout).toContain('2 sessions wiped');
 
     // Nothing deleted.
     expect(existsSync(done)).toBe(true);
@@ -475,18 +470,28 @@ describe('runWipeLegacySessions — --dry-run', () => {
 // ===========================================================================
 
 describe('renderSummary', () => {
-  test('singular forms when counts are 1', () => {
-    const out = renderSummary({ wiped: 1, protectedCount: 1, dryRun: false });
-    expect(out).toBe('1 session wiped, 1 active session protected\n');
+  test('singular form when wiped is 1', () => {
+    const out = renderSummary({ wiped: 1, dryRun: false });
+    expect(out).toBe('1 session wiped\n');
   });
 
-  test('plural forms when counts are not 1', () => {
-    const out = renderSummary({ wiped: 0, protectedCount: 2, dryRun: false });
-    expect(out).toBe('0 sessions wiped, 2 active sessions protected\n');
+  test('plural form when wiped is not 1', () => {
+    const out = renderSummary({ wiped: 0, dryRun: false });
+    expect(out).toBe('0 sessions wiped\n');
+  });
+
+  test('refuse-all model does not emit a "protected" clause', () => {
+    // Under the refuse-all safety model the summary is only ever
+    // rendered when no legacy session is active — reporting a
+    // "protected" count would always read 0. The clause is omitted
+    // entirely rather than kept as a dead field.
+    const out = renderSummary({ wiped: 5, dryRun: false });
+    expect(out).not.toContain('protected');
+    expect(out).not.toContain('active');
   });
 
   test('dry-run prefix', () => {
-    const out = renderSummary({ wiped: 3, protectedCount: 0, dryRun: true });
+    const out = renderSummary({ wiped: 3, dryRun: true });
     expect(out.startsWith('[dry-run] ')).toBe(true);
   });
 });

@@ -71,6 +71,22 @@ import {
  * Kept as a module-local `ReadonlySet<string>` rather than imported from
  * `workflow/state.ts` on purpose: we never narrow to `WorkflowStep` here
  * (see file header — Arch F3 rationale for raw-string reads).
+ *
+ * ## Intentional divergence from `workflow/state.ts::TERMINAL_STEPS`
+ *
+ * `TERMINAL_STEPS` in `workflow/state.ts` contains only `'done'` — its
+ * predicate is "no further transitions are legal from this step". It
+ * deliberately OMITS `'error'` because `workflow.resume` can transition
+ * a session out of `'error'` (see `workflow/transitions.ts`).
+ *
+ * `TERMINAL_CURRENT_STEPS` answers a different question — "is this
+ * session wipe-safe?" — and therefore INCLUDES `'error'`. An errored
+ * session is wipe-safe even though the state machine allows resuming
+ * from it: the operator running `gobbi maintenance wipe-legacy-sessions`
+ * is asking "can the directory be deleted" not "can the workflow still
+ * progress". These two predicates are independent by design; adding a
+ * new terminal state to `TERMINAL_STEPS` does NOT automatically add it
+ * here, and vice versa.
  */
 export const TERMINAL_CURRENT_STEPS: ReadonlySet<string> = new Set<string>([
   'done',
@@ -220,8 +236,14 @@ function scanLayer(layer: Layer): readonly StateActiveSession[] {
  * Deliberately does NOT call `isValidState` — see the file header for the
  * Arch F3 rationale. The raw string is sufficient for the terminal-set
  * comparison in {@link scanLayer}.
+ *
+ * Exported so callers outside this module that need to classify a single
+ * session without invoking the full dual-layer scan (e.g., the wipe
+ * command's inactive-session enumerator) can share the exact same
+ * parsing discipline rather than reimplementing it. Duplicating the
+ * chain risks the two reads drifting if the `state.json` shape evolves.
  */
-function readCurrentStepRaw(sessionDir: string): string | null {
+export function readCurrentStepRaw(sessionDir: string): string | null {
   const statePath = join(sessionDir, 'state.json');
   if (!existsSync(statePath)) return null;
 

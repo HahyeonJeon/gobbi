@@ -12,6 +12,19 @@
  * migration session keeps writing there. Once migration completes, the
  * operator runs this command ONCE to reclaim the legacy directories.
  *
+ * ## Safety model — all-or-nothing refusal
+ *
+ * This command implements a stricter safety rule than the original plan
+ * text: if ANY legacy session under `.gobbi/sessions/<id>/` has a
+ * non-terminal `currentStep`, the command refuses to delete anything
+ * and exits 1. Partial wipes ("skip active, continue with inactive")
+ * are deliberately disallowed — the operator never has to choose
+ * between protecting live work and reclaiming disk; every wipe run is
+ * either a full sweep of the legacy layer or a no-op. Per-project
+ * sessions under `.gobbi/projects/<name>/sessions/` never block the
+ * wipe (the wipe only ever targets the legacy layer) and are never
+ * touched regardless of their state.
+ *
  * The command is deliberately narrow:
  *
  *   1. It uses STATE-BASED detection (not heartbeat-based). A session is
@@ -23,9 +36,21 @@
  *      session lives there. The per-project layer is the canonical home
  *      going forward; only the legacy flat layer is wiped.
  *   3. If any LEGACY session is active, the command refuses to run and
- *      exits 1. Active sessions in per-project layers do not block the
- *      wipe — the wipe only ever targets the legacy layer.
+ *      exits 1 — no partial deletions. See the safety-model paragraph
+ *      above.
  *   4. `--dry-run` prints the plan and exits 0 without deleting anything.
+ *
+ * ## Ordering vs W4 (`'plan'` → `'planning'` step rename)
+ *
+ * Safe to run BEFORE or AFTER the W4 `'plan'` → `'planning'` rename.
+ * The step-name detection uses raw-string `state.json` reads
+ * (`readCurrentStepRaw` in `lib/active-sessions.ts`) and compares only
+ * against `TERMINAL_CURRENT_STEPS = {'done', 'error'}`. Values outside
+ * that set — including both pre-rename `'plan'` and post-rename
+ * `'planning'` — classify as active-to-protect. Detection does NOT
+ * depend on `VALID_STEPS` membership or `isValidState`; a session
+ * whose step was renamed out of the union is still protected. See
+ * `plan-remediation.md` §Arch F3 for the rationale.
  *
  * ## Scope boundary
  *
@@ -48,26 +73,21 @@
  * @see `.gobbi/sessions/35742566-.../plan/plan-remediation.md`
  *      §W3.3 wipe order vs W4 rename (Arch F3)
  * @see `lib/active-sessions.ts` — state-based detection helper
+ *      (`readCurrentStepRaw`, `findStateActiveSessions`)
  * @see `commands/gotcha/promote.ts` — sibling command (heartbeat-based
  *      detection, different semantics)
  */
 
-import {
-  existsSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  statSync,
-} from 'node:fs';
+import { existsSync, readdirSync, rmSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 
 import {
   findStateActiveSessions,
+  readCurrentStepRaw,
   TERMINAL_CURRENT_STEPS,
   type StateActiveSession,
 } from '../../lib/active-sessions.js';
-import { isRecord, isString } from '../../lib/guards.js';
 import { getRepoRoot } from '../../lib/repo.js';
 import { workspaceRoot } from '../../lib/workspace-paths.js';
 
@@ -79,9 +99,14 @@ const USAGE = `Usage: gobbi maintenance wipe-legacy-sessions [options]
 
 Delete every session directory under the legacy flat layout
 (.gobbi/sessions/<id>) whose state.json.currentStep is terminal
-('done' or 'error'). Refuses to run if ANY legacy session is still
-active, so the operator is never asked to choose between protecting
-live work and reclaiming disk.
+('done' or 'error'). Refuses to run if ANY legacy session has a
+non-terminal currentStep — partial wipes are disallowed. The operator
+is never asked to choose between protecting live work and reclaiming
+disk; every run is either a full sweep of the legacy layer or a no-op.
+
+Safe to run before OR after the W4 'plan' -> 'planning' step rename:
+detection reads state.json.currentStep as a raw string and does not
+depend on VALID_STEPS membership. See plan-remediation.md §Arch F3.
 
 The new multi-project layout (.gobbi/projects/<name>/sessions/...) is
 NEVER touched by this command.
@@ -163,27 +188,33 @@ export async function runWipeLegacySessionsWithOptions(
 
   // --- 5. Enumerate INACTIVE legacy sessions to wipe --------------------
   //
-  // `findStateActiveSessions` returns only the ACTIVE set; the wipe set is
-  // its complement (restricted to the legacy layer). Rather than scan the
-  // disk a second time with different semantics, delegate to a dedicated
-  // helper that walks the same directory and filters the other way. This
-  // keeps the "what's on disk" source of truth in one place and makes the
-  // inverse relationship obvious.
+  // `findStateActiveSessions` returned only the ACTIVE set (across both
+  // layers); the wipe set is its complement restricted to the legacy
+  // layer. The two passes over `.gobbi/sessions/` are intentional: the
+  // active scan is shared with the per-project layer and feeds the
+  // refusal diagnostic, while the inactive scan lives here and carries
+  // only the fields the wipe renderer needs. Factoring the inactive
+  // enumeration into its own helper keeps the two pass semantics
+  // (active-or-else-skip vs inactive-or-else-skip) legible rather than
+  // combining them into a single filter expression.
   const inactiveLegacy = listInactiveLegacySessions(repoRoot);
 
   // --- 6. Execute (or print) --------------------------------------------
+  //
+  // The refusal guard above means we only reach here when NO legacy
+  // session is active, so every entry in `inactiveLegacy` is terminal
+  // and the "M active sessions protected" clause from the old
+  // skip-active-continue design would always be zero. The summary omits
+  // it entirely.
   const wiped = inactiveLegacy.length;
-  const protectedCount = 0; // by construction — else we'd have exited above
 
   if (dryRun) {
     for (const s of inactiveLegacy) {
       process.stdout.write(
-        `Would wipe: ${s.sessionDir} (currentStep: ${s.currentStep ?? 'done'})\n`,
+        `Would wipe: ${s.sessionDir} (currentStep: ${s.currentStep})\n`,
       );
     }
-    process.stdout.write(
-      renderSummary({ wiped, protectedCount, dryRun: true }),
-    );
+    process.stdout.write(renderSummary({ wiped, dryRun: true }));
     return;
   }
 
@@ -191,9 +222,7 @@ export async function runWipeLegacySessionsWithOptions(
     process.stdout.write(`Wiping: ${s.sessionDir}\n`);
     rmSync(s.sessionDir, { recursive: true, force: true });
   }
-  process.stdout.write(
-    renderSummary({ wiped, protectedCount, dryRun: false }),
-  );
+  process.stdout.write(renderSummary({ wiped, dryRun: false }));
 }
 
 // ---------------------------------------------------------------------------
@@ -203,13 +232,17 @@ export async function runWipeLegacySessionsWithOptions(
 
 /**
  * One legacy-layer session earmarked for deletion by the wipe command.
- * Mirrors the active-session shape but carries only the fields the
- * command needs for rendering.
+ * Mirrors the active-session shape but narrows `currentStep` to the
+ * non-null case: an entry is only produced after
+ * {@link TERMINAL_CURRENT_STEPS}`.has(step)` succeeds, which requires
+ * `step` to be a concrete string. The null case (missing / malformed
+ * `state.json`) is structurally excluded here — those sessions classify
+ * as active and the caller has already exited.
  */
 interface InactiveLegacySession {
   readonly sessionId: string;
   readonly sessionDir: string;
-  readonly currentStep: string | null;
+  readonly currentStep: string;
 }
 
 /**
@@ -217,9 +250,12 @@ interface InactiveLegacySession {
  * `state.json.currentStep` IS in {@link TERMINAL_CURRENT_STEPS}. The
  * complement of `findStateActiveSessions` restricted to the legacy layer.
  *
- * Sessions with missing / malformed state.json are excluded (they are
- * active under our conservative rule and should already have aborted the
- * caller via the guard above).
+ * The raw-string read is delegated to `readCurrentStepRaw` in
+ * `lib/active-sessions.ts` so the two enumerations (active + inactive)
+ * share one parsing discipline. Sessions with missing / malformed
+ * state.json are excluded (they classify as active under the
+ * conservative rule and should already have aborted the caller via the
+ * refusal guard above).
  */
 function listInactiveLegacySessions(
   repoRoot: string,
@@ -243,26 +279,11 @@ function listInactiveLegacySessions(
       continue;
     }
 
-    const statePath = join(sessionDir, 'state.json');
-    if (!existsSync(statePath)) continue; // unreadable → treat as active
-
-    let raw: string;
-    try {
-      raw = readFileSync(statePath, 'utf8');
-    } catch {
-      continue;
-    }
-
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      continue;
-    }
-
-    if (!isRecord(parsed)) continue;
-    const step = parsed['currentStep'];
-    if (!isString(step)) continue;
+    const step = readCurrentStepRaw(sessionDir);
+    // `null` means missing / malformed / wrong-type state.json — those
+    // sessions classify as active (the refusal guard upstream has
+    // already aborted on them) and are skipped here.
+    if (step === null) continue;
 
     if (TERMINAL_CURRENT_STEPS.has(step)) {
       out.push({ sessionId: id, sessionDir, currentStep: step });
@@ -303,18 +324,21 @@ export function renderActiveLegacyError(
 /**
  * Render the one-line summary of the wipe result. Kept as a helper so the
  * string is testable without executing `rmSync`.
+ *
+ * The summary does not report a "protected" count: under the refuse-all
+ * safety model the helper is only ever reached with zero active legacy
+ * sessions in flight, so the clause would always read "0 active sessions
+ * protected". The emitted line is simply `<N> session(s) wiped` with an
+ * optional `[dry-run] ` prefix.
  */
 export function renderSummary(opts: {
   readonly wiped: number;
-  readonly protectedCount: number;
   readonly dryRun: boolean;
 }): string {
   const prefix = opts.dryRun ? '[dry-run] ' : '';
   return `${prefix}${opts.wiped} session${
     opts.wiped === 1 ? '' : 's'
-  } wiped, ${opts.protectedCount} active session${
-    opts.protectedCount === 1 ? '' : 's'
-  } protected\n`;
+  } wiped\n`;
 }
 
 // ---------------------------------------------------------------------------

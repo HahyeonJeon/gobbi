@@ -21,6 +21,7 @@ import { join } from 'node:path';
 
 import {
   findStateActiveSessions,
+  readCurrentStepRaw,
   TERMINAL_CURRENT_STEPS,
   type StateActiveSession,
 } from '../active-sessions.js';
@@ -336,5 +337,66 @@ describe('findStateActiveSessions — dual-layer scan', () => {
     const result = findStateActiveSessions(repo);
     expect(result.length).toBe(1);
     expect(result[0]?.projectName).toBe('foo');
+  });
+});
+
+// ===========================================================================
+// readCurrentStepRaw (now exported; shared by the wipe command's inactive
+// enumeration)
+// ===========================================================================
+
+describe('readCurrentStepRaw — edge cases', () => {
+  test('returns the raw string value for a well-formed state.json', () => {
+    const repo = makeRepo();
+    const dir = seedLegacySessionWithStep(repo, 's-1', 'execution');
+    expect(readCurrentStepRaw(dir)).toBe('execution');
+  });
+
+  test('returns null when state.json is absent', () => {
+    const repo = makeRepo();
+    const dir = seedLegacySession(repo, 's-missing', null);
+    expect(readCurrentStepRaw(dir)).toBeNull();
+  });
+
+  test('returns null when state.json is not parseable JSON', () => {
+    const repo = makeRepo();
+    const dir = seedLegacySession(repo, 's-bad', '{not valid,,,');
+    expect(readCurrentStepRaw(dir)).toBeNull();
+  });
+
+  test('returns null when the parsed root is not an object', () => {
+    const repo = makeRepo();
+    const dir = seedLegacySession(repo, 's-array', '[1, 2, 3]');
+    expect(readCurrentStepRaw(dir)).toBeNull();
+  });
+
+  test('returns null when currentStep is missing from the object', () => {
+    const repo = makeRepo();
+    const dir = seedLegacySession(
+      repo,
+      's-no-step',
+      JSON.stringify({ sessionId: 's-no-step' }),
+    );
+    expect(readCurrentStepRaw(dir)).toBeNull();
+  });
+
+  test('returns null when currentStep is not a string', () => {
+    const repo = makeRepo();
+    const dir = seedLegacySession(
+      repo,
+      's-wrong-type',
+      JSON.stringify({ currentStep: 42 }),
+    );
+    expect(readCurrentStepRaw(dir)).toBeNull();
+  });
+
+  test('returns the unvalidated raw string — pre-rename `plan` survives', () => {
+    // Load-bearing for the W3.3/W4 ordering guarantee: even after
+    // `VALID_STEPS` drops `'plan'`, `readCurrentStepRaw` still returns
+    // it verbatim so the wipe-safety classifier can honour the terminal
+    // set without taking a dependency on the workflow state union.
+    const repo = makeRepo();
+    const dir = seedLegacySessionWithStep(repo, 's-plan', 'plan');
+    expect(readCurrentStepRaw(dir)).toBe('plan');
   });
 });
