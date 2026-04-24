@@ -31,9 +31,10 @@ import { $ } from 'bun';
 import { Database } from 'bun:sqlite';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import type { EventRow } from '../../workflow/migrations.js';
+import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 
 // CLI entry — mirrors workflow-cycle.test.ts. Two `..` hops land at
 // packages/cli/src/cli.ts.
@@ -98,7 +99,11 @@ describe('migration chain e2e', () => {
           .quiet();
         expect(initResult.exitCode).toBe(0);
 
-        const sessionDir = join(tmpRoot, '.gobbi', 'sessions', sessionId);
+        const sessionDir = sessionDirForProject(
+          tmpRoot,
+          basename(tmpRoot),
+          sessionId,
+        );
         const dbPath = join(sessionDir, 'gobbi.db');
         const statePath = join(sessionDir, 'state.json');
         const stateBackupPath = join(sessionDir, 'state.json.backup');
