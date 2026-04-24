@@ -1026,10 +1026,11 @@ function applyFreshInstallActivation(
   if (!dryRun) {
     writeSettingsAtLevel(repoRoot, 'workspace', updated);
     // Build the farm directly at `.claude/` (fresh-install = first
-    // activation, nothing to rotate). `buildFarmIntoRoot` wipes any
-    // existing content at the destination; we accept that only in the
-    // fresh-install path because the upgrade gate has already filtered
-    // non-empty targets via the `--upgrade` flag.
+    // activation, nothing to rotate). `buildFarmIntoRoot` preserves
+    // non-farm siblings under `.claude/` (CLAUDE.md, settings.json,
+    // etc.) and wipes only the three per-kind subdirectories it owns
+    // — see the docblock on `buildFarmIntoRoot` for the preservation
+    // contract.
     const claudeRoot = join(repoRoot, '.claude');
     buildFarmIntoRoot(repoRoot, claudeRoot, projectName);
   }

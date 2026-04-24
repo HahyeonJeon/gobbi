@@ -92,31 +92,43 @@ export const CLAUDE_FARM_KINDS: readonly ClaudeSymlinkKind[] = [
  *
  * Behaviour:
  *
- *   - If `destRoot` already exists, it is WIPED first. Callers pass a
- *     fresh path, or explicitly accept the wipe (fresh-install uses
- *     `.claude/` directly and the caller verifies non-existence
- *     upstream).
+ *   - `destRoot` itself is NOT wiped — only the three per-kind subdirs
+ *     (`destRoot/skills`, `destRoot/agents`, `destRoot/rules`) are
+ *     removed before being rebuilt. This protects non-farm siblings
+ *     that may live under `destRoot` (e.g. the operator's
+ *     `.claude/CLAUDE.md`, `settings.json`, `README.md`) which the farm
+ *     does not own and must never delete. The fresh-install path
+ *     depends on this preservation — wiping the whole `.claude/` root
+ *     would silently destroy user content.
+ *   - `destRoot` is created if absent so fresh repos (no prior
+ *     `.claude/`) still get a materialised farm in one call.
  *   - Each kind directory is materialised even if the source kind dir
  *     is absent — the destination carries an empty dir, matching the
  *     pre-swap behaviour the rotation logic relies on.
  *   - A single failure propagates. The caller is responsible for
- *     cleanup (e.g. `rmSync(destRoot)` before exit).
+ *     cleanup (e.g. per-kind remove, or full `destRoot` removal only
+ *     when the caller owns the whole tree — the switch-rotation path
+ *     builds the farm under a temp root it owns outright).
  */
 export function buildFarmIntoRoot(
   repoRoot: string,
   destRoot: string,
   projectName: string,
 ): void {
-  // Wipe any stale content at the destination so a caller that ran
-  // twice (aborted prior run, retried) starts with a clean tree.
-  if (existsSync(destRoot)) {
-    rmSync(destRoot, { recursive: true, force: true });
-  }
+  // Ensure the destination root exists without touching its existing
+  // contents. Non-farm siblings (CLAUDE.md, settings.json, etc.) are
+  // preserved; stale farm kinds are wiped per-kind below.
   mkdirSync(destRoot, { recursive: true });
 
   for (const kind of CLAUDE_FARM_KINDS) {
     const srcRoot = projectSubdir(repoRoot, projectName, kind);
     const dstRoot = path.join(destRoot, kind);
+    // Per-kind wipe: a prior aborted run, a retried install, or an
+    // existing farm at this kind must start clean so mirroring into
+    // the dir never collides with stale symlinks/files.
+    if (existsSync(dstRoot)) {
+      rmSync(dstRoot, { recursive: true, force: true });
+    }
     mkdirSync(dstRoot, { recursive: true });
     // A newly created project may not have scaffolded every kind yet;
     // skip silently — the destination stays as an empty dir.

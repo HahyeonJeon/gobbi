@@ -410,6 +410,68 @@ describe('runInstall — fresh install activation', () => {
     expect(farmAfter).toBe(farmBefore);
   });
 
+  test('fresh install preserves existing .claude/ files', async () => {
+    // Regression lock for W5 eval NI-1: `buildFarmIntoRoot` must NOT
+    // wipe `destRoot` itself — only the three per-kind subdirectories.
+    // Operators frequently carry non-farm siblings under `.claude/`
+    // (CLAUDE.md, README.md, settings.json); a fresh install has to
+    // leave them intact.
+    const templateRoot = makeTemplate({
+      'skills/_x/SKILL.md': '# x\n',
+      'agents/a.md': '# a\n',
+      'rules/r.md': '# r\n',
+    });
+    const repo = makeRepo();
+
+    // Seed preexisting `.claude/` siblings.
+    const claudeRoot = join(repo, '.claude');
+    mkdirSync(claudeRoot, { recursive: true });
+    writeFileSync(
+      join(claudeRoot, 'CLAUDE.md'),
+      '# operator claude.md\n',
+      'utf8',
+    );
+    writeFileSync(
+      join(claudeRoot, 'README.md'),
+      '# operator readme\n',
+      'utf8',
+    );
+    writeFileSync(
+      join(claudeRoot, 'user-settings.json'),
+      JSON.stringify({ operator: 'value' }),
+      'utf8',
+    );
+
+    await captureExit(() =>
+      runInstallWithOptions([], { repoRoot: repo, templateRoot }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+
+    // Siblings survive with their original content.
+    expect(existsSync(join(claudeRoot, 'CLAUDE.md'))).toBe(true);
+    expect(readFileSync(join(claudeRoot, 'CLAUDE.md'), 'utf8')).toBe(
+      '# operator claude.md\n',
+    );
+    expect(readFileSync(join(claudeRoot, 'README.md'), 'utf8')).toBe(
+      '# operator readme\n',
+    );
+    expect(
+      JSON.parse(readFileSync(join(claudeRoot, 'user-settings.json'), 'utf8')),
+    ).toEqual({ operator: 'value' });
+
+    // Farm symlinks materialise under the three kind roots.
+    for (const kind of __INTERNALS__.TEMPLATE_KINDS) {
+      expect(existsSync(join(claudeRoot, kind))).toBe(true);
+    }
+    expect(
+      lstatSync(join(claudeRoot, 'rules', 'r.md')).isSymbolicLink(),
+    ).toBe(true);
+
+    // Workspace settings written as usual.
+    expect(existsSync(join(repo, '.gobbi', 'settings.json'))).toBe(true);
+  });
+
   test('--dry-run shows the settings + farm lines without touching disk', async () => {
     const templateRoot = makeTemplate({ 'rules/r.md': '# r\n' });
     const repo = makeRepo();
