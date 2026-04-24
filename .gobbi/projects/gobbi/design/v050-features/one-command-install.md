@@ -1,20 +1,52 @@
-# One-Command Install & Auto-Update
+# One-Command Install
 
-Feature description for gobbi's plugin-based distribution model. Read this to understand how gobbi installs, what updates automatically, and why no manual `.claude/` file maintenance is required.
+Feature description for gobbi's install and multi-project management surface. Read this to understand how `gobbi install`, `gobbi project create/switch`, and the `.claude/` symlink farm coexist as complementary mechanisms, and when a user reaches for each one.
 
 ---
 
-> **Install once. Update the CLI, skills, agents, rules, and hooks together — no manual edits.**
+> **Three mechanisms, one coherent model: install distributes content, project commands manage projects, the symlink farm exposes the active project to Claude Code.**
 
-Gobbi distributes as a Claude Code plugin. Installing the plugin brings the entire gobbi system in a single operation: the CLI binary, all workflow agents, domain knowledge skills, always-active behavioral rules, and the hook wiring that registers those rules with every session. Nothing is assembled by hand.
+These are not competing installers. Each has a distinct responsibility. Understanding which layer owns which concern prevents confusion when configuring a second project or upgrading an existing one.
 
-The gobbi behavioral rule that governs every session ships with the plugin and is refreshed whenever the plugin updates. There is no version drift between what the plugin ships and what a session loads. Projects never need to maintain their own copy of gobbi's rules, agents, or hooks; they inherit them through the plugin relationship.
+---
 
-The entry point for this story is `/gobbi`. When a user installs the gobbi plugin and runs `/gobbi` in a session, the session agent checks whether `gobbi-cli` is installed and whether its version is current. If the CLI is missing or outdated, the session agent installs or updates it automatically — the user does not run a separate install command. `/gobbi` is the single trigger that drives the entire install and update flow from inside the session.
+## What `gobbi install` does
 
-The CLI package `@gobbitools/cli` is the v0.5.0 distribution target. All subsystems — the workflow engine, prompt compiler, event store, guard evaluation — live in the CLI package and update atomically when the plugin updates. The hook scripts registered in `hooks/hooks.json` contain no logic; they delegate entirely to `gobbi` CLI commands. This separation means hook wiring stays stable across releases while CLI behavior evolves.
+`gobbi install` lays the gobbi template bundle — skills, agents, and rules from `@gobbitools/cli` — into `.gobbi/projects/<projectName>/`. On a fresh install (no prior manifest, no preexisting content) it does three things atomically: copies the template files into the project directory, writes `.gobbi/settings.json` with `projects.active` and `projects.known`, and builds the `.claude/{skills,agents,rules}/` per-file symlink farm pointing at that project. After a single `gobbi install` the Claude Code integration is live — no follow-up command needed.
 
-The zero-config assumption is intentional: gobbi does not require any project-specific `.claude/` file edits to function. Skills, agents, rules, and hooks all come through the plugin. Project-specific knowledge — design notes, decisions, gotchas, backlog items — belongs in `.gobbi/projects/{project_name}/`, which projects own. Gobbi's own layer is self-contained and self-updating.
+On a subsequent `gobbi install --upgrade`, the command performs a three-way merge keyed on the hash manifest written during the previous install. Files the user has not touched are updated to the new template; files with user edits are left alone; files where both sides diverged are reported as conflicts for manual resolution. The upgrade path deliberately skips the settings and farm steps — it is content-only, preserving whatever activation state already exists.
+
+The `--project` flag lets a user install into any named project; the default is `gobbi`. This is how secondary projects receive their initial content without going through `gobbi project create` first.
+
+---
+
+## What `gobbi project create` and `gobbi project switch` do
+
+`gobbi project create <name>` scaffolds the directory structure for a new project under `.gobbi/projects/<name>/`, seeds it from the same template bundle, and appends the name to `projects.known` in `settings.json`. It deliberately does NOT set `projects.active` and does NOT rotate the symlink farm. Creating a project does not change what Claude Code sees — the intent is to prepare the project, then switch to it when ready.
+
+`gobbi project switch <name>` rotates the `.claude/` farm to point at the named project and updates `projects.active`. The switch uses a temp-build-then-per-kind-swap strategy that leaves the old farm untouched until every symlink in the new farm is materialised successfully. After the switch, all Claude Code sessions loading from `.claude/` pick up the new project's skills, agents, and rules.
+
+`gobbi project list` shows all known projects and which is active.
+
+---
+
+## The `.claude/` symlink farm
+
+The farm is the loader surface for Claude Code. Each file under `.claude/skills/`, `.claude/agents/`, and `.claude/rules/` is a symlink pointing into `.gobbi/projects/<active>/`. The farm is built by `gobbi install` (fresh) and rotated by `gobbi project switch`. It is not hand-maintained — editing symlinks directly is not safe across install upgrades.
+
+The farm contains only the three template bundle roots. Project docs (design, decisions, gotchas, sessions) under `.gobbi/projects/<name>/` are not part of the farm and are not loaded by Claude Code automatically. They are accessed directly by agents during workflow steps.
+
+---
+
+## Typical flows
+
+For a first-time setup in a new repository: `gobbi install` covers everything — templates, settings, and farm in one command.
+
+For a second project in the same workspace: `gobbi project create <name>` scaffolds and seeds the directory, then `gobbi project switch <name>` activates it.
+
+For upgrading after a CLI update: `gobbi install --upgrade` merges new template content while preserving user edits.
+
+For switching back to a prior project: `gobbi project switch <prior-name>` re-points the farm; no content is re-installed.
 
 ---
 
@@ -22,6 +54,6 @@ The zero-config assumption is intentional: gobbi does not require any project-sp
 
 | Document | Covers |
 |----------|--------|
-| `deterministic-orchestration.md` | The six-step workflow; the `/gobbi`-driven install check runs inside Workflow Configuration |
-| `cli-as-runtime-api.md` | The CLI surface the plugin installs |
-| `claude-docs-management.md` | How rules, skills, and agents ship with the plugin and reach `.claude/` |
+| `gobbi-memory.md` | `.gobbi/projects/<name>/` directory layout and the Memorization Loop |
+| `gobbi-config/README.md` | `settings.json` cascade; `projects.active` and `projects.known` fields |
+| `claude-docs-management.md` | How the plugin ships the template bundle and how it reaches `.claude/` |
