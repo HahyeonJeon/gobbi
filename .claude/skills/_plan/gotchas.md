@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/_plan/gotchas.md

@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/_innovation/SKILL.md

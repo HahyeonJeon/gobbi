@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/_gotcha/project-gotcha.md

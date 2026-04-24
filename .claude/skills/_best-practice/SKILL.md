@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/_best-practice/SKILL.md

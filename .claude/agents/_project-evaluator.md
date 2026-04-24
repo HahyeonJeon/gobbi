@@ -1,0 +1,1 @@
+../../.gobbi/projects/gobbi/agents/_project-evaluator.md

@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/_execution/SKILL.md

@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/gobbi/cli-setup.md

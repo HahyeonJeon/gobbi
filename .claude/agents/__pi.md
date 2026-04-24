@@ -1,0 +1,1 @@
+../../.gobbi/projects/gobbi/agents/__pi.md
