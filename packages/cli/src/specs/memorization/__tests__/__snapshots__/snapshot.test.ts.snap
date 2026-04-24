@@ -54,10 +54,10 @@ Criteria:
 session.schemaVersion=4
 session.currentStep=memorization
 session.currentSubstate=null
-session.completedSteps=[ideation,plan,execution,execution_eval]
-session.evalConfig=ideation=false,planning=undefined
+session.completedSteps=[ideation,planning,execution,execution_eval]
+session.evalConfig=ideation=false,planning=false
 session.feedbackRound=0/3
-session.artifactCounts={execution=1,execution_eval=3,ideation=3,plan=1}
+session.artifactCounts={execution=1,execution_eval=3,ideation=3,planning=1}
 
 dynamic.timestamp=2026-04-16T12:00:00.000Z
 dynamic.activeSubagentCount=0
@@ -120,10 +120,10 @@ Criteria:
 session.schemaVersion=4
 session.currentStep=memorization
 session.currentSubstate=null
-session.completedSteps=[ideation,plan,execution,execution_eval]
-session.evalConfig=ideation=false,planning=undefined
+session.completedSteps=[ideation,planning,execution,execution_eval]
+session.evalConfig=ideation=false,planning=false
 session.feedbackRound=2/3
-session.artifactCounts={execution=1,execution_eval=3,ideation=1,plan=1}
+session.artifactCounts={execution=1,execution_eval=3,ideation=1,planning=1}
 
 dynamic.timestamp=2026-04-16T12:00:00.000Z
 dynamic.activeSubagentCount=0
@@ -190,10 +190,10 @@ Criteria:
 session.schemaVersion=4
 session.currentStep=memorization
 session.currentSubstate=null
-session.completedSteps=[ideation,plan,execution,execution_eval,error]
-session.evalConfig=ideation=false,planning=undefined
+session.completedSteps=[ideation,planning,execution,execution_eval,error]
+session.evalConfig=ideation=false,planning=false
 session.feedbackRound=3/3
-session.artifactCounts={execution=1,execution_eval=3,ideation=1,plan=1}
+session.artifactCounts={execution=1,execution_eval=3,ideation=1,planning=1}
 
 dynamic.timestamp=2026-04-16T12:00:00.000Z
 dynamic.activeSubagentCount=0

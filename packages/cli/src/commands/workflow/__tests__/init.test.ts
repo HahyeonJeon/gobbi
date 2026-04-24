@@ -2,7 +2,7 @@
  * Unit tests for `gobbi workflow init` — idempotent session initialisation.
  *
  * Coverage:
- *   - Fresh init writes metadata.json with schemaVersion 2, projectRoot, and
+ *   - Fresh init writes metadata.json with schemaVersion 3, projectRoot, and
  *     an empty techStack (C.2c fills techStack in a follow-up commit).
  *   - Fresh init opens gobbi.db and emits workflow.start + workflow.eval.decide
  *     atomically; the session reaches `ideation`.
@@ -141,7 +141,7 @@ describe('resolveSessionId', () => {
 // ---------------------------------------------------------------------------
 
 describe('runInit — fresh session', () => {
-  test('writes metadata.json with schema v2, empty techStack, and the given flags', async () => {
+  test('writes metadata.json with schema v3, empty techStack, and the given flags', async () => {
     const repo = makeScratchRepo();
     await captureExit(() =>
       runInitWithOptions(

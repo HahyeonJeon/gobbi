@@ -55,8 +55,8 @@ describe('ensureSessionStepDir', () => {
   });
 
   test('returns the step path', () => {
-    const returned = ensureSessionStepDir(scratchDir, 'plan');
-    expect(returned).toBe(join(scratchDir, 'plan'));
+    const returned = ensureSessionStepDir(scratchDir, 'planning');
+    expect(returned).toBe(join(scratchDir, 'planning'));
   });
 
   test('idempotent when called twice', () => {
@@ -77,7 +77,7 @@ describe('ensureSessionStepDir', () => {
 
   const ALL_STEPS: readonly StepId[] = [
     'ideation',
-    'plan',
+    'planning',
     'execution',
     'evaluation',
     'memorization',

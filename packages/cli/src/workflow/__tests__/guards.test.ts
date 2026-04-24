@@ -69,7 +69,7 @@ describe('buildGuardMatcher — exact match', () => {
   test('returns guards whose (step, tool) pair matches exactly', () => {
     const matcher = buildGuardMatcher([
       denyGuard('g1', ['execution'], ['Write']),
-      denyGuard('g2', ['plan'], ['Edit']),
+      denyGuard('g2', ['planning'], ['Edit']),
     ]);
     const hits = matcher.match('execution', 'Write');
     expect(hits.map((g) => g.id)).toEqual(['g1']);
@@ -77,12 +77,12 @@ describe('buildGuardMatcher — exact match', () => {
 
   test('cartesian product — multiple steps and multiple tools', () => {
     const matcher = buildGuardMatcher([
-      denyGuard('g1', ['execution', 'plan'], ['Write', 'Edit']),
+      denyGuard('g1', ['execution', 'planning'], ['Write', 'Edit']),
     ]);
     expect(matcher.match('execution', 'Write').map((g) => g.id)).toEqual(['g1']);
     expect(matcher.match('execution', 'Edit').map((g) => g.id)).toEqual(['g1']);
-    expect(matcher.match('plan', 'Write').map((g) => g.id)).toEqual(['g1']);
-    expect(matcher.match('plan', 'Edit').map((g) => g.id)).toEqual(['g1']);
+    expect(matcher.match('planning', 'Write').map((g) => g.id)).toEqual(['g1']);
+    expect(matcher.match('planning', 'Edit').map((g) => g.id)).toEqual(['g1']);
     expect(matcher.match('ideation', 'Write')).toEqual([]);
     expect(matcher.match('execution', 'Read')).toEqual([]);
   });
@@ -98,7 +98,7 @@ describe('buildGuardMatcher — step wildcard', () => {
       denyGuard('sw', '*', ['Write']),
     ]);
     expect(matcher.match('execution', 'Write').map((g) => g.id)).toEqual(['sw']);
-    expect(matcher.match('plan', 'Write').map((g) => g.id)).toEqual(['sw']);
+    expect(matcher.match('planning', 'Write').map((g) => g.id)).toEqual(['sw']);
     expect(matcher.match('ideation', 'Write').map((g) => g.id)).toEqual(['sw']);
     expect(matcher.match('idle', 'Write').map((g) => g.id)).toEqual(['sw']);
     // Tool mismatch — still empty.
@@ -121,7 +121,7 @@ describe('buildGuardMatcher — tool wildcard', () => {
       'tw',
     ]);
     // Step mismatch — still empty.
-    expect(matcher.match('plan', 'Write')).toEqual([]);
+    expect(matcher.match('planning', 'Write')).toEqual([]);
   });
 });
 
@@ -135,7 +135,7 @@ describe('buildGuardMatcher — both wildcards', () => {
       denyGuard('ww', '*', '*'),
     ]);
     expect(matcher.match('execution', 'Write').map((g) => g.id)).toEqual(['ww']);
-    expect(matcher.match('plan', 'Edit').map((g) => g.id)).toEqual(['ww']);
+    expect(matcher.match('planning', 'Edit').map((g) => g.id)).toEqual(['ww']);
     expect(matcher.match('ideation', 'Read').map((g) => g.id)).toEqual(['ww']);
     expect(matcher.match('done', 'Whatever').map((g) => g.id)).toEqual(['ww']);
   });
@@ -150,13 +150,13 @@ describe('buildGuardMatcher — no match', () => {
     const matcher = buildGuardMatcher([
       denyGuard('g', ['execution'], ['Write']),
     ]);
-    expect(matcher.match('plan', 'Read')).toEqual([]);
+    expect(matcher.match('planning', 'Read')).toEqual([]);
   });
 
   test('empty registry — every lookup is empty', () => {
     const matcher = buildGuardMatcher([]);
     expect(matcher.match('execution', 'Write')).toEqual([]);
-    expect(matcher.match('plan', 'Edit')).toEqual([]);
+    expect(matcher.match('planning', 'Edit')).toEqual([]);
   });
 });
 

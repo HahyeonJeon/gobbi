@@ -68,7 +68,7 @@ function baseSpec(): StepSpec {
       expectedArtifacts: [],
       completionSignal: 'SubagentStop',
     },
-    transitions: [{ to: 'plan', condition: 'always' }],
+    transitions: [{ to: 'planning', condition: 'always' }],
     delegation: { agents: [] },
     tokenBudget: {
       staticPrefix: 0.5,
@@ -148,13 +148,13 @@ function arbSessionStateVariant(
     currentStep: fc.constantFrom(
       'idle' as const,
       'ideation' as const,
-      'plan' as const,
+      'planning' as const,
       'execution' as const,
       'memorization' as const,
     ),
     feedbackRound: fc.integer({ min: 0, max: 5 }),
     completedSteps: fc.array(
-      fc.constantFrom('idle', 'ideation', 'plan', 'execution'),
+      fc.constantFrom('idle', 'ideation', 'planning', 'execution'),
       { maxLength: 4 },
     ),
   }).map((overrides) => ({
@@ -480,7 +480,7 @@ function arbitraryCostRows(): fc.Arbitrary<
       subagentId: fc.uuid(),
       step: fc.constantFrom(
         'ideation',
-        'plan',
+        'planning',
         'execution',
         'memorization',
       ),

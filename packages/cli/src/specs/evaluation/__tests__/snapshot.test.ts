@@ -80,7 +80,7 @@ function ideationEvalFirstEntryFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-ideation-eval-first'),
     currentStep: 'ideation_eval',
-    evalConfig: { ideation: true, plan: false },
+    evalConfig: { ideation: true, planning: false },
     completedSteps: ['ideation'],
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
@@ -107,8 +107,8 @@ function projectEvaluatorDispatchFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-exec-eval-dispatch'),
     currentStep: 'execution_eval',
-    evalConfig: { ideation: false, plan: false },
-    completedSteps: ['ideation', 'plan', 'execution'],
+    evalConfig: { ideation: false, planning: false },
+    completedSteps: ['ideation', 'planning', 'execution'],
     activeSubagents: [
       {
         subagentId: 'subagent-project-eval',
@@ -125,7 +125,7 @@ function projectEvaluatorDispatchFixture(spec: StepSpec): CompileInput {
     ],
     artifacts: {
       ideation: ['ideation.md'],
-      plan: ['plan.md'],
+      planning: ['plan.md'],
       execution: ['execution.md'],
     },
   };
@@ -149,14 +149,14 @@ function feedbackRoundEvalFixture(spec: StepSpec): CompileInput {
   // findings. `feedbackRound = 1` fires the feedback-context conditional.
   const state: WorkflowState = {
     ...initialState('session-plan-eval-round2'),
-    currentStep: 'plan_eval',
-    evalConfig: { ideation: false, plan: true },
+    currentStep: 'planning_eval',
+    evalConfig: { ideation: false, planning: true },
     feedbackRound: 1,
-    completedSteps: ['ideation', 'plan', 'plan_eval'],
+    completedSteps: ['ideation', 'planning', 'planning_eval'],
     artifacts: {
       ideation: ['ideation.md'],
-      plan: ['plan.md'],
-      plan_eval: ['project.md', 'overall.md', 'evaluation.md'],
+      planning: ['plan.md'],
+      planning_eval: ['project.md', 'overall.md', 'evaluation.md'],
     },
   };
   const dynamic: DynamicContext = {

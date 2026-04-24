@@ -10,7 +10,7 @@ The workflow was in an active step when the process terminated. There is no expl
 session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
-session.completedSteps=[ideation,plan]
+session.completedSteps=[ideation,planning]
 session.evalConfig=null
 session.feedbackRound=0/3
 session.artifactCounts={}
@@ -63,7 +63,7 @@ A step exceeded its configured timeout and the Stop hook emitted a workflow.step
 session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
-session.completedSteps=[ideation,plan]
+session.completedSteps=[ideation,planning]
 session.evalConfig=null
 session.feedbackRound=0/3
 session.artifactCounts={}
@@ -118,8 +118,8 @@ The evaluation loop reached its configured maximum feedback rounds with a traili
 session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
-session.completedSteps=[ideation,plan]
-session.evalConfig=ideation=true,planning=undefined
+session.completedSteps=[ideation,planning]
+session.evalConfig=ideation=true,planning=false
 session.feedbackRound=3/3
 session.artifactCounts={}
 
@@ -181,12 +181,12 @@ session.artifactCounts={}
 InvalidTransition evidence:
   rejectedEventType=workflow.step.exit
   rejectedEventSeq=null (rejected before append)
-  stepAtRejection=plan
-  reducerMessage=Cannot exit plan before plan_eval decision
+  stepAtRejection=planning
+  reducerMessage=Cannot exit planning before planning_eval decision
   invalidTransitionEventSeq=31
 
 Recovery options:
-  - Retry from the last valid state:  gobbi workflow resume --target plan
+  - Retry from the last valid state:  gobbi workflow resume --target planning
   - Force-advance to memorization:    gobbi workflow resume --force-memorization
   - Abort the session:                gobbi workflow transition --type abort"
 `;
