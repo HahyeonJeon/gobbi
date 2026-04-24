@@ -260,7 +260,11 @@ export async function ensureSettingsCascade(repoRoot: string): Promise<void> {
       );
     }
 
-    writeSettingsAtLevel(repoRoot, 'project', upgraded);
+    // Pass `DEFAULT_PROJECT_NAME` explicitly so `writeSettingsAtLevel` does
+    // not re-resolve through the stderr-warning fallback path; the upgrade
+    // always targets the default project slot on this transition path.
+    // TODO(W2.3): replace `DEFAULT_PROJECT_NAME` with `projects.active` resolution.
+    writeSettingsAtLevel(repoRoot, 'project', upgraded, undefined, DEFAULT_PROJECT_NAME);
     process.stderr.write(
       `[ensure-settings-cascade] upgraded ${path.relative(repoRoot, legacyProject)} → ${path.relative(repoRoot, newProject)}\n`,
     );
