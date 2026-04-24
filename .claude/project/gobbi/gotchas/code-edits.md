@@ -60,3 +60,29 @@ store.append({
 The factory functions from `workflow/events/*.ts` (`createResume`, `createStepTimeout`, etc.) return a `{ type, data }` pair suitable for `appendEventAndUpdateState(store, state, event)` — the engine-level wrapper that handles idempotency + state derivation in one call. For raw `store.append`, use the full input struct; existing seeders in `specs/__tests__/errors.test.ts` and `workflow/__tests__/store.test.ts` are the canonical reference.
 
 Briefings that say "append event X with idempotency kind system" mean the AppendInput's `idempotencyKind: 'system'` field, not a second positional argument to `store.append`.
+
+---
+
+### AJV `JSONSchemaType<T>` cannot express required-plus-nullable fields
+---
+priority: medium
+tech-stack: typescript, ajv
+enforcement: advisory
+---
+
+**Priority:** Medium
+
+**What happened:** The gobbi-memory Pass 2 W1.2 executor extended `Settings` with `projects: ProjectsRegistry` where `active: string | null` is required (key present) but the value may be `null`. AJV's strict `JSONSchemaType<ProjectsRegistry>` inference refused to admit `{type: 'string', nullable: true}` on a required field — the derivation pins `nullable?: false` for any field listed in `required`. Making `active?: string | null` optional in TS to get past that in turn made `required: ['active', 'known']` reject the list as "Type '\"active\" | \"known\"' is not assignable to type '\"known\"'". The two shapes (required+nullable and optional+nullable) are mutually exclusive under `JSONSchemaType`'s strict type derivation.
+
+**User feedback:** Self-caught during W1.2 AJV compile; fixed by inlining the projects slot with a narrowed `as unknown as JSONSchemaType<Settings>['properties']['projects']` cast so AJV's runtime validation runs unchanged while TS accepts the shape. The `_schema/v1.ts` subschema pattern uses the same escape — unannotated constants plugged at property positions where the strict inference cannot compose.
+
+**Correct approach:** When an AJV schema needs a required field whose value admits `null`:
+
+1. Keep the TS type shape on the owning interface honest (`active: string | null`, not `active?: string | null`) — the runtime contract is "key is always present."
+2. Inline the sub-schema literal at the property position in the top-level `JSONSchemaType<T>` annotation.
+3. Cast the inline literal with `as unknown as JSONSchemaType<T>['properties'][key]` — this preserves AJV's own validation behaviour while bypassing the strict-derivation conflict.
+4. Document the cast inline so future authors know it is load-bearing and deliberate, not an accidental escape hatch.
+
+Do NOT reach for `as any` or drop the `JSONSchemaType<T>` annotation entirely. The top-level annotation is what gives drift safety — if `Settings.projects` gains a new field, the inline sub-schema fails `tsc --noEmit` at the call-site even through the cast, because the cast target itself is derived from the outer `Settings` type. The `specs/_schema/v1.ts` shared-subschema pattern is the other precedent for this class of workaround; reach for whichever form reads cleaner at the call-site.
+
+Related: `_typescript/SKILL.md` §"Boundary parsing" covers the general AJV binding pattern; this gotcha covers the required-nullable corner case where the strict inference has no way to express the shape without help.
