@@ -12,17 +12,20 @@
 
 import { afterEach, describe, expect, test } from 'bun:test';
 import {
+  chmodSync,
   existsSync,
   lstatSync,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   readlinkSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve as pathResolve } from 'node:path';
+import { join, relative, resolve as pathResolve } from 'node:path';
 
 import {
   buildFarmIntoRoot,
@@ -231,5 +234,272 @@ describe('buildFarmIntoRoot — preservation contract', () => {
     expect(
       lstatSync(join(destRoot, 'rules', 'r.md')).isSymbolicLink(),
     ).toBe(true);
+  });
+});
+
+// ===========================================================================
+// Operational edges — W6.4 coverage extension
+// ===========================================================================
+
+/**
+ * Recursively collect every filesystem leaf (file, symlink, or empty dir)
+ * under `root` so tests can snapshot the full farm layout without caring
+ * about traversal order. Keys are repo-relative paths; values are the
+ * {@link Dirent}-style kind of the leaf. Used by the idempotency and
+ * cross-project-rotation tests that need to compare whole-tree shape.
+ */
+function snapshotTree(
+  root: string,
+): Record<string, 'file' | 'symlink' | 'dir'> {
+  const out: Record<string, 'file' | 'symlink' | 'dir'> = {};
+  const stack: string[] = [root];
+  while (stack.length > 0) {
+    const dir = stack.pop();
+    if (dir === undefined) break;
+    const entries = readdirSync(dir, { withFileTypes: true });
+    if (entries.length === 0 && dir !== root) {
+      out[relative(root, dir)] = 'dir';
+      continue;
+    }
+    for (const e of entries) {
+      const abs = join(dir, e.name);
+      const rel = relative(root, abs);
+      if (e.isSymbolicLink()) {
+        out[rel] = 'symlink';
+      } else if (e.isDirectory()) {
+        stack.push(abs);
+      } else if (e.isFile()) {
+        out[rel] = 'file';
+      }
+    }
+  }
+  return out;
+}
+
+describe('buildFarmIntoRoot — operational edges', () => {
+  test('cross-project rotation: every symlink re-points at the new project', () => {
+    const repo = makeScratch('farm-rotate-');
+    seedProject(repo, 'alpha', {
+      'skills/_s/SKILL.md': '# alpha skill\n',
+      'skills/_s/evaluation.md': '# alpha eval\n',
+      'agents/a.md': '# alpha agent\n',
+      'rules/r.md': '# alpha rule\n',
+    });
+    seedProject(repo, 'beta', {
+      'skills/_s/SKILL.md': '# beta skill\n',
+      'skills/_s/evaluation.md': '# beta eval\n',
+      'agents/a.md': '# beta agent\n',
+      'rules/r.md': '# beta rule\n',
+    });
+
+    const destRoot = join(repo, '.claude');
+    buildFarmIntoRoot(repo, destRoot, 'alpha');
+
+    // Sanity-probe: alpha farm resolves into alpha's tree.
+    const alphaProbe = join(destRoot, 'skills', '_s', 'SKILL.md');
+    expect(
+      pathResolve(
+        join(alphaProbe, '..'),
+        readlinkSync(alphaProbe),
+      ),
+    ).toBe(
+      join(repo, '.gobbi', 'projects', 'alpha', 'skills', '_s', 'SKILL.md'),
+    );
+
+    // Rotate to beta. The switch-command path would do this under a
+    // temp root; the fresh-install path would call it in place. Either
+    // way the caller contract is: after the call, every symlink under
+    // each kind points at the *new* project's tree.
+    buildFarmIntoRoot(repo, destRoot, 'beta');
+
+    const alphaRoot = join(repo, '.gobbi', 'projects', 'alpha');
+    const betaRoot = join(repo, '.gobbi', 'projects', 'beta');
+    const stalePointers: string[] = [];
+    const misPointers: string[] = [];
+    for (const kind of CLAUDE_FARM_KINDS) {
+      const kindDir = join(destRoot, kind);
+      const stack: string[] = [kindDir];
+      while (stack.length > 0) {
+        const dir = stack.pop();
+        if (dir === undefined) break;
+        for (const e of readdirSync(dir, { withFileTypes: true })) {
+          const abs = join(dir, e.name);
+          if (e.isDirectory()) {
+            stack.push(abs);
+            continue;
+          }
+          if (!e.isSymbolicLink()) {
+            misPointers.push(abs);
+            continue;
+          }
+          const resolved = pathResolve(
+            join(abs, '..'),
+            readlinkSync(abs),
+          );
+          if (resolved.startsWith(alphaRoot)) {
+            stalePointers.push(`${abs} -> ${resolved}`);
+          } else if (!resolved.startsWith(betaRoot)) {
+            misPointers.push(`${abs} -> ${resolved}`);
+          }
+        }
+      }
+    }
+    expect(stalePointers).toEqual([]);
+    expect(misPointers).toEqual([]);
+
+    // Spot-check the content to confirm the redirected link reads beta.
+    const betaProbe = join(destRoot, 'skills', '_s', 'SKILL.md');
+    expect(readFileSync(betaProbe, 'utf8')).toBe('# beta skill\n');
+  });
+
+  test('dangling source symlink is mirrored as a dangling link, not a crash', () => {
+    const repo = makeScratch('farm-dangle-');
+    seedProject(repo, 'gobbi', { 'skills/_x/SKILL.md': '# ok\n' });
+
+    // Plant a dangling symlink directly under the skills tree — points
+    // at a path that does not (and will not) exist.
+    const skillsRoot = join(repo, '.gobbi', 'projects', 'gobbi', 'skills');
+    const danglingSrc = join(skillsRoot, '_x', 'dangler.md');
+    symlinkSync('/nonexistent/target/__gobbi_test__', danglingSrc);
+
+    const destRoot = join(repo, '.claude');
+    // Must not throw — readdirSync + withFileTypes reports the dangler
+    // as `isSymbolicLink()` and the farm faithfully mirrors it.
+    expect(() => buildFarmIntoRoot(repo, destRoot, 'gobbi')).not.toThrow();
+
+    // The mirrored leaf is itself a symlink and itself dangling —
+    // existsSync follows links and should return false.
+    const mirrored = join(destRoot, 'skills', '_x', 'dangler.md');
+    expect(lstatSync(mirrored).isSymbolicLink()).toBe(true);
+    expect(existsSync(mirrored)).toBe(false);
+
+    // The healthy leaf in the same kind is unaffected.
+    const healthy = join(destRoot, 'skills', '_x', 'SKILL.md');
+    expect(lstatSync(healthy).isSymbolicLink()).toBe(true);
+    expect(existsSync(healthy)).toBe(true);
+  });
+
+  test('deep nesting: 5-level source path mirrors with correct relative target', () => {
+    const repo = makeScratch('farm-deep-');
+    const deepRel = 'skills/_x/evaluation/nested/deep/file.md';
+    seedProject(repo, 'gobbi', { [deepRel]: '# deep\n' });
+
+    const destRoot = join(repo, '.claude');
+    buildFarmIntoRoot(repo, destRoot, 'gobbi');
+
+    const leaf = join(destRoot, deepRel);
+    expect(lstatSync(leaf).isSymbolicLink()).toBe(true);
+
+    // The symlink target is relative; resolving it from the link's
+    // parent must land exactly at the source path.
+    const linkStr = readlinkSync(leaf);
+    const expectedSource = join(
+      repo,
+      '.gobbi',
+      'projects',
+      'gobbi',
+      deepRel,
+    );
+    expect(pathResolve(join(leaf, '..'), linkStr)).toBe(expectedSource);
+    // And reading through the symlink must yield the source bytes.
+    expect(readFileSync(leaf, 'utf8')).toBe('# deep\n');
+
+    // Every intermediate directory under the kind root is a real dir
+    // (NOT a symlink) so the per-file farm invariant holds at depth.
+    for (const segment of ['_x', '_x/evaluation', '_x/evaluation/nested', '_x/evaluation/nested/deep']) {
+      const p = join(destRoot, 'skills', segment);
+      expect(lstatSync(p).isDirectory()).toBe(true);
+      expect(lstatSync(p).isSymbolicLink()).toBe(false);
+    }
+  });
+
+  test('unreadable source directory propagates a readable error', () => {
+    // Running as root defeats chmod-based permission tests — skip so
+    // CI containers that run the suite as root don't fail spuriously.
+    if (process.getuid !== undefined && process.getuid() === 0) return;
+
+    const repo = makeScratch('farm-perm-');
+    seedProject(repo, 'gobbi', {
+      'skills/_x/SKILL.md': '# x\n',
+      'agents/a.md': '# a\n',
+      'rules/r.md': '# r\n',
+    });
+
+    // Lock the skills source dir so `readdirSync` inside the mirroring
+    // walk hits EACCES. The other two kinds remain readable.
+    const lockedSrc = join(repo, '.gobbi', 'projects', 'gobbi', 'skills');
+    chmodSync(lockedSrc, 0o000);
+    try {
+      const destRoot = join(repo, '.claude');
+      // Documented contract: "A single failure propagates. The caller
+      // is responsible for cleanup." The test pins that contract —
+      // the error must propagate (not crash the process), and it must
+      // carry enough info to diagnose the locked path.
+      expect(() => buildFarmIntoRoot(repo, destRoot, 'gobbi')).toThrow();
+    } finally {
+      // Restore perms so the afterEach cleanup can remove the dir.
+      chmodSync(lockedSrc, 0o755);
+    }
+  });
+
+  test('idempotent: two identical runs produce an identical tree', () => {
+    const repo = makeScratch('farm-idem-');
+    seedProject(repo, 'gobbi', {
+      'skills/_x/SKILL.md': '# x\n',
+      'skills/_x/evaluation.md': '# eval\n',
+      'agents/a.md': '# a\n',
+      'rules/r.md': '# r\n',
+    });
+
+    const destRoot = join(repo, '.claude');
+    buildFarmIntoRoot(repo, destRoot, 'gobbi');
+    const first = snapshotTree(destRoot);
+    const firstTargets: Record<string, string> = {};
+    for (const rel of Object.keys(first)) {
+      if (first[rel] === 'symlink') {
+        firstTargets[rel] = readlinkSync(join(destRoot, rel));
+      }
+    }
+
+    buildFarmIntoRoot(repo, destRoot, 'gobbi');
+    const second = snapshotTree(destRoot);
+    const secondTargets: Record<string, string> = {};
+    for (const rel of Object.keys(second)) {
+      if (second[rel] === 'symlink') {
+        secondTargets[rel] = readlinkSync(join(destRoot, rel));
+      }
+    }
+
+    // Same set of leaves with the same kinds; no accumulating cruft.
+    expect(second).toEqual(first);
+    // Same symlink targets — per-kind wipe + rebuild produces bit-for-bit
+    // identical links on repeat.
+    expect(secondTargets).toEqual(firstTargets);
+  });
+
+  test('empty kind dir: seeded skills/ with missing agents/ yields empty agents/', () => {
+    const repo = makeScratch('farm-empty-kind-');
+    // Seed only `skills/`; leave `agents/` and `rules/` un-created.
+    const root = join(repo, '.gobbi', 'projects', 'gobbi');
+    mkdirSync(join(root, 'skills', '_x'), { recursive: true });
+    writeFileSync(join(root, 'skills', '_x', 'SKILL.md'), '# x\n', 'utf8');
+
+    const destRoot = join(repo, '.claude');
+    buildFarmIntoRoot(repo, destRoot, 'gobbi');
+
+    // The seeded kind has content.
+    expect(
+      lstatSync(join(destRoot, 'skills', '_x', 'SKILL.md')).isSymbolicLink(),
+    ).toBe(true);
+
+    // Missing-source kinds still materialise as *empty* directories so
+    // downstream consumers (Claude Code plugin loader, `gobbi project
+    // switch` rollback pre-image) see a consistent shape.
+    for (const emptyKind of ['agents', 'rules'] as const) {
+      const p = join(destRoot, emptyKind);
+      expect(existsSync(p)).toBe(true);
+      expect(lstatSync(p).isDirectory()).toBe(true);
+      expect(readdirSync(p)).toEqual([]);
+    }
   });
 });
