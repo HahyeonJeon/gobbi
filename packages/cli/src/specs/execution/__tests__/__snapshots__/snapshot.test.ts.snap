@@ -52,7 +52,7 @@ session.schemaVersion=4
 session.currentStep=execution
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
-session.evalConfig=ideation=false,plan=false
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3,plan=1}
 
@@ -129,7 +129,7 @@ session.schemaVersion=4
 session.currentStep=execution
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
-session.evalConfig=ideation=false,plan=false
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3,plan=1}
 
@@ -193,7 +193,7 @@ session.schemaVersion=4
 session.currentStep=execution
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
-session.evalConfig=ideation=false,plan=false
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3,plan=1}
 

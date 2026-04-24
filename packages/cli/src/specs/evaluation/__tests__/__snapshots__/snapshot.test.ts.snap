@@ -15,11 +15,11 @@ Evaluation principles:
 
 Scope boundary:
 
-- This spec is reused for ideation_eval, plan_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
-- The \`transitions\` array in this spec declares ideation_eval defaults. For plan_eval and execution_eval, the graph (\`index.json\`) is authoritative: plan_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
-- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, plan, or execution), not here.
+- This spec is reused for ideation_eval, planning_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
+- The \`transitions\` array in this spec declares ideation_eval defaults. For planning_eval and execution_eval, the graph (\`index.json\`) is authoritative: planning_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
+- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, planning, or execution), not here.
 - Do not spawn more than \`maxParallelAgents\` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.
-- Stay in evaluation. Do not ask the user to make plan or implementation decisions here — the verdict is what exits the step; the next step handles the response.
+- Stay in evaluation. Do not ask the user to make planning or implementation decisions here — the verdict is what exits the step; the next step handles the response.
 
 Synthesis instructions:
 
@@ -45,7 +45,7 @@ session.schemaVersion=4
 session.currentStep=ideation_eval
 session.currentSubstate=null
 session.completedSteps=[ideation]
-session.evalConfig=ideation=true,plan=false
+session.evalConfig=ideation=true,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3}
 
@@ -71,11 +71,11 @@ Evaluation principles:
 
 Scope boundary:
 
-- This spec is reused for ideation_eval, plan_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
-- The \`transitions\` array in this spec declares ideation_eval defaults. For plan_eval and execution_eval, the graph (\`index.json\`) is authoritative: plan_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
-- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, plan, or execution), not here.
+- This spec is reused for ideation_eval, planning_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
+- The \`transitions\` array in this spec declares ideation_eval defaults. For planning_eval and execution_eval, the graph (\`index.json\`) is authoritative: planning_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
+- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, planning, or execution), not here.
 - Do not spawn more than \`maxParallelAgents\` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.
-- Stay in evaluation. Do not ask the user to make plan or implementation decisions here — the verdict is what exits the step; the next step handles the response.
+- Stay in evaluation. Do not ask the user to make planning or implementation decisions here — the verdict is what exits the step; the next step handles the response.
 
 You are an evaluator working the Project perspective.
 
@@ -114,7 +114,7 @@ session.schemaVersion=4
 session.currentStep=execution_eval
 session.currentSubstate=null
 session.completedSteps=[ideation,plan,execution]
-session.evalConfig=ideation=false,plan=false
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={execution=1,ideation=1,plan=1}
 
@@ -137,11 +137,11 @@ Evaluation principles:
 
 Scope boundary:
 
-- This spec is reused for ideation_eval, plan_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
-- The \`transitions\` array in this spec declares ideation_eval defaults. For plan_eval and execution_eval, the graph (\`index.json\`) is authoritative: plan_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
-- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, plan, or execution), not here.
+- This spec is reused for ideation_eval, planning_eval, and execution_eval via \`index.json\`'s \`evalFor\` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read \`state.currentStep\` and its \`evalFor\` target when assembling the delegation prompts.
+- The \`transitions\` array in this spec declares ideation_eval defaults. For planning_eval and execution_eval, the graph (\`index.json\`) is authoritative: planning_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.
+- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, planning, or execution), not here.
 - Do not spawn more than \`maxParallelAgents\` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.
-- Stay in evaluation. Do not ask the user to make plan or implementation decisions here — the verdict is what exits the step; the next step handles the response.
+- Stay in evaluation. Do not ask the user to make planning or implementation decisions here — the verdict is what exits the step; the next step handles the response.
 
 Feedback round context:
 
@@ -171,7 +171,7 @@ session.schemaVersion=4
 session.currentStep=plan_eval
 session.currentSubstate=null
 session.completedSteps=[ideation,plan,plan_eval]
-session.evalConfig=ideation=false,plan=true
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=1/3
 session.artifactCounts={ideation=1,plan=1,plan_eval=3}
 

@@ -119,7 +119,7 @@ session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
 session.completedSteps=[ideation,plan]
-session.evalConfig=ideation=true,plan=false
+session.evalConfig=ideation=true,planning=undefined
 session.feedbackRound=3/3
 session.artifactCounts={}
 

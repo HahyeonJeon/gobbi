@@ -15,9 +15,9 @@ Plan principles:
 
 Scope boundary:
 
-- Plan produces a task list. Do not start implementation — Execution owns that step.
-- Do not re-open ideation. If a new option surfaces during planning, note it and ask the user whether to skip back to ideation rather than silently ideating inside plan.
-- Do not evaluate the plan. If the user enabled plan evaluation at session start, the CLI transitions to \`plan_eval\` after your exit; independent evaluator agents assess the plan then.
+- Planning produces a task list. Do not start implementation — Execution owns that step.
+- Do not re-open ideation. If a new option surfaces during planning, note it and ask the user whether to skip back to ideation rather than silently ideating inside planning.
+- Do not evaluate the plan. If the user enabled planning evaluation at session start, the CLI transitions to \`planning_eval\` after your exit; independent evaluator agents assess the plan then.
 - Do not expand tasks into adjacent work. A plan that grows to absorb "while we are at it" work is a plan that executes slowly and reviews poorly.
 
 Plan artifact shape:
@@ -60,7 +60,7 @@ session.schemaVersion=4
 session.currentStep=plan
 session.currentSubstate=null
 session.completedSteps=[]
-session.evalConfig=ideation=false,plan=false
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3}
 
@@ -86,9 +86,9 @@ Plan principles:
 
 Scope boundary:
 
-- Plan produces a task list. Do not start implementation — Execution owns that step.
-- Do not re-open ideation. If a new option surfaces during planning, note it and ask the user whether to skip back to ideation rather than silently ideating inside plan.
-- Do not evaluate the plan. If the user enabled plan evaluation at session start, the CLI transitions to \`plan_eval\` after your exit; independent evaluator agents assess the plan then.
+- Planning produces a task list. Do not start implementation — Execution owns that step.
+- Do not re-open ideation. If a new option surfaces during planning, note it and ask the user whether to skip back to ideation rather than silently ideating inside planning.
+- Do not evaluate the plan. If the user enabled planning evaluation at session start, the CLI transitions to \`planning_eval\` after your exit; independent evaluator agents assess the plan then.
 - Do not expand tasks into adjacent work. A plan that grows to absorb "while we are at it" work is a plan that executes slowly and reviews poorly.
 
 Plan artifact shape:
@@ -107,10 +107,6 @@ Write \`plan.md\` with the following structure so Execution and downstream evalu
 4. \`Out-of-scope\` — adjacent work that was considered and deliberately deferred, with a one-line rationale per item. This protects Execution from quietly absorbing deferred work.
 
 The shape is stable on purpose: \`gobbi workflow validate\` and downstream compilation read it structurally.
-
-Evaluation pre-exit check:
-
-The user enabled Plan evaluation at session start (\`evalConfig.plan == true\`). Before emitting the completion signal, confirm the plan artifact is complete and the user has approved its shape. The CLI will transition to \`plan_eval\` on exit; do not ask the user again about running evaluation — that decision is locked. Your job at exit is to ensure \`plan.md\` is ready to be assessed by independent evaluator agents.
 
 Synthesis instructions:
 
@@ -135,7 +131,7 @@ session.schemaVersion=4
 session.currentStep=plan
 session.currentSubstate=null
 session.completedSteps=[]
-session.evalConfig=ideation=false,plan=true
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3}
 
@@ -161,9 +157,9 @@ Plan principles:
 
 Scope boundary:
 
-- Plan produces a task list. Do not start implementation — Execution owns that step.
-- Do not re-open ideation. If a new option surfaces during planning, note it and ask the user whether to skip back to ideation rather than silently ideating inside plan.
-- Do not evaluate the plan. If the user enabled plan evaluation at session start, the CLI transitions to \`plan_eval\` after your exit; independent evaluator agents assess the plan then.
+- Planning produces a task list. Do not start implementation — Execution owns that step.
+- Do not re-open ideation. If a new option surfaces during planning, note it and ask the user whether to skip back to ideation rather than silently ideating inside planning.
+- Do not evaluate the plan. If the user enabled planning evaluation at session start, the CLI transitions to \`planning_eval\` after your exit; independent evaluator agents assess the plan then.
 - Do not expand tasks into adjacent work. A plan that grows to absorb "while we are at it" work is a plan that executes slowly and reviews poorly.
 
 Plan artifact shape:
@@ -185,7 +181,7 @@ The shape is stable on purpose: \`gobbi workflow validate\` and downstream compi
 
 Feedback round context:
 
-A prior evaluation of this plan returned a revise verdict, or an execution_eval loop targeted the plan step. Before rewriting the plan, read the evaluator findings under \`evaluation/\` (for plan_eval loops) or the execution_eval summary (for execution_eval loops) in the session directory. Ask the user which findings to address, which to defer, and which to disagree with — the feedback is input, not instruction. Re-plan only after the revision scope is clear; do not rewrite tasks on a guess.
+A prior evaluation of this plan returned a revise verdict, or an execution_eval loop targeted the planning step. Before rewriting the plan, read the evaluator findings under \`evaluation/\` (for planning_eval loops) or the execution_eval summary (for execution_eval loops) in the session directory. Ask the user which findings to address, which to defer, and which to disagree with — the feedback is input, not instruction. Re-plan only after the revision scope is clear; do not rewrite tasks on a guess.
 
 Synthesis instructions:
 
@@ -210,7 +206,7 @@ session.schemaVersion=4
 session.currentStep=plan
 session.currentSubstate=null
 session.completedSteps=[]
-session.evalConfig=ideation=false,plan=false
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=1/3
 session.artifactCounts={ideation=3,plan=1}
 

@@ -94,7 +94,7 @@ session.schemaVersion=4
 session.currentStep=ideation
 session.currentSubstate=null
 session.completedSteps=[]
-session.evalConfig=ideation=true,plan=false
+session.evalConfig=ideation=true,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={ideation=3}
 
@@ -169,7 +169,7 @@ session.schemaVersion=4
 session.currentStep=ideation
 session.currentSubstate=null
 session.completedSteps=[]
-session.evalConfig=ideation=false,plan=false
+session.evalConfig=ideation=false,planning=undefined
 session.feedbackRound=0/3
 session.artifactCounts={}
 
