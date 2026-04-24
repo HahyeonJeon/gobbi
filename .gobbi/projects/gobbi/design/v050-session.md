@@ -8,7 +8,7 @@ Data model reference for v0.5.0. Read this when implementing or reasoning about 
 
 A session corresponds to a single Claude Code conversation lifecycle. It begins when the SessionStart hook fires and ends when the user runs `/clear` or opens a new chat. Context compaction is mid-session — it does not end the session, it triggers a resume prompt generated from persisted state.
 
-Sessions are stored under `.gobbi/sessions/{session-id}/`. The session ID is a timestamp-prefixed UUID assigned at creation, chosen for human readability and filesystem sortability.
+Sessions are stored under `.gobbi/projects/{project-name}/sessions/{session-id}/`. The session ID is a timestamp-prefixed UUID assigned at creation, chosen for human readability and filesystem sortability. The `project-name` identifies which project this session belongs to — set at session creation from the active project configured in `settings.json`.
 
 ---
 
@@ -17,26 +17,26 @@ Sessions are stored under `.gobbi/sessions/{session-id}/`. The session ID is a t
 ```
 .gobbi/
 ├── settings.json              workspace prefs — gitignored (see gobbi-config/README.md)
-├── project/
-│   └── settings.json          project config — tracked, AJV-validated, schema v1
-└── sessions/
-    └── {session-id}/
-        ├── settings.json          session config — gitignored, overrides workspace + project
-        ├── metadata.json          immutable — written once at session creation
-        ├── state.json             canonical workflow state — materialized view
-        ├── state.json.backup      previous state before last transition
-        ├── events.jsonl           human-readable event log — mirrors gobbi.db
-        ├── gobbi.db               SQLite event store — source of truth
-        ├── ideation/              step artifacts — flat directory
-        ├── plan/                  step artifacts — flat directory
-        ├── execution/             step artifacts — flat directory
-        ├── evaluation/            step artifacts — flat directory
-        └── memorization/          step artifacts — flat directory
+├── gobbi.db                   workspace event store — single SQLite file for all projects/sessions
+└── projects/
+    └── {project-name}/
+        ├── settings.json          project config — tracked, AJV-validated
+        └── sessions/
+            └── {session-id}/
+                ├── settings.json      session config — gitignored, overrides workspace + project
+                ├── metadata.json      immutable — written once at session creation
+                ├── state.json         canonical workflow state — materialized view
+                ├── state.json.backup  previous state before last transition
+                ├── ideation/          step artifacts — flat directory
+                ├── planning/          step artifacts — flat directory
+                ├── execution/         step artifacts — flat directory
+                ├── evaluation/        step artifacts — flat directory
+                └── memorization/      step artifacts — flat directory
 ```
 
-Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The event store is `gobbi.db` inside each session directory, which is separate from config. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
+Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The workspace event store is `gobbi.db` at the `.gobbi/` root — one file for all projects and sessions, with `project_id` and `session_id` columns on every event row for scoped queries. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
 
-Each file and directory has a single responsibility. `metadata.json` and `gobbi.db` are the permanent record. `state.json` and `events.jsonl` are derived views — they can be rebuilt from `gobbi.db` at any time.
+Each file and directory has a single responsibility. `metadata.json` and `gobbi.db` are the permanent record. `state.json` is a derived view — it can be rebuilt from `gobbi.db` at any time. `events.jsonl` has been removed; `gobbi.db` is the sole event store.
 
 ---
 
@@ -44,15 +44,13 @@ Each file and directory has a single responsibility. `metadata.json` and `gobbi.
 
 **`metadata.json`** is written once when the session is created and never modified. It records the session ID, creation timestamp, the project root path, and the user configuration snapshot that was active at session start. Because it is immutable, it remains valid even if the rest of the session directory is corrupted.
 
-**`gobbi.db`** is the authoritative event store. Every workflow event — step transitions, subagent completions, evaluation verdicts, user decisions, guard violations — is appended as a row. The CLI reads `gobbi.db` to derive workflow state when generating the next prompt. The hooks write to `gobbi.db` when events occur.
+**`gobbi.db`** is the authoritative event store — a single SQLite file at `.gobbi/gobbi.db` shared across all projects and sessions in the workspace. Every workflow event — step transitions, subagent completions, evaluation verdicts, user decisions, guard violations — is appended as a row. The CLI reads `gobbi.db` to derive workflow state when generating the next prompt. The hooks write to `gobbi.db` when events occur. Each row carries `project_id` and `session_id` columns so queries can be scoped to one project or session without scanning the full log.
 
-**`state.json`** is a materialized view of current workflow state, derived by reducing all events in `gobbi.db`. It is written after every event append. Reading `state.json` is faster than replaying all events on each CLI invocation, but it is a cache, not a source. If `state.json` is absent or corrupted, it is rebuilt from `gobbi.db`.
+**`state.json`** is a materialized view of current workflow state, derived by reducing all events in `gobbi.db` for the active session. It is written after every event append. Reading `state.json` is faster than replaying all events on each CLI invocation, but it is a cache, not a source. If `state.json` is absent or corrupted, it is rebuilt from `gobbi.db`.
 
 **`state.json.backup`** holds the state as it was before the most recent transition — the Terraform apply pattern. Before writing a new `state.json`, the CLI copies the current `state.json` to `state.json.backup`. If a transition corrupts `state.json`, the backup provides a known-good rollback point without requiring full event replay.
 
-**`events.jsonl`** mirrors every event written to `gobbi.db` as a newline-delimited JSON record. It exists for human readability only — operators can `grep` or `cat` it without a SQLite client. It is not authoritative; `gobbi.db` is.
-
-**Step directories** (`ideation/`, `plan/`, `execution/`, `evaluation/`, `memorization/`) are flat directories for step artifacts. An ideation step stores its output notes here; an execution step stores subtask results here. Flat structure is deliberate — no nesting, no hierarchy inside step directories.
+**Step directories** (`ideation/`, `planning/`, `execution/`, `evaluation/`, `memorization/`) are flat directories for step artifacts. An ideation step stores its output notes here; an execution step stores subtask results here. Flat structure is deliberate — no nesting, no hierarchy inside step directories. Note: the step was renamed from `plan/` to `planning/` in v0.5.0 to align with state-machine step identifiers.
 
 ### Artifact Filename Versioning
 
@@ -66,7 +64,7 @@ The SubagentStop capture hook reads `feedbackRound` from `state.json` to constru
 
 > **The event store is the source of truth. Everything else is derived from it.**
 
-SQLite with WAL mode is chosen over a pure JSONL approach for three reasons: indexed queries allow efficient filtering by event type and step without full scans; atomic writes with WAL mode survive mid-write crashes without partial records; built-in sequence numbers provide a reliable ordering guarantee. The implementation uses Bun's native `bun:sqlite` module — zero additional runtime dependencies.
+SQLite with WAL mode is chosen over a pure JSONL approach for three reasons: indexed queries allow efficient filtering by event type and step without full scans; atomic writes with WAL mode survive mid-write crashes without partial records; built-in sequence numbers provide a reliable ordering guarantee. The implementation uses Bun's native `bun:sqlite` module — zero additional runtime dependencies. A single `gobbi.db` at `.gobbi/gobbi.db` serves the entire workspace; the `project_id` and `session_id` columns on each row provide the scoping that per-session files previously offered.
 
 ### Events Table
 
@@ -77,6 +75,8 @@ The events table has one row per event. Its columns are:
 | `seq` | integer, primary key | Auto-increment sequence — ordering guarantee |
 | `ts` | text (ISO 8601) | Timestamp of the event |
 | `schema_version` | integer | Schema version at write time |
+| `session_id` | text | Identifies the session this event belongs to |
+| `project_id` | text | Identifies the project this event belongs to |
 | `type` | text | Event type from the enum below |
 | `step` | text, nullable | Workflow step this event belongs to |
 | `data` | text (JSON) | Event-specific payload — structure varies by type |
@@ -84,9 +84,11 @@ The events table has one row per event. Its columns are:
 | `parent_seq` | integer, nullable | References the `seq` of a parent event |
 | `idempotency_key` | text, unique | Deduplication key — see formula below |
 
+The `session_id` and `project_id` columns scope every event to its origin, replacing the previous per-session-directory isolation. Queries filter on `(project_id, session_id)` for session-level replay or on `project_id` alone for project-wide aggregation.
+
 The `idempotency_key` column prevents duplicate events from hook retries. Two formulas cover the two event categories. Tool-call events (guard violations, delegation events) use `session_id + tool_call_id + event_type` — the tool call ID uniquely identifies the action. System events (heartbeat, timeout) have no tool call context, so they use `session_id + timestamp_ms + event_type` — millisecond timestamps are sufficient because the Stop hook fires at most once per conversation turn. A UNIQUE constraint on this column means a retry that produces the same event is silently deduplicated at the storage layer. This is defensive engineering — even if Claude Code hooks do not retry today, future behavior may change. The pattern follows Kafka and EventBridge deduplication semantics: exactly-once append regardless of delivery guarantees.
 
-Three indexes cover the common access patterns: one on `type` for queries that filter across the full event history by event category, one on `(step, type)` for queries scoped to a particular workflow step, and the implicit unique index on `idempotency_key` for deduplication.
+Three indexes cover the common access patterns: one on `type` for queries that filter across the full event history by event category, one on `(project_id, session_id, step, type)` for queries scoped to a particular workflow step in a particular project session, and the implicit unique index on `idempotency_key` for deduplication.
 
 ### Event Type Enum
 
@@ -165,7 +167,7 @@ Cost data surfaces via `gobbi workflow status` only. It must NOT appear in compi
 
 State is produced by a typed reducer: a pure function that takes the current state and one event, and returns the next state. Replaying all events from sequence 1 through the latest produces the identical state as reading `state.json`. The reducer is the canonical definition of what each event means — if the two ever disagree, the reducer wins.
 
-The CLI writes `state.json` after each event append. On startup it reads `state.json` if present; if absent or structurally invalid, it reads `gobbi.db`, replays events through the reducer, and writes a fresh `state.json`.
+The CLI writes `state.json` after each event append. On startup it reads `state.json` if present; if absent or structurally invalid, it queries `gobbi.db` for the active project and session, replays those events through the reducer, and writes a fresh `state.json`.
 
 ---
 
@@ -213,7 +215,7 @@ The schema version is incremented whenever a breaking change is made to the even
 
 ## Session Lifecycle
 
-**Creation** — The SessionStart hook fires when Claude Code opens a new conversation. The hook creates the session directory, writes `metadata.json` with a new session ID, and appends a `workflow.start` event to `gobbi.db`. The session is active from this point.
+**Creation** — The SessionStart hook fires when Claude Code opens a new conversation. The hook creates the session directory at `.gobbi/projects/{project-name}/sessions/{session-id}/`, writes `metadata.json` with a new session ID and the active project name, and appends a `workflow.start` event to `.gobbi/gobbi.db`. The session is active from this point.
 
 **Active session** — Hooks append events as the workflow proceeds. The CLI reads the event store to generate each step's prompt. Subagents write artifacts to step directories. `state.json` is updated after each event.
 

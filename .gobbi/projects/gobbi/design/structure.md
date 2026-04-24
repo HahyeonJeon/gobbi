@@ -61,24 +61,25 @@ Shell scripts in `.claude/hooks/` that execute in response to Claude Code events
 | `settings.local.json` | Claude Code local overrides. Not checked into git. |
 | `.env` | Environment variables for hooks. Not checked into git. |
 
-Note: `.gobbi/settings.json` is the gobbi workspace-level preference file — separate from `.claude/settings.json` above. The three-level gobbi cascade is: workspace `.gobbi/settings.json` → project `.gobbi/project/settings.json` → session `.gobbi/sessions/{id}/settings.json`. See `v050-features/gobbi-config/README.md` for the full cascade model. Note: `.gobbi/config.db` no longer exists — it was the SQLite session store used in an earlier design and is deleted by `ensureSettingsCascade` on first run of v0.5.0.
+Note: `.gobbi/settings.json` is the gobbi workspace-level preference file — separate from `.claude/settings.json` above. The three-level gobbi cascade is: workspace `.gobbi/settings.json` → project `.gobbi/projects/{name}/settings.json` → session `.gobbi/projects/{name}/sessions/{id}/settings.json`. See `v050-features/gobbi-config/README.md` for the full cascade model. Note: `.gobbi/config.db` no longer exists — it was the SQLite session store used in an earlier design and is deleted by `ensureSettingsCascade` on first run of v0.5.0.
 
 ### Project State
 
-`.claude/project/gobbi/` holds project-specific state that persists across sessions.
+`.claude/project/gobbi/` has moved to `.gobbi/projects/gobbi/` as part of the v0.5.0 directory split. All project-specific state that persists across sessions lives there.
 
 | Directory | Purpose | Git-tracked |
 |:----------|:--------|:------------|
 | `design/` | Design documents — architecture, vision, workflow, evaluation model | Yes |
-| `gotchas/` | Project-specific gotchas (distinct from cross-project gotchas in skills) | Yes |
+| `learnings/gotchas/` | Project-specific gotchas (distinct from cross-project gotchas in skills) | Yes |
 | `rules/` | Project-specific rules and conventions | Yes |
-| `reference/` | External references, API docs, research materials | Yes |
-| `docs/` | Other project documents | Yes |
-| `note/` | Workflow notes per task session — ephemeral, managed by _note | No |
+| `skills/` | Project-specific skills | Yes |
+| `agents/` | Project-specific agent definitions | Yes |
+| `references/` | External references, API docs, research materials | Yes |
+| `sessions/` | Per-session state directories — managed by the CLI | No |
 
 ### Worktrees
 
-`.claude/worktrees/` is the directory where git worktrees are created for isolated task execution. Each worktree maps to one branch and one PR. Managed entirely by the orchestrator, cleaned up after merge. Gitignored.
+`.gobbi/worktrees/` is the directory where git worktrees are created for isolated task execution. Each worktree maps to one branch and one PR. Managed entirely by the orchestrator, cleaned up after merge. Gitignored. Worktrees were previously at `.claude/worktrees/` — they moved to `.gobbi/` in v0.5.0 to prevent idle false-positives triggered by branch operations inside `.claude/`.
 
 ---
 
@@ -92,13 +93,18 @@ v0.5.0 introduces a hard boundary between Claude Code's native directory and gob
 
 Gobbi's runtime state directory, separate from `.claude/`. Created at the project root alongside `.claude/`.
 
-| Directory | Purpose |
-|:----------|:--------|
-| `sessions/` | Workflow session data — `state.json`, `state.json.backup`, `gobbi.db` (SQLite event store), `metadata.json`, `events.jsonl` (human-readable event log), and one subdirectory per step containing notes, research, and execution output |
+| Path | Purpose |
+|:-----|:--------|
+| `settings.json` | Workspace-level gobbi preferences — gitignored |
+| `gobbi.db` | Single SQLite event store for all projects and sessions in the workspace |
+| `skills/`, `agents/`, `rules/` | Workspace-level Claude docs — canonical source; `.claude/` symlinks point here |
+| `projects/{name}/` | Per-project directory — settings, design docs, learnings, sessions |
+| `projects/{name}/settings.json` | Project-level config — tracked |
+| `projects/{name}/sessions/{id}/` | Per-session state — `metadata.json`, `state.json`, `state.json.backup`, and one subdirectory per step |
+| `projects/{name}/learnings/` | Durable learnings — `gotchas/`, `decisions/`, and other knowledge promoted after sessions |
 | `worktrees/` | Git worktree isolation — moved from `.claude/worktrees/` to prevent idle false-positives during branch operations |
-| `project/` | Project notes, gotchas, and context — moved from `.claude/project/` so workflow writes do not touch `.claude/` |
 
-`.claude/` retains only static content: skills, agent definitions, hooks, settings, and `CLAUDE.md`. Nothing written during a workflow session goes into `.claude/`.
+`.claude/` retains only static content: `CLAUDE.md`, hooks, and `settings.json`. Its `skills/`, `agents/`, and `rules/` entries are per-file symlinks into the corresponding `.gobbi/` directories — the symlink farm. The farm is rebuilt by `gobbi install` on first install and rotated by `gobbi project switch` when the active project changes. Nothing written during a workflow session goes into `.claude/` directly.
 
 ### Step Spec Files
 
@@ -137,14 +143,24 @@ The plugin uses symlinks to reference the canonical files in `.claude/`. This me
 
 ### Templates
 
-`templates/` contains the source files that `gobbi install` copies into a target project's `.claude/` directory. The template structure mirrors the `.claude/` layout — skills, agents, hooks, settings, and README.md. Templates represent the installable snapshot; the working `.claude/` directory is the development copy.
+`templates/` contains the source files that `gobbi install` bundles as the install template. On fresh install, `gobbi install` copies these into the target project and builds the `.claude/` symlink farm. The template structure mirrors the `.claude/` layout — `CLAUDE.md`, hooks, settings. Skills, agents, and rules are not copied as files; they are established as symlinks pointing into `.gobbi/`.
 
 ---
 
 ## Gobbi CLI
 
-> **Planned for v0.3.0.**
+The CLI is a Bun-based standalone package in `packages/cli/` for managing gobbi installations, workflow sessions, and multi-project configuration.
 
-The CLI will be restructured as a standalone package for managing gobbi installations — creating, installing, updating, and configuring gobbi in target projects.
+Key entry points:
 
-The current CLI source lives in `src/` with commands in `src/commands/` and shared libraries in `src/lib/`. The `packages/market/` workspace provides the marketplace client. Both will be reorganized in v0.3.0.
+| Command | Purpose |
+|:--------|:--------|
+| `gobbi install` | Install or upgrade gobbi in a target project — copies templates, builds the `.claude/` symlink farm, runs `ensureSettingsCascade` |
+| `gobbi project create` | Provision a new project directory under `.gobbi/projects/<name>/` |
+| `gobbi project switch` | Rotate the `.claude/` symlink farm to point at a different project's docs |
+| `gobbi project list` | List all known projects and the currently active one |
+| `gobbi workflow init` | Start a new workflow session for the active project |
+| `gobbi workflow status` | Show current step, completed steps, and cost rollup from `gobbi.db` |
+| `gobbi workflow resume` | Generate a pathway-specific resume prompt after crash or compaction |
+
+CLI source lives in `packages/cli/src/` with commands in `commands/` and shared libraries in `lib/`. Step specifications live in `packages/cli/src/specs/` and are the source of truth for the workflow graph. See `v050-cli.md` for the full command surface.

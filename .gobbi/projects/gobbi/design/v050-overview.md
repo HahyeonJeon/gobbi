@@ -120,21 +120,23 @@ V0.5.0 resolves it with a hard directory split:
   ─────────────────────────         ─────────────────────────────
   Read-only during workflow         Runtime state — write freely
 
-  CLAUDE.md                         settings.json        (workspace prefs — gitignored)
-  rules/                            project/settings.json  (project config — tracked)
-  skills/                           sessions/            (per-session settings.json — gitignored)
-  agents/                           worktrees/
-  settings.json (Claude Code)       project/
-  hooks/
+  CLAUDE.md                         settings.json              (workspace prefs — gitignored)
+  rules/          ← symlinks →      projects/<name>/
+  skills/         from .gobbi/        settings.json            (project config — tracked)
+  agents/         skills|agents|      sessions/<id>/           (per-session — gitignored)
+  settings.json   rules             projects/<name>/learnings/ (gotchas, decisions)
+  hooks/                            gobbi.db                   (workspace event store)
 ```
 
-`.claude/` is the static knowledge layer. During a workflow session, no agent writes to it. The hooks enforce this at the tool layer — a PreToolUse hook blocks any write to `.claude/` while a session is active.
+`.claude/` is the static knowledge layer. During a workflow session, no agent writes to it. The hooks enforce this at the tool layer — a PreToolUse hook blocks any write to `.claude/` while a session is active. The `skills/`, `agents/`, and `rules/` entries in `.claude/` are per-file symlinks pointing into `.gobbi/skills/`, `.gobbi/agents/`, and `.gobbi/rules/` — the symlink farm lets Claude Code load docs from `.claude/` without storing the canonical copies there.
 
 `.gobbi/` is the runtime layer. Session state, worktree management, notes, gotchas recorded mid-session, and context files all live here. Writing to `.gobbi/` does not trigger context reload. Agents write freely.
 
-The three settings levels in `.gobbi/` form the cascade: `settings.json` (workspace preferences, gitignored), `project/settings.json` (project config, tracked), and `sessions/{id}/settings.json` (per-session overrides, gitignored). All three use the same unified schema. See `gobbi-config/README.md` for cascade resolution semantics.
+A single workspace can host multiple projects. Each project gets its own directory under `.gobbi/projects/<name>/` — design docs, learnings, rules, skills, and session directories all scoped to that project. `gobbi project create <name>` provisions the directory; `gobbi project switch <name>` rotates the symlink farm to point at the new project's docs.
 
-The implication: gotchas recorded during a session live in `.gobbi/project/gotchas/` until a designated promotion step moves them into `.claude/skills/_gotcha/`. This promotion happens outside an active session. It does not cause idle.
+The three settings levels in `.gobbi/` form the cascade: `settings.json` (workspace preferences, gitignored), `projects/<name>/settings.json` (project config, tracked), and `projects/<name>/sessions/<id>/settings.json` (per-session overrides, gitignored). All three use the same unified schema. See `v050-features/gobbi-config/README.md` for cascade resolution semantics.
+
+The implication: gotchas recorded during a session live in `.gobbi/projects/<name>/learnings/gotchas/` until a designated promotion step moves them into the workspace-level skill storage. This promotion happens outside an active session. It does not cause idle.
 
 ---
 
