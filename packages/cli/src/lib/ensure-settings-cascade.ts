@@ -42,13 +42,21 @@ import {
 } from './settings.js';
 import { writeSettingsAtLevel } from './settings-io.js';
 import { formatAjvErrors, validateSettings } from './settings-validator.js';
+import { projectDir, workspaceRoot } from './workspace-paths.js';
 
 // ---------------------------------------------------------------------------
 // Paths
 // ---------------------------------------------------------------------------
 
+/**
+ * Fallback project name used by path helpers that run before
+ * `projects.active` is resolved (e.g. legacy upgrade, fresh-install seed).
+ * TODO(W2.3): replace `DEFAULT_PROJECT_NAME` with `projects.active` resolution.
+ */
+const DEFAULT_PROJECT_NAME = 'gobbi';
+
 function legacyConfigDbPath(repoRoot: string): string {
-  return path.join(repoRoot, '.gobbi', 'config.db');
+  return path.join(workspaceRoot(repoRoot), 'config.db');
 }
 
 function legacyClaudeGobbiJsonPath(repoRoot: string): string {
@@ -56,19 +64,20 @@ function legacyClaudeGobbiJsonPath(repoRoot: string): string {
 }
 
 function legacyProjectConfigPath(repoRoot: string): string {
-  return path.join(repoRoot, '.gobbi', 'project-config.json');
+  return path.join(workspaceRoot(repoRoot), 'project-config.json');
 }
 
 function newProjectSettingsPath(repoRoot: string): string {
-  return path.join(repoRoot, '.gobbi', 'project', 'settings.json');
+  // TODO(W2.3): replace DEFAULT_PROJECT_NAME with projects.active resolution
+  return path.join(projectDir(repoRoot, DEFAULT_PROJECT_NAME), 'settings.json');
 }
 
 function workspaceSettingsFile(repoRoot: string): string {
-  return path.join(repoRoot, '.gobbi', 'settings.json');
+  return path.join(workspaceRoot(repoRoot), 'settings.json');
 }
 
 function gitignorePath(repoRoot: string): string {
-  return path.join(repoRoot, '.gobbi', '.gitignore');
+  return path.join(workspaceRoot(repoRoot), '.gitignore');
 }
 
 // ---------------------------------------------------------------------------
@@ -196,7 +205,7 @@ function ensureGitignoreLines(repoRoot: string): void {
 export async function ensureSettingsCascade(repoRoot: string): Promise<void> {
   // The `.gobbi/` directory is a precondition for later writes; fresh
   // tmpdirs (and fresh real repos) may not have it yet.
-  mkdirSync(path.join(repoRoot, '.gobbi'), { recursive: true });
+  mkdirSync(workspaceRoot(repoRoot), { recursive: true });
 
   // Step 1 — delete legacy SQLite config.
   const dbPath = legacyConfigDbPath(repoRoot);

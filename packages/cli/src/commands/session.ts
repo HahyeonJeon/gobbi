@@ -23,8 +23,16 @@ import { join } from 'node:path';
 
 import { readStdinJson } from '../lib/stdin.js';
 import { getRepoRoot } from '../lib/repo.js';
+import { sessionsRoot as sessionsRootForProject } from '../lib/workspace-paths.js';
 import { EventStore } from '../workflow/store.js';
 import type { EventRow, ReadStore } from '../workflow/store.js';
+
+/**
+ * Fallback project name used by path helpers that run before
+ * `projects.active` is resolved.
+ * TODO(W2.3): replace `DEFAULT_PROJECT_NAME` with `projects.active` resolution.
+ */
+const DEFAULT_PROJECT_NAME = 'gobbi';
 
 // ---------------------------------------------------------------------------
 // Usage strings
@@ -403,7 +411,8 @@ function summariseData(raw: string): string {
  */
 export function resolveSessionDir(override?: string | undefined): string | null {
   const repoRoot = getRepoRoot();
-  const sessionsRoot = join(repoRoot, '.gobbi', 'sessions');
+  // TODO(W2.3): replace DEFAULT_PROJECT_NAME with projects.active resolution
+  const sessionsRoot = sessionsRootForProject(repoRoot, DEFAULT_PROJECT_NAME);
 
   const candidate = override ?? process.env['CLAUDE_SESSION_ID'];
   if (candidate !== undefined && candidate !== '') {

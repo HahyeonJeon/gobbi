@@ -38,6 +38,7 @@ import { randomUUID } from 'node:crypto';
 import { getRepoRoot } from '../../lib/repo.js';
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../../lib/guards.js';
 import { ensureSettingsCascade } from '../../lib/ensure-settings-cascade.js';
+import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 import { EventStore } from '../../workflow/store.js';
 import { appendEventAndUpdateState, resolveWorkflowState } from '../../workflow/engine.js';
 import { initialState } from '../../workflow/state.js';
@@ -163,7 +164,9 @@ export async function runInitWithOptions(
     typeof values['session-id'] === 'string' ? values['session-id'] : undefined,
   );
   const repoRoot = overrides.repoRoot ?? getRepoRoot();
-  const sessionDir = join(repoRoot, '.gobbi', 'sessions', sessionId);
+  // TODO(W2.3): replace basename(repoRoot) with projects.active resolution + fallback
+  const projectName = basename(repoRoot);
+  const sessionDir = sessionDirForProject(repoRoot, projectName, sessionId);
   const metadataPath = join(sessionDir, 'metadata.json');
 
   // Ensure the unified settings cascade is ready — deletes legacy config
@@ -198,9 +201,6 @@ export async function runInitWithOptions(
   };
 
   const techStack = detectTechStack(repoRoot);
-
-  // TODO(W2.3): replace basename(repoRoot) with projects.active resolution + fallback
-  const projectName = basename(repoRoot);
 
   const metadata: SessionMetadata = {
     schemaVersion: 3,

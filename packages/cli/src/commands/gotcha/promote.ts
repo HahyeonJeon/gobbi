@@ -66,7 +66,18 @@ import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 
 import { getRepoRoot } from '../../lib/repo.js';
+import {
+  projectSubdir,
+  sessionsRoot as sessionsRootForProject,
+} from '../../lib/workspace-paths.js';
 import { EventStore } from '../../workflow/store.js';
+
+/**
+ * Fallback project name used by path helpers that run before
+ * `projects.active` is resolved.
+ * TODO(W2.3): replace `DEFAULT_PROJECT_NAME` with `projects.active` resolution.
+ */
+const DEFAULT_PROJECT_NAME = 'gobbi';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -81,8 +92,19 @@ import { EventStore } from '../../workflow/store.js';
  */
 export const HEARTBEAT_TTL_MS = 60 * 60 * 1000;
 
-/** Default source directory — `.gobbi/project/gotchas/` at the repo root. */
-const SOURCE_DIR_REL = join('.gobbi', 'project', 'gotchas');
+/**
+ * Default source directory — `.gobbi/projects/<project>/learnings/gotchas/` at
+ * the repo root. Computed per call because the project name resolution
+ * (TODO(W2.3)) lands in a later wave; for now `DEFAULT_PROJECT_NAME` is
+ * threaded through the facade.
+ */
+function defaultSourceDir(repoRoot: string): string {
+  // TODO(W2.3): replace DEFAULT_PROJECT_NAME with projects.active resolution
+  return join(
+    projectSubdir(repoRoot, DEFAULT_PROJECT_NAME, 'learnings'),
+    'gotchas',
+  );
+}
 
 /** Skill-scoped prefix convention (see file header). */
 const SKILL_PREFIX = '_skill-';
@@ -167,7 +189,7 @@ export async function runPromoteWithOptions(
   // --- 2. Resolve paths --------------------------------------------------
   const repoRoot = overrides.repoRoot ?? getRepoRoot();
   const claudeDir = overrides.claudeDir ?? join(repoRoot, '.claude');
-  const sourceDir = sourceOverride ?? join(repoRoot, SOURCE_DIR_REL);
+  const sourceDir = sourceOverride ?? defaultSourceDir(repoRoot);
 
   const now = overrides.now === undefined ? new Date() : overrides.now();
 
@@ -246,7 +268,8 @@ export function findActiveSessions(
   repoRoot: string,
   nowMs: number,
 ): readonly ActiveSession[] {
-  const sessionsRoot = join(repoRoot, '.gobbi', 'sessions');
+  // TODO(W2.3): replace DEFAULT_PROJECT_NAME with projects.active resolution
+  const sessionsRoot = sessionsRootForProject(repoRoot, DEFAULT_PROJECT_NAME);
   if (!existsSync(sessionsRoot)) return [];
 
   let entries: string[];
