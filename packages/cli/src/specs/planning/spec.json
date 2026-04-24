@@ -44,7 +44,7 @@
       },
       {
         "id": "scope-boundary",
-        "content": "Scope boundary:\n\n- Plan produces a task list. Do not start implementation — Execution owns that step.\n- Do not re-open ideation. If a new option surfaces during planning, note it and ask the user whether to skip back to ideation rather than silently ideating inside plan.\n- Do not evaluate the plan. If the user enabled plan evaluation at session start, the CLI transitions to `plan_eval` after your exit; independent evaluator agents assess the plan then.\n- Do not expand tasks into adjacent work. A plan that grows to absorb \"while we are at it\" work is a plan that executes slowly and reviews poorly."
+        "content": "Scope boundary:\n\n- Planning produces a task list. Do not start implementation — Execution owns that step.\n- Do not re-open ideation. If a new option surfaces during planning, note it and ask the user whether to skip back to ideation rather than silently ideating inside planning.\n- Do not evaluate the plan. If the user enabled planning evaluation at session start, the CLI transitions to `planning_eval` after your exit; independent evaluator agents assess the plan then.\n- Do not expand tasks into adjacent work. A plan that grows to absorb \"while we are at it\" work is a plan that executes slowly and reviews poorly."
       },
       {
         "id": "plan-artifact-shape",
@@ -54,12 +54,12 @@
     "conditional": [
       {
         "id": "feedback-context",
-        "content": "Feedback round context:\n\nA prior evaluation of this plan returned a revise verdict, or an execution_eval loop targeted the plan step. Before rewriting the plan, read the evaluator findings under `evaluation/` (for plan_eval loops) or the execution_eval summary (for execution_eval loops) in the session directory. Ask the user which findings to address, which to defer, and which to disagree with — the feedback is input, not instruction. Re-plan only after the revision scope is clear; do not rewrite tasks on a guess.",
+        "content": "Feedback round context:\n\nA prior evaluation of this plan returned a revise verdict, or an execution_eval loop targeted the planning step. Before rewriting the plan, read the evaluator findings under `evaluation/` (for planning_eval loops) or the execution_eval summary (for execution_eval loops) in the session directory. Ask the user which findings to address, which to defer, and which to disagree with — the feedback is input, not instruction. Re-plan only after the revision scope is clear; do not rewrite tasks on a guess.",
         "when": "feedbackRoundActive"
       },
       {
         "id": "evaluation-deciding",
-        "content": "Evaluation pre-exit check:\n\nThe user enabled Plan evaluation at session start (`evalConfig.plan == true`). Before emitting the completion signal, confirm the plan artifact is complete and the user has approved its shape. The CLI will transition to `plan_eval` on exit; do not ask the user again about running evaluation — that decision is locked. Your job at exit is to ensure `plan.md` is ready to be assessed by independent evaluator agents.",
+        "content": "Evaluation pre-exit check:\n\nThe user enabled Planning evaluation at session start (`evalConfig.planning == true`). Before emitting the completion signal, confirm the plan artifact is complete and the user has approved its shape. The CLI will transition to `planning_eval` on exit; do not ask the user again about running evaluation — that decision is locked. Your job at exit is to ensure `plan.md` is ready to be assessed by independent evaluator agents.",
         "when": "evalPlanEnabled"
       }
     ],

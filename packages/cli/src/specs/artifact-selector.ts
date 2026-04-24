@@ -81,7 +81,7 @@ import {
  * `memorization/` — per `v050-session.md` §Session Directory Structure.
  *
  * `StepId` is deliberately NARROWER than the state-machine step identifiers
- * in `specs/index.json`. Callers using `ideation_eval` / `plan_eval` /
+ * in `specs/index.json`. Callers using `ideation_eval` / `planning_eval` /
  * `execution_eval` must map those to productive steps before calling the
  * selector: all three eval steps share the flat `evaluation/` directory,
  * and research lives inside `ideation/` as an Ideation substate. See the

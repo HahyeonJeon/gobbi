@@ -1,6 +1,6 @@
 # Evaluation step spec
 
-The evaluation step spec is reused by three workflow steps — `ideation_eval`, `plan_eval`, and `execution_eval` — via `index.json`'s `evalFor` indirection. There is one spec and three workflow-graph entries pointing at it; the session state (`state.currentStep` plus the `evalFor` target) tells the orchestrator which preceding step is under assessment.
+The evaluation step spec is reused by three workflow steps — `ideation_eval`, `planning_eval`, and `execution_eval` — via `index.json`'s `evalFor` indirection. There is one spec and three workflow-graph entries pointing at it; the session state (`state.currentStep` plus the `evalFor` target) tells the orchestrator which preceding step is under assessment.
 
 Authoritative design: [`v050-prompts.md`](../../../../../.claude/project/gobbi/design/v050-prompts.md) §Stances as CLI-Managed Configuration. Transition graph: [`v050-state-machine.md`](../../../../../.claude/project/gobbi/design/v050-state-machine.md) §Evaluation Gate Model.
 
@@ -12,7 +12,7 @@ Evaluation spawns independent evaluator agents from at least two perspectives (P
 
 The creating agent of the preceding step never participates in its own evaluation. This isolation is the reason evaluation is a separate workflow step rather than a sub-state of the preceding step.
 
-For `execution_eval` revise verdicts, the evaluator specifies a `loopTarget` — one of `ideation`, `plan`, or `execution`. The workflow routes the loop-back to the target step, increments `feedbackRound`, and the target step re-enters with the evaluation findings in context.
+For `execution_eval` revise verdicts, the evaluator specifies a `loopTarget` — one of `ideation`, `planning`, or `execution`. The workflow routes the loop-back to the target step, increments `feedbackRound`, and the target step re-enters with the evaluation findings in context.
 
 ---
 
@@ -24,7 +24,7 @@ For `execution_eval` revise verdicts, the evaluator specifies a `loopTarget` —
 | `transitions` | Two exit edges — `verdictRevise` back to the preceding step, `verdictPass` forward. The graph-level transitions are per-eval-step (see `index.json`); this spec declares the canonical shape |
 | `delegation.agents` | Two evaluator agents at `sonnet` / `max` — Project and Overall, the minimum two perspectives |
 | `tokenBudget` | `artifacts` slot raised to 0.35 — prior step artifacts drive the evaluation, so they dominate the budget |
-| `blocks.static` | Role, principles, and scope-boundary — all three reused across ideation_eval, plan_eval, and execution_eval |
+| `blocks.static` | Role, principles, and scope-boundary — all three reused across ideation_eval, planning_eval, and execution_eval |
 | `blocks.conditional` | Feedback-round context for later rounds (evaluate the revision, not just the current state) |
 | `blocks.delegation` | Two entries keyed by `evaluator.project` and `evaluator.overall` — the per-perspective subagent prompt bodies |
 | `blocks.synthesis` | Instructions for the orchestrator to consolidate findings and propose the verdict |
@@ -40,7 +40,7 @@ The full schema lives in [`../_schema/v1.ts`](../_schema/v1.ts). Every field is 
 
 ```
 { "id": "ideation_eval",   "spec": "./evaluation/spec.json", "evalFor": "ideation" }
-{ "id": "plan_eval",       "spec": "./evaluation/spec.json", "evalFor": "plan" }
+{ "id": "planning_eval",   "spec": "./evaluation/spec.json", "evalFor": "planning" }
 { "id": "execution_eval",  "spec": "./evaluation/spec.json", "evalFor": "execution" }
 ```
 
