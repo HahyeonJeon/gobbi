@@ -23,16 +23,13 @@ import { join } from 'node:path';
 
 import { readStdinJson } from '../lib/stdin.js';
 import { getRepoRoot } from '../lib/repo.js';
-import { sessionsRoot as sessionsRootForProject } from '../lib/workspace-paths.js';
+import {
+  projectsRoot as projectsRootForRepo,
+  sessionsRoot as sessionsRootForProject,
+  workspaceRoot as workspaceRootForRepo,
+} from '../lib/workspace-paths.js';
 import { EventStore } from '../workflow/store.js';
 import type { EventRow, ReadStore } from '../workflow/store.js';
-
-/**
- * Fallback project name used by path helpers that run before
- * `projects.active` is resolved.
- * TODO(W2.3): replace `DEFAULT_PROJECT_NAME` with `projects.active` resolution.
- */
-const DEFAULT_PROJECT_NAME = 'gobbi';
 
 // ---------------------------------------------------------------------------
 // Usage strings
@@ -398,46 +395,160 @@ function summariseData(raw: string): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Resolve the active session's `.gobbi/sessions/<id>/` directory.
+ * Resolve the active session's session directory. Scans both the legacy-flat
+ * layout (`.gobbi/sessions/<id>/`) AND every project's sessions dir
+ * (`.gobbi/projects/<name>/sessions/<id>/`) so a `--session-id` override
+ * works regardless of which project currently owns the session.
  *
  * Priority:
  *   1. Explicit `--session-id` override.
  *   2. `CLAUDE_SESSION_ID` environment variable.
- *   3. Fallback — if exactly one session directory exists under
- *      `<repo>/.gobbi/sessions/`, use it. Otherwise return `null`.
+ *   3. Fallback — if exactly one session directory exists across the union of
+ *      layouts (legacy-flat + every project's sessions dir), use it.
+ *      Otherwise return `null`.
  *
  * Returns `null` when no directory can be resolved; the caller is responsible
  * for emitting the user-facing error message.
+ *
+ * ## Why scan all projects given --session-id
+ *
+ * Post-Pass-2 sessions live at `.gobbi/projects/<name>/sessions/<id>/`. If
+ * a caller passes `--session-id` without knowing the owning project name
+ * (e.g., e2e tests, cross-project debugging, or a shell with a different
+ * `projects.active` than the session's creator), binding the resolver to a
+ * single project would cause spurious "could not resolve" failures even
+ * though the session exists on disk. A session id is a UUID-grade
+ * identifier — uniqueness across projects is an invariant, so scanning all
+ * projects for the id is safe.
  */
 export function resolveSessionDir(override?: string | undefined): string | null {
   const repoRoot = getRepoRoot();
-  // TODO(W2.3): replace DEFAULT_PROJECT_NAME with projects.active resolution
-  const sessionsRoot = sessionsRootForProject(repoRoot, DEFAULT_PROJECT_NAME);
 
   const candidate = override ?? process.env['CLAUDE_SESSION_ID'];
   if (candidate !== undefined && candidate !== '') {
-    const dir = join(sessionsRoot, candidate);
-    return existsSync(dir) ? dir : null;
+    return findSessionById(repoRoot, candidate);
   }
 
-  // Single-session fallback: if only one directory exists, use it. More than
-  // one is ambiguous; zero means no active session.
-  try {
-    if (!existsSync(sessionsRoot)) return null;
-    const entries = readdirSync(sessionsRoot).filter((name) => {
-      try {
-        return statSync(join(sessionsRoot, name)).isDirectory();
-      } catch {
-        return false;
-      }
-    });
-    if (entries.length === 1) {
-      const only = entries[0];
-      if (only === undefined) return null;
-      return join(sessionsRoot, only);
+  // Single-session fallback — if exactly one session exists across the
+  // union of legacy-flat and per-project layers, use it. More than one is
+  // ambiguous; zero means no active session.
+  const all = collectAllSessionDirs(repoRoot);
+  if (all.length === 1) {
+    const only = all[0];
+    return only ?? null;
+  }
+  return null;
+}
+
+/**
+ * Search for a session directory by id across every known layout.
+ * Returns the first match found or `null`.
+ *
+ * Order:
+ *   1. Legacy-flat `.gobbi/sessions/<id>/` (back-compat with pre-Pass-2 sessions).
+ *   2. Per-project `.gobbi/projects/<name>/sessions/<id>/` — iterated in
+ *      `readdirSync` order so the scan is deterministic within one repo state.
+ */
+function findSessionById(repoRoot: string, sessionId: string): string | null {
+  // Layer 1 — legacy flat layout.
+  const legacyDir = join(workspaceRootForRepo(repoRoot), 'sessions', sessionId);
+  if (existsSync(legacyDir)) {
+    try {
+      if (statSync(legacyDir).isDirectory()) return legacyDir;
+    } catch {
+      // Fall through to project scan.
     }
-    return null;
+  }
+
+  // Layer 2 — per-project layouts.
+  const projectsDir = projectsRootForRepo(repoRoot);
+  if (!existsSync(projectsDir)) return null;
+
+  let projectNames: string[];
+  try {
+    projectNames = readdirSync(projectsDir);
   } catch {
     return null;
   }
+
+  for (const projectName of projectNames) {
+    let projectsEntry: string;
+    try {
+      projectsEntry = join(projectsDir, projectName);
+      if (!statSync(projectsEntry).isDirectory()) continue;
+    } catch {
+      continue;
+    }
+    const candidateDir = join(
+      sessionsRootForProject(repoRoot, projectName),
+      sessionId,
+    );
+    if (!existsSync(candidateDir)) continue;
+    try {
+      if (statSync(candidateDir).isDirectory()) return candidateDir;
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Enumerate every session directory across legacy-flat + per-project layers.
+ * Used by the single-session fallback so a repo with exactly one session
+ * (regardless of which layer it lives under) resolves unambiguously.
+ */
+function collectAllSessionDirs(repoRoot: string): readonly string[] {
+  const out: string[] = [];
+
+  // Layer 1 — legacy flat.
+  const legacyRoot = join(workspaceRootForRepo(repoRoot), 'sessions');
+  if (existsSync(legacyRoot)) {
+    try {
+      for (const id of readdirSync(legacyRoot)) {
+        const dir = join(legacyRoot, id);
+        try {
+          if (statSync(dir).isDirectory()) out.push(dir);
+        } catch {
+          // ignore
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // Layer 2 — per-project.
+  const projectsDir = projectsRootForRepo(repoRoot);
+  if (existsSync(projectsDir)) {
+    let projectNames: string[];
+    try {
+      projectNames = readdirSync(projectsDir);
+    } catch {
+      projectNames = [];
+    }
+    for (const projectName of projectNames) {
+      const projSessions = sessionsRootForProject(repoRoot, projectName);
+      try {
+        if (!statSync(projSessions).isDirectory()) continue;
+      } catch {
+        continue;
+      }
+      try {
+        for (const id of readdirSync(projSessions)) {
+          const dir = join(projSessions, id);
+          try {
+            if (statSync(dir).isDirectory()) out.push(dir);
+          } catch {
+            // ignore
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  return out;
 }
