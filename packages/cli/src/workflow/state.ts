@@ -41,8 +41,8 @@ export type WorkflowStep =
   | 'idle'
   | 'ideation'
   | 'ideation_eval'
-  | 'plan'
-  | 'plan_eval'
+  | 'planning'
+  | 'planning_eval'
   | 'execution'
   | 'execution_eval'
   | 'memorization'
@@ -56,8 +56,8 @@ export type WorkflowStep =
 export const ACTIVE_STEPS: ReadonlySet<WorkflowStep> = new Set<WorkflowStep>([
   'ideation',
   'ideation_eval',
-  'plan',
-  'plan_eval',
+  'planning',
+  'planning_eval',
   'execution',
   'execution_eval',
   'memorization',
@@ -90,11 +90,13 @@ export type IdeationSubstate = 'discussing' | 'researching' | null;
 
 export interface EvalConfig {
   readonly ideation: boolean;
-  readonly plan: boolean;
+  readonly planning: boolean;
   /**
    * Execution-eval gate. Optional for backward-compat — prior to Wave C.2
-   * the EVAL_DECIDE payload carried only `{ideation, plan}`, and on-disk
-   * state files written under those semantics have no `execution` key.
+   * the EVAL_DECIDE payload carried only `{ideation, planning}` (the field
+   * was originally named `plan`; see the Wave-4 rename history in
+   * `v050-features/gobbi-memory`), and on-disk state files written under
+   * those semantics have no `execution` key.
    * Under `exactOptionalPropertyTypes`, absence means "field not set" (the
    * reducer never wrote one); presence means the EVAL_DECIDE payload
    * carried an explicit boolean. The `execution_eval` step is still
@@ -246,8 +248,8 @@ const VALID_STEPS: ReadonlySet<string> = new Set<string>([
   'idle',
   'ideation',
   'ideation_eval',
-  'plan',
-  'plan_eval',
+  'planning',
+  'planning_eval',
   'execution',
   'execution_eval',
   'memorization',
@@ -308,7 +310,7 @@ export function isValidState(value: unknown): value is WorkflowState {
   if (evalConfig !== null) {
     if (!isRecord(evalConfig)) return false;
     if (!isBoolean(evalConfig['ideation'])) return false;
-    if (!isBoolean(evalConfig['plan'])) return false;
+    if (!isBoolean(evalConfig['planning'])) return false;
     // execution is optional (Wave C.2 additive slot). When present must be
     // a boolean; when absent the field is simply not set on the record.
     const execution = evalConfig['execution'];

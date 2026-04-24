@@ -76,7 +76,7 @@ export interface StatusSnapshot {
   readonly currentSubstate: string | null;
   readonly completedSteps: readonly string[];
   readonly activeSubagents: readonly { readonly subagentId: string; readonly agentType: string; readonly step: string }[];
-  readonly evalConfig: { readonly ideation: boolean; readonly plan: boolean } | null;
+  readonly evalConfig: { readonly ideation: boolean; readonly planning: boolean; readonly execution?: boolean } | null;
   readonly feedbackRound: number;
   readonly maxFeedbackRounds: number;
   readonly lastVerdictOutcome: 'pass' | 'revise' | null;
@@ -435,7 +435,7 @@ function renderHuman(snapshot: StatusSnapshot): string {
     lines.push(`Eval: unset`);
   } else {
     lines.push(
-      `Eval: ideation=${snapshot.evalConfig.ideation ? 'on' : 'off'}, plan=${snapshot.evalConfig.plan ? 'on' : 'off'}`,
+      `Eval: ideation=${snapshot.evalConfig.ideation ? 'on' : 'off'}, planning=${snapshot.evalConfig.planning ? 'on' : 'off'}`,
     );
   }
   lines.push(

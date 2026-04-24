@@ -470,14 +470,13 @@ export function renderSessionSummary(state: WorkflowState): string {
     .sort()
     .map((k) => `${k}=${(state.artifacts[k] ?? []).length}`)
     .join(',');
-  // evalConfig rendering (Wave C.2): ideation/plan are always present when
+  // evalConfig rendering (Wave C.2): ideation/planning are always present when
   // evalConfig is non-null; `execution` is the optional third slot and is
-  // OMITTED from the rendered summary when undefined. This keeps every
-  // pre-C.2 snapshot (`session.evalConfig=ideation=false,plan=false` etc.)
-  // byte-stable and only extends the line when the translation layer has
-  // fed an explicit boolean into the state.
+  // OMITTED from the rendered summary when undefined. Wave-4 rename flipped
+  // the field name from `plan` to `planning`; snapshot regeneration
+  // (W4.4) tracks the line change.
   const renderEvalConfig = (ec: NonNullable<WorkflowState['evalConfig']>): string => {
-    const parts = [`ideation=${ec.ideation}`, `plan=${ec.plan}`];
+    const parts = [`ideation=${ec.ideation}`, `planning=${ec.planning}`];
     if (ec.execution !== undefined) parts.push(`execution=${ec.execution}`);
     return parts.join(',');
   };

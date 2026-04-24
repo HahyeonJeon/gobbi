@@ -178,7 +178,10 @@ function reduceWorkflow(
       if (state.evalConfig === null) {
         const nextEvalConfig = {
           ideation: event.data.ideation,
-          plan: event.data.plan,
+          // The EVAL_DECIDE event payload retains its original `plan` field
+          // name for payload-schema stability; the state-level field is the
+          // post-rename `planning`. The mapping happens here.
+          planning: event.data.plan,
           ...(event.data.execution !== undefined
             ? { execution: event.data.execution }
             : {}),
@@ -188,7 +191,7 @@ function reduceWorkflow(
           evalConfig: nextEvalConfig,
         });
       }
-      // evalConfig already set — ideation/plan locked. If the event carries
+      // evalConfig already set — ideation/planning locked. If the event carries
       // an execution value and state has not yet recorded one, merge it in.
       if (
         event.data.execution !== undefined &&
