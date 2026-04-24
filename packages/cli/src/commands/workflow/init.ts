@@ -2,7 +2,7 @@
  * gobbi workflow init — initialise a workflow session directory.
  *
  * Creates `.gobbi/sessions/<sessionId>/` under the detected repo root, writes
- * a `metadata.json` at schema v2, opens the SQLite event store (`gobbi.db`),
+ * a `metadata.json` at schema v3, opens the SQLite event store (`gobbi.db`),
  * and appends the opening pair of events — `workflow.start` followed by
  * `workflow.eval.decide` — atomically inside a single `store.transaction`.
  *
@@ -23,14 +23,16 @@
  *
  * ## Schema
  *
- * `metadata.json` shape is locked at `schemaVersion: 2` across the v0.5.0
- * Phase 2 surface (state.json, events, metadata all share the version stamp).
- * See `research.md` Wave 3 C.8 coordination note.
+ * `metadata.json` shape is at `schemaVersion: 3` as of the gobbi-memory
+ * Pass-2 redesign — v3 adds the required `projectName` field that names
+ * the project partition this session belongs to. The metadata schemaVersion
+ * is decoupled from the state-machine `WorkflowState.schemaVersion` (which
+ * lives in `workflow/state.ts` and tracks state-shape migrations separately).
  */
 
 import { parseArgs } from 'node:util';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 import { getRepoRoot } from '../../lib/repo.js';
@@ -78,11 +80,16 @@ const PARSE_OPTIONS = {
 // ---------------------------------------------------------------------------
 
 /**
- * On-disk shape of `metadata.json`. Schema v2 is the v0.5.0 Phase 2 lock.
+ * On-disk shape of `metadata.json`. Schema v3 adds the required `projectName`
+ * field for the gobbi-memory Pass-2 multi-project layout.
  *
  *   - `sessionId` — matches the directory name.
  *   - `createdAt` — ISO-8601 timestamp, set once at init; never rewritten.
  *   - `projectRoot` — absolute path to the repo root at init time.
+ *   - `projectName` — name of the project partition this session belongs to
+ *     (see `.gobbi/projects/<projectName>/`). Resolved at init time; never
+ *     rewritten. W2.3 plumbs the full resolution chain (flag/active/bootstrap);
+ *     this wave derives from `basename(repoRoot)` as a simple starting point.
  *   - `techStack` — output of {@link detectTechStack} (lowercase, deduped,
  *     alphabetically sorted; empty array when no signals match).
  *   - `configSnapshot` — the setup answers captured at init (task text,
@@ -90,10 +97,11 @@ const PARSE_OPTIONS = {
  *     may revisit if mid-session reconfig becomes a requirement.
  */
 export interface SessionMetadata {
-  readonly schemaVersion: 2;
+  readonly schemaVersion: 3;
   readonly sessionId: string;
   readonly createdAt: string;
   readonly projectRoot: string;
+  readonly projectName: string;
   readonly techStack: readonly string[];
   readonly configSnapshot: SessionConfigSnapshot;
 }
@@ -191,11 +199,15 @@ export async function runInitWithOptions(
 
   const techStack = detectTechStack(repoRoot);
 
+  // TODO(W2.3): replace basename(repoRoot) with projects.active resolution + fallback
+  const projectName = basename(repoRoot);
+
   const metadata: SessionMetadata = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     sessionId,
     createdAt: new Date().toISOString(),
     projectRoot: repoRoot,
+    projectName,
     techStack,
     configSnapshot,
   };
@@ -293,10 +305,12 @@ export function readMetadata(path: string): SessionMetadata | null {
 
 export function isValidMetadata(value: unknown): value is SessionMetadata {
   if (!isRecord(value)) return false;
-  if (!isNumber(value['schemaVersion']) || value['schemaVersion'] !== 2) return false;
+  // TODO(W6.1): fixture tests asserting schemaVersion: 2 must migrate to 3
+  if (!isNumber(value['schemaVersion']) || value['schemaVersion'] !== 3) return false;
   if (!isString(value['sessionId'])) return false;
   if (!isString(value['createdAt'])) return false;
   if (!isString(value['projectRoot'])) return false;
+  if (!isString(value['projectName'])) return false;
   if (!isArray(value['techStack'])) return false;
   for (const tag of value['techStack']) {
     if (!isString(tag)) return false;
