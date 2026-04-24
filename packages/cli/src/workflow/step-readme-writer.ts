@@ -82,8 +82,13 @@ export interface StepReadmeArgs {
   readonly verdictOutcome: 'pass' | 'revise' | null;
   /** Artifact filenames recorded against this step. */
   readonly artifacts: readonly string[];
-  /** Count of subagents spawned while this step was active. */
-  readonly subagentsSpawned: number;
+  /**
+   * Count of subagents still active (not yet COMPLETE/FAIL) at
+   * STEP_EXIT. The reducer removes completed/failed subagents from
+   * `activeSubagents`, so this reflects outstanding work at exit —
+   * typically 0 on a clean finish. Not a total-spawned count.
+   */
+  readonly subagentsActiveAtExit: number;
   /** Feedback-loop round at exit time. */
   readonly feedbackRound: number;
   /** Step the workflow transitions to next (post-reduction `currentStep`). */
@@ -106,7 +111,7 @@ export function generateStepReadme(args: StepReadmeArgs): string {
     `verdictOutcome: ${args.verdictOutcome ?? 'null'}`,
     `feedbackRound: ${args.feedbackRound}`,
     `nextStep: ${args.nextStep}`,
-    `subagentsSpawned: ${args.subagentsSpawned}`,
+    `subagentsActiveAtExit: ${args.subagentsActiveAtExit}`,
     'artifacts:',
     ...(args.artifacts.length === 0
       ? ['  []']
@@ -170,7 +175,7 @@ export function writeStepReadmeForExit(args: StepExitWriteArgs): string | null {
   const stepDir = ensureSessionStepDir(args.sessionDir, step);
   const projectName = projectNameFromSessionDir(args.sessionDir);
 
-  const subagentsSpawned = args.prevState.activeSubagents.filter(
+  const subagentsActiveAtExit = args.prevState.activeSubagents.filter(
     (agent) => agent.step === step,
   ).length;
 
@@ -182,7 +187,7 @@ export function writeStepReadmeForExit(args: StepExitWriteArgs): string | null {
     exitedAt: args.exitedAt,
     verdictOutcome: args.prevState.lastVerdictOutcome,
     artifacts: args.prevState.artifacts[step] ?? [],
-    subagentsSpawned,
+    subagentsActiveAtExit,
     feedbackRound: args.nextState.feedbackRound,
     nextStep: args.nextState.currentStep,
   };

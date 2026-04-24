@@ -103,7 +103,7 @@ describe('generateStepReadme', () => {
     exitedAt: '2026-04-20T11:30:00.000Z',
     verdictOutcome: 'pass',
     artifacts: ['ideation.md', 'innovative.md'],
-    subagentsSpawned: 2,
+    subagentsActiveAtExit: 2,
     feedbackRound: 0,
     nextStep: 'ideation_eval',
   };
@@ -119,7 +119,7 @@ describe('generateStepReadme', () => {
     expect(md).toContain('verdictOutcome: pass');
     expect(md).toContain('feedbackRound: 0');
     expect(md).toContain('nextStep: ideation_eval');
-    expect(md).toContain('subagentsSpawned: 2');
+    expect(md).toContain('subagentsActiveAtExit: 2');
   });
 
   it('renders the artifacts list as a YAML sequence', () => {

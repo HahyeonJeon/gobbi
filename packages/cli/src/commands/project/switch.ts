@@ -73,7 +73,6 @@ import {
   mkdirSync,
   renameSync,
   rmSync,
-  statSync,
 } from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
@@ -249,20 +248,33 @@ export async function runProjectSwitchWithOptions(
 
   // --- Per-kind swap ----------------------------------------------------
   //
-  // `swapKinds` returns the list of kinds that were successfully swapped.
-  // On failure mid-sequence it attempts rollback of already-swapped
-  // kinds before propagating the error; a rollback failure surfaces as
-  // a structured diagnostic so the operator can recover manually.
+  // `swapKinds` succeeds or throws. On mid-swap failure it attempts
+  // rollback; the distinguishing class {@link SwapKindsRollbackFailedError}
+  // signals "rollback also failed" vs a plain Error (rollback succeeded,
+  // old farm restored).
+  //
+  //   - Rollback succeeded → the temp tree holds no forensic state worth
+  //     keeping; clean it up just like the happy path.
+  //   - Rollback failed → the temp tree may carry `<kind>.old` directories
+  //     the operator needs to inspect for manual recovery; preserve it
+  //     and emit a distinguishing stderr line so the operator knows to
+  //     investigate.
   try {
     swapKinds(repoRoot, tempRoot);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    process.stderr.write(
-      `gobbi project switch: rotation failed: ${message}\n`,
-    );
-    // `swapKinds` already emitted any per-kind diagnostics; do not
-    // overwrite the tempRoot because it may still carry rollback state
-    // the operator needs to inspect.
+    if (err instanceof SwapKindsRollbackFailedError) {
+      process.stderr.write(
+        `gobbi project switch: rotation failed AND rollback failed: ${message}\n` +
+          `                     Temp farm preserved for inspection: ${tempRoot}\n`,
+      );
+    } else {
+      process.stderr.write(
+        `gobbi project switch: rotation failed: ${message}\n` +
+          `                     Rollback succeeded; old .claude/ restored.\n`,
+      );
+      safeRmTree(tempRoot);
+    }
     process.exit(1);
   }
 
@@ -370,6 +382,19 @@ export function renderActiveSessionError(
 // ---------------------------------------------------------------------------
 
 /**
+ * Thrown by {@link swapKinds} when a mid-swap rollback itself fails.
+ * The caller distinguishes this from a swap failure with a successful
+ * rollback so forensics can be preserved (temp tree left on disk) vs
+ * cleaned up (temp tree removed).
+ */
+export class SwapKindsRollbackFailedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'SwapKindsRollbackFailedError';
+  }
+}
+
+/**
  * Perform the three per-kind swaps. For each kind in {@link FARM_KINDS}:
  *
  *   1. If `.claude/<kind>` exists, rename it to
@@ -426,7 +451,7 @@ function swapKinds(repoRoot: string, tempRoot: string): void {
       } catch (rollbackErr) {
         const rollbackMessage =
           rollbackErr instanceof Error ? rollbackErr.message : String(rollbackErr);
-        throw new Error(
+        throw new SwapKindsRollbackFailedError(
           `swapKinds: failure mid-swap on ${kind}; rollback also failed (${rollbackMessage}). ` +
             `Original error: ${err instanceof Error ? err.message : String(err)}. ` +
             `Paths: live=${livePath} old=${oldPath} newBuilt=${newBuiltPath}`,
@@ -467,17 +492,6 @@ function safeRmTree(target: string): void {
     rmSync(target, { recursive: true, force: true });
   } catch {
     // best-effort
-  }
-}
-
-// Stat-but-don't-follow — kept as an exported helper so tests can
-// assert the rotation outcome without re-deriving the path arithmetic.
-// (Unused in production paths; exported for test convenience.)
-export function isSymlink(target: string): boolean {
-  try {
-    return statSync(target).isSymbolicLink();
-  } catch {
-    return false;
   }
 }
 
