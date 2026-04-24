@@ -88,6 +88,8 @@ export const COMMAND_ORDER = [
   'workflow',
   'gotcha',
   'maintenance',
+  'install',
+  'project',
   'image',
   'video',
   'web',
@@ -174,6 +176,22 @@ export const COMMANDS_BY_NAME = {
     run: async (args: string[]): Promise<void> => {
       const { runMaintenance } = await import('./commands/maintenance.js');
       await runMaintenance(args);
+    },
+  },
+  install: {
+    name: 'install',
+    summary: 'Fresh / upgrade / 3-way merge of the template bundle',
+    run: async (args: string[]): Promise<void> => {
+      const { runInstall } = await import('./commands/install.js');
+      await runInstall(args);
+    },
+  },
+  project: {
+    name: 'project',
+    summary: 'Manage gobbi projects (list, create, switch)',
+    run: async (args: string[]): Promise<void> => {
+      const { runProject } = await import('./commands/project.js');
+      await runProject(args);
     },
   },
   image: {

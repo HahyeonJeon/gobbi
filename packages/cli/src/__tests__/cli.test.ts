@@ -255,9 +255,12 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
     // C.1 refactored the dispatch layer; Wave 9 (C.9) added the top-level
     // `gotcha` namespace. v0.5.0 Pass-2 W3.3 added the top-level
     // `maintenance` namespace for out-of-session cleanup commands
-    // (wipe-legacy-sessions). Workflow subcommands (Waves 2–8) extend the
-    // inner `workflow` registry and do not surface here. If this test
-    // fails, verify the change belongs in this PR before updating it.
+    // (wipe-legacy-sessions). W5.5 added `install` (template-bundle
+    // lay-down + 3-way merge) and `project` (list / create / switch)
+    // as top-level multi-project verbs. Workflow subcommands (Waves
+    // 2–8) extend the inner `workflow` registry and do not surface
+    // here. If this test fails, verify the change belongs in this PR
+    // before updating it.
     const expected: readonly CommandName[] = [
       'config',
       'session',
@@ -267,6 +270,8 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
       'workflow',
       'gotcha',
       'maintenance',
+      'install',
+      'project',
       'image',
       'video',
       'web',
