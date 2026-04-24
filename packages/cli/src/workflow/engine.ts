@@ -30,6 +30,7 @@ import {
   WORKFLOW_EVENTS,
   createWorkflowInvalidTransition,
 } from './events/workflow.js';
+import { writeStepReadmeForExit } from './step-readme-writer.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -144,8 +145,9 @@ export function appendEventAndUpdateState(
   // runs its audit-emit branch after the outer transaction has fully
   // rolled back.
   // ---------------------------------------------------------------------
+  let appendResult: AppendResult;
   try {
-    return store.transaction(() => {
+    appendResult = store.transaction(() => {
       // Track whether state.json existed before the operation. When this
       // is the first event ever, there is no state.json and therefore no
       // backup — the catch block needs to know so it can delete state.json
@@ -269,6 +271,41 @@ export function appendEventAndUpdateState(
     // rely on the error surface for their exit codes and diagnostics.
     throw outerError;
   }
+
+  // Post-commit side effect: per-step README writer (W5.1).
+  //
+  // Fires AFTER the core transaction has committed — the README is a
+  // non-authoritative navigation aid that mirrors info already in
+  // gobbi.db + state.json. Running it outside the transaction means a
+  // filesystem error on README write cannot corrupt the event store,
+  // and deduplicated (`persisted: false`) events skip the write entirely.
+  //
+  // Only productive-step STEP_EXIT events produce a README; other event
+  // types and `*_eval` / terminal steps are filtered inside
+  // `writeStepReadmeForExit`. Failures are swallowed with a stderr log —
+  // per the plan's "best-effort" contract, the side effect must never
+  // mask an accepted state transition.
+  if (
+    appendResult.persisted &&
+    event.type === WORKFLOW_EVENTS.STEP_EXIT
+  ) {
+    try {
+      writeStepReadmeForExit({
+        sessionDir: dir,
+        prevState: state,
+        nextState: appendResult.state,
+        exitedStep: event.data.step,
+        exitedAt: effectiveTs,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      process.stderr.write(
+        `gobbi: per-step README write failed — ${msg}\n`,
+      );
+    }
+  }
+
+  return appendResult;
 }
 
 // ---------------------------------------------------------------------------
