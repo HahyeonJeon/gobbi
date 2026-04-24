@@ -80,8 +80,8 @@ describe('isValidState', () => {
       sessionId: 'sess-1',
       currentStep: 'execution',
       currentSubstate: null,
-      completedSteps: ['ideation', 'plan'],
-      evalConfig: { ideation: true, plan: false },
+      completedSteps: ['ideation', 'planning'],
+      evalConfig: { ideation: true, planning: false },
       activeSubagents: [
         { subagentId: 'a1', agentType: 'executor', step: 'execution', spawnedAt: '2026-01-01T00:00:00Z' },
       ],
@@ -128,7 +128,7 @@ describe('isValidState', () => {
   });
 
   it('rejects non-boolean evalConfig fields', () => {
-    const bad = { ...initialState('s1'), evalConfig: { ideation: 'yes', plan: false } };
+    const bad = { ...initialState('s1'), evalConfig: { ideation: 'yes', planning: false } };
     expect(isValidState(bad)).toBe(false);
   });
 });
@@ -189,7 +189,7 @@ describe('readState returns null', () => {
 
 describe('backupState + restoreBackup', () => {
   it('creates a backup and restores it', () => {
-    const state = makeState({ currentStep: 'plan', feedbackRound: 1 });
+    const state = makeState({ currentStep: 'planning', feedbackRound: 1 });
     writeState(testDir, state);
     backupState(testDir);
 
@@ -298,8 +298,8 @@ describe('deriveState', () => {
     store.append(makeAppendInput({
       toolCallId: 'tc-4',
       type: WORKFLOW_EVENTS.STEP_EXIT,
-      step: 'plan',
-      data: JSON.stringify({ step: 'plan' }),
+      step: 'planning',
+      data: JSON.stringify({ step: 'planning' }),
     }));
     store.append(makeAppendInput({
       toolCallId: 'tc-5',
@@ -312,7 +312,7 @@ describe('deriveState', () => {
     const state = deriveState('sess-1', events, reduce);
 
     expect(state.currentStep).toBe('execution');
-    expect(state.completedSteps).toEqual(['ideation', 'plan']);
+    expect(state.completedSteps).toEqual(['ideation', 'planning']);
     expect(state.activeSubagents).toHaveLength(1);
     expect(state.activeSubagents[0]!.subagentId).toBe('agent-1');
   });
@@ -367,7 +367,7 @@ describe('resolveState', () => {
     using store = new EventStore(':memory:');
 
     // Write valid state, backup it, then corrupt primary
-    const backupStateObj = makeState({ currentStep: 'plan' });
+    const backupStateObj = makeState({ currentStep: 'planning' });
     writeState(testDir, backupStateObj);
     backupState(testDir);
     writeFileSync(join(testDir, 'state.json'), 'corrupt', 'utf8');
@@ -376,7 +376,7 @@ describe('resolveState', () => {
     const events = store.replayAll();
 
     const resolved = resolveState(testDir, events, 'test-session', reduce);
-    expect(resolved.currentStep).toBe('plan');
+    expect(resolved.currentStep).toBe('planning');
   });
 
   it('falls back to event replay when both state.json and backup are missing', () => {
@@ -438,7 +438,7 @@ describe('appendEventAndUpdateState deduplication', () => {
 
 describe('restoreStateFromBackup', () => {
   it('copies backup back to state.json', () => {
-    const original = makeState({ currentStep: 'plan' });
+    const original = makeState({ currentStep: 'planning' });
     writeState(testDir, original);
     backupState(testDir);
 

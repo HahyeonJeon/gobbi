@@ -709,7 +709,9 @@ describe('v1 state.json on-disk compat', () => {
       expect(resolved).not.toBeNull();
       if (resolved === null) throw new Error('unreachable');
       expect(resolved.sessionId).toBe('sess-v1-ondisk');
-      expect(resolved.currentStep).toBe('plan');
+      // v1 on-disk 'plan' is normalised to the post-rename 'planning' literal
+      // on read (see `normaliseToLatestSchema` in state.ts).
+      expect(resolved.currentStep).toBe('planning');
       // Normalisation: v1's absent lastVerdictOutcome becomes null in memory.
       expect(resolved.lastVerdictOutcome).toBeNull();
       // Normalisation: v1 violation without severity becomes 'error' in memory.

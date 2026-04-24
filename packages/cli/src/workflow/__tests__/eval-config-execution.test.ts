@@ -71,7 +71,7 @@ function evalDecide3Field(
 describe('EVAL_DECIDE — legacy 2-field payload', () => {
   it('leaves the execution slot absent on state.evalConfig', () => {
     const next = expectOk(reduce(baseState(), evalDecide2Field(true, false)));
-    expect(next.evalConfig).toEqual({ ideation: true, plan: false });
+    expect(next.evalConfig).toEqual({ ideation: true, planning: false });
     // `exactOptionalPropertyTypes` — absent means the key is not on the
     // record. `in` checks the presence of the key directly.
     expect(next.evalConfig !== null && 'execution' in next.evalConfig).toBe(false);
@@ -85,7 +85,7 @@ describe('EVAL_DECIDE — new 3-field payload', () => {
     );
     expect(next.evalConfig).toEqual({
       ideation: false,
-      plan: false,
+      planning: false,
       execution: true,
     });
   });
@@ -115,7 +115,7 @@ describe('EVAL_DECIDE — mixed merge sequences', () => {
     );
     expect(afterSecond.evalConfig).toEqual({
       ideation: true, // unchanged from first call
-      plan: false, // unchanged from first call
+      planning: false, // unchanged from first call
       execution: true, // merged from second call
     });
   });
@@ -129,7 +129,7 @@ describe('EVAL_DECIDE — mixed merge sequences', () => {
     );
     expect(afterSecond.evalConfig).toEqual({
       ideation: true,
-      plan: false,
+      planning: false,
       execution: false,
     });
   });
@@ -174,7 +174,7 @@ describe('evalExecutionEnabled / evalExecutionDisabled predicates', () => {
   test('enabled=false / disabled=true when execution slot absent', () => {
     const s: WorkflowState = {
       ...baseState(),
-      evalConfig: { ideation: true, plan: true },
+      evalConfig: { ideation: true, planning: true },
     };
     expect(enabled(s)).toBe(false);
     expect(disabled(s)).toBe(true);
@@ -183,7 +183,7 @@ describe('evalExecutionEnabled / evalExecutionDisabled predicates', () => {
   test('enabled=false / disabled=true when execution=false', () => {
     const s: WorkflowState = {
       ...baseState(),
-      evalConfig: { ideation: false, plan: false, execution: false },
+      evalConfig: { ideation: false, planning: false, execution: false },
     };
     expect(enabled(s)).toBe(false);
     expect(disabled(s)).toBe(true);
@@ -192,7 +192,7 @@ describe('evalExecutionEnabled / evalExecutionDisabled predicates', () => {
   test('enabled=true / disabled=false when execution=true', () => {
     const s: WorkflowState = {
       ...baseState(),
-      evalConfig: { ideation: false, plan: false, execution: true },
+      evalConfig: { ideation: false, planning: false, execution: true },
     };
     expect(enabled(s)).toBe(true);
     expect(disabled(s)).toBe(false);
@@ -207,32 +207,32 @@ describe('renderSessionSummary — evalConfig.execution rendering', () => {
   test('omits the execution segment when the slot is absent', () => {
     const s: WorkflowState = {
       ...baseState(),
-      evalConfig: { ideation: true, plan: false },
+      evalConfig: { ideation: true, planning: false },
     };
     const out = renderSessionSummary(s);
-    expect(out).toContain('session.evalConfig=ideation=true,plan=false');
+    expect(out).toContain('session.evalConfig=ideation=true,planning=false');
     expect(out).not.toContain('execution=');
   });
 
   test('appends execution=true when set', () => {
     const s: WorkflowState = {
       ...baseState(),
-      evalConfig: { ideation: true, plan: false, execution: true },
+      evalConfig: { ideation: true, planning: false, execution: true },
     };
     const out = renderSessionSummary(s);
     expect(out).toContain(
-      'session.evalConfig=ideation=true,plan=false,execution=true',
+      'session.evalConfig=ideation=true,planning=false,execution=true',
     );
   });
 
   test('appends execution=false when explicitly disabled', () => {
     const s: WorkflowState = {
       ...baseState(),
-      evalConfig: { ideation: false, plan: false, execution: false },
+      evalConfig: { ideation: false, planning: false, execution: false },
     };
     const out = renderSessionSummary(s);
     expect(out).toContain(
-      'session.evalConfig=ideation=false,plan=false,execution=false',
+      'session.evalConfig=ideation=false,planning=false,execution=false',
     );
   });
 
