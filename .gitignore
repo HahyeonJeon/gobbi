@@ -4,7 +4,17 @@ node_modules/
 .claude/.env
 .claude/gobbi.json
 .claude/gobbi.json.lock
-.gobbi/
+
+# .gobbi/ — whitelist pattern.
+# Ignore workspace-level files (e.g. .gobbi/settings.json, .gobbi/config.db),
+# but track per-project content under .gobbi/projects/<name>/ except for
+# per-session runtime state (sessions/, rawdata/) and per-project settings.
+.gobbi/*
+!.gobbi/projects/
+.gobbi/projects/*/sessions/
+.gobbi/projects/*/rawdata/
+.gobbi/projects/*/settings.json
+
 dist/
 packages/*/dist/
 packages/*/node_modules/
