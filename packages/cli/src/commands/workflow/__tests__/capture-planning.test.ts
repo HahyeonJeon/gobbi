@@ -1,10 +1,10 @@
 /**
- * Unit tests for `gobbi workflow capture-plan` — the PostToolUse(ExitPlanMode)
+ * Unit tests for `gobbi workflow capture-planning` — the PostToolUse(ExitPlanMode)
  * hook handler.
  *
  * Coverage:
- *   - Registry presence — `capture-plan` is registered in WORKFLOW_COMMANDS.
- *   - Happy path — plan written to plan/plan.md + artifact.write event.
+ *   - Registry presence — `capture-planning` is registered in WORKFLOW_COMMANDS.
+ *   - Happy path — plan written to planning/plan.md + artifact.write event.
  *   - Re-run overwrites existing plan.md and emits a second artifact.write
  *     when invoked without a deduplicating tool_call_id.
  *   - Missing session → silent exit.
@@ -20,10 +20,10 @@ import {
   rmSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
-import { runCapturePlanWithOptions } from '../capture-plan.js';
+import { runCapturePlanningWithOptions } from '../capture-planning.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
 import { EventStore } from '../../../workflow/store.js';
 
@@ -105,7 +105,7 @@ afterEach(() => {
 });
 
 function makeScratchRepo(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'gobbi-capture-plan-'));
+  const dir = mkdtempSync(join(tmpdir(), 'gobbi-capture-planning-'));
   scratchDirs.push(dir);
   return dir;
 }
@@ -116,11 +116,20 @@ async function initScratchSession(
   const repo = makeScratchRepo();
   await captureExit(() =>
     runInitWithOptions(
-      ['--session-id', sessionId, '--task', 'capture-plan-test'],
+      ['--session-id', sessionId, '--task', 'capture-planning-test'],
       { repoRoot: repo },
     ),
   );
-  const sessionDir = join(repo, '.gobbi', 'sessions', sessionId);
+  // Post-W2, session layout is `.gobbi/projects/<name>/sessions/<id>` —
+  // the project name resolves to `basename(repo)` on fresh bootstrap.
+  const sessionDir = join(
+    repo,
+    '.gobbi',
+    'projects',
+    basename(repo),
+    'sessions',
+    sessionId,
+  );
   captured = { stdout: '', stderr: '', exitCode: null };
   return { sessionDir, repo };
 }
@@ -153,9 +162,9 @@ function planPayload(
 // ---------------------------------------------------------------------------
 
 describe('WORKFLOW_COMMANDS registration', () => {
-  test('exposes `capture-plan` as a subcommand', () => {
+  test('exposes `capture-planning` as a subcommand', () => {
     const names = WORKFLOW_COMMANDS.map((c) => c.name);
-    expect(names).toContain('capture-plan');
+    expect(names).toContain('capture-planning');
   });
 });
 
@@ -163,12 +172,12 @@ describe('WORKFLOW_COMMANDS registration', () => {
 // Happy path
 // ---------------------------------------------------------------------------
 
-describe('runCapturePlan — happy path', () => {
+describe('runCapturePlanning — happy path', () => {
   test('writes plan.md and emits artifact.write', async () => {
     const { sessionDir } = await initScratchSession('cap-plan-ok');
 
     await captureExit(() =>
-      runCapturePlanWithOptions([], {
+      runCapturePlanningWithOptions([], {
         sessionDir,
         payload: planPayload(
           'cap-plan-ok',
@@ -182,7 +191,7 @@ describe('runCapturePlan — happy path', () => {
     // Observational hook — no permissionDecision on stdout.
     expect(captured.stdout).toBe('');
 
-    const planPath = join(sessionDir, 'plan', 'plan.md');
+    const planPath = join(sessionDir, 'planning', 'plan.md');
     expect(existsSync(planPath)).toBe(true);
     expect(readFileSync(planPath, 'utf8')).toBe(
       '# Plan\n\n1. step one\n2. step two\n',
@@ -208,27 +217,27 @@ describe('runCapturePlan — happy path', () => {
 // Re-run / revision overwrites
 // ---------------------------------------------------------------------------
 
-describe('runCapturePlan — revision overwrite', () => {
+describe('runCapturePlanning — revision overwrite', () => {
   test('re-run with new plan overwrites plan.md and emits a second artifact.write', async () => {
     const { sessionDir } = await initScratchSession('cap-plan-rev');
 
     // First invocation — uses tool-call idempotency with one id.
     await captureExit(() =>
-      runCapturePlanWithOptions([], {
+      runCapturePlanningWithOptions([], {
         sessionDir,
         payload: planPayload('cap-plan-rev', '# Plan v1\n', {
           tool_call_id: 'plan-call-v1',
         }),
       }),
     );
-    const planPath = join(sessionDir, 'plan', 'plan.md');
+    const planPath = join(sessionDir, 'planning', 'plan.md');
     expect(readFileSync(planPath, 'utf8')).toBe('# Plan v1\n');
 
     // Second invocation — distinct tool_call_id so the idempotency key is
     // different and the append is NOT deduplicated. Plan content changes.
     captured = { stdout: '', stderr: '', exitCode: null };
     await captureExit(() =>
-      runCapturePlanWithOptions([], {
+      runCapturePlanningWithOptions([], {
         sessionDir,
         payload: planPayload(
           'cap-plan-rev',
@@ -257,14 +266,14 @@ describe('runCapturePlan — revision overwrite', () => {
 // Missing session
 // ---------------------------------------------------------------------------
 
-describe('runCapturePlan — missing session', () => {
+describe('runCapturePlanning — missing session', () => {
   test('nonexistent session dir → silent exit, no crash', async () => {
     const repo = makeScratchRepo();
     const fakeDir = join(repo, '.gobbi', 'sessions', 'not-real');
     expect(existsSync(fakeDir)).toBe(false);
 
     await captureExit(() =>
-      runCapturePlanWithOptions([], {
+      runCapturePlanningWithOptions([], {
         sessionDir: fakeDir,
         payload: planPayload('not-real', '# plan'),
       }),
@@ -272,7 +281,7 @@ describe('runCapturePlan — missing session', () => {
 
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toBe('');
-    expect(existsSync(join(fakeDir, 'plan', 'plan.md'))).toBe(false);
+    expect(existsSync(join(fakeDir, 'planning', 'plan.md'))).toBe(false);
   });
 });
 
@@ -280,12 +289,12 @@ describe('runCapturePlan — missing session', () => {
 // Missing / empty plan
 // ---------------------------------------------------------------------------
 
-describe('runCapturePlan — missing plan content', () => {
+describe('runCapturePlanning — missing plan content', () => {
   test('payload without tool_input.plan → silent no-op (no file, no events)', async () => {
     const { sessionDir } = await initScratchSession('cap-plan-empty');
 
     await captureExit(() =>
-      runCapturePlanWithOptions([], {
+      runCapturePlanningWithOptions([], {
         sessionDir,
         payload: {
           tool_name: 'ExitPlanMode',
@@ -296,7 +305,7 @@ describe('runCapturePlan — missing plan content', () => {
     );
 
     expect(captured.exitCode).toBeNull();
-    expect(existsSync(join(sessionDir, 'plan', 'plan.md'))).toBe(false);
+    expect(existsSync(join(sessionDir, 'planning', 'plan.md'))).toBe(false);
 
     const store = new EventStore(join(sessionDir, 'gobbi.db'));
     try {
