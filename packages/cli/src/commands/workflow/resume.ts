@@ -66,8 +66,8 @@ import { resolveSessionDir } from '../session.js';
 const VALID_TARGETS: ReadonlySet<string> = new Set<string>([
   'ideation',
   'ideation_eval',
-  'plan',
-  'plan_eval',
+  'planning',
+  'planning_eval',
   'execution',
   'execution_eval',
   'memorization',
@@ -85,7 +85,7 @@ workflow.resume event (plus an atomic decision.eval.skip when
 
 Required:
   --target <step>        The step to resume into (ideation / ideation_eval /
-                         plan / plan_eval / execution / execution_eval /
+                         planning / planning_eval / execution / execution_eval /
                          memorization). \`error\` is rejected.
 
 Options:

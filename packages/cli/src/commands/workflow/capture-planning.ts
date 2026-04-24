@@ -1,9 +1,9 @@
 /**
- * gobbi workflow capture-plan — PostToolUse(ExitPlanMode) hook handler.
+ * gobbi workflow capture-planning — PostToolUse(ExitPlanMode) hook handler.
  *
  * Reads a Claude Code PostToolUse JSON payload on stdin (fired for the
  * `ExitPlanMode` tool), writes the plan text to
- * `.gobbi/sessions/<id>/plan/plan.md`, and appends an `artifact.write`
+ * `.gobbi/sessions/<id>/planning/plan.md`, and appends an `artifact.write`
  * event to the store. Plan revisions overwrite the same `plan.md` — the
  * JSONL transcript preserves revision history; the artifact file is
  * always the latest snapshot.
@@ -81,24 +81,24 @@ function asPayload(value: unknown): PostToolUsePayload {
 // Entry points
 // ---------------------------------------------------------------------------
 
-export interface CapturePlanOverrides {
+export interface CapturePlanningOverrides {
   /** Override the resolved session directory (tests-only). */
   readonly sessionDir?: string;
   /** Seed the payload directly (tests-only). */
   readonly payload?: unknown;
 }
 
-export async function runCapturePlan(args: string[]): Promise<void> {
-  await runCapturePlanWithOptions(args);
+export async function runCapturePlanning(args: string[]): Promise<void> {
+  await runCapturePlanningWithOptions(args);
 }
 
 /**
- * Testable entry point — same behaviour as {@link runCapturePlan} but
+ * Testable entry point — same behaviour as {@link runCapturePlanning} but
  * accepts overrides for session directory and stdin payload.
  */
-export async function runCapturePlanWithOptions(
+export async function runCapturePlanningWithOptions(
   args: string[],
-  overrides: CapturePlanOverrides = {},
+  overrides: CapturePlanningOverrides = {},
 ): Promise<void> {
   if (args.includes('--help') || args.includes('-h')) {
     process.stdout.write(`${USAGE}\n`);
@@ -148,7 +148,10 @@ export async function runCapturePlanWithOptions(
     }
 
     // --- 4. Write plan artifact -----------------------------------------
-    const planDir = join(sessionDir, 'plan');
+    // Session subdir matches the post-Wave-4 step literal `'planning'`;
+    // the artifact filename `plan.md` is preserved (W4 renamed the step,
+    // not the artifact filename).
+    const planDir = join(sessionDir, 'planning');
     const filename = 'plan.md';
     mkdirSync(planDir, { recursive: true });
     writeFileSync(join(planDir, filename), plan, 'utf8');
@@ -204,13 +207,13 @@ function sessionDirName(dir: string): string {
 // Help
 // ---------------------------------------------------------------------------
 
-const USAGE = `Usage: gobbi workflow capture-plan
+const USAGE = `Usage: gobbi workflow capture-planning
 
 PostToolUse hook handler for the ExitPlanMode tool. Reads the Claude Code
 hook payload on stdin, writes tool_input.plan to
-.gobbi/sessions/<id>/plan/plan.md (overwriting any previous plan), and
+.gobbi/sessions/<id>/planning/plan.md (overwriting any previous plan), and
 appends one artifact.write event to the store.
 
 Observational hook — writes no permissionDecision and always exits 0.`;
 
-export { USAGE as CAPTURE_PLAN_USAGE };
+export { USAGE as CAPTURE_PLANNING_USAGE };

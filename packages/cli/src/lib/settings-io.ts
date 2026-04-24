@@ -433,15 +433,14 @@ export interface EvalDecision {
  */
 export function resolveEvalDecision(
   cascade: Settings,
-  step: 'ideation' | 'plan' | 'planning' | 'execution',
+  step: 'ideation' | 'planning' | 'execution',
   context?: { userAnswer?: boolean; orchestratorDecision?: boolean },
 ): EvalDecision {
-  // The state-machine literal is `'plan'`; the settings field is `planning`.
-  // Accept both for backward compatibility until the comprehensive rename
-  // Pass aligns the state-machine literal with the loop name.
-  const settingsKey: 'ideation' | 'planning' | 'execution' =
-    step === 'plan' ? 'planning' : step;
-  const stepSettings = cascade.workflow?.[settingsKey];
+  // Post-Wave-4 rename: state-machine literal and settings field name both
+  // align on `'planning'`. The Pass-3 backward-compat bridge that accepted
+  // `'plan'` has been removed — callers that still pass the legacy literal
+  // now fail at compile time, which is the enforcement gate for the rename.
+  const stepSettings = cascade.workflow?.[step];
   const mode = stepSettings?.evaluate?.mode;
 
   if (mode === 'always') {
@@ -470,7 +469,7 @@ export function resolveEvalDecision(
   // Field absent — fall through to DEFAULTS. Every step in DEFAULTS is
   // `evaluate.mode: 'always'`, but tag the source distinctly so callers
   // can distinguish "no override" from "explicit 'always'".
-  const defaultMode = DEFAULTS.workflow?.[settingsKey]?.evaluate?.mode;
+  const defaultMode = DEFAULTS.workflow?.[step]?.evaluate?.mode;
   if (defaultMode === 'always') {
     return { enabled: true, source: 'default' };
   }
