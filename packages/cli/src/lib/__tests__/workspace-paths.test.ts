@@ -320,3 +320,138 @@ describe('facade invariants', () => {
     expect(projectsRoot(REPO)).toBe(path.join(workspaceRoot(REPO), 'projects'));
   });
 });
+
+// ---------------------------------------------------------------------------
+// W6.6 — round-trip + property-style containment invariants
+//
+// The W1.1 facade exists so that every caller composes paths through one
+// module; the tests below pin three invariants that the earlier suites only
+// check opportunistically:
+//
+//   1. Idempotency — repeated calls with the same inputs return the exact
+//      same string. Catches accidental state in the module (global counter,
+//      mtime interpolation, etc.).
+//   2. Round-trip — `projectSubdir(repoRoot, name, kind)` composes via
+//      `projectsRoot(repoRoot)`; the path ALWAYS begins with that prefix
+//      and appends `<name>/<kind>`. No helper reconstructs the prefix
+//      independently.
+//   3. Containment property — for any projectName value (including names
+//      containing dots or unusual characters), `projectSubdir` never
+//      escapes `projectsRoot`. The facade does not implement sanitisation;
+//      this test asserts that ABSENT sanitisation it still does not leak
+//      outside the workspace root for typical inputs, so future sanitisers
+//      can be layered in one place without breaking composition.
+// ---------------------------------------------------------------------------
+
+describe('W6.6 — round-trip + idempotency', () => {
+  test('projectsRoot(repoRoot) is idempotent across calls', () => {
+    const a = projectsRoot(REPO);
+    const b = projectsRoot(REPO);
+    const c = projectsRoot(REPO);
+    expect(a).toBe(b);
+    expect(b).toBe(c);
+  });
+
+  test('projectSubdir is idempotent for identical (repoRoot, name, kind) triples', () => {
+    const a = projectSubdir(REPO, PROJECT, 'skills');
+    const b = projectSubdir(REPO, PROJECT, 'skills');
+    expect(a).toBe(b);
+  });
+
+  test('projectSubdir(repoRoot, name, "skills") resolves relative to repoRoot', () => {
+    // The round-trip property: starting from repoRoot, a caller can arrive
+    // at the per-project skills dir by concatenating `.gobbi/projects/<name>/skills`.
+    // The facade's output matches that explicit composition exactly.
+    const sub = projectSubdir(REPO, PROJECT, 'skills');
+    expect(sub).toBe(path.join(REPO, '.gobbi', 'projects', PROJECT, 'skills'));
+    // And the reverse: from `sub`, stripping the repoRoot prefix yields the
+    // canonical relative path.
+    const rel = path.relative(REPO, sub);
+    expect(rel).toBe(path.join('.gobbi', 'projects', PROJECT, 'skills'));
+  });
+
+  test('sessionsRoot returns the correct path for the default project name ("gobbi")', () => {
+    // `DEFAULT_PROJECT_NAME = 'gobbi'` is a caller-side constant that
+    // multiple commands pass in while the projects.active resolution lands
+    // in a later wave (TODO(W2.3)). Pin the shape the facade MUST produce
+    // for that value so changes to the layout surface as test failures
+    // rather than silent path drift.
+    expect(sessionsRoot(REPO, 'gobbi')).toBe(
+      path.join(REPO, '.gobbi', 'projects', 'gobbi', 'sessions'),
+    );
+  });
+
+  test('sessionsRoot returns the correct path for a custom project name', () => {
+    expect(sessionsRoot(REPO, 'acme-app')).toBe(
+      path.join(REPO, '.gobbi', 'projects', 'acme-app', 'sessions'),
+    );
+    // Different project names must produce different paths.
+    expect(sessionsRoot(REPO, 'acme-app')).not.toBe(
+      sessionsRoot(REPO, 'gobbi'),
+    );
+  });
+
+  test('no helper fabricates `.gobbi/projects/` independently — every output routes through projectsRoot', () => {
+    // If any helper regresses to a hand-rolled `.gobbi/projects/` literal,
+    // it will fail to agree with `projectsRoot(REPO)`. Check that every
+    // output that SHOULD live under projects/ actually has that root as a
+    // prefix, so the facade is the single source of truth.
+    const under: readonly string[] = [
+      projectDir(REPO, PROJECT),
+      projectSubdir(REPO, PROJECT, 'learnings'),
+      projectSubdir(REPO, PROJECT, 'skills'),
+      projectSubdir(REPO, PROJECT, 'sessions'),
+      projectSubdir(REPO, PROJECT, 'worktrees'),
+      sessionsRoot(REPO, PROJECT),
+      sessionDir(REPO, PROJECT, SESSION_ID),
+      worktreeDir(REPO, PROJECT, 'wt1'),
+    ];
+    const root = projectsRoot(REPO);
+    for (const p of under) {
+      expect(p.startsWith(root + path.sep) || p === root).toBe(true);
+    }
+  });
+});
+
+describe('W6.6 — containment property', () => {
+  // Sample of project-name shapes the facade forwards verbatim. The facade
+  // does not sanitise; the test asserts that for each of these realistic
+  // shapes, `projectSubdir` still resolves under `projectsRoot`. If future
+  // sanitisation lands in this module, these samples remain valid inputs.
+  const PROJECT_NAMES: readonly string[] = [
+    'gobbi',
+    'acme',
+    'my-project',
+    'Project_With_Underscores',
+    'with.dots.in.name',
+    'a',
+    'extremely-long-project-name-with-many-hyphens-and-words',
+    '日本語プロジェクト',
+  ];
+
+  for (const name of PROJECT_NAMES) {
+    for (const kind of PROJECT_SUBDIR_KINDS) {
+      test(`projectSubdir does not escape projectsRoot for name=${name} kind=${kind}`, () => {
+        const sub = projectSubdir(REPO, name, kind);
+        // Must be a descendant of projectsRoot (not a sibling, not outside).
+        const root = projectsRoot(REPO);
+        expect(sub.startsWith(root + path.sep)).toBe(true);
+        // Resolving the sub dir and relativising against projectsRoot must
+        // not yield a segment containing `..` — i.e. no upward escape.
+        const rel = path.relative(root, sub);
+        expect(rel.split(path.sep).includes('..')).toBe(false);
+      });
+    }
+  }
+
+  test('projectDir never escapes projectsRoot for any sampled name', () => {
+    const root = projectsRoot(REPO);
+    for (const name of PROJECT_NAMES) {
+      const dir = projectDir(REPO, name);
+      expect(dir.startsWith(root + path.sep)).toBe(true);
+      expect(path.relative(root, dir).split(path.sep).includes('..')).toBe(
+        false,
+      );
+    }
+  });
+});

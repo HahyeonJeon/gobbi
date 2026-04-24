@@ -417,6 +417,260 @@ describe('engine STEP_EXIT hook', () => {
     expect(existsSync(join(sessionDir, 'ideation', 'README.md'))).toBe(false);
   });
 
+  // -------------------------------------------------------------------------
+  // W6.6 — frontmatter completeness + idempotency + verdict/artifact edges
+  //
+  // The earlier suites cover most field emissions; these tests lock the
+  // additional contract points W6.6 calls out explicitly:
+  //
+  //   - Frontmatter field COMPLETENESS — every field the writer is
+  //     expected to emit appears in the output (not just the ones the
+  //     earlier test happened to spot-check). If a future refactor drops
+  //     a field, this test fails.
+  //   - Idempotency under re-emission — the LAST STEP_EXIT wins. Two
+  //     consecutive direct writer invocations with different args must
+  //     leave the file with exactly the second args' values (not merged,
+  //     not appended).
+  //   - Empty-artifacts edge — the writer must not crash or emit a
+  //     malformed frontmatter when the productive step recorded no
+  //     artifacts.
+  //   - Verdict presence/absence edge — `state.lastVerdictOutcome` feeds
+  //     `verdictOutcome` in the README; when it is `null` the output
+  //     contains the literal `null`, when it is a real verdict the
+  //     output contains that verdict verbatim.
+  // -------------------------------------------------------------------------
+
+  it('W6.6 — frontmatter contains every field the writer emits', () => {
+    const sessionDir = makeSessionDir(rootDir, 'gobbi', 'sess-fields');
+    const prev: WorkflowState = {
+      ...initialState('sess-fields'),
+      currentStep: 'execution',
+      stepStartedAt: '2026-04-20T09:00:00.000Z',
+      artifacts: { execution: ['exec.md', 'notes.md'] },
+      lastVerdictOutcome: 'revise',
+      feedbackRound: 2,
+      activeSubagents: [
+        { subagentId: 'sa-exec-A', agentType: '__executor', step: 'execution', spawnedAt: '2026-04-20T09:10:00.000Z' },
+        { subagentId: 'sa-exec-B', agentType: '__executor', step: 'execution', spawnedAt: '2026-04-20T09:15:00.000Z' },
+        // Subagent on a different step must not be counted.
+        { subagentId: 'sa-pi-A', agentType: '__pi', step: 'ideation', spawnedAt: '2026-04-20T08:00:00.000Z' },
+      ],
+    };
+    const next: WorkflowState = {
+      ...prev,
+      currentStep: 'execution_eval',
+      feedbackRound: 3,
+    };
+
+    const filePath = writeStepReadmeForExit({
+      sessionDir,
+      prevState: prev,
+      nextState: next,
+      exitedStep: 'execution',
+      exitedAt: '2026-04-20T11:00:00.000Z',
+    });
+    expect(filePath).not.toBeNull();
+
+    const contents = readFileSync(filePath as string, 'utf8');
+    // Every frontmatter field the writer emits.
+    expect(contents).toContain('sessionId: sess-fields');
+    expect(contents).toContain('projectName: gobbi');
+    expect(contents).toContain('step: execution');
+    expect(contents).toContain('enteredAt: 2026-04-20T09:00:00.000Z');
+    expect(contents).toContain('exitedAt: 2026-04-20T11:00:00.000Z');
+    expect(contents).toContain('verdictOutcome: revise');
+    // subagentsActiveAtExit counts only subagents whose `step` matches
+    // the exiting step (two execution-scoped ones, not the pi).
+    expect(contents).toContain('subagentsActiveAtExit: 2');
+    // feedbackRound comes from the POST-reduction next state.
+    expect(contents).toContain('feedbackRound: 3');
+    // nextStep mirrors the post-reduction currentStep.
+    expect(contents).toContain('nextStep: execution_eval');
+    expect(contents).toContain('artifacts:\n  - exec.md\n  - notes.md');
+  });
+
+  it('W6.6 — last STEP_EXIT wins on re-emission (idempotent overwrite)', () => {
+    // Three successive writes for the same step with DIFFERENT args each
+    // time. The final file must reflect the third args exactly — nothing
+    // from the earlier emissions should leak through (no append, no merge
+    // of artifact lists, no double frontmatter).
+    const sessionDir = makeSessionDir(rootDir, 'gobbi', 'sess-last-wins');
+
+    const round1: WorkflowState = {
+      ...initialState('sess-last-wins'),
+      currentStep: 'planning',
+      stepStartedAt: '2026-04-20T08:00:00.000Z',
+      artifacts: { planning: ['draft.md'] },
+      lastVerdictOutcome: 'revise',
+      feedbackRound: 0,
+    };
+    const round1Next: WorkflowState = { ...round1, currentStep: 'planning_eval' };
+
+    writeStepReadmeForExit({
+      sessionDir,
+      prevState: round1,
+      nextState: round1Next,
+      exitedStep: 'planning',
+      exitedAt: '2026-04-20T08:30:00.000Z',
+    });
+
+    const round2: WorkflowState = {
+      ...round1,
+      artifacts: { planning: ['draft.md', 'updated.md'] },
+      lastVerdictOutcome: null,
+      feedbackRound: 1,
+    };
+    const round2Next: WorkflowState = { ...round2, currentStep: 'planning_eval' };
+
+    writeStepReadmeForExit({
+      sessionDir,
+      prevState: round2,
+      nextState: round2Next,
+      exitedStep: 'planning',
+      exitedAt: '2026-04-20T09:00:00.000Z',
+    });
+
+    const round3: WorkflowState = {
+      ...round1,
+      artifacts: { planning: ['final.md'] },
+      lastVerdictOutcome: 'pass',
+      feedbackRound: 2,
+    };
+    const round3Next: WorkflowState = { ...round3, currentStep: 'execution' };
+
+    const finalPath = writeStepReadmeForExit({
+      sessionDir,
+      prevState: round3,
+      nextState: round3Next,
+      exitedStep: 'planning',
+      exitedAt: '2026-04-20T10:00:00.000Z',
+    });
+
+    const contents = readFileSync(finalPath as string, 'utf8');
+
+    // Round 3 values present.
+    expect(contents).toContain('exitedAt: 2026-04-20T10:00:00.000Z');
+    expect(contents).toContain('verdictOutcome: pass');
+    expect(contents).toContain('artifacts:\n  - final.md');
+    expect(contents).toContain('nextStep: execution');
+    expect(contents).toContain('feedbackRound: 2');
+
+    // Round 1 + 2 values gone — the file reflects ONLY round 3.
+    expect(contents).not.toContain('exitedAt: 2026-04-20T08:30:00.000Z');
+    expect(contents).not.toContain('exitedAt: 2026-04-20T09:00:00.000Z');
+    expect(contents).not.toContain('draft.md');
+    expect(contents).not.toContain('updated.md');
+    expect(contents).not.toContain('verdictOutcome: revise');
+    // verdictOutcome: null should NOT persist from round 2.
+    expect(contents).not.toContain('verdictOutcome: null');
+
+    // Exactly one frontmatter block — no duplicated fences from append.
+    const fenceCount = contents.split('\n').filter((line) => line === '---').length;
+    expect(fenceCount).toBe(2);
+  });
+
+  it('W6.6 — empty artifacts list renders gracefully (no crash, empty YAML array)', () => {
+    const sessionDir = makeSessionDir(rootDir, 'gobbi', 'sess-empty-artifacts');
+    // The writer's `StepId` union includes 'evaluation', but
+    // `WorkflowState.currentStep` is the narrower `WorkflowStep` union
+    // (which models eval as `execution_eval`, not `evaluation`). Set
+    // `currentStep` to a valid WorkflowStep and pass 'evaluation' via
+    // `exitedStep` — the writer reads `exitedStep` to select the step
+    // subdir, not `currentStep`.
+    const prev: WorkflowState = {
+      ...initialState('sess-empty-artifacts'),
+      currentStep: 'execution_eval',
+      stepStartedAt: '2026-04-20T10:00:00.000Z',
+      // Deliberately omit 'evaluation' from artifacts so the writer falls
+      // back to the empty-list branch. The writer reads
+      // `prevState.artifacts[step] ?? []`.
+      artifacts: {},
+      lastVerdictOutcome: null,
+    };
+    const next: WorkflowState = { ...prev, currentStep: 'memorization' };
+
+    const filePath = writeStepReadmeForExit({
+      sessionDir,
+      prevState: prev,
+      nextState: next,
+      exitedStep: 'evaluation',
+      exitedAt: '2026-04-20T11:00:00.000Z',
+    });
+    expect(filePath).not.toBeNull();
+
+    const contents = readFileSync(filePath as string, 'utf8');
+    // Empty YAML array — NOT a "-" list entry, NOT a missing key.
+    expect(contents).toContain('artifacts:\n  []');
+    // Must NOT contain a spurious artifact bullet line.
+    expect(contents).not.toMatch(/artifacts:\n\s+-\s/);
+    // The frontmatter still closes correctly.
+    const fenceCount = contents.split('\n').filter((line) => line === '---').length;
+    expect(fenceCount).toBe(2);
+  });
+
+  it('W6.6 — verdictOutcome reflects state.lastVerdictOutcome presence vs absence', () => {
+    const baseSession = (sessionId: string): { sessionDir: string; prev: WorkflowState } => {
+      const sessionDir = makeSessionDir(rootDir, 'gobbi', sessionId);
+      const prev: WorkflowState = {
+        ...initialState(sessionId),
+        currentStep: 'memorization',
+        stepStartedAt: '2026-04-20T10:00:00.000Z',
+        artifacts: { memorization: ['memo.md'] },
+      };
+      return { sessionDir, prev };
+    };
+
+    // Case A — verdict present: emits the verdict verbatim.
+    {
+      const { sessionDir, prev } = baseSession('sess-verdict-pass');
+      const prevPass: WorkflowState = { ...prev, lastVerdictOutcome: 'pass' };
+      const next: WorkflowState = { ...prevPass, currentStep: 'done' };
+      const p = writeStepReadmeForExit({
+        sessionDir,
+        prevState: prevPass,
+        nextState: next,
+        exitedStep: 'memorization',
+        exitedAt: '2026-04-20T11:00:00.000Z',
+      });
+      const contents = readFileSync(p as string, 'utf8');
+      expect(contents).toContain('verdictOutcome: pass');
+      expect(contents).not.toContain('verdictOutcome: null');
+    }
+
+    // Case B — verdict 'revise'.
+    {
+      const { sessionDir, prev } = baseSession('sess-verdict-revise');
+      const prevRevise: WorkflowState = { ...prev, lastVerdictOutcome: 'revise' };
+      const next: WorkflowState = { ...prevRevise, currentStep: 'memorization' };
+      const p = writeStepReadmeForExit({
+        sessionDir,
+        prevState: prevRevise,
+        nextState: next,
+        exitedStep: 'memorization',
+        exitedAt: '2026-04-20T11:30:00.000Z',
+      });
+      const contents = readFileSync(p as string, 'utf8');
+      expect(contents).toContain('verdictOutcome: revise');
+    }
+
+    // Case C — verdict absent: emits literal null, not the string "undefined".
+    {
+      const { sessionDir, prev } = baseSession('sess-verdict-absent');
+      const prevNone: WorkflowState = { ...prev, lastVerdictOutcome: null };
+      const next: WorkflowState = { ...prevNone, currentStep: 'done' };
+      const p = writeStepReadmeForExit({
+        sessionDir,
+        prevState: prevNone,
+        nextState: next,
+        exitedStep: 'memorization',
+        exitedAt: '2026-04-20T11:45:00.000Z',
+      });
+      const contents = readFileSync(p as string, 'utf8');
+      expect(contents).toContain('verdictOutcome: null');
+      expect(contents).not.toContain('undefined');
+    }
+  });
+
   it('does NOT write a README when STEP_EXIT is deduplicated (persisted: false)', () => {
     const sessionId = 'engine-exit-dedup';
     const sessionDir = makeSessionDir(rootDir, 'gobbi', sessionId);
