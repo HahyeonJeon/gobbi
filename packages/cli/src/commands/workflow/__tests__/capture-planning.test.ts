@@ -24,6 +24,7 @@ import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
 import { runCapturePlanningWithOptions } from '../capture-planning.js';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
 import { EventStore } from '../../../workflow/store.js';
 
@@ -269,7 +270,7 @@ describe('runCapturePlanning — revision overwrite', () => {
 describe('runCapturePlanning — missing session', () => {
   test('nonexistent session dir → silent exit, no crash', async () => {
     const repo = makeScratchRepo();
-    const fakeDir = join(repo, '.gobbi', 'sessions', 'not-real');
+    const fakeDir = sessionDirForProject(repo, basename(repo), 'not-real');
     expect(existsSync(fakeDir)).toBe(false);
 
     await captureExit(() =>

@@ -23,11 +23,12 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
 import { runStopWithOptions, DEFAULT_SPECS_DIR } from '../stop.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import { EventStore } from '../../../workflow/store.js';
 import {
   readState,
@@ -128,7 +129,7 @@ async function initScratchSession(
       { repoRoot: repo },
     ),
   );
-  const sessionDir = join(repo, '.gobbi', 'sessions', sessionId);
+  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
   return { sessionDir, repo };
 }
@@ -416,7 +417,7 @@ describe('runStop — bounded heartbeat tail-scan', () => {
 describe('runStop — missing session', () => {
   test('session dir does not exist → silent exit, no crash', async () => {
     const repo = makeScratchRepo();
-    const fakeDir = join(repo, '.gobbi', 'sessions', 'ghost');
+    const fakeDir = sessionDirForProject(repo, basename(repo), 'ghost');
     expect(existsSync(fakeDir)).toBe(false);
 
     await captureExit(() =>
@@ -433,7 +434,7 @@ describe('runStop — missing session', () => {
 
   test('session dir exists but gobbi.db is missing → silent exit', async () => {
     const repo = makeScratchRepo();
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'no-db');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'no-db');
     const { mkdirSync } = await import('node:fs');
     mkdirSync(sessionDir, { recursive: true });
 

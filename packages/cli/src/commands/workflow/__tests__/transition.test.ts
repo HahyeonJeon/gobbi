@@ -22,9 +22,10 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import {
   buildEvent,
   runTransitionWithOptions,
@@ -128,7 +129,7 @@ async function initScratchSession(
       { repoRoot: repo },
     ),
   );
-  const sessionDir = join(repo, '.gobbi', 'sessions', sessionId);
+  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
   return { sessionDir, repo };
 }
@@ -299,7 +300,7 @@ describe('runTransitionWithOptions — happy paths', () => {
     try {
       const last = store.last('workflow.step.skip');
       expect(last).not.toBeNull();
-      expect(last!.step).toBe('plan');
+      expect(last!.step).toBe('planning');
     } finally {
       store.close();
     }
@@ -362,7 +363,7 @@ describe('runTransitionWithOptions — happy paths', () => {
     expect(parsed.eventType).toBe('workflow.step.exit');
     expect(parsed.persisted).toBe(true);
     expect(parsed.idempotencyKind).toBe('system');
-    expect(parsed.state?.currentStep).toBe('plan');
+    expect(parsed.state?.currentStep).toBe('planning');
   });
 });
 
@@ -391,10 +392,9 @@ describe('runTransitionWithOptions — idempotency', () => {
         { repoRoot: evalRepo },
       ),
     );
-    const evalSessionDir = join(
+    const evalSessionDir = sessionDirForProject(
       evalRepo,
-      '.gobbi',
-      'sessions',
+      basename(evalRepo),
       'trans-idem-eval',
     );
     captured = { stdout: '', stderr: '', exitCode: null };

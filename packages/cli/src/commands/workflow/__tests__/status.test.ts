@@ -15,9 +15,10 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import {
   aggregateCost,
   buildSnapshot,
@@ -187,7 +188,7 @@ describe('runStatusWithOptions', () => {
       ),
     );
 
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'status-happy');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'status-happy');
     captured = { stdout: '', stderr: '', exitCode: null };
     await captureExit(() => runStatusWithOptions([], { sessionDir }));
 
@@ -206,7 +207,7 @@ describe('runStatusWithOptions', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'status-json');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'status-json');
     captured = { stdout: '', stderr: '', exitCode: null };
     await captureExit(() => runStatusWithOptions(['--json'], { sessionDir }));
 
@@ -216,12 +217,12 @@ describe('runStatusWithOptions', () => {
     expect(snapshot.schemaVersion).toBe(4);
     expect(snapshot.currentStep).toBe('ideation');
     expect(snapshot.violationsTotal).toBe(0);
-    expect(snapshot.evalConfig).toEqual({ ideation: false, plan: false });
+    expect(snapshot.evalConfig).toEqual({ ideation: false, planning: false });
   });
 
   test('missing event store exits 1', async () => {
     const repo = makeScratchRepo();
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'absent');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'absent');
     // deliberately do not init
     await captureExit(() => runStatusWithOptions([], { sessionDir }));
     expect(captured.exitCode).toBe(1);
@@ -235,7 +236,7 @@ describe('runStatusWithOptions', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'status-no-cost');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'status-no-cost');
     captured = { stdout: '', stderr: '', exitCode: null };
     await captureExit(() => runStatusWithOptions(['--json'], { sessionDir }));
 
@@ -295,7 +296,7 @@ describe('aggregateCost — direct store integration', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'cost-empty');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'cost-empty');
     const store = new EventStore(join(sessionDir, 'gobbi.db'));
     try {
       const rollup = aggregateCost(store);
@@ -315,7 +316,7 @@ describe('aggregateCost — direct store integration', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'cost-mix');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'cost-mix');
 
     // Two token-derived events at different steps.
     seedDelegationComplete(sessionDir, 'cost-mix', {
@@ -398,7 +399,7 @@ describe('aggregateCost — direct store integration', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'cost-unk');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'cost-unk');
     seedDelegationComplete(sessionDir, 'cost-unk', {
       subagentId: 'sub-u',
       step: 'plan',
@@ -442,7 +443,7 @@ describe('runStatusWithOptions --cost', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'cost-prose');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'cost-prose');
 
     seedDelegationComplete(sessionDir, 'cost-prose', {
       subagentId: 'sub-p',
@@ -483,7 +484,7 @@ describe('runStatusWithOptions --cost', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'cost-json');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'cost-json');
 
     seedDelegationComplete(sessionDir, 'cost-json', {
       subagentId: 'sub-j',
@@ -523,7 +524,7 @@ describe('runStatusWithOptions --cost', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'cost-empty-prose');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'cost-empty-prose');
 
     captured = { stdout: '', stderr: '', exitCode: null };
     await captureExit(() => runStatusWithOptions(['--cost'], { sessionDir }));
@@ -542,7 +543,7 @@ describe('runStatusWithOptions --cost', () => {
         repoRoot: repo,
       }),
     );
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'cost-empty-json');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'cost-empty-json');
 
     captured = { stdout: '', stderr: '', exitCode: null };
     await captureExit(() =>

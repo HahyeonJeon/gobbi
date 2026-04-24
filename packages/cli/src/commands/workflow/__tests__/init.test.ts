@@ -23,6 +23,7 @@ import { basename, join } from 'node:path';
 
 import { EventStore } from '../../../workflow/store.js';
 import { runInitWithOptions, readMetadata, resolveSessionId } from '../init.js';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap
@@ -158,10 +159,13 @@ describe('runInit — fresh session', () => {
     );
     expect(captured.exitCode).toBeNull();
 
-    const metaPath = join(repo, '.gobbi', 'sessions', 'fresh-happy', 'metadata.json');
+    const metaPath = join(
+      sessionDirForProject(repo, basename(repo), 'fresh-happy'),
+      'metadata.json',
+    );
     const meta = readMetadata(metaPath);
     expect(meta).not.toBeNull();
-    expect(meta!.schemaVersion).toBe(2);
+    expect(meta!.schemaVersion).toBe(3);
     expect(meta!.sessionId).toBe('fresh-happy');
     expect(meta!.projectRoot).toBe(repo);
     // C.2c populates techStack; for now it's empty.
@@ -181,7 +185,10 @@ describe('runInit — fresh session', () => {
       ),
     );
 
-    const dbPath = join(repo, '.gobbi', 'sessions', 'fresh-events', 'gobbi.db');
+    const dbPath = join(
+      sessionDirForProject(repo, basename(repo), 'fresh-events'),
+      'gobbi.db',
+    );
     const store = new EventStore(dbPath);
     try {
       const rows = store.replayAll();
@@ -208,8 +215,9 @@ describe('runInit — idempotency', () => {
       ),
     );
 
-    const dbPath = join(repo, '.gobbi', 'sessions', 'idem', 'gobbi.db');
-    const metaPath = join(repo, '.gobbi', 'sessions', 'idem', 'metadata.json');
+    const idemSessionDir = sessionDirForProject(repo, basename(repo), 'idem');
+    const dbPath = join(idemSessionDir, 'gobbi.db');
+    const metaPath = join(idemSessionDir, 'metadata.json');
     const firstMeta = readFileSync(metaPath, 'utf8');
 
     captured = { stdout: '', stderr: '', exitCode: null };
@@ -238,7 +246,7 @@ describe('runInit — idempotency', () => {
 
   test('malformed existing metadata.json exits 1', async () => {
     const repo = makeScratchRepo();
-    const sessionDir = join(repo, '.gobbi', 'sessions', 'broken');
+    const sessionDir = sessionDirForProject(repo, basename(repo), 'broken');
     mkdirSync(sessionDir, { recursive: true });
     writeFileSync(join(sessionDir, 'metadata.json'), 'not json', 'utf8');
 
