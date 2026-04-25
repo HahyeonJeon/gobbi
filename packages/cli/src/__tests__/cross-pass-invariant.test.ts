@@ -36,11 +36,10 @@
  *   - NO existing session dir      — init creates one fresh
  *
  * The test uses a tmp scratch repo whose `basename(repoRoot)` is `gobbi`
- * so the upgrader's `DEFAULT_PROJECT_NAME = 'gobbi'` (see
- * `ensure-settings-cascade.ts:55-56` TODO(W2.3)) and init's
- * `basename(repoRoot)` bootstrap target both resolve to the same project
- * slot. A separate skipped test below isolates the divergence path
- * surfaced when those two helpers disagree.
+ * so the upgrader and init's bootstrap target both resolve to the same
+ * project slot. A separate test below (XPI-2) covers the divergence
+ * path where `basename(repoRoot) !== 'gobbi'` and verifies that
+ * cascade + init still agree post-#138.
  *
  * The fresh-install comparison runs the same `runInitWithOptions` call
  * against a fresh tmpdir with no legacy fixtures, then asserts the
@@ -167,12 +166,12 @@ const scratchDirs: string[] = [];
 
 /**
  * Create a fresh tmp scratch repo whose `basename(repoRoot)` equals
- * `gobbi`. Required so the legacy upgrader's hard-coded
- * `DEFAULT_PROJECT_NAME = 'gobbi'` and init's `basename(repoRoot)`
- * bootstrap target compose to the same project slot
- * (`.gobbi/projects/gobbi/...`). A scratch repo with any other basename
- * exposes a known divergence in the upgrader → init handshake; that path
- * is covered by the skipped fixture below.
+ * `gobbi`. Used by XPI-1 to keep the legacy-seed and fresh-install arms
+ * pointed at the same project slot (`.gobbi/projects/gobbi/...`). A
+ * scratch repo with any other basename is the XPI-2 fixture that locks
+ * the issue-#138 fix — cascade and init must still converge on the
+ * resolved active project (`my-app`) instead of orphaning the upgrade
+ * under `gobbi/`.
  */
 function makeScratchRepoNamedGobbi(): string {
   const parent = mkdtempSync(join(tmpdir(), 'gobbi-cross-pass-'));
@@ -184,8 +183,10 @@ function makeScratchRepoNamedGobbi(): string {
 
 /**
  * Create a fresh tmp scratch repo whose `basename(repoRoot)` differs
- * from the upgrader's `DEFAULT_PROJECT_NAME`. Used by the skipped
- * divergence-path test.
+ * from `'gobbi'`. Used by XPI-2 to lock the post-#138 invariant: the
+ * cascade upgrader resolves the project name via the same ladder init
+ * uses, so the legacy upgrade lands at the active project's slot
+ * (`projects/my-app/...`) instead of an orphaned `projects/gobbi/`.
  */
 function makeScratchRepoWithDifferentBasename(): string {
   const parent = mkdtempSync(join(tmpdir(), 'gobbi-cross-pass-'));
@@ -537,22 +538,23 @@ describe('cross-pass invariant: init normalises legacy-shape session', () => {
 });
 
 // ===========================================================================
-// XPI-2 — divergence-path probe (skipped pending W2.3 / GH issue)
+// XPI-2 — divergence-path probe (issue #138 fix verification)
 // ===========================================================================
 
-describe('cross-pass invariant: upgrader DEFAULT_PROJECT_NAME vs init basename divergence', () => {
-  // SKIPPED: surfaces a real seam bug — the T2-v1 upgrader hard-codes
-  // `DEFAULT_PROJECT_NAME = 'gobbi'` (see ensure-settings-cascade.ts:55-56,
-  // marked TODO(W2.3)) but `runInit` bootstraps `projects.active =
-  // basename(repoRoot)` when no flag is given. When the two disagree, the
-  // upgraded project-level settings file lands at `.gobbi/projects/gobbi/`
-  // while the active project's session goes to
-  // `.gobbi/projects/<basename>/sessions/<id>/` — orphaning the upgrade.
-  // This test reproduces the divergence; un-skip after W2.3 lands the
-  // resolved-active-project upgrade path. Tracked in Wave 4.E backlog
-  // (file new GitHub issue when un-skipping).
-  test.skip(
-    'XPI-2: legacy upgrader writes to projects/gobbi/ even when basename(repoRoot) !== "gobbi" — orphaned settings',
+describe('cross-pass invariant: upgrader resolves project name via init ladder', () => {
+  // Originally skipped while issue #138 was open: the T2-v1 upgrader
+  // hard-coded `DEFAULT_PROJECT_NAME = 'gobbi'` independently of the
+  // `runInit` bootstrap, so when `basename(repoRoot) !== 'gobbi'` the
+  // upgraded project-level settings file landed at
+  // `.gobbi/projects/gobbi/settings.json` while the active session
+  // landed at `.gobbi/projects/<basename>/sessions/<id>/` — orphaning
+  // the upgrade. The fix threads the resolved project name from
+  // `runInitWithOptions` through `ensureSettingsCascade(repoRoot, name)`
+  // so cascade and init agree on the slot by construction. This test
+  // locks the seam: the upgrade MUST land at the active project's slot
+  // (`my-app`), and the orphan path under `gobbi` MUST NOT exist.
+  test(
+    'XPI-2: legacy upgrader lands at the resolved active project slot when basename(repoRoot) !== "gobbi"',
     async () => {
       const repo = makeScratchRepoWithDifferentBasename();
       seedLegacyProjectConfig(repo);
@@ -581,8 +583,9 @@ describe('cross-pass invariant: upgrader DEFAULT_PROJECT_NAME vs init basename d
         ),
       ).toBe(true);
 
-      // BUT the upgrader wrote to `projects/gobbi/settings.json` —
-      // orphaned from the active project. This is the seam bug.
+      // Post-fix expectation: the upgrade lands at the active project's
+      // slot, and the previously-orphan `projects/gobbi/` slot is
+      // empty (never created).
       const orphan = join(
         projectDirForName(repo, 'gobbi'),
         'settings.json',
@@ -591,13 +594,17 @@ describe('cross-pass invariant: upgrader DEFAULT_PROJECT_NAME vs init basename d
         projectDirForName(repo, 'my-app'),
         'settings.json',
       );
+      expect(existsSync(orphan)).toBe(false);
+      expect(existsSync(activeProject)).toBe(true);
 
-      // Documented (and skipped) FAIL expectations: when this test
-      // un-skips post-W2.3, the assertions should flip to
-      // `existsSync(orphan)).toBe(false)` and the cascade-merged config
-      // should surface the upgraded T2-v1 values for the active project.
-      expect(existsSync(orphan)).toBe(true);
-      expect(existsSync(activeProject)).toBe(false);
+      // The upgraded settings carry the T2-v1 fixture's git workflow
+      // mode, confirming the upgrade path actually executed (not merely
+      // skipped) — the file at `projects/my-app/settings.json` is the
+      // T2-v1 → unified-shape upgrade output, not a fresh-install seed.
+      const upgraded = JSON.parse(readFileSync(activeProject, 'utf8')) as {
+        readonly git?: { readonly workflow?: { readonly mode?: string } };
+      };
+      expect(upgraded.git?.workflow?.mode).toBe('worktree-pr');
     },
   );
 });

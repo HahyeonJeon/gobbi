@@ -253,10 +253,10 @@ And `.gobbi/project/settings.json` does not exist
   - `git.workflow.mode: 'worktree-pr'` and `git.workflow.baseBranch: 'main'` (renamed)
   - `workflow.ideation.evaluate.mode: 'always'` (true → 'always') and `workflow.planning.evaluate.mode: 'ask'` (legacy `eval.plan` → new `workflow.planning`; false → 'ask')
   - No `trivialRange`, `verification.*`, `cost.*`, or `ui.*` fields
-And `.gobbi/project-config.json` no longer exists
+And `.gobbi/project-config.json` is left in place (idempotency guard prevents re-upgrading on subsequent runs).
 
 State trace:
-- Step 3 of `ensureSettingsCascade`: reads legacy JSON, upgrades shape, writes to new path, deletes legacy file
+- Step 3 of `ensureSettingsCascade`: reads legacy JSON, upgrades shape, writes to new path. The legacy file is intentionally NOT deleted — keeping it allows users to inspect their pre-upgrade settings, and the idempotency guard short-circuits if the new file already exists.
 
 Evidence:
 - `packages/cli/src/lib/ensure-settings-cascade.ts` — step 3 upgrade logic

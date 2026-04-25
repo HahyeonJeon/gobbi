@@ -49,7 +49,7 @@ import {
 } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import {
   projectDir as projectDirForName,
@@ -585,7 +585,11 @@ describe("CFG-9: T2-v1 legacy upgrader writes new-shape settings.json", () => {
       process.stderr.write = origErr;
     }
 
-    const newProjectPath = join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json');
+    // Post-#138: the upgrader resolves the project slot via the same
+    // ladder init uses (`projects.active` → `basename(repoRoot)`). With
+    // no `projects.active` seeded by this test, the slot is the scratch
+    // repo's basename — not the legacy `'gobbi'` literal.
+    const newProjectPath = join(projectDirForName(repo, basename(repo)), 'settings.json');
     expect(existsSync(newProjectPath)).toBe(true);
     const upgraded = JSON.parse(readFileSync(newProjectPath, 'utf8')) as Settings;
 
@@ -614,7 +618,11 @@ describe("CFG-9: T2-v1 legacy upgrader writes new-shape settings.json", () => {
 describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already exists", () => {
   test('CFG-10: new-shape file is preserved even if legacy file is also present', async () => {
     const repo = makeScratchRepo();
-    mkdirSync(projectDirForName(repo, FALLBACK_PROJECT_NAME), { recursive: true });
+    // Post-#138: the upgrader's idempotency probe checks the resolved
+    // project slot (basename(repoRoot) when no `projects.active` is
+    // seeded), so the pre-existing fixture must land at the same slot.
+    const slotName = basename(repo);
+    mkdirSync(projectDirForName(repo, slotName), { recursive: true });
 
     // Pre-existing new-shape doc at the target path. `projects` is a
     // required field after the gobbi-memory Pass 2 schema extension;
@@ -625,7 +633,7 @@ describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already e
       projects: { active: null, known: [] },
       workflow: { ideation: { evaluate: { mode: 'skip' } } },
     };
-    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), preExisting);
+    writeJson(join(projectDirForName(repo, slotName), 'settings.json'), preExisting);
 
     // Also drop a legacy v1 file beside it. Upgrader must skip the rewrite.
     writeFileSync(
@@ -648,9 +656,111 @@ describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already e
 
     // New-shape file preserved verbatim.
     const stillThere = JSON.parse(
-      readFileSync(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), 'utf8'),
+      readFileSync(join(projectDirForName(repo, slotName), 'settings.json'), 'utf8'),
     ) as Settings;
     expect(stillThere.workflow?.ideation?.evaluate?.mode).toBe('skip');
+  });
+});
+
+// ===========================================================================
+// CFG-10b: T2-v1 upgrader honours `projects.active` when it disagrees with
+// basename(repoRoot) — regression test for issue #138
+// ===========================================================================
+//
+// Pre-#138, `ensureSettingsCascade` hardcoded the upgrade target at
+// `.gobbi/projects/gobbi/settings.json` regardless of what the workspace
+// `projects.active` declared. A repo whose active project was `'foo'`
+// would have its T2-v1 upgrade silently land in `projects/gobbi/`,
+// orphaning the upgraded settings from the active project. This
+// regression test seeds a workspace `projects.active = 'foo'` BEFORE
+// the cascade runs and asserts the upgrade lands at `projects/foo/`,
+// not `projects/gobbi/`.
+
+describe('CFG-10b (issue #138): T2-v1 upgrade lands at projects.active slot, not literal "gobbi"', () => {
+  test('non-"gobbi" projects.active routes the upgrade to the right slot', async () => {
+    const repo = makeScratchRepo();
+    mkdirSync(join(repo, '.gobbi'), { recursive: true });
+
+    // Seed the workspace with `projects.active = 'foo'`. The cascade
+    // step 4 (workspace-seed) is a no-op when the file is already
+    // present, so this `'foo'` value survives the cascade run intact.
+    writeJson(join(repo, '.gobbi', 'settings.json'), {
+      schemaVersion: 1,
+      projects: { active: 'foo', known: ['foo'] },
+    });
+
+    // Seed the legacy T2-v1 file. Step 3 must read this and write the
+    // upgrade to `projects/foo/settings.json` (NOT `projects/gobbi/`).
+    writeFileSync(
+      join(repo, '.gobbi', 'project-config.json'),
+      JSON.stringify(
+        {
+          version: 1,
+          git: { mode: 'worktree-pr', baseBranch: 'main' },
+          eval: { ideation: true, plan: true, execution: false },
+        },
+        null,
+        2,
+      ),
+      'utf8',
+    );
+
+    const origErr = process.stderr.write;
+    process.stderr.write = ((): boolean => true) as typeof process.stderr.write;
+    try {
+      await ensureSettingsCascade(repo);
+    } finally {
+      process.stderr.write = origErr;
+    }
+
+    // The active-project slot received the upgrade.
+    const activeSlot = join(projectDirForName(repo, 'foo'), 'settings.json');
+    expect(existsSync(activeSlot)).toBe(true);
+    const upgraded = JSON.parse(readFileSync(activeSlot, 'utf8')) as Settings;
+    expect(upgraded.git?.workflow?.mode).toBe('worktree-pr');
+    expect(upgraded.git?.workflow?.baseBranch).toBe('main');
+    expect(upgraded.workflow?.ideation?.evaluate?.mode).toBe('always');
+    expect(upgraded.workflow?.planning?.evaluate?.mode).toBe('always');
+    expect(upgraded.workflow?.execution?.evaluate?.mode).toBe('ask');
+
+    // The literal `'gobbi'` slot is NOT created — the orphan path the
+    // pre-fix code wrote to is empty.
+    const orphanSlot = join(projectDirForName(repo, 'gobbi'), 'settings.json');
+    expect(existsSync(orphanSlot)).toBe(false);
+  });
+
+  test('explicit projectName argument overrides workspace projects.active', async () => {
+    const repo = makeScratchRepo();
+    mkdirSync(join(repo, '.gobbi'), { recursive: true });
+
+    // Workspace claims `projects.active = 'foo'`, but the caller passes
+    // a different name (mirrors what `runInitWithOptions` does when
+    // `--project bar` is supplied). The explicit argument wins.
+    writeJson(join(repo, '.gobbi', 'settings.json'), {
+      schemaVersion: 1,
+      projects: { active: 'foo', known: ['foo'] },
+    });
+    writeFileSync(
+      join(repo, '.gobbi', 'project-config.json'),
+      JSON.stringify(
+        { version: 1, git: { mode: 'direct-commit' } },
+        null,
+        2,
+      ),
+      'utf8',
+    );
+
+    const origErr = process.stderr.write;
+    process.stderr.write = ((): boolean => true) as typeof process.stderr.write;
+    try {
+      await ensureSettingsCascade(repo, 'bar');
+    } finally {
+      process.stderr.write = origErr;
+    }
+
+    expect(existsSync(join(projectDirForName(repo, 'bar'), 'settings.json'))).toBe(true);
+    expect(existsSync(join(projectDirForName(repo, 'foo'), 'settings.json'))).toBe(false);
+    expect(existsSync(join(projectDirForName(repo, 'gobbi'), 'settings.json'))).toBe(false);
   });
 });
 

@@ -65,16 +65,18 @@ import { projectDir, sessionDir, workspaceRoot } from './workspace-paths.js';
 // ---------------------------------------------------------------------------
 
 /**
- * Transition-period fallback used when neither an explicit `projectName`
- * argument nor a workspace-level `projects.active` entry is available.
- * Matches the `DEFAULT_PROJECT_NAME` constant set by W2.1 callers
- * (`ensure-settings-cascade.ts`, `session.ts`, `gotcha/promote.ts`).
+ * Last-resort safety-net project name used by {@link resolveProjectName}
+ * when no explicit argument is supplied AND the workspace-level
+ * `projects.active` entry is absent. Exported so sibling modules
+ * (`ensure-settings-cascade.ts`, `gotcha/promote.ts`) can share the same
+ * literal rather than redeclaring it; consolidation per issue #138 wave 4.E.
  *
- * TODO(W2.3): bootstrap should prevent this fallback from firing; once
- * `gobbi workflow init` always writes a real `projects.active` in
- * `.gobbi/settings.json`, the callers here will never reach the fallback.
+ * Production callers should reach this only on truly fresh installs that
+ * have not yet been bootstrapped — `gobbi workflow init` writes
+ * `projects.active = basename(repoRoot)` on its first run, after which
+ * cascade reads always resolve via the workspace-active leg.
  */
-const DEFAULT_PROJECT_NAME = 'gobbi';
+export const DEFAULT_PROJECT_NAME = 'gobbi';
 
 /**
  * Module-scoped latch — `true` once the transition-period fallback
@@ -109,8 +111,15 @@ export function __resetFallbackWarningLatchForTests(): void {
  * file is absent, fails to parse, or does not declare a non-null active
  * project. Never throws — this is a best-effort lookup used as one leg of
  * the project-name fallback ladder.
+ *
+ * Exported so sibling modules (`ensure-settings-cascade.ts`) can probe
+ * the same on-disk source without duplicating the read/parse logic. The
+ * cascade-init step needs this leg directly because the legacy upgrade
+ * runs BEFORE the workspace-seed step; on the second-and-later inits the
+ * workspace file already exists, and the upgrader can route the upgrade
+ * to the right project slot by reading `projects.active` here.
  */
-function readWorkspaceActiveProject(repoRoot: string): string | null {
+export function readWorkspaceActiveProject(repoRoot: string): string | null {
   const filePath = path.join(workspaceRoot(repoRoot), 'settings.json');
   if (!existsSync(filePath)) return null;
 
