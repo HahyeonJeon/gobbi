@@ -19,6 +19,27 @@
  *      e.g., before a snapshot/backup, or as part of a Flyway-style
  *      "baseline-on-migrate" handoff (orchestration README §3.5).
  *
+ * ## v6 audit tables: empty until later waves
+ *
+ * Three of the four v6 tables (`state_snapshots`, `tool_calls`,
+ * `config_changes`) ship with their schema locked in this wave but no
+ * production writers yet. The CREATEs land in A.1 so a future wave does
+ * not need to add a v7 migration purely to introduce them — the
+ * forward-compatible schema is the cheaper choice.
+ *
+ *   - `state_snapshots` — Wave E.1 (Inner-mode safety net) wires the
+ *     writer that records per-(session, seq) state snapshots and emits
+ *     the missed-advancement escalation marks.
+ *   - `tool_calls` — the hooks waves wire Pre/PostToolUse capture into
+ *     this table; until then it stays empty.
+ *   - `config_changes` — `gobbi config set` audit; the writer lands with
+ *     the config-management wave.
+ *
+ * `schema_meta` is the only v6 table this command itself writes to —
+ * every successful run stamps the sentinel row. Operators running this
+ * command and finding the other three tables empty are seeing the
+ * intended state, not a half-applied migration.
+ *
  * The command is intentionally narrow:
  *
  *   - It opens the supplied `state.db` directly (no `EventStore`
@@ -92,9 +113,23 @@ Migrate a state.db file's schema in place to the current workspace-level
 version (v${CURRENT_SCHEMA_VERSION}). Idempotent — re-running on an already-current db is
 a no-op other than refreshing the schema_meta migrated_at stamp.
 
+Re-runnable on partial failure: every CREATE inside ensureSchemaV6 uses
+IF NOT EXISTS, and the chain runs inside a single
+db.transaction(...).immediate() so a mid-chain failure rolls back any
+partial schema rather than leaving the DB half-applied.
+
+Schema v6 reserves four tables: state_snapshots, tool_calls,
+config_changes, and schema_meta. Writers for state_snapshots arrive in
+Wave E.1; tool_calls + config_changes ship with the hooks / config-
+management waves. Until then those three tables are intentionally empty.
+schema_meta is the only one this command itself writes to.
+
 Options:
   --db <path>   Path to state.db (default: <repoRoot>/.gobbi/state.db)
-  --json        Emit a JSON object instead of the human-readable summary
+  --json        Emit a JSON object instead of the human-readable summary.
+                Under --json, error paths emit a structured envelope of
+                shape {"status":"error","code":"<code>","message":"..."}
+                to stderr instead of plain text.
   --help, -h    Show this help message`;
 
 // ---------------------------------------------------------------------------
@@ -146,6 +181,77 @@ export interface MigrateStateDbResult {
   readonly elapsedMs: number;
 }
 
+/**
+ * Stable error code surface for the `--json` failure path. The set is
+ * deliberately small — operators piping to `jq` need a discriminator,
+ * not a verbose taxonomy. New codes are additive only; renames break the
+ * wire format and require a major-version note.
+ *
+ *   - `DB_MISSING`     — pre-flight `existsSync` returned false for the
+ *                        target path.
+ *   - `MIGRATE_FAILED` — `migrateStateDbAt` threw (corrupt db, permission
+ *                        denied at open time, transaction rollback after
+ *                        a CREATE failure, …).
+ *   - `PARSE_ARGS`     — `parseArgs` rejected the supplied flags. Maps to
+ *                        exit code 2 (argv error) rather than 1.
+ */
+export type MigrateStateDbErrorCode =
+  | 'DB_MISSING'
+  | 'MIGRATE_FAILED'
+  | 'PARSE_ARGS';
+
+/**
+ * Structured error envelope emitted on stderr under `--json` when the
+ * command fails. Mirrors the success-side {@link MigrateStateDbResult}
+ * shape: a single line of well-formed JSON with a fixed key set so
+ * `jq -e '.status == "error"'` is reliable.
+ */
+export interface MigrateStateDbErrorEnvelope {
+  readonly status: 'error';
+  readonly code: MigrateStateDbErrorCode;
+  readonly message: string;
+  /**
+   * The target path, when known at the failure point. Absent on
+   * `PARSE_ARGS` (the path is not yet resolved when argv parsing fails)
+   * and present on `DB_MISSING` / `MIGRATE_FAILED`.
+   */
+  readonly path?: string;
+}
+
+/**
+ * Emit an error to stderr in the shape demanded by `jsonFlag`.
+ *
+ * Under `--json` the envelope is a single line of JSON, `{"status":
+ * "error", "code":..., "message":..., "path"?:...}` — operators piping
+ * to `jq` get the same structured surface on success and failure paths.
+ * Under the default (pretty) form the legacy
+ * `gobbi maintenance migrate-state-db: <message>\n` shape is preserved
+ * so existing terminal output is unchanged.
+ *
+ * The path is only included in the JSON envelope when the caller passes
+ * it — `PARSE_ARGS` failures fire before the path is resolved and pass
+ * `undefined`. Object spread in JSON.stringify omits absent fields, so
+ * the wire format stays clean either way.
+ */
+function writeErrorEnvelope(
+  jsonFlag: boolean,
+  code: MigrateStateDbErrorCode,
+  message: string,
+  path: string | undefined,
+): void {
+  if (jsonFlag) {
+    const envelope: MigrateStateDbErrorEnvelope =
+      path !== undefined
+        ? { status: 'error', code, message, path }
+        : { status: 'error', code, message };
+    process.stderr.write(`${JSON.stringify(envelope)}\n`);
+    return;
+  }
+  process.stderr.write(
+    `gobbi maintenance migrate-state-db: ${message}\n`,
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Public entry points
 // ---------------------------------------------------------------------------
@@ -163,9 +269,16 @@ export async function runMigrateStateDbWithOptions(
     return;
   }
 
+  // Detect `--json` ahead of `parseArgs` so the failure-path envelope is
+  // available even when argv parsing itself throws. Cheap heuristic:
+  // either `--json` (boolean) or `--json=true`. False-positive risk is
+  // minimal — `--json` is not used as a value elsewhere in this command,
+  // and parseArgs would reject any malformed shape on the next line.
+  const jsonFlag =
+    args.includes('--json') || args.some((a) => a.startsWith('--json='));
+
   // --- 1. Parse flags ----------------------------------------------------
   let dbFlag: string | undefined;
-  let jsonFlag = false;
   try {
     const { values } = parseArgs({
       args,
@@ -177,13 +290,15 @@ export async function runMigrateStateDbWithOptions(
       },
     });
     dbFlag = values.db;
-    jsonFlag = values.json === true;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    process.stderr.write(
-      `gobbi maintenance migrate-state-db: ${message}\n`,
-    );
-    process.stderr.write(`${USAGE}\n`);
+    writeErrorEnvelope(jsonFlag, 'PARSE_ARGS', message, undefined);
+    if (!jsonFlag) {
+      // Pretty form keeps the legacy USAGE dump after the error line.
+      // The JSON form omits it — structured consumers parse the envelope
+      // and would have to strip the trailing prose to use the result.
+      process.stderr.write(`${USAGE}\n`);
+    }
     process.exit(2);
   }
 
@@ -193,8 +308,11 @@ export async function runMigrateStateDbWithOptions(
 
   // --- 3. Pre-flight: file must exist -----------------------------------
   if (!existsSync(dbPath)) {
-    process.stderr.write(
-      `gobbi maintenance migrate-state-db: db file not found: ${dbPath}\n`,
+    writeErrorEnvelope(
+      jsonFlag,
+      'DB_MISSING',
+      `db file not found: ${dbPath}`,
+      dbPath,
     );
     process.exit(1);
   }
@@ -205,9 +323,7 @@ export async function runMigrateStateDbWithOptions(
     result = migrateStateDbAt(dbPath, overrides.now);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    process.stderr.write(
-      `gobbi maintenance migrate-state-db: ${message}\n`,
-    );
+    writeErrorEnvelope(jsonFlag, 'MIGRATE_FAILED', message, dbPath);
     process.exit(1);
   }
 

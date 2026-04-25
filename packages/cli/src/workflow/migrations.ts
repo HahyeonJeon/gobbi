@@ -289,6 +289,29 @@ export function backfillSessionAndProjectIds(
 
 // ---------------------------------------------------------------------------
 // Schema v6 — workspace-partitioned audit + meta tables (Wave A.1.3)
+//
+// ## Producer status
+//
+// Schema v6 reserves four tables. Three of them ship with their schema
+// locked but no production writers yet — operators running
+// `gobbi maintenance migrate-state-db`, observing that v6 stamped, then
+// finding these tables empty are seeing the intended state, not a
+// half-applied migration:
+//
+//   - `state_snapshots` — Wave E.1 (Inner-mode safety net) wires the
+//     writer that records per-(session, last_event_seq) snapshots and
+//     the missed-advancement escalation marks.
+//   - `tool_calls` — the hooks waves wire Pre/PostToolUse capture into
+//     this table. Empty until those hooks land.
+//   - `config_changes` — `gobbi config set` audit; the writer ships with
+//     the config-management wave.
+//   - `schema_meta` — written by every successful migration run
+//     ({@link ensureSchemaV6}'s `INSERT OR REPLACE`), so this is the
+//     only v6 table the migration command itself populates.
+//
+// The CREATEs land in A.1 so a future wave does not need to add a v7
+// migration purely to introduce them — the forward-compatible schema is
+// the cheaper choice.
 // ---------------------------------------------------------------------------
 
 /**

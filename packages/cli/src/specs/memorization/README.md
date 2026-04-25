@@ -29,6 +29,8 @@ Rawdata reaches the memorization agent as a **path-pointer manifest**, not as in
 
 **Runtime generation is wave B.1's job.** A.1.6 ships the spec contract — the prose that tells the agent how to read a manifest. The compile-pipeline change that actually populates `dynamic.artifacts` with manifest entries (instead of `[]` per `commands/workflow/next.ts:255`) lands in wave B.1, which owns `assembly.ts`/`next.ts`. The spec is correct ahead of the runtime; the runtime conforms to the spec when B.1 lands.
 
+**Implementation status (Wave A.1).** The manifest contract is locked in this spec, but the runtime currently passes `dynamic.artifacts: []` to the assembly pipeline (`commands/workflow/next.ts:255`). Wave B.1 implements the manifest generator that walks the seven rawdata source classes enumerated below and emits the markdown table the prompt expects. Until then, agents reading the rendered prompt see no artifact section — the synthesis block's reading rules instruct them to fall back to a direct walk of `sessions/<id>/` plus the orchestrator transcript path recorded in `metadata.json`, so the step still functions in the interim.
+
 ---
 
 ## Rawdata sources (manifest covers these)

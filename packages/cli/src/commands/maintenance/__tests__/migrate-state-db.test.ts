@@ -484,6 +484,142 @@ describe('runMigrateStateDb — --json output', () => {
 });
 
 // ===========================================================================
+// --json error envelope (R2 — System F-1 remediation)
+//
+// Failure paths under `--json` emit a structured envelope to stderr instead
+// of the legacy plain-text `gobbi maintenance migrate-state-db: <msg>`. The
+// envelope shape is `{status, code, message, path?}`; consumers piping to
+// `jq` get the same structured surface on success and failure paths.
+// ===========================================================================
+
+describe('runMigrateStateDb — --json error envelope', () => {
+  test('DB_MISSING — default path under --json emits structured stderr envelope', async () => {
+    const repo = makeRepo();
+    const missingPath = join(repo, '.gobbi', 'state.db');
+    expect(existsSync(missingPath)).toBe(false);
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(['--json'], { repoRoot: repo }),
+    );
+
+    expect(captured.exitCode).toBe(1);
+    // stderr must contain a single JSON line — no legacy prose preamble.
+    const lines = captured.stderr.split('\n').filter((l) => l.length > 0);
+    expect(lines).toHaveLength(1);
+    const parsed: unknown = JSON.parse(lines[0] as string);
+    expect(typeof parsed === 'object' && parsed !== null).toBe(true);
+    const obj = parsed as Record<string, unknown>;
+    expect(obj['status']).toBe('error');
+    expect(obj['code']).toBe('DB_MISSING');
+    expect(typeof obj['message']).toBe('string');
+    expect(obj['message']).toContain('db file not found');
+    expect(obj['path']).toBe(missingPath);
+
+    // stdout stays clean on the failure path so a `--json` consumer sees
+    // either a success object or an error envelope, never both.
+    expect(captured.stdout).toBe('');
+  });
+
+  test('DB_MISSING — explicit --db with non-existent path emits envelope', async () => {
+    const repo = makeRepo();
+    const fake = join(repo, 'no-such-dir', 'no-such.db');
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(['--json', '--db', fake], {
+        repoRoot: repo,
+      }),
+    );
+
+    expect(captured.exitCode).toBe(1);
+    const parsed = JSON.parse(captured.stderr.trim()) as Record<
+      string,
+      unknown
+    >;
+    expect(parsed['status']).toBe('error');
+    expect(parsed['code']).toBe('DB_MISSING');
+    expect(parsed['path']).toBe(fake);
+  });
+
+  test('MIGRATE_FAILED — corrupt db under --json emits envelope', async () => {
+    const repo = makeRepo();
+    const gobbiDir = join(repo, '.gobbi');
+    mkdirSync(gobbiDir, { recursive: true });
+    const dbPath = join(gobbiDir, 'state.db');
+    // Write garbage bytes that bun:sqlite will reject when ALTER /
+    // PRAGMA runs. Using a non-empty file ensures the existsSync
+    // pre-flight passes and the failure surfaces inside migrateStateDbAt.
+    Bun.write(dbPath, 'not a sqlite database — synthetic test garbage');
+    // Sanity — the pre-flight should have seen the file.
+    expect(existsSync(dbPath)).toBe(true);
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(['--json'], { repoRoot: repo }),
+    );
+
+    expect(captured.exitCode).toBe(1);
+    const lines = captured.stderr.split('\n').filter((l) => l.length > 0);
+    expect(lines).toHaveLength(1);
+    const parsed = JSON.parse(lines[0] as string) as Record<
+      string,
+      unknown
+    >;
+    expect(parsed['status']).toBe('error');
+    expect(parsed['code']).toBe('MIGRATE_FAILED');
+    expect(typeof parsed['message']).toBe('string');
+    expect((parsed['message'] as string).length).toBeGreaterThan(0);
+    expect(parsed['path']).toBe(dbPath);
+    expect(captured.stdout).toBe('');
+  });
+
+  test('PARSE_ARGS — unknown flag under --json emits envelope without USAGE', async () => {
+    const repo = makeRepo();
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(['--json', '--no-such-flag'], {
+        repoRoot: repo,
+      }),
+    );
+
+    expect(captured.exitCode).toBe(2);
+    // The JSON failure path must NOT dump the prose USAGE block — the
+    // pretty path keeps it for terminal users.
+    expect(captured.stderr).not.toContain(
+      'Usage: gobbi maintenance migrate-state-db',
+    );
+    const lines = captured.stderr.split('\n').filter((l) => l.length > 0);
+    expect(lines).toHaveLength(1);
+    const parsed = JSON.parse(lines[0] as string) as Record<
+      string,
+      unknown
+    >;
+    expect(parsed['status']).toBe('error');
+    expect(parsed['code']).toBe('PARSE_ARGS');
+    expect(typeof parsed['message']).toBe('string');
+    // path is not yet resolved at parseArgs failure time — must be absent.
+    expect('path' in parsed).toBe(false);
+  });
+
+  test('default (pretty) form preserves the legacy stderr error shape', async () => {
+    // Regression — the JSON path must NOT have changed the pretty path.
+    const repo = makeRepo();
+    const missingPath = join(repo, '.gobbi', 'state.db');
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions([], { repoRoot: repo }),
+    );
+
+    expect(captured.exitCode).toBe(1);
+    expect(captured.stderr).toContain(
+      'gobbi maintenance migrate-state-db: db file not found:',
+    );
+    expect(captured.stderr).toContain(missingPath);
+    // No JSON envelope under pretty form.
+    expect(captured.stderr).not.toContain('"status"');
+    expect(captured.stderr).not.toContain('"code"');
+  });
+});
+
+// ===========================================================================
 // Pure helper — migrateStateDbAt
 // ===========================================================================
 
