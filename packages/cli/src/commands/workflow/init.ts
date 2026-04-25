@@ -199,12 +199,23 @@ export async function runInitWithOptions(
 
   // Ensure the unified settings cascade is ready — deletes legacy config
   // sources (.gobbi/config.db, .claude/gobbi.json), upgrades legacy T2-v1
-  // project-config.json → project/settings.json, seeds workspace defaults,
-  // and updates .gobbi/.gitignore. Idempotent; safe to call every init.
-  // This also guarantees `.gobbi/settings.json` exists (seeded with
-  // `{projects: {active: null, known: []}}` on fresh repos) so the
-  // project-name resolution ladder below can always read it.
-  await ensureSettingsCascade(repoRoot);
+  // project-config.json → projects/<name>/settings.json, seeds workspace
+  // defaults, and updates .gobbi/.gitignore. Idempotent; safe to call
+  // every init. This also guarantees `.gobbi/settings.json` exists
+  // (seeded with `{projects: {active: null, known: []}}` on fresh repos)
+  // so the project-name resolution ladder below can always read it.
+  //
+  // Thread the resolved project name through so the T2-v1 upgrader's
+  // existence check and write target use the SAME slot init will declare
+  // active downstream. The pre-resolve walks `--project flag → workspace
+  // projects.active → basename(repoRoot)` — the same ladder
+  // `resolveProjectNameForInit` uses, minus the bootstrap side-effect
+  // (which still happens below at the call site). Threading the value
+  // in avoids cascade and init disagreeing on which project slot the
+  // legacy config belongs to (issue #138).
+  const cascadeProjectName =
+    projectFlag ?? readWorkspaceActiveProject(repoRoot) ?? basename(repoRoot);
+  await ensureSettingsCascade(repoRoot, cascadeProjectName);
 
   // Idempotent fast-path — find any pre-existing session for this sessionId
   // across every plausible project name (flag, projects.active, basename) so

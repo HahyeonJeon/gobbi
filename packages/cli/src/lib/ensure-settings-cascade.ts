@@ -40,20 +40,52 @@ import {
   type StepEvaluate,
   type StepSettings,
 } from './settings.js';
-import { writeSettingsAtLevel } from './settings-io.js';
+import {
+  readWorkspaceActiveProject,
+  writeSettingsAtLevel,
+} from './settings-io.js';
 import { formatAjvErrors, validateSettings } from './settings-validator.js';
 import { projectDir, workspaceRoot } from './workspace-paths.js';
 
 // ---------------------------------------------------------------------------
-// Paths
+// Project-name resolution at cascade-init time
 // ---------------------------------------------------------------------------
 
 /**
- * Fallback project name used by path helpers that run before
- * `projects.active` is resolved (e.g. legacy upgrade, fresh-install seed).
- * TODO(W2.3): replace `DEFAULT_PROJECT_NAME` with `projects.active` resolution.
+ * Resolve the project name that the legacy T2-v1 upgrader (Step 3) and
+ * the project-level seed should target. The cascade init runs BEFORE the
+ * workspace seed step writes `projects.active`, so this resolver cannot
+ * rely on the workspace file having been bootstrapped yet — instead it
+ * walks the same priority ladder that {@link resolveProjectNameForInit}
+ * uses, terminating at `basename(repoRoot)` so the upgrade always lands
+ * in the slot that the subsequent init bootstrap will declare active.
+ *
+ * Resolution order:
+ *
+ *   1. Caller-supplied {@link projectName} argument (highest priority —
+ *      `runInitWithOptions` knows the answer once flags + workspace state
+ *      have been consulted, and threads it through so cascade and init
+ *      agree by construction).
+ *   2. Workspace `projects.active` from an existing
+ *      `.gobbi/settings.json` (second-and-later inits).
+ *   3. `basename(repoRoot)` — fresh-install fallback that matches the
+ *      bootstrap value the workspace seed will write.
+ *
+ * The legacy `'gobbi'` literal `DEFAULT_PROJECT_NAME` (still exported
+ * from `settings-io.ts` for downstream resolvers) is intentionally NOT
+ * reachable from this path — `basename(repoRoot)` always returns a
+ * non-empty string for any real repo (and for the tmpdir scratch repos
+ * the test suite uses), so the literal would never fire here.
  */
-const DEFAULT_PROJECT_NAME = 'gobbi';
+function resolveProjectNameForCascade(
+  repoRoot: string,
+  projectName: string | undefined,
+): string {
+  if (projectName !== undefined && projectName !== '') return projectName;
+  const active = readWorkspaceActiveProject(repoRoot);
+  if (active !== null) return active;
+  return path.basename(repoRoot);
+}
 
 function legacyConfigDbPath(repoRoot: string): string {
   return path.join(workspaceRoot(repoRoot), 'config.db');
@@ -67,9 +99,14 @@ function legacyProjectConfigPath(repoRoot: string): string {
   return path.join(workspaceRoot(repoRoot), 'project-config.json');
 }
 
-function newProjectSettingsPath(repoRoot: string): string {
-  // TODO(W2.3): replace DEFAULT_PROJECT_NAME with projects.active resolution
-  return path.join(projectDir(repoRoot, DEFAULT_PROJECT_NAME), 'settings.json');
+/**
+ * Path to the project-level settings file for the resolved project. Used
+ * for both the Step-3 idempotency probe (`!existsSync(newProject)`) and
+ * the post-upgrade log message — both must reflect the resolved name,
+ * not a hardcoded literal, otherwise the probe checks the wrong path.
+ */
+function newProjectSettingsPath(repoRoot: string, projectName: string): string {
+  return path.join(projectDir(repoRoot, projectName), 'settings.json');
 }
 
 function workspaceSettingsFile(repoRoot: string): string {
@@ -209,11 +246,31 @@ function ensureGitignoreLines(repoRoot: string): void {
 /**
  * Idempotent migration + seed orchestrator. Safe to call on every
  * `gobbi workflow init`. See module-level JSDoc for the five steps.
+ *
+ * The optional {@link projectName} argument is the resolved project the
+ * upgrade target should land under; when absent, the cascade resolves
+ * it via the same priority ladder the init bootstrap uses (workspace
+ * `projects.active` → `basename(repoRoot)`). Passing it explicitly from
+ * `runInitWithOptions` is the preferred path because the init knows the
+ * answer once it has consulted flag + workspace state, and threading it
+ * here guarantees cascade and init agree on the slot by construction.
  */
-export async function ensureSettingsCascade(repoRoot: string): Promise<void> {
+export async function ensureSettingsCascade(
+  repoRoot: string,
+  projectName?: string,
+): Promise<void> {
   // The `.gobbi/` directory is a precondition for later writes; fresh
   // tmpdirs (and fresh real repos) may not have it yet.
   mkdirSync(workspaceRoot(repoRoot), { recursive: true });
+
+  // Resolve the project name once at the top of the cascade so every
+  // step that needs it (Step 3 upgrade target, post-write log message)
+  // uses the same value. The resolution lives outside the steps because
+  // Step 4 (workspace seed) writes the settings file that Step 3 would
+  // otherwise read AFTER its own decision — see the §Cascade-ordering
+  // notes in the W3.C review for why probing here, before any cleanup,
+  // is correct.
+  const resolvedProjectName = resolveProjectNameForCascade(repoRoot, projectName);
 
   // Step 1 — delete legacy SQLite config.
   const dbPath = legacyConfigDbPath(repoRoot);
@@ -230,9 +287,14 @@ export async function ensureSettingsCascade(repoRoot: string): Promise<void> {
   }
 
   // Step 3 — upgrade legacy `.gobbi/project-config.json` (T2-v1) to the
-  // new shape at `.gobbi/project/settings.json` if the new path is absent.
+  // new shape at `.gobbi/projects/<resolved>/settings.json` if the
+  // resolved-project path is absent. Both the existence-check and the
+  // post-upgrade log path go through `newProjectSettingsPath(repoRoot,
+  // resolvedProjectName)` so the idempotency guard checks the SAME slot
+  // we are about to write to — checking the wrong slot is the bug
+  // tracked by issue #138.
   const legacyProject = legacyProjectConfigPath(repoRoot);
-  const newProject = newProjectSettingsPath(repoRoot);
+  const newProject = newProjectSettingsPath(repoRoot, resolvedProjectName);
   if (existsSync(legacyProject) && !existsSync(newProject)) {
     let raw: string;
     try {
@@ -268,11 +330,11 @@ export async function ensureSettingsCascade(repoRoot: string): Promise<void> {
       );
     }
 
-    // Pass `DEFAULT_PROJECT_NAME` explicitly so `writeSettingsAtLevel` does
-    // not re-resolve through the stderr-warning fallback path; the upgrade
-    // always targets the default project slot on this transition path.
-    // TODO(W2.3): replace `DEFAULT_PROJECT_NAME` with `projects.active` resolution.
-    writeSettingsAtLevel(repoRoot, 'project', upgraded, undefined, DEFAULT_PROJECT_NAME);
+    // Pass the resolved name explicitly so `writeSettingsAtLevel` does
+    // not re-resolve through the stderr-warning fallback path; we have
+    // already committed to the right slot above and want the on-disk
+    // write to land there without any second-guessing.
+    writeSettingsAtLevel(repoRoot, 'project', upgraded, undefined, resolvedProjectName);
     process.stderr.write(
       `[ensure-settings-cascade] upgraded ${path.relative(repoRoot, legacyProject)} → ${path.relative(repoRoot, newProject)}\n`,
     );
