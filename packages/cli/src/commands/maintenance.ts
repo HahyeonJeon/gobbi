@@ -57,6 +57,17 @@ export const MAINTENANCE_COMMANDS: readonly MaintenanceCommand[] = [
       await runWipeLegacySessions(args);
     },
   },
+  {
+    name: 'migrate-state-db',
+    summary:
+      'Migrate a state.db schema in place to the current workspace-level version (idempotent)',
+    run: async (args: string[]): Promise<void> => {
+      const { runMigrateStateDb } = await import(
+        './maintenance/migrate-state-db.js'
+      );
+      await runMigrateStateDb(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------

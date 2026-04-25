@@ -23,6 +23,7 @@ import {
   CURRENT_SCHEMA_VERSION,
   backfillSessionAndProjectIds,
   ensureSchemaV5,
+  ensureSchemaV6,
 } from './migrations.js';
 import type { EventRow } from './migrations.js';
 
@@ -502,6 +503,14 @@ export class EventStore implements WriteStore {
     // store opens an existing pre-v5 file, the ALTER statements inside
     // `ensureSchemaV5` add the columns without data loss.
     ensureSchemaV5(this.db);
+    // Additive v5 → v6 schema migration — creates the four
+    // workspace-partitioned audit + meta tables (`state_snapshots`,
+    // `tool_calls`, `config_changes`, `schema_meta`) plus their
+    // indices. Idempotent (every CREATE uses `IF NOT EXISTS`) so this
+    // is safe to call on every store open. Wave A.1.4 (issue #146)
+    // wires this here so `EventStore` callers get v6 tables without
+    // running `gobbi maintenance migrate-state-db` explicitly.
+    ensureSchemaV6(this.db);
   }
 
   // -------------------------------------------------------------------------
