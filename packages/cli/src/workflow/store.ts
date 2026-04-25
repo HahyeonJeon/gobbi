@@ -266,6 +266,49 @@ export interface WriteStore extends ReadStore {
 }
 
 // ---------------------------------------------------------------------------
+// EventStore constructor options
+// ---------------------------------------------------------------------------
+
+/**
+ * Optional explicit partition-key overrides for the {@link EventStore}
+ * constructor. Both fields participate in the same fallback policy:
+ *
+ * - A non-empty string overrides the on-disk derivation.
+ * - `null`, `undefined`, or the empty string `''` defers to the
+ *   path-derivation fallback (existing behavior).
+ *
+ * Empty-string and `null` are treated identically as "explicitly unset"
+ * so callers cannot accidentally stamp empty-string columns on every
+ * INSERT — a `''` `session_id` would defeat the per-session partition
+ * query that powers `gobbi workflow status` and would silently degrade
+ * the cost rollup.
+ *
+ * Wave A.1's workspace re-scope (`.gobbi/state.db`) needs both keys
+ * supplied explicitly because the path derivation yields `'.gobbi'`
+ * for the session id and `null` for the project id at workspace root.
+ * Per-session callers (legacy `<sessionDir>/gobbi.db` layout) keep
+ * working unchanged by passing no options object — Wave A.1.7 sweeps
+ * the 11 callsites separately.
+ */
+export interface EventStoreOptions {
+  readonly sessionId?: string | null;
+  readonly projectId?: string | null;
+}
+
+/**
+ * Type guard — narrows an options-bag partition-key field to a non-empty
+ * `string` when an explicit override was supplied. `null`, `undefined`,
+ * and the empty string all return `false` (deferring to the on-disk
+ * derivation fallback). See {@link EventStoreOptions} for the policy
+ * rationale.
+ */
+function isExplicitOverride(
+  value: string | null | undefined,
+): value is string {
+  return typeof value === 'string' && value !== '';
+}
+
+// ---------------------------------------------------------------------------
 // Partition-key resolution helpers — used by the EventStore constructor
 // to derive `session_id` + `project_id` from on-disk layout.
 // ---------------------------------------------------------------------------
@@ -356,19 +399,54 @@ export class EventStore implements WriteStore {
   private readonly stmtCount;
   private readonly stmtAggregateDelegationCosts;
 
-  constructor(pathOrMemory: string) {
+  /**
+   * Open an event store at `pathOrMemory`.
+   *
+   * Partition-key resolution policy (`session_id` + `project_id`
+   * stamped on every v5+ INSERT):
+   *
+   * 1. If `opts.sessionId` is a non-empty string, use it verbatim.
+   *    `null`, `undefined`, or the empty string defers to step 2.
+   * 2. Fall back to {@link resolveSessionId} — `basename(dirname(path))`
+   *    on the on-disk layout. `:memory:` and filesystem-root paths
+   *    yield `null`.
+   *
+   * The same two-step policy applies to `opts.projectId`:
+   *
+   * 1. Non-empty `opts.projectId` takes precedence.
+   * 2. Otherwise {@link resolveProjectRootBasename} parses the
+   *    sibling `metadata.json` and extracts
+   *    `basename(metadata.projectRoot)`. Missing or malformed
+   *    metadata yields `null` (silent — the column stays NULL until
+   *    a future open recovers a valid metadata).
+   *
+   * Empty-string and `null` are treated identically as "explicitly
+   * unset" — see {@link EventStoreOptions} for why empty strings
+   * cannot reach the column. Wave A.1's workspace mode supplies both
+   * keys; legacy per-session callers omit the options object and keep
+   * the original path-derived behavior.
+   */
+  constructor(pathOrMemory: string, opts?: EventStoreOptions) {
     this.db = new Database(pathOrMemory, { strict: true });
     this.db.run('PRAGMA journal_mode = WAL');
     this.db.run('PRAGMA synchronous = NORMAL');
     this.db.run('PRAGMA foreign_keys = ON');
     this.db.run('PRAGMA busy_timeout = 5000');
 
-    // Resolve partition keys from the db path's session directory. In-memory
-    // stores and any path whose parent is the filesystem root get null keys.
+    // Resolve partition keys. Explicit non-empty overrides win; null,
+    // undefined, and the empty string defer to on-disk derivation.
+    // In-memory stores and filesystem-root paths yield null keys when
+    // no override is supplied.
     const sessionDir =
       pathOrMemory === ':memory:' ? null : dirname(pathOrMemory);
-    this.sessionId = resolveSessionId(sessionDir);
-    this.projectRootBasename = resolveProjectRootBasename(sessionDir);
+    this.sessionId =
+      isExplicitOverride(opts?.sessionId)
+        ? opts.sessionId
+        : resolveSessionId(sessionDir);
+    this.projectRootBasename =
+      isExplicitOverride(opts?.projectId)
+        ? opts.projectId
+        : resolveProjectRootBasename(sessionDir);
 
     this.initSchema();
     // v4 → v5 row-level backfill. Idempotent — writes only to rows whose

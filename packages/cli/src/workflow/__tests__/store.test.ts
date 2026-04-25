@@ -11,6 +11,7 @@ import type {
   AppendInputSystem,
   AppendInputToolCall,
   EventRow,
+  EventStoreOptions,
   ReadStore,
   WriteStore,
 } from '../store.js';
@@ -1244,5 +1245,245 @@ describe('schema v5 — session_id + project_id columns', () => {
     // sensible value; project_id stays NULL.
     expect(row!.session_id).toBe('sess-mem');
     expect(row!.project_id).toBeNull();
+  });
+});
+
+// ===========================================================================
+// EventStoreOptions — explicit partition-key constructor params (#146 A.1.2)
+//
+// Wave A.1's workspace re-scope (`.gobbi/state.db`) requires explicit
+// partition-key overrides because the path-derivation fallback yields
+// `'.gobbi'` for session_id and `null` for project_id at the workspace
+// root. The legacy per-session callers (omitting the options object)
+// keep working unchanged via path derivation.
+//
+// Policy under test (mirrors the constructor's JSDoc):
+//   - non-empty string in opts → use verbatim
+//   - `null`     in opts → defer to derivation
+//   - `undefined` in opts → defer to derivation
+//   - `''`       in opts → defer to derivation (empty-string columns
+//                          would defeat the per-session partition query)
+// ===========================================================================
+
+describe('EventStoreOptions — explicit partition-key constructor params (#146 A.1.2)', () => {
+  it('falls back to path/metadata derivation when no opts are passed', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-fallback',
+      '/home/alice/projects/repo-fallback',
+    );
+    try {
+      using store = new EventStore(dbPath);
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-fallback-1',
+        sessionId: 'sess-fallback',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        expect(row?.session_id).toBe('sess-fallback');
+        expect(row?.project_id).toBe('repo-fallback');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('explicit sessionId override beats path-derived basename', () => {
+    // Session dir basename would be `sess-on-disk`, but the override is
+    // `workspace-session` — the workspace re-scope use case.
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-on-disk',
+      '/home/alice/projects/dir-derived',
+    );
+    try {
+      using store = new EventStore(dbPath, {
+        sessionId: 'workspace-session',
+      });
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-override-1',
+        sessionId: 'workspace-session',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        expect(row?.session_id).toBe('workspace-session');
+        // projectId not overridden — derivation still runs.
+        expect(row?.project_id).toBe('dir-derived');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('explicit projectId override beats metadata.json lookup', () => {
+    // metadata.projectRoot basename would be `metadata-derived`, but the
+    // override is `workspace-project`.
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-proj-override',
+      '/home/alice/projects/metadata-derived',
+    );
+    try {
+      using store = new EventStore(dbPath, {
+        projectId: 'workspace-project',
+      });
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-proj-override-1',
+        sessionId: 'sess-proj-override',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        // sessionId not overridden — derivation still runs.
+        expect(row?.session_id).toBe('sess-proj-override');
+        expect(row?.project_id).toBe('workspace-project');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('null in opts is treated as "explicitly unset" and falls back to derivation', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-null-opts',
+      '/home/alice/projects/null-derived',
+    );
+    try {
+      const opts: EventStoreOptions = {
+        sessionId: null,
+        projectId: null,
+      };
+      using store = new EventStore(dbPath, opts);
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-null-opts-1',
+        sessionId: 'sess-null-opts',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        // Both keys derived — null in opts did not stamp a NULL column.
+        expect(row?.session_id).toBe('sess-null-opts');
+        expect(row?.project_id).toBe('null-derived');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('empty string in opts falls back to derivation (no empty-string columns)', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-empty-opts',
+      '/home/alice/projects/empty-derived',
+    );
+    try {
+      const opts: EventStoreOptions = {
+        sessionId: '',
+        projectId: '',
+      };
+      using store = new EventStore(dbPath, opts);
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-empty-opts-1',
+        sessionId: 'sess-empty-opts',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        // Empty strings did not reach the columns — derivation populated
+        // both keys.
+        expect(row?.session_id).toBe('sess-empty-opts');
+        expect(row?.project_id).toBe('empty-derived');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
   });
 });
