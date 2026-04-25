@@ -41,6 +41,7 @@ import {
   resolveWorkflowState,
 } from '../../../workflow/engine.js';
 import { createDelegationSpawn } from '../../../workflow/events/delegation.js';
+import { withEnv } from '../../../__tests__/helpers/with-env.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap
@@ -695,12 +696,10 @@ describe('runCaptureSubagent — tool-call idempotency', () => {
 
 describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () => {
   test('env present → spawn event data carries claudeCodeVersion', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-ccv-present');
     const sessionId = 'cap-sub-ccv-present';
+    const { sessionDir } = await initScratchSession(sessionId);
 
-    const originalVersion = process.env['CLAUDE_CODE_VERSION'];
-    try {
-      process.env['CLAUDE_CODE_VERSION'] = '2.1.110';
+    await withEnv({ CLAUDE_CODE_VERSION: '2.1.110' }, () => {
       const envVersion = process.env['CLAUDE_CODE_VERSION'];
       // Emitters populate the field only when the env var is a non-empty
       // string — this is the documented pattern (see delegation.ts
@@ -738,33 +737,33 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
       } finally {
         store.close();
       }
-    } finally {
-      if (originalVersion === undefined) {
-        delete process.env['CLAUDE_CODE_VERSION'];
-      } else {
-        process.env['CLAUDE_CODE_VERSION'] = originalVersion;
-      }
-    }
+    });
   });
 
-  // TODO(#92): capture-subagent env-bleed flake — same-millisecond
-  // `new Date().toISOString()` between scenarios A and B collides on the
-  // `system` idempotency key, and `process.env['CLAUDE_CODE_VERSION']` leaks
-  // across parallel workers in full-suite runs. Quarantined at the TEST
-  // level (not `describe.skip`) so the env-present sibling above still
-  // exercises the happy path. See issue #131 for the detailed repro and
-  // fix options (idempotency-key salt / sleep-1ms / per-test store
-  // isolation / env-cleanup).
-  test.skip('env unset or empty → spawn event data omits claudeCodeVersion', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-ccv-absent');
-    const sessionId = 'cap-sub-ccv-absent';
+  // Issue #131 stabilization: the original test merged scenarios A
+  // (`CLAUDE_CODE_VERSION` unset) and B (empty string) into one body,
+  // sharing a single sessionId and event store. Two flake sources
+  // collided in full-suite runs:
+  //
+  //   1. The `system` idempotency key is `${sessionId}:${ms}:${type}` —
+  //      same-millisecond `new Date().toISOString()` between the two
+  //      append calls produced an ON-CONFLICT no-op for scenario B,
+  //      then the `store.last(...)` read returned scenario A's row.
+  //   2. `process.env['CLAUDE_CODE_VERSION']` leaked across parallel
+  //      bun-test workers because the prior try/finally only ran inside
+  //      the test body.
+  //
+  // The fix splits the two scenarios into separate `test(...)` blocks
+  // (each with its own `initScratchSession` + scratch DB → distinct
+  // sessionId → idempotency keys cannot collide) and routes every env
+  // mutation through `withEnv` (scoped capture-set-restore in `finally`).
+  test('env unset → spawn event data omits claudeCodeVersion', async () => {
+    const sessionId = 'cap-sub-ccv-unset';
+    const { sessionDir } = await initScratchSession(sessionId);
 
-    const originalVersion = process.env['CLAUDE_CODE_VERSION'];
-    try {
-      // Scenario A — env var unset.
-      delete process.env['CLAUDE_CODE_VERSION'];
-      let envVersion = process.env['CLAUDE_CODE_VERSION'];
-      let claudeCodeVersion =
+    await withEnv({ CLAUDE_CODE_VERSION: undefined }, () => {
+      const envVersion = process.env['CLAUDE_CODE_VERSION'];
+      const claudeCodeVersion =
         envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
 
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
@@ -777,64 +776,64 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
           createDelegationSpawn({
             agentType: 'executor',
             step: state.currentStep,
-            subagentId: 'agent-ccv-absent-1',
+            subagentId: 'agent-ccv-unset',
             timestamp: new Date().toISOString(),
             ...(claudeCodeVersion !== undefined ? { claudeCodeVersion } : {}),
           }),
           'cli',
           sessionId,
           'system',
-          undefined,
         );
 
-        const rowA = store.last('delegation.spawn');
-        expect(rowA).not.toBeNull();
-        const dataA = JSON.parse(rowA!.data) as Record<string, unknown>;
-        expect(dataA['subagentId']).toBe('agent-ccv-absent-1');
+        const row = store.last('delegation.spawn');
+        expect(row).not.toBeNull();
+        const data = JSON.parse(row!.data) as Record<string, unknown>;
+        expect(data['subagentId']).toBe('agent-ccv-unset');
         // Emitter MUST omit the field, not write an empty string.
-        expect('claudeCodeVersion' in dataA).toBe(false);
-
-        // Scenario B — env var explicitly empty string. Same contract:
-        // emitter must omit the field rather than writing ''.
-        process.env['CLAUDE_CODE_VERSION'] = '';
-        envVersion = process.env['CLAUDE_CODE_VERSION'];
-        claudeCodeVersion =
-          envVersion !== undefined && envVersion !== ''
-            ? envVersion
-            : undefined;
-
-        const stateB = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
-          store,
-          sessionDir,
-          stateB,
-          createDelegationSpawn({
-            agentType: 'executor',
-            step: stateB.currentStep,
-            subagentId: 'agent-ccv-absent-2',
-            timestamp: new Date().toISOString(),
-            ...(claudeCodeVersion !== undefined ? { claudeCodeVersion } : {}),
-          }),
-          'cli',
-          sessionId,
-          'system',
-          undefined,
-        );
-
-        const rowB = store.last('delegation.spawn');
-        expect(rowB).not.toBeNull();
-        const dataB = JSON.parse(rowB!.data) as Record<string, unknown>;
-        expect(dataB['subagentId']).toBe('agent-ccv-absent-2');
-        expect('claudeCodeVersion' in dataB).toBe(false);
+        expect('claudeCodeVersion' in data).toBe(false);
       } finally {
         store.close();
       }
-    } finally {
-      if (originalVersion === undefined) {
-        delete process.env['CLAUDE_CODE_VERSION'];
-      } else {
-        process.env['CLAUDE_CODE_VERSION'] = originalVersion;
+    });
+  });
+
+  test('env empty string → spawn event data omits claudeCodeVersion', async () => {
+    const sessionId = 'cap-sub-ccv-empty';
+    const { sessionDir } = await initScratchSession(sessionId);
+
+    await withEnv({ CLAUDE_CODE_VERSION: '' }, () => {
+      const envVersion = process.env['CLAUDE_CODE_VERSION'];
+      const claudeCodeVersion =
+        envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
+
+      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      try {
+        const state = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          state,
+          createDelegationSpawn({
+            agentType: 'executor',
+            step: state.currentStep,
+            subagentId: 'agent-ccv-empty',
+            timestamp: new Date().toISOString(),
+            ...(claudeCodeVersion !== undefined ? { claudeCodeVersion } : {}),
+          }),
+          'cli',
+          sessionId,
+          'system',
+        );
+
+        const row = store.last('delegation.spawn');
+        expect(row).not.toBeNull();
+        const data = JSON.parse(row!.data) as Record<string, unknown>;
+        expect(data['subagentId']).toBe('agent-ccv-empty');
+        // Emitter MUST omit the field, not write an empty string.
+        expect('claudeCodeVersion' in data).toBe(false);
+      } finally {
+        store.close();
       }
-    }
+    });
   });
 });
