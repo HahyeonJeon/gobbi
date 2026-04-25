@@ -17,6 +17,8 @@ import {
   normaliseToLatestSchema,
 } from '../state.js';
 import type { WorkflowState, ReduceFn } from '../state.js';
+import type { ResolvedSettings } from '../../lib/settings.js';
+import { DEFAULTS } from '../../lib/settings.js';
 import { EventStore } from '../store.js';
 import type { AppendInput, AppendInputToolCall } from '../store.js';
 import { reduce } from '../reducer.js';
@@ -130,6 +132,70 @@ describe('isValidState', () => {
   it('rejects non-boolean evalConfig fields', () => {
     const bad = { ...initialState('s1'), evalConfig: { ideation: 'yes', planning: false } };
     expect(isValidState(bad)).toBe(false);
+  });
+});
+
+// ===========================================================================
+// initialState — settings-driven maxFeedbackRounds (issue #134)
+// ===========================================================================
+
+describe('initialState maxFeedbackRounds wiring', () => {
+  it('falls back to 3 when settings argument is omitted', () => {
+    const state = initialState('s-no-settings');
+    expect(state.maxFeedbackRounds).toBe(3);
+  });
+
+  it('reads workflow.execution.maxIterations from settings', () => {
+    const settings: ResolvedSettings = {
+      ...DEFAULTS,
+      workflow: {
+        ...DEFAULTS.workflow,
+        execution: { ...DEFAULTS.workflow?.execution, maxIterations: 5 },
+      },
+    };
+    const state = initialState('s-exec-5', settings);
+    expect(state.maxFeedbackRounds).toBe(5);
+  });
+
+  it('prefers execution over planning over ideation', () => {
+    const settings: ResolvedSettings = {
+      ...DEFAULTS,
+      workflow: {
+        ideation: { maxIterations: 7 },
+        planning: { maxIterations: 6 },
+        execution: { maxIterations: 9 },
+      },
+    };
+    const state = initialState('s-cascade', settings);
+    expect(state.maxFeedbackRounds).toBe(9);
+  });
+
+  it('falls back to planning when execution is absent', () => {
+    const settings: ResolvedSettings = {
+      schemaVersion: 1,
+      projects: { active: null, known: [] },
+      workflow: {
+        ideation: { maxIterations: 7 },
+        planning: { maxIterations: 6 },
+        // execution slot omitted entirely
+      },
+    };
+    const state = initialState('s-fallback-plan', settings);
+    expect(state.maxFeedbackRounds).toBe(6);
+  });
+
+  it('falls back to 3 when no step carries maxIterations', () => {
+    const settings: ResolvedSettings = {
+      schemaVersion: 1,
+      projects: { active: null, known: [] },
+      workflow: {
+        ideation: { discuss: { mode: 'user' } },
+        planning: { discuss: { mode: 'user' } },
+        execution: { discuss: { mode: 'agent' } },
+      },
+    };
+    const state = initialState('s-no-iter', settings);
+    expect(state.maxFeedbackRounds).toBe(3);
   });
 });
 
