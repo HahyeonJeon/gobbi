@@ -1,0 +1,67 @@
+{
+  "$schema": "https://gobbi.dev/schemas/step-spec/v1.json",
+  "version": 1,
+  "meta": {
+    "description": "Handoff — read the just-written memorization artifact and the session's terminal-state record, then write a tight hand-off note for the next session. Last productive step; the workflow transitions to done after it completes.",
+    "allowedAgentTypes": [],
+    "maxParallelAgents": 0,
+    "requiredSkills": ["_project"],
+    "optionalSkills": ["_claude"],
+    "expectedArtifacts": ["handoff.md"],
+    "completionSignal": "Stop"
+  },
+  "transitions": [
+    {
+      "to": "done",
+      "condition": "always",
+      "label": "handoff complete → done"
+    }
+  ],
+  "delegation": {
+    "agents": []
+  },
+  "tokenBudget": {
+    "staticPrefix": 0.4,
+    "session": 0.1,
+    "instructions": 0.2,
+    "artifacts": 0.2,
+    "materials": 0.1
+  },
+  "blocks": {
+    "static": [
+      {
+        "id": "role",
+        "content": "You are the orchestrator of the Handoff step. Your job is to read the just-written memorization artifact and the session's terminal-state record, then produce a narrow, high-signal hand-off note that the next session can read first to resume without re-discovery.\n\nHandoff is orchestrator-authored. You do not delegate; you do not evaluate. You read the wider record memorization wrote, distill it to what the next session must know, and commit a single tight artifact. Memorization is the long record; handoff is the cover sheet that points into it."
+      },
+      {
+        "id": "principles",
+        "content": "Handoff principles:\n\n- Narrow over wide. Memorization captured everything that should persist; handoff captures only what the next session must read first. A reader who only opens `handoff.md` should know what shipped, what is still open, what locks not to re-litigate, and where to dig deeper. They should not need to skim the full memorization artifact to decide what to do next.\n- Faithful to the record, not to the intent. Quote the memorization artifact's language for decisions and open threads rather than restating optimistically. If memorization says a task did not converge, handoff says the same — never smooth an unfinished state into a success narrative.\n- Pointers, not duplication. The decisions, gotchas, and design notes live in their own files post-memorization. Handoff names the paths and the one-line gist; the next session reads the source when it needs the detail.\n- Tight by construction. The artifact targets ~5 sentences in `What was shipped`, bulleted lists elsewhere, and stops there. Handoff that grows to memorization size has lost its purpose."
+      },
+      {
+        "id": "scope-boundary",
+        "content": "Scope boundary:\n\n- Handoff does not re-do memorization's work. Memorization already wrote `memorization.md`, the per-class extraction files, and any project documentation updates. Handoff reads those outputs and synthesizes the cover sheet — it does not write new gotchas, decisions, or design entries.\n- Handoff does not re-open prior steps. If you find a gap while reading memorization, record it as an open thread in `handoff.md` — the next session decides whether to address it.\n- Handoff writes only to handoff-scope locations: the session's `handoff/` directory and the workspace `gobbi.db::memories` row of class `'handoff'`. Do not modify `memorization.md`, prior-step artifacts, or any project documentation.\n- One artifact. Handoff produces exactly `handoff.md` plus one memory row. No supplementary files, no second cover sheet — narrowness is the contract."
+      },
+      {
+        "id": "artifact-shape",
+        "content": "Handoff artifact shape:\n\nWrite `handoff.md` at `sessions/<id>/handoff/handoff.md` with the following structure so the next session reads it deterministically:\n\n1. `What was shipped` — one paragraph, max ~5 sentences. The session's net deliverable in its own terms, with PR/commit references if any. If the session ended via the force-memorization recovery pathway, state that here — the partial-record framing must reach handoff, not be smoothed away.\n2. `Open threads — read these first` — bulleted list of unresolved items the next session needs to know about. Each bullet is a one-liner; pointers go to `memorization.md` or other files for detail.\n3. `Decisions you should respect` — bulleted list of locks made this session that the next session should not re-litigate. Quote the decision in the memorization artifact's language; do not paraphrase.\n4. `Pointers` — references to the session's load-bearing artifacts: `memorization.md` (always), key files changed, key issues filed or closed, the worktree path if relevant. The next session uses these to dive deeper without grepping the session tree.\n\nThe shape is stable on purpose. Future sessions' first action is to read the most recent `handoff.md`; a predictable shape keeps resumption fast and the cover-sheet contract honest. A handoff longer than ~150 lines is over-budget — trim toward pointers."
+      }
+    ],
+    "conditional": [],
+    "delegation": {},
+    "synthesis": [
+      {
+        "id": "synthesis",
+        "content": "Synthesis instructions:\n\nHandoff is orchestrator-authored — no delegated agents contribute. Your synthesis is the hand-off artifact itself:\n\n1. Read `sessions/<id>/memorization/memorization.md` end-to-end. This is the wider record; handoff is the cover sheet that points into it.\n2. Read the last-N events from the workspace event store for this session — terminal-state inspection. The events tell you whether the session reached `done` cleanly or via the force-memorization recovery pathway; that framing must reach the artifact.\n3. Distill `memorization.md` to the four-section shape in the `Handoff artifact shape` section. Quote the memorization artifact's language for decisions and open threads — paraphrase loses fidelity.\n4. Write `handoff.md` at `sessions/<id>/handoff/handoff.md`.\n5. Write one row into the workspace memories store with `class='handoff', session_id=<id>, project_id=<resolved>`, body equal to the rendered artifact. The next session's CLI pulls this row as ambient context for its first step.\n6. Emit the completion signal — the CLI transitions the workflow to `done` on the `always` transition."
+      }
+    ],
+    "completion": {
+      "instruction": "Emit the Stop completion signal once `handoff.md` is written at `sessions/<id>/handoff/handoff.md` and a `class='handoff'` row has been added to the workspace memories store.",
+      "criteria": [
+        "handoff.md exists at sessions/<id>/handoff/handoff.md with What was shipped, Open threads, Decisions you should respect, and Pointers sections",
+        "exactly one row of class='handoff' has been added to the workspace memories store with the rendered artifact body and the resolved session_id and project_id",
+        "the artifact stays narrow — pointers replace duplication, no new gotchas/decisions/design entries are introduced (those belong to memorization)",
+        "no prior-step artifacts have been modified — handoff is write-forward only into the session's handoff directory"
+      ]
+    }
+  }
+}

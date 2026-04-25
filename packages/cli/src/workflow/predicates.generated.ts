@@ -74,6 +74,7 @@ export const PREDICATE_NAMES: readonly PredicateName[] = [
 const SOURCE_FILES: readonly string[] = [
   'src/specs/evaluation/spec.json',
   'src/specs/execution/spec.json',
+  'src/specs/handoff/spec.json',
   'src/specs/ideation/discussing.overlay.json',
   'src/specs/ideation/researching.overlay.json',
   'src/specs/ideation/spec.json',
