@@ -19,19 +19,19 @@ export type PredicateName =
   | 'always'
   | 'evalIdeationDisabled'
   | 'evalIdeationEnabled'
-  | 'evalPlanDisabled'
-  | 'evalPlanEnabled'
+  | 'evalPlanningDisabled'
+  | 'evalPlanningEnabled'
   | 'feedbackCapExceeded'
   | 'feedbackRoundActive'
   | 'ideationSynthesized'
   | 'loopTargetExecution'
   | 'loopTargetIdeation'
-  | 'loopTargetPlan'
+  | 'loopTargetPlanning'
   | 'piAgentsToSpawn'
   | 'resumeTargetExecution'
   | 'resumeTargetIdeation'
   | 'resumeTargetMemorization'
-  | 'resumeTargetPlan'
+  | 'resumeTargetPlanning'
   | 'skipRequested'
   | 'stepTimeoutFired'
   | 'verdictPass'
@@ -48,19 +48,19 @@ export const PREDICATE_NAMES: readonly PredicateName[] = [
   'always',
   'evalIdeationDisabled',
   'evalIdeationEnabled',
-  'evalPlanDisabled',
-  'evalPlanEnabled',
+  'evalPlanningDisabled',
+  'evalPlanningEnabled',
   'feedbackCapExceeded',
   'feedbackRoundActive',
   'ideationSynthesized',
   'loopTargetExecution',
   'loopTargetIdeation',
-  'loopTargetPlan',
+  'loopTargetPlanning',
   'piAgentsToSpawn',
   'resumeTargetExecution',
   'resumeTargetIdeation',
   'resumeTargetMemorization',
-  'resumeTargetPlan',
+  'resumeTargetPlanning',
   'skipRequested',
   'stepTimeoutFired',
   'verdictPass',
@@ -79,6 +79,6 @@ const SOURCE_FILES: readonly string[] = [
   'src/specs/ideation/spec.json',
   'src/specs/index.json',
   'src/specs/memorization/spec.json',
-  'src/specs/plan/spec.json',
+  'src/specs/planning/spec.json',
 ] as const;
 void SOURCE_FILES;

@@ -470,15 +470,23 @@ export function renderSessionSummary(state: WorkflowState): string {
     .sort()
     .map((k) => `${k}=${(state.artifacts[k] ?? []).length}`)
     .join(',');
+  // evalConfig rendering (Wave C.2): ideation/planning are always present when
+  // evalConfig is non-null; `execution` is the optional third slot and is
+  // OMITTED from the rendered summary when undefined. Wave-4 rename flipped
+  // the field name from `plan` to `planning`; snapshot regeneration
+  // (W4.4) tracks the line change.
+  const renderEvalConfig = (ec: NonNullable<WorkflowState['evalConfig']>): string => {
+    const parts = [`ideation=${ec.ideation}`, `planning=${ec.planning}`];
+    if (ec.execution !== undefined) parts.push(`execution=${ec.execution}`);
+    return parts.join(',');
+  };
   return [
     `session.schemaVersion=${state.schemaVersion}`,
     `session.currentStep=${state.currentStep}`,
     `session.currentSubstate=${state.currentSubstate ?? 'null'}`,
     `session.completedSteps=[${completedSteps}]`,
     `session.evalConfig=${
-      state.evalConfig === null
-        ? 'null'
-        : `ideation=${state.evalConfig.ideation},plan=${state.evalConfig.plan}`
+      state.evalConfig === null ? 'null' : renderEvalConfig(state.evalConfig)
     }`,
     `session.feedbackRound=${state.feedbackRound}/${state.maxFeedbackRounds}`,
     `session.artifactCounts={${artifactSummary}}`,

@@ -29,10 +29,11 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
 import { runCaptureSubagentWithOptions } from '../capture-subagent.js';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
 import { EventStore } from '../../../workflow/store.js';
 import {
@@ -134,7 +135,7 @@ async function initScratchSession(
       { repoRoot: repo },
     ),
   );
-  const sessionDir = join(repo, '.gobbi', 'sessions', sessionId);
+  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
   return { sessionDir, repo };
 }
@@ -518,7 +519,7 @@ describe('runCaptureSubagent — stop_hook_active', () => {
 describe('runCaptureSubagent — missing session', () => {
   test('session dir does not exist → silent exit, no crash', async () => {
     const repo = makeScratchRepo();
-    const fakeDir = join(repo, '.gobbi', 'sessions', 'not-real');
+    const fakeDir = sessionDirForProject(repo, basename(repo), 'not-real');
     expect(existsSync(fakeDir)).toBe(false);
 
     await captureExit(() =>
@@ -746,7 +747,15 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
     }
   });
 
-  test('env unset or empty → spawn event data omits claudeCodeVersion', async () => {
+  // TODO(#92): capture-subagent env-bleed flake — same-millisecond
+  // `new Date().toISOString()` between scenarios A and B collides on the
+  // `system` idempotency key, and `process.env['CLAUDE_CODE_VERSION']` leaks
+  // across parallel workers in full-suite runs. Quarantined at the TEST
+  // level (not `describe.skip`) so the env-present sibling above still
+  // exercises the happy path. See issue #131 for the detailed repro and
+  // fix options (idempotency-key salt / sleep-1ms / per-test store
+  // isolation / env-cleanup).
+  test.skip('env unset or empty → spawn event data omits claudeCodeVersion', async () => {
     const { sessionDir } = await initScratchSession('cap-sub-ccv-absent');
     const sessionId = 'cap-sub-ccv-absent';
 

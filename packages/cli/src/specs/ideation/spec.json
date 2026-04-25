@@ -13,9 +13,9 @@
   },
   "transitions": [
     {
-      "to": "plan",
+      "to": "planning",
       "condition": "evalIdeationDisabled",
-      "label": "ideation exit → plan (eval skipped)"
+      "label": "ideation exit → planning (eval skipped)"
     },
     {
       "to": "ideation_eval",

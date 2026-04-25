@@ -22,11 +22,12 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
 import { runResumeWithOptions } from '../resume.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import {
   appendEventAndUpdateState,
   resolveWorkflowState,
@@ -132,7 +133,7 @@ async function initScratchSession(
       { repoRoot: repo },
     ),
   );
-  const sessionDir = join(repo, '.gobbi', 'sessions', sessionId);
+  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
   return { sessionDir, repo };
 }
@@ -233,7 +234,7 @@ describe('runResumeWithOptions — target validation', () => {
     // No driveToErrorState — fresh init sits at ideation/discussing.
 
     await captureExit(() =>
-      runResumeWithOptions(['--target', 'plan'], { sessionDir }),
+      runResumeWithOptions(['--target', 'planning'], { sessionDir }),
     );
 
     expect(captured.exitCode).toBe(1);
@@ -246,13 +247,13 @@ describe('runResumeWithOptions — target validation', () => {
 // ===========================================================================
 
 describe('runResumeWithOptions — default resume', () => {
-  test('--target plan from error state appends workflow.resume and emits the resume prompt', async () => {
+  test('--target planning from error state appends workflow.resume and emits the resume prompt', async () => {
     const sessionId = 'resume-plan';
     const { sessionDir } = await initScratchSession(sessionId);
     await driveToErrorState(sessionDir, sessionId);
 
     await captureExit(() =>
-      runResumeWithOptions(['--target', 'plan'], { sessionDir }),
+      runResumeWithOptions(['--target', 'planning'], { sessionDir }),
     );
 
     expect(captured.exitCode).toBeNull();
@@ -263,7 +264,7 @@ describe('runResumeWithOptions — default resume', () => {
     // error via a STEP_TIMEOUT event.
     expect(captured.stdout).toContain('Timeout recap:');
     // Target-entry framing names the target step.
-    expect(captured.stdout).toContain('plan');
+    expect(captured.stdout).toContain('planning');
 
     // One workflow.resume event is persisted.
     const store = new EventStore(join(sessionDir, 'gobbi.db'));
@@ -275,7 +276,7 @@ describe('runResumeWithOptions — default resume', () => {
         readonly targetStep: string;
         readonly fromError: boolean;
       };
-      expect(parsed.targetStep).toBe('plan');
+      expect(parsed.targetStep).toBe('planning');
       expect(parsed.fromError).toBe(true);
 
       // No decision.eval.skip on the non-force path.

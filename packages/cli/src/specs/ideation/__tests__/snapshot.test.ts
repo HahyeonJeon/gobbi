@@ -131,7 +131,7 @@ function evaluationDecidingFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...base,
     currentStep: 'ideation',
-    evalConfig: { ideation: true, plan: false },
+    evalConfig: { ideation: true, planning: false },
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
     },
@@ -167,7 +167,7 @@ function subagentSpawningFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-spawn'),
     currentStep: 'ideation',
-    evalConfig: { ideation: false, plan: false },
+    evalConfig: { ideation: false, planning: false },
     activeSubagents: [
       {
         subagentId: 'subagent-pi-innovative',

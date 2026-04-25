@@ -1,6 +1,6 @@
 # Execution step spec
 
-The third productive step in the v0.5.0 workflow. After Plan (optionally via `plan_eval`), the CLI enters `execution` — the step where the orchestrator runs the approved plan one task at a time, delegating each task to an `__executor` subagent, verifying each task before the next begins.
+The third productive step in the v0.5.0 workflow. After Planning (optionally via `planning_eval`), the CLI enters `execution` — the step where the orchestrator runs the approved plan one task at a time, delegating each task to an `__executor` subagent, verifying each task before the next begins.
 
 Authoritative design: [`v050-prompts.md`](../../../../../.claude/project/gobbi/design/v050-prompts.md) §Execution Step: Verification Blocks. Transition graph: [`v050-state-machine.md`](../../../../../.claude/project/gobbi/design/v050-state-machine.md) §Transition Table.
 

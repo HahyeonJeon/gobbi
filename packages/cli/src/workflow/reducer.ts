@@ -160,17 +160,57 @@ function reduceWorkflow(
     }
 
     case WORKFLOW_EVENTS.EVAL_DECIDE: {
-      // Immutable once set — second call is a no-op
-      if (state.evalConfig !== null) {
-        return ok(state);
-      }
-      return ok({
-        ...state,
-        evalConfig: {
+      // Write-once for ideation/plan — the first EVAL_DECIDE locks them.
+      // `execution` (Wave C.2, optional slot) uses a symmetric write-once
+      // rule per its own field: the first EVAL_DECIDE whose payload carries
+      // `execution !== undefined` writes it; subsequent EVAL_DECIDE events
+      // whose payload omits `execution` are no-ops with respect to that
+      // slot. This preserves the "evalConfig immutable once set"
+      // property-test invariant for the two original fields while making
+      // the new slot additively mergeable — the common case (translation
+      // layer emits all three booleans in one event) is the first-call
+      // path below and writes everything in a single step.
+      //
+      // EOPT discipline: build the evalConfig record with a conditional
+      // spread so the `execution` key is absent when `event.data.execution`
+      // is undefined — never `execution: undefined`, which would violate
+      // `exactOptionalPropertyTypes`.
+      if (state.evalConfig === null) {
+        const nextEvalConfig = {
           ideation: event.data.ideation,
-          plan: event.data.plan,
-        },
-      });
+          // CQRS asymmetry: the EVAL_DECIDE event payload keeps its
+          // pre-Wave-4 `plan` field name (immutable wire history); the
+          // state-level field was renamed to `EvalConfig.planning` in W4.
+          // This single mapping site is the seam — see the JSDoc on
+          // `EvalDecideData.plan` in `events/workflow.ts` for the full
+          // rationale. Renaming the event field would require an event
+          // schema migration and break the payload-stability invariant.
+          planning: event.data.plan,
+          ...(event.data.execution !== undefined
+            ? { execution: event.data.execution }
+            : {}),
+        };
+        return ok({
+          ...state,
+          evalConfig: nextEvalConfig,
+        });
+      }
+      // evalConfig already set — ideation/planning locked. If the event carries
+      // an execution value and state has not yet recorded one, merge it in.
+      if (
+        event.data.execution !== undefined &&
+        state.evalConfig.execution === undefined
+      ) {
+        return ok({
+          ...state,
+          evalConfig: {
+            ...state.evalConfig,
+            execution: event.data.execution,
+          },
+        });
+      }
+      // No mergeable additions — second (or later) EVAL_DECIDE is a no-op.
+      return ok(state);
     }
 
     case WORKFLOW_EVENTS.FINISH: {

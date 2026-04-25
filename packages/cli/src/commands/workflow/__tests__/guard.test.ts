@@ -26,7 +26,8 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 
 import { runInitWithOptions } from '../init.js';
 import {
@@ -135,7 +136,7 @@ async function initScratchSession(
       { repoRoot: repo },
     ),
   );
-  const sessionDir = join(repo, '.gobbi', 'sessions', sessionId);
+  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
   return { sessionDir, repo };
 }
@@ -395,7 +396,7 @@ describe('runGuard — warn + deny combo', () => {
 describe('runGuard — missing session', () => {
   test('session dir does not exist → allow, no crash, exit 0', async () => {
     const repo = makeScratchRepo();
-    const fakeDir = join(repo, '.gobbi', 'sessions', 'not-real');
+    const fakeDir = sessionDirForProject(repo, basename(repo), 'not-real');
     expect(existsSync(fakeDir)).toBe(false);
 
     await captureExit(() =>
@@ -413,7 +414,7 @@ describe('runGuard — missing session', () => {
 
   test('session dir exists but no gobbi.db → allow', async () => {
     const repo = makeScratchRepo();
-    const dir = join(repo, '.gobbi', 'sessions', 'empty-session');
+    const dir = sessionDirForProject(repo, basename(repo), 'empty-session');
     // Create the dir but NOT the db.
     const { mkdirSync } = await import('node:fs');
     mkdirSync(dir, { recursive: true });

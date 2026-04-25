@@ -109,7 +109,7 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     priority: 0,
   },
 
-  // ideation -> ideation_eval (eval enabled) or plan (eval disabled)
+  // ideation -> ideation_eval (eval enabled) or planning (eval disabled)
   {
     from: 'ideation',
     to: 'ideation_eval',
@@ -119,13 +119,13 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
   },
   {
     from: 'ideation',
-    to: 'plan',
+    to: 'planning',
     trigger: WORKFLOW_EVENTS.STEP_EXIT,
     condition: 'evalIdeationDisabled',
     priority: 0,
   },
 
-  // ideation_eval -> ideation (revise) or plan (pass)
+  // ideation_eval -> ideation (revise) or planning (pass)
   {
     from: 'ideation_eval',
     to: 'ideation',
@@ -135,38 +135,38 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
   },
   {
     from: 'ideation_eval',
-    to: 'plan',
+    to: 'planning',
     trigger: DECISION_EVENTS.EVAL_VERDICT,
     verdict: 'pass',
     priority: 0,
   },
 
-  // plan -> plan_eval (eval enabled) or execution (eval disabled)
+  // planning -> planning_eval (eval enabled) or execution (eval disabled)
   {
-    from: 'plan',
-    to: 'plan_eval',
+    from: 'planning',
+    to: 'planning_eval',
     trigger: WORKFLOW_EVENTS.STEP_EXIT,
-    condition: 'evalPlanEnabled',
+    condition: 'evalPlanningEnabled',
     priority: 0,
   },
   {
-    from: 'plan',
+    from: 'planning',
     to: 'execution',
     trigger: WORKFLOW_EVENTS.STEP_EXIT,
-    condition: 'evalPlanDisabled',
+    condition: 'evalPlanningDisabled',
     priority: 0,
   },
 
-  // plan_eval -> plan (revise) or execution (pass)
+  // planning_eval -> planning (revise) or execution (pass)
   {
-    from: 'plan_eval',
-    to: 'plan',
+    from: 'planning_eval',
+    to: 'planning',
     trigger: DECISION_EVENTS.EVAL_VERDICT,
     verdict: 'revise',
     priority: 0,
   },
   {
-    from: 'plan_eval',
+    from: 'planning_eval',
     to: 'execution',
     trigger: DECISION_EVENTS.EVAL_VERDICT,
     verdict: 'pass',
@@ -201,7 +201,7 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     priority: 1,
   },
 
-  // execution_eval -> ideation/plan/execution (revise with loopTarget)
+  // execution_eval -> ideation/planning/execution (revise with loopTarget)
   {
     from: 'execution_eval',
     to: 'ideation',
@@ -212,10 +212,10 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
   },
   {
     from: 'execution_eval',
-    to: 'plan',
+    to: 'planning',
     trigger: DECISION_EVENTS.EVAL_VERDICT,
     verdict: 'revise',
-    loopTarget: 'plan',
+    loopTarget: 'planning',
     priority: 2,
   },
   {
@@ -252,13 +252,13 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     priority: 10,
   },
   {
-    from: 'plan',
+    from: 'planning',
     to: 'error',
     trigger: WORKFLOW_EVENTS.STEP_TIMEOUT,
     priority: 10,
   },
   {
-    from: 'plan_eval',
+    from: 'planning_eval',
     to: 'error',
     trigger: WORKFLOW_EVENTS.STEP_TIMEOUT,
     priority: 10,
@@ -293,13 +293,13 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     priority: 20,
   },
   {
-    from: 'plan',
+    from: 'planning',
     to: 'ideation',
     trigger: WORKFLOW_EVENTS.STEP_SKIP,
     priority: 20,
   },
   {
-    from: 'plan_eval',
+    from: 'planning_eval',
     to: 'ideation',
     trigger: WORKFLOW_EVENTS.STEP_SKIP,
     priority: 20,

@@ -76,7 +76,7 @@ const CRASH_PATHWAY: ErrorPathwayCrash = {
 };
 
 const CRASH_STATE: WorkflowState = errorState({
-  completedSteps: ['ideation', 'plan'],
+  completedSteps: ['ideation', 'planning'],
 });
 
 const TIMEOUT_PATHWAY: ErrorPathwayTimeout = {
@@ -89,7 +89,7 @@ const TIMEOUT_PATHWAY: ErrorPathwayTimeout = {
 };
 
 const TIMEOUT_STATE: WorkflowState = errorState({
-  completedSteps: ['ideation', 'plan'],
+  completedSteps: ['ideation', 'planning'],
 });
 
 const FEEDBACK_CAP_PATHWAY: ErrorPathwayFeedbackCap = {
@@ -126,16 +126,16 @@ const FEEDBACK_CAP_STATE: WorkflowState = errorState({
   feedbackRound: 3,
   maxFeedbackRounds: 3,
   lastVerdictOutcome: 'revise',
-  completedSteps: ['ideation', 'plan'],
-  evalConfig: { ideation: true, plan: false },
+  completedSteps: ['ideation', 'planning'],
+  evalConfig: { ideation: true, planning: false },
 });
 
 const INVALID_TRANSITION_PATHWAY: ErrorPathwayInvalidTransition = {
   kind: 'invalidTransition',
   rejectedEventType: 'workflow.step.exit',
   rejectedEventSeq: null,
-  stepAtRejection: 'plan',
-  reducerMessage: 'Cannot exit plan before plan_eval decision',
+  stepAtRejection: 'planning',
+  reducerMessage: 'Cannot exit planning before planning_eval decision',
   invalidTransitionEventSeq: 31,
 };
 

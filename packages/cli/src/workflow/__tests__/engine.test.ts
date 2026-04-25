@@ -114,13 +114,13 @@ describe('resolveWorkflowState — state.json fast path', () => {
     // only source on the fast path, not deriveState.
     const written: WorkflowState = {
       ...initialState(sessionId),
-      currentStep: 'plan',
+      currentStep: 'planning',
       feedbackRound: 2,
     };
     writeState(testDir, written);
 
     const state = resolveWorkflowState(testDir, store, sessionId);
-    expect(state.currentStep).toBe('plan');
+    expect(state.currentStep).toBe('planning');
     expect(state.feedbackRound).toBe(2);
   });
 });
@@ -365,7 +365,7 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
       appendEventAndUpdateState(
         store,
         blockedDir,
-        { ...before, evalConfig: { ideation: false, plan: false } },
+        { ...before, evalConfig: { ideation: false, planning: false } },
         validEvent,
         'cli',
         sessionId,
@@ -382,7 +382,7 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
   it('property test: reducer rejections always produce exactly one audit + original error', () => {
     const arbActiveStep = fc.constantFrom<WorkflowStep>(
       'ideation',
-      'plan',
+      'planning',
       'execution',
       'memorization',
     );

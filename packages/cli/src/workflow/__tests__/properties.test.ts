@@ -44,8 +44,8 @@ import {
 const ACTIVE_STEP_NAMES = [
   'ideation',
   'ideation_eval',
-  'plan',
-  'plan_eval',
+  'planning',
+  'planning_eval',
   'execution',
   'execution_eval',
   'memorization',
@@ -233,7 +233,7 @@ function arbitraryEvalVerdict(): fc.Arbitrary<Event> {
         'escalate' as const,
       ),
       loopTarget: fc.option(
-        fc.constantFrom('ideation', 'plan', 'execution'),
+        fc.constantFrom('ideation', 'planning', 'execution'),
         { nil: undefined },
       ),
       evaluatorId: fc.option(fc.uuid(), { nil: undefined }),
@@ -627,19 +627,19 @@ describe('fixtures: STATES snapshots', () => {
     expect(STATES.ideation_eval.currentStep).toBe('ideation_eval');
   });
 
-  it('plan state is at plan step', () => {
-    expect(STATES.plan.currentStep).toBe('plan');
-    expect(STATES.plan.completedSteps).toContain('ideation');
+  it('planning state is at planning step', () => {
+    expect(STATES.planning.currentStep).toBe('planning');
+    expect(STATES.planning.completedSteps).toContain('ideation');
   });
 
-  it('plan_eval state is at plan_eval step', () => {
-    expect(STATES.plan_eval.currentStep).toBe('plan_eval');
+  it('planning_eval state is at planning_eval step', () => {
+    expect(STATES.planning_eval.currentStep).toBe('planning_eval');
   });
 
   it('execution state is at execution step', () => {
     expect(STATES.execution.currentStep).toBe('execution');
     expect(STATES.execution.completedSteps).toContain('ideation');
-    expect(STATES.execution.completedSteps).toContain('plan');
+    expect(STATES.execution.completedSteps).toContain('planning');
   });
 
   it('execution_eval state is at execution_eval step', () => {
@@ -669,8 +669,8 @@ describe('fixtures: eventsToReach round-trip', () => {
     'idle',
     'ideation',
     'ideation_eval',
-    'plan',
-    'plan_eval',
+    'planning',
+    'planning_eval',
     'execution',
     'execution_eval',
     'memorization',
@@ -735,7 +735,7 @@ describe('properties: schema v4 migration idempotence', () => {
           fc.constantFrom(
             'idle',
             'ideation',
-            'plan',
+            'planning',
             'execution',
             'memorization',
           ),
@@ -750,6 +750,12 @@ describe('properties: schema v4 migration idempotence', () => {
         actor: fc.constantFrom('cli', 'hook', 'user', 'system'),
         parent_seq: fc.option(fc.nat({ max: 100_000 }), { nil: null }),
         idempotency_key: fc.string({ minLength: 1, maxLength: 60 }),
+        session_id: fc.option(fc.string({ minLength: 1, maxLength: 40 }), {
+          nil: null,
+        }),
+        project_id: fc.option(fc.string({ minLength: 1, maxLength: 40 }), {
+          nil: null,
+        }),
       });
 
     fc.assert(

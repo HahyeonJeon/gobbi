@@ -23,9 +23,6 @@
  */
 
 import { describe, it, test, expect } from 'bun:test';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import fc from 'fast-check';
 
 import {
@@ -48,12 +45,6 @@ import {
   aggregateCost,
   COST_EMPTY_SESSION_MESSAGE,
 } from '../../commands/workflow/status.js';
-import {
-  DEFAULT_CONFIG,
-  loadProjectConfig,
-  type CommandSlot,
-  type ProjectConfigInput,
-} from '../../lib/project-config.js';
 import type {
   VerificationCommandKind,
   VerificationResultData,
@@ -77,7 +68,7 @@ function baseSpec(): StepSpec {
       expectedArtifacts: [],
       completionSignal: 'SubagentStop',
     },
-    transitions: [{ to: 'plan', condition: 'always' }],
+    transitions: [{ to: 'planning', condition: 'always' }],
     delegation: { agents: [] },
     tokenBudget: {
       staticPrefix: 0.5,
@@ -157,13 +148,13 @@ function arbSessionStateVariant(
     currentStep: fc.constantFrom(
       'idle' as const,
       'ideation' as const,
-      'plan' as const,
+      'planning' as const,
       'execution' as const,
       'memorization' as const,
     ),
     feedbackRound: fc.integer({ min: 0, max: 5 }),
     completedSteps: fc.array(
-      fc.constantFrom('idle', 'ideation', 'plan', 'execution'),
+      fc.constantFrom('idle', 'ideation', 'planning', 'execution'),
       { maxLength: 4 },
     ),
   }).map((overrides) => ({
@@ -452,9 +443,9 @@ describe('properties: compile idempotency', () => {
 //      sizeProxyBytes present/absent), the aggregator's source counters
 //      fit within the total row count and the cumulative USD is a finite
 //      non-negative number.
-//   6. `loadProjectConfig` default completeness — for any valid partial
-//      config (including `{version:1}`), the returned config is fully
-//      populated with defaults at every nested field.
+//   6. (retired) project-config default completeness — superseded by the
+//      unified settings.json cascade in Pass 3 finalize; see the retired-
+//      property note below Property 5.
 //   7. Verification-block chronological-ordering preservation — for any
 //      insertion order of `VerificationResultData` entries, the rendered
 //      block lists commands in the compiler's canonical enum order.
@@ -489,7 +480,7 @@ function arbitraryCostRows(): fc.Arbitrary<
       subagentId: fc.uuid(),
       step: fc.constantFrom(
         'ideation',
-        'plan',
+        'planning',
         'execution',
         'memorization',
       ),
@@ -597,154 +588,13 @@ describe('properties: cost-query NULL-safety', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Property 6 — loadProjectConfig default completeness.
-//
-// Writes an arbitrary ProjectConfigInput-shaped partial (always valid —
-// just omits or overrides subsets of the defaults) to a temp `.gobbi/
-// project-config.json` and asserts `loadProjectConfig(tmp)` returns a
-// value with no missing nested fields. The absent fields must be
-// supplied from DEFAULT_CONFIG via the deepMerge path.
+// Property 6 (project-config default completeness) was retired in Pass 3
+// finalize — the Pass-3 project-config API was replaced by the cascade
+// resolver in `lib/settings-io.ts` under a different contract (no
+// verification / cost sections; no default-hydration contract to
+// property-test). Cascade coverage is exercised end-to-end by the
+// `gobbi-config` feature tests instead.
 // ---------------------------------------------------------------------------
-
-function arbitraryCommandSlot(): fc.Arbitrary<CommandSlot> {
-  return fc.record({
-    command: fc.string({ minLength: 1, maxLength: 40 }),
-    policy: fc.constantFrom('inform' as const, 'gate' as const),
-    timeoutMs: fc.integer({ min: 0, max: 600_000 }),
-  });
-}
-
-/**
- * Strip `undefined` leaves from a record so the resulting JSON string
- * serialises the same as if the key had been omitted. `JSON.stringify`
- * already drops `undefined` leaves, but we also drop them before the
- * typed return so the `ProjectConfigInput` shape is satisfied under
- * `exactOptionalPropertyTypes: true` — optional fields are either
- * present with a value or absent entirely, never `{ key: undefined }`.
- */
-function stripUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (v === undefined) continue;
-    if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
-      out[k] = stripUndefined(v as Record<string, unknown>);
-    } else {
-      out[k] = v;
-    }
-  }
-  return out as Partial<T>;
-}
-
-function arbitraryPartialProjectConfig(): fc.Arbitrary<ProjectConfigInput> {
-  // Each nested sub-branch is optional; fast-check picks any mix. We
-  // use `fc.option(..., { nil: undefined })` to drive the "field
-  // absent" branch, then strip `undefined` leaves so the resulting
-  // value actually satisfies `exactOptionalPropertyTypes: true` shape.
-  return fc
-    .record({
-      version: fc.constant(1 as const),
-      verification: fc.option(
-        fc.record({
-          commands: fc.option(
-            fc.record({
-              lint: fc.option(arbitraryCommandSlot(), { nil: undefined }),
-              test: fc.option(arbitraryCommandSlot(), { nil: undefined }),
-              typecheck: fc.option(arbitraryCommandSlot(), { nil: undefined }),
-              build: fc.option(arbitraryCommandSlot(), { nil: undefined }),
-              format: fc.option(arbitraryCommandSlot(), { nil: undefined }),
-              custom: fc.option(arbitraryCommandSlot(), { nil: undefined }),
-            }),
-            { nil: undefined },
-          ),
-          runAfterSubagentStop: fc.option(
-            fc.array(
-              fc.constantFrom(
-                'lint',
-                'test',
-                'typecheck',
-                'build',
-                'format',
-                'custom',
-              ),
-              { maxLength: 4 },
-            ),
-            { nil: undefined },
-          ),
-        }),
-        { nil: undefined },
-      ),
-      cost: fc.option(
-        fc.record({
-          rateTable: fc.option(fc.string({ minLength: 1, maxLength: 30 }), {
-            nil: undefined,
-          }),
-        }),
-        { nil: undefined },
-      ),
-    })
-    .map((raw) => stripUndefined(raw) as ProjectConfigInput);
-}
-
-describe('properties: loadProjectConfig default completeness', () => {
-  it('any valid partial config yields a fully-populated result', () => {
-    fc.assert(
-      fc.property(arbitraryPartialProjectConfig(), (partial) => {
-        const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-cfg-prop-'));
-        try {
-          mkdirSync(join(tmpRoot, '.gobbi'), { recursive: true });
-          writeFileSync(
-            join(tmpRoot, '.gobbi', 'project-config.json'),
-            `${JSON.stringify(partial, null, 2)}\n`,
-            'utf8',
-          );
-          const config = loadProjectConfig(tmpRoot);
-          // Top-level keys must always be present (never undefined).
-          expect(config.version).toBe(1);
-          expect(config.verification).toBeDefined();
-          expect(config.verification.commands).toBeDefined();
-          // `runAfterSubagentStop` must always be an array — arrays
-          // replace under deepMerge, so a partial with `[]` legitimately
-          // yields `[]`. The invariant is shape (array-typed), not
-          // cardinality.
-          expect(Array.isArray(config.verification.runAfterSubagentStop)).toBe(
-            true,
-          );
-          expect(config.cost).toBeDefined();
-          expect(config.cost.rateTable).toBeDefined();
-          // Every command slot key exists (even if null). The partial
-          // might have omitted some slots; defaults must hydrate them.
-          expect('lint' in config.verification.commands).toBe(true);
-          expect('test' in config.verification.commands).toBe(true);
-          expect('typecheck' in config.verification.commands).toBe(true);
-          expect('build' in config.verification.commands).toBe(true);
-          expect('format' in config.verification.commands).toBe(true);
-          expect('custom' in config.verification.commands).toBe(true);
-          // For slots the partial did not set, the returned value must
-          // match DEFAULT_CONFIG — this is the deepMerge contract.
-          const partialCommands = partial.verification?.commands;
-          if (partialCommands?.lint === undefined) {
-            expect(config.verification.commands.lint).toEqual(
-              DEFAULT_CONFIG.verification.commands.lint,
-            );
-          }
-          if (partialCommands?.test === undefined) {
-            expect(config.verification.commands.test).toEqual(
-              DEFAULT_CONFIG.verification.commands.test,
-            );
-          }
-          if (partial.cost?.rateTable === undefined) {
-            expect(config.cost.rateTable).toBe(
-              DEFAULT_CONFIG.cost.rateTable,
-            );
-          }
-        } finally {
-          rmSync(tmpRoot, { recursive: true, force: true });
-        }
-      }),
-      { numRuns: 30 },
-    );
-  });
-});
 
 // ---------------------------------------------------------------------------
 // Property 7 — verification-block chronological ordering preservation.

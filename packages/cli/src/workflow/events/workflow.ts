@@ -67,7 +67,32 @@ export interface StepTimeoutData {
 
 export interface EvalDecideData {
   readonly ideation: boolean;
+  /**
+   * Planning-evaluation gate.
+   *
+   * Event payloads are immutable wire-format history; the field name
+   * remains `plan` (matching the pre-Wave-4 state-machine literal) even
+   * though the state-level field was renamed to `EvalConfig.planning` in
+   * W4. The two sides meet in `reducer.ts:184`, which maps
+   * `planning: event.data.plan` — the CQRS asymmetry. See the file-level
+   * JSDoc block in `reducer.ts` for the rationale and the plan-remediation
+   * doc (v050-features/gobbi-memory) for the migration history.
+   *
+   * Do NOT rename this field — doing so would require an event schema
+   * migration (events on disk under the old name) and break the
+   * payload-stability invariant. The state field `EvalConfig.planning`
+   * is the post-rename canonical read site.
+   */
   readonly plan: boolean;
+  /**
+   * Execution-eval gate (Wave C.2). Optional for backward-compat — legacy
+   * emitters and the ~22 existing reducer/state tests carry only
+   * `{ideation, plan}`. When the orchestrator resolves
+   * `workflow.execution.evaluate.mode` via the settings translation layer
+   * (ideation §6.5), the resulting boolean is attached to the EVAL_DECIDE
+   * event and the reducer merges it into `state.evalConfig.execution`.
+   */
+  readonly execution?: boolean;
 }
 
 export type FinishData = Record<string, never>;

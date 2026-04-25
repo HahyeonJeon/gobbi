@@ -70,10 +70,10 @@ export type PredicateRegistry = Readonly<Record<string, Predicate>>;
 // Predicates are grouped by concern so the file reads as a map, not a bag.
 // ---------------------------------------------------------------------------
 
-export const defaultPredicates = {
+const corePredicates = {
   // ------------------------------------------------------------------- Eval
   //
-  // Gate ideation/plan evaluation on `evalConfig`. Missing config defaults
+  // Gate ideation/planning evaluation on `evalConfig`. Missing config defaults
   // to "evaluation disabled" — the reducer only populates `evalConfig` once
   // `workflow.eval.decide` has fired.
   // -------------------------------------------------------------------------
@@ -84,11 +84,11 @@ export const defaultPredicates = {
   /** Ideation evaluation is disabled or evalConfig not yet set. */
   evalIdeationDisabled: (s) => s.evalConfig?.ideation !== true,
 
-  /** Plan evaluation is enabled in evalConfig. */
-  evalPlanEnabled: (s) => s.evalConfig?.plan === true,
+  /** Planning evaluation is enabled in evalConfig. */
+  evalPlanningEnabled: (s) => s.evalConfig?.planning === true,
 
-  /** Plan evaluation is disabled or evalConfig not yet set. */
-  evalPlanDisabled: (s) => s.evalConfig?.plan !== true,
+  /** Planning evaluation is disabled or evalConfig not yet set. */
+  evalPlanningDisabled: (s) => s.evalConfig?.planning !== true,
 
   // --------------------------------------------------------------- Feedback
   //
@@ -187,8 +187,8 @@ export const defaultPredicates = {
   /** Revise verdict targeted `ideation` — the workflow is back at ideation mid-feedback. */
   loopTargetIdeation: (s) => s.currentStep === 'ideation' && s.feedbackRound > 0,
 
-  /** Revise verdict targeted `plan` — the workflow is back at plan mid-feedback. */
-  loopTargetPlan: (s) => s.currentStep === 'plan' && s.feedbackRound > 0,
+  /** Revise verdict targeted `planning` — the workflow is back at planning mid-feedback. */
+  loopTargetPlanning: (s) => s.currentStep === 'planning' && s.feedbackRound > 0,
 
   /** Revise verdict targeted `execution` — the workflow is back at execution mid-feedback. */
   loopTargetExecution: (s) =>
@@ -235,8 +235,8 @@ export const defaultPredicates = {
   /** Resume target is `ideation`. */
   resumeTargetIdeation: (s) => s.currentStep === 'ideation',
 
-  /** Resume target is `plan`. */
-  resumeTargetPlan: (s) => s.currentStep === 'plan',
+  /** Resume target is `planning`. */
+  resumeTargetPlanning: (s) => s.currentStep === 'planning',
 
   /** Resume target is `execution`. */
   resumeTargetExecution: (s) => s.currentStep === 'execution',
@@ -244,6 +244,44 @@ export const defaultPredicates = {
   /** Resume target is `memorization` (the force-memorization recovery pathway). */
   resumeTargetMemorization: (s) => s.currentStep === 'memorization',
 } as const satisfies Record<PredicateName, Predicate>;
+
+// ---------------------------------------------------------------------------
+// Non-spec predicates — Wave C.2
+//
+// Predicates that are NOT referenced in any spec / overlay / graph and
+// therefore do NOT appear in the codegen-derived `PredicateName` union.
+// They live outside the `satisfies Record<PredicateName, Predicate>` gate
+// so the codegen gate still fails when a spec references an unregistered
+// name, while these additional registrations remain available to
+// state-only consumers (settings translation, status rendering, future
+// `execution_eval` gating).
+//
+// Today `evalExecutionEnabled` / `evalExecutionDisabled` are registered
+// for observational parity with the ideation/plan variants — the
+// `execution_eval` step is unconditionally reached via the graph until a
+// follow-up Pass wires the gate. See ideation §6.5 for the translation
+// layer and the Wave C.2 briefing for the scope boundary.
+// ---------------------------------------------------------------------------
+
+const additionalPredicates = {
+  /** Execution evaluation is enabled in evalConfig. */
+  evalExecutionEnabled: (s) => s.evalConfig?.execution === true,
+
+  /** Execution evaluation is disabled or the slot has not been set. */
+  evalExecutionDisabled: (s) => s.evalConfig?.execution !== true,
+} as const satisfies Record<string, Predicate>;
+
+/**
+ * The exposed predicate registry — `corePredicates` plus any non-spec
+ * `additionalPredicates` registered for state-only consumers. The core
+ * registry retains the `satisfies Record<PredicateName, Predicate>`
+ * compile-time gate; extras are merged here so they remain accessible
+ * without relaxing that gate.
+ */
+export const defaultPredicates = {
+  ...corePredicates,
+  ...additionalPredicates,
+} satisfies Record<string, Predicate>;
 
 // `defaultPredicates` is typed as a concrete record above. The exported
 // surface keeps the broader `PredicateRegistry` shape so callers assembling
@@ -285,6 +323,37 @@ export const DEFAULT_PREDICATES: PredicateRegistry = defaultPredicates;
 export const ADVISORY_PREDICATE_NAMES: ReadonlySet<PredicateName> = new Set<PredicateName>([
   // Add any genuinely-advisory predicate names here. Start empty.
 ]) satisfies ReadonlySet<PredicateName>;
+
+// ---------------------------------------------------------------------------
+// Non-spec predicate exclusion — Wave C.2
+//
+// Predicates registered in `defaultPredicates` that are deliberately NOT
+// referenced by any spec / overlay / graph edge, so they cannot appear in
+// the codegen-derived `PredicateName` union. E009 (`gobbi workflow
+// validate`) would otherwise flag them as dead. This set is the opt-out
+// list for that class of registrations — parallel in purpose to
+// `ADVISORY_PREDICATE_NAMES` but scoped to names outside `PredicateName`.
+//
+// Today the only inhabitants are the two execution-eval parity predicates
+// (`evalExecutionEnabled`, `evalExecutionDisabled`) added by Wave C.2 for
+// observational state-only consumers — the `execution_eval` step is still
+// reached unconditionally via the graph. A follow-up Pass that wires a
+// conditional `execution_eval` entry will cause the codegen to pull the
+// names into `PredicateName`, at which point these entries should migrate
+// to `ADVISORY_PREDICATE_NAMES` (or be removed entirely).
+// ---------------------------------------------------------------------------
+
+/**
+ * Non-spec predicate names registered in `defaultPredicates` but absent
+ * from the codegen `PredicateName` union. E009 excludes these from the
+ * dead-predicate diagnostic alongside `ADVISORY_PREDICATE_NAMES`.
+ *
+ * Strings are intentionally unbranded — members are not in `PredicateName`.
+ */
+export const NON_SPEC_PREDICATE_NAMES: ReadonlySet<string> = new Set<string>([
+  'evalExecutionEnabled',
+  'evalExecutionDisabled',
+]);
 
 // ---------------------------------------------------------------------------
 // Verdict predicate exclusion — compile-time gate for `TransitionRule.condition`

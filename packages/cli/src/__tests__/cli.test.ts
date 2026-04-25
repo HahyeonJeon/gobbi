@@ -251,11 +251,16 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
     expect(registryNames).toEqual(orderNames);
   });
 
-  test('exposes the PR C command set (Wave 9 adds `gotcha`)', () => {
-    // C.1 refactored the dispatch layer; Wave 9 (C.9) adds the top-level
-    // `gotcha` namespace. Workflow subcommands (Waves 2–8) extend the
-    // inner `workflow` registry and do not surface here. If this test
-    // fails, verify the change belongs in this PR before updating it.
+  test('exposes the PR C command set (Wave 9 adds `gotcha`, Pass-2 W3.3 adds `maintenance`)', () => {
+    // C.1 refactored the dispatch layer; Wave 9 (C.9) added the top-level
+    // `gotcha` namespace. v0.5.0 Pass-2 W3.3 added the top-level
+    // `maintenance` namespace for out-of-session cleanup commands
+    // (wipe-legacy-sessions). W5.5 added `install` (template-bundle
+    // lay-down + 3-way merge) and `project` (list / create / switch)
+    // as top-level multi-project verbs. Workflow subcommands (Waves
+    // 2–8) extend the inner `workflow` registry and do not surface
+    // here. If this test fails, verify the change belongs in this PR
+    // before updating it.
     const expected: readonly CommandName[] = [
       'config',
       'session',
@@ -264,6 +269,9 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
       'validate',
       'workflow',
       'gotcha',
+      'maintenance',
+      'install',
+      'project',
       'image',
       'video',
       'web',

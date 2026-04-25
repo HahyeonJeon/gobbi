@@ -15,13 +15,13 @@
       "evalFor": "ideation"
     },
     {
-      "id": "plan",
-      "spec": "./plan/spec.json"
+      "id": "planning",
+      "spec": "./planning/spec.json"
     },
     {
-      "id": "plan_eval",
+      "id": "planning_eval",
       "spec": "./evaluation/spec.json",
-      "evalFor": "plan"
+      "evalFor": "planning"
     },
     {
       "id": "execution",
@@ -47,10 +47,10 @@
     },
     {
       "from": "ideation",
-      "to": "plan",
+      "to": "planning",
       "condition": "evalIdeationDisabled",
       "trigger": "workflow.step.exit",
-      "label": "ideation exit → plan (eval skipped)"
+      "label": "ideation exit → planning (eval skipped)"
     },
     {
       "from": "ideation_eval",
@@ -62,39 +62,39 @@
     },
     {
       "from": "ideation_eval",
-      "to": "plan",
+      "to": "planning",
       "condition": "verdictPass",
       "trigger": "decision.eval.verdict",
-      "label": "ideation_eval pass → plan"
+      "label": "ideation_eval pass → planning"
     },
     {
-      "from": "plan",
-      "to": "plan_eval",
-      "condition": "evalPlanEnabled",
+      "from": "planning",
+      "to": "planning_eval",
+      "condition": "evalPlanningEnabled",
       "trigger": "workflow.step.exit",
-      "label": "plan exit → optional plan_eval"
+      "label": "planning exit → optional planning_eval"
     },
     {
-      "from": "plan",
+      "from": "planning",
       "to": "execution",
-      "condition": "evalPlanDisabled",
+      "condition": "evalPlanningDisabled",
       "trigger": "workflow.step.exit",
-      "label": "plan exit → execution (eval skipped)"
+      "label": "planning exit → execution (eval skipped)"
     },
     {
-      "from": "plan_eval",
-      "to": "plan",
+      "from": "planning_eval",
+      "to": "planning",
       "condition": "verdictRevise",
       "trigger": "decision.eval.verdict",
       "feedback": true,
-      "label": "plan_eval revise → re-enter plan"
+      "label": "planning_eval revise → re-enter planning"
     },
     {
-      "from": "plan_eval",
+      "from": "planning_eval",
       "to": "execution",
       "condition": "verdictPass",
       "trigger": "decision.eval.verdict",
-      "label": "plan_eval pass → execution"
+      "label": "planning_eval pass → execution"
     },
     {
       "from": "execution",
@@ -127,11 +127,11 @@
     },
     {
       "from": "execution_eval",
-      "to": "plan",
-      "condition": "loopTargetPlan",
+      "to": "planning",
+      "condition": "loopTargetPlanning",
       "trigger": "decision.eval.verdict",
       "feedback": true,
-      "label": "execution_eval revise loopTarget=plan"
+      "label": "execution_eval revise loopTarget=planning"
     },
     {
       "from": "execution_eval",
@@ -163,18 +163,18 @@
       "label": "ideation_eval timeout → error"
     },
     {
-      "from": "plan",
+      "from": "planning",
       "to": "error",
       "condition": "stepTimeoutFired",
       "trigger": "workflow.step.timeout",
-      "label": "plan timeout → error"
+      "label": "planning timeout → error"
     },
     {
-      "from": "plan_eval",
+      "from": "planning_eval",
       "to": "error",
       "condition": "stepTimeoutFired",
       "trigger": "workflow.step.timeout",
-      "label": "plan_eval timeout → error"
+      "label": "planning_eval timeout → error"
     },
     {
       "from": "execution",
@@ -206,7 +206,7 @@
       "label": "user skip → restart ideation"
     },
     {
-      "from": "plan",
+      "from": "planning",
       "to": "ideation",
       "condition": "skipRequested",
       "trigger": "workflow.step.skip",
@@ -214,7 +214,7 @@
       "label": "user skip → restart ideation"
     },
     {
-      "from": "plan_eval",
+      "from": "planning_eval",
       "to": "ideation",
       "condition": "skipRequested",
       "trigger": "workflow.step.skip",
@@ -261,10 +261,10 @@
     },
     {
       "from": "error",
-      "to": "plan",
-      "condition": "resumeTargetPlan",
+      "to": "planning",
+      "condition": "resumeTargetPlanning",
       "trigger": "workflow.resume",
-      "label": "resume from error → plan"
+      "label": "resume from error → planning"
     },
     {
       "from": "error",

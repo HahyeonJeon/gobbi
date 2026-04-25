@@ -9,7 +9,7 @@
  * ## Scope (PR B / B.4)
  *
  * PR C has shipped `init`, `status`, `events`, `next`, `transition`,
- * `resume`, `guard`, `capture-subagent`, `capture-plan`, and `stop` via
+ * `resume`, `guard`, `capture-subagent`, `capture-planning`, and `stop` via
  * entries in `WORKFLOW_COMMANDS` — the dispatcher itself did not need to
  * change. `validate` remains the only direct import; the rest use
  * dynamic `import()` so the hot path does not pay their load cost at
@@ -141,12 +141,12 @@ export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
     },
   },
   {
-    name: 'capture-plan',
+    name: 'capture-planning',
     summary:
-      'PostToolUse(ExitPlanMode) hook handler — writes plan.md and emits artifact.write',
+      'PostToolUse(ExitPlanMode) hook handler — writes planning/plan.md and emits artifact.write',
     run: async (args: string[]): Promise<void> => {
-      const { runCapturePlan } = await import('./workflow/capture-plan.js');
-      await runCapturePlan(args);
+      const { runCapturePlanning } = await import('./workflow/capture-planning.js');
+      await runCapturePlanning(args);
     },
   },
   {

@@ -66,8 +66,8 @@ import { resolveSessionDir } from '../session.js';
 const VALID_TARGETS: ReadonlySet<string> = new Set<string>([
   'ideation',
   'ideation_eval',
-  'plan',
-  'plan_eval',
+  'planning',
+  'planning_eval',
   'execution',
   'execution_eval',
   'memorization',
@@ -85,7 +85,7 @@ workflow.resume event (plus an atomic decision.eval.skip when
 
 Required:
   --target <step>        The step to resume into (ideation / ideation_eval /
-                         plan / plan_eval / execution / execution_eval /
+                         planning / planning_eval / execution / execution_eval /
                          memorization). \`error\` is rejected.
 
 Options:
@@ -298,9 +298,9 @@ export async function runResumeWithOptions(
         process.exit(1);
       }
 
-      // Refresh state. The raw transaction bypassed state.json /
-      // events.jsonl mirroring (those live in `appendEventAndUpdateState`),
-      // so `resolveWorkflowState` falls through to `replayAll` and derives
+      // Refresh state. The raw transaction bypassed the state.json
+      // write (that lives in `appendEventAndUpdateState`), so
+      // `resolveWorkflowState` falls through to `replayAll` and derives
       // a fresh state — this materializes the updated state.json.
       resolveWorkflowState(sessionDir, store, sessionId);
     } else {

@@ -231,7 +231,7 @@ export async function runStopWithOptions(
 
   // Observational hook — no permissionDecision, minimal stdout. We do
   // not emit a JSON response because PostToolUse/Stop hooks do not
-  // consume one (see `v050-hooks.md:133` for the parallel capture-plan
+  // consume one (see `v050-hooks.md:133` for the parallel capture-planning
   // case). Claude Code treats any non-empty stdout on Stop as extra
   // context for the next turn; keep it empty.
 }
