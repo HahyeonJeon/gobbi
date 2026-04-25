@@ -31,6 +31,9 @@
  * - `0` on `--help` / `--version`.
  * - `0` when no command is supplied (prints help).
  * - `1` when the command is unknown.
+ * - `--is-latest` delegates to `lib/version-check.ts` which exits
+ *   `0` (current) / `1` (stale) / `2` (indeterminate); with `--json`
+ *   it always exits `0` after printing the JSON report.
  * - Command handlers are free to `process.exit(code)` themselves; the
  *   dispatcher does not normalise their exit codes.
  *
@@ -245,7 +248,7 @@ export function renderHelp(commands: readonly CommandDef[]): string {
       : commands
           .map((cmd) => `  ${cmd.name.padEnd(10)} ${cmd.summary}`)
           .join('\n');
-  const optionsSection = `Options:\n  --help              Show this help message\n  --version           Show version number`;
+  const optionsSection = `Options:\n  --help              Show this help message\n  --version           Show version number\n  --is-latest         Check if installed CLI matches npm @latest (exit 0 current, 1 stale, 2 indeterminate)\n  --json              With --is-latest: emit JSON report and exit 0`;
   return `${header}\n\nCommands:\n${commandsSection}\n\n${optionsSection}`;
 }
 
@@ -286,6 +289,8 @@ export async function runWithRegistry(
     options: {
       help: { type: 'boolean', default: false },
       version: { type: 'boolean', default: false },
+      'is-latest': { type: 'boolean', default: false },
+      json: { type: 'boolean', default: false },
     },
   });
 
@@ -300,6 +305,14 @@ export async function runWithRegistry(
     };
     console.log(pkg.version);
     process.exit(0);
+  }
+
+  if (values['is-latest']) {
+    // Version-currency check — exits 0/1/2 (or 0 when --json is requested).
+    // See `lib/version-check.ts` for the exit-code policy.
+    const { runIsLatest } = await import('./lib/version-check.js');
+    await runIsLatest({ emitJson: values.json === true });
+    return;
   }
 
   const help = renderHelp(commands);
