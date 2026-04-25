@@ -69,7 +69,7 @@ import {
 } from '../../workflow/events/delegation.js';
 import { createArtifactWrite } from '../../workflow/events/artifact.js';
 import type { WorkflowState } from '../../workflow/state.js';
-import { resolveSessionDir } from '../session.js';
+import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 import type { StepId } from '../../specs/artifact-selector.js';
 
 // ---------------------------------------------------------------------------
@@ -175,9 +175,14 @@ export async function runCaptureSubagentWithOptions(
 
   // --- 4. Open store + read state ---------------------------------------
   const sessionId = payload.session_id ?? sessionDirName(sessionDir);
+  const { sessionId: partitionSessionId, projectId } =
+    resolvePartitionKeys(sessionDir);
   let store: EventStore;
   try {
-    store = new EventStore(dbPath);
+    store = new EventStore(dbPath, {
+      sessionId: partitionSessionId,
+      projectId,
+    });
   } catch {
     return;
   }

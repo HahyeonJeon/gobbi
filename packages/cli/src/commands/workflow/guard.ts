@@ -70,7 +70,7 @@ import {
   type GuardMatcher,
 } from '../../workflow/guards.js';
 import type { WorkflowState, WorkflowStep } from '../../workflow/state.js';
-import { resolveSessionDir } from '../session.js';
+import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
 // Hook payload shape
@@ -235,9 +235,14 @@ export async function runGuardWithOptions(
 
   // --- 3. Open store + read state ----------------------------------------
   const sessionId = payload.session_id ?? sessionDirName(sessionDir);
+  const { sessionId: partitionSessionId, projectId } =
+    resolvePartitionKeys(sessionDir);
   let store: EventStore;
   try {
-    store = new EventStore(dbPath);
+    store = new EventStore(dbPath, {
+      sessionId: partitionSessionId,
+      projectId,
+    });
   } catch {
     // Malformed DB on disk — fail open. The reducer / append path will
     // report the drift the next time a writeable command touches the

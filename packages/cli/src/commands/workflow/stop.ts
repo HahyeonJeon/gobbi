@@ -69,7 +69,7 @@ import { isActiveStep } from '../../workflow/state.js';
 import { getStepById, loadGraph } from '../../specs/graph.js';
 import { validateStepSpec } from '../../specs/_schema/v1.js';
 import type { StepSpec } from '../../specs/types.js';
-import { resolveSessionDir } from '../session.js';
+import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
 // Hook payload shape
@@ -185,9 +185,14 @@ export async function runStopWithOptions(
 
   // --- 4. Open store + read state --------------------------------------
   const sessionId = payload.session_id ?? sessionDirName(sessionDir);
+  const { sessionId: partitionSessionId, projectId } =
+    resolvePartitionKeys(sessionDir);
   let store: EventStore;
   try {
-    store = new EventStore(dbPath);
+    store = new EventStore(dbPath, {
+      sessionId: partitionSessionId,
+      projectId,
+    });
   } catch {
     return;
   }

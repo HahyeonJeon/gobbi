@@ -46,7 +46,7 @@ import {
   compileResumePrompt,
   detectPathway,
 } from '../../specs/errors.js';
-import { resolveSessionDir } from '../session.js';
+import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
 // Valid resume targets
@@ -194,7 +194,8 @@ export async function runResumeWithOptions(
   }
 
   const sessionId = sessionDirName(sessionDir);
-  const store = new EventStore(dbPath);
+  const partitionKeys = resolvePartitionKeys(sessionDir);
+  const store = new EventStore(dbPath, partitionKeys);
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
 
