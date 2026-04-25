@@ -397,9 +397,29 @@ async function runNoteCollect(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  // Derive subagent transcript paths
+  // Derive subagent transcript paths.
+  //
+  // `CLAUDE_TRANSCRIPT_PATH` is set by the SessionStart hook to the path
+  // Claude Code reports as `transcript_path`. The canonical layout is the
+  // *main session* transcript at `<projects-root>/<slug>/<session-id>.jsonl`
+  // — its dirname is the per-project root, and joining `<sessionId>/subagents`
+  // resolves to the per-session subagent directory.
+  //
+  // Some hook contexts (notably SubagentStop) may instead supply a path that
+  // already lives inside `<projects-root>/<slug>/<session-id>/subagents/`.
+  // Naively re-appending `<sessionId>/subagents` then yields a doubled path
+  // (`.../<session>/subagents/<session>/subagents`) and the meta-file lookup
+  // fails — see issue #132. Make the derivation idempotent by detecting when
+  // the dirname already matches the canonical subagent directory and using
+  // it directly; otherwise derive it from the project root as before.
   const transcriptDir = path.dirname(transcriptPath);
-  const subagentDir = path.join(transcriptDir, sessionId, 'subagents');
+  const expectedSubagentSuffix = path.join(sessionId, 'subagents');
+  const dirnameIsSubagentDir =
+    transcriptDir === expectedSubagentSuffix ||
+    transcriptDir.endsWith(`${path.sep}${expectedSubagentSuffix}`);
+  const subagentDir = dirnameIsSubagentDir
+    ? transcriptDir
+    : path.join(transcriptDir, sessionId, 'subagents');
   const metaFile = path.join(subagentDir, `agent-${agentId}.meta.json`);
   const jsonlFile = path.join(subagentDir, `agent-${agentId}.jsonl`);
 
