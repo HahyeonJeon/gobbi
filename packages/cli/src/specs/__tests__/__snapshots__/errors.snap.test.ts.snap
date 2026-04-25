@@ -1,0 +1,271 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`errors — pathway-compiler snapshots crash pathway compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. Do not proceed with the normal step sequence — you are in recovery mode. Inspect the pathway-specific context below and choose a recovery action that matches the evidence. When you are ready, re-enter the workflow via \`gobbi workflow resume --target <step>\` or abort via \`gobbi workflow transition --type abort\`.
+
+Pathway: crash.
+
+The workflow was in an active step when the process terminated. There is no explicit triggering event (no timeout, no invalid transition, no feedback cap) — the evidence points to a mid-step process exit. Recovery means choosing whether to retry the step from where it left off or to force-advance to memorization and end the session.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[ideation,planning]
+session.evalConfig=null
+session.feedbackRound=0/3
+session.artifactCounts={}
+
+Crash evidence:
+  stepAtCrash=execution
+  lastEventSeqs=[42, 41, 40, 39, 38]
+  heartbeat.seq=37
+
+Recovery options:
+  - Retry from the crashed step:      gobbi workflow resume --target execution
+  - Force-advance to memorization:    gobbi workflow resume --force-memorization
+  - Abort the session:                gobbi workflow transition --type abort"
+`;
+
+exports[`errors — pathway-compiler snapshots crash pathway compiles to a stable prompt 2`] = `"ed7b2ef297699c4a94b7d837749ed54ebc08733ed2995371f8e48d0a58b9479c"`;
+
+exports[`errors — pathway-compiler snapshots crash pathway compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "error.role",
+    "kind": "static",
+  },
+  {
+    "id": "error.crash.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "error.crash.evidence",
+    "kind": "dynamic",
+  },
+  {
+    "id": "error.crash.recovery",
+    "kind": "dynamic",
+  },
+]
+`;
+
+exports[`errors — pathway-compiler snapshots timeout pathway compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. Do not proceed with the normal step sequence — you are in recovery mode. Inspect the pathway-specific context below and choose a recovery action that matches the evidence. When you are ready, re-enter the workflow via \`gobbi workflow resume --target <step>\` or abort via \`gobbi workflow transition --type abort\`.
+
+Pathway: step timeout.
+
+A step exceeded its configured timeout and the Stop hook emitted a workflow.step.timeout event. The briefing below names which step timed out, the elapsed time at timeout, the configured timeout value, and the artifacts that were in progress when the Stop hook fired. Recovery means choosing between a fresh-context retry, a force-advance to memorization, or an abort.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[ideation,planning]
+session.evalConfig=null
+session.feedbackRound=0/3
+session.artifactCounts={}
+
+Timeout evidence:
+  timedOutStep=execution
+  elapsedMs=300000
+  configuredTimeoutMs=120000
+  timeoutEventSeq=17
+  inProgressArtifacts=[subtasks/01-foundation.json, execution.md]
+
+Recovery options:
+  - Retry with a fresh context:       gobbi workflow resume --target execution
+  - Force-advance to memorization:    gobbi workflow resume --force-memorization
+  - Abort the session:                gobbi workflow transition --type abort"
+`;
+
+exports[`errors — pathway-compiler snapshots timeout pathway compiles to a stable prompt 2`] = `"20327ab50dd38c1b024fda1e977085bd0cac5c2d4ed45d88b55fc3a459f0e172"`;
+
+exports[`errors — pathway-compiler snapshots timeout pathway compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "error.role",
+    "kind": "static",
+  },
+  {
+    "id": "error.timeout.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "error.timeout.evidence",
+    "kind": "dynamic",
+  },
+  {
+    "id": "error.timeout.recovery",
+    "kind": "dynamic",
+  },
+]
+`;
+
+exports[`errors — pathway-compiler snapshots feedbackCap pathway compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. Do not proceed with the normal step sequence — you are in recovery mode. Inspect the pathway-specific context below and choose a recovery action that matches the evidence. When you are ready, re-enter the workflow via \`gobbi workflow resume --target <step>\` or abort via \`gobbi workflow transition --type abort\`.
+
+Pathway: feedback round cap.
+
+The evaluation loop reached its configured maximum feedback rounds with a trailing revise verdict — the reducer transitioned execution_eval to error at the cap-fire moment. The briefing below lists the per-round verdict history and the artifacts captured during the final round. Recovery means force-memorizing partial work (gobbi workflow resume --force-memorization) or aborting. Re-entering the evaluation loop is not available once the cap has fired.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[ideation,planning]
+session.evalConfig=ideation=true,planning=false
+session.feedbackRound=3/3
+session.artifactCounts={}
+
+FeedbackCap evidence:
+  feedbackRound=3/3
+  verdictHistory:
+  round=1 verdict=revise seq=12 loopTarget=execution evaluator=eval-project
+  round=2 verdict=revise seq=18 loopTarget=execution evaluator=eval-project
+  round=3 verdict=revise seq=24 loopTarget=execution evaluator=eval-overall
+  finalRoundArtifacts=[execution.md, execution/subtasks/01-final.json]
+
+Recovery options:
+  - Force memorization (save partial): gobbi workflow resume --force-memorization
+  - Abort the session:                 gobbi workflow transition --type abort"
+`;
+
+exports[`errors — pathway-compiler snapshots feedbackCap pathway compiles to a stable prompt 2`] = `"80b8cbc440ddc031e607cc817ed1c776f3a897268388ceb0b23372802110e9e9"`;
+
+exports[`errors — pathway-compiler snapshots feedbackCap pathway compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "error.role",
+    "kind": "static",
+  },
+  {
+    "id": "error.feedbackCap.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "error.feedbackCap.evidence",
+    "kind": "dynamic",
+  },
+  {
+    "id": "error.feedbackCap.recovery",
+    "kind": "dynamic",
+  },
+]
+`;
+
+exports[`errors — pathway-compiler snapshots invalidTransition pathway compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. Do not proceed with the normal step sequence — you are in recovery mode. Inspect the pathway-specific context below and choose a recovery action that matches the evidence. When you are ready, re-enter the workflow via \`gobbi workflow resume --target <step>\` or abort via \`gobbi workflow transition --type abort\`.
+
+Pathway: invalid transition.
+
+The reducer rejected an event because the transition was not valid from the current state. The rejected event itself never landed in the store (it was inside a rolled-back transaction); an audit event of type workflow.invalid_transition carries the witness. The briefing below names the rejected event type, the reducer error message, and the step at the time of rejection. Recovery means retrying from the last valid state or aborting.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[ideation]
+session.evalConfig=null
+session.feedbackRound=0/3
+session.artifactCounts={}
+
+InvalidTransition evidence:
+  rejectedEventType=workflow.step.exit
+  rejectedEventSeq=null (rejected before append)
+  stepAtRejection=planning
+  reducerMessage=Cannot exit planning before planning_eval decision
+  invalidTransitionEventSeq=31
+
+Recovery options:
+  - Retry from the last valid state:  gobbi workflow resume --target planning
+  - Force-advance to memorization:    gobbi workflow resume --force-memorization
+  - Abort the session:                gobbi workflow transition --type abort"
+`;
+
+exports[`errors — pathway-compiler snapshots invalidTransition pathway compiles to a stable prompt 2`] = `"1434bdf31b6332f4b2bcae1e756d032b550a48b752d86451613b3b918b820526"`;
+
+exports[`errors — pathway-compiler snapshots invalidTransition pathway compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "error.role",
+    "kind": "static",
+  },
+  {
+    "id": "error.invalidTransition.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "error.invalidTransition.evidence",
+    "kind": "dynamic",
+  },
+  {
+    "id": "error.invalidTransition.recovery",
+    "kind": "dynamic",
+  },
+]
+`;
+
+exports[`errors — pathway-compiler snapshots unknown pathway compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. Do not proceed with the normal step sequence — you are in recovery mode. Inspect the pathway-specific context below and choose a recovery action that matches the evidence. When you are ready, re-enter the workflow via \`gobbi workflow resume --target <step>\` or abort via \`gobbi workflow transition --type abort\`.
+
+Pathway: unknown.
+
+The workflow is in the error step but the event store carries no evidence that attributes the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The classifier's diagnostic hint appears below — it usually indicates either an empty store (state.json written manually) or a store-read race during classification. Recovery means inspecting the hint to pick between retry-from-last-valid-state, force-memorization, and abort.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[]
+session.evalConfig=null
+session.feedbackRound=0/3
+session.artifactCounts={}
+
+Unknown-pathway evidence:
+  reason=empty-store
+  diagnosticHint=The event store is empty — state.json appears to have been manually written into the error step without any triggering event.
+
+Recovery options (no pathway-specific recommendation — inspect the diagnostic hint above):
+  - Retry from the last completed step: gobbi workflow resume --target <step>
+  - Force-advance to memorization:      gobbi workflow resume --force-memorization
+  - Abort the session:                  gobbi workflow transition --type abort"
+`;
+
+exports[`errors — pathway-compiler snapshots unknown pathway compiles to a stable prompt 2`] = `"34e819ce3ec72c826d23a45384c649a1b5ae4b3ff4804282dfc4909354e49d51"`;
+
+exports[`errors — pathway-compiler snapshots unknown pathway compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "error.role",
+    "kind": "static",
+  },
+  {
+    "id": "error.unknown.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "error.unknown.evidence",
+    "kind": "dynamic",
+  },
+  {
+    "id": "error.unknown.recovery",
+    "kind": "dynamic",
+  },
+]
+`;

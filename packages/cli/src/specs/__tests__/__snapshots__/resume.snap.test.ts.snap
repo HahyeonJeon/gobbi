@@ -1,0 +1,252 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`resume — pathway-compiler snapshots crash resume compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. The resume frame below recaps the pathway that triggered the error and names the target step you are transitioning into. After you process this frame, run \`gobbi workflow next\` to receive the target step's full prompt — this resume frame intentionally does not inline the target step's instructions. Treat the resume prompt as orientation, not as a work prompt.
+
+Resume from pathway: crash.
+
+You are transitioning out of the error step after a mid-step process crash. The target step below names the step you are re-entering — typically the crashed step (retry) or memorization (force-advance). The pathway recap lists the last observed step and the tail of the event history so you can re-orient to the crash evidence before the target step's prompt arrives.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[ideation,planning]
+session.evalConfig=null
+session.feedbackRound=0/3
+session.artifactCounts={}
+
+Crash recap:
+  stepAtCrash=planning
+  lastEventSeqs=[1]
+  heartbeat=(none)
+
+Target-entry framing:
+  You are transitioning from error into planning.
+  The pathway recap above names the crash evidence you are re-entering with.
+  Continue with the normal planning flow; the full planning prompt will be emitted by \`gobbi workflow next\` on the next invocation."
+`;
+
+exports[`resume — pathway-compiler snapshots crash resume compiles to a stable prompt 2`] = `"bc3e82ade5ef98f5045ce951a33734cd860a34f251925d2396826caa38900a47"`;
+
+exports[`resume — pathway-compiler snapshots crash resume compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "resume.role",
+    "kind": "static",
+  },
+  {
+    "id": "resume.crash.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "resume.crash.recap",
+    "kind": "dynamic",
+  },
+]
+`;
+
+exports[`resume — pathway-compiler snapshots timeout resume compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. The resume frame below recaps the pathway that triggered the error and names the target step you are transitioning into. After you process this frame, run \`gobbi workflow next\` to receive the target step's full prompt — this resume frame intentionally does not inline the target step's instructions. Treat the resume prompt as orientation, not as a work prompt.
+
+Resume from pathway: step timeout.
+
+You are transitioning out of the error step after a workflow.step.timeout event. The target step below names the step you are re-entering — typically the timed-out step (retry with a fresh context) or memorization (force-advance). The pathway recap lists the timed-out step, the elapsed vs configured milliseconds, and the in-progress artifacts so you can decide whether the fresh-context retry is ready to proceed.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[ideation,planning]
+session.evalConfig=null
+session.feedbackRound=0/3
+session.artifactCounts={}
+
+Timeout recap:
+  timedOutStep=execution
+  elapsedMs=300000
+  configuredTimeoutMs=120000
+  timeoutEventSeq=2
+  inProgressArtifacts=[(none observable)]
+
+Target-entry framing:
+  You are transitioning from error into execution.
+  The pathway recap above names the timeout evidence you are re-entering with.
+  Continue with the normal execution flow; the full execution prompt will be emitted by \`gobbi workflow next\` on the next invocation."
+`;
+
+exports[`resume — pathway-compiler snapshots timeout resume compiles to a stable prompt 2`] = `"3a054f261ebf2c8cc152f69082992f39775494b1b10946edc27b4043938c2a2e"`;
+
+exports[`resume — pathway-compiler snapshots timeout resume compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "resume.role",
+    "kind": "static",
+  },
+  {
+    "id": "resume.timeout.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "resume.timeout.recap",
+    "kind": "dynamic",
+  },
+]
+`;
+
+exports[`resume — pathway-compiler snapshots feedbackCap resume compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. The resume frame below recaps the pathway that triggered the error and names the target step you are transitioning into. After you process this frame, run \`gobbi workflow next\` to receive the target step's full prompt — this resume frame intentionally does not inline the target step's instructions. Treat the resume prompt as orientation, not as a work prompt.
+
+Resume from pathway: feedback round cap.
+
+You are transitioning out of the error step after the evaluation loop reached its configured maximum feedback rounds. The target step below names the step you are re-entering — typically memorization (force-advance) because re-entry into the evaluation loop is not available once the cap has fired. The pathway recap lists the per-round verdict history and the final-round artifacts so you can re-orient to the partial work being carried forward.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[ideation,planning]
+session.evalConfig=ideation=true,planning=false
+session.feedbackRound=3/3
+session.artifactCounts={}
+
+FeedbackCap recap:
+  feedbackRound=3/3
+  verdictHistory:
+  round=1 verdict=revise seq=2 loopTarget=execution evaluator=eval-1
+  round=2 verdict=revise seq=3 loopTarget=execution evaluator=eval-1
+  round=3 verdict=revise seq=4 loopTarget=execution evaluator=eval-1
+  finalRoundArtifacts=[(none observable)]
+
+Target-entry framing:
+  You are transitioning from error into memorization.
+  The pathway recap above names the feedbackCap evidence you are re-entering with.
+  Continue with the normal memorization flow; the full memorization prompt will be emitted by \`gobbi workflow next\` on the next invocation."
+`;
+
+exports[`resume — pathway-compiler snapshots feedbackCap resume compiles to a stable prompt 2`] = `"35fa0bd3efcc65e33cacd9fe9e164a2b5bc80dde9f2780db899069d2f5e08144"`;
+
+exports[`resume — pathway-compiler snapshots feedbackCap resume compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "resume.role",
+    "kind": "static",
+  },
+  {
+    "id": "resume.feedbackCap.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "resume.feedbackCap.recap",
+    "kind": "dynamic",
+  },
+]
+`;
+
+exports[`resume — pathway-compiler snapshots invalidTransition resume compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. The resume frame below recaps the pathway that triggered the error and names the target step you are transitioning into. After you process this frame, run \`gobbi workflow next\` to receive the target step's full prompt — this resume frame intentionally does not inline the target step's instructions. Treat the resume prompt as orientation, not as a work prompt.
+
+Resume from pathway: invalid transition.
+
+You are transitioning out of the error step after the reducer rejected an event as invalid from the current state. The target step below names the step you are re-entering — typically the step at the time of rejection (retry from the last valid state). The pathway recap lists the rejected event type, the reducer message, and the step at rejection so you can re-orient to the rejection evidence before retrying.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[ideation]
+session.evalConfig=null
+session.feedbackRound=0/3
+session.artifactCounts={}
+
+InvalidTransition recap:
+  rejectedEventType=workflow.step.exit
+  rejectedEventSeq=null (rejected before append)
+  stepAtRejection=planning
+  reducerMessage=Cannot exit planning before planning_eval decision
+  invalidTransitionEventSeq=2
+
+Target-entry framing:
+  You are transitioning from error into planning.
+  The pathway recap above names the invalidTransition evidence you are re-entering with.
+  Continue with the normal planning flow; the full planning prompt will be emitted by \`gobbi workflow next\` on the next invocation."
+`;
+
+exports[`resume — pathway-compiler snapshots invalidTransition resume compiles to a stable prompt 2`] = `"85abf8dce70506e347e99922be1a466d49fde93a1e96d7aaf27d10b607ce4dab"`;
+
+exports[`resume — pathway-compiler snapshots invalidTransition resume compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "resume.role",
+    "kind": "static",
+  },
+  {
+    "id": "resume.invalidTransition.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "resume.invalidTransition.recap",
+    "kind": "dynamic",
+  },
+]
+`;
+
+exports[`resume — pathway-compiler snapshots unknown resume compiles to a stable prompt 1`] = `
+"You are resuming a gobbi workflow that entered the error step. The resume frame below recaps the pathway that triggered the error and names the target step you are transitioning into. After you process this frame, run \`gobbi workflow next\` to receive the target step's full prompt — this resume frame intentionally does not inline the target step's instructions. Treat the resume prompt as orientation, not as a work prompt.
+
+Resume from pathway: unknown.
+
+You are transitioning out of the error step but the classifier could not attribute the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The pathway recap surfaces the classifier's diagnostic hint so you can inspect it before re-entering the target step — the detector has no pathway-specific recommendation for this resume, and the target step below is the operator's chosen re-entry point.
+
+session.schemaVersion=4
+session.currentStep=error
+session.currentSubstate=null
+session.completedSteps=[]
+session.evalConfig=null
+session.feedbackRound=0/3
+session.artifactCounts={}
+
+Unknown-pathway recap:
+  reason=empty-store
+  diagnosticHint=The event store is empty — state.json appears to have been manually written into the error step without any triggering event.
+
+Target-entry framing:
+  You are transitioning from error into planning.
+  The pathway recap above names the unknown evidence you are re-entering with.
+  Continue with the normal planning flow; the full planning prompt will be emitted by \`gobbi workflow next\` on the next invocation."
+`;
+
+exports[`resume — pathway-compiler snapshots unknown resume compiles to a stable prompt 2`] = `"242ad9a06933c4bfcdc063fbfefe5e3ed00c8bde1eac33427513b2e9d0e6dc8d"`;
+
+exports[`resume — pathway-compiler snapshots unknown resume compiles to a stable prompt 3`] = `
+[
+  {
+    "id": "resume.role",
+    "kind": "static",
+  },
+  {
+    "id": "resume.unknown.preamble",
+    "kind": "static",
+  },
+  {
+    "id": "session.state",
+    "kind": "session",
+  },
+  {
+    "id": "resume.unknown.recap",
+    "kind": "dynamic",
+  },
+]
+`;

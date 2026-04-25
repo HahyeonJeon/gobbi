@@ -4,8 +4,12 @@
  * Subcommands:
  *   metadata                                    Output session metadata as key=value pairs
  *   init <project-name> <task-slug>             Create note directory structure
- *   collect <agent-id> <n> <slug> <note-dir>    Extract subagent result from JSONL transcript (--phase ideation|plan|research|execution|review)
- *   plan <note-dir>                             Extract plan from session transcript
+ *   collect <agent-id> <n> <slug> <note-dir>    Extract subagent result from JSONL transcript (--phase ideation|planning|research|execution|review)
+ *   planning <note-dir>                         Extract plan from session transcript (writes plan.json)
+ *
+ * Note on the `planning` subcommand name: aligned with the W4 state-machine
+ * rename from 'plan' -> 'planning'. The on-disk artifact filename remains
+ * `plan.json` because the artifact contract is separate from the step name.
  */
 
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -33,7 +37,7 @@ Subcommands:
   metadata                                    Output session metadata as key=value pairs
   init <project-name> <task-slug>             Create note directory structure
   collect <agent-id> <n> <slug> <note-dir>    Extract subagent result from JSONL transcript
-  plan <note-dir>                             Extract plan from session transcript
+  planning <note-dir>                         Extract plan from session transcript
 
 Options:
   --help    Show this help message`;
@@ -59,7 +63,7 @@ export async function runNote(args: string[]): Promise<void> {
     case 'collect':
       await runNoteCollect(args.slice(1));
       break;
-    case 'plan':
+    case 'planning':
       await runNotePlan(args.slice(1));
       break;
     case '--help':
@@ -117,6 +121,38 @@ function getGitBranch(): string {
   } catch {
     return '';
   }
+}
+
+/**
+ * Resolve the `<phase>/subtasks/` directory inside a note-dir, with a
+ * backward-compat fallback for pre-W4 layouts. When `phase` is
+ * `'planning'` and the new-shape directory is absent but a legacy
+ * `plan/subtasks/` directory exists, return the legacy path so existing
+ * note trees stay readable. Same mapping applies for `'planning_eval'`
+ * -> legacy `plan_eval`. When `phase` is undefined, the flat
+ * `noteDir/subtasks/` path is returned (un-phased layout).
+ */
+function resolvePhaseSubtasksDir(
+  noteDir: string,
+  phase: string | undefined,
+): string {
+  if (phase === undefined) {
+    return path.join(noteDir, 'subtasks');
+  }
+  const primary = path.join(noteDir, phase, 'subtasks');
+  if (existsSync(primary)) return primary;
+  // Legacy fallback — only applies when the phase was renamed in W4.
+  const legacyName =
+    phase === 'planning'
+      ? 'plan'
+      : phase === 'planning_eval'
+        ? 'plan_eval'
+        : null;
+  if (legacyName !== null) {
+    const legacy = path.join(noteDir, legacyName, 'subtasks');
+    if (existsSync(legacy)) return legacy;
+  }
+  return primary;
 }
 
 /**
@@ -202,12 +238,15 @@ async function runNoteInit(args: string[]): Promise<void> {
   const dirName = `${datetime}-${slug}-${sessionId}`;
   const noteDir = path.join(claudeProjectDir, '.claude', 'project', projectName, 'note', dirName);
 
-  // Create per-step subdirectories — subtasks/ in every step
+  // Create per-step subdirectories — subtasks/ in every step. Post-W4,
+  // the planning step uses `planning/`; legacy note directories that
+  // still carry `plan/` are read-only supported in `runNoteCollect` via
+  // the `resolvePhaseDir` helper.
   await Promise.all([
     mkdir(path.join(noteDir, 'ideation', 'subtasks'), { recursive: true }),
     mkdir(path.join(noteDir, 'ideation', 'evaluation'), { recursive: true }),
-    mkdir(path.join(noteDir, 'plan', 'subtasks'), { recursive: true }),
-    mkdir(path.join(noteDir, 'plan', 'evaluation'), { recursive: true }),
+    mkdir(path.join(noteDir, 'planning', 'subtasks'), { recursive: true }),
+    mkdir(path.join(noteDir, 'planning', 'evaluation'), { recursive: true }),
     mkdir(path.join(noteDir, 'research', 'results'), { recursive: true }),
     mkdir(path.join(noteDir, 'research', 'subtasks'), { recursive: true }),
     mkdir(path.join(noteDir, 'research', 'evaluation'), { recursive: true }),
@@ -300,7 +339,7 @@ async function runNoteInit(args: string[]): Promise<void> {
 async function runNoteCollect(args: string[]): Promise<void> {
   if (args[0] === '--help') {
     console.log(
-      `Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <ideation|plan|research|execution|review>]\n\nExtract subagent result from JSONL transcript.\n\nOptions:\n  --phase <ideation|plan|research|execution|review>  Route to step-specific subtasks/ subdirectory`,
+      `Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <ideation|planning|research|execution|review>]\n\nExtract subagent result from JSONL transcript.\n\nOptions:\n  --phase <ideation|planning|research|execution|review>  Route to step-specific subtasks/ subdirectory`,
     );
     return;
   }
@@ -330,13 +369,17 @@ async function runNoteCollect(args: string[]): Promise<void> {
   ) {
     console.error(
       error(
-        'Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <ideation|plan|research|execution|review>]',
+        'Usage: gobbi note collect <agent-id> <subtask-number> <subtask-slug> <note-dir> [--phase <ideation|planning|research|execution|review>]',
       ),
     );
     process.exit(1);
   }
 
-  const validPhases = ['ideation', 'plan', 'research', 'execution', 'review'];
+  // Post-W4 phase names align with the state-machine loop name `planning`.
+  // Legacy `plan` phase directories on disk are still honoured by
+  // `resolvePhaseSubtasksDir` below — a note-dir created before the rename
+  // retains its `plan/subtasks/` layout and continues to work.
+  const validPhases = ['ideation', 'planning', 'research', 'execution', 'review'];
   if (phase !== undefined && !validPhases.includes(phase)) {
     console.error(error(`Invalid phase: ${phase}. Must be one of: ${validPhases.join(', ')}.`));
     process.exit(1);
@@ -370,10 +413,11 @@ async function runNoteCollect(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  // Resolve subtasks directory based on --phase flag
-  const subtasksDir = phase !== undefined
-    ? path.join(noteDir, phase, 'subtasks')
-    : path.join(noteDir, 'subtasks');
+  // Resolve subtasks directory based on --phase flag. Backward-compat:
+  // when `--phase planning` is requested and the new-shape directory
+  // does not exist but a legacy `plan/subtasks/` does, fall back to the
+  // legacy name so pre-W4 note directories stay readable.
+  const subtasksDir = resolvePhaseSubtasksDir(noteDir, phase);
   if (!existsSync(subtasksDir)) {
     console.error(`Error: subtasks/ directory not found: ${subtasksDir}`);
     process.exit(1);
@@ -475,14 +519,14 @@ async function runNoteCollect(args: string[]): Promise<void> {
 async function runNotePlan(args: string[]): Promise<void> {
   if (args[0] === '--help') {
     console.log(
-      `Usage: gobbi note plan <note-dir>\n\nExtract plan from session transcript and write plan.json.`,
+      `Usage: gobbi note planning <note-dir>\n\nExtract plan from session transcript and write plan.json.`,
     );
     return;
   }
 
   const noteDir = args[0];
   if (noteDir === undefined) {
-    console.error(error('Usage: gobbi note plan <note-dir>'));
+    console.error(error('Usage: gobbi note planning <note-dir>'));
     process.exit(1);
   }
 

@@ -12,6 +12,7 @@ import {
   createFinish,
   createAbort,
   createResume,
+  createWorkflowInvalidTransition,
 
   // Delegation
   DELEGATION_EVENTS,
@@ -44,6 +45,11 @@ import {
   isSessionEvent,
   createSessionHeartbeat,
 
+  // Verification
+  VERIFICATION_EVENTS,
+  isVerificationEvent,
+  createVerificationResult,
+
   // Top-level
   ALL_EVENT_TYPES,
   isValidEventType,
@@ -56,8 +62,8 @@ import type { Event, EventType } from '../index.js';
 // ===========================================================================
 
 describe('const objects', () => {
-  it('WORKFLOW_EVENTS has 8 entries', () => {
-    expect(Object.values(WORKFLOW_EVENTS)).toHaveLength(8);
+  it('WORKFLOW_EVENTS has 9 entries', () => {
+    expect(Object.values(WORKFLOW_EVENTS)).toHaveLength(9);
   });
 
   it('DELEGATION_EVENTS has 3 entries', () => {
@@ -72,12 +78,16 @@ describe('const objects', () => {
     expect(Object.values(DECISION_EVENTS)).toHaveLength(3);
   });
 
-  it('GUARD_EVENTS has 2 entries', () => {
-    expect(Object.values(GUARD_EVENTS)).toHaveLength(2);
+  it('GUARD_EVENTS has 3 entries', () => {
+    expect(Object.values(GUARD_EVENTS)).toHaveLength(3);
   });
 
   it('SESSION_EVENTS has 1 entry', () => {
     expect(Object.values(SESSION_EVENTS)).toHaveLength(1);
+  });
+
+  it('VERIFICATION_EVENTS has 1 entry', () => {
+    expect(Object.values(VERIFICATION_EVENTS)).toHaveLength(1);
   });
 });
 
@@ -86,8 +96,8 @@ describe('const objects', () => {
 // ===========================================================================
 
 describe('ALL_EVENT_TYPES', () => {
-  it('contains exactly 19 entries (8 + 3 + 2 + 3 + 2 + 1)', () => {
-    expect(ALL_EVENT_TYPES.size).toBe(19);
+  it('contains exactly 22 entries (9 + 3 + 2 + 3 + 3 + 1 + 1)', () => {
+    expect(ALL_EVENT_TYPES.size).toBe(22);
   });
 
   it('contains every workflow event type', () => {
@@ -126,6 +136,12 @@ describe('ALL_EVENT_TYPES', () => {
     }
   });
 
+  it('contains every verification event type', () => {
+    for (const value of Object.values(VERIFICATION_EVENTS)) {
+      expect(ALL_EVENT_TYPES.has(value)).toBe(true);
+    }
+  });
+
   it('does not contain unknown event types', () => {
     expect(ALL_EVENT_TYPES.has('unknown.event')).toBe(false);
     expect(ALL_EVENT_TYPES.has('START')).toBe(false); // key, not value
@@ -144,6 +160,7 @@ describe('cross-category exclusivity', () => {
     Object.values(DECISION_EVENTS),
     Object.values(GUARD_EVENTS),
     Object.values(SESSION_EVENTS),
+    Object.values(VERIFICATION_EVENTS),
   ];
 
   it('no event type string appears in more than one category', () => {
@@ -170,6 +187,7 @@ describe('cross-category exclusivity', () => {
       [Object.values(DECISION_EVENTS), 'decision.'],
       [Object.values(GUARD_EVENTS), 'guard.'],
       [Object.values(SESSION_EVENTS), 'session.'],
+      [Object.values(VERIFICATION_EVENTS), 'verification.'],
     ];
 
     for (const [values, prefix] of prefixMap) {
@@ -296,6 +314,35 @@ describe('type guards', () => {
     });
   });
 
+  describe('isVerificationEvent', () => {
+    const verificationEvent = { type: 'verification.result' };
+
+    it('returns true for all verification event types', () => {
+      for (const value of Object.values(VERIFICATION_EVENTS)) {
+        expect(isVerificationEvent({ type: value })).toBe(true);
+      }
+    });
+
+    it('returns false for non-verification events', () => {
+      expect(isVerificationEvent(workflowEvent)).toBe(false);
+      expect(isVerificationEvent(delegationEvent)).toBe(false);
+      expect(isVerificationEvent(artifactEvent)).toBe(false);
+      expect(isVerificationEvent(decisionEvent)).toBe(false);
+      expect(isVerificationEvent(guardEvent)).toBe(false);
+      expect(isVerificationEvent(sessionEvent)).toBe(false);
+      expect(isVerificationEvent(unknownEvent)).toBe(false);
+    });
+
+    it('no other category guard matches a verification event', () => {
+      expect(isWorkflowEvent(verificationEvent)).toBe(false);
+      expect(isDelegationEvent(verificationEvent)).toBe(false);
+      expect(isArtifactEvent(verificationEvent)).toBe(false);
+      expect(isDecisionEvent(verificationEvent)).toBe(false);
+      expect(isGuardEvent(verificationEvent)).toBe(false);
+      expect(isSessionEvent(verificationEvent)).toBe(false);
+    });
+  });
+
   describe('isValidEventType', () => {
     it('returns true for all known event types', () => {
       for (const value of ALL_EVENT_TYPES) {
@@ -330,6 +377,9 @@ describe('type guards', () => {
       }
       for (const key of Object.keys(SESSION_EVENTS)) {
         expect(isSessionEvent({ type: key })).toBe(false);
+      }
+      for (const key of Object.keys(VERIFICATION_EVENTS)) {
+        expect(isVerificationEvent({ type: key })).toBe(false);
       }
     });
   });
@@ -394,6 +444,31 @@ describe('factory functions', () => {
       expect(event.type).toBe(WORKFLOW_EVENTS.RESUME);
       expect(event.data).toEqual({ targetStep: 'execution', fromError: true });
     });
+
+    it('createWorkflowInvalidTransition — round-trip through type guard', () => {
+      const event = createWorkflowInvalidTransition({
+        rejectedEventType: 'workflow.abort',
+        rejectedEventSeq: null,
+        stepAtRejection: 'ideation',
+        reducerMessage:
+          'workflow.abort requires error state, got ideation',
+        timestamp: '2026-01-01T00:00:00.000Z',
+      });
+      expect(event.type).toBe(WORKFLOW_EVENTS.INVALID_TRANSITION);
+      expect(event.data).toEqual({
+        rejectedEventType: 'workflow.abort',
+        rejectedEventSeq: null,
+        stepAtRejection: 'ideation',
+        reducerMessage:
+          'workflow.abort requires error state, got ideation',
+        timestamp: '2026-01-01T00:00:00.000Z',
+      });
+      // Narrows via the category type guard.
+      expect(isWorkflowEvent(event)).toBe(true);
+      // Round-trips through JSON.stringify (no Date, no Set, no class).
+      const round = JSON.parse(JSON.stringify(event));
+      expect(round).toEqual(event);
+    });
   });
 
   describe('delegation factories', () => {
@@ -401,6 +476,42 @@ describe('factory functions', () => {
       const event = createDelegationSpawn({ agentType: 'researcher', step: 'ideation', subagentId: 'sub-1', timestamp: '2026-01-01T00:00:00Z' });
       expect(event.type).toBe(DELEGATION_EVENTS.SPAWN);
       expect(event.data).toEqual({ agentType: 'researcher', step: 'ideation', subagentId: 'sub-1', timestamp: '2026-01-01T00:00:00Z' });
+    });
+
+    // Issue #92 — optional `claudeCodeVersion` field on DelegationSpawnData.
+    // The field is schema-only until a spawn emitter lands; the factory must
+    // accept it as a pass-through and the omit-branch must keep the data
+    // shape identical to the pre-field behaviour.
+
+    it('createDelegationSpawn passes claudeCodeVersion through when set (issue #92)', () => {
+      const event = createDelegationSpawn({
+        agentType: 'researcher',
+        step: 'ideation',
+        subagentId: 'sub-1',
+        timestamp: '2026-01-01T00:00:00Z',
+        claudeCodeVersion: '2.1.110',
+      });
+      expect(event.data).toEqual({
+        agentType: 'researcher',
+        step: 'ideation',
+        subagentId: 'sub-1',
+        timestamp: '2026-01-01T00:00:00Z',
+        claudeCodeVersion: '2.1.110',
+      });
+      // Round-trips through JSON.stringify — the optional field survives
+      // serialization into the event store's `data` column.
+      const round = JSON.parse(JSON.stringify(event));
+      expect(round).toEqual(event);
+    });
+
+    it('createDelegationSpawn omits claudeCodeVersion when caller omits it (issue #92)', () => {
+      const event = createDelegationSpawn({
+        agentType: 'executor',
+        step: 'execution',
+        subagentId: 'sub-2',
+        timestamp: '2026-01-01T00:00:00Z',
+      });
+      expect('claudeCodeVersion' in event.data).toBe(false);
     });
 
     it('createDelegationComplete with all optional fields', () => {
@@ -494,6 +605,41 @@ describe('factory functions', () => {
       expect(event.type).toBe(DECISION_EVENTS.EVAL_SKIP);
       expect(event.data).toEqual({ step: 'ideation_eval' });
     });
+
+    it('createEvalSkip with priorError (CP11 reversibility)', () => {
+      // Schema v3 extension — the factory accepts an optional PriorErrorSnapshot
+      // on top of the existing `step` field and round-trips it through
+      // isDecisionEvent without mutation.
+      const priorError = {
+        pathway: {
+          kind: 'feedbackCap' as const,
+          feedbackRound: 3,
+          maxFeedbackRounds: 3,
+          verdictHistory: [
+            {
+              round: 3,
+              verdict: 'revise' as const,
+              verdictSeq: 15,
+              loopTarget: null,
+              evaluatorId: null,
+            },
+          ],
+          finalRoundArtifacts: ['exec.md'],
+        },
+        capturedAt: '2026-02-01T00:00:00.000Z',
+        stepAtError: 'error',
+        witnessEventSeqs: [15],
+      };
+      const event = createEvalSkip({ step: 'memorization', priorError });
+      expect(event.type).toBe(DECISION_EVENTS.EVAL_SKIP);
+      expect(isDecisionEvent(event)).toBe(true);
+      // Structural identity — the factory does not clone or re-shape the
+      // nested snapshot.
+      expect(event.data).toEqual({ step: 'memorization', priorError });
+      // JSON round-trip invariant (what the event-store wire format does).
+      const reparsed = JSON.parse(JSON.stringify(event.data)) as unknown;
+      expect(reparsed).toEqual({ step: 'memorization', priorError });
+    });
   });
 
   describe('guard factories', () => {
@@ -537,6 +683,89 @@ describe('factory functions', () => {
       expect(event.data).toEqual({ timestamp: '2026-01-01T00:01:00Z' });
     });
   });
+
+  describe('verification factories', () => {
+    const baseData = {
+      subagentId: 'sub-1',
+      command: 'bunx tsc --noEmit',
+      commandKind: 'typecheck' as const,
+      exitCode: 0,
+      durationMs: 4321,
+      policy: 'gate' as const,
+      timedOut: false,
+      stdoutDigest: 'sha256:abc',
+      stderrDigest: 'sha256:def',
+      timestamp: '2026-04-17T14:00:00.000Z',
+    };
+
+    it('createVerificationResult — round-trip through factory', () => {
+      const event = createVerificationResult(baseData);
+      expect(event.type).toBe(VERIFICATION_EVENTS.RESULT);
+      expect(event.data).toEqual(baseData);
+    });
+
+    it('createVerificationResult — narrows via isVerificationEvent', () => {
+      const event = createVerificationResult(baseData);
+      expect(isVerificationEvent(event)).toBe(true);
+      // Every other category guard must reject it.
+      expect(isWorkflowEvent(event)).toBe(false);
+      expect(isDelegationEvent(event)).toBe(false);
+    });
+
+    it('createVerificationResult — round-trips through JSON', () => {
+      const event = createVerificationResult({
+        ...baseData,
+        exitCode: -1,
+        timedOut: true,
+      });
+      const round = JSON.parse(JSON.stringify(event)) as unknown;
+      expect(round).toEqual(event);
+    });
+
+    it('createVerificationResult — each commandKind variant typechecks', () => {
+      const kinds = [
+        'lint',
+        'test',
+        'typecheck',
+        'build',
+        'format',
+        'custom',
+      ] as const;
+      for (const commandKind of kinds) {
+        const event = createVerificationResult({ ...baseData, commandKind });
+        expect(event.data.commandKind).toBe(commandKind);
+        expect(isVerificationEvent(event)).toBe(true);
+      }
+    });
+
+    it('createVerificationResult — inform vs gate policy both round-trip', () => {
+      const gateEvt = createVerificationResult({ ...baseData, policy: 'gate' });
+      const infoEvt = createVerificationResult({ ...baseData, policy: 'inform' });
+      expect(gateEvt.data.policy).toBe('gate');
+      expect(infoEvt.data.policy).toBe('inform');
+    });
+
+    it('createVerificationResult — SIGTERM / SIGKILL encoded as negative exit codes', () => {
+      const sigterm = createVerificationResult({
+        ...baseData,
+        exitCode: -1,
+        timedOut: true,
+      });
+      const sigkill = createVerificationResult({
+        ...baseData,
+        exitCode: -2,
+        timedOut: true,
+      });
+      expect(sigterm.data.exitCode).toBe(-1);
+      expect(sigterm.data.timedOut).toBe(true);
+      expect(sigkill.data.exitCode).toBe(-2);
+      expect(sigkill.data.timedOut).toBe(true);
+    });
+
+    it('VERIFICATION_EVENTS.RESULT matches the prefixed string', () => {
+      expect(VERIFICATION_EVENTS.RESULT).toBe('verification.result');
+    });
+  });
 });
 
 // ===========================================================================
@@ -556,6 +785,13 @@ describe('type-level correctness', () => {
       createFinish({}),
       createAbort({}),
       createResume({ targetStep: 'execution', fromError: true }),
+      createWorkflowInvalidTransition({
+        rejectedEventType: 'workflow.abort',
+        rejectedEventSeq: null,
+        stepAtRejection: 'ideation',
+        reducerMessage: 'rejected',
+        timestamp: '2026-01-01T00:00:00Z',
+      }),
       createDelegationSpawn({ agentType: 'executor', step: 'execution', subagentId: 'sub-1', timestamp: '2026-01-01T00:00:00Z' }),
       createDelegationComplete({ subagentId: 'sub-1' }),
       createDelegationFail({ subagentId: 'sub-1', reason: 'error' }),
@@ -567,10 +803,22 @@ describe('type-level correctness', () => {
       createGuardViolation({ guardId: 'g1', toolName: 'Write', reason: 'blocked', step: 'execution', timestamp: '2026-01-01T00:00:00Z' }),
       createGuardOverride({ guardId: 'g1', toolName: 'Write', reason: 'allowed' }),
       createSessionHeartbeat({ timestamp: '2026-01-01T00:00:00Z' }),
+      createVerificationResult({
+        subagentId: 'sub-1',
+        command: 'bun test',
+        commandKind: 'test',
+        exitCode: 0,
+        durationMs: 1000,
+        policy: 'gate',
+        timedOut: false,
+        stdoutDigest: 'sha256:a',
+        stderrDigest: 'sha256:b',
+        timestamp: '2026-01-01T00:00:00Z',
+      }),
     ];
 
     // Runtime check: every factory produced a valid event
-    expect(events).toHaveLength(19);
+    expect(events).toHaveLength(21);
     for (const event of events) {
       expect(isValidEventType(event.type)).toBe(true);
     }

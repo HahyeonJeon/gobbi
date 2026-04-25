@@ -1,6 +1,6 @@
 {
   "name": "@gobbitools/cli",
-  "version": "0.4.5",
+  "version": "0.5.0",
   "description": "Gobbi CLI — workflow orchestration and docs management for Claude Code",
   "type": "module",
   "bin": {
@@ -11,14 +11,25 @@
   },
   "files": [
     "bin",
-    "dist"
+    "dist",
+    ".gobbi/projects/gobbi/skills",
+    ".gobbi/projects/gobbi/agents",
+    ".gobbi/projects/gobbi/rules"
   ],
   "scripts": {
+    "gen:predicates": "bun run scripts/gen-predicate-names.ts",
+    "sync:template-bundle": "bun run scripts/sync-template-bundle.ts",
+    "prebuild": "bun run gen:predicates",
     "build": "bun build ./src/cli.ts --outdir ./dist --target bun --external playwright --external sharp",
+    "build:safe": "bun run gen:predicates && bun build ./src/cli.ts --outdir ./dist.new --target bun --external playwright --external sharp && mv ./dist.new/cli.js ./dist/cli.js && rm -rf ./dist.new",
+    "pretypecheck": "bun run gen:predicates",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "prepack": "bun run sync:template-bundle"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ajv": "^8.18.0"
+  },
   "peerDependencies": {
     "playwright": ">=1.40.0",
     "sharp": ">=0.33.0"

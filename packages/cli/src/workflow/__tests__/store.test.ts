@@ -1,15 +1,33 @@
 import { describe, it, expect } from 'bun:test';
+import { Database } from 'bun:sqlite';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { EventStore } from '../store.js';
-import type { AppendInput, EventRow } from '../store.js';
+import type {
+  AppendInput,
+  AppendInputCounter,
+  AppendInputSystem,
+  AppendInputToolCall,
+  EventRow,
+  ReadStore,
+  WriteStore,
+} from '../store.js';
 import { CURRENT_SCHEMA_VERSION, migrateEvent } from '../migrations.js';
 import type { EventRow as MigrationEventRow } from '../migrations.js';
 
 // ---------------------------------------------------------------------------
-// Test helpers
+// Test helpers — narrower `Partial<Variant>` overrides keep the
+// discriminated union tight. A helper that took `Partial<AppendInput>`
+// would let a caller leak a `toolCallId` into a 'system' fixture (the
+// union distribution would permit it), which our runtime branch does
+// not intend to support.
 // ---------------------------------------------------------------------------
 
-function makeInput(overrides: Partial<AppendInput> = {}): AppendInput {
+function makeInput(
+  overrides: Partial<AppendInputToolCall> = {},
+): AppendInput {
   return {
     ts: '2026-01-01T00:00:00.000Z',
     type: 'workflow.start',
@@ -24,7 +42,9 @@ function makeInput(overrides: Partial<AppendInput> = {}): AppendInput {
   };
 }
 
-function makeSystemInput(overrides: Partial<AppendInput> = {}): AppendInput {
+function makeSystemInput(
+  overrides: Partial<AppendInputSystem> = {},
+): AppendInput {
   return {
     ts: '2026-01-01T00:00:00.000Z',
     type: 'session.heartbeat',
@@ -33,6 +53,23 @@ function makeSystemInput(overrides: Partial<AppendInput> = {}): AppendInput {
     actor: 'system',
     parent_seq: null,
     idempotencyKind: 'system',
+    sessionId: 'sess-1',
+    ...overrides,
+  };
+}
+
+function makeCounterInput(
+  overrides: Partial<AppendInputCounter> = {},
+): AppendInput {
+  return {
+    ts: '2026-01-01T00:00:00.000Z',
+    type: 'session.heartbeat',
+    step: null,
+    data: JSON.stringify({ timestamp: '2026-01-01T00:00:00.000Z' }),
+    actor: 'system',
+    parent_seq: null,
+    idempotencyKind: 'counter',
+    counter: 0,
     sessionId: 'sess-1',
     ...overrides,
   };
@@ -187,14 +224,22 @@ describe('idempotency', () => {
   it('throws for tool-call kind without toolCallId', () => {
     using store = new EventStore(':memory:');
 
-    expect(() => store.append({
+    // The discriminated-union refinement makes a tool-call AppendInput
+    // without `toolCallId` a compile-time error. The `@ts-expect-error`
+    // below asserts the type error fires; the runtime throw is still
+    // exercised to keep the defensive check from silently rotting.
+    const bad = {
       ts: '2026-01-01T00:00:00.000Z',
       type: 'delegation.spawn',
       actor: 'orchestrator',
-      idempotencyKind: 'tool-call',
+      idempotencyKind: 'tool-call' as const,
       sessionId: 'sess-1',
       // toolCallId intentionally omitted
-    })).toThrow('toolCallId is required for tool-call idempotency kind');
+    };
+    expect(() =>
+      // @ts-expect-error — toolCallId is required when kind === 'tool-call'
+      store.append(bad),
+    ).toThrow('toolCallId is required for tool-call idempotency kind');
   });
 });
 
@@ -337,6 +382,135 @@ describe('last', () => {
 });
 
 // ===========================================================================
+// lastN
+// ===========================================================================
+
+describe('lastN', () => {
+  it('returns the n most recent events in DESC order (newest first)', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.step.exit', step: 'ideation' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit', step: 'plan' }));
+    store.append(makeInput({ toolCallId: 'tc-3', type: 'workflow.step.exit', step: 'execution' }));
+    store.append(makeInput({ toolCallId: 'tc-4', type: 'workflow.step.exit', step: 'memorization' }));
+
+    const tail = store.lastN('workflow.step.exit', 2);
+    expect(tail).toHaveLength(2);
+    // Newest first — seq=4 then seq=3.
+    expect(tail[0]!.seq).toBe(4);
+    expect(tail[0]!.step).toBe('memorization');
+    expect(tail[1]!.seq).toBe(3);
+    expect(tail[1]!.step).toBe('execution');
+  });
+
+  it('caps the materialised set at n even when more events exist', () => {
+    using store = new EventStore(':memory:');
+
+    // Seed 10 heartbeats; ask for 3 — store must return only 3.
+    for (let i = 0; i < 10; i += 1) {
+      const counter = i;
+      store.append({
+        ts: `2026-01-01T00:00:00.${String(i).padStart(3, '0')}Z`,
+        type: 'session.heartbeat',
+        step: null,
+        data: '{}',
+        actor: 'hook',
+        parent_seq: null,
+        idempotencyKind: 'counter',
+        counter,
+        sessionId: 'lastn-session',
+      });
+    }
+
+    const tail = store.lastN('session.heartbeat', 3);
+    expect(tail).toHaveLength(3);
+    // DESC ordering — seq 10, 9, 8.
+    expect(tail[0]!.seq).toBe(10);
+    expect(tail[1]!.seq).toBe(9);
+    expect(tail[2]!.seq).toBe(8);
+  });
+
+  it('returns fewer rows than requested when the type has fewer events', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.start' }));
+
+    const tail = store.lastN('workflow.start', 50);
+    expect(tail).toHaveLength(1);
+  });
+
+  it('returns empty array for unknown type', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1' }));
+
+    const tail = store.lastN('no-such-type', 10);
+    expect(tail).toHaveLength(0);
+  });
+
+  it('returns empty array when n is 0 or negative', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1' }));
+
+    expect(store.lastN('workflow.start', 0)).toHaveLength(0);
+    expect(store.lastN('workflow.start', -5)).toHaveLength(0);
+  });
+});
+
+// ===========================================================================
+// lastNAny
+// ===========================================================================
+
+describe('lastNAny', () => {
+  it('returns up to n most recent events regardless of type, seq DESC', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1', type: 'workflow.start' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit', step: 'ideation' }));
+    store.append(makeSystemInput({ type: 'session.heartbeat', ts: '2026-01-01T00:00:01.000Z' }));
+    store.append(makeInput({ toolCallId: 'tc-4', type: 'workflow.step.skip' }));
+
+    const tail = store.lastNAny(3);
+    expect(tail).toHaveLength(3);
+    // Newest first, all types mixed.
+    expect(tail[0]!.seq).toBe(4);
+    expect(tail[0]!.type).toBe('workflow.step.skip');
+    expect(tail[1]!.seq).toBe(3);
+    expect(tail[1]!.type).toBe('session.heartbeat');
+    expect(tail[2]!.seq).toBe(2);
+    expect(tail[2]!.type).toBe('workflow.step.exit');
+  });
+
+  it('returns empty array for an empty store', () => {
+    using store = new EventStore(':memory:');
+
+    const tail = store.lastNAny(5);
+    expect(tail).toHaveLength(0);
+  });
+
+  it('returns fewer rows than requested when count < n', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-only', type: 'workflow.start' }));
+
+    const tail = store.lastNAny(10);
+    expect(tail).toHaveLength(1);
+    expect(tail[0]!.seq).toBe(1);
+  });
+
+  it('returns empty array when n <= 0', () => {
+    using store = new EventStore(':memory:');
+
+    store.append(makeInput({ toolCallId: 'tc-1' }));
+    store.append(makeInput({ toolCallId: 'tc-2', type: 'workflow.step.exit' }));
+
+    expect(store.lastNAny(0)).toHaveLength(0);
+    expect(store.lastNAny(-1)).toHaveLength(0);
+  });
+});
+
+// ===========================================================================
 // transaction
 // ===========================================================================
 
@@ -465,6 +639,8 @@ describe('migrateEvent', () => {
     actor: 'orchestrator',
     parent_seq: null,
     idempotency_key: 'test:1:workflow.start',
+    session_id: 's1',
+    project_id: null,
   };
 
   it('returns the same row when already at target version', () => {
@@ -502,5 +678,571 @@ describe('system idempotency key', () => {
     expect(row).not.toBeNull();
     const expectedMs = Date.parse(ts);
     expect(row!.idempotency_key).toBe(`sess-1:${expectedMs}:session.heartbeat`);
+  });
+});
+
+// ===========================================================================
+// Counter idempotency kind
+// ===========================================================================
+
+describe('counter idempotency key', () => {
+  it('generates key from sessionId, timestampMs, eventType, and counter', () => {
+    using store = new EventStore(':memory:');
+
+    const ts = '2026-06-15T12:30:00.000Z';
+    const row = store.append(
+      makeCounterInput({ ts, type: 'session.heartbeat', counter: 0 }),
+    );
+
+    expect(row).not.toBeNull();
+    const expectedMs = Date.parse(ts);
+    expect(row!.idempotency_key).toBe(
+      `sess-1:${expectedMs}:session.heartbeat:0`,
+    );
+  });
+
+  it('same timestamp + type + counter collides (ON CONFLICT returns null)', () => {
+    using store = new EventStore(':memory:');
+
+    const ts = '2026-06-15T12:30:00.000Z';
+    const first = store.append(makeCounterInput({ ts, counter: 0 }));
+    const dup = store.append(makeCounterInput({ ts, counter: 0 }));
+
+    expect(first).not.toBeNull();
+    expect(dup).toBeNull();
+    expect(store.eventCount()).toBe(1);
+  });
+
+  it('same timestamp + type with counter+1 disambiguates — both persist', () => {
+    using store = new EventStore(':memory:');
+
+    const ts = '2026-06-15T12:30:00.000Z';
+    const r0 = store.append(makeCounterInput({ ts, counter: 0 }));
+    const r1 = store.append(makeCounterInput({ ts, counter: 1 }));
+
+    expect(r0).not.toBeNull();
+    expect(r1).not.toBeNull();
+    expect(r0!.idempotency_key).toBe(
+      `sess-1:${Date.parse(ts)}:session.heartbeat:0`,
+    );
+    expect(r1!.idempotency_key).toBe(
+      `sess-1:${Date.parse(ts)}:session.heartbeat:1`,
+    );
+    expect(store.eventCount()).toBe(2);
+  });
+
+  it('counter is required when kind === "counter" — omitting it is a compile-time error', () => {
+    using store = new EventStore(':memory:');
+
+    // Discriminated-union refinement forbids `counter`-kind inputs
+    // without a `counter` field. The `@ts-expect-error` below asserts
+    // the type error fires; at runtime the key formula would produce
+    // `:undefined`, which is still unique enough to not crash the
+    // UNIQUE constraint but is clearly wrong — the type guard is the
+    // real protection here.
+    const bad = {
+      ts: '2026-01-01T00:00:00.000Z',
+      type: 'session.heartbeat',
+      actor: 'system',
+      idempotencyKind: 'counter' as const,
+      sessionId: 'sess-1',
+      // counter intentionally omitted
+    };
+    // @ts-expect-error — counter is required when kind === 'counter'
+    const row = store.append(bad);
+    // The cast path succeeded — assert the formula degraded predictably
+    // so future readers understand the tsc gate is the real protection.
+    expect(row).not.toBeNull();
+    expect(row!.idempotency_key).toBe(
+      `sess-1:${Date.parse('2026-01-01T00:00:00.000Z')}:session.heartbeat:undefined`,
+    );
+  });
+
+  it('system and counter keys for the same (sessionId, ts, type) are distinct', () => {
+    using store = new EventStore(':memory:');
+
+    const ts = '2026-06-15T12:30:00.000Z';
+    const sys = store.append(makeSystemInput({ ts }));
+    const cnt = store.append(makeCounterInput({ ts, counter: 0 }));
+
+    expect(sys).not.toBeNull();
+    expect(cnt).not.toBeNull();
+    expect(sys!.idempotency_key).not.toBe(cnt!.idempotency_key);
+  });
+});
+
+// ===========================================================================
+// aggregateDelegationCosts — named cost-rollup query surface
+// ===========================================================================
+
+/**
+ * Seed one `delegation.complete` event into the given store. Mirrors the
+ * `seedDelegationComplete` helper in status.test.ts but writes through the
+ * provided store handle so tests can compose a mixed-type fixture in a
+ * single in-memory database.
+ */
+function appendDelegationComplete(
+  store: EventStore,
+  opts: {
+    readonly sessionId: string;
+    readonly subagentId: string;
+    readonly step: string;
+    readonly ts: string;
+    readonly toolCallId: string;
+    readonly data: Readonly<Record<string, unknown>>;
+  },
+): void {
+  store.append({
+    ts: opts.ts,
+    type: 'delegation.complete',
+    step: opts.step,
+    data: JSON.stringify(opts.data),
+    actor: 'orchestrator',
+    parent_seq: null,
+    idempotencyKind: 'tool-call',
+    toolCallId: opts.toolCallId,
+    sessionId: opts.sessionId,
+  });
+}
+
+describe('aggregateDelegationCosts', () => {
+  it('returns an empty array when the events table has no rows', () => {
+    using store = new EventStore(':memory:');
+
+    const rows = store.aggregateDelegationCosts();
+
+    expect(rows).toEqual([]);
+  });
+
+  it('returns one row per delegation.complete event in seq ASC order', () => {
+    using store = new EventStore(':memory:');
+
+    appendDelegationComplete(store, {
+      sessionId: 'sess-agg',
+      subagentId: 'sub-1',
+      step: 'ideation',
+      ts: '2026-04-18T10:00:00.000Z',
+      toolCallId: 'tc-1',
+      data: {
+        subagentId: 'sub-1',
+        model: 'claude-opus-4-7',
+        tokensUsed: {
+          input_tokens: 1_000_000,
+          output_tokens: 0,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+        },
+      },
+    });
+    appendDelegationComplete(store, {
+      sessionId: 'sess-agg',
+      subagentId: 'sub-2',
+      step: 'plan',
+      ts: '2026-04-18T10:01:00.000Z',
+      toolCallId: 'tc-2',
+      data: {
+        subagentId: 'sub-2',
+        sizeProxyBytes: 10_000,
+      },
+    });
+    appendDelegationComplete(store, {
+      sessionId: 'sess-agg',
+      subagentId: 'sub-3',
+      step: 'execution',
+      ts: '2026-04-18T10:02:00.000Z',
+      toolCallId: 'tc-3',
+      data: {
+        subagentId: 'sub-3',
+        model: 'claude-sonnet-4-5',
+        tokensUsed: {
+          input_tokens: 500_000,
+          output_tokens: 0,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+        },
+      },
+    });
+
+    const rows = store.aggregateDelegationCosts();
+
+    expect(rows).toHaveLength(3);
+    // seq ASC mirrors append order
+    expect(rows[0]?.subagentId).toBe('sub-1');
+    expect(rows[0]?.step).toBe('ideation');
+    expect(rows[0]?.model).toBe('claude-opus-4-7');
+    expect(rows[0]?.tokensJson).not.toBeNull();
+    expect(rows[0]?.bytes).toBeNull();
+
+    expect(rows[1]?.subagentId).toBe('sub-2');
+    expect(rows[1]?.step).toBe('plan');
+    expect(rows[1]?.tokensJson).toBeNull();
+    expect(rows[1]?.bytes).toBe(10_000);
+
+    expect(rows[2]?.subagentId).toBe('sub-3');
+    expect(rows[2]?.step).toBe('execution');
+    expect(rows[2]?.model).toBe('claude-sonnet-4-5');
+  });
+
+  it('filters out events whose type is not delegation.complete', () => {
+    using store = new EventStore(':memory:');
+
+    // One delegation.complete that should appear in the rollup
+    appendDelegationComplete(store, {
+      sessionId: 'sess-filter',
+      subagentId: 'sub-included',
+      step: 'plan',
+      ts: '2026-04-18T11:00:00.000Z',
+      toolCallId: 'tc-included',
+      data: {
+        subagentId: 'sub-included',
+        model: 'claude-opus-4-7',
+        tokensUsed: {
+          input_tokens: 100,
+          output_tokens: 0,
+          cache_read_input_tokens: 0,
+          cache_creation_input_tokens: 0,
+        },
+      },
+    });
+
+    // Noise: other event types that MUST be filtered out
+    store.append({
+      ts: '2026-04-18T11:01:00.000Z',
+      type: 'workflow.start',
+      step: null,
+      data: JSON.stringify({
+        sessionId: 'sess-filter',
+        timestamp: '2026-04-18T11:01:00.000Z',
+      }),
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-start',
+      sessionId: 'sess-filter',
+    });
+    store.append({
+      ts: '2026-04-18T11:02:00.000Z',
+      type: 'delegation.spawn',
+      step: 'plan',
+      data: JSON.stringify({
+        subagentId: 'sub-other',
+        agentType: 'executor',
+        step: 'plan',
+      }),
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-spawn',
+      sessionId: 'sess-filter',
+    });
+
+    const rows = store.aggregateDelegationCosts();
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.subagentId).toBe('sub-included');
+    expect(rows[0]?.step).toBe('plan');
+  });
+});
+
+// ===========================================================================
+// ReadStore / WriteStore — structural read-only enforcement (#97)
+//
+// The pair of interfaces is the type-level guarantee that read-only callers
+// (prompt compilers, pathway detector, cost rollup, state derivation) cannot
+// accidentally invoke write methods. Runtime behaviour is unchanged — this
+// block only exercises `tsc`'s view of the contract.
+//
+// Each `@ts-expect-error` assertion MUST trigger a real compile error; if it
+// doesn't, `tsc` flags the annotation as unused, which fails the typecheck
+// gate. That "unused-directive" mode is what turns the assertion into an
+// enforceable structural check rather than a static-only comment.
+// ===========================================================================
+
+describe('ReadStore / WriteStore — structural read-only enforcement (#97)', () => {
+  it('rejects write calls on a ReadStore reference at compile time', () => {
+    using store = new EventStore(':memory:');
+    const readOnly: ReadStore = store;
+
+    // A legal read — lastN is part of the ReadStore surface.
+    expect(readOnly.lastN('workflow.start', 1)).toEqual([]);
+
+    // @ts-expect-error — `append` is not part of ReadStore; only WriteStore.
+    readOnly.append;
+
+    // @ts-expect-error — `transaction` is not part of ReadStore.
+    readOnly.transaction;
+
+    // @ts-expect-error — `close` is not part of ReadStore.
+    readOnly.close;
+  });
+
+  it('accepts write calls on a WriteStore reference', () => {
+    using store = new EventStore(':memory:');
+    const writeable: WriteStore = store;
+
+    // Structural assertion — both read and write methods are available.
+    expect(typeof writeable.append).toBe('function');
+    expect(typeof writeable.transaction).toBe('function');
+    expect(typeof writeable.close).toBe('function');
+    expect(typeof writeable.lastN).toBe('function');
+  });
+});
+
+// ===========================================================================
+// Schema v5 — session_id + project_id column presence and stamping (#118)
+//
+// Pass 2's DRIFT-3 fix lifts the two partition keys out of the
+// `idempotency_key` string. Every fresh-write row must carry both
+// columns; a store opened against a legacy v4 file must ALTER the
+// columns in and backfill known-null rows. These tests exercise the
+// on-disk shape — `:memory:` stores cannot see the session directory
+// so they carry `null` partition keys by design.
+// ===========================================================================
+
+/**
+ * Make a tmpdir-scoped session directory with a valid `metadata.json`,
+ * returning the path to the directory + its `gobbi.db` child. Caller is
+ * responsible for rmSync'ing the tmpdir after the test.
+ */
+function makeSessionDir(
+  sessionId: string,
+  projectRoot: string,
+): { readonly sessionDir: string; readonly dbPath: string } {
+  const sessionDir = join(
+    mkdtempSync(join(tmpdir(), 'gobbi-store-partition-')),
+    sessionId,
+  );
+  mkdirSync(sessionDir, { recursive: true });
+  const metadata = {
+    schemaVersion: 2,
+    sessionId,
+    createdAt: '2026-04-21T00:00:00.000Z',
+    projectRoot,
+    techStack: [],
+    configSnapshot: { task: '', evalIdeation: false, evalPlan: false, context: '' },
+  };
+  writeFileSync(
+    join(sessionDir, 'metadata.json'),
+    JSON.stringify(metadata, null, 2),
+    'utf8',
+  );
+  return { sessionDir, dbPath: join(sessionDir, 'gobbi.db') };
+}
+
+describe('schema v5 — session_id + project_id columns', () => {
+  it('PRAGMA table_info(events) exposes both partition-key columns on a fresh database', () => {
+    using store = new EventStore(':memory:');
+
+    // The EventStore private db is not exposed, but we can re-open the
+    // same `:memory:` connection scope via a sibling Database — except
+    // :memory: databases are per-connection. Instead, open a fresh
+    // connection against a separate :memory: and run the constructor's
+    // schema path through the public EventStore.
+    //
+    // Concretely: append one event to force the stmt cache to prepare
+    // against the v5 schema, then pull the column names via a fresh
+    // introspection query on the same store's db. We cannot reach the
+    // private `db` field, so we open another on-disk path, introspect
+    // it, and rely on the constructor's behaviour being deterministic.
+    const row = store.append(makeInput());
+    expect(row).not.toBeNull();
+
+    // Re-run the column introspection via a freshly-constructed file-
+    // based store to confirm the CREATE TABLE statement on disk matches.
+    const { sessionDir, dbPath } = makeSessionDir('sess-pragma', '/tmp/my-repo');
+    try {
+      using filestore = new EventStore(dbPath);
+      // Append once to keep the store alive and the schema frozen.
+      filestore.append({
+        ts: '2026-04-21T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-pragma',
+          timestamp: '2026-04-21T00:00:00.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-pragma-1',
+        sessionId: 'sess-pragma',
+      });
+
+      // Read the on-disk schema through a sibling connection — the
+      // store holds a writer lock, but PRAGMA is a read-only query and
+      // WAL mode permits a second connection to inspect it.
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface ColumnInfo { readonly name: string }
+        const cols = inspector
+          .query<ColumnInfo, []>('PRAGMA table_info(events)')
+          .all();
+        const names = new Set(cols.map((c) => c.name));
+        expect(names.has('session_id')).toBe(true);
+        expect(names.has('project_id')).toBe(true);
+        // Sanity — the legacy columns must still be present.
+        expect(names.has('seq')).toBe(true);
+        expect(names.has('idempotency_key')).toBe(true);
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('fresh-session append stamps session_id (dir basename) + project_id (basename(projectRoot))', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-stamp',
+      '/home/alice/projects/my-repo',
+    );
+    try {
+      using store = new EventStore(dbPath);
+      store.append({
+        ts: '2026-04-21T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-stamp',
+          timestamp: '2026-04-21T00:00:00.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-stamp-1',
+        sessionId: 'sess-stamp',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly seq: number;
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const rows = inspector
+          .query<PartitionRow, []>(
+            'SELECT seq, session_id, project_id FROM events ORDER BY seq ASC',
+          )
+          .all();
+        // workflow init would normally pre-seed 2 rows, but this raw
+        // EventStore construction does not — only the appended row is
+        // present.
+        expect(rows).toHaveLength(1);
+        expect(rows[0]?.session_id).toBe('sess-stamp');
+        // `basename('/home/alice/projects/my-repo')` — lifted from
+        // metadata.json at store-open time.
+        expect(rows[0]?.project_id).toBe('my-repo');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('missing metadata.json → session_id stamped from dir basename, project_id NULL', () => {
+    // Same shape as `makeSessionDir` but WITHOUT writing metadata.json.
+    const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-store-nometa-'));
+    const sessionDir = join(tmpRoot, 'sess-nometa');
+    mkdirSync(sessionDir, { recursive: true });
+    const dbPath = join(sessionDir, 'gobbi.db');
+    try {
+      using store = new EventStore(dbPath);
+      store.append({
+        ts: '2026-04-21T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-nometa',
+          timestamp: '2026-04-21T00:00:00.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-nometa-1',
+        sessionId: 'sess-nometa',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        // session_id still derives from the directory basename — metadata
+        // absence does not gate it.
+        expect(row?.session_id).toBe('sess-nometa');
+        // project_id left NULL — absence of metadata.json is a legitimate
+        // state during test setup or a partially-initialised session.
+        expect(row?.project_id).toBeNull();
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('malformed metadata.json → project_id NULL (silent, no throw)', () => {
+    const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-store-bad-meta-'));
+    const sessionDir = join(tmpRoot, 'sess-bad-meta');
+    mkdirSync(sessionDir, { recursive: true });
+    const dbPath = join(sessionDir, 'gobbi.db');
+    // Write garbage instead of JSON — the store constructor must not throw.
+    writeFileSync(join(sessionDir, 'metadata.json'), 'not { json at all', 'utf8');
+    try {
+      using store = new EventStore(dbPath);
+      store.append({
+        ts: '2026-04-21T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: JSON.stringify({
+          sessionId: 'sess-bad-meta',
+          timestamp: '2026-04-21T00:00:00.000Z',
+        }),
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-bad-meta-1',
+        sessionId: 'sess-bad-meta',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        expect(row?.session_id).toBe('sess-bad-meta');
+        expect(row?.project_id).toBeNull();
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  it(':memory: store leaves both partition keys NULL (no session dir to resolve)', () => {
+    using store = new EventStore(':memory:');
+    const row = store.append(makeSystemInput({ sessionId: 'sess-mem' }));
+    expect(row).not.toBeNull();
+    // The constructor could not resolve a session directory, so
+    // `this.sessionId` and `this.projectRootBasename` are null. The
+    // append fallback uses `input.sessionId` so the row still carries a
+    // sensible value; project_id stays NULL.
+    expect(row!.session_id).toBe('sess-mem');
+    expect(row!.project_id).toBeNull();
   });
 });

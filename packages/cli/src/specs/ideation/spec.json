@@ -1,0 +1,114 @@
+{
+  "$schema": "https://gobbi.dev/schemas/step-spec/v1.json",
+  "version": 1,
+  "meta": {
+    "description": "Ideation — PI agents explore what to do across innovative and best-practice stances, then the orchestrator synthesizes a single direction.",
+    "substates": ["discussing", "researching"],
+    "allowedAgentTypes": ["__pi"],
+    "maxParallelAgents": 2,
+    "requiredSkills": ["_gotcha"],
+    "optionalSkills": ["_claude"],
+    "expectedArtifacts": ["innovative.md", "best.md", "ideation.md"],
+    "completionSignal": "SubagentStop"
+  },
+  "transitions": [
+    {
+      "to": "planning",
+      "condition": "evalIdeationDisabled",
+      "label": "ideation exit → planning (eval skipped)"
+    },
+    {
+      "to": "ideation_eval",
+      "condition": "evalIdeationEnabled",
+      "label": "ideation exit → optional ideation_eval"
+    }
+  ],
+  "delegation": {
+    "agents": [
+      {
+        "role": "innovative",
+        "stance": "innovative",
+        "modelTier": "opus",
+        "effort": "max",
+        "skills": [],
+        "artifactTarget": "innovative.md",
+        "blockRef": "pi.innovative"
+      },
+      {
+        "role": "best",
+        "stance": "best-practice",
+        "modelTier": "opus",
+        "effort": "max",
+        "skills": [],
+        "artifactTarget": "best.md",
+        "blockRef": "pi.best"
+      }
+    ]
+  },
+  "tokenBudget": {
+    "staticPrefix": 0.4,
+    "session": 0.1,
+    "instructions": 0.2,
+    "artifacts": 0.1,
+    "materials": 0.2
+  },
+  "blocks": {
+    "static": [
+      {
+        "id": "role",
+        "content": "You are the orchestrator of the Ideation step. Your job is to coordinate two parallel PI (perspective-informed) agents — one innovative, one best-practice — and synthesize their findings into a single shared direction the user approves before the workflow moves to planning.\n\nYou are not the ideator yourself. The PI agents ideate; you frame the problem, delegate, discuss the options with the user, and synthesize."
+      },
+      {
+        "id": "principles",
+        "content": "Ideation principles:\n\n- Two stances, not one. Innovative explores novel approaches; best-practice grounds the work in proven patterns. Neither is correct alone — the synthesis is where the direction emerges.\n- Discuss before delegating. Talk to the user about the problem shape, constraints, and priorities. Use AskUserQuestion for every decision point. A detailed prompt to the PI agents produces detailed ideation; a vague prompt produces vague options.\n- Synthesize, do not concatenate. The output `ideation.md` is one chosen direction, not both stances pasted together. When the stances conflict, surface the tradeoff to the user and decide together.\n- Never evaluate your own synthesis. If evaluation is enabled for this step, the CLI will transition to `ideation_eval` and spawn independent evaluator agents after your synthesis lands."
+      },
+      {
+        "id": "scope-boundary",
+        "content": "Scope boundary:\n\n- Stay within the Ideation step. Do not begin decomposition or implementation — that is the Plan and Execution steps' job.\n- Do not load orchestration, discussion, or ideation skills as content — their behavior is already encoded in this prompt. Load only domain skills the PI agents need for the specific problem.\n- Note adjacent improvements in the ideation artifact, but do not implement them now. The Plan step decides what belongs in scope."
+      }
+    ],
+    "conditional": [
+      {
+        "id": "feedback-context",
+        "content": "Feedback round context:\n\nA prior evaluation of this step returned a revise verdict. Before re-running the PI agents, read the evaluator findings under `evaluation/` in the session directory. Ask the user which findings to address, which to defer, and which to disagree with. Re-run ideation only after the revision scope is clear — do not blindly re-spawn the PI agents on the original prompt.",
+        "when": "feedbackRoundActive"
+      },
+      {
+        "id": "evaluation-deciding",
+        "content": "Evaluation decision point:\n\nThe PI agents have completed and you have synthesized `ideation.md`. Before exiting the step, ask the user whether to run Ideation evaluation. Use AskUserQuestion with two options: skip evaluation (recommended when the synthesis is clearly aligned with user intent) or run evaluation (recommended when the direction is novel, risky, or touches multiple architectural surfaces). Wait for the user decision before emitting the completion signal.",
+        "when": "ideationSynthesized"
+      },
+      {
+        "id": "spawn-ready",
+        "content": "Spawn-readiness guidance:\n\nYou are about to spawn the two PI agents in parallel. Before calling the Agent tool, confirm the delegation prompt contains the problem framing, constraints, user priorities, and the stance label. Spawn both agents in a single message — parallel dispatch is cheaper than sequential because their execution does not depend on each other.",
+        "when": "piAgentsToSpawn"
+      }
+    ],
+    "delegation": {
+      "pi.innovative": {
+        "id": "pi.innovative",
+        "content": "You are a PI agent working the innovative stance.\n\nYour goal is to produce `innovative.md` — a depth-first, divergent exploration of what this problem could become if the most creative constraints were lifted. Challenge the default framing. Propose approaches that are unusual, novel, or that reshape the problem itself rather than solve its surface.\n\nApproach:\n\n- Question the problem statement before accepting it. What assumption is load-bearing? What would change if it were false?\n- Propose at least three distinct approaches. Each approach should have a clear first-order shape, an honest tradeoff note, and a sketched decision rationale.\n- Favor conceptual clarity over completeness. A strong idea explored halfway beats two shallow ideas each explored a quarter.\n- Do not optimize for compatibility with the current codebase. That is the best-practice agent's job. Your job is the frontier.\n\nOutput: `innovative.md` under the session's ideation directory. Include a brief stance statement at the top so the synthesis step knows which perspective authored it."
+      },
+      "pi.best": {
+        "id": "pi.best",
+        "content": "You are a PI agent working the best-practice stance.\n\nYour goal is to produce `best.md` — a grounded exploration of what this problem becomes when proven patterns, established conventions, and reliability are the primary lens. Propose approaches that are safe, reversible, and aligned with how similar problems have been solved in the codebase or the wider ecosystem.\n\nApproach:\n\n- Name the pattern you are applying. Cite where the pattern is already used (codebase, upstream library, well-known reference).\n- Propose at least three distinct approaches. Each approach should name its pattern, show how it maps onto the problem, and state its operational tradeoff.\n- Favor reversibility. A change that can be rolled back in one commit beats a change that requires a migration to undo.\n- Do not optimize for novelty. The innovative agent handles the frontier. Your job is the steady baseline against which novelty is weighed.\n\nOutput: `best.md` under the session's ideation directory. Include a brief stance statement at the top so the synthesis step knows which perspective authored it."
+      }
+    },
+    "synthesis": [
+      {
+        "id": "synthesis",
+        "content": "Synthesis instructions:\n\nAfter both PI agents complete, produce `ideation.md` — one chosen direction, not a concatenation of both stances. Your synthesis process:\n\n1. Read both `innovative.md` and `best.md` in full. Do not skim. Overlaps and conflicts are what the synthesis is actually about.\n2. Extract the options table. List every distinct approach across both artifacts with a one-line summary, a stance tag, and an honest tradeoff. Deduplicate near-identical approaches; keep the clearer articulation.\n3. Discuss the options with the user via AskUserQuestion. Recommend one option first with a clear rationale. The user decides which direction to take — never auto-select.\n4. Write `ideation.md` with the chosen direction, the reasoning that led there, and the options that were considered but not selected with their tradeoffs. Future steps read this file; it is the record of why this direction was taken over the alternatives.\n5. If the evaluation gate is enabled for this step, the CLI will spawn evaluator agents after your synthesis lands. Do not evaluate your own synthesis."
+      }
+    ],
+    "completion": {
+      "instruction": "Emit the SubagentStop completion signal once `ideation.md` is written, the user has approved the chosen direction, and (if evaluation is enabled) the user has decided whether to run ideation_eval.",
+      "criteria": [
+        "innovative.md is written to the session's ideation directory by the innovative PI agent",
+        "best.md is written to the session's ideation directory by the best-practice PI agent",
+        "ideation.md is written by the orchestrator with a single chosen direction and a record of the options considered",
+        "the user has approved the chosen direction via AskUserQuestion",
+        "the user has decided whether to run ideation_eval (if the eval gate is enabled for this session)"
+      ]
+    }
+  }
+}

@@ -37,6 +37,7 @@ Options:
 import { sendNotifications } from '../lib/notify.js';
 
 import type { NotifyOptions } from '../lib/notify.js';
+import type { NotifyEvent } from '../lib/settings.js';
 
 // ---------------------------------------------------------------------------
 // Hook payload shapes
@@ -90,11 +91,14 @@ function sessionPrefix(sessionId: string): string {
  * Required because exactOptionalPropertyTypes forbids passing `undefined`
  * for optional string properties.
  */
-function buildOptions(sessionId: string | undefined, projectDir: string | undefined): NotifyOptions {
-  const opts: NotifyOptions = {};
-  if (sessionId !== undefined) opts.sessionId = sessionId;
-  if (projectDir !== undefined) opts.projectDir = projectDir;
-  return opts;
+function buildOptions(
+  sessionId: string | undefined,
+  projectDir: string | undefined,
+): NotifyOptions {
+  return {
+    ...(sessionId !== undefined ? { sessionId } : {}),
+    ...(projectDir !== undefined ? { projectDir } : {}),
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -170,7 +174,11 @@ async function runNotifySend(args: string[]): Promise<void> {
   const projectDir = process.env['CLAUDE_PROJECT_DIR'];
   const sessionId = process.env['CLAUDE_SESSION_ID'];
 
-  await sendNotifications(title, message.trim(), buildOptions(sessionId, projectDir));
+  // `send` is the generic manual entry point — no dedicated NotifyEvent maps
+  // to "user invoked `gobbi notify send` directly". `'error'` is the closest
+  // catch-all; users wanting silence can set `events: []` on their channels.
+  const event: NotifyEvent = 'error';
+  await sendNotifications(title, message.trim(), event, buildOptions(sessionId, projectDir));
 }
 
 // ---------------------------------------------------------------------------
@@ -205,7 +213,14 @@ async function runNotifyAttention(): Promise<void> {
   const message = `${msg} Session \`${sessionPrefix(sessionId)}\`.`;
   const projectDir = process.env['CLAUDE_PROJECT_DIR'];
 
-  await sendNotifications('Attention Needed', message, buildOptions(sessionId, projectDir));
+  // Attention hooks (permission prompt, idle prompt, MCP elicitation) are
+  // user-attention signals — closest NotifyEvent is `error`.
+  await sendNotifications(
+    'Attention Needed',
+    message,
+    'error',
+    buildOptions(sessionId, projectDir),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -245,7 +260,12 @@ async function runNotifyError(): Promise<void> {
 
   const projectDir = process.env['CLAUDE_PROJECT_DIR'];
 
-  await sendNotifications('Error Alert', message, buildOptions(sessionId, projectDir));
+  await sendNotifications(
+    'Error Alert',
+    message,
+    'error',
+    buildOptions(sessionId, projectDir),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -270,7 +290,12 @@ async function runNotifyCompletion(): Promise<void> {
   const message = `Session \`${sessionPrefix(sessionId)}\` finished in ${project}.`;
   const projectDir = process.env['CLAUDE_PROJECT_DIR'];
 
-  await sendNotifications('Task Complete', message, buildOptions(sessionId, projectDir));
+  await sendNotifications(
+    'Task Complete',
+    message,
+    'workflow.complete',
+    buildOptions(sessionId, projectDir),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -292,12 +317,22 @@ async function runNotifySession(): Promise<void> {
     case 'SessionStart': {
       const source = payload.source ?? 'unknown';
       const message = `Session started (${source}) in ${project}. Session \`${sessionPrefix(sessionId)}\`.`;
-      await sendNotifications('Session Started', message, buildOptions(sessionId, projectDir));
+      await sendNotifications(
+        'Session Started',
+        message,
+        'workflow.start',
+        buildOptions(sessionId, projectDir),
+      );
       break;
     }
     case 'SessionEnd': {
       const message = `Session ended in ${project}. Session \`${sessionPrefix(sessionId)}\`.`;
-      await sendNotifications('Session Ended', message, buildOptions(sessionId, projectDir));
+      await sendNotifications(
+        'Session Ended',
+        message,
+        'workflow.complete',
+        buildOptions(sessionId, projectDir),
+      );
       break;
     }
     default:
@@ -322,5 +357,10 @@ async function runNotifySubagent(): Promise<void> {
   const message = `Subagent (${agentType}) finished in ${project}. Session \`${sessionPrefix(sessionId)}\`.`;
   const projectDir = process.env['CLAUDE_PROJECT_DIR'];
 
-  await sendNotifications('Subagent Done', message, buildOptions(sessionId, projectDir));
+  await sendNotifications(
+    'Subagent Done',
+    message,
+    'subagent.complete',
+    buildOptions(sessionId, projectDir),
+  );
 }

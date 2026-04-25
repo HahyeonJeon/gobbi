@@ -21,6 +21,16 @@ import { DECISION_EVENTS } from '../events/decision.js';
 import { GUARD_EVENTS } from '../events/guard.js';
 import { SESSION_EVENTS } from '../events/session.js';
 import {
+  CURRENT_SCHEMA_VERSION,
+  migrateEvent,
+  type EventRow,
+} from '../migrations.js';
+import {
+  SyncScheduler,
+  type VerificationTask,
+} from '../verification-scheduler.js';
+import type { VerificationResultData } from '../events/verification.js';
+import {
   createStepTimeoutEvent,
   eventsToReach,
   applyEvents,
@@ -34,8 +44,8 @@ import {
 const ACTIVE_STEP_NAMES = [
   'ideation',
   'ideation_eval',
-  'plan',
-  'plan_eval',
+  'planning',
+  'planning_eval',
   'execution',
   'execution_eval',
   'memorization',
@@ -57,7 +67,7 @@ function arbitraryWorkflowStart(): fc.Arbitrary<Event> {
     type: fc.constant(WORKFLOW_EVENTS.START),
     data: fc.record({
       sessionId: fc.uuid(),
-      timestamp: fc.date().map((d) => d.toISOString()),
+      timestamp: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
     }),
   });
 }
@@ -134,7 +144,7 @@ function arbitraryDelegationSpawn(): fc.Arbitrary<Event> {
       agentType: fc.constantFrom('executor', 'researcher', 'evaluator'),
       step: fc.constantFrom(...ACTIVE_STEP_NAMES),
       subagentId: fc.uuid(),
-      timestamp: fc.date().map((d) => d.toISOString()),
+      timestamp: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
     }),
   });
 }
@@ -223,7 +233,7 @@ function arbitraryEvalVerdict(): fc.Arbitrary<Event> {
         'escalate' as const,
       ),
       loopTarget: fc.option(
-        fc.constantFrom('ideation', 'plan', 'execution'),
+        fc.constantFrom('ideation', 'planning', 'execution'),
         { nil: undefined },
       ),
       evaluatorId: fc.option(fc.uuid(), { nil: undefined }),
@@ -248,7 +258,7 @@ function arbitraryGuardViolation(): fc.Arbitrary<Event> {
       toolName: fc.constantFrom('Write', 'Read', 'Edit', 'Bash'),
       reason: fc.string({ minLength: 1, maxLength: 100 }),
       step: fc.constantFrom(...ACTIVE_STEP_NAMES),
-      timestamp: fc.date().map((d) => d.toISOString()),
+      timestamp: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
     }),
   });
 }
@@ -268,7 +278,7 @@ function arbitraryHeartbeat(): fc.Arbitrary<Event> {
   return fc.record({
     type: fc.constant(SESSION_EVENTS.HEARTBEAT),
     data: fc.record({
-      timestamp: fc.date().map((d) => d.toISOString()),
+      timestamp: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
     }),
   });
 }
@@ -617,19 +627,19 @@ describe('fixtures: STATES snapshots', () => {
     expect(STATES.ideation_eval.currentStep).toBe('ideation_eval');
   });
 
-  it('plan state is at plan step', () => {
-    expect(STATES.plan.currentStep).toBe('plan');
-    expect(STATES.plan.completedSteps).toContain('ideation');
+  it('planning state is at planning step', () => {
+    expect(STATES.planning.currentStep).toBe('planning');
+    expect(STATES.planning.completedSteps).toContain('ideation');
   });
 
-  it('plan_eval state is at plan_eval step', () => {
-    expect(STATES.plan_eval.currentStep).toBe('plan_eval');
+  it('planning_eval state is at planning_eval step', () => {
+    expect(STATES.planning_eval.currentStep).toBe('planning_eval');
   });
 
   it('execution state is at execution step', () => {
     expect(STATES.execution.currentStep).toBe('execution');
     expect(STATES.execution.completedSteps).toContain('ideation');
-    expect(STATES.execution.completedSteps).toContain('plan');
+    expect(STATES.execution.completedSteps).toContain('planning');
   });
 
   it('execution_eval state is at execution_eval step', () => {
@@ -659,8 +669,8 @@ describe('fixtures: eventsToReach round-trip', () => {
     'idle',
     'ideation',
     'ideation_eval',
-    'plan',
-    'plan_eval',
+    'planning',
+    'planning_eval',
     'execution',
     'execution_eval',
     'memorization',
@@ -675,4 +685,188 @@ describe('fixtures: eventsToReach round-trip', () => {
       expect(state.currentStep as string).toBe(step);
     });
   }
+});
+
+// ===========================================================================
+// E.7 properties (per plan §E.7 and research `e7-properties-and-e2e-patterns.md`)
+//
+// Three additional properties exercising PR E surface:
+//
+//   1. Schema v4 identity migration idempotence — `migrateEvent` is
+//      idempotent for any row whose schema_version is in the
+//      registered range (1 .. CURRENT_SCHEMA_VERSION).
+//   2. VerificationResultData JSON round-trip — the event payload
+//      survives JSON.stringify / JSON.parse with deep equality, so
+//      replaying a stream rebuilds the same entries the reducer
+//      originally wrote.
+//   3. SyncScheduler SIGTERM invariant — for any timeoutMs in a small
+//      range, running a sleep command of 2x the timeout reports
+//      `timedOut: true` and returns within `timeoutMs + 3000ms` of
+//      spawn. Spawns real subprocesses; numRuns is capped to keep the
+//      overall suite time bounded.
+// ===========================================================================
+
+describe('properties: schema v4 migration idempotence', () => {
+  it('migrateEvent(migrateEvent(row)) === migrateEvent(row) for any registered schema_version', () => {
+    // Arbitrary row generator — parametrises the fields that the
+    // migrator actually reads (`schema_version`, `data`). Other columns
+    // are filled with plausible-but-opaque values so the returned row is
+    // structurally valid for downstream EventRow consumers.
+    const arbitraryEventRow: fc.Arbitrary<EventRow> = fc
+      .record({
+        seq: fc.nat({ max: 100_000 }),
+        ts: fc
+          .integer({
+            min: Date.UTC(2020, 0, 1),
+            max: Date.UTC(2030, 11, 31),
+          })
+          .map((ms) => new Date(ms).toISOString()),
+        schema_version: fc.integer({
+          min: 1,
+          max: CURRENT_SCHEMA_VERSION,
+        }),
+        type: fc.constantFrom(
+          WORKFLOW_EVENTS.START,
+          WORKFLOW_EVENTS.STEP_EXIT,
+          DELEGATION_EVENTS.COMPLETE,
+          ARTIFACT_EVENTS.WRITE,
+        ),
+        step: fc.option(
+          fc.constantFrom(
+            'idle',
+            'ideation',
+            'planning',
+            'execution',
+            'memorization',
+          ),
+          { nil: null },
+        ),
+        data: fc
+          .record({
+            foo: fc.option(fc.string({ maxLength: 20 }), { nil: undefined }),
+            n: fc.option(fc.nat({ max: 1000 }), { nil: undefined }),
+          })
+          .map((obj) => JSON.stringify(obj)),
+        actor: fc.constantFrom('cli', 'hook', 'user', 'system'),
+        parent_seq: fc.option(fc.nat({ max: 100_000 }), { nil: null }),
+        idempotency_key: fc.string({ minLength: 1, maxLength: 60 }),
+        session_id: fc.option(fc.string({ minLength: 1, maxLength: 40 }), {
+          nil: null,
+        }),
+        project_id: fc.option(fc.string({ minLength: 1, maxLength: 40 }), {
+          nil: null,
+        }),
+      });
+
+    fc.assert(
+      fc.property(arbitraryEventRow, (row) => {
+        const once = migrateEvent(row);
+        const twice = migrateEvent(once);
+        // Deep-equal — the registered hops are identities on event data,
+        // so once and twice must agree on every field including the JSON
+        // payload (string-compared).
+        expect(twice).toEqual(once);
+      }),
+      { numRuns: 100 },
+    );
+  });
+});
+
+describe('properties: VerificationResultData JSON round-trip', () => {
+  it('JSON.parse(JSON.stringify(data)) deeply equals the original', () => {
+    const arbitraryVerificationResultData: fc.Arbitrary<VerificationResultData> =
+      fc.record({
+        subagentId: fc.uuid(),
+        command: fc.string({ minLength: 1, maxLength: 80 }),
+        commandKind: fc.constantFrom(
+          'lint' as const,
+          'test' as const,
+          'typecheck' as const,
+          'build' as const,
+          'format' as const,
+          'custom' as const,
+        ),
+        // Scheduler contract: exitCode ∈ {-2, -1, 0..255}. Slightly
+        // wider bounds cover forward-compat without costing shrink
+        // time.
+        exitCode: fc.integer({ min: -2, max: 255 }),
+        durationMs: fc.nat({ max: 1_000_000 }),
+        policy: fc.constantFrom('inform' as const, 'gate' as const),
+        timedOut: fc.boolean(),
+        // fast-check v4 removed the `hexaString` shorthand; build a
+        // 64-char hex digest from a fixed alphabet so the arbitrary
+        // stays deterministic across fast-check upgrades.
+        stdoutDigest: fc
+          .array(
+            fc.constantFrom(...'0123456789abcdef'.split('')),
+            { minLength: 64, maxLength: 64 },
+          )
+          .map((chars) => chars.join('')),
+        stderrDigest: fc
+          .array(
+            fc.constantFrom(...'0123456789abcdef'.split('')),
+            { minLength: 64, maxLength: 64 },
+          )
+          .map((chars) => chars.join('')),
+        timestamp: fc
+          .integer({
+            min: Date.UTC(2020, 0, 1),
+            max: Date.UTC(2030, 11, 31),
+          })
+          .map((ms) => new Date(ms).toISOString()),
+      });
+
+    fc.assert(
+      fc.property(arbitraryVerificationResultData, (data) => {
+        const json = JSON.stringify(data);
+        const parsed = JSON.parse(json) as VerificationResultData;
+        expect(parsed).toEqual(data);
+      }),
+      { numRuns: 100 },
+    );
+  });
+});
+
+describe('properties: scheduler SIGTERM invariant', () => {
+  it(
+    'timeoutMs x2 sleep yields timedOut=true within timeoutMs + 3000ms',
+    async () => {
+      // Spawns real `sleep` subprocesses — expensive. Keep `numRuns`
+      // small; the scheduler test file already covers the ladder in
+      // detail. The property here guards the CONTRACT (timeout
+      // invariant) against any regression a bulk test refactor might
+      // introduce.
+      await fc.assert(
+        fc.asyncProperty(
+          fc.integer({ min: 50, max: 500 }),
+          async (timeoutMs) => {
+            const scheduler = new SyncScheduler();
+            const task: VerificationTask = {
+              subagentId: 'prop-sigterm',
+              // Sleep accepts fractional seconds on GNU coreutils; the
+              // test host runs Linux per `env` block in the briefing so
+              // this is safe. 2x the timeout guarantees the scheduler
+              // fires before the natural exit.
+              command: `sleep ${(timeoutMs * 2) / 1000}`,
+              commandKind: 'custom',
+              cwd: process.cwd(),
+              timeoutMs,
+              policy: 'inform',
+            };
+            const controller = new AbortController();
+            const start = Date.now();
+            const outcome = await scheduler.run(task, controller.signal);
+            const elapsed = Date.now() - start;
+            expect(outcome.timedOut).toBe(true);
+            // Upper bound covers SIGTERM delivery + 2s SIGKILL grace +
+            // generous slack for kernel scheduling. Any regression that
+            // widens the ladder beyond 3s over budget flags here.
+            expect(elapsed).toBeLessThan(timeoutMs + 3000);
+          },
+        ),
+        { numRuns: 3 },
+      );
+    },
+    30_000,
+  );
 });

@@ -99,24 +99,24 @@ describe('normal workflow progression', () => {
   });
 
   it('ideation -> ideation_eval when evalConfig.ideation is true', () => {
-    const state = withEvalConfig(stateAt('ideation'), { ideation: true, plan: false });
+    const state = withEvalConfig(stateAt('ideation'), { ideation: true, planning: false });
     const rule = findTransition('ideation', stepExit('ideation'), state, defaultPredicates);
     expect(rule).not.toBeNull();
     expect(rule!.to).toBe('ideation_eval');
   });
 
   it('ideation -> plan when evalConfig.ideation is false', () => {
-    const state = withEvalConfig(stateAt('ideation'), { ideation: false, plan: false });
+    const state = withEvalConfig(stateAt('ideation'), { ideation: false, planning: false });
     const rule = findTransition('ideation', stepExit('ideation'), state, defaultPredicates);
     expect(rule).not.toBeNull();
-    expect(rule!.to).toBe('plan');
+    expect(rule!.to).toBe('planning');
   });
 
   it('ideation -> plan when evalConfig is null (ideation eval disabled by default)', () => {
     const state = stateAt('ideation');
     const rule = findTransition('ideation', stepExit('ideation'), state, defaultPredicates);
     expect(rule).not.toBeNull();
-    expect(rule!.to).toBe('plan');
+    expect(rule!.to).toBe('planning');
   });
 
   it('ideation_eval -> ideation on revise verdict', () => {
@@ -130,33 +130,33 @@ describe('normal workflow progression', () => {
     const state = stateAt('ideation_eval');
     const rule = findTransition('ideation_eval', verdictPass(), state, defaultPredicates);
     expect(rule).not.toBeNull();
-    expect(rule!.to).toBe('plan');
+    expect(rule!.to).toBe('planning');
   });
 
   it('plan -> plan_eval when evalConfig.plan is true', () => {
-    const state = withEvalConfig(stateAt('plan'), { ideation: false, plan: true });
-    const rule = findTransition('plan', stepExit('plan'), state, defaultPredicates);
+    const state = withEvalConfig(stateAt('planning'), { ideation: false, planning: true });
+    const rule = findTransition('planning', stepExit('planning'), state, defaultPredicates);
     expect(rule).not.toBeNull();
-    expect(rule!.to).toBe('plan_eval');
+    expect(rule!.to).toBe('planning_eval');
   });
 
   it('plan -> execution when evalConfig.plan is false', () => {
-    const state = withEvalConfig(stateAt('plan'), { ideation: false, plan: false });
-    const rule = findTransition('plan', stepExit('plan'), state, defaultPredicates);
+    const state = withEvalConfig(stateAt('planning'), { ideation: false, planning: false });
+    const rule = findTransition('planning', stepExit('planning'), state, defaultPredicates);
     expect(rule).not.toBeNull();
     expect(rule!.to).toBe('execution');
   });
 
   it('plan_eval -> plan on revise verdict', () => {
-    const state = stateAt('plan_eval');
-    const rule = findTransition('plan_eval', verdictRevise(), state, defaultPredicates);
+    const state = stateAt('planning_eval');
+    const rule = findTransition('planning_eval', verdictRevise(), state, defaultPredicates);
     expect(rule).not.toBeNull();
-    expect(rule!.to).toBe('plan');
+    expect(rule!.to).toBe('planning');
   });
 
   it('plan_eval -> execution on pass verdict', () => {
-    const state = stateAt('plan_eval');
-    const rule = findTransition('plan_eval', verdictPass(), state, defaultPredicates);
+    const state = stateAt('planning_eval');
+    const rule = findTransition('planning_eval', verdictPass(), state, defaultPredicates);
     expect(rule).not.toBeNull();
     expect(rule!.to).toBe('execution');
   });
@@ -204,12 +204,12 @@ describe('feedback loops from execution_eval', () => {
     const state = stateAt('execution_eval');
     const rule = findTransition(
       'execution_eval',
-      verdictRevise('plan'),
+      verdictRevise('planning'),
       state,
       defaultPredicates,
     );
     expect(rule).not.toBeNull();
-    expect(rule!.to).toBe('plan');
+    expect(rule!.to).toBe('planning');
   });
 
   it('execution_eval -> execution on revise with loopTarget=execution', () => {
@@ -252,7 +252,7 @@ describe('feedback cap', () => {
     });
     const rule = findTransition(
       'execution_eval',
-      verdictRevise('plan'),
+      verdictRevise('planning'),
       state,
       defaultPredicates,
     );
@@ -335,8 +335,8 @@ describe('error reachability via timeout', () => {
   const activeSteps: WorkflowStep[] = [
     'ideation',
     'ideation_eval',
-    'plan',
-    'plan_eval',
+    'planning',
+    'planning_eval',
     'execution',
     'execution_eval',
     'memorization',
@@ -404,7 +404,7 @@ describe('error recovery', () => {
 
   it('resume from non-error state returns null', () => {
     const state = stateAt('ideation');
-    const rule = findTransition('ideation', resume('plan'), state, defaultPredicates);
+    const rule = findTransition('ideation', resume('planning'), state, defaultPredicates);
     expect(rule).toBeNull();
   });
 });
@@ -416,8 +416,8 @@ describe('error recovery', () => {
 describe('skip transitions', () => {
   const skippableSteps: WorkflowStep[] = [
     'ideation_eval',
-    'plan',
-    'plan_eval',
+    'planning',
+    'planning_eval',
     'execution',
     'execution_eval',
     'memorization',
@@ -523,7 +523,7 @@ describe('invalid transitions', () => {
   });
 
   it('plan rejects verdict events', () => {
-    const rule = findTransition('plan', verdictPass(), stateAt('plan'), defaultPredicates);
+    const rule = findTransition('planning', verdictPass(), stateAt('planning'), defaultPredicates);
     expect(rule).toBeNull();
   });
 
@@ -574,26 +574,26 @@ describe('invalid transitions', () => {
 
 describe('predicate evaluation', () => {
   it('ideation routes to ideation_eval when ideation eval enabled', () => {
-    const state = withEvalConfig(stateAt('ideation'), { ideation: true, plan: true });
+    const state = withEvalConfig(stateAt('ideation'), { ideation: true, planning: true });
     const rule = findTransition('ideation', stepExit('ideation'), state, defaultPredicates);
     expect(rule!.to).toBe('ideation_eval');
   });
 
   it('ideation routes to plan when ideation eval disabled', () => {
-    const state = withEvalConfig(stateAt('ideation'), { ideation: false, plan: true });
+    const state = withEvalConfig(stateAt('ideation'), { ideation: false, planning: true });
     const rule = findTransition('ideation', stepExit('ideation'), state, defaultPredicates);
-    expect(rule!.to).toBe('plan');
+    expect(rule!.to).toBe('planning');
   });
 
   it('plan routes to plan_eval when plan eval enabled', () => {
-    const state = withEvalConfig(stateAt('plan'), { ideation: true, plan: true });
-    const rule = findTransition('plan', stepExit('plan'), state, defaultPredicates);
-    expect(rule!.to).toBe('plan_eval');
+    const state = withEvalConfig(stateAt('planning'), { ideation: true, planning: true });
+    const rule = findTransition('planning', stepExit('planning'), state, defaultPredicates);
+    expect(rule!.to).toBe('planning_eval');
   });
 
   it('plan routes to execution when plan eval disabled', () => {
-    const state = withEvalConfig(stateAt('plan'), { ideation: true, plan: false });
-    const rule = findTransition('plan', stepExit('plan'), state, defaultPredicates);
+    const state = withEvalConfig(stateAt('planning'), { ideation: true, planning: false });
+    const rule = findTransition('planning', stepExit('planning'), state, defaultPredicates);
     expect(rule!.to).toBe('execution');
   });
 
@@ -603,7 +603,7 @@ describe('predicate evaluation', () => {
       evalIdeationEnabled: (s) => s.evalConfig?.ideation === true,
       // evalIdeationDisabled intentionally missing
     };
-    const state = withEvalConfig(stateAt('ideation'), { ideation: false, plan: false });
+    const state = withEvalConfig(stateAt('ideation'), { ideation: false, planning: false });
     const rule = findTransition('ideation', stepExit('ideation'), state, sparseRegistry);
     // evalIdeationEnabled returns false, evalIdeationDisabled is missing -> both fail
     expect(rule).toBeNull();
@@ -627,8 +627,8 @@ describe('validatePredicateReferences', () => {
     // Should reference the specific missing predicate names
     expect(errors.some((e) => e.includes('evalIdeationEnabled'))).toBe(true);
     expect(errors.some((e) => e.includes('evalIdeationDisabled'))).toBe(true);
-    expect(errors.some((e) => e.includes('evalPlanEnabled'))).toBe(true);
-    expect(errors.some((e) => e.includes('evalPlanDisabled'))).toBe(true);
+    expect(errors.some((e) => e.includes('evalPlanningEnabled'))).toBe(true);
+    expect(errors.some((e) => e.includes('evalPlanningDisabled'))).toBe(true);
     expect(errors.some((e) => e.includes('feedbackCapExceeded'))).toBe(true);
   });
 
@@ -636,8 +636,8 @@ describe('validatePredicateReferences', () => {
     const partialRegistry: PredicateRegistry = {
       evalIdeationEnabled: () => false,
       evalIdeationDisabled: () => true,
-      evalPlanEnabled: () => false,
-      evalPlanDisabled: () => true,
+      evalPlanningEnabled: () => false,
+      evalPlanningDisabled: () => true,
       // feedbackCapExceeded intentionally missing
     };
     const errors = validatePredicateReferences(TRANSITION_TABLE, partialRegistry);
@@ -674,7 +674,7 @@ describe('transition table integrity', () => {
 
   it('all transition targets are valid WorkflowStep values', () => {
     const validSteps: ReadonlySet<string> = new Set([
-      'idle', 'ideation', 'ideation_eval', 'plan', 'plan_eval',
+      'idle', 'ideation', 'ideation_eval', 'planning', 'planning_eval',
       'execution', 'execution_eval', 'memorization', 'done', 'error',
     ]);
     for (const rule of TRANSITION_TABLE) {
@@ -691,7 +691,7 @@ describe('transition table integrity', () => {
 describe('initialState', () => {
   it('creates state at idle with correct defaults', () => {
     const state = initialState('sess-123');
-    expect(state.schemaVersion).toBe(1);
+    expect(state.schemaVersion).toBe(4);
     expect(state.sessionId).toBe('sess-123');
     expect(state.currentStep).toBe('idle');
     expect(state.currentSubstate).toBeNull();
@@ -702,5 +702,61 @@ describe('initialState', () => {
     expect(state.violations).toEqual([]);
     expect(state.feedbackRound).toBe(0);
     expect(state.maxFeedbackRounds).toBe(3);
+    expect(state.lastVerdictOutcome).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Compile-time verdict-predicate exclusion (C.3-d)
+//
+// TransitionRule.condition is narrowed to `Exclude<PredicateName,
+// VerdictPredicateName>`. Authoring a rule with `condition: 'verdictPass'`
+// or `condition: 'verdictRevise'` must fail at `tsc`. The `@ts-expect-error`
+// comments below BOTH assert the error and document the hazard — if the
+// narrowing is ever removed, `@ts-expect-error` flips to a typecheck error
+// because it expected an error that no longer exists.
+//
+// This describe block is intentionally empty of runtime behaviour — it is a
+// type-level test container, exercised by `tsc --noEmit`.
+// ---------------------------------------------------------------------------
+
+describe('TransitionRule.condition — verdict-predicate exclusion (type-level)', () => {
+  it('rejects verdictPass as a condition (compile-time)', () => {
+    const _rule: TransitionRule = {
+      from: 'idle',
+      to: 'ideation',
+      trigger: WORKFLOW_EVENTS.START,
+      // @ts-expect-error — verdictPass is a VerdictPredicateName and is excluded
+      // from TransitionRule.condition. Verdict routing uses rule.verdict against
+      // the event payload in findTransition(), not condition-predicate lookup.
+      condition: 'verdictPass',
+      priority: 0,
+    };
+    // The runtime body is a placeholder — `_rule` reference keeps the binding
+    // from being tree-shaken in strict-unused-locals environments.
+    expect(_rule.from).toBe('idle');
+  });
+
+  it('rejects verdictRevise as a condition (compile-time)', () => {
+    const _rule: TransitionRule = {
+      from: 'idle',
+      to: 'ideation',
+      trigger: WORKFLOW_EVENTS.START,
+      // @ts-expect-error — verdictRevise is excluded; use rule.verdict instead.
+      condition: 'verdictRevise',
+      priority: 0,
+    };
+    expect(_rule.to).toBe('ideation');
+  });
+
+  it('accepts non-verdict predicate names (evalIdeationEnabled)', () => {
+    const rule: TransitionRule = {
+      from: 'ideation',
+      to: 'ideation_eval',
+      trigger: WORKFLOW_EVENTS.STEP_EXIT,
+      condition: 'evalIdeationEnabled',
+      priority: 0,
+    };
+    expect(rule.condition).toBe('evalIdeationEnabled');
   });
 });

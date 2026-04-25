@@ -1,0 +1,73 @@
+{
+  "$schema": "https://gobbi.dev/schemas/step-spec/v1.json",
+  "version": 1,
+  "meta": {
+    "description": "Memorization — read the session conversation and artifacts, extract decisions, state, open questions, and gotchas, and write them where the next session can find them. Terminal productive step before the workflow transitions to done.",
+    "allowedAgentTypes": [],
+    "maxParallelAgents": 0,
+    "requiredSkills": ["_gotcha", "_project"],
+    "optionalSkills": ["_claude"],
+    "expectedArtifacts": ["memorization.md"],
+    "completionSignal": "Stop"
+  },
+  "transitions": [
+    {
+      "to": "done",
+      "condition": "always",
+      "label": "memorization complete → done"
+    }
+  ],
+  "delegation": {
+    "agents": []
+  },
+  "tokenBudget": {
+    "staticPrefix": 0.3,
+    "session": 0.1,
+    "instructions": 0.2,
+    "artifacts": 0.3,
+    "materials": 0.1
+  },
+  "blocks": {
+    "static": [
+      {
+        "id": "role",
+        "content": "You are the orchestrator of the Memorization step. Your job is to read the session's produced artifacts and conversation, extract what should persist beyond this session, and commit that to the places where the next session can discover it.\n\nMemorization is orchestrator-authored. You do not delegate; you do not evaluate. You collect, verify the collection is faithful, and write. The artifact you produce here is what a future session reads to resume without re-discovery."
+      },
+      {
+        "id": "principles",
+        "content": "Memorization principles:\n\n- Capture context for session continuity. Decisions made, state at completion, open questions, and gotchas recorded — the next session should be able to resume without re-discovering any of them.\n- Write gotchas before writing the memorization artifact. A gotcha not recorded before the session ends is a gotcha lost. Walk the conversation for corrections, platform quirks, and non-obvious constraints the user surfaced; commit them to the gotcha system first.\n- Ensure project documentation reflects what was done. If the session added files, changed conventions, or set precedent, the project README / design docs / gotcha index must reflect that before the step completes. A memorization artifact that references undocumented changes is a broken handoff.\n- Be faithful to the record, not to the intent. Memorize what happened, including what went wrong, what was deferred, and what the user chose differently from recommendations. Rewriting history optimistically is the failure mode memorization exists to prevent."
+      },
+      {
+        "id": "scope-boundary",
+        "content": "Scope boundary:\n\n- Memorization does not evaluate the work. Execution_eval has already run (it is mandatory); do not re-litigate its verdict here.\n- Memorization does not re-open prior steps. If you find a gap while memorizing, record it as an open question in the memorization artifact — the user decides in the next session whether to loop back.\n- Memorization does not implement deferred work. The Out-of-scope list from the plan, plus any adjacent improvements surfaced during execution, belong in the memorization artifact as named open items, not as new edits.\n- Write only to memorization-scope locations: the session's `memorization/` directory, the project's `gotchas/`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps."
+      },
+      {
+        "id": "artifact-shape",
+        "content": "Memorization artifact shape:\n\nWrite `memorization.md` with the following structure so the next session can read it deterministically:\n\n1. `Summary` — one paragraph: what this session accomplished, in the session's own terms.\n2. `Decisions` — ordered list of the decisions made this session (architectural choices, scope calls, deferrals). Each decision names what was chosen, what was rejected, and why.\n3. `State at completion` — the concrete state the next session inherits: files changed, branches created, PRs opened, tests added, features shipped.\n4. `Open questions` — named questions this session did not resolve, each with a one-line note on who is expected to resolve it and what the next step looks like.\n5. `Gotchas recorded` — a bulleted list pointing at gotcha files written this session, with a one-line summary per gotcha so the next session can grep for the one it needs.\n6. `Pointers` — references to the session's key artifacts (ideation.md, plan.md, execution.md, evaluation.md) so the next session can dive deeper without searching.\n\nThe shape is stable on purpose: future sessions' first action is to read the most recent memorization artifact; a predictable shape keeps resumption fast."
+      }
+    ],
+    "conditional": [
+      {
+        "id": "force-memorization-context",
+        "content": "Force-memorization recovery context:\n\nThis memorization run was entered via the force-memorization recovery pathway — the workflow hit the feedback-round cap at execution_eval and the user opted to persist partial work rather than abort. Treat the memorization artifact as a partial record: explicitly note which plan tasks converged, which did not, and what the accumulated evaluation findings say about the blocked tasks. Future sessions reading this artifact must see that the work is partial — do not smooth the unfinished state into a success narrative.",
+        "when": "feedbackCapExceeded"
+      }
+    ],
+    "delegation": {},
+    "synthesis": [
+      {
+        "id": "synthesis",
+        "content": "Synthesis instructions:\n\nMemorization is orchestrator-authored — no delegated agents contribute. Your synthesis is the memorization artifact itself:\n\n1. Walk the session's conversation end-to-end. Note every correction the user issued, every decision that replaced a recommended option, every deferral. These are the highest-value entries.\n2. Read each step's artifact (`ideation.md`, `plan.md`, `execution.md`, `evaluation.md`) to confirm the decisions and state you are about to record match the durable artifacts — not just your memory of the conversation.\n3. Write gotchas first. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.\n4. Update project documentation for any session-level change (README updates, design doc entries, gotcha index links).\n5. Commit `memorization.md` using the structure in the `Memorization artifact shape` section.\n6. Emit the completion signal — the CLI transitions the workflow to `done` on the `always` transition."
+      }
+    ],
+    "completion": {
+      "instruction": "Emit the Stop completion signal once `memorization.md` is written, gotchas have been committed to the gotcha system, and project documentation reflects the session's durable changes.",
+      "criteria": [
+        "memorization.md is written to the session's memorization directory with Summary, Decisions, State at completion, Open questions, Gotchas recorded, and Pointers sections",
+        "every non-obvious correction from the session has a corresponding gotcha entry in the gotcha system",
+        "project README and design docs reflect any convention, precedent, or scope change the session introduced",
+        "no prior-step artifacts have been modified by this step — memorization is write-forward only"
+      ]
+    }
+  }
+}

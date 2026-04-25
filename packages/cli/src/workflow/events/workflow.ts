@@ -1,8 +1,17 @@
 /**
- * Workflow event category — 8 event types tracking session lifecycle.
+ * Workflow event category — 9 event types tracking session lifecycle.
  *
  * Core events: start, step.exit, step.skip, eval.decide, finish
- * Error/recovery events: step.timeout, abort, resume
+ * Error/recovery events: step.timeout, abort, resume, invalid_transition
+ *
+ * `workflow.invalid_transition` is the audit-emit-on-rejection record
+ * introduced in PR D.1. When `appendEventAndUpdateState`'s reducer rejects
+ * an event, the engine rolls back the outer transaction, then opens a
+ * fresh transaction and appends one `workflow.invalid_transition` with the
+ * rejection context. This turns previously-silent reducer errors into an
+ * observable, CP11-reversible audit trail. See `workflow/engine.ts` for
+ * the refactor details and `specs/errors.pathway-detect.ts` for the
+ * detector branch that reads these events.
  */
 
 // ---------------------------------------------------------------------------
@@ -18,6 +27,7 @@ export const WORKFLOW_EVENTS = {
   FINISH: 'workflow.finish',
   ABORT: 'workflow.abort',
   RESUME: 'workflow.resume',
+  INVALID_TRANSITION: 'workflow.invalid_transition',
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -57,7 +67,32 @@ export interface StepTimeoutData {
 
 export interface EvalDecideData {
   readonly ideation: boolean;
+  /**
+   * Planning-evaluation gate.
+   *
+   * Event payloads are immutable wire-format history; the field name
+   * remains `plan` (matching the pre-Wave-4 state-machine literal) even
+   * though the state-level field was renamed to `EvalConfig.planning` in
+   * W4. The two sides meet in `reducer.ts:184`, which maps
+   * `planning: event.data.plan` — the CQRS asymmetry. See the file-level
+   * JSDoc block in `reducer.ts` for the rationale and the plan-remediation
+   * doc (v050-features/gobbi-memory) for the migration history.
+   *
+   * Do NOT rename this field — doing so would require an event schema
+   * migration (events on disk under the old name) and break the
+   * payload-stability invariant. The state field `EvalConfig.planning`
+   * is the post-rename canonical read site.
+   */
   readonly plan: boolean;
+  /**
+   * Execution-eval gate (Wave C.2). Optional for backward-compat — legacy
+   * emitters and the ~22 existing reducer/state tests carry only
+   * `{ideation, plan}`. When the orchestrator resolves
+   * `workflow.execution.evaluate.mode` via the settings translation layer
+   * (ideation §6.5), the resulting boolean is attached to the EVAL_DECIDE
+   * event and the reducer merges it into `state.evalConfig.execution`.
+   */
+  readonly execution?: boolean;
 }
 
 export type FinishData = Record<string, never>;
@@ -69,6 +104,31 @@ export interface AbortData {
 export interface ResumeData {
   readonly targetStep: string;
   readonly fromError: boolean;
+}
+
+/**
+ * Audit record for a reducer rejection. Emitted by
+ * `engine.ts::appendEventAndUpdateState` when `reduce()` returns
+ * `{ok: false}`. Five fields:
+ *
+ * - `rejectedEventType` — the type string of the event that was rejected.
+ * - `rejectedEventSeq` — always `null` for PR D.1. The rejected event was
+ *   inside a rolled-back SQLite transaction and therefore never persisted,
+ *   so no seq exists for it. The audit event itself has a seq (the row seq
+ *   assigned by `store.append`); downstream tooling can cite that.
+ * - `stepAtRejection` — the current step at the time of rejection.
+ * - `reducerMessage` — human-readable error message from the reducer's
+ *   `{ok: false, error}` return.
+ * - `timestamp` — ISO 8601 timestamp of the audit-emit (same wall-clock
+ *   reading used for the rejected event's idempotency key, so the two
+ *   events share the same millisecond).
+ */
+export interface InvalidTransitionData {
+  readonly rejectedEventType: string;
+  readonly rejectedEventSeq: number | null;
+  readonly stepAtRejection: string;
+  readonly reducerMessage: string;
+  readonly timestamp: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -83,7 +143,8 @@ export type WorkflowEvent =
   | { readonly type: typeof WORKFLOW_EVENTS.EVAL_DECIDE; readonly data: EvalDecideData }
   | { readonly type: typeof WORKFLOW_EVENTS.FINISH; readonly data: FinishData }
   | { readonly type: typeof WORKFLOW_EVENTS.ABORT; readonly data: AbortData }
-  | { readonly type: typeof WORKFLOW_EVENTS.RESUME; readonly data: ResumeData };
+  | { readonly type: typeof WORKFLOW_EVENTS.RESUME; readonly data: ResumeData }
+  | { readonly type: typeof WORKFLOW_EVENTS.INVALID_TRANSITION; readonly data: InvalidTransitionData };
 
 // ---------------------------------------------------------------------------
 // 6. Type guard — Set.has() on values, NEVER `in` operator on keys
@@ -127,4 +188,10 @@ export function createAbort(data: AbortData): WorkflowEvent {
 
 export function createResume(data: ResumeData): WorkflowEvent {
   return { type: WORKFLOW_EVENTS.RESUME, data };
+}
+
+export function createWorkflowInvalidTransition(
+  data: InvalidTransitionData,
+): WorkflowEvent {
+  return { type: WORKFLOW_EVENTS.INVALID_TRANSITION, data };
 }

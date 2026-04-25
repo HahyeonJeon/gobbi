@@ -1,0 +1,863 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gobbi.dev/schemas/step-spec/v1.json",
+  "title": "Gobbi StepSpec v1",
+  "description": "Per-step spec.json shape. Mirrors the TypeScript `StepSpec` interface in `packages/cli/src/specs/types.ts`. The ajv `JSONSchemaType<StepSpec>` binding in `_schema/v1.ts` forces this schema and the TS interface to evolve together; any drift fails `tsc --noEmit`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "version",
+    "meta",
+    "transitions",
+    "delegation",
+    "tokenBudget",
+    "blocks"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "allowedAgentTypes",
+        "maxParallelAgents",
+        "requiredSkills",
+        "optionalSkills",
+        "expectedArtifacts",
+        "completionSignal"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "substates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nullable": true
+        },
+        "allowedAgentTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "maxParallelAgents": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requiredSkills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "optionalSkills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "expectedArtifacts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "completionSignal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        }
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "to",
+          "condition"
+        ],
+        "properties": {
+          "to": {
+            "type": "string",
+            "minLength": 1
+          },
+          "condition": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "nullable": true
+          }
+        }
+      }
+    },
+    "delegation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "agents"
+      ],
+      "properties": {
+        "agents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "role",
+              "modelTier",
+              "effort",
+              "skills",
+              "artifactTarget",
+              "blockRef"
+            ],
+            "properties": {
+              "role": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stance": {
+                "type": "string",
+                "minLength": 1,
+                "nullable": true
+              },
+              "modelTier": {
+                "type": "string",
+                "enum": [
+                  "opus",
+                  "sonnet",
+                  "haiku"
+                ]
+              },
+              "effort": {
+                "type": "string",
+                "enum": [
+                  "max",
+                  "high",
+                  "medium"
+                ]
+              },
+              "skills": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "artifactTarget": {
+                "type": "string",
+                "minLength": 1
+              },
+              "blockRef": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "tokenBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "staticPrefix",
+        "session",
+        "instructions",
+        "artifacts",
+        "materials"
+      ],
+      "properties": {
+        "staticPrefix": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "session": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "instructions": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "artifacts": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "materials": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "tokenBudgetSumEqualsOne": true
+    },
+    "blocks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "static",
+        "conditional",
+        "delegation",
+        "synthesis",
+        "completion"
+      ],
+      "properties": {
+        "static": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "content"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string"
+              },
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "conditional": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "content",
+              "when"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+              },
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "delegation": {
+          "type": "object",
+          "required": [],
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "content"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string"
+              },
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "synthesis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "content"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string"
+              },
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "instruction",
+            "criteria"
+          ],
+          "properties": {
+            "instruction": {
+              "type": "string",
+              "minLength": 1
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "StepMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "allowedAgentTypes",
+        "maxParallelAgents",
+        "requiredSkills",
+        "optionalSkills",
+        "expectedArtifacts",
+        "completionSignal"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "substates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nullable": true
+        },
+        "allowedAgentTypes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "maxParallelAgents": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requiredSkills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "optionalSkills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "expectedArtifacts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "completionSignal": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 0,
+          "nullable": true
+        }
+      }
+    },
+    "StepTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "to",
+        "condition"
+      ],
+      "properties": {
+        "to": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "nullable": true
+        }
+      }
+    },
+    "AgentConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "modelTier",
+        "effort",
+        "skills",
+        "artifactTarget",
+        "blockRef"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stance": {
+          "type": "string",
+          "minLength": 1,
+          "nullable": true
+        },
+        "modelTier": {
+          "type": "string",
+          "enum": [
+            "opus",
+            "sonnet",
+            "haiku"
+          ]
+        },
+        "effort": {
+          "type": "string",
+          "enum": [
+            "max",
+            "high",
+            "medium"
+          ]
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "artifactTarget": {
+          "type": "string",
+          "minLength": 1
+        },
+        "blockRef": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "StepDelegation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "agents"
+      ],
+      "properties": {
+        "agents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "role",
+              "modelTier",
+              "effort",
+              "skills",
+              "artifactTarget",
+              "blockRef"
+            ],
+            "properties": {
+              "role": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stance": {
+                "type": "string",
+                "minLength": 1,
+                "nullable": true
+              },
+              "modelTier": {
+                "type": "string",
+                "enum": [
+                  "opus",
+                  "sonnet",
+                  "haiku"
+                ]
+              },
+              "effort": {
+                "type": "string",
+                "enum": [
+                  "max",
+                  "high",
+                  "medium"
+                ]
+              },
+              "skills": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "artifactTarget": {
+                "type": "string",
+                "minLength": 1
+              },
+              "blockRef": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "TokenBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "staticPrefix",
+        "session",
+        "instructions",
+        "artifacts",
+        "materials"
+      ],
+      "properties": {
+        "staticPrefix": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "session": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "instructions": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "artifacts": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "materials": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "tokenBudgetSumEqualsOne": true
+    },
+    "BlockContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "content"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content": {
+          "type": "string"
+        },
+        "refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nullable": true
+        }
+      }
+    },
+    "ConditionalBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "content",
+        "when"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content": {
+          "type": "string"
+        },
+        "when": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nullable": true
+        }
+      }
+    },
+    "StepCompletion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "instruction",
+        "criteria"
+      ],
+      "properties": {
+        "instruction": {
+          "type": "string",
+          "minLength": 1
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "StepBlocks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "static",
+        "conditional",
+        "delegation",
+        "synthesis",
+        "completion"
+      ],
+      "properties": {
+        "static": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "content"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string"
+              },
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "conditional": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "content",
+              "when"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string"
+              },
+              "when": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+              },
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "delegation": {
+          "type": "object",
+          "required": [],
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "content"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string"
+              },
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "synthesis": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "content"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "content": {
+                "type": "string"
+              },
+              "refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "nullable": true
+              }
+            }
+          }
+        },
+        "completion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "instruction",
+            "criteria"
+          ],
+          "properties": {
+            "instruction": {
+              "type": "string",
+              "minLength": 1
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

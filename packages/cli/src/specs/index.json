@@ -1,0 +1,284 @@
+{
+  "$schema": "https://gobbi.dev/schemas/workflow-graph/v1.json",
+  "version": 1,
+  "entry": "ideation",
+  "terminal": ["memorization"],
+  "steps": [
+    {
+      "id": "ideation",
+      "spec": "./ideation/spec.json",
+      "substates": ["discussing", "researching"]
+    },
+    {
+      "id": "ideation_eval",
+      "spec": "./evaluation/spec.json",
+      "evalFor": "ideation"
+    },
+    {
+      "id": "planning",
+      "spec": "./planning/spec.json"
+    },
+    {
+      "id": "planning_eval",
+      "spec": "./evaluation/spec.json",
+      "evalFor": "planning"
+    },
+    {
+      "id": "execution",
+      "spec": "./execution/spec.json"
+    },
+    {
+      "id": "execution_eval",
+      "spec": "./evaluation/spec.json",
+      "evalFor": "execution"
+    },
+    {
+      "id": "memorization",
+      "spec": "./memorization/spec.json"
+    }
+  ],
+  "transitions": [
+    {
+      "from": "ideation",
+      "to": "ideation_eval",
+      "condition": "evalIdeationEnabled",
+      "trigger": "workflow.step.exit",
+      "label": "ideation exit → optional ideation_eval"
+    },
+    {
+      "from": "ideation",
+      "to": "planning",
+      "condition": "evalIdeationDisabled",
+      "trigger": "workflow.step.exit",
+      "label": "ideation exit → planning (eval skipped)"
+    },
+    {
+      "from": "ideation_eval",
+      "to": "ideation",
+      "condition": "verdictRevise",
+      "trigger": "decision.eval.verdict",
+      "feedback": true,
+      "label": "ideation_eval revise → re-enter ideation"
+    },
+    {
+      "from": "ideation_eval",
+      "to": "planning",
+      "condition": "verdictPass",
+      "trigger": "decision.eval.verdict",
+      "label": "ideation_eval pass → planning"
+    },
+    {
+      "from": "planning",
+      "to": "planning_eval",
+      "condition": "evalPlanningEnabled",
+      "trigger": "workflow.step.exit",
+      "label": "planning exit → optional planning_eval"
+    },
+    {
+      "from": "planning",
+      "to": "execution",
+      "condition": "evalPlanningDisabled",
+      "trigger": "workflow.step.exit",
+      "label": "planning exit → execution (eval skipped)"
+    },
+    {
+      "from": "planning_eval",
+      "to": "planning",
+      "condition": "verdictRevise",
+      "trigger": "decision.eval.verdict",
+      "feedback": true,
+      "label": "planning_eval revise → re-enter planning"
+    },
+    {
+      "from": "planning_eval",
+      "to": "execution",
+      "condition": "verdictPass",
+      "trigger": "decision.eval.verdict",
+      "label": "planning_eval pass → execution"
+    },
+    {
+      "from": "execution",
+      "to": "execution_eval",
+      "condition": "always",
+      "trigger": "workflow.step.exit",
+      "label": "execution exit → mandatory execution_eval"
+    },
+    {
+      "from": "execution_eval",
+      "to": "memorization",
+      "condition": "verdictPass",
+      "trigger": "decision.eval.verdict",
+      "label": "execution_eval pass → memorization"
+    },
+    {
+      "from": "execution_eval",
+      "to": "error",
+      "condition": "feedbackCapExceeded",
+      "trigger": "decision.eval.verdict",
+      "label": "execution_eval revise but cap exceeded → error"
+    },
+    {
+      "from": "execution_eval",
+      "to": "ideation",
+      "condition": "loopTargetIdeation",
+      "trigger": "decision.eval.verdict",
+      "feedback": true,
+      "label": "execution_eval revise loopTarget=ideation"
+    },
+    {
+      "from": "execution_eval",
+      "to": "planning",
+      "condition": "loopTargetPlanning",
+      "trigger": "decision.eval.verdict",
+      "feedback": true,
+      "label": "execution_eval revise loopTarget=planning"
+    },
+    {
+      "from": "execution_eval",
+      "to": "execution",
+      "condition": "loopTargetExecution",
+      "trigger": "decision.eval.verdict",
+      "feedback": true,
+      "label": "execution_eval revise loopTarget=execution"
+    },
+    {
+      "from": "memorization",
+      "to": "done",
+      "condition": "always",
+      "trigger": "workflow.finish",
+      "label": "memorization complete → done"
+    },
+    {
+      "from": "ideation",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "ideation timeout → error"
+    },
+    {
+      "from": "ideation_eval",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "ideation_eval timeout → error"
+    },
+    {
+      "from": "planning",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "planning timeout → error"
+    },
+    {
+      "from": "planning_eval",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "planning_eval timeout → error"
+    },
+    {
+      "from": "execution",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "execution timeout → error"
+    },
+    {
+      "from": "execution_eval",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "execution_eval timeout → error"
+    },
+    {
+      "from": "memorization",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "memorization timeout → error"
+    },
+    {
+      "from": "ideation_eval",
+      "to": "ideation",
+      "condition": "skipRequested",
+      "trigger": "workflow.step.skip",
+      "feedback": true,
+      "label": "user skip → restart ideation"
+    },
+    {
+      "from": "planning",
+      "to": "ideation",
+      "condition": "skipRequested",
+      "trigger": "workflow.step.skip",
+      "feedback": true,
+      "label": "user skip → restart ideation"
+    },
+    {
+      "from": "planning_eval",
+      "to": "ideation",
+      "condition": "skipRequested",
+      "trigger": "workflow.step.skip",
+      "feedback": true,
+      "label": "user skip → restart ideation"
+    },
+    {
+      "from": "execution",
+      "to": "ideation",
+      "condition": "skipRequested",
+      "trigger": "workflow.step.skip",
+      "feedback": true,
+      "label": "user skip → restart ideation"
+    },
+    {
+      "from": "execution_eval",
+      "to": "ideation",
+      "condition": "skipRequested",
+      "trigger": "workflow.step.skip",
+      "feedback": true,
+      "label": "user skip → restart ideation"
+    },
+    {
+      "from": "memorization",
+      "to": "ideation",
+      "condition": "skipRequested",
+      "trigger": "workflow.step.skip",
+      "feedback": true,
+      "label": "user skip → restart ideation"
+    },
+    {
+      "from": "error",
+      "to": "done",
+      "condition": "abortRequested",
+      "trigger": "workflow.abort",
+      "label": "user abort from error → done"
+    },
+    {
+      "from": "error",
+      "to": "ideation",
+      "condition": "resumeTargetIdeation",
+      "trigger": "workflow.resume",
+      "label": "resume from error → ideation"
+    },
+    {
+      "from": "error",
+      "to": "planning",
+      "condition": "resumeTargetPlanning",
+      "trigger": "workflow.resume",
+      "label": "resume from error → planning"
+    },
+    {
+      "from": "error",
+      "to": "execution",
+      "condition": "resumeTargetExecution",
+      "trigger": "workflow.resume",
+      "label": "resume from error → execution"
+    },
+    {
+      "from": "error",
+      "to": "memorization",
+      "condition": "resumeTargetMemorization",
+      "trigger": "workflow.resume",
+      "label": "resume from error → memorization (force-memorization pathway)"
+    }
+  ]
+}
