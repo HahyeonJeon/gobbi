@@ -40,6 +40,8 @@ Verify: `gobbi --version`
 
 This is the recommended approach for users who want `gobbi` available across all projects.
 
+To check whether an existing install is current, run `gobbi --is-latest`. It exits `0` if the installed version matches the npm `@latest` tag, `1` if the install is stale (update with `npm install -g @gobbitools/cli@latest`), and `2` if the check is indeterminate (no network, `npm` missing). The `/gobbi` skill's THIRD step invokes this automatically after the availability check.
+
 ### Option 2: Claude Code plugin install
 
 If using the gobbi plugin for Claude Code, install via the plugin system:
