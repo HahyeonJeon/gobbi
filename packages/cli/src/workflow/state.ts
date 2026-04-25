@@ -5,9 +5,9 @@
  * configuration, active subagent tracking, and guard violation records.
  * State is immutable — all fields use readonly modifiers.
  *
- * Persistence functions are synchronous (writeFileSync, renameSync,
- * appendFileSync) because they execute inside bun:sqlite transactions
- * which cannot contain async calls.
+ * Persistence functions are synchronous (writeFileSync, renameSync)
+ * because they execute inside bun:sqlite transactions which cannot
+ * contain async calls.
  *
  * This module does NOT import from reducer.ts — deriveState and
  * resolveState accept a reduce function as a parameter to avoid
@@ -21,7 +21,6 @@ import {
   renameSync,
   copyFileSync,
   existsSync,
-  appendFileSync,
   mkdirSync,
 } from 'node:fs';
 import { join } from 'node:path';
@@ -42,8 +41,8 @@ export type WorkflowStep =
   | 'idle'
   | 'ideation'
   | 'ideation_eval'
-  | 'plan'
-  | 'plan_eval'
+  | 'planning'
+  | 'planning_eval'
   | 'execution'
   | 'execution_eval'
   | 'memorization'
@@ -57,8 +56,8 @@ export type WorkflowStep =
 export const ACTIVE_STEPS: ReadonlySet<WorkflowStep> = new Set<WorkflowStep>([
   'ideation',
   'ideation_eval',
-  'plan',
-  'plan_eval',
+  'planning',
+  'planning_eval',
   'execution',
   'execution_eval',
   'memorization',
@@ -91,11 +90,13 @@ export type IdeationSubstate = 'discussing' | 'researching' | null;
 
 export interface EvalConfig {
   readonly ideation: boolean;
-  readonly plan: boolean;
+  readonly planning: boolean;
   /**
    * Execution-eval gate. Optional for backward-compat — prior to Wave C.2
-   * the EVAL_DECIDE payload carried only `{ideation, plan}`, and on-disk
-   * state files written under those semantics have no `execution` key.
+   * the EVAL_DECIDE payload carried only `{ideation, planning}` (the field
+   * was originally named `plan`; see the Wave-4 rename history in
+   * `v050-features/gobbi-memory`), and on-disk state files written under
+   * those semantics have no `execution` key.
    * Under `exactOptionalPropertyTypes`, absence means "field not set" (the
    * reducer never wrote one); presence means the EVAL_DECIDE payload
    * carried an explicit boolean. The `execution_eval` step is still
@@ -247,8 +248,8 @@ const VALID_STEPS: ReadonlySet<string> = new Set<string>([
   'idle',
   'ideation',
   'ideation_eval',
-  'plan',
-  'plan_eval',
+  'planning',
+  'planning_eval',
   'execution',
   'execution_eval',
   'memorization',
@@ -309,7 +310,7 @@ export function isValidState(value: unknown): value is WorkflowState {
   if (evalConfig !== null) {
     if (!isRecord(evalConfig)) return false;
     if (!isBoolean(evalConfig['ideation'])) return false;
-    if (!isBoolean(evalConfig['plan'])) return false;
+    if (!isBoolean(evalConfig['planning'])) return false;
     // execution is optional (Wave C.2 additive slot). When present must be
     // a boolean; when absent the field is simply not set on the record.
     const execution = evalConfig['execution'];
@@ -419,6 +420,106 @@ export function writeState(dir: string, state: WorkflowState): void {
 }
 
 /**
+ * Translate legacy step literals in a parsed (but not-yet-validated)
+ * `state.json` payload to the post-Wave-4 names BEFORE `isValidState`
+ * runs. This is the backward-compatibility shim for sessions written
+ * under the pre-rename shape (`'plan'` / `'plan_eval'` / `evalConfig.plan`).
+ *
+ * Translations applied:
+ *
+ *   - `currentStep: 'plan'`        → `'planning'`
+ *   - `currentStep: 'plan_eval'`   → `'planning_eval'`
+ *   - `completedSteps` entries     → same pair-wise rename
+ *   - `evalConfig.plan`            → `evalConfig.planning` (key moves;
+ *                                     the old key is dropped)
+ *   - `evalConfig.plan_eval`       → `evalConfig.planning_eval`
+ *     (defensive — schema never had this key in practice, but the
+ *     symmetric treatment guards future drift)
+ *
+ * Everything else is untouched. We do NOT bump `schemaVersion` — that
+ * field tracks state-shape migrations, not the post-W4 name alignment.
+ * The next `writeState` promotes the on-disk file to the current shape
+ * naturally, matching the Greg Young discipline that `normaliseReadState`
+ * applies post-validation.
+ *
+ * Accepts `unknown` because it runs BEFORE `isValidState` — translation
+ * must tolerate any parsed JSON shape. When the input is not a record
+ * or does not carry the legacy literals, it is returned unchanged.
+ *
+ * Idempotent: running this over already-translated (new-shape) input
+ * produces the same output (no legacy literals survive).
+ */
+export function normaliseToLatestSchema(parsed: unknown): unknown {
+  if (!isRecord(parsed)) return parsed;
+
+  const out: Record<string, unknown> = { ...parsed };
+
+  // currentStep: string rename
+  const currentStep = out['currentStep'];
+  if (currentStep === 'plan') {
+    out['currentStep'] = 'planning';
+  } else if (currentStep === 'plan_eval') {
+    out['currentStep'] = 'planning_eval';
+  }
+
+  // completedSteps: array of strings, pair-wise rename
+  const completedSteps = out['completedSteps'];
+  if (isArray(completedSteps)) {
+    let mutated = false;
+    const translated: unknown[] = completedSteps.map((entry) => {
+      if (entry === 'plan') {
+        mutated = true;
+        return 'planning';
+      }
+      if (entry === 'plan_eval') {
+        mutated = true;
+        return 'planning_eval';
+      }
+      return entry;
+    });
+    if (mutated) {
+      out['completedSteps'] = translated;
+    }
+  }
+
+  // evalConfig: move the `plan` key to `planning` (same for plan_eval).
+  // Preserve every other key on the record.
+  const evalConfig = out['evalConfig'];
+  if (isRecord(evalConfig)) {
+    const hasLegacyPlan = Object.prototype.hasOwnProperty.call(evalConfig, 'plan');
+    const hasLegacyPlanEval = Object.prototype.hasOwnProperty.call(
+      evalConfig,
+      'plan_eval',
+    );
+    if (hasLegacyPlan || hasLegacyPlanEval) {
+      const nextEval: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(evalConfig)) {
+        if (key === 'plan') {
+          // Only rename if the post-rename key is not already set — new-shape
+          // writes always win (idempotency).
+          if (!Object.prototype.hasOwnProperty.call(evalConfig, 'planning')) {
+            nextEval['planning'] = value;
+          }
+          continue;
+        }
+        if (key === 'plan_eval') {
+          if (
+            !Object.prototype.hasOwnProperty.call(evalConfig, 'planning_eval')
+          ) {
+            nextEval['planning_eval'] = value;
+          }
+          continue;
+        }
+        nextEval[key] = value;
+      }
+      out['evalConfig'] = nextEval;
+    }
+  }
+
+  return out;
+}
+
+/**
  * Normalise a validated `WorkflowState` read from disk so in-memory state
  * always carries the current (v4) shape:
  *
@@ -450,8 +551,18 @@ function normaliseReadState(state: WorkflowState): WorkflowState {
  * Returns null if the file is absent, contains invalid JSON, or has
  * an unexpected shape.
  *
- * Normalises v1 on-disk shapes to the v2 in-memory shape (see
- * `normaliseReadState`) — the file itself is not rewritten.
+ * Applies two normalisation passes:
+ *
+ *   1. `normaliseToLatestSchema` — translates pre-Wave-4 step literals
+ *      (`'plan'` → `'planning'`, `evalConfig.plan` → `evalConfig.planning`,
+ *      etc.) so legacy on-disk state files survive the rename. Runs BEFORE
+ *      `isValidState` because the validator rejects the old literals.
+ *   2. `normaliseReadState` — fills in absent v2+ fields
+ *      (`lastVerdictOutcome`, violation `severity`, `verificationResults`,
+ *      `stepStartedAt`) on a validated state. Runs AFTER validation.
+ *
+ * The file itself is not rewritten in either pass — next `writeState`
+ * naturally promotes.
  */
 export function readState(dir: string): WorkflowState | null {
   const filePath = join(dir, 'state.json');
@@ -459,8 +570,9 @@ export function readState(dir: string): WorkflowState | null {
   try {
     const raw = readFileSync(filePath, 'utf8');
     const parsed: unknown = JSON.parse(raw);
-    if (!isValidState(parsed)) return null;
-    return normaliseReadState(parsed);
+    const normalized = normaliseToLatestSchema(parsed);
+    if (!isValidState(normalized)) return null;
+    return normaliseReadState(normalized);
   } catch {
     return null;
   }
@@ -482,7 +594,9 @@ export function backupState(dir: string): void {
  * Restore WorkflowState from the backup file.
  * Returns null if the backup is absent, invalid JSON, or wrong shape.
  *
- * Normalises v1 shapes to v2 (see `normaliseReadState`).
+ * Applies the same two-pass normalisation as {@link readState} —
+ * `normaliseToLatestSchema` translates legacy step literals before
+ * validation, `normaliseReadState` fills in absent v2+ fields after.
  */
 export function restoreBackup(dir: string): WorkflowState | null {
   const filePath = join(dir, 'state.json.backup');
@@ -490,8 +604,9 @@ export function restoreBackup(dir: string): WorkflowState | null {
   try {
     const raw = readFileSync(filePath, 'utf8');
     const parsed: unknown = JSON.parse(raw);
-    if (!isValidState(parsed)) return null;
-    return normaliseReadState(parsed);
+    const normalized = normaliseToLatestSchema(parsed);
+    if (!isValidState(normalized)) return null;
+    return normaliseReadState(normalized);
   } catch {
     return null;
   }
@@ -514,21 +629,44 @@ export function restoreStateFromBackup(dir: string): void {
   }
 }
 
-/**
- * Append one JSON line to events.jsonl.
- * Creates the directory and file if they do not exist.
- *
- * Uses appendFileSync because Bun.write does not support append mode.
- */
-export function appendJsonl(dir: string, event: object): void {
-  mkdirSync(dir, { recursive: true });
-  const filePath = join(dir, 'events.jsonl');
-  appendFileSync(filePath, JSON.stringify(event) + '\n', 'utf8');
-}
-
 // ---------------------------------------------------------------------------
 // EventRow → Event conversion
 // ---------------------------------------------------------------------------
+
+/**
+ * Rename the legacy `'plan'` / `'plan_eval'` literals to their post-Wave-4
+ * equivalents inside a parsed event `data` record. Applies to the
+ * well-known step-carrying fields:
+ *
+ *   - `step` — `workflow.step.exit`, `workflow.step.skip`, etc.
+ *   - `targetStep` — `workflow.resume`
+ *   - `loopTarget` — `decision.eval.verdict`
+ *
+ * The `EvalDecideData.plan` payload field is INTENTIONALLY preserved
+ * (see `reducer.ts:184` — the state-level field is `planning` but the
+ * event payload keeps `plan` for wire-format stability). Event data
+ * normalization does NOT touch `ideation`/`plan`/`execution` keys on
+ * `workflow.eval.decide` payloads — those are handled by the reducer's
+ * existing `planning: event.data.plan` mapping.
+ *
+ * Pure and idempotent: returns a new record when a translation fires,
+ * the original reference otherwise.
+ */
+function normaliseEventDataLiterals(data: Record<string, unknown>): Record<string, unknown> {
+  const stepLike: readonly string[] = ['step', 'targetStep', 'loopTarget'];
+  let out: Record<string, unknown> | null = null;
+  for (const key of stepLike) {
+    const value = data[key];
+    if (value === 'plan') {
+      out ??= { ...data };
+      out[key] = 'planning';
+    } else if (value === 'plan_eval') {
+      out ??= { ...data };
+      out[key] = 'planning_eval';
+    }
+  }
+  return out ?? data;
+}
 
 /**
  * Convert an EventRow (SQLite row) to a typed Event.
@@ -536,6 +674,12 @@ export function appendJsonl(dir: string, event: object): void {
  * Applies schema migration, parses the data JSON, validates the type field,
  * and constructs the Event variant. Returns null if the row contains an
  * unrecognized event type or unparseable data.
+ *
+ * Also applies `normaliseEventDataLiterals` to translate pre-Wave-4 step
+ * literals (`'plan'` / `'plan_eval'`) on `step` / `targetStep` /
+ * `loopTarget` payload fields so replay against new-shape state matches
+ * correctly. The `EvalDecideData.plan` field is intentionally preserved
+ * (see `reducer.ts:184`).
  */
 export function rowToEvent(row: EventRow): Event | null {
   let migrated: EventRow;
@@ -558,12 +702,14 @@ export function rowToEvent(row: EventRow): Event | null {
 
   if (!isRecord(parsedData)) return null;
 
+  const normalizedData = normaliseEventDataLiterals(parsedData);
+
   // Construct the Event with the validated type and parsed data.
   // The type field from the row is already validated as EventType by
   // isValidEventType, and the data is a parsed JSON object. The event
   // categories use discriminated unions on the type field, so the cast
   // is safe after validation.
-  return { type: migrated.type, data: parsedData } as Event;
+  return { type: migrated.type, data: normalizedData } as Event;
 }
 
 // ---------------------------------------------------------------------------

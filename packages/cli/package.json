@@ -11,15 +11,20 @@
   },
   "files": [
     "bin",
-    "dist"
+    "dist",
+    ".gobbi/projects/gobbi/skills",
+    ".gobbi/projects/gobbi/agents",
+    ".gobbi/projects/gobbi/rules"
   ],
   "scripts": {
     "gen:predicates": "bun run scripts/gen-predicate-names.ts",
+    "sync:template-bundle": "bun run scripts/sync-template-bundle.ts",
     "prebuild": "bun run gen:predicates",
     "build": "bun build ./src/cli.ts --outdir ./dist --target bun --external playwright --external sharp",
     "pretypecheck": "bun run gen:predicates",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "prepack": "bun run sync:template-bundle"
   },
   "dependencies": {
     "ajv": "^8.18.0"

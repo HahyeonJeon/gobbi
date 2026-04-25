@@ -18,9 +18,10 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
+import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import {
   compileCurrentStep,
   DEFAULT_SPECS_DIR,
@@ -136,7 +137,7 @@ async function initScratchSession(
       { repoRoot: repo },
     ),
   );
-  const sessionDir = join(repo, '.gobbi', 'sessions', sessionId);
+  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
   // Reset capture between init and the test's real assertions.
   captured = { stdout: '', stderr: '', exitCode: null };
   return { sessionDir, repo };

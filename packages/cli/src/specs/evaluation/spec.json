@@ -2,7 +2,7 @@
   "$schema": "https://gobbi.dev/schemas/step-spec/v1.json",
   "version": 1,
   "meta": {
-    "description": "Evaluation — independent evaluator agents assess the preceding step's output from distinct perspectives. Reused by ideation_eval, plan_eval, and execution_eval via index.json's evalFor indirection. The creating agent never participates. NOTE: The transitions array below declares ideation_eval defaults (verdictRevise → ideation, verdictPass → plan). For plan_eval and execution_eval, the authoritative routing lives in index.json graph edges (e.g., plan_eval verdictPass → execution, execution_eval verdictPass → memorization). Do not restructure this spec to hold per-eval-variant transitions — the shared-spec design is intentional.",
+    "description": "Evaluation — independent evaluator agents assess the preceding step's output from distinct perspectives. Reused by ideation_eval, planning_eval, and execution_eval via index.json's evalFor indirection. The creating agent never participates. NOTE: The transitions array below declares ideation_eval defaults (verdictRevise → ideation, verdictPass → planning). For planning_eval and execution_eval, the authoritative routing lives in index.json graph edges (e.g., planning_eval verdictPass → execution, execution_eval verdictPass → memorization). Do not restructure this spec to hold per-eval-variant transitions — the shared-spec design is intentional.",
     "allowedAgentTypes": ["_project-evaluator", "_agent-evaluator", "_skills-evaluator"],
     "maxParallelAgents": 5,
     "requiredSkills": ["_gotcha"],
@@ -17,7 +17,7 @@
       "label": "evaluation revise → feedback to preceding step"
     },
     {
-      "to": "plan",
+      "to": "planning",
       "condition": "verdictPass",
       "label": "evaluation pass → proceed"
     }
@@ -63,7 +63,7 @@
       },
       {
         "id": "scope-boundary",
-        "content": "Scope boundary:\n\n- This spec is reused for ideation_eval, plan_eval, and execution_eval via `index.json`'s `evalFor` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read `state.currentStep` and its `evalFor` target when assembling the delegation prompts.\n- The `transitions` array in this spec declares ideation_eval defaults. For plan_eval and execution_eval, the graph (`index.json`) is authoritative: plan_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.\n- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, plan, or execution), not here.\n- Do not spawn more than `maxParallelAgents` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.\n- Stay in evaluation. Do not ask the user to make plan or implementation decisions here — the verdict is what exits the step; the next step handles the response."
+        "content": "Scope boundary:\n\n- This spec is reused for ideation_eval, planning_eval, and execution_eval via `index.json`'s `evalFor` indirection. The preceding step under evaluation is identified by the session state, not by the spec — read `state.currentStep` and its `evalFor` target when assembling the delegation prompts.\n- The `transitions` array in this spec declares ideation_eval defaults. For planning_eval and execution_eval, the graph (`index.json`) is authoritative: planning_eval verdictPass routes to execution, execution_eval verdictPass routes to memorization. Do not rely on the spec-level transitions for non-ideation eval routing.\n- Do not modify the artifacts under evaluation. Evaluation is read-only. If a finding requires a fix, that fix belongs in the loop-back step (ideation, planning, or execution), not here.\n- Do not spawn more than `maxParallelAgents` evaluators in a single wave. Cap set conservatively at five to keep the parallel response channel observable and to keep per-call rate-limit exposure bounded.\n- Stay in evaluation. Do not ask the user to make planning or implementation decisions here — the verdict is what exits the step; the next step handles the response."
       }
     ],
     "conditional": [

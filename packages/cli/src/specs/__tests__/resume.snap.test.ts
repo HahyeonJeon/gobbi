@@ -101,7 +101,7 @@ function seedTimeout(
 function seedInvalidTransition(
   store: EventStore,
   rejectedEventType = 'workflow.step.exit',
-  stepAtRejection = 'plan',
+  stepAtRejection = 'planning',
   toolCallId = 'tc-invalid',
   ts = '2026-01-01T00:10:00.000Z',
 ): void {
@@ -113,7 +113,7 @@ function seedInvalidTransition(
       rejectedEventType,
       rejectedEventSeq: null,
       stepAtRejection,
-      reducerMessage: 'Cannot exit plan before plan_eval decision',
+      reducerMessage: 'Cannot exit planning before planning_eval decision',
       timestamp: ts,
     }),
     actor: 'cli',
@@ -184,7 +184,7 @@ function crashFixture(): { state: WorkflowState; store: EventStore } {
   const store = new EventStore(':memory:');
   seedStart(store);
   return {
-    state: errorState({ completedSteps: ['ideation', 'plan'] }),
+    state: errorState({ completedSteps: ['ideation', 'planning'] }),
     store,
   };
 }
@@ -198,7 +198,7 @@ function timeoutFixture(): { state: WorkflowState; store: EventStore } {
   seedStart(store);
   seedTimeout(store, 'execution');
   return {
-    state: errorState({ completedSteps: ['ideation', 'plan'] }),
+    state: errorState({ completedSteps: ['ideation', 'planning'] }),
     store,
   };
 }
@@ -222,8 +222,8 @@ function feedbackCapFixture(): {
       feedbackRound: 3,
       maxFeedbackRounds: 3,
       lastVerdictOutcome: 'revise',
-      completedSteps: ['ideation', 'plan'],
-      evalConfig: { ideation: true, plan: false },
+      completedSteps: ['ideation', 'planning'],
+      evalConfig: { ideation: true, planning: false },
     }),
     store,
   };
@@ -266,7 +266,7 @@ describe('resume — pathway-compiler snapshots', () => {
   test('crash resume compiles to a stable prompt', () => {
     const { state, store } = crashFixture();
     using s = store;
-    const prompt = compileResumePrompt(state, s, { targetStep: 'plan' });
+    const prompt = compileResumePrompt(state, s, { targetStep: 'planning' });
     expect(prompt.text).toMatchSnapshot();
     expect(prompt.staticPrefixHash).toMatchSnapshot();
     expect(prompt.sections.map((x) => ({ id: x.id, kind: x.kind }))).toMatchSnapshot();
@@ -295,7 +295,7 @@ describe('resume — pathway-compiler snapshots', () => {
   test('invalidTransition resume compiles to a stable prompt', () => {
     const { state, store } = invalidTransitionFixture();
     using s = store;
-    const prompt = compileResumePrompt(state, s, { targetStep: 'plan' });
+    const prompt = compileResumePrompt(state, s, { targetStep: 'planning' });
     expect(prompt.text).toMatchSnapshot();
     expect(prompt.staticPrefixHash).toMatchSnapshot();
     expect(prompt.sections.map((x) => ({ id: x.id, kind: x.kind }))).toMatchSnapshot();
@@ -304,7 +304,7 @@ describe('resume — pathway-compiler snapshots', () => {
   test('unknown resume compiles to a stable prompt', () => {
     const { state, store } = unknownFixture();
     using s = store;
-    const prompt = compileResumePrompt(state, s, { targetStep: 'plan' });
+    const prompt = compileResumePrompt(state, s, { targetStep: 'planning' });
     expect(prompt.text).toMatchSnapshot();
     expect(prompt.staticPrefixHash).toMatchSnapshot();
     expect(prompt.sections.map((x) => ({ id: x.id, kind: x.kind }))).toMatchSnapshot();
@@ -375,13 +375,13 @@ describe('resume — cache-stability invariants', () => {
       using sUnk = unk.store;
 
       const prompts = [
-        compileResumePrompt(crash.state, sCrash, { targetStep: 'plan' }),
+        compileResumePrompt(crash.state, sCrash, { targetStep: 'planning' }),
         compileResumePrompt(timeout.state, sTimeout, {
           targetStep: 'execution',
         }),
         compileResumePrompt(fc.state, sFc, { targetStep: 'memorization' }),
-        compileResumePrompt(inv.state, sInv, { targetStep: 'plan' }),
-        compileResumePrompt(unk.state, sUnk, { targetStep: 'plan' }),
+        compileResumePrompt(inv.state, sInv, { targetStep: 'planning' }),
+        compileResumePrompt(unk.state, sUnk, { targetStep: 'planning' }),
       ];
 
       const firstHashes = prompts.map((p) => {
@@ -416,9 +416,9 @@ describe('resume — cache-stability invariants', () => {
       // `options.targetStep` is absent.
       const store = new EventStore(':memory:');
       seedStart(store);
-      seedResume(store, 'plan');
+      seedResume(store, 'planning');
       using s = store;
-      const state = errorState({ completedSteps: ['ideation', 'plan'] });
+      const state = errorState({ completedSteps: ['ideation', 'planning'] });
       const prompt = compileResumePrompt(state, s);
       expect(prompt.text).toContain('transitioning from error into plan');
     },

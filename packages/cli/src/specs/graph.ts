@@ -71,7 +71,7 @@ import { isRecord, isString, isNumber, isBoolean, isArray } from '../lib/guards.
  * One step entry in the workflow graph.
  *
  * `spec` is a relative path from `index.json`'s directory (e.g.
- * `./ideation/spec.json`). Evaluation steps (`ideation_eval`, `plan_eval`,
+ * `./ideation/spec.json`). Evaluation steps (`ideation_eval`, `planning_eval`,
  * `execution_eval`) share a single `./evaluation/spec.json` and carry an
  * `evalFor` discriminator identifying the step they evaluate.
  *

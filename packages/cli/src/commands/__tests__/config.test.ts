@@ -39,6 +39,12 @@ import { join } from 'node:path';
 
 import { COMMAND_ORDER, COMMANDS_BY_NAME } from '../../cli.js';
 import { coerceValue, runConfig } from '../config.js';
+import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
+
+// Post-W2 redesign: the config writer composes session paths via
+// `resolveProjectName`, which falls back to the literal 'gobbi' when a
+// fresh scratch repo has no `.gobbi/settings.json::projects.active`.
+const FALLBACK_PROJECT_NAME = 'gobbi';
 
 // ---------------------------------------------------------------------------
 // stdout / stderr / process.exit capture
@@ -362,7 +368,11 @@ describe('runConfig get read paths', () => {
       await runConfig(['get', 'workflow.ideation.discuss.mode']);
     });
     expect(captured.stdout).toBe('"user"\n');
-    expect(captured.stderr).toBe('');
+    // Post-W2: `resolveProjectName` emits a one-shot stderr warning when the
+    // workspace has no `projects.active` and no explicit projectName was
+    // supplied. The fallback to 'gobbi' is a legitimate resolution, not an
+    // error. Tolerate the single-line warning; still reject real errors.
+    expect(captured.stderr).toMatch(/^(?:\[settings-io\] no projects\.active[^\n]*\n)?$/);
     expect(captured.exitCode).toBeNull();
   });
 
@@ -470,6 +480,7 @@ describe('runConfig set argument validation', () => {
     const parsed = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
     expect(parsed).toEqual({
       schemaVersion: 1,
+      projects: { active: null, known: [] },
       workflow: {
         ideation: {
           discuss: {
@@ -526,9 +537,15 @@ describe('runConfig set argument validation', () => {
       ]);
     });
     expect(captured.exitCode).toBeNull();
-    expect(captured.stderr).toBe('');
+    // Post-W2: tolerate the `resolveProjectName` projects.active-not-set
+    // warning on stderr; it fires once per Bun process and the settings
+    // writer still lands the file under the fallback 'gobbi' project.
+    expect(captured.stderr).toMatch(/^(?:\[settings-io\] no projects\.active[^\n]*\n)?$/);
 
-    const filePath = join(repo, '.gobbi', 'sessions', 'test-session', 'settings.json');
+    const filePath = join(
+      sessionDirForProject(repo, FALLBACK_PROJECT_NAME, 'test-session'),
+      'settings.json',
+    );
     expect(existsSync(filePath)).toBe(true);
     const parsed = JSON.parse(readFileSync(filePath, 'utf8')) as {
       readonly workflow: { readonly planning: { readonly discuss: { readonly mode: string } } };

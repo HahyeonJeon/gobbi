@@ -14,19 +14,19 @@
  *
  * `StepId` enumerates the five top-level directories that appear under a
  * session root per `v050-session.md` §Session Directory Structure:
- * `ideation/`, `plan/`, `execution/`, `evaluation/`, `memorization/`. These
- * are the "productive" steps — each step writes authoritative artifacts
- * into its own flat directory.
+ * `ideation/`, `planning/`, `execution/`, `evaluation/`, `memorization/`.
+ * These are the "productive" steps — each step writes authoritative
+ * artifacts into its own flat directory.
  *
  * The v0.5.0 state machine (`v050-state-machine.md`) has additional
  * state-level identifiers that do NOT correspond to their own session
  * directory:
  *
- * - `ideation_eval`, `plan_eval`, `execution_eval` — all three evaluation
+ * - `ideation_eval`, `planning_eval`, `execution_eval` — all three evaluation
  *   state-machine steps share the single `evaluation/` directory (see
  *   `specs/index.json`: every `*_eval` entry points at `evaluation/spec.json`).
  *   Callers transitioning out of an eval state should pass the productive
- *   step that the eval step follows (`ideation` / `plan` / `execution`) as
+ *   step that the eval step follows (`ideation` / `planning` / `execution`) as
  *   `currentStep`; the selector will include the shared `evaluation/` files
  *   once that step is crossed. A separate `selectEvalArtifacts()` sibling
  *   may be added later if a caller needs to read the `evaluation/` dir
@@ -43,7 +43,8 @@
  *
  * - Ideation → `ideation.md` is authoritative. `innovative.md` / `best.md`
  *   are source inputs (only included when `includeSources: true`).
- * - Plan → `plan.md` is authoritative.
+ * - Planning → `plan.md` is authoritative (filename preserved; the step
+ *   rename only changed the directory name, not the artifact filename).
  * - Execution → `execution.md` is authoritative (absent mid-workflow is OK).
  *   Per-subtask files under `execution/subtasks/` are out of scope for the
  *   default selection — the caller can opt in separately.
@@ -80,7 +81,7 @@ import {
  * `memorization/` — per `v050-session.md` §Session Directory Structure.
  *
  * `StepId` is deliberately NARROWER than the state-machine step identifiers
- * in `specs/index.json`. Callers using `ideation_eval` / `plan_eval` /
+ * in `specs/index.json`. Callers using `ideation_eval` / `planning_eval` /
  * `execution_eval` must map those to productive steps before calling the
  * selector: all three eval steps share the flat `evaluation/` directory,
  * and research lives inside `ideation/` as an Ideation substate. See the
@@ -91,7 +92,7 @@ import {
  */
 export type StepId =
   | 'ideation'
-  | 'plan'
+  | 'planning'
   | 'execution'
   | 'evaluation'
   | 'memorization';
@@ -157,7 +158,7 @@ export interface SelectorOptions {
  */
 const STEP_ORDER: readonly StepId[] = [
   'ideation',
-  'plan',
+  'planning',
   'execution',
   'evaluation',
   'memorization',
@@ -220,9 +221,9 @@ const DISCOVERY: Readonly<Record<StepId, StepDiscovery>> = {
       { baseName: 'best', role: 'source' },
     ],
   },
-  plan: {
-    stepId: 'plan',
-    subdir: 'plan',
+  planning: {
+    stepId: 'planning',
+    subdir: 'planning',
     named: [{ baseName: 'plan', role: 'authoritative' }],
   },
   execution: {

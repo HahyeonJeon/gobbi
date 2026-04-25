@@ -189,8 +189,8 @@ export function createHeartbeatEvent(): Event {
  * Returns a minimal valid sequence of events that transitions from idle
  * to the given workflow step. The sequence uses eval disabled (shortest path).
  *
- * Supported steps: idle, ideation, plan, execution, execution_eval,
- * memorization, done, error, ideation_eval, plan_eval.
+ * Supported steps: idle, ideation, planning, execution, execution_eval,
+ * memorization, done, error, ideation_eval, planning_eval.
  *
  * Returns an empty array for 'idle' (already there).
  */
@@ -213,18 +213,18 @@ export function eventsToReach(
     case 'ideation_eval':
       return [start, evalIdeationOn, createStepExitEvent('ideation')];
 
-    case 'plan':
+    case 'planning':
       return [start, evalOff, createStepExitEvent('ideation')];
 
-    case 'plan_eval':
-      return [start, evalPlanOn, createStepExitEvent('ideation'), createStepExitEvent('plan')];
+    case 'planning_eval':
+      return [start, evalPlanOn, createStepExitEvent('ideation'), createStepExitEvent('planning')];
 
     case 'execution':
       return [
         start,
         evalOff,
         createStepExitEvent('ideation'),
-        createStepExitEvent('plan'),
+        createStepExitEvent('planning'),
       ];
 
     case 'execution_eval':
@@ -232,7 +232,7 @@ export function eventsToReach(
         start,
         evalOff,
         createStepExitEvent('ideation'),
-        createStepExitEvent('plan'),
+        createStepExitEvent('planning'),
         createStepExitEvent('execution'),
       ];
 
@@ -241,7 +241,7 @@ export function eventsToReach(
         start,
         evalOff,
         createStepExitEvent('ideation'),
-        createStepExitEvent('plan'),
+        createStepExitEvent('planning'),
         createStepExitEvent('execution'),
         createVerdictPassEvent(),
       ];
@@ -251,7 +251,7 @@ export function eventsToReach(
         start,
         evalOff,
         createStepExitEvent('ideation'),
-        createStepExitEvent('plan'),
+        createStepExitEvent('planning'),
         createStepExitEvent('execution'),
         createVerdictPassEvent(),
         createFinishEvent(),
@@ -303,8 +303,8 @@ export const STATES = {
   idle: initialState('test'),
   ideation: applyEvents(eventsToReach('ideation'), 'test'),
   ideation_eval: applyEvents(eventsToReach('ideation_eval'), 'test'),
-  plan: applyEvents(eventsToReach('plan'), 'test'),
-  plan_eval: applyEvents(eventsToReach('plan_eval'), 'test'),
+  planning: applyEvents(eventsToReach('planning'), 'test'),
+  planning_eval: applyEvents(eventsToReach('planning_eval'), 'test'),
   execution: applyEvents(eventsToReach('execution'), 'test'),
   execution_eval: applyEvents(eventsToReach('execution_eval'), 'test'),
   memorization: applyEvents(eventsToReach('memorization'), 'test'),

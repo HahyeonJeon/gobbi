@@ -73,7 +73,7 @@ export type PredicateRegistry = Readonly<Record<string, Predicate>>;
 const corePredicates = {
   // ------------------------------------------------------------------- Eval
   //
-  // Gate ideation/plan evaluation on `evalConfig`. Missing config defaults
+  // Gate ideation/planning evaluation on `evalConfig`. Missing config defaults
   // to "evaluation disabled" — the reducer only populates `evalConfig` once
   // `workflow.eval.decide` has fired.
   // -------------------------------------------------------------------------
@@ -84,11 +84,11 @@ const corePredicates = {
   /** Ideation evaluation is disabled or evalConfig not yet set. */
   evalIdeationDisabled: (s) => s.evalConfig?.ideation !== true,
 
-  /** Plan evaluation is enabled in evalConfig. */
-  evalPlanEnabled: (s) => s.evalConfig?.plan === true,
+  /** Planning evaluation is enabled in evalConfig. */
+  evalPlanningEnabled: (s) => s.evalConfig?.planning === true,
 
-  /** Plan evaluation is disabled or evalConfig not yet set. */
-  evalPlanDisabled: (s) => s.evalConfig?.plan !== true,
+  /** Planning evaluation is disabled or evalConfig not yet set. */
+  evalPlanningDisabled: (s) => s.evalConfig?.planning !== true,
 
   // --------------------------------------------------------------- Feedback
   //
@@ -187,8 +187,8 @@ const corePredicates = {
   /** Revise verdict targeted `ideation` — the workflow is back at ideation mid-feedback. */
   loopTargetIdeation: (s) => s.currentStep === 'ideation' && s.feedbackRound > 0,
 
-  /** Revise verdict targeted `plan` — the workflow is back at plan mid-feedback. */
-  loopTargetPlan: (s) => s.currentStep === 'plan' && s.feedbackRound > 0,
+  /** Revise verdict targeted `planning` — the workflow is back at planning mid-feedback. */
+  loopTargetPlanning: (s) => s.currentStep === 'planning' && s.feedbackRound > 0,
 
   /** Revise verdict targeted `execution` — the workflow is back at execution mid-feedback. */
   loopTargetExecution: (s) =>
@@ -235,8 +235,8 @@ const corePredicates = {
   /** Resume target is `ideation`. */
   resumeTargetIdeation: (s) => s.currentStep === 'ideation',
 
-  /** Resume target is `plan`. */
-  resumeTargetPlan: (s) => s.currentStep === 'plan',
+  /** Resume target is `planning`. */
+  resumeTargetPlanning: (s) => s.currentStep === 'planning',
 
   /** Resume target is `execution`. */
   resumeTargetExecution: (s) => s.currentStep === 'execution',

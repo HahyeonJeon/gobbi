@@ -4,10 +4,26 @@
  * All methods are synchronous (bun:sqlite is a synchronous API).
  * Uses WAL mode, cached prepared statements via db.query(), and
  * ON CONFLICT(idempotency_key) DO NOTHING RETURNING * for atomic dedup.
+ *
+ * Schema v5+ adds explicit `session_id` and `project_id` columns to the
+ * `events` table — previously these partition keys were only implicit
+ * in the row's `idempotency_key` string. The column-level encoding makes
+ * per-session and per-project queries a direct projection rather than a
+ * string-parse. See DRIFT-3 in `.claude/project/gobbi/design/v050-features/gobbi-memory/review.md`
+ * for the design rationale + backfill semantics (gobbi-memory Pass 2,
+ * issue #118). `session_id` is read from the constructor's inferred
+ * sessionId (derived from the session directory name); `project_id` is
+ * the `basename(projectRoot)` captured from the session's metadata.json.
  */
 
 import { Database } from 'bun:sqlite';
-import { CURRENT_SCHEMA_VERSION } from './migrations.js';
+import { readFileSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
+import {
+  CURRENT_SCHEMA_VERSION,
+  backfillSessionAndProjectIds,
+  ensureSchemaV5,
+} from './migrations.js';
 import type { EventRow } from './migrations.js';
 
 // Re-export EventRow for consumers that import from store
@@ -106,7 +122,9 @@ CREATE TABLE IF NOT EXISTS events (
   data TEXT NOT NULL DEFAULT '{}',
   actor TEXT NOT NULL,
   parent_seq INTEGER REFERENCES events(seq),
-  idempotency_key TEXT NOT NULL UNIQUE
+  idempotency_key TEXT NOT NULL UNIQUE,
+  session_id TEXT,
+  project_id TEXT
 )`;
 
 const SQL_CREATE_INDEX_TYPE = `
@@ -116,8 +134,8 @@ const SQL_CREATE_INDEX_STEP_TYPE = `
 CREATE INDEX IF NOT EXISTS idx_events_step_type ON events(step, type)`;
 
 const SQL_APPEND = `
-INSERT INTO events (ts, schema_version, type, step, data, actor, parent_seq, idempotency_key)
-VALUES ($ts, $schema_version, $type, $step, $data, $actor, $parent_seq, $idempotency_key)
+INSERT INTO events (ts, schema_version, type, step, data, actor, parent_seq, idempotency_key, session_id, project_id)
+VALUES ($ts, $schema_version, $type, $step, $data, $actor, $parent_seq, $idempotency_key, $session_id, $project_id)
 ON CONFLICT(idempotency_key) DO NOTHING
 RETURNING *`;
 
@@ -248,11 +266,80 @@ export interface WriteStore extends ReadStore {
 }
 
 // ---------------------------------------------------------------------------
+// Partition-key resolution helpers — used by the EventStore constructor
+// to derive `session_id` + `project_id` from on-disk layout.
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve the session id from the directory that contains `gobbi.db`.
+ * The session id is the directory's basename
+ * (`.gobbi/sessions/<sessionId>/gobbi.db`). Returns `null` when the
+ * directory is null (in-memory store) or when the basename resolves to
+ * an empty string (filesystem root).
+ */
+function resolveSessionId(sessionDir: string | null): string | null {
+  if (sessionDir === null) return null;
+  const name = basename(sessionDir);
+  return name === '' ? null : name;
+}
+
+/**
+ * Resolve `basename(projectRoot)` from the session's `metadata.json`.
+ * Silent on every failure mode (missing file, parse error, unexpected
+ * shape) — the project_id column stays NULL until a future open
+ * recovers a valid metadata.
+ */
+function resolveProjectRootBasename(
+  sessionDir: string | null,
+): string | null {
+  if (sessionDir === null) return null;
+  let raw: string;
+  try {
+    raw = readFileSync(join(sessionDir, 'metadata.json'), 'utf8');
+  } catch {
+    return null;
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return null;
+  }
+  const projectRoot = (parsed as Record<string, unknown>)['projectRoot'];
+  if (typeof projectRoot !== 'string' || projectRoot === '') return null;
+  const name = basename(projectRoot);
+  return name === '' ? null : name;
+}
+
+// ---------------------------------------------------------------------------
 // EventStore class
 // ---------------------------------------------------------------------------
 
 export class EventStore implements WriteStore {
   private readonly db: Database;
+
+  /**
+   * Session partition key — derived from the session directory name (the
+   * parent of the `gobbi.db` file). Populated on every v5 INSERT so the
+   * per-session partition is queryable by column rather than by parsing
+   * the `idempotency_key` prefix. `null` when the store is opened on
+   * `:memory:` or any path where the containing directory is the
+   * filesystem root (tests).
+   */
+  private readonly sessionId: string | null;
+
+  /**
+   * Project partition key — `basename(metadata.projectRoot)` read from
+   * the session's `metadata.json` at construction. `null` when
+   * `metadata.json` is missing, unreadable, or malformed. Populated on
+   * every v5 INSERT alongside `session_id`; NULL rows are left alone
+   * unless {@link backfillSessionAndProjectIds} stamps them during a
+   * later open.
+   */
+  private readonly projectRootBasename: string | null;
 
   // Cached prepared statements — db.query() returns cached compiled bytecode.
   // Using SqlBindings as the param type to satisfy bun-types' SQLQueryBindings
@@ -275,7 +362,27 @@ export class EventStore implements WriteStore {
     this.db.run('PRAGMA synchronous = NORMAL');
     this.db.run('PRAGMA foreign_keys = ON');
     this.db.run('PRAGMA busy_timeout = 5000');
+
+    // Resolve partition keys from the db path's session directory. In-memory
+    // stores and any path whose parent is the filesystem root get null keys.
+    const sessionDir =
+      pathOrMemory === ':memory:' ? null : dirname(pathOrMemory);
+    this.sessionId = resolveSessionId(sessionDir);
+    this.projectRootBasename = resolveProjectRootBasename(sessionDir);
+
     this.initSchema();
+    // v4 → v5 row-level backfill. Idempotent — writes only to rows whose
+    // partition keys are NULL (the legacy-v4 shape). Runs outside the
+    // SQL_CREATE_TABLE / ALTER path because it depends on the resolved
+    // `sessionId` + `projectRootBasename`, which `initSchema` does not
+    // know about.
+    if (this.sessionId !== null) {
+      backfillSessionAndProjectIds(
+        this.db,
+        this.sessionId,
+        this.projectRootBasename,
+      );
+    }
 
     // Cache all prepared statements with typed return values
     this.stmtAppend = this.db.query<EventRow, [SqlBindings]>(SQL_APPEND);
@@ -301,6 +408,11 @@ export class EventStore implements WriteStore {
     this.db.run(SQL_CREATE_TABLE);
     this.db.run(SQL_CREATE_INDEX_TYPE);
     this.db.run(SQL_CREATE_INDEX_STEP_TYPE);
+    // Additive v4 → v5 column migration — no-op when the CREATE TABLE
+    // above already emitted the columns on a fresh database. When the
+    // store opens an existing pre-v5 file, the ALTER statements inside
+    // `ensureSchemaV5` add the columns without data loss.
+    ensureSchemaV5(this.db);
   }
 
   // -------------------------------------------------------------------------
@@ -346,7 +458,12 @@ export class EventStore implements WriteStore {
    */
   append(input: AppendInput): EventRow | null {
     const idempotencyKey = EventStore.computeIdempotencyKey(input);
-    // With strict: true, bun:sqlite binds by name WITHOUT the $ prefix
+    // With strict: true, bun:sqlite binds by name WITHOUT the $ prefix.
+    // Schema v5 stamps `session_id` + `project_id` explicitly. The
+    // constructor-resolved `sessionId` falls back to the input's
+    // `sessionId` when a store opened on `:memory:` (no session directory
+    // to infer from) still needs to author rows for a specific session
+    // during tests.
     const params: SqlBindings = {
       ts: input.ts,
       schema_version: CURRENT_SCHEMA_VERSION,
@@ -356,6 +473,8 @@ export class EventStore implements WriteStore {
       actor: input.actor,
       parent_seq: input.parent_seq ?? null,
       idempotency_key: idempotencyKey,
+      session_id: this.sessionId ?? input.sessionId,
+      project_id: this.projectRootBasename,
     };
     return this.stmtAppend.get(params);
   }

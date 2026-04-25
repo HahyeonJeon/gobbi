@@ -81,11 +81,11 @@ function firstEntryFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-memo-first'),
     currentStep: 'memorization',
-    evalConfig: { ideation: false, plan: false },
-    completedSteps: ['ideation', 'plan', 'execution', 'execution_eval'],
+    evalConfig: { ideation: false, planning: false },
+    completedSteps: ['ideation', 'planning', 'execution', 'execution_eval'],
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
-      plan: ['plan.md'],
+      planning: ['plan.md'],
       execution: ['execution.md'],
       execution_eval: ['project.md', 'overall.md', 'evaluation.md'],
     },
@@ -111,12 +111,12 @@ function postFeedbackConvergenceFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-memo-converged'),
     currentStep: 'memorization',
-    evalConfig: { ideation: false, plan: false },
-    completedSteps: ['ideation', 'plan', 'execution', 'execution_eval'],
+    evalConfig: { ideation: false, planning: false },
+    completedSteps: ['ideation', 'planning', 'execution', 'execution_eval'],
     feedbackRound: 2,
     artifacts: {
       ideation: ['ideation.md'],
-      plan: ['plan.md'],
+      planning: ['plan.md'],
       execution: ['execution.md'],
       execution_eval: ['project.md', 'overall.md', 'evaluation.md'],
     },
@@ -142,10 +142,10 @@ function forceMemorizationFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-memo-forced'),
     currentStep: 'memorization',
-    evalConfig: { ideation: false, plan: false },
+    evalConfig: { ideation: false, planning: false },
     completedSteps: [
       'ideation',
-      'plan',
+      'planning',
       'execution',
       'execution_eval',
       'error',
@@ -154,7 +154,7 @@ function forceMemorizationFixture(spec: StepSpec): CompileInput {
     maxFeedbackRounds: 3,
     artifacts: {
       ideation: ['ideation.md'],
-      plan: ['plan.md'],
+      planning: ['plan.md'],
       execution: ['execution.md'],
       execution_eval: ['project.md', 'overall.md', 'evaluation.md'],
     },

@@ -50,18 +50,18 @@ describe('getStepOrder', () => {
     expect(getStepOrder('ideation')).toEqual([]);
   });
 
-  test('plan is preceded only by ideation', () => {
-    expect(getStepOrder('plan')).toEqual(['ideation']);
+  test('planning is preceded only by ideation', () => {
+    expect(getStepOrder('planning')).toEqual(['ideation']);
   });
 
-  test('execution is preceded by ideation, plan — research is an Ideation substate, not a step', () => {
-    expect(getStepOrder('execution')).toEqual(['ideation', 'plan']);
+  test('execution is preceded by ideation, planning — research is an Ideation substate, not a step', () => {
+    expect(getStepOrder('execution')).toEqual(['ideation', 'planning']);
   });
 
-  test('evaluation is preceded by ideation, plan, execution', () => {
+  test('evaluation is preceded by ideation, planning, execution', () => {
     expect(getStepOrder('evaluation')).toEqual([
       'ideation',
-      'plan',
+      'planning',
       'execution',
     ]);
   });
@@ -69,7 +69,7 @@ describe('getStepOrder', () => {
   test('memorization is preceded by every other step', () => {
     expect(getStepOrder('memorization')).toEqual([
       'ideation',
-      'plan',
+      'planning',
       'execution',
       'evaluation',
     ]);
@@ -99,14 +99,14 @@ describe('selectPriorArtifacts — first step', () => {
 });
 
 // ===========================================================================
-// Plan step — picks up ideation authoritative artifact
+// Planning step — picks up ideation authoritative artifact
 // ===========================================================================
 
-describe('selectPriorArtifacts — plan step', () => {
+describe('selectPriorArtifacts — planning step', () => {
   test('returns the ideation authoritative artifact', async () => {
     const result = await selectPriorArtifacts({
       sessionDir: FIXTURE.complete,
-      currentStep: 'plan',
+      currentStep: 'planning',
     });
     expect(result).toHaveLength(1);
     const only = result[0];
@@ -120,7 +120,7 @@ describe('selectPriorArtifacts — plan step', () => {
   test('returned filePath is absolute and points at the real file on disk', async () => {
     const result = await selectPriorArtifacts({
       sessionDir: FIXTURE.complete,
-      currentStep: 'plan',
+      currentStep: 'planning',
     });
     const first = result[0];
     expect(first).toBeDefined();
@@ -131,7 +131,7 @@ describe('selectPriorArtifacts — plan step', () => {
   test('does not include innovative/best sources by default', async () => {
     const result = await selectPriorArtifacts({
       sessionDir: FIXTURE.complete,
-      currentStep: 'plan',
+      currentStep: 'planning',
     });
     expect(basenames(result)).not.toContain('innovative.md');
     expect(basenames(result)).not.toContain('best.md');
@@ -149,7 +149,7 @@ describe('selectPriorArtifacts — execution step', () => {
       currentStep: 'execution',
     });
     expect(result).toHaveLength(2);
-    expect(stepIds(result)).toEqual(['ideation', 'plan']);
+    expect(stepIds(result)).toEqual(['ideation', 'planning']);
     expect(basenames(result)).toEqual(['ideation.md', 'plan.md']);
     for (const a of result) expect(a.role).toBe('authoritative');
   });
@@ -167,7 +167,7 @@ describe('selectPriorArtifacts — filename versioning', () => {
     });
     // ideation has round-0 ideation.md; plan has plan-r1.md and plan-r2.md.
     expect(basenames(result)).toEqual(['ideation.md', 'plan-r2.md']);
-    const planEntry = result.find((a) => a.stepId === 'plan');
+    const planEntry = result.find((a) => a.stepId === 'planning');
     expect(planEntry).toBeDefined();
     expect(planEntry?.round).toBe(2);
     // round-1 artifact is NOT returned.
@@ -187,7 +187,7 @@ describe('selectPriorArtifacts — missing artifacts', () => {
     });
     // ideation/ exists but has no ideation.md → skipped.
     // plan/plan.md exists → included.
-    expect(stepIds(result)).toEqual(['plan']);
+    expect(stepIds(result)).toEqual(['planning']);
     expect(basenames(result)).toEqual(['plan.md']);
   });
 
@@ -203,7 +203,7 @@ describe('selectPriorArtifacts — missing artifacts', () => {
   test('does not throw when the whole session directory does not exist', async () => {
     const result = await selectPriorArtifacts({
       sessionDir: '/nonexistent/path/that/definitely/does/not/exist',
-      currentStep: 'plan',
+      currentStep: 'planning',
     });
     expect(result).toEqual([]);
   });
@@ -217,7 +217,7 @@ describe('selectPriorArtifacts — includeSources', () => {
   test('surfaces innovative.md and best.md alongside ideation.md when enabled', async () => {
     const result = await selectPriorArtifacts({
       sessionDir: FIXTURE.complete,
-      currentStep: 'plan',
+      currentStep: 'planning',
       includeSources: true,
     });
     expect(basenames(result)).toEqual(['ideation.md', 'innovative.md', 'best.md']);
@@ -228,12 +228,12 @@ describe('selectPriorArtifacts — includeSources', () => {
   test('includeSources: false (explicit) matches the default', async () => {
     const explicit = await selectPriorArtifacts({
       sessionDir: FIXTURE.complete,
-      currentStep: 'plan',
+      currentStep: 'planning',
       includeSources: false,
     });
     const defaulted = await selectPriorArtifacts({
       sessionDir: FIXTURE.complete,
-      currentStep: 'plan',
+      currentStep: 'planning',
     });
     expect(explicit).toEqual(defaulted);
   });
@@ -252,7 +252,7 @@ describe('selectPriorArtifacts — evaluation perspective files', () => {
     // Canonical order: ideation, plan, execution, evaluation (3 files).
     expect(stepIds(result)).toEqual([
       'ideation',
-      'plan',
+      'planning',
       'execution',
       'evaluation',
       'evaluation',

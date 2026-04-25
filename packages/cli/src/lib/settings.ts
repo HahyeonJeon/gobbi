@@ -110,10 +110,12 @@ export interface StepSettings {
 }
 
 /**
- * Per-step config keyed by the workflow loop's name. Field name `planning`
- * matches `deterministic-orchestration.md` ("Planning Loop"); the
- * state-machine literal remains `'plan'` until a comprehensive rename
- * Pass — `resolveEvalDecision` accepts both for backward compatibility.
+ * Per-step config keyed by the workflow loop's name. Post-Wave-4 the
+ * settings field name (`planning`) and the state-machine literal
+ * (`'planning'`) are aligned; `resolveEvalDecision` in `settings-io.ts`
+ * accepts only the post-rename literal — the Pass-3 backward-compat
+ * bridge that also accepted `'plan'` was removed in W4.3. Callers that
+ * still pass the legacy literal now fail at compile time.
  */
 export interface WorkflowSettings {
   readonly ideation?: StepSettings;
@@ -182,6 +184,29 @@ export interface GitSettings {
 }
 
 /**
+ * Multi-project workspace registry. Identifies which project is currently
+ * active and enumerates every project known to this workspace. Introduced
+ * by gobbi-memory Pass 2 for the `.gobbi/projects/{name}/` redesign.
+ *
+ *   - `active: null` + `known: []` = fresh install, no project configured
+ *     yet; the next `gobbi workflow init` triggers bootstrap.
+ *   - `active: "name"` is expected to also appear in `known` (cross-field
+ *     invariant enforced by a later wave — NOT in this schema pass).
+ *
+ * Both fields are required at the runtime/AJV level; callers that write
+ * `projects` must supply both. The AJV sub-schema is declared as an
+ * unannotated constant rather than `JSONSchemaType<ProjectsRegistry>`
+ * because AJV's strict `JSONSchemaType` cannot express
+ * required-plus-nullable fields cleanly (mirrors the `_schema/v1.ts`
+ * subschema pattern). Drift safety is retained via the top-level
+ * `JSONSchemaType<Settings>` annotation in `settings-validator.ts`.
+ */
+export interface ProjectsRegistry {
+  readonly active: string | null;
+  readonly known: readonly string[];
+}
+
+/**
  * The unified settings shape. Written identically at every level
  * (`.gobbi/settings.json`, `.gobbi/project/settings.json`,
  * `.gobbi/sessions/{id}/settings.json`) — narrower levels override wider
@@ -190,9 +215,16 @@ export interface GitSettings {
  * `schemaVersion` is required and must equal `1`. Every section is
  * optional; absent sections delegate to the next-wider level (and finally
  * to {@link DEFAULTS}). Arrays replace on overlay (no concat, no dedup).
+ *
+ * `projects` is required at schemaVersion 1 (additive from gobbi-memory
+ * Pass 2) — the defaults carry `{active: null, known: []}` so every
+ * existing on-disk file that omits the block surfaces a clean AJV error
+ * pointing at the missing field, and `ensureSettingsCascade` bootstraps
+ * the field on legacy files.
  */
 export interface Settings {
   readonly schemaVersion: 1;
+  readonly projects: ProjectsRegistry;
   readonly workflow?: WorkflowSettings;
   readonly notify?: NotifySettings;
   readonly git?: GitSettings;
@@ -219,6 +251,7 @@ export type ResolvedSettings = Settings;
  */
 export const DEFAULTS: Settings = {
   schemaVersion: 1,
+  projects: { active: null, known: [] },
   workflow: {
     ideation: {
       discuss: { mode: 'user', model: 'auto', effort: 'auto' },

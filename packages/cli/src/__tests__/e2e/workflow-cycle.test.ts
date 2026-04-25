@@ -30,7 +30,9 @@ import { test, expect } from 'bun:test';
 import { $ } from 'bun';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
+
+import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 
 // ---------------------------------------------------------------------------
 // Module-relative path to the CLI entry point. `import.meta.dir` points at
@@ -85,7 +87,11 @@ test(
         .quiet();
       expect(initResult.exitCode).toBe(0);
 
-      const sessionDir = join(tmpRoot, '.gobbi', 'sessions', sessionId);
+      const sessionDir = sessionDirForProject(
+        tmpRoot,
+        basename(tmpRoot),
+        sessionId,
+      );
       expect(existsSync(join(sessionDir, 'metadata.json'))).toBe(true);
       expect(existsSync(join(sessionDir, 'gobbi.db'))).toBe(true);
       // Pass 3 finalize: `ensureSettingsCascade` seeds a sparse workspace
@@ -138,7 +144,7 @@ test(
             .quiet()
         ).stdout,
       );
-      expect(afterIdeation['currentStep']).toBe('plan');
+      expect(afterIdeation['currentStep']).toBe('planning');
 
       // -----------------------------------------------------------------
       // Step 3b — COMPLETE: plan -> execution.
@@ -231,7 +237,7 @@ test(
       expect(Array.isArray(completed)).toBe(true);
       if (Array.isArray(completed)) {
         expect(completed).toContain('ideation');
-        expect(completed).toContain('plan');
+        expect(completed).toContain('planning');
         expect(completed).toContain('execution');
       }
       expect(snapFinal['violationsTotal']).toBe(0);

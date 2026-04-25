@@ -10,20 +10,20 @@ You are transitioning out of the error step after a mid-step process crash. The 
 session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
-session.completedSteps=[ideation,plan]
+session.completedSteps=[ideation,planning]
 session.evalConfig=null
 session.feedbackRound=0/3
 session.artifactCounts={}
 
 Crash recap:
-  stepAtCrash=plan
+  stepAtCrash=planning
   lastEventSeqs=[1]
   heartbeat=(none)
 
 Target-entry framing:
-  You are transitioning from error into plan.
+  You are transitioning from error into planning.
   The pathway recap above names the crash evidence you are re-entering with.
-  Continue with the normal plan flow; the full plan prompt will be emitted by \`gobbi workflow next\` on the next invocation."
+  Continue with the normal planning flow; the full planning prompt will be emitted by \`gobbi workflow next\` on the next invocation."
 `;
 
 exports[`resume — pathway-compiler snapshots crash resume compiles to a stable prompt 2`] = `"bc3e82ade5ef98f5045ce951a33734cd860a34f251925d2396826caa38900a47"`;
@@ -59,7 +59,7 @@ You are transitioning out of the error step after a workflow.step.timeout event.
 session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
-session.completedSteps=[ideation,plan]
+session.completedSteps=[ideation,planning]
 session.evalConfig=null
 session.feedbackRound=0/3
 session.artifactCounts={}
@@ -110,8 +110,8 @@ You are transitioning out of the error step after the evaluation loop reached it
 session.schemaVersion=4
 session.currentStep=error
 session.currentSubstate=null
-session.completedSteps=[ideation,plan]
-session.evalConfig=ideation=true,plan=false
+session.completedSteps=[ideation,planning]
+session.evalConfig=ideation=true,planning=false
 session.feedbackRound=3/3
 session.artifactCounts={}
 
@@ -170,14 +170,14 @@ session.artifactCounts={}
 InvalidTransition recap:
   rejectedEventType=workflow.step.exit
   rejectedEventSeq=null (rejected before append)
-  stepAtRejection=plan
-  reducerMessage=Cannot exit plan before plan_eval decision
+  stepAtRejection=planning
+  reducerMessage=Cannot exit planning before planning_eval decision
   invalidTransitionEventSeq=2
 
 Target-entry framing:
-  You are transitioning from error into plan.
+  You are transitioning from error into planning.
   The pathway recap above names the invalidTransition evidence you are re-entering with.
-  Continue with the normal plan flow; the full plan prompt will be emitted by \`gobbi workflow next\` on the next invocation."
+  Continue with the normal planning flow; the full planning prompt will be emitted by \`gobbi workflow next\` on the next invocation."
 `;
 
 exports[`resume — pathway-compiler snapshots invalidTransition resume compiles to a stable prompt 2`] = `"85abf8dce70506e347e99922be1a466d49fde93a1e96d7aaf27d10b607ce4dab"`;
@@ -223,9 +223,9 @@ Unknown-pathway recap:
   diagnosticHint=The event store is empty — state.json appears to have been manually written into the error step without any triggering event.
 
 Target-entry framing:
-  You are transitioning from error into plan.
+  You are transitioning from error into planning.
   The pathway recap above names the unknown evidence you are re-entering with.
-  Continue with the normal plan flow; the full plan prompt will be emitted by \`gobbi workflow next\` on the next invocation."
+  Continue with the normal planning flow; the full planning prompt will be emitted by \`gobbi workflow next\` on the next invocation."
 `;
 
 exports[`resume — pathway-compiler snapshots unknown resume compiles to a stable prompt 2`] = `"242ad9a06933c4bfcdc063fbfefe5e3ed00c8bde1eac33427513b2e9d0e6dc8d"`;

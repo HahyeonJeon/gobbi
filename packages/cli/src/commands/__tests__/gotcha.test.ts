@@ -7,7 +7,8 @@
  *   - Dispatch: `--help` prints usage to stdout; unknown subcommands exit 1
  *     with a diagnostic on stderr.
  *   - Promote happy path: a regular `.md` file lands at
- *     `.claude/project/<project>/gotchas/` and the source is deleted.
+ *     `.gobbi/projects/<project>/learnings/gotchas/` and the source is
+ *     deleted.
  *   - Promote skill-scoped: `_skill-<name>.md` lands at
  *     `.claude/skills/<name>/gotchas.md`.
  *   - `--dry-run`: prints planned moves, writes nothing, deletes nothing.
@@ -17,7 +18,11 @@
  *   - Empty source: exit 0 silently.
  *   - No destination project inferable: exit 1 with diagnostic.
  *
- * All tests operate on scratch directories under the OS temp dir — no real
+ * All tests operate on scratch directories under the OS temp dir that
+ * mirror the real post-W3.1 layout: source lives at
+ * `<repo>/.gobbi/projects/gobbi/learnings/gotchas/` and destinations land
+ * at `<repo>/.gobbi/projects/<name>/learnings/gotchas/` (category) or
+ * `<repo>/.claude/skills/<name>/gotchas.md` (skill-scoped). No real
  * session or `.claude/` paths are touched.
  */
 
@@ -142,9 +147,24 @@ function makeScratchRepo(): string {
 }
 
 /**
- * Build a scratch "repo" layout:
- *   <repo>/.gobbi/project/gotchas/  — source dir
- *   <repo>/.claude/project/<name>/  — destination project dir
+ * Build a scratch "repo" layout matching the post-W3.1 on-disk shape:
+ *   <repo>/.gobbi/projects/gobbi/learnings/gotchas/  — source dir (the
+ *       default `DEFAULT_PROJECT_NAME = 'gobbi'` source the command
+ *       resolves to when no `--source` is passed)
+ *   <repo>/.gobbi/projects/<name>/                    — destination
+ *       project dir (inferred when `projectName` is unambiguous)
+ *   <repo>/.claude/                                    — empty by default;
+ *       tests that exercise skill-scoped writes create the farm dir
+ *       themselves.
+ *
+ * When `projectName === null` no destination project dir is created —
+ * callers either pass `--destination-project` or seed their own
+ * `.gobbi/projects/<name>/` tree.
+ *
+ * When `projectName` differs from `DEFAULT_PROJECT_NAME` we still create
+ * the source dir under `.gobbi/projects/gobbi/learnings/gotchas/` because
+ * that is where the CLI looks by default; the destination project name
+ * (`projectName`) is independent.
  */
 function makeRepoLayout(projectName: string | null): {
   repo: string;
@@ -152,13 +172,21 @@ function makeRepoLayout(projectName: string | null): {
   claudeDir: string;
 } {
   const repo = makeScratchRepo();
-  const sourceDir = join(repo, '.gobbi', 'project', 'gotchas');
+  const sourceDir = join(
+    repo,
+    '.gobbi',
+    'projects',
+    'gobbi',
+    'learnings',
+    'gotchas',
+  );
   mkdirSync(sourceDir, { recursive: true });
   const claudeDir = join(repo, '.claude');
+  mkdirSync(claudeDir, { recursive: true });
   if (projectName !== null) {
-    mkdirSync(join(claudeDir, 'project', projectName), { recursive: true });
-  } else {
-    mkdirSync(join(claudeDir), { recursive: true });
+    mkdirSync(join(repo, '.gobbi', 'projects', projectName), {
+      recursive: true,
+    });
   }
   return { repo, sourceDir, claudeDir };
 }
@@ -167,6 +195,11 @@ function makeRepoLayout(projectName: string | null): {
  * Seed a session directory with a SQLite store containing the supplied
  * events. The events are appended in order with `system` idempotency keyed
  * off the provided timestamps.
+ *
+ * Sessions are seeded at the post-W3.1 per-project path
+ * `<repo>/.gobbi/projects/gobbi/sessions/<id>/` because that is where
+ * `findActiveSessions` looks (via
+ * `sessionsRootForProject(repoRoot, DEFAULT_PROJECT_NAME)`).
  */
 function seedSession(
   repo: string,
@@ -179,7 +212,14 @@ function seedSession(
     readonly counter?: number;
   }>,
 ): void {
-  const sessionDir = join(repo, '.gobbi', 'sessions', sessionId);
+  const sessionDir = join(
+    repo,
+    '.gobbi',
+    'projects',
+    'gobbi',
+    'sessions',
+    sessionId,
+  );
   mkdirSync(sessionDir, { recursive: true });
   const store = new EventStore(join(sessionDir, 'gobbi.db'));
   try {
@@ -301,7 +341,11 @@ describe('runGotchaWithRegistry — dispatch', () => {
 // ===========================================================================
 
 describe('runPromote — happy path (project-scoped)', () => {
-  test('appends the source file to .claude/project/<project>/gotchas/ and deletes the source', async () => {
+  test('appends the source file to .gobbi/projects/<project>/learnings/gotchas/ and deletes the source', async () => {
+    // `makeRepoLayout('testproj')` seeds two project dirs
+    // (`gobbi` — the source's default project — and `testproj`), so
+    // `inferProjectName` returns null on ambiguity; pass
+    // `--destination-project testproj` to pin the destination.
     const { repo, sourceDir, claudeDir } = makeRepoLayout('testproj');
     const sourceFile = join(sourceDir, 'foo.md');
     const originalBody =
@@ -309,11 +353,22 @@ describe('runPromote — happy path (project-scoped)', () => {
     writeFileSync(sourceFile, originalBody, 'utf8');
 
     await captureExit(() =>
-      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(['--destination-project', 'testproj'], {
+        repoRoot: repo,
+        claudeDir,
+      }),
     );
 
     expect(captured.exitCode).toBeNull();
-    const destFile = join(claudeDir, 'project', 'testproj', 'gotchas', 'foo.md');
+    const destFile = join(
+      repo,
+      '.gobbi',
+      'projects',
+      'testproj',
+      'learnings',
+      'gotchas',
+      'foo.md',
+    );
     expect(existsSync(destFile)).toBe(true);
     expect(readFileSync(destFile, 'utf8')).toBe(originalBody);
     expect(existsSync(sourceFile)).toBe(false);
@@ -321,7 +376,14 @@ describe('runPromote — happy path (project-scoped)', () => {
 
   test('appends (not overwrites) when the destination already exists', async () => {
     const { repo, sourceDir, claudeDir } = makeRepoLayout('testproj');
-    const destDir = join(claudeDir, 'project', 'testproj', 'gotchas');
+    const destDir = join(
+      repo,
+      '.gobbi',
+      'projects',
+      'testproj',
+      'learnings',
+      'gotchas',
+    );
     mkdirSync(destDir, { recursive: true });
     const existing = '## existing entry\n\nold.\n';
     writeFileSync(join(destDir, 'bar.md'), existing, 'utf8');
@@ -330,7 +392,10 @@ describe('runPromote — happy path (project-scoped)', () => {
     writeFileSync(join(sourceDir, 'bar.md'), newBody, 'utf8');
 
     await captureExit(() =>
-      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(['--destination-project', 'testproj'], {
+        repoRoot: repo,
+        claudeDir,
+      }),
     );
 
     const merged = readFileSync(join(destDir, 'bar.md'), 'utf8');
@@ -339,6 +404,33 @@ describe('runPromote — happy path (project-scoped)', () => {
     expect(merged.indexOf('existing entry')).toBeLessThan(
       merged.indexOf('new entry'),
     );
+  });
+
+  test('inferProjectName picks the sole project under .gobbi/projects/', async () => {
+    // When the only project dir under `.gobbi/projects/` is the default
+    // (`gobbi`), inference succeeds without `--destination-project`.
+    //
+    // For the default project the source path and destination path
+    // resolve to the same file (both at
+    // `.gobbi/projects/gobbi/learnings/gotchas/<category>.md`) — the
+    // draft is already in its permanent location. `applyPromotion`
+    // detects the collision and leaves the file unchanged rather than
+    // appending-then-unlinking (which would lose data).
+    const { repo, sourceDir, claudeDir } = makeRepoLayout(null);
+    const sourceFile = join(sourceDir, 'foo.md');
+    const originalBody = 'body-inferred\n';
+    writeFileSync(sourceFile, originalBody, 'utf8');
+
+    await captureExit(() =>
+      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+    );
+
+    expect(captured.stderr).toBe('');
+    expect(captured.exitCode).toBeNull();
+    // Same-path collision: the file is preserved intact, not
+    // double-appended nor deleted.
+    expect(existsSync(sourceFile)).toBe(true);
+    expect(readFileSync(sourceFile, 'utf8')).toBe(originalBody);
   });
 });
 
@@ -359,12 +451,23 @@ describe('runPromote — happy path (skill-scoped)', () => {
     expect(existsSync(sourceFile)).toBe(false);
   });
 
-  test('skill-scoped entry works even when no destination project can be inferred', async () => {
-    // Scratch repo with NO .claude/project/* directories — the inference
-    // returns null, but since the only source file is skill-scoped the
-    // promotion still succeeds (skills do not need a project name).
+  test('skill-scoped entry does not require a destination project', async () => {
+    // Even if inference did return null (two or zero project dirs under
+    // `.gobbi/projects/`), a skill-scoped source file (`_skill-*.md`)
+    // does not need a destination project and promotion still succeeds.
+    // Here the sole project dir (`gobbi`) is enough for inference to
+    // succeed; the test's primary assertion is that skill-scoped writes
+    // always land at `.claude/skills/<name>/gotchas.md` via the W3.2
+    // farm regardless of the project-inference outcome.
     const repo = makeScratchRepo();
-    const sourceDir = join(repo, '.gobbi', 'project', 'gotchas');
+    const sourceDir = join(
+      repo,
+      '.gobbi',
+      'projects',
+      'gobbi',
+      'learnings',
+      'gotchas',
+    );
     mkdirSync(sourceDir, { recursive: true });
     const claudeDir = join(repo, '.claude');
     mkdirSync(claudeDir, { recursive: true });
@@ -401,7 +504,10 @@ describe('runPromote — --dry-run', () => {
     );
 
     await captureExit(() =>
-      runPromoteWithOptions(['--dry-run'], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(
+        ['--dry-run', '--destination-project', 'testproj'],
+        { repoRoot: repo, claudeDir },
+      ),
     );
 
     expect(captured.exitCode).toBeNull();
@@ -413,7 +519,15 @@ describe('runPromote — --dry-run', () => {
     // Nothing created at the destinations.
     expect(
       existsSync(
-        join(claudeDir, 'project', 'testproj', 'gotchas', 'foo.md'),
+        join(
+          repo,
+          '.gobbi',
+          'projects',
+          'testproj',
+          'learnings',
+          'gotchas',
+          'foo.md',
+        ),
       ),
     ).toBe(false);
     expect(
@@ -545,7 +659,7 @@ describe('runPromote — active-session rejection', () => {
     ]);
 
     await captureExit(() =>
-      runPromoteWithOptions([], {
+      runPromoteWithOptions(['--destination-project', 'testproj'], {
         repoRoot: repo,
         claudeDir,
         now: () => now,
@@ -556,7 +670,15 @@ describe('runPromote — active-session rejection', () => {
     // Promotion proceeded despite the session being on disk.
     expect(
       existsSync(
-        join(claudeDir, 'project', 'testproj', 'gotchas', 'foo.md'),
+        join(
+          repo,
+          '.gobbi',
+          'projects',
+          'testproj',
+          'learnings',
+          'gotchas',
+          'foo.md',
+        ),
       ),
     ).toBe(true);
   });
@@ -577,7 +699,7 @@ describe('runPromote — active-session rejection', () => {
     ]);
 
     await captureExit(() =>
-      runPromoteWithOptions([], {
+      runPromoteWithOptions(['--destination-project', 'testproj'], {
         repoRoot: repo,
         claudeDir,
         now: () => now,
@@ -587,7 +709,15 @@ describe('runPromote — active-session rejection', () => {
     expect(captured.exitCode).toBeNull();
     expect(
       existsSync(
-        join(claudeDir, 'project', 'testproj', 'gotchas', 'foo.md'),
+        join(
+          repo,
+          '.gobbi',
+          'projects',
+          'testproj',
+          'learnings',
+          'gotchas',
+          'foo.md',
+        ),
       ),
     ).toBe(true);
   });
@@ -612,7 +742,10 @@ describe('runPromote — edge cases', () => {
   test('missing source directory exits 0 silently', async () => {
     const repo = makeScratchRepo();
     const claudeDir = join(repo, '.claude');
-    mkdirSync(join(claudeDir, 'project', 'testproj'), { recursive: true });
+    mkdirSync(
+      join(repo, '.gobbi', 'projects', 'testproj'),
+      { recursive: true },
+    );
     await captureExit(() =>
       runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
     );
@@ -623,13 +756,22 @@ describe('runPromote — edge cases', () => {
 
   test('no destination project inferable → exit 1 with diagnostic', async () => {
     const repo = makeScratchRepo();
-    const sourceDir = join(repo, '.gobbi', 'project', 'gotchas');
+    const sourceDir = join(
+      repo,
+      '.gobbi',
+      'projects',
+      'gobbi',
+      'learnings',
+      'gotchas',
+    );
     mkdirSync(sourceDir, { recursive: true });
     writeFileSync(join(sourceDir, 'foo.md'), 'body\n', 'utf8');
     const claudeDir = join(repo, '.claude');
-    // Two project dirs → ambiguous.
-    mkdirSync(join(claudeDir, 'project', 'alpha'), { recursive: true });
-    mkdirSync(join(claudeDir, 'project', 'beta'), { recursive: true });
+    // Three project dirs → ambiguous (including `gobbi` from the source
+    // setup). Two non-default entries make the choice non-trivial for
+    // `inferProjectName`.
+    mkdirSync(join(repo, '.gobbi', 'projects', 'alpha'), { recursive: true });
+    mkdirSync(join(repo, '.gobbi', 'projects', 'beta'), { recursive: true });
 
     await captureExit(() =>
       runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
@@ -643,12 +785,19 @@ describe('runPromote — edge cases', () => {
 
   test('--destination-project overrides inference', async () => {
     const repo = makeScratchRepo();
-    const sourceDir = join(repo, '.gobbi', 'project', 'gotchas');
+    const sourceDir = join(
+      repo,
+      '.gobbi',
+      'projects',
+      'gobbi',
+      'learnings',
+      'gotchas',
+    );
     mkdirSync(sourceDir, { recursive: true });
     writeFileSync(join(sourceDir, 'foo.md'), 'body\n', 'utf8');
     const claudeDir = join(repo, '.claude');
-    mkdirSync(join(claudeDir, 'project', 'alpha'), { recursive: true });
-    mkdirSync(join(claudeDir, 'project', 'beta'), { recursive: true });
+    mkdirSync(join(repo, '.gobbi', 'projects', 'alpha'), { recursive: true });
+    mkdirSync(join(repo, '.gobbi', 'projects', 'beta'), { recursive: true });
 
     await captureExit(() =>
       runPromoteWithOptions(
@@ -659,10 +808,30 @@ describe('runPromote — edge cases', () => {
 
     expect(captured.exitCode).toBeNull();
     expect(
-      existsSync(join(claudeDir, 'project', 'alpha', 'gotchas', 'foo.md')),
+      existsSync(
+        join(
+          repo,
+          '.gobbi',
+          'projects',
+          'alpha',
+          'learnings',
+          'gotchas',
+          'foo.md',
+        ),
+      ),
     ).toBe(true);
     expect(
-      existsSync(join(claudeDir, 'project', 'beta', 'gotchas', 'foo.md')),
+      existsSync(
+        join(
+          repo,
+          '.gobbi',
+          'projects',
+          'beta',
+          'learnings',
+          'gotchas',
+          'foo.md',
+        ),
+      ),
     ).toBe(false);
   });
 
@@ -673,17 +842,19 @@ describe('runPromote — edge cases', () => {
     writeFileSync(join(altSource, 'foo.md'), 'alt-body\n', 'utf8');
 
     await captureExit(() =>
-      runPromoteWithOptions(['--source', altSource], {
-        repoRoot: repo,
-        claudeDir,
-      }),
+      runPromoteWithOptions(
+        ['--source', altSource, '--destination-project', 'testproj'],
+        { repoRoot: repo, claudeDir },
+      ),
     );
 
     expect(captured.exitCode).toBeNull();
     const destFile = join(
-      claudeDir,
-      'project',
+      repo,
+      '.gobbi',
+      'projects',
       'testproj',
+      'learnings',
       'gotchas',
       'foo.md',
     );

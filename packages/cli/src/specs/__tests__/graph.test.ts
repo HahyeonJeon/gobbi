@@ -80,8 +80,8 @@ describe('loadGraph — canonical index.json', () => {
     const expected = [
       'ideation',
       'ideation_eval',
-      'plan',
-      'plan_eval',
+      'planning',
+      'planning_eval',
       'execution',
       'execution_eval',
       'memorization',
@@ -232,10 +232,10 @@ describe('loadGraph — parse and shape errors', () => {
 describe('getStepById', () => {
   test('returns the matching step', async () => {
     const graph = await loadGraph();
-    const plan = getStepById(graph, 'plan');
+    const plan = getStepById(graph, 'planning');
     expect(plan).toBeDefined();
-    expect(plan?.id).toBe('plan');
-    expect(plan?.spec).toBe('./plan/spec.json');
+    expect(plan?.id).toBe('planning');
+    expect(plan?.spec).toBe('./planning/spec.json');
   });
 
   test('returns undefined for an unknown ID', async () => {
@@ -249,9 +249,9 @@ describe('getTransitions', () => {
     const graph = await loadGraph();
     const outgoing = getTransitions(graph, 'ideation');
     const targets = outgoing.map((t) => t.to).sort();
-    // Direct to plan, eval branch to ideation_eval, plus the timeout and
+    // Direct to planning, eval branch to ideation_eval, plus the timeout and
     // (possibly) skip edges. At minimum the two primary exits must exist.
-    expect(targets).toContain('plan');
+    expect(targets).toContain('planning');
     expect(targets).toContain('ideation_eval');
   });
 

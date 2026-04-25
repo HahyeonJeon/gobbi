@@ -8,13 +8,13 @@ MUST load this at session start, resume, and compaction. MUST follow the core pr
 
 ## Core Principles
 
-> **The logic of good work: Ideation → Plan → Execution → Evaluation → Memorization.**
+> **The logic of good work: Ideation → Planning → Execution → Evaluation → Memorization.**
 
 Every non-trivial task must follow this cycle. Research is absorbed into Ideation's internal loop — it surfaces as discussion and investigation, not as a separate step. Evaluation is a first-class step, mandatory after Execution and optional at earlier steps. The state machine lives in `packages/cli/src/specs/` and is driven by `gobbi workflow init`.
 
 **Ideation** — Explore what to do. PI agents (innovative + best stances) investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
 
-**Plan** — Decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Optional evaluation.
+**Planning** — Decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Optional evaluation.
 
 **Execution** — Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Optional evaluation.
 
@@ -32,7 +32,7 @@ MUST use AskUserQuestion to discuss with the user at every stage — ideation, p
 
 > **Never repeat the same mistake. Read gotchas before acting, write gotchas after feedback.**
 
-Every agent MUST load `_gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/project/gotchas/` and promoted to permanent storage in `.claude/skills/_gotcha/` via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
+Every agent MUST load `_gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/projects/{name}/learnings/gotchas/` and promoted to permanent storage in the workspace-level skill storage via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
 
 > **Split into narrow tasks. Execute step by step, not all at once.**
 
@@ -46,6 +46,6 @@ MUST decompose work into small, specific tasks and track them with TaskCreate. E
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [_claude skill](skills/_claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [design/v050-overview.md](project/gobbi/design/v050-overview.md) | v0.5.0 state machine, 5-step cycle, directory split |
-| [design/v050-cli.md](project/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` commands |
+| [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 5-step cycle, directory split |
+| [`v050-cli.md`](../../../.gobbi/projects/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` and `gobbi project *` commands |
 | [rules/](rules/) | Naming conventions and project rules |

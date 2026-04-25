@@ -123,7 +123,7 @@ describe('validate — canonical library', () => {
 describe('E001_INVALID_SCHEMA', () => {
   test('fires when a spec fails ajv validation', async () => {
     const dir = await makeScratchCopy();
-    const specPath = join(dir, 'plan', 'spec.json');
+    const specPath = join(dir, 'planning', 'spec.json');
     const spec = await readJson(specPath);
     // Remove a required field — plan/spec.json will fail the top-level
     // `required` check.
@@ -140,7 +140,7 @@ describe('E001_INVALID_SCHEMA', () => {
 
   test('fires on invalid JSON with a clear message', async () => {
     const dir = await makeScratchCopy();
-    const specPath = join(dir, 'plan', 'spec.json');
+    const specPath = join(dir, 'planning', 'spec.json');
     await writeFile(specPath, '{ not valid json', 'utf8');
 
     const report = await validate({ dir });
@@ -157,7 +157,7 @@ describe('E001_INVALID_SCHEMA', () => {
 describe('E002_UNKNOWN_PREDICATE', () => {
   test('fires when a spec transition names a predicate not in the registry', async () => {
     const dir = await makeScratchCopy();
-    const specPath = join(dir, 'plan', 'spec.json');
+    const specPath = join(dir, 'planning', 'spec.json');
     const spec = await readJson(specPath);
     // Inject a bogus predicate name into a valid transition.
     const transitions = (spec as { transitions: Array<Record<string, unknown>> }).transitions;
@@ -207,7 +207,7 @@ describe('E003_INVALID_GRAPH', () => {
       transitions: Array<Record<string, unknown>>;
     }).transitions;
     transitions.push({
-      from: 'plan',
+      from: 'planning',
       to: 'nonexistent_step',
       condition: 'always',
       trigger: 'workflow.step.exit',
@@ -250,13 +250,13 @@ describe('E004_MISSING_SPEC', () => {
   test('fires when a graph step names a spec file that does not exist', async () => {
     const dir = await makeScratchCopy();
     // Remove plan/spec.json entirely.
-    await rm(join(dir, 'plan', 'spec.json'));
+    await rm(join(dir, 'planning', 'spec.json'));
 
     const report = await validate({ dir });
     const hit = firstOfCode(report, 'E004_MISSING_SPEC');
     expect(hit).toBeDefined();
     expect(hit?.severity).toBe('error');
-    expect(hit?.message).toContain('plan');
+    expect(hit?.message).toContain('planning');
     expect(hit?.location.pointer).toBeNull();
   });
 });
@@ -471,7 +471,7 @@ describe('E003_INVALID_GRAPH — path containment', () => {
 describe('JSON output shape', () => {
   test('diagnostic objects carry stable fields', async () => {
     const dir = await makeScratchCopy();
-    await rm(join(dir, 'plan', 'spec.json'));
+    await rm(join(dir, 'planning', 'spec.json'));
     const report = await validate({ dir });
 
     expect(Array.isArray(report.diagnostics)).toBe(true);
@@ -693,7 +693,7 @@ describe('E009_DEAD_PREDICATE', () => {
 describe('E010_VERDICT_PREDICATE_AS_CONDITION', () => {
   test('fires when a spec transition uses verdictPass as its condition', async () => {
     const dir = await makeScratchCopy();
-    const specPath = join(dir, 'plan', 'spec.json');
+    const specPath = join(dir, 'planning', 'spec.json');
     const spec = (await readJson(specPath)) as {
       transitions: Array<Record<string, unknown>>;
     };
@@ -719,15 +719,15 @@ describe('E010_VERDICT_PREDICATE_AS_CONDITION', () => {
   });
 
   test('does not fire for non-verdict condition predicates', async () => {
-    // A scratch copy without any edits — the plan spec's transitions use
-    // non-verdict predicates (evalPlanDisabled/evalPlanEnabled) and must
-    // not trigger E010 at the plan.spec.json path.
+    // A scratch copy without any edits — the planning spec's transitions use
+    // non-verdict predicates (evalPlanningDisabled/evalPlanningEnabled) and
+    // must not trigger E010 at the planning spec.json path.
     const dir = await makeScratchCopy();
     const report = await validate({ dir });
     const hit = report.diagnostics.find(
       (d) =>
         d.code === 'E010_VERDICT_PREDICATE_AS_CONDITION' &&
-        d.location.file === join(dir, 'plan', 'spec.json'),
+        d.location.file === join(dir, 'planning', 'spec.json'),
     );
     expect(hit).toBeUndefined();
   });
@@ -782,7 +782,7 @@ describe('E009 + E010 coexistence', () => {
     await writeJson(ideationPath, ideationSpec);
 
     // Trigger E010 by mis-slotting verdictRevise in the plan spec.
-    const planPath = join(dir, 'plan', 'spec.json');
+    const planPath = join(dir, 'planning', 'spec.json');
     const planSpec = (await readJson(planPath)) as {
       transitions: Array<Record<string, unknown>>;
     };

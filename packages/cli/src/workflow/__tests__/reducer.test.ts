@@ -223,17 +223,17 @@ describe('workflow.start', () => {
 describe('workflow.step.exit', () => {
   it('ideation -> plan (eval disabled), appends to completedSteps', () => {
     const state = stateAt('ideation', {
-      evalConfig: { ideation: false, plan: false },
+      evalConfig: { ideation: false, planning: false },
     });
     const next = expectOk(reduce(state, stepExit('ideation')));
-    expect(next.currentStep).toBe('plan');
+    expect(next.currentStep).toBe('planning');
     expect(next.completedSteps).toEqual(['ideation']);
     expect(next.currentSubstate).toBeNull();
   });
 
   it('ideation -> ideation_eval (eval enabled)', () => {
     const state = stateAt('ideation', {
-      evalConfig: { ideation: true, plan: false },
+      evalConfig: { ideation: true, planning: false },
     });
     const next = expectOk(reduce(state, stepExit('ideation')));
     expect(next.currentStep).toBe('ideation_eval');
@@ -241,14 +241,14 @@ describe('workflow.step.exit', () => {
 
   it('rejects when step does not match currentStep', () => {
     const state = stateAt('ideation');
-    const error = expectErr(reduce(state, stepExit('plan')));
+    const error = expectErr(reduce(state, stepExit('planning')));
     expect(error).toContain('does not match');
   });
 
   it('clears currentSubstate on exit', () => {
     const state = stateAt('ideation', {
       currentSubstate: 'discussing',
-      evalConfig: { ideation: false, plan: false },
+      evalConfig: { ideation: false, planning: false },
     });
     const next = expectOk(reduce(state, stepExit('ideation')));
     expect(next.currentSubstate).toBeNull();
@@ -263,11 +263,11 @@ describe('workflow.step.exit completedSteps accumulation', () => {
   it('accumulates completed steps across multiple exits', () => {
     // Start at ideation with one previous completion
     const state = stateAt('execution', {
-      completedSteps: ['ideation', 'plan'],
-      evalConfig: { ideation: false, plan: false },
+      completedSteps: ['ideation', 'planning'],
+      evalConfig: { ideation: false, planning: false },
     });
     const next = expectOk(reduce(state, stepExit('execution')));
-    expect(next.completedSteps).toEqual(['ideation', 'plan', 'execution']);
+    expect(next.completedSteps).toEqual(['ideation', 'planning', 'execution']);
   });
 });
 
@@ -279,15 +279,15 @@ describe('workflow.eval.decide', () => {
   it('sets evalConfig when null', () => {
     const state = stateAt('ideation');
     const next = expectOk(reduce(state, evalDecide(true, false)));
-    expect(next.evalConfig).toEqual({ ideation: true, plan: false });
+    expect(next.evalConfig).toEqual({ ideation: true, planning: false });
   });
 
   it('is immutable — second call does not change evalConfig', () => {
     const state = stateAt('ideation', {
-      evalConfig: { ideation: true, plan: false },
+      evalConfig: { ideation: true, planning: false },
     });
     const next = expectOk(reduce(state, evalDecide(false, true)));
-    expect(next.evalConfig).toEqual({ ideation: true, plan: false });
+    expect(next.evalConfig).toEqual({ ideation: true, planning: false });
   });
 });
 
@@ -460,11 +460,11 @@ describe('decision.eval.verdict pass', () => {
   it('ideation_eval -> plan on pass', () => {
     const state = stateAt('ideation_eval');
     const next = expectOk(reduce(state, verdictPass()));
-    expect(next.currentStep).toBe('plan');
+    expect(next.currentStep).toBe('planning');
   });
 
   it('plan_eval -> execution on pass', () => {
-    const state = stateAt('plan_eval');
+    const state = stateAt('planning_eval');
     const next = expectOk(reduce(state, verdictPass()));
     expect(next.currentStep).toBe('execution');
   });
@@ -484,8 +484,8 @@ describe('decision.eval.verdict revise', () => {
 
   it('execution_eval -> plan on revise with loopTarget=plan', () => {
     const state = stateAt('execution_eval');
-    const next = expectOk(reduce(state, verdictRevise('plan')));
-    expect(next.currentStep).toBe('plan');
+    const next = expectOk(reduce(state, verdictRevise('planning')));
+    expect(next.currentStep).toBe('planning');
     expect(next.feedbackRound).toBe(1);
   });
 
@@ -505,9 +505,9 @@ describe('decision.eval.verdict revise', () => {
   });
 
   it('plan_eval revise does NOT increment feedbackRound', () => {
-    const state = stateAt('plan_eval');
+    const state = stateAt('planning_eval');
     const next = expectOk(reduce(state, verdictRevise()));
-    expect(next.currentStep).toBe('plan');
+    expect(next.currentStep).toBe('planning');
     expect(next.feedbackRound).toBe(0);
   });
 });
@@ -531,7 +531,7 @@ describe('feedback cap', () => {
       feedbackRound: 5,
       maxFeedbackRounds: 3,
     });
-    const next = expectOk(reduce(state, verdictRevise('plan')));
+    const next = expectOk(reduce(state, verdictRevise('planning')));
     expect(next.currentStep).toBe('error');
   });
 
@@ -567,7 +567,7 @@ describe('guard events', () => {
           guardId: 'g-prev',
           toolName: 'Read',
           reason: 'prior violation',
-          step: 'plan',
+          step: 'planning',
           timestamp: '2026-01-01T00:00:00.000Z',
         },
       ],
@@ -604,8 +604,8 @@ describe('workflow.step.timeout', () => {
   const activeSteps: WorkflowStep[] = [
     'ideation',
     'ideation_eval',
-    'plan',
-    'plan_eval',
+    'planning',
+    'planning_eval',
     'execution',
     'execution_eval',
     'memorization',
@@ -654,7 +654,7 @@ describe('workflow.invalid_transition', () => {
   it('is an observational no-op — state does not change', () => {
     const state = stateAt('error', {
       feedbackRound: 2,
-      completedSteps: ['ideation', 'plan'],
+      completedSteps: ['ideation', 'planning'],
     });
     const event: Event = {
       type: WORKFLOW_EVENTS.INVALID_TRANSITION,
@@ -710,7 +710,7 @@ describe('workflow.resume', () => {
 
   it('rejects resume from non-error step', () => {
     const state = stateAt('execution');
-    const error = expectErr(reduce(state, resume('plan')));
+    const error = expectErr(reduce(state, resume('planning')));
     expect(error).toContain('error state');
   });
 
@@ -749,7 +749,7 @@ describe('invalid transitions return error, not throw', () => {
   });
 
   it('step.exit with wrong step returns error', () => {
-    const result = reduce(stateAt('plan'), stepExit('execution'));
+    const result = reduce(stateAt('planning'), stepExit('execution'));
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error).toContain('does not match');
@@ -854,7 +854,7 @@ describe('immutability', () => {
 
 describe('workflow.step.skip', () => {
   it('skips from plan to ideation', () => {
-    const state = stateAt('plan');
+    const state = stateAt('planning');
     const next = expectOk(reduce(state, stepSkip('ideation')));
     expect(next.currentStep).toBe('ideation');
     expect(next.currentSubstate).toBe('discussing');
@@ -891,12 +891,12 @@ describe('E.10 — stepStartedAt', () => {
     // with an explicit ts. The new state records the ts as the plan
     // entry time.
     const state = stateAt('ideation', {
-      evalConfig: { ideation: false, plan: false },
+      evalConfig: { ideation: false, planning: false },
       stepStartedAt: null,
     });
     const exitTs = '2026-04-18T13:35:00.000Z';
     const next = expectOk(reduce(state, stepExit('ideation'), exitTs));
-    expect(next.currentStep).toBe('plan');
+    expect(next.currentStep).toBe('planning');
     expect(next.stepStartedAt).toBe(exitTs);
   });
 
@@ -906,11 +906,11 @@ describe('E.10 — stepStartedAt', () => {
     // advances to the new event's ts — never moves backward.
     const earlier = '2026-04-18T13:35:00.000Z';
     const later = '2026-04-18T14:00:00.000Z';
-    const state = stateAt('plan', {
-      evalConfig: { ideation: false, plan: false },
+    const state = stateAt('planning', {
+      evalConfig: { ideation: false, planning: false },
       stepStartedAt: earlier,
     });
-    const next = expectOk(reduce(state, stepExit('plan'), later));
+    const next = expectOk(reduce(state, stepExit('planning'), later));
     expect(next.currentStep).toBe('execution');
     expect(next.stepStartedAt).toBe(later);
     // Sanity — original state frozen semantics, not mutated.
@@ -934,11 +934,11 @@ describe('E.10 — stepStartedAt', () => {
     // monotonic witness. This guards the signature's backward-compat.
     const prior = '2026-04-18T13:35:00.000Z';
     const state = stateAt('ideation', {
-      evalConfig: { ideation: false, plan: false },
+      evalConfig: { ideation: false, planning: false },
       stepStartedAt: prior,
     });
     const next = expectOk(reduce(state, stepExit('ideation')));
-    expect(next.currentStep).toBe('plan');
+    expect(next.currentStep).toBe('planning');
     expect(next.stepStartedAt).toBe(prior);
   });
 
@@ -948,7 +948,7 @@ describe('E.10 — stepStartedAt', () => {
     // so any future switch to epoch-ms is caught here.
     const ts = '2026-04-18T13:35:00.000Z';
     const state = stateAt('ideation', {
-      evalConfig: { ideation: false, plan: false },
+      evalConfig: { ideation: false, planning: false },
     });
     const next = expectOk(reduce(state, stepExit('ideation'), ts));
     const reparsed = JSON.parse(JSON.stringify(next)) as WorkflowState;

@@ -178,7 +178,14 @@ function reduceWorkflow(
       if (state.evalConfig === null) {
         const nextEvalConfig = {
           ideation: event.data.ideation,
-          plan: event.data.plan,
+          // CQRS asymmetry: the EVAL_DECIDE event payload keeps its
+          // pre-Wave-4 `plan` field name (immutable wire history); the
+          // state-level field was renamed to `EvalConfig.planning` in W4.
+          // This single mapping site is the seam — see the JSDoc on
+          // `EvalDecideData.plan` in `events/workflow.ts` for the full
+          // rationale. Renaming the event field would require an event
+          // schema migration and break the payload-stability invariant.
+          planning: event.data.plan,
           ...(event.data.execution !== undefined
             ? { execution: event.data.execution }
             : {}),
@@ -188,7 +195,7 @@ function reduceWorkflow(
           evalConfig: nextEvalConfig,
         });
       }
-      // evalConfig already set — ideation/plan locked. If the event carries
+      // evalConfig already set — ideation/planning locked. If the event carries
       // an execution value and state has not yet recorded one, merge it in.
       if (
         event.data.execution !== undefined &&

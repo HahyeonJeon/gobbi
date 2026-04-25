@@ -57,6 +57,7 @@ import {
   readLastLine,
 } from '../../lib/jsonl.js';
 import { isRecord, isString, isNumber } from '../../lib/guards.js';
+import { ensureSessionStepDir } from '../../lib/session-dirs.js';
 import { EventStore, type ReadStore } from '../../workflow/store.js';
 import {
   appendEventAndUpdateState,
@@ -69,6 +70,7 @@ import {
 import { createArtifactWrite } from '../../workflow/events/artifact.js';
 import type { WorkflowState } from '../../workflow/state.js';
 import { resolveSessionDir } from '../session.js';
+import type { StepId } from '../../specs/artifact-selector.js';
 
 // ---------------------------------------------------------------------------
 // Hook payload shape
@@ -195,6 +197,16 @@ export async function runCaptureSubagentWithOptions(
     const artifactsDir = join(sessionDir, 'artifacts');
     const successFilename = `${agentType}-r${round}.md`;
     const failureFilename = `delegation-fail-r${round}.md`;
+
+    // Lazy step-subdir materialisation — when the current workflow step is
+    // one of the five productive steps, ensure `<step>/` and `<step>/rawdata/`
+    // exist so downstream prompt assembly finds them. Narrows the wider
+    // `WorkflowState.currentStep` (`WorkflowStep`) to `StepId`; `*_eval`,
+    // `idle`, `done`, `error` variants skip the ensure call.
+    const stepId = asStepId(state.currentStep);
+    if (stepId !== null) {
+      ensureSessionStepDir(sessionDir, stepId);
+    }
 
     // --- 5. Parent-seq best-effort lookup -----------------------------
     const parentSeq = findParentSpawnSeq(store, agentId);
@@ -504,6 +516,25 @@ function idempotencyFor(toolCallId: string | undefined): IdempotencyChoice {
 function sessionDirName(dir: string): string {
   const parts = dir.split(/[\\/]+/);
   return parts[parts.length - 1] ?? dir;
+}
+
+/**
+ * Narrow `WorkflowState.currentStep` (the wider `WorkflowStep` union) to the
+ * `StepId` subset recognised by `ensureSessionStepDir`. Returns `null` for
+ * `idle`, `done`, `error`, and the `*_eval` variants — none of those map to
+ * a productive step directory that lazy materialisation should create.
+ */
+function asStepId(step: string): StepId | null {
+  if (
+    step === 'ideation' ||
+    step === 'planning' ||
+    step === 'execution' ||
+    step === 'evaluation' ||
+    step === 'memorization'
+  ) {
+    return step;
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------

@@ -58,19 +58,19 @@ describe('PREDICATE_NAMES ↔ defaultPredicates — coverage', () => {
       'always',
       'evalIdeationDisabled',
       'evalIdeationEnabled',
-      'evalPlanDisabled',
-      'evalPlanEnabled',
+      'evalPlanningDisabled',
+      'evalPlanningEnabled',
       'feedbackCapExceeded',
       'feedbackRoundActive',
       'ideationSynthesized',
       'loopTargetExecution',
       'loopTargetIdeation',
-      'loopTargetPlan',
+      'loopTargetPlanning',
       'piAgentsToSpawn',
       'resumeTargetExecution',
       'resumeTargetIdeation',
       'resumeTargetMemorization',
-      'resumeTargetPlan',
+      'resumeTargetPlanning',
       'skipRequested',
       'stepTimeoutFired',
       'verdictPass',
@@ -135,7 +135,7 @@ describe('verdictPass / verdictRevise — state-only semantics', () => {
 describe('loopTarget* — mid-feedback state matching', () => {
   const cases: readonly (readonly [PredicateName, WorkflowState['currentStep']])[] = [
     ['loopTargetIdeation', 'ideation'],
-    ['loopTargetPlan', 'plan'],
+    ['loopTargetPlanning', 'planning'],
     ['loopTargetExecution', 'execution'],
   ];
 
@@ -157,7 +157,7 @@ describe('loopTarget* — mid-feedback state matching', () => {
     test(`${name} false when currentStep does not match the loop target`, () => {
       const state: WorkflowState = {
         ...freshState(),
-        currentStep: step === 'ideation' ? 'plan' : 'ideation',
+        currentStep: step === 'ideation' ? 'planning' : 'ideation',
         feedbackRound: 1,
       };
       expect(defaultPredicates[name](state)).toBe(false);
@@ -172,7 +172,7 @@ describe('loopTarget* — mid-feedback state matching', () => {
 describe('resumeTarget* — current step matches resume target', () => {
   const cases: readonly (readonly [PredicateName, WorkflowState['currentStep']])[] = [
     ['resumeTargetIdeation', 'ideation'],
-    ['resumeTargetPlan', 'plan'],
+    ['resumeTargetPlanning', 'planning'],
     ['resumeTargetExecution', 'execution'],
     ['resumeTargetMemorization', 'memorization'],
   ];
@@ -186,7 +186,7 @@ describe('resumeTarget* — current step matches resume target', () => {
     test(`${name} false when currentStep does not match`, () => {
       const state: WorkflowState = {
         ...freshState(),
-        currentStep: step === 'ideation' ? 'plan' : 'ideation',
+        currentStep: step === 'ideation' ? 'planning' : 'ideation',
       };
       expect(defaultPredicates[name](state)).toBe(false);
     });
@@ -223,7 +223,7 @@ describe('error-state and navigation predicates', () => {
     const variants: WorkflowState[] = [
       freshState(),
       { ...freshState(), currentStep: 'ideation' },
-      { ...freshState(), currentStep: 'plan', feedbackRound: 1 },
+      { ...freshState(), currentStep: 'planning', feedbackRound: 1 },
       { ...freshState(), currentStep: 'error' },
     ];
     for (const s of variants) {

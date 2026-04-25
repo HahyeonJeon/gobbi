@@ -12,7 +12,7 @@
  * The workflow has two related but distinct models that must not be confused:
  *
  * 1. The PRODUCTIVE STEP MODEL. `StepId` is the union
- *    `'ideation' | 'plan' | 'execution' | 'evaluation' | 'memorization'`
+ *    `'ideation' | 'planning' | 'execution' | 'evaluation' | 'memorization'`
  *    (see PR A A.3b's `specs/index.ts` restructuring and the `StepId` type).
  *    These are the five steps whose `spec.json` files live on disk and whose
  *    prompts are compiled by `assembly.ts::compile()`. Every `spec.json`
@@ -20,7 +20,8 @@
  *
  * 2. The GRAPH MODEL. `specs/index.json` describes the full workflow graph.
  *    Its `steps[]` array has SEVEN entries: `ideation`, `ideation_eval`,
- *    `plan`, `plan_eval`, `execution`, `execution_eval`, `memorization`. The
+ *    `planning`, `planning_eval`, `execution`, `execution_eval`, `memorization`.
+ *    The
  *    three `*_eval` nodes all point at the SAME `evaluation/spec.json` (via
  *    `StepDefinition.evalFor`). Additional non-productive states appear as
  *    transition targets — `done`, `error`, `idle` — which are lifecycle

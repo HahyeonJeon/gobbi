@@ -88,11 +88,11 @@ function firstEntryFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-exec-first'),
     currentStep: 'execution',
-    evalConfig: { ideation: false, plan: false },
-    completedSteps: ['ideation', 'plan'],
+    evalConfig: { ideation: false, planning: false },
+    completedSteps: ['ideation', 'planning'],
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
-      plan: ['plan.md'],
+      planning: ['plan.md'],
     },
   };
   const dynamic: DynamicContext = {
@@ -116,8 +116,8 @@ function executorDispatchFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-exec-dispatch'),
     currentStep: 'execution',
-    evalConfig: { ideation: false, plan: false },
-    completedSteps: ['ideation', 'plan'],
+    evalConfig: { ideation: false, planning: false },
+    completedSteps: ['ideation', 'planning'],
     activeSubagents: [
       {
         subagentId: 'subagent-executor-task-2',
@@ -128,7 +128,7 @@ function executorDispatchFixture(spec: StepSpec): CompileInput {
     ],
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
-      plan: ['plan.md'],
+      planning: ['plan.md'],
     },
   };
   const dynamic: DynamicContext = {
@@ -168,11 +168,11 @@ function skillInjectionFixture(spec: StepSpec): CompileInput {
   const state: WorkflowState = {
     ...initialState('session-exec-skills'),
     currentStep: 'execution',
-    evalConfig: { ideation: false, plan: false },
-    completedSteps: ['ideation', 'plan'],
+    evalConfig: { ideation: false, planning: false },
+    completedSteps: ['ideation', 'planning'],
     artifacts: {
       ideation: ['innovative.md', 'best.md', 'ideation.md'],
-      plan: ['plan.md'],
+      planning: ['plan.md'],
     },
   };
   const dynamic: DynamicContext = {
