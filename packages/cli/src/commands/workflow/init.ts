@@ -58,6 +58,7 @@ import { ensureSettingsCascade } from '../../lib/ensure-settings-cascade.js';
 import { type Settings } from '../../lib/settings.js';
 import {
   loadSettingsAtLevel,
+  resolveSettings,
   writeSettingsAtLevel,
 } from '../../lib/settings-io.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
@@ -286,6 +287,17 @@ export async function runInitWithOptions(
 
   writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`, 'utf8');
 
+  // Resolve the cascaded settings AFTER metadata is written so the
+  // session-level `settings.json` (if one was seeded by a future Pass) is
+  // visible. The resolved cascade feeds `initialState` so
+  // `state.maxFeedbackRounds` reflects the configured per-step
+  // `workflow.{step}.maxIterations` instead of the hardcoded 3 (issue #134).
+  const resolvedSettings = resolveSettings({
+    repoRoot,
+    sessionId,
+    projectName,
+  });
+
   // Open the SQLite store and emit the opening events atomically inside a
   // single transaction. `appendEventAndUpdateState` already uses IMMEDIATE
   // locking; composing two calls under `store.transaction` yields a single
@@ -305,7 +317,14 @@ export async function runInitWithOptions(
       if (state.currentStep !== 'idle' && state.currentStep !== 'ideation') {
         // Defensive: should never happen on a fresh session. Fall back to
         // initialState rather than emit events against an unknown base.
-        state = initialState(sessionId);
+        state = initialState(sessionId, resolvedSettings);
+      } else if (state.currentStep === 'idle') {
+        // Fresh session — overlay the settings-derived feedback cap onto the
+        // initialState the cold fallback returned. The replay path inside
+        // `resolveWorkflowState` calls `initialState(sessionId)` without
+        // settings so the cascaded cap must be threaded in here. All other
+        // initialState fields are unchanged for an empty event stream.
+        state = initialState(sessionId, resolvedSettings);
       }
 
       const startEvent = createWorkflowStart({

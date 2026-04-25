@@ -27,6 +27,7 @@ import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../lib/guards.js';
+import type { ResolvedSettings } from '../lib/settings.js';
 import { isValidEventType } from './events/index.js';
 import type { Event } from './events/index.js';
 import type { VerificationResultData } from './events/verification.js';
@@ -218,9 +219,24 @@ export interface WorkflowState {
  * Create a fresh WorkflowState for a new session.
  *
  * Starts in the `idle` step with no substate, no eval config,
- * and a default feedback cap of 3 rounds.
+ * and a feedback cap derived from the resolved settings cascade
+ * (see {@link resolveMaxFeedbackRounds}). When `settings` is omitted
+ * — the common case in tests, replay paths, and any call site that
+ * does not have a cascade in hand — falls back to the historical
+ * default of 3.
+ *
+ * The `state.maxFeedbackRounds` field is a single session-wide cap
+ * (state-shape unchanged this Pass). `resolveMaxFeedbackRounds`
+ * collapses the per-step `workflow.{ideation,planning,execution}.maxIterations`
+ * values into one number using the `execution → planning → ideation`
+ * preference ladder — execution-step REVISE loops are the most common
+ * driver of the cap in practice. Per-step state extension is a
+ * deferred follow-up; see issue #134.
  */
-export function initialState(sessionId: string): WorkflowState {
+export function initialState(
+  sessionId: string,
+  settings?: ResolvedSettings,
+): WorkflowState {
   return {
     schemaVersion: 4,
     sessionId,
@@ -232,11 +248,33 @@ export function initialState(sessionId: string): WorkflowState {
     artifacts: {},
     violations: [],
     feedbackRound: 0,
-    maxFeedbackRounds: 3,
+    maxFeedbackRounds: resolveMaxFeedbackRounds(settings),
     lastVerdictOutcome: null,
     verificationResults: {},
     stepStartedAt: null,
   };
+}
+
+/**
+ * Resolve the session-wide `maxFeedbackRounds` from a resolved settings
+ * cascade. Reads the per-step `workflow.{step}.maxIterations` slots in
+ * the order `execution → planning → ideation`, returning the first
+ * defined value. Falls back to `3` when `settings` is `undefined` or
+ * none of the step slots carry a value.
+ *
+ * The state shape carries a single number this Pass — per-step state
+ * extension is deferred (see issue #134). Execution-step REVISE loops
+ * are the most common driver of the cap, so the execution slot wins
+ * the resolution race.
+ */
+function resolveMaxFeedbackRounds(settings: ResolvedSettings | undefined): number {
+  if (settings === undefined) return 3;
+  return (
+    settings.workflow?.execution?.maxIterations
+    ?? settings.workflow?.planning?.maxIterations
+    ?? settings.workflow?.ideation?.maxIterations
+    ?? 3
+  );
 }
 
 // ---------------------------------------------------------------------------
