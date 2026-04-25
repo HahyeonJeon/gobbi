@@ -478,11 +478,12 @@ describe('cross-pass invariant: init normalises legacy-shape session', () => {
       expect(legacySnap.stateSchemaVersion).toBe(4);
       expect(freshSnap.stateSchemaVersion).toBe(4);
 
-      // Layer 3 — gobbi.db schema (gobbi-memory Pass 2: v5 — session_id +
-      // project_id columns). `CURRENT_SCHEMA_VERSION` is imported (not
-      // hardcoded literal) so a future schema bump localises the failure
-      // here rather than scattering bare integers across asserts.
-      expect(CURRENT_SCHEMA_VERSION).toBe(5);
+      // Layer 3 — gobbi.db schema (Wave A.1.3: v6 — workspace-partitioned
+      // audit + meta tables on top of the gobbi-memory Pass 2 v5 events
+      // columns). `CURRENT_SCHEMA_VERSION` is imported (not hardcoded
+      // literal) so a future schema bump localises the failure here rather
+      // than scattering bare integers across asserts.
+      expect(CURRENT_SCHEMA_VERSION).toBe(6);
       expect(legacySnap.dbColumnsHaveSessionAndProjectId).toBe(true);
       expect(freshSnap.dbColumnsHaveSessionAndProjectId).toBe(true);
 
