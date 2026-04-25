@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'bun:test';
 import { Database } from 'bun:sqlite';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -1485,5 +1492,153 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
     } finally {
       rmSync(join(sessionDir, '..'), { recursive: true, force: true });
     }
+  });
+});
+
+// ===========================================================================
+// WAL checkpoint after workflow.step.exit (#146 A.1.9)
+//
+// Wave A.1's workspace-scoped `state.db` widens the writer surface — every
+// hook in the conversation turn writes to the same DB. Per Architecture
+// P-A-6 + scenario SC-ORCH-25, the EventStore truncates the WAL after
+// every successful `workflow.step.exit` append. The pre-existing `close()`
+// checkpoint stays — the per-step.exit hook is additive, bounding the
+// in-session SIGKILL loss window to the events written between two
+// adjacent step.exit checkpoints.
+// ===========================================================================
+
+/**
+ * Append a non-step.exit event without toggling the step.exit hook.
+ * Each call uses a unique toolCallId so ON CONFLICT cannot dedup.
+ */
+function appendNoise(store: EventStore, sessionId: string, n: number): void {
+  for (let i = 0; i < n; i += 1) {
+    store.append({
+      ts: `2026-04-25T00:00:${String(i).padStart(2, '0')}.000Z`,
+      type: 'workflow.start',
+      step: null,
+      data: '{}',
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: `noise-${i}`,
+      sessionId,
+    });
+  }
+}
+
+describe('WAL checkpoint after workflow.step.exit (#146 A.1.9)', () => {
+  it('a workflow.step.exit append truncates the WAL file', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-wal-truncate',
+      '/home/alice/projects/wal-truncate',
+    );
+    const walPath = `${dbPath}-wal`;
+    try {
+      using store = new EventStore(dbPath);
+
+      // Seed many non-step.exit events so the WAL grows. Each row is
+      // tiny but the WAL accumulates page-sized writes — enough events
+      // guarantees a non-zero WAL size before the checkpoint runs.
+      appendNoise(store, 'sess-wal-truncate', 50);
+
+      const walSizeBefore = existsSync(walPath) ? statSync(walPath).size : 0;
+      // Sanity: the WAL must have grown — otherwise the checkpoint
+      // assertion below is vacuous.
+      expect(walSizeBefore).toBeGreaterThan(0);
+
+      // Now append a step.exit — the hook should checkpoint(TRUNCATE),
+      // shrinking the WAL file.
+      const exitRow = store.append({
+        ts: '2026-04-25T00:01:00.000Z',
+        type: 'workflow.step.exit',
+        step: 'ideation',
+        data: '{}',
+        actor: 'orchestrator',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-step-exit',
+        sessionId: 'sess-wal-truncate',
+      });
+      expect(exitRow).not.toBeNull();
+      expect(exitRow!.type).toBe('workflow.step.exit');
+
+      const walSizeAfter = existsSync(walPath) ? statSync(walPath).size : 0;
+      // PRAGMA wal_checkpoint(TRUNCATE) shrinks the WAL to a header-only
+      // (or zero) state. The exact size depends on the SQLite build, but
+      // it must be strictly smaller than the pre-checkpoint size.
+      expect(walSizeAfter).toBeLessThan(walSizeBefore);
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('non-step.exit events do NOT trigger a checkpoint — WAL keeps growing', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-wal-nogrow',
+      '/home/alice/projects/wal-nogrow',
+    );
+    const walPath = `${dbPath}-wal`;
+    try {
+      using store = new EventStore(dbPath);
+
+      // Seed a small batch and capture the WAL size baseline.
+      appendNoise(store, 'sess-wal-nogrow', 10);
+      const walSizeAfterFirst = existsSync(walPath)
+        ? statSync(walPath).size
+        : 0;
+      expect(walSizeAfterFirst).toBeGreaterThan(0);
+
+      // Append more non-step.exit events. If a stray code path
+      // mistakenly checkpointed on these types, the WAL would shrink or
+      // stay flat. Instead it must grow (or stay equal at the page
+      // boundary — assert "not smaller" rather than "strictly larger").
+      appendNoise(store, 'sess-wal-nogrow', 50);
+      const walSizeAfterMore = existsSync(walPath)
+        ? statSync(walPath).size
+        : 0;
+      expect(walSizeAfterMore).toBeGreaterThanOrEqual(walSizeAfterFirst);
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('checkpoint failures are swallowed — append still returns the row (`:memory:` smoke)', () => {
+    // `:memory:` databases reject `PRAGMA wal_checkpoint(TRUNCATE)` (no
+    // WAL file exists) — historically this was the trigger that forced
+    // `close()` to wrap the pragma in try/catch. The same swallow policy
+    // must hold for the per-step.exit hook so a checkpoint failure
+    // cannot surface as an append failure.
+    using store = new EventStore(':memory:');
+
+    // No throw + the row comes back with an assigned seq.
+    const row = store.append({
+      ts: '2026-04-25T00:00:00.000Z',
+      type: 'workflow.step.exit',
+      step: 'ideation',
+      data: '{}',
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-mem-step-exit',
+      sessionId: 'sess-mem',
+    });
+    expect(row).not.toBeNull();
+    expect(row!.seq).toBe(1);
+    expect(row!.type).toBe('workflow.step.exit');
+    // The store stays usable — a follow-up append must not throw either.
+    const follow = store.append({
+      ts: '2026-04-25T00:01:00.000Z',
+      type: 'workflow.start',
+      step: null,
+      data: '{}',
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-mem-followup',
+      sessionId: 'sess-mem',
+    });
+    expect(follow).not.toBeNull();
+    expect(follow!.seq).toBe(2);
   });
 });

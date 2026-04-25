@@ -108,6 +108,17 @@ export type AppendInput =
 
 type SqlBindings = Record<string, string | number | bigint | boolean | null>;
 
+/**
+ * Event type that triggers a per-event WAL checkpoint inside `append()`.
+ *
+ * Wave A.1's workspace-scoped `state.db` widens the writer surface — this
+ * checkpoint bounds the lost-event window under SIGKILL to "events written
+ * between two adjacent step.exit checkpoints" (orchestration §6, scenario
+ * SC-ORCH-25). Hoisted as a named const so the constraint is greppable
+ * and so future readers can find the policy at the source-of-truth.
+ */
+const STEP_EXIT_EVENT_TYPE = 'workflow.step.exit';
+
 // ---------------------------------------------------------------------------
 // SQL statements
 // ---------------------------------------------------------------------------
@@ -554,7 +565,21 @@ export class EventStore implements WriteStore {
       session_id: this.sessionId ?? input.sessionId,
       project_id: this.projectRootBasename,
     };
-    return this.stmtAppend.get(params);
+    const row = this.stmtAppend.get(params);
+    // Concurrent-writer durability mitigation (#146 A.1.9 / SC-ORCH-25):
+    // truncate the WAL after every successful `workflow.step.exit` write.
+    // Workspace-scoped `state.db` widens the writer surface — this bounds
+    // the lost-event window under SIGKILL to "events written between two
+    // adjacent step.exit checkpoints." Additive to the existing
+    // `close()` checkpoint below; do not collapse the two.
+    //
+    // The hook only fires when `stmtAppend.get` returned a row — deduped
+    // events (ON CONFLICT DO NOTHING returning null) need no checkpoint
+    // because no new bytes hit the WAL.
+    if (row !== null && row.type === STEP_EXIT_EVENT_TYPE) {
+      this.checkpointWal();
+    }
+    return row;
   }
 
   /**
@@ -658,16 +683,40 @@ export class EventStore implements WriteStore {
   }
 
   // -------------------------------------------------------------------------
-  // Cleanup
+  // WAL checkpoint
   // -------------------------------------------------------------------------
 
-  /** Close the database. Best-effort WAL checkpoint before closing. */
-  close(): void {
+  /**
+   * Best-effort `PRAGMA wal_checkpoint(TRUNCATE)`. Used both at session
+   * close and after every `workflow.step.exit` append (#146 A.1.9).
+   * Errors are swallowed — checkpoint failure must never surface as an
+   * append or close failure (e.g., `:memory:` databases reject the
+   * pragma). Mirrors the existing best-effort policy that lived inline
+   * in `close()` before A.1.9.
+   */
+  private checkpointWal(): void {
     try {
       this.db.run('PRAGMA wal_checkpoint(TRUNCATE)');
     } catch {
-      // Cleanup is best-effort — ignore errors (e.g., in-memory databases)
+      // Best-effort — ignore errors (e.g., in-memory databases reject
+      // the pragma; transient lock contention recovers on the next
+      // checkpoint).
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // Cleanup
+  // -------------------------------------------------------------------------
+
+  /**
+   * Close the database. Best-effort WAL checkpoint before closing — this
+   * coexists with the per-`workflow.step.exit` checkpoint added in #146
+   * A.1.9. The two checkpoints are additive: the per-step.exit hook
+   * bounds in-session SIGKILL loss; the close-time hook bounds clean
+   * shutdown WAL size.
+   */
+  close(): void {
+    this.checkpointWal();
     this.db.close();
   }
 
