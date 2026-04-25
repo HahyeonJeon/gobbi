@@ -13,7 +13,7 @@ See `README.md` for the feature overview.
 ### CFG-1 — Cascade get — no `--level` returns session → project → workspace → default
 
 **Given** `.gobbi/projects/<name>/sessions/{id}/settings.json` has `git.workflow.mode: 'worktree-pr'`
-And `.gobbi/project/settings.json` has `git.workflow.mode: 'direct-commit'`
+And `.gobbi/projects/<name>/settings.json` has `git.workflow.mode: 'direct-commit'`
 **When** `gobbi config get git.workflow.mode --session-id <id>` runs
 **Then** output is `"worktree-pr"` (session wins) and exit code is `0`
 
@@ -29,7 +29,7 @@ Evidence:
 
 ### CFG-2 — Level-scoped get — `--level project` reads only project file
 
-**Given** `.gobbi/project/settings.json` has `notify.slack.enabled: true`
+**Given** `.gobbi/projects/<name>/settings.json` has `notify.slack.enabled: true`
 And `.gobbi/projects/<name>/sessions/{id}/settings.json` has `notify.slack.enabled: false`
 **When** `gobbi config get notify.slack.enabled --level project` runs
 **Then** output is `true` and exit code is `0`
@@ -47,7 +47,7 @@ Evidence:
 
 ### CFG-3 — Level-scoped get — key absent at level returns exit 1 even when default supplies value
 
-**Given** `.gobbi/project/settings.json` is empty (only `schemaVersion: 1`)
+**Given** `.gobbi/projects/<name>/settings.json` is empty (only `schemaVersion: 1`)
 **When** `gobbi config get git.workflow.mode --level project` runs
 **Then** exit code is `1` and stdout is empty
 
@@ -63,7 +63,7 @@ Evidence:
 
 ### CFG-4 — Cascade get — key absent at all levels returns exit 1
 
-**Given** no `.gobbi/settings.json`, no `.gobbi/project/settings.json`, no session settings
+**Given** no `.gobbi/settings.json`, no `.gobbi/projects/<name>/settings.json`, no session settings
 **When** `gobbi config get workflow.ideation.discuss.mode --session-id <id>` runs
 **Then** exit code is `0` and output is `"user"` (the built-in default)
 
@@ -117,9 +117,9 @@ Evidence:
 
 ### CFG-7 — Deep-path set — nested key created without clobbering siblings
 
-**Given** `.gobbi/project/settings.json` has `git: { workflow: { mode: 'worktree-pr', baseBranch: 'main' } }`
+**Given** `.gobbi/projects/<name>/settings.json` has `git: { workflow: { mode: 'worktree-pr', baseBranch: 'main' } }`
 **When** `gobbi config set git.pr.draft true --level project` runs
-**Then** `.gobbi/project/settings.json` has `git.pr.draft: true`
+**Then** `.gobbi/projects/<name>/settings.json` has `git.pr.draft: true`
 And `git.workflow.mode` is still `'worktree-pr'` and `git.workflow.baseBranch` is still `'main'`
 
 State trace:
@@ -171,7 +171,7 @@ Evidence:
 ### CFG-10 — `null` at narrower level is an explicit leaf
 
 **Given** `.gobbi/settings.json` has `git.workflow.baseBranch: 'main'`
-And `.gobbi/project/settings.json` has `git.workflow.baseBranch: null`
+And `.gobbi/projects/<name>/settings.json` has `git.workflow.baseBranch: null`
 **When** `resolveSettings({ repoRoot })` (no session) runs
 **Then** resolved `git.workflow.baseBranch` is `null` — project's explicit null wins over workspace's `'main'`
 
@@ -246,9 +246,9 @@ Evidence:
 ### CFG-14 — T2-v1 upgrade — `project-config.json` migrated to `project/settings.json`
 
 **Given** `.gobbi/project-config.json` exists with `version: 1`, `git.mode: 'worktree-pr'`, `git.baseBranch: 'main'`, `eval.ideation: true`, `eval.plan: false`
-And `.gobbi/project/settings.json` does not exist
+And `.gobbi/projects/<name>/settings.json` does not exist
 **When** `ensureSettingsCascade(repoRoot)` runs
-**Then** `.gobbi/project/settings.json` exists with:
+**Then** `.gobbi/projects/<name>/settings.json` exists with:
   - `schemaVersion: 1`
   - `git.workflow.mode: 'worktree-pr'` and `git.workflow.baseBranch: 'main'` (renamed)
   - `workflow.ideation.evaluate.mode: 'always'` (true → 'always') and `workflow.planning.evaluate.mode: 'ask'` (legacy `eval.plan` → new `workflow.planning`; false → 'ask')

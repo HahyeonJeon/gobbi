@@ -128,7 +128,7 @@ V0.5.0 resolves it with a hard directory split:
   hooks/                            gobbi.db                   (workspace event store)
 ```
 
-`.claude/` is the static knowledge layer. During a workflow session, no agent writes to it. The hooks enforce this at the tool layer — a PreToolUse hook blocks any write to `.claude/` while a session is active. The `skills/`, `agents/`, and `rules/` entries in `.claude/` are per-file symlinks pointing into `.gobbi/skills/`, `.gobbi/agents/`, and `.gobbi/rules/` — the symlink farm lets Claude Code load docs from `.claude/` without storing the canonical copies there.
+`.claude/` is the static knowledge layer. During a workflow session, no agent writes to it. The hooks enforce this at the tool layer — a PreToolUse hook blocks any write to `.claude/` while a session is active. The `skills/`, `agents/`, and `rules/` entries in `.claude/` are per-file symlinks pointing into `.gobbi/projects/<name>/skills/`, `.gobbi/projects/<name>/agents/`, and `.gobbi/projects/<name>/rules/` — the symlink farm lets Claude Code load docs from `.claude/` without storing the canonical copies there.
 
 `.gobbi/` is the runtime layer. Session state, worktree management, notes, gotchas recorded mid-session, and context files all live here. Writing to `.gobbi/` does not trigger context reload. Agents write freely.
 

@@ -44,10 +44,10 @@ Check if the intended base branch exists locally and on the remote. The base bra
 
 ### 6. Worktree State
 
-Check `.claude/worktrees/` for existing worktrees:
+Check `.gobbi/projects/<name>/worktrees/` for existing worktrees:
 - **Active worktrees** — may indicate concurrent sessions. Report branch names and paths.
 - **Orphaned worktrees** — from crashed or abandoned sessions. Offer cleanup or recovery.
-- **Gitignore** — Check if `.claude/worktrees/` is listed in `.gitignore`. If not, worktree contents will appear in the main repo's git status.
+- **Gitignore** — Check if `.gobbi/projects/*/worktrees/` is listed in `.gitignore`. If not, worktree contents will appear in the main repo's git status.
 
 ### 7. Classify State
 

@@ -68,11 +68,11 @@ Mistakes in git/GitHub workflow, worktree management, branch handling, and PR li
 
 **Priority:** High
 
-**What happened:** The worktree naming convention preserves branch slashes as directory separators (e.g., `chore/1-bump-version` → `.claude/worktrees/chore/1-bump-version/`). When the worktree was removed with `git worktree remove`, only the leaf directory (`1-bump-version/`) was deleted. The parent directory (`chore/`) remained as an empty directory. This leaves visible clutter that looks like an orphaned worktree.
+**What happened:** The worktree naming convention preserves branch slashes as directory separators (e.g., `chore/1-bump-version` → `.gobbi/projects/<name>/worktrees/chore/1-bump-version/`). When the worktree was removed with `git worktree remove`, only the leaf directory (`1-bump-version/`) was deleted. The parent directory (`chore/`) remained as an empty directory. This leaves visible clutter that looks like an orphaned worktree.
 
 **User feedback:** "There are remains like .claude/worktrees/chore."
 
-**Correct approach:** After removing a worktree, clean up any empty parent directories left behind under `.claude/worktrees/`. The cleanup should walk upward from the removed worktree path, removing empty directories until reaching `.claude/worktrees/` itself. This must be part of the worktree removal step, not left as a manual cleanup.
+**Correct approach:** After removing a worktree, clean up any empty parent directories left behind under `.gobbi/projects/<name>/worktrees/`. The cleanup should walk upward from the removed worktree path, removing empty directories until reaching `.gobbi/projects/<name>/worktrees/` itself. This must be part of the worktree removal step, not left as a manual cleanup.
 
 ---
 

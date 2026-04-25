@@ -55,7 +55,7 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 - [EP] `--level workspace` creates `.gobbi/settings.json` when absent, with `schemaVersion: 1` and the set key.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-6'`
-- [EP] `--level project` writes to `.gobbi/project/settings.json`.
+- [EP] `--level project` writes to `.gobbi/projects/<name>/settings.json`.
   - Verify: CFG-6 variant test for project level
 
 ---
@@ -139,7 +139,7 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-14'`
 - [DT] Boolean `eval.*: true` → `'always'`; boolean `eval.*: false` → `'ask'`. Both cases covered.
   - Verify: CFG-14 test asserts `workflow.ideation.evaluate.mode === 'always'` (true→'always') and `workflow.planning.evaluate.mode === 'ask'` (legacy `eval.plan` → new `workflow.planning`; false→'ask')
-- [EP] After upgrade, `.gobbi/project-config.json` is absent and `.gobbi/project/settings.json` is present with `schemaVersion: 1`.
+- [EP] After upgrade, `.gobbi/project-config.json` is absent and `.gobbi/projects/<name>/settings.json` is present with `schemaVersion: 1`.
   - Verify: CFG-14 test asserts source file gone, target file has correct schema version
 - [EP] `ensureSettingsCascade` idempotent when target already exists — upgrade does NOT run twice.
   - Verify: CFG-14 idempotency case in test file

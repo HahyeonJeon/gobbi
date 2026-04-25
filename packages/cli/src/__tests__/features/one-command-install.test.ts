@@ -218,11 +218,7 @@ describe('one-command-install feature — code surface', () => {
   });
 
   describe('/gobbi skill wiring', () => {
-    // TODO(#136): Re-integrate Pass 1 'gobbi --is-latest' wiring into §THIRD
-    // of the Pass-3 session-ID-discovery-shape SKILL.md. Skipped during the
-    // phase/v050-phase-2 integration merge on 2026-04-25 because the Pass 1
-    // and Pass 3 bodies of §THIRD diverged too far for an inline merge.
-    test.skip('.claude/skills/gobbi/SKILL.md §THIRD references `gobbi --is-latest`', () => {
+    test('.claude/skills/gobbi/SKILL.md §THIRD references `gobbi --is-latest`', () => {
       const body = readFileSync(GOBBI_SKILL_PATH, 'utf8');
       const thirdStart = body.indexOf('**THIRD');
       const fourthStart = body.indexOf('**FOURTH', thirdStart);

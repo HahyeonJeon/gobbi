@@ -102,9 +102,9 @@ GitHub does not auto-create labels. On a fresh repository, the orchestrator must
 
 ## Worktree Directory Naming
 
-Worktrees are created inside `.claude/worktrees/` within the main repository. The directory name preserves the branch name exactly, including slashes — so a branch named feat/42-oauth-login becomes `.claude/worktrees/feat/42-oauth-login/`. This keeps worktrees co-located with the repo rather than scattered as sibling directories, and the preserved branch path makes it easy to identify what each worktree is for without inspecting git state. Naming collisions are prevented because each branch name is unique.
+Worktrees are created inside `.gobbi/projects/<name>/worktrees/` within the main repository. The directory name preserves the branch name exactly, including slashes — so a branch named feat/42-oauth-login becomes `.gobbi/projects/<name>/worktrees/feat/42-oauth-login/`. This keeps worktrees project-scoped under `.gobbi/` rather than co-located with the `.claude/` static layer, and the preserved branch path makes it easy to identify what each worktree is for without inspecting git state. Naming collisions are prevented because each branch name is unique.
 
-The `.claude/worktrees/` directory must be in `.gitignore` to prevent worktree contents from appearing in the main repo's git status.
+The `.gobbi/projects/*/worktrees/` glob must be in `.gitignore` to prevent worktree contents from appearing in the main repo's git status.
 
 ---
 

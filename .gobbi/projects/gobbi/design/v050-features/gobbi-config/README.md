@@ -15,7 +15,7 @@ Gobbi resolves every setting by composing three `settings.json` files — worksp
 | Level | Path | Git | Written by |
 |---|---|---|---|
 | workspace | `.gobbi/settings.json` | gitignored | `ensureSettingsCascade` seed on first run; manual edit |
-| project | `.gobbi/project/settings.json` | tracked | `ensureSettingsCascade` seed; manual edit |
+| project | `.gobbi/projects/<name>/settings.json` | tracked | `ensureSettingsCascade` seed; manual edit |
 | session | `.gobbi/projects/<name>/sessions/{id}/settings.json` | gitignored (inherits `.gobbi/projects/<name>/sessions/`) | `/gobbi` setup FIFTH step; `gobbi config set` |
 
 Session-id resolution: `$CLAUDE_SESSION_ID` env is the CLI-level primary; `--session-id` flag is the fallback. The `/gobbi` skill discovers the real session id per the `session-id-discovery` gotcha (primary env is `$CODEX_COMPANION_SESSION_ID` at the skill level) and passes `--session-id` explicitly when the env is not populated.
@@ -121,7 +121,7 @@ Resolution fires at the eval checkpoint, not at config-write time.
 
 1. If `.gobbi/config.db` exists — delete it and log
 2. If `.claude/gobbi.json` exists — delete it and log
-3. If `.gobbi/project-config.json` (T2-v1 legacy) exists and `.gobbi/project/settings.json` does not — upgrade: rename path, set `schemaVersion: 1`, restructure `git.mode → git.workflow.mode`, convert `eval.{step}: bool → workflow.{step}.evaluate.mode` enum (`true→'always'`, `false→'ask'`), drop `trivialRange`, `verification.*`, `cost.*`, `ui.*`
+3. If `.gobbi/project-config.json` (T2-v1 legacy) exists and `.gobbi/projects/<name>/settings.json` does not — upgrade: rename path, set `schemaVersion: 1`, restructure `git.mode → git.workflow.mode`, convert `eval.{step}: bool → workflow.{step}.evaluate.mode` enum (`true→'always'`, `false→'ask'`), drop `trivialRange`, `verification.*`, `cost.*`, `ui.*`
 4. Seed workspace and project defaults if absent
 5. Ensure `.gobbi/.gitignore` lists `settings.json` and `sessions/`
 

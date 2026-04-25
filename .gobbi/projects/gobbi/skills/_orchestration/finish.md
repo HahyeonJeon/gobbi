@@ -39,7 +39,7 @@ When the user selects FINISH after Review (or after a FEEDBACK → Review loop),
 
 ## Action Definitions
 
-**Merge** — squash merge the PR, delete the remote branch, explicitly close the linked issue (closing keywords don't auto-close on non-default branch PRs), remove the local worktree, clean up empty parent directories under `.claude/worktrees/`, pull the merge into the local base branch, and prune stale worktree references.
+**Merge** — squash merge the PR, delete the remote branch, explicitly close the linked issue (closing keywords don't auto-close on non-default branch PRs), remove the local worktree, clean up empty parent directories under `.gobbi/projects/<name>/worktrees/`, pull the merge into the local base branch, and prune stale worktree references.
 
 **Commit** — create a git commit with the changes from this workflow.
 
