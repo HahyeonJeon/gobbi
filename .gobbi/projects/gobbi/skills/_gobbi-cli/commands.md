@@ -29,7 +29,7 @@ Cross-reference: `_note` for note directory structure, subtask JSON format, and 
 
 ## config
 
-Read and write gobbi settings across the three-level cascade: workspace (`.gobbi/settings.json`), project (`.gobbi/project/settings.json`), and session (`.gobbi/sessions/{id}/settings.json`). Two verbs only — `get` and `set`. Keys use dot-path notation (e.g. `git.workflow.mode`, `notify.slack.enabled`).
+Read and write gobbi settings across the three-level cascade: workspace (`.gobbi/settings.json`), project (`.gobbi/projects/<name>/settings.json`), and session (`.gobbi/projects/<name>/sessions/{id}/settings.json`). Two verbs only — `get` and `set`. Keys use dot-path notation (e.g. `git.workflow.mode`, `notify.slack.enabled`).
 
 | Command | Synopsis | Description |
 |---|---|---|

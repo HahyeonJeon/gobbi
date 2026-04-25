@@ -43,7 +43,7 @@ Before the git workflow can function, certain conditions must hold. These divide
 
 **Critical — block until resolved.** The gh CLI must be available and reachable because the entire PR lifecycle depends on it. The gh CLI must be authenticated to the remote because API access is required for issue creation, PR management, and CI monitoring. The repository must have a configured git remote because pushing and PR creation require a remote target. If any of these are missing, the workflow cannot proceed.
 
-**Warning — inform the user, continue.** The configured base branch should exist on the remote — worktree creation will fail later if it doesn't, but the user may intend to create it. The `.claude/worktrees/` directory should be listed in `.gitignore` — without this, worktree contents appear in the main repo's git status. Orphaned worktrees may exist in `.claude/worktrees/` from crashed or abandoned sessions — offer cleanup or recovery.
+**Warning — inform the user, continue.** The configured base branch should exist on the remote — worktree creation will fail later if it doesn't, but the user may intend to create it. The `.gobbi/projects/<name>/worktrees/` directory should be listed in `.gitignore` — without this, worktree contents appear in the main repo's git status. Orphaned worktrees may exist in `.gobbi/projects/<name>/worktrees/` from crashed or abandoned sessions — offer cleanup or recovery.
 
 > **Fallback principle:**
 
@@ -107,7 +107,7 @@ This skill loads at session start as a core skill. Prerequisites run during sess
 - **After identifying cause:** fix it in the worktree, commit the fix, and push; CI re-runs automatically against the updated branch
 - **Monitor:** until CI passes or the user decides to defer
 
-**Cleanup failure when removing a worktree** — If normal removal fails (uncommitted changes, locked files), force removal is the fallback, followed by pruning to clean up stale references. Nested branch names that use slashes create intermediate directories under `.claude/worktrees/` — git only removes the leaf directory, so empty parent directories must be cleaned up separately after worktree removal.
+**Cleanup failure when removing a worktree** — If normal removal fails (uncommitted changes, locked files), force removal is the fallback, followed by pruning to clean up stale references. Nested branch names that use slashes create intermediate directories under `.gobbi/projects/<name>/worktrees/` — git only removes the leaf directory, so empty parent directories must be cleaned up separately after worktree removal.
 
 ---
 

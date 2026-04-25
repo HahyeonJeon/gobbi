@@ -41,7 +41,7 @@ New columns use an idempotent `PRAGMA table_info`-guarded ALTER. The guard check
 
 ### Settings path constants
 
-All paths under `.gobbi/` must go through `workspace-paths.ts`. Hard-coding paths like `.gobbi/project/settings.json` bypasses the multi-project routing and breaks `gobbi project switch`. If a function constructs a path by string concatenation rather than calling `workspacePaths(root, projectName)`, it is a bug.
+All paths under `.gobbi/` must go through `workspace-paths.ts`. Hard-coding paths like `.gobbi/projects/<name>/settings.json` as literals bypasses the multi-project routing and breaks `gobbi project switch`. If a function constructs a path by string concatenation rather than calling `workspacePaths(root, projectName)`, it is a bug.
 
 ### Step directory creation
 

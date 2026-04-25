@@ -36,7 +36,13 @@ gobbi config get workflow --level session --session-id $DISCOVERED
 
 The CLI does NOT know about `$CODEX_COMPANION_SESSION_ID`. Discovery belongs here in the skill; the CLI only consumes the resolved ID. See `cli-vs-skill-session-id.md` in the project gotchas for the full boundary rationale.
 
-**THIRD — check gobbi CLI availability.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
+**THIRD — check gobbi CLI availability and version.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
+
+After confirming the CLI is present, run `gobbi --is-latest` to check whether the installed version matches the latest published release on npm. Exit-code semantics:
+
+- **Exit 0** — installed version is current. Proceed without comment.
+- **Exit 1** — installed version is stale. Surface the version delta to the user and offer to run the install command from [cli-setup.md](cli-setup.md) to update. Do not block session start — the user may choose to defer.
+- **Exit 2** — indeterminate (network unavailable, registry error). Surface the diagnostic to the user but do not block. Proceed with the installed version.
 
 **FOURTH — check for existing session settings.** Run:
 

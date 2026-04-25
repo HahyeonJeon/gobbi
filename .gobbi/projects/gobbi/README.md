@@ -11,8 +11,10 @@ Gobbi v0.5.0 separates runtime state from retrospective records. `.gobbi/session
 ## Directory
 
 - [design/](design/) — Design docs: vision, architecture, workflow, agents, evaluation, state, hacks, distribution, GSD analysis
+- [learnings/](learnings/) — Gotchas and decisions accumulated across sessions
+- [references/](references/) — External references, API docs, research
 - [rules/](rules/) — Project-specific rules and conventions
-- [gotchas/](gotchas/) — Project-specific gotchas (not cross-project)
-- [note/](note/) — Retrospective workflow notes per completed task (gitignored, main tree only)
-- [reference/](reference/) — External references, API docs, research
-- [docs/](docs/) — Other project documents
+- [skills/](skills/) — Project-specific skill files (symlinked into `.claude/skills/` per-file)
+- [agents/](agents/) — Project-specific agent definitions (symlinked into `.claude/agents/` per-file)
+- [sessions/](sessions/) — Per-session runtime state: settings, event store, mid-session notes (gitignored)
+- [README.md](README.md) — This file
