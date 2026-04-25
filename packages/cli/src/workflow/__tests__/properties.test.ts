@@ -49,6 +49,7 @@ const ACTIVE_STEP_NAMES = [
   'execution',
   'execution_eval',
   'memorization',
+  'handoff',
 ] as const;
 
 const ALL_STEP_NAMES = [
@@ -651,6 +652,10 @@ describe('fixtures: STATES snapshots', () => {
     expect(STATES.memorization.currentStep).toBe('memorization');
   });
 
+  it('handoff state is at handoff step', () => {
+    expect(STATES.handoff.currentStep).toBe('handoff');
+  });
+
   it('done state is at done step', () => {
     expect(STATES.done.currentStep).toBe('done');
   });
@@ -674,6 +679,7 @@ describe('fixtures: eventsToReach round-trip', () => {
     'execution',
     'execution_eval',
     'memorization',
+    'handoff',
     'done',
     'error',
   ];

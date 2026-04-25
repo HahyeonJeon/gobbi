@@ -61,7 +61,7 @@ import {
 } from '../../workflow/events/workflow.js';
 import { createEvalVerdict } from '../../workflow/events/decision.js';
 import type { WorkflowState } from '../../workflow/state.js';
-import { resolveSessionDir } from '../session.js';
+import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
 // Keyword union — single source of truth.
@@ -239,7 +239,8 @@ export async function runTransitionWithOptions(
   const emitJson = values.json === true;
 
   const sessionId = sessionDirName(sessionDir);
-  const store = new EventStore(dbPath);
+  const partitionKeys = resolvePartitionKeys(sessionDir);
+  const store = new EventStore(dbPath, partitionKeys);
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
 

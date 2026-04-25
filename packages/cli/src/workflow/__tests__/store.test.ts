@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'bun:test';
 import { Database } from 'bun:sqlite';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -11,6 +18,7 @@ import type {
   AppendInputSystem,
   AppendInputToolCall,
   EventRow,
+  EventStoreOptions,
   ReadStore,
   WriteStore,
 } from '../store.js';
@@ -1244,5 +1252,393 @@ describe('schema v5 — session_id + project_id columns', () => {
     // sensible value; project_id stays NULL.
     expect(row!.session_id).toBe('sess-mem');
     expect(row!.project_id).toBeNull();
+  });
+});
+
+// ===========================================================================
+// EventStoreOptions — explicit partition-key constructor params (#146 A.1.2)
+//
+// Wave A.1's workspace re-scope (`.gobbi/state.db`) requires explicit
+// partition-key overrides because the path-derivation fallback yields
+// `'.gobbi'` for session_id and `null` for project_id at the workspace
+// root. The legacy per-session callers (omitting the options object)
+// keep working unchanged via path derivation.
+//
+// Policy under test (mirrors the constructor's JSDoc):
+//   - non-empty string in opts → use verbatim
+//   - `null`     in opts → defer to derivation
+//   - `undefined` in opts → defer to derivation
+//   - `''`       in opts → defer to derivation (empty-string columns
+//                          would defeat the per-session partition query)
+// ===========================================================================
+
+describe('EventStoreOptions — explicit partition-key constructor params (#146 A.1.2)', () => {
+  it('falls back to path/metadata derivation when no opts are passed', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-fallback',
+      '/home/alice/projects/repo-fallback',
+    );
+    try {
+      using store = new EventStore(dbPath);
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-fallback-1',
+        sessionId: 'sess-fallback',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        expect(row?.session_id).toBe('sess-fallback');
+        expect(row?.project_id).toBe('repo-fallback');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('explicit sessionId override beats path-derived basename', () => {
+    // Session dir basename would be `sess-on-disk`, but the override is
+    // `workspace-session` — the workspace re-scope use case.
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-on-disk',
+      '/home/alice/projects/dir-derived',
+    );
+    try {
+      using store = new EventStore(dbPath, {
+        sessionId: 'workspace-session',
+      });
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-override-1',
+        sessionId: 'workspace-session',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        expect(row?.session_id).toBe('workspace-session');
+        // projectId not overridden — derivation still runs.
+        expect(row?.project_id).toBe('dir-derived');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('explicit projectId override beats metadata.json lookup', () => {
+    // metadata.projectRoot basename would be `metadata-derived`, but the
+    // override is `workspace-project`.
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-proj-override',
+      '/home/alice/projects/metadata-derived',
+    );
+    try {
+      using store = new EventStore(dbPath, {
+        projectId: 'workspace-project',
+      });
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-proj-override-1',
+        sessionId: 'sess-proj-override',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        // sessionId not overridden — derivation still runs.
+        expect(row?.session_id).toBe('sess-proj-override');
+        expect(row?.project_id).toBe('workspace-project');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('null in opts is treated as "explicitly unset" and falls back to derivation', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-null-opts',
+      '/home/alice/projects/null-derived',
+    );
+    try {
+      const opts: EventStoreOptions = {
+        sessionId: null,
+        projectId: null,
+      };
+      using store = new EventStore(dbPath, opts);
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-null-opts-1',
+        sessionId: 'sess-null-opts',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        // Both keys derived — null in opts did not stamp a NULL column.
+        expect(row?.session_id).toBe('sess-null-opts');
+        expect(row?.project_id).toBe('null-derived');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('empty string in opts falls back to derivation (no empty-string columns)', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-empty-opts',
+      '/home/alice/projects/empty-derived',
+    );
+    try {
+      const opts: EventStoreOptions = {
+        sessionId: '',
+        projectId: '',
+      };
+      using store = new EventStore(dbPath, opts);
+      store.append({
+        ts: '2026-04-25T00:00:00.000Z',
+        type: 'workflow.start',
+        step: null,
+        data: '{}',
+        actor: 'cli',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-empty-opts-1',
+        sessionId: 'sess-empty-opts',
+      });
+
+      const inspector = new Database(dbPath, { readonly: true });
+      try {
+        interface PartitionRow {
+          readonly session_id: string | null;
+          readonly project_id: string | null;
+        }
+        const row = inspector
+          .query<PartitionRow, []>(
+            'SELECT session_id, project_id FROM events WHERE seq = 1',
+          )
+          .get();
+        // Empty strings did not reach the columns — derivation populated
+        // both keys.
+        expect(row?.session_id).toBe('sess-empty-opts');
+        expect(row?.project_id).toBe('empty-derived');
+      } finally {
+        inspector.close();
+      }
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+});
+
+// ===========================================================================
+// WAL checkpoint after workflow.step.exit (#146 A.1.9)
+//
+// Wave A.1's workspace-scoped `state.db` widens the writer surface — every
+// hook in the conversation turn writes to the same DB. Per Architecture
+// P-A-6 + scenario SC-ORCH-25, the EventStore truncates the WAL after
+// every successful `workflow.step.exit` append. The pre-existing `close()`
+// checkpoint stays — the per-step.exit hook is additive, bounding the
+// in-session SIGKILL loss window to the events written between two
+// adjacent step.exit checkpoints.
+// ===========================================================================
+
+/**
+ * Append a non-step.exit event without toggling the step.exit hook.
+ * Each call uses a unique toolCallId so ON CONFLICT cannot dedup.
+ */
+function appendNoise(store: EventStore, sessionId: string, n: number): void {
+  for (let i = 0; i < n; i += 1) {
+    store.append({
+      ts: `2026-04-25T00:00:${String(i).padStart(2, '0')}.000Z`,
+      type: 'workflow.start',
+      step: null,
+      data: '{}',
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: `noise-${i}`,
+      sessionId,
+    });
+  }
+}
+
+describe('WAL checkpoint after workflow.step.exit (#146 A.1.9)', () => {
+  it('a workflow.step.exit append truncates the WAL file', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-wal-truncate',
+      '/home/alice/projects/wal-truncate',
+    );
+    const walPath = `${dbPath}-wal`;
+    try {
+      using store = new EventStore(dbPath);
+
+      // Seed many non-step.exit events so the WAL grows. Each row is
+      // tiny but the WAL accumulates page-sized writes — enough events
+      // guarantees a non-zero WAL size before the checkpoint runs.
+      appendNoise(store, 'sess-wal-truncate', 50);
+
+      const walSizeBefore = existsSync(walPath) ? statSync(walPath).size : 0;
+      // Sanity: the WAL must have grown — otherwise the checkpoint
+      // assertion below is vacuous.
+      expect(walSizeBefore).toBeGreaterThan(0);
+
+      // Now append a step.exit — the hook should checkpoint(TRUNCATE),
+      // shrinking the WAL file.
+      const exitRow = store.append({
+        ts: '2026-04-25T00:01:00.000Z',
+        type: 'workflow.step.exit',
+        step: 'ideation',
+        data: '{}',
+        actor: 'orchestrator',
+        parent_seq: null,
+        idempotencyKind: 'tool-call',
+        toolCallId: 'tc-step-exit',
+        sessionId: 'sess-wal-truncate',
+      });
+      expect(exitRow).not.toBeNull();
+      expect(exitRow!.type).toBe('workflow.step.exit');
+
+      const walSizeAfter = existsSync(walPath) ? statSync(walPath).size : 0;
+      // PRAGMA wal_checkpoint(TRUNCATE) shrinks the WAL to a header-only
+      // (or zero) state. The exact size depends on the SQLite build, but
+      // it must be strictly smaller than the pre-checkpoint size.
+      expect(walSizeAfter).toBeLessThan(walSizeBefore);
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('non-step.exit events do NOT trigger a checkpoint — WAL keeps growing', () => {
+    const { sessionDir, dbPath } = makeSessionDir(
+      'sess-wal-nogrow',
+      '/home/alice/projects/wal-nogrow',
+    );
+    const walPath = `${dbPath}-wal`;
+    try {
+      using store = new EventStore(dbPath);
+
+      // Seed a small batch and capture the WAL size baseline.
+      appendNoise(store, 'sess-wal-nogrow', 10);
+      const walSizeAfterFirst = existsSync(walPath)
+        ? statSync(walPath).size
+        : 0;
+      expect(walSizeAfterFirst).toBeGreaterThan(0);
+
+      // Append more non-step.exit events. If a stray code path
+      // mistakenly checkpointed on these types, the WAL would shrink or
+      // stay flat. Instead it must grow (or stay equal at the page
+      // boundary — assert "not smaller" rather than "strictly larger").
+      appendNoise(store, 'sess-wal-nogrow', 50);
+      const walSizeAfterMore = existsSync(walPath)
+        ? statSync(walPath).size
+        : 0;
+      expect(walSizeAfterMore).toBeGreaterThanOrEqual(walSizeAfterFirst);
+    } finally {
+      rmSync(join(sessionDir, '..'), { recursive: true, force: true });
+    }
+  });
+
+  it('checkpoint failures are swallowed — append still returns the row (`:memory:` smoke)', () => {
+    // `:memory:` databases reject `PRAGMA wal_checkpoint(TRUNCATE)` (no
+    // WAL file exists) — historically this was the trigger that forced
+    // `close()` to wrap the pragma in try/catch. The same swallow policy
+    // must hold for the per-step.exit hook so a checkpoint failure
+    // cannot surface as an append failure.
+    using store = new EventStore(':memory:');
+
+    // No throw + the row comes back with an assigned seq.
+    const row = store.append({
+      ts: '2026-04-25T00:00:00.000Z',
+      type: 'workflow.step.exit',
+      step: 'ideation',
+      data: '{}',
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-mem-step-exit',
+      sessionId: 'sess-mem',
+    });
+    expect(row).not.toBeNull();
+    expect(row!.seq).toBe(1);
+    expect(row!.type).toBe('workflow.step.exit');
+    // The store stays usable — a follow-up append must not throw either.
+    const follow = store.append({
+      ts: '2026-04-25T00:01:00.000Z',
+      type: 'workflow.start',
+      step: null,
+      data: '{}',
+      actor: 'orchestrator',
+      parent_seq: null,
+      idempotencyKind: 'tool-call',
+      toolCallId: 'tc-mem-followup',
+      sessionId: 'sess-mem',
+    });
+    expect(follow).not.toBeNull();
+    expect(follow!.seq).toBe(2);
   });
 });

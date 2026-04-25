@@ -12,6 +12,10 @@ import { ARTIFACT_EVENTS } from '../events/artifact.js';
 import { DECISION_EVENTS } from '../events/decision.js';
 import { GUARD_EVENTS } from '../events/guard.js';
 import { SESSION_EVENTS } from '../events/session.js';
+import {
+  STEP_ADVANCEMENT_EVENTS,
+  createStepAdvancementObserved,
+} from '../events/step-advancement.js';
 
 // ---------------------------------------------------------------------------
 // Test helpers
@@ -292,21 +296,27 @@ describe('workflow.eval.decide', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 5. workflow.finish: memorization -> done
+// 5. workflow.finish: handoff -> done (Wave A.1.5 split memorization → handoff → done)
 // ---------------------------------------------------------------------------
 
 describe('workflow.finish', () => {
-  it('transitions memorization -> done', () => {
-    const state = stateAt('memorization');
+  it('transitions handoff -> done', () => {
+    const state = stateAt('handoff');
     const next = expectOk(reduce(state, finish()));
     expect(next.currentStep).toBe('done');
     expect(next.currentSubstate).toBeNull();
   });
 
-  it('rejects finish from non-memorization step', () => {
+  it('rejects finish from memorization (must STEP_EXIT to handoff first)', () => {
+    const state = stateAt('memorization');
+    const error = expectErr(reduce(state, finish()));
+    expect(error).toContain('handoff');
+  });
+
+  it('rejects finish from non-handoff step', () => {
     const state = stateAt('execution');
     const error = expectErr(reduce(state, finish()));
-    expect(error).toContain('memorization');
+    expect(error).toContain('handoff');
   });
 });
 
@@ -681,7 +691,7 @@ describe('workflow.invalid_transition', () => {
         rejectedEventType: 'workflow.finish',
         rejectedEventSeq: null,
         stepAtRejection: 'execution',
-        reducerMessage: 'workflow.finish requires memorization state, got execution',
+        reducerMessage: 'workflow.finish requires handoff state, got execution',
         timestamp: '2026-01-01T00:00:00.000Z',
       },
     };
@@ -736,7 +746,7 @@ describe('invalid transitions return error, not throw', () => {
     const result = reduce(stateAt('idle'), finish());
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain('memorization');
+      expect(result.error).toContain('handoff');
     }
   });
 
@@ -978,5 +988,85 @@ describe('E.10 — stepStartedAt', () => {
     expect(isValidState({ ...base, stepStartedAt: {} })).toBe(false);
     expect(isValidState({ ...base, stepStartedAt: true })).toBe(false);
     expect(isValidState({ ...base, stepStartedAt: [] })).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Audit-only event runtime fence (Wave A.1.3)
+//
+// `step.advancement.observed` is committed via `store.append()` directly
+// per orchestration NOTE-2. It is NOT a member of the reducer-typed `Event`
+// union, so callers normally cannot pass it to `reduce()` at compile time.
+// These tests cover the runtime-fence branch in `reduce()` that returns the
+// state unchanged when an audit-only event somehow does reach the reducer
+// (e.g. through a cast, a JSON-roundtrip replay, or a future regression).
+// The expectation: state is unchanged, `result.ok === true`, and the reducer
+// MUST NOT throw — defending against the silent-fail mode that
+// state-db-redesign.md §1 documents.
+// ---------------------------------------------------------------------------
+
+describe('audit-only events bypass the reducer (Wave A.1.3)', () => {
+  // The runtime fence treats audit-only events as observability-only:
+  // state is returned unchanged regardless of step. We construct the event
+  // and cast it through the union via `unknown` because the type system
+  // (correctly) rejects passing an `AuditOnlyEvent` to a parameter typed
+  // as `Event`. The cast simulates the on-the-wire replay path that
+  // discards the type-level discriminator.
+  const advanceObservedEvent = createStepAdvancementObserved({
+    step: 'planning',
+    toolCallId: 'tc-pa-1',
+    timestamp: '2026-04-25T12:00:00.000Z',
+  }) as unknown as Event;
+
+  it('returns ok with state unchanged when handed step.advancement.observed at an active step', () => {
+    const state = stateAt('planning');
+    const result = reduce(state, advanceObservedEvent);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error('expected ok');
+    expect(result.state).toEqual(state);
+    // Same identity reference — the fence skips the spread that
+    // sub-reducers use, so callers that depend on `===` for cache
+    // invalidation can rely on a referential no-op.
+    expect(result.state).toBe(state);
+  });
+
+  it('returns ok with state unchanged when handed step.advancement.observed at idle', () => {
+    const state = stateAt('idle');
+    const result = reduce(state, advanceObservedEvent);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error('expected ok');
+    expect(result.state).toBe(state);
+  });
+
+  it('returns ok with state unchanged even at terminal states (audit fence runs before terminal-state rejection)', () => {
+    // Audit-only events are observability-only — they have no business
+    // logic and must persist regardless of state. The `done` / `error`
+    // terminal-state guard would otherwise reject every event with a
+    // step error message; the audit fence must intercept BEFORE that
+    // guard. This is the architectural ordering invariant.
+    const doneState = stateAt('done');
+    const r1 = reduce(doneState, advanceObservedEvent);
+    expect(r1.ok).toBe(true);
+    if (r1.ok) expect(r1.state).toBe(doneState);
+
+    const errorState = stateAt('error');
+    const r2 = reduce(errorState, advanceObservedEvent);
+    expect(r2.ok).toBe(true);
+    if (r2.ok) expect(r2.state).toBe(errorState);
+  });
+
+  it('does not throw when handed an audit-only event (defense-in-depth against silent-fail mode)', () => {
+    // The reducer's `assertNever` would throw a plain Error if the audit
+    // event reached the bottom of the dispatch chain. The fence at the
+    // top of `reduce()` is the runtime guarantee that this throw cannot
+    // surface — the test calls `reduce()` directly and asserts NO throw.
+    const state = stateAt('execution');
+    expect(() => reduce(state, advanceObservedEvent)).not.toThrow();
+  });
+
+  it('STEP_ADVANCEMENT_EVENTS.OBSERVED is the constant the reducer fence narrows', () => {
+    // Sanity check — the test fixtures above use the typed factory; this
+    // assertion documents the type-string the runtime fence checks for.
+    expect(STEP_ADVANCEMENT_EVENTS.OBSERVED).toBe('step.advancement.observed');
   });
 });

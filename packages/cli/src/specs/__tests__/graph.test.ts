@@ -67,7 +67,9 @@ describe('loadGraph — canonical index.json', () => {
     const graph = await loadGraph();
     expect(graph.version).toBe(1);
     expect(graph.entry).toBe('ideation');
-    expect(graph.terminal).toContain('memorization');
+    // `handoff` is the terminal productive step post-A.1.5 (was `memorization`
+    // pre-Pass-4); see `v050-features/orchestration/README.md` §1 + §9.
+    expect(graph.terminal).toContain('handoff');
     expect(graph.steps.length).toBeGreaterThanOrEqual(6);
     expect(graph.transitions.length).toBeGreaterThan(0);
   });
@@ -76,7 +78,8 @@ describe('loadGraph — canonical index.json', () => {
     const graph = await loadGraph();
     const ids = graph.steps.map((s) => s.id);
     // The design-doc active steps (minus idle/done/error lifecycle states)
-    // must all be represented as graph nodes.
+    // must all be represented as graph nodes. Post-A.1.5 the canonical set
+    // grows to include `handoff` per the locked 6-step model.
     const expected = [
       'ideation',
       'ideation_eval',
@@ -85,6 +88,7 @@ describe('loadGraph — canonical index.json', () => {
       'execution',
       'execution_eval',
       'memorization',
+      'handoff',
     ];
     for (const id of expected) {
       expect(ids).toContain(id);
@@ -96,6 +100,53 @@ describe('loadGraph — canonical index.json', () => {
     const ideation = graph.steps.find((s) => s.id === 'ideation');
     expect(ideation).toBeDefined();
     expect(ideation?.substates).toEqual(['discussing', 'researching']);
+  });
+
+  test('A.1.5 — memorization → handoff → done chain is wired', async () => {
+    const graph = await loadGraph();
+    // memorization → handoff on workflow.step.exit / always
+    const memToHandoff = graph.transitions.find(
+      (t) => t.from === 'memorization' && t.to === 'handoff',
+    );
+    expect(memToHandoff).toBeDefined();
+    expect(memToHandoff?.condition).toBe('always');
+    expect(memToHandoff?.trigger).toBe('workflow.step.exit');
+
+    // handoff → done on workflow.finish / always
+    const handoffToDone = graph.transitions.find(
+      (t) => t.from === 'handoff' && t.to === 'done',
+    );
+    expect(handoffToDone).toBeDefined();
+    expect(handoffToDone?.condition).toBe('always');
+    expect(handoffToDone?.trigger).toBe('workflow.finish');
+
+    // The pre-Pass-4 memorization → done edge is gone — handoff replaces it.
+    const memToDone = graph.transitions.find(
+      (t) => t.from === 'memorization' && t.to === 'done',
+    );
+    expect(memToDone).toBeUndefined();
+  });
+
+  test('A.1.5 — handoff inherits the timeout and skip lifecycle edges', async () => {
+    const graph = await loadGraph();
+    const handoffTimeout = graph.transitions.find(
+      (t) =>
+        t.from === 'handoff' &&
+        t.to === 'error' &&
+        t.trigger === 'workflow.step.timeout',
+    );
+    expect(handoffTimeout).toBeDefined();
+    expect(handoffTimeout?.condition).toBe('stepTimeoutFired');
+
+    const handoffSkip = graph.transitions.find(
+      (t) =>
+        t.from === 'handoff' &&
+        t.to === 'ideation' &&
+        t.trigger === 'workflow.step.skip',
+    );
+    expect(handoffSkip).toBeDefined();
+    expect(handoffSkip?.condition).toBe('skipRequested');
+    expect(handoffSkip?.feedback).toBe(true);
   });
 
   test('loadGraph accepts an explicit path argument', async () => {

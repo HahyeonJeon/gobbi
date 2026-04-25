@@ -224,11 +224,13 @@ describe('memorization/spec.json — validation', () => {
     expect(spec.meta.completionSignal).toBe('Stop');
   });
 
-  test('transitions include exactly one always-routing exit to done', () => {
+  test('transitions include exactly one always-routing exit to handoff', () => {
     const spec = loadSpec();
     expect(spec.transitions).toHaveLength(1);
     const transition = spec.transitions[0];
-    expect(transition?.to).toBe('done');
+    // Wave A.1.5 promoted handoff to a true state-machine step; memorization
+    // now exits to handoff (which itself exits to done via workflow.finish).
+    expect(transition?.to).toBe('handoff');
     expect(transition?.condition).toBe('always');
   });
 });

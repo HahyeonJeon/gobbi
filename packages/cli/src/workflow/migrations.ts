@@ -44,6 +44,34 @@
  *   open path — {@link ensureSchemaV5} adds the columns when missing;
  *   {@link backfillSessionAndProjectIds} populates NULL slots on pre-v5
  *   rows using the store's known `sessionId` + `projectRootBasename`.
+ * - v6 — Wave A.1.3 / orchestration Pass 4 (issue #146). Adds four new
+ *   workspace-partitioned tables to the event store DB:
+ *
+ *     - `state_snapshots` — per-(session, seq) snapshot rows powering
+ *       fast resume + replay-storm prevention + missed-advancement
+ *       escalation (orchestration README §3.3).
+ *     - `tool_calls` — Pre/PostToolUse audit trail (table-only — not a
+ *       new event category).
+ *     - `config_changes` — `gobbi config set` audit (table-only).
+ *     - `schema_meta` — workspace-level migration version + last-completed
+ *       timestamp tracking, separate from the per-event `schema_version`
+ *       column. Single-row table keyed on a sentinel `'state_db'`.
+ *
+ *   v6 also adds the `step.advancement.observed` audit-only event type
+ *   (see `events/step-advancement.ts`). Event *data* payloads remain
+ *   wire-compatible: the new event is strictly additive, and the
+ *   registered v5 migration is an identity. New tables are workspace-
+ *   partitioned by `session_id` (all four) and `project_id` (where the
+ *   row originates from a project-scoped action) so cross-session and
+ *   cross-project queries are direct projections per the workspace re-
+ *   scope locked in orchestration README §3.1. The schema CREATE
+ *   statements run inside the event store's open path — {@link
+ *   ensureSchemaV6} runs after {@link ensureSchemaV5} and is idempotent
+ *   (CREATE TABLE IF NOT EXISTS / CREATE INDEX IF NOT EXISTS).
+ *
+ *   Note: `prompt_patches` is intentionally NOT in v6 — Wave C.1's
+ *   prompts-as-data feature owns it via a future v7. See
+ *   orchestration review DRIFT-9 for the rationale.
  */
 
 import type { Database } from 'bun:sqlite';
@@ -83,7 +111,7 @@ export interface EventRow {
 // Schema version tracking
 // ---------------------------------------------------------------------------
 
-export const CURRENT_SCHEMA_VERSION = 5;
+export const CURRENT_SCHEMA_VERSION = 6;
 
 // ---------------------------------------------------------------------------
 // Migration registry
@@ -113,16 +141,23 @@ type MigrationFn = (eventData: unknown) => unknown;
  *   COLUMNS on the `events` table. Row shape changes; event *data*
  *   payloads do not. Registered as an identity on event data so the
  *   walk path still exercises the composition plumbing.
+ * - v5→v6 (Wave A.1.3, issue #146): adds four workspace-partitioned
+ *   tables (`state_snapshots`, `tool_calls`, `config_changes`,
+ *   `schema_meta`) and the `step.advancement.observed` audit-only event
+ *   type. No transform on existing event data — the new event type and
+ *   the new tables are strictly additive. Registered as an identity on
+ *   event data so the walk path stays composable for a future v7.
  *
  * Declaring each identity registers the hop so the composition walks the
- * full chain (v1→v2→v3→v4→v5) rather than short-circuiting — the walk
- * path is what a future v6 migration will extend.
+ * full chain (v1→v2→v3→v4→v5→v6) rather than short-circuiting — the walk
+ * path is what a future v7 migration will extend.
  */
 const migrations: Readonly<Record<number, MigrationFn>> = {
   1: (data) => data,
   2: (data) => data,
   3: (data) => data,
   4: (data) => data,
+  5: (data) => data,
 };
 
 // ---------------------------------------------------------------------------
@@ -250,4 +285,307 @@ export function backfillSessionAndProjectIds(
       [projectRootBasename],
     );
   }
+}
+
+// ---------------------------------------------------------------------------
+// Schema v6 — workspace-partitioned audit + meta tables (Wave A.1.3)
+//
+// ## Producer status
+//
+// Schema v6 reserves four tables. Three of them ship with their schema
+// locked but no production writers yet — operators running
+// `gobbi maintenance migrate-state-db`, observing that v6 stamped, then
+// finding these tables empty are seeing the intended state, not a
+// half-applied migration:
+//
+//   - `state_snapshots` — Wave E.1 (Inner-mode safety net) wires the
+//     writer that records per-(session, last_event_seq) snapshots and
+//     the missed-advancement escalation marks.
+//   - `tool_calls` — the hooks waves wire Pre/PostToolUse capture into
+//     this table. Empty until those hooks land.
+//   - `config_changes` — `gobbi config set` audit; the writer ships with
+//     the config-management wave.
+//   - `schema_meta` — written by every successful migration run
+//     ({@link ensureSchemaV6}'s `INSERT OR REPLACE`), so this is the
+//     only v6 table the migration command itself populates.
+//
+// The CREATEs land in A.1 so a future wave does not need to add a v7
+// migration purely to introduce them — the forward-compatible schema is
+// the cheaper choice.
+// ---------------------------------------------------------------------------
+
+/**
+ * Names of every table introduced in schema v6. Exported so tests and
+ * post-migration verification can iterate without duplicating the literal.
+ *
+ * The order is the create order: tables that other tables may reference
+ * (none today, but reserved for FK extensions) come first.
+ */
+export const SCHEMA_V6_TABLES = [
+  'state_snapshots',
+  'tool_calls',
+  'config_changes',
+  'schema_meta',
+] as const;
+
+export type SchemaV6TableName = typeof SCHEMA_V6_TABLES[number];
+
+/**
+ * Names of every index introduced in schema v6. Exported so tests can
+ * assert presence without duplicating the literal.
+ */
+export const SCHEMA_V6_INDICES = [
+  'idx_state_snapshots_session_created',
+  'idx_state_snapshots_session_seq',
+  'idx_tool_calls_session_ts',
+  'idx_tool_calls_tool_call',
+  'idx_config_changes_session_ts',
+] as const;
+
+export type SchemaV6IndexName = typeof SCHEMA_V6_INDICES[number];
+
+/**
+ * `state_snapshots` — one row per (session_id, last_event_seq).
+ *
+ * Powers fast resume + replay-storm prevention. Per orchestration README
+ * §3.3 / §6 the table also receives "missed-advancement escalation"
+ * marks from the Stop hook at the 5-turn threshold (Wave E.1 owner) — a
+ * Wave A.1 caller writes a snapshot row whenever it materialises state
+ * derivation, so repeated calls within the same turn project from the
+ * cached row instead of replaying from the event log.
+ *
+ * Columns:
+ *   - session_id      TEXT  — workspace partition key (every snapshot is
+ *                             scoped to a single session).
+ *   - project_id      TEXT  — project partition key, NULL when the
+ *                             session has no resolvable project root.
+ *   - last_event_seq  INTEGER — the `events.seq` the snapshot reflects.
+ *                               Forms the dedupe key with `session_id`.
+ *   - state_json      TEXT  — serialised `WorkflowState` at that seq.
+ *   - created_at      INTEGER — UNIX-ms wall clock at write time.
+ */
+const SQL_CREATE_STATE_SNAPSHOTS = `
+CREATE TABLE IF NOT EXISTS state_snapshots (
+  session_id     TEXT NOT NULL,
+  project_id     TEXT,
+  last_event_seq INTEGER NOT NULL,
+  state_json     TEXT NOT NULL,
+  created_at     INTEGER NOT NULL,
+  PRIMARY KEY (session_id, last_event_seq)
+)`;
+
+const SQL_CREATE_INDEX_STATE_SNAPSHOTS_SESSION_CREATED = `
+CREATE INDEX IF NOT EXISTS idx_state_snapshots_session_created
+  ON state_snapshots (session_id, created_at)`;
+
+const SQL_CREATE_INDEX_STATE_SNAPSHOTS_SESSION_SEQ = `
+CREATE INDEX IF NOT EXISTS idx_state_snapshots_session_seq
+  ON state_snapshots (session_id, last_event_seq)`;
+
+/**
+ * `tool_calls` — Pre/PostToolUse audit trail. Table-only (NOT a new event
+ * category).
+ *
+ * One row per observed `(tool_call_id, phase)` pair: PreToolUse captures
+ * the input on the way in, PostToolUse captures the output on the way
+ * out. The pair allows debugging slow / failed tool invocations without
+ * inflating the `events` table.
+ *
+ * Columns:
+ *   - session_id     TEXT  — workspace partition key.
+ *   - project_id     TEXT  — project partition key (nullable).
+ *   - tool_call_id   TEXT  — the Claude Code-supplied identifier.
+ *   - tool_name      TEXT  — e.g. `'Bash'`, `'Edit'`, `'Write'`.
+ *   - phase          TEXT  — `'pre'` for PreToolUse, `'post'` for
+ *                            PostToolUse. CHECK-constrained.
+ *   - timestamp      INTEGER — UNIX-ms wall clock at hook fire.
+ *   - input_json     TEXT  — the tool input payload (always populated).
+ *   - output_json    TEXT  — the tool output payload, NULL on PreToolUse
+ *                            rows (output not yet available).
+ *
+ * Composite primary key `(tool_call_id, phase)` deduplicates across hook
+ * retries while keeping pre/post rows distinct.
+ */
+const SQL_CREATE_TOOL_CALLS = `
+CREATE TABLE IF NOT EXISTS tool_calls (
+  session_id   TEXT NOT NULL,
+  project_id   TEXT,
+  tool_call_id TEXT NOT NULL,
+  tool_name    TEXT NOT NULL,
+  phase        TEXT NOT NULL CHECK (phase IN ('pre', 'post')),
+  timestamp    INTEGER NOT NULL,
+  input_json   TEXT NOT NULL,
+  output_json  TEXT,
+  PRIMARY KEY (tool_call_id, phase)
+)`;
+
+const SQL_CREATE_INDEX_TOOL_CALLS_SESSION_TS = `
+CREATE INDEX IF NOT EXISTS idx_tool_calls_session_ts
+  ON tool_calls (session_id, timestamp)`;
+
+const SQL_CREATE_INDEX_TOOL_CALLS_TOOL_CALL = `
+CREATE INDEX IF NOT EXISTS idx_tool_calls_tool_call
+  ON tool_calls (tool_call_id)`;
+
+/**
+ * `config_changes` — `gobbi config set` audit. Table-only.
+ *
+ * One row per applied configuration change. Records the layer the
+ * change was written to (project / workspace / user) and the before/after
+ * value pair so the change history is replayable without parsing
+ * `.gobbi/config.toml` deltas.
+ *
+ * Columns:
+ *   - session_id   TEXT  — workspace partition key (the session that
+ *                          ran the `gobbi config set` command).
+ *   - project_id   TEXT  — project partition key (nullable).
+ *   - key          TEXT  — the dotted config path being changed.
+ *   - layer        TEXT  — `'project' | 'workspace' | 'user'`.
+ *                          CHECK-constrained.
+ *   - old_value    TEXT  — the prior JSON-encoded value, or NULL when
+ *                          the key was unset.
+ *   - new_value    TEXT  — the JSON-encoded new value, or NULL when the
+ *                          change is a deletion.
+ *   - timestamp    INTEGER — UNIX-ms wall clock at write time.
+ *
+ * No primary key — `config_changes` is a pure log; the natural key is
+ * `(timestamp, key, layer)` but allowing duplicates keeps the writer
+ * implementation simple. Partition queries scope by `session_id`.
+ */
+const SQL_CREATE_CONFIG_CHANGES = `
+CREATE TABLE IF NOT EXISTS config_changes (
+  session_id TEXT NOT NULL,
+  project_id TEXT,
+  key        TEXT NOT NULL,
+  layer      TEXT NOT NULL CHECK (layer IN ('project', 'workspace', 'user')),
+  old_value  TEXT,
+  new_value  TEXT,
+  timestamp  INTEGER NOT NULL
+)`;
+
+const SQL_CREATE_INDEX_CONFIG_CHANGES_SESSION_TS = `
+CREATE INDEX IF NOT EXISTS idx_config_changes_session_ts
+  ON config_changes (session_id, timestamp)`;
+
+/**
+ * `schema_meta` — workspace-level migration tracking.
+ *
+ * Augments the per-event `schema_version` column on `events` with a
+ * single-row table that records the DB-as-a-whole migration version and
+ * the last-completed timestamp. Wave A.1.4's `gobbi maintenance migrate-state-db`
+ * reads this row to decide whether to run a pending migration; v0.5.0
+ * Phase 2's pre-event `metadata.json::schemaVersion` will eventually
+ * source from this row instead.
+ *
+ * Single-row design: the `id` column is a constant sentinel
+ * (`'state_db'`) so an INSERT OR REPLACE always rewrites the same row.
+ * No history kept here — historical version transitions are reconstructible
+ * from the event stream's `schema_version` distribution.
+ *
+ * Columns:
+ *   - id              TEXT     — sentinel `'state_db'`. PRIMARY KEY.
+ *   - schema_version  INTEGER — the DB-as-a-whole version (matches
+ *                                CURRENT_SCHEMA_VERSION at write time).
+ *   - migrated_at     INTEGER — UNIX-ms wall clock when the migration
+ *                                completed.
+ */
+const SQL_CREATE_SCHEMA_META = `
+CREATE TABLE IF NOT EXISTS schema_meta (
+  id             TEXT PRIMARY KEY,
+  schema_version INTEGER NOT NULL,
+  migrated_at    INTEGER NOT NULL
+)`;
+
+/**
+ * Stamp the `schema_meta` row at v6.
+ *
+ * Idempotent via INSERT OR REPLACE — re-running the migration is a no-op
+ * other than refreshing `migrated_at`, which is the desired semantic
+ * (operators can grep `schema_meta` to confirm the most recent migration).
+ *
+ * Bind parameters are positional `?` placeholders so the statement runs
+ * unchanged regardless of whether the caller's `Database` was opened in
+ * `strict: true` (event-store path) or default mode (test fixtures and
+ * the future maintenance command that opens a raw `Database` for the
+ * one-shot migrate-state-db run).
+ */
+const SQL_STAMP_SCHEMA_META_V6 = `
+INSERT OR REPLACE INTO schema_meta (id, schema_version, migrated_at)
+VALUES ('state_db', ?, ?)`;
+
+/**
+ * Return the set of table names currently present in the database.
+ *
+ * Mirrors {@link getEventsColumnNames} for v5 — gives tests and the
+ * migration runner a cheap idempotency check without throwing on
+ * already-applied CREATEs.
+ */
+export function getTableNames(db: Database): ReadonlySet<string> {
+  const rows = db
+    .query<{ name: string }, []>(
+      "SELECT name FROM sqlite_master WHERE type = 'table'",
+    )
+    .all();
+  return new Set(rows.map((r) => r.name));
+}
+
+/**
+ * Return the set of index names currently present in the database.
+ */
+export function getIndexNames(db: Database): ReadonlySet<string> {
+  const rows = db
+    .query<{ name: string }, []>(
+      "SELECT name FROM sqlite_master WHERE type = 'index' AND name NOT LIKE 'sqlite_autoindex_%'",
+    )
+    .all();
+  return new Set(rows.map((r) => r.name));
+}
+
+/**
+ * Ensure the schema-v6 tables and indices exist.
+ *
+ * Idempotent: every CREATE uses `IF NOT EXISTS`, so re-running this on a
+ * v6-or-later DB is a no-op. Running it on a pre-v6 DB after
+ * {@link ensureSchemaV5} brings the DB to v6 in one pass.
+ *
+ * Caller is responsible for sequencing — the `EventStore` constructor
+ * runs `ensureSchemaV5(db)` and then `ensureSchemaV6(db)` inside
+ * `initSchema`.
+ *
+ * Stamps the `schema_meta` row at v6 with the current wall-clock; the
+ * caller can pass an explicit `now` to make tests deterministic.
+ *
+ * ## Atomicity
+ *
+ * The CREATE chain runs inside a single `db.transaction(...).immediate()`
+ * so a mid-chain failure rolls back any partial v6 schema rather than
+ * leaving the DB half-applied. SQLite would otherwise auto-commit each
+ * `db.run()` independently — a thrown error after the first CREATE TABLE
+ * landed but before `schema_meta` stamped would leave the operator with
+ * a non-trivial recovery problem (some v6 tables present, no `schema_meta`
+ * row, no migration record). `.immediate()` acquires the write lock
+ * upfront, matching the pattern used elsewhere in the codebase
+ * (`commands/workflow/init.ts`, `lib/config-store.ts`) for write-first
+ * transactions.
+ */
+export function ensureSchemaV6(
+  db: Database,
+  now: number = Date.now(),
+): void {
+  db.transaction(() => {
+    db.run(SQL_CREATE_STATE_SNAPSHOTS);
+    db.run(SQL_CREATE_INDEX_STATE_SNAPSHOTS_SESSION_CREATED);
+    db.run(SQL_CREATE_INDEX_STATE_SNAPSHOTS_SESSION_SEQ);
+
+    db.run(SQL_CREATE_TOOL_CALLS);
+    db.run(SQL_CREATE_INDEX_TOOL_CALLS_SESSION_TS);
+    db.run(SQL_CREATE_INDEX_TOOL_CALLS_TOOL_CALL);
+
+    db.run(SQL_CREATE_CONFIG_CHANGES);
+    db.run(SQL_CREATE_INDEX_CONFIG_CHANGES_SESSION_TS);
+
+    db.run(SQL_CREATE_SCHEMA_META);
+
+    db.run(SQL_STAMP_SCHEMA_META_V6, [CURRENT_SCHEMA_VERSION, now]);
+  }).immediate();
 }

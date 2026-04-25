@@ -6,10 +6,15 @@ node_modules/
 .claude/gobbi.json.lock
 
 # .gobbi/ — whitelist pattern.
-# Ignore workspace-level files (e.g. .gobbi/settings.json, .gobbi/config.db),
+# Ignore workspace-level files (e.g. .gobbi/settings.json, .gobbi/state.db),
 # but track per-project content under .gobbi/projects/<name>/ except for
 # per-session runtime state (sessions/, rawdata/) and per-project settings.
+# `.gobbi/gobbi.db` is the workspace-scoped memories projection
+# (Pass-4 orchestration §3.4 + System F-1) — git-tracked so the markdown→
+# sqlite read model lives in the repo. `.gobbi/state.db` (events) stays
+# under the `.gobbi/*` ignore.
 .gobbi/*
+!.gobbi/gobbi.db
 !.gobbi/projects/
 .gobbi/projects/*/sessions/
 .gobbi/projects/*/rawdata/

@@ -50,12 +50,23 @@ import {
   isVerificationEvent,
   createVerificationResult,
 
+  // Step advancement (audit-only)
+  STEP_ADVANCEMENT_EVENTS,
+  isStepAdvancementEvent,
+  createStepAdvancementObserved,
+
   // Top-level
   ALL_EVENT_TYPES,
   isValidEventType,
 } from '../index.js';
 
-import type { Event, EventType } from '../index.js';
+import type {
+  Event,
+  EventType,
+  AuditOnlyEvent,
+  AuditOnlyEventType,
+  AnyEventType,
+} from '../index.js';
 
 // ===========================================================================
 // Const object completeness
@@ -89,6 +100,10 @@ describe('const objects', () => {
   it('VERIFICATION_EVENTS has 1 entry', () => {
     expect(Object.values(VERIFICATION_EVENTS)).toHaveLength(1);
   });
+
+  it('STEP_ADVANCEMENT_EVENTS has 1 entry (audit-only)', () => {
+    expect(Object.values(STEP_ADVANCEMENT_EVENTS)).toHaveLength(1);
+  });
 });
 
 // ===========================================================================
@@ -96,8 +111,12 @@ describe('const objects', () => {
 // ===========================================================================
 
 describe('ALL_EVENT_TYPES', () => {
-  it('contains exactly 22 entries (9 + 3 + 2 + 3 + 3 + 1 + 1)', () => {
-    expect(ALL_EVENT_TYPES.size).toBe(22);
+  it('contains exactly 23 entries (9 + 3 + 2 + 3 + 3 + 1 + 1 + 1) — wire-level (reducer + audit-only)', () => {
+    // Wave A.1.3 / orchestration Pass 4: 22 reducer-typed events + 1
+    // audit-only event (`step.advancement.observed`) = 23 wire-level
+    // event types. Closed-enumeration discipline per orchestration
+    // README §3.5 / §13 success criterion #5.
+    expect(ALL_EVENT_TYPES.size).toBe(23);
   });
 
   it('contains every workflow event type', () => {
@@ -142,6 +161,16 @@ describe('ALL_EVENT_TYPES', () => {
     }
   });
 
+  it('contains every step-advancement (audit-only) event type', () => {
+    for (const value of Object.values(STEP_ADVANCEMENT_EVENTS)) {
+      expect(ALL_EVENT_TYPES.has(value)).toBe(true);
+    }
+  });
+
+  it('contains step.advancement.observed (Wave A.1.3 audit-only)', () => {
+    expect(ALL_EVENT_TYPES.has('step.advancement.observed')).toBe(true);
+  });
+
   it('does not contain unknown event types', () => {
     expect(ALL_EVENT_TYPES.has('unknown.event')).toBe(false);
     expect(ALL_EVENT_TYPES.has('START')).toBe(false); // key, not value
@@ -161,6 +190,7 @@ describe('cross-category exclusivity', () => {
     Object.values(GUARD_EVENTS),
     Object.values(SESSION_EVENTS),
     Object.values(VERIFICATION_EVENTS),
+    Object.values(STEP_ADVANCEMENT_EVENTS),
   ];
 
   it('no event type string appears in more than one category', () => {
@@ -188,6 +218,7 @@ describe('cross-category exclusivity', () => {
       [Object.values(GUARD_EVENTS), 'guard.'],
       [Object.values(SESSION_EVENTS), 'session.'],
       [Object.values(VERIFICATION_EVENTS), 'verification.'],
+      [Object.values(STEP_ADVANCEMENT_EVENTS), 'step.advancement.'],
     ];
 
     for (const [values, prefix] of prefixMap) {
@@ -766,6 +797,79 @@ describe('factory functions', () => {
       expect(VERIFICATION_EVENTS.RESULT).toBe('verification.result');
     });
   });
+
+  describe('step-advancement (audit-only) factories', () => {
+    // Wave A.1.3 / orchestration Pass 4 — `step.advancement.observed` is an
+    // audit-only event. These tests cover (a) factory shape, (b) type-guard
+    // accept/reject behaviour against the eight categories, and (c) the
+    // architectural fence: it must NOT be a member of `Event` (the
+    // reducer-typed union) — that's enforced by a separate `isWorkflowEvent`
+    // / `isVerificationEvent` cross-rejection check.
+
+    const baseAdvancementData = {
+      step: 'planning',
+      toolCallId: 'tc-pa-1',
+      timestamp: '2026-04-25T12:00:00.000Z',
+    };
+
+    it('createStepAdvancementObserved produces a well-formed event', () => {
+      const event = createStepAdvancementObserved(baseAdvancementData);
+      expect(event.type).toBe(STEP_ADVANCEMENT_EVENTS.OBSERVED);
+      expect(event.data).toEqual(baseAdvancementData);
+    });
+
+    it('STEP_ADVANCEMENT_EVENTS.OBSERVED matches the prefixed string', () => {
+      expect(STEP_ADVANCEMENT_EVENTS.OBSERVED).toBe(
+        'step.advancement.observed',
+      );
+    });
+
+    it('isStepAdvancementEvent narrows the audit-only event', () => {
+      const event = createStepAdvancementObserved(baseAdvancementData);
+      expect(isStepAdvancementEvent(event)).toBe(true);
+    });
+
+    it('isStepAdvancementEvent rejects every reducer-typed category', () => {
+      const reducerTypedSamples = [
+        { type: 'workflow.start' },
+        { type: 'delegation.spawn' },
+        { type: 'artifact.write' },
+        { type: 'decision.user' },
+        { type: 'guard.violation' },
+        { type: 'session.heartbeat' },
+        { type: 'verification.result' },
+        { type: 'unknown.event' },
+      ];
+      for (const sample of reducerTypedSamples) {
+        expect(isStepAdvancementEvent(sample)).toBe(false);
+      }
+    });
+
+    it('audit-only event is rejected by every reducer-category guard (architectural fence)', () => {
+      // The fence: an audit-only event MUST NOT pass any reducer-category
+      // type guard. A failure here means a reducer category accidentally
+      // claims the audit event, which would route it through the reducer
+      // and silently lose it (state-db-redesign.md §1).
+      const event = createStepAdvancementObserved(baseAdvancementData);
+      expect(isWorkflowEvent(event)).toBe(false);
+      expect(isDelegationEvent(event)).toBe(false);
+      expect(isArtifactEvent(event)).toBe(false);
+      expect(isDecisionEvent(event)).toBe(false);
+      expect(isGuardEvent(event)).toBe(false);
+      expect(isSessionEvent(event)).toBe(false);
+      expect(isVerificationEvent(event)).toBe(false);
+    });
+
+    it('round-trips through JSON (wire-format invariant)', () => {
+      const event = createStepAdvancementObserved(baseAdvancementData);
+      const round = JSON.parse(JSON.stringify(event)) as unknown;
+      expect(round).toEqual(event);
+    });
+
+    it('isValidEventType accepts the audit-only type', () => {
+      expect(isValidEventType('step.advancement.observed')).toBe(true);
+    });
+  });
 });
 
 // ===========================================================================
@@ -836,5 +940,29 @@ describe('type-level correctness', () => {
       // Should not reach here
       expect(true).toBe(false);
     }
+  });
+
+  it('AuditOnlyEvent is structurally assignable to its own union', () => {
+    // Type-level invariant — `AuditOnlyEvent` is the typed contract for
+    // audit-only events. The factory's return type must be assignable to
+    // it. If this file compiles, the assignment holds.
+    const audit: AuditOnlyEvent = createStepAdvancementObserved({
+      step: 'planning',
+      toolCallId: 'tc-1',
+      timestamp: '2026-04-25T12:00:00.000Z',
+    });
+    expect(audit.type).toBe('step.advancement.observed');
+  });
+
+  it('AuditOnlyEventType and AnyEventType cover the wire-level union', () => {
+    // Compile-time discipline: every wire-level type string must be
+    // representable as `AnyEventType`. The runtime check confirms the
+    // closed-enumeration assertion remains in sync with the type union.
+    const auditType: AuditOnlyEventType = 'step.advancement.observed';
+    const reducerType: EventType = 'workflow.start';
+    const anyA: AnyEventType = auditType;
+    const anyR: AnyEventType = reducerType;
+    expect(ALL_EVENT_TYPES.has(anyA)).toBe(true);
+    expect(ALL_EVENT_TYPES.has(anyR)).toBe(true);
   });
 });

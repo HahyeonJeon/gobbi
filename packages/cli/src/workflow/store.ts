@@ -23,6 +23,7 @@ import {
   CURRENT_SCHEMA_VERSION,
   backfillSessionAndProjectIds,
   ensureSchemaV5,
+  ensureSchemaV6,
 } from './migrations.js';
 import type { EventRow } from './migrations.js';
 
@@ -107,6 +108,17 @@ export type AppendInput =
 // ---------------------------------------------------------------------------
 
 type SqlBindings = Record<string, string | number | bigint | boolean | null>;
+
+/**
+ * Event type that triggers a per-event WAL checkpoint inside `append()`.
+ *
+ * Wave A.1's workspace-scoped `state.db` widens the writer surface — this
+ * checkpoint bounds the lost-event window under SIGKILL to "events written
+ * between two adjacent step.exit checkpoints" (orchestration §6, scenario
+ * SC-ORCH-25). Hoisted as a named const so the constraint is greppable
+ * and so future readers can find the policy at the source-of-truth.
+ */
+const STEP_EXIT_EVENT_TYPE = 'workflow.step.exit';
 
 // ---------------------------------------------------------------------------
 // SQL statements
@@ -266,6 +278,49 @@ export interface WriteStore extends ReadStore {
 }
 
 // ---------------------------------------------------------------------------
+// EventStore constructor options
+// ---------------------------------------------------------------------------
+
+/**
+ * Optional explicit partition-key overrides for the {@link EventStore}
+ * constructor. Both fields participate in the same fallback policy:
+ *
+ * - A non-empty string overrides the on-disk derivation.
+ * - `null`, `undefined`, or the empty string `''` defers to the
+ *   path-derivation fallback (existing behavior).
+ *
+ * Empty-string and `null` are treated identically as "explicitly unset"
+ * so callers cannot accidentally stamp empty-string columns on every
+ * INSERT — a `''` `session_id` would defeat the per-session partition
+ * query that powers `gobbi workflow status` and would silently degrade
+ * the cost rollup.
+ *
+ * Wave A.1's workspace re-scope (`.gobbi/state.db`) needs both keys
+ * supplied explicitly because the path derivation yields `'.gobbi'`
+ * for the session id and `null` for the project id at workspace root.
+ * Per-session callers (legacy `<sessionDir>/gobbi.db` layout) keep
+ * working unchanged by passing no options object — Wave A.1.7 sweeps
+ * the 11 callsites separately.
+ */
+export interface EventStoreOptions {
+  readonly sessionId?: string | null;
+  readonly projectId?: string | null;
+}
+
+/**
+ * Type guard — narrows an options-bag partition-key field to a non-empty
+ * `string` when an explicit override was supplied. `null`, `undefined`,
+ * and the empty string all return `false` (deferring to the on-disk
+ * derivation fallback). See {@link EventStoreOptions} for the policy
+ * rationale.
+ */
+function isExplicitOverride(
+  value: string | null | undefined,
+): value is string {
+  return typeof value === 'string' && value !== '';
+}
+
+// ---------------------------------------------------------------------------
 // Partition-key resolution helpers — used by the EventStore constructor
 // to derive `session_id` + `project_id` from on-disk layout.
 // ---------------------------------------------------------------------------
@@ -356,19 +411,54 @@ export class EventStore implements WriteStore {
   private readonly stmtCount;
   private readonly stmtAggregateDelegationCosts;
 
-  constructor(pathOrMemory: string) {
+  /**
+   * Open an event store at `pathOrMemory`.
+   *
+   * Partition-key resolution policy (`session_id` + `project_id`
+   * stamped on every v5+ INSERT):
+   *
+   * 1. If `opts.sessionId` is a non-empty string, use it verbatim.
+   *    `null`, `undefined`, or the empty string defers to step 2.
+   * 2. Fall back to {@link resolveSessionId} — `basename(dirname(path))`
+   *    on the on-disk layout. `:memory:` and filesystem-root paths
+   *    yield `null`.
+   *
+   * The same two-step policy applies to `opts.projectId`:
+   *
+   * 1. Non-empty `opts.projectId` takes precedence.
+   * 2. Otherwise {@link resolveProjectRootBasename} parses the
+   *    sibling `metadata.json` and extracts
+   *    `basename(metadata.projectRoot)`. Missing or malformed
+   *    metadata yields `null` (silent — the column stays NULL until
+   *    a future open recovers a valid metadata).
+   *
+   * Empty-string and `null` are treated identically as "explicitly
+   * unset" — see {@link EventStoreOptions} for why empty strings
+   * cannot reach the column. Wave A.1's workspace mode supplies both
+   * keys; legacy per-session callers omit the options object and keep
+   * the original path-derived behavior.
+   */
+  constructor(pathOrMemory: string, opts?: EventStoreOptions) {
     this.db = new Database(pathOrMemory, { strict: true });
     this.db.run('PRAGMA journal_mode = WAL');
     this.db.run('PRAGMA synchronous = NORMAL');
     this.db.run('PRAGMA foreign_keys = ON');
     this.db.run('PRAGMA busy_timeout = 5000');
 
-    // Resolve partition keys from the db path's session directory. In-memory
-    // stores and any path whose parent is the filesystem root get null keys.
+    // Resolve partition keys. Explicit non-empty overrides win; null,
+    // undefined, and the empty string defer to on-disk derivation.
+    // In-memory stores and filesystem-root paths yield null keys when
+    // no override is supplied.
     const sessionDir =
       pathOrMemory === ':memory:' ? null : dirname(pathOrMemory);
-    this.sessionId = resolveSessionId(sessionDir);
-    this.projectRootBasename = resolveProjectRootBasename(sessionDir);
+    this.sessionId =
+      isExplicitOverride(opts?.sessionId)
+        ? opts.sessionId
+        : resolveSessionId(sessionDir);
+    this.projectRootBasename =
+      isExplicitOverride(opts?.projectId)
+        ? opts.projectId
+        : resolveProjectRootBasename(sessionDir);
 
     this.initSchema();
     // v4 → v5 row-level backfill. Idempotent — writes only to rows whose
@@ -413,6 +503,14 @@ export class EventStore implements WriteStore {
     // store opens an existing pre-v5 file, the ALTER statements inside
     // `ensureSchemaV5` add the columns without data loss.
     ensureSchemaV5(this.db);
+    // Additive v5 → v6 schema migration — creates the four
+    // workspace-partitioned audit + meta tables (`state_snapshots`,
+    // `tool_calls`, `config_changes`, `schema_meta`) plus their
+    // indices. Idempotent (every CREATE uses `IF NOT EXISTS`) so this
+    // is safe to call on every store open. Wave A.1.4 (issue #146)
+    // wires this here so `EventStore` callers get v6 tables without
+    // running `gobbi maintenance migrate-state-db` explicitly.
+    ensureSchemaV6(this.db);
   }
 
   // -------------------------------------------------------------------------
@@ -476,7 +574,21 @@ export class EventStore implements WriteStore {
       session_id: this.sessionId ?? input.sessionId,
       project_id: this.projectRootBasename,
     };
-    return this.stmtAppend.get(params);
+    const row = this.stmtAppend.get(params);
+    // Concurrent-writer durability mitigation (#146 A.1.9 / SC-ORCH-25):
+    // truncate the WAL after every successful `workflow.step.exit` write.
+    // Workspace-scoped `state.db` widens the writer surface — this bounds
+    // the lost-event window under SIGKILL to "events written between two
+    // adjacent step.exit checkpoints." Additive to the existing
+    // `close()` checkpoint below; do not collapse the two.
+    //
+    // The hook only fires when `stmtAppend.get` returned a row — deduped
+    // events (ON CONFLICT DO NOTHING returning null) need no checkpoint
+    // because no new bytes hit the WAL.
+    if (row !== null && row.type === STEP_EXIT_EVENT_TYPE) {
+      this.checkpointWal();
+    }
+    return row;
   }
 
   /**
@@ -580,16 +692,40 @@ export class EventStore implements WriteStore {
   }
 
   // -------------------------------------------------------------------------
-  // Cleanup
+  // WAL checkpoint
   // -------------------------------------------------------------------------
 
-  /** Close the database. Best-effort WAL checkpoint before closing. */
-  close(): void {
+  /**
+   * Best-effort `PRAGMA wal_checkpoint(TRUNCATE)`. Used both at session
+   * close and after every `workflow.step.exit` append (#146 A.1.9).
+   * Errors are swallowed — checkpoint failure must never surface as an
+   * append or close failure (e.g., `:memory:` databases reject the
+   * pragma). Mirrors the existing best-effort policy that lived inline
+   * in `close()` before A.1.9.
+   */
+  private checkpointWal(): void {
     try {
       this.db.run('PRAGMA wal_checkpoint(TRUNCATE)');
     } catch {
-      // Cleanup is best-effort — ignore errors (e.g., in-memory databases)
+      // Best-effort — ignore errors (e.g., in-memory databases reject
+      // the pragma; transient lock contention recovers on the next
+      // checkpoint).
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // Cleanup
+  // -------------------------------------------------------------------------
+
+  /**
+   * Close the database. Best-effort WAL checkpoint before closing — this
+   * coexists with the per-`workflow.step.exit` checkpoint added in #146
+   * A.1.9. The two checkpoints are additive: the per-step.exit hook
+   * bounds in-session SIGKILL loss; the close-time hook bounds clean
+   * shutdown WAL size.
+   */
+  close(): void {
+    this.checkpointWal();
     this.db.close();
   }
 

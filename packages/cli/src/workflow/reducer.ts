@@ -24,6 +24,7 @@ import type { SessionEvent } from './events/session.js';
 import { SESSION_EVENTS, isSessionEvent } from './events/session.js';
 import type { VerificationEvent } from './events/verification.js';
 import { VERIFICATION_EVENTS, isVerificationEvent } from './events/verification.js';
+import { isStepAdvancementEvent } from './events/step-advancement.js';
 import type { WorkflowState, WorkflowStep } from './state.js';
 import { TERMINAL_STEPS, ACTIVE_STEPS } from './state.js';
 import { findTransition } from './transitions.js';
@@ -214,9 +215,12 @@ function reduceWorkflow(
     }
 
     case WORKFLOW_EVENTS.FINISH: {
-      if (state.currentStep !== 'memorization') {
+      // Wave A.1.5 split memorization → handoff → done. `workflow.finish` now
+      // gates on `handoff`, not `memorization`. Memorization advances to
+      // handoff via `workflow.step.exit` (productive exit).
+      if (state.currentStep !== 'handoff') {
         return err(
-          `workflow.finish requires memorization state, got ${state.currentStep}`,
+          `workflow.finish requires handoff state, got ${state.currentStep}`,
         );
       }
       return ok({
@@ -669,6 +673,25 @@ export function reduce(
   ts?: string,
   predicates: PredicateRegistry = defaultPredicates,
 ): ReducerResult {
+  // Audit-only event runtime fence (Wave A.1.3 / orchestration NOTE-2).
+  //
+  // Audit-only events (`step.advancement.observed` and any future addition
+  // to `AuditOnlyEvent`) MUST be committed via `store.append()` directly
+  // and never enter the reducer. The TypeScript types already enforce
+  // this — `Event` excludes `AuditOnlyEvent` — but the runtime guard
+  // here is a defense-in-depth fence: a serialise/deserialise roundtrip
+  // (e.g. event replay from the wire) erases the type-level discriminator
+  // and could otherwise drive an audit event into `assertNever`'s plain-
+  // `Error` throw, which the engine's audit-on-rejection branch does NOT
+  // surface and which `capture-planning.ts`'s catch silently swallows.
+  // See `state-db-redesign.md` §1 for the failure-mode analysis.
+  //
+  // The guard returns the input state unchanged — audit-only events are
+  // observability-only and have no state projection by definition.
+  if (isStepAdvancementEvent(event)) {
+    return ok(state);
+  }
+
   // Pre-check: terminal state rejection
   if (TERMINAL_STEPS.has(state.currentStep)) {
     return err(

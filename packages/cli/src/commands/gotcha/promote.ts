@@ -84,6 +84,7 @@ import {
   sessionsRoot as sessionsRootForProject,
 } from '../../lib/workspace-paths.js';
 import { EventStore } from '../../workflow/store.js';
+import { resolvePartitionKeys } from '../session.js';
 
 /**
  * Fallback project name used by path helpers that run before
@@ -308,9 +309,10 @@ export function findActiveSessions(
     const dbPath = join(sessionDir, 'gobbi.db');
     if (!existsSync(dbPath)) continue;
 
+    const partitionKeys = resolvePartitionKeys(sessionDir);
     let store: EventStore;
     try {
-      store = new EventStore(dbPath);
+      store = new EventStore(dbPath, partitionKeys);
     } catch {
       continue;
     }

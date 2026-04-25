@@ -190,9 +190,13 @@ export function createHeartbeatEvent(): Event {
  * to the given workflow step. The sequence uses eval disabled (shortest path).
  *
  * Supported steps: idle, ideation, planning, execution, execution_eval,
- * memorization, done, error, ideation_eval, planning_eval.
+ * memorization, handoff, done, error, ideation_eval, planning_eval.
  *
  * Returns an empty array for 'idle' (already there).
+ *
+ * Wave A.1.5 split memorization → handoff → done. To reach `done` the
+ * sequence now performs `workflow.step.exit` on memorization (advances to
+ * handoff) and then `workflow.finish` on handoff (advances to done).
  */
 export function eventsToReach(
   step: string,
@@ -246,6 +250,17 @@ export function eventsToReach(
         createVerdictPassEvent(),
       ];
 
+    case 'handoff':
+      return [
+        start,
+        evalOff,
+        createStepExitEvent('ideation'),
+        createStepExitEvent('planning'),
+        createStepExitEvent('execution'),
+        createVerdictPassEvent(),
+        createStepExitEvent('memorization'),
+      ];
+
     case 'done':
       return [
         start,
@@ -254,6 +269,7 @@ export function eventsToReach(
         createStepExitEvent('planning'),
         createStepExitEvent('execution'),
         createVerdictPassEvent(),
+        createStepExitEvent('memorization'),
         createFinishEvent(),
       ];
 
@@ -308,6 +324,7 @@ export const STATES = {
   execution: applyEvents(eventsToReach('execution'), 'test'),
   execution_eval: applyEvents(eventsToReach('execution_eval'), 'test'),
   memorization: applyEvents(eventsToReach('memorization'), 'test'),
+  handoff: applyEvents(eventsToReach('handoff'), 'test'),
   done: applyEvents(eventsToReach('done'), 'test'),
   error: applyEvents(eventsToReach('error'), 'test'),
 } as const;

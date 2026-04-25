@@ -17,9 +17,9 @@
  */
 
 import { appendFile, readFile, chmod } from 'node:fs/promises';
-import { existsSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { parseArgs } from 'node:util';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { readStdinJson } from '../lib/stdin.js';
 import { getRepoRoot } from '../lib/repo.js';
@@ -323,7 +323,8 @@ export async function runSessionEvents(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  const store = new EventStore(dbPath);
+  const { sessionId, projectId } = resolvePartitionKeys(sessionDir);
+  const store = new EventStore(dbPath, { sessionId, projectId });
   try {
     const options: SessionEventsOptions = {
       json: values.json === true,
@@ -492,6 +493,72 @@ function findSessionById(repoRoot: string, sessionId: string): string | null {
   }
 
   return null;
+}
+
+/**
+ * Resolved partition keys for an {@link EventStore} opened against the legacy
+ * `<sessionDir>/gobbi.db` path. Both fields participate in the v5+ INSERT
+ * `(session_id, project_id)` columns. `null` defers to the constructor's
+ * on-disk derivation fallback (matches the legacy single-arg behavior).
+ */
+export interface ResolvedPartitionKeys {
+  readonly sessionId: string | null;
+  readonly projectId: string | null;
+}
+
+/**
+ * Resolve `(sessionId, projectId)` from a session directory so callers of
+ * `new EventStore(dbPath, opts)` can supply the partition keys explicitly.
+ * Mirrors the on-disk derivation that {@link EventStore} performs internally
+ * today — extracted into a single source of truth so the 11 callsites stay
+ * in sync once Wave A.1's workspace re-scope (`.gobbi/state.db`) lands and
+ * the path-derivation fallback no longer yields the right values.
+ *
+ *   - `sessionId` = `basename(sessionDir)` (matches the per-session layout
+ *     `.gobbi/projects/<name>/sessions/<sessionId>/`). `null` only when the
+ *     basename resolves to the empty string (filesystem root).
+ *   - `projectId` = `basename(metadata.projectRoot)` read from the session's
+ *     `metadata.json`. Silent on every failure mode (missing file, parse
+ *     error, unexpected shape) — `null` defers to the constructor fallback,
+ *     which performs the same read.
+ *
+ * Empty-string and `null` are treated identically as "explicitly unset" by
+ * the {@link EventStore} constructor, so empty-string columns can never reach
+ * the SQLite INSERT (see `EventStoreOptions` in `workflow/store.ts`).
+ */
+export function resolvePartitionKeys(sessionDir: string): ResolvedPartitionKeys {
+  const sessionName = basename(sessionDir);
+  const sessionId = sessionName === '' ? null : sessionName;
+  const projectId = readProjectIdFromMetadata(sessionDir);
+  return { sessionId, projectId };
+}
+
+/**
+ * Read `basename(metadata.projectRoot)` from `<sessionDir>/metadata.json`.
+ * Silent on every failure mode — the `EventStore` constructor's
+ * `resolveProjectRootBasename` performs the same read with the same fallback
+ * semantics, so a `null` here defers cleanly to the constructor's fallback.
+ */
+function readProjectIdFromMetadata(sessionDir: string): string | null {
+  let raw: string;
+  try {
+    raw = readFileSync(join(sessionDir, 'metadata.json'), 'utf8');
+  } catch {
+    return null;
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return null;
+  }
+  const projectRoot = (parsed as Record<string, unknown>)['projectRoot'];
+  if (typeof projectRoot !== 'string' || projectRoot === '') return null;
+  const name = basename(projectRoot);
+  return name === '' ? null : name;
 }
 
 /**

@@ -69,6 +69,8 @@ import {
   createEvalDecide,
 } from '../../workflow/events/workflow.js';
 
+import { resolvePartitionKeys } from '../session.js';
+
 import { detectTechStack } from './tech-stack.js';
 
 // ---------------------------------------------------------------------------
@@ -279,7 +281,8 @@ export async function runInitWithOptions(
   // outer SAVEPOINT (bun:sqlite promotes nested calls automatically), so a
   // crash between the two appends rolls the pair back together.
   const dbPath = join(sessionDir, 'gobbi.db');
-  const store = new EventStore(dbPath);
+  const partitionKeys = resolvePartitionKeys(sessionDir);
+  const store = new EventStore(dbPath, partitionKeys);
   try {
     store.transaction(() => {
       // Start from a fresh state — this is a brand-new session, so

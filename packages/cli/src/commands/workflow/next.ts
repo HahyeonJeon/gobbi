@@ -50,7 +50,7 @@ import { resolveWorkflowState } from '../../workflow/engine.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
 import type { WorkflowState } from '../../workflow/state.js';
 import { EventStore } from '../../workflow/store.js';
-import { resolveSessionDir } from '../session.js';
+import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
 // Usage
@@ -165,7 +165,8 @@ export async function runNextWithOptions(
     (typeof values.dir === 'string' ? resolveDir(values.dir) : DEFAULT_SPECS_DIR);
 
   const sessionId = sessionDirName(sessionDir);
-  const store = new EventStore(dbPath);
+  const partitionKeys = resolvePartitionKeys(sessionDir);
+  const store = new EventStore(dbPath, partitionKeys);
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
     const text = await compileCurrentStep(

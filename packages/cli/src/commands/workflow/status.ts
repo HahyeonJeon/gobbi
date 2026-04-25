@@ -29,7 +29,7 @@ import { EventStore } from '../../workflow/store.js';
 import type { CostAggregateRow, ReadStore } from '../../workflow/store.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
 import type { GuardViolationRecord, WorkflowState } from '../../workflow/state.js';
-import { resolveSessionDir } from '../session.js';
+import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------
 // Usage
@@ -179,7 +179,8 @@ export async function runStatusWithOptions(
   }
 
   const sessionId = sessionDirName(sessionDir);
-  const store = new EventStore(dbPath);
+  const partitionKeys = resolvePartitionKeys(sessionDir);
+  const store = new EventStore(dbPath, partitionKeys);
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
     const cost = values.cost === true ? aggregateCost(store) : undefined;

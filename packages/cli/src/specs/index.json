@@ -2,7 +2,7 @@
   "$schema": "https://gobbi.dev/schemas/workflow-graph/v1.json",
   "version": 1,
   "entry": "ideation",
-  "terminal": ["memorization"],
+  "terminal": ["handoff"],
   "steps": [
     {
       "id": "ideation",
@@ -35,6 +35,10 @@
     {
       "id": "memorization",
       "spec": "./memorization/spec.json"
+    },
+    {
+      "id": "handoff",
+      "spec": "./handoff/spec.json"
     }
   ],
   "transitions": [
@@ -143,10 +147,17 @@
     },
     {
       "from": "memorization",
+      "to": "handoff",
+      "condition": "always",
+      "trigger": "workflow.step.exit",
+      "label": "memorization complete → handoff"
+    },
+    {
+      "from": "handoff",
       "to": "done",
       "condition": "always",
       "trigger": "workflow.finish",
-      "label": "memorization complete → done"
+      "label": "handoff complete → done"
     },
     {
       "from": "ideation",
@@ -198,6 +209,13 @@
       "label": "memorization timeout → error"
     },
     {
+      "from": "handoff",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "handoff timeout → error"
+    },
+    {
       "from": "ideation_eval",
       "to": "ideation",
       "condition": "skipRequested",
@@ -239,6 +257,14 @@
     },
     {
       "from": "memorization",
+      "to": "ideation",
+      "condition": "skipRequested",
+      "trigger": "workflow.step.skip",
+      "feedback": true,
+      "label": "user skip → restart ideation"
+    },
+    {
+      "from": "handoff",
       "to": "ideation",
       "condition": "skipRequested",
       "trigger": "workflow.step.skip",

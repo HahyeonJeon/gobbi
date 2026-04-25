@@ -64,8 +64,8 @@ const LEGACY_PARTITION: Pick<EventRow, 'session_id' | 'project_id'> = {
 // ---------------------------------------------------------------------------
 
 describe('CURRENT_SCHEMA_VERSION', () => {
-  test('is 5 — schema v5 landed in gobbi-memory Pass 2 (session_id + project_id columns on events table)', () => {
-    expect(CURRENT_SCHEMA_VERSION).toBe(5);
+  test('is 6 — schema v6 landed in Wave A.1.3 (state_snapshots + tool_calls + config_changes + schema_meta tables, plus step.advancement.observed audit-only event)', () => {
+    expect(CURRENT_SCHEMA_VERSION).toBe(6);
   });
 });
 
@@ -659,6 +659,306 @@ describe('v4 → v5 schema ALTER + backfill', () => {
       // project_id left NULL — absence of metadata is distinguishable from a
       // real project-root basename.
       expect(row?.project_id).toBeNull();
+    } finally {
+      db.close();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 2e. v5 → v6 event round-trip (Wave A.1.3) — identity on event data;
+//     workspace-partitioned audit + meta tables added by ensureSchemaV6.
+// ---------------------------------------------------------------------------
+
+describe('v5 → v6 event round-trip (identity on event data)', () => {
+  test('a v5 workflow.start migrates to v6 unchanged', () => {
+    const v5Row: EventRow = {
+      seq: 80,
+      ts: '2026-04-25T00:00:00.000Z',
+      schema_version: 5,
+      type: 'workflow.start',
+      step: null,
+      data: JSON.stringify({
+        sessionId: 'sess-v5',
+        timestamp: '2026-04-25T00:00:00.000Z',
+      }),
+      actor: 'cli',
+      parent_seq: null,
+      idempotency_key: 'tool-call:tc-080:workflow.start',
+      session_id: 'sess-v5',
+      project_id: 'gobbi',
+    };
+    const migrated = migrateEvent(v5Row, 6);
+    expect(migrated.schema_version).toBe(6);
+    expect(JSON.parse(migrated.data)).toEqual(JSON.parse(v5Row.data));
+    // Byte-identical data string — the v5→v6 hop is an identity transform
+    // and does NOT re-serialise with different whitespace.
+    expect(migrated.data).toBe(v5Row.data);
+  });
+
+  test('a v5 row with explicit partition keys walks to v6 losslessly', () => {
+    const v5Row: EventRow = {
+      seq: 81,
+      ts: '2026-04-25T00:00:01.000Z',
+      schema_version: 5,
+      type: 'guard.warn',
+      step: 'execution',
+      data: JSON.stringify({
+        guardId: 'g-secret',
+        toolName: 'Write',
+        reason: 'path looks like credential',
+        step: 'execution',
+        timestamp: '2026-04-25T00:00:01.000Z',
+        severity: 'warning',
+        code: 'W001',
+      }),
+      actor: 'hook',
+      parent_seq: null,
+      idempotency_key: 'tool-call:tc-081:guard.warn',
+      session_id: 'sess-v5',
+      project_id: 'gobbi',
+    };
+    const migrated = migrateEvent(v5Row, 6);
+    expect(migrated.schema_version).toBe(6);
+    expect(JSON.parse(migrated.data)).toEqual(JSON.parse(v5Row.data));
+    // Partition keys flow through unmodified — the migration is at the
+    // event-data level only.
+    expect(migrated.session_id).toBe('sess-v5');
+    expect(migrated.project_id).toBe('gobbi');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 2f. v5 → v6 schema CREATE — workspace-partitioned audit + meta tables.
+// ---------------------------------------------------------------------------
+
+describe('v5 → v6 schema ensureSchemaV6', () => {
+  // Build a v5-shape `events` table on an in-memory db, then run
+  // ensureSchemaV6 directly. EventStore wiring lives in Wave A.1.4 — the
+  // function is exercised here in isolation, mirroring the v4→v5 pattern.
+  const buildV5Db = async () => {
+    const { Database } = await import('bun:sqlite');
+    const db = new Database(':memory:');
+    db.run(`
+      CREATE TABLE events (
+        seq INTEGER PRIMARY KEY,
+        ts TEXT NOT NULL,
+        schema_version INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        step TEXT,
+        data TEXT NOT NULL DEFAULT '{}',
+        actor TEXT NOT NULL,
+        parent_seq INTEGER REFERENCES events(seq),
+        idempotency_key TEXT NOT NULL UNIQUE,
+        session_id TEXT,
+        project_id TEXT
+      )
+    `);
+    return db;
+  };
+
+  test('ensureSchemaV6 applies cleanly on a v5 store and creates the four new tables', async () => {
+    const db = await buildV5Db();
+    try {
+      const {
+        ensureSchemaV6,
+        getTableNames,
+        SCHEMA_V6_TABLES,
+      } = await import('../migrations.js');
+      // Pre-state: only `events` exists (plus sqlite_sequence may exist
+      // automatically for INTEGER PRIMARY KEY tables).
+      const before = getTableNames(db);
+      for (const t of SCHEMA_V6_TABLES) {
+        expect(before.has(t)).toBe(false);
+      }
+
+      ensureSchemaV6(db);
+
+      const after = getTableNames(db);
+      for (const t of SCHEMA_V6_TABLES) {
+        expect(after.has(t)).toBe(true);
+      }
+    } finally {
+      db.close();
+    }
+  });
+
+  test('every v6 table carries its expected workspace-partition columns', async () => {
+    const db = await buildV5Db();
+    try {
+      const { ensureSchemaV6 } = await import('../migrations.js');
+      ensureSchemaV6(db);
+
+      // Helper: read the column set for a single table via PRAGMA table_info.
+      interface Pragma {
+        readonly name: string;
+      }
+      const cols = (table: string): Set<string> =>
+        new Set(
+          db
+            .query<Pragma, []>(`PRAGMA table_info(${table})`)
+            .all()
+            .map((r) => r.name),
+        );
+
+      const stateSnapshotsCols = cols('state_snapshots');
+      expect(stateSnapshotsCols.has('session_id')).toBe(true);
+      expect(stateSnapshotsCols.has('project_id')).toBe(true);
+      expect(stateSnapshotsCols.has('last_event_seq')).toBe(true);
+      expect(stateSnapshotsCols.has('state_json')).toBe(true);
+      expect(stateSnapshotsCols.has('created_at')).toBe(true);
+
+      const toolCallsCols = cols('tool_calls');
+      expect(toolCallsCols.has('session_id')).toBe(true);
+      expect(toolCallsCols.has('project_id')).toBe(true);
+      expect(toolCallsCols.has('tool_call_id')).toBe(true);
+      expect(toolCallsCols.has('tool_name')).toBe(true);
+      expect(toolCallsCols.has('phase')).toBe(true);
+      expect(toolCallsCols.has('timestamp')).toBe(true);
+      expect(toolCallsCols.has('input_json')).toBe(true);
+      expect(toolCallsCols.has('output_json')).toBe(true);
+
+      const configChangesCols = cols('config_changes');
+      expect(configChangesCols.has('session_id')).toBe(true);
+      expect(configChangesCols.has('project_id')).toBe(true);
+      expect(configChangesCols.has('key')).toBe(true);
+      expect(configChangesCols.has('layer')).toBe(true);
+      expect(configChangesCols.has('old_value')).toBe(true);
+      expect(configChangesCols.has('new_value')).toBe(true);
+      expect(configChangesCols.has('timestamp')).toBe(true);
+
+      const schemaMetaCols = cols('schema_meta');
+      expect(schemaMetaCols.has('id')).toBe(true);
+      expect(schemaMetaCols.has('schema_version')).toBe(true);
+      expect(schemaMetaCols.has('migrated_at')).toBe(true);
+    } finally {
+      db.close();
+    }
+  });
+
+  test('every v6 index is created', async () => {
+    const db = await buildV5Db();
+    try {
+      const {
+        ensureSchemaV6,
+        getIndexNames,
+        SCHEMA_V6_INDICES,
+      } = await import('../migrations.js');
+      ensureSchemaV6(db);
+      const indices = getIndexNames(db);
+      for (const idx of SCHEMA_V6_INDICES) {
+        expect(indices.has(idx)).toBe(true);
+      }
+    } finally {
+      db.close();
+    }
+  });
+
+  test('schema_meta is stamped at the current schema version with the supplied timestamp', async () => {
+    const db = await buildV5Db();
+    try {
+      const { ensureSchemaV6 } = await import('../migrations.js');
+      const fixedNow = 1745000000000;
+      ensureSchemaV6(db, fixedNow);
+
+      interface MetaRow {
+        readonly id: string;
+        readonly schema_version: number;
+        readonly migrated_at: number;
+      }
+      const row = db
+        .query<MetaRow, [string]>('SELECT * FROM schema_meta WHERE id = ?')
+        .get('state_db');
+      expect(row).not.toBeNull();
+      expect(row?.schema_version).toBe(CURRENT_SCHEMA_VERSION);
+      expect(row?.migrated_at).toBe(fixedNow);
+    } finally {
+      db.close();
+    }
+  });
+
+  test('ensureSchemaV6 is idempotent — re-running does not throw and refreshes migrated_at', async () => {
+    const db = await buildV5Db();
+    try {
+      const {
+        ensureSchemaV6,
+        getTableNames,
+        SCHEMA_V6_TABLES,
+      } = await import('../migrations.js');
+      const t0 = 1745000000000;
+      const t1 = 1745000001000;
+      ensureSchemaV6(db, t0);
+      ensureSchemaV6(db, t1);
+
+      const after = getTableNames(db);
+      for (const t of SCHEMA_V6_TABLES) {
+        expect(after.has(t)).toBe(true);
+      }
+
+      // INSERT OR REPLACE on the single sentinel row — the second call's
+      // migrated_at wins.
+      interface MetaRow {
+        readonly migrated_at: number;
+      }
+      const row = db
+        .query<MetaRow, [string]>(
+          'SELECT migrated_at FROM schema_meta WHERE id = ?',
+        )
+        .get('state_db');
+      expect(row?.migrated_at).toBe(t1);
+
+      // Single-row invariant — `id = 'state_db'` is the sentinel; no
+      // history rows.
+      const count = db
+        .query<{ cnt: number }, []>('SELECT count(*) as cnt FROM schema_meta')
+        .get();
+      expect(count?.cnt).toBe(1);
+    } finally {
+      db.close();
+    }
+  });
+
+  test('phase CHECK constraint rejects rows outside the pre/post enum', async () => {
+    const db = await buildV5Db();
+    try {
+      const { ensureSchemaV6 } = await import('../migrations.js');
+      ensureSchemaV6(db);
+
+      // Valid pre row inserts.
+      db.run(
+        `INSERT INTO tool_calls (session_id, project_id, tool_call_id, tool_name, phase, timestamp, input_json) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        ['s', 'p', 'tc-1', 'Bash', 'pre', 1, '{}'],
+      );
+      // An out-of-enum phase must throw on INSERT.
+      expect(() =>
+        db.run(
+          `INSERT INTO tool_calls (session_id, project_id, tool_call_id, tool_name, phase, timestamp, input_json) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          ['s', 'p', 'tc-2', 'Bash', 'invalid', 2, '{}'],
+        ),
+      ).toThrow();
+    } finally {
+      db.close();
+    }
+  });
+
+  test('config_changes layer CHECK constraint rejects unknown layer literals', async () => {
+    const db = await buildV5Db();
+    try {
+      const { ensureSchemaV6 } = await import('../migrations.js');
+      ensureSchemaV6(db);
+
+      // Valid layer literal.
+      db.run(
+        `INSERT INTO config_changes (session_id, key, layer, old_value, new_value, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
+        ['s', 'workflow.foo', 'project', null, '"x"', 1],
+      );
+      // Unknown layer must throw.
+      expect(() =>
+        db.run(
+          `INSERT INTO config_changes (session_id, key, layer, old_value, new_value, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
+          ['s', 'workflow.foo', 'global', null, '"x"', 2],
+        ),
+      ).toThrow();
     } finally {
       db.close();
     }

@@ -227,9 +227,21 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     priority: 2,
   },
 
-  // memorization -> done
+  // memorization -> handoff (productive exit; see specs/index.json::transitions)
+  // Wave A.1.5 promoted handoff to a true state-machine step so the cover-sheet
+  // artifact never collapses into the wide memorization sweep. The runtime
+  // routing is workflow.step.exit (memorization) → handoff, matching the
+  // declarative graph in `specs/index.json`.
   {
     from: 'memorization',
+    to: 'handoff',
+    trigger: WORKFLOW_EVENTS.STEP_EXIT,
+    priority: 0,
+  },
+
+  // handoff -> done via workflow.finish
+  {
+    from: 'handoff',
     to: 'done',
     trigger: WORKFLOW_EVENTS.FINISH,
     priority: 0,
@@ -281,6 +293,12 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     trigger: WORKFLOW_EVENTS.STEP_TIMEOUT,
     priority: 10,
   },
+  {
+    from: 'handoff',
+    to: 'error',
+    trigger: WORKFLOW_EVENTS.STEP_TIMEOUT,
+    priority: 10,
+  },
 
   // -------------------------------------------------------------------------
   // Skip transitions — any -> ideation (priority 20, lower than error)
@@ -318,6 +336,12 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
   },
   {
     from: 'memorization',
+    to: 'ideation',
+    trigger: WORKFLOW_EVENTS.STEP_SKIP,
+    priority: 20,
+  },
+  {
+    from: 'handoff',
     to: 'ideation',
     trigger: WORKFLOW_EVENTS.STEP_SKIP,
     priority: 20,
