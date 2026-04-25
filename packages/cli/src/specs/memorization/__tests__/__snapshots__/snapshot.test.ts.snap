@@ -11,13 +11,14 @@ Memorization principles:
 - Write gotchas before writing the memorization artifact. A gotcha not recorded before the session ends is a gotcha lost. Walk the conversation for corrections, platform quirks, and non-obvious constraints the user surfaced; commit them to the gotcha system first.
 - Ensure project documentation reflects what was done. If the session added files, changed conventions, or set precedent, the project README / design docs / gotcha index must reflect that before the step completes. A memorization artifact that references undocumented changes is a broken handoff.
 - Be faithful to the record, not to the intent. Memorize what happened, including what went wrong, what was deferred, and what the user chose differently from recommendations. Rewriting history optimistically is the failure mode memorization exists to prevent.
+- Read the rawdata manifest, do not assume inlined content. The artifact section of this prompt lists rawdata as path pointers — file paths plus one-line purpose tags — not the file contents themselves. For each section of \`memorization.md\` you write, decide which manifest entries are load-bearing and read those files with the Read tool. Do not assume the manifest exhausts what is needed; also consult \`git log\`, the project README, and any decisions/gotchas under \`.gobbi/projects/<name>/learnings/\` that the session touched.
 
 Scope boundary:
 
 - Memorization does not evaluate the work. Execution_eval has already run (it is mandatory); do not re-litigate its verdict here.
 - Memorization does not re-open prior steps. If you find a gap while memorizing, record it as an open question in the memorization artifact — the user decides in the next session whether to loop back.
 - Memorization does not implement deferred work. The Out-of-scope list from the plan, plus any adjacent improvements surfaced during execution, belong in the memorization artifact as named open items, not as new edits.
-- Write only to memorization-scope locations: the session's \`memorization/\` directory, the project's \`gotchas/\`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps.
+- Write only to memorization-scope locations: the session's \`memorization/\` directory, the project's \`learnings/decisions/\`, the project's \`learnings/gotchas/\`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps.
 
 Memorization artifact shape:
 
@@ -32,24 +33,64 @@ Write \`memorization.md\` with the following structure so the next session can r
 
 The shape is stable on purpose: future sessions' first action is to read the most recent memorization artifact; a predictable shape keeps resumption fast.
 
+Rawdata is delivered as a path-pointer manifest, not as inlined content:
+
+The artifact slot of this prompt holds a manifest — a list of file paths, sizes, kinds, and one-line purpose tags — that names every rawdata source the memorization step considers in scope. The manifest does NOT carry the content of those files. You read the files yourself, with the Read tool, on demand and selectively per section of \`memorization.md\` you are writing.
+
+Why: inlining 30+ rawdata transcripts at a 0.3 artifacts budget caused the budget allocator to drop the entire dynamic-context section wholesale (whole-section atomic inclusion). The manifest pattern keeps the prompt small and predictable while still naming every source the agent must be able to reach. See \`learnings/decisions/2026-04-25-spike-3-memorization-compile-latency.md\` for the empirical record.
+
+Manifest format:
+
+The manifest renders as a markdown table with columns \`path | bytes | kind | purpose\`. Rows group by \`kind\`. Recognized \`kind\` values: \`subagent\` (subagent transcripts), \`main\` (orchestrator/main session transcript), \`state-snapshot\` (event-store extracts and \`state.db\` snapshots), \`learnings-decision\` (recent decisions written this session), \`learnings-gotcha\` (gotchas written this session), \`step-artifact\` (the durable per-step \`*.md\` files), \`exit-plan\` (ExitPlanMode captures), \`step-readme\` (per-step \`README.md\` if present).
+
+Reading rules:
+
+- Read selectively. Open a manifest file only when its \`kind\` and \`purpose\` are load-bearing for the section of \`memorization.md\` you are currently writing. A \`subagent\` transcript is load-bearing for \`Decisions\` and \`Gotchas recorded\`; a \`state-snapshot\` is load-bearing for \`State at completion\`; a \`learnings-decision\` is load-bearing for \`Pointers\` and may already capture what you would otherwise duplicate.
+- The manifest is not exhaustive. Also consult \`git log\` for the session's commit shape, the project's \`README.md\` and \`design/\` tree for convention changes, and any prior-session \`memorization.md\` linked from \`learnings/\`.
+- When the manifest is absent or empty (e.g. an early session, or a session run before the runtime manifest generator landed), fall back to a direct walk of the session's \`sessions/<id>/\` subtree and the orchestrator transcript path recorded in \`metadata.json\`.
+
 Synthesis instructions:
 
-Memorization is orchestrator-authored — no delegated agents contribute. Your synthesis is the memorization artifact itself:
+Memorization is orchestrator-authored — no delegated agents contribute. Your synthesis is the memorization artifact itself, plus the durable extractions that flow out of it. Use the rawdata manifest in the artifact section as the path index; do not expect content to be inlined.
 
-1. Walk the session's conversation end-to-end. Note every correction the user issued, every decision that replaced a recommended option, every deferral. These are the highest-value entries.
-2. Read each step's artifact (\`ideation.md\`, \`plan.md\`, \`execution.md\`, \`evaluation.md\`) to confirm the decisions and state you are about to record match the durable artifacts — not just your memory of the conversation.
-3. Write gotchas first. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.
-4. Update project documentation for any session-level change (README updates, design doc entries, gotcha index links).
-5. Commit \`memorization.md\` using the structure in the \`Memorization artifact shape\` section.
-6. Emit the completion signal — the CLI transitions the workflow to \`done\` on the \`always\` transition.
+Rawdata sources you may need to read (the manifest enumerates these as path pointers):
 
-Emit the Stop completion signal once \`memorization.md\` is written, gotchas have been committed to the gotcha system, and project documentation reflects the session's durable changes.
+1. Main session transcript — \`~/.claude/projects/-playinganalytics-git-gobbi/<session-id>.jsonl\`. The orchestrator's full conversation log; authoritative for user corrections, decisions, deferrals.
+2. Subagent transcripts — \`~/.claude/projects/-playinganalytics-git-gobbi/<session-id>/subagents/*.jsonl\`. Per-subagent runs, useful for verifying what each delegated agent actually did.
+3. Captured rawdata — \`.gobbi/projects/<name>/sessions/<session-id>/raw-data/transcripts/*.jsonl\`. Files copied into the session by \`gobbi capture-subagent\` / capture hooks.
+4. Recent project decisions — \`.gobbi/projects/<name>/learnings/decisions/*.md\`. The latest entries (including spike outcomes) often subsume what you would otherwise re-record.
+5. Mid-session gotchas — \`.gobbi/projects/<name>/learnings/gotchas/*.md\`. Gotchas written during the session you may need to escalate or cross-reference.
+6. Per-step durable artifacts — \`sessions/<session-id>/{ideation,planning,execution,execution_eval}/*.md\`. The committed records of each prior step.
+7. State-snapshot extracts — rows from the workspace event store for this session, available via \`gobbi workflow events\` and surfaced by the manifest as \`state-snapshot\` entries.
+
+Extraction destinations (where you write):
+
+1. \`.gobbi/projects/<name>/sessions/<session-id>/memorization/memorization.md\` — the per-session record (the artifact named in \`meta.expectedArtifacts\`). Use the structure from \`Memorization artifact shape\`.
+2. \`.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md\` — one file per durable decision the session locked. Cross-link from \`memorization.md::Decisions\`.
+3. \`.gobbi/projects/<name>/learnings/gotchas/<slug>.md\` — one file per non-obvious correction the user surfaced. Write these BEFORE writing \`memorization.md\` so the artifact's \`Gotchas recorded\` section has real files to point at.
+4. Auto-memory updates — when a session's outcome warrants an entry in the user-level \`MEMORY.md\` index (e.g. a shipped PR, a phase milestone), update the index and add or update the per-topic memory file alongside it.
+5. Project documentation — README/design entries for any convention, precedent, or directory-structure change the session introduced.
+
+Pipeline:
+
+1. Read the rawdata manifest in the artifact section. Note which paths each section of \`memorization.md\` will need.
+2. Walk the session end-to-end via the manifest's main + subagent + captured-rawdata entries. Note every correction the user issued, every decision that replaced a recommended option, every deferral. These are the highest-value entries.
+3. Cross-check against each step's artifact (\`ideation.md\`, \`plan.md\`, \`execution.md\`, \`evaluation.md\`) — read them via the manifest's \`step-artifact\` rows — to confirm the decisions and state you are about to record match the durable artifacts.
+4. Write gotchas first under \`learnings/gotchas/\`. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.
+5. Write durable decisions next under \`learnings/decisions/\`, one file per locked decision.
+6. Update project documentation and the user-level MEMORY index for any session-level change.
+7. Commit \`memorization.md\` at \`sessions/<session-id>/memorization/memorization.md\` using the structure in the \`Memorization artifact shape\` section. Cross-link the gotcha and decision files you just wrote in \`Gotchas recorded\` and \`Pointers\`.
+8. Emit the completion signal — the CLI transitions the workflow to the next step (\`handoff\`) on the \`always\` transition; handoff then writes the narrow cover-sheet artifact and finishes the workflow.
+
+Emit the Stop completion signal once \`memorization.md\` is written, gotchas have been committed to the gotcha system, project documentation reflects the session's durable changes, and any new decisions or auto-memory entries the session warrants have been written.
 
 Criteria:
-  1. memorization.md is written to the session's memorization directory with Summary, Decisions, State at completion, Open questions, Gotchas recorded, and Pointers sections
-  2. every non-obvious correction from the session has a corresponding gotcha entry in the gotcha system
-  3. project README and design docs reflect any convention, precedent, or scope change the session introduced
-  4. no prior-step artifacts have been modified by this step — memorization is write-forward only
+  1. memorization.md is written at the session's memorization directory with Summary, Decisions, State at completion, Open questions, Gotchas recorded, and Pointers sections
+  2. every non-obvious correction from the session has a corresponding entry under \`.gobbi/projects/<name>/learnings/gotchas/\`
+  3. every durable decision the session locked has a corresponding entry under \`.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md\`, cross-linked from memorization.md
+  4. the user-level MEMORY.md index has been updated with any per-session entry the session warrants (e.g. shipped PR, phase milestone)
+  5. project README and design docs reflect any convention, precedent, or scope change the session introduced
+  6. no prior-step artifacts have been modified by this step — memorization is write-forward only
 
 session.schemaVersion=4
 session.currentStep=memorization
@@ -77,13 +118,14 @@ Memorization principles:
 - Write gotchas before writing the memorization artifact. A gotcha not recorded before the session ends is a gotcha lost. Walk the conversation for corrections, platform quirks, and non-obvious constraints the user surfaced; commit them to the gotcha system first.
 - Ensure project documentation reflects what was done. If the session added files, changed conventions, or set precedent, the project README / design docs / gotcha index must reflect that before the step completes. A memorization artifact that references undocumented changes is a broken handoff.
 - Be faithful to the record, not to the intent. Memorize what happened, including what went wrong, what was deferred, and what the user chose differently from recommendations. Rewriting history optimistically is the failure mode memorization exists to prevent.
+- Read the rawdata manifest, do not assume inlined content. The artifact section of this prompt lists rawdata as path pointers — file paths plus one-line purpose tags — not the file contents themselves. For each section of \`memorization.md\` you write, decide which manifest entries are load-bearing and read those files with the Read tool. Do not assume the manifest exhausts what is needed; also consult \`git log\`, the project README, and any decisions/gotchas under \`.gobbi/projects/<name>/learnings/\` that the session touched.
 
 Scope boundary:
 
 - Memorization does not evaluate the work. Execution_eval has already run (it is mandatory); do not re-litigate its verdict here.
 - Memorization does not re-open prior steps. If you find a gap while memorizing, record it as an open question in the memorization artifact — the user decides in the next session whether to loop back.
 - Memorization does not implement deferred work. The Out-of-scope list from the plan, plus any adjacent improvements surfaced during execution, belong in the memorization artifact as named open items, not as new edits.
-- Write only to memorization-scope locations: the session's \`memorization/\` directory, the project's \`gotchas/\`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps.
+- Write only to memorization-scope locations: the session's \`memorization/\` directory, the project's \`learnings/decisions/\`, the project's \`learnings/gotchas/\`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps.
 
 Memorization artifact shape:
 
@@ -98,24 +140,64 @@ Write \`memorization.md\` with the following structure so the next session can r
 
 The shape is stable on purpose: future sessions' first action is to read the most recent memorization artifact; a predictable shape keeps resumption fast.
 
+Rawdata is delivered as a path-pointer manifest, not as inlined content:
+
+The artifact slot of this prompt holds a manifest — a list of file paths, sizes, kinds, and one-line purpose tags — that names every rawdata source the memorization step considers in scope. The manifest does NOT carry the content of those files. You read the files yourself, with the Read tool, on demand and selectively per section of \`memorization.md\` you are writing.
+
+Why: inlining 30+ rawdata transcripts at a 0.3 artifacts budget caused the budget allocator to drop the entire dynamic-context section wholesale (whole-section atomic inclusion). The manifest pattern keeps the prompt small and predictable while still naming every source the agent must be able to reach. See \`learnings/decisions/2026-04-25-spike-3-memorization-compile-latency.md\` for the empirical record.
+
+Manifest format:
+
+The manifest renders as a markdown table with columns \`path | bytes | kind | purpose\`. Rows group by \`kind\`. Recognized \`kind\` values: \`subagent\` (subagent transcripts), \`main\` (orchestrator/main session transcript), \`state-snapshot\` (event-store extracts and \`state.db\` snapshots), \`learnings-decision\` (recent decisions written this session), \`learnings-gotcha\` (gotchas written this session), \`step-artifact\` (the durable per-step \`*.md\` files), \`exit-plan\` (ExitPlanMode captures), \`step-readme\` (per-step \`README.md\` if present).
+
+Reading rules:
+
+- Read selectively. Open a manifest file only when its \`kind\` and \`purpose\` are load-bearing for the section of \`memorization.md\` you are currently writing. A \`subagent\` transcript is load-bearing for \`Decisions\` and \`Gotchas recorded\`; a \`state-snapshot\` is load-bearing for \`State at completion\`; a \`learnings-decision\` is load-bearing for \`Pointers\` and may already capture what you would otherwise duplicate.
+- The manifest is not exhaustive. Also consult \`git log\` for the session's commit shape, the project's \`README.md\` and \`design/\` tree for convention changes, and any prior-session \`memorization.md\` linked from \`learnings/\`.
+- When the manifest is absent or empty (e.g. an early session, or a session run before the runtime manifest generator landed), fall back to a direct walk of the session's \`sessions/<id>/\` subtree and the orchestrator transcript path recorded in \`metadata.json\`.
+
 Synthesis instructions:
 
-Memorization is orchestrator-authored — no delegated agents contribute. Your synthesis is the memorization artifact itself:
+Memorization is orchestrator-authored — no delegated agents contribute. Your synthesis is the memorization artifact itself, plus the durable extractions that flow out of it. Use the rawdata manifest in the artifact section as the path index; do not expect content to be inlined.
 
-1. Walk the session's conversation end-to-end. Note every correction the user issued, every decision that replaced a recommended option, every deferral. These are the highest-value entries.
-2. Read each step's artifact (\`ideation.md\`, \`plan.md\`, \`execution.md\`, \`evaluation.md\`) to confirm the decisions and state you are about to record match the durable artifacts — not just your memory of the conversation.
-3. Write gotchas first. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.
-4. Update project documentation for any session-level change (README updates, design doc entries, gotcha index links).
-5. Commit \`memorization.md\` using the structure in the \`Memorization artifact shape\` section.
-6. Emit the completion signal — the CLI transitions the workflow to \`done\` on the \`always\` transition.
+Rawdata sources you may need to read (the manifest enumerates these as path pointers):
 
-Emit the Stop completion signal once \`memorization.md\` is written, gotchas have been committed to the gotcha system, and project documentation reflects the session's durable changes.
+1. Main session transcript — \`~/.claude/projects/-playinganalytics-git-gobbi/<session-id>.jsonl\`. The orchestrator's full conversation log; authoritative for user corrections, decisions, deferrals.
+2. Subagent transcripts — \`~/.claude/projects/-playinganalytics-git-gobbi/<session-id>/subagents/*.jsonl\`. Per-subagent runs, useful for verifying what each delegated agent actually did.
+3. Captured rawdata — \`.gobbi/projects/<name>/sessions/<session-id>/raw-data/transcripts/*.jsonl\`. Files copied into the session by \`gobbi capture-subagent\` / capture hooks.
+4. Recent project decisions — \`.gobbi/projects/<name>/learnings/decisions/*.md\`. The latest entries (including spike outcomes) often subsume what you would otherwise re-record.
+5. Mid-session gotchas — \`.gobbi/projects/<name>/learnings/gotchas/*.md\`. Gotchas written during the session you may need to escalate or cross-reference.
+6. Per-step durable artifacts — \`sessions/<session-id>/{ideation,planning,execution,execution_eval}/*.md\`. The committed records of each prior step.
+7. State-snapshot extracts — rows from the workspace event store for this session, available via \`gobbi workflow events\` and surfaced by the manifest as \`state-snapshot\` entries.
+
+Extraction destinations (where you write):
+
+1. \`.gobbi/projects/<name>/sessions/<session-id>/memorization/memorization.md\` — the per-session record (the artifact named in \`meta.expectedArtifacts\`). Use the structure from \`Memorization artifact shape\`.
+2. \`.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md\` — one file per durable decision the session locked. Cross-link from \`memorization.md::Decisions\`.
+3. \`.gobbi/projects/<name>/learnings/gotchas/<slug>.md\` — one file per non-obvious correction the user surfaced. Write these BEFORE writing \`memorization.md\` so the artifact's \`Gotchas recorded\` section has real files to point at.
+4. Auto-memory updates — when a session's outcome warrants an entry in the user-level \`MEMORY.md\` index (e.g. a shipped PR, a phase milestone), update the index and add or update the per-topic memory file alongside it.
+5. Project documentation — README/design entries for any convention, precedent, or directory-structure change the session introduced.
+
+Pipeline:
+
+1. Read the rawdata manifest in the artifact section. Note which paths each section of \`memorization.md\` will need.
+2. Walk the session end-to-end via the manifest's main + subagent + captured-rawdata entries. Note every correction the user issued, every decision that replaced a recommended option, every deferral. These are the highest-value entries.
+3. Cross-check against each step's artifact (\`ideation.md\`, \`plan.md\`, \`execution.md\`, \`evaluation.md\`) — read them via the manifest's \`step-artifact\` rows — to confirm the decisions and state you are about to record match the durable artifacts.
+4. Write gotchas first under \`learnings/gotchas/\`. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.
+5. Write durable decisions next under \`learnings/decisions/\`, one file per locked decision.
+6. Update project documentation and the user-level MEMORY index for any session-level change.
+7. Commit \`memorization.md\` at \`sessions/<session-id>/memorization/memorization.md\` using the structure in the \`Memorization artifact shape\` section. Cross-link the gotcha and decision files you just wrote in \`Gotchas recorded\` and \`Pointers\`.
+8. Emit the completion signal — the CLI transitions the workflow to the next step (\`handoff\`) on the \`always\` transition; handoff then writes the narrow cover-sheet artifact and finishes the workflow.
+
+Emit the Stop completion signal once \`memorization.md\` is written, gotchas have been committed to the gotcha system, project documentation reflects the session's durable changes, and any new decisions or auto-memory entries the session warrants have been written.
 
 Criteria:
-  1. memorization.md is written to the session's memorization directory with Summary, Decisions, State at completion, Open questions, Gotchas recorded, and Pointers sections
-  2. every non-obvious correction from the session has a corresponding gotcha entry in the gotcha system
-  3. project README and design docs reflect any convention, precedent, or scope change the session introduced
-  4. no prior-step artifacts have been modified by this step — memorization is write-forward only
+  1. memorization.md is written at the session's memorization directory with Summary, Decisions, State at completion, Open questions, Gotchas recorded, and Pointers sections
+  2. every non-obvious correction from the session has a corresponding entry under \`.gobbi/projects/<name>/learnings/gotchas/\`
+  3. every durable decision the session locked has a corresponding entry under \`.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md\`, cross-linked from memorization.md
+  4. the user-level MEMORY.md index has been updated with any per-session entry the session warrants (e.g. shipped PR, phase milestone)
+  5. project README and design docs reflect any convention, precedent, or scope change the session introduced
+  6. no prior-step artifacts have been modified by this step — memorization is write-forward only
 
 session.schemaVersion=4
 session.currentStep=memorization
@@ -143,13 +225,14 @@ Memorization principles:
 - Write gotchas before writing the memorization artifact. A gotcha not recorded before the session ends is a gotcha lost. Walk the conversation for corrections, platform quirks, and non-obvious constraints the user surfaced; commit them to the gotcha system first.
 - Ensure project documentation reflects what was done. If the session added files, changed conventions, or set precedent, the project README / design docs / gotcha index must reflect that before the step completes. A memorization artifact that references undocumented changes is a broken handoff.
 - Be faithful to the record, not to the intent. Memorize what happened, including what went wrong, what was deferred, and what the user chose differently from recommendations. Rewriting history optimistically is the failure mode memorization exists to prevent.
+- Read the rawdata manifest, do not assume inlined content. The artifact section of this prompt lists rawdata as path pointers — file paths plus one-line purpose tags — not the file contents themselves. For each section of \`memorization.md\` you write, decide which manifest entries are load-bearing and read those files with the Read tool. Do not assume the manifest exhausts what is needed; also consult \`git log\`, the project README, and any decisions/gotchas under \`.gobbi/projects/<name>/learnings/\` that the session touched.
 
 Scope boundary:
 
 - Memorization does not evaluate the work. Execution_eval has already run (it is mandatory); do not re-litigate its verdict here.
 - Memorization does not re-open prior steps. If you find a gap while memorizing, record it as an open question in the memorization artifact — the user decides in the next session whether to loop back.
 - Memorization does not implement deferred work. The Out-of-scope list from the plan, plus any adjacent improvements surfaced during execution, belong in the memorization artifact as named open items, not as new edits.
-- Write only to memorization-scope locations: the session's \`memorization/\` directory, the project's \`gotchas/\`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps.
+- Write only to memorization-scope locations: the session's \`memorization/\` directory, the project's \`learnings/decisions/\`, the project's \`learnings/gotchas/\`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps.
 
 Memorization artifact shape:
 
@@ -164,28 +247,68 @@ Write \`memorization.md\` with the following structure so the next session can r
 
 The shape is stable on purpose: future sessions' first action is to read the most recent memorization artifact; a predictable shape keeps resumption fast.
 
+Rawdata is delivered as a path-pointer manifest, not as inlined content:
+
+The artifact slot of this prompt holds a manifest — a list of file paths, sizes, kinds, and one-line purpose tags — that names every rawdata source the memorization step considers in scope. The manifest does NOT carry the content of those files. You read the files yourself, with the Read tool, on demand and selectively per section of \`memorization.md\` you are writing.
+
+Why: inlining 30+ rawdata transcripts at a 0.3 artifacts budget caused the budget allocator to drop the entire dynamic-context section wholesale (whole-section atomic inclusion). The manifest pattern keeps the prompt small and predictable while still naming every source the agent must be able to reach. See \`learnings/decisions/2026-04-25-spike-3-memorization-compile-latency.md\` for the empirical record.
+
+Manifest format:
+
+The manifest renders as a markdown table with columns \`path | bytes | kind | purpose\`. Rows group by \`kind\`. Recognized \`kind\` values: \`subagent\` (subagent transcripts), \`main\` (orchestrator/main session transcript), \`state-snapshot\` (event-store extracts and \`state.db\` snapshots), \`learnings-decision\` (recent decisions written this session), \`learnings-gotcha\` (gotchas written this session), \`step-artifact\` (the durable per-step \`*.md\` files), \`exit-plan\` (ExitPlanMode captures), \`step-readme\` (per-step \`README.md\` if present).
+
+Reading rules:
+
+- Read selectively. Open a manifest file only when its \`kind\` and \`purpose\` are load-bearing for the section of \`memorization.md\` you are currently writing. A \`subagent\` transcript is load-bearing for \`Decisions\` and \`Gotchas recorded\`; a \`state-snapshot\` is load-bearing for \`State at completion\`; a \`learnings-decision\` is load-bearing for \`Pointers\` and may already capture what you would otherwise duplicate.
+- The manifest is not exhaustive. Also consult \`git log\` for the session's commit shape, the project's \`README.md\` and \`design/\` tree for convention changes, and any prior-session \`memorization.md\` linked from \`learnings/\`.
+- When the manifest is absent or empty (e.g. an early session, or a session run before the runtime manifest generator landed), fall back to a direct walk of the session's \`sessions/<id>/\` subtree and the orchestrator transcript path recorded in \`metadata.json\`.
+
 Force-memorization recovery context:
 
 This memorization run was entered via the force-memorization recovery pathway — the workflow hit the feedback-round cap at execution_eval and the user opted to persist partial work rather than abort. Treat the memorization artifact as a partial record: explicitly note which plan tasks converged, which did not, and what the accumulated evaluation findings say about the blocked tasks. Future sessions reading this artifact must see that the work is partial — do not smooth the unfinished state into a success narrative.
 
 Synthesis instructions:
 
-Memorization is orchestrator-authored — no delegated agents contribute. Your synthesis is the memorization artifact itself:
+Memorization is orchestrator-authored — no delegated agents contribute. Your synthesis is the memorization artifact itself, plus the durable extractions that flow out of it. Use the rawdata manifest in the artifact section as the path index; do not expect content to be inlined.
 
-1. Walk the session's conversation end-to-end. Note every correction the user issued, every decision that replaced a recommended option, every deferral. These are the highest-value entries.
-2. Read each step's artifact (\`ideation.md\`, \`plan.md\`, \`execution.md\`, \`evaluation.md\`) to confirm the decisions and state you are about to record match the durable artifacts — not just your memory of the conversation.
-3. Write gotchas first. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.
-4. Update project documentation for any session-level change (README updates, design doc entries, gotcha index links).
-5. Commit \`memorization.md\` using the structure in the \`Memorization artifact shape\` section.
-6. Emit the completion signal — the CLI transitions the workflow to \`done\` on the \`always\` transition.
+Rawdata sources you may need to read (the manifest enumerates these as path pointers):
 
-Emit the Stop completion signal once \`memorization.md\` is written, gotchas have been committed to the gotcha system, and project documentation reflects the session's durable changes.
+1. Main session transcript — \`~/.claude/projects/-playinganalytics-git-gobbi/<session-id>.jsonl\`. The orchestrator's full conversation log; authoritative for user corrections, decisions, deferrals.
+2. Subagent transcripts — \`~/.claude/projects/-playinganalytics-git-gobbi/<session-id>/subagents/*.jsonl\`. Per-subagent runs, useful for verifying what each delegated agent actually did.
+3. Captured rawdata — \`.gobbi/projects/<name>/sessions/<session-id>/raw-data/transcripts/*.jsonl\`. Files copied into the session by \`gobbi capture-subagent\` / capture hooks.
+4. Recent project decisions — \`.gobbi/projects/<name>/learnings/decisions/*.md\`. The latest entries (including spike outcomes) often subsume what you would otherwise re-record.
+5. Mid-session gotchas — \`.gobbi/projects/<name>/learnings/gotchas/*.md\`. Gotchas written during the session you may need to escalate or cross-reference.
+6. Per-step durable artifacts — \`sessions/<session-id>/{ideation,planning,execution,execution_eval}/*.md\`. The committed records of each prior step.
+7. State-snapshot extracts — rows from the workspace event store for this session, available via \`gobbi workflow events\` and surfaced by the manifest as \`state-snapshot\` entries.
+
+Extraction destinations (where you write):
+
+1. \`.gobbi/projects/<name>/sessions/<session-id>/memorization/memorization.md\` — the per-session record (the artifact named in \`meta.expectedArtifacts\`). Use the structure from \`Memorization artifact shape\`.
+2. \`.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md\` — one file per durable decision the session locked. Cross-link from \`memorization.md::Decisions\`.
+3. \`.gobbi/projects/<name>/learnings/gotchas/<slug>.md\` — one file per non-obvious correction the user surfaced. Write these BEFORE writing \`memorization.md\` so the artifact's \`Gotchas recorded\` section has real files to point at.
+4. Auto-memory updates — when a session's outcome warrants an entry in the user-level \`MEMORY.md\` index (e.g. a shipped PR, a phase milestone), update the index and add or update the per-topic memory file alongside it.
+5. Project documentation — README/design entries for any convention, precedent, or directory-structure change the session introduced.
+
+Pipeline:
+
+1. Read the rawdata manifest in the artifact section. Note which paths each section of \`memorization.md\` will need.
+2. Walk the session end-to-end via the manifest's main + subagent + captured-rawdata entries. Note every correction the user issued, every decision that replaced a recommended option, every deferral. These are the highest-value entries.
+3. Cross-check against each step's artifact (\`ideation.md\`, \`plan.md\`, \`execution.md\`, \`evaluation.md\`) — read them via the manifest's \`step-artifact\` rows — to confirm the decisions and state you are about to record match the durable artifacts.
+4. Write gotchas first under \`learnings/gotchas/\`. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.
+5. Write durable decisions next under \`learnings/decisions/\`, one file per locked decision.
+6. Update project documentation and the user-level MEMORY index for any session-level change.
+7. Commit \`memorization.md\` at \`sessions/<session-id>/memorization/memorization.md\` using the structure in the \`Memorization artifact shape\` section. Cross-link the gotcha and decision files you just wrote in \`Gotchas recorded\` and \`Pointers\`.
+8. Emit the completion signal — the CLI transitions the workflow to the next step (\`handoff\`) on the \`always\` transition; handoff then writes the narrow cover-sheet artifact and finishes the workflow.
+
+Emit the Stop completion signal once \`memorization.md\` is written, gotchas have been committed to the gotcha system, project documentation reflects the session's durable changes, and any new decisions or auto-memory entries the session warrants have been written.
 
 Criteria:
-  1. memorization.md is written to the session's memorization directory with Summary, Decisions, State at completion, Open questions, Gotchas recorded, and Pointers sections
-  2. every non-obvious correction from the session has a corresponding gotcha entry in the gotcha system
-  3. project README and design docs reflect any convention, precedent, or scope change the session introduced
-  4. no prior-step artifacts have been modified by this step — memorization is write-forward only
+  1. memorization.md is written at the session's memorization directory with Summary, Decisions, State at completion, Open questions, Gotchas recorded, and Pointers sections
+  2. every non-obvious correction from the session has a corresponding entry under \`.gobbi/projects/<name>/learnings/gotchas/\`
+  3. every durable decision the session locked has a corresponding entry under \`.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md\`, cross-linked from memorization.md
+  4. the user-level MEMORY.md index has been updated with any per-session entry the session warrants (e.g. shipped PR, phase milestone)
+  5. project README and design docs reflect any convention, precedent, or scope change the session introduced
+  6. no prior-step artifacts have been modified by this step — memorization is write-forward only
 
 session.schemaVersion=4
 session.currentStep=memorization
