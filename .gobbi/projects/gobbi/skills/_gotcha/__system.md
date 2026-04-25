@@ -111,3 +111,21 @@ priority: high
 **User feedback:** Surfaced during the Wave 0 fix session — a rebuild during an active session produced sporadic hook failures with no obvious cause.
 
 **Correct approach:** Use `bun run build:safe` from `packages/cli/package.json` whenever hooks may fire concurrently with the build. The `build:safe` script writes to `./dist.new`, then atomically renames `dist.new/cli.js` over `dist/cli.js`. POSIX `rename(2)` is atomic on the same filesystem, so any hook that opens `dist/cli.js` either gets the old complete file or the new complete file — never a partial. The default `build` script remains for non-hook contexts (CI, `prepack`, fresh worktrees) where no concurrent reader exists.
+
+---
+
+### Bash tool executes the literal `git stash` regardless of intent comments
+---
+priority: high
+enforcement: hook
+event: bash
+pattern: "git\\s+stash"
+---
+
+**Priority:** High
+
+**What happened:** A subagent briefing said "NEVER `git stash` — sandbox denies the command." The subagent reproduced the literal command in a Bash tool call, intending to demonstrate the rule. The Bash tool ran the command anyway — comments and surrounding prose explaining "do not run" do not stop the runtime from executing the command. The stash silently captured working-tree changes; recovery required `git stash pop`.
+
+**User feedback:** Surfaced as a self-reported violation during the Wave 4 execution of v0.5.0 Phase 2 integration. Existing gotcha #6 already says "never `git stash`" but did not explain that the Bash tool ignores intent comments around the literal.
+
+**Correct approach:** Never type the literal `git stash` (or `git stash push`, `git stash pop`, `git stash list`) inside a Bash tool call, EVEN INSIDE quoted strings, comments, or example commands. If you need to demonstrate the rule in documentation, write it inside a Markdown file (Edit/Write tools), not inside a Bash command's text body. If the underlying need is to suspend uncommitted work, commit it on a temporary branch instead — `git checkout -b wip-<context> && git commit -am "wip: <context>"` and `git checkout - && git branch -D wip-<context>` after restoring. The same principle applies to other dangerous literals (e.g. `rm -rf /`, `kill -9 <pid>`) — do not let "I'm not actually running this" appear in a Bash command's command field, because the field is the command, not the explanation.
