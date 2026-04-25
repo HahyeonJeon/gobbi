@@ -121,7 +121,21 @@ function isPreToolUsePayload(value: unknown): value is PreToolUsePayload {
  */
 type PermissionDecision = 'allow' | 'deny' | 'ask' | 'defer';
 
+/**
+ * Claude Code requires every PreToolUse hook response to identify which hook
+ * event the JSON belongs to via `hookSpecificOutput.hookEventName`. Omitting
+ * the field produces:
+ *
+ *   "Hook JSON output validation failed — hookSpecificOutput is missing
+ *    required field hookEventName"
+ *
+ * The literal type pins the value at compile time so future emitters cannot
+ * accidentally drop or mistype it.
+ *
+ * @see `_gotcha/__system.md` §"Claude Code hookSpecificOutput requires hookEventName"
+ */
 interface HookSpecificOutput {
+  readonly hookEventName: 'PreToolUse';
   readonly permissionDecision: PermissionDecision;
   readonly permissionDecisionReason?: string;
   readonly additionalContext?: string;
@@ -137,6 +151,7 @@ interface HookResponse {
 
 function emitAllow(additionalContext?: string): void {
   const output: HookSpecificOutput = {
+    hookEventName: 'PreToolUse',
     permissionDecision: 'allow',
     ...(additionalContext !== undefined && additionalContext !== ''
       ? { additionalContext }
@@ -149,6 +164,7 @@ function emitAllow(additionalContext?: string): void {
 function emitDeny(reason: string): void {
   const response: HookResponse = {
     hookSpecificOutput: {
+      hookEventName: 'PreToolUse',
       permissionDecision: 'deny',
       permissionDecisionReason: reason,
     },

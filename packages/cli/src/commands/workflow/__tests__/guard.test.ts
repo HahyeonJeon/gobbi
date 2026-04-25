@@ -198,6 +198,7 @@ function matcherWith(guards: readonly Guard[]): GuardMatcher {
 }
 
 function parseResponse(stdout: string): {
+  readonly hookEventName: 'PreToolUse';
   readonly permissionDecision: string;
   readonly permissionDecisionReason?: string;
   readonly additionalContext?: string;
@@ -206,11 +207,15 @@ function parseResponse(stdout: string): {
   expect(trimmed.length).toBeGreaterThan(0);
   const parsed = JSON.parse(trimmed) as {
     readonly hookSpecificOutput: {
+      readonly hookEventName: 'PreToolUse';
       readonly permissionDecision: string;
       readonly permissionDecisionReason?: string;
       readonly additionalContext?: string;
     };
   };
+  // Claude Code rejects PreToolUse hookSpecificOutput payloads that omit
+  // `hookEventName`. Assert presence on every emit path.
+  expect(parsed.hookSpecificOutput.hookEventName).toBe('PreToolUse');
   return parsed.hookSpecificOutput;
 }
 

@@ -21,6 +21,7 @@
     "sync:template-bundle": "bun run scripts/sync-template-bundle.ts",
     "prebuild": "bun run gen:predicates",
     "build": "bun build ./src/cli.ts --outdir ./dist --target bun --external playwright --external sharp",
+    "build:safe": "bun run gen:predicates && bun build ./src/cli.ts --outdir ./dist.new --target bun --external playwright --external sharp && mv ./dist.new/cli.js ./dist/cli.js && rm -rf ./dist.new",
     "pretypecheck": "bun run gen:predicates",
     "typecheck": "tsc --noEmit",
     "test": "bun test",

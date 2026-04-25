@@ -164,14 +164,14 @@ describe('one-command-install feature — code surface', () => {
       expect(commands).toContain('gobbi workflow guard');
     });
 
-    test('registers PostToolUse[ExitPlanMode] → gobbi workflow capture-plan', () => {
+    test('registers PostToolUse[ExitPlanMode] → gobbi workflow capture-planning', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(
         manifest,
         'PostToolUse',
         'ExitPlanMode',
       );
-      expect(commands).toContain('gobbi workflow capture-plan');
+      expect(commands).toContain('gobbi workflow capture-planning');
     });
 
     test('registers SubagentStop → gobbi workflow capture-subagent', () => {

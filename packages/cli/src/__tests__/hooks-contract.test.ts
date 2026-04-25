@@ -1,0 +1,249 @@
+/**
+ * Contract tests for the `.claude/settings.json` hook wiring.
+ *
+ * Two live Claude Code hook bugs motivated this file:
+ *
+ *   1. `gobbi workflow guard` emitted `hookSpecificOutput` without the
+ *      required `hookEventName` field, causing Claude Code to reject every
+ *      PreToolUse response with a validation error.
+ *   2. `.claude/settings.json` registered `gobbi workflow capture-plan`
+ *      under `PostToolUse[ExitPlanMode]`, but the CLI command was renamed
+ *      to `capture-planning` in Pass 3. The hook silently command-not-
+ *      founded on every plan-mode exit.
+ *
+ * Both bugs share a class — a registered hook command that does not match
+ * the CLI's actual surface, or an emitter shape that does not match Claude
+ * Code's per-event JSON contract. This file enumerates every hook in
+ * `.claude/settings.json`, asserts each command exists in the
+ * `WORKFLOW_COMMANDS` registry, and (for the one hook that emits JSON to
+ * stdout — `guard`) asserts the emitted payload conforms to the per-event
+ * shape Claude Code accepts.
+ *
+ * Pattern references:
+ *   - Hook manifest enumeration / `commandsForHook` shape — adopted from
+ *     `__tests__/features/one-command-install.test.ts`.
+ *   - `runGuardWithOptions` invocation pattern — adopted from
+ *     `commands/workflow/__tests__/guard.test.ts`. The guard is exercised
+ *     via the testable entry point with a `payload` override; no stdin,
+ *     no real session — the test only needs to inspect the emitted JSON
+ *     shape on the fail-open allow path.
+ *
+ * @see `_gotcha/__system.md` §"Claude Code hookSpecificOutput requires hookEventName"
+ * @see `_gotcha/__system.md` §".claude/settings.json hook command names MUST exist in the CLI registry"
+ */
+
+import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+import { runGuardWithOptions } from '../commands/workflow/guard.js';
+import { WORKFLOW_COMMANDS } from '../commands/workflow.js';
+
+// ---------------------------------------------------------------------------
+// Path resolution — this file lives at
+// `packages/cli/src/__tests__/hooks-contract.test.ts`; hop four directories
+// up to reach the repo root.
+// ---------------------------------------------------------------------------
+
+const REPO_ROOT: string = join(import.meta.dir, '..', '..', '..', '..');
+const SETTINGS_PATH: string = join(REPO_ROOT, '.claude', 'settings.json');
+
+// ---------------------------------------------------------------------------
+// Manifest shape — minimal structural typing for the JSON we parse. Only
+// the fields asserted on are declared.
+// ---------------------------------------------------------------------------
+
+interface HookCommand {
+  readonly type?: string;
+  readonly command?: string;
+}
+
+interface HookBlock {
+  readonly matcher?: string;
+  readonly hooks?: readonly HookCommand[];
+}
+
+interface HooksManifest {
+  readonly hooks?: Record<string, readonly HookBlock[] | undefined>;
+}
+
+function readJson<T>(path: string): T {
+  const text = readFileSync(path, 'utf8');
+  const parsed: unknown = JSON.parse(text);
+  if (parsed === null || typeof parsed !== 'object') {
+    throw new Error(`${path} did not contain a JSON object`);
+  }
+  return parsed as T;
+}
+
+/**
+ * Extract every `(event, matcher, command)` tuple registered under
+ * `hooks` in the manifest. Used by the registry-presence test below.
+ */
+interface HookEntry {
+  readonly event: string;
+  readonly matcher: string | undefined;
+  readonly command: string;
+}
+
+function enumerateHooks(manifest: HooksManifest): readonly HookEntry[] {
+  const entries: HookEntry[] = [];
+  const hooks = manifest.hooks ?? {};
+  for (const event of Object.keys(hooks)) {
+    const blocks = hooks[event] ?? [];
+    for (const block of blocks) {
+      for (const hook of block.hooks ?? []) {
+        if (hook.type === 'command' && typeof hook.command === 'string') {
+          entries.push({
+            event,
+            matcher: block.matcher,
+            command: hook.command,
+          });
+        }
+      }
+    }
+  }
+  return entries;
+}
+
+/**
+ * Parse `gobbi workflow <subcommand> [...]` into the subcommand token. Returns
+ * `null` for any string that does not start with the `gobbi workflow ` prefix —
+ * such hooks are out of scope for this contract test (the CLI registry it
+ * checks is `WORKFLOW_COMMANDS`).
+ */
+function parseWorkflowSubcommand(command: string): string | null {
+  const PREFIX = 'gobbi workflow ';
+  if (!command.startsWith(PREFIX)) return null;
+  const remainder = command.slice(PREFIX.length).trim();
+  if (remainder.length === 0) return null;
+  const firstToken = remainder.split(/\s+/)[0];
+  return firstToken ?? null;
+}
+
+// ---------------------------------------------------------------------------
+// stdout / process.exit capture — mirrors the harness in
+// `commands/workflow/__tests__/guard.test.ts` so the contract test can
+// invoke `runGuardWithOptions` and inspect the emitted JSON without
+// touching the real terminal.
+// ---------------------------------------------------------------------------
+
+interface Captured {
+  stdout: string;
+  exitCode: number | null;
+}
+
+class ExitCalled extends Error {
+  constructor(readonly code: number) {
+    super(`process.exit(${code})`);
+  }
+}
+
+let captured: Captured;
+let origStdoutWrite: typeof process.stdout.write;
+let origExit: typeof process.exit;
+
+beforeEach(() => {
+  captured = { stdout: '', exitCode: null };
+  origStdoutWrite = process.stdout.write;
+  origExit = process.exit;
+
+  process.stdout.write = ((chunk: string | Uint8Array): boolean => {
+    captured.stdout +=
+      typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString('utf8');
+    return true;
+  }) as typeof process.stdout.write;
+  process.exit = ((code?: number | string | null): never => {
+    captured.exitCode = typeof code === 'number' ? code : 0;
+    throw new ExitCalled(captured.exitCode);
+  }) as typeof process.exit;
+});
+
+afterEach(() => {
+  process.stdout.write = origStdoutWrite;
+  process.exit = origExit;
+});
+
+async function captureExit(fn: () => Promise<void>): Promise<void> {
+  try {
+    await fn();
+  } catch (err) {
+    if (err instanceof ExitCalled) return;
+    throw err;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+describe('hooks contract — `.claude/settings.json`', () => {
+  describe('every registered hook command exists in WORKFLOW_COMMANDS', () => {
+    const manifest = readJson<HooksManifest>(SETTINGS_PATH);
+    const entries = enumerateHooks(manifest);
+    const registered = new Set(WORKFLOW_COMMANDS.map((c) => c.name));
+
+    // Sanity check: the manifest enumerates exactly the five hooks the
+    // briefing names. If a future change adds or removes a hook, this
+    // assertion fails loudly so the contract test maintainer is forced
+    // to revisit the per-event shape coverage below.
+    test('manifest enumerates the five expected hook events', () => {
+      const eventKeys = new Set(entries.map((e) => e.event));
+      expect(eventKeys).toEqual(
+        new Set(['SessionStart', 'PreToolUse', 'PostToolUse', 'SubagentStop', 'Stop']),
+      );
+    });
+
+    for (const entry of entries) {
+      const label =
+        entry.matcher !== undefined
+          ? `${entry.event}[${entry.matcher}] → ${entry.command}`
+          : `${entry.event} → ${entry.command}`;
+      test(`${label} resolves to a registered subcommand`, () => {
+        const subcommand = parseWorkflowSubcommand(entry.command);
+        expect(subcommand).not.toBeNull();
+        // Non-null narrowing for the assertion below — the previous
+        // expect would have thrown if subcommand were null.
+        if (subcommand === null) return;
+        expect(registered.has(subcommand)).toBe(true);
+      });
+    }
+  });
+
+  describe('per-event emitter shape', () => {
+    // Of the five hooks enumerated above, only `guard` (PreToolUse) emits
+    // JSON to stdout that Claude Code parses against a `hookSpecificOutput`
+    // schema. The other four return exit codes only. If a future hook
+    // begins emitting JSON, add its shape assertion here.
+    test('PreToolUse: guard emits hookSpecificOutput with hookEventName: "PreToolUse"', async () => {
+      // Fail-open path: a payload with no session_id and no env-derived
+      // session causes the guard to emit `permissionDecision: 'allow'`.
+      // The shape under test is the `hookSpecificOutput` envelope, which
+      // is identical on both allow and deny paths — fail-open is the
+      // simplest invocation that does not require a scratch session.
+      await captureExit(() =>
+        runGuardWithOptions([], {
+          sessionDir: '/nonexistent/path/that/forces/fail/open',
+          payload: { tool_name: 'Read' },
+        }),
+      );
+
+      const trimmed = captured.stdout.trim();
+      expect(trimmed.length).toBeGreaterThan(0);
+      const parsed = JSON.parse(trimmed) as {
+        readonly hookSpecificOutput?: {
+          readonly hookEventName?: string;
+          readonly permissionDecision?: string;
+        };
+      };
+      expect(parsed.hookSpecificOutput).toBeDefined();
+      // The literal contract: `hookEventName` is required and must equal
+      // the registered hook event name. Claude Code rejects payloads that
+      // omit it ("hookSpecificOutput is missing required field
+      // hookEventName").
+      expect(parsed.hookSpecificOutput?.hookEventName).toBe('PreToolUse');
+      // Sanity: the response is well-formed beyond just the new field.
+      expect(parsed.hookSpecificOutput?.permissionDecision).toBe('allow');
+    });
+  });
+});

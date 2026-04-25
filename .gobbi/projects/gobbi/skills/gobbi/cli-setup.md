@@ -46,7 +46,7 @@ If using the gobbi plugin for Claude Code, install via the plugin system:
 
 `/plugin install gobbi`
 
-The plugin registers the CLI and the five v0.5.0 workflow hook entries (`gobbi workflow init`, `gobbi workflow guard`, `gobbi workflow capture-subagent`, `gobbi workflow capture-plan`, `gobbi workflow stop`) automatically.
+The plugin registers the CLI and the five v0.5.0 workflow hook entries (`gobbi workflow init`, `gobbi workflow guard`, `gobbi workflow capture-subagent`, `gobbi workflow capture-planning`, `gobbi workflow stop`) automatically.
 
 Verify: `gobbi --version`
 
@@ -78,7 +78,7 @@ The gobbi CLI manages workflow state, session configuration, notes, and validati
 | `gobbi workflow init` | Initialize a session directory under `.gobbi/sessions/{id}/`, write `metadata.json`, open `gobbi.db`, emit the first `workflow.start` event |
 | `gobbi workflow guard` | Evaluate guard predicates against current workflow state before each tool call |
 | `gobbi workflow capture-subagent` | Record subagent completion — called by the SubagentStop hook |
-| `gobbi workflow capture-plan` | Record the current plan when ExitPlanMode fires |
+| `gobbi workflow capture-planning` | Record the current plan when ExitPlanMode fires |
 | `gobbi workflow stop` | Write the final session event and flush state on Stop |
 | `gobbi workflow status` | Show current workflow state for the active session |
 | `gobbi workflow resume` | Resume an interrupted session, replaying events from `gobbi.db` |

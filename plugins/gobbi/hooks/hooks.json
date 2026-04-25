@@ -29,7 +29,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi workflow capture-plan",
+            "command": "gobbi workflow capture-planning",
             "timeout": 30
           }
         ]
