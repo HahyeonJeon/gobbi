@@ -34,7 +34,7 @@ import { migrateEvent } from './migrations.js';
 import type { EventRow } from './migrations.js';
 
 // ---------------------------------------------------------------------------
-// Workflow step type — 10 discrete states
+// Workflow step type — 11 discrete states
 // ---------------------------------------------------------------------------
 
 export type WorkflowStep =
@@ -46,12 +46,18 @@ export type WorkflowStep =
   | 'execution'
   | 'execution_eval'
   | 'memorization'
+  | 'handoff'
   | 'done'
   | 'error';
 
 /**
  * Steps that represent active workflow execution (not terminal or pre-start).
  * Used for timeout and skip applicability checks.
+ *
+ * Includes `handoff` per Wave A.1.5 — the narrow cover-sheet step that
+ * follows memorization. `handoff` is productive (not terminal at the spec
+ * level the way `done` is at runtime) so it participates in the same
+ * timeout / skip lifecycle as the other productive steps.
  */
 export const ACTIVE_STEPS: ReadonlySet<WorkflowStep> = new Set<WorkflowStep>([
   'ideation',
@@ -61,6 +67,7 @@ export const ACTIVE_STEPS: ReadonlySet<WorkflowStep> = new Set<WorkflowStep>([
   'execution',
   'execution_eval',
   'memorization',
+  'handoff',
 ]);
 
 /**
@@ -253,6 +260,7 @@ const VALID_STEPS: ReadonlySet<string> = new Set<string>([
   'execution',
   'execution_eval',
   'memorization',
+  'handoff',
   'done',
   'error',
 ]);

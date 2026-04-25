@@ -215,9 +215,12 @@ function reduceWorkflow(
     }
 
     case WORKFLOW_EVENTS.FINISH: {
-      if (state.currentStep !== 'memorization') {
+      // Wave A.1.5 split memorization → handoff → done. `workflow.finish` now
+      // gates on `handoff`, not `memorization`. Memorization advances to
+      // handoff via `workflow.step.exit` (productive exit).
+      if (state.currentStep !== 'handoff') {
         return err(
-          `workflow.finish requires memorization state, got ${state.currentStep}`,
+          `workflow.finish requires handoff state, got ${state.currentStep}`,
         );
       }
       return ok({

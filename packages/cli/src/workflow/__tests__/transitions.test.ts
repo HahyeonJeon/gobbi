@@ -175,9 +175,21 @@ describe('normal workflow progression', () => {
     expect(rule!.to).toBe('memorization');
   });
 
-  it('memorization -> done via workflow.finish', () => {
+  it('memorization -> handoff via workflow.step.exit', () => {
     const state = stateAt('memorization');
-    const rule = findTransition('memorization', finish(), state, defaultPredicates);
+    const rule = findTransition(
+      'memorization',
+      stepExit('memorization'),
+      state,
+      defaultPredicates,
+    );
+    expect(rule).not.toBeNull();
+    expect(rule!.to).toBe('handoff');
+  });
+
+  it('handoff -> done via workflow.finish', () => {
+    const state = stateAt('handoff');
+    const rule = findTransition('handoff', finish(), state, defaultPredicates);
     expect(rule).not.toBeNull();
     expect(rule!.to).toBe('done');
   });
@@ -340,6 +352,7 @@ describe('error reachability via timeout', () => {
     'execution',
     'execution_eval',
     'memorization',
+    'handoff',
   ];
 
   for (const step of activeSteps) {
@@ -537,11 +550,11 @@ describe('invalid transitions', () => {
     expect(rule).toBeNull();
   });
 
-  it('memorization rejects step.exit', () => {
+  it('handoff rejects step.exit (handoff exits via workflow.finish, not step.exit)', () => {
     const rule = findTransition(
-      'memorization',
-      stepExit('memorization'),
-      stateAt('memorization'),
+      'handoff',
+      stepExit('handoff'),
+      stateAt('handoff'),
       defaultPredicates,
     );
     expect(rule).toBeNull();
@@ -675,7 +688,7 @@ describe('transition table integrity', () => {
   it('all transition targets are valid WorkflowStep values', () => {
     const validSteps: ReadonlySet<string> = new Set([
       'idle', 'ideation', 'ideation_eval', 'planning', 'planning_eval',
-      'execution', 'execution_eval', 'memorization', 'done', 'error',
+      'execution', 'execution_eval', 'memorization', 'handoff', 'done', 'error',
     ]);
     for (const rule of TRANSITION_TABLE) {
       expect(validSteps.has(rule.from)).toBe(true);

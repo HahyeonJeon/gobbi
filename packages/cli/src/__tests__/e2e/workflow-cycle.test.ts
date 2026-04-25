@@ -8,8 +8,9 @@
  *   2. status           — initial snapshot at ideation
  *   3. COMPLETE x3      — ideation -> plan -> execution -> execution_eval
  *   4. PASS             — execution_eval -> memorization
- *   5. FINISH           — memorization -> done
- *   6. final status     — currentStep === 'done', event trail intact
+ *   5. COMPLETE         — memorization -> handoff (Wave A.1.5 split)
+ *   6. FINISH           — handoff -> done
+ *   7. final status     — currentStep === 'done', event trail intact
  *
  * Each CLI invocation spawns a Bun subprocess via `$`, `cwd(tmpRoot)` so
  * `getRepoRoot()` falls back to `process.cwd()` (the temp dir is not a git
@@ -60,7 +61,7 @@ function parseStatus(buf: Buffer): Record<string, unknown> {
 }
 
 test(
-  'full workflow cycle: init -> ideation -> plan -> execution -> execution_eval -> memorization -> done',
+  'full workflow cycle: init -> ideation -> plan -> execution -> execution_eval -> memorization -> handoff -> done',
   async () => {
     const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-e2e-'));
     const sessionId = 'e2e-happy-path';
@@ -211,7 +212,33 @@ test(
       expect(afterVerdict['lastVerdictOutcome']).toBe('pass');
 
       // -----------------------------------------------------------------
-      // Step 5 — FINISH: memorization -> done.
+      // Step 5 — COMPLETE: memorization -> handoff. Wave A.1.5 promoted
+      // handoff to a true state-machine step; memorization fires
+      // workflow.step.exit which routes to handoff per the runtime
+      // transition table.
+      // -----------------------------------------------------------------
+      const completeMemorization = await $`bun run ${CLI_PATH} workflow transition COMPLETE --session-id ${sessionId}`
+        .cwd(tmpRoot)
+        .env(childEnv)
+        .quiet();
+      expect(completeMemorization.exitCode).toBe(0);
+      expect(completeMemorization.stdout.toString('utf8')).toContain(
+        'workflow.step.exit',
+      );
+
+      const afterMemorization = parseStatus(
+        (
+          await $`bun run ${CLI_PATH} workflow status --session-id ${sessionId} --json`
+            .cwd(tmpRoot)
+            .env(childEnv)
+            .quiet()
+        ).stdout,
+      );
+      expect(afterMemorization['currentStep']).toBe('handoff');
+
+      // -----------------------------------------------------------------
+      // Step 6 — FINISH: handoff -> done. workflow.finish gates on the
+      // handoff step (Wave A.1.5).
       // -----------------------------------------------------------------
       const finish = await $`bun run ${CLI_PATH} workflow transition FINISH --session-id ${sessionId}`
         .cwd(tmpRoot)
@@ -221,9 +248,9 @@ test(
       expect(finish.stdout.toString('utf8')).toContain('workflow.finish');
 
       // -----------------------------------------------------------------
-      // Step 6 — final status. currentStep === 'done' with ideation, plan,
-      // and execution on the completedSteps trail; violations must be
-      // clean.
+      // Step 7 — final status. currentStep === 'done' with ideation, plan,
+      // execution, and memorization on the completedSteps trail; violations
+      // must be clean.
       // -----------------------------------------------------------------
       const finalStatus = await $`bun run ${CLI_PATH} workflow status --session-id ${sessionId} --json`
         .cwd(tmpRoot)
@@ -239,18 +266,25 @@ test(
         expect(completed).toContain('ideation');
         expect(completed).toContain('planning');
         expect(completed).toContain('execution');
+        // Wave A.1.5: memorization fires workflow.step.exit en route to
+        // handoff and lands on the completedSteps trail.
+        expect(completed).toContain('memorization');
       }
       expect(snapFinal['violationsTotal']).toBe(0);
-      expect(snapFinal['lastVerdictOutcome']).toBe('pass');
+      // Wave A.1.5: STEP_EXIT (memorization → handoff) clears the verdict
+      // window, so by the time FINISH commits the run is past the verdict's
+      // scope. The verdict trail is still observable via `workflow events`.
+      expect(snapFinal['lastVerdictOutcome']).toBeNull();
 
       // -----------------------------------------------------------------
       // Event-trail spot-check via `workflow events --json`. The cycle
       // above must have appended AT LEAST: workflow.start,
-      // workflow.eval.decide, 3x workflow.step.exit,
-      // decision.eval.verdict, workflow.finish (7 events). We assert >= 7
-      // rather than an exact count so future additive bookkeeping (e.g.
-      // heartbeats stamped by stop.ts during the run) does not break the
-      // test.
+      // workflow.eval.decide, 4x workflow.step.exit (ideation, plan,
+      // execution, memorization — Wave A.1.5 added the memorization →
+      // handoff exit), decision.eval.verdict, workflow.finish (8 events).
+      // We assert >= 8 rather than an exact count so future additive
+      // bookkeeping (e.g. heartbeats stamped by stop.ts during the run)
+      // does not break the test.
       // -----------------------------------------------------------------
       const eventsResult = await $`bun run ${CLI_PATH} workflow events --session-id ${sessionId} --json`
         .cwd(tmpRoot)
@@ -262,7 +296,7 @@ test(
       );
       expect(Array.isArray(rawEvents)).toBe(true);
       if (Array.isArray(rawEvents)) {
-        expect(rawEvents.length).toBeGreaterThanOrEqual(7);
+        expect(rawEvents.length).toBeGreaterThanOrEqual(8);
         const eventTypes = rawEvents
           .map((r) =>
             r !== null && typeof r === 'object' && 'type' in r

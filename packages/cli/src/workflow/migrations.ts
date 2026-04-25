@@ -531,23 +531,38 @@ export function getIndexNames(db: Database): ReadonlySet<string> {
  *
  * Stamps the `schema_meta` row at v6 with the current wall-clock; the
  * caller can pass an explicit `now` to make tests deterministic.
+ *
+ * ## Atomicity
+ *
+ * The CREATE chain runs inside a single `db.transaction(...).immediate()`
+ * so a mid-chain failure rolls back any partial v6 schema rather than
+ * leaving the DB half-applied. SQLite would otherwise auto-commit each
+ * `db.run()` independently — a thrown error after the first CREATE TABLE
+ * landed but before `schema_meta` stamped would leave the operator with
+ * a non-trivial recovery problem (some v6 tables present, no `schema_meta`
+ * row, no migration record). `.immediate()` acquires the write lock
+ * upfront, matching the pattern used elsewhere in the codebase
+ * (`commands/workflow/init.ts`, `lib/config-store.ts`) for write-first
+ * transactions.
  */
 export function ensureSchemaV6(
   db: Database,
   now: number = Date.now(),
 ): void {
-  db.run(SQL_CREATE_STATE_SNAPSHOTS);
-  db.run(SQL_CREATE_INDEX_STATE_SNAPSHOTS_SESSION_CREATED);
-  db.run(SQL_CREATE_INDEX_STATE_SNAPSHOTS_SESSION_SEQ);
+  db.transaction(() => {
+    db.run(SQL_CREATE_STATE_SNAPSHOTS);
+    db.run(SQL_CREATE_INDEX_STATE_SNAPSHOTS_SESSION_CREATED);
+    db.run(SQL_CREATE_INDEX_STATE_SNAPSHOTS_SESSION_SEQ);
 
-  db.run(SQL_CREATE_TOOL_CALLS);
-  db.run(SQL_CREATE_INDEX_TOOL_CALLS_SESSION_TS);
-  db.run(SQL_CREATE_INDEX_TOOL_CALLS_TOOL_CALL);
+    db.run(SQL_CREATE_TOOL_CALLS);
+    db.run(SQL_CREATE_INDEX_TOOL_CALLS_SESSION_TS);
+    db.run(SQL_CREATE_INDEX_TOOL_CALLS_TOOL_CALL);
 
-  db.run(SQL_CREATE_CONFIG_CHANGES);
-  db.run(SQL_CREATE_INDEX_CONFIG_CHANGES_SESSION_TS);
+    db.run(SQL_CREATE_CONFIG_CHANGES);
+    db.run(SQL_CREATE_INDEX_CONFIG_CHANGES_SESSION_TS);
 
-  db.run(SQL_CREATE_SCHEMA_META);
+    db.run(SQL_CREATE_SCHEMA_META);
 
-  db.run(SQL_STAMP_SCHEMA_META_V6, [CURRENT_SCHEMA_VERSION, now]);
+    db.run(SQL_STAMP_SCHEMA_META_V6, [CURRENT_SCHEMA_VERSION, now]);
+  }).immediate();
 }

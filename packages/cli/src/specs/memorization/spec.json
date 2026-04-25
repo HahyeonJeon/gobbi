@@ -12,9 +12,9 @@
   },
   "transitions": [
     {
-      "to": "done",
+      "to": "handoff",
       "condition": "always",
-      "label": "memorization complete → done"
+      "label": "memorization complete → handoff"
     }
   ],
   "delegation": {

@@ -296,21 +296,27 @@ describe('workflow.eval.decide', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 5. workflow.finish: memorization -> done
+// 5. workflow.finish: handoff -> done (Wave A.1.5 split memorization → handoff → done)
 // ---------------------------------------------------------------------------
 
 describe('workflow.finish', () => {
-  it('transitions memorization -> done', () => {
-    const state = stateAt('memorization');
+  it('transitions handoff -> done', () => {
+    const state = stateAt('handoff');
     const next = expectOk(reduce(state, finish()));
     expect(next.currentStep).toBe('done');
     expect(next.currentSubstate).toBeNull();
   });
 
-  it('rejects finish from non-memorization step', () => {
+  it('rejects finish from memorization (must STEP_EXIT to handoff first)', () => {
+    const state = stateAt('memorization');
+    const error = expectErr(reduce(state, finish()));
+    expect(error).toContain('handoff');
+  });
+
+  it('rejects finish from non-handoff step', () => {
     const state = stateAt('execution');
     const error = expectErr(reduce(state, finish()));
-    expect(error).toContain('memorization');
+    expect(error).toContain('handoff');
   });
 });
 
@@ -685,7 +691,7 @@ describe('workflow.invalid_transition', () => {
         rejectedEventType: 'workflow.finish',
         rejectedEventSeq: null,
         stepAtRejection: 'execution',
-        reducerMessage: 'workflow.finish requires memorization state, got execution',
+        reducerMessage: 'workflow.finish requires handoff state, got execution',
         timestamp: '2026-01-01T00:00:00.000Z',
       },
     };
@@ -740,7 +746,7 @@ describe('invalid transitions return error, not throw', () => {
     const result = reduce(stateAt('idle'), finish());
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain('memorization');
+      expect(result.error).toContain('handoff');
     }
   });
 

@@ -45,6 +45,7 @@ import { EventStore } from '../store.js';
 import {
   CURRENT_SCHEMA_VERSION,
   SCHEMA_V6_TABLES,
+  ensureSchemaV6,
   getTableNames,
 } from '../migrations.js';
 import type { EventRow } from '../migrations.js';
@@ -505,30 +506,86 @@ describe('Wave A.1.10 — atomic-rename safety', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Half-applied schema — the strict atomic-rename guarantee
+  // Half-applied schema — the strict atomicity guarantee
   //
   // The briefing's most stringent question: if `ensureSchemaV6` throws AFTER
   // the first CREATE TABLE landed but BEFORE the schema_meta INSERT, does
   // sqlite leave a half-applied schema on disk?
   //
-  // Today `ensureSchemaV6` does NOT wrap its CREATE chain in an explicit
-  // BEGIN/COMMIT (see `migrations.ts:535-553`). A mid-chain failure
-  // therefore CAN leave a partial set of v6 tables on disk. SQLite does
-  // run each `db.run` in an implicit auto-commit transaction, so each
-  // single CREATE is itself atomic — but the *chain* is not.
+  // Wave A.1 R1 (#146) wraps the CREATE chain in
+  // `db.transaction(fn).immediate()`, so a mid-chain failure rolls every
+  // partial CREATE back. This test forces a mid-chain failure by monkey-
+  // patching `db.run` to throw on the 5th invocation (after the first
+  // CREATE TABLE has landed inside the transaction) and asserts that NO
+  // v6 tables are visible after the throw.
   //
-  // This is a real bug for the strict atomicity guarantee implied by
-  // GAP-9. It belongs to S2 (`ensureSchemaV6`) — the test marks it
-  // `test.todo` so the gap is greppable until a follow-up wraps the
-  // chain in `db.transaction(...).immediate()`.
+  // The patch is restored in a `finally` so the surrounding `db.close()`
+  // path stays unaffected. Verification opens a fresh read-only handle
+  // because the throwing handle is in an indeterminate state.
   // ---------------------------------------------------------------------------
-  test.todo(
-    'ensureSchemaV6 wraps CREATE chain in a single transaction (no half-applied schema)',
-    () => {
-      // Deferred — depends on `ensureSchemaV6` (migrations.ts:535) being
-      // refactored to wrap its CREATE chain in `db.transaction(fn).immediate()`.
-      // Today the chain runs as separate auto-commit statements, so a
-      // mid-chain failure CAN leave a partial schema. Filed for follow-up.
-    },
-  );
+  test('ensureSchemaV6 wraps CREATE chain in a single transaction (no half-applied schema)', () => {
+    const repo = makeScratch();
+    const dbPath = buildV5StateDb(repo, []);
+
+    // Pre-flight — the v5 db has the events table but none of the v6
+    // tables. This is the baseline we expect to be preserved when the
+    // migration aborts mid-chain.
+    {
+      const inspect = new Database(dbPath, { readonly: true });
+      try {
+        const tables = getTableNames(inspect);
+        for (const t of SCHEMA_V6_TABLES) {
+          expect(tables.has(t)).toBe(false);
+        }
+      } finally {
+        inspect.close();
+      }
+    }
+
+    // Open a writable handle and force a mid-chain failure. Patch `run`
+    // to throw on its 5th call (after the first three indices land,
+    // before tool_calls + the rest). The exact 5th-call boundary is an
+    // implementation detail — we only assert "the chain failed mid-way"
+    // and "no v6 tables survive the throw".
+    const db = new Database(dbPath);
+    const origRun = db.run.bind(db);
+    let runCallCount = 0;
+    const patchedRun = ((...args: Parameters<typeof db.run>) => {
+      runCallCount += 1;
+      if (runCallCount === 5) {
+        throw new Error('synthetic mid-chain failure');
+      }
+      return origRun(...args);
+    }) as typeof db.run;
+    db.run = patchedRun;
+
+    let threw = false;
+    try {
+      ensureSchemaV6(db, 1745000000000);
+    } catch (err) {
+      threw = true;
+      expect(err).toBeInstanceOf(Error);
+      if (err instanceof Error) {
+        expect(err.message).toContain('synthetic mid-chain failure');
+      }
+    } finally {
+      // Restore so the `db.close()` path runs through unpatched code.
+      db.run = origRun;
+      db.close();
+    }
+    expect(threw).toBe(true);
+
+    // Post-rollback verification — the ROLLBACK from
+    // `db.transaction(fn).immediate()` must have undone every partial
+    // CREATE. None of the v6 tables should exist on disk.
+    const verify = new Database(dbPath, { readonly: true });
+    try {
+      const tables = getTableNames(verify);
+      for (const t of SCHEMA_V6_TABLES) {
+        expect(tables.has(t)).toBe(false);
+      }
+    } finally {
+      verify.close();
+    }
+  });
 });

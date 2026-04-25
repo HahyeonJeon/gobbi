@@ -151,6 +151,7 @@ function arbSessionStateVariant(
       'planning' as const,
       'execution' as const,
       'memorization' as const,
+      'handoff' as const,
     ),
     feedbackRound: fc.integer({ min: 0, max: 5 }),
     completedSteps: fc.array(
