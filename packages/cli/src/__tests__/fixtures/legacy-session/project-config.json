@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "git": { "mode": "worktree-pr", "baseBranch": "develop" },
+  "eval": { "ideation": true, "plan": false, "execution": true },
+  "cost": { "rateTable": {} },
+  "ui": { "verbosity": "verbose" },
+  "trivialRange": "read-only",
+  "verification": { "commands": [] }
+}

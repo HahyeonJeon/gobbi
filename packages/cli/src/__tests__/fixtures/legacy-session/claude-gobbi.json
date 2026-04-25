@@ -1,0 +1,5 @@
+{
+  "_comment": "Legacy pre-Pass-3 .claude/gobbi.json stub. ensureSettingsCascade Step 2 must delete this file unconditionally; the content is ignored.",
+  "legacy": true,
+  "userPrefs": { "verbosity": "default" }
+}
