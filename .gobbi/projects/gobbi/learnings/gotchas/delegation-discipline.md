@@ -26,6 +26,18 @@ Gotchas tied to orchestrator ↔ subagent delegation — briefing accuracy, para
 
 ---
 
+## Peer executor's commit between `git add` and `git commit` can drop a staged hunk silently
+
+**Priority:** High
+
+**What happened:** W1.4 gobbi-memory Pass-2 executor staged two files (`.gitignore` + `test/gitignore.test.sh`) with `git add <file1> <file2>`, ran `git diff --staged --stat` (showed both), then ran `git commit`. Between the stage and the commit a peer executor (W1.1, separate process) landed its own commit `f2e2ee6` in the same worktree. The executor's own commit landed successfully but only included `test/gitignore.test.sh`; the staged `.gitignore` hunk was silently dropped — `git show --stat HEAD` showed "1 file changed" instead of the expected 2. `git diff HEAD -- .gitignore` still showed the full intended diff as unstaged, so no data was lost. Re-staging and committing `.gitignore` alone on a follow-up commit resolved it.
+
+**User feedback:** Self-caught by the W1.4 executor 2026-04-24 when verifying the commit `git show --stat HEAD` output.
+
+**Correct approach:** Shared-worktree parallel executors: after `git add`, always confirm the commit actually included what you staged with `git show --stat HEAD` (or `git log -1 --stat`) before reporting done. If the commit dropped a file, `git diff HEAD -- <file>` tells you whether the intended change is still on disk; if it is, re-stage and commit it as a follow-up. Do NOT amend — amend is only safe when you're certain no peer commit has landed in between, and that certainty is rare in a shared worktree. Two-commit fix is cheaper than figuring out what the peer did. The root cause is git's index being updated concurrently: `git commit` invoked after a peer commit walks the updated index, and a staged hunk that was written against the older tree can be dropped if the peer touched files in the same commit or if the index was refreshed. Treat every `git commit` in a shared worktree as "may commit a subset of what I staged" — verify the post-commit stat, never the pre-commit `--staged` output alone.
+
+---
+
 ## Partial-rewrite pattern — grep for concrete identifiers, not just the renamed phrase
 
 **Priority:** Medium
