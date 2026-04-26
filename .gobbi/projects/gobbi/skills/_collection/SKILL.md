@@ -6,7 +6,7 @@ allowed-tools: Write, Read, Glob, Bash
 
 # Collection
 
-Verify that all per-step note files are present and write the task-level `README.md`. Collection is a utility run during Execution wrap-up in the v0.5.0 5-step cycle (Ideation, Plan, Execution, Evaluation, Memorization) — it is not a named step but a completeness gate before Memorization begins. Notes are written during their respective steps; Collection verifies completeness, it does not create the notes themselves.
+Verify that all per-step note files are present and write the task-level `README.md`. Collection is a utility run during Execution wrap-up in the v0.5.0 6-step state machine (Configuration → Ideation → Planning → Execution → Memorization → Handoff) — it is not a named step but a completeness gate before Memorization begins. Notes are written during their respective steps; Collection verifies completeness, it does not create the notes themselves.
 
 **Navigate deeper from here:**
 

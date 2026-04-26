@@ -6,7 +6,7 @@ Workflow transition reference for v0.5.0. Read this when implementing or reasoni
 
 ## Workflow Steps and Substates
 
-The five steps map directly to the workflow defined in `v050-overview.md`. Two steps have internal substates that the CLI tracks separately from the top-level step.
+The six steps map directly to the workflow defined in `v050-overview.md`. Two steps have internal substates that the CLI tracks separately from the top-level step.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -55,7 +55,12 @@ The five steps map directly to the workflow defined in `v050-overview.md`. Two s
     ┌──────────────────────┐
     │    memorization      │
     └──────────┬───────────┘
-               │
+               │  workflow.step.exit
+               ▼
+    ┌──────────────────────┐
+    │       handoff        │
+    └──────────┬───────────┘
+               │  workflow.finish
          ┌─────▼────┐
          │   done   │
          └──────────┘
@@ -74,7 +79,7 @@ The five steps map directly to the workflow defined in `v050-overview.md`. Two s
 
 **Evaluation** steps (`ideation_eval`, `plan_eval`, `execution_eval`) have no substates. They are separate workflow steps, not substeps of the preceding step, because the creating agent must not participate in evaluation. Evaluation enters, collects verdicts from independent evaluator agents, and exits with a `decision.eval.verdict` event.
 
-**Memorization** has no substates. The orchestrator reads the conversation log, extracts decisions, open questions, and gotchas, and writes them to `.gobbi/sessions/{session-id}/memorization/`.
+**Memorization** has no substates. The orchestrator reads the conversation log, extracts decisions, open questions, and gotchas, and writes them to `.gobbi/projects/<name>/sessions/{session-id}/memorization/`.
 
 ---
 
@@ -99,7 +104,8 @@ Every valid transition in the state machine. Transitions not in this table are i
 | `execution_eval` | `plan` | `decision.eval.verdict` (revise) | Loop target is plan |
 | `execution_eval` | `execution` | `decision.eval.verdict` (revise) | Loop target is execution |
 | `execution_eval` | `error` | `decision.eval.verdict` (revise) | `feedbackRound >= maxFeedbackRounds` |
-| `memorization` | `done` | `workflow.finish` | Memorization artifact written |
+| `memorization` | `handoff` | `workflow.step.exit` | Memorization artifact written |
+| `handoff` | `done` | `workflow.finish` | Handoff artifact written; emits terminal event |
 | `any` | `error` | `workflow.step.timeout` | Step elapsed time exceeds configured timeout |
 | `any` | `error` | (reducer) | Reducer rejects an invalid transition |
 | `any` | `ideation` | `workflow.step.skip` | User explicitly skips forward |
@@ -111,6 +117,8 @@ Every valid transition in the state machine. Transitions not in this table are i
 **Terminal state rule:** `done` accepts no events. A `workflow.resume` from `done` is rejected by the reducer — the workflow must start a new session. This is enforced by the exhaustiveness check: the `done` case handles no event types.
 
 The `loopTarget` field on the `decision.eval.verdict` event specifies which step to loop back to. The transition table uses this field to route revise verdicts from `execution_eval` to `ideation`, `plan`, or `execution`. The `feedbackRound` counter distinguishes first-time entries from loop-back entries.
+
+> **Plan vs Planning naming:** the runtime state-machine literal is `plan` / `plan_eval` (as shipped in [`packages/cli/src/specs/index.json`](../../../../packages/cli/src/specs/index.json)). Design prose in [`v050-features/orchestration/README.md`](v050-features/orchestration/README.md) and the loop name in [`gobbi/SKILL.md`](../../skills/gobbi/SKILL.md) use "Planning Loop" / `planning`. The dual form is intentional pending a comprehensive rename Pass tracked in [issue #133](https://github.com/HahyeonJeon/gobbi/issues/133). When in doubt: code says `plan`; design prose says Planning.
 
 ### Skip Semantics
 
@@ -149,7 +157,7 @@ Key state fields the reducer maintains:
 
 The reducer never mutates state in place. It produces a new state object on every invocation. This makes the state history reconstructable: each event maps to a state snapshot.
 
-**Why not XState v5** — The typed reducer was chosen over XState v5 for one structural reason: the event-sourced model means `events.jsonl` (and `gobbi.db`) IS the state machine — the complete record of what happened and in what order. Introducing XState would create a second state system that must be kept synchronized with the event store. Two state representations means two places to update when a transition changes, and two sources of truth that can diverge. The reducer pattern keeps the state machine in one place: the reducer function, validated by a `deriveState()` equivalent. It is zero-dependency, pure TypeScript, and naturally aligned with event sourcing. XState's primary advantage — visual graph generation — can be replicated with a simple renderer over the transition table defined in this document.
+**Why not XState v5** — The typed reducer was chosen over XState v5 for one structural reason: the event-sourced model means `state.db` IS the state machine — the complete record of what happened and in what order. Introducing XState would create a second state system that must be kept synchronized with the event store. Two state representations means two places to update when a transition changes, and two sources of truth that can diverge. The reducer pattern keeps the state machine in one place: the reducer function, validated by a `deriveState()` equivalent. It is zero-dependency, pure TypeScript, and naturally aligned with event sourcing. XState's primary advantage — visual graph generation — can be replicated with a simple renderer over the transition table defined in this document.
 
 ---
 
