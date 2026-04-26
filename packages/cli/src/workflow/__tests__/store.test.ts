@@ -14,6 +14,7 @@ import { join } from 'node:path';
 import { EventStore } from '../store.js';
 import type {
   AppendInput,
+  AppendInputContent,
   AppendInputCounter,
   AppendInputSystem,
   AppendInputToolCall,
@@ -78,6 +79,23 @@ function makeCounterInput(
     parent_seq: null,
     idempotencyKind: 'counter',
     counter: 0,
+    sessionId: 'sess-1',
+    ...overrides,
+  };
+}
+
+function makeContentInput(
+  overrides: Partial<AppendInputContent> = {},
+): AppendInput {
+  return {
+    ts: '2026-01-01T00:00:00.000Z',
+    type: 'prompt.patch.applied',
+    step: null,
+    data: JSON.stringify({ patchId: 'p1' }),
+    actor: 'operator',
+    parent_seq: null,
+    idempotencyKind: 'content',
+    contentId: 'sha256-content-1',
     sessionId: 'sess-1',
     ...overrides,
   };
@@ -776,6 +794,114 @@ describe('counter idempotency key', () => {
     expect(sys).not.toBeNull();
     expect(cnt).not.toBeNull();
     expect(sys!.idempotency_key).not.toBe(cnt!.idempotency_key);
+  });
+});
+
+// ===========================================================================
+// 'content' idempotency key — Wave C.1.3 (issue #156)
+//
+// Cross-session content-addressed dedup. The formula is `${type}:${contentId}`
+// — `sessionId` is intentionally absent from the key so the same patch
+// content appended from two different sessions dedupes at the events table.
+// Synthesis lock 8 + 9.
+// ===========================================================================
+
+describe('content idempotency key', () => {
+  it('generates key from eventType and contentId only — sessionId is NOT in the formula', () => {
+    using store = new EventStore(':memory:');
+
+    const row = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: 'sha256-abc',
+      }),
+    );
+
+    expect(row).not.toBeNull();
+    expect(row!.idempotency_key).toBe('prompt.patch.applied:sha256-abc');
+  });
+
+  it('same (type, contentId) collides regardless of sessionId — cross-session dedup', () => {
+    using store = new EventStore(':memory:');
+
+    const first = store.append(
+      makeContentInput({ contentId: 'sha256-shared', sessionId: 'sess-A' }),
+    );
+    // Different session, same content. Must dedupe — the patch_id is
+    // a content address, not a session-scoped identifier.
+    const dup = store.append(
+      makeContentInput({ contentId: 'sha256-shared', sessionId: 'sess-B' }),
+    );
+
+    expect(first).not.toBeNull();
+    expect(dup).toBeNull();
+    expect(store.eventCount()).toBe(1);
+  });
+
+  it('different contentIds produce distinct keys — both persist', () => {
+    using store = new EventStore(':memory:');
+
+    const r0 = store.append(makeContentInput({ contentId: 'sha256-a' }));
+    const r1 = store.append(makeContentInput({ contentId: 'sha256-b' }));
+
+    expect(r0).not.toBeNull();
+    expect(r1).not.toBeNull();
+    expect(r0!.idempotency_key).toBe('prompt.patch.applied:sha256-a');
+    expect(r1!.idempotency_key).toBe('prompt.patch.applied:sha256-b');
+    expect(store.eventCount()).toBe(2);
+  });
+
+  it('same contentId across different event types is distinct', () => {
+    using store = new EventStore(':memory:');
+
+    const r0 = store.append(
+      makeContentInput({ type: 'prompt.patch.applied', contentId: 'sha256-x' }),
+    );
+    const r1 = store.append(
+      makeContentInput({ type: 'unknown.future', contentId: 'sha256-x' }),
+    );
+
+    expect(r0).not.toBeNull();
+    expect(r1).not.toBeNull();
+    expect(r0!.idempotency_key).not.toBe(r1!.idempotency_key);
+  });
+
+  it('content kind is rejected at compile time when contentId is omitted', () => {
+    using store = new EventStore(':memory:');
+
+    const bad = {
+      ts: '2026-01-01T00:00:00.000Z',
+      type: 'prompt.patch.applied',
+      actor: 'operator',
+      idempotencyKind: 'content' as const,
+      sessionId: 'sess-1',
+      // contentId intentionally omitted
+    };
+    // @ts-expect-error — contentId is required when kind === 'content'
+    const row = store.append(bad);
+    // Like the counter case: tsc is the gate. Runtime will produce a
+    // degenerate `prompt.patch.applied:undefined` key — clearly wrong but
+    // not a crash.
+    expect(row).not.toBeNull();
+    expect(row!.idempotency_key).toBe('prompt.patch.applied:undefined');
+  });
+
+  it('content row is still partitioned by session_id column even though sessionId is absent from the idempotency formula', () => {
+    using store = new EventStore(':memory:', { sessionId: 'sess-explicit' });
+
+    const row = store.append(
+      makeContentInput({
+        contentId: 'sha256-partition-check',
+        sessionId: 'sess-explicit',
+      }),
+    );
+
+    expect(row).not.toBeNull();
+    expect(row!.session_id).toBe('sess-explicit');
+    // Idempotency key omits the session — partition column does not.
+    expect(row!.idempotency_key).toBe(
+      'prompt.patch.applied:sha256-partition-check',
+    );
   });
 });
 

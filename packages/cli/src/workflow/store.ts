@@ -47,8 +47,16 @@ export type { EventRow } from './migrations.js';
  *   (heartbeats). The caller supplies a monotonically increasing counter
  *   per same-ms collision window so the UNIQUE constraint does not
  *   silently drop repeats.
+ * - 'content': `${eventType}:${contentId}` — for content-addressed
+ *   events whose payload is byte-stable across sessions (Wave C.1.3,
+ *   issue #156). The same content must dedupe even when authored from
+ *   two different sessions, so `sessionId` is intentionally absent
+ *   from the formula. Used by `prompt.patch.applied` with
+ *   `contentId = patchId` (sha256 of canonicalized RFC 6902 ops).
+ *   See synthesis lock 8 + 9 in
+ *   `sessions/<sid>/ideation/ideation.md`.
  */
-export type IdempotencyKind = 'tool-call' | 'system' | 'counter';
+export type IdempotencyKind = 'tool-call' | 'system' | 'counter' | 'content';
 
 /**
  * Fields shared across every `AppendInput` variant — excludes `seq`
@@ -70,6 +78,7 @@ export interface AppendInputToolCall extends AppendInputBase {
   readonly idempotencyKind: 'tool-call';
   readonly toolCallId: string;
   readonly counter?: never;
+  readonly contentId?: never;
 }
 
 /**
@@ -80,6 +89,7 @@ export interface AppendInputSystem extends AppendInputBase {
   readonly idempotencyKind: 'system';
   readonly toolCallId?: never;
   readonly counter?: never;
+  readonly contentId?: never;
 }
 
 /**
@@ -92,17 +102,40 @@ export interface AppendInputCounter extends AppendInputBase {
   readonly idempotencyKind: 'counter';
   readonly toolCallId?: never;
   readonly counter: number;
+  readonly contentId?: never;
+}
+
+/**
+ * Content-addressed variant — formula is `${type}:${contentId}`. The
+ * `sessionId` from the base type is still recorded on the row's
+ * `session_id` column for partition queries, but is intentionally NOT
+ * part of the idempotency key. This makes content-addressed events
+ * dedupe across sessions: two operators authoring the same patch from
+ * two different sessions produce one event row, not two.
+ *
+ * `contentId` is REQUIRED — discriminated-union enforcement at
+ * construction time. Used by `prompt.patch.applied` with `contentId =
+ * patchId` (sha256 of canonicalized RFC 6902 ops); the same content
+ * always produces the same key.
+ */
+export interface AppendInputContent extends AppendInputBase {
+  readonly idempotencyKind: 'content';
+  readonly toolCallId?: never;
+  readonly counter?: never;
+  readonly contentId: string;
 }
 
 /**
  * Discriminated union — TypeScript enforces the per-kind fields at
  * construction time. `toolCallId` is only legal when `kind === 'tool-call'`;
- * `counter` is only legal (and is REQUIRED) when `kind === 'counter'`.
+ * `counter` is only legal (and is REQUIRED) when `kind === 'counter'`;
+ * `contentId` is only legal (and is REQUIRED) when `kind === 'content'`.
  */
 export type AppendInput =
   | AppendInputToolCall
   | AppendInputSystem
-  | AppendInputCounter;
+  | AppendInputCounter
+  | AppendInputContent;
 
 // ---------------------------------------------------------------------------
 // SQLite binding type — compatible with bun:sqlite's SQLQueryBindings
@@ -546,6 +579,13 @@ export class EventStore implements WriteStore {
       case 'counter': {
         const timestampMs = Date.parse(input.ts);
         return `${input.sessionId}:${timestampMs}:${input.type}:${input.counter}`;
+      }
+      case 'content': {
+        // Content-addressed: same patch content across two sessions
+        // produces the same key, so the second writer hits ON CONFLICT
+        // and dedupes silently. `sessionId` is intentionally absent
+        // from the formula — see synthesis lock 8 + 9.
+        return `${input.type}:${input.contentId}`;
       }
     }
   }
