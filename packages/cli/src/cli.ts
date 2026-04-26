@@ -91,6 +91,7 @@ export const COMMAND_ORDER = [
   'workflow',
   'gotcha',
   'maintenance',
+  'prompt',
   'install',
   'project',
   'image',
@@ -179,6 +180,14 @@ export const COMMANDS_BY_NAME = {
     run: async (args: string[]): Promise<void> => {
       const { runMaintenance } = await import('./commands/maintenance.js');
       await runMaintenance(args);
+    },
+  },
+  prompt: {
+    name: 'prompt',
+    summary: 'Render / patch / rebuild per-step spec.json (operator-only)',
+    run: async (args: string[]): Promise<void> => {
+      const { runPrompt } = await import('./commands/prompt.js');
+      await runPrompt(args);
     },
   },
   install: {

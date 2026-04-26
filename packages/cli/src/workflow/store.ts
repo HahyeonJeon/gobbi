@@ -24,6 +24,7 @@ import {
   backfillSessionAndProjectIds,
   ensureSchemaV5,
   ensureSchemaV6,
+  ensureSchemaV7,
 } from './migrations.js';
 import type { EventRow } from './migrations.js';
 
@@ -46,8 +47,16 @@ export type { EventRow } from './migrations.js';
  *   (heartbeats). The caller supplies a monotonically increasing counter
  *   per same-ms collision window so the UNIQUE constraint does not
  *   silently drop repeats.
+ * - 'content': `${eventType}:${contentId}` — for content-addressed
+ *   events whose payload is byte-stable across sessions (Wave C.1.3,
+ *   issue #156). The same content must dedupe even when authored from
+ *   two different sessions, so `sessionId` is intentionally absent
+ *   from the formula. Used by `prompt.patch.applied` with
+ *   `contentId = patchId` (sha256 of canonicalized RFC 6902 ops).
+ *   See synthesis lock 8 + 9 in
+ *   `sessions/<sid>/ideation/ideation.md`.
  */
-export type IdempotencyKind = 'tool-call' | 'system' | 'counter';
+export type IdempotencyKind = 'tool-call' | 'system' | 'counter' | 'content';
 
 /**
  * Fields shared across every `AppendInput` variant — excludes `seq`
@@ -69,6 +78,7 @@ export interface AppendInputToolCall extends AppendInputBase {
   readonly idempotencyKind: 'tool-call';
   readonly toolCallId: string;
   readonly counter?: never;
+  readonly contentId?: never;
 }
 
 /**
@@ -79,6 +89,7 @@ export interface AppendInputSystem extends AppendInputBase {
   readonly idempotencyKind: 'system';
   readonly toolCallId?: never;
   readonly counter?: never;
+  readonly contentId?: never;
 }
 
 /**
@@ -91,17 +102,40 @@ export interface AppendInputCounter extends AppendInputBase {
   readonly idempotencyKind: 'counter';
   readonly toolCallId?: never;
   readonly counter: number;
+  readonly contentId?: never;
+}
+
+/**
+ * Content-addressed variant — formula is `${type}:${contentId}`. The
+ * `sessionId` from the base type is still recorded on the row's
+ * `session_id` column for partition queries, but is intentionally NOT
+ * part of the idempotency key. This makes content-addressed events
+ * dedupe across sessions: two operators authoring the same patch from
+ * two different sessions produce one event row, not two.
+ *
+ * `contentId` is REQUIRED — discriminated-union enforcement at
+ * construction time. Used by `prompt.patch.applied` with `contentId =
+ * patchId` (sha256 of canonicalized RFC 6902 ops); the same content
+ * always produces the same key.
+ */
+export interface AppendInputContent extends AppendInputBase {
+  readonly idempotencyKind: 'content';
+  readonly toolCallId?: never;
+  readonly counter?: never;
+  readonly contentId: string;
 }
 
 /**
  * Discriminated union — TypeScript enforces the per-kind fields at
  * construction time. `toolCallId` is only legal when `kind === 'tool-call'`;
- * `counter` is only legal (and is REQUIRED) when `kind === 'counter'`.
+ * `counter` is only legal (and is REQUIRED) when `kind === 'counter'`;
+ * `contentId` is only legal (and is REQUIRED) when `kind === 'content'`.
  */
 export type AppendInput =
   | AppendInputToolCall
   | AppendInputSystem
-  | AppendInputCounter;
+  | AppendInputCounter
+  | AppendInputContent;
 
 // ---------------------------------------------------------------------------
 // SQLite binding type — compatible with bun:sqlite's SQLQueryBindings
@@ -274,6 +308,29 @@ export interface ReadStore {
 export interface WriteStore extends ReadStore {
   append(input: AppendInput): EventRow | null;
   transaction<T>(fn: () => T): T;
+  /**
+   * Append an event AND run a projection write under a single SQLite
+   * `IMMEDIATE` transaction. The projection callback receives the same
+   * underlying `Database` handle the events table writes through, so
+   * both writes commit atomically — a SIGKILL between them rolls both
+   * back rather than leaving an orphan event row.
+   *
+   * Used by `commands/prompt/patch.ts` (Wave C.1.6 R1, Architecture F-1
+   * fix) to keep the `events` row + `prompt_patches` projection row
+   * in lockstep. The projection callback MUST use the supplied `Database`
+   * handle — opening a separate connection inside the callback would
+   * defeat the atomicity guarantee.
+   *
+   * Returns the appended row, or `null` if the event was deduped at the
+   * `idempotency_key` UNIQUE constraint. When `null` is returned the
+   * projection callback is NOT invoked — the caller decides how to
+   * handle the dedup hit (typically: query the existing projection and
+   * surface the originating session).
+   */
+  appendWithProjection(
+    input: AppendInput,
+    projection: (db: Database, row: EventRow) => void,
+  ): EventRow | null;
   close(): void;
 }
 
@@ -511,6 +568,14 @@ export class EventStore implements WriteStore {
     // wires this here so `EventStore` callers get v6 tables without
     // running `gobbi maintenance migrate-state-db` explicitly.
     ensureSchemaV6(this.db);
+    // Additive v6 → v7 schema migration — creates the `prompt_patches`
+    // workspace-partitioned audit table for the prompts-as-data feature
+    // (Wave C.1.2, issue #156). Idempotent (every CREATE uses `IF NOT
+    // EXISTS`) so this is safe to call on every store open. The stamp
+    // inside `ensureSchemaV7` writes `CURRENT_SCHEMA_VERSION` (= 7),
+    // overwriting the v6 stamp from the line above so callers reading
+    // `schema_meta.schema_version` see the latest applied version.
+    ensureSchemaV7(this.db);
   }
 
   // -------------------------------------------------------------------------
@@ -537,6 +602,13 @@ export class EventStore implements WriteStore {
       case 'counter': {
         const timestampMs = Date.parse(input.ts);
         return `${input.sessionId}:${timestampMs}:${input.type}:${input.counter}`;
+      }
+      case 'content': {
+        // Content-addressed: same patch content across two sessions
+        // produces the same key, so the second writer hits ON CONFLICT
+        // and dedupes silently. `sessionId` is intentionally absent
+        // from the formula — see synthesis lock 8 + 9.
+        return `${input.type}:${input.contentId}`;
       }
     }
   }
@@ -599,6 +671,46 @@ export class EventStore implements WriteStore {
    */
   transaction<T>(fn: () => T): T {
     return this.db.transaction(fn).immediate();
+  }
+
+  /**
+   * Atomic event-append + projection-write — Wave C.1.6 R1
+   * (Architecture F-1 fix). Both writes share a single bun:sqlite
+   * IMMEDIATE transaction on the same `Database` handle: a SIGKILL
+   * between the event INSERT and the projection INSERT rolls both
+   * back rather than leaving an orphan event row.
+   *
+   * The projection callback receives the underlying `Database` so it
+   * can prepare-and-run its own statement against the same connection
+   * (e.g. `db.run('INSERT INTO prompt_patches ...')`). Opening a
+   * separate `new Database(path)` inside the callback would defeat
+   * the atomicity guarantee — the helper only enforces single-handle
+   * semantics by passing the handle in.
+   *
+   * Returns the appended row, or `null` when the event was deduped at
+   * the `idempotency_key` UNIQUE constraint. On dedup the projection
+   * callback is NOT invoked — the caller decides whether to query the
+   * existing projection and surface a diagnostic.
+   *
+   * Implementation note: bun:sqlite's `transaction()` runs the wrapped
+   * function under a single `BEGIN IMMEDIATE / COMMIT` envelope, with
+   * automatic ROLLBACK on thrown errors. Since `append()` already runs
+   * under its own implicit per-statement transaction, wrapping it
+   * inside `transaction()` creates a SAVEPOINT — the outer envelope
+   * stays atomic across both writes.
+   */
+  appendWithProjection(
+    input: AppendInput,
+    projection: (db: Database, row: EventRow) => void,
+  ): EventRow | null {
+    return this.transaction(() => {
+      const row = this.append(input);
+      if (row === null) {
+        return null;
+      }
+      projection(this.db, row);
+      return row;
+    });
   }
 
   // -------------------------------------------------------------------------

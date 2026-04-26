@@ -1,5 +1,5 @@
 /**
- * Event type system — 8 categories, 23 event types.
+ * Event type system — 9 categories, 24 event types.
  *
  * Re-exports all category modules and assembles top-level union types.
  *
@@ -34,6 +34,7 @@ export * from './guard.js';
 export * from './session.js';
 export * from './verification.js';
 export * from './step-advancement.js';
+export * from './prompt.js';
 
 // Import const objects for ALL_EVENT_TYPES assembly
 import { WORKFLOW_EVENTS } from './workflow.js';
@@ -44,6 +45,7 @@ import { GUARD_EVENTS } from './guard.js';
 import { SESSION_EVENTS } from './session.js';
 import { VERIFICATION_EVENTS } from './verification.js';
 import { STEP_ADVANCEMENT_EVENTS } from './step-advancement.js';
+import { PROMPT_EVENTS } from './prompt.js';
 
 // Import category types for top-level unions
 import type { WorkflowEvent, WorkflowEventType } from './workflow.js';
@@ -60,6 +62,7 @@ import type {
   StepAdvancementEvent,
   StepAdvancementEventType,
 } from './step-advancement.js';
+import type { PromptEvent, PromptEventType } from './prompt.js';
 
 // ---------------------------------------------------------------------------
 // Reducer-typed Event union — discriminated on `type`
@@ -87,7 +90,7 @@ export type Event =
 // receive an audit-only event (and vice versa) without an explicit cast.
 // ---------------------------------------------------------------------------
 
-export type AuditOnlyEvent = StepAdvancementEvent;
+export type AuditOnlyEvent = StepAdvancementEvent | PromptEvent;
 
 // ---------------------------------------------------------------------------
 // Reducer-typed EventType union — all valid reducer event-type strings
@@ -106,7 +109,7 @@ export type EventType =
 // Audit-only EventType union — strings that MUST NOT reach the reducer
 // ---------------------------------------------------------------------------
 
-export type AuditOnlyEventType = StepAdvancementEventType;
+export type AuditOnlyEventType = StepAdvancementEventType | PromptEventType;
 
 // ---------------------------------------------------------------------------
 // Wire-level EventType union — every type string that may legitimately
@@ -128,6 +131,7 @@ export const ALL_EVENT_TYPES: ReadonlySet<string> = new Set<string>([
   ...Object.values(SESSION_EVENTS),
   ...Object.values(VERIFICATION_EVENTS),
   ...Object.values(STEP_ADVANCEMENT_EVENTS),
+  ...Object.values(PROMPT_EVENTS),
 ]);
 
 // ---------------------------------------------------------------------------

@@ -367,6 +367,20 @@ function buildAppendInput(args: BuildAppendInputArgs): AppendInput {
         counter: args.counter,
       };
     }
+    case 'content': {
+      // Wave C.1.3 (issue #156) — `'content'` is the new audit-only
+      // dedup kind for `prompt.patch.applied`. Audit-only events bypass
+      // `appendEventAndUpdateState` (synthesis §6 + the runtime fence
+      // at `reducer.ts:691`); they commit via `store.append()` directly.
+      // Reaching this branch through the engine means a caller wired
+      // a content-addressed event into the reducer-routed path — that is
+      // a contract violation, not a runtime failure to handle. Fail
+      // loudly so the misuse surfaces during development rather than
+      // silently producing a non-functional event row.
+      throw new Error(
+        "appendEventAndUpdateState: 'content' idempotency kind is reserved for audit-only events that commit via store.append() directly; reducer-routed events must use 'tool-call', 'system', or 'counter'",
+      );
+    }
   }
 }
 

@@ -101,6 +101,7 @@ import {
   CURRENT_SCHEMA_VERSION,
   ensureSchemaV5,
   ensureSchemaV6,
+  ensureSchemaV7,
 } from '../../workflow/migrations.js';
 
 // ---------------------------------------------------------------------------
@@ -368,6 +369,10 @@ export function migrateStateDbAt(
     // Stamp v6 with the supplied `now` so the JSON output is
     // deterministic under a fixed clock.
     ensureSchemaV6(db, clock());
+    // v7 — Wave C.1.2 — additive `prompt_patches` table. Stamp with the
+    // same clock so the operator-visible `migrated_at` is the v7 stamp,
+    // matching the schema_meta.schema_version that this run advertises.
+    ensureSchemaV7(db, clock());
     const elapsedMs = clock() - startMs;
     return {
       path: dbPath,

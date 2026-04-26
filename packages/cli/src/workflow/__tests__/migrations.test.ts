@@ -64,8 +64,8 @@ const LEGACY_PARTITION: Pick<EventRow, 'session_id' | 'project_id'> = {
 // ---------------------------------------------------------------------------
 
 describe('CURRENT_SCHEMA_VERSION', () => {
-  test('is 6 — schema v6 landed in Wave A.1.3 (state_snapshots + tool_calls + config_changes + schema_meta tables, plus step.advancement.observed audit-only event)', () => {
-    expect(CURRENT_SCHEMA_VERSION).toBe(6);
+  test('is 7 — schema v7 landed in Wave C.1.2 (prompt_patches table + prompt.patch.applied audit-only event for prompts-as-data)', () => {
+    expect(CURRENT_SCHEMA_VERSION).toBe(7);
   });
 });
 
@@ -854,7 +854,7 @@ describe('v5 → v6 schema ensureSchemaV6', () => {
     }
   });
 
-  test('schema_meta is stamped at the current schema version with the supplied timestamp', async () => {
+  test('schema_meta is stamped at v6 with the supplied timestamp', async () => {
     const db = await buildV5Db();
     try {
       const { ensureSchemaV6 } = await import('../migrations.js');
@@ -870,7 +870,13 @@ describe('v5 → v6 schema ensureSchemaV6', () => {
         .query<MetaRow, [string]>('SELECT * FROM schema_meta WHERE id = ?')
         .get('state_db');
       expect(row).not.toBeNull();
-      expect(row?.schema_version).toBe(CURRENT_SCHEMA_VERSION);
+      // Wave C.1.2 — `ensureSchemaV6` stamps the literal `6`, not
+      // `CURRENT_SCHEMA_VERSION`. Once v7 landed, the per-version stamp
+      // moved into each `ensureSchemaVN` so re-running an older hop in
+      // isolation does not leave the DB advertising a future version.
+      // The full chain (ensureSchemaV6 + ensureSchemaV7) stamps 7 in the
+      // outer test; this isolated call stamps 6.
+      expect(row?.schema_version).toBe(6);
       expect(row?.migrated_at).toBe(fixedNow);
     } finally {
       db.close();
@@ -959,6 +965,371 @@ describe('v5 → v6 schema ensureSchemaV6', () => {
           ['s', 'workflow.foo', 'global', null, '"x"', 2],
         ),
       ).toThrow();
+    } finally {
+      db.close();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 2g. v6 → v7 event round-trip — identity on event data; the new
+//     `prompt_patches` table + `prompt.patch.applied` audit-only event
+//     are strictly additive (Wave C.1.2).
+// ---------------------------------------------------------------------------
+
+describe('v6 → v7 event round-trip (identity on event data)', () => {
+  test('a v6 workflow.start migrates to v7 unchanged', () => {
+    const v6Event: EventRow = {
+      seq: 1,
+      ts: '2026-04-26T00:00:00Z',
+      schema_version: 6,
+      type: 'workflow.start',
+      step: 'ideation',
+      data: JSON.stringify({
+        sessionId: 'sess-v6',
+        timestamp: '2026-04-26T00:00:00Z',
+      }),
+      actor: 'system',
+      parent_seq: null,
+      idempotency_key: 'sess-v6:1745611200000:workflow.start',
+      ...LEGACY_PARTITION,
+      session_id: 'sess-v6',
+    };
+    const migrated = migrateEvent(v6Event, 7);
+    expect(migrated.schema_version).toBe(7);
+    // Byte-identical data string — v6→v7 is an identity transform on
+    // event data; only the wire-level type set widened.
+    expect(migrated.data).toBe(v6Event.data);
+    expect(migrated.type).toBe(v6Event.type);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 2h. v6 → v7 schema CREATE — `prompt_patches` workspace-partitioned
+//     audit table (Wave C.1.2, issue #156).
+// ---------------------------------------------------------------------------
+
+describe('v6 → v7 schema ensureSchemaV7', () => {
+  // Build a v6-shape store (events + the four v6 tables already
+  // present) so ensureSchemaV7 runs against the realistic starting
+  // point — a v6 db that has already been opened by an A.1+ binary.
+  const buildV6Db = async () => {
+    const { Database } = await import('bun:sqlite');
+    const { ensureSchemaV6 } = await import('../migrations.js');
+    const db = new Database(':memory:');
+    db.run(`
+      CREATE TABLE events (
+        seq INTEGER PRIMARY KEY,
+        ts TEXT NOT NULL,
+        schema_version INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        step TEXT,
+        data TEXT NOT NULL DEFAULT '{}',
+        actor TEXT NOT NULL,
+        parent_seq INTEGER REFERENCES events(seq),
+        idempotency_key TEXT NOT NULL UNIQUE,
+        session_id TEXT,
+        project_id TEXT
+      )
+    `);
+    ensureSchemaV6(db);
+    return db;
+  };
+
+  test('ensureSchemaV7 applies cleanly on a v6 store and creates the prompt_patches table', async () => {
+    const db = await buildV6Db();
+    try {
+      const {
+        ensureSchemaV7,
+        getTableNames,
+        SCHEMA_V7_TABLES,
+      } = await import('../migrations.js');
+
+      const before = getTableNames(db);
+      for (const t of SCHEMA_V7_TABLES) {
+        expect(before.has(t)).toBe(false);
+      }
+
+      ensureSchemaV7(db);
+
+      const after = getTableNames(db);
+      for (const t of SCHEMA_V7_TABLES) {
+        expect(after.has(t)).toBe(true);
+      }
+    } finally {
+      db.close();
+    }
+  });
+
+  test('prompt_patches carries every expected column', async () => {
+    const db = await buildV6Db();
+    try {
+      const { ensureSchemaV7 } = await import('../migrations.js');
+      ensureSchemaV7(db);
+
+      interface Pragma {
+        readonly name: string;
+      }
+      const cols = (table: string): Set<string> =>
+        new Set(
+          db
+            .query<Pragma, []>(`PRAGMA table_info(${table})`)
+            .all()
+            .map((r) => r.name),
+        );
+
+      const promptPatchesCols = cols('prompt_patches');
+      for (const expected of [
+        'seq',
+        'session_id',
+        'project_id',
+        'prompt_id',
+        'parent_seq',
+        'event_seq',
+        'patch_id',
+        'patch_json',
+        'pre_hash',
+        'post_hash',
+        'applied_at',
+        'applied_by',
+      ]) {
+        expect(promptPatchesCols.has(expected)).toBe(true);
+      }
+    } finally {
+      db.close();
+    }
+  });
+
+  test('every v7 index is created', async () => {
+    const db = await buildV6Db();
+    try {
+      const {
+        ensureSchemaV7,
+        getIndexNames,
+        SCHEMA_V7_INDICES,
+      } = await import('../migrations.js');
+      ensureSchemaV7(db);
+      const indices = getIndexNames(db);
+      for (const idx of SCHEMA_V7_INDICES) {
+        expect(indices.has(idx)).toBe(true);
+      }
+    } finally {
+      db.close();
+    }
+  });
+
+  test('schema_meta is stamped at v7 with the supplied timestamp', async () => {
+    const db = await buildV6Db();
+    try {
+      const { ensureSchemaV7 } = await import('../migrations.js');
+      const fixedNow = 1746000000000;
+      ensureSchemaV7(db, fixedNow);
+
+      interface MetaRow {
+        readonly schema_version: number;
+        readonly migrated_at: number;
+      }
+      const row = db
+        .query<MetaRow, [string]>(
+          'SELECT schema_version, migrated_at FROM schema_meta WHERE id = ?',
+        )
+        .get('state_db');
+      expect(row).not.toBeNull();
+      expect(row?.schema_version).toBe(CURRENT_SCHEMA_VERSION);
+      expect(row?.migrated_at).toBe(fixedNow);
+    } finally {
+      db.close();
+    }
+  });
+
+  test('ensureSchemaV7 is idempotent — re-running does not throw and refreshes migrated_at', async () => {
+    const db = await buildV6Db();
+    try {
+      const {
+        ensureSchemaV7,
+        getTableNames,
+        SCHEMA_V7_TABLES,
+      } = await import('../migrations.js');
+      const t0 = 1746000000000;
+      const t1 = 1746000001000;
+      ensureSchemaV7(db, t0);
+      ensureSchemaV7(db, t1);
+
+      const after = getTableNames(db);
+      for (const t of SCHEMA_V7_TABLES) {
+        expect(after.has(t)).toBe(true);
+      }
+
+      interface MetaRow {
+        readonly migrated_at: number;
+      }
+      const row = db
+        .query<MetaRow, [string]>(
+          'SELECT migrated_at FROM schema_meta WHERE id = ?',
+        )
+        .get('state_db');
+      expect(row?.migrated_at).toBe(t1);
+
+      // Single-row invariant — `id = 'state_db'` remains the only row.
+      const count = db
+        .query<{ cnt: number }, []>('SELECT count(*) as cnt FROM schema_meta')
+        .get();
+      expect(count?.cnt).toBe(1);
+    } finally {
+      db.close();
+    }
+  });
+
+  test('prompt_id CHECK constraint rejects values outside the closed enum', async () => {
+    const db = await buildV6Db();
+    try {
+      const { ensureSchemaV7 } = await import('../migrations.js');
+      ensureSchemaV7(db);
+
+      // Insert a parent event row first to satisfy the FK on event_seq.
+      db.run(
+        `INSERT INTO events (seq, ts, schema_version, type, data, actor, idempotency_key, session_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [1, '2026-04-26T00:00:00Z', 7, 'prompt.patch.applied', '{}', 'operator', 'idem-1', 's'],
+      );
+
+      // Valid prompt_id passes.
+      db.run(
+        `INSERT INTO prompt_patches (session_id, prompt_id, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ['s', 'ideation', 1, 'p1', '[]', 'h0', 'h1', 1, 'operator'],
+      );
+      // Invalid prompt_id throws.
+      // Insert a second event row first because event_seq is UNIQUE.
+      db.run(
+        `INSERT INTO events (seq, ts, schema_version, type, data, actor, idempotency_key, session_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [2, '2026-04-26T00:00:00Z', 7, 'prompt.patch.applied', '{}', 'operator', 'idem-2', 's'],
+      );
+      expect(() =>
+        db.run(
+          `INSERT INTO prompt_patches (session_id, prompt_id, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ['s', 'unknown_step', 2, 'p2', '[]', 'h0', 'h1', 1, 'operator'],
+        ),
+      ).toThrow();
+    } finally {
+      db.close();
+    }
+  });
+
+  test('applied_by CHECK constraint rejects anything other than "operator"', async () => {
+    const db = await buildV6Db();
+    try {
+      const { ensureSchemaV7 } = await import('../migrations.js');
+      ensureSchemaV7(db);
+
+      db.run(
+        `INSERT INTO events (seq, ts, schema_version, type, data, actor, idempotency_key, session_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [1, '2026-04-26T00:00:00Z', 7, 'prompt.patch.applied', '{}', 'operator', 'idem-1', 's'],
+      );
+
+      expect(() =>
+        db.run(
+          `INSERT INTO prompt_patches (session_id, prompt_id, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ['s', 'ideation', 1, 'p1', '[]', 'h0', 'h1', 1, 'agent'],
+        ),
+      ).toThrow();
+    } finally {
+      db.close();
+    }
+  });
+
+  test('UNIQUE(prompt_id, patch_id) blocks cross-session duplicate writes', async () => {
+    const db = await buildV6Db();
+    try {
+      const { ensureSchemaV7 } = await import('../migrations.js');
+      ensureSchemaV7(db);
+
+      // Two separate sessions emit the same patch content (same patch_id).
+      db.run(
+        `INSERT INTO events (seq, ts, schema_version, type, data, actor, idempotency_key, session_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [1, '2026-04-26T00:00:00Z', 7, 'prompt.patch.applied', '{}', 'operator', 'idem-1', 'sess-A'],
+      );
+      db.run(
+        `INSERT INTO events (seq, ts, schema_version, type, data, actor, idempotency_key, session_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [2, '2026-04-26T01:00:00Z', 7, 'prompt.patch.applied', '{}', 'operator', 'idem-2', 'sess-B'],
+      );
+
+      db.run(
+        `INSERT INTO prompt_patches (session_id, prompt_id, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ['sess-A', 'ideation', 1, 'shared-patch-id', '[]', 'h0', 'h1', 1, 'operator'],
+      );
+      // Second session writing the same content-addressed patch_id must
+      // be blocked by `UNIQUE (prompt_id, patch_id)`.
+      expect(() =>
+        db.run(
+          `INSERT INTO prompt_patches (session_id, prompt_id, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ['sess-B', 'ideation', 2, 'shared-patch-id', '[]', 'h0', 'h1', 1, 'operator'],
+        ),
+      ).toThrow();
+    } finally {
+      db.close();
+    }
+  });
+
+  test('UNIQUE(event_seq) blocks two prompt_patches rows pointing at the same event', async () => {
+    const db = await buildV6Db();
+    try {
+      const { ensureSchemaV7 } = await import('../migrations.js');
+      ensureSchemaV7(db);
+
+      db.run(
+        `INSERT INTO events (seq, ts, schema_version, type, data, actor, idempotency_key, session_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [1, '2026-04-26T00:00:00Z', 7, 'prompt.patch.applied', '{}', 'operator', 'idem-1', 's'],
+      );
+
+      db.run(
+        `INSERT INTO prompt_patches (session_id, prompt_id, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ['s', 'ideation', 1, 'p1', '[]', 'h0', 'h1', 1, 'operator'],
+      );
+      expect(() =>
+        db.run(
+          `INSERT INTO prompt_patches (session_id, prompt_id, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          ['s', 'planning', 1, 'p2', '[]', 'h0', 'h1', 1, 'operator'],
+        ),
+      ).toThrow();
+    } finally {
+      db.close();
+    }
+  });
+
+  test('full v6 → v7 chain via ensureSchemaV6 + ensureSchemaV7 stamps v7 in schema_meta', async () => {
+    const { Database } = await import('bun:sqlite');
+    const { ensureSchemaV6, ensureSchemaV7 } = await import('../migrations.js');
+    const db = new Database(':memory:');
+    try {
+      db.run(`
+        CREATE TABLE events (
+          seq INTEGER PRIMARY KEY,
+          ts TEXT NOT NULL,
+          schema_version INTEGER NOT NULL,
+          type TEXT NOT NULL,
+          step TEXT,
+          data TEXT NOT NULL DEFAULT '{}',
+          actor TEXT NOT NULL,
+          parent_seq INTEGER REFERENCES events(seq),
+          idempotency_key TEXT NOT NULL UNIQUE,
+          session_id TEXT,
+          project_id TEXT
+        )
+      `);
+      ensureSchemaV6(db, 1);
+      ensureSchemaV7(db, 2);
+
+      interface MetaRow {
+        readonly schema_version: number;
+        readonly migrated_at: number;
+      }
+      const row = db
+        .query<MetaRow, [string]>(
+          'SELECT schema_version, migrated_at FROM schema_meta WHERE id = ?',
+        )
+        .get('state_db');
+      // v7 stamp wins after the chain runs.
+      expect(row?.schema_version).toBe(7);
+      expect(row?.migrated_at).toBe(2);
     } finally {
       db.close();
     }

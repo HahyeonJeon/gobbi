@@ -72,6 +72,25 @@
  *   Note: `prompt_patches` is intentionally NOT in v6 — Wave C.1's
  *   prompts-as-data feature owns it via a future v7. See
  *   orchestration review DRIFT-9 for the rationale.
+ *
+ * - v7 — Wave C.1.2 (issue #156). Adds the `prompt_patches` workspace-
+ *   partitioned audit table for the prompts-as-data feature. The table
+ *   carries one row per applied RFC 6902 patch on a per-step `spec.json`
+ *   (closed prompt-id set: `ideation`, `planning`, `execution`,
+ *   `evaluation`, `memorization`, `handoff`). Columns mirror the v6
+ *   sibling-table conventions for queryability under the v6+ "every
+ *   workspace table is partitioned by `(session_id, project_id)`" rule.
+ *   The `event_seq` column is a UNIQUE FK to `events(seq)` — every patch
+ *   row pairs 1:1 with the `prompt.patch.applied` audit-only event that
+ *   committed it. The composite UNIQUE on `(prompt_id, patch_id)` is the
+ *   cross-session deduplication safety net (a patch with identical content
+ *   produces the same `patch_id` regardless of session, so two sessions
+ *   applying the same patch produce one row, not two). Event *data*
+ *   payloads are wire-compatible v6→v7 (the new event type is strictly
+ *   additive and the table is purely a read projection). The registered
+ *   v6 migration is an identity on event data; the schema CREATE runs in
+ *   {@link ensureSchemaV7}, wired into `EventStore.initSchema` after
+ *   {@link ensureSchemaV6} and into `gobbi maintenance migrate-state-db`.
  */
 
 import type { Database } from 'bun:sqlite';
@@ -111,7 +130,7 @@ export interface EventRow {
 // Schema version tracking
 // ---------------------------------------------------------------------------
 
-export const CURRENT_SCHEMA_VERSION = 6;
+export const CURRENT_SCHEMA_VERSION = 7;
 
 // ---------------------------------------------------------------------------
 // Migration registry
@@ -147,10 +166,17 @@ type MigrationFn = (eventData: unknown) => unknown;
  *   type. No transform on existing event data — the new event type and
  *   the new tables are strictly additive. Registered as an identity on
  *   event data so the walk path stays composable for a future v7.
+ * - v6→v7 (Wave C.1.2, issue #156): adds the `prompt_patches`
+ *   workspace-partitioned audit table and the `prompt.patch.applied`
+ *   audit-only event type for the prompts-as-data feature. No transform
+ *   on existing event data — the new event type is strictly additive
+ *   and the new table is a pure read projection. Registered as an
+ *   identity on event data so the walk path stays composable for a
+ *   future v8.
  *
  * Declaring each identity registers the hop so the composition walks the
- * full chain (v1→v2→v3→v4→v5→v6) rather than short-circuiting — the walk
- * path is what a future v7 migration will extend.
+ * full chain (v1→v2→v3→v4→v5→v6→v7) rather than short-circuiting — the
+ * walk path is what a future v8 migration will extend.
  */
 const migrations: Readonly<Record<number, MigrationFn>> = {
   1: (data) => data,
@@ -158,6 +184,7 @@ const migrations: Readonly<Record<number, MigrationFn>> = {
   3: (data) => data,
   4: (data) => data,
   5: (data) => data,
+  6: (data) => data,
 };
 
 // ---------------------------------------------------------------------------
@@ -586,6 +613,172 @@ export function ensureSchemaV6(
 
     db.run(SQL_CREATE_SCHEMA_META);
 
-    db.run(SQL_STAMP_SCHEMA_META_V6, [CURRENT_SCHEMA_VERSION, now]);
+    // Stamp v6 here, not v7 — `ensureSchemaV6` exists as the v5→v6 hop in
+    // isolation (it must remain valid when called by older binaries that
+    // do not yet know about v7). The v7 caller below stamps v7 over the
+    // v6 stamp inside the same transaction so no half-migrated state is
+    // observable.
+    db.run(SQL_STAMP_SCHEMA_META_V6, [6, now]);
+  }).immediate();
+}
+
+// ---------------------------------------------------------------------------
+// Schema v7 — `prompt_patches` workspace-partitioned audit table
+//                (Wave C.1.2, issue #156)
+//
+// ## Producer status
+//
+// The writer for `prompt_patches` ships in Wave C.1.6 alongside the
+// `gobbi prompt patch` command. Operators running `gobbi maintenance
+// migrate-state-db` against a v6 db, observing v7 stamped, then finding
+// `prompt_patches` empty are seeing the intended state — the table is
+// the read projection for the `prompt.patch.applied` audit-only event,
+// populated only when an operator authors a patch.
+//
+// The CREATE lands in this wave so a future wave does not need to add a
+// v8 migration purely to introduce the table — forward-compatible
+// schema is the cheaper choice.
+// ---------------------------------------------------------------------------
+
+/**
+ * Names of every table introduced in schema v7. Exported so tests and
+ * post-migration verification can iterate without duplicating the literal.
+ */
+export const SCHEMA_V7_TABLES = ['prompt_patches'] as const;
+
+export type SchemaV7TableName = typeof SCHEMA_V7_TABLES[number];
+
+/**
+ * Names of every index introduced in schema v7. Exported so tests can
+ * assert presence without duplicating the literal.
+ *
+ * - `idx_prompt_patches_prompt_seq` — accelerates per-prompt history
+ *   queries (`SELECT … WHERE prompt_id = ? ORDER BY seq`).
+ * - `idx_prompt_patches_session_seq` — accelerates per-session history
+ *   queries; DESC ordering matches the "most-recent-first" workflow of
+ *   `gobbi prompt log`.
+ * - `idx_prompt_patches_event` — UNIQUE FK projection on `event_seq`,
+ *   guarantees 1:1 row-event pairing.
+ * - `idx_prompt_patches_content` — UNIQUE on `(prompt_id, patch_id)`,
+ *   the cross-session content-dedup safety net (synthesis lock 8).
+ */
+export const SCHEMA_V7_INDICES = [
+  'idx_prompt_patches_prompt_seq',
+  'idx_prompt_patches_session_seq',
+  'idx_prompt_patches_event',
+  'idx_prompt_patches_content',
+] as const;
+
+export type SchemaV7IndexName = typeof SCHEMA_V7_INDICES[number];
+
+/**
+ * `prompt_patches` — one row per applied RFC 6902 patch on a per-step
+ * `spec.json`.
+ *
+ * Columns:
+ *   - seq             INTEGER PRIMARY KEY AUTOINCREMENT — local row
+ *                     ordering, mirrors `events.seq`.
+ *   - session_id      TEXT NOT NULL — workspace partition key.
+ *   - project_id      TEXT — project partition key (nullable).
+ *   - prompt_id       TEXT NOT NULL CHECK — closed enum
+ *                     `(ideation, planning, execution, evaluation,
+ *                       memorization, handoff)` mirroring the user-lock
+ *                     prompt-id set.
+ *   - parent_seq      INTEGER REFERENCES prompt_patches(seq) — chain
+ *                     causality (NULL = genesis row).
+ *   - event_seq       INTEGER NOT NULL REFERENCES events(seq) — 1:1 FK
+ *                     to the `prompt.patch.applied` audit event that
+ *                     committed this patch.
+ *   - patch_id        TEXT NOT NULL — `sha256(canonicalize(patch_json))`,
+ *                     content address. Reused as `contentId` in the
+ *                     `'content'` IdempotencyKind formula at
+ *                     `store.ts:50-94`.
+ *   - patch_json      TEXT NOT NULL — RFC 6902 ops array (JSON-encoded,
+ *                     including any synthesized `test`-op-at-head).
+ *   - pre_hash        TEXT NOT NULL — `sha256(canonicalize(spec.json))`
+ *                     before this patch applied.
+ *   - post_hash       TEXT NOT NULL — `sha256(canonicalize(spec.json))`
+ *                     after this patch applied.
+ *   - applied_at      INTEGER NOT NULL — UNIX-ms wall clock.
+ *   - applied_by      TEXT NOT NULL CHECK = 'operator' — patch flow is
+ *                     operator-only via CLI (synthesis lock 3). Future
+ *                     widening (agent-proposed patches) requires a v8
+ *                     migration.
+ *
+ * Indices: see {@link SCHEMA_V7_INDICES}.
+ */
+const SQL_CREATE_PROMPT_PATCHES = `
+CREATE TABLE IF NOT EXISTS prompt_patches (
+  seq         INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_id  TEXT NOT NULL,
+  project_id  TEXT,
+  prompt_id   TEXT NOT NULL CHECK (prompt_id IN ('ideation','planning','execution','evaluation','memorization','handoff')),
+  parent_seq  INTEGER REFERENCES prompt_patches(seq),
+  event_seq   INTEGER NOT NULL REFERENCES events(seq),
+  patch_id    TEXT NOT NULL,
+  patch_json  TEXT NOT NULL,
+  pre_hash    TEXT NOT NULL,
+  post_hash   TEXT NOT NULL,
+  applied_at  INTEGER NOT NULL,
+  applied_by  TEXT NOT NULL CHECK (applied_by = 'operator')
+)`;
+
+const SQL_CREATE_INDEX_PROMPT_PATCHES_PROMPT_SEQ = `
+CREATE INDEX IF NOT EXISTS idx_prompt_patches_prompt_seq
+  ON prompt_patches (prompt_id, seq)`;
+
+const SQL_CREATE_INDEX_PROMPT_PATCHES_SESSION_SEQ = `
+CREATE INDEX IF NOT EXISTS idx_prompt_patches_session_seq
+  ON prompt_patches (session_id, seq DESC)`;
+
+const SQL_CREATE_INDEX_PROMPT_PATCHES_EVENT = `
+CREATE UNIQUE INDEX IF NOT EXISTS idx_prompt_patches_event
+  ON prompt_patches (event_seq)`;
+
+const SQL_CREATE_INDEX_PROMPT_PATCHES_CONTENT = `
+CREATE UNIQUE INDEX IF NOT EXISTS idx_prompt_patches_content
+  ON prompt_patches (prompt_id, patch_id)`;
+
+/**
+ * Stamp the `schema_meta` row at v7. Same INSERT OR REPLACE shape as the
+ * v6 stamp — re-running the migration refreshes `migrated_at` without
+ * leaving a stale lower version.
+ */
+const SQL_STAMP_SCHEMA_META_V7 = `
+INSERT OR REPLACE INTO schema_meta (id, schema_version, migrated_at)
+VALUES ('state_db', ?, ?)`;
+
+/**
+ * Ensure the schema-v7 table and indices exist.
+ *
+ * Idempotent: every CREATE uses `IF NOT EXISTS`, so re-running this on
+ * a v7-or-later DB is a no-op. Running it on a pre-v7 DB after
+ * {@link ensureSchemaV6} brings the DB to v7 in one pass.
+ *
+ * Caller is responsible for sequencing — the `EventStore` constructor
+ * runs `ensureSchemaV5(db)` then `ensureSchemaV6(db)` then
+ * `ensureSchemaV7(db)` inside `initSchema`.
+ *
+ * Stamps the `schema_meta` row at v7 with the current wall-clock; the
+ * caller can pass an explicit `now` to make tests deterministic.
+ *
+ * ## Atomicity
+ *
+ * The CREATE chain runs inside a single `db.transaction(...).immediate()`
+ * so a mid-chain failure rolls back any partial v7 schema rather than
+ * leaving the DB half-applied. Mirrors {@link ensureSchemaV6}.
+ */
+export function ensureSchemaV7(
+  db: Database,
+  now: number = Date.now(),
+): void {
+  db.transaction(() => {
+    db.run(SQL_CREATE_PROMPT_PATCHES);
+    db.run(SQL_CREATE_INDEX_PROMPT_PATCHES_PROMPT_SEQ);
+    db.run(SQL_CREATE_INDEX_PROMPT_PATCHES_SESSION_SEQ);
+    db.run(SQL_CREATE_INDEX_PROMPT_PATCHES_EVENT);
+    db.run(SQL_CREATE_INDEX_PROMPT_PATCHES_CONTENT);
+
+    db.run(SQL_STAMP_SCHEMA_META_V7, [CURRENT_SCHEMA_VERSION, now]);
   }).immediate();
 }

@@ -14,5 +14,5 @@ Feature description docs for gobbi v0.5.0 — read these to understand what the 
 | [claude-docs-management.md](claude-docs-management.md) | JSON source at `.gobbi/skills\|agents\|rules/` rendered to `.claude/` by the CLI. Evaluation rubrics travel with authoring skills. |
 | [cli-as-runtime-api.md](cli-as-runtime-api.md) | Agent-facing runtime API spanning workflow control, configuration, memory, rendering, and hard-for-agents helpers. |
 | [token-budget-and-cache.md](token-budget-and-cache.md) | Cache-prefix ordering invariant + token budget allocation with section minimums. |
-| [prompts-as-data.md](prompts-as-data.md) | Step specs as JSON data; transition conditions as predicate-registry names; the CLI compiles prompts, not humans. |
+| [prompts-as-data.md](prompts-as-data.md) | Step specs as JSON data; CQRS for spec evolution (state.db::events truth, prompt_patches projection, JSONL chain foldable to spec.json); operator-only `gobbi prompt render | patch | rebuild` mutation surface. |
 | [worktree-based-operation.md](worktree-based-operation.md) | One worktree per task under `.gobbi/worktrees/`. Branch exclusivity, base-branch verification, subagents commit / orchestrator pushes. |

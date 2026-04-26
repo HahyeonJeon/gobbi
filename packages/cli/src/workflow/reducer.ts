@@ -25,6 +25,7 @@ import { SESSION_EVENTS, isSessionEvent } from './events/session.js';
 import type { VerificationEvent } from './events/verification.js';
 import { VERIFICATION_EVENTS, isVerificationEvent } from './events/verification.js';
 import { isStepAdvancementEvent } from './events/step-advancement.js';
+import { isPromptPatchAppliedEvent } from './events/prompt.js';
 import type { WorkflowState, WorkflowStep } from './state.js';
 import { TERMINAL_STEPS, ACTIVE_STEPS } from './state.js';
 import { findTransition } from './transitions.js';
@@ -688,7 +689,7 @@ export function reduce(
   //
   // The guard returns the input state unchanged — audit-only events are
   // observability-only and have no state projection by definition.
-  if (isStepAdvancementEvent(event)) {
+  if (isStepAdvancementEvent(event) || isPromptPatchAppliedEvent(event)) {
     return ok(state);
   }
 

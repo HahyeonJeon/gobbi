@@ -55,6 +55,11 @@ import {
   isStepAdvancementEvent,
   createStepAdvancementObserved,
 
+  // Prompt (audit-only)
+  PROMPT_EVENTS,
+  isPromptPatchAppliedEvent,
+  createPromptPatchApplied,
+
   // Top-level
   ALL_EVENT_TYPES,
   isValidEventType,
@@ -104,6 +109,10 @@ describe('const objects', () => {
   it('STEP_ADVANCEMENT_EVENTS has 1 entry (audit-only)', () => {
     expect(Object.values(STEP_ADVANCEMENT_EVENTS)).toHaveLength(1);
   });
+
+  it('PROMPT_EVENTS has 1 entry (audit-only)', () => {
+    expect(Object.values(PROMPT_EVENTS)).toHaveLength(1);
+  });
 });
 
 // ===========================================================================
@@ -111,12 +120,13 @@ describe('const objects', () => {
 // ===========================================================================
 
 describe('ALL_EVENT_TYPES', () => {
-  it('contains exactly 23 entries (9 + 3 + 2 + 3 + 3 + 1 + 1 + 1) — wire-level (reducer + audit-only)', () => {
-    // Wave A.1.3 / orchestration Pass 4: 22 reducer-typed events + 1
-    // audit-only event (`step.advancement.observed`) = 23 wire-level
-    // event types. Closed-enumeration discipline per orchestration
-    // README §3.5 / §13 success criterion #5.
-    expect(ALL_EVENT_TYPES.size).toBe(23);
+  it('contains exactly 24 entries (9 + 3 + 2 + 3 + 3 + 1 + 1 + 1 + 1) — wire-level (reducer + audit-only)', () => {
+    // Wave C.1.3 (issue #156): 22 reducer-typed events + 2 audit-only
+    // events (`step.advancement.observed` from Wave A.1.3 +
+    // `prompt.patch.applied` from Wave C.1.3) = 24 wire-level event
+    // types. Closed-enumeration discipline per orchestration README
+    // §3.5 / §13 success criterion #5.
+    expect(ALL_EVENT_TYPES.size).toBe(24);
   });
 
   it('contains every workflow event type', () => {
@@ -171,6 +181,16 @@ describe('ALL_EVENT_TYPES', () => {
     expect(ALL_EVENT_TYPES.has('step.advancement.observed')).toBe(true);
   });
 
+  it('contains every prompt (audit-only) event type', () => {
+    for (const value of Object.values(PROMPT_EVENTS)) {
+      expect(ALL_EVENT_TYPES.has(value)).toBe(true);
+    }
+  });
+
+  it('contains prompt.patch.applied (Wave C.1.3 audit-only)', () => {
+    expect(ALL_EVENT_TYPES.has('prompt.patch.applied')).toBe(true);
+  });
+
   it('does not contain unknown event types', () => {
     expect(ALL_EVENT_TYPES.has('unknown.event')).toBe(false);
     expect(ALL_EVENT_TYPES.has('START')).toBe(false); // key, not value
@@ -191,6 +211,7 @@ describe('cross-category exclusivity', () => {
     Object.values(SESSION_EVENTS),
     Object.values(VERIFICATION_EVENTS),
     Object.values(STEP_ADVANCEMENT_EVENTS),
+    Object.values(PROMPT_EVENTS),
   ];
 
   it('no event type string appears in more than one category', () => {
@@ -219,6 +240,7 @@ describe('cross-category exclusivity', () => {
       [Object.values(SESSION_EVENTS), 'session.'],
       [Object.values(VERIFICATION_EVENTS), 'verification.'],
       [Object.values(STEP_ADVANCEMENT_EVENTS), 'step.advancement.'],
+      [Object.values(PROMPT_EVENTS), 'prompt.'],
     ];
 
     for (const [values, prefix] of prefixMap) {
@@ -868,6 +890,118 @@ describe('factory functions', () => {
 
     it('isValidEventType accepts the audit-only type', () => {
       expect(isValidEventType('step.advancement.observed')).toBe(true);
+    });
+  });
+
+  describe('prompt (audit-only) factories', () => {
+    // Wave C.1.3 / issue #156 — `prompt.patch.applied` is an audit-only
+    // event committed via `store.append()` directly by the
+    // `gobbi prompt patch` command (Wave C.1.6). These tests cover
+    // (a) factory shape, (b) type-guard accept/reject behaviour, and
+    // (c) the architectural fence: it must NOT be a member of `Event`
+    // (the reducer-typed union). The runtime fence at `reducer.ts:691`
+    // catches a serialise/deserialise replay before `assertNever`
+    // throws.
+
+    const basePromptData = {
+      promptId: 'ideation' as const,
+      patchId: 'sha256-abcdef',
+      parentPatchId: null,
+      preHash: 'sha256-pre',
+      postHash: 'sha256-post',
+      opCount: 2,
+      schemaId: 'https://gobbi.dev/schemas/step-spec/v1.json',
+      appliedBy: 'operator' as const,
+    };
+
+    it('createPromptPatchApplied produces a well-formed event', () => {
+      const event = createPromptPatchApplied(basePromptData);
+      expect(event.type).toBe(PROMPT_EVENTS.PATCH_APPLIED);
+      expect(event.data).toEqual(basePromptData);
+    });
+
+    it('PROMPT_EVENTS.PATCH_APPLIED matches the prefixed string', () => {
+      expect(PROMPT_EVENTS.PATCH_APPLIED).toBe('prompt.patch.applied');
+    });
+
+    it('isPromptPatchAppliedEvent narrows the audit-only event', () => {
+      const event = createPromptPatchApplied(basePromptData);
+      expect(isPromptPatchAppliedEvent(event)).toBe(true);
+    });
+
+    it('isPromptPatchAppliedEvent rejects every reducer-typed category', () => {
+      const reducerTypedSamples = [
+        { type: 'workflow.start' },
+        { type: 'delegation.spawn' },
+        { type: 'artifact.write' },
+        { type: 'decision.user' },
+        { type: 'guard.violation' },
+        { type: 'session.heartbeat' },
+        { type: 'verification.result' },
+        { type: 'step.advancement.observed' },
+        { type: 'unknown.event' },
+      ];
+      for (const sample of reducerTypedSamples) {
+        expect(isPromptPatchAppliedEvent(sample)).toBe(false);
+      }
+    });
+
+    it('audit-only event is rejected by every reducer-category guard (architectural fence)', () => {
+      // Same fence as `step.advancement.observed`: an audit-only event
+      // MUST NOT pass any reducer-category type guard. Synthesis §6.
+      const event = createPromptPatchApplied(basePromptData);
+      expect(isWorkflowEvent(event)).toBe(false);
+      expect(isDelegationEvent(event)).toBe(false);
+      expect(isArtifactEvent(event)).toBe(false);
+      expect(isDecisionEvent(event)).toBe(false);
+      expect(isGuardEvent(event)).toBe(false);
+      expect(isSessionEvent(event)).toBe(false);
+      expect(isVerificationEvent(event)).toBe(false);
+      // And rejected by the sibling audit-only guard so the two
+      // categories stay distinct.
+      expect(isStepAdvancementEvent(event)).toBe(false);
+    });
+
+    it('round-trips through JSON (wire-format invariant)', () => {
+      const event = createPromptPatchApplied(basePromptData);
+      const round = JSON.parse(JSON.stringify(event)) as unknown;
+      expect(round).toEqual(event);
+    });
+
+    it('isValidEventType accepts the audit-only type', () => {
+      expect(isValidEventType('prompt.patch.applied')).toBe(true);
+    });
+
+    it('PromptId enum covers the closed prompt-id set', () => {
+      const expected = [
+        'ideation',
+        'planning',
+        'execution',
+        'evaluation',
+        'memorization',
+        'handoff',
+      ] as const;
+      // The factory accepts every member; round-trip preserves them.
+      for (const promptId of expected) {
+        const event = createPromptPatchApplied({ ...basePromptData, promptId });
+        expect(event.data.promptId).toBe(promptId);
+      }
+    });
+
+    it('parentPatchId can be null (genesis row marker)', () => {
+      const event = createPromptPatchApplied({
+        ...basePromptData,
+        parentPatchId: null,
+      });
+      expect(event.data.parentPatchId).toBeNull();
+    });
+
+    it('parentPatchId can be a string (chained patch)', () => {
+      const event = createPromptPatchApplied({
+        ...basePromptData,
+        parentPatchId: 'sha256-prior',
+      });
+      expect(event.data.parentPatchId).toBe('sha256-prior');
     });
   });
 });

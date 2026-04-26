@@ -14,6 +14,7 @@ import { join } from 'node:path';
 import { EventStore } from '../store.js';
 import type {
   AppendInput,
+  AppendInputContent,
   AppendInputCounter,
   AppendInputSystem,
   AppendInputToolCall,
@@ -78,6 +79,23 @@ function makeCounterInput(
     parent_seq: null,
     idempotencyKind: 'counter',
     counter: 0,
+    sessionId: 'sess-1',
+    ...overrides,
+  };
+}
+
+function makeContentInput(
+  overrides: Partial<AppendInputContent> = {},
+): AppendInput {
+  return {
+    ts: '2026-01-01T00:00:00.000Z',
+    type: 'prompt.patch.applied',
+    step: null,
+    data: JSON.stringify({ patchId: 'p1' }),
+    actor: 'operator',
+    parent_seq: null,
+    idempotencyKind: 'content',
+    contentId: 'sha256-content-1',
     sessionId: 'sess-1',
     ...overrides,
   };
@@ -776,6 +794,197 @@ describe('counter idempotency key', () => {
     expect(sys).not.toBeNull();
     expect(cnt).not.toBeNull();
     expect(sys!.idempotency_key).not.toBe(cnt!.idempotency_key);
+  });
+});
+
+// ===========================================================================
+// 'content' idempotency key — Wave C.1.3 (issue #156)
+//
+// Cross-session content-addressed dedup. The formula is `${type}:${contentId}`
+// — `sessionId` is intentionally absent from the key so the same patch
+// content appended from two different sessions dedupes at the events table.
+// Synthesis lock 8 + 9.
+// ===========================================================================
+
+describe('content idempotency key', () => {
+  it('generates key from eventType and contentId only — sessionId is NOT in the formula', () => {
+    using store = new EventStore(':memory:');
+
+    const row = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: 'sha256-abc',
+      }),
+    );
+
+    expect(row).not.toBeNull();
+    expect(row!.idempotency_key).toBe('prompt.patch.applied:sha256-abc');
+  });
+
+  it('same (type, contentId) collides regardless of sessionId — cross-session dedup', () => {
+    using store = new EventStore(':memory:');
+
+    const first = store.append(
+      makeContentInput({ contentId: 'sha256-shared', sessionId: 'sess-A' }),
+    );
+    // Different session, same content. Must dedupe — the patch_id is
+    // a content address, not a session-scoped identifier.
+    const dup = store.append(
+      makeContentInput({ contentId: 'sha256-shared', sessionId: 'sess-B' }),
+    );
+
+    expect(first).not.toBeNull();
+    expect(dup).toBeNull();
+    expect(store.eventCount()).toBe(1);
+  });
+
+  it('different contentIds produce distinct keys — both persist', () => {
+    using store = new EventStore(':memory:');
+
+    const r0 = store.append(makeContentInput({ contentId: 'sha256-a' }));
+    const r1 = store.append(makeContentInput({ contentId: 'sha256-b' }));
+
+    expect(r0).not.toBeNull();
+    expect(r1).not.toBeNull();
+    expect(r0!.idempotency_key).toBe('prompt.patch.applied:sha256-a');
+    expect(r1!.idempotency_key).toBe('prompt.patch.applied:sha256-b');
+    expect(store.eventCount()).toBe(2);
+  });
+
+  it('same contentId across different event types is distinct', () => {
+    using store = new EventStore(':memory:');
+
+    const r0 = store.append(
+      makeContentInput({ type: 'prompt.patch.applied', contentId: 'sha256-x' }),
+    );
+    const r1 = store.append(
+      makeContentInput({ type: 'unknown.future', contentId: 'sha256-x' }),
+    );
+
+    expect(r0).not.toBeNull();
+    expect(r1).not.toBeNull();
+    expect(r0!.idempotency_key).not.toBe(r1!.idempotency_key);
+  });
+
+  it('content kind is rejected at compile time when contentId is omitted', () => {
+    using store = new EventStore(':memory:');
+
+    const bad = {
+      ts: '2026-01-01T00:00:00.000Z',
+      type: 'prompt.patch.applied',
+      actor: 'operator',
+      idempotencyKind: 'content' as const,
+      sessionId: 'sess-1',
+      // contentId intentionally omitted
+    };
+    // @ts-expect-error — contentId is required when kind === 'content'
+    const row = store.append(bad);
+    // Like the counter case: tsc is the gate. Runtime will produce a
+    // degenerate `prompt.patch.applied:undefined` key — clearly wrong but
+    // not a crash.
+    expect(row).not.toBeNull();
+    expect(row!.idempotency_key).toBe('prompt.patch.applied:undefined');
+  });
+
+  it('byte-identical patches across DIFFERENT prompts produce distinct events when contentId is namespaced by promptId — Architecture F-4', () => {
+    // Wave C.1.6 R1 / Architecture F-4: the same RFC 6902 ops array
+    // applied to two different prompts (e.g., a generic
+    // `add /meta/notes "audited"` op meaningful for both `ideation` and
+    // `planning`) must produce TWO event rows, not one. The fix is to
+    // namespace `contentId` with `${promptId}:${patchId}` so the
+    // idempotency formula `${type}:${contentId}` resolves to distinct
+    // keys per prompt. This test locks the contract at the store layer.
+    using store = new EventStore(':memory:');
+
+    // The raw patch hash is identical across prompts; the namespaced
+    // `contentId` differs.
+    const rawPatchId = 'sha256-shared-ops';
+    const ideationContentId = `ideation:${rawPatchId}`;
+    const planningContentId = `planning:${rawPatchId}`;
+
+    const r1 = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: ideationContentId,
+        sessionId: 'sess-x',
+        data: JSON.stringify({ promptId: 'ideation', patchId: rawPatchId }),
+      }),
+    );
+    const r2 = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: planningContentId,
+        sessionId: 'sess-x',
+        data: JSON.stringify({ promptId: 'planning', patchId: rawPatchId }),
+      }),
+    );
+
+    expect(r1).not.toBeNull();
+    expect(r2).not.toBeNull();
+    expect(r1!.idempotency_key).toBe(`prompt.patch.applied:${ideationContentId}`);
+    expect(r2!.idempotency_key).toBe(`prompt.patch.applied:${planningContentId}`);
+    expect(r1!.idempotency_key).not.toBe(r2!.idempotency_key);
+    expect(store.eventCount()).toBe(2);
+
+    // Sanity check: the raw patchId on the JSON payload is the same
+    // (the operator's RFC 6902 ops array is byte-identical) — only the
+    // namespaced contentId differs.
+    const data1 = JSON.parse(r1!.data) as { patchId: string };
+    const data2 = JSON.parse(r2!.data) as { patchId: string };
+    expect(data1.patchId).toBe(rawPatchId);
+    expect(data2.patchId).toBe(rawPatchId);
+    expect(data1.patchId).toBe(data2.patchId);
+  });
+
+  it('byte-identical patches on the SAME prompt across two sessions still dedup — Architecture F-4 keeps the cross-session safety net', () => {
+    // The promptId-namespaced contentId must NOT break the original
+    // cross-session dedup contract: a patch hash applied twice on the
+    // same prompt from two different sessions still collapses to one
+    // event row (synthesis lock 8 + 9). The Architecture F-4 fix only
+    // changes the formula's INPUT (contentId now includes promptId),
+    // not its cross-session-collision semantics.
+    using store = new EventStore(':memory:');
+
+    const namespaced = 'ideation:sha256-same';
+
+    const first = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: namespaced,
+        sessionId: 'sess-A',
+        data: JSON.stringify({ promptId: 'ideation' }),
+      }),
+    );
+    const dup = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: namespaced,
+        sessionId: 'sess-B',
+        data: JSON.stringify({ promptId: 'ideation' }),
+      }),
+    );
+
+    expect(first).not.toBeNull();
+    expect(dup).toBeNull();
+    expect(store.eventCount()).toBe(1);
+  });
+
+  it('content row is still partitioned by session_id column even though sessionId is absent from the idempotency formula', () => {
+    using store = new EventStore(':memory:', { sessionId: 'sess-explicit' });
+
+    const row = store.append(
+      makeContentInput({
+        contentId: 'sha256-partition-check',
+        sessionId: 'sess-explicit',
+      }),
+    );
+
+    expect(row).not.toBeNull();
+    expect(row!.session_id).toBe('sess-explicit');
+    // Idempotency key omits the session — partition column does not.
+    expect(row!.idempotency_key).toBe(
+      'prompt.patch.applied:sha256-partition-check',
+    );
   });
 });
 
@@ -1640,5 +1849,244 @@ describe('WAL checkpoint after workflow.step.exit (#146 A.1.9)', () => {
     });
     expect(follow).not.toBeNull();
     expect(follow!.seq).toBe(2);
+  });
+});
+
+// ===========================================================================
+// appendWithProjection — atomic event + projection write (Wave C.1.6 R1,
+// Architecture F-1 fix). The events INSERT and the projection callback
+// share one bun:sqlite IMMEDIATE transaction; a thrown projection rolls
+// the events row back, and a deduped event skips the projection entirely.
+// ===========================================================================
+
+describe('appendWithProjection — atomic event + projection write', () => {
+  /**
+   * Seed the v7 `prompt_patches` table on a fresh on-disk store. The
+   * table is created by `ensureSchemaV7` during EventStore construction;
+   * the helper here just opens a same-process connection to confirm the
+   * shape used by the atomicity tests below.
+   */
+  function withTmpStore<T>(fn: (store: EventStore, dbPath: string) => T): T {
+    const tmp = mkdtempSync(join(tmpdir(), 'store-aw-'));
+    const dbPath = join(tmp, 'state.db');
+    const store = new EventStore(dbPath, {
+      sessionId: 'sess-aw',
+      projectId: 'proj-aw',
+    });
+    try {
+      return fn(store, dbPath);
+    } finally {
+      store.close();
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  }
+
+  it('commits both writes when the projection callback succeeds', () => {
+    withTmpStore((store, dbPath) => {
+      const row = store.appendWithProjection(
+        makeContentInput({
+          contentId: 'sha256-aw-ok',
+          sessionId: 'sess-aw',
+          data: JSON.stringify({ promptId: 'ideation' }),
+        }),
+        (db, eventRow) => {
+          db.run(
+            `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              'sess-aw',
+              'proj-aw',
+              'ideation',
+              null,
+              eventRow.seq,
+              'sha256-aw-ok',
+              '[]',
+              'sha256:0',
+              'sha256:1',
+              Date.parse('2026-01-01T00:00:00.000Z'),
+              'operator',
+            ],
+          );
+        },
+      );
+
+      expect(row).not.toBeNull();
+      expect(row!.seq).toBe(1);
+
+      // Both rows persisted in the same transaction — verify via a
+      // separate read-only handle.
+      const reader = new Database(dbPath, { readonly: true });
+      try {
+        const eventCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM events`).get()
+        )?.cnt ?? 0;
+        const projectionCount = (
+          reader
+            .query<{ cnt: number }, []>(
+              `SELECT count(*) AS cnt FROM prompt_patches WHERE event_seq = ${row!.seq}`,
+            )
+            .get()
+        )?.cnt ?? 0;
+        expect(eventCount).toBe(1);
+        expect(projectionCount).toBe(1);
+      } finally {
+        reader.close();
+      }
+    });
+  });
+
+  it('rolls back the events row when the projection callback throws', () => {
+    withTmpStore((store, dbPath) => {
+      let threw = false;
+      try {
+        store.appendWithProjection(
+          makeContentInput({
+            contentId: 'sha256-aw-rollback',
+            sessionId: 'sess-aw',
+            data: JSON.stringify({ promptId: 'ideation' }),
+          }),
+          (_db, _row) => {
+            // Simulate a projection write failure (e.g. CHECK constraint
+            // violation, or a synthetic mid-transaction abort). bun:sqlite
+            // surfaces the throw as a rolled-back transaction.
+            throw new Error('synthetic projection failure');
+          },
+        );
+      } catch {
+        threw = true;
+      }
+
+      expect(threw).toBe(true);
+
+      // The events row MUST NOT exist — atomicity guarantee. If the
+      // events INSERT had committed independently of the projection
+      // callback (the pre-R1 two-handle bug), this row count would be 1.
+      const reader = new Database(dbPath, { readonly: true });
+      try {
+        const eventCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM events`).get()
+        )?.cnt ?? 0;
+        const projectionCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM prompt_patches`).get()
+        )?.cnt ?? 0;
+        expect(eventCount).toBe(0);
+        expect(projectionCount).toBe(0);
+      } finally {
+        reader.close();
+      }
+    });
+  });
+
+  it('skips the projection callback when the event was deduped', () => {
+    withTmpStore((store, dbPath) => {
+      // First append — both writes commit.
+      const first = store.appendWithProjection(
+        makeContentInput({
+          contentId: 'sha256-aw-dup',
+          sessionId: 'sess-aw',
+          data: JSON.stringify({ promptId: 'ideation' }),
+        }),
+        (db, row) => {
+          db.run(
+            `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              'sess-aw',
+              'proj-aw',
+              'ideation',
+              null,
+              row.seq,
+              'sha256-aw-dup',
+              '[]',
+              'sha256:0',
+              'sha256:1',
+              Date.parse('2026-01-01T00:00:00.000Z'),
+              'operator',
+            ],
+          );
+        },
+      );
+      expect(first).not.toBeNull();
+
+      // Second append — same content. Idempotency key collides; the
+      // projection callback MUST NOT be invoked (otherwise the
+      // UNIQUE(prompt_id, patch_id) index would throw, but more
+      // importantly the contract is "no projection write on dedup").
+      let projectionInvocations = 0;
+      const dup = store.appendWithProjection(
+        makeContentInput({
+          contentId: 'sha256-aw-dup',
+          sessionId: 'sess-aw-other',
+          data: JSON.stringify({ promptId: 'ideation' }),
+        }),
+        () => {
+          projectionInvocations += 1;
+        },
+      );
+
+      expect(dup).toBeNull();
+      expect(projectionInvocations).toBe(0);
+
+      // Only the original row exists.
+      const reader = new Database(dbPath, { readonly: true });
+      try {
+        const eventCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM events`).get()
+        )?.cnt ?? 0;
+        const projectionCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM prompt_patches`).get()
+        )?.cnt ?? 0;
+        expect(eventCount).toBe(1);
+        expect(projectionCount).toBe(1);
+      } finally {
+        reader.close();
+      }
+    });
+  });
+
+  it('events.seq matches prompt_patches.event_seq after a successful append', () => {
+    withTmpStore((store, dbPath) => {
+      const row = store.appendWithProjection(
+        makeContentInput({
+          contentId: 'sha256-aw-link',
+          sessionId: 'sess-aw',
+          data: JSON.stringify({ promptId: 'planning' }),
+        }),
+        (db, eventRow) => {
+          db.run(
+            `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              'sess-aw',
+              'proj-aw',
+              'planning',
+              null,
+              eventRow.seq,
+              'sha256-aw-link',
+              '[]',
+              'sha256:0',
+              'sha256:1',
+              Date.parse('2026-01-01T00:00:00.000Z'),
+              'operator',
+            ],
+          );
+        },
+      );
+      expect(row).not.toBeNull();
+
+      const reader = new Database(dbPath, { readonly: true });
+      try {
+        const eventSeq = reader
+          .query<{ seq: number }, []>(`SELECT seq FROM events ORDER BY seq DESC LIMIT 1`)
+          .get()?.seq;
+        const projectionEventSeq = reader
+          .query<{ event_seq: number }, []>(
+            `SELECT event_seq FROM prompt_patches ORDER BY seq DESC LIMIT 1`,
+          )
+          .get()?.event_seq;
+        expect(eventSeq).toBe(row!.seq);
+        expect(projectionEventSeq).toBe(row!.seq);
+        expect(eventSeq).toBe(projectionEventSeq);
+      } finally {
+        reader.close();
+      }
+    });
   });
 });
