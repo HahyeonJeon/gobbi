@@ -56,8 +56,6 @@
  * installed prompts; they patch the source repo and rebuild.
  */
 
-import { execFileSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
 import {
   existsSync,
   readFileSync,
@@ -88,7 +86,7 @@ import type { WorkflowStep } from '../../workflow/state.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
 import { EventStore } from '../../workflow/store.js';
 import {
-  appendJsonlSync,
+  appendPromptEvolutionEntry,
   buildGenesisEntry,
   contentHash,
 } from '../../lib/prompt-evolution.js';
@@ -497,7 +495,11 @@ export async function runPromptPatchOnFiles(
             'unreachable: appendWithProjection succeeded but genesis entry was not captured',
           );
         }
-        appendJsonlSync(jsonlPath, JSON.stringify(genesisEntry));
+        // Use the shared `appendPromptEvolutionEntry` helper rather
+        // than rebuilding the JSONL-line stringification at the call
+        // site (Wave C.1.6 R1 / Overall F-2 fix). One source of truth
+        // for the wire shape — `lib/prompt-evolution.ts`.
+        appendPromptEvolutionEntry(jsonlPath, genesisEntry);
         parentPatchId = genesisEntry.patchId;
         parentSeq = genesisProjectionSeq;
       } else {
@@ -595,7 +597,9 @@ export async function runPromptPatchOnFiles(
     eventSeq = eventRow.seq;
 
     // JSONL append (after SQL transaction commits; crash-recovery
-    // covered by F-5 diagnostic on next run).
+    // covered by F-5 diagnostic on next run). Uses the shared
+    // `appendPromptEvolutionEntry` helper so the JSONL wire shape
+    // lives in one place (Wave C.1.6 R1 / Overall F-2 fix).
     const entry: PromptEvolutionEntry = {
       v: 1,
       ts,
@@ -610,7 +614,7 @@ export async function runPromptPatchOnFiles(
       eventSeq: eventRow.seq,
       schemaId: STEP_SPEC_SCHEMA_ID,
     };
-    appendJsonlSync(jsonlPath, JSON.stringify(entry));
+    appendPromptEvolutionEntry(jsonlPath, entry);
 
     // Atomic spec.json write (temp+rename).
     const tmp = `${specPath}.tmp`;
@@ -897,7 +901,3 @@ function printPatchSummary(result: PromptPatchResult): void {
 
 export { PROMPT_PATCH_USAGE };
 const PROMPT_PATCH_USAGE = USAGE;
-
-// Suppress unused warnings while keeping the imports above narrowed.
-void execFileSync;
-void createHash;
