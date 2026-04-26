@@ -127,8 +127,11 @@ describe('buildGenesisEntry', () => {
       { op: 'add', path: '', value: BASELINE_SPEC },
     ]);
     expect(entry.appliedBy).toBe('operator');
-    expect(entry.validationStatus).toBe('passed');
     expect(entry.v).toBe(1);
+    // Wave C.1.6 R1 / Overall F-4: `validationStatus` was dropped from
+    // the JSONL wire shape. Existence of the line IS the "passed"
+    // signal.
+    expect('validationStatus' in entry).toBe(false);
   });
 
   test('preHash hashes the empty-object baseline (genesis convention)', () => {
@@ -249,7 +252,6 @@ describe('appendPromptEvolutionEntry', () => {
       preHash: genesis.postHash,
       postHash: contentHash({ ...BASELINE_SPEC, version: 1 }),
       ops,
-      validationStatus: 'passed',
       appliedBy: 'operator',
       eventSeq: 2,
       schemaId: SCHEMA_ID,
@@ -310,7 +312,6 @@ describe('foldChain', () => {
       preHash: genesis.postHash,
       postHash: contentHash(intermediate),
       ops: ops1,
-      validationStatus: 'passed',
       appliedBy: 'operator',
       eventSeq: 2,
       schemaId: SCHEMA_ID,
@@ -329,7 +330,6 @@ describe('foldChain', () => {
       preHash: entry1.postHash,
       postHash: contentHash(finalSpec),
       ops: ops2,
-      validationStatus: 'passed',
       appliedBy: 'operator',
       eventSeq: 3,
       schemaId: SCHEMA_ID,
@@ -352,7 +352,6 @@ describe('foldChain', () => {
       preHash: contentHash({}),
       postHash: contentHash(BASELINE_SPEC),
       ops: [{ op: 'add', path: '', value: BASELINE_SPEC }],
-      validationStatus: 'passed',
       appliedBy: 'operator',
       eventSeq: 1,
       schemaId: SCHEMA_ID,
@@ -382,7 +381,6 @@ describe('foldChain', () => {
       preHash: genesis.postHash,
       postHash: genesis.postHash,
       ops: [],
-      validationStatus: 'passed',
       appliedBy: 'operator',
       eventSeq: 2,
       schemaId: SCHEMA_ID,
@@ -461,7 +459,6 @@ describe('foldChain', () => {
       preHash: genesis.postHash,
       postHash: genesis.postHash,
       ops,
-      validationStatus: 'passed',
       appliedBy: 'operator',
       eventSeq: 2,
       schemaId: SCHEMA_ID,
@@ -469,5 +466,43 @@ describe('foldChain', () => {
     appendPromptEvolutionEntry(path, bogus);
 
     expect(() => foldChain(path)).toThrow(/applyPatch failed/);
+  });
+
+  test('accepts a legacy line carrying validationStatus: "passed" and ignores the field (Wave C.1.6 R1)', () => {
+    // Backward compatibility: chains written by the prior pass carry
+    // a `validationStatus: "passed"` field on every line. The reader
+    // accepts but ignores these (Overall F-4 fix).
+    const path = join(testDir, 'ideation.jsonl');
+    const genesis = buildGenesisEntry({
+      promptId: 'ideation',
+      baselineSpec: BASELINE_SPEC,
+      ts: '2026-04-26T00:00:00Z',
+      schemaId: SCHEMA_ID,
+      eventSeq: 1,
+    });
+    const legacy = { ...genesis, validationStatus: 'passed' };
+    appendJsonlSync(path, JSON.stringify(legacy));
+
+    const result = foldChain(path);
+    expect(result.entryCount).toBe(1);
+    expect(canonicalize(result.spec)).toBe(canonicalize(BASELINE_SPEC));
+  });
+
+  test('rejects a legacy line whose validationStatus carries an unexpected value', () => {
+    // The reader IGNORES `validationStatus` when 'passed', but a non-
+    // 'passed' value (which never legitimately existed) is corruption
+    // and must be rejected loudly.
+    const path = join(testDir, 'ideation.jsonl');
+    const genesis = buildGenesisEntry({
+      promptId: 'ideation',
+      baselineSpec: BASELINE_SPEC,
+      ts: '2026-04-26T00:00:00Z',
+      schemaId: SCHEMA_ID,
+      eventSeq: 1,
+    });
+    const corrupted = { ...genesis, validationStatus: 'failed' };
+    appendJsonlSync(path, JSON.stringify(corrupted));
+
+    expect(() => foldChain(path)).toThrow(/validationStatus.*must equal 'passed'/);
   });
 });

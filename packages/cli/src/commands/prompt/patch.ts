@@ -609,7 +609,6 @@ export async function runPromptPatchOnFiles(
       preHash,
       postHash,
       ops: mergedOps,
-      validationStatus: 'passed',
       appliedBy: 'operator',
       eventSeq: eventRow.seq,
       schemaId: STEP_SPEC_SCHEMA_ID,

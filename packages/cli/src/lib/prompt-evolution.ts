@@ -73,6 +73,15 @@ export type PromptId =
  * snake_case SQL — established gobbi precedent at
  * `events/workflow.ts:73-86`). `eventSeq` back-links to
  * `state.db::events.seq`.
+ *
+ * Wave C.1.6 R1 / Overall F-4: the field formerly known as
+ * `validationStatus` was removed. The prior pass dropped the
+ * SQLite column but kept the JSONL field, leaving an asymmetric
+ * wire shape (column gone, line constant carrying the same value).
+ * Existence of the row IS the "passed" signal; a future schema-v2
+ * status taxonomy will be a separate field. The fold-time reader
+ * accepts and IGNORES `validationStatus` if a legacy line carries
+ * it — see {@link parseEntry}.
  */
 export interface PromptEvolutionEntry {
   readonly v: 1;
@@ -83,7 +92,6 @@ export interface PromptEvolutionEntry {
   readonly preHash: string;
   readonly postHash: string;
   readonly ops: ReadonlyArray<Operation>;
-  readonly validationStatus: 'passed';
   readonly appliedBy: 'operator';
   readonly eventSeq: number;
   readonly schemaId: string;
@@ -167,7 +175,6 @@ export function buildGenesisEntry(args: {
     preHash,
     postHash,
     ops,
-    validationStatus: 'passed',
     appliedBy: 'operator',
     eventSeq: args.eventSeq,
     schemaId: args.schemaId,
@@ -389,9 +396,17 @@ function parseEntry(value: unknown): PromptEvolutionEntry {
     throw new Error('field ops must be an array');
   }
 
-  if (obj['validationStatus'] !== 'passed') {
+  // Wave C.1.6 R1 / Overall F-4: `validationStatus` was dropped from
+  // the wire shape. Legacy lines may carry `validationStatus: 'passed'`
+  // — accept and IGNORE so older JSONL chains keep folding cleanly.
+  // A line with a non-'passed' value (which never legitimately existed)
+  // is rejected as corruption.
+  if (
+    'validationStatus' in obj &&
+    obj['validationStatus'] !== 'passed'
+  ) {
     throw new Error(
-      `field validationStatus must be 'passed' (got ${String(
+      `field validationStatus, when present, must equal 'passed' (got ${String(
         obj['validationStatus'],
       )})`,
     );
@@ -411,7 +426,6 @@ function parseEntry(value: unknown): PromptEvolutionEntry {
     preHash: requireString('preHash'),
     postHash: requireString('postHash'),
     ops: opsRaw as ReadonlyArray<Operation>,
-    validationStatus: 'passed',
     appliedBy: 'operator',
     eventSeq: requireNumber('eventSeq'),
     schemaId: requireString('schemaId'),
