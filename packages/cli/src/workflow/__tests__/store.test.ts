@@ -886,6 +886,89 @@ describe('content idempotency key', () => {
     expect(row!.idempotency_key).toBe('prompt.patch.applied:undefined');
   });
 
+  it('byte-identical patches across DIFFERENT prompts produce distinct events when contentId is namespaced by promptId — Architecture F-4', () => {
+    // Wave C.1.6 R1 / Architecture F-4: the same RFC 6902 ops array
+    // applied to two different prompts (e.g., a generic
+    // `add /meta/notes "audited"` op meaningful for both `ideation` and
+    // `planning`) must produce TWO event rows, not one. The fix is to
+    // namespace `contentId` with `${promptId}:${patchId}` so the
+    // idempotency formula `${type}:${contentId}` resolves to distinct
+    // keys per prompt. This test locks the contract at the store layer.
+    using store = new EventStore(':memory:');
+
+    // The raw patch hash is identical across prompts; the namespaced
+    // `contentId` differs.
+    const rawPatchId = 'sha256-shared-ops';
+    const ideationContentId = `ideation:${rawPatchId}`;
+    const planningContentId = `planning:${rawPatchId}`;
+
+    const r1 = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: ideationContentId,
+        sessionId: 'sess-x',
+        data: JSON.stringify({ promptId: 'ideation', patchId: rawPatchId }),
+      }),
+    );
+    const r2 = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: planningContentId,
+        sessionId: 'sess-x',
+        data: JSON.stringify({ promptId: 'planning', patchId: rawPatchId }),
+      }),
+    );
+
+    expect(r1).not.toBeNull();
+    expect(r2).not.toBeNull();
+    expect(r1!.idempotency_key).toBe(`prompt.patch.applied:${ideationContentId}`);
+    expect(r2!.idempotency_key).toBe(`prompt.patch.applied:${planningContentId}`);
+    expect(r1!.idempotency_key).not.toBe(r2!.idempotency_key);
+    expect(store.eventCount()).toBe(2);
+
+    // Sanity check: the raw patchId on the JSON payload is the same
+    // (the operator's RFC 6902 ops array is byte-identical) — only the
+    // namespaced contentId differs.
+    const data1 = JSON.parse(r1!.data) as { patchId: string };
+    const data2 = JSON.parse(r2!.data) as { patchId: string };
+    expect(data1.patchId).toBe(rawPatchId);
+    expect(data2.patchId).toBe(rawPatchId);
+    expect(data1.patchId).toBe(data2.patchId);
+  });
+
+  it('byte-identical patches on the SAME prompt across two sessions still dedup — Architecture F-4 keeps the cross-session safety net', () => {
+    // The promptId-namespaced contentId must NOT break the original
+    // cross-session dedup contract: a patch hash applied twice on the
+    // same prompt from two different sessions still collapses to one
+    // event row (synthesis lock 8 + 9). The Architecture F-4 fix only
+    // changes the formula's INPUT (contentId now includes promptId),
+    // not its cross-session-collision semantics.
+    using store = new EventStore(':memory:');
+
+    const namespaced = 'ideation:sha256-same';
+
+    const first = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: namespaced,
+        sessionId: 'sess-A',
+        data: JSON.stringify({ promptId: 'ideation' }),
+      }),
+    );
+    const dup = store.append(
+      makeContentInput({
+        type: 'prompt.patch.applied',
+        contentId: namespaced,
+        sessionId: 'sess-B',
+        data: JSON.stringify({ promptId: 'ideation' }),
+      }),
+    );
+
+    expect(first).not.toBeNull();
+    expect(dup).toBeNull();
+    expect(store.eventCount()).toBe(1);
+  });
+
   it('content row is still partitioned by session_id column even though sessionId is absent from the idempotency formula', () => {
     using store = new EventStore(':memory:', { sessionId: 'sess-explicit' });
 

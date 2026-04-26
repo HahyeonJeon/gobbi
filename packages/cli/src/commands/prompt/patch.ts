@@ -426,9 +426,18 @@ export async function runPromptPatchOnFiles(
       // Synthesize genesis from the pre-patch spec. Atomic — event +
       // projection share one transaction (Wave C.1.6 R1, Architecture
       // F-1 fix).
-      const genesisContentId = contentHash([
+      //
+      // The events idempotency `contentId` is namespaced by `promptId`
+      // (Architecture F-4 fix, Wave C.1.6 R1): the same RFC 6902 ops
+      // array applied across two prompts (e.g., the same `add /`
+      // synthesized from two different baseline specs) must produce
+      // two distinct event rows, not one. Without the prefix the
+      // events table would dedup at the second `gobbi prompt patch`
+      // and the projection insert would be skipped.
+      const genesisPatchId = contentHash([
         { op: 'add', path: '', value: specRaw },
       ]);
+      const genesisContentId = `${inputs.promptId}:${genesisPatchId}`;
       // `genesisEntryRef` is captured inside the projection callback so
       // the post-callback code can append the JSONL line and read the
       // projection seq without re-querying. TypeScript's flow analysis
@@ -448,7 +457,7 @@ export async function runPromptPatchOnFiles(
           sessionId,
           data: JSON.stringify({
             promptId: inputs.promptId,
-            patchId: genesisContentId,
+            patchId: genesisPatchId,
             parentPatchId: null,
             preHash: contentHash({}),
             postHash: preHash,
@@ -493,11 +502,14 @@ export async function runPromptPatchOnFiles(
         parentSeq = genesisProjectionSeq;
       } else {
         // Genesis event was deduped (someone else just wrote it). Read
-        // back the existing genesis row and continue.
+        // back the existing genesis row and continue. Note: the
+        // projection row's `patch_id` column stores the raw patch hash
+        // (NOT the events idempotency `contentId`, which is namespaced
+        // by promptId per Architecture F-4).
         const dedupedSeq = readPatchSeqByContent(
           store,
           inputs.promptId,
-          genesisContentId,
+          genesisPatchId,
         );
         if (dedupedSeq === null) {
           throw new Error(
@@ -520,13 +532,22 @@ export async function runPromptPatchOnFiles(
     // SQLite IMMEDIATE transaction. A SIGKILL between the events INSERT
     // and the prompt_patches INSERT rolls both back rather than leaving
     // an orphan event row (Wave C.1.6 R1 / Architecture F-1 fix).
+    //
+    // The events idempotency `contentId` is namespaced by `promptId`
+    // (Architecture F-4 fix, Wave C.1.6 R1): a byte-identical RFC 6902
+    // ops array applied across two prompts (e.g., a generic
+    // `add /meta/notes` op meaningful for both `ideation` and
+    // `planning`) must produce two distinct event rows. Without the
+    // prefix the second invocation would dedup at the events table
+    // and skip the projection write entirely.
+    const eventContentId = `${inputs.promptId}:${patchId}`;
     const eventRow = store.appendWithProjection(
       {
         ts,
         type: 'prompt.patch.applied',
         actor: 'operator',
         idempotencyKind: 'content',
-        contentId: patchId,
+        contentId: eventContentId,
         sessionId,
         data: JSON.stringify({
           promptId: inputs.promptId,
