@@ -236,7 +236,7 @@ The spec model provides four concrete benefits. Guards (`gobbi workflow validate
 
 The Pass-4 design ([`orchestration/README.md` § 5](v050-features/orchestration/README.md#5-jit-prompt-footer-pattern)) introduces a data-driven footer pattern: each step's `spec.json` declares a footer block, which the prompt compiler renders at the end of the assembled step prompt. Wave B.1 implements the runtime; this doc describes the design intent only.
 
-The footer tells the orchestrator exactly which `gobbi workflow transition` command to run when the step is complete. Every step receives a COMPLETE-only footer; evaluation steps also receive PASS/REVISE/ESCALATE variants. This is the first proving-ground prompt for the prompts-as-data pass — the footer block moves from a hardcoded string in TypeScript to a `blocks.footer` field in `spec.json`, rendered by `assembly.ts::compile()`. Wave B.1 implements the three-file simultaneous update (`_schema/v1.ts`, `_schema/v1.json`, `types.ts::StepBlocks`) required to add the `blocks.footer` field without breaking `tsc --noEmit` or the `schema.test.ts` drift test.
+The footer tells the orchestrator exactly which `gobbi workflow transition` command to run when the step is complete. Every step receives a COMPLETE-only footer; evaluation steps also receive PASS/REVISE/ESCALATE variants. Today the footer is a hardcoded TypeScript string; the data-driven move puts it in `spec.json` as a `blocks.footer` field. Wave B.1 owns the implementation — schema additions, renderer changes, and drift-test updates — and is free to choose the field shape and runtime contract that best matches the prompts-as-data design.
 
 ---
 

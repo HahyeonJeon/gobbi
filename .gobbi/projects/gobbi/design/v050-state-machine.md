@@ -138,7 +138,7 @@ The `workflow.step.skip` transition allows the user to jump the workflow forward
 
 > **State is a pure function of events. The reducer is the canonical definition of what each event means.**
 
-The reducer takes the current state and one event, and returns the next state. It is pure — no side effects, no external reads. Replaying all events in sequence order produces the same state as reading `state.json`. When `state.json` is absent or invalid, the CLI replays `gobbi.db` through the reducer to rebuild it.
+The reducer takes the current state and one event, and returns the next state. It is pure — no side effects, no external reads. Replaying all events in sequence order produces the same state as reading `state.json`. When `state.json` is absent or invalid, the CLI replays `state.db` through the reducer to rebuild it.
 
 The reducer is structured as a discriminated union switch: the `type` field of the event is the discriminant, and each case handles one event type. The switch has a default branch that assigns to a `never`-typed variable. This TypeScript exhaustiveness pattern means the compiler reports a type error if a new event type is added to the enum without a corresponding reducer case — no event type can be silently ignored. The `error` state is a variant in this discriminated union — its valid events and transitions are handled by the same exhaustiveness mechanism as all other states.
 
