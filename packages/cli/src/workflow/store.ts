@@ -24,6 +24,7 @@ import {
   backfillSessionAndProjectIds,
   ensureSchemaV5,
   ensureSchemaV6,
+  ensureSchemaV7,
 } from './migrations.js';
 import type { EventRow } from './migrations.js';
 
@@ -511,6 +512,14 @@ export class EventStore implements WriteStore {
     // wires this here so `EventStore` callers get v6 tables without
     // running `gobbi maintenance migrate-state-db` explicitly.
     ensureSchemaV6(this.db);
+    // Additive v6 → v7 schema migration — creates the `prompt_patches`
+    // workspace-partitioned audit table for the prompts-as-data feature
+    // (Wave C.1.2, issue #156). Idempotent (every CREATE uses `IF NOT
+    // EXISTS`) so this is safe to call on every store open. The stamp
+    // inside `ensureSchemaV7` writes `CURRENT_SCHEMA_VERSION` (= 7),
+    // overwriting the v6 stamp from the line above so callers reading
+    // `schema_meta.schema_version` see the latest applied version.
+    ensureSchemaV7(this.db);
   }
 
   // -------------------------------------------------------------------------
