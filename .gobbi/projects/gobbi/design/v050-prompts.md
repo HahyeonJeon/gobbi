@@ -21,7 +21,7 @@ prompt = compile(state, artifacts, skills, gotchas, context)
 | `state` | `state.json` from the active session | Current step, completed steps, eval config, active subagents |
 | `artifacts` | Step directories under `.gobbi/projects/<name>/sessions/{id}/` | Prior step outputs inlined as context for the current step |
 | `skills` | `.claude/skills/` — the surviving domain skills | Domain knowledge injected as materials, not instructions |
-| `gotchas` | `.claude/skills/_gotcha/` and `.gobbi/project/gotchas/` | Known failure patterns prepended as guards |
+| `gotchas` | `.claude/skills/_gotcha/` and `.gobbi/projects/<name>/learnings/gotchas/` | Known failure patterns prepended as guards |
 | `context` | `metadata.json` plus project root scan | Project path, config snapshot, tech stack context |
 
 The CLI reads `state.json` first to determine which step is active. It then selects which artifacts are relevant to the current step — an Execution prompt needs Plan artifacts; an Evaluation prompt needs Execution artifacts. It loads the surviving skills that are appropriate for this step and inlines their content as materials. Gotchas are always included. The resulting prompt is the only thing the orchestrator sees.
@@ -231,6 +231,12 @@ Every spec file carries `$schema` and `version` fields. When the CLI loads a spe
 > **Adding a workflow step means adding a spec file — no TypeScript modification required for content changes.**
 
 The spec model provides four concrete benefits. Guards (`gobbi workflow validate`) can validate structured delegation data without parsing prose. The `SubagentStop` hook knows expected artifacts from the spec's `delegation` config without introspecting the conversation. Static analysis at build time catches structural errors — missing transitions, broken refs, unreachable steps — before they reach runtime. Cache-aware ordering is enforced by the spec schema: `static` blocks always come before `conditional` blocks, which always come before `delegation` blocks, which preserves the static prefix guarantee described in the Cache-Aware Prompt Ordering section above.
+
+### JIT Footer Pattern (Wave B.1)
+
+The Pass-4 design ([`orchestration/README.md` § 5](v050-features/orchestration/README.md#5-jit-prompt-footer-pattern)) introduces a data-driven footer pattern: each step's `spec.json` declares a footer block, which the prompt compiler renders at the end of the assembled step prompt. Wave B.1 implements the runtime; this doc describes the design intent only.
+
+The footer tells the orchestrator exactly which `gobbi workflow transition` command to run when the step is complete. Every step receives a COMPLETE-only footer; evaluation steps also receive PASS/REVISE/ESCALATE variants. This is the first proving-ground prompt for the prompts-as-data pass — the footer block moves from a hardcoded string in TypeScript to a `blocks.footer` field in `spec.json`, rendered by `assembly.ts::compile()`. Wave B.1 implements the three-file simultaneous update (`_schema/v1.ts`, `_schema/v1.json`, `types.ts::StepBlocks`) required to add the `blocks.footer` field without breaking `tsc --noEmit` or the `schema.test.ts` drift test.
 
 ---
 

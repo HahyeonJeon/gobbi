@@ -17,7 +17,8 @@ Sessions are stored under `.gobbi/projects/{project-name}/sessions/{session-id}/
 ```
 .gobbi/
 ├── settings.json              workspace prefs — gitignored (see gobbi-config/README.md)
-├── gobbi.db                   workspace event store — single SQLite file for all projects/sessions
+├── state.db                   workspace event log — gitignored (append-only SQLite)
+├── gobbi.db                   workspace memories projection — git-tracked (decisions, gotchas, handoffs)
 └── projects/
     └── {project-name}/
         ├── settings.json          project config — tracked, AJV-validated
@@ -34,9 +35,9 @@ Sessions are stored under `.gobbi/projects/{project-name}/sessions/{session-id}/
                 └── memorization/      step artifacts — flat directory
 ```
 
-Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The workspace event store is `gobbi.db` at the `.gobbi/` root — one file for all projects and sessions, with `project_id` and `session_id` columns on every event row for scoped queries. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
+Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The workspace event store is `state.db` at the `.gobbi/` root — one file for all projects and sessions, with `project_id` and `session_id` columns on every event row for scoped queries. The workspace memories projection is `gobbi.db` at the `.gobbi/` root — git-tracked, holds decisions, gotchas, design notes, and handoff rows. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
 
-Each file and directory has a single responsibility. `metadata.json` and `gobbi.db` are the permanent record. `state.json` is a derived view — it can be rebuilt from `gobbi.db` at any time. `events.jsonl` has been removed; `gobbi.db` is the sole event store.
+Each file and directory has a single responsibility. `metadata.json` and `state.db` are the permanent record. `state.json` is a derived view — it can be rebuilt from `state.db` at any time. `events.jsonl` has been removed; `state.db` is the sole event store.
 
 ---
 
@@ -44,9 +45,11 @@ Each file and directory has a single responsibility. `metadata.json` and `gobbi.
 
 **`metadata.json`** is written once when the session is created and never modified. It records the session ID, creation timestamp, the project root path, and the user configuration snapshot that was active at session start. Because it is immutable, it remains valid even if the rest of the session directory is corrupted.
 
-**`gobbi.db`** is the authoritative event store — a single SQLite file at `.gobbi/gobbi.db` shared across all projects and sessions in the workspace. Every workflow event — step transitions, subagent completions, evaluation verdicts, user decisions, guard violations — is appended as a row. The CLI reads `gobbi.db` to derive workflow state when generating the next prompt. The hooks write to `gobbi.db` when events occur. Each row carries `project_id` and `session_id` columns so queries can be scoped to one project or session without scanning the full log.
+**`state.db`** is the authoritative event store — a single SQLite file at `.gobbi/state.db` shared across all projects and sessions in the workspace (gitignored). Every workflow event — step transitions, subagent completions, evaluation verdicts, user decisions, guard violations — is appended as a row. The CLI reads `state.db` to derive workflow state when generating the next prompt. The hooks write to `state.db` when events occur. Each row carries `project_id` and `session_id` columns so queries can be scoped to one project or session without scanning the full log.
 
-**`state.json`** is a materialized view of current workflow state, derived by reducing all events in `gobbi.db` for the active session. It is written after every event append. Reading `state.json` is faster than replaying all events on each CLI invocation, but it is a cache, not a source. If `state.json` is absent or corrupted, it is rebuilt from `gobbi.db`.
+**`gobbi.db`** is the workspace memories projection — a single SQLite file at `.gobbi/gobbi.db` (git-tracked). It holds cross-session persistent records: decisions (`class='decision'`), gotchas (`class='gotcha'`), design notes (`class='design'`), backlogs (`class='backlog'`), and handoff summaries (`class='handoff'`). Written by Memorization and Handoff steps; readable by every subsequent session. The markdown tree under `.gobbi/projects/<name>/learnings/` is the source of truth for git; `gobbi.db` is the read-optimized projection, regenerable from the markdown.
+
+**`state.json`** is a materialized view of current workflow state, derived by reducing all events in `state.db` for the active session. It is written after every event append. Reading `state.json` is faster than replaying all events on each CLI invocation, but it is a cache, not a source. If `state.json` is absent or corrupted, it is rebuilt from `state.db`.
 
 **`state.json.backup`** holds the state as it was before the most recent transition — the Terraform apply pattern. Before writing a new `state.json`, the CLI copies the current `state.json` to `state.json.backup`. If a transition corrupts `state.json`, the backup provides a known-good rollback point without requiring full event replay.
 
@@ -64,7 +67,7 @@ The SubagentStop capture hook reads `feedbackRound` from `state.json` to constru
 
 > **The event store is the source of truth. Everything else is derived from it.**
 
-SQLite with WAL mode is chosen over a pure JSONL approach for three reasons: indexed queries allow efficient filtering by event type and step without full scans; atomic writes with WAL mode survive mid-write crashes without partial records; built-in sequence numbers provide a reliable ordering guarantee. The implementation uses Bun's native `bun:sqlite` module — zero additional runtime dependencies. A single `gobbi.db` at `.gobbi/gobbi.db` serves the entire workspace; the `project_id` and `session_id` columns on each row provide the scoping that per-session files previously offered.
+SQLite with WAL mode is chosen over a pure JSONL approach for three reasons: indexed queries allow efficient filtering by event type and step without full scans; atomic writes with WAL mode survive mid-write crashes without partial records; built-in sequence numbers provide a reliable ordering guarantee. The implementation uses Bun's native `bun:sqlite` module — zero additional runtime dependencies. A single `state.db` at `.gobbi/state.db` serves the entire workspace; the `project_id` and `session_id` columns on each row provide the scoping that per-session files previously offered.
 
 ### Events Table
 
@@ -92,19 +95,23 @@ Three indexes cover the common access patterns: one on `type` for queries that f
 
 ### Event Type Enum
 
-Events are grouped into six categories that reflect the things that can happen in a session.
+Events are grouped into seven categories that reflect the things that can happen in a session. The closed-enumeration discipline: 23 event types total post-Pass-4 — any reducer-accepted event is in this set. The test suite asserts `ALL_EVENT_TYPES.size === 23`.
 
-**Workflow** events track the high-level session progression:
+**Workflow** events track the high-level session progression (9 events):
 
 | Event | Meaning |
 |-------|---------|
 | `workflow.start` | Session began — first event in every session |
 | `workflow.step.exit` | A workflow step completed normally — triggers transition to next step |
 | `workflow.step.skip` | A workflow step was bypassed (step field indicates which) |
+| `workflow.step.timeout` | Step's configured timeout exceeded — transitions to `error` state |
 | `workflow.eval.decide` | The user decided whether to evaluate at a given step |
-| `workflow.finish` | Workflow reached terminal state |
+| `workflow.finish` | Handoff complete — transitions to terminal `done` |
+| `workflow.abort` | User-initiated termination from `error`; transitions to `done` |
+| `workflow.resume` | User resumed from last valid state; sets `fromError` if from error |
+| `workflow.invalid_transition` | Reducer rejected an event; audit-emitted on rejection in fresh transaction |
 
-**Delegation** events track subagent lifecycle:
+**Delegation** events track subagent lifecycle (3 events):
 
 | Event | Meaning |
 |-------|---------|
@@ -116,14 +123,14 @@ The `delegation.complete` event carries optional cost fields in its `data` paylo
 
 Cost data surfaces via `gobbi workflow status` only. It must NOT appear in compiled prompts or guard conditions. This is a visibility feature, not a control mechanism — cost data informs the operator but does not alter workflow behavior.
 
-**Artifact** events track writes to the step directories:
+**Artifact** events track writes to the step directories (2 events):
 
 | Event | Meaning |
 |-------|---------|
 | `artifact.write` | A file was written to a step directory for the first time |
 | `artifact.overwrite` | An existing artifact was replaced |
 
-**Decision** events record choices that affect workflow direction:
+**Decision** events record choices that affect workflow direction (3 events):
 
 | Event | Meaning |
 |-------|---------|
@@ -131,18 +138,26 @@ Cost data surfaces via `gobbi workflow status` only. It must NOT appear in compi
 | `decision.eval.verdict` | An evaluator returned a verdict (pass, revise, escalate) |
 | `decision.eval.skip` | Evaluation was skipped at a step |
 
-**Guard** events record enforcement actions:
+**Guard** events record enforcement actions (3 events):
 
 | Event | Meaning |
 |-------|---------|
 | `guard.violation` | A PreToolUse hook blocked a disallowed tool call |
 | `guard.override` | A user explicitly overrode a guard |
+| `guard.warn` | A PreToolUse warn-effect guard fired — tool call allowed but context injected |
 
-**Session** events track liveness:
+**Verification** events record automated check results (1 event):
+
+| Event | Meaning |
+|-------|---------|
+| `verification.result` | A verification command completed — exit code and summary in data |
+
+**Session** events track liveness and advancement (2 events):
 
 | Event | Meaning |
 |-------|---------|
 | `session.heartbeat` | Liveness signal — written by the Stop hook after each turn |
+| `step.advancement.observed` | Synthetic audit event emitted by PostToolUse when `gobbi workflow transition` runs — primes the missed-advancement safety net; committed via direct `store.append()`, NOT through the reducer |
 
 ---
 
@@ -167,7 +182,7 @@ Cost data surfaces via `gobbi workflow status` only. It must NOT appear in compi
 
 State is produced by a typed reducer: a pure function that takes the current state and one event, and returns the next state. Replaying all events from sequence 1 through the latest produces the identical state as reading `state.json`. The reducer is the canonical definition of what each event means — if the two ever disagree, the reducer wins.
 
-The CLI writes `state.json` after each event append. On startup it reads `state.json` if present; if absent or structurally invalid, it queries `gobbi.db` for the active project and session, replays those events through the reducer, and writes a fresh `state.json`.
+The CLI writes `state.json` after each event append. On startup it reads `state.json` if present; if absent or structurally invalid, it queries `state.db` for the active project and session, replays those events through the reducer, and writes a fresh `state.json`.
 
 ---
 
@@ -175,9 +190,9 @@ The CLI writes `state.json` after each event append. On startup it reads `state.
 
 > **No workflow event is lost. Crash recovery is a property of the storage layer, not a special case.**
 
-SQLite with WAL mode provides atomic write semantics: a write either completes fully or does not appear. A process crash during an event append leaves `gobbi.db` in its pre-crash state. The event that was being written is absent — which is correct, because the action it described did not complete.
+SQLite with WAL mode provides atomic write semantics: a write either completes fully or does not appear. A process crash during an event append leaves `state.db` in its pre-crash state. The event that was being written is absent — which is correct, because the action it described did not complete.
 
-`state.json.backup` handles state-file corruption without full replay. Before each state transition, the current `state.json` is copied to `state.json.backup`. If `state.json` is found to be invalid on startup, the CLI falls back to `state.json.backup`. If both are invalid, the CLI replays `gobbi.db`.
+`state.json.backup` handles state-file corruption without full replay. Before each state transition, the current `state.json` is copied to `state.json.backup`. If `state.json` is found to be invalid on startup, the CLI falls back to `state.json.backup`. If both are invalid, the CLI replays `state.db`.
 
 ### Resume Briefing with Pathway Differentiation
 
@@ -215,7 +230,7 @@ The schema version is incremented whenever a breaking change is made to the even
 
 ## Session Lifecycle
 
-**Creation** — The SessionStart hook fires when Claude Code opens a new conversation. The hook creates the session directory at `.gobbi/projects/{project-name}/sessions/{session-id}/`, writes `metadata.json` with a new session ID and the active project name, and appends a `workflow.start` event to `.gobbi/gobbi.db`. The session is active from this point.
+**Creation** — The SessionStart hook fires when Claude Code opens a new conversation. The hook creates the session directory at `.gobbi/projects/{project-name}/sessions/{session-id}/`, writes `metadata.json` with a new session ID and the active project name, and appends a `workflow.start` event to `.gobbi/state.db`. The session is active from this point.
 
 **Active session** — Hooks append events as the workflow proceeds. The CLI reads the event store to generate each step's prompt. Subagents write artifacts to step directories. `state.json` is updated after each event.
 
@@ -223,7 +238,7 @@ The schema version is incremented whenever a breaking change is made to the even
 
 **Session end** — The session ends when the user runs `/clear` or opens a new conversation. There is no explicit cleanup event — the session directory remains on disk until the TTL cleanup runs.
 
-**Abandoned session detection** — The Stop hook (which fires after each turn) writes a `session.heartbeat` event with a timestamp to `gobbi.db`. When `gobbi workflow init` runs, it checks all existing session directories for sessions without a `workflow.finish` event. If a session has no heartbeat within the last 60 minutes, it is treated as abandoned. The `.claude/` write guard checks heartbeat freshness before blocking writes: if the most recent `session.heartbeat` is older than 60 minutes and no `workflow.finish` event exists, the guard treats the session as expired and allows `.claude/` writes to proceed. This prevents abandoned sessions from permanently blocking the `.claude/` write protection. A session that was interrupted by a crash or a user closing their terminal without clearing will not hold the write guard indefinitely. The 1-hour threshold replaces a 24-hour threshold — stale sessions should release the write guard quickly, not hold it for an entire day.
+**Abandoned session detection** — The Stop hook (which fires after each turn) writes a `session.heartbeat` event with a timestamp to `state.db`. When `gobbi workflow init` runs, it checks all existing session directories for sessions without a `workflow.finish` event. If a session has no heartbeat within the last 60 minutes, it is treated as abandoned. The `.claude/` write guard checks heartbeat freshness before blocking writes: if the most recent `session.heartbeat` is older than 60 minutes and no `workflow.finish` event exists, the guard treats the session as expired and allows `.claude/` writes to proceed. This prevents abandoned sessions from permanently blocking the `.claude/` write protection. A session that was interrupted by a crash or a user closing their terminal without clearing will not hold the write guard indefinitely. The 1-hour threshold replaces a 24-hour threshold — stale sessions should release the write guard quickly, not hold it for an entire day.
 
 **Cleanup** — A background cleanup process removes sessions older than 7 days and enforces a maximum entry cap (default 50 sessions). Cleanup targets the oldest sessions first when the cap is exceeded. The cleanup configuration is stored in the user's gobbi config and can be adjusted.
 
