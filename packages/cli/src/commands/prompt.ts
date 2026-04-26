@@ -73,6 +73,14 @@ export const PROMPT_COMMANDS: readonly PromptCommand[] = [
       await runPromptPatch(args);
     },
   },
+  {
+    name: 'rebuild',
+    summary: 'Materialize spec.json from the JSONL chain (recovery)',
+    run: async (args: string[]): Promise<void> => {
+      const { runPromptRebuild } = await import('./prompt/rebuild.js');
+      await runPromptRebuild(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
