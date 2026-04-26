@@ -257,10 +257,12 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
     // `maintenance` namespace for out-of-session cleanup commands
     // (wipe-legacy-sessions). W5.5 added `install` (template-bundle
     // lay-down + 3-way merge) and `project` (list / create / switch)
-    // as top-level multi-project verbs. Workflow subcommands (Waves
-    // 2–8) extend the inner `workflow` registry and do not surface
-    // here. If this test fails, verify the change belongs in this PR
-    // before updating it.
+    // as top-level multi-project verbs. v0.5.0 Wave C.1.5 added
+    // `prompt` (render / patch / rebuild — operator-only spec.json
+    // mutation surface for the prompts-as-data feature). Workflow
+    // subcommands (Waves 2–8) extend the inner `workflow` registry
+    // and do not surface here. If this test fails, verify the change
+    // belongs in this PR before updating it.
     const expected: readonly CommandName[] = [
       'config',
       'session',
@@ -270,6 +272,7 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
       'workflow',
       'gotcha',
       'maintenance',
+      'prompt',
       'install',
       'project',
       'image',
