@@ -113,7 +113,7 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 **`gobbi maintenance migrate-state-db`** — Ships in PR #147 (Wave A.1). Reverses Wave A.1's DB rename: moves the per-session `gobbi.db` file to the workspace-scoped `state.db` path at `.gobbi/state.db`. Run this after upgrading to v0.5.0 to migrate existing sessions. The companion `gobbi maintenance restore-state-db` reverts in one commit for reversibility.
 
-**`gobbi maintenance wipe-legacy-sessions`** — Removes stale session directories under the pre-multi-project `.gobbi/sessions/` layout. Safe to run after migration to the multi-project layout; sessions under `.gobbi/projects/<name>/sessions/` are never touched.
+**`gobbi maintenance wipe-legacy-sessions`** — Removes stale session directories under the pre-multi-project workspace-root sessions layout (the `sessions/` directory that existed before multi-project support). Safe to run after migration; sessions under `.gobbi/projects/<name>/sessions/` are never touched.
 
 ### Existing commands (unchanged)
 

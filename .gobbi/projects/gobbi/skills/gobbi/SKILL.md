@@ -20,7 +20,7 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup 
 
 1. **Primary:** check `$CODEX_COMPANION_SESSION_ID` — the Codex companion plugin exports the real Claude session ID into this env var. Run `env | grep CODEX_COMPANION_SESSION_ID` to test.
 2. **Fallback:** if `$CODEX_COMPANION_SESSION_ID` is empty, list `~/.claude/projects/{slug}/*.jsonl` and take the most recently modified file. The filename minus `.jsonl` is the session ID. The slug is derived from the project path (e.g., `-playinganalytics-git-gobbi` for `/playinganalytics/git/gobbi`).
-3. **Do NOT generate a `manual-*` fallback.** A fake session ID writes orphan entries under `.gobbi/sessions/manual-*/` that need manual cleanup.
+3. **Do NOT generate a `manual-*` fallback.** A fake session ID writes orphan entries under `.gobbi/projects/<name>/sessions/manual-*/` that need manual cleanup.
 
 Once discovered, store the ID in a local variable (`DISCOVERED`). Pass it to every CLI call via inline env assignment or the explicit flag — the CLI is plugin-neutral and reads only `$CLAUDE_SESSION_ID` and `--session-id`:
 
@@ -50,7 +50,7 @@ After confirming the CLI is present, run `gobbi --is-latest` to check whether th
 CLAUDE_SESSION_ID=$DISCOVERED gobbi config get workflow --level session
 ```
 
-This reads `.gobbi/sessions/{id}/settings.json` at the session level without cascade fallthrough.
+This reads `.gobbi/projects/<name>/sessions/{id}/settings.json` at the session level without cascade fallthrough.
 
 - **Exit 0** — session settings exist (this is a resume or compact). Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`.
 - **Exit 1** — no prior session settings. Proceed to the setup questions in FIFTH.
@@ -84,7 +84,7 @@ Multi-select. If any channel is selected alongside Skip, channels take priority.
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help the user configure them before proceeding.
 
-**After all three questions — persist session choices.** Write the user's selections to `.gobbi/sessions/{id}/settings.json` via `gobbi config set`. All writes target `--level session` (the default); pass the discovered ID via inline env or `--session-id`. Session settings set defaults for this session only; either can be overridden at any specific step.
+**After all three questions — persist session choices.** Write the user's selections to `.gobbi/projects/<name>/sessions/{id}/settings.json` via `gobbi config set`. All writes target `--level session` (the default); pass the discovered ID via inline env or `--session-id`. Session settings set defaults for this session only; either can be overridden at any specific step.
 
 Evaluation mode mapping — the same answer applies to all three steps:
 
