@@ -16,6 +16,10 @@ import {
   STEP_ADVANCEMENT_EVENTS,
   createStepAdvancementObserved,
 } from '../events/step-advancement.js';
+import {
+  PROMPT_EVENTS,
+  createPromptPatchApplied,
+} from '../events/prompt.js';
 
 // ---------------------------------------------------------------------------
 // Test helpers
@@ -1068,5 +1072,109 @@ describe('audit-only events bypass the reducer (Wave A.1.3)', () => {
     // Sanity check — the test fixtures above use the typed factory; this
     // assertion documents the type-string the runtime fence checks for.
     expect(STEP_ADVANCEMENT_EVENTS.OBSERVED).toBe('step.advancement.observed');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Audit-only event runtime fence — `prompt.patch.applied` (Wave C.1.6 R1)
+//
+// Architecture F-2 fix. The plan's C.1.3 verification criterion required:
+// "Replay of a `prompt.patch.applied` event through the reducer returns
+// `ok(state)` without throwing (regression test for the runtime-fence
+// fix)." The prior pass extended the fence at `reducer.ts:692` with
+// `isPromptPatchAppliedEvent(event)` but did NOT add a regression test.
+// A future refactor that narrowed the fence back to `step.advancement.
+// observed`-only would silently regress the same invariant the prior
+// architecture eval flagged — defense-in-depth code that nothing tests
+// gets trimmed in a cleanup pass.
+//
+// These tests mirror the four `step.advancement.observed` tests above:
+// active step, idle, terminal-state, does-not-throw. All assert the
+// reducer returns `ok(state)` referentially unchanged when handed a
+// `prompt.patch.applied` event through the wire-roundtrip cast.
+// ---------------------------------------------------------------------------
+
+describe('audit-only events bypass the reducer — prompt.patch.applied (Wave C.1.6 R1)', () => {
+  // The runtime fence treats audit-only events as observability-only:
+  // state is returned unchanged regardless of step. Cast through
+  // `unknown` to bypass the type-system separation — this simulates the
+  // on-the-wire replay path that discards the type-level discriminator.
+  const promptPatchAppliedEvent = createPromptPatchApplied({
+    promptId: 'planning',
+    patchId: 'sha256:test-patch-id',
+    parentPatchId: null,
+    preHash: 'sha256:pre',
+    postHash: 'sha256:post',
+    opCount: 1,
+    schemaId: 'https://gobbi.dev/schemas/step-spec/v1.json',
+    appliedBy: 'operator',
+  }) as unknown as Event;
+
+  it('returns ok with state unchanged when handed prompt.patch.applied at an active step', () => {
+    const state = stateAt('planning');
+    const result = reduce(state, promptPatchAppliedEvent);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error('expected ok');
+    expect(result.state).toEqual(state);
+    // Same identity reference — the fence skips the spread that
+    // sub-reducers use, so callers that depend on `===` for cache
+    // invalidation can rely on a referential no-op.
+    expect(result.state).toBe(state);
+  });
+
+  it('returns ok with state unchanged when handed prompt.patch.applied at idle', () => {
+    const state = stateAt('idle');
+    const result = reduce(state, promptPatchAppliedEvent);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error('expected ok');
+    expect(result.state).toBe(state);
+  });
+
+  it('returns ok with state unchanged even at terminal states (audit fence runs before terminal-state rejection)', () => {
+    // Audit-only events are observability-only — they have no business
+    // logic and must persist regardless of state. The `done` / `error`
+    // terminal-state guard would otherwise reject every event with a
+    // step error message; the audit fence must intercept BEFORE that
+    // guard. This is the architectural ordering invariant.
+    const doneState = stateAt('done');
+    const r1 = reduce(doneState, promptPatchAppliedEvent);
+    expect(r1.ok).toBe(true);
+    if (r1.ok) expect(r1.state).toBe(doneState);
+
+    const errorState = stateAt('error');
+    const r2 = reduce(errorState, promptPatchAppliedEvent);
+    expect(r2.ok).toBe(true);
+    if (r2.ok) expect(r2.state).toBe(errorState);
+  });
+
+  it('does not throw when handed prompt.patch.applied (defense-in-depth against silent-fail mode)', () => {
+    // The reducer's `assertNever` would throw a plain Error if the audit
+    // event reached the bottom of the dispatch chain. The fence at the
+    // top of `reduce()` is the runtime guarantee that this throw cannot
+    // surface — the test calls `reduce()` directly and asserts NO throw.
+    const state = stateAt('execution');
+    expect(() => reduce(state, promptPatchAppliedEvent)).not.toThrow();
+  });
+
+  it('PROMPT_EVENTS.PATCH_APPLIED is the constant the reducer fence narrows', () => {
+    // Sanity check — the test fixture above uses the typed factory;
+    // this assertion documents the type-string the runtime fence
+    // checks for.
+    expect(PROMPT_EVENTS.PATCH_APPLIED).toBe('prompt.patch.applied');
+  });
+
+  it('a JSON serialise/deserialise roundtrip still hits the fence (wire-replay regression)', () => {
+    // The fence's primary purpose: a serialised event read back from
+    // the wire (or from an `events` table replay) loses its TypeScript
+    // discriminator. The runtime check at `reducer.ts:692` MUST still
+    // recognize it via the `type` field's string value.
+    const wireForm = JSON.parse(
+      JSON.stringify(promptPatchAppliedEvent),
+    ) as unknown as Event;
+    const state = stateAt('execution');
+    const result = reduce(state, wireForm);
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error('expected ok');
+    expect(result.state).toBe(state);
   });
 });
