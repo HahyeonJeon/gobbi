@@ -116,6 +116,7 @@ function baseSpec(): StepSpec {
         instruction: 'Emit completion signal once both PI agents have produced artifacts.',
         criteria: ['both PI agents completed', 'synthesis written'],
       },
+      footer: 'Step completion protocol — run gobbi workflow transition COMPLETE.',
     },
   };
 }
@@ -633,6 +634,7 @@ describe('renderSpec', () => {
         delegation: {},
         synthesis: [],
         completion: spec.blocks.completion,
+        footer: spec.blocks.footer,
       },
     };
     const kinded = renderSpec(baseInput({ spec: thinSpec }));

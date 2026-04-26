@@ -56,6 +56,15 @@ Criteria:
   4. no task is so large that its delegation prompt would overflow a single context window
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
 
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
+
 session.schemaVersion=4
 session.currentStep=planning
 session.currentSubstate=null
@@ -131,6 +140,15 @@ Criteria:
   4. no task is so large that its delegation prompt would overflow a single context window
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
 
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
+
 session.schemaVersion=4
 session.currentStep=planning
 session.currentSubstate=null
@@ -205,6 +223,15 @@ Criteria:
   3. the user has approved the decomposition via AskUserQuestion
   4. no task is so large that its delegation prompt would overflow a single context window
   5. deferred adjacent work is captured in the Out-of-scope section with a one-line rationale per item
+
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
 
 session.schemaVersion=4
 session.currentStep=planning

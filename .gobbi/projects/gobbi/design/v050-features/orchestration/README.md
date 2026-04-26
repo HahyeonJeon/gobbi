@@ -178,30 +178,11 @@ Closed-enumeration discipline: every reducer-accepted event is in the 23-event s
 
 ## 5. JIT prompt footer pattern
 
-**Static-prefix placement** for cache stability (per `../../v050-prompts.md` cache-aware ordering). The footer is data-driven from `spec.json::blocks.footer` — this becomes the first proving-ground prompt for the prompts-as-data pass (Wave C). Eval steps use a verdict variant; productive steps use a COMPLETE-only variant. The compiler picks the variant from the step's `id` ending in `_eval`.
+**Static-prefix placement** for cache stability (per `../../v050-prompts.md` cache-aware ordering). The footer is data-driven from `spec.json::blocks.footer` — this becomes the first proving-ground prompt for the prompts-as-data pass (Wave C). Each spec carries its own complete footer text; the spec author writes the variant appropriate to that step. Productive steps carry the COMPLETE-only variant; the shared evaluation spec carries the verdict variant (PASS/REVISE/ESCALATE).
 
-```
----
-## Step completion protocol
+The footer text begins immediately after `blocks.completion`, so the agent reads both in sequence: the completion criteria come from `blocks.completion`, and the footer opens with "You have finished this step's work when the criteria above are satisfied" — a back-pointer that is unambiguous because `blocks.completion` is the immediately-preceding static section. No template engine is involved; the full footer text lives verbatim in each `spec.json::blocks.footer` field.
 
-You have finished this step's work when these criteria are satisfied:
-{{COMPLETION_CRITERIA}}    ← injected from spec.json::blocks.completion.criteria
-
-Once the criteria are met, run EXACTLY ONE of the following commands:
-
-  gobbi workflow transition COMPLETE
-    — Use this when the step's deliverable is written and criteria pass.
-    — For evaluation steps, use PASS/REVISE/ESCALATE below instead.
-
-  gobbi workflow transition PASS                              (eval steps only)
-  gobbi workflow transition REVISE [--loop-target <step>]     (eval steps only)
-  gobbi workflow transition ESCALATE                          (eval steps only)
-
-You MUST run one of these as your last action. The CLI's output is the
-authoritative record; no other phrasing advances the workflow.
-```
-
-Token cost: ~180 tokens uncached; identical across same-step compilations so fully cached after the first compile. Maps 1:1 to `TRANSITION_KEYWORDS` (`transition.ts:74-84`); SKIP/TIMEOUT/FINISH/ABORT/RESUME stay operator-only and do not appear in agent footers.
+Token cost: ~180 tokens uncached; identical across same-step compilations so fully cached after the first compile. Maps 1:1 to `TRANSITION_KEYWORDS` (`transition.ts:74-84`); SKIP/TIMEOUT/FINISH/ABORT/RESUME stay operator-only and do not appear in agent footers. The `blocks.footer` field maps to the `'instructions'` budget slot in `budget.ts::inferSlot` (peer to `blocks.completion`) — the footer is load-bearing protocol and must not be evicted as low-priority materials under context pressure.
 
 **Why prompts-as-data here.** `blocks.footer` is the first data-driven prompt block. Wave B.1 lifts the literal footer string into `_schema/v1.ts::StepBlocks` (TypeScript), `_schema/v1.json` (JSON Schema mirror — `schema.test.ts:399-404` asserts they stay in sync), and `assembly.ts::renderSpec`'s pipeline (rendered as a `StaticSection` immediately after `blocks.completion`). Without the simultaneous update across all three, `tsc --noEmit` fails or the drift test fails. Wave C extends this pattern to every prompt block.
 

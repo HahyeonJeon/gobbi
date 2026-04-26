@@ -87,6 +87,7 @@ function baseSpec(): StepSpec {
         instruction: 'Emit signal',
         criteria: ['criterion one', 'criterion two'],
       },
+      footer: 'Step completion protocol — run gobbi workflow transition COMPLETE.',
     },
   };
 }

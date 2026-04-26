@@ -98,6 +98,7 @@
         "no evaluator assessed the artifacts it helped create — creator-evaluator isolation is preserved",
         "the user has confirmed the verdict via AskUserQuestion before the completion signal is emitted"
       ]
-    }
+    },
+    "footer": "---\n## Step completion protocol\n\nYou have finished this evaluation when the criteria above are satisfied and the user has confirmed the verdict. Once they are met, run EXACTLY ONE of the following commands as your last action:\n\n  gobbi workflow transition PASS\n    — Use this when no critical or major findings remain after user discussion.\n\n  gobbi workflow transition REVISE [--loop-target <step>]\n    — Use this when findings require re-entering a prior step. For execution_eval, include --loop-target with the user-agreed target (ideation, planning, or execution). For ideation_eval and planning_eval, the loop target is the preceding productive step by default.\n\n  gobbi workflow transition ESCALATE\n    — Use this when a critical structural defect requires user intervention outside the workflow. Routes to the error step.\n\nYou MUST run exactly one of these as your last action. COMPLETE is not valid for evaluation steps. The CLI's output is the authoritative record; no other phrasing advances the workflow."
   }
 }

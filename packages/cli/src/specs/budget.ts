@@ -305,10 +305,15 @@ export function inferSlot(section: CompiledSectionLike): Slot {
   if (
     id === 'blocks.synthesis' ||
     id === 'blocks.completion' ||
+    id === 'blocks.footer' ||
     id.startsWith('blocks.conditional.') ||
     id.startsWith('blocks.delegation.') ||
     id.startsWith('blocks.instructions.')
   ) {
+    // `blocks.footer` is the JIT step-completion protocol — peer to
+    // `blocks.completion` and load-bearing for workflow advancement.
+    // Mapping it to the `instructions` slot keeps it from being evicted as
+    // low-priority `materials` under context pressure.
     return 'instructions';
   }
   if (id.startsWith('materials.') || id.startsWith('dynamic.')) {

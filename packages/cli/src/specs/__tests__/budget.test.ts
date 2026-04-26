@@ -157,6 +157,16 @@ describe('inferSlot', () => {
     expect(check('blocks.delegation.pi.innovative')).toBe('instructions');
   });
 
+  test('blocks.footer maps to instructions (peer to blocks.completion)', () => {
+    // The JIT step-completion footer is load-bearing for workflow
+    // advancement — the agent reads it to learn the exact `gobbi workflow
+    // transition <VERB>` command to run. Mapping to `instructions` keeps it
+    // from being evicted as low-priority `materials` under context pressure.
+    expect(
+      inferSlot({ id: 'blocks.footer', content: '', contentHash: 'x' }),
+    ).toBe('instructions');
+  });
+
   test('materials.* and dynamic.* (non-context) and unknown prefixes map to materials', () => {
     const check = (id: string): Slot =>
       inferSlot({ id, content: '', contentHash: 'x' });

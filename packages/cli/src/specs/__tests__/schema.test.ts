@@ -105,6 +105,7 @@ const validSpec: StepSpec = {
       instruction: 'Emit completion signal once both PI agents complete.',
       criteria: ['innovative.md written', 'best.md written', 'synthesis emitted'],
     },
+    footer: 'Step completion protocol — run gobbi workflow transition COMPLETE.',
   },
 };
 

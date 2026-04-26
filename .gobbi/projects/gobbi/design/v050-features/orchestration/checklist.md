@@ -66,8 +66,8 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 - `[ST]` `workflow.step.skip` from `currentStep='planning_eval'` routes to `ideation` per `index.json:200-247`.
   - Verify: reducer step.skip test; transitions JSON snapshot.
-- `[EP]` SKIP is operator-only (not in agent footer); footer template MUST NOT mention SKIP.
-  - Verify: README §5 footer template manual review + snapshot test asserting footer text does not contain `SKIP`.
+- `[EP]` SKIP is operator-only (not in agent footer); `spec.json::blocks.footer` must not mention `gobbi workflow transition SKIP`.
+  - Verify: SC-ORCH-28 productive-spec verb-partition assertions include `gobbi workflow transition SKIP` in the negative set; SC-ORCH-29 evaluation-spec assertions do the same.
 
 ---
 
@@ -98,23 +98,67 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-11 — Footer auto-injection from `blocks.footer` (post-Wave-B.1)
+## SC-ORCH-11 — Footer auto-injection from `blocks.footer`
 
-- `[GAP]` `_schema/v1.ts::StepBlocks` includes a `footer: BlockContent | null` field; `_schema/v1.json` mirrors; `schema.test.ts:399-404` drift test passes after the change.
-  - Verify (post-B.1.1): `bun run typecheck` and `bun test packages/cli/src/specs/__tests__/schema.test.ts -t 'drift'`.
-- `[GAP]` `assembly.ts::renderSpec` renders `blocks.footer` as a `StaticSection` immediately after `blocks.completion` (new step 5b in the pipeline).
-  - Verify (post-B.1.1): snapshot test asserts footer-block presence and ordering.
-- `[GAP]` Same-step recompilations produce byte-identical compiled prompts (cache stability).
-  - Verify (post-B.1.2): `packages/cli/src/specs/__tests__/snapshot.test.ts` cache-prefix-bytes assertion.
+- `[ST]` `_schema/v1.ts::StepBlocks` declares `readonly footer: string` (required, `minLength: 1`); `_schema/v1.json` mirrors both `properties.blocks` and `$defs.StepBlocks` halves; `schema.test.ts:399-404` drift test passes.
+  - Verify: `bun run typecheck` passes; `bun test packages/cli/src/specs/__tests__/schema.test.ts -t 'drift'` passes; `rg -c '"footer"' packages/cli/src/specs/_schema/v1.json` returns 4.
+- `[ST]` `assembly.ts::renderSpec` renders `blocks.footer` as a `StaticSection` (`id='blocks.footer'`, `kind='static'`) immediately after `blocks.completion` and before `session.state`.
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts` — section-position assertions in the productive-specs and evaluation-spec describe blocks.
+- `[ST]` Same-spec recompilations produce identical `staticPrefixHash` and `prompt.text` (cache stability).
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts` — cache-stability describe block (two-compile equality assertion).
 
 ---
 
 ## SC-ORCH-12 — Agent runs `gobbi workflow transition COMPLETE`
 
-- `[UC]` Agent footer instructs `COMPLETE` as the last action; agent's `gobbi workflow transition COMPLETE` invocation emits `workflow.step.exit`.
-  - Verify: footer template manual review (README §5) + `transition.ts:74-84` map review.
-- `[EP]` Footer text matches the canonical template; deviations in `spec.json::blocks.footer` content are caught by spec validation.
-  - Verify: spec validator schema enforcement via AJV.
+- `[UC]` Productive step footer (`spec.json::blocks.footer`) instructs `COMPLETE` as the last action; the agent's `gobbi workflow transition COMPLETE` invocation emits `workflow.step.exit`.
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts` — verb-partition assertions confirm `gobbi workflow transition COMPLETE` is present in productive prompts; `transition.ts:74-84` map review confirms the COMPLETE keyword routes to `step.exit`.
+- `[EP]` Footer content must include the `gobbi workflow transition` token sequence; `blocks.footer` with empty string is rejected by schema (`minLength: 1`); absent `blocks.footer` is rejected as a required field.
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts` — schema-enforcement describe block (missing footer, empty footer).
+
+---
+
+## SC-ORCH-27 — Schema rejects spec missing `blocks.footer`
+
+- `[EP]` `validateStepSpec()` on a spec object with `blocks.footer` absent returns `{ ok: false }` with an error whose `instancePath === '/blocks'` and `params.missingProperty === 'footer'`.
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts -t 'missing blocks.footer'` — schema-enforcement describe block.
+
+---
+
+## SC-ORCH-28 — Footer renders for productive specs (verb-partition + position)
+
+- `[ST]` × 5 For each productive spec (`ideation`, `planning`, `execution`, `memorization`, `handoff`): `compile()` produces a section `id='blocks.footer'` positioned after `blocks.completion` and before `session.state`; section `kind` is `'static'`; `prompt.text` contains `gobbi workflow transition COMPLETE`; `prompt.text` does not contain `gobbi workflow transition PASS`, `REVISE`, `ESCALATE`, `SKIP`, `TIMEOUT`, `FINISH`, `ABORT`, or `RESUME` as token sequences.
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts` — productive-specs describe block (5 parametrized test cases).
+
+**Note (Architecture F-2):** The operator/agent verb partition — productive steps see only COMPLETE; evaluation steps see only PASS/REVISE/ESCALATE; operator-only verbs (SKIP/TIMEOUT/FINISH/ABORT/RESUME) appear in neither — is a convention enforced by `spec.json` authoring, not by an exported constant. The verb-partition assertions in `footer.snap.test.ts` are the enforcement mechanism; they fail CI if any spec's `blocks.footer` drifts outside its allowed verb set.
+
+---
+
+## SC-ORCH-29 — Footer renders for evaluation spec (verdict-verb partition)
+
+- `[ST]` For the shared evaluation spec: `compile()` produces a footer section with `gobbi workflow transition PASS`, `gobbi workflow transition REVISE`, and `gobbi workflow transition ESCALATE` present; `gobbi workflow transition COMPLETE` and all operator-only verb token sequences absent. The bare word "COMPLETE" in the prose body ("COMPLETE is not valid for evaluation steps") is not a violation — the assertion targets the full token sequence only.
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts` — evaluation-spec describe block.
+
+---
+
+## SC-ORCH-30 — Footer cache stability across recompilations
+
+- `[ST]` Same `CompileInput` passed to `compile()` twice produces identical `staticPrefixHash` and `prompt.text`.
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts` — cache-stability describe block (two-compile equality test).
+
+---
+
+## SC-ORCH-31 — One-byte footer mutation flips `staticPrefixHash`
+
+- `[BVA]` Two spec objects differing by exactly one byte in `blocks.footer` (e.g., trailing space) produce different `staticPrefixHash` values when compiled with the same `CompileInput`.
+  - Verify: `bun test packages/cli/src/specs/__tests__/footer.snap.test.ts` — cache-stability describe block (mutation test).
+
+---
+
+## SC-ORCH-32 — Schema mirror carries `footer` in both `StepBlocks` declarations
+
+- `[MANUAL]` `packages/cli/src/specs/_schema/v1.json` (post-B.1.1) has `'footer'` in `properties.blocks.required` AND `$defs.StepBlocks.required`; both `properties` blocks declare `footer: { type: 'string', minLength: 1 }`. `rg -c '"footer"' v1.json` returns 4.
+  - Verify: `schema.test.ts:399-404` drift test asserts byte equality between the TypeScript source and the on-disk JSON; running `bun run regen-schema` reproduces the committed file.
 
 ---
 

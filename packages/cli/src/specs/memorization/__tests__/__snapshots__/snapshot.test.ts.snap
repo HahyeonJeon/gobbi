@@ -92,6 +92,15 @@ Criteria:
   5. project README and design docs reflect any convention, precedent, or scope change the session introduced
   6. no prior-step artifacts have been modified by this step — memorization is write-forward only
 
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
+
 session.schemaVersion=4
 session.currentStep=memorization
 session.currentSubstate=null
@@ -198,6 +207,15 @@ Criteria:
   4. the user-level MEMORY.md index has been updated with any per-session entry the session warrants (e.g. shipped PR, phase milestone)
   5. project README and design docs reflect any convention, precedent, or scope change the session introduced
   6. no prior-step artifacts have been modified by this step — memorization is write-forward only
+
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
 
 session.schemaVersion=4
 session.currentStep=memorization
@@ -309,6 +327,15 @@ Criteria:
   4. the user-level MEMORY.md index has been updated with any per-session entry the session warrants (e.g. shipped PR, phase milestone)
   5. project README and design docs reflect any convention, precedent, or scope change the session introduced
   6. no prior-step artifacts have been modified by this step — memorization is write-forward only
+
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
 
 session.schemaVersion=4
 session.currentStep=memorization

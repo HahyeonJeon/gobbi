@@ -61,6 +61,7 @@ function fixtureSpec(overrides?: Partial<StepSpec>): StepSpec {
       delegation: {},
       synthesis: [],
       completion: { instruction: 'done', criteria: [] },
+      footer: 'footer',
     },
   };
   return { ...base, ...overrides };
@@ -92,6 +93,7 @@ describe('collectSpecPredicateReferences', () => {
         delegation: {},
         synthesis: [],
         completion: { instruction: 'x', criteria: [] },
+        footer: 'footer',
       },
     });
     const refs = [...collectSpecPredicateReferences(spec)].sort();
@@ -107,6 +109,7 @@ describe('collectSpecPredicateReferences', () => {
         delegation: {},
         synthesis: [],
         completion: { instruction: 'x', criteria: [] },
+        footer: 'footer',
       },
     });
     expect(collectSpecPredicateReferences(spec)).toEqual([]);
@@ -146,6 +149,7 @@ describe('validateSpecPredicateReferences', () => {
         delegation: {},
         synthesis: [],
         completion: { instruction: 'x', criteria: [] },
+        footer: 'footer',
       },
     });
     const errors = validateSpecPredicateReferences(spec, defaultPredicates);
@@ -163,6 +167,7 @@ describe('validateSpecPredicateReferences', () => {
         delegation: {},
         synthesis: [],
         completion: { instruction: 'x', criteria: [] },
+        footer: 'footer',
       },
     });
     const errors = validateSpecPredicateReferences(spec, defaultPredicates, 'my-step/spec.json');

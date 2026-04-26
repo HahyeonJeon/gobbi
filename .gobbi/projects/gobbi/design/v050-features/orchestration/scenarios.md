@@ -114,23 +114,83 @@ Evidence: `engine.ts:223,232,272` (audit-emit-on-rejection), `events/workflow.ts
 
 ## JIT footer protocol
 
-### SC-ORCH-11 — Footer auto-injected per `spec.json::blocks.footer` (post-Wave-B.1)
+### SC-ORCH-11 — Footer auto-injected per `spec.json::blocks.footer`
 
 **Given** a step spec at `packages/cli/src/specs/<step>/spec.json` with `blocks.footer` populated
 **When** `assembly.ts::compile()` renders the prompt for that step
-**Then** the rendered prompt ends with the footer block as a `StaticSection`, immediately after `blocks.completion`; the footer is identical across same-step recompilations for the same spec version (cache-stable); the eval-step variant uses the verdict footer, productive steps use the COMPLETE-only footer.
+**Then** the rendered prompt contains a `StaticSection` with `id='blocks.footer'` positioned immediately after `blocks.completion` and before `session.state`; the footer section's kind is `'static'`; same-spec recompilations produce byte-identical `staticPrefixHash` and `prompt.text` (cache-stable); productive specs carry the COMPLETE-only variant, the shared evaluation spec carries the verdict variant (PASS/REVISE/ESCALATE).
 
-Evidence (post-Wave-B.1): `_schema/v1.ts::StepBlocks` (with `footer` field), `_schema/v1.json` mirror, `assembly.ts::renderSpec` step 5b, `schema.test.ts:399-404` drift test.
+Evidence: `_schema/v1.ts::StepBlocks` (with `readonly footer: string`), `_schema/v1.json` mirror (regenerated via `bun run regen-schema`; `rg -c '"footer"' v1.json` returns 4), `assembly.ts::renderSpec` step 5b (`makeStatic({ id: 'blocks.footer', content: spec.blocks.footer })`), `schema.test.ts:399-404` drift test, `__tests__/footer.snap.test.ts`.
 
 ---
 
 ### SC-ORCH-12 — Agent runs `gobbi workflow transition COMPLETE` from the footer
 
 **Given** an agent that has finished the work named in `blocks.completion.criteria`
-**When** the agent's last action is `gobbi workflow transition COMPLETE`
+**When** the agent's last action is `gobbi workflow transition COMPLETE` (as instructed by the spec's `blocks.footer` text)
 **Then** the CLI emits `workflow.step.exit`; the workflow advances per the reducer's eval-decision; no other agent prose phrasing advances the workflow (the CLI's output is authoritative).
 
-Evidence: `transition.ts:74-84` (TRANSITION_KEYWORDS), `transition.ts:335` (event emission), README §5 footer template.
+Evidence: `transition.ts:74-84` (TRANSITION_KEYWORDS), `transition.ts:335` (event emission), `specs/{ideation,planning,execution,memorization,handoff}/spec.json::blocks.footer` (productive variant), `specs/evaluation/spec.json::blocks.footer` (verdict variant).
+
+---
+
+### SC-ORCH-27 — Schema rejects spec missing `blocks.footer`
+
+**Given** a spec object with `blocks.footer` absent
+**When** `validateStepSpec()` runs against the object
+**Then** the result is `{ ok: false }` with an error whose `keyword === 'required'`, `instancePath === '/blocks'`, and `params.missingProperty === 'footer'`.
+
+Evidence: `_schema/v1.json` `required` arrays in both `properties.blocks` and `$defs.StepBlocks`; `__tests__/footer.snap.test.ts` schema-enforcement describe block.
+
+---
+
+### SC-ORCH-28 — Footer section renders between completion and session state for productive specs
+
+**Given** each of the five productive step specs (`ideation`, `planning`, `execution`, `memorization`, `handoff`)
+**When** `compile()` runs with a deterministic `CompileInput`
+**Then** the resulting `prompt.sections` contains a section with `id='blocks.footer'` whose index is greater than the `blocks.completion` index and less than the `session.state` index; the section's `kind` is `'static'`; `prompt.text` contains the token sequence `gobbi workflow transition COMPLETE`; `prompt.text` does not contain any of the token sequences `gobbi workflow transition PASS`, `gobbi workflow transition REVISE`, `gobbi workflow transition ESCALATE`, `gobbi workflow transition SKIP`, `gobbi workflow transition TIMEOUT`, `gobbi workflow transition FINISH`, `gobbi workflow transition ABORT`, or `gobbi workflow transition RESUME`.
+
+Evidence: `assembly.ts::renderSpec` step 5b; `budget.ts::inferSlot` `'blocks.footer'` → `'instructions'` case; `__tests__/footer.snap.test.ts` productive-specs describe block (5 parametrized test cases).
+
+---
+
+### SC-ORCH-29 — Footer section renders with verdict verbs for the evaluation spec
+
+**Given** the shared evaluation spec (`evaluation/spec.json`) compiled with a deterministic `CompileInput`
+**When** `compile()` runs
+**Then** `prompt.text` contains the token sequences `gobbi workflow transition PASS`, `gobbi workflow transition REVISE`, and `gobbi workflow transition ESCALATE`; `prompt.text` does not contain the token sequence `gobbi workflow transition COMPLETE` nor any operator-only verb token sequences (`gobbi workflow transition SKIP`, `TIMEOUT`, `FINISH`, `ABORT`, or `RESUME`). The bare word "COMPLETE" appears in the prose body ("COMPLETE is not valid for evaluation steps") — that occurrence is intentional; only the verb token sequence is constrained.
+
+Evidence: `evaluation/spec.json::blocks.footer` (verdict variant); `__tests__/footer.snap.test.ts` evaluation-spec describe block.
+
+---
+
+### SC-ORCH-30 — Compiled footer is cache-stable across recompilations
+
+**Given** the same `CompileInput` (same spec, same `WorkflowState`, same `DynamicContext`) passed to `compile()` twice
+**When** both calls complete
+**Then** the two results have identical `staticPrefixHash` values and identical `prompt.text` strings.
+
+Evidence: `assembly.ts::compile` deterministic pipeline; `__tests__/footer.snap.test.ts` cache-stability describe block.
+
+---
+
+### SC-ORCH-31 — One-byte footer mutation invalidates `staticPrefixHash`
+
+**Given** two spec objects that differ by exactly one byte in `blocks.footer` (e.g., a trailing space appended to the productive variant text)
+**When** each is compiled with the same `CompileInput` (same state, same dynamic context)
+**Then** the two `staticPrefixHash` values differ, proving the footer content feeds the cache prefix and any footer mutation breaks the existing cache entry.
+
+Evidence: `assembly.ts` `makeStatic` → hash accumulation chain; `__tests__/footer.snap.test.ts` cache-stability one-byte-mutation test.
+
+---
+
+### SC-ORCH-32 — Schema mirror carries `footer` in both `StepBlocks` declarations
+
+**Given** the post-B.1.1 `packages/cli/src/specs/_schema/v1.json` (regenerated via `bun run regen-schema`)
+**When** the file is inspected
+**Then** `properties.blocks.required` includes `'footer'`; `$defs.StepBlocks.required` includes `'footer'`; both `properties.blocks.properties` and `$defs.StepBlocks.properties` declare `footer: { type: 'string', minLength: 1 }`. Running `rg -c '"footer"' packages/cli/src/specs/_schema/v1.json` returns exactly 4 (two `required` array entries plus two `properties` declarations).
+
+Evidence: `_schema/v1.ts::StepBlocksSchema` (source); `bun run regen-schema` script in `packages/cli/package.json`; `schema.test.ts:399-404` drift test asserts byte equality between the TypeScript schema and the on-disk JSON file.
 
 ---
 

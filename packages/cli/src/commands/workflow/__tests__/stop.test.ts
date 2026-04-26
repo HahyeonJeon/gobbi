@@ -805,6 +805,7 @@ function makeTimeoutSpecsDir(options: MakeTimeoutSpecsOptions): string {
         instruction: 'emit',
         criteria: ['ideation.md is written'],
       },
+      footer: 'Step completion protocol — run gobbi workflow transition COMPLETE.',
     },
   };
 

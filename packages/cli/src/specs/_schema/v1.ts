@@ -205,7 +205,14 @@ const StepCompletionSchema = {
 const StepBlocksSchema = {
   type: 'object',
   additionalProperties: false,
-  required: ['static', 'conditional', 'delegation', 'synthesis', 'completion'],
+  required: [
+    'static',
+    'conditional',
+    'delegation',
+    'synthesis',
+    'completion',
+    'footer',
+  ],
   properties: {
     static: { type: 'array', items: BlockContentSchema },
     conditional: { type: 'array', items: ConditionalBlockSchema },
@@ -221,6 +228,10 @@ const StepBlocksSchema = {
     },
     synthesis: { type: 'array', items: BlockContentSchema },
     completion: StepCompletionSchema,
+    // Step-completion protocol footer — see `types.ts::StepBlocks.footer`.
+    // Required + `minLength: 1` keeps the static-prefix byte stream from
+    // accumulating empty separators when a spec author forgets the field.
+    footer: { type: 'string', minLength: 1 },
   },
 } as const;
 

@@ -351,6 +351,23 @@ export interface StepBlocks {
 
   /** Completion instruction and acceptance criteria for the step. */
   readonly completion: StepCompletion;
+
+  /**
+   * Step-completion protocol footer — the JIT prose that names the exact
+   * `gobbi workflow transition <VERB>` invocation the agent must run as its
+   * terminal action. Rendered as a static section between
+   * `blocks.completion` and `session.state` (see `assembly.ts::renderSpec`),
+   * so its bytes are part of the cache prefix and remain stable across
+   * invocations of the same step on the same codebase revision.
+   *
+   * Required, `minLength: 1` (see `_schema/v1.ts::StepBlocksSchema`). Each
+   * spec carries its own complete footer text; productive steps name
+   * `COMPLETE`, evaluation steps name `PASS` / `REVISE` / `ESCALATE`.
+   * Operator-only verbs (SKIP / TIMEOUT / FINISH / ABORT / RESUME) are
+   * excluded by convention, enforced by the verb-partition assertions in
+   * `__tests__/footer.snap.test.ts`.
+   */
+  readonly footer: string;
 }
 
 // ---------------------------------------------------------------------------

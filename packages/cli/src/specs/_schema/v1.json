@@ -231,7 +231,8 @@
         "conditional",
         "delegation",
         "synthesis",
-        "completion"
+        "completion",
+        "footer"
       ],
       "properties": {
         "static": {
@@ -373,6 +374,10 @@
               }
             }
           }
+        },
+        "footer": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }
@@ -714,7 +719,8 @@
         "conditional",
         "delegation",
         "synthesis",
-        "completion"
+        "completion",
+        "footer"
       ],
       "properties": {
         "static": {
@@ -856,6 +862,10 @@
               }
             }
           }
+        },
+        "footer": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }

@@ -41,6 +41,22 @@ Criteria:
   4. no evaluator assessed the artifacts it helped create — creator-evaluator isolation is preserved
   5. the user has confirmed the verdict via AskUserQuestion before the completion signal is emitted
 
+---
+## Step completion protocol
+
+You have finished this evaluation when the criteria above are satisfied and the user has confirmed the verdict. Once they are met, run EXACTLY ONE of the following commands as your last action:
+
+  gobbi workflow transition PASS
+    — Use this when no critical or major findings remain after user discussion.
+
+  gobbi workflow transition REVISE [--loop-target <step>]
+    — Use this when findings require re-entering a prior step. For execution_eval, include --loop-target with the user-agreed target (ideation, planning, or execution). For ideation_eval and planning_eval, the loop target is the preceding productive step by default.
+
+  gobbi workflow transition ESCALATE
+    — Use this when a critical structural defect requires user intervention outside the workflow. Routes to the error step.
+
+You MUST run exactly one of these as your last action. COMPLETE is not valid for evaluation steps. The CLI's output is the authoritative record; no other phrasing advances the workflow.
+
 session.schemaVersion=4
 session.currentStep=ideation_eval
 session.currentSubstate=null
@@ -110,6 +126,22 @@ Criteria:
   4. no evaluator assessed the artifacts it helped create — creator-evaluator isolation is preserved
   5. the user has confirmed the verdict via AskUserQuestion before the completion signal is emitted
 
+---
+## Step completion protocol
+
+You have finished this evaluation when the criteria above are satisfied and the user has confirmed the verdict. Once they are met, run EXACTLY ONE of the following commands as your last action:
+
+  gobbi workflow transition PASS
+    — Use this when no critical or major findings remain after user discussion.
+
+  gobbi workflow transition REVISE [--loop-target <step>]
+    — Use this when findings require re-entering a prior step. For execution_eval, include --loop-target with the user-agreed target (ideation, planning, or execution). For ideation_eval and planning_eval, the loop target is the preceding productive step by default.
+
+  gobbi workflow transition ESCALATE
+    — Use this when a critical structural defect requires user intervention outside the workflow. Routes to the error step.
+
+You MUST run exactly one of these as your last action. COMPLETE is not valid for evaluation steps. The CLI's output is the authoritative record; no other phrasing advances the workflow.
+
 session.schemaVersion=4
 session.currentStep=execution_eval
 session.currentSubstate=null
@@ -166,6 +198,22 @@ Criteria:
   3. every finding from every evaluator has a user-agreed disposition recorded in evaluation.md
   4. no evaluator assessed the artifacts it helped create — creator-evaluator isolation is preserved
   5. the user has confirmed the verdict via AskUserQuestion before the completion signal is emitted
+
+---
+## Step completion protocol
+
+You have finished this evaluation when the criteria above are satisfied and the user has confirmed the verdict. Once they are met, run EXACTLY ONE of the following commands as your last action:
+
+  gobbi workflow transition PASS
+    — Use this when no critical or major findings remain after user discussion.
+
+  gobbi workflow transition REVISE [--loop-target <step>]
+    — Use this when findings require re-entering a prior step. For execution_eval, include --loop-target with the user-agreed target (ideation, planning, or execution). For ideation_eval and planning_eval, the loop target is the preceding productive step by default.
+
+  gobbi workflow transition ESCALATE
+    — Use this when a critical structural defect requires user intervention outside the workflow. Routes to the error step.
+
+You MUST run exactly one of these as your last action. COMPLETE is not valid for evaluation steps. The CLI's output is the authoritative record; no other phrasing advances the workflow.
 
 session.schemaVersion=4
 session.currentStep=planning_eval
