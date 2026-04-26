@@ -65,6 +65,14 @@ export const PROMPT_COMMANDS: readonly PromptCommand[] = [
       await runPromptRender(args);
     },
   },
+  {
+    name: 'patch',
+    summary: 'Apply an RFC 6902 patch to a per-step spec.json (operator-only)',
+    run: async (args: string[]): Promise<void> => {
+      const { runPromptPatch } = await import('./prompt/patch.js');
+      await runPromptPatch(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
