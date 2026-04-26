@@ -55,3 +55,27 @@ tech-stack: git
 - Run the test in isolation (`bun test path/to/specific.test.ts`) — usually enough to confirm the flake is unrelated without touching the working tree.
 
 This rule already exists in `_git/gotchas.md` ("Using git stash in a worktree leaks state to other worktrees"). The new wrinkle: the slip happens most often during flake-debugging under time pressure, not during normal feature work. Brief executors explicitly that `git stash` is banned during ANY worktree operation including diagnostic ones.
+
+---
+
+### Direct push to develop blocked when `git.workflow.mode=worktree-pr` is active
+---
+priority: medium
+tech-stack: git, claude-hooks
+---
+
+**Priority:** Medium
+
+**What happened:** During Wave A.2 setup, the orchestrator tried to commit a single-line `.gitignore` fix directly to develop (small infrastructure change required to enable the new `.gobbi/projects/<name>/worktrees/` path per `_git/conventions.md:107`). The Claude Code permission hook denied the action with: *"Direct commit and push to `develop` bypasses the worktree+PR workflow the user explicitly configured this session (git.workflow.mode=worktree-pr)."*
+
+**User feedback:** Hook caught it correctly. The intent of the lock — "All work targets develop via PRs" — is correct; even infrastructure prep should land via a PR.
+
+**Correct approach:** When `git.workflow.mode=worktree-pr` is set in session settings, EVERY change to `develop` flows through a PR. For small prerequisite infrastructure changes (gitignore additions, config tweaks), choose one:
+
+1. **Bundle into the in-flight feature PR.** If the infra is the prerequisite for that feature's worktree convention, it logically belongs in the same PR. Wave A.2 did this — the gitignore fix shipped as Commit A of PR #151.
+2. **Open a tiny dedicated PR.** Acceptable when the infra is unrelated to any in-flight feature.
+3. **Never** override the hook with `--no-verify` or attempt to bypass — the lock is intentional.
+
+This applies even to the orchestrator. Direct push privileges do not exist under worktree-pr mode.
+
+**Refs:** Wave A.2 session `dbaf6f5f-403c-4645-b7c3-8962dc16c2d5` setup phase; PR #151 Commit A `7289f48` `chore(gitignore): ignore .gobbi/projects/*/worktrees/`.
