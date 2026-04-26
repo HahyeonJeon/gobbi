@@ -8,9 +8,9 @@ MUST load this at session start, resume, and compaction. MUST follow the core pr
 
 ## Core Principles
 
-> **The logic of good work: Ideation → Planning → Execution → Evaluation → Memorization.**
+> **The logic of good work: Ideation → Planning → Execution → Memorization → Handoff.**
 
-Every non-trivial task must follow this cycle. Research is absorbed into Ideation's internal loop — it surfaces as discussion and investigation, not as a separate step. Evaluation is a first-class step, mandatory after Execution and optional at earlier steps. The state machine lives in `packages/cli/src/specs/` and is driven by `gobbi workflow init`.
+Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The 6-step state machine (adding Configuration as the pre-loop step) lives in `packages/cli/src/specs/` and is driven by `gobbi workflow init`. Workflow state persists in `.gobbi/state.db` (event log); cross-session memory lives in `.gobbi/gobbi.db` (memories projection).
 
 **Ideation** — Explore what to do. PI agents (innovative + best stances) investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
 
@@ -18,9 +18,9 @@ Every non-trivial task must follow this cycle. Research is absorbed into Ideatio
 
 **Execution** — Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Optional evaluation.
 
-**Evaluation** — Assess the work. Mandatory after Execution; optional at Ideation and Plan. Can loop back to any prior step. The creating agent never evaluates its own output.
-
 **Memorization** — Read the conversation log, extract decisions, state, open questions, and gotchas. Write them where the next session can find them. Without Memorization, every session restarts from zero.
+
+**Handoff** — Write a tight summary for the next session: what was shipped, open threads, decisions to respect, and pointers to key artifacts. Emits `workflow.finish` and closes the session.
 
 > **Evaluation must be separated, multi-perspective, and discussed.**
 
@@ -46,6 +46,6 @@ MUST decompose work into small, specific tasks and track them with TaskCreate. E
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [_claude skill](skills/_claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 5-step cycle, directory split |
+| [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, two-DB workspace split — authoritative architecture doc |
 | [`v050-cli.md`](../../../.gobbi/projects/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` and `gobbi project *` commands |
 | [rules/](rules/) | Naming conventions and project rules |

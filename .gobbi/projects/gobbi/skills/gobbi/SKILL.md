@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are an orchestrator based on gobbi. You must delegate everything to specialist subagents except trivial cases.
 
-In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/sessions/{session-id}/` and record the first `workflow.start` event. The 5-step cycle — Ideation, Plan, Execution, Evaluation, Memorization — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
+In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/projects/<name>/sessions/{session-id}/` and record the first `workflow.start` event. The 6-step state machine — Ideation, Planning, Execution, Memorization, Handoff (with Evaluation as a sub-phase) — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
 
 **FIRST — load core skills before anything else.** Load `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`_orchestration` is deprecated in v0.5.0 and no longer loads — see `_orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
 
@@ -20,7 +20,7 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup 
 
 1. **Primary:** check `$CODEX_COMPANION_SESSION_ID` — the Codex companion plugin exports the real Claude session ID into this env var. Run `env | grep CODEX_COMPANION_SESSION_ID` to test.
 2. **Fallback:** if `$CODEX_COMPANION_SESSION_ID` is empty, list `~/.claude/projects/{slug}/*.jsonl` and take the most recently modified file. The filename minus `.jsonl` is the session ID. The slug is derived from the project path (e.g., `-playinganalytics-git-gobbi` for `/playinganalytics/git/gobbi`).
-3. **Do NOT generate a `manual-*` fallback.** A fake session ID writes orphan entries under `.gobbi/sessions/manual-*/` that need manual cleanup.
+3. **Do NOT generate a `manual-*` fallback.** A fake session ID writes orphan entries under `.gobbi/projects/<name>/sessions/manual-*/` that need manual cleanup.
 
 Once discovered, store the ID in a local variable (`DISCOVERED`). Pass it to every CLI call via inline env assignment or the explicit flag — the CLI is plugin-neutral and reads only `$CLAUDE_SESSION_ID` and `--session-id`:
 
@@ -50,7 +50,7 @@ After confirming the CLI is present, run `gobbi --is-latest` to check whether th
 CLAUDE_SESSION_ID=$DISCOVERED gobbi config get workflow --level session
 ```
 
-This reads `.gobbi/sessions/{id}/settings.json` at the session level without cascade fallthrough.
+This reads `.gobbi/projects/<name>/sessions/{id}/settings.json` at the session level without cascade fallthrough.
 
 - **Exit 0** — session settings exist (this is a resume or compact). Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`.
 - **Exit 1** — no prior session settings. Proceed to the setup questions in FIFTH.
@@ -84,7 +84,7 @@ Multi-select. If any channel is selected alongside Skip, channels take priority.
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help the user configure them before proceeding.
 
-**After all three questions — persist session choices.** Write the user's selections to `.gobbi/sessions/{id}/settings.json` via `gobbi config set`. All writes target `--level session` (the default); pass the discovered ID via inline env or `--session-id`. Session settings set defaults for this session only; either can be overridden at any specific step.
+**After all three questions — persist session choices.** Write the user's selections to `.gobbi/projects/<name>/sessions/{id}/settings.json` via `gobbi config set`. All writes target `--level session` (the default); pass the discovered ID via inline env or `--session-id`. Session settings set defaults for this session only; either can be overridden at any specific step.
 
 Evaluation mode mapping — the same answer applies to all three steps:
 
@@ -128,7 +128,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | [project-setup.md](project-setup.md) | Project-specific context and technology stack signals |
 | [notification-setup.md](notification-setup.md) | Notification channel and credential detection |
 | [git-setup.md](git-setup.md) | Git tooling and repository state detection |
-| [design/v050-overview.md](../../project/gobbi/design/v050-overview.md) | v0.5.0 state machine, 5-step cycle, directory split — authoritative architecture doc |
+| [design/v050-overview.md](../../projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, two-DB workspace split — authoritative architecture doc |
 
 ---
 
@@ -142,7 +142,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 ### Work
 
-Workflow participant skills — loaded during the 5-step cycle: Ideation, Plan, Execution, Evaluation, Memorization.
+Workflow participant skills — loaded during the 6-step state machine: Ideation, Planning, Execution, Memorization, Handoff (Evaluation as sub-phase).
 
 | Skill | Purpose |
 |---|---|

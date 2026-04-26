@@ -54,11 +54,11 @@ The CLI expands from its current eight-command surface to add a `workflow` subco
 
 ### New: `gobbi workflow` commands
 
-**`gobbi workflow init`** — Creates the session directory under `.gobbi/projects/<name>/sessions/{session-id}/`, writes `metadata.json`, initializes `gobbi.db` with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
+**`gobbi workflow init`** — Creates the session directory under `.gobbi/projects/<name>/sessions/{session-id}/`, writes `metadata.json`, initializes `state.db` (if not yet present) with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
-During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers are stored immediately as a `workflow.eval.decide` event in `gobbi.db`, populating `evalConfig` in `state.json`. The compiled prompt generated for the first step includes the eval decision in its session section.
+During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers are stored immediately as a `workflow.eval.decide` event in `state.db`, populating `evalConfig` in `state.json`. The compiled prompt generated for the first step includes the eval decision in its session section.
 
-**`gobbi workflow next`** — The core command. Reads `state.json` (or replays `gobbi.db` if absent), determines the active step, selects the appropriate step spec, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step.
+**`gobbi workflow next`** — The core command. Reads `state.json` (or replays `state.db` if absent), determines the active step, selects the appropriate step spec, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step.
 
 When the session is in `error` state, `gobbi workflow next` generates a pathway-specific error prompt instead of the normal step prompt. The error prompt is selected based on which pathway caused the error entry. Four pathways produce distinct prompts:
 
@@ -69,7 +69,7 @@ When the session is in `error` state, `gobbi workflow next` generates a pathway-
 
 Each error prompt includes the available recovery options: retry from the errored step, force-advance to memorization (`--force-memorization`), or abort. The prompt also includes available artifacts so the orchestrator or user can assess what was produced before the error. Cross-reference `v050-session.md` for pathway definitions and `v050-prompts.md` for resume prompt compilation.
 
-**`gobbi workflow transition <event>`** — Advances the state machine by appending a typed event to `gobbi.db` and updating `state.json`. Validates that the event produces a valid transition from the current step before writing. Returns the new state summary on stdout. Invalid transitions produce an error with the reason.
+**`gobbi workflow transition <event>`** — Advances the state machine by appending a typed event to `state.db` and updating `state.json`. Validates that the event produces a valid transition from the current step before writing. Returns the new state summary on stdout. Invalid transitions produce an error with the reason.
 
 The orchestrator calls this command via Bash, instructed by the step spec. Each step's compiled prompt ends with an explicit instruction: when this step is complete, run `gobbi workflow transition COMPLETE`. The CLI validates the transition against the state machine and advances state. The Stop hook can also trigger implicit transitions when it detects a completion signal that the orchestrator did not explicitly transition.
 
@@ -81,7 +81,7 @@ The orchestrator calls this command via Bash, instructed by the step spec. Each 
 
 **`gobbi workflow stop`** — Invoked by the Stop hook. Handles three responsibilities: heartbeat writing, timeout detection, and state flush for pending changes. Respects `stop_hook_active` — exits immediately if true to prevent reentrance loops. Cross-reference `v050-hooks.md` for the full Stop hook behavior.
 
-**`gobbi workflow resume`** — User-facing recovery command. Replays `gobbi.db` through the reducer, writes a fresh `state.json`, and outputs a resume prompt that re-orients the orchestrator to the current step. Used after crash recovery and after context compaction — both cases use the same rebuild path.
+**`gobbi workflow resume`** — User-facing recovery command. Replays `state.db` through the reducer, writes a fresh `state.json`, and outputs a resume prompt that re-orients the orchestrator to the current step. Used after crash recovery and after context compaction — both cases use the same rebuild path.
 
 **`gobbi workflow status`** — Reads `state.json` and the event store and prints the current workflow step, completed steps, active subagent count, evaluation configuration, feedback round count, and cost summary. Human-readable output.
 
@@ -89,13 +89,15 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 **`gobbi workflow validate`** — Performs static analysis of the spec library and predicate registry. Checks that every predicate name referenced in specs and guards has a registered TypeScript implementation. Also checks the workflow graph for dead steps, cycles, and broken references. This is a build-time check — it catches structural errors before they reach runtime.
 
+**`gobbi workflow run --task "<text>"`** — (NEW in Wave E.2 — does not exist today.) Outer-mode driver: reads `state.db`, compiles the step prompt, spawns `claude -p '<prompt>'` as a child process, observes the child exit, re-resolves state, and loops until `currentStep ∈ {'done','error'}`. On footer-miss (child exits without calling `gobbi workflow transition`), re-spawns with a reminder block. Enables headless/CI execution of the full workflow without interactive Claude Code. See `orchestration/README.md` § 7 for the design contract.
+
 ### New: `gobbi session` commands
 
-**`gobbi session events`** — Formats the event log from `gobbi.db` for human consumption. Provides a readable audit trail without requiring a SQLite client.
+**`gobbi session events`** — Formats the event log from `state.db` for human consumption. Provides a readable audit trail without requiring a SQLite client.
 
 ### New: `gobbi gotcha` commands
 
-**`gobbi gotcha promote`** — Moves gotchas from `.gobbi/project/gotchas/` to the permanent store in `.claude/skills/_gotcha/`. Runs outside active sessions only — checks that no session is active before proceeding. The promotion turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session.
+**`gobbi gotcha promote`** — Moves gotchas from `.gobbi/projects/<name>/learnings/gotchas/` to the permanent store in `.claude/skills/_gotcha/`. Runs outside active sessions only — checks that no session is active before proceeding. The promotion turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session.
 
 ### New: installation and project management commands
 
@@ -109,7 +111,9 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 ### New: `gobbi maintenance` commands
 
-**`gobbi maintenance wipe-legacy-sessions`** — Removes stale session directories under the pre-multi-project `.gobbi/sessions/` layout. Safe to run after migration to the multi-project layout; sessions under `.gobbi/projects/<name>/sessions/` are never touched.
+**`gobbi maintenance migrate-state-db`** — Ships in PR #147 (Wave A.1). Reverses Wave A.1's DB rename: moves the per-session `gobbi.db` file to the workspace-scoped `state.db` path at `.gobbi/state.db`. Run this after upgrading to v0.5.0 to migrate existing sessions. The companion `gobbi maintenance restore-state-db` reverts in one commit for reversibility.
+
+**`gobbi maintenance wipe-legacy-sessions`** — Removes stale session directories under the pre-multi-project `.gobbi/sessions/` layout (the literal directory name predates multi-project support — this is the command's actual target, not a drift residue). Safe to run after migration; sessions under `.gobbi/projects/<name>/sessions/` are never touched.
 
 ### Existing commands (unchanged)
 

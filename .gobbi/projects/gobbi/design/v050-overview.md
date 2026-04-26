@@ -38,7 +38,7 @@ In v0.5.0, skills still teach agents how to think about specific domains — git
 
 ## The Workflow
 
-V0.5.0 collapses the v0.4.x seven-step cycle into five steps. Research is absorbed into Ideation as an internal loop. Collection and Memorization merge into a single Memorization step.
+V0.5.0 collapsed the v0.4.x seven-step cycle into the current 6-step state machine (Configuration plus 5 productive steps: Ideation, Planning, Execution, Memorization, Handoff). Research is absorbed into Ideation as an internal loop. Collection and Memorization merge into a single Memorization step. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. Handoff is a true state-machine step (not a memorization sub-artifact) that writes a tight next-session summary.
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -46,11 +46,18 @@ V0.5.0 collapses the v0.4.x seven-step cycle into five steps. Research is absorb
 └──────────────────────────────────────────────────────────────────┘
 
   ┌────────────────────────────────────┐
+  │    Configuration (step 0)          │
+  │  Setup questions, git mode,        │
+  │  notification, task statement      │
+  └──────────────────┬─────────────────┘
+                     │  workflow.start
+                     ▼
+  ┌────────────────────────────────────┐
   │            Ideation                │
   │                                    │
   │  ┌──────────────────────────────┐  │
   │  │  Discuss ◀──────▶ Research  │  │
-  │  │  (internal loop)             │  │
+  │  │  (internal loop + Evaluation)│  │
   │  └──────────────────────────────┘  │
   │                                    │
   │  Output: concrete approach         │
@@ -58,7 +65,7 @@ V0.5.0 collapses the v0.4.x seven-step cycle into five steps. Research is absorb
                      │
                      ▼
   ┌──────────────────────────────────┐
-  │              Plan                │
+  │            Planning              │
   │                                  │
   │  Task decomposition              │
   │  Delegation assignments          │
@@ -72,15 +79,8 @@ V0.5.0 collapses the v0.4.x seven-step cycle into five steps. Research is absorb
   │  One task at a time              │
   │  Verify before next              │
   └────────────────┬─────────────────┘
-                   │
-                   ▼
-  ┌──────────────────────────────────┐       ┌───────────────────────┐
-  │          Evaluation              │──────▶│  Loop back to any     │
-  │                                  │◀──────│  prior step           │
-  │  Mandatory after Execution       │       └───────────────────────┘
-  │  Optional at other steps         │
-  └────────────────┬─────────────────┘
-                   │
+                   │ (Evaluation mandatory after Execution)
+                   │ (can loop back to any prior step)
                    ▼
   ┌──────────────────────────────────┐
   │         Memorization             │
@@ -88,20 +88,35 @@ V0.5.0 collapses the v0.4.x seven-step cycle into five steps. Research is absorb
   │  Read conversation log           │
   │  Extract crucial information     │
   │  Persist decisions and state     │
-  └──────────────────────────────────┘
+  └────────────────┬─────────────────┘
+                   │  workflow.step.exit
+                   ▼
+  ┌──────────────────────────────────┐
+  │            Handoff               │
+  │                                  │
+  │  Tight next-session summary      │
+  │  Writes handoff.md + gobbi.db    │
+  └────────────────┬─────────────────┘
+                   │  workflow.finish
+                   ▼
+                ┌──────┐
+                │ done │
+                └──────┘
 ```
 
 Each step has a single defined responsibility:
 
 **Ideation** answers "what to do." Discussion with the user and research into the problem space are internal loops within Ideation — they do not surface as separate workflow steps. Ideation completes when the approach is concrete enough to plan against.
 
-**Plan** answers "how to orchestrate." Task decomposition, agent delegation assignments, and verification criteria. The plan is the contract — Execution runs against it.
+**Planning** answers "how to orchestrate." Task decomposition, agent delegation assignments, and verification criteria. The plan is the contract — Execution runs against it.
 
 **Execution** answers "do it." One task at a time, verified before the next begins. Scope is bounded by the plan; no improvisation.
 
-**Evaluation** answers "is it right." Mandatory after Execution. At Ideation and Plan, the decision to evaluate is made once at workflow start, not redecided at each step. Evaluation can loop back to any prior step — not just the immediately preceding one. The creating agent never evaluates its own output.
+**Evaluation** runs as a sub-phase inside Ideation, Planning, and Execution — mandatory after Execution, optional at earlier steps. Evaluation can loop back to any prior step. The creating agent never evaluates its own output.
 
 **Memorization** answers "what should persist." Read the conversation log, extract decisions, state, open questions, and gotchas. Write them where the next session can find them. Without Memorization, every session restarts from zero.
+
+**Handoff** answers "what does the next session need to know." Reads the memorization output and writes a tight summary: what was shipped, open threads, decisions to respect, and pointers to key artifacts. Emits `workflow.finish` and writes one `gobbi.db::memories` row with `class='handoff'`.
 
 ---
 
@@ -121,11 +136,12 @@ V0.5.0 resolves it with a hard directory split:
   Read-only during workflow         Runtime state — write freely
 
   CLAUDE.md                         settings.json              (workspace prefs — gitignored)
-  rules/          ← symlinks →      projects/<name>/
-  skills/         from .gobbi/        settings.json            (project config — tracked)
-  agents/         skills|agents|      sessions/<id>/           (per-session — gitignored)
-  settings.json   rules             projects/<name>/learnings/ (gotchas, decisions)
-  hooks/                            gobbi.db                   (workspace event store)
+  rules/          ← symlinks →      state.db                   (workspace event log — gitignored)
+  skills/         from .gobbi/      gobbi.db                   (workspace memories projection — tracked)
+  agents/         skills|agents|    projects/<name>/
+  settings.json   rules               settings.json            (project config — tracked)
+  hooks/                              sessions/<id>/           (per-session — gitignored)
+                                    projects/<name>/learnings/ (gotchas, decisions)
 ```
 
 `.claude/` is the static knowledge layer. During a workflow session, no agent writes to it. The hooks enforce this at the tool layer — a PreToolUse hook blocks any write to `.claude/` while a session is active. The `skills/`, `agents/`, and `rules/` entries in `.claude/` are per-file symlinks pointing into `.gobbi/projects/<name>/skills/`, `.gobbi/projects/<name>/agents/`, and `.gobbi/projects/<name>/rules/` — the symlink farm lets Claude Code load docs from `.claude/` without storing the canonical copies there.
@@ -151,7 +167,7 @@ The five components of v0.5.0 form a closed feedback loop:
 
               ┌─────────────────────────────┐
               │         SQLite              │
-              │      Event Store            │
+              │   state.db (event log)      │
               │  (source of truth)          │
               └──────┬──────────────────────┘
                      │ reads state
@@ -185,7 +201,7 @@ The five components of v0.5.0 form a closed feedback loop:
                      ▼
               ┌─────────────────────────────┐
               │         SQLite              │
-              │      Event Store            │
+              │   state.db (event log)      │
               └─────────────────────────────┘
 ```
 
@@ -193,7 +209,7 @@ The five components of v0.5.0 form a closed feedback loop:
 
 **Hooks** are the constraint layer. PreToolUse hooks enforce guards — blocking writes to `.claude/` during sessions, preventing scope violations, enforcing step preconditions. PostToolUse and SubagentStop hooks capture events — when a subagent finishes, its output is automatically recorded in the event store without the orchestrator needing to remember to collect it.
 
-**SQLite event store** is the source of truth. Every step completion, every subagent result, every evaluation verdict, every state transition is an event. The CLI reads events to determine what to generate next. The hooks write events. The event store is the shared memory of the system.
+**SQLite event store** (`state.db`) is the source of truth for workflow state. Every step completion, every subagent result, every evaluation verdict, every state transition is an event. The CLI reads events to determine what to generate next. The hooks write events. A separate `gobbi.db` holds the cross-session memories projection (decisions, gotchas, design notes, handoff rows) — git-tracked so it persists across sessions.
 
 **Skills** still exist and still matter. They provide domain knowledge that the CLI incorporates into generated prompts as materials — git conventions, evaluation perspectives, documentation standards. Skills no longer drive orchestration; they inform it.
 

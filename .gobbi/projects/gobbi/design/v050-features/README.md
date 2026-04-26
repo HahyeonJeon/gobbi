@@ -7,10 +7,10 @@ Feature description docs for gobbi v0.5.0 — read these to understand what the 
 | Document | Feature |
 |----------|---------|
 | [one-command-install.md](one-command-install.md) | Plugin install + `/gobbi` in a session auto-installs or updates gobbi-cli; rules, agents, skills refresh on plugin update. |
-| [deterministic-orchestration.md](deterministic-orchestration.md) | Six-step workflow driven by the CLI. Bounded prompt per step; stance-diverse PI in the Ideation Loop; per-loop `eval_enabled` + `max_iterations`. |
+| [deterministic-orchestration.md](deterministic-orchestration.md) | Stub redirect to [`orchestration/README.md`](orchestration/README.md) — retired in Wave A.2. The six-step workflow, loop configuration, and reproducibility design now lives in the orchestration/ docs. |
 | [gobbi-config/README.md](gobbi-config/README.md) | Unified `settings.json` cascade under `.gobbi/` (workspace / project / session). Session wins; project wins over workspace. Two-verb CLI: `gobbi config get` + `set`. |
-| [gobbi-memory.md](gobbi-memory.md) | Three-tier memory under `.gobbi/`. Project memory subdirs (design, decisions, gotchas, ...). Workspace-wide `gobbi.db` event store. |
-| [just-in-time-prompt-injection.md](just-in-time-prompt-injection.md) | Prompts emitted at the moment of need, not always-loaded; skills injected per-step. |
+| [gobbi-memory.md](gobbi-memory.md) | Three-tier memory under `.gobbi/`. Project memory subdirs (design, decisions, gotchas, ...). Workspace-wide `state.db` event log + `gobbi.db` memories projection. |
+| [just-in-time-prompt-injection.md](just-in-time-prompt-injection.md) | Stub redirect to [`orchestration/README.md`](orchestration/README.md) — retired in Wave A.2. The JIT footer pattern design now lives in `orchestration/README.md` § 5 and § 6. |
 | [claude-docs-management.md](claude-docs-management.md) | JSON source at `.gobbi/skills\|agents\|rules/` rendered to `.claude/` by the CLI. Evaluation rubrics travel with authoring skills. |
 | [cli-as-runtime-api.md](cli-as-runtime-api.md) | Agent-facing runtime API spanning workflow control, configuration, memory, rendering, and hard-for-agents helpers. |
 | [token-budget-and-cache.md](token-budget-and-cache.md) | Cache-prefix ordering invariant + token budget allocation with section minimums. |

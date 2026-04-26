@@ -68,7 +68,7 @@ When the guard allows an Agent tool call, it appends a `delegation.spawn` event 
 
 A PreToolUse guard checks Write and Edit tool inputs for common secret patterns — API keys, tokens, credentials, and other sensitive material. The match filter fires only on `Write` and `Edit` tool calls. The guard's effect is `warn`, not `deny`, because false positives are possible and blocking would stall the workflow unnecessarily.
 
-The match filter must exclude paths under `.gobbi/sessions/**`. Gobbi's session artifact writes — subagent results, event data, state files — may contain strings that resemble secret patterns without being actual secrets. The exclusion is narrowed to `sessions/` specifically so that writes to `.gobbi/config.json` or other non-session files are still checked for secrets.
+The match filter must exclude paths under `.gobbi/projects/<name>/sessions/**`. Gobbi's session artifact writes — subagent results, event data, state files — may contain strings that resemble secret patterns without being actual secrets. The exclusion is narrowed to `sessions/` specifically so that writes to `.gobbi/config.json` or other non-session files are still checked for secrets.
 
 When the guard fires, it injects an `additionalContext` warning into the hook response and writes a `guard.warn` event to the event store with `idempotency_key`. The orchestrator receives the warning and can inspect the flagged content. The `guard.warn` event is distinct from `guard.violation` (which is written by deny guards) — both count toward escalation thresholds, but `guard.warn` does not block the tool call.
 
@@ -96,7 +96,7 @@ SubagentStop fires after every subagent completes, regardless of success or fail
 
 Every SubagentStop produces either a `delegation.complete` or `delegation.fail` event. No subagent completion is silently dropped. The capture hook handles three cases:
 
-**Transcript present and parseable** — The hook reads the transcript at `agent_transcript_path`, extracts the result, and writes an artifact file to the current step's directory under `.gobbi/sessions/{session-id}/{step}/`. It then appends a `delegation.complete` event to `gobbi.db` with the artifact path as data. The `parent_seq` field references the `delegation.spawn` event that initiated this subagent.
+**Transcript present and parseable** — The hook reads the transcript at `agent_transcript_path`, extracts the result, and writes an artifact file to the current step's directory under `.gobbi/projects/<name>/sessions/{session-id}/{step}/`. It then appends a `delegation.complete` event to `state.db` with the artifact path as data. The `parent_seq` field references the `delegation.spawn` event that initiated this subagent.
 
 **Transcript present but unparseable** — The transcript file exists but the hook cannot extract a structured result from it — malformed content, unexpected format, or extraction logic failure. The hook writes a `delegation.fail` event with the transcript path included as context in the event data, so the operator can inspect the raw transcript. A failure marker artifact (`delegation-fail-r{N}.md`) is written to the step directory.
 
@@ -125,12 +125,22 @@ Output length cap applies. Transcripts can be large. The hook writes results to 
 PostToolUse fires after a tool call completes. The hook is registered specifically for the `ExitPlanMode` tool. When ExitPlanMode completes, the plan is finalized. The hook:
 
 1. Reads `tool_input` from the stdin payload to extract the plan content
-2. Writes the plan as an artifact to `.gobbi/sessions/{session-id}/plan/`
-3. Appends an `artifact.write` event to `gobbi.db` with `idempotency_key`
+2. Writes the plan as an artifact to `.gobbi/projects/<name>/sessions/{session-id}/planning/`
+3. Appends an `artifact.write` event to `state.db` with `idempotency_key`
 
 This removes the requirement for the orchestrator to explicitly save the plan. The capture is automatic — the orchestrator uses ExitPlanMode as normal and the hook handles persistence.
 
 PostToolUse does not use `permissionDecision` — it cannot block. If the hook fails, the failure is logged but the tool call result is not affected.
+
+### PostToolUse (Bash — `gobbi workflow transition`)
+
+A second PostToolUse registration fires when a `Bash` tool call's command starts with `gobbi workflow transition`. This is the `step.advancement.observed` signal — an audit-only synthetic event that primes the Stop-hook safety net (see § Missed-Advancement Safety Net below).
+
+The hook calls `store.append()` directly, bypassing the reducer. This is intentional: the reducer's `assertNever` branch throws a plain `Error` (not `ReducerRejectionError`), so a reducer-routed audit event would be silently swallowed. Direct `store.append()` is the only path that persists the event reliably. The reducer remains pure — it never sees this event.
+
+Idempotency key: `tool-call` keyed on the PostToolUse payload's `tool_call_id`. Deduplicates across hook retries without merging distinct Bash invocations.
+
+Cite: `orchestration/README.md` § 6 (Inner mode hooks).
 
 ### Stop Hook
 
@@ -138,11 +148,13 @@ PostToolUse does not use `permissionDecision` — it cannot block. If the hook f
 
 The Stop hook fires after each turn of the conversation ends. It has three responsibilities in v0.5.0:
 
-**Heartbeat writing** — On each firing, the Stop hook writes a `session.heartbeat` event with the current timestamp to `gobbi.db`. This event includes `idempotency_key`. The heartbeat enables abandoned session detection: sessions without a heartbeat for 60 minutes are treated as abandoned, which releases the `.claude/` write guard. Cross-reference `v050-session.md` for the heartbeat event type and the abandoned session threshold.
+**Heartbeat writing** — On each firing, the Stop hook writes a `session.heartbeat` event with the current timestamp to `state.db`. This event includes `idempotency_key`. The heartbeat enables abandoned session detection: sessions without a heartbeat for 60 minutes are treated as abandoned, which releases the `.claude/` write guard. Cross-reference `v050-session.md` for the heartbeat event type and the abandoned session threshold.
 
 **Timeout detection** — On each firing, the Stop hook checks elapsed time since the current step began (using the most recent transition event that set `currentStep`). If elapsed time exceeds the step's configured timeout (from the step spec `meta` section), the hook writes a `workflow.step.timeout` event with `idempotency_key`. This event triggers transition to `error` state per the transition table in `v050-state-machine.md`. Default timeouts are generous — 30 minutes for execution steps, 15 minutes for evaluation steps — because human interaction is expected during most steps. Timeout configuration lives in step spec `meta`; cross-reference `v050-prompts.md` for step spec structure.
 
-**State flush** — If any state changes computed during the turn were not yet persisted, the Stop hook ensures they are applied. This is a safety net — events are written to `gobbi.db` during the turn as they occur, and the Stop hook only handles the case where a turn ended with pending state that was not flushed inline.
+**State flush** — If any state changes computed during the turn were not yet persisted, the Stop hook ensures they are applied. This is a safety net — events are written to `state.db` during the turn as they occur, and the Stop hook only handles the case where a turn ended with pending state that was not flushed inline.
+
+**Missed-advancement safety net** — On each firing, the Stop hook queries `state.db` for the most recent `step.advancement.observed` event since the last `workflow.step.exit`, `workflow.start`, or `workflow.resume`. If no such event exists and `turns_since_step_start >= 2`, the hook injects an `additionalContext` reminder that the orchestrator must call `gobbi workflow transition` when the step's work is complete. If `turns_since_step_start >= 5`, the hook additionally marks the situation in `state_snapshots` so `gobbi workflow status` can surface it to the operator. Thresholds: 2-turn reminder, 5-turn escalation — matching Temporal's heartbeat-budget conventions. See `orchestration/README.md` § 6 for the full design.
 
 `stop_hook_active` in the stdin payload must be checked at the start of every Stop hook invocation. If true, the hook exits immediately with a zero exit code and empty output. Claude Code sets `stop_hook_active` when a Stop hook triggers another Stop hook — the reentrance guard prevents cascading. Omitting this check causes infinite loops that stall the session.
 
@@ -191,7 +203,7 @@ The SessionStart hook receives a fixed stdin schema:
 | `cwd` | string | Working directory at session open time — recorded in `metadata.json` |
 | `source` | string | What triggered the session: `user`, `project`, or `api` |
 
-`gobbi workflow init` uses these fields to create the session directory under `.gobbi/sessions/{session-id}/`, write `metadata.json`, initialize `gobbi.db` with the events table schema, and append the first `workflow.start` event. The command is idempotent — if the session directory already exists, it verifies structure and exits cleanly.
+`gobbi workflow init` uses these fields to create the session directory under `.gobbi/projects/<name>/sessions/{session-id}/`, write `metadata.json`, initialize `state.db` (if not yet present) with the events table schema, and append the first `workflow.start` event. The command is idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
 This means the hooks registered in `hooks/hooks.json` are stable across releases. The CLI evolves; the hook wiring does not.
 
@@ -203,7 +215,7 @@ V0.5.0 implements two enforcement levels that reflect different violation severi
 
 **Soft nudge** — For edge cases that are unusual but not structurally invalid, the PreToolUse hook returns a response that includes `additionalContext` rather than a denial. The tool call proceeds. The orchestrator receives the additional context and can adjust its behavior. This is appropriate when the action is technically within scope but warrants attention — for example, writing to a step directory that does not match the currently active step, or when the secret pattern guard detects a potential credential in a Write call.
 
-**Hard block** — For structural violations, the hook returns `permissionDecision: "deny"`. The tool does not execute. A `guard.violation` event is written to `gobbi.db` with `idempotency_key`. The `violations` array in `state.json` is updated. The orchestrator receives the denial and the reason.
+**Hard block** — For structural violations, the hook returns `permissionDecision: "deny"`. The tool does not execute. A `guard.violation` event is written to `state.db` with `idempotency_key`. The `violations` array in `state.json` is updated. The orchestrator receives the denial and the reason.
 
 **Escalation on repeat triggers** — The `violations` array in `state.json` tracks both `guard.violation` events (from deny guards) and `guard.warn` events (from warn guards). The CLI reads the trigger count for a specific guard when generating the next prompt. If the same guard has fired more than a configurable threshold (default 3 times), the CLI escalates — it surfaces a warning to the user via the generated prompt. For deny guards, this means the orchestrator is repeatedly attempting a blocked action. For warn guards like the secret pattern detector, this means the orchestrator is repeatedly writing content that triggers the warning. Both are stagnation signals that may require human intervention.
 
