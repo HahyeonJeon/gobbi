@@ -62,6 +62,7 @@
         "the artifact stays narrow — pointers replace duplication, no new gotchas/decisions/design entries are introduced (those belong to memorization)",
         "no prior-step artifacts have been modified — handoff is write-forward only into the session's handoff directory"
       ]
-    }
+    },
+    "footer": "---\n## Step completion protocol\n\nYou have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:\n\n  gobbi workflow transition COMPLETE\n\nThe CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop."
   }
 }

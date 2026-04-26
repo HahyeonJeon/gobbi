@@ -587,6 +587,20 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
     kinded.push(staticKinded(s));
   }
 
+  // 5b) Footer block — JIT step-completion protocol that names the exact
+  //     `gobbi workflow transition <VERB>` invocation the agent must run as
+  //     its terminal action. Always emitted; per-spec text. Sits between the
+  //     completion block and the session summary so the protocol prose is
+  //     part of the cache prefix and the agent reads it immediately after
+  //     the criteria it back-references.
+  {
+    const s = makeStatic({
+      id: 'blocks.footer',
+      content: spec.blocks.footer,
+    });
+    kinded.push(staticKinded(s));
+  }
+
   // 6) Session summary — one SessionSection.
   {
     const s = makeSession({

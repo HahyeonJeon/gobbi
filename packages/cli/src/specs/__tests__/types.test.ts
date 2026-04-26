@@ -78,6 +78,7 @@ const blocks: StepBlocks = {
     instruction: 'Emit completion signal',
     criteria: ['both PI agents completed', 'synthesis written'],
   },
+  footer: 'Step completion protocol — run gobbi workflow transition COMPLETE.',
 };
 
 const spec: StepSpec = {

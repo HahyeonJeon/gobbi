@@ -76,6 +76,7 @@ function v1Spec(): StepSpec {
         instruction: 'done',
         criteria: ['all-done'],
       },
+      footer: 'Step completion protocol — run gobbi workflow transition COMPLETE.',
     },
   };
 }

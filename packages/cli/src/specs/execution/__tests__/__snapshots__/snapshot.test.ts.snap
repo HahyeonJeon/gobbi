@@ -48,6 +48,15 @@ Criteria:
   3. gotchas surfaced during execution have been written to the appropriate gotcha location before the step exits
   4. no task was marked complete on a failing verification without explicit user agreement recorded in execution.md
 
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
+
 session.schemaVersion=4
 session.currentStep=execution
 session.currentSubstate=null
@@ -125,6 +134,15 @@ Criteria:
   3. gotchas surfaced during execution have been written to the appropriate gotcha location before the step exits
   4. no task was marked complete on a failing verification without explicit user agreement recorded in execution.md
 
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
+
 session.schemaVersion=4
 session.currentStep=execution
 session.currentSubstate=null
@@ -188,6 +206,15 @@ Criteria:
   2. execution.md is written to the session's execution directory with a per-task ledger of scope, verification, result, and artifacts
   3. gotchas surfaced during execution have been written to the appropriate gotcha location before the step exits
   4. no task was marked complete on a failing verification without explicit user agreement recorded in execution.md
+
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
 
 session.schemaVersion=4
 session.currentStep=execution

@@ -87,6 +87,7 @@
         "gotchas surfaced during execution have been written to the appropriate gotcha location before the step exits",
         "no task was marked complete on a failing verification without explicit user agreement recorded in execution.md"
       ]
-    }
+    },
+    "footer": "---\n## Step completion protocol\n\nYou have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:\n\n  gobbi workflow transition COMPLETE\n\nThe CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop."
   }
 }

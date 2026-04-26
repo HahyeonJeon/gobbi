@@ -37,6 +37,15 @@ Criteria:
   4. the user has approved the chosen direction via AskUserQuestion
   5. the user has decided whether to run ideation_eval (if the eval gate is enabled for this session)
 
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
+
 session.schemaVersion=4
 session.currentStep=ideation
 session.currentSubstate=null
@@ -89,6 +98,15 @@ Criteria:
   3. ideation.md is written by the orchestrator with a single chosen direction and a record of the options considered
   4. the user has approved the chosen direction via AskUserQuestion
   5. the user has decided whether to run ideation_eval (if the eval gate is enabled for this session)
+
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
 
 session.schemaVersion=4
 session.currentStep=ideation
@@ -164,6 +182,15 @@ Criteria:
   3. ideation.md is written by the orchestrator with a single chosen direction and a record of the options considered
   4. the user has approved the chosen direction via AskUserQuestion
   5. the user has decided whether to run ideation_eval (if the eval gate is enabled for this session)
+
+---
+## Step completion protocol
+
+You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
+
+  gobbi workflow transition COMPLETE
+
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
 
 session.schemaVersion=4
 session.currentStep=ideation

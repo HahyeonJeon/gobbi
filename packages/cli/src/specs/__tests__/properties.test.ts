@@ -89,6 +89,7 @@ function baseSpec(): StepSpec {
         instruction: 'Finalize.',
         criteria: ['done'],
       },
+      footer: 'Step completion protocol — run gobbi workflow transition COMPLETE.',
     },
   };
 }
