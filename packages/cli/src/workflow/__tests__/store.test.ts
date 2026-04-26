@@ -1768,3 +1768,242 @@ describe('WAL checkpoint after workflow.step.exit (#146 A.1.9)', () => {
     expect(follow!.seq).toBe(2);
   });
 });
+
+// ===========================================================================
+// appendWithProjection — atomic event + projection write (Wave C.1.6 R1,
+// Architecture F-1 fix). The events INSERT and the projection callback
+// share one bun:sqlite IMMEDIATE transaction; a thrown projection rolls
+// the events row back, and a deduped event skips the projection entirely.
+// ===========================================================================
+
+describe('appendWithProjection — atomic event + projection write', () => {
+  /**
+   * Seed the v7 `prompt_patches` table on a fresh on-disk store. The
+   * table is created by `ensureSchemaV7` during EventStore construction;
+   * the helper here just opens a same-process connection to confirm the
+   * shape used by the atomicity tests below.
+   */
+  function withTmpStore<T>(fn: (store: EventStore, dbPath: string) => T): T {
+    const tmp = mkdtempSync(join(tmpdir(), 'store-aw-'));
+    const dbPath = join(tmp, 'state.db');
+    const store = new EventStore(dbPath, {
+      sessionId: 'sess-aw',
+      projectId: 'proj-aw',
+    });
+    try {
+      return fn(store, dbPath);
+    } finally {
+      store.close();
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  }
+
+  it('commits both writes when the projection callback succeeds', () => {
+    withTmpStore((store, dbPath) => {
+      const row = store.appendWithProjection(
+        makeContentInput({
+          contentId: 'sha256-aw-ok',
+          sessionId: 'sess-aw',
+          data: JSON.stringify({ promptId: 'ideation' }),
+        }),
+        (db, eventRow) => {
+          db.run(
+            `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              'sess-aw',
+              'proj-aw',
+              'ideation',
+              null,
+              eventRow.seq,
+              'sha256-aw-ok',
+              '[]',
+              'sha256:0',
+              'sha256:1',
+              Date.parse('2026-01-01T00:00:00.000Z'),
+              'operator',
+            ],
+          );
+        },
+      );
+
+      expect(row).not.toBeNull();
+      expect(row!.seq).toBe(1);
+
+      // Both rows persisted in the same transaction — verify via a
+      // separate read-only handle.
+      const reader = new Database(dbPath, { readonly: true });
+      try {
+        const eventCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM events`).get()
+        )?.cnt ?? 0;
+        const projectionCount = (
+          reader
+            .query<{ cnt: number }, []>(
+              `SELECT count(*) AS cnt FROM prompt_patches WHERE event_seq = ${row!.seq}`,
+            )
+            .get()
+        )?.cnt ?? 0;
+        expect(eventCount).toBe(1);
+        expect(projectionCount).toBe(1);
+      } finally {
+        reader.close();
+      }
+    });
+  });
+
+  it('rolls back the events row when the projection callback throws', () => {
+    withTmpStore((store, dbPath) => {
+      let threw = false;
+      try {
+        store.appendWithProjection(
+          makeContentInput({
+            contentId: 'sha256-aw-rollback',
+            sessionId: 'sess-aw',
+            data: JSON.stringify({ promptId: 'ideation' }),
+          }),
+          (_db, _row) => {
+            // Simulate a projection write failure (e.g. CHECK constraint
+            // violation, or a synthetic mid-transaction abort). bun:sqlite
+            // surfaces the throw as a rolled-back transaction.
+            throw new Error('synthetic projection failure');
+          },
+        );
+      } catch {
+        threw = true;
+      }
+
+      expect(threw).toBe(true);
+
+      // The events row MUST NOT exist — atomicity guarantee. If the
+      // events INSERT had committed independently of the projection
+      // callback (the pre-R1 two-handle bug), this row count would be 1.
+      const reader = new Database(dbPath, { readonly: true });
+      try {
+        const eventCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM events`).get()
+        )?.cnt ?? 0;
+        const projectionCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM prompt_patches`).get()
+        )?.cnt ?? 0;
+        expect(eventCount).toBe(0);
+        expect(projectionCount).toBe(0);
+      } finally {
+        reader.close();
+      }
+    });
+  });
+
+  it('skips the projection callback when the event was deduped', () => {
+    withTmpStore((store, dbPath) => {
+      // First append — both writes commit.
+      const first = store.appendWithProjection(
+        makeContentInput({
+          contentId: 'sha256-aw-dup',
+          sessionId: 'sess-aw',
+          data: JSON.stringify({ promptId: 'ideation' }),
+        }),
+        (db, row) => {
+          db.run(
+            `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              'sess-aw',
+              'proj-aw',
+              'ideation',
+              null,
+              row.seq,
+              'sha256-aw-dup',
+              '[]',
+              'sha256:0',
+              'sha256:1',
+              Date.parse('2026-01-01T00:00:00.000Z'),
+              'operator',
+            ],
+          );
+        },
+      );
+      expect(first).not.toBeNull();
+
+      // Second append — same content. Idempotency key collides; the
+      // projection callback MUST NOT be invoked (otherwise the
+      // UNIQUE(prompt_id, patch_id) index would throw, but more
+      // importantly the contract is "no projection write on dedup").
+      let projectionInvocations = 0;
+      const dup = store.appendWithProjection(
+        makeContentInput({
+          contentId: 'sha256-aw-dup',
+          sessionId: 'sess-aw-other',
+          data: JSON.stringify({ promptId: 'ideation' }),
+        }),
+        () => {
+          projectionInvocations += 1;
+        },
+      );
+
+      expect(dup).toBeNull();
+      expect(projectionInvocations).toBe(0);
+
+      // Only the original row exists.
+      const reader = new Database(dbPath, { readonly: true });
+      try {
+        const eventCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM events`).get()
+        )?.cnt ?? 0;
+        const projectionCount = (
+          reader.query<{ cnt: number }, []>(`SELECT count(*) AS cnt FROM prompt_patches`).get()
+        )?.cnt ?? 0;
+        expect(eventCount).toBe(1);
+        expect(projectionCount).toBe(1);
+      } finally {
+        reader.close();
+      }
+    });
+  });
+
+  it('events.seq matches prompt_patches.event_seq after a successful append', () => {
+    withTmpStore((store, dbPath) => {
+      const row = store.appendWithProjection(
+        makeContentInput({
+          contentId: 'sha256-aw-link',
+          sessionId: 'sess-aw',
+          data: JSON.stringify({ promptId: 'planning' }),
+        }),
+        (db, eventRow) => {
+          db.run(
+            `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              'sess-aw',
+              'proj-aw',
+              'planning',
+              null,
+              eventRow.seq,
+              'sha256-aw-link',
+              '[]',
+              'sha256:0',
+              'sha256:1',
+              Date.parse('2026-01-01T00:00:00.000Z'),
+              'operator',
+            ],
+          );
+        },
+      );
+      expect(row).not.toBeNull();
+
+      const reader = new Database(dbPath, { readonly: true });
+      try {
+        const eventSeq = reader
+          .query<{ seq: number }, []>(`SELECT seq FROM events ORDER BY seq DESC LIMIT 1`)
+          .get()?.seq;
+        const projectionEventSeq = reader
+          .query<{ event_seq: number }, []>(
+            `SELECT event_seq FROM prompt_patches ORDER BY seq DESC LIMIT 1`,
+          )
+          .get()?.event_seq;
+        expect(eventSeq).toBe(row!.seq);
+        expect(projectionEventSeq).toBe(row!.seq);
+        expect(eventSeq).toBe(projectionEventSeq);
+      } finally {
+        reader.close();
+      }
+    });
+  });
+});

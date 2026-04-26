@@ -29,14 +29,21 @@
  *      deterministic state).
  *   8. Compute post_hash.
  *   9. If --validate-only or --dry-run: print + exit 0, no writes.
- *   10. Commit phase: SQL transaction (event + projection row) → JSONL
- *       append → atomic temp+rename spec.json.
+ *   10. Commit phase: ONE SQLite IMMEDIATE transaction wraps the event
+ *       row + prompt_patches projection row INSERT (Wave C.1.6 R1 /
+ *       Architecture F-1 fix — both writes share one connection so a
+ *       SIGKILL between them rolls both back). After the SQL commits,
+ *       JSONL append → atomic temp+rename spec.json.
  *
  * # Crash recovery
  *
- *   - Crash after SQL commit, before JSONL: re-running the same patch
- *     hits the events idempotency_key, hits the prompt_patches UNIQUE
- *     event_seq, and JSONL append fires once — end state correct.
+ *   - Crash inside the SQL transaction: BEGIN IMMEDIATE rolls back —
+ *     no events row, no prompt_patches row. Next run re-applies cleanly.
+ *   - Crash after SQL commit, before JSONL append: events + projection
+ *     rows exist. Re-running the same patch hits the events idempotency
+ *     dedup; the patch.ts dedup-hit branch surfaces the existing
+ *     projection row and exits 0. The operator runs `gobbi prompt
+ *     rebuild` to materialize the missing JSONL line + spec.json.
  *   - Crash after JSONL append, before spec.json rename: JSONL has the
  *     entry, DB has the row, spec.json is stale. Next `gobbi prompt
  *     patch` invocation detects (`pre_hash` of on-disk spec ≠ last
@@ -416,56 +423,81 @@ export async function runPromptPatchOnFiles(
         );
         process.exit(1);
       }
-      // Synthesize genesis from the pre-patch spec.
-      const genesisEvent = store.append({
-        ts,
-        type: 'prompt.patch.applied',
-        actor: 'operator',
-        idempotencyKind: 'content',
-        contentId: contentHash([{ op: 'add', path: '', value: specRaw }]),
-        sessionId,
-        data: JSON.stringify({
-          promptId: inputs.promptId,
-          patchId: contentHash([{ op: 'add', path: '', value: specRaw }]),
-          parentPatchId: null,
-          preHash: contentHash({}),
-          postHash: preHash,
-          opCount: 1,
-          schemaId: STEP_SPEC_SCHEMA_ID,
-          appliedBy: 'operator',
-        }),
-      });
-      if (genesisEvent !== null) {
-        const genesisEntry = buildGenesisEntry({
-          promptId: inputs.promptId,
-          baselineSpec: specRaw,
+      // Synthesize genesis from the pre-patch spec. Atomic — event +
+      // projection share one transaction (Wave C.1.6 R1, Architecture
+      // F-1 fix).
+      const genesisContentId = contentHash([
+        { op: 'add', path: '', value: specRaw },
+      ]);
+      // `genesisEntryRef` is captured inside the projection callback so
+      // the post-callback code can append the JSONL line and read the
+      // projection seq without re-querying. TypeScript's flow analysis
+      // narrows the closure-mutated locals to `never`, so we capture
+      // the type explicitly here.
+      let genesisEntryRef: PromptEvolutionEntry | null = null as
+        | PromptEvolutionEntry
+        | null;
+      let genesisProjectionSeq: number | null = null as number | null;
+      const genesisEvent = store.appendWithProjection(
+        {
           ts,
-          schemaId: STEP_SPEC_SCHEMA_ID,
-          eventSeq: genesisEvent.seq,
-        });
-        // Write the genesis row in prompt_patches.
-        insertPromptPatchRow(store, {
+          type: 'prompt.patch.applied',
+          actor: 'operator',
+          idempotencyKind: 'content',
+          contentId: genesisContentId,
           sessionId,
-          projectId: projectName,
-          promptId: inputs.promptId,
-          parentSeq: null,
-          eventSeq: genesisEvent.seq,
-          patchId: genesisEntry.patchId,
-          patchJson: canonicalize(genesisEntry.ops),
-          preHash: genesisEntry.preHash,
-          postHash: genesisEntry.postHash,
-          appliedAt: Date.parse(ts),
-        });
+          data: JSON.stringify({
+            promptId: inputs.promptId,
+            patchId: genesisContentId,
+            parentPatchId: null,
+            preHash: contentHash({}),
+            postHash: preHash,
+            opCount: 1,
+            schemaId: STEP_SPEC_SCHEMA_ID,
+            appliedBy: 'operator',
+          }),
+        },
+        (db, row) => {
+          const genesisEntry = buildGenesisEntry({
+            promptId: inputs.promptId,
+            baselineSpec: specRaw,
+            ts,
+            schemaId: STEP_SPEC_SCHEMA_ID,
+            eventSeq: row.seq,
+          });
+          insertPromptPatchRowOnDb(db, {
+            sessionId,
+            projectId: projectName,
+            promptId: inputs.promptId,
+            parentSeq: null,
+            eventSeq: row.seq,
+            patchId: genesisEntry.patchId,
+            patchJson: canonicalize(genesisEntry.ops),
+            preHash: genesisEntry.preHash,
+            postHash: genesisEntry.postHash,
+            appliedAt: Date.parse(ts),
+          });
+          genesisEntryRef = genesisEntry;
+          genesisProjectionSeq = readPatchSeqByEventSeqOnDb(db, row.seq);
+        },
+      );
+      if (genesisEvent !== null) {
+        const genesisEntry: PromptEvolutionEntry | null = genesisEntryRef;
+        if (genesisEntry === null) {
+          throw new Error(
+            'unreachable: appendWithProjection succeeded but genesis entry was not captured',
+          );
+        }
         appendJsonlSync(jsonlPath, JSON.stringify(genesisEntry));
         parentPatchId = genesisEntry.patchId;
-        parentSeq = readPatchSeqByEventSeq(store, genesisEvent.seq);
+        parentSeq = genesisProjectionSeq;
       } else {
         // Genesis event was deduped (someone else just wrote it). Read
         // back the existing genesis row and continue.
         const dedupedSeq = readPatchSeqByContent(
           store,
           inputs.promptId,
-          contentHash([{ op: 'add', path: '', value: specRaw }]),
+          genesisContentId,
         );
         if (dedupedSeq === null) {
           throw new Error(
@@ -484,25 +516,44 @@ export async function runPromptPatchOnFiles(
       }
     }
 
-    // Append the operator's patch as event + projection row.
-    const eventRow = store.append({
-      ts,
-      type: 'prompt.patch.applied',
-      actor: 'operator',
-      idempotencyKind: 'content',
-      contentId: patchId,
-      sessionId,
-      data: JSON.stringify({
-        promptId: inputs.promptId,
-        patchId,
-        parentPatchId,
-        preHash,
-        postHash,
-        opCount: mergedOps.length,
-        schemaId: STEP_SPEC_SCHEMA_ID,
-        appliedBy: 'operator',
-      }),
-    });
+    // Append the operator's patch as event + projection row inside one
+    // SQLite IMMEDIATE transaction. A SIGKILL between the events INSERT
+    // and the prompt_patches INSERT rolls both back rather than leaving
+    // an orphan event row (Wave C.1.6 R1 / Architecture F-1 fix).
+    const eventRow = store.appendWithProjection(
+      {
+        ts,
+        type: 'prompt.patch.applied',
+        actor: 'operator',
+        idempotencyKind: 'content',
+        contentId: patchId,
+        sessionId,
+        data: JSON.stringify({
+          promptId: inputs.promptId,
+          patchId,
+          parentPatchId,
+          preHash,
+          postHash,
+          opCount: mergedOps.length,
+          schemaId: STEP_SPEC_SCHEMA_ID,
+          appliedBy: 'operator',
+        }),
+      },
+      (db, row) => {
+        insertPromptPatchRowOnDb(db, {
+          sessionId,
+          projectId: projectName,
+          promptId: inputs.promptId,
+          parentSeq,
+          eventSeq: row.seq,
+          patchId,
+          patchJson: canonicalize(mergedOps),
+          preHash,
+          postHash,
+          appliedAt: Date.parse(ts),
+        });
+      },
+    );
 
     if (eventRow === null) {
       // Cross-session content dedup hit — the same patch was already
@@ -522,21 +573,8 @@ export async function runPromptPatchOnFiles(
     }
     eventSeq = eventRow.seq;
 
-    insertPromptPatchRow(store, {
-      sessionId,
-      projectId: projectName,
-      promptId: inputs.promptId,
-      parentSeq,
-      eventSeq: eventRow.seq,
-      patchId,
-      patchJson: canonicalize(mergedOps),
-      preHash,
-      postHash,
-      appliedAt: Date.parse(ts),
-    });
-
-    // JSONL append (after SQL commit; crash-recovery covered by F-5
-    // diagnostic on next run).
+    // JSONL append (after SQL transaction commits; crash-recovery
+    // covered by F-5 diagnostic on next run).
     const entry: PromptEvolutionEntry = {
       v: 1,
       ts,
@@ -651,50 +689,55 @@ interface InsertPromptPatchArgs {
   readonly appliedAt: number;
 }
 
-function insertPromptPatchRow(
-  store: EventStore,
+/**
+ * Run the `INSERT INTO prompt_patches ...` projection write on the
+ * supplied `Database` handle. Used inside
+ * {@link EventStore.appendWithProjection} so the projection row shares
+ * the same transaction as the events row (Wave C.1.6 R1 /
+ * Architecture F-1 fix). The caller MUST pass the handle obtained
+ * from the projection callback — opening a separate `new Database(path)`
+ * here would defeat the atomicity guarantee.
+ */
+function insertPromptPatchRowOnDb(
+  db: Database,
   args: InsertPromptPatchArgs,
 ): void {
-  // EventStore exposes only the events table publicly; for the
-  // projection row we open the underlying db via the same path. Keep
-  // the call inside the store's transaction so SQL atomicity holds.
-  // Grab a typed query via `(store as unknown as { db: Database }).db`
-  // — store does not export the db. Workaround: use a separate raw
-  // Database instance opened on the same file. SQLite WAL mode supports
-  // cross-handle visibility; the EventStore's busy_timeout=5000 covers
-  // contention.
-  //
-  // NOTE: this works because the events table append already committed
-  // (immediate transaction inside store.append). The prompt_patches
-  // INSERT runs in its own micro-transaction. Crash semantics: an
-  // event without a matching projection row is a recoverable state —
-  // a future run sees the unique idempotency key collide and a
-  // post-processor can fill in the projection row. For C.1 the
-  // simpler "second handle, second transaction" model is sufficient
-  // (single-writer convention; SQLITE_BUSY surfaces loudly via the
-  // busy_timeout).
-  const db = new Database(stateDbPathFromStore(store));
-  try {
-    db.run('PRAGMA busy_timeout = 5000');
-    db.run(
-      `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        args.sessionId,
-        args.projectId,
-        args.promptId,
-        args.parentSeq,
-        args.eventSeq,
-        args.patchId,
-        args.patchJson,
-        args.preHash,
-        args.postHash,
-        args.appliedAt,
-        'operator',
-      ],
-    );
-  } finally {
-    db.close();
+  db.run(
+    `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      args.sessionId,
+      args.projectId,
+      args.promptId,
+      args.parentSeq,
+      args.eventSeq,
+      args.patchId,
+      args.patchJson,
+      args.preHash,
+      args.postHash,
+      args.appliedAt,
+      'operator',
+    ],
+  );
+}
+
+/**
+ * Read the `prompt_patches.seq` for a given `event_seq` using the
+ * supplied in-transaction `Database` handle. Co-located with
+ * {@link insertPromptPatchRowOnDb} so the genesis-bootstrap path can
+ * capture the projection row's seq inside the same transaction the
+ * INSERT just landed in.
+ */
+function readPatchSeqByEventSeqOnDb(
+  db: Database,
+  eventSeq: number,
+): number | null {
+  interface Row {
+    readonly seq: number;
   }
+  const row = db
+    .query<Row, [number]>(`SELECT seq FROM prompt_patches WHERE event_seq = ?`)
+    .get(eventSeq);
+  return row === null ? null : row.seq;
 }
 
 /**
@@ -759,26 +802,6 @@ function readLastPostHash(
     } catch {
       return null;
     }
-  } finally {
-    db.close();
-  }
-}
-
-function readPatchSeqByEventSeq(
-  store: EventStore,
-  eventSeq: number,
-): number | null {
-  const db = new Database(stateDbPathFromStore(store), { readonly: true });
-  try {
-    interface Row {
-      readonly seq: number;
-    }
-    const row = db
-      .query<Row, [number]>(
-        `SELECT seq FROM prompt_patches WHERE event_seq = ?`,
-      )
-      .get(eventSeq);
-    return row === null ? null : row.seq;
   } finally {
     db.close();
   }

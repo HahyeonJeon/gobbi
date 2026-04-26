@@ -158,15 +158,24 @@ Validation pipeline (synthesis §9.2 fail-fast ladder):
 10. **Commit phase** (atomic):
 
     ```text
-    SQL transaction:
+    SQL transaction (BEGIN IMMEDIATE — single bun:sqlite handle):
       store.append(prompt.patch.applied event) → returns event_seq
       INSERT INTO prompt_patches (event_seq, ...)
+    COMMIT
 
     Filesystem (after SQL commit):
       appendFileSync(<jsonl>, <line> + '\n')
       writeFileSync(<spec.json>.tmp, canonicalize(<new spec>) + '\n')
       renameSync(<spec.json>.tmp, <spec.json>)
     ```
+
+    The SQL transaction lives on the `EventStore` as
+    `appendWithProjection(input, projection)` (Wave C.1.6 R1 /
+    Architecture F-1 fix). Both writes share one connection — a
+    SIGKILL between them rolls both back rather than leaving an
+    orphan event row. The projection callback receives the same
+    underlying `Database` handle so it cannot accidentally open a
+    second connection that would defeat the atomicity guarantee.
 
 `--allow-no-parent` opts the operator into bootstrapping a fresh chain by synthesizing a genesis line from the on-disk pre-patch spec.
 
