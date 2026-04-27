@@ -162,7 +162,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-13 — PostToolUse direct-append `step.advancement.observed` (post-Wave-A.1)
+## SC-ORCH-13 — PostToolUse direct-append `step.advancement.observed`
 
 - `[GAP]` `events/step.ts` defines `STEP_EVENTS.ADVANCEMENT_OBSERVED`; `events/index.ts::ALL_EVENT_TYPES` includes the new type.
   - Verify (post-A.1.3): `bun test packages/cli/src/workflow/events/__tests__/closed-enumeration.test.ts`.
@@ -227,7 +227,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-20 — Handoff writes + emits workflow.finish (post-Wave-A.1)
+## SC-ORCH-20 — Handoff writes + emits workflow.finish
 
 - `[GAP]` `specs/handoff/spec.json` exists with the README §9.2 template; running through the step writes `sessions/<id>/handoff/handoff.md` and inserts a `gobbi.db::memories` row with `class='handoff', session_id=<id>, project_id=<resolved>`.
   - Verify (post-A.1.5): `specs/handoff/__tests__/spec.test.ts` (new) asserts artifact-write + memory-row insert.
@@ -238,7 +238,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-21 — `migrate-state-db` reversibility (post-Wave-A.1)
+## SC-ORCH-21 — `migrate-state-db` reversibility
 
 - `[GAP]` `commands/maintenance.ts:48-59` registry includes `{ name: 'migrate-state-db', ... }` and `{ name: 'restore-state-db', ... }` — the dispatch loop routes both subcommands (Architecture P-A-1).
   - Verify (post-A.1.4): `bun test packages/cli/src/commands/__tests__/maintenance.test.ts -t 'registry'` plus a smoke run of `gobbi maintenance migrate-state-db --dry-run`.
@@ -249,7 +249,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-22 — `.gitignore` boundary (post-Wave-A.1)
+## SC-ORCH-22 — `.gitignore` boundary
 
 - `[GAP]` `git check-ignore .gobbi/gobbi.db` returns nonzero (file is tracked); `git check-ignore .gobbi/state.db` returns 0 (file is ignored).
   - Verify (post-A.1.8): `bun test packages/cli/src/__tests__/gitignore-boundary.test.ts` (new) using `git check-ignore` shell-out.
@@ -258,7 +258,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-23 — Path-resolution sweep complete (post-Wave-A.1)
+## SC-ORCH-23 — Path-resolution sweep complete
 
 - `[GAP]` Zero non-test matches for `join(sessionDir, 'gobbi.db')` across `packages/cli/src/`.
   - Verify (post-A.1.7): `rg -n "join\(sessionDir, 'gobbi\.db'\)" packages/cli/src/ --type ts` returns no lines.
@@ -267,7 +267,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-24 — EventStore explicit partition keys (post-Wave-A.1)
+## SC-ORCH-24 — EventStore explicit partition keys
 
 - `[GAP]` `new EventStore(path, { sessionId, projectId })` writes events with the supplied partition keys (not path-derived).
   - Verify (post-A.1.2): `store.test.ts` constructor-with-options test; assert persisted row has supplied `session_id` and `project_id`.
@@ -278,7 +278,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-25 — `wal_checkpoint(TRUNCATE)` after each `step.exit` (post-Wave-A.1)
+## SC-ORCH-25 — `wal_checkpoint(TRUNCATE)` after each `step.exit`
 
 - `[GAP]` `store.ts` runs `PRAGMA wal_checkpoint(TRUNCATE)` after every commit of a `workflow.step.exit` event.
   - Verify (post-A.1.9): `store.test.ts` checkpoint-after-step-exit test inspects WAL-file size after commit.

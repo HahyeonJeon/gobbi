@@ -275,7 +275,7 @@ Evidence: `specs/memorization/spec.json` (rewritten in Wave A.1.6), `events/arti
 ### SC-ORCH-20 — Handoff writes `handoff.md` + memory row + emits `workflow.finish`
 
 **Given** an active session at `currentStep = 'handoff'` with `memorization.md` already written
-**When** the handoff agent reads `memorization.md` plus the last-N events from `state.db` and writes `sessions/<id>/handoff/handoff.md`
+**When** the handoff agent reads `memorization.md` plus the last-N events from the per-session `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db` and writes `sessions/<id>/handoff/handoff.md`
 **Then** `artifact.write` is emitted; an `INSERT INTO memories` row is added with `class='handoff', session_id=<id>, project_id=<resolved>`; the agent runs `gobbi workflow transition COMPLETE` which on the handoff step maps to `workflow.finish` per `index.json` rule `{ from: "handoff", to: "done", trigger: "workflow.finish" }`; reducer transitions `currentStep` to `done`.
 
 Evidence: `specs/handoff/spec.json`, `index.json` (handoff transitions added Wave A.1.5), `events/workflow.ts:21` (workflow.finish), `events/artifact.ts`.
