@@ -28,7 +28,7 @@ v0.4.5 remains installable from npm for archival purposes: `npm install -g @gobb
 |---|---|---|---|
 | Skill-based orchestration (`_orchestration` skill) | CLI state machine (`gobbi workflow init`) | Plugin auto-registers new hooks on install | n/a — conceptual change |
 | 8 v0.4.x hook entries (3×SessionStart + Stop + Notification + StopFailure + SubagentStop + SessionEnd — calling `gobbi notify *` and `gobbi session *`) | 5 `gobbi workflow *` hook entries (SessionStart, PreToolUse, PostToolUse, SubagentStop, Stop) | Breaking — see below | n/a — hook wiring |
-| Notes in `.claude/project/{name}/note/` (retrospective archive) | Active sessions in `.gobbi/sessions/{id}/` (runtime state) | Both coexist; no migration needed | Existing note archives remain valid |
+| Notes in `.claude/project/{name}/note/` (retrospective archive) | Active sessions in `.gobbi/projects/<name>/sessions/<id>/` (runtime state) | Both coexist; no migration needed | Existing note archives remain valid |
 | 7-step cycle (ideation → plan → research → execute → collect → memorize → review) | 5-step cycle (Ideation → Plan → Execution → Evaluation → Memorization) | Conceptual; no user action needed | n/a |
 | `_orchestration` skill as workflow entry | Deprecated — banner + `ARCHIVED.md` | Skill remains on disk for reference; no deletion | n/a |
 
@@ -44,7 +44,7 @@ v0.5.0 removes all 8 v0.4.x entries and replaces them with 5 `gobbi workflow *` 
 |---|---|
 | SessionStart | `gobbi workflow init` |
 | PreToolUse | `gobbi workflow guard` |
-| PostToolUse (ExitPlanMode) | `gobbi workflow capture-plan` |
+| PostToolUse (ExitPlanMode) | `gobbi workflow capture-planning` |
 | SubagentStop | `gobbi workflow capture-subagent` |
 | Stop | `gobbi workflow stop` |
 
@@ -85,11 +85,11 @@ Removal is not scheduled. The deprecated skill will remain in v0.5.x as an archi
 
 - `.claude/` — static knowledge layer. Skills, rules, agents, gotchas, CLAUDE.md, settings. Read-only during an active workflow session. A PreToolUse guard blocks writes to `.claude/` while a session is running.
 
-- `.gobbi/` — runtime layer. Active sessions (`sessions/{id}/`), event store (`gobbi.db`), heartbeats, and mid-session gotchas. Agents write freely here. Writing to `.gobbi/` does not trigger Claude Code context reload.
+- `.gobbi/` — runtime layer. Active sessions (`.gobbi/projects/<name>/sessions/<id>/`), per-session event store (`sessions/<id>/gobbi.db`), workspace memories projection (`.gobbi/gobbi.db`, git-tracked), workspace prompt-patch journal (`.gobbi/state.db`, gitignored), and mid-session gotchas. Agents write freely here. Writing to `.gobbi/` does not trigger Claude Code context reload.
 
 **Consumer impact.** The gobbi repo itself already has `.gobbi/` in `.gitignore` (line 7). If you are adopting the gobbi plugin in your own project, add `.gobbi/` to your project's `.gitignore`. The `.gobbi/` directory is created on first `gobbi workflow init` run.
 
-Gotchas recorded mid-session land in `.gobbi/project/gotchas/` and must be promoted to `.claude/skills/_gotcha/` via `gobbi gotcha promote` — run this outside an active session. The promotion step is a deliberate gate that prevents mid-session noise from polluting the permanent gotcha store.
+Gotchas recorded mid-session land in `.gobbi/projects/gobbi/learnings/gotchas/` and must be promoted to workspace-level skill storage via `gobbi gotcha promote` — run this outside an active session. The promotion step is a deliberate gate that prevents mid-session noise from polluting the permanent gotcha store.
 
 ---
 
@@ -117,9 +117,27 @@ grep -n "gobbi notify" plugins/gobbi/hooks/hooks.json
 # 5. Session directory is created on init
 cd /tmp && mkdir test-gobbi && cd test-gobbi
 gobbi workflow init --session-id smoke-test --task "verify install"
-ls .gobbi/sessions/smoke-test/
+ls .gobbi/projects/gobbi/sessions/smoke-test/
 # → metadata.json  gobbi.db
 ```
+
+---
+
+### Event store schema evolution
+
+The `events` table in `gobbi.db` (per-session) and `state.db` (workspace) uses lazy read-time migration. Events are never rewritten on disk; migration runs in memory at replay time. The `schema_version` column on each row records the version at write time.
+
+| Version | Shipped | Key changes |
+|---|---|---|
+| v1 | v0.5.0 | Initial schema — `events`, `state_snapshots`, `idempotency_key` unique constraint |
+| v2 | v0.5.0 | `guard.warn` event type |
+| v3 | v0.5.0 | `metadata.json` schema v3 shape |
+| v4 | v0.5.0 | Error-compiler pathway fields in event data |
+| v5 | v0.5.0 | `session_id` and `project_id` columns on `events` |
+| v6 | Wave A.1 | `tool_calls` and `config_changes` tables; `step.advancement.observed` audit event; WAL checkpoint after `step.exit` |
+| v7 | Wave C.1 | `prompt_patches` table (`id`, `prompt_id`, `patch_id`, `patch_json`, `applied_at`, `applied_by`); `prompt.patch.applied` audit event written to workspace `state.db` |
+
+Run `gobbi maintenance migrate-state-db` to apply pending migrations. Run `gobbi maintenance restore-state-db` to revert. Both commands are idempotent.
 
 ---
 
