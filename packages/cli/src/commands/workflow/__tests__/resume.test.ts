@@ -20,7 +20,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -391,6 +391,61 @@ describe('runResumeWithOptions — --force-memorization', () => {
       // `detectPathway`, so it is NOT part of the baseline; it lives on
       // the PriorErrorSnapshot envelope rather than the pathway itself.
       expect(reconstructed).toEqual(baselinePathway);
+    } finally {
+      store.close();
+    }
+  });
+
+  // CV-9 regression — issue #163. The pre-fix `--force-memorization`
+  // branch appended events via raw `store.transaction(...)` and never
+  // wrote `state.json`. `resolveWorkflowState`'s fast path read the
+  // stale state.json and returned the pre-resume `error` step on every
+  // subsequent invocation — events said `memorization`, state.json
+  // disagreed. The fix derives state via `deriveWorkflowState` and
+  // explicitly calls `writeState` after the transaction commits.
+  //
+  // This test asserts the on-disk state.json content directly, NOT the
+  // event-store rows (the pre-existing tests above already cover those).
+  test('writes state.json with currentStep=memorization after --force-memorization (issue #163)', async () => {
+    const sessionId = 'resume-force-statefile';
+    const { sessionDir } = await initScratchSession(sessionId);
+    await driveToErrorState(sessionDir, sessionId);
+
+    // Sanity baseline: state.json reflects the error state pre-resume.
+    {
+      const raw = readFileSync(join(sessionDir, 'state.json'), 'utf8');
+      const before = JSON.parse(raw) as { readonly currentStep: string };
+      expect(before.currentStep).toBe('error');
+    }
+
+    await captureExit(() =>
+      runResumeWithOptions(
+        ['--target', 'memorization', '--force-memorization'],
+        { sessionDir },
+      ),
+    );
+    expect(captured.exitCode).toBeNull();
+
+    // The actual regression assertion — state.json materialised the
+    // post-resume state, not just the event-store rows.
+    const raw = readFileSync(join(sessionDir, 'state.json'), 'utf8');
+    const after = JSON.parse(raw) as {
+      readonly currentStep: string;
+      readonly schemaVersion: number;
+    };
+    expect(after.currentStep).toBe('memorization');
+    // The fast-path readers (`resolveWorkflowState`) accept the file by
+    // schemaVersion gate — confirm the persisted shape passes that gate
+    // so downstream guard / status / next reads see the fresh state.
+    expect(after.schemaVersion).toBeGreaterThanOrEqual(4);
+
+    // Cross-check via the same code path the runtime uses — fast-path
+    // readState → resolveWorkflowState. Pre-fix, this returned 'error'
+    // because state.json was stale.
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const resolved = resolveWorkflowState(sessionDir, store, sessionId);
+      expect(resolved.currentStep).toBe('memorization');
     } finally {
       store.close();
     }
