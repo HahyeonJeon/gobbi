@@ -85,8 +85,9 @@
  *     {"path": "...", "previousVersion": 6, "newVersion": 7,
  *      "rowsTouched": 1, "elapsedMs": 4}
  *
- * @see `packages/cli/src/workflow/migrations.ts` — `ensureSchemaV7`,
- *      `SCHEMA_V7_TABLES`, `getTableNames`,
+ * @see `packages/cli/src/workflow/migrations.ts` — `ensureSchemaV5`,
+ *      `ensureSchemaV6`, `ensureSchemaV7`, `SCHEMA_V7_TABLES`,
+ *      `SCHEMA_V7_INDICES`, `getTableNames`,
  *      `getIndexNames`, `CURRENT_SCHEMA_VERSION`.
  * @see `commands/maintenance/wipe-legacy-sessions.ts` — sibling
  *      command (mirrors flag-parsing / overrides / exit-code shape).
@@ -115,6 +116,8 @@ const USAGE = `Usage: gobbi maintenance migrate-state-db [options]
 Migrate a state.db file's schema in place to the current workspace-level
 version (v${CURRENT_SCHEMA_VERSION}). Idempotent — re-running on an already-current db is
 a no-op other than refreshing the schema_meta migrated_at stamp.
+Non-destructive — only ADD COLUMN / CREATE TABLE IF NOT EXISTS operations;
+no DROP or DELETE. Backup recommended for paranoia, not required.
 
 Re-runnable on partial failure: every CREATE inside ensureSchemaV7 uses
 IF NOT EXISTS, and the chain runs inside a single
