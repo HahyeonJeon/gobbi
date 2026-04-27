@@ -195,7 +195,7 @@ Broader JSDoc style lives in `_claude`; this skill names the trap because the fa
 
 ## Input vs hydrated type pairs
 
-A recurring shape: declare a `FooInput` interface (the on-disk or partially-populated form, with optional fields and nullable values) and a `Foo` interface (the fully hydrated form, no optionals where defaults exist, no nulls where the loader fills). Callers of the loader receive `Foo`; they never see `FooInput`. `packages/cli/src/lib/settings.ts` demonstrates the pattern — `deepMerge` at lines 301-320 takes an on-disk parsed record and an overlay, returning the fully hydrated `T` that downstream code reasons over without casts.
+A recurring shape: declare a `FooInput` interface (the on-disk or partially-populated form, with optional fields and nullable values) and a `Foo` interface (the fully hydrated form, no optionals where defaults exist, no nulls where the loader fills). Callers of the loader receive `Foo`; they never see `FooInput`. `packages/cli/src/lib/settings.ts` demonstrates the merge step of the pattern — `deepMerge` at lines 301-320 takes an on-disk parsed record and an overlay, returning the fully hydrated `T` that downstream code reasons over without casts. (`settings.ts` defines `Settings` as a single interface; the named `FooInput`/`Foo` pair lives at the AJV boundary where input validation produces the hydrated form.)
 
 The pattern buys two properties: the loader's validation contract is narrow (accept anything schema-valid), and the consumer's contract is wide (every field is present and typed). Do not leak `FooInput` into consumers — if a function takes a partially-populated config, that is a different concern and should be a separate type.
 
