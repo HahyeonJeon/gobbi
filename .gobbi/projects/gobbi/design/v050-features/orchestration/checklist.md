@@ -289,12 +289,12 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ---
 
-## SC-ORCH-26 — 23-event closed enumeration (post-Wave-A.1)
+## SC-ORCH-26 — 24-event closed enumeration
 
-- `[GAP]` `events/index.ts:1` event-count documentation reads "7 categories, 23 event types"; `ALL_EVENT_TYPES.size === 23`.
-  - Verify (post-A.1.3): closed-enumeration test asserts size and category breakdown.
-- `[GAP]` Every reducer-accepted event type appears in `ALL_EVENT_TYPES`; reducer-tested events outside the set fail the test.
-  - Verify (post-A.1.3): test enumerates reducer cases and cross-checks `ALL_EVENT_TYPES`.
+- `[GAP]` `events/index.ts:1` event-count documentation reads "9 categories, 24 event types"; `ALL_EVENT_TYPES.size === 24`.
+  - Verify (post-A.1.3 + C.1): closed-enumeration test asserts size and category breakdown.
+- `[GAP]` Every reducer-accepted event type appears in `ALL_EVENT_TYPES`; reducer-tested events outside the set fail the test. Audit-only events (`step.advancement.observed`, `prompt.patch.applied`) appear in `ALL_EVENT_TYPES` but are excluded from the reducer-typed `Event` union.
+  - Verify (post-A.1.3 + C.1): test enumerates reducer cases and cross-checks `ALL_EVENT_TYPES`.
 
 ---
 
@@ -303,7 +303,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 The Pass-4 PR itself adds no code, so its verification is documentation-only:
 
 - `[MANUAL]` `README.md` references the 6-step model with `handoff` as step 5/6 in the §1 step table.
-- `[MANUAL]` Event count is cited as 22 today and 23 post-Pass-4 in §3.5 and §13.5.
+- `[MANUAL]` Event count is cited as 24 total (22 base + 1 Pass-4 + 1 Wave C.1) in §3.5 and §13.5.
 - `[MANUAL]` `step.advancement.observed` is documented to commit via direct `store.append()` (not reducer-routed) in §3.5 and §6.
 - `[MANUAL]` Every `[GAP]` item above traces to a Wave A.1 / B.1 / E.1 / E.2 task in `review.md`'s multi-session execution plan.
 - `[MANUAL]` `scenarios.md` includes scenarios SC-ORCH-01 through SC-ORCH-26.

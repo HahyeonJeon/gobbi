@@ -16,7 +16,7 @@ See `README.md` for the feature overview.
 
 **Given** a fresh repo with `.gobbi/projects/<name>/` populated by `gobbi install`
 **When** `gobbi workflow init --task "<text>"` runs
-**Then** a new session directory `.gobbi/projects/<name>/sessions/<id>/` is created with `metadata.json`; the workspace `state.db` (post-Wave-A.1) or per-session `gobbi.db` (today) records exactly one `workflow.start` event with `actor='cli'`; reducer sets `currentStep = 'ideation'`; exit code is `0`.
+**Then** a new session directory `.gobbi/projects/<name>/sessions/<id>/` is created with `metadata.json`; the per-session `gobbi.db` records exactly one `workflow.start` event with `actor='cli'`; reducer sets `currentStep = 'ideation'`; exit code is `0`.
 
 Evidence: `commands/workflow/init.ts:281` (DB open), `transition.ts:74-84` (TRANSITION_KEYWORDS map), `events/workflow.ts:21` (event constants), `reducer.ts` (workflow.start case).
 
@@ -196,13 +196,13 @@ Evidence: `_schema/v1.ts::StepBlocksSchema` (source); `bun run regen-schema` scr
 
 ## Missed-advancement safety net
 
-### SC-ORCH-13 — PostToolUse on `gobbi workflow transition` Bash emits `step.advancement.observed` via direct `store.append()` (post-Wave-A.1)
+### SC-ORCH-13 — PostToolUse on `gobbi workflow transition` Bash emits `step.advancement.observed` via direct `store.append()`
 
 **Given** an active session and an agent runs a Bash tool with command starting `gobbi workflow transition`
 **When** the PostToolUse hook fires (`capture-planning.ts` extended path)
 **Then** the hook calls `store.append()` directly with `type='step.advancement.observed'`, `actor='hook'`, `idempotencyKind='tool-call'` keyed on the PostToolUse payload's `tool_call_id`; the event is persisted; the reducer never sees this audit-only event (bypass is intentional per Architecture F-1).
 
-Evidence (post-Wave-A.1): `capture-planning.ts:166-179` extended; `events/step.ts` new factory; `store.ts:36-48` idempotency formula; Architecture F-1 finding.
+Evidence: `capture-planning.ts:166-179` extended; `events/step-advancement.ts` event factory; `store.ts:36-48` idempotency formula; Architecture F-1 finding.
 
 ---
 
@@ -264,7 +264,7 @@ Evidence (post-Wave-E.2): `packages/cli/src/specs/__tests__/snapshot.test.ts` cr
 
 **Given** an active session at `currentStep = 'memorization'` with the productive steps' rawdata under `sessions/<id>/{ideation,planning,execution}/rawdata/` and per-step READMEs written
 **When** the memorization agent reads the rawdata sources (per README §8.1) and writes `sessions/<id>/memorization/memorization.md`
-**Then** `artifact.write` is emitted for the file; for each extraction class, the agent writes the markdown destination (`learnings/decisions/<slug>.md`, `learnings/gotchas/<slug>.md`, `design/<area>/*.md`, `learnings/backlogs/<slug>.md`) and an `INSERT INTO memories` row (post-Wave-A.1) with the matching `class`; the agent then runs `gobbi workflow transition COMPLETE`; `workflow.step.exit` advances `currentStep` to `handoff`.
+**Then** `artifact.write` is emitted for the file; for each extraction class, the agent writes the markdown destination (`learnings/decisions/<slug>.md`, `learnings/gotchas/<slug>.md`, `design/<area>/*.md`, `learnings/backlogs/<slug>.md`) and an `INSERT INTO memories` row with the matching `class`; the agent then runs `gobbi workflow transition COMPLETE`; `workflow.step.exit` advances `currentStep` to `handoff`.
 
 Evidence: `specs/memorization/spec.json` (rewritten in Wave A.1.6), `events/artifact.ts` (artifact.write), `transition.ts:335` (step.exit emission), README §8.
 
@@ -272,79 +272,79 @@ Evidence: `specs/memorization/spec.json` (rewritten in Wave A.1.6), `events/arti
 
 ## Handoff step
 
-### SC-ORCH-20 — Handoff writes `handoff.md` + memory row + emits `workflow.finish` (post-Wave-A.1)
+### SC-ORCH-20 — Handoff writes `handoff.md` + memory row + emits `workflow.finish`
 
-**Given** an active session at `currentStep = 'handoff'` (post-Wave-A.1.5 schema) with `memorization.md` already written
+**Given** an active session at `currentStep = 'handoff'` with `memorization.md` already written
 **When** the handoff agent reads `memorization.md` plus the last-N events from `state.db` and writes `sessions/<id>/handoff/handoff.md`
 **Then** `artifact.write` is emitted; an `INSERT INTO memories` row is added with `class='handoff', session_id=<id>, project_id=<resolved>`; the agent runs `gobbi workflow transition COMPLETE` which on the handoff step maps to `workflow.finish` per `index.json` rule `{ from: "handoff", to: "done", trigger: "workflow.finish" }`; reducer transitions `currentStep` to `done`.
 
-Evidence (post-Wave-A.1.5): `specs/handoff/spec.json` (new), `index.json` (new transitions), `events/workflow.ts:21` (workflow.finish), `events/artifact.ts`.
+Evidence: `specs/handoff/spec.json`, `index.json` (handoff transitions added Wave A.1.5), `events/workflow.ts:21` (workflow.finish), `events/artifact.ts`.
 
 ---
 
 ## Schema migration + path discipline
 
-### SC-ORCH-21 — `gobbi maintenance migrate-state-db` is reversible via `restore-state-db` (post-Wave-A.1)
+### SC-ORCH-21 — `gobbi maintenance migrate-state-db` is reversible via `restore-state-db`
 
 **Given** a workspace at schema v5 with per-session `gobbi.db` files under `.gobbi/projects/*/sessions/*/gobbi.db`
 **When** `gobbi maintenance migrate-state-db` runs
 **Then** events are migrated into a new workspace `.gobbi/state.db` at schema v6; partition keys (`session_id`, `project_id`) are preserved on every row; per-session `gobbi.db` files are renamed `.bak` (not deleted) for one-commit reversibility; `gobbi maintenance restore-state-db` reverses the operation; replay-equivalence integration test confirms identical state derivation pre- and post-migration.
 
-Evidence (post-Wave-A.1.4): `commands/maintenance/migrate-state-db.ts` (new), `commands/maintenance/restore-state-db.ts` (new), `commands/maintenance.ts:48-59` registry update (Architecture P-A-1), replay-equivalence test in Wave A.1.10.
+Evidence: `commands/maintenance/migrate-state-db.ts`, `commands/maintenance/restore-state-db.ts`, `commands/maintenance.ts:48-59` registry, replay-equivalence test in Wave A.1.10 integration tests.
 
 ---
 
-### SC-ORCH-22 — `.gobbi/gobbi.db` has `!.gitignore` exception so it is git-tracked (post-Wave-A.1)
+### SC-ORCH-22 — `.gobbi/gobbi.db` has `!.gitignore` exception so it is git-tracked
 
-**Given** a workspace at the post-Wave-A.1 layout with `.gitignore` containing `.gobbi/*`, `!.gobbi/projects/`, `!.gobbi/gobbi.db`
+**Given** a workspace with `.gitignore` containing `.gobbi/*`, `!.gobbi/projects/`, `!.gobbi/gobbi.db`
 **When** the user runs `git check-ignore .gobbi/gobbi.db` and `git check-ignore .gobbi/state.db`
 **Then** `.gobbi/gobbi.db` returns nonzero (file is tracked); `.gobbi/state.db` returns 0 (file is ignored); both states are validated by an integration test added in Wave A.1.8.
 
-Evidence (post-Wave-A.1.8): `.gitignore` update, integration test asserting check-ignore exit codes, System F-1 finding.
+Evidence: `.gitignore` Wave A.1.8 update (commit `cdaea69`), integration test asserting check-ignore exit codes, System F-1 finding.
 
 ---
 
-### SC-ORCH-23 — Path-resolution sweep: every `gobbi.db` open uses `resolveDbPath(sessionDir)` helper (post-Wave-A.1)
+### SC-ORCH-23 — Path-resolution sweep: every `gobbi.db` open uses explicit partition keys or `resolveDbPath(sessionDir)` helper
 
-**Given** the post-Wave-A.1.7 codebase
+**Given** the Wave-A.1.7 codebase
 **When** `grep -rn 'join(sessionDir, .gobbi.db.)' packages/cli/src/` runs
 **Then** zero non-test matches are returned; every callsite that previously hard-coded the per-session `gobbi.db` path now calls `resolveDbPath(sessionDir)` (or equivalent helper) defined in `commands/session.ts`; the workspace rename touches the helper only, not the 11 individual call sites.
 
-Evidence (post-Wave-A.1.7): `commands/session.ts` `resolveDbPath` helper, A.1.7 callsite list (`{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts` + `session.ts` + `gotcha/promote.ts`).
+Evidence: Wave A.1.7 explicit partition-key refactor (commit `8d71fa4`), callsite list (`{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts` + `session.ts` + `gotcha/promote.ts`).
 
 ---
 
-### SC-ORCH-24 — EventStore constructor accepts explicit partition keys (post-Wave-A.1)
+### SC-ORCH-24 — EventStore constructor accepts explicit partition keys
 
 **Given** a workspace with `.gobbi/state.db` and an active session whose `metadata.json` is at `.gobbi/projects/<name>/sessions/<id>/`
 **When** `new EventStore('.gobbi/state.db', { sessionId: <id>, projectId: <name> })` opens the store and writes an event
 **Then** the persisted row has `session_id === <id>` AND `project_id === <name>` (not the path-derived `'.gobbi'` and `null`); a per-session caller without explicit params still works via the path-derivation fallback.
 
-Evidence (post-Wave-A.1.2): `store.ts` constructor signature change, partition-key fallback at `store.ts:476-477`, Architecture F-2 finding.
+Evidence: `store.ts` constructor with `{ sessionId?, projectId? }` options (Wave A.1.2, commit `14f53d5`), partition-key fallback at `store.ts:476-477`, Architecture F-2 finding.
 
 ---
 
 ## Concurrency + durability
 
-### SC-ORCH-25 — `wal_checkpoint(TRUNCATE)` runs after every `workflow.step.exit` (post-Wave-A.1)
+### SC-ORCH-25 — `wal_checkpoint(TRUNCATE)` runs after every `workflow.step.exit`
 
 **Given** a session that has emitted three `workflow.step.exit` events under workspace-scoped `state.db`
 **When** the WAL file is inspected after each step.exit
 **Then** the WAL has been truncated to size 0 (or close to it) immediately after each step.exit commit; events written between adjacent step.exits remain in WAL until the next checkpoint; the existing `store.ts::close()` checkpoint at lines 588-590 still runs at session-end (additive, not replaced); SIGKILL between adjacent step.exits cannot lose events committed before the prior step.exit.
 
-Evidence (post-Wave-A.1.9): `store.ts` per-step-exit checkpoint hook, integration test fixture using SIGKILL between checkpoints, Architecture P-A-6 finding (additive coexistence note).
+Evidence: `store.ts` per-step-exit checkpoint hook (Wave A.1.9, commit `84f4c79`), integration test fixture using SIGKILL between checkpoints, Architecture P-A-6 finding (additive coexistence note).
 
 ---
 
 ## Closed-enumeration
 
-### SC-ORCH-26 — Event-set test asserts `ALL_EVENT_TYPES.size === 23` post-Pass-4 (post-Wave-A.1)
+### SC-ORCH-26 — Event-set test asserts `ALL_EVENT_TYPES.size === 24`
 
-**Given** the post-Wave-A.1.3 codebase with `step.advancement.observed` registered in `events/index.ts::ALL_EVENT_TYPES`
+**Given** the post-Wave-A.1.3 + Wave-C.1 codebase with `step.advancement.observed` and `prompt.patch.applied` registered in `events/index.ts::ALL_EVENT_TYPES`
 **When** the closed-enumeration test scans every category constant
-**Then** the union has exactly 23 entries: 9 `workflow.*`, 3 `delegation.*`, 3 `decision.*`, 2 `artifact.*`, 3 `guard.*`, 1 `verification.*`, 1 `session.*`, 1 `step.*`; any reducer-accepted event outside this set fails the test.
+**Then** the union has exactly 24 entries: 9 `workflow.*`, 3 `delegation.*`, 3 `decision.*`, 2 `artifact.*`, 3 `guard.*`, 1 `verification.*`, 1 `session.*`, 1 `step.*`, 1 `prompt.*`; any reducer-accepted event outside this set fails the test; audit-only events (`step.advancement.observed`, `prompt.patch.applied`) are in `ALL_EVENT_TYPES` but excluded from the `Event` reducer union.
 
-Evidence (post-Wave-A.1.3): `events/index.ts:1` event-count documentation update, `events/__tests__/closed-enumeration.test.ts` (new or extended), README §3.5 (23-event ledger).
+Evidence (post-Wave-A.1.3 + C.1): `events/index.ts:1` event-count documentation ("9 categories, 24 event types"), `events/__tests__/closed-enumeration.test.ts`, README §3.5 (24-event ledger).
 
 ---
 
