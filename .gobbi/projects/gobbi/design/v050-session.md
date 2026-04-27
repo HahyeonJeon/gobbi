@@ -95,7 +95,7 @@ Three indexes cover the common access patterns: one on `type` for queries that f
 
 ### Event Type Enum
 
-Events are grouped into seven categories that reflect the things that can happen in a session. The closed-enumeration discipline: 23 event types total post-Pass-4 — any reducer-accepted event is in this set. The test suite asserts `ALL_EVENT_TYPES.size === 23`.
+Events are grouped into nine categories that reflect the things that can happen in a session. The closed-enumeration discipline: 24 event types total (22 reducer-typed + 2 audit-only) — the wire-level set that may appear in the `events` table. The test suite asserts `ALL_EVENT_TYPES.size === 24`. Reducer-typed events flow through `appendEventAndUpdateState`; audit-only events (`step.advancement.observed`, `prompt.patch.applied`) are committed via direct `store.append()`.
 
 **Workflow** events track the high-level session progression (9 events):
 
@@ -152,12 +152,23 @@ Cost data surfaces via `gobbi workflow status` only. It must NOT appear in compi
 |-------|---------|
 | `verification.result` | A verification command completed — exit code and summary in data |
 
-**Session** events track liveness and advancement (2 events):
+**Session** events track liveness (1 event):
 
 | Event | Meaning |
 |-------|---------|
 | `session.heartbeat` | Liveness signal — written by the Stop hook after each turn |
+
+**Step-advancement** events track transition observability (1 event, audit-only):
+
+| Event | Meaning |
+|-------|---------|
 | `step.advancement.observed` | Synthetic audit event emitted by PostToolUse when `gobbi workflow transition` runs — primes the missed-advancement safety net; committed via direct `store.append()`, NOT through the reducer |
+
+**Prompt** events track prompt-patch operations (1 event, audit-only):
+
+| Event | Meaning |
+|-------|---------|
+| `prompt.patch.applied` | A JSON Patch was applied to a prompt spec — written to workspace `state.db` by `gobbi prompt patch`; committed via direct `store.append()`, NOT through the reducer |
 
 ---
 
