@@ -1,31 +1,31 @@
 /**
  * gobbi maintenance migrate-state-db — bring a state.db file's schema up
- * to the current workspace-level version (currently v6).
+ * to the current workspace-level version (currently v7).
  *
- * ## Context (v0.5.0 Wave A.1.4 — issue #146)
+ * ## Context (v0.5.0 Wave C.1.2 — issue #156; originally Wave A.1.4 — issue #146)
  *
- * Wave A.1 adds schema v6 to the event-store DB: four new workspace-
+ * Wave A.1 added schema v6 to the event-store DB: four new workspace-
  * partitioned tables (`state_snapshots`, `tool_calls`, `config_changes`,
- * `schema_meta`) plus their indices. The `EventStore.initSchema` path
- * auto-applies the migration when an `EventStore` opens, so most
- * sessions never need to invoke this command. It exists for two cases
- * the auto-apply does not cover:
+ * `schema_meta`) plus their indices. Wave C.1.2 added schema v7: the
+ * `prompt_patches` workspace-partitioned audit table for prompts-as-data
+ * RFC 6902 patch records. The `EventStore.initSchema` path auto-applies
+ * migrations when an `EventStore` opens, so most sessions never need to
+ * invoke this command. It exists for two cases the auto-apply does not cover:
  *
  *   1. An on-disk `state.db` that has not yet been opened by an
- *      `EventStore` since the v6 bump — running this command stamps
+ *      `EventStore` since the v7 bump — running this command stamps
  *      the schema_meta row and creates the new tables ahead of the
  *      first session-opening.
  *   2. Operator wants a deterministic, reportable migration step —
  *      e.g., before a snapshot/backup, or as part of a Flyway-style
  *      "baseline-on-migrate" handoff (orchestration README §3.5).
  *
- * ## v6 audit tables: empty until later waves
+ * ## Audit tables: empty until later waves
  *
  * Three of the four v6 tables (`state_snapshots`, `tool_calls`,
- * `config_changes`) ship with their schema locked in this wave but no
- * production writers yet. The CREATEs land in A.1 so a future wave does
- * not need to add a v7 migration purely to introduce them — the
- * forward-compatible schema is the cheaper choice.
+ * `config_changes`) ship with their schema locked but no production
+ * writers yet. The v7 `prompt_patches` table writer landed in Wave C.1.6
+ * alongside `gobbi prompt patch`.
  *
  *   - `state_snapshots` — Wave E.1 (Inner-mode safety net) wires the
  *     writer that records per-(session, seq) state snapshots and emits
@@ -34,21 +34,23 @@
  *     this table; until then it stays empty.
  *   - `config_changes` — `gobbi config set` audit; the writer lands with
  *     the config-management wave.
+ *   - `prompt_patches` — active since Wave C.1.6; stores one row per
+ *     applied RFC 6902 patch, keyed by `(prompt_id, patch_id)`.
  *
- * `schema_meta` is the only v6 table this command itself writes to —
+ * `schema_meta` is the only table this command itself writes to —
  * every successful run stamps the sentinel row. Operators running this
- * command and finding the other three tables empty are seeing the
- * intended state, not a half-applied migration.
+ * command and finding `state_snapshots`, `tool_calls`, or `config_changes`
+ * empty are seeing the intended state, not a half-applied migration.
  *
  * The command is intentionally narrow:
  *
  *   - It opens the supplied `state.db` directly (no `EventStore`
  *     wrapper) so it can run on any pre-v6 file without depending on
  *     the EventStore constructor's partition-key resolution.
- *   - It runs `ensureSchemaV5(db)` then `ensureSchemaV6(db)` — both
- *     idempotent — so the chain catches up regardless of starting
- *     version, and re-running on a v6 file is a no-op other than
- *     refreshing the `migrated_at` stamp.
+ *   - It runs `ensureSchemaV5(db)`, `ensureSchemaV6(db)`, then
+ *     `ensureSchemaV7(db)` — all idempotent — so the chain catches up
+ *     regardless of starting version, and re-running on an already-v7
+ *     file is a no-op other than refreshing the `migrated_at` stamp.
  *   - It reports previous-vs-new schema version, rows touched (always
  *     1 — the single `schema_meta` row), and elapsed wall-clock ms.
  *
@@ -62,7 +64,7 @@
  *
  * ## Exit codes
  *
- *   - `0` — migration succeeded (or was a no-op on an already-v6 db).
+ *   - `0` — migration succeeded (or was a no-op on an already-v7 db).
  *   - `1` — migration failed (db file missing, schema-violation,
  *           SQLite open error). Error message printed to stderr.
  *   - `2` — argument parse error.
@@ -73,18 +75,19 @@
  *
  *     gobbi maintenance migrate-state-db
  *     path: /repo/.gobbi/state.db
- *     previous schema_version: 5
- *     new schema_version: 6
+ *     previous schema_version: 6
+ *     new schema_version: 7
  *     rows touched: 1
  *     elapsed: 4 ms
  *
  * Structured form (`--json`):
  *
- *     {"path": "...", "previousVersion": 5, "newVersion": 6,
+ *     {"path": "...", "previousVersion": 6, "newVersion": 7,
  *      "rowsTouched": 1, "elapsedMs": 4}
  *
- * @see `packages/cli/src/workflow/migrations.ts` — `ensureSchemaV6`,
- *      `SCHEMA_V6_TABLES`, `SCHEMA_V6_INDICES`, `getTableNames`,
+ * @see `packages/cli/src/workflow/migrations.ts` — `ensureSchemaV5`,
+ *      `ensureSchemaV6`, `ensureSchemaV7`, `SCHEMA_V7_TABLES`,
+ *      `SCHEMA_V7_INDICES`, `getTableNames`,
  *      `getIndexNames`, `CURRENT_SCHEMA_VERSION`.
  * @see `commands/maintenance/wipe-legacy-sessions.ts` — sibling
  *      command (mirrors flag-parsing / overrides / exit-code shape).
@@ -113,17 +116,21 @@ const USAGE = `Usage: gobbi maintenance migrate-state-db [options]
 Migrate a state.db file's schema in place to the current workspace-level
 version (v${CURRENT_SCHEMA_VERSION}). Idempotent — re-running on an already-current db is
 a no-op other than refreshing the schema_meta migrated_at stamp.
+Non-destructive — only ADD COLUMN / CREATE TABLE IF NOT EXISTS operations;
+no DROP or DELETE. Backup recommended for paranoia, not required.
 
-Re-runnable on partial failure: every CREATE inside ensureSchemaV6 uses
+Re-runnable on partial failure: every CREATE inside ensureSchemaV7 uses
 IF NOT EXISTS, and the chain runs inside a single
 db.transaction(...).immediate() so a mid-chain failure rolls back any
 partial schema rather than leaving the DB half-applied.
 
 Schema v6 reserves four tables: state_snapshots, tool_calls,
-config_changes, and schema_meta. Writers for state_snapshots arrive in
-Wave E.1; tool_calls + config_changes ship with the hooks / config-
-management waves. Until then those three tables are intentionally empty.
-schema_meta is the only one this command itself writes to.
+config_changes, and schema_meta. Schema v7 adds prompt_patches — one
+row per applied RFC 6902 patch (keyed by prompt_id + patch_id). Writers
+for state_snapshots arrive in Wave E.1; tool_calls + config_changes ship
+with the hooks / config-management waves. prompt_patches is populated by
+gobbi prompt patch (Wave C.1.6). schema_meta is the only one this
+command itself writes to.
 
 Options:
   --db <path>   Path to state.db (default: <repoRoot>/.gobbi/state.db)
@@ -341,7 +348,7 @@ export async function runMigrateStateDbWithOptions(
 // ---------------------------------------------------------------------------
 
 /**
- * Open `dbPath`, run the v5 + v6 schema-ensure chain, and return the
+ * Open `dbPath`, run the v5 + v6 + v7 schema-ensure chain, and return the
  * structured result. Throws on SQLite-level errors — the caller handles
  * exit-code mapping.
  *
@@ -379,8 +386,8 @@ export function migrateStateDbAt(
       previousVersion,
       newVersion: CURRENT_SCHEMA_VERSION,
       // Single `schema_meta` row is the only meta-table mutation
-      // either v5 or v6 performs. v6's INSERT OR REPLACE always
-      // touches exactly that row.
+      // v5, v6, or v7 perform. The final INSERT OR REPLACE (v7's stamp)
+      // always touches exactly that row.
       rowsTouched: 1,
       elapsedMs,
     };
