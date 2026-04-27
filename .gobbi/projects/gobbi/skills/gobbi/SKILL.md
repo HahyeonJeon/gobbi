@@ -128,7 +128,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | [project-setup.md](project-setup.md) | Project-specific context and technology stack signals |
 | [notification-setup.md](notification-setup.md) | Notification channel and credential detection |
 | [git-setup.md](git-setup.md) | Git tooling and repository state detection |
-| [design/v050-overview.md](../../projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, two-DB workspace split — authoritative architecture doc |
+| [design/v050-overview.md](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, two-DB workspace split — authoritative architecture doc |
 
 ---
 
@@ -212,6 +212,8 @@ Utility and maintenance tooling.
 |---|---|
 | **_gobbi-cli** | Intent-first CLI reference. Maps agent tasks to gobbi commands and cross-references domain skills for workflow context. |
 | **_gobbi-rule-container** | Container for `_gobbi-rule` behavioral rule. Source files symlinked into `.claude/rules/` at session start for auto-update with plugin. |
+| **_bun** | Bun runtime patterns for `packages/cli/` — subprocess spawning, SQLite access, bun:test runner, module-relative paths, and build/run script surface. Load when writing or reviewing Bun runtime code. |
+| **_typescript** | TypeScript strict-mode discipline for `packages/cli/src/` — discriminated unions, `satisfies`/`assertNever` exhaustiveness gates, AJV boundary parsing, readonly conventions, and codegen-branded types. Load when authoring, reviewing, or debugging any `.ts` file. |
 
 #### Evaluation criteria child docs
 
