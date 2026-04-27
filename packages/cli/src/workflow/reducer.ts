@@ -403,72 +403,109 @@ function reduceDecision(
     case DECISION_EVENTS.EVAL_VERDICT: {
       const { verdict } = event.data;
 
-      if (verdict === 'pass') {
-        const rule = findTransition(
-          state.currentStep,
-          event,
-          state,
-          predicates,
+      // Verdict events are only valid from `*_eval` steps. The pass/revise
+      // arms enforce this implicitly via `findTransition` (which returns
+      // null for non-eval origins because the transition table contains no
+      // verdict-triggered rules for productive or terminal steps). The
+      // escalate arm has no transition-table rule, so we enforce the same
+      // rule explicitly here for a single source of truth across all three
+      // verdict variants. See CV-11 in the v0.5.0 adversarial review
+      // campaign synthesis (issue #168) for the failure mode this guards
+      // against — pre-fix, escalate from any step fell through to
+      // `ok(state)` and silently committed a no-op event.
+      if (
+        state.currentStep !== 'ideation_eval' &&
+        state.currentStep !== 'planning_eval' &&
+        state.currentStep !== 'execution_eval'
+      ) {
+        return err(
+          `decision.eval.verdict requires an eval step (ideation_eval / planning_eval / execution_eval), got ${state.currentStep}`,
         );
-        if (rule === null) {
-          return err(
-            `No valid transition from ${state.currentStep} for pass verdict`,
-          );
-        }
-        return ok({
-          ...state,
-          currentStep: rule.to,
-          currentSubstate: rule.to === 'ideation' ? 'discussing' : null,
-          lastVerdictOutcome: 'pass',
-        });
       }
 
-      if (verdict === 'revise') {
-        // Check feedback cap first
-        const feedbackCapPredicate = predicates['feedbackCapExceeded'];
-        if (
-          state.currentStep === 'execution_eval' &&
-          feedbackCapPredicate !== undefined &&
-          feedbackCapPredicate(state)
-        ) {
+      switch (verdict) {
+        case 'pass': {
+          const rule = findTransition(
+            state.currentStep,
+            event,
+            state,
+            predicates,
+          );
+          if (rule === null) {
+            return err(
+              `No valid transition from ${state.currentStep} for pass verdict`,
+            );
+          }
           return ok({
             ...state,
-            currentStep: 'error',
-            currentSubstate: null,
+            currentStep: rule.to,
+            currentSubstate: rule.to === 'ideation' ? 'discussing' : null,
+            lastVerdictOutcome: 'pass',
+          });
+        }
+
+        case 'revise': {
+          // Check feedback cap first
+          const feedbackCapPredicate = predicates['feedbackCapExceeded'];
+          if (
+            state.currentStep === 'execution_eval' &&
+            feedbackCapPredicate !== undefined &&
+            feedbackCapPredicate(state)
+          ) {
+            return ok({
+              ...state,
+              currentStep: 'error',
+              currentSubstate: null,
+              lastVerdictOutcome: 'revise',
+            });
+          }
+
+          const rule = findTransition(
+            state.currentStep,
+            event,
+            state,
+            predicates,
+          );
+          if (rule === null) {
+            return err(
+              `No valid transition from ${state.currentStep} for revise verdict`,
+            );
+          }
+
+          // feedbackRound increments only on execution_eval revise loops
+          const nextFeedbackRound =
+            state.currentStep === 'execution_eval'
+              ? state.feedbackRound + 1
+              : state.feedbackRound;
+
+          return ok({
+            ...state,
+            currentStep: rule.to,
+            currentSubstate: rule.to === 'ideation' ? 'discussing' : null,
+            feedbackRound: nextFeedbackRound,
             lastVerdictOutcome: 'revise',
           });
         }
 
-        const rule = findTransition(
-          state.currentStep,
-          event,
-          state,
-          predicates,
-        );
-        if (rule === null) {
-          return err(
-            `No valid transition from ${state.currentStep} for revise verdict`,
-          );
+        case 'escalate': {
+          // Escalate transitions the active eval step to `error` so the
+          // operator can choose `gobbi workflow resume --target …` (or
+          // `--force-memorization`). `lastVerdictOutcome` remains
+          // 'pass' | 'revise' | null at the schema level — escalate is
+          // recorded by the step transition itself plus the committed
+          // event, not by overwriting the prior verdict outcome (which
+          // some predicates still consult). The `error` step is the
+          // authoritative witness that this branch fired.
+          return ok({
+            ...state,
+            currentStep: 'error',
+            currentSubstate: null,
+          });
         }
 
-        // feedbackRound increments only on execution_eval revise loops
-        const nextFeedbackRound =
-          state.currentStep === 'execution_eval'
-            ? state.feedbackRound + 1
-            : state.feedbackRound;
-
-        return ok({
-          ...state,
-          currentStep: rule.to,
-          currentSubstate: rule.to === 'ideation' ? 'discussing' : null,
-          feedbackRound: nextFeedbackRound,
-          lastVerdictOutcome: 'revise',
-        });
+        default:
+          return assertNever(verdict);
       }
-
-      // escalate — informational, leaves lastVerdictOutcome unchanged so the
-      // prior outcome (if any) stays visible to predicates.
-      return ok(state);
     }
 
     case DECISION_EVENTS.EVAL_SKIP: {
