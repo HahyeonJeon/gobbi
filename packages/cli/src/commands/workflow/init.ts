@@ -303,6 +303,22 @@ export async function runInitWithOptions(
   // locking; composing two calls under `store.transaction` yields a single
   // outer SAVEPOINT (bun:sqlite promotes nested calls automatically), so a
   // crash between the two appends rolls the pair back together.
+  //
+  // Why no explicit `writeState` after this transaction:
+  // The inner calls go through `appendEventAndUpdateState`, which
+  // calls `backupState` + `writeState` itself on every append (see
+  // `engine.ts`). state.json is materialised twice during this block —
+  // once after `workflow.start`, once after `workflow.eval.decide` —
+  // and the final write reflects the post-decide state. No
+  // post-transaction projection is needed.
+  //
+  // Contrast with the `--force-memorization` branch in `resume.ts`:
+  // that path appends events directly via `store.append(...)` inside
+  // its raw transaction (NOT through `appendEventAndUpdateState`),
+  // bypassing the per-append state.json write. It therefore needs an
+  // explicit `backupState` + `writeState` after the commit to bring
+  // state.json forward. See CV-9 (issue #163) for the regression that
+  // motivated that pattern.
   const dbPath = join(sessionDir, 'gobbi.db');
   const partitionKeys = resolvePartitionKeys(sessionDir);
   const store = new EventStore(dbPath, partitionKeys);
