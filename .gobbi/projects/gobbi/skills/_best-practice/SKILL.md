@@ -62,7 +62,7 @@ Assess whether best practices were followed in the implementation. Did the imple
 
 The best-practice review is not about enforcing rigidity — it is about identifying where the implementation diverged from proven patterns and whether that divergence was justified. If a deviation was intentional and well-reasoned, acknowledge it. If it was accidental, flag it.
 
-Output is always written to `best.md` in the appropriate note subdirectory (`ideation/best.md` or `ideation/review/best.md`). Never write to `innovative.md` — that belongs to the innovative stance.
+Output is always written to `best.md` in the appropriate note subdirectory: `ideation/best.md` when running as part of the Ideation step; `<step>/evaluation/best.md` when invoked as a perspective during evaluation, where `<step>` is `ideation`, `planning`, or `execution`. Never write to `innovative.md` — that belongs to the innovative stance.
 
 ---
 

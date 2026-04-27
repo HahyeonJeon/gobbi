@@ -62,7 +62,7 @@ Assess whether the implementation was creative enough — did it just follow the
 
 The innovative review is not about criticizing safe choices — it is about identifying whether better options were available and not explored. If the conventional approach was the right one, say so and explain why the alternatives were worse.
 
-Output is always written to `innovative.md` in the appropriate note subdirectory (`ideation/innovative.md` or `ideation/review/innovative.md`). Never write to `best.md` — that belongs to the best-practice stance.
+Output is always written to `innovative.md` in the appropriate note subdirectory: `ideation/innovative.md` when running as part of the Ideation step; `<step>/evaluation/innovative.md` when invoked as a perspective during evaluation, where `<step>` is `ideation`, `planning`, or `execution`. Never write to `best.md` — that belongs to the best-practice stance.
 
 ---
 
