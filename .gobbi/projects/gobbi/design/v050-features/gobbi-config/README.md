@@ -34,7 +34,7 @@ One TypeScript interface. One AJV validator. All levels read and write the same 
 - `model` and `effort` default to `'auto'`, deferring to `_delegation` and core-rule defaults
 - `maxIterations: number` — per-step REVISE-loop iteration cap; default `3`. Schema-only this Pass — wiring to `state.maxFeedbackRounds` is deferred to a follow-up Pass that extends state to carry per-step caps
 
-The `planning` field name matches the loop name in `deterministic-orchestration.md` ("Planning Loop"). The workflow state-machine literal remains `'plan'` until a comprehensive rename Pass — `resolveEvalDecision` accepts both `'plan'` and `'planning'` for the `step` parameter.
+The `planning` field name matches the loop name in `deterministic-orchestration.md` ("Planning Loop") and the state-machine literal (renamed from `'plan'` in Pass 3). `resolveEvalDecision` accepts only `'planning'` — the `'plan'` backward-compat bridge was removed at Pass 3; callers still passing the legacy literal fail at compile time.
 
 **`notify`** — Per-channel dict. Channels: `slack`, `telegram`, `discord`, `desktop`. Each carries:
 - `enabled: boolean`
