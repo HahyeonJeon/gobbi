@@ -43,7 +43,7 @@ import {
   type PriorErrorSnapshot,
 } from '../../workflow/events/decision.js';
 import type { WorkflowState } from '../../workflow/state.js';
-import { writeState } from '../../workflow/state.js';
+import { backupState, writeState } from '../../workflow/state.js';
 import {
   compileResumePrompt,
   detectPathway,
@@ -320,7 +320,14 @@ export async function runResumeWithOptions(
       // The write happens OUTSIDE the SQLite transaction — the atomicity
       // boundary is the two-event append; state.json is a downstream
       // projection that follows the commit.
+      //
+      // `backupState` runs immediately before `writeState` to preserve
+      // the invariant that `state.json.backup` trails `state.json` by
+      // at most one state write — matching the discipline in
+      // `appendEventAndUpdateState` (engine.ts), which calls
+      // `backupState` as step 1 inside its transaction.
       const derived = deriveWorkflowState(sessionId, store);
+      backupState(sessionDir);
       writeState(sessionDir, derived);
     } else {
       const resumeEvent = createResume({

@@ -449,6 +449,19 @@ describe('runResumeWithOptions — --force-memorization', () => {
     } finally {
       store.close();
     }
+
+    // Backup invariant — `state.json.backup` must trail `state.json` by
+    // at most one state write. The `--force-memorization` branch calls
+    // `backupState` immediately before `writeState`, so the backup
+    // captures the pre-resume `error` state that lived in `state.json`
+    // before the explicit post-transaction projection. This mirrors the
+    // discipline in `appendEventAndUpdateState` (engine.ts).
+    const backupRaw = readFileSync(
+      join(sessionDir, 'state.json.backup'),
+      'utf8',
+    );
+    const backup = JSON.parse(backupRaw) as { readonly currentStep: string };
+    expect(backup.currentStep).toBe('error');
   });
 });
 
