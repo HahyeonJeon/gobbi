@@ -371,9 +371,9 @@ Criteria:
 
 You have finished this step's work when the criteria above are satisfied. Once they are met, run EXACTLY this command as your last action:
 
-  gobbi workflow transition COMPLETE
+  gobbi workflow transition FINISH
 
-The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop.
+The CLI's output is the authoritative record of step completion. No other phrasing — prose, markdown headers, comments — advances the workflow. Run the command, observe the printed next step, and stop. Handoff is the terminal productive step; FINISH emits \`workflow.finish\` and transitions the session to \`done\`.
 
 session.schemaVersion=4
 session.currentStep=handoff
