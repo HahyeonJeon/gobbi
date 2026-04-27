@@ -29,7 +29,7 @@ v0.4.5 remains installable from npm for archival purposes: `npm install -g @gobb
 | Skill-based orchestration (`_orchestration` skill) | CLI state machine (`gobbi workflow init`) | Plugin auto-registers new hooks on install | n/a — conceptual change |
 | 8 v0.4.x hook entries (3×SessionStart + Stop + Notification + StopFailure + SubagentStop + SessionEnd — calling `gobbi notify *` and `gobbi session *`) | 5 `gobbi workflow *` hook entries (SessionStart, PreToolUse, PostToolUse, SubagentStop, Stop) | Breaking — see below | n/a — hook wiring |
 | Notes in `.claude/project/{name}/note/` (retrospective archive) | Active sessions in `.gobbi/projects/<name>/sessions/<id>/` (runtime state) | Both coexist; no migration needed | Existing note archives remain valid |
-| 7-step cycle (ideation → plan → research → execute → collect → memorize → review) | 5-step cycle (Ideation → Plan → Execution → Evaluation → Memorization) | Conceptual; no user action needed | n/a |
+| 7-step cycle (ideation → plan → research → execute → collect → memorize → review) | 6-step workflow (Configuration → Ideation → Planning → Execution → Memorization → Handoff) | Conceptual; no user action needed | n/a |
 | `_orchestration` skill as workflow entry | Deprecated — banner + `ARCHIVED.md` | Skill remains on disk for reference; no deletion | n/a |
 
 ---
@@ -65,13 +65,13 @@ The `gobbi notify` subcommand (`gobbi notify session`, `gobbi notify completion`
 **Path C — Wait for Phase 3.**
 Best for: users who want the canonical gobbi notification setup restored and can tolerate a gap.
 
-Phase 3 may restore notification events over the v0.5.0 hook surface. No timeline is committed. See `CHANGELOG.md` for release history and the Phase 3 backlog doc at `.claude/project/gobbi/design/v050-phase3-backlog.md` for the tracked item.
+Phase 3 may restore notification events over the v0.5.0 hook surface. No timeline is committed. See `CHANGELOG.md` for release history and the Phase 3 backlog doc at `.gobbi/projects/gobbi/design/v050-phase3-backlog.md` for the tracked item.
 
 ---
 
 ### Breaking change 2 — `_orchestration` skill deprecated
 
-**What changed.** The `_orchestration` skill's SKILL.md, which contained the 7-step prose orchestration cycle, is deprecated in v0.5.0. The skill directory remains on disk (per CP6 locked decision — no deletion) and is marked with a deprecation banner. The authoritative deprecation context, including the 7-step → 5-step mapping, lives in `.claude/skills/_orchestration/ARCHIVED.md`.
+**What changed.** The `_orchestration` skill's SKILL.md, which contained the 7-step prose orchestration cycle, is deprecated in v0.5.0. The skill directory remains on disk (per CP6 locked decision — no deletion) and is marked with a deprecation banner. The authoritative deprecation context, including the 7-step → v0.5.0 mapping, lives in `.claude/skills/_orchestration/ARCHIVED.md`.
 
 **Consumer impact.** If you have muscle memory loading the `_orchestration` skill or following its 7-step cycle, read `ARCHIVED.md` first. The new entry point for v0.5.0 orchestration is the `gobbi` skill (`/gobbi`), which now bootstraps a `gobbi workflow init` session instead of driving the 7-step prose cycle. The `_orchestration` skill remains on disk for reference; you will see a deprecation banner if you load it directly.
 
