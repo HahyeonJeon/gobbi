@@ -88,7 +88,7 @@ This skill loads at session start as a core skill. Prerequisites run during sess
 
 **FINISH phase** — When _git is active, the FINISH phase changes: "merge PR and cleanup" replaces the default commit step. Merging, branch deletion, and worktree removal happen as part of the orchestrator's FINISH responsibilities. When the PR targets a non-default branch, the orchestrator must explicitly close linked issues because closing keywords only trigger on PRs merged into the default branch. After removing the worktree, any empty parent directories left behind by nested branch names must be cleaned up. The orchestrator also pulls the merge into the local base branch to keep it in sync with the remote.
 
-**Notes and gotchas always write to the main tree** — The `$CLAUDE_PROJECT_DIR/.claude/project/` directory is gitignored. Subagent notes and gotchas must use the main tree's absolute path, not the worktree path, because worktrees are temporary and get removed after merge.
+**Notes and gotchas always write to the main tree** — Session notes live under `.gobbi/projects/<name>/sessions/` (gitignored) and gotchas under `.gobbi/projects/<name>/learnings/gotchas/`. Subagent notes and gotchas must use the main tree's absolute path, not the worktree path, because worktrees are temporary and get removed after merge.
 
 ---
 
