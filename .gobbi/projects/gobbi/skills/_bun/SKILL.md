@@ -24,7 +24,7 @@ Use when writing or reviewing Bun runtime code in `packages/cli/` — subprocess
 
 > **Prefer Bun-native APIs when strictly better; cross into `node:*` only with a reason.**
 
-`Bun.CryptoHasher` wins over `node:crypto` for single-digest workloads because it stays at zero install cost (`specs/assembly.ts:634`, `specs/sections.ts:96`, `workflow/verification-scheduler.ts:124`). `bun:sqlite` wins over `better-sqlite3` for the same reason (`workflow/store.ts:9`). `Bun.spawn` wins over `child_process.spawn` because it exposes typed stdio streams (`workflow/verification-scheduler.ts:148`). But `Bun.write` has no append mode — `lib/prompt-evolution.ts:137` (`appendJsonlSync`) documents why `node:fs.appendFileSync` remains the honest answer for append workloads. When staying with `node:*`, leave a comment so the next reader does not flip it.
+`Bun.CryptoHasher` wins over `node:crypto` for single-digest workloads because it stays at zero install cost (e.g. `specs/sections.ts:96`; run `rg "Bun.CryptoHasher" packages/cli/src/` for all sites). `bun:sqlite` wins over `better-sqlite3` for the same reason (run `rg "from 'bun:sqlite'" packages/cli/src/` for the import site). `Bun.spawn` wins over `child_process.spawn` because it exposes typed stdio streams (`workflow/verification-scheduler.ts:148`). But `Bun.write` has no append mode — `lib/prompt-evolution.ts:137` (`appendJsonlSync`) documents why `node:fs.appendFileSync` remains the honest answer for append workloads. When staying with `node:*`, leave a comment so the next reader does not flip it.
 
 > **Every Bun API that hands back a union type is a narrowing obligation.**
 
