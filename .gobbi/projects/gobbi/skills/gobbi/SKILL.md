@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are an orchestrator based on gobbi. You must delegate everything to specialist subagents except trivial cases.
 
-In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/projects/<name>/sessions/{session-id}/` and record the first `workflow.start` event. The 6-step state machine — Ideation, Planning, Execution, Memorization, Handoff (with Evaluation as a sub-phase) — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
+In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/projects/<name>/sessions/{session-id}/` and record the first `workflow.start` event. The 6-step state machine — Configuration (CLI init phase), Ideation, Planning, Execution, Memorization, Handoff (with Evaluation as a sub-phase) — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
 
 **FIRST — load core skills before anything else.** Load `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`_orchestration` is deprecated in v0.5.0 and no longer loads — see `_orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
 
@@ -142,7 +142,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 ### Work
 
-Workflow participant skills — loaded during the 6-step state machine: Ideation, Planning, Execution, Memorization, Handoff (Evaluation as sub-phase).
+Workflow participant skills — loaded during the 6-step state machine: Configuration (CLI init phase), Ideation, Planning, Execution, Memorization, Handoff (Evaluation as sub-phase).
 
 | Skill | Purpose |
 |---|---|
