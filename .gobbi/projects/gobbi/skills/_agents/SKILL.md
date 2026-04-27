@@ -84,7 +84,7 @@ The Agent tool's `model` parameter lets the orchestrator override at delegation 
 
 > **All review tasks override to sonnet via the Agent tool's `model` parameter.**
 
-Review is assessment, not creation. When spawning any subagent for review work — Step 7 Review, code review, PR review, or any other assessment task — the orchestrator sets `model: "sonnet"` in the Agent tool call. This overrides the agent definition's default (e.g., `__pi` defaults to opus but runs at sonnet during review). Evaluator agents already default to sonnet, so no override is needed for them.
+Review is assessment, not creation. When spawning any subagent for evaluation sub-phase work (`ideation_eval`, `planning_eval`, `execution_eval`), code review, PR review, or any other assessment task — the orchestrator sets `model: "sonnet"` in the Agent tool call. This overrides the agent definition's default (e.g., `__pi` defaults to opus but runs at sonnet during evaluation sub-phases). Evaluator agents already default to sonnet, so no override is needed for them.
 
 When creating a new agent, determine its model tier by asking: "Does this agent need to reason creatively or investigate novel problems?" If yes, opus. "Does this agent assess against structured criteria or follow defined processes?" If yes, sonnet. All agents run at max effort regardless of tier — effort is not a dial to turn down.
 

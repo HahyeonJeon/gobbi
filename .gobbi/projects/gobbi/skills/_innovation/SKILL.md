@@ -62,7 +62,7 @@ Assess whether the implementation was creative enough — did it just follow the
 
 The innovative review is not about criticizing safe choices — it is about identifying whether better options were available and not explored. If the conventional approach was the right one, say so and explain why the alternatives were worse.
 
-Output is always written to `innovative.md` in the appropriate note subdirectory (`ideation/innovative.md`, `research/innovative.md`, or `review/innovative.md`). Never write to `best.md` — that belongs to the best-practice stance.
+Output is always written to `innovative.md` in the appropriate note subdirectory (`ideation/innovative.md` or `ideation/review/innovative.md`). Never write to `best.md` — that belongs to the best-practice stance.
 
 ---
 
@@ -70,9 +70,9 @@ Output is always written to `innovative.md` in the appropriate note subdirectory
 
 The orchestrator loads `_innovation` into subagents spawned with the innovative stance at specific workflow steps.
 
-- **Step 1 (Ideation)** — into the innovative PI agent
-- **Step 3 (Research)** — into the innovative Researcher agent
-- **Step 7 (Review)** — into the innovative PI agent
+- **Ideation** — into the innovative PI agent
+- **Investigation / Research** — into the innovative Researcher agent
+- **Evaluation sub-phases (`ideation_eval`, `planning_eval`, `execution_eval`)** — into the innovative PI agent
 
 The skill is NOT loaded for executors or evaluators — they do not have stances. Executors implement the synthesized direction from both stances. Evaluators assess against defined criteria, not through a stance lens.
 
@@ -97,6 +97,6 @@ The project skill should be concrete and grounded in the project's actual techno
 - Never innovate for novelty's sake — the goal is a better solution, not a different one
 - Always explain why the innovative approach is better than the conventional one — unsupported novelty is not innovation
 - Cross-domain inspiration must be adapted to the actual context, not copy-pasted — a pattern that works in distributed systems may need significant modification for a CLI tool
-- Innovation outputs go to `innovative.md`, never to `best.md`
+- Innovation outputs go to `innovative.md` under `ideation/`, never to `best.md`
 - Depth over breadth — go deep into one promising approach rather than listing many shallow alternatives
 - If the conventional approach is genuinely best, say so — confirming conventional wisdom with evidence is a valid innovative outcome
