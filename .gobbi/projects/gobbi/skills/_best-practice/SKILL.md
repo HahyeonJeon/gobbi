@@ -62,7 +62,7 @@ Assess whether best practices were followed in the implementation. Did the imple
 
 The best-practice review is not about enforcing rigidity — it is about identifying where the implementation diverged from proven patterns and whether that divergence was justified. If a deviation was intentional and well-reasoned, acknowledge it. If it was accidental, flag it.
 
-Output is always written to `best.md` in the appropriate note subdirectory (`ideation/best.md`, `research/best.md`, or `review/best.md`). Never write to `innovative.md` — that belongs to the innovative stance.
+Output is always written to `best.md` in the appropriate note subdirectory: `ideation/best.md` when running as part of the Ideation step; `<step>/evaluation/best.md` when invoked as a perspective during evaluation, where `<step>` is `ideation`, `planning`, or `execution`. Never write to `innovative.md` — that belongs to the innovative stance.
 
 ---
 
@@ -70,9 +70,9 @@ Output is always written to `best.md` in the appropriate note subdirectory (`ide
 
 The orchestrator loads `_best-practice` into subagents spawned with the best stance at specific workflow steps.
 
-- **Step 1 (Ideation)** — into the best-practice PI agent
-- **Step 3 (Research)** — into the best-practice Researcher agent
-- **Step 7 (Review)** — into the best-practice PI agent
+- **Ideation** — into the best-practice PI agent
+- **Investigation / Research** — into the best-practice Researcher agent
+- **Evaluation sub-phases (`ideation_eval`, `planning_eval`, `execution_eval`)** — into the best-practice PI agent
 
 The skill is NOT loaded for executors or evaluators — they do not have stances. Executors implement the synthesized direction from both stances. Evaluators assess against defined criteria, not through a stance lens.
 
@@ -97,6 +97,6 @@ The project skill should reference actual documentation and community standards 
 - Always cite sources — documentation links, community references, or codebase patterns that demonstrate the best practice
 - Never present personal preference as best practice — every recommendation must trace to evidence
 - Acknowledge when multiple valid best practices exist and explain the trade-offs in the project's context
-- Best-practice outputs go to `best.md`, never to `innovative.md`
+- Best-practice outputs go to `best.md` under `ideation/`, never to `innovative.md`
 - Evaluate best practices against the project's actual constraints — team size, performance requirements, maintenance expectations
 - Consistency with the existing codebase is itself a best practice — do not recommend patterns that conflict with established project conventions without strong justification

@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are an orchestrator based on gobbi. You must delegate everything to specialist subagents except trivial cases.
 
-In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/projects/<name>/sessions/{session-id}/` and record the first `workflow.start` event. The 6-step state machine — Ideation, Planning, Execution, Memorization, Handoff (with Evaluation as a sub-phase) — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
+In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/projects/<name>/sessions/{session-id}/` and record the first `workflow.start` event. The 6-step state machine — Configuration (CLI init phase), Ideation, Planning, Execution, Memorization, Handoff (with Evaluation as a sub-phase) — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
 
 **FIRST — load core skills before anything else.** Load `_gotcha`, `_claude`, and `_git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`_orchestration` is deprecated in v0.5.0 and no longer loads — see `_orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
 
@@ -128,7 +128,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | [project-setup.md](project-setup.md) | Project-specific context and technology stack signals |
 | [notification-setup.md](notification-setup.md) | Notification channel and credential detection |
 | [git-setup.md](git-setup.md) | Git tooling and repository state detection |
-| [design/v050-overview.md](../../projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, two-DB workspace split — authoritative architecture doc |
+| [design/v050-overview.md](../../design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, two-DB workspace split — authoritative architecture doc |
 
 ---
 
@@ -142,7 +142,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 ### Work
 
-Workflow participant skills — loaded during the 6-step state machine: Ideation, Planning, Execution, Memorization, Handoff (Evaluation as sub-phase).
+Workflow participant skills — loaded during the 6-step state machine: Configuration (CLI init phase), Ideation, Planning, Execution, Memorization, Handoff (Evaluation as sub-phase).
 
 | Skill | Purpose |
 |---|---|
@@ -212,6 +212,8 @@ Utility and maintenance tooling.
 |---|---|
 | **_gobbi-cli** | Intent-first CLI reference. Maps agent tasks to gobbi commands and cross-references domain skills for workflow context. |
 | **_gobbi-rule-container** | Container for `_gobbi-rule` behavioral rule. Source files symlinked into `.claude/rules/` at session start for auto-update with plugin. |
+| **_bun** | Bun runtime patterns for `packages/cli/` — subprocess spawning, SQLite access, bun:test runner, module-relative paths, and build/run script surface. Load when writing or reviewing Bun runtime code. |
+| **_typescript** | TypeScript strict-mode discipline for `packages/cli/src/` — discriminated unions, `satisfies`/`assertNever` exhaustiveness gates, AJV boundary parsing, readonly conventions, and codegen-branded types. Load when authoring, reviewing, or debugging any `.ts` file. |
 
 #### Evaluation criteria child docs
 
