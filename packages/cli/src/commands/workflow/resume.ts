@@ -34,6 +34,7 @@ import { join } from 'node:path';
 import { EventStore } from '../../workflow/store.js';
 import {
   appendEventAndUpdateState,
+  deriveWorkflowState,
   resolveWorkflowState,
 } from '../../workflow/engine.js';
 import { createResume } from '../../workflow/events/workflow.js';
@@ -42,6 +43,7 @@ import {
   type PriorErrorSnapshot,
 } from '../../workflow/events/decision.js';
 import type { WorkflowState } from '../../workflow/state.js';
+import { writeState } from '../../workflow/state.js';
 import {
   compileResumePrompt,
   detectPathway,
@@ -299,11 +301,27 @@ export async function runResumeWithOptions(
         process.exit(1);
       }
 
-      // Refresh state. The raw transaction bypassed the state.json
-      // write (that lives in `appendEventAndUpdateState`), so
-      // `resolveWorkflowState` falls through to `replayAll` and derives
-      // a fresh state — this materializes the updated state.json.
-      resolveWorkflowState(sessionDir, store, sessionId);
+      // Refresh state.json after the raw transaction.
+      //
+      // The raw transaction bypassed the `writeState` call that lives
+      // inside `appendEventAndUpdateState`, so the on-disk `state.json`
+      // is still the pre-resume state at this point. `resolveWorkflowState`
+      // ALONE would not fix that — its fast path (`readState`) returns
+      // whatever `state.json` currently holds without re-deriving from
+      // events. Without the explicit write below, every subsequent
+      // `workflow status / next / guard` invocation reads stale state
+      // (currentStep: 'error') even though the event log says
+      // 'memorization'. See CV-9 in the v0.5.0 adversarial review
+      // campaign synthesis (issue #163) for the failure mode.
+      //
+      // The fix: force a full replay via `deriveWorkflowState` (cold
+      // path, ignores state.json) and then `writeState` to materialise
+      // the result, mirroring `appendEventAndUpdateState`'s discipline.
+      // The write happens OUTSIDE the SQLite transaction — the atomicity
+      // boundary is the two-event append; state.json is a downstream
+      // projection that follows the commit.
+      const derived = deriveWorkflowState(sessionId, store);
+      writeState(sessionDir, derived);
     } else {
       const resumeEvent = createResume({
         targetStep: target,
