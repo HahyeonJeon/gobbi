@@ -24,7 +24,7 @@ Use when writing or reviewing Bun runtime code in `packages/cli/` — subprocess
 
 > **Prefer Bun-native APIs when strictly better; cross into `node:*` only with a reason.**
 
-`Bun.CryptoHasher` wins over `node:crypto` for single-digest workloads because it stays at zero install cost (`specs/assembly.ts:634`, `specs/sections.ts:96`, `workflow/verification-runner.ts:124`). `bun:sqlite` wins over `better-sqlite3` for the same reason (`workflow/store.ts:9`, `lib/config-store.ts:173`). `Bun.spawn` wins over `child_process.spawn` because it exposes typed stdio streams (`workflow/verification-scheduler.ts:148`). But `Bun.write` has no append mode — `workflow/state.ts:506` documents why `node:fs/promises.appendFile` / `node:fs.appendFileSync` remains the honest answer for append workloads. When staying with `node:*`, leave a comment so the next reader does not flip it.
+`Bun.CryptoHasher` wins over `node:crypto` for single-digest workloads because it stays at zero install cost (`specs/assembly.ts:634`, `specs/sections.ts:96`, `workflow/verification-scheduler.ts:124`). `bun:sqlite` wins over `better-sqlite3` for the same reason (`workflow/store.ts:9`). `Bun.spawn` wins over `child_process.spawn` because it exposes typed stdio streams (`workflow/verification-scheduler.ts:148`). But `Bun.write` has no append mode — `lib/prompt-evolution.ts:137` (`appendJsonlSync`) documents why `node:fs.appendFileSync` remains the honest answer for append workloads. When staying with `node:*`, leave a comment so the next reader does not flip it.
 
 > **Every Bun API that hands back a union type is a narrowing obligation.**
 
@@ -45,7 +45,7 @@ Every `*.test.ts` file imports from `bun:test` — `describe`, `test`, `it`, `ex
 This is a decision guide, not a cheat sheet — one line per surface on which call to make and why. Read the cited code for the pattern; do not duplicate it here.
 
 - **Single-file reads of JSON/text/bytes** — `Bun.file(path).text()` / `.json()` / `.bytes()`. Lazy, composable with `new Response()`, zero dependency.
-- **Append-mode writes** — `appendFileSync` from `node:fs`. `Bun.write` always truncates-and-writes; the comment at `workflow/state.ts:506` is the canonical marker for this choice.
+- **Append-mode writes** — `appendFileSync` from `node:fs`. `Bun.write` always truncates-and-writes; `lib/prompt-evolution.ts:137` (`appendJsonlSync`) is the canonical reference for this choice.
 - **Atomic writes (temp + rename)** — `writeFileSync` + `renameSync` from `node:fs`. `Bun.write` is not atomic in the rename sense.
 - **SHA-256 / other hashing** — `new Bun.CryptoHasher('sha256')` over `node:crypto.createHash`. Keeps dependency surface at zero against the `engines.bun` floor.
 - **Subprocess spawn (production)** — `Bun.spawn({ cmd, cwd, stdio, env, detached })`. `child_process` is a polyfill; always prefer `Bun.spawn`.
@@ -90,17 +90,17 @@ Two constraints make this a test-only idiom here:
 
 `bun:sqlite` is a synchronous API. All methods return directly; no Promise wrappers, no async boundaries. This is a feature, not a limitation — the CLI is a short-lived process and synchronous composition with `db.transaction()` is the simplest possible transactional model.
 
-The repo's canonical bootstrap is `ConfigStore` at `lib/config-store.ts:173-189`. Mirrored in the event store at `workflow/store.ts:274-277`. Five invariants, all cited:
+The repo's canonical bootstrap is the `EventStore` constructor at `workflow/store.ts:499-503`. Five invariants, all cited:
 
-**Open with `{ strict: true }`.** `new Database(path, { strict: true })` enables `$named` parameters with `Record`-shaped bindings and turns type-coercion errors into thrown exceptions rather than silent mis-writes. `SqlBindings` at `lib/config-store.ts:50` shows the contract. Do not mix `strict` modes across a session.
+**Open with `{ strict: true }`.** `new Database(path, { strict: true })` enables `$named` parameters with `Record`-shaped bindings and turns type-coercion errors into thrown exceptions rather than silent mis-writes. See `workflow/store.ts:499` for the canonical open call. Do not mix `strict` modes across a session.
 
-**Three PRAGMAs after open.** `journal_mode = WAL`, `synchronous = NORMAL`, `busy_timeout = 5000`. Set at open time, always. WAL + busy_timeout eliminates the lost-update class the legacy `settings.json` read-modify-write suffered from. The event store adds `foreign_keys = ON` (`workflow/store.ts:276`).
+**Four PRAGMAs after open.** `journal_mode = WAL`, `synchronous = NORMAL`, `foreign_keys = ON`, `busy_timeout = 5000`. Set at open time, always — see `workflow/store.ts:500-503`. WAL + busy_timeout eliminates the lost-update class the legacy `settings.json` read-modify-write suffered from. `foreign_keys = ON` enforces referential integrity at the SQLite layer.
 
-**`db.query(sql)` caches the compiled statement; cache the return value yourself too.** Bun caches by SQL string on the database instance, so repeated `db.query(...)` calls return the same `Statement`. The repo additionally caches each prepared statement as a class field (`lib/config-store.ts:180-189`) so the lookup is direct. For dynamic SQL where the cache would fill with one-offs, use a `Map` (see `stmtSetFieldCache` at `lib/config-store.ts:167`).
+**`db.query(sql)` caches the compiled statement; cache the return value yourself too.** Bun caches by SQL string on the database instance, so repeated `db.query(...)` calls return the same `Statement`. For dynamic SQL where the cache would fill with one-offs, use a `Map`. Run `rg "db.query\|Map.*Statement" packages/cli/src/workflow/store.ts` for current caching patterns in the repo.
 
 **Transactions use `.immediate()` for write-first blocks.** `db.transaction(() => {...}).immediate()` acquires the write lock upfront and prevents deadlock under concurrent writers. Use `.immediate()` whenever the first operation inside the transaction is a write.
 
-**Cleanup via `Symbol.dispose` and the `using` keyword.** `ConfigStore` implements `[Symbol.dispose]()` at `lib/config-store.ts:426-428`, which lets tests and callers write `using store = new ConfigStore(':memory:')`. `close()` runs a best-effort `PRAGMA wal_checkpoint(TRUNCATE)` inside a try/catch so in-memory databases (which do not support checkpointing) do not throw.
+**Cleanup via `Symbol.dispose` and the `using` keyword.** `EventStore` implements `[Symbol.dispose]()` — run `rg "Symbol.dispose" packages/cli/src/workflow/store.ts` to find the implementation. `close()` runs a best-effort `PRAGMA wal_checkpoint(TRUNCATE)` inside a try/catch so in-memory databases (which do not support checkpointing) do not throw.
 
 Nested `db.transaction()` calls behave as SAVEPOINTs, not nested `BEGIN` blocks — see the comment at `commands/workflow/init.ts:209` and the skill-level gotcha below.
 
@@ -136,7 +136,7 @@ Three near-synonymous primitives, each with a narrow role. Consistency inside a 
 
 Single-rule summary: **`Bun.file` for reads, `node:fs` for writes that need append or atomic-rename.** The split is explicit, not an aesthetic choice.
 
-Reads use `Bun.file(path).text()` / `.json()` / `.bytes()` when a single-shot async load suffices. Append workloads go through `appendFileSync` from `node:fs` — see `appendJsonl` at `workflow/state.ts:508` and the comment at `workflow/state.ts:506` explaining why `Bun.write` cannot substitute. Atomic writes use the temp-file-plus-rename pattern in the same module; do not reach for `Bun.write` here either.
+Reads use `Bun.file(path).text()` / `.json()` / `.bytes()` when a single-shot async load suffices. Append workloads go through `appendFileSync` from `node:fs` — see `appendJsonlSync` at `lib/prompt-evolution.ts:137` for the canonical append-mode helper and the inline comment explaining why `Bun.write` cannot substitute. Atomic writes use the temp-file-plus-rename pattern; do not reach for `Bun.write` here either.
 
 ---
 
