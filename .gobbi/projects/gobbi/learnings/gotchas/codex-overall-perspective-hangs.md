@@ -1,4 +1,4 @@
-### Codex Overall perspective hangs on large diffs
+# Codex Overall perspective hangs on large diffs
 
 ---
 priority: medium
