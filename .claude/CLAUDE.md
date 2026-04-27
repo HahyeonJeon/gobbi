@@ -10,7 +10,7 @@ MUST load this at session start, resume, and compaction. MUST follow the core pr
 
 > **The logic of good work: Ideation → Planning → Execution → Memorization → Handoff.**
 
-Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The 6-step state machine (adding Configuration as the pre-loop step) lives in `packages/cli/src/specs/` and is driven by `gobbi workflow init`. Workflow state persists in `.gobbi/state.db` (event log); cross-session memory lives in `.gobbi/gobbi.db` (memories projection).
+Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The 6-step state machine (Configuration as the CLI init phase, plus the 5 productive steps) lives in `packages/cli/src/specs/` and is driven by `gobbi workflow init`. Workflow events write to per-session `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db`; cross-session memory lives in `.gobbi/gobbi.db` (workspace memories projection, git-tracked). Note: `prompt.patch.applied` events write to workspace `.gobbi/state.db` — full workspace consolidation of workflow events is Wave A.1 work, partially shipped.
 
 **Ideation** — Explore what to do. PI agents (innovative + best stances) investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
 
@@ -46,6 +46,6 @@ MUST decompose work into small, specific tasks and track them with TaskCreate. E
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [_claude skill](skills/_claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, two-DB workspace split — authoritative architecture doc |
+| [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step workflow, per-session/workspace DB split — authoritative architecture doc |
 | [`v050-cli.md`](../../../.gobbi/projects/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` and `gobbi project *` commands |
 | [rules/](rules/) | Naming conventions and project rules |

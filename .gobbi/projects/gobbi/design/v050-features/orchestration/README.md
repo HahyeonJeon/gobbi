@@ -14,7 +14,7 @@ The same architecture pattern is well-established at scale — Temporal, AWS Ste
 
 ## 1. The 6-step workflow
 
-Every workflow is six steps. Evaluation is a sub-phase **inside** Ideation, Planning, and Execution — not a standalone step. `handoff` is a **true state-machine step**, not a memorization sub-artifact. The 6-step model supersedes the 5-step cycle currently described in `../../v050-overview.md` and `.claude/CLAUDE.md`; reconciling those is in scope for Wave A.2.
+Every workflow is six steps. Evaluation is a sub-phase **inside** Ideation, Planning, and Execution — not a standalone step. `handoff` is a **true state-machine step**, not a memorization sub-artifact. The 6-step model is now the authoritative framing in `../../v050-overview.md` and `.claude/CLAUDE.md` (reconciled in Wave A.2).
 
 | Step | State literal in `index.json` | Purpose | Productive or terminal? |
 |---|---|---|---|
@@ -54,19 +54,19 @@ The four layers each own a distinct slice of the orchestration stack. The user a
 | **L3a** Orchestrator-in-step | The active agent runtime (Claude Code or `claude -p`) | Compiled JIT prompt from `specs/assembly.ts::compile()` ending with the standardized footer | Autonomy within a bounded contract |
 | **L3b** Subagent-in-task | A spawned subagent with `(role, specialties[])` composition | Composed delegation prompt — spec'd in deferred `roles-and-specialties` pass | Autonomy within a delegation contract |
 
-**End-to-end trace (Plan → Execution under Outer mode, post-Wave-E.2 target):** `gobbi workflow run` reads `state.db`, sees `currentStep == 'planning_eval'` with `verdictPass`, calls `transition.ts::buildEvent('PASS')` to advance to `currentStep == 'execution'`. `gobbi workflow next` compiles the execution prompt via `specs/assembly.ts`. L1 spawns `claude -p '<prompt>' --session-id $SID`. The agent works in the prompt and runs `gobbi workflow transition COMPLETE` per the footer. `transition.ts:335` emits `workflow.step.exit`; the reducer validates; the loop continues. Same flow runs in Inner mode under interactive Claude Code — the only differences are who spawns the runtime and where the prompt is delivered.
+**End-to-end trace (Plan → Execution under Outer mode, post-Wave-E.2 target):** `gobbi workflow run` reads the per-session `gobbi.db`, sees `currentStep == 'planning_eval'` with `verdictPass`, calls `transition.ts::buildEvent('PASS')` to advance to `currentStep == 'execution'`. `gobbi workflow next` compiles the execution prompt via `specs/assembly.ts`. L1 spawns `claude -p '<prompt>' --session-id $SID`. The agent works in the prompt and runs `gobbi workflow transition COMPLETE` per the footer. `transition.ts:335` emits `workflow.step.exit`; the reducer validates; the loop continues. Same flow runs in Inner mode under interactive Claude Code — the only differences are who spawns the runtime and where the prompt is delivered.
 
 ---
 
 ## 3. State.db and gobbi.db — the two-DB partition
 
-The two-DB split is a CQRS read-model partition (Greg Young / EventStoreDB canon): `state.db` is the append-only event log; `gobbi.db` is the cross-session memory projection. After Wave A.1 both DBs are workspace-scoped at `.gobbi/state.db` and `.gobbi/gobbi.db`.
+The two-DB split is a CQRS read-model partition (Greg Young / EventStoreDB canon): the per-session `gobbi.db` is the append-only workflow event log; the workspace `gobbi.db` is the cross-session memory projection; the workspace `state.db` holds prompt-patch events. Full workspace consolidation of workflow events is a Wave A.1 migration target, partially shipped.
 
 ### 3.1 Current state vs target state
 
-**Today** (per `init.ts:6`, `store.ts:26`, `transition.ts:228`): `gobbi.db` is opened **per session** at `.gobbi/projects/<name>/sessions/<id>/gobbi.db`. Schema v5 already added `session_id` and `project_id` columns (`store.ts:8-17`), so partitioning is mechanically ready. The path is per-session.
+**Today** (per `init.ts`): workflow events write to a per-session `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db`. The workspace `state.db` at `.gobbi/state.db` holds only `prompt.patch.applied` events (Wave C.1). The workspace `gobbi.db` at `.gobbi/gobbi.db` holds cross-session memories (git-tracked). Schema v7 applies to both DB openings.
 
-**Target after Wave A.1:** workspace-scoped `state.db` (events) + workspace-scoped `gobbi.db` (memories). Wave A.1 owns the rename + re-scope migration via `gobbi maintenance migrate-state-db`.
+**Target (post-Wave A.1, full consolidation pending):** workspace-scoped `state.db` for workflow events + workspace-scoped `gobbi.db` for memories. Wave A.1 partially shipped the migration infrastructure (`gobbi maintenance migrate-state-db`, explicit EventStore partition keys, schema v6); full workspace event-log consolidation remains in progress.
 
 ### 3.2 EventStore constructor must accept explicit partition keys
 
@@ -94,11 +94,11 @@ config_changes           -- gobbi config set audit (table-only)
 schema_meta              -- migration version + last-completed timestamp
 ```
 
-Note: `prompt_patches` is **deferred to Wave C** (prompts-as-data owns it via schema v7). Wave A.1 schema v6 does not include it.
+Note: `prompt_patches` shipped in Wave C.1 (schema v7). Wave A.1 schema v6 did not include it; v7 adds the `prompt_patches` table for tracking applied JSON Patch operations.
 
 `session_id` and `project_id` remain nullable `TEXT` (not `NOT NULL`) — SQLite cannot add `NOT NULL` columns via `ALTER TABLE` without a table rebuild, and the `store.ts:476` fallback (`this.sessionId ?? input.sessionId`) provides backward compatibility for any pre-v6 row that lacks the partition keys.
 
-**Indices added in v6:** `(session_id, seq)`, `(project_id, seq DESC)` for "most recent N", `(type, step, session_id)` for predicate matchers; UNIQUE `idempotency_key` already exists at `store.ts:130-134`.
+**Indices added in v6:** `(session_id, seq)`, `(project_id, seq DESC)` for "most recent N", `(type, step, session_id)` for predicate matchers; UNIQUE `idempotency_key` already exists at `store.ts:130-134`. Schema v7 (Wave C.1) added the `prompt_patches` table.
 
 ### 3.4 `.gobbi/gobbi.db` (workspace, **git-tracked**, project + session memories)
 
@@ -123,9 +123,9 @@ Memories live **both** in SQLite (queryable + FTS) and rendered to markdown unde
 
 The `.gitignore` exception is required: today `.gobbi/*` covers everything; Wave A.1 must add `!.gobbi/gobbi.db` immediately after the `.gobbi/*` line, following the existing `!.gobbi/projects/` pattern (System F-1). Without the exception the file silently stays gitignored, defeating the entire point of the cross-session memory store.
 
-### 3.5 Event types — 22 today + 1 new in this design = 23 post-Pass-4
+### 3.5 Event types — 24 total (current)
 
-Today (verified per `events/index.ts:1` "22 event types"; expanded via `events/{workflow,delegation,decision,artifact,guard,verification,session}.ts`):
+Current live count per `events/index.ts` header "9 categories, 24 event types" — expanded via `events/{workflow,delegation,decision,artifact,guard,verification,session,step-advancement,prompt}.ts`:
 
 - **9 `workflow.*`** — `start`, `step.exit`, `step.skip`, `step.timeout`, `eval.decide`, `finish`, `abort`, `resume`, `invalid_transition`
 - **3 `delegation.*`** — `spawn`, `complete`, `fail`
@@ -134,25 +134,19 @@ Today (verified per `events/index.ts:1` "22 event types"; expanded via `events/{
 - **3 `guard.*`** — `violation`, `override`, `warn` (`warn` added in schema v2 per `migrations.ts:16`)
 - **1 `verification.*`** — `result`
 - **1 `session.*`** — `heartbeat`
+- **1 `step.*`** — `step.advancement.observed` (audit-only, bypasses reducer; added Pass 4 / Wave A.1)
+- **1 `prompt.*`** — `prompt.patch.applied` (audit-only, writes to workspace `state.db`; added Wave C.1)
 
-= **22 events total**.
+= **24 events total**.
 
-**New in Pass 4 (1 event):**
+**Audit-only events** (`step.advancement.observed`, `prompt.patch.applied`) bypass the reducer. The hook and `gobbi prompt patch` commands call `store.append()` directly. The reducer's `assertNever` at `reducer.ts:688` throws plain `Error` (not `ReducerRejectionError`), so a reducer-routed audit event would silently fail. Direct `store.append()` is the only path that persists these reliably. The reducer remains pure — it never sees audit-only events.
 
-- `step.advancement.observed` — synthetic event emitted by PostToolUse on `Bash` calls whose command starts with `gobbi workflow transition`. Primes the Stop-hook safety net so it does not false-positive after a successful transition.
-
-**Architecture F-1 fix:** the hook **calls `store.append()` directly**, bypassing the reducer. The reducer's `assertNever` at `reducer.ts:688` throws plain `Error` (not `ReducerRejectionError`), so a reducer-routed audit event would silently fail — the audit gate at `engine.ts:232` doesn't fire and `capture-planning.ts:177`'s catch swallows the throw. Direct `store.append()` is the only path that persists the event reliably. The reducer remains pure — it simply never sees this audit-only event.
-
-**Idempotency formula:** `tool-call`, keyed on the PostToolUse payload's `tool_call_id`. Deduplicates across hook retries; preserves distinctness across distinct Bash invocations.
-
-**Spike before committing in Wave A.1:** confirm Claude Code's PostToolUse fires for `Bash` running `gobbi workflow transition`. If not, the hook source becomes either a thin `gobbi workflow advance-observed` wrapper command that agents call after `transition`, or Stop-hook log scraping. Branch the implementation on the spike outcome.
-
-= **23 events total post-Pass-4**.
+**Idempotency formula (step.advancement.observed):** `tool-call`, keyed on the PostToolUse payload's `tool_call_id`. Deduplicates across hook retries; preserves distinctness across distinct Bash invocations.
 
 **Not new event categories — table-only:**
-- `tool_calls`, `config_changes`, `prompt_patches` (Wave C), `memories` (CRUD on table; no `memory.*` events).
+- `tool_calls`, `config_changes`, `memories` (CRUD on table; no `memory.*` events).
 
-**Migration:** schema v5 → v6 lifts the new tables and the new event type. Existing event streams are a strict subset; backfill is a no-op. `migrations.ts:86`'s `CURRENT_SCHEMA_VERSION` constant is bumped to `6`; `migrations.ts:121-126`'s registry adds an identity entry `5: (data) => data` so the walk loop at `migrations.ts:156-165` traverses v5 → v6 cleanly. `gobbi maintenance migrate-state-db` is the explicit command (Best §3 — Flyway "baseline-on-migrate" pattern). `gobbi maintenance restore-state-db` is the companion revert command for one-commit reversibility.
+**Migration history:** schema v5 → v6 (Wave A.1) lifted new tables (`state_snapshots`, `tool_calls`, `config_changes`) and `step.advancement.observed`. Schema v6 → v7 (Wave C.1) added `prompt_patches` table and `prompt.patch.applied` event. `gobbi maintenance migrate-state-db` handles the migration; `gobbi maintenance restore-state-db` is the companion revert command.
 
 ---
 
@@ -172,7 +166,7 @@ Verbatim from `packages/cli/src/workflow/events/workflow.ts:21-31`:
 | `workflow.resume` | User invoked `gobbi workflow resume --target <step>`; sets `fromError` if from error |
 | `workflow.invalid_transition` | Reducer rejected an event; audit-emit-on-rejection in fresh transaction |
 
-Closed-enumeration discipline: every reducer-accepted event is in the 23-event set. Test scans every category constant and asserts `ALL_EVENT_TYPES.size === 23` post-Pass-4. (Today: 22.)
+Closed-enumeration discipline: every wire-level event (reducer-typed + audit-only) is in the 24-event set. Test scans every category constant and asserts `ALL_EVENT_TYPES.size === 24`.
 
 ---
 
@@ -376,7 +370,7 @@ For the orchestration core:
 2. **0 state losses** across `/compact` + one full Claude Code restart in 100 test cases.
 3. **Inner ↔ Outer parity** — same workflow definition produces byte-identical compiled prompts (modulo per-mode footer) in 100% of snapshot tests.
 4. **No prompt-cache regression** — `gobbi workflow status --cost` rollup post-redesign ≥ pre-redesign baseline.
-5. **23-event closed enumeration** post-Pass-4 — test scans every category constant and asserts `ALL_EVENT_TYPES.size === 23`.
+5. **24-event closed enumeration** post-Pass-4 + Wave C.1 — test scans every category constant and asserts `ALL_EVENT_TYPES.size === 24`.
 6. **State-derivation determinism** — 1,000 random event-log replays produce identical `state_snapshot` rows.
 7. **Hook latency p99 < 10 ms** for PreToolUse — k8s admission-webhook budget. The 5 s `busy_timeout` is the failure mode boundary, not the operating point; `wal_checkpoint(TRUNCATE)` at step.exit prevents writer queue buildup.
 8. **Handoff coverage** — for every session that reaches `done`, exactly one `class='handoff'` row exists in `gobbi.db::memories` AND `handoff.md` exists at `sessions/<id>/handoff/handoff.md`. Measured via integration test.

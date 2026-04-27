@@ -7,20 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Wave C.1 — Prompts-as-data: schema v7, `prompt_patches` table, `gobbi prompt patch` and `gobbi prompt render` commands, JSON Patch (RFC 6902) spec evolution, `fast-json-patch` library, `prompt.patch.applied` audit event written to workspace `state.db` (#156, #161)
+- Wave B.1 — JIT step-completion footer data-driven: `blocks.footer` field in step specs, `_schema/v1.ts::StepBlocks`, JSON Schema mirror in `_schema/v1.json`, `assembly.ts::renderSpec` pipeline, footer snap tests, operator/agent verb-partition enforcement (#153, #154)
+- Wave A.2 — 9-doc reconciliation: stub-redirect files for retired `deterministic-orchestration.md` and `just-in-time-prompt-injection.md`, reconciled `v050-prompts.md`, `v050-hooks.md`, `v050-cli.md`, `v050-session.md` to post-Wave-A.1 reality (#150, #151)
+- Wave A.1 — Orchestration core: schema v6, `step.advancement.observed` audit event, explicit `EventStore` partition-key constructor params, WAL checkpoint after `workflow.step.exit`, handoff state-machine step (`specs/handoff/spec.json`), `gobbi maintenance migrate-state-db` + `restore-state-db`, memorization path-pointer manifest, `.gobbi/gobbi.db` git-tracked via `.gitignore` exception, 10 Wave A.1 integration tests (#146, #147)
+
 ## [0.5.0] - 2026-04-19
 
 ### Breaking
 
 - Hook wiring replaced — `gobbi notify *` hooks removed; `gobbi workflow *` hooks registered in `plugins/gobbi/hooks/hooks.json` and `.claude/settings.json` (#83)
-- `_orchestration` skill deprecated — see `.claude/skills/_orchestration/ARCHIVED.md` for the 7-step → 5-step mapping (#83)
-- 7-step cycle replaced by 5-step state machine (Ideation → Plan → Execution → Evaluation → Memorization); see `design/v050-overview.md` (#78, #79, #80, #81, #82, #83)
+- `_orchestration` skill deprecated — see `.claude/skills/_orchestration/ARCHIVED.md` for the 7-step → 6-step mapping (#83)
+- 7-step cycle replaced by 6-step workflow (Configuration → Ideation → Planning → Execution → Memorization → Handoff); see `.gobbi/projects/gobbi/design/v050-overview.md` (#78, #79, #80, #81, #82, #83)
 - Directory split — `.claude/` is static knowledge (skills, rules, docs, gotchas); `.gobbi/` is runtime state (event store, sessions, heartbeats); `.gobbi/` is gitignored (#78, #83)
 
 ### Added
 
-- `gobbi workflow` command group — 11 subcommands: `init`, `next`, `transition`, `guard`, `capture-subagent`, `capture-plan`, `stop`, `resume`, `status`, `validate`, `events` (#78, #80)
+- `gobbi workflow` command group — 11 subcommands: `init`, `next`, `transition`, `guard`, `capture-subagent`, `capture-planning`, `stop`, `resume`, `status`, `validate`, `events` (#78, #80)
 - Predicate registry — typed TS functions replacing JsonLogic; `gobbi workflow validate` enforces coverage (#79)
-- Spec library — 5 step specs as validated JSON under `packages/cli/src/specs/{ideation,plan,execution,evaluation,memorization}/spec.json` (#79)
+- Spec library — step specs as validated JSON under `packages/cli/src/specs/{ideation,planning,execution,evaluation,memorization}/spec.json` (#79)
 - Event store + schema v1→v4 migrations — `packages/cli/src/workflow/migrations.ts` with lazy read-time migration (#78, #80, #81, #82)
 - State reducer — `packages/cli/src/workflow/reducer.ts`, pure function state evolution (#78)
 - Verification runner — synchronous serial execution wired into `next.ts`; results reduce to state (#82)
@@ -35,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Property-based tests — fast-check v4 reducer idempotency + transition exhaustiveness (#82)
 - End-to-end subprocess tests — `workflow-cycle.test.ts` (full cycle) + `migration-chain.test.ts` (v1→v4 replay) (#82, #83)
 - `MIGRATION.md` at repo root — v0.4.x → v0.5.0 upgrade guide (#83)
-- Phase 3 backlog — `.claude/project/gobbi/design/v050-phase3-backlog.md` (#83)
+- Phase 3 backlog — `.gobbi/projects/gobbi/design/v050-phase3-backlog.md` (#83)
 - `_orchestration/ARCHIVED.md` — pedagogical mapping of 7-step to v0.5.0 equivalents (#83)
 
 ### Changed

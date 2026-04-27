@@ -35,9 +35,11 @@ Sessions are stored under `.gobbi/projects/{project-name}/sessions/{session-id}/
                 └── memorization/      step artifacts — flat directory
 ```
 
-Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The workspace event store is `state.db` at the `.gobbi/` root — one file for all projects and sessions, with `project_id` and `session_id` columns on every event row for scoped queries. The workspace memories projection is `gobbi.db` at the `.gobbi/` root — git-tracked, holds decisions, gotchas, design notes, and handoff rows. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
+Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The workspace memories projection is `gobbi.db` at the `.gobbi/` root — git-tracked, holds decisions, gotchas, design notes, and handoff rows. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
 
-Each file and directory has a single responsibility. `metadata.json` and `state.db` are the permanent record. `state.json` is a derived view — it can be rebuilt from `state.db` at any time. `events.jsonl` has been removed; `state.db` is the sole event store.
+**Today** (per `init.ts`): workflow events write to a per-session `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db`. The workspace `state.db` at `.gobbi/state.db` currently holds only `prompt.patch.applied` events (Wave C.1). Full workspace consolidation of workflow events into a shared `state.db` is Wave A.1 work, partially shipped. The descriptions below in File Responsibilities and SQLite Event Store describe the target architecture; current path reality follows the per-session layout above.
+
+Each file and directory has a single responsibility. `metadata.json` and the per-session `gobbi.db` are the permanent record. `state.json` is a derived view — it can be rebuilt from the session event store at any time. `events.jsonl` has been removed.
 
 ---
 
@@ -45,11 +47,11 @@ Each file and directory has a single responsibility. `metadata.json` and `state.
 
 **`metadata.json`** is written once when the session is created and never modified. It records the session ID, creation timestamp, the project root path, and the user configuration snapshot that was active at session start. Because it is immutable, it remains valid even if the rest of the session directory is corrupted.
 
-**`state.db`** is the authoritative event store — a single SQLite file at `.gobbi/state.db` shared across all projects and sessions in the workspace (gitignored). Every workflow event — step transitions, subagent completions, evaluation verdicts, user decisions, guard violations — is appended as a row. The CLI reads `state.db` to derive workflow state when generating the next prompt. The hooks write to `state.db` when events occur. Each row carries `project_id` and `session_id` columns so queries can be scoped to one project or session without scanning the full log.
+**`state.db`** (target architecture, Wave A.1 full consolidation) — the workspace-scoped event store at `.gobbi/state.db` (gitignored). Every workflow event — step transitions, subagent completions, evaluation verdicts, user decisions, guard violations — is appended as a row. The CLI reads `state.db` to derive workflow state when generating the next prompt. The hooks write to `state.db` when events occur. Each row carries `project_id` and `session_id` columns so queries can be scoped to one project or session without scanning the full log. Today (per `init.ts`): workflow events write to the per-session `gobbi.db` instead; only `prompt.patch.applied` events currently write to `state.db`.
 
 **`gobbi.db`** is the workspace memories projection — a single SQLite file at `.gobbi/gobbi.db` (git-tracked). It holds cross-session persistent records: decisions (`class='decision'`), gotchas (`class='gotcha'`), design notes (`class='design'`), backlogs (`class='backlog'`), and handoff summaries (`class='handoff'`). Written by Memorization and Handoff steps; readable by every subsequent session. The markdown tree under `.gobbi/projects/<name>/learnings/` is the source of truth for git; `gobbi.db` is the read-optimized projection, regenerable from the markdown.
 
-**`state.json`** is a materialized view of current workflow state, derived by reducing all events in `state.db` for the active session. It is written after every event append. Reading `state.json` is faster than replaying all events on each CLI invocation, but it is a cache, not a source. If `state.json` is absent or corrupted, it is rebuilt from `state.db`.
+**`state.json`** is a materialized view of current workflow state, derived by reducing all events in the session event store. It is written after every event append. Reading `state.json` is faster than replaying all events on each CLI invocation, but it is a cache, not a source. If `state.json` is absent or corrupted, it is rebuilt from the per-session `gobbi.db` (today) or from `state.db` (target after Wave A.1 consolidation).
 
 **`state.json.backup`** holds the state as it was before the most recent transition — the Terraform apply pattern. Before writing a new `state.json`, the CLI copies the current `state.json` to `state.json.backup`. If a transition corrupts `state.json`, the backup provides a known-good rollback point without requiring full event replay.
 
@@ -67,7 +69,7 @@ The SubagentStop capture hook reads `feedbackRound` from `state.json` to constru
 
 > **The event store is the source of truth. Everything else is derived from it.**
 
-SQLite with WAL mode is chosen over a pure JSONL approach for three reasons: indexed queries allow efficient filtering by event type and step without full scans; atomic writes with WAL mode survive mid-write crashes without partial records; built-in sequence numbers provide a reliable ordering guarantee. The implementation uses Bun's native `bun:sqlite` module — zero additional runtime dependencies. A single `state.db` at `.gobbi/state.db` serves the entire workspace; the `project_id` and `session_id` columns on each row provide the scoping that per-session files previously offered.
+SQLite with WAL mode is chosen over a pure JSONL approach for three reasons: indexed queries allow efficient filtering by event type and step without full scans; atomic writes with WAL mode survive mid-write crashes without partial records; built-in sequence numbers provide a reliable ordering guarantee. The implementation uses Bun's native `bun:sqlite` module — zero additional runtime dependencies. **Today** (per `init.ts`): each session has its own `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db`. **Target after Wave A.1 consolidation:** a single `state.db` at `.gobbi/state.db` serves the entire workspace; the `project_id` and `session_id` columns on each row provide the scoping that per-session files currently offer.
 
 ### Events Table
 
@@ -95,7 +97,7 @@ Three indexes cover the common access patterns: one on `type` for queries that f
 
 ### Event Type Enum
 
-Events are grouped into seven categories that reflect the things that can happen in a session. The closed-enumeration discipline: 23 event types total post-Pass-4 — any reducer-accepted event is in this set. The test suite asserts `ALL_EVENT_TYPES.size === 23`.
+Events are grouped into nine categories that reflect the things that can happen in a session. The closed-enumeration discipline: 24 event types total (22 reducer-typed + 2 audit-only) — the wire-level set that may appear in the `events` table. The test suite asserts `ALL_EVENT_TYPES.size === 24`. Reducer-typed events flow through `appendEventAndUpdateState`; audit-only events (`step.advancement.observed`, `prompt.patch.applied`) are committed via direct `store.append()`.
 
 **Workflow** events track the high-level session progression (9 events):
 
@@ -152,12 +154,23 @@ Cost data surfaces via `gobbi workflow status` only. It must NOT appear in compi
 |-------|---------|
 | `verification.result` | A verification command completed — exit code and summary in data |
 
-**Session** events track liveness and advancement (2 events):
+**Session** events track liveness (1 event):
 
 | Event | Meaning |
 |-------|---------|
 | `session.heartbeat` | Liveness signal — written by the Stop hook after each turn |
+
+**Step-advancement** events track transition observability (1 event, audit-only):
+
+| Event | Meaning |
+|-------|---------|
 | `step.advancement.observed` | Synthetic audit event emitted by PostToolUse when `gobbi workflow transition` runs — primes the missed-advancement safety net; committed via direct `store.append()`, NOT through the reducer |
+
+**Prompt** events track prompt-patch operations (1 event, audit-only):
+
+| Event | Meaning |
+|-------|---------|
+| `prompt.patch.applied` | A JSON Patch was applied to a prompt spec — written to workspace `state.db` by `gobbi prompt patch`; committed via direct `store.append()`, NOT through the reducer |
 
 ---
 
