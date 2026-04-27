@@ -4,14 +4,16 @@
  * Pins the data-driven `blocks.footer` payload that B.1.1 lifted from prose
  * into a first-class `StepBlocks` field. The footer carries the exact
  * `gobbi workflow transition <VERB>` invocation each agent must run as its
- * terminal action — productive steps name `COMPLETE`; the shared evaluation
- * spec names `PASS` / `REVISE` / `ESCALATE`. Operator-only verbs (SKIP,
- * TIMEOUT, FINISH, ABORT, RESUME) must never appear paired with the
- * `gobbi workflow transition` token, so the verb-partition assertions key on
- * the *token sequence*, not the bare verb. (The eval footer's prose body
- * legitimately contains the bare word "COMPLETE" in the sentence "COMPLETE is
- * not valid for evaluation steps" — the token-sequence test does not flag
- * that.)
+ * terminal action — productive steps name `COMPLETE` EXCEPT `handoff`, which
+ * is the terminal productive step and names `FINISH` (drives `handoff → done`
+ * via `workflow.finish`). The shared evaluation spec names `PASS` / `REVISE`
+ * / `ESCALATE`. Operator-only verbs (SKIP, TIMEOUT, ABORT, RESUME) must
+ * never appear paired with the `gobbi workflow transition` token in any
+ * footer; `FINISH` may appear paired only in `handoff`'s footer. The
+ * verb-partition assertions key on the *token sequence*, not the bare verb.
+ * (The eval footer's prose body legitimately contains the bare word
+ * "COMPLETE" in the sentence "COMPLETE is not valid for evaluation steps" —
+ * the token-sequence test does not flag that.)
  *
  * Test groups:
  *
@@ -22,8 +24,10 @@
  *        (i)   the footer section sits between `blocks.completion` and
  *              `session.state` in the section list,
  *        (ii)  the footer section's `kind` is `'static'`,
- *        (iii) `prompt.text` contains the COMPLETE-verb sequence and none of
- *              the verdict / operator-only verb sequences,
+ *        (iii) `prompt.text` contains the step's terminal verb sequence
+ *              (FINISH for `handoff`; COMPLETE for every other productive
+ *              step) and none of the other verdict / operator-only verb
+ *              sequences,
  *        (iv)  `prompt.text` matches the on-disk snapshot.
  *
  *   b. footer — renders for evaluation spec
@@ -138,17 +142,37 @@ function compileGenerous(input: CompileInput): ReturnType<typeof compile> {
 
 const TXN = 'gobbi workflow transition';
 
-const PRODUCTIVE_POSITIVE_SEQUENCES = [`${TXN} COMPLETE`] as const;
+// Productive-step terminal verb is `COMPLETE` for every step EXCEPT
+// `handoff`, which is the terminal productive step and must emit
+// `workflow.finish` to drive `handoff → done`. See `spec.json` of each
+// step + issue #188 (CV-10 in the v0.5.0 adversarial review campaign).
+const PRODUCTIVE_POSITIVE_SEQUENCES_DEFAULT = [`${TXN} COMPLETE`] as const;
+const HANDOFF_POSITIVE_SEQUENCES = [`${TXN} FINISH`] as const;
 
-// All verbs that must NOT pair with `gobbi workflow transition` in a
-// productive footer — every verdict verb plus every operator-only verb.
-const PRODUCTIVE_NEGATIVE_SEQUENCES = [
+// Verbs that must NOT pair with `gobbi workflow transition` in a
+// non-handoff productive footer — every verdict verb plus every
+// operator-only verb (FINISH included; only handoff names FINISH).
+const PRODUCTIVE_NEGATIVE_SEQUENCES_DEFAULT = [
   `${TXN} PASS`,
   `${TXN} REVISE`,
   `${TXN} ESCALATE`,
   `${TXN} SKIP`,
   `${TXN} TIMEOUT`,
   `${TXN} FINISH`,
+  `${TXN} ABORT`,
+  `${TXN} RESUME`,
+] as const;
+
+// Handoff-specific negatives — same as default minus `FINISH`, plus
+// `COMPLETE` (which is the productive default everywhere else and must
+// not appear paired with `gobbi workflow transition` in handoff).
+const HANDOFF_NEGATIVE_SEQUENCES = [
+  `${TXN} COMPLETE`,
+  `${TXN} PASS`,
+  `${TXN} REVISE`,
+  `${TXN} ESCALATE`,
+  `${TXN} SKIP`,
+  `${TXN} TIMEOUT`,
   `${TXN} ABORT`,
   `${TXN} RESUME`,
 ] as const;
@@ -213,12 +237,23 @@ describe('footer — renders for productive specs', () => {
       expect(footerSummary).toBeDefined();
       expect(footerSummary?.kind).toBe('static');
 
-      // (iii) — verb-partition: the COMPLETE invocation is present; no other
-      //          `gobbi workflow transition <VERB>` sequence is.
-      for (const seq of PRODUCTIVE_POSITIVE_SEQUENCES) {
+      // (iii) — verb-partition: the step's terminal verb is present; no
+      //          other `gobbi workflow transition <VERB>` sequence is.
+      //          `handoff` names FINISH (the terminal productive step
+      //          drives `handoff → done` via `workflow.finish`); every
+      //          other productive step names COMPLETE.
+      const positives =
+        step === 'handoff'
+          ? HANDOFF_POSITIVE_SEQUENCES
+          : PRODUCTIVE_POSITIVE_SEQUENCES_DEFAULT;
+      const negatives =
+        step === 'handoff'
+          ? HANDOFF_NEGATIVE_SEQUENCES
+          : PRODUCTIVE_NEGATIVE_SEQUENCES_DEFAULT;
+      for (const seq of positives) {
         expect(prompt.text).toContain(seq);
       }
-      for (const seq of PRODUCTIVE_NEGATIVE_SEQUENCES) {
+      for (const seq of negatives) {
         expect(prompt.text).not.toContain(seq);
       }
 

@@ -20,7 +20,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -304,6 +304,76 @@ describe('runTransitionWithOptions — happy paths', () => {
     } finally {
       store.close();
     }
+  });
+
+  // CV-10 / issue #188 regression — pre-fix the handoff footer
+  // instructed `gobbi workflow transition COMPLETE`, but the runtime
+  // routed `handoff → done` only on `workflow.finish` (FINISH). The
+  // session looped without terminating because COMPLETE from handoff
+  // emitted `workflow.invalid_transition` while the agent retried.
+  // This test drives the full workflow through to handoff and asserts
+  // FINISH terminates the session.
+  test('FINISH from handoff fires workflow.finish and reaches `done`', async () => {
+    const { sessionDir } = await initScratchSession('trans-handoff-finish');
+
+    // Drive ideation → planning → execution → execution_eval. The
+    // execution → execution_eval edge is unconditional in the
+    // transition graph (see `transitions.ts:176`), so even with eval
+    // disabled the workflow lands at execution_eval after three
+    // COMPLETEs.
+    for (let i = 0; i < 3; i += 1) {
+      captured = { stdout: '', stderr: '', exitCode: null };
+      await captureExit(() =>
+        runTransitionWithOptions(['COMPLETE'], { sessionDir }),
+      );
+      expect(captured.exitCode).toBeNull();
+    }
+
+    // execution_eval → memorization via PASS verdict.
+    captured = { stdout: '', stderr: '', exitCode: null };
+    await captureExit(() =>
+      runTransitionWithOptions(['PASS'], { sessionDir }),
+    );
+    expect(captured.exitCode).toBeNull();
+
+    // memorization → handoff via COMPLETE.
+    captured = { stdout: '', stderr: '', exitCode: null };
+    await captureExit(() =>
+      runTransitionWithOptions(['COMPLETE'], { sessionDir }),
+    );
+    expect(captured.exitCode).toBeNull();
+
+    // FINISH from handoff terminates. Pre-fix the handoff footer
+    // instructed COMPLETE which routed `workflow.step.exit` from
+    // `handoff` — there is no transition rule for that pair, so the
+    // reducer rejected and the agent looped retrying COMPLETE.
+    captured = { stdout: '', stderr: '', exitCode: null };
+    await captureExit(() =>
+      runTransitionWithOptions(['FINISH'], { sessionDir }),
+    );
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stdout).toContain('workflow.finish');
+    // After FINISH the runtime transition graph routes handoff → done.
+    expect(captured.stdout).toContain('done');
+
+    const store = openStore(sessionDir);
+    try {
+      const finishRow = store.last('workflow.finish');
+      expect(finishRow).not.toBeNull();
+      // The finish event was emitted while still at the handoff step
+      // (the reducer transitions to `done` AFTER applying the event).
+      expect(finishRow!.step).toBe('handoff');
+    } finally {
+      store.close();
+    }
+
+    // state.json reflects the terminal `done` state via the same
+    // resolveWorkflowState fast path the runtime guards / status
+    // commands use.
+    const finalState = JSON.parse(
+      readFileSync(join(sessionDir, 'state.json'), 'utf8'),
+    ) as { readonly currentStep: string };
+    expect(finalState.currentStep).toBe('done');
   });
 
   test('REVISE with --loop-target carries the target to EvalVerdictData', async () => {

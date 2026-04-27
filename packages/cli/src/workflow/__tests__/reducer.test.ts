@@ -160,6 +160,13 @@ function verdictRevise(loopTarget?: string): Event {
   };
 }
 
+function verdictEscalate(): Event {
+  return {
+    type: DECISION_EVENTS.EVAL_VERDICT,
+    data: { verdict: 'escalate' },
+  };
+}
+
 function decisionUser(): Event {
   return {
     type: DECISION_EVENTS.USER,
@@ -527,6 +534,92 @@ describe('decision.eval.verdict revise', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 10b. decision.eval.verdict (escalate): transitions eval step -> error,
+//      rejects from non-eval steps. CV-11 / issue #168 regression.
+// ---------------------------------------------------------------------------
+
+describe('decision.eval.verdict escalate', () => {
+  // Pre-fix, the escalate arm fell through to `ok(state)` — a committed
+  // event that recorded nothing and moved nowhere. The fix transitions
+  // any *_eval origin to the `error` step so the operator can choose
+  // resume / abort via `gobbi workflow resume`.
+  it('ideation_eval -> error on escalate', () => {
+    const state = stateAt('ideation_eval');
+    const next = expectOk(reduce(state, verdictEscalate()));
+    expect(next.currentStep).toBe('error');
+    expect(next.currentSubstate).toBeNull();
+  });
+
+  it('planning_eval -> error on escalate', () => {
+    const state = stateAt('planning_eval');
+    const next = expectOk(reduce(state, verdictEscalate()));
+    expect(next.currentStep).toBe('error');
+  });
+
+  it('execution_eval -> error on escalate', () => {
+    const state = stateAt('execution_eval');
+    const next = expectOk(reduce(state, verdictEscalate()));
+    expect(next.currentStep).toBe('error');
+  });
+
+  // The eval-step gate (issue #168) is the source-of-truth check —
+  // verdict events fired from non-eval steps are rejected at the
+  // verdict arm, NOT silently no-opped. The pass/revise arms relied on
+  // `findTransition` returning null; escalate has no transition rule
+  // and therefore needed an explicit gate.
+  it('rejects escalate from a non-eval productive step (execution)', () => {
+    const result = reduce(stateAt('execution'), verdictEscalate());
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain('requires an eval step');
+    }
+  });
+
+  it('rejects escalate from ideation', () => {
+    const result = reduce(stateAt('ideation'), verdictEscalate());
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain('requires an eval step');
+    }
+  });
+
+  it('rejects escalate from planning', () => {
+    const result = reduce(stateAt('planning'), verdictEscalate());
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain('requires an eval step');
+    }
+  });
+
+  it('rejects escalate from memorization', () => {
+    const result = reduce(stateAt('memorization'), verdictEscalate());
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain('requires an eval step');
+    }
+  });
+
+  it('rejects escalate from error (already-error fallthrough guard)', () => {
+    const result = reduce(stateAt('error'), verdictEscalate());
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain('requires an eval step');
+    }
+  });
+
+  // Escalate must NOT overwrite `lastVerdictOutcome` — that field's
+  // schema is `'pass' | 'revise' | null` and downstream predicates may
+  // still consult the prior outcome. The step transition + committed
+  // event are the witnesses that this branch fired.
+  it('preserves lastVerdictOutcome from a prior pass when escalate fires', () => {
+    const state = stateAt('execution_eval', { lastVerdictOutcome: 'pass' });
+    const next = expectOk(reduce(state, verdictEscalate()));
+    expect(next.currentStep).toBe('error');
+    expect(next.lastVerdictOutcome).toBe('pass');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 11. Feedback cap: revise with feedbackRound >= maxFeedbackRounds -> error
 // ---------------------------------------------------------------------------
 
@@ -758,7 +851,9 @@ describe('invalid transitions return error, not throw', () => {
     const result = reduce(stateAt('execution'), verdictPass());
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toContain('No valid transition');
+      // The eval-step gate (issue #168) rejects any verdict variant
+      // — pass / revise / escalate — fired from a non-eval step.
+      expect(result.error).toContain('requires an eval step');
     }
   });
 

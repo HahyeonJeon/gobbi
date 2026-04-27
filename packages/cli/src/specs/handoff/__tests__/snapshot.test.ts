@@ -171,6 +171,19 @@ describe('handoff/spec.json — validation', () => {
     const spec = loadSpec();
     expect(spec.meta.requiredSkills).toContain('_project');
   });
+
+  // CV-10 / issue #188 regression — pre-fix the handoff footer named
+  // `gobbi workflow transition COMPLETE` but the runtime drives
+  // `handoff → done` only via `workflow.finish` (FINISH). The footer
+  // and the transition graph must agree at the spec-file level so any
+  // future edit re-introducing COMPLETE fails fast at unit-test time
+  // rather than wedging an in-flight session.
+  test('footer instructs `gobbi workflow transition FINISH`, not COMPLETE', () => {
+    const spec = loadSpec();
+    const footer = spec.blocks.footer;
+    expect(footer).toContain('gobbi workflow transition FINISH');
+    expect(footer).not.toContain('gobbi workflow transition COMPLETE');
+  });
 });
 
 // ===========================================================================
