@@ -129,7 +129,7 @@ Resolution fires at the eval checkpoint, not at config-write time.
 
 ## Config vs. memory
 
-Configuration answers "how should this session behave?" Memory answers "what happened and what did we learn?" They share the `.gobbi/` root but not a storage shape. See `gobbi-memory.md` for the memory model.
+Configuration answers "how should this session behave?" Memory answers "what happened and what did we learn?" They share the `.gobbi/` root but not a storage shape. See [`gobbi-memory/README.md`](../gobbi-memory/README.md) for the memory model.
 
 ---
 
