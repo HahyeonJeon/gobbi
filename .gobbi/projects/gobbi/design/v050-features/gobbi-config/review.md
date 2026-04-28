@@ -4,13 +4,16 @@
 |------------|--------------------------|------------|--------|
 | 2026-04-21 | `dfd4ff66-a2d4-456f-8fa4-ddd843e4e58b` | shipped | #123 (draft) |
 | 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1c (TBD) |
-| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR (TBD) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1a (TBD) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1b (TBD) |
 
 Pass-3 finalization replaced the T1/T2 JSON + T3 SQLite + provenance architecture with a unified three-level `settings.json` shape and a two-verb CLI. Waves B through D landed on `feat/120-gobbi-config-pass-3` atop 6 prior commits.
 
 PR-FIN-1c (session `c34ea7e6`) reshaped `GitSettings` around always-on worktrees with independent opt-in fields (`issue.create`, `pr.open`, `pr.draft`), removed the `mode`/`workflow`/`cleanup` sub-objects, and removed the `ProjectsRegistry` interface + `Settings.projects` field entirely. Project resolution is now `basename(repoRoot)` + `--project` flag. The T2-v1 upgrader was extended to handle both the original T2-v1 shape and Pass-3 current-shape files. Commits `362217c` + `954f889` on branch `feat/212-pr-fin-1c-schema-redesign`.
 
 PR-FIN-1a (session `c34ea7e6`) added the `gobbi config init` verb (three levels, minimum-valid seed, `--force` overwrite with stderr WARN), replaced `init.ts::resolveSessionId`'s `randomUUID()` fallback with a hard error and remediation hint, added the `#182` recovery hint to `config get/set/init` missing-session-id errors, and locked the `#185` fresh-setup ordering invariant via CFG-23 integration test. Commit `6909fec` on branch `feat/214-pr-fin-1a-config-init-session-id`.
+
+PR-FIN-1b (session `c34ea7e6`) shipped the `gobbi hook` namespace (28 Claude Code events, 5 non-trivial bodies + 23 generic stubs), `gobbi config env` (reads stdin JSON payload + native `CLAUDE_*` env, writes unified `KEY=VALUE` lines to `$CLAUDE_ENV_FILE`), and the `/gobbi` SKILL.md migration (retired the "Discovering the real session ID" section and the `cli-vs-skill-session-id` gotcha). Plugin manifest and per-repo `.claude/settings.json` updated from 5 entries to 28. Commits `2248b72` + `b307214` on branch `feat/216-pr-fin-1b-hook-namespace`.
 
 This review documents what drifted from the originally-shipped Pass-3 design, notable implementation decisions (NOTEs), and open gaps deferred to follow-up Passes (GAPs). Entries marked **[superseded by DRIFT-9]** describe changes now themselves changed by PR-FIN-1c.
 
@@ -208,6 +211,16 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 
 ---
 
+### NOTE-6 — 23 `gobbi hook <event>` stub handlers ship in PR-FIN-1b; notify dispatch deferred to PR-FIN-1d
+
+**Finding:** PR-FIN-1b registers all 28 Claude Code events in the plugin manifest, but only 5 handlers have non-trivial bodies (the existing `gobbi workflow *` integrations). The remaining 23 handlers are generic stubs: read stdin, exit 0. Notify dispatch — the logic that checks `notify.{channel}.triggers` and fires the notify bridge — is not wired in any of the 28 handlers in this PR. Each non-trivial handler has a `// TODO(PR-FIN-1d)` marker at the dispatch site. PR-FIN-1d will fill in dispatch logic without adding new command files.
+
+**Evidence:** plan §1b.1 "Phase scope" — "23 events have a generic stub body"; `commands/hook/<event>.ts` files at `2248b72` — all contain `// TODO(PR-FIN-1d)` comment; `commands/hook/_stub.ts::runGenericHookStub` — stub body comment notes deferred dispatch.
+
+**Owner:** PR-FIN-1b (scope boundary, by design); wiring in PR-FIN-1d.
+
+---
+
 ### NOTE-4 — `notify.*.triggers` is schema-only; Claude Code hook-registration wiring deferred
 
 **Finding:** `ChannelBase.triggers: HookTrigger[]` is defined in the schema and accepted by AJV, but the dispatch wiring that registers Claude Code hook events to fire gobbi's notify bridge does not exist yet. Field is reserved to avoid a schema bump when wiring lands.
@@ -244,6 +257,28 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 
 ---
 
+### DRIFT-11 — PR-FIN-1b: `/gobbi` skill discovery dance retired; `gobbi hook` namespace + `gobbi config env` + `$CLAUDE_ENV_FILE` pipeline ships
+
+**Finding:** PR-FIN-1b (session `c34ea7e6`) fundamentally changes how Claude Code hook events reach the gobbi CLI and how session-id is acquired by the `/gobbi` skill. Prior to PR-FIN-1b, five hook entries in `plugins/gobbi/hooks/hooks.json` invoked `gobbi workflow *` commands directly; the `/gobbi` SKILL.md contained a multi-step "Discovering the real session ID" section (~24 lines) that tried `$CODEX_COMPANION_SESSION_ID`, fell back to scanning `.jsonl` file mtime, and warned on manual UUID. Authoritative finding from R3 ideation §F4: `CLAUDE_SESSION_ID` is NOT a Claude Code-provided env var — it arrives only as a field in the stdin JSON payload to hook commands. `$CLAUDE_ENV_FILE` is the official mechanism for persisting vars across a session.
+
+PR-FIN-1b introduces:
+
+1. `gobbi config env` — single-action verb that reads hook stdin JSON + native `CLAUDE_*` env and upserts `KEY=VALUE` lines into `$CLAUDE_ENV_FILE`. Idempotent.
+2. `gobbi hook <event>` namespace — 28 handlers (one per Claude Code event). Five non-trivial bodies (`session-start`, `pre-tool-use`, `post-tool-use`, `subagent-stop`, `stop`) replace the prior direct `gobbi workflow *` registrations. 23 generic stubs read stdin and exit 0; notify dispatch deferred to PR-FIN-1d.
+3. Plugin manifest (`hooks.json`) and per-repo `.claude/settings.json` updated from 5 to 28 entries pointing at `gobbi hook <event>`.
+4. `/gobbi` SKILL.md discovery section removed — skill calls `gobbi config get …` directly; env is pre-populated by the SessionStart hook via `$CLAUDE_ENV_FILE`.
+5. `cli-vs-skill-session-id` gotcha retired — the CLI/skill boundary for session id no longer exists.
+
+**Evidence:** Round-3 ideation memo §F4 at `.claude/project/gobbi/note/20260428-0311-finalize-gobbi-config-c34ea7e6-d5c3-4174-b61e-5176efc8d39b/ideation/ideation.md`; target-state spec §3.3, §3.4, §5, §6 at `.gobbi/projects/gobbi/tmp/gobbi-config-target-state.md`; `packages/cli/src/commands/hook.ts` + `commands/hook/<28 files>.ts` at `2248b72`; `packages/cli/src/commands/config.ts::runConfigEnv` at `2248b72`; `.claude/skills/gobbi/SKILL.md` at `b307214`.
+
+**Severity:** Medium-High — any doc, skill, or agent referencing `$CODEX_COMPANION_SESSION_ID`, the `.jsonl` mtime discovery technique, or the old 5-entry hook registration pattern now describes retired behaviour.
+
+**Resolution:** fix code + doc — resolved at `2248b72` (code + plugin manifest) + `b307214` (SKILL.md migration + gotcha retirement). This review updated; README, scenarios, checklist updated in the same commit.
+
+**Owner:** PR-FIN-1b (session `c34ea7e6`).
+
+---
+
 ### GAP-3 — gobbi-memory/README.md cross-ref sync deferred to post-#119 merge
 
 **Finding:** The `feat/120-gobbi-config-pass-3` branch has `v050-features/gobbi-memory.md` as a flat file. The directory form (`gobbi-memory/README.md`) exists only on `feat/118-gobbi-memory-pass-2` (PR #119, still draft). Cross-ref sync between gobbi-config and gobbi-memory cannot land until #119 merges — doing it now would create a doc pointing to a directory that doesn't exist on this branch.
@@ -270,11 +305,13 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 | DRIFT-8 | drift | high | `f9b3925` + `b671b02` | fix code + doc |
 | DRIFT-9 | drift | high | `362217c` + `954f889` (PR-FIN-1c) | fix code + doc |
 | DRIFT-10 | drift | medium | `6909fec` (PR-FIN-1a) | fix code + doc |
+| DRIFT-11 | drift | medium-high | `2248b72` + `b307214` (PR-FIN-1b) | fix code + doc |
 | NOTE-1 | note | — | `f9b3925` (Wave A→B decision) | design decision |
 | NOTE-2 | note | — | `ff20702` | test discipline |
 | NOTE-3 | note | — | — (no code change) | scope boundary |
 | NOTE-4 | note | — | `b671b02` (schema-only) | scope boundary |
 | NOTE-5 | note | — | `6909fec` (PR-FIN-1a) | usability decision |
+| NOTE-6 | note | — | `2248b72` (PR-FIN-1b) | scope boundary; wiring in PR-FIN-1d |
 | GAP-1 | gap | — | — | deferred; follow-up Pass |
 | GAP-2 | gap | — | — | deferred; gobbi-rule update |
 | GAP-3 | gap | — | — | deferred; issue #130 post-#119 |

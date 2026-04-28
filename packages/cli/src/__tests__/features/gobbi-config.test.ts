@@ -34,8 +34,8 @@
  * tests (`beforeEach`). Pattern mirrors `commands/__tests__/config.test.ts`.
  *
  * Env hygiene: `CLAUDE_SESSION_ID` / `CLAUDE_PROJECT_DIR` are set explicitly
- * in `beforeEach` and cleared in `afterEach` per the `cli-vs-skill-session-id`
- * gotcha so sibling tests never leak a stale id into the CLI process env.
+ * in `beforeEach` and cleared in `afterEach` so sibling tests never leak a
+ * stale id into the CLI process env.
  */
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test';
@@ -1418,5 +1418,233 @@ describe('CFG-23: fresh-setup config set + workflow init resolve to the same pro
     });
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toBe('"always"\n');
+  });
+});
+
+// ===========================================================================
+// CFG-24..28 (PR-FIN-1b): gobbi config env — $CLAUDE_ENV_FILE persistence
+// ===========================================================================
+//
+// `gobbi config env` reads the hook stdin JSON payload and the natively-
+// provided CLAUDE_* env vars, composes a unified set of KEY=VALUE lines,
+// and upserts them into the file pointed to by $CLAUDE_ENV_FILE. After
+// Claude Code sources that file, every subsequent command in the
+// session inherits CLAUDE_SESSION_ID / CLAUDE_TRANSCRIPT_PATH / etc.
+//
+// The tests pass `runConfigEnv([], payload)` with an explicit payload
+// override so we don't have to fake stdin — that's what real in-process
+// callers (gobbi hook session-start) do too.
+
+describe('CFG-24..28: gobbi config env — $CLAUDE_ENV_FILE persistence', () => {
+  const ORIG_ENV_FILE = process.env['CLAUDE_ENV_FILE'];
+  const ORIG_PROJECT_DIR = process.env['CLAUDE_PROJECT_DIR'];
+  const ORIG_PLUGIN_ROOT = process.env['CLAUDE_PLUGIN_ROOT'];
+  const ORIG_PLUGIN_DATA = process.env['CLAUDE_PLUGIN_DATA'];
+
+  function restoreEnvVar(name: string, original: string | undefined): void {
+    if (original !== undefined) {
+      process.env[name] = original;
+    } else {
+      delete process.env[name];
+    }
+  }
+
+  function restoreNativeEnv(): void {
+    restoreEnvVar('CLAUDE_ENV_FILE', ORIG_ENV_FILE);
+    restoreEnvVar('CLAUDE_PROJECT_DIR', ORIG_PROJECT_DIR);
+    restoreEnvVar('CLAUDE_PLUGIN_ROOT', ORIG_PLUGIN_ROOT);
+    restoreEnvVar('CLAUDE_PLUGIN_DATA', ORIG_PLUGIN_DATA);
+  }
+
+  test('CFG-24: stdin JSON only writes the four core CLAUDE_* lines', async () => {
+    const repo = makeScratchRepo();
+    const envFile = join(repo, 'env-file-cfg-24.txt');
+    process.env['CLAUDE_ENV_FILE'] = envFile;
+    // Clear native passthrough vars so this test only exercises stdin->env.
+    delete process.env['CLAUDE_PROJECT_DIR'];
+    delete process.env['CLAUDE_PLUGIN_ROOT'];
+    delete process.env['CLAUDE_PLUGIN_DATA'];
+
+    const { runConfigEnv } = await import('../../commands/config.js');
+    await captureExit(async () => {
+      await runConfigEnv([], {
+        session_id: 'sess-cfg-24',
+        transcript_path: '/tmp/transcript-24.jsonl',
+        cwd: '/tmp/cfg-24',
+        hook_event_name: 'SessionStart',
+      });
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+
+    expect(existsSync(envFile)).toBe(true);
+    const body = readFileSync(envFile, 'utf8');
+    expect(body).toContain('CLAUDE_SESSION_ID=sess-cfg-24\n');
+    expect(body).toContain('CLAUDE_TRANSCRIPT_PATH=/tmp/transcript-24.jsonl\n');
+    expect(body).toContain('CLAUDE_CWD=/tmp/cfg-24\n');
+    expect(body).toContain('CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
+    // Native passthrough vars are unset → no lines.
+    expect(body).not.toContain('CLAUDE_PROJECT_DIR=');
+    expect(body).not.toContain('CLAUDE_PLUGIN_ROOT=');
+    expect(body).not.toContain('CLAUDE_PLUGIN_DATA=');
+
+    restoreNativeEnv();
+  });
+
+  test('CFG-25: stdin JSON + native env passthrough writes both groups', async () => {
+    const repo = makeScratchRepo();
+    const envFile = join(repo, 'env-file-cfg-25.txt');
+    process.env['CLAUDE_ENV_FILE'] = envFile;
+    process.env['CLAUDE_PROJECT_DIR'] = '/repo/cfg-25';
+    process.env['CLAUDE_PLUGIN_ROOT'] = '/plugin/root-25';
+    process.env['CLAUDE_PLUGIN_DATA'] = '/plugin/data-25';
+
+    const { runConfigEnv } = await import('../../commands/config.js');
+    await captureExit(async () => {
+      await runConfigEnv([], {
+        session_id: 'sess-cfg-25',
+        transcript_path: '/tmp/t.jsonl',
+        cwd: '/tmp/cfg-25',
+        hook_event_name: 'SessionStart',
+        agent_id: 'agent-cfg-25',
+        agent_type: 'subagent',
+        permission_mode: 'allow',
+      });
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+
+    const body = readFileSync(envFile, 'utf8');
+    // Stdin-derived lines (all 7).
+    expect(body).toContain('CLAUDE_SESSION_ID=sess-cfg-25\n');
+    expect(body).toContain('CLAUDE_TRANSCRIPT_PATH=/tmp/t.jsonl\n');
+    expect(body).toContain('CLAUDE_CWD=/tmp/cfg-25\n');
+    expect(body).toContain('CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
+    expect(body).toContain('CLAUDE_AGENT_ID=agent-cfg-25\n');
+    expect(body).toContain('CLAUDE_AGENT_TYPE=subagent\n');
+    expect(body).toContain('CLAUDE_PERMISSION_MODE=allow\n');
+    // Native passthrough lines (all 3).
+    expect(body).toContain('CLAUDE_PROJECT_DIR=/repo/cfg-25\n');
+    expect(body).toContain('CLAUDE_PLUGIN_ROOT=/plugin/root-25\n');
+    expect(body).toContain('CLAUDE_PLUGIN_DATA=/plugin/data-25\n');
+
+    restoreNativeEnv();
+  });
+
+  test('CFG-26: TTY (no stdin, no payload override) silently exits 0', async () => {
+    const repo = makeScratchRepo();
+    const envFile = join(repo, 'env-file-cfg-26.txt');
+    process.env['CLAUDE_ENV_FILE'] = envFile;
+    delete process.env['CLAUDE_PROJECT_DIR'];
+    delete process.env['CLAUDE_PLUGIN_ROOT'];
+    delete process.env['CLAUDE_PLUGIN_DATA'];
+
+    // `runConfigEnv` reads stdin via `readStdinJson`. In the bun:test
+    // runtime, `process.stdin.isTTY` is true (the test runner does not
+    // pipe stdin), so `readStdin` returns null and `runConfigEnv`
+    // exits 0 silently.
+    const { runConfigEnv } = await import('../../commands/config.js');
+    await captureExit(async () => {
+      // Crucially: NO payloadOverride argument. This forces the stdin
+      // path, which on TTY yields null and triggers the silent exit.
+      await runConfigEnv([]);
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+    expect(captured.stdout).toBe('');
+    // The env file is untouched.
+    expect(existsSync(envFile)).toBe(false);
+
+    restoreNativeEnv();
+  });
+
+  test('CFG-27: $CLAUDE_ENV_FILE unset emits stderr WARN and exits 0', async () => {
+    makeScratchRepo();
+    delete process.env['CLAUDE_ENV_FILE'];
+    delete process.env['CLAUDE_PROJECT_DIR'];
+    delete process.env['CLAUDE_PLUGIN_ROOT'];
+    delete process.env['CLAUDE_PLUGIN_DATA'];
+
+    const { runConfigEnv } = await import('../../commands/config.js');
+    await captureExit(async () => {
+      // Payload that yields managed keys, but no env file to write to.
+      await runConfigEnv([], {
+        session_id: 'sess-cfg-27',
+        hook_event_name: 'SessionStart',
+      });
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stdout).toBe('');
+    expect(captured.stderr).toContain('WARN');
+    expect(captured.stderr).toContain('$CLAUDE_ENV_FILE not set');
+
+    restoreNativeEnv();
+  });
+
+  test('CFG-28: repeat invocation overwrites existing keys without duplicating', async () => {
+    const repo = makeScratchRepo();
+    const envFile = join(repo, 'env-file-cfg-28.txt');
+    process.env['CLAUDE_ENV_FILE'] = envFile;
+    delete process.env['CLAUDE_PROJECT_DIR'];
+    delete process.env['CLAUDE_PLUGIN_ROOT'];
+    delete process.env['CLAUDE_PLUGIN_DATA'];
+
+    const { runConfigEnv } = await import('../../commands/config.js');
+
+    // First invocation — write initial payload.
+    await captureExit(async () => {
+      await runConfigEnv([], {
+        session_id: 'sess-A',
+        hook_event_name: 'SessionStart',
+        cwd: '/cwd-1',
+      });
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+
+    // Sanity: file has each managed key exactly once.
+    const firstBody = readFileSync(envFile, 'utf8');
+    const countA = firstBody.split('\n').filter((l) => l.startsWith('CLAUDE_SESSION_ID=')).length;
+    expect(countA).toBe(1);
+
+    resetCapture();
+
+    // Second invocation — same KEY (CLAUDE_SESSION_ID) with different
+    // VALUE, plus a brand-new key (CLAUDE_TRANSCRIPT_PATH). The
+    // existing CLAUDE_SESSION_ID line must be REPLACED in place; the
+    // new key APPENDED at the end.
+    await captureExit(async () => {
+      await runConfigEnv([], {
+        session_id: 'sess-B',
+        transcript_path: '/tmp/replay.jsonl',
+        hook_event_name: 'SubagentStop',
+        cwd: '/cwd-2',
+      });
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+
+    const secondBody = readFileSync(envFile, 'utf8');
+    // Old session id is GONE.
+    expect(secondBody).not.toContain('CLAUDE_SESSION_ID=sess-A');
+    // New session id is present exactly once.
+    const sessionLines = secondBody
+      .split('\n')
+      .filter((l) => l.startsWith('CLAUDE_SESSION_ID='));
+    expect(sessionLines).toEqual(['CLAUDE_SESSION_ID=sess-B']);
+    // New key landed.
+    expect(secondBody).toContain('CLAUDE_TRANSCRIPT_PATH=/tmp/replay.jsonl\n');
+    // Old hook_event_name was overwritten.
+    const eventLines = secondBody
+      .split('\n')
+      .filter((l) => l.startsWith('CLAUDE_HOOK_EVENT_NAME='));
+    expect(eventLines).toEqual(['CLAUDE_HOOK_EVENT_NAME=SubagentStop']);
+    // Cwd was overwritten.
+    const cwdLines = secondBody
+      .split('\n')
+      .filter((l) => l.startsWith('CLAUDE_CWD='));
+    expect(cwdLines).toEqual(['CLAUDE_CWD=/cwd-2']);
+
+    restoreNativeEnv();
   });
 });

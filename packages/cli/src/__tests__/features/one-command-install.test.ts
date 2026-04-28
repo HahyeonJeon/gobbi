@@ -147,43 +147,53 @@ describe('one-command-install feature — code surface', () => {
     });
   });
 
-  describe('hooks wiring', () => {
-    test('registers SessionStart → gobbi workflow init', () => {
+  describe('hooks wiring (PR-FIN-1b: gobbi hook namespace)', () => {
+    // PR-FIN-1b consolidated all 28 Claude Code hook events under the
+    // `gobbi hook <event>` namespace. The previous `gobbi workflow init/
+    // guard/capture-planning/capture-subagent/stop` direct registrations
+    // were replaced; the underlying workflow commands stay defined for
+    // direct invocation but are no longer the hook-registered entries.
+    //
+    // The canonical 5 non-trivial events plus the previously-registered
+    // matcher (PostToolUse[ExitPlanMode]) are asserted explicitly. For
+    // the full 28-event registry, see `__tests__/hooks-contract.test.ts`.
+
+    test('registers SessionStart → gobbi hook session-start', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(
         manifest,
         'SessionStart',
         'startup|resume|compact',
       );
-      expect(commands).toContain('gobbi workflow init');
+      expect(commands).toContain('gobbi hook session-start');
     });
 
-    test('registers PreToolUse → gobbi workflow guard', () => {
+    test('registers PreToolUse → gobbi hook pre-tool-use', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(manifest, 'PreToolUse');
-      expect(commands).toContain('gobbi workflow guard');
+      expect(commands).toContain('gobbi hook pre-tool-use');
     });
 
-    test('registers PostToolUse[ExitPlanMode] → gobbi workflow capture-planning', () => {
+    test('registers PostToolUse[ExitPlanMode] → gobbi hook post-tool-use', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(
         manifest,
         'PostToolUse',
         'ExitPlanMode',
       );
-      expect(commands).toContain('gobbi workflow capture-planning');
+      expect(commands).toContain('gobbi hook post-tool-use');
     });
 
-    test('registers SubagentStop → gobbi workflow capture-subagent', () => {
+    test('registers SubagentStop → gobbi hook subagent-stop', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(manifest, 'SubagentStop');
-      expect(commands).toContain('gobbi workflow capture-subagent');
+      expect(commands).toContain('gobbi hook subagent-stop');
     });
 
-    test('registers Stop → gobbi workflow stop', () => {
+    test('registers Stop → gobbi hook stop', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(manifest, 'Stop');
-      expect(commands).toContain('gobbi workflow stop');
+      expect(commands).toContain('gobbi hook stop');
     });
   });
 

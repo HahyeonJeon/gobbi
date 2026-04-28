@@ -2,7 +2,7 @@
 
 Verification harness for the scenarios in `scenarios.md`. Items are grouped by scenario ID so every check traces directly to the scenario it validates. Each item carries an ISTQB technique tag: `[EP]` equivalence partition, `[BVA]` boundary value, `[DT]` decision table, `[ST]` state transition, `[MANUAL]` manual, `[GAP]` aspirational behaviour not yet shipped.
 
-All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.md`) and PR-FIN-1c (commits `362217c` + `954f889`).
+All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.md`), PR-FIN-1c (commits `362217c` + `954f889`), PR-FIN-1a (commit `6909fec`), and PR-FIN-1b (commits `2248b72` + `b307214`).
 
 ---
 
@@ -265,12 +265,120 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ---
 
+---
+
+## CFG-24 — `gobbi config env` stdin JSON only (PR-FIN-1b)
+
+- [EP] Payload with `session_id`, `transcript_path`, `cwd`, `hook_event_name` and no native passthrough vars → env file contains exactly those 4 `CLAUDE_*` lines; exit 0; stderr empty.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-24'`
+- [EP] No `CLAUDE_PROJECT_DIR`, `CLAUDE_PLUGIN_ROOT`, or `CLAUDE_PLUGIN_DATA` lines appear in env file when native vars are unset.
+  - Verify: CFG-24 test asserts `body.not.toContain('CLAUDE_PROJECT_DIR=')`
+
+---
+
+## CFG-25 — `gobbi config env` stdin JSON + native env passthrough (PR-FIN-1b)
+
+- [EP] Payload with all 7 stdin fields + all 3 native vars set → env file contains all 10 `CLAUDE_*` lines; exit 0; stderr empty.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-25'`
+- [EP] Optional stdin fields (`agent_id`, `agent_type`, `permission_mode`) present in payload → `CLAUDE_AGENT_ID`, `CLAUDE_AGENT_TYPE`, `CLAUDE_PERMISSION_MODE` lines written.
+  - Verify: CFG-25 test asserts all 3 optional lines present
+
+---
+
+## CFG-26 — `gobbi config env` TTY silent exit (PR-FIN-1b)
+
+- [EP] TTY stdin (no payload override) → exit 0; stdout empty; stderr empty; env file not created.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-26'`
+- [BVA] `existsSync(envFile) === false` after TTY invocation — confirms no write side-effects.
+  - Verify: CFG-26 test asserts `existsSync(envFile) === false`
+
+---
+
+## CFG-27 — `gobbi config env` `$CLAUDE_ENV_FILE` unset (PR-FIN-1b)
+
+- [EP] `$CLAUDE_ENV_FILE` unset → stderr contains `WARN` and `$CLAUDE_ENV_FILE not set`; exit 0; stdout empty.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-27'`
+- [EP] Non-zero exit does NOT occur — hook callers must always see exit 0.
+  - Verify: CFG-27 test asserts `captured.exitCode === null` (no process.exit call)
+
+---
+
+## CFG-28 — `gobbi config env` idempotency (PR-FIN-1b)
+
+- [EP] Second invocation with changed `session_id` → `CLAUDE_SESSION_ID=` line overwritten; no duplication; `CLAUDE_SESSION_ID=` appears exactly once.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-28'`
+- [EP] New key present in second invocation but not first → appended at end of file.
+  - Verify: CFG-28 test confirms `CLAUDE_TRANSCRIPT_PATH` appears after second invocation
+- [ST] File content after two invocations: only managed keys are overwritten; unmanaged lines from other tools (if any) survive.
+  - Verify: CFG-28 test design confirms position-stable upsert behaviour
+
+---
+
+## HOOK-1 — session-start chains config env + workflow init (PR-FIN-1b)
+
+- [ST] `runHookSessionStart([])` with `$CLAUDE_SESSION_ID` in env → session directory created under `.gobbi/projects/<basename>/sessions/hook-1-sess/`; `metadata.json` exists.
+  - Verify: `bun test packages/cli/src/__tests__/features/hook.test.ts -t 'HOOK-1'`
+- [ST] `metadata.json` fields: `sessionId === 'hook-1-sess'` and `projectName === basename(repo)`.
+  - Verify: HOOK-1 test asserts both fields
+- [EP] Hook exit code is `null` (no `process.exit` call) — hooks must not block Claude Code.
+  - Verify: HOOK-1 test asserts `captured.exitCode === null`
+
+---
+
+## HOOK-2 — pre-tool-use chains workflow guard (PR-FIN-1b)
+
+- [EP] `runHookPreToolUse([])` with no session dir (no session to load) → guard fail-open; stdout contains `"hookEventName":"PreToolUse"` and `"permissionDecision":"allow"`.
+  - Verify: `bun test packages/cli/src/__tests__/features/hook.test.ts -t 'HOOK-2'`
+- [EP] Exit code is `null` — guard's fail-open path exits 0 naturally.
+  - Verify: HOOK-2 test asserts `captured.exitCode === null`
+
+---
+
+## HOOK-3 — generic stub session-end (PR-FIN-1b)
+
+- [EP] `runHookSessionEnd([])` → exit 0; stdout empty; stderr empty; env file NOT created.
+  - Verify: `bun test packages/cli/src/__tests__/features/hook.test.ts -t 'HOOK-3'`
+- [EP] No file writes occur — confirms stub does not write env file or session dir.
+  - Verify: HOOK-3 test asserts `existsSync(envFile) === false`
+
+---
+
+## HOOK-4 — unknown subcommand exit 1 (PR-FIN-1b)
+
+- [EP] `runHook(['bogus'])` → exit 1; stderr contains `Unknown subcommand: bogus`; help text in stderr contains `session-start`.
+  - Verify: `bun test packages/cli/src/__tests__/features/hook.test.ts -t 'HOOK-4'`
+- [BVA] Unknown subcommand name does NOT match any of the 28 registered events — confirms registry lookup is exact.
+  - Verify: HOOK-4 test asserts `captured.exitCode === 1`
+
+---
+
+## HOOK-5 — `--help` lists all 28 subcommands (PR-FIN-1b)
+
+- [EP] `runHookWithRegistry(['--help'], HOOK_COMMANDS)` → exit 0; `HOOK_COMMANDS.length === 28`; stdout contains every registered command name.
+  - Verify: `bun test packages/cli/src/__tests__/features/hook.test.ts -t 'HOOK-5'`
+- [BVA] Registry count is exactly 28 — one entry per Claude Code hook event.
+  - Verify: HOOK-5 test asserts `toHaveLength(28)` on `HOOK_COMMANDS`
+
+---
+
+## HOOK-6 — end-to-end SessionStart (PR-FIN-1b)
+
+- [ST] `runHookSessionStart([])` with `$CLAUDE_PROJECT_DIR` and `$CLAUDE_SESSION_ID` set → env file contains `CLAUDE_PROJECT_DIR` line; session dir with `metadata.json` created; `meta.sessionId === 'hook-6-sess'`.
+  - Verify: `bun test packages/cli/src/__tests__/features/hook.test.ts -t 'HOOK-6'`
+- [EP] stderr does NOT contain `gobbi hook session-start:` — no hook-level error message.
+  - Verify: HOOK-6 test asserts `captured.stderr.not.toContain('gobbi hook session-start:')`
+- [ST] Exit code is `null` — the full session-start chain (config env + workflow init) completes without calling `process.exit`.
+  - Verify: HOOK-6 test asserts `captured.exitCode === null`
+
+---
+
 ## Verification procedure
 
-1. `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts` — exercises CFG-1 through CFG-23
-2. `bun test packages/cli/src/__tests__/features/q2-evalconfig-e2e.test.ts` — exercises CFG-15 (4×3 matrix)
-3. `bun test packages/cli/src/__tests__/` — exercises CFG-18 (project list)
-4. For structural items, use the grep hints in each section to confirm cited code patterns exist
-5. `[GAP]` items represent aspirational behaviour — no items are GAP in Pass 3, PR-FIN-1c, or PR-FIN-1a
+1. `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts` — exercises CFG-1 through CFG-28
+2. `bun test packages/cli/src/__tests__/features/hook.test.ts` — exercises HOOK-1 through HOOK-6
+3. `bun test packages/cli/src/__tests__/features/q2-evalconfig-e2e.test.ts` — exercises CFG-15 (4×3 matrix)
+4. `bun test packages/cli/src/__tests__/` — exercises CFG-18 (project list)
+5. For structural items, use the grep hints in each section to confirm cited code patterns exist
+6. `[GAP]` items represent aspirational behaviour — no items are GAP in Pass 3, PR-FIN-1c, PR-FIN-1a, or PR-FIN-1b
 
 See `scenarios.md` for full Given/When/Then bodies and `review.md` for DRIFT/NOTE/GAP resolutions.

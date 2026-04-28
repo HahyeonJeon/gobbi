@@ -136,9 +136,9 @@ beforeEach(() => {
     throw new ExitCalled(captured.exitCode);
   }) as typeof process.exit;
 
-  // Env hygiene per `cli-vs-skill-session-id` gotcha — every CLI run in
-  // this file passes an explicit `--session-id` flag, so pre-existing
-  // CLAUDE_SESSION_ID would only confuse the fixture wiring.
+  // Env hygiene — every CLI run in this file passes an explicit
+  // `--session-id` flag, so pre-existing CLAUDE_SESSION_ID would only
+  // confuse the fixture wiring.
   delete process.env['CLAUDE_SESSION_ID'];
   delete process.env['CLAUDE_PROJECT_DIR'];
 });
