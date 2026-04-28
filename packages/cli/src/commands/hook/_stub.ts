@@ -23,7 +23,7 @@ import { readStdinJson } from '../../lib/stdin.js';
  * (`Stop`, `SubagentStop`, `SessionStart`) live in their own files and
  * call `dispatchHookNotify` directly. Phase-2 events (the 21 remaining
  * `HookTrigger` values) intentionally do not dispatch in this PR; the
- * follow-up issue #<phase-2> tracks rich-message wiring for them.
+ * follow-up issue #219 tracks rich-message wiring for them.
  *
  * `dispatchHookNotify` is itself double-protected — for events outside
  * its rendered-template set it returns silently before invoking

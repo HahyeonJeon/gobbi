@@ -6,6 +6,7 @@
 | 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1c (TBD) |
 | 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1a (TBD) |
 | 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1b (TBD) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1d (TBD) |
 
 Pass-3 finalization replaced the T1/T2 JSON + T3 SQLite + provenance architecture with a unified three-level `settings.json` shape and a two-verb CLI. Waves B through D landed on `feat/120-gobbi-config-pass-3` atop 6 prior commits.
 
@@ -14,6 +15,8 @@ PR-FIN-1c (session `c34ea7e6`) reshaped `GitSettings` around always-on worktrees
 PR-FIN-1a (session `c34ea7e6`) added the `gobbi config init` verb (three levels, minimum-valid seed, `--force` overwrite with stderr WARN), replaced `init.ts::resolveSessionId`'s `randomUUID()` fallback with a hard error and remediation hint, added the `#182` recovery hint to `config get/set/init` missing-session-id errors, and locked the `#185` fresh-setup ordering invariant via CFG-23 integration test. Commit `6909fec` on branch `feat/214-pr-fin-1a-config-init-session-id`.
 
 PR-FIN-1b (session `c34ea7e6`) shipped the `gobbi hook` namespace (28 Claude Code events, 5 non-trivial bodies + 23 generic stubs), `gobbi config env` (reads stdin JSON payload + native `CLAUDE_*` env, writes unified `KEY=VALUE` lines to `$CLAUDE_ENV_FILE`), and the `/gobbi` SKILL.md migration (retired the "Discovering the real session ID" section and the `cli-vs-skill-session-id` gotcha). Plugin manifest and per-repo `.claude/settings.json` updated from 5 entries to 28. Commits `2248b72` + `b307214` on branch `feat/216-pr-fin-1b-hook-namespace`.
+
+PR-FIN-1d (session `c34ea7e6`) expanded the `HookTrigger` enum from 9 to 28 values, extracted `dispatchToChannels` as the shared per-channel dispatch helper, added `dispatchHookNotify(payload, eventName, options)` for hook-side notification, wired 7 Phase-1 events (`Stop`, `SubagentStop`, `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `Notification`, `PreCompact`) end-to-end, and shipped `gobbi notify configure --enable/--disable/--status` for user-driven `.claude/settings.json` management with a trust-boundary read-only stance for non-gobbi entries. The 21 Phase-2 events keep `TODO(PR-FIN-1d-phase-2 #219)` markers; rich-message wiring for them is filed as issue #219. Commits `a8980f8` + `001f96b` + `126e898` + `f7674d8` + `5b10500` on branch `feat/218-pr-fin-1d-hooktrigger-notify-dispatch`.
 
 This review documents what drifted from the originally-shipped Pass-3 design, notable implementation decisions (NOTEs), and open gaps deferred to follow-up Passes (GAPs). Entries marked **[superseded by DRIFT-9]** describe changes now themselves changed by PR-FIN-1c.
 

@@ -594,7 +594,7 @@ function renderHookMessage(
         message: `Session \`${prefix}\` compacting in ${project}.`,
       };
     // Phase-2 events: no template wired in this Pass.
-    // TODO(PR-FIN-1d-phase-2 #<follow-up-issue>): rich message templates
+    // TODO(PR-FIN-1d-phase-2 #219): rich message templates
     //   for the remaining 21 hook events.
     default:
       return null;
