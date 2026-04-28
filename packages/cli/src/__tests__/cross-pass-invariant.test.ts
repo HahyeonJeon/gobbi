@@ -77,9 +77,13 @@ import {
 import { resolveSettings } from '../lib/settings-io.js';
 
 // ---------------------------------------------------------------------------
-// stdout/stderr/process.exit capture — quiet the bootstrap stderr line and
-// the `[settings-io] no projects.active` warning so test output stays clean.
-// Pattern lifted from `commands/workflow/__tests__/init.test.ts`.
+// stdout/stderr/process.exit capture — quiet the `[ensure-settings-cascade]`
+// bootstrap line (seed/upgrade messages) and any `[settings-io]` provenance
+// noise so test output stays clean. Pattern lifted from
+// `commands/workflow/__tests__/init.test.ts`. PR-FIN-1c removed the
+// `projects.active` registry and its associated `[settings-io] no
+// projects.active` warning, so that line no longer needs suppressing —
+// the bootstrap line(s) below are the residual noise.
 // ---------------------------------------------------------------------------
 
 interface Captured {

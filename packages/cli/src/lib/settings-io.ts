@@ -312,7 +312,10 @@ export function resolveSettings(args: {
   // user has not chosen pr.open=true, so there is nothing to violate.
   // Once the user opts in to PR opening, they must also set baseBranch.
   const userPrOpen = userOverlay?.git?.pr?.open;
-  if (userPrOpen === true && (acc.git?.baseBranch === null || acc.git?.baseBranch === undefined)) {
+  // deepMerge(DEFAULTS, userOverlay) guarantees `baseBranch` is
+  // `'string | null'` here (the type) and never `undefined` at runtime
+  // (DEFAULTS supplies `null`; any user value is a string).
+  if (userPrOpen === true && acc.git?.baseBranch === null) {
     throw new ConfigCascadeError(
       'parse',
       'git.pr.open=true requires git.baseBranch to be set (non-null). ' +

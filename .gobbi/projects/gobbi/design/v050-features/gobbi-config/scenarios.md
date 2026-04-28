@@ -61,7 +61,7 @@ Evidence:
 
 ---
 
-### CFG-4 — Cascade get — key absent at all levels returns exit 1
+### CFG-4 — Cascade get — key absent at all levels returns default value (exit 0)
 
 **Given** no `.gobbi/settings.json`, no `.gobbi/projects/<name>/settings.json`, no session settings
 **When** `gobbi config get workflow.ideation.discuss.mode --session-id <id>` runs

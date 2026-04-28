@@ -406,11 +406,16 @@ export async function runInstallWithOptions(
 
   // --- 8. Fresh-install activation (settings + farm) --------------------
   //
-  // Fresh installs complete the multi-project setup in one command:
-  // write `projects.active` + `projects.known` to the workspace
-  // settings file, then build the `.claude/{skills,agents,rules}/`
-  // per-file symlink farm. Upgrade installs skip this step to preserve
-  // the operator's existing activation — upgrade is content-only.
+  // Fresh installs complete the per-project setup in one command:
+  // seed `.gobbi/settings.json` at minimum shape (`{schemaVersion: 1}`)
+  // when absent, then build the `.claude/{skills,agents,rules}/`
+  // per-file symlink farm pointing at this project. PR-FIN-1c removed
+  // the `projects` registry, so no `projects.active` / `projects.known`
+  // writes happen — the directory tree under `.gobbi/projects/` is the
+  // sole source of truth, and the active project resolves via
+  // `basename(repoRoot)` (or the `--project` flag) at command time.
+  // Upgrade installs skip this step to preserve the operator's existing
+  // settings + farm — upgrade is content-only.
   //
   // Dry-run still emits the plan lines but does not mutate the
   // filesystem.

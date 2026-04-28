@@ -888,8 +888,75 @@ describe('CFG-15: T2-v1 upgrader applies the PR-FIN-1c reshape end-to-end', () =
     // No `projects` block anywhere.
     expect((upgraded as unknown as Record<string, unknown>)['projects']).toBeUndefined();
   });
+});
 
-  test('Pass-3 current shape is upgraded in place by ensureSettingsCascade', async () => {
+// ===========================================================================
+// CFG-16 (PR-FIN-1c): DEFAULTS-exempt cross-field check
+// ===========================================================================
+//
+// `DEFAULTS.git.pr.open` is `true` and `DEFAULTS.git.baseBranch` is `null`.
+// A fresh repo where both values come from DEFAULTS must NOT trip the
+// cross-field invariant — only an *explicit* user-set `pr.open=true`
+// without a non-null `baseBranch` is a misconfiguration. This is the
+// most subtle semantic of the PR-FIN-1c cross-field check.
+
+describe("CFG-16: DEFAULTS-exempt — fresh repo with no user settings does not throw", () => {
+  test('CFG-16: empty repo (no user settings files) resolves without throwing', () => {
+    const repo = makeScratchRepo();
+    const resolved = resolveSettings({ repoRoot: repo });
+    // Both values come from DEFAULTS; the cross-field check must be
+    // skipped because the user has not chosen `pr.open=true` themselves.
+    expect(resolved.git?.pr?.open).toBe(true);
+    expect(resolved.git?.baseBranch).toBe(null);
+  });
+
+  test('CFG-16: explicit user pr.open=true with absent baseBranch throws', () => {
+    const repo = makeScratchRepo();
+    // User explicitly opts in to PR opening but never sets baseBranch —
+    // the resolved baseBranch comes from DEFAULTS (null) and the check
+    // must fire because the user *did* explicitly set pr.open.
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
+      schemaVersion: 1,
+      git: { pr: { open: true } },
+    });
+    try {
+      resolveSettings({ repoRoot: repo });
+      throw new Error('expected ConfigCascadeError');
+    } catch (err) {
+      expect(err).toBeInstanceOf(ConfigCascadeError);
+      if (err instanceof ConfigCascadeError) {
+        expect(err.code).toBe('parse');
+        expect(err.message).toMatch(/pr\.open/);
+        expect(err.message).toMatch(/baseBranch/);
+      }
+    }
+  });
+
+  test('CFG-16: user-set baseBranch alone (DEFAULTS pr.open) does not throw', () => {
+    const repo = makeScratchRepo();
+    // User sets only baseBranch; pr.open comes from DEFAULTS (true) but
+    // since the *user* did not explicitly opt in, the check is skipped.
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
+      schemaVersion: 1,
+      git: { baseBranch: 'main' },
+    });
+    const resolved = resolveSettings({ repoRoot: repo });
+    expect(resolved.git?.baseBranch).toBe('main');
+    expect(resolved.git?.pr?.open).toBe(true);
+  });
+});
+
+// ===========================================================================
+// CFG-17 (PR-FIN-1c): Pass-3 current-shape in-place upgrade
+// ===========================================================================
+//
+// `ensureSettingsCascade` Step 4 (`upgradeFileInPlace` +
+// `needsCurrentShapeUpgrade`) detects Pass-3-current files (with
+// `git.workflow.*`, `projects.*`, or `git.cleanup.*`) and rewrites them
+// in place to the PR-FIN-1c shape. Idempotent on re-run.
+
+describe('CFG-17: Pass-3 current-shape in-place upgrade by ensureSettingsCascade', () => {
+  test('CFG-17: project-level Pass-3 shape is upgraded in place', async () => {
     const repo = makeScratchRepo();
     mkdirSync(projectDirForName(repo, basename(repo)), { recursive: true });
     // Seed a Pass-3 shape file (with `git.workflow.*`, `projects.*`).
@@ -907,12 +974,108 @@ describe('CFG-15: T2-v1 upgrader applies the PR-FIN-1c reshape end-to-end', () =
       process.stderr.write = origErr;
     }
 
-    // After the cascade, the file is reshaped to PR-FIN-1c shape.
     const upgradedPath = join(projectDirForName(repo, basename(repo)), 'settings.json');
     const upgraded = JSON.parse(readFileSync(upgradedPath, 'utf8')) as Settings;
     expect(upgraded.git?.baseBranch).toBe('main');
     expect(upgraded.git?.pr?.open).toBe(true);
     expect(upgraded.git?.branch?.autoRemove).toBe(false);
     expect((upgraded as unknown as Record<string, unknown>)['projects']).toBeUndefined();
+    // Legacy git.workflow / git.cleanup blocks must be gone.
+    const onDiskGit = upgraded.git as unknown as Record<string, unknown>;
+    expect(onDiskGit['workflow']).toBeUndefined();
+    expect(onDiskGit['cleanup']).toBeUndefined();
+  });
+
+  test('CFG-17: re-running ensureSettingsCascade is idempotent on already-upgraded file', async () => {
+    const repo = makeScratchRepo();
+    mkdirSync(projectDirForName(repo, basename(repo)), { recursive: true });
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
+      schemaVersion: 1,
+      projects: { active: null, known: [] },
+      git: { workflow: { mode: 'worktree-pr', baseBranch: 'main' } },
+    });
+
+    const origErr = process.stderr.write;
+    process.stderr.write = ((): boolean => true) as typeof process.stderr.write;
+    try {
+      await ensureSettingsCascade(repo);
+      const upgradedPath = join(projectDirForName(repo, basename(repo)), 'settings.json');
+      const firstPass = readFileSync(upgradedPath, 'utf8');
+      // Second run must not modify the (already-upgraded) file.
+      await ensureSettingsCascade(repo);
+      const secondPass = readFileSync(upgradedPath, 'utf8');
+      expect(secondPass).toBe(firstPass);
+    } finally {
+      process.stderr.write = origErr;
+    }
+  });
+
+  test('CFG-17: workspace-level Pass-3 shape is upgraded in place', async () => {
+    const repo = makeScratchRepo();
+    mkdirSync(join(repo, '.gobbi'), { recursive: true });
+    // Workspace-level Pass-3 shape — `git.workflow` triggers the upgrader.
+    writeJson(join(repo, '.gobbi', 'settings.json'), {
+      schemaVersion: 1,
+      git: { workflow: { mode: 'direct-commit', baseBranch: 'main' } },
+    });
+
+    const origErr = process.stderr.write;
+    process.stderr.write = ((): boolean => true) as typeof process.stderr.write;
+    try {
+      await ensureSettingsCascade(repo);
+    } finally {
+      process.stderr.write = origErr;
+    }
+
+    const upgradedPath = join(repo, '.gobbi', 'settings.json');
+    const upgraded = JSON.parse(readFileSync(upgradedPath, 'utf8')) as Settings;
+    expect(upgraded.git?.baseBranch).toBe('main');
+    expect(upgraded.git?.pr?.open).toBe(false);
+    const onDiskGit = upgraded.git as unknown as Record<string, unknown>;
+    expect(onDiskGit['workflow']).toBeUndefined();
+  });
+});
+
+// ===========================================================================
+// CFG-18 (PR-FIN-1c): `gobbi project list` filesystem scan
+// ===========================================================================
+//
+// `gobbi project list` reads `.gobbi/projects/` directory entries via
+// `readdirSync` rather than consulting the (removed) `projects.known`
+// registry. The active marker (`*`) fires for the entry whose name
+// matches `basename(repoRoot)`.
+
+describe('CFG-18: gobbi project list — filesystem scan replaces registry', () => {
+  test('CFG-18: lists every directory under .gobbi/projects/ sorted alphabetically', async () => {
+    const repo = makeScratchRepo();
+    // Create three project directories — none of them match
+    // basename(scratchRepo) (which is `gobbi-cfg-feat-XXXXXX`).
+    mkdirSync(join(repo, '.gobbi', 'projects', 'alpha'), { recursive: true });
+    mkdirSync(join(repo, '.gobbi', 'projects', 'beta'), { recursive: true });
+    mkdirSync(join(repo, '.gobbi', 'projects', 'gobbi'), { recursive: true });
+
+    // Lazy import — `runProjectListWithOptions` is in a sibling module
+    // and we want to keep the test file's static-import surface focused.
+    const { runProjectListWithOptions } = await import('../../commands/project/list.js');
+    await runProjectListWithOptions([], { repoRoot: repo });
+
+    const stdout = captured.stdout;
+    // Sorted alphabetically: alpha, beta, gobbi.
+    const rows = stdout.split('\n').filter((r) => r.length > 0);
+    expect(rows).toEqual([' \talpha', ' \tbeta', ' \tgobbi']);
+  });
+
+  test('CFG-18: active marker fires for basename(repoRoot) match', async () => {
+    const repo = makeScratchRepo();
+    const repoBase = basename(repo);
+    mkdirSync(join(repo, '.gobbi', 'projects', repoBase), { recursive: true });
+    mkdirSync(join(repo, '.gobbi', 'projects', 'sibling'), { recursive: true });
+
+    const { runProjectListWithOptions } = await import('../../commands/project/list.js');
+    await runProjectListWithOptions([], { repoRoot: repo });
+
+    const rows = captured.stdout.split('\n').filter((r) => r.length > 0);
+    const active = rows.find((r) => r.startsWith('*\t'));
+    expect(active).toBe(`*\t${repoBase}`);
   });
 });
