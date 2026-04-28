@@ -12,16 +12,19 @@
  *      `dispatchHookNotify` for the 4 Phase-1 events
  *      (`SessionEnd`, `UserPromptSubmit`, `Notification`, `PreCompact`)
  *      and skips it for Phase-2 events (`FileChanged`, `PostToolUse`).
- *   C. Throw containment (1 test) — when `dispatchHookNotify` throws
- *      synchronously, `runGenericHookStub` does NOT propagate; stderr
- *      receives a kebab-cased `gobbi hook <event>: <message>` line and
- *      the function resolves normally.
+ *   C. Throw containment (2 tests) — when `dispatchHookNotify` or
+ *      `readStdinJson` throws synchronously, `runGenericHookStub` does
+ *      NOT propagate; stderr receives a kebab-cased
+ *      `gobbi hook <event>: <message>` line and the function resolves
+ *      normally. PR-FIN-1d.6 widened the try/catch to cover the stdin
+ *      reader as well, so a future regression in `readStdinJson` (I/O
+ *      error, buffer decode failure) is contained.
  *   D. Hook-contract preservation (3 tests) — when `dispatchHookNotify`
  *      throws inside a bespoke handler, the existing try/catch catches
  *      it and the handler exits 0 with a `gobbi hook <name>:` stderr
  *      message — never propagates.
  *
- * Total: 11 tests (≥6 required by plan §1d.3 verification).
+ * Total: 12 tests (≥6 required by plan §1d.3 verification).
  *
  * ## Mock strategy
  *
@@ -92,6 +95,8 @@ mock.module('../../../lib/notify.js', () => ({
 
 interface StdinState {
   payload: string | null;
+  /** When set, the mocked `readStdinJson` rejects with this error. */
+  throwOnRead: Error | null;
 }
 
 const STDIN_KEY = '__gobbiStubStdinPayload__';
@@ -99,7 +104,20 @@ const STDIN_KEY = '__gobbiStubStdinPayload__';
 function setStdinPayload(payload: object | null): void {
   (globalThis as unknown as Record<string, StdinState>)[STDIN_KEY] = {
     payload: payload === null ? null : JSON.stringify(payload),
+    throwOnRead: null,
   };
+}
+
+function setStdinThrow(err: Error): void {
+  const slot = (globalThis as unknown as Record<string, StdinState | undefined>)[STDIN_KEY];
+  if (slot !== undefined) {
+    slot.throwOnRead = err;
+  } else {
+    (globalThis as unknown as Record<string, StdinState>)[STDIN_KEY] = {
+      payload: null,
+      throwOnRead: err,
+    };
+  }
 }
 
 function consumeStdinPayload(): string | null {
@@ -109,9 +127,18 @@ function consumeStdinPayload(): string | null {
   return raw;
 }
 
+function consumeStdinThrow(): Error | null {
+  const slot = (globalThis as unknown as Record<string, StdinState | undefined>)[STDIN_KEY];
+  const err = slot?.throwOnRead ?? null;
+  if (slot !== undefined) slot.throwOnRead = null;
+  return err;
+}
+
 mock.module('../../../lib/stdin.js', () => ({
   readStdin: async (): Promise<string | null> => consumeStdinPayload(),
   readStdinJson: async <T,>(): Promise<T | null> => {
+    const err = consumeStdinThrow();
+    if (err !== null) throw err;
     const raw = consumeStdinPayload();
     if (raw === null || raw.trim() === '') return null;
     try {
@@ -310,6 +337,25 @@ describe('C. runGenericHookStub — throw containment', () => {
     expect(state.calls).toHaveLength(1);
     expect(capturedStderr).toContain('gobbi hook user-prompt-submit:');
     expect(capturedStderr).toContain('synthetic dispatch failure');
+  });
+
+  test('C.2 readStdinJson throw → no propagation, kebab stderr line, dispatch never called', async () => {
+    // Hardening: a future regression in `readStdinJson` (malformed I/O,
+    // failed buffer decode) must not propagate. The widened try/catch
+    // (PR-FIN-1d.6) keeps the hook contract's exit-0 guarantee even if
+    // the stdin reader rejects before the dispatch path runs.
+    process.env['CLAUDE_PROJECT_DIR'] = '/tmp/proj-stdin-throw';
+    setStdinThrow(new Error('synthetic stdin read failure'));
+
+    const state = getDispatchState();
+
+    await expect(runGenericHookStub('SessionEnd', [])).resolves.toBeUndefined();
+
+    // Dispatch never reached because the throw happened earlier in the
+    // try block.
+    expect(state.calls).toHaveLength(0);
+    expect(capturedStderr).toContain('gobbi hook session-end:');
+    expect(capturedStderr).toContain('synthetic stdin read failure');
   });
 });
 

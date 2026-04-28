@@ -71,14 +71,16 @@ function pascalToKebab(name: string): string {
  *      defensively from the payload's `session_id` and the ambient
  *      `$CLAUDE_PROJECT_DIR`, then call `dispatchHookNotify`. The 19
  *      Phase-2 events covered by this stub no-op silently — the
- *      follow-up issue #<phase-2> tracks rich-message wiring.
+ *      follow-up issue #219 tracks rich-message wiring.
  *   4. Exit 0. Hooks must NEVER block Claude Code; the surrounding
- *      try/catch swallows any throw from `dispatchHookNotify` (or any
- *      future regression in this body) and writes a kebab-cased
- *      `gobbi hook <event>: <message>` line to stderr. The defense is
- *      redundant with `dispatchHookNotify`'s own top-level catch but
- *      protects against unhandled rejections from synchronous throws
- *      in the options-derivation path.
+ *      try/catch swallows any throw from `readStdinJson`,
+ *      `dispatchHookNotify`, or any future regression in this body and
+ *      writes a kebab-cased `gobbi hook <event>: <message>` line to
+ *      stderr. The defense is redundant with `dispatchHookNotify`'s
+ *      own top-level catch but protects against unhandled rejections
+ *      from synchronous throws in the options-derivation path or a
+ *      future regression in `readStdinJson` that lets an I/O error
+ *      escape its current `null`-on-failure contract.
  */
 export async function runGenericHookStub(eventName: string, args: string[] = []): Promise<void> {
   if (args.includes('--help') || args.includes('-h')) {
@@ -90,8 +92,8 @@ export async function runGenericHookStub(eventName: string, args: string[] = [])
     );
     return;
   }
-  const payload = await readStdinJson<unknown>();
   try {
+    const payload = await readStdinJson<unknown>();
     if (PHASE_1_STUB_EVENTS.has(eventName as HookTrigger)) {
       const options: NotifyOptions = {
         ...(typeof (payload as { session_id?: unknown })?.session_id === 'string'

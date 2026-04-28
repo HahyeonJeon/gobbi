@@ -19,6 +19,12 @@
  *             Stop produces a fixed expected JSON shape.
  *   CFG-N-8 — Multi-mode: --enable Stop --disable SessionEnd in one
  *             invocation exits 2 with stderr error.
+ *   CFG-N-9 — Non-canonical idempotency edge: a pre-existing gobbi
+ *             entry with a non-canonical command (e.g.,
+ *             `gobbi --debug hook session-end`) does NOT short-circuit
+ *             --enable; the canonical entry is appended alongside.
+ *             Both entries coexist; --status reports `yes` because the
+ *             canonical command is now present.
  *
  * Test isolation: every test file scratches a private tmpdir under
  * `os.tmpdir()` and routes the mocked `getRepoRoot` to that path via a
@@ -514,5 +520,79 @@ describe('CFG-N-8: multi-mode invocation rejected', () => {
     });
     expect(captured.exitCode).toBe(2);
     expect(captured.stderr).toContain('only one of');
+  });
+});
+
+// ===========================================================================
+// CFG-N-9: non-canonical idempotency edge — append alongside, do not collapse
+// ===========================================================================
+
+describe('CFG-N-9: --enable does not short-circuit on a non-canonical gobbi entry', () => {
+  test('CFG-N-9: pre-existing `gobbi --debug hook session-end` is preserved; canonical entry appended; --status reports yes', async () => {
+    const repo = makeScratchRepo();
+
+    // Seed a non-canonical gobbi entry (the trust boundary recognises
+    // it as gobbi-owned via the `gobbi ` prefix, but it does NOT match
+    // the exact canonical command, so the idempotency short-circuit
+    // does not fire).
+    writeSettings(repo, {
+      hooks: {
+        SessionEnd: [
+          {
+            hooks: [
+              {
+                type: 'command',
+                command: 'gobbi --debug hook session-end',
+                timeout: 15,
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    await captureExit(async () => {
+      await runNotify(['configure', '--enable', 'SessionEnd']);
+    });
+    expect(captured.exitCode).toBeNull();
+
+    const onDisk = readSettings(repo) as {
+      readonly hooks?: { readonly SessionEnd?: readonly unknown[] };
+    };
+
+    // Two blocks coexist: the original non-canonical entry (untouched)
+    // and the freshly appended canonical entry. Order matters — the
+    // canonical block is appended at the tail.
+    expect(onDisk.hooks?.SessionEnd).toEqual([
+      {
+        hooks: [
+          {
+            type: 'command',
+            command: 'gobbi --debug hook session-end',
+            timeout: 15,
+          },
+        ],
+      },
+      {
+        hooks: [
+          {
+            type: 'command',
+            command: 'gobbi hook session-end',
+            timeout: 10,
+          },
+        ],
+      },
+    ]);
+
+    // --status reports SessionEnd as `yes` because the canonical
+    // command is now present. The non-canonical entry alone would not
+    // have flipped the column to `yes` — see CFG-N-3 for the parallel
+    // assertion on a wholly-foreign command.
+    resetCapture();
+    await captureExit(async () => {
+      await runNotify(['configure', '--status']);
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stdout).toMatch(/SessionEnd\s+yes\s+gobbi hook session-end/);
   });
 });
