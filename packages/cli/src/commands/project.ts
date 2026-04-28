@@ -7,18 +7,19 @@
  * Sub-handlers are dynamic-`import()`-ed so the CLI pays no cold-start
  * cost when the operator is only running an unrelated command.
  *
- * ## Scope (v0.5.0 Pass-2 W5.4)
+ * ## Scope (post-PR-FIN-1c)
  *
- * Ships three subcommands:
+ * Ships two subcommands:
  *
- *   - `list`   — enumerate projects, mark the active one.
- *   - `create` — scaffold a new project directory tree + register in
- *     `settings.json`'s `projects.known`.
- *   - `switch` — rotate the `.claude/{skills,agents,rules}/` symlink farm
- *     to point at a different project, with an active-session gate.
+ *   - `list`   — enumerate projects under `.gobbi/projects/` and mark the
+ *     active one (basename of repoRoot).
+ *   - `create` — scaffold a new project directory tree under
+ *     `.gobbi/projects/<name>/`.
  *
- * Out-of-scope for W5.4: `delete` and `rename` — deferred to a later
- * pass per the plan's §W5.4 scope boundary.
+ * `switch` was removed in PR-FIN-1c when the `Settings.projects` registry
+ * was retired — the active project is now derived from `--project <name>`
+ * (or `basename(repoRoot)` when the flag is absent), so there is nothing
+ * persistent to "switch" to.
  *
  * ## Exit codes
  *
@@ -28,7 +29,6 @@
  *
  * @see `commands/project/list.ts`
  * @see `commands/project/create.ts`
- * @see `commands/project/switch.ts`
  */
 
 // ---------------------------------------------------------------------------
@@ -66,18 +66,10 @@ export const PROJECT_COMMANDS: readonly ProjectCommand[] = [
   },
   {
     name: 'create',
-    summary: 'Create a new project directory tree and register it in settings.json',
+    summary: 'Create a new project directory tree under .gobbi/projects/',
     run: async (args: string[]): Promise<void> => {
       const { runProjectCreate } = await import('./project/create.js');
       await runProjectCreate(args);
-    },
-  },
-  {
-    name: 'switch',
-    summary: 'Rotate the .claude/ symlink farm to a different project (active-session-gated)',
-    run: async (args: string[]): Promise<void> => {
-      const { runProjectSwitch } = await import('./project/switch.js');
-      await runProjectSwitch(args);
     },
   },
 ];

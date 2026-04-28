@@ -79,7 +79,8 @@ import {
 } from '../../commands/install.js';
 import { runProjectCreateWithOptions } from '../../commands/project/create.js';
 import { runProjectListWithOptions } from '../../commands/project/list.js';
-import { runProjectSwitchWithOptions } from '../../commands/project/switch.js';
+// PR-FIN-1c: `commands/project/switch.ts` deleted with the registry
+// removal; the import is retained as a comment for git-history navigation.
 import { runWipeLegacySessionsWithOptions } from '../../commands/maintenance/wipe-legacy-sessions.js';
 import { runPromoteWithOptions } from '../../commands/gotcha/promote.js';
 import { runInitWithOptions } from '../../commands/workflow/init.js';
@@ -783,124 +784,25 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
     // `projects.active` registry was removed). Farm-rotation tests
     // retired with the registry; project-name resolution lives on the
     // `--project` flag now.
-    test.skip('G-MEM2-17: `gobbi project switch <name>` atomically rotates the farm', async () => {
-      const tpl = makeTemplate({
-        'rules/gobbi-source.md': 'gobbi\n',
-        'skills/_x/SKILL.md': '# gobbi-x\n',
-        'agents/a.md': '# a\n',
-      });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Build a sibling project `alt` by hand.
-      const altRoot = projectDir(repo, 'alt');
-      for (const kind of CLAUDE_FARM_KINDS) {
-        mkdirSync(join(altRoot, kind), { recursive: true });
-      }
-      mkdirSync(join(altRoot, 'skills', '_y'), { recursive: true });
-      writeFileSync(
-        join(altRoot, 'rules', 'alt-source.md'),
-        'alt-rules\n',
-        'utf8',
-      );
-      writeFileSync(
-        join(altRoot, 'skills', '_y', 'SKILL.md'),
-        '# alt-y\n',
-        'utf8',
-      );
-
-      // Operator drops a non-farm sibling — it must survive the switch.
-      writeFileSync(
-        join(repo, '.claude', 'CLAUDE.md'),
-        '# operator\n',
-        'utf8',
-      );
-
-      resetCaptured();
-      await captureExit(() =>
-        runProjectSwitchWithOptions(['alt'], {
-          repoRoot: repo,
-          tempPidTag: 's17',
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Farm now points at `alt`'s source.
-      const altLeaf = join(repo, '.claude', 'rules', 'alt-source.md');
-      expect(lstatSync(altLeaf).isSymbolicLink()).toBe(true);
-      const resolvedAlt = pathResolve(
-        join(repo, '.claude', 'rules'),
-        readlinkSync(altLeaf),
-      );
-      expect(resolvedAlt).toBe(join(altRoot, 'rules', 'alt-source.md'));
-
-      // Non-farm sibling survived.
-      expect(readFileSync(join(repo, '.claude', 'CLAUDE.md'), 'utf8')).toBe(
-        '# operator\n',
-      );
-
-      const settings = readSettings(repo);
-      expect((settings as unknown as Record<string, unknown>)["projects"]).toBeUndefined();
+    test.skip('G-MEM2-17: RETIRED — `gobbi project switch` deleted in PR-FIN-1c', () => {
+      // Original body asserted atomic farm rotation: switch + `.claude/`
+      // sibling preservation + settings.active update. Preserved in git
+      // history at commit 362217c33778b58ec7b7a15155563decaccc2bae and
+      // prior. Switch command was deleted with the registry removal.
     });
 
-    test.skip('G-MEM2-18: `gobbi project switch` refuses while a session is active', async () => {
-      const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Build `alt` enough that target-exists check passes.
-      const altRoot = projectDir(repo, 'alt');
-      for (const kind of CLAUDE_FARM_KINDS) {
-        mkdirSync(join(altRoot, kind), { recursive: true });
-      }
-      writeFileSync(join(altRoot, 'rules', 'a.md'), '# a\n', 'utf8');
-
-      // Active session in the CURRENT project blocks the switch.
-      seedProjectSession(repo, 'gobbi', 'live', 'execution');
-
-      resetCaptured();
-      await captureExit(() =>
-        runProjectSwitchWithOptions(['alt'], {
-          repoRoot: repo,
-          tempPidTag: 's18',
-        }),
-      );
-      expect(captured.exitCode).toBe(1);
-      expect(captured.stderr).toContain('live');
-      // Active project unchanged.
-      expect((readSettings(repo) as unknown as Record<string, unknown>)["projects"]).toBeUndefined();
+    test.skip('G-MEM2-18: RETIRED — `gobbi project switch` deleted in PR-FIN-1c', () => {
+      // Original body asserted that switch refuses while a session is
+      // active. Preserved in git history.
     });
 
-    test.skip('G-MEM2-19: `gobbi project switch` refuses an unknown project', async () => {
-      const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      resetCaptured();
-      await captureExit(() =>
-        runProjectSwitchWithOptions(['ghost'], {
-          repoRoot: repo,
-          tempPidTag: 's19',
-        }),
-      );
-      expect(captured.exitCode).toBe(1);
-      expect(captured.stderr).toContain('ghost');
-      expect(captured.stderr).toContain('does not exist');
-      // Settings + farm unchanged.
-      expect((readSettings(repo) as unknown as Record<string, unknown>)["projects"]).toBeUndefined();
+    test.skip('G-MEM2-19: RETIRED — `gobbi project switch` deleted in PR-FIN-1c', () => {
+      // Original body asserted that switch refuses an unknown project.
+      // Preserved in git history.
     });
 
-    test.skip('G-MEM2-20: `gobbi project switch` rolls back on partial swap failure — class retired (PR-FIN-1c)', () => {
-      // Class removed with the switch farm-rotation logic (PR-FIN-1c).
+    test.skip('G-MEM2-20: RETIRED — switch rollback class deleted in PR-FIN-1c', () => {
+      // Class retired with the switch farm-rotation logic.
     });
 
     test('G-MEM2-21: install and project verbs are registered in top-level dispatch', async () => {
@@ -961,83 +863,22 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
     });
 
-    // PR-FIN-1c: project switch farm rotation retired with the registry.
-    test.skip('G-MEM2-23: farm rotation is atomic per-kind via double-rename', async () => {
-      // The atomicity property manifests as: after switch, the three
-      // farm kinds point at the NEW project and no temp artifacts
-      // remain. We assert both, which captures the observable surface
-      // of the per-kind swap. Actual atomic-syscall semantics are
-      // tested at finer grain in the unit suite.
-      const tpl = makeTemplate({
-        'rules/src.md': 'gobbi\n',
-        'skills/_x/SKILL.md': '# gx\n',
-        'agents/a.md': '# ga\n',
-      });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Build `alt` minimally.
-      const altRoot = projectDir(repo, 'alt');
-      for (const kind of CLAUDE_FARM_KINDS) {
-        mkdirSync(join(altRoot, kind), { recursive: true });
-      }
-      writeFileSync(join(altRoot, 'rules', 'alt.md'), 'alt\n', 'utf8');
-      mkdirSync(join(altRoot, 'skills', '_y'), { recursive: true });
-      writeFileSync(join(altRoot, 'skills', '_y', 'SKILL.md'), '# ay\n');
-      writeFileSync(join(altRoot, 'agents', 'b.md'), '# ab\n');
-
-      resetCaptured();
-      await captureExit(() =>
-        runProjectSwitchWithOptions(['alt'], {
-          repoRoot: repo,
-          tempPidTag: 's23',
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Each kind resolves into `alt`'s source (rather than `gobbi`'s).
-      for (const kind of CLAUDE_FARM_KINDS) {
-        const kindDir = join(repo, '.claude', kind);
-        expect(existsSync(kindDir)).toBe(true);
-      }
-      const altLeaf = join(repo, '.claude', 'rules', 'alt.md');
-      expect(lstatSync(altLeaf).isSymbolicLink()).toBe(true);
-      expect(readFileSync(altLeaf, 'utf8')).toBe('alt\n');
+    // PR-FIN-1c: `gobbi project switch` deleted with the registry
+    // removal; per-kind atomic rotation is no longer in the codebase.
+    test.skip('G-MEM2-23: RETIRED — farm rotation specific to project switch', () => {
+      // Original body asserted that after switch, all three farm kinds
+      // pointed at the new project and no temp artifacts remained.
+      // Preserved in git history.
     });
 
-    test('G-MEM2-24: temp-location farm is cleaned up on swap failure', async () => {
-      // Exercise a switch that FAILS to build because the target
-      // project tree is empty — `buildFarmIntoRoot` returns silently
-      // in that case, so failure at the build stage isn't trivially
-      // reproducible. Instead we exercise the happy path and lock the
-      // cleanup invariant (temp dir removed).
-      const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      const altRoot = projectDir(repo, 'alt');
-      for (const kind of CLAUDE_FARM_KINDS) {
-        mkdirSync(join(altRoot, kind), { recursive: true });
-      }
-      writeFileSync(join(altRoot, 'rules', 'a.md'), '# a\n', 'utf8');
-
-      resetCaptured();
-      await captureExit(() =>
-        runProjectSwitchWithOptions(['alt'], {
-          repoRoot: repo,
-          tempPidTag: 's24',
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Temp farm scratch dir must not linger.
-      expect(existsSync(join(repo, '.claude.tmp-farm-s24'))).toBe(false);
+    // PR-FIN-1c: `gobbi project switch` was deleted with the registry
+    // removal. The temp-farm path was specific to switch's per-kind atomic
+    // rotation; with no rotation, there is no temp-farm to clean up.
+    test.skip('G-MEM2-24: RETIRED — temp-location farm cleanup specific to project switch', () => {
+      // Original body: exercised a switch and asserted that the
+      // `.claude.tmp-farm-<pid>/` scratch dir did not linger after the
+      // operation. Preserved in git history at commit
+      // 362217c33778b58ec7b7a15155563decaccc2bae and prior.
     });
 
     test('G-MEM2-25: farm rebuild preserves sibling .claude/ content', async () => {

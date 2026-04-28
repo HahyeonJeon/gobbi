@@ -1,45 +1,29 @@
 /**
  * Shared `.claude/{skills,agents,rules}/` per-file symlink farm
- * primitives — extracted from `commands/project/switch.ts` so both
- * `gobbi install` (fresh-install setup) and `gobbi project switch`
- * (farm rotation) build the farm with identical semantics.
+ * primitives used by `gobbi install` (fresh-install setup).
  *
- * ## Why shared?
+ * ## Background
  *
  * The D3 lock from the v0.5.0 ideation mandates a per-file symlink
  * farm: each leaf `.claude/<kind>/<...>/<file>` is its own symlink
- * into the active project's source tree. Two commands need to
- * materialise that farm:
+ * into the active project's source tree.
  *
- *   - `gobbi install` fresh-path: after templates land in
- *     `.gobbi/projects/<name>/{skills,agents,rules}/`, build the
- *     farm from scratch so the user has a working Claude Code
- *     integration in one command.
- *   - `gobbi project switch <name>`: rotate the farm to point at a
- *     different project's source tree (atomic per-kind swap with
- *     rollback).
- *
- * Duplicating the walk-and-symlink logic would drift; one source of
- * truth is better.
+ * Pre-PR-FIN-1c, two commands materialised the farm: `gobbi install`
+ * (fresh-path) and `gobbi project switch` (farm rotation). PR-FIN-1c
+ * deleted the switch command together with the `Settings.projects`
+ * registry, so this module is now used only by the install path. The
+ * primitives stay in their own module — they remain useful surface
+ * for any future caller that needs to materialise the farm.
  *
  * ## Scope
  *
  *   - `buildFarmIntoRoot` — materialise the farm tree under a CALLER-OWNED
- *     destination root (either `.claude/` directly for fresh install,
- *     or a temp root for rotation). The caller decides whether the
- *     destination is being built in place or built-then-swapped.
+ *     destination root (typically `.claude/` for fresh install).
  *   - `mirrorTreeAsSymlinks` — recursive walk that creates one symlink
  *     per regular file in the source tree. Directories in the source
  *     become real directories in the destination so the per-file
  *     constraint is preserved.
  *
- * Rotation-specific concerns (temp-farm path naming, per-kind atomic
- * swap, rollback on mid-swap failure) stay in `commands/project/switch.ts`
- * — those are switch-command-only concerns. The shared module
- * exposes only the "materialise a farm" primitive.
- *
- * @see `commands/project/switch.ts::swapKinds` — rotation atomicity
- *      and rollback logic.
  * @see `commands/install.ts::runInstallWithOptions` — fresh-install
  *      farm build.
  * @see `lib/workspace-paths.ts::claudeSymlinkTarget` — canonical

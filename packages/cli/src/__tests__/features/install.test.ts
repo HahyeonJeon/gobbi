@@ -1,38 +1,37 @@
 /**
  * Feature-level integration tests for the install / project management
- * surface — exercises the four W5 commands (`gobbi install`,
- * `gobbi project create`, `gobbi project switch`, `gobbi project list`)
- * as end-to-end flows rather than in isolation.
+ * surface — exercises the install + project commands as end-to-end flows
+ * rather than in isolation.
  *
- * ## Scope
+ * ## Scope (post-PR-FIN-1c)
  *
- * W5's unit-test suite (`commands/__tests__/install.test.ts`,
- * `commands/project/__tests__/{create,list,switch}.test.ts`) already
- * covers each subcommand's branch matrix. This file is the layer above:
- * each test threads multiple commands through a single scratch repo and
- * asserts the CROSS-command invariants — settings-file shape after
- * install-then-switch, symlink-farm rotation preserving fresh-install
- * operator content, project-create seeding the new project while
- * leaving the active project untouched, `project list`'s active marker
- * following `project switch`, and so on.
+ * The unit-test suite (`commands/__tests__/install.test.ts`,
+ * `commands/project/__tests__/{create,list}.test.ts`) covers each
+ * subcommand's branch matrix. This file is the layer above: each test
+ * threads multiple commands through a single scratch repo and asserts
+ * cross-command invariants — settings-file shape after install,
+ * project-create seeding alongside the active project, `project list`'s
+ * active marker derived from `basename(repoRoot)`, etc.
  *
  * Scenario coverage:
  *
  *   F-INST-01 — Fresh `gobbi install`: project root materialises, farm
  *               symlinks resolve to the installed source, workspace
- *               settings carry `active=gobbi` + `known=[gobbi]`.
+ *               settings.json is seeded with the minimum-shape.
  *   F-INST-02 — Upgrade path: template v1 → edit → template v2
  *               `gobbi install --upgrade` overwrites unmodified files and
  *               leaves user-edited files intact (3-way merge contract).
  *   F-INST-03 — `gobbi project create <name>`: scaffold dir + seeded
- *               templates + settings.known appended, active unchanged.
- *   F-INST-04 — `gobbi project switch <name>`: farm rotates to point at
- *               the new project's source; `.claude/` non-farm siblings
- *               survive; workspace `projects.active` updated.
- *   F-INST-05 — `gobbi project list`: active project marked with `*`,
- *               others with ` `, sorted alphabetically.
- *   F-INST-06 — End-to-end combination: install → create second →
- *               switch → list — every invariant above holds in sequence.
+ *               templates under `.gobbi/projects/<name>/`.
+ *   F-INST-05 — `gobbi project list`: active marker follows
+ *               `basename(repoRoot)`; entries derived from filesystem.
+ *
+ * F-INST-04 (`gobbi project switch` farm rotation) and F-INST-06
+ * (end-to-end install → create → switch → list) were retired in
+ * PR-FIN-1c when `Settings.projects` and the `gobbi project switch`
+ * command were both removed. Active project resolves dynamically from
+ * `--project <name>` (or `basename(repoRoot)`) so there is no farm
+ * rotation step left to test.
  *
  * ## Design notes
  *
@@ -85,7 +84,6 @@ import {
 } from '../../commands/install.js';
 import { runProjectCreateWithOptions } from '../../commands/project/create.js';
 import { runProjectListWithOptions } from '../../commands/project/list.js';
-import { runProjectSwitchWithOptions } from '../../commands/project/switch.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap
@@ -413,102 +411,17 @@ describe('install + project commands — feature-level flows', () => {
   });
 
   // -------------------------------------------------------------------------
-  // F-INST-04 — project switch rotates farm + updates active.
+  // F-INST-04 — RETIRED in PR-FIN-1c.
   // -------------------------------------------------------------------------
-  // PR-FIN-1c: `gobbi project switch` is a deprecated no-op (the
-  // `projects.active` registry was removed). Farm-rotation tests retired.
-  describe('F-INST-04 — project switch rotates farm', () => {
-    test.skip('farm rotates to new project, settings.active updates, .claude siblings survive', async () => {
-      // Install fresh so `.gobbi/projects/gobbi/` + the initial farm
-      // exist.
-      const templateRoot = makeTemplate({
-        'rules/source.md': 'gobbi-source\n',
-        'skills/_x/SKILL.md': '# gobbi skill\n',
-        'agents/a.md': '# gobbi agent\n',
-      });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Operator drops a non-farm sibling into `.claude/` — the rotation
-      // must preserve it. This is the same invariant the install suite
-      // locks for fresh-install (NI-1); we lock it for rotation here.
-      const claudeRoot = join(repo, '.claude');
-      writeFileSync(
-        join(claudeRoot, 'CLAUDE.md'),
-        '# operator content\n',
-        'utf8',
-      );
-
-      // Build a sibling project `alt` by hand — no install/create
-      // needed, just raw source content to rotate to. The fact that
-      // farm rotation is independent of how the project was seeded is
-      // a contract worth asserting.
-      const altRoot = join(repo, '.gobbi', 'projects', 'alt');
-      mkdirSync(join(altRoot, 'rules'), { recursive: true });
-      mkdirSync(join(altRoot, 'skills', '_y'), { recursive: true });
-      mkdirSync(join(altRoot, 'agents'), { recursive: true });
-      writeFileSync(
-        join(altRoot, 'rules', 'alt-source.md'),
-        'alt-source\n',
-        'utf8',
-      );
-      writeFileSync(
-        join(altRoot, 'skills', '_y', 'SKILL.md'),
-        '# alt skill\n',
-        'utf8',
-      );
-      writeFileSync(
-        join(altRoot, 'agents', 'alt-agent.md'),
-        '# alt agent\n',
-        'utf8',
-      );
-
-      // Pre-register `alt` in settings (the switch command adds it
-      // dedup-safely; we pre-stage to keep the assertion focused).
-      const before = readSettings(repo);
-      expect((before as Record<string, unknown>)["projects"]).toBe('gobbi');
-
-      // Switch.
-      resetCaptured();
-      await captureExit(() =>
-        runProjectSwitchWithOptions(['alt'], {
-          repoRoot: repo,
-          tempPidTag: 'f04',
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Farm now points at `alt`'s source — the old `.claude/rules/source.md`
-      // leaf is gone (the rotate wipes the per-kind subtree) and
-      // `.claude/rules/alt-source.md` now exists as a symlink into the
-      // new project.
-      const oldLeaf = join(repo, '.claude', 'rules', 'source.md');
-      const newLeaf = join(repo, '.claude', 'rules', 'alt-source.md');
-      expect(existsSync(oldLeaf)).toBe(false);
-      expect(lstatSync(newLeaf).isSymbolicLink()).toBe(true);
-      const resolvedNew = pathResolve(
-        join(repo, '.claude', 'rules'),
-        readlinkSync(newLeaf),
-      );
-      expect(resolvedNew).toBe(join(altRoot, 'rules', 'alt-source.md'));
-      expect(readFileSync(resolvedNew, 'utf8')).toBe('alt-source\n');
-
-      // Non-farm sibling under `.claude/` survived the rotation.
-      expect(existsSync(join(claudeRoot, 'CLAUDE.md'))).toBe(true);
-      expect(readFileSync(join(claudeRoot, 'CLAUDE.md'), 'utf8')).toBe(
-        '# operator content\n',
-      );
-
-      // PR-FIN-1c: skipped test body — projects registry retired.
-      const after = readSettings(repo);
-      expect(after).toBeDefined();
-
-      // Temp-farm scratch dir cleaned up — `.claude.tmp-farm-f04/`
-      // must not linger.
-      expect(existsSync(join(repo, '.claude.tmp-farm-f04'))).toBe(false);
+  // `gobbi project switch` was deleted with the `Settings.projects` registry.
+  // Active project now resolves dynamically from `--project <name>` (or
+  // `basename(repoRoot)`); there is no farm rotation step left to test.
+  // The original F-INST-04 body (farm rotation, settings.active update,
+  // .claude sibling preservation) is preserved in git history at commit
+  // 362217c33778b58ec7b7a15155563decaccc2bae and prior.
+  describe.skip('F-INST-04 — RETIRED (project switch deleted in PR-FIN-1c)', () => {
+    test('placeholder', () => {
+      expect(true).toBe(true);
     });
   });
 
@@ -553,126 +466,17 @@ describe('install + project commands — feature-level flows', () => {
   });
 
   // -------------------------------------------------------------------------
-  // F-INST-06 — End-to-end combination flow: install → create → switch → list.
+  // F-INST-06 — RETIRED in PR-FIN-1c.
   // -------------------------------------------------------------------------
-  // PR-FIN-1c: `gobbi project switch` no longer rotates the farm.
-  // F-INST-06 retired with the registry removal.
-  describe('F-INST-06 — end-to-end combination flow', () => {
-    test.skip('install → create second → switch → list threads state correctly', async () => {
-      const templateRoot = makeTemplate({
-        'rules/core.md': 'core v1\n',
-        'skills/_x/SKILL.md': '# x\n',
-        'agents/a.md': '# a\n',
-      });
-      const repo = makeRepo();
-
-      // --- Step 1: fresh install -----------------------------------------
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot }),
-      );
-      expect(captured.exitCode).toBeNull();
-      const afterInstall = readSettings(repo);
-      expect((afterInstall as Record<string, unknown>)["projects"]).toBe('gobbi');
-      expect((afterInstall as Record<string, unknown>)["projects"]).toEqual(['gobbi']);
-      // Farm points at `gobbi`.
-      const coreLeafGobbi = join(repo, '.claude', 'rules', 'core.md');
-      expect(lstatSync(coreLeafGobbi).isSymbolicLink()).toBe(true);
-      expect(readFileSync(coreLeafGobbi, 'utf8')).toBe('core v1\n');
-
-      // --- Step 2: create a second project --------------------------------
-      //
-      // The create path seeds from the real worktree template bundle
-      // (no templateRoot override on `project create`). We assert only
-      // the shape invariants that don't depend on that content —
-      // scaffold directory + manifest + settings.known updated +
-      // active unchanged.
-      resetCaptured();
-      await captureExit(() =>
-        runProjectCreateWithOptions(['second'], { repoRoot: repo }),
-      );
-      expect(captured.exitCode).toBeNull();
-      expect(
-        existsSync(join(repo, '.gobbi', 'projects', 'second', 'design')),
-      ).toBe(true);
-      expect(
-        existsSync(
-          join(
-            repo,
-            '.gobbi',
-            'projects',
-            'second',
-            '.install-manifest.json',
-          ),
-        ),
-      ).toBe(true);
-      const afterCreate = readSettings(repo);
-      expect(afterCreate).toBeDefined();
-
-      // --- Step 3: switch to `second` ------------------------------------
-      //
-      // `gobbi project switch` needs the target to have the three kind
-      // dirs present. `project create` scaffolds those (skills/agents/
-      // rules are in the SCAFFOLD_DIRS list), and the seed hook
-      // populates them with template content. The rotation rewires
-      // `.claude/` to point at `second`'s source tree.
-      resetCaptured();
-      await captureExit(() =>
-        runProjectSwitchWithOptions(['second'], {
-          repoRoot: repo,
-          tempPidTag: 'f06',
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      const afterSwitch = readSettings(repo);
-      expect(afterSwitch).toBeDefined();
-
-      // Farm rotation: the old `gobbi`-specific leaf (`rules/core.md`)
-      // does not exist under the new farm (the real template seeded
-      // into `second` by `create` does NOT carry our synthetic
-      // `rules/core.md`; it carries the actual worktree content).
-      // The rotation wipes each per-kind subtree before rebuild, so
-      // the old leaf is gone even if the new project happens to also
-      // have it. Assert that the symlink, if present at the same
-      // path, now resolves into `second`'s source — or that it is
-      // absent because `second` lacks that file.
-      //
-      // The invariant we lock: NO `.claude/rules/core.md` leaf
-      // pointing into `gobbi`'s project root after the switch.
-      const postSwitchCoreLeaf = join(
-        repo,
-        '.claude',
-        'rules',
-        'core.md',
-      );
-      if (existsSync(postSwitchCoreLeaf)) {
-        const resolved = pathResolve(
-          join(repo, '.claude', 'rules'),
-          readlinkSync(postSwitchCoreLeaf),
-        );
-        expect(resolved).not.toBe(
-          join(repo, '.gobbi', 'projects', 'gobbi', 'rules', 'core.md'),
-        );
-        expect(resolved).toContain(
-          join(repo, '.gobbi', 'projects', 'second'),
-        );
-      }
-
-      // --- Step 4: list shows `second` as active -------------------------
-      resetCaptured();
-      await captureExit(() =>
-        runProjectListWithOptions([], { repoRoot: repo }),
-      );
-      expect(captured.exitCode).toBeNull();
-      const rows = captured.stdout.trimEnd().split('\n');
-      // `project create` leaves scaffold dirs for both projects, so
-      // both appear; only `second` carries the marker.
-      expect(rows).toContain(' \tgobbi');
-      expect(rows).toContain('*\tsecond');
-      // Sort is alphabetical — `gobbi` < `second`.
-      const gobbiIdx = rows.indexOf(' \tgobbi');
-      const secondIdx = rows.indexOf('*\tsecond');
-      expect(gobbiIdx).toBeLessThan(secondIdx);
+  // The end-to-end install → create → switch → list flow relied on the
+  // (now-deleted) `gobbi project switch` command and the registry it
+  // mutated. With switch deleted and `Settings.projects` removed,
+  // F-INST-06 has no farm-rotation step left to test. Original body is
+  // preserved in git history at commit 362217c33778b58ec7b7a15155563decaccc2bae
+  // and prior.
+  describe.skip('F-INST-06 — RETIRED (project switch deleted in PR-FIN-1c)', () => {
+    test('placeholder', () => {
+      expect(true).toBe(true);
     });
   });
 });
