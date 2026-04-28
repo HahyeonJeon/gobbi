@@ -4,6 +4,97 @@ This guide documents breaking changes and upgrade steps for major version bumps.
 
 ---
 
+## PR-FIN-1b: gobbi hook namespace + gobbi config env + `$CLAUDE_ENV_FILE`
+
+### Summary
+
+PR-FIN-1b ships three integrated pieces: (1) `gobbi config env` — the primitive that persists `CLAUDE_*` env vars to `$CLAUDE_ENV_FILE`; (2) `gobbi hook <event>` namespace — all 28 Claude Code hook events routed through a single dispatcher, with 5 non-trivial bodies and 23 generic stubs pending PR-FIN-1d; (3) `/gobbi` SKILL.md migration — the session-id discovery section is removed because env is now populated automatically.
+
+---
+
+### 1. Hook registration migration
+
+**Before PR-FIN-1b**, the plugin manifest (`plugins/gobbi/hooks/hooks.json`) and per-repo `.claude/settings.json` registered 5 entries that invoked the `gobbi workflow *` commands directly:
+
+| Hook event | Command |
+|---|---|
+| SessionStart | `gobbi workflow init` |
+| PreToolUse | `gobbi workflow guard` |
+| PostToolUse (ExitPlanMode) | `gobbi workflow capture-planning` |
+| SubagentStop | `gobbi workflow capture-subagent` |
+| Stop | `gobbi workflow stop` |
+
+**After PR-FIN-1b**, both files register all 28 Claude Code events with `gobbi hook <event>` commands. The five above now invoke `gobbi workflow *` internally via in-process function calls; the remaining 23 are stubs that exit 0 silently.
+
+**Action required:** If you have a custom per-repo `.claude/settings.json` that references any of the 5 old `gobbi workflow *` commands in hook entries, update those entries to `gobbi hook <event>`. Example:
+
+| Old entry | New entry |
+|---|---|
+| `gobbi workflow init` (SessionStart) | `gobbi hook session-start` |
+| `gobbi workflow guard` (PreToolUse) | `gobbi hook pre-tool-use` |
+| `gobbi workflow capture-planning` (PostToolUse) | `gobbi hook post-tool-use` |
+| `gobbi workflow capture-subagent` (SubagentStop) | `gobbi hook subagent-stop` |
+| `gobbi workflow stop` (Stop) | `gobbi hook stop` |
+
+The underlying `gobbi workflow *` commands remain independently invocable — direct calls for testing (`gobbi workflow init --session-id manual123`) continue to work unchanged. Only the hook registration entry-point changed.
+
+---
+
+### 2. `/gobbi` skill change
+
+**Before PR-FIN-1b**, the `/gobbi` SKILL.md contained a multi-step "Discovering the real session ID" section. The skill tried `$CODEX_COMPANION_SESSION_ID`, fell back to scanning `.jsonl` file mtime, and warned about manual UUID fallback. Skills called `gobbi config get …` with an explicit `CLAUDE_SESSION_ID=<discovered-id>` prefix.
+
+**After PR-FIN-1b**, that section is removed. The SessionStart hook fires → `gobbi hook session-start` runs → `gobbi config env` writes `CLAUDE_SESSION_ID` to `$CLAUDE_ENV_FILE` → Claude Code sources the env file → all subsequent commands and skill invocations in the session inherit `CLAUDE_SESSION_ID` automatically. The skill calls `gobbi config get workflow --level session` directly without any env-passing dance.
+
+**Action required:** If you have any scripts or custom skill files that include `CLAUDE_SESSION_ID=$DISCOVERED gobbi …` patterns (using the discovery dance), remove the discovery dance. The env var is already in the environment after the SessionStart hook fires.
+
+If you invoke the CLI outside a Claude Code session (e.g., for testing), use `--session-id <id>` or set `$CLAUDE_SESSION_ID` explicitly:
+
+```bash
+CLAUDE_SESSION_ID=my-test-session gobbi config get workflow --level session
+# or
+gobbi config get workflow --level session --session-id my-test-session
+```
+
+---
+
+### 3. `gobbi config env` usage
+
+`gobbi config env` is primarily invoked by `gobbi hook session-start` as part of the SessionStart hook chain. Agents and skills do not call it directly — they read `$CLAUDE_SESSION_ID`, `$CLAUDE_TRANSCRIPT_PATH`, etc. directly from the process environment (already populated by the hook).
+
+The command is available for direct invocation in tests:
+
+```bash
+# Simulate what the SessionStart hook does:
+echo '{"session_id":"test-123","transcript_path":"/tmp/t.jsonl","cwd":"/repo","hook_event_name":"SessionStart"}' \
+  | CLAUDE_ENV_FILE=/tmp/gobbi-env.txt gobbi config env
+
+cat /tmp/gobbi-env.txt
+# CLAUDE_SESSION_ID=test-123
+# CLAUDE_TRANSCRIPT_PATH=/tmp/t.jsonl
+# CLAUDE_CWD=/repo
+# CLAUDE_HOOK_EVENT_NAME=SessionStart
+```
+
+---
+
+### 4. `gobbi hook <event>` usage
+
+`gobbi hook <event>` is invoked by Claude Code hooks (not by users directly). Direct invocation works for testing but produces minimal output without a stdin JSON payload:
+
+```bash
+# Test that the command resolves (exit 0 expected):
+echo '{}' | gobbi hook session-end    # stub — exits 0 silently
+
+# Test the session-start chain (requires $CLAUDE_ENV_FILE and $CLAUDE_SESSION_ID):
+export CLAUDE_ENV_FILE=/tmp/test-env.txt
+export CLAUDE_SESSION_ID=test-sess-1
+echo '{"session_id":"test-sess-1","hook_event_name":"SessionStart","cwd":"/repo","transcript_path":"/tmp/t.jsonl"}' \
+  | gobbi hook session-start
+```
+
+---
+
 ## PR-FIN-1a: gobbi config init verb + session-id resolution change
 
 ### Summary

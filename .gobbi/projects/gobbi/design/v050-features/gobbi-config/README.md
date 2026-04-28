@@ -1,6 +1,6 @@
 # gobbi-config — Unified Settings Cascade
 
-Feature description for gobbi's three-level configuration cascade. Read this to understand where settings live at each scope, how levels override one another, the unified `settings.json` shape, and the three-verb CLI surface. This is the design-of-record for Pass 3 (session `dfd4ff66`) updated in PR-FIN-1c (session `c34ea7e6`) for the GitSettings reshape and ProjectsRegistry removal, and PR-FIN-1a (session `c34ea7e6`) for the `gobbi config init` verb and session-id resolution hard-error.
+Feature description for gobbi's three-level configuration cascade. Read this to understand where settings live at each scope, how levels override one another, the unified `settings.json` shape, and the three-verb CLI surface. This is the design-of-record for Pass 3 (session `dfd4ff66`) updated in PR-FIN-1c (session `c34ea7e6`) for the GitSettings reshape and ProjectsRegistry removal, PR-FIN-1a (session `c34ea7e6`) for the `gobbi config init` verb and session-id resolution hard-error, and PR-FIN-1b (session `c34ea7e6`) for `gobbi config env`, the `gobbi hook` namespace, and `$CLAUDE_ENV_FILE` persistence.
 
 ---
 
@@ -18,7 +18,9 @@ Gobbi resolves every setting by composing three `settings.json` files — worksp
 | project | `.gobbi/projects/<name>/settings.json` | tracked | `ensureSettingsCascade` seed; `gobbi config init --level project`; manual edit |
 | session | `.gobbi/projects/<name>/sessions/{id}/settings.json` | gitignored (inherits `.gobbi/projects/<name>/sessions/`) | `/gobbi` setup FIFTH step; `gobbi config set`; `gobbi config init --level session` |
 
-**Session-id resolution (PR-FIN-1a):** `--session-id` flag takes priority over `$CLAUDE_SESSION_ID` env. When neither is present, CLI commands that require a session id exit 2 with a remediation hint — no silent UUID fallback (removed in PR-FIN-1a). `gobbi workflow init` follows the same ladder: flag → env → hard error.
+**Session-id resolution (PR-FIN-1a, updated by PR-FIN-1b):** `--session-id` flag takes priority over `$CLAUDE_SESSION_ID` env. When neither is present, CLI commands that require a session id exit 2 with a remediation hint — no silent UUID fallback (removed in PR-FIN-1a). `gobbi workflow init` follows the same ladder: flag → env → hard error.
+
+After PR-FIN-1b, `$CLAUDE_SESSION_ID` is populated automatically by the SessionStart hook: Claude Code fires the hook → `gobbi hook session-start` reads the stdin JSON payload → `gobbi config env` writes `CLAUDE_SESSION_ID` (and other `CLAUDE_*` vars) to `$CLAUDE_ENV_FILE` → Claude Code sources the env file → all subsequent commands in the session inherit the env var. The `/gobbi` skill calls `gobbi config get …` directly without a discovery dance. See §`gobbi hook` namespace and §Session-id resolution below for details.
 
 **Project-name resolution (PR-FIN-1c):** Project name resolves in priority order:
 1. `--project <name>` flag — passed explicitly by CLI commands
@@ -94,7 +96,7 @@ Violation raises `ConfigCascadeError('parse', …)` without a `tier` (the violat
 
 ## CLI surface
 
-Three verbs. No `list`, `delete`, `cleanup`, `resolve`, or `--with-sources`.
+Five verbs. No `list`, `delete`, `cleanup`, `resolve`, or `--with-sources`.
 
 ### `gobbi config init [--level workspace|project|session] [--session-id <id>] [--project <name>] [--force]` (PR-FIN-1a)
 
@@ -120,6 +122,100 @@ Scaffolds the minimum-valid `{schemaVersion: 1}` seed at the target level. Works
 - Value coercion: `"true"/"false"` → boolean; `"null"` → null; JSON-array with leading `[` → parsed array; else string
 - Unknown keys fail validation with exit 2
 - Exit codes: `0` success; `2` parse/validation/IO error
+
+### `gobbi config env` (PR-FIN-1b)
+
+```
+gobbi config env
+```
+
+Single-action verb. Reads the hook's stdin JSON payload AND any natively-provided `CLAUDE_*` env vars; writes a unified set of `KEY=VALUE` lines to `$CLAUDE_ENV_FILE`. No flags — behavior is fully driven by stdin payload and native env.
+
+**Behavior:**
+1. Acquire payload — read stdin JSON via `lib/stdin.ts::readStdinJson` (TTY-safe). If `$CLAUDE_ENV_FILE` is unset, emit stderr WARN and exit 0 (non-blocking).
+2. Compose env vars — from stdin JSON: `session_id`, `transcript_path`, `cwd`, `hook_event_name`, `agent_id` (optional), `agent_type` (optional), `permission_mode` (optional). From native env passthrough: `CLAUDE_PROJECT_DIR`, `CLAUDE_PLUGIN_ROOT`, `CLAUDE_PLUGIN_DATA` (only those that are set).
+3. Upsert each as `KEY=VALUE\n` line in `$CLAUDE_ENV_FILE` — creates the file if absent; replaces existing line for same KEY (idempotent); does not clobber lines owned by other tools.
+4. Exit 0 on success; exit 2 on IO error.
+
+**Env vars persisted to `$CLAUDE_ENV_FILE`:**
+
+| Source | Key written |
+|---|---|
+| stdin JSON `session_id` | `CLAUDE_SESSION_ID` |
+| stdin JSON `transcript_path` | `CLAUDE_TRANSCRIPT_PATH` |
+| stdin JSON `cwd` | `CLAUDE_CWD` |
+| stdin JSON `hook_event_name` | `CLAUDE_HOOK_EVENT_NAME` |
+| stdin JSON `agent_id` (if present) | `CLAUDE_AGENT_ID` |
+| stdin JSON `agent_type` (if present) | `CLAUDE_AGENT_TYPE` |
+| stdin JSON `permission_mode` (if present) | `CLAUDE_PERMISSION_MODE` |
+| native env `CLAUDE_PROJECT_DIR` (if set) | `CLAUDE_PROJECT_DIR` |
+| native env `CLAUDE_PLUGIN_ROOT` (if set) | `CLAUDE_PLUGIN_ROOT` |
+| native env `CLAUDE_PLUGIN_DATA` (if set) | `CLAUDE_PLUGIN_DATA` |
+
+**Primary use case:** invoked by `gobbi hook session-start` to persist the session's `CLAUDE_*` env vars before `gobbi workflow init` runs. Subsequent CLI commands and the `/gobbi` skill inherit these vars from `$CLAUDE_ENV_FILE` for the remainder of the session.
+
+### `gobbi hook <event>` namespace (PR-FIN-1b)
+
+```
+gobbi hook session-start
+gobbi hook pre-tool-use
+gobbi hook post-tool-use
+gobbi hook subagent-stop
+gobbi hook stop
+gobbi hook session-end
+... (23 additional events — see full list below)
+```
+
+One canonical hook entrypoint per Claude Code hook event. All 28 events are registered. Five events have non-trivial bodies that replace the previous `gobbi workflow *` direct registrations; the remaining 23 are generic stubs (read stdin, exit 0) pending PR-FIN-1d notify dispatch.
+
+**Non-trivial bodies (5):**
+
+| Event | Internal sequence |
+|---|---|
+| `session-start` | `gobbi config env` → `gobbi workflow init` → TODO(PR-FIN-1d) notify dispatch |
+| `pre-tool-use` | `gobbi workflow guard` → TODO(PR-FIN-1d) notify dispatch |
+| `post-tool-use` (matcher: ExitPlanMode) | `gobbi workflow capture-planning` → TODO(PR-FIN-1d) notify dispatch |
+| `subagent-stop` | `gobbi workflow capture-subagent` → TODO(PR-FIN-1d) notify dispatch |
+| `stop` | `gobbi workflow stop` → TODO(PR-FIN-1d) notify dispatch |
+
+**Generic stubs (23):** `session-end`, `stop-failure`, `user-prompt-submit`, `user-prompt-expansion`, `post-tool-use-failure`, `post-tool-batch`, `permission-request`, `permission-denied`, `notification`, `subagent-start`, `task-created`, `task-completed`, `teammate-idle`, `pre-compact`, `post-compact`, `worktree-create`, `worktree-remove`, `file-changed`, `cwd-changed`, `instructions-loaded`, `config-change`, `elicitation`, `elicitation-result`. Each reads stdin, exits 0. Notify dispatch wiring is deferred to PR-FIN-1d.
+
+**Stdin payload flow:** each handler reads stdin once; passes the parsed payload (or relevant fields) to sub-steps via in-process function call — no double-read. Sub-steps that do not need the full payload receive env vars already set by earlier steps.
+
+**Plugin manifest:** `plugins/gobbi/hooks/hooks.json` registers all 28 Claude Code events with `gobbi hook <event>` commands. Per-repo `.claude/settings.json` mirrors the same 28 entries.
+
+**Independence:** the existing `gobbi workflow init`, `gobbi workflow guard`, etc. commands remain independently invocable. `gobbi hook <event>` orchestrates them but does not replace them — direct `gobbi workflow init --session-id manual123` continues to work for testing.
+
+---
+
+## Session-id resolution + `$CLAUDE_ENV_FILE` (PR-FIN-1b)
+
+The session-id resolution ladder for `gobbi workflow init` (post-PR-FIN-1b):
+
+| Priority | Source | Behavior |
+|---|---|---|
+| 1 | `--session-id <id>` flag | Use directly |
+| 2 | `$CLAUDE_SESSION_ID` env | Use directly — reliably set via `$CLAUDE_ENV_FILE` after `gobbi hook session-start` fires |
+| 3 | (none) | Exit 2 with remediation hint — no UUID fallback |
+
+Stdin-JSON extraction does NOT live in `init.ts`. It lives in `gobbi hook session-start`, which is the single site responsible for hook payloads.
+
+**SessionStart flow (runtime behavior):**
+
+```
+Claude Code fires SessionStart
+  → plugins/gobbi/hooks/hooks.json: "gobbi hook session-start"
+  → 1. parse stdin JSON (session_id, transcript_path, cwd, hook_event_name, …)
+  → 2. set process.env.CLAUDE_SESSION_ID = session_id (in-process, for subsequent steps)
+  → 3. invoke gobbi config env → writes CLAUDE_* lines to $CLAUDE_ENV_FILE
+  → 4. invoke gobbi workflow init → reads CLAUDE_SESSION_ID from env; opens session DB
+  → 5. TODO(PR-FIN-1d) — dispatch notify if SessionStart in channel triggers
+  → 6. exit 0 (hooks must not block Claude Code)
+Claude Code sources $CLAUDE_ENV_FILE → all subsequent commands inherit CLAUDE_*
+/gobbi skill calls: gobbi config get workflow --level session  (env var already in env)
+```
+
+**`/gobbi` skill (post-PR-FIN-1b):** The "Discovering the real session ID" section has been removed from SKILL.md. The skill calls `gobbi config get …` directly — `$CLAUDE_SESSION_ID` is already in env from `$CLAUDE_ENV_FILE`. The `cli-vs-skill-session-id` gotcha has been retired.
 
 ---
 
@@ -167,6 +263,12 @@ Resolution fires at the eval checkpoint, not at config-write time.
 
 ---
 
+## Legacy cleanup (continued)
+
+**Hook registration migration (PR-FIN-1b):** Prior to PR-FIN-1b, `plugins/gobbi/hooks/hooks.json` and `.claude/settings.json` registered 5 entries pointing directly at `gobbi workflow init`, `gobbi workflow guard`, `gobbi workflow capture-planning`, `gobbi workflow capture-subagent`, and `gobbi workflow stop`. PR-FIN-1b replaces those 5 entries with 28 entries pointing at `gobbi hook <event>`. The underlying `gobbi workflow *` commands remain unchanged — only the hook dispatch entry-point changed.
+
+---
+
 ## Config vs. memory
 
 Configuration answers "how should this session behave?" Memory answers "what happened and what did we learn?" They share the `.gobbi/` root but not a storage shape. See [`gobbi-memory/README.md`](../gobbi-memory/README.md) for the memory model.
@@ -181,5 +283,8 @@ Configuration answers "how should this session behave?" Memory answers "what hap
 | [`checklist.md`](checklist.md) | ISTQB-tagged verification items grouped by scenario ID |
 | [`review.md`](review.md) | DRIFT/NOTE/GAP findings with pinned commit SHAs |
 | [`packages/cli/src/lib/settings.ts`](../../../../../packages/cli/src/lib/settings.ts) | TypeScript source of truth for the `Settings` interface and `DEFAULTS` |
+| [`packages/cli/src/commands/config.ts`](../../../../../packages/cli/src/commands/config.ts) | `runConfigEnv` implementation |
+| [`packages/cli/src/commands/hook.ts`](../../../../../packages/cli/src/commands/hook.ts) | `gobbi hook` namespace dispatcher; `HOOK_COMMANDS` registry |
+| [`packages/cli/src/__tests__/features/hook.test.ts`](../../../../../packages/cli/src/__tests__/features/hook.test.ts) | HOOK-1..6 integration tests |
 | [`v050-overview.md §Directory Split`](../../v050-overview.md) | `.claude/` vs `.gobbi/` invariant; canonical directory layout |
 | [`deterministic-orchestration.md`](../deterministic-orchestration.md) | Five-step workflow; Workflow Configuration step populates session settings |

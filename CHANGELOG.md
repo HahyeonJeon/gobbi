@@ -14,11 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- PR-FIN-1b — `plugins/gobbi/hooks/hooks.json` and `.claude/settings.json` updated from 5 entries (direct `gobbi workflow *` commands) to 28 entries (all pointing at `gobbi hook <event>`). The existing `gobbi workflow *` commands remain independently invocable. See `MIGRATION.md` for hook registration migration guidance. (#216)
+- PR-FIN-1b — `/gobbi` SKILL.md: "Discovering the real session ID" section removed; `cli-vs-skill-session-id.md` gotcha retired. The skill calls `gobbi config get …` directly — `$CLAUDE_SESSION_ID` is in env automatically after `gobbi hook session-start` runs. (#216)
+
 - PR-FIN-1a — `init.ts::resolveSessionId` no longer falls back to `randomUUID()`. Resolution ladder: `--session-id` flag → `$CLAUDE_SESSION_ID` env → exit 2 with remediation hint. Pre-PR-FIN-1a sessions created with a random UUID fallback are now orphaned; see `MIGRATION.md` for cleanup guidance. (#214)
 - PR-FIN-1a — `gobbi config get/set/init --level session` error message now includes the recovery hint: `(outside a session, use --level workspace or --level project to bypass)`. Closes #182. (#214)
 - PR-FIN-1a — `GET_USAGE`/`SET_USAGE` help text corrected: `--session-id` flag takes priority over `$CLAUDE_SESSION_ID` env when both are present. (#214)
 - PR-FIN-1a — SKILL.md stale `resolveEvalDecision` note removed (the `'plan'` backward-compat bridge was removed in Pass 3; the note was factually wrong post-PR-FIN-1c). (#214)
 - PR-FIN-1a — `lib/settings.ts` module docstring T1/T3 historical narrative trimmed; current three-level cascade is described instead. (#214)
+
+- PR-FIN-1b — `gobbi config env` (NEW): single-action verb that reads the hook's stdin JSON payload plus native `CLAUDE_*` env vars, and upserts unified `KEY=VALUE` lines into `$CLAUDE_ENV_FILE`. Idempotent (overwrites existing lines for the same key, does not duplicate). Emits stderr WARN and exits 0 when `$CLAUDE_ENV_FILE` is unset — hooks are never blocked. Closes the env-file persistence gap from PR-FIN-1a's remediation hint. (#216)
+- PR-FIN-1b — `gobbi hook <event>` namespace (NEW): 28 Claude Code hook events registered under a single `gobbi hook` top-level command. Five events have non-trivial bodies replacing the prior direct `gobbi workflow *` registrations (`session-start`, `pre-tool-use`, `post-tool-use`, `subagent-stop`, `stop`); 23 events have generic stubs (read stdin, exit 0) pending PR-FIN-1d notify dispatch. Sub-step invocation is in-process (direct import) with parsed payload passed as parameter to avoid double-reading stdin. (#216)
+- PR-FIN-1b — CFG-24..28 integration tests: `gobbi config env` stdin-only, stdin+native passthrough, TTY silent exit, `$CLAUDE_ENV_FILE` unset WARN, and idempotent repeat-invocation. (#216)
+- PR-FIN-1b — HOOK-1..6 integration tests: `gobbi hook session-start` chain (env file + session dir), `gobbi hook pre-tool-use` guard fail-open, generic stub session-end, unknown subcommand exit 1, `--help` lists all 28, end-to-end SessionStart payload materialisation. (#216)
 
 - PR-FIN-1c — `GitSettings` reshaped: `mode`/`workflow`/`cleanup` sub-objects removed; flat shape with per-concern sub-objects (`baseBranch`, `issue.create`, `worktree.autoRemove`, `branch.autoRemove`, `pr.open`, `pr.draft`). Worktrees always created; PR and issue creation are independent opt-in fields. Cross-field check updated to `pr.open=true` requires `baseBranch !== null`; check exempts DEFAULTS-only case (fresh repos). `ProjectsRegistry` interface and `Settings.projects` field removed; project resolution is `basename(repoRoot)` + `--project` flag. `gobbi project list` runs filesystem scan; `gobbi project switch` removed. T2-v1 upgrader extended to also handle Pass-3-current-shape files in place. Workspace seed simplified to `{schemaVersion: 1}`. Closes #179, #212. (#212)
 
