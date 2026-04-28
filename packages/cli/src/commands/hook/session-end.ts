@@ -9,4 +9,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookSessionEnd = (args: string[]): Promise<void> =>
-  runGenericHookStub('SessionEnd');
+  runGenericHookStub('SessionEnd', args);

@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookFileChanged = (args: string[]): Promise<void> =>
-  runGenericHookStub('FileChanged');
+  runGenericHookStub('FileChanged', args);

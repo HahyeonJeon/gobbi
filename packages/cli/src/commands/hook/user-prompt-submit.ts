@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookUserPromptSubmit = (args: string[]): Promise<void> =>
-  runGenericHookStub('UserPromptSubmit');
+  runGenericHookStub('UserPromptSubmit', args);

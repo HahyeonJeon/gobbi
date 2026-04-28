@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookStopFailure = (args: string[]): Promise<void> =>
-  runGenericHookStub('StopFailure');
+  runGenericHookStub('StopFailure', args);

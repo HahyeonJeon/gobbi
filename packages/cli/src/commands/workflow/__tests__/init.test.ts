@@ -148,6 +148,11 @@ describe('resolveSessionId', () => {
     expect(captured.stderr).toContain('cannot resolve session id');
     expect(captured.stderr).toContain('--session-id');
     expect(captured.stderr).toContain('CLAUDE_SESSION_ID');
+    // Target-state §6.3: name the SessionStart hook + $CLAUDE_ENV_FILE
+    // mechanism so users have a concrete next step.
+    expect(captured.stderr).toContain('SessionStart hook');
+    expect(captured.stderr).toContain('gobbi hook session-start');
+    expect(captured.stderr).toContain('$CLAUDE_ENV_FILE');
   });
 });
 

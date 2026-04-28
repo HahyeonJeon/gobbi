@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookTeammateIdle = (args: string[]): Promise<void> =>
-  runGenericHookStub('TeammateIdle');
+  runGenericHookStub('TeammateIdle', args);

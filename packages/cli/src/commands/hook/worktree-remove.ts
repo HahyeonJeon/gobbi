@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookWorktreeRemove = (args: string[]): Promise<void> =>
-  runGenericHookStub('WorktreeRemove');
+  runGenericHookStub('WorktreeRemove', args);

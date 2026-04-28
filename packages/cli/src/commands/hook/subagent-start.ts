@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookSubagentStart = (args: string[]): Promise<void> =>
-  runGenericHookStub('SubagentStart');
+  runGenericHookStub('SubagentStart', args);

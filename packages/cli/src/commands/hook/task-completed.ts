@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookTaskCompleted = (args: string[]): Promise<void> =>
-  runGenericHookStub('TaskCompleted');
+  runGenericHookStub('TaskCompleted', args);

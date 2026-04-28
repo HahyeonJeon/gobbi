@@ -727,8 +727,13 @@ const NATIVE_PASSTHROUGH_KEYS: readonly string[] = [
  * picked individually — non-string values are dropped. The return is never
  * `null`; an entirely-missing payload yields an empty object so callers
  * can still apply native-env passthrough.
+ *
+ * Exported so `commands/hook/session-start.ts` (and any future hook
+ * entrypoint that reads the same payload shape) shares one boundary
+ * parser. Adding a field to {@link HookEnvPayload} + {@link ENV_KEY_MAP}
+ * automatically flows through every caller without parallel updates.
  */
-function asHookEnvPayload(value: unknown): HookEnvPayload {
+export function parseHookEnvPayload(value: unknown): HookEnvPayload {
   if (!isRecord(value)) return {};
   const out: Record<string, unknown> = {};
   for (const { stdinKey } of ENV_KEY_MAP) {
@@ -796,7 +801,7 @@ export async function runConfigEnv(
       // invoked outside a real Claude Code event must not fail loudly.
       return;
     }
-    payload = asHookEnvPayload(raw);
+    payload = parseHookEnvPayload(raw);
   }
 
   // --- 2. Compose env vars ---------------------------------------------

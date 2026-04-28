@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookPostToolUseFailure = (args: string[]): Promise<void> =>
-  runGenericHookStub('PostToolUseFailure');
+  runGenericHookStub('PostToolUseFailure', args);

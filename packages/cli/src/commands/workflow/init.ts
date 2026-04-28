@@ -397,8 +397,8 @@ export function resolveSessionId(override: string | undefined): string | never {
   process.stderr.write(
     'gobbi: cannot resolve session id.\n' +
       '  Tried: --session-id flag, CLAUDE_SESSION_ID env.\n' +
-      '  Pass --session-id explicitly or set CLAUDE_SESSION_ID.\n' +
-      '  (SessionStart hook integration arrives in PR-FIN-1b.)\n',
+      '  Pass --session-id explicitly, or invoke from a Claude Code SessionStart hook\n' +
+      '  (which writes CLAUDE_SESSION_ID to $CLAUDE_ENV_FILE via `gobbi hook session-start`).\n',
   );
   process.exit(2);
 }

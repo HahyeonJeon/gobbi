@@ -42,38 +42,11 @@
  */
 
 import { readStdinJson } from '../../lib/stdin.js';
-import { isRecord, isString } from '../../lib/guards.js';
 import {
+  parseHookEnvPayload,
   runConfigEnv,
-  type HookEnvPayload,
 } from '../config.js';
 import { runInitWithOptions } from '../workflow/init.js';
-
-/**
- * Narrow the raw stdin to {@link HookEnvPayload} — same shape used by
- * `runConfigEnv`. Non-string fields are dropped silently; an entirely
- * malformed payload yields an empty object so downstream calls still
- * see a valid shape.
- */
-function extractPayload(value: unknown): HookEnvPayload {
-  if (!isRecord(value)) return {};
-  const out: Record<string, string> = {};
-  const sid = value['session_id'];
-  if (isString(sid)) out['session_id'] = sid;
-  const tp = value['transcript_path'];
-  if (isString(tp)) out['transcript_path'] = tp;
-  const cwd = value['cwd'];
-  if (isString(cwd)) out['cwd'] = cwd;
-  const hen = value['hook_event_name'];
-  if (isString(hen)) out['hook_event_name'] = hen;
-  const aid = value['agent_id'];
-  if (isString(aid)) out['agent_id'] = aid;
-  const at = value['agent_type'];
-  if (isString(at)) out['agent_type'] = at;
-  const pm = value['permission_mode'];
-  if (isString(pm)) out['permission_mode'] = pm;
-  return out as HookEnvPayload;
-}
 
 export async function runHookSessionStart(args: string[]): Promise<void> {
   if (args.includes('--help') || args.includes('-h')) {
@@ -88,7 +61,7 @@ export async function runHookSessionStart(args: string[]): Promise<void> {
   // and runInitWithOptions will fall back to the existing `$CLAUDE_SESSION_ID`
   // env or exit 2 with the standard remediation if neither is set.
   const raw = await readStdinJson<unknown>();
-  const payload = extractPayload(raw);
+  const payload = parseHookEnvPayload(raw);
 
   try {
     // --- 2. Set CLAUDE_SESSION_ID for the in-process chain ---------------

@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookPreCompact = (args: string[]): Promise<void> =>
-  runGenericHookStub('PreCompact');
+  runGenericHookStub('PreCompact', args);

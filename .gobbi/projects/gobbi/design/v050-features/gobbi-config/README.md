@@ -47,7 +47,7 @@ The `planning` field name matches the loop name in `deterministic-orchestration.
 **`notify`** — Per-channel dict. Channels: `slack`, `telegram`, `discord`, `desktop`. Each carries:
 - `enabled: boolean`
 - `events: NotifyEvent[]` — gobbi workflow events; absent = all, `[]` = none, `[…]` = exactly those
-- `triggers: HookTrigger[]` — Claude Code hook events (schema-only this Pass; dispatch wiring deferred)
+- `triggers: HookTrigger[]` — Claude Code hook events (schema-only this Pass; dispatch wiring deferred). The `HookTrigger` enum currently enumerates 9 events; expansion to all 28 is deferred to PR-FIN-1d (alongside notify dispatch wiring).
 - Channel-specific routing: `slack.channel`, `telegram.chatId`, `discord.webhookName` (non-secret; null = unset)
 
 **`git`** — PR-FIN-1c flat shape with sub-objects per concern (see `packages/cli/src/lib/settings.ts::GitSettings`):

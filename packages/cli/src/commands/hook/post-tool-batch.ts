@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookPostToolBatch = (args: string[]): Promise<void> =>
-  runGenericHookStub('PostToolBatch');
+  runGenericHookStub('PostToolBatch', args);

@@ -83,6 +83,44 @@ mock.module('../../lib/repo.js', () => ({
   },
 }));
 
+// ---------------------------------------------------------------------------
+// Mocked stdin — bun:test's stdin is a TTY/internal stream, so the production
+// `lib/stdin.ts::readStdin` path returns null. To exercise the full
+// session-start chain end-to-end (HOOK-1, HOOK-6), tests can queue a synthetic
+// payload via `setStdinPayload()`. Default returns null (no piped input),
+// matching the production behaviour outside of hook invocations.
+// ---------------------------------------------------------------------------
+
+interface StdinState {
+  payload: string | null;
+}
+const STDIN_KEY = '__gobbiHookStdinPayload__';
+function setStdinPayload(payload: object | null): void {
+  (globalThis as unknown as Record<string, StdinState>)[STDIN_KEY] = {
+    payload: payload === null ? null : JSON.stringify(payload),
+  };
+}
+function consumeStdinPayload(): string | null {
+  const entry = (globalThis as unknown as Record<string, StdinState | undefined>)[STDIN_KEY];
+  const raw = entry?.payload ?? null;
+  // One-shot: clear after consume so subsequent reads in the same chain
+  // see null (matching the drained-stdin behaviour in production).
+  if (entry !== undefined) entry.payload = null;
+  return raw;
+}
+mock.module('../../lib/stdin.js', () => ({
+  readStdin: async (): Promise<string | null> => consumeStdinPayload(),
+  readStdinJson: async <T,>(): Promise<T | null> => {
+    const raw = consumeStdinPayload();
+    if (raw === null || raw.trim() === '') return null;
+    try {
+      return JSON.parse(raw) as T;
+    } catch {
+      return null;
+    }
+  },
+}));
+
 import { runHook, runHookWithRegistry, HOOK_COMMANDS } from '../../commands/hook.js';
 import { runHookSessionStart } from '../../commands/hook/session-start.js';
 
@@ -227,6 +265,10 @@ beforeEach(() => {
   delete process.env['CLAUDE_PLUGIN_ROOT'];
   delete process.env['CLAUDE_PLUGIN_DATA'];
   delete process.env['CLAUDE_ENV_FILE'];
+
+  // Default — no queued stdin payload. Tests that exercise the stdin-fed
+  // chain call `setStdinPayload({...})` explicitly.
+  setStdinPayload(null);
 });
 
 afterEach(() => {
@@ -261,20 +303,40 @@ describe('HOOK-1: gobbi hook session-start chains config env + workflow init', (
     const repo = makeScratchRepo();
     const envFile = join(repo, 'claude-env-hook-1.txt');
     process.env['CLAUDE_ENV_FILE'] = envFile;
+    process.env['CLAUDE_PROJECT_DIR'] = repo;
 
-    // No real stdin in bun:test (TTY); runHookSessionStart's readStdinJson
-    // returns null and the chain falls through with an empty payload.
-    // To exercise the full chain (extract → set env → call workflow init),
-    // we use the in-process `runConfigEnv` + `runInitWithOptions` path
-    // directly via runHookSessionStart, but since stdin is TTY we set
-    // CLAUDE_SESSION_ID via env for workflow init's env fallback.
-    process.env['CLAUDE_SESSION_ID'] = 'hook-1-sess';
+    // Feed a synthetic SessionStart payload through the mocked
+    // `readStdinJson`. The full chain runs end-to-end:
+    //   1. parseHookEnvPayload narrows the JSON to HookEnvPayload
+    //   2. session-start.ts sets process.env.CLAUDE_SESSION_ID from
+    //      payload.session_id
+    //   3. runConfigEnv writes CLAUDE_* lines (stdin-derived + native
+    //      passthrough) to $CLAUDE_ENV_FILE
+    //   4. runInitWithOptions resolves session id from env and creates
+    //      the session directory
+    setStdinPayload({
+      session_id: 'hook-1-sess',
+      transcript_path: '/tmp/hook-1-transcript.jsonl',
+      cwd: repo,
+      hook_event_name: 'SessionStart',
+    });
 
     await captureExit(async () => {
       await runHookSessionStart([]);
     });
     // Hook contract — must always exit 0 (never call process.exit).
     expect(captured.exitCode).toBeNull();
+
+    // The env file must be written with every CLAUDE_* line derived from
+    // the stdin payload + native passthrough. This is the assertion the
+    // file-header docstring promises HOOK-1 covers.
+    expect(existsSync(envFile)).toBe(true);
+    const body = readFileSync(envFile, 'utf8');
+    expect(body).toContain('CLAUDE_SESSION_ID=hook-1-sess\n');
+    expect(body).toContain('CLAUDE_TRANSCRIPT_PATH=/tmp/hook-1-transcript.jsonl\n');
+    expect(body).toContain(`CLAUDE_CWD=${repo}\n`);
+    expect(body).toContain('CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
+    expect(body).toContain(`CLAUDE_PROJECT_DIR=${repo}\n`);
 
     // workflow init created the session directory and metadata.json.
     const projectName = basename(repo);

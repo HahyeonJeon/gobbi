@@ -95,6 +95,21 @@ echo '{"session_id":"test-sess-1","hook_event_name":"SessionStart","cwd":"/repo"
 
 ---
 
+### 5. `init.ts` remediation message updated
+
+`init.ts::resolveSessionId` retains the same flag → env → exit-2 ladder shipped in PR-FIN-1a, but the closing line of the exit-2 message was updated in PR-FIN-1b now that the SessionStart hook integration ships in this PR. The live message is:
+
+```
+gobbi: cannot resolve session id.
+  Tried: --session-id flag, CLAUDE_SESSION_ID env.
+  Pass --session-id explicitly, or invoke from a Claude Code SessionStart hook
+  (which writes CLAUDE_SESSION_ID to $CLAUDE_ENV_FILE via `gobbi hook session-start`).
+```
+
+The PR-FIN-1a section below quotes the original placeholder text — preserved for history. Target-state §6.3.
+
+---
+
 ## PR-FIN-1a: gobbi config init verb + session-id resolution change
 
 ### Summary
@@ -166,6 +181,8 @@ gobbi: cannot resolve session id.
   Pass --session-id explicitly or set CLAUDE_SESSION_ID.
   (SessionStart hook integration arrives in PR-FIN-1b.)
 ```
+
+> **Note:** The closing line of this message was updated in PR-FIN-1b once the SessionStart hook integration shipped — the live runtime text now names `gobbi hook session-start` and `$CLAUDE_ENV_FILE` instead of the future-tense placeholder. See the PR-FIN-1b section above for the post-1b text.
 
 For commands that accept `--level session` (e.g., `gobbi config get/set/init`), the error also includes: `(outside a session, use --level workspace or --level project to bypass)`. Closes #182.
 

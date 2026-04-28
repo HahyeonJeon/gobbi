@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookPermissionRequest = (args: string[]): Promise<void> =>
-  runGenericHookStub('PermissionRequest');
+  runGenericHookStub('PermissionRequest', args);

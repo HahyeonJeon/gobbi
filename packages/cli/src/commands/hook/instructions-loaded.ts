@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookInstructionsLoaded = (args: string[]): Promise<void> =>
-  runGenericHookStub('InstructionsLoaded');
+  runGenericHookStub('InstructionsLoaded', args);

@@ -7,4 +7,4 @@
 import { runGenericHookStub } from './_stub.js';
 
 export const runHookPostCompact = (args: string[]): Promise<void> =>
-  runGenericHookStub('PostCompact');
+  runGenericHookStub('PostCompact', args);
