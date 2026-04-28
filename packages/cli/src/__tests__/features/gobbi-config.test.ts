@@ -1079,3 +1079,344 @@ describe('CFG-18: gobbi project list — filesystem scan replaces registry', () 
     expect(active).toBe(`*\t${repoBase}`);
   });
 });
+
+// ===========================================================================
+// CFG-19 (PR-FIN-1a): gobbi config init --level workspace
+// ===========================================================================
+//
+// `gobbi config init` is the explicit scaffold verb for the three-level
+// cascade. Default level is `workspace`; the seed is the minimum-valid
+// shape `{schemaVersion: 1}` (the cascade supplies all other defaults at
+// resolve time). Refuses without `--force` when the file exists.
+
+describe('CFG-19: gobbi config init --level workspace seeds + refuses + --force overwrites', () => {
+  test('CFG-19a: fresh init writes minimum-valid workspace seed', async () => {
+    const repo = makeScratchRepo();
+    await captureExit(async () => {
+      await runConfig(['init']);
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+
+    const filePath = join(repo, '.gobbi', 'settings.json');
+    expect(existsSync(filePath)).toBe(true);
+    const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
+    expect(onDisk).toEqual({ schemaVersion: 1 });
+  });
+
+  test('CFG-19b: --level workspace explicit seeds the same workspace path', async () => {
+    const repo = makeScratchRepo();
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'workspace']);
+    });
+    expect(captured.exitCode).toBeNull();
+
+    const filePath = join(repo, '.gobbi', 'settings.json');
+    expect(existsSync(filePath)).toBe(true);
+  });
+
+  test('CFG-19c: existing workspace settings.json refuses without --force', async () => {
+    const repo = makeScratchRepo();
+    // Pre-seed a non-trivial workspace settings file — init must not clobber.
+    writeJson(join(repo, '.gobbi', 'settings.json'), {
+      schemaVersion: 1,
+      workflow: { ideation: { discuss: { mode: 'agent' } } },
+    });
+    const before = readFileSync(join(repo, '.gobbi', 'settings.json'), 'utf8');
+
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'workspace']);
+    });
+    expect(captured.exitCode).toBe(2);
+    expect(captured.stderr).toContain('settings.json already exists at');
+    expect(captured.stderr).toContain('--force');
+
+    // File untouched.
+    expect(readFileSync(join(repo, '.gobbi', 'settings.json'), 'utf8')).toBe(before);
+  });
+
+  test('CFG-19d: --force overwrites the existing workspace file', async () => {
+    const repo = makeScratchRepo();
+    writeJson(join(repo, '.gobbi', 'settings.json'), {
+      schemaVersion: 1,
+      workflow: { ideation: { discuss: { mode: 'agent' } } },
+    });
+
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'workspace', '--force']);
+    });
+    expect(captured.exitCode).toBeNull();
+
+    const onDisk = JSON.parse(
+      readFileSync(join(repo, '.gobbi', 'settings.json'), 'utf8'),
+    ) as unknown;
+    expect(onDisk).toEqual({ schemaVersion: 1 });
+  });
+});
+
+// ===========================================================================
+// CFG-20 (PR-FIN-1a): gobbi config init --level project
+// ===========================================================================
+
+describe('CFG-20: gobbi config init --level project seeds via --project flag + basename fallback', () => {
+  test('CFG-20a: --project foo seeds .gobbi/projects/foo/settings.json', async () => {
+    const repo = makeScratchRepo();
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'project', '--project', 'foo']);
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+
+    const filePath = join(projectDirForName(repo, 'foo'), 'settings.json');
+    expect(existsSync(filePath)).toBe(true);
+    const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
+    expect(onDisk).toEqual({ schemaVersion: 1 });
+  });
+
+  test('CFG-20b: no --project flag falls back to basename(repoRoot)', async () => {
+    const repo = makeScratchRepo();
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'project']);
+    });
+    expect(captured.exitCode).toBeNull();
+
+    const filePath = join(projectDirForName(repo, basename(repo)), 'settings.json');
+    expect(existsSync(filePath)).toBe(true);
+  });
+
+  test('CFG-20c: existing project file refuses without --force', async () => {
+    const repo = makeScratchRepo();
+    writeJson(join(projectDirForName(repo, 'foo'), 'settings.json'), {
+      schemaVersion: 1,
+      git: { baseBranch: 'develop' },
+    });
+    const before = readFileSync(
+      join(projectDirForName(repo, 'foo'), 'settings.json'),
+      'utf8',
+    );
+
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'project', '--project', 'foo']);
+    });
+    expect(captured.exitCode).toBe(2);
+    expect(captured.stderr).toContain('--force');
+
+    expect(
+      readFileSync(join(projectDirForName(repo, 'foo'), 'settings.json'), 'utf8'),
+    ).toBe(before);
+  });
+});
+
+// ===========================================================================
+// CFG-21 (PR-FIN-1a): gobbi config init --level session
+// ===========================================================================
+
+describe('CFG-21: gobbi config init --level session seeds + requires session id + --force overwrites', () => {
+  test('CFG-21a: --session-id flag seeds .gobbi/projects/<name>/sessions/<id>/settings.json', async () => {
+    const repo = makeScratchRepo();
+    await captureExit(async () => {
+      await runConfig([
+        'init',
+        '--level',
+        'session',
+        '--session-id',
+        'sess-21',
+      ]);
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+
+    const filePath = join(
+      sessionDirForProject(repo, basename(repo), 'sess-21'),
+      'settings.json',
+    );
+    expect(existsSync(filePath)).toBe(true);
+    const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
+    expect(onDisk).toEqual({ schemaVersion: 1 });
+  });
+
+  test('CFG-21b: CLAUDE_SESSION_ID env supplies the session id when no flag', async () => {
+    const repo = makeScratchRepo();
+    process.env['CLAUDE_SESSION_ID'] = 'env-sess-21';
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'session']);
+    });
+    expect(captured.exitCode).toBeNull();
+
+    const filePath = join(
+      sessionDirForProject(repo, basename(repo), 'env-sess-21'),
+      'settings.json',
+    );
+    expect(existsSync(filePath)).toBe(true);
+  });
+
+  test('CFG-21c: missing both flag and env exits 2 with recovery hint', async () => {
+    makeScratchRepo();
+    delete process.env['CLAUDE_SESSION_ID'];
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'session']);
+    });
+    expect(captured.exitCode).toBe(2);
+    expect(captured.stderr).toContain(
+      'requires CLAUDE_SESSION_ID env or --session-id',
+    );
+    expect(captured.stderr).toContain(
+      'use --level workspace or --level project to bypass',
+    );
+  });
+
+  test('CFG-21d: --force overwrites the existing session file', async () => {
+    const repo = makeScratchRepo();
+    writeJson(
+      join(sessionDirForProject(repo, basename(repo), 'sess-force'), 'settings.json'),
+      { schemaVersion: 1, workflow: { ideation: { discuss: { mode: 'agent' } } } },
+    );
+
+    await captureExit(async () => {
+      await runConfig([
+        'init',
+        '--level',
+        'session',
+        '--session-id',
+        'sess-force',
+        '--force',
+      ]);
+    });
+    expect(captured.exitCode).toBeNull();
+
+    const onDisk = JSON.parse(
+      readFileSync(
+        join(
+          sessionDirForProject(repo, basename(repo), 'sess-force'),
+          'settings.json',
+        ),
+        'utf8',
+      ),
+    ) as unknown;
+    expect(onDisk).toEqual({ schemaVersion: 1 });
+  });
+});
+
+// ===========================================================================
+// CFG-22 (PR-FIN-1a): --force emits stderr WARN line on overwrite
+// ===========================================================================
+//
+// Explicit assertion that `--force` overwriting an existing file emits a
+// WARN line to stderr (not silent). The line names the path so the
+// operator can rollback if the overwrite was unintentional.
+
+describe('CFG-22: --force on existing file emits stderr WARN line', () => {
+  test('CFG-22a: workspace --force emits stderr WARN line containing the path', async () => {
+    const repo = makeScratchRepo();
+    writeJson(join(repo, '.gobbi', 'settings.json'), {
+      schemaVersion: 1,
+      workflow: { ideation: { discuss: { mode: 'agent' } } },
+    });
+
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'workspace', '--force']);
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toContain('WARN');
+    expect(captured.stderr).toContain('overwriting existing settings.json');
+    expect(captured.stderr).toContain(join(repo, '.gobbi', 'settings.json'));
+    expect(captured.stderr).toContain('--force');
+  });
+
+  test('CFG-22b: --force on non-existent file is silent (no WARN)', async () => {
+    const repo = makeScratchRepo();
+    await captureExit(async () => {
+      await runConfig(['init', '--level', 'workspace', '--force']);
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+    // The file lands either way.
+    expect(existsSync(join(repo, '.gobbi', 'settings.json'))).toBe(true);
+  });
+});
+
+// ===========================================================================
+// CFG-23 (PR-FIN-1a): fresh-setup config + workflow init ordering invariant
+// ===========================================================================
+//
+// Locks the #185 invariant: post-PR-FIN-1c project resolution is
+// consistent across `gobbi config set` and `gobbi workflow init` because
+// both walk `--project flag → basename(repoRoot)`. A pre-init `config
+// set` lands at the same project path that `workflow init` later
+// resolves, so a subsequent `config get` returns the value the user wrote.
+//
+// On a fresh repo (no `.gobbi/`), this exercises the entire ladder:
+// `ensureSettingsCascade` runs from `workflow init`, but the pre-init
+// `config set` already created the session-level file at the basename
+// slot — both must agree on the slot name.
+
+describe('CFG-23: fresh-setup config set + workflow init resolve to the same project', () => {
+  test('CFG-23: pre-init config set on session level + workflow init reads back the same value', async () => {
+    const repo = makeScratchRepo();
+    process.env['CLAUDE_SESSION_ID'] = 'sess1';
+    const expectedProject = basename(repo);
+
+    // Step 1: pre-init `config set` at session level — lands at
+    // .gobbi/projects/<basename>/sessions/sess1/settings.json. With no
+    // `.gobbi/` yet, this also creates the directory tree.
+    await captureExit(async () => {
+      await runConfig([
+        'set',
+        'workflow.ideation.evaluate.mode',
+        'always',
+        '--level',
+        'session',
+        '--session-id',
+        'sess1',
+      ]);
+    });
+    expect(captured.exitCode).toBeNull();
+
+    const expectedFile = join(
+      sessionDirForProject(repo, expectedProject, 'sess1'),
+      'settings.json',
+    );
+    expect(existsSync(expectedFile)).toBe(true);
+
+    // Step 2: workflow init — `ensureSettingsCascade` must NOT clobber the
+    // pre-existing session file, and it must resolve the project to the
+    // same `basename(repoRoot)` slot.
+    const { runInitWithOptions } = await import('../../commands/workflow/init.js');
+    resetCapture();
+    await captureExit(async () => {
+      await runInitWithOptions(
+        ['--session-id', 'sess1'],
+        { repoRoot: repo },
+      );
+    });
+    expect(captured.exitCode).toBeNull();
+
+    // The metadata.projectName must match the project the pre-init `set`
+    // landed under.
+    const metaPath = join(
+      sessionDirForProject(repo, expectedProject, 'sess1'),
+      'metadata.json',
+    );
+    expect(existsSync(metaPath)).toBe(true);
+    const meta = JSON.parse(readFileSync(metaPath, 'utf8')) as {
+      readonly projectName: string;
+    };
+    expect(meta.projectName).toBe(expectedProject);
+
+    // Step 3: read the value back via `config get --level session` — it
+    // must still be the value we set in step 1.
+    resetCapture();
+    await captureExit(async () => {
+      await runConfig([
+        'get',
+        'workflow.ideation.evaluate.mode',
+        '--level',
+        'session',
+        '--session-id',
+        'sess1',
+      ]);
+    });
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stdout).toBe('"always"\n');
+  });
+});

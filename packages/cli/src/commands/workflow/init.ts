@@ -19,8 +19,11 @@
  * ## Session id resolution
  *
  *   1. Explicit `--session-id <id>` flag (CLI direct mode).
- *   2. `CLAUDE_SESSION_ID` env var (hook context — set by Claude Code).
- *   3. Fallback — generate a fresh UUID.
+ *   2. `CLAUDE_SESSION_ID` env var (hook context — set by Claude Code via
+ *      the SessionStart hook + `$CLAUDE_ENV_FILE` mechanism in PR-FIN-1b).
+ *   3. Hard error — exit 2 with remediation. No `randomUUID()` fallback;
+ *      a fabricated id orphans `.gobbi/projects/<name>/sessions/<random>/`
+ *      directories that nothing references.
  *
  * ## Project name resolution (PR-FIN-1c)
  *
@@ -43,7 +46,6 @@
 import { parseArgs } from 'node:util';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
-import { randomUUID } from 'node:crypto';
 
 import { getRepoRoot } from '../../lib/repo.js';
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../../lib/guards.js';
@@ -73,7 +75,8 @@ const USAGE = `Usage: gobbi workflow init [options]
 Initialise the workflow session directory and emit the opening events.
 
 Options:
-  --session-id <id>     Session id (overrides CLAUDE_SESSION_ID, generates UUID if neither set)
+  --session-id <id>     Session id (takes priority over CLAUDE_SESSION_ID env;
+                        exits 2 with remediation when neither is set)
   --project <name>      Bind this session to project <name> (per-invocation override)
   --task <text>         Free-text description of the task
   --eval-ideation       Enable evaluation after ideation (default: off)
@@ -371,14 +374,28 @@ function dedup(items: readonly string[]): readonly string[] {
 }
 
 /**
- * Resolve the session id using the three-tier priority described in the
- * module docblock. Exported so tests can exercise the fallback chain.
+ * Resolve the session id using the priority described in the module
+ * docblock — `--session-id` flag → `$CLAUDE_SESSION_ID` env → hard error.
+ *
+ * No silent UUID fabrication: a randomly-generated id orphans
+ * `.gobbi/projects/<name>/sessions/<random>/` directories that nothing
+ * else references, contaminating the workspace and breaking idempotent
+ * re-init. Fail loudly with remediation instead.
+ *
+ * Exits 2 (and never returns) when both sources are absent. Exported so
+ * tests can exercise both the success branches and the abort branch.
  */
 export function resolveSessionId(override: string | undefined): string {
   if (override !== undefined && override !== '') return override;
   const env = process.env['CLAUDE_SESSION_ID'];
   if (env !== undefined && env !== '') return env;
-  return randomUUID();
+  process.stderr.write(
+    'gobbi: cannot resolve session id.\n' +
+      '  Tried: --session-id flag, CLAUDE_SESSION_ID env.\n' +
+      '  Pass --session-id explicitly or set CLAUDE_SESSION_ID.\n' +
+      '  (SessionStart hook integration arrives in PR-FIN-1b.)\n',
+  );
+  process.exit(2);
 }
 
 /**

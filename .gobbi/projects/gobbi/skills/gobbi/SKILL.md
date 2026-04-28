@@ -114,8 +114,6 @@ CLAUDE_SESSION_ID=$DISCOVERED gobbi config set notify.slack.enabled true
 
 Discussion modes are NOT asked. Defaults apply: `workflow.ideation.discuss.mode` = `user`, `workflow.planning.discuss.mode` = `user`, `workflow.execution.discuss.mode` = `agent`. Users override these manually via `gobbi config set` if they want different behavior.
 
-Note: the settings field is named `planning` to match the loop name in `deterministic-orchestration.md` ("Planning Loop") and the state-machine literal (aligned post-Wave-4). `resolveEvalDecision` accepts only `'planning'` — the `'plan'` backward-compat bridge was removed at Pass 3.
-
 **SIXTH — project context detection.** This runs automatically at session start without asking. Load [project-setup.md](project-setup.md) to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.

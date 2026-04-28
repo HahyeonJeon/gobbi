@@ -128,11 +128,26 @@ describe('resolveSessionId', () => {
     delete process.env['CLAUDE_SESSION_ID'];
   });
 
-  test('generates a UUID when neither override nor env', () => {
+  test('flag override takes priority over env', () => {
+    process.env['CLAUDE_SESSION_ID'] = 'env-id';
+    try {
+      expect(resolveSessionId('flag-wins')).toBe('flag-wins');
+    } finally {
+      delete process.env['CLAUDE_SESSION_ID'];
+    }
+  });
+
+  test('exits 2 with remediation when neither override nor env', async () => {
     delete process.env['CLAUDE_SESSION_ID'];
-    const id = resolveSessionId(undefined);
-    expect(id.length).toBeGreaterThan(10);
-    expect(id.split('-').length).toBe(5);
+    await captureExit(async () => {
+      // Wrap in a promise so the captureExit harness intercepts the
+      // ExitCalled throw thrown inside `process.exit`.
+      resolveSessionId(undefined);
+    });
+    expect(captured.exitCode).toBe(2);
+    expect(captured.stderr).toContain('cannot resolve session id');
+    expect(captured.stderr).toContain('--session-id');
+    expect(captured.stderr).toContain('CLAUDE_SESSION_ID');
   });
 });
 
