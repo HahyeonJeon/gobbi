@@ -35,16 +35,49 @@ const NOTIFY_EVENT_ENUM = [
   'error',
 ] as const;
 
+// Mirrors `HookTrigger` in `settings.ts`. Listed in the same target-state
+// §4.4 canonical order so the AJV schema diff matches a manual scan of the
+// TypeScript union — drift surfaces as a `JSONSchemaType<Settings>` error.
 const HOOK_TRIGGER_ENUM = [
-  'PreToolUse',
-  'PostToolUse',
-  'Stop',
-  'SubagentStop',
-  'UserPromptSubmit',
-  'Notification',
-  'PreCompact',
+  // Session lifecycle
   'SessionStart',
   'SessionEnd',
+  'Stop',
+  'StopFailure',
+  // Prompt lifecycle
+  'UserPromptSubmit',
+  'UserPromptExpansion',
+  // Tool lifecycle
+  'PreToolUse',
+  'PostToolUse',
+  'PostToolUseFailure',
+  'PostToolBatch',
+  // Permission
+  'PermissionRequest',
+  'PermissionDenied',
+  // Notification
+  'Notification',
+  // Subagent / task
+  'SubagentStart',
+  'SubagentStop',
+  'TaskCreated',
+  'TaskCompleted',
+  'TeammateIdle',
+  // Compaction
+  'PreCompact',
+  'PostCompact',
+  // Worktree
+  'WorktreeCreate',
+  'WorktreeRemove',
+  // Workspace
+  'FileChanged',
+  'CwdChanged',
+  'InstructionsLoaded',
+  // Config
+  'ConfigChange',
+  // Elicitation
+  'Elicitation',
+  'ElicitationResult',
 ] as const;
 
 const AGENT_MODEL_ENUM = ['opus', 'sonnet', 'haiku', 'auto'] as const;
