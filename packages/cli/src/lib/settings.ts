@@ -163,8 +163,12 @@ export interface WorkflowSettings {
  * Shared fields for every notification channel. Channel-specific routing
  * (Slack channel, Telegram chatId, Discord webhookName) is added per-channel
  * below. Desktop has no routing fields.
+ *
+ * Exported so the notify dispatcher can type its predicate parameter
+ * against the common parent of `SlackChannel | TelegramChannel |
+ * DiscordChannel | DesktopChannel` without duplicating the shape.
  */
-interface ChannelBase {
+export interface ChannelBase {
   readonly enabled?: boolean;
   /** Workflow events this channel fires on. Absent = all; `[]` = none. */
   readonly events?: readonly NotifyEvent[];

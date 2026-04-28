@@ -50,7 +50,7 @@ import { mkdir, appendFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { resolveSettings } from './settings-io.js';
-import type { NotifyEvent, NotifySettings } from './settings.js';
+import type { ChannelBase, NotifyEvent, NotifySettings } from './settings.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -258,6 +258,101 @@ async function sendDesktop(title: string, message: string): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Per-channel dispatch
+// ---------------------------------------------------------------------------
+
+/**
+ * Iterate the four channels in fixed order (slack → telegram → discord →
+ * desktop), apply the caller-supplied `predicate` to each, and dispatch the
+ * channel-specific send when the predicate returns `true` AND the
+ * channel-specific credentials / routing are present.
+ *
+ * The predicate owns filter semantics — `enabled === true`, the inverted
+ * `events` filter, the `triggers` filter, or any composition the caller
+ * needs. This helper is indifferent to which gate the predicate models;
+ * its job is to apply the per-channel credential resolution and push to
+ * the concurrent task list.
+ *
+ * Channel-specific behavior is unchanged from the original inline form:
+ *
+ *   - **slack** — token from `SLACK_BOT_TOKEN`; destination from
+ *     `notify.slack.channel` if a non-empty string, else `SLACK_USER_ID`
+ *     env. Skipped when token or destination is absent.
+ *   - **telegram** — token from `TELEGRAM_BOT_TOKEN`; chat id from
+ *     `notify.telegram.chatId` if a non-empty string, else
+ *     `TELEGRAM_CHAT_ID` env. Skipped when token or chat id is absent.
+ *   - **discord** — webhook URL from `DISCORD_WEBHOOK_URL`. Skipped when
+ *     the URL is absent. `webhookName` is recorded for future named-webhook
+ *     routing but is not used to select a target today.
+ *   - **desktop** — no credential gate; only the predicate.
+ *
+ * All four channels fire concurrently via `Promise.allSettled` so that a
+ * failure in one never blocks the others. Never throws — errors land in
+ * `~/.claude/notification-failures.log` via the per-channel send helpers.
+ *
+ * @internal — exported for tests; production callers use `sendNotifications`.
+ */
+export async function dispatchToChannels(
+  title: string,
+  message: string,
+  notify: NotifySettings | undefined,
+  predicate: (channel: ChannelBase) => boolean,
+): Promise<void> {
+  const tasks: Promise<void>[] = [];
+
+  // ---- slack ----
+  const slack = notify?.slack;
+  if (slack !== undefined && predicate(slack)) {
+    const token = process.env['SLACK_BOT_TOKEN'];
+    // Prefer config routing; fall back to legacy env var. `null` in config
+    // is a terminate-delegation leaf — treated as "no destination", which
+    // silences the channel until the operator sets one.
+    const destination =
+      typeof slack.channel === 'string' && slack.channel !== ''
+        ? slack.channel
+        : process.env['SLACK_USER_ID'];
+    if (token !== undefined && destination !== undefined && destination !== '') {
+      tasks.push(sendSlack(title, message, token, destination));
+    }
+  }
+
+  // ---- telegram ----
+  const telegram = notify?.telegram;
+  if (telegram !== undefined && predicate(telegram)) {
+    const token = process.env['TELEGRAM_BOT_TOKEN'];
+    const chatId =
+      typeof telegram.chatId === 'string' && telegram.chatId !== ''
+        ? telegram.chatId
+        : process.env['TELEGRAM_CHAT_ID'];
+    if (token !== undefined && chatId !== undefined && chatId !== '') {
+      tasks.push(sendTelegram(title, message, token, chatId));
+    }
+  }
+
+  // ---- discord ----
+  // `webhookName` is persisted for future named-webhook routing; today we
+  // only support the single env-var webhook URL, so the field is read for
+  // schema completeness but not used to select a target.
+  const discord = notify?.discord;
+  if (discord !== undefined && predicate(discord)) {
+    const webhookUrl = process.env['DISCORD_WEBHOOK_URL'];
+    if (webhookUrl !== undefined && webhookUrl !== '') {
+      tasks.push(sendDiscord(title, message, webhookUrl));
+    }
+  }
+
+  // ---- desktop ----
+  // No credential/env gate — desktop only needs the local notifier binary.
+  // The predicate is the sole authorization.
+  const desktop = notify?.desktop;
+  if (desktop !== undefined && predicate(desktop)) {
+    tasks.push(sendDesktop(title, message));
+  }
+
+  await Promise.allSettled(tasks);
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -313,56 +408,10 @@ export async function sendNotifications(
     return;
   }
 
-  const tasks: Promise<void>[] = [];
-
-  // ---- slack ----
-  const slack = notify?.slack;
-  if (slack?.enabled === true && channelMatchesEvent(slack.events, event)) {
-    const token = process.env['SLACK_BOT_TOKEN'];
-    // Prefer config routing; fall back to legacy env var. `null` in config
-    // is a terminate-delegation leaf — treated as "no destination", which
-    // silences the channel until the operator sets one.
-    const destination =
-      typeof slack.channel === 'string' && slack.channel !== ''
-        ? slack.channel
-        : process.env['SLACK_USER_ID'];
-    if (token !== undefined && destination !== undefined && destination !== '') {
-      tasks.push(sendSlack(title, message, token, destination));
-    }
-  }
-
-  // ---- telegram ----
-  const telegram = notify?.telegram;
-  if (telegram?.enabled === true && channelMatchesEvent(telegram.events, event)) {
-    const token = process.env['TELEGRAM_BOT_TOKEN'];
-    const chatId =
-      typeof telegram.chatId === 'string' && telegram.chatId !== ''
-        ? telegram.chatId
-        : process.env['TELEGRAM_CHAT_ID'];
-    if (token !== undefined && chatId !== undefined && chatId !== '') {
-      tasks.push(sendTelegram(title, message, token, chatId));
-    }
-  }
-
-  // ---- discord ----
-  // `webhookName` is persisted for future named-webhook routing; today we
-  // only support the single env-var webhook URL, so the field is read for
-  // schema completeness but not used to select a target.
-  const discord = notify?.discord;
-  if (discord?.enabled === true && channelMatchesEvent(discord.events, event)) {
-    const webhookUrl = process.env['DISCORD_WEBHOOK_URL'];
-    if (webhookUrl !== undefined && webhookUrl !== '') {
-      tasks.push(sendDiscord(title, message, webhookUrl));
-    }
-  }
-
-  // ---- desktop ----
-  // No credential/env gate — desktop only needs the local notifier binary.
-  // `notify.desktop.enabled === true` is the sole authorization.
-  const desktop = notify?.desktop;
-  if (desktop?.enabled === true && channelMatchesEvent(desktop.events, event)) {
-    tasks.push(sendDesktop(title, message));
-  }
-
-  await Promise.allSettled(tasks);
+  await dispatchToChannels(
+    title,
+    message,
+    notify,
+    (channel) => channel.enabled === true && channelMatchesEvent(channel.events, event),
+  );
 }

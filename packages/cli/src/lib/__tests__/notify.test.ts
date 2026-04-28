@@ -38,10 +38,11 @@ import { join } from 'node:path';
 
 import {
   channelMatchesEvent,
+  dispatchToChannels,
   sendNotifications,
   type NotifyOptions,
 } from '../notify.js';
-import type { NotifyEvent, Settings } from '../settings.js';
+import type { ChannelBase, NotifyEvent, NotifySettings, Settings } from '../settings.js';
 
 // ===========================================================================
 // channelMatchesEvent — pure function
@@ -514,5 +515,93 @@ describe('sendNotifications — multi-channel', () => {
     await sendNotifications('T', 'm', 'workflow.complete', baseOptions());
     expect(calls.length).toBe(1);
     expect(calls[0]?.url).toContain('api.telegram.org');
+  });
+});
+
+// ===========================================================================
+// dispatchToChannels — predicate-driven helper (PR-FIN-1d.2a seam)
+// ===========================================================================
+
+/**
+ * Tests the extracted helper directly. The helper is indifferent to filter
+ * semantics — predicate ownership lets the upcoming `dispatchHookNotify`
+ * (1d.2) reuse the per-channel credential resolution without duplicating
+ * logic. These tests assert the predicate gates dispatch on a per-channel
+ * basis: only channels for which the predicate returns `true` consult
+ * credentials and push to the concurrent task list.
+ *
+ * Channels are observed via the `fetch` mock for slack / telegram / discord;
+ * desktop has no HTTP side-effect, so it is asserted by predicate-call
+ * count via a spy predicate plus the absence of any HTTP call.
+ */
+describe('dispatchToChannels', () => {
+  /** Build a `NotifySettings` with all four channels populated and credentials
+   *  pre-staged via env so the only remaining gate is the predicate. */
+  function fullySeededSettings(): NotifySettings {
+    process.env['SLACK_BOT_TOKEN'] = 'slack-token';
+    process.env['SLACK_USER_ID'] = 'U-slack';
+    process.env['TELEGRAM_BOT_TOKEN'] = 'tg-token';
+    process.env['TELEGRAM_CHAT_ID'] = 'chat-id';
+    process.env['DISCORD_WEBHOOK_URL'] = 'https://discord.example/webhook';
+    return {
+      slack: { enabled: true, events: ['error'] },
+      telegram: { enabled: true, events: ['error'] },
+      discord: { enabled: true, events: ['error'] },
+      desktop: { enabled: true, events: ['error'] },
+    };
+  }
+
+  test('predicate gates per channel — slack + discord pass, telegram + desktop skipped', async () => {
+    const notify = fullySeededSettings();
+    const seen: ChannelBase[] = [];
+
+    // Predicate returns true only for the two channels whose `events`
+    // happen to start with the letter 'e' AND whose `enabled` is true —
+    // we use a structural marker (`channel === slack || === discord`)
+    // by reference identity since the helper passes the same object the
+    // predicate received from `notify`.
+    const slackRef = notify.slack;
+    const discordRef = notify.discord;
+    const predicate = (channel: ChannelBase): boolean => {
+      seen.push(channel);
+      return channel === slackRef || channel === discordRef;
+    };
+
+    await dispatchToChannels('Title', 'body', notify, predicate);
+
+    // Predicate was called once per channel in the fixed order.
+    expect(seen.length).toBe(4);
+    expect(seen[0]).toBe(notify.slack as ChannelBase);
+    expect(seen[1]).toBe(notify.telegram as ChannelBase);
+    expect(seen[2]).toBe(notify.discord as ChannelBase);
+    expect(seen[3]).toBe(notify.desktop as ChannelBase);
+
+    // Only slack and discord dispatched (telegram and desktop skipped).
+    // Desktop has no HTTP side-effect so its skip is observed via the
+    // total fetch-call count: 2 = slack + discord, no telegram.
+    expect(calls.length).toBe(2);
+    const urls = calls.map((c) => c.url).sort();
+    expect(urls).toEqual(
+      ['https://discord.example/webhook', 'https://slack.com/api/chat.postMessage'].sort(),
+    );
+  });
+
+  test('predicate that always returns true fires all four channels', async () => {
+    const notify = fullySeededSettings();
+
+    await dispatchToChannels('Title', 'body', notify, () => true);
+
+    // Slack + telegram + discord each fire one HTTP call. Desktop has no
+    // HTTP side-effect; its dispatch is implicit in the helper completing
+    // without throwing. Three observable HTTP calls is the strict assertion.
+    expect(calls.length).toBe(3);
+    const urls = calls.map((c) => c.url).sort();
+    expect(urls).toEqual(
+      [
+        'https://api.telegram.org/bottg-token/sendMessage',
+        'https://discord.example/webhook',
+        'https://slack.com/api/chat.postMessage',
+      ].sort(),
+    );
   });
 });
