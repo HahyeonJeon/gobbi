@@ -172,7 +172,12 @@ export interface ChannelBase {
   readonly enabled?: boolean;
   /** Workflow events this channel fires on. Absent = all; `[]` = none. */
   readonly events?: readonly NotifyEvent[];
-  /** Claude Code hook events. Schema-only in this Pass. */
+  /**
+   * Claude Code hook events this channel fires on. Consumed by
+   * `dispatchHookNotify` in `lib/notify.ts`. Absent = fire on all hook
+   * events; `[]` = fire on none (silent); `[...]` = fire only when the
+   * hook event matches.
+   */
   readonly triggers?: readonly HookTrigger[];
 }
 
