@@ -40,9 +40,11 @@ export const SECRET_PATTERN_ALLOWLIST: readonly string[] = [
   // Post-W2.1: all project-scoped subtrees live under `.gobbi/projects/<name>/…`
   // (multi-project layout). The prefix-match runtime strips the `/**` suffix,
   // so these entries admit every path below each named subtree across projects.
-  // TODO(W2.3): project name resolution lands with `projects.active`; until
-  // then the allowlist covers every project by including the learnings/notes/
-  // sessions/worktrees branch under the shared `.gobbi/projects/*/` prefix.
+  // The `*` wildcard is the permanent design under PR-FIN-1c: the `projects`
+  // registry was removed and project names are resolved at command time from
+  // the `--project` flag (or `basename(repoRoot)` as the default). The
+  // allowlist therefore covers every project by name without any registry
+  // lookup — a single shared `.gobbi/projects/*/` prefix per branch.
   '.gobbi/projects/*/learnings/**',
   '.gobbi/projects/*/notes/**',
   '.gobbi/projects/*/sessions/**',

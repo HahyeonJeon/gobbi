@@ -272,7 +272,7 @@ describe('runInstall — fresh install', () => {
 // ===========================================================================
 
 describe('runInstall — fresh install activation', () => {
-  test('writes projects.active + projects.known to workspace settings.json', async () => {
+  test('seeds workspace settings.json with minimum shape (PR-FIN-1c)', async () => {
     const templateRoot = makeTemplate({
       'skills/_x/SKILL.md': '# x\n',
       'agents/a.md': '# a\n',
@@ -287,15 +287,16 @@ describe('runInstall — fresh install activation', () => {
     expect(captured.exitCode).toBeNull();
     const settings = JSON.parse(
       readFileSync(join(repo, '.gobbi', 'settings.json'), 'utf8'),
-    ) as { schemaVersion: number; projects: { active: string; known: string[] } };
+    ) as { schemaVersion: number };
     expect(settings.schemaVersion).toBe(1);
-    expect(settings.projects.active).toBe('gobbi');
-    expect(settings.projects.known).toEqual(['gobbi']);
-    // Summary must diagnose the activation.
-    expect(captured.stdout).toContain("projects.active = 'gobbi'");
+    // PR-FIN-1c: no projects registry; the directory tree is the source
+    // of truth.
+    expect((settings as Record<string, unknown>)['projects']).toBeUndefined();
+    // Summary mentions the seed write.
+    expect(captured.stdout).toContain("seeded .gobbi/settings.json");
   });
 
-  test('custom --project name activates that project as the current one', async () => {
+  test('custom --project name still seeds workspace settings (no projects registry)', async () => {
     const templateRoot = makeTemplate({ 'rules/r.md': '# r\n' });
     const repo = makeRepo();
 
@@ -309,9 +310,10 @@ describe('runInstall — fresh install activation', () => {
     expect(captured.exitCode).toBeNull();
     const settings = JSON.parse(
       readFileSync(join(repo, '.gobbi', 'settings.json'), 'utf8'),
-    ) as { projects: { active: string; known: string[] } };
-    expect(settings.projects.active).toBe('alt');
-    expect(settings.projects.known).toEqual(['alt']);
+    ) as { schemaVersion: number };
+    expect(settings.schemaVersion).toBe(1);
+    // The project tree at .gobbi/projects/alt/ is the source of truth.
+    expect(existsSync(join(repo, '.gobbi', 'projects', 'alt'))).toBe(true);
   });
 
   test('builds per-file .claude/{skills,agents,rules}/ symlink farm', async () => {
@@ -360,23 +362,17 @@ describe('runInstall — fresh install activation', () => {
       runInstallWithOptions([], { repoRoot: repo, templateRoot: tplV1 }),
     );
     expect(captured.exitCode).toBeNull();
-    const settingsBefore = readFileSync(
-      join(repo, '.gobbi', 'settings.json'),
-      'utf8',
-    );
     const farmBefore = readlinkSync(
       join(repo, '.claude', 'rules', 'r.md'),
     );
 
-    // Simulate operator mutating `projects.active` to a different
-    // value (e.g., they ran `gobbi project switch other` after the
-    // fresh install). We want to assert upgrade does NOT clobber it.
-    const custom = JSON.parse(settingsBefore) as {
-      schemaVersion: number;
-      projects: { active: string | null; known: string[] };
+    // Simulate operator adding a custom field to settings.json. PR-FIN-1c
+    // dropped the projects registry, so we assert on a different field
+    // the operator might tweak (workflow.execution.discuss.mode).
+    const custom = {
+      schemaVersion: 1,
+      workflow: { execution: { discuss: { mode: 'agent' } } },
     };
-    custom.projects.active = 'other';
-    custom.projects.known = ['gobbi', 'other'];
     writeFileSync(
       join(repo, '.gobbi', 'settings.json'),
       JSON.stringify(custom, null, 2),
@@ -397,13 +393,11 @@ describe('runInstall — fresh install activation', () => {
     // settings.json preserved (upgrade is content-only).
     const settingsAfter = JSON.parse(
       readFileSync(join(repo, '.gobbi', 'settings.json'), 'utf8'),
-    ) as { projects: { active: string | null; known: string[] } };
-    expect(settingsAfter.projects.active).toBe('other');
-    expect(settingsAfter.projects.known.sort()).toEqual(['gobbi', 'other']);
+    ) as { workflow: { execution: { discuss: { mode: string } } } };
+    expect(settingsAfter.workflow.execution.discuss.mode).toBe('agent');
 
     // Farm left alone — symlink still points where the fresh install
-    // left it. (Upgrade reinstalls the file content, but the symlink
-    // is in `.claude/`, pointing at the still-live source.)
+    // left it.
     const farmAfter = readlinkSync(
       join(repo, '.claude', 'rules', 'r.md'),
     );
@@ -485,7 +479,7 @@ describe('runInstall — fresh install activation', () => {
 
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toContain('[dry-run]');
-    expect(captured.stdout).toContain("projects.active = 'gobbi'");
+    expect(captured.stdout).toContain("seeded .gobbi/settings.json");
     expect(captured.stdout).toContain(
       'farm: skills, agents, rules -> .gobbi/projects/gobbi/',
     );

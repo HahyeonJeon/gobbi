@@ -119,22 +119,6 @@ function makeProject(repo: string, name: string): void {
   mkdirSync(join(repo, '.gobbi', 'projects', name), { recursive: true });
 }
 
-function writeWorkspaceSettings(
-  repo: string,
-  projects: { active: string | null; known: readonly string[] },
-): void {
-  mkdirSync(join(repo, '.gobbi'), { recursive: true });
-  const body = {
-    schemaVersion: 1,
-    projects: { active: projects.active, known: [...projects.known] },
-  };
-  writeFileSync(
-    join(repo, '.gobbi', 'settings.json'),
-    JSON.stringify(body, null, 2),
-    'utf8',
-  );
-}
-
 // ===========================================================================
 
 describe('gobbi project list', () => {
@@ -150,8 +134,10 @@ describe('gobbi project list', () => {
   test('single project, no active marker set → row prefixed with space', async () => {
     const repo = makeRepo();
     makeProject(repo, 'gobbi');
-    // No settings.json at all — `resolveSettings` returns DEFAULTS which
-    // has `projects.active: null`, so no project gets the marker.
+    // PR-FIN-1c: the active marker matches `basename(repoRoot)`, not any
+    // settings field. The scratch repo's basename is `gobbi-project-list-…`
+    // (mkdtempSync), which does not match the literal `gobbi` directory
+    // name above, so the row carries the space marker.
 
     await captureExit(() =>
       runProjectListWithOptions([], { repoRoot: repo }),
@@ -160,18 +146,26 @@ describe('gobbi project list', () => {
     expect(captured.stdout).toBe(' \tgobbi\n');
   });
 
-  test('active project gets an asterisk marker', async () => {
+  test('active project (basename(repoRoot)) gets an asterisk marker', async () => {
+    // PR-FIN-1c: the marker fires for the project whose name matches
+    // `basename(repoRoot)`. We create a project under the basename so
+    // the marker lights up; a second project (different name) carries
+    // the space marker.
     const repo = makeRepo();
-    makeProject(repo, 'gobbi');
-    makeProject(repo, 'foo');
-    writeWorkspaceSettings(repo, { active: 'foo', known: ['foo', 'gobbi'] });
+    const repoBase = require('node:path').basename(repo) as string;
+    makeProject(repo, repoBase);
+    makeProject(repo, 'aother');
 
     await captureExit(() =>
       runProjectListWithOptions([], { repoRoot: repo }),
     );
     expect(captured.exitCode).toBeNull();
-    // Alphabetical: foo first (active), gobbi second.
-    expect(captured.stdout).toBe('*\tfoo\n \tgobbi\n');
+    // Alphabetical sort. The basename (which starts with `gobbi-...`
+    // from mkdtempSync) sorts AFTER 'aother'. The basename row carries
+    // the `*` marker.
+    const rows = captured.stdout.trimEnd().split('\n');
+    const activeRow = rows.find((r) => r.startsWith('*\t'));
+    expect(activeRow).toBe(`*\t${repoBase}`);
   });
 
   test('ignores non-directory entries under .gobbi/projects/', async () => {
@@ -214,12 +208,15 @@ describe('gobbi project list', () => {
     expect(captured.stdout).toContain('Usage: gobbi project list');
   });
 
-  test('settings.json with parse error degrades to unmarked list', async () => {
+  test('settings.json with parse error does not affect list output', async () => {
     const repo = makeRepo();
     makeProject(repo, 'foo');
     mkdirSync(join(repo, '.gobbi'), { recursive: true });
-    // Deliberately malformed JSON — `resolveSettings` will throw,
-    // and `list` should fall through to no-marker rendering.
+    // PR-FIN-1c: `list.ts` no longer calls `resolveSettings` — the
+    // active marker derives from `basename(repoRoot)`, not from any
+    // settings field. A malformed `settings.json` is therefore inert
+    // for this command and the list still renders cleanly with the
+    // space marker (the scratch basename does not match `foo`).
     writeFileSync(join(repo, '.gobbi', 'settings.json'), '{ not json', 'utf8');
 
     await captureExit(() =>

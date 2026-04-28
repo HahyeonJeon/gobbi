@@ -99,11 +99,11 @@ CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.planning.evaluate.mode a
 CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.execution.evaluate.mode ask
 ```
 
-Git workflow mode:
+Git settings (PR-FIN-1c shape — no `mode` field; worktrees always created):
 
 ```
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set git.workflow.mode worktree-pr
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set git.workflow.baseBranch phase/v050-phase-2
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set git.pr.open true
+CLAUDE_SESSION_ID=$DISCOVERED gobbi config set git.baseBranch develop
 ```
 
 Notifications — for each selected channel, set `enabled true`. Do NOT touch `events` or `triggers` (those are advanced config users edit manually):
@@ -114,7 +114,7 @@ CLAUDE_SESSION_ID=$DISCOVERED gobbi config set notify.slack.enabled true
 
 Discussion modes are NOT asked. Defaults apply: `workflow.ideation.discuss.mode` = `user`, `workflow.planning.discuss.mode` = `user`, `workflow.execution.discuss.mode` = `agent`. Users override these manually via `gobbi config set` if they want different behavior.
 
-Note: the settings field is named `planning` to match the loop name in `deterministic-orchestration.md` ("Planning Loop"); the workflow state-machine literal remains `'plan'` until a comprehensive rename Pass — `resolveEvalDecision` accepts both `'plan'` and `'planning'` for the `step` parameter.
+Note: the settings field is named `planning` to match the loop name in `deterministic-orchestration.md` ("Planning Loop") and the state-machine literal (aligned post-Wave-4). `resolveEvalDecision` accepts only `'planning'` — the `'plan'` backward-compat bridge was removed at Pass 3.
 
 **SIXTH — project context detection.** This runs automatically at session start without asking. Load [project-setup.md](project-setup.md) to execute detection.
 

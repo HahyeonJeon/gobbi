@@ -1,7 +1,7 @@
 /**
  * Level I/O + cascade resolution for the unified {@link Settings} shape.
  *
- * Three levels, one shape (new multi-project layout from gobbi-memory Pass 2):
+ * Three levels, one shape:
  *
  *   workspace → `.gobbi/settings.json`                                         (gitignored)
  *   project   → `.gobbi/projects/<projectName>/settings.json`                  (tracked)
@@ -11,40 +11,38 @@
  * Arrays replace; `null` is an explicit leaf that terminates delegation;
  * `undefined` / absent keys delegate up.
  *
- * ## Project-name resolution
+ * ## Project-name resolution (PR-FIN-1c)
  *
  * Both the project and session levels are keyed by a project name. The
  * effective project name resolves in priority order:
  *
  *   1. Explicit `projectName` argument passed by the caller.
- *   2. `projects.active` read from the workspace-level `.gobbi/settings.json`.
- *   3. Fallback literal `'gobbi'` (transition default; emits a stderr
- *      warning when neither an explicit name nor an active project is set).
- *      TODO(W2.3): bootstrap should prevent this fallback from firing in
- *      real-world runs.
+ *   2. `basename(repoRoot)` — the directory containing the repo. The
+ *      `.gobbi/projects/<name>/` directory is the source of truth for
+ *      which projects exist; no registry, no `projects.active`.
  *
- * Every path helper that depends on the project name takes it as an
- * explicit, required argument so the resolution happens once at the call
- * site (typically inside `resolveSettings` or the public
- * `load/writeSettingsAtLevel` functions).
+ * Callers that need a specific named project pass it explicitly (CLI
+ * commands plumb `--project <name>` through). Workspace-level settings
+ * have no `projects` block — that registry was removed in PR-FIN-1c.
  *
  * ## Module boundary
  *
  *   - Type shape + defaults + `deepMerge` + `ConfigCascadeError` live in
  *     `settings.ts`.
  *   - AJV validation lives in `settings-validator.ts`.
- *   - On-disk directory computation lives in `workspace-paths.ts` (the
- *     pure facade introduced by gobbi-memory Pass 2 W1.1). This module
- *     composes facade paths into `settings.json` file paths, adds
+ *   - On-disk directory computation lives in `workspace-paths.ts`. This
+ *     module composes facade paths into `settings.json` file paths, adds
  *     atomic-write + AJV-validate, and exposes cascade resolution + the
  *     `resolveEvalDecision` translation helper that converts the
  *     `evaluate.mode` enum into a boolean for the EVAL_DECIDE event payload.
  *
- * ## Cross-field check
+ * ## Cross-field check (PR-FIN-1c)
  *
  * After cascade merge, `resolveSettings` asserts:
  *
- *   - `git.workflow.mode === 'worktree-pr'` must have `git.workflow.baseBranch !== null`.
+ *   - `git.pr.open === true` requires `git.baseBranch !== null`. A repo
+ *     without a target branch (no GitHub remote, direct-commit-style
+ *     workflow) must set `pr.open: false` to satisfy the invariant.
  *
  * The check runs on the resolved state (post-merge) because it depends on
  * the cascaded value, not on any single level's file. Failure throws
@@ -55,119 +53,26 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { isRecord } from './guards.js';
 import { ConfigCascadeError, DEFAULTS, deepMerge, type Settings, type SettingsLevel } from './settings.js';
 import { formatAjvErrors, validateSettings } from './settings-validator.js';
 import { projectDir, sessionDir, workspaceRoot } from './workspace-paths.js';
 
 // ---------------------------------------------------------------------------
-// Default project name + name resolution
+// Project-name resolution
 // ---------------------------------------------------------------------------
-
-/**
- * Last-resort safety-net project name used by {@link resolveProjectName}
- * when no explicit argument is supplied AND the workspace-level
- * `projects.active` entry is absent. Exported so sibling modules
- * (`ensure-settings-cascade.ts`, `gotcha/promote.ts`) can share the same
- * literal rather than redeclaring it; consolidation per issue #138 wave 4.E.
- *
- * Production callers should reach this only on truly fresh installs that
- * have not yet been bootstrapped — `gobbi workflow init` writes
- * `projects.active = basename(repoRoot)` on its first run, after which
- * cascade reads always resolve via the workspace-active leg.
- */
-export const DEFAULT_PROJECT_NAME = 'gobbi';
-
-/**
- * Module-scoped latch — `true` once the transition-period fallback
- * warning has fired. Repeat fallbacks in the same process are silent so
- * a single CLI invocation that resolves project + session levels (both
- * going through {@link resolveProjectName}) emits the warning at most
- * once; repeated `bun test` calls within the same process reset the
- * latch via {@link __resetFallbackWarningLatchForTests} when the test
- * intent is to re-observe the warning.
- *
- * TODO(W2.3): bootstrap should prevent the fallback entirely; when it
- * does, this latch can be removed along with the warning path.
- */
-let fallbackWarningFired = false;
-
-/**
- * Test-only hook — reset the warning latch so a subsequent
- * {@link resolveProjectName} call in the same Bun process can re-fire
- * the stderr warning. Exported (not `internal`) because `bun:test` files
- * import the module via the normal specifier; the double-underscore
- * prefix marks the symbol as test-use-only. Production code never calls
- * this.
- */
-export function __resetFallbackWarningLatchForTests(): void {
-  fallbackWarningFired = false;
-}
-
-/**
- * Read `projects.active` from the workspace-level `.gobbi/settings.json`
- * without going through the cascade (to avoid recursion into
- * `resolveSettings` during cascade composition). Returns `null` when the
- * file is absent, fails to parse, or does not declare a non-null active
- * project. Never throws — this is a best-effort lookup used as one leg of
- * the project-name fallback ladder.
- *
- * Exported so sibling modules (`ensure-settings-cascade.ts`) can probe
- * the same on-disk source without duplicating the read/parse logic. The
- * cascade-init step needs this leg directly because the legacy upgrade
- * runs BEFORE the workspace-seed step; on the second-and-later inits the
- * workspace file already exists, and the upgrader can route the upgrade
- * to the right project slot by reading `projects.active` here.
- */
-export function readWorkspaceActiveProject(repoRoot: string): string | null {
-  const filePath = path.join(workspaceRoot(repoRoot), 'settings.json');
-  if (!existsSync(filePath)) return null;
-
-  let raw: string;
-  try {
-    raw = readFileSync(filePath, 'utf8');
-  } catch {
-    return null;
-  }
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return null;
-  }
-
-  if (!isRecord(parsed)) return null;
-  const projects = parsed['projects'];
-  if (!isRecord(projects)) return null;
-  const active = projects['active'];
-  return typeof active === 'string' && active.length > 0 ? active : null;
-}
 
 /**
  * Resolve the effective project name for path composition.
  *
- *   1. Explicit `projectName` argument → use it (no warning).
- *   2. Workspace `projects.active` → use it (no warning).
- *   3. Fallback `'gobbi'` → use it and emit a stderr warning so
- *      transition-period fallbacks are visible.
+ *   1. Explicit `projectName` argument → use it.
+ *   2. Fallback `basename(repoRoot)` — the directory containing the repo.
  *
  * Centralised so every caller (`pathForLevel`, `resolveSettings`,
  * `load/writeSettingsAtLevel`) applies identical resolution semantics.
  */
 function resolveProjectName(repoRoot: string, projectName: string | undefined): string {
   if (projectName !== undefined && projectName !== '') return projectName;
-  const active = readWorkspaceActiveProject(repoRoot);
-  if (active !== null) return active;
-  if (!fallbackWarningFired) {
-    process.stderr.write(
-      '[settings-io] no projects.active in workspace settings and no projectName argument; ' +
-        `falling back to '${DEFAULT_PROJECT_NAME}'\n`,
-    );
-    fallbackWarningFired = true;
-  }
-  // TODO(W2.3): bootstrap should prevent this fallback.
-  return DEFAULT_PROJECT_NAME;
+  return path.basename(repoRoot);
 }
 
 // ---------------------------------------------------------------------------
@@ -182,8 +87,9 @@ export function workspaceSettingsPath(repoRoot: string): string {
 /**
  * Path to `.gobbi/projects/<projectName>/settings.json` — project (tracked)
  * level. `projectName` is required so the resolution is explicit at the
- * call site; use {@link resolveProjectName} upstream when only a
- * cascade-derived default is available.
+ * call site; callers that only have a repo root pass
+ * `basename(repoRoot)` (or use {@link resolveSettings} which does that
+ * automatically).
  */
 export function projectSettingsPath(repoRoot: string, projectName: string): string {
   return path.join(projectDir(repoRoot, projectName), 'settings.json');
@@ -193,9 +99,7 @@ export function projectSettingsPath(repoRoot: string, projectName: string): stri
  * Path to `.gobbi/projects/<projectName>/sessions/<sessionId>/settings.json`
  * — session level. Both `projectName` and `sessionId` are required; the
  * caller is responsible for supplying a real session id (discovered per the
- * `session-id-discovery` / `cli-vs-skill-session-id` gotchas) and for
- * resolving the project name via {@link resolveProjectName} when only a
- * cascade-derived default is available.
+ * `session-id-discovery` / `cli-vs-skill-session-id` gotchas).
  */
 export function sessionSettingsPath(
   repoRoot: string,
@@ -208,8 +112,9 @@ export function sessionSettingsPath(
 /**
  * Resolve the on-disk path for a given level. `projectName` is required
  * for `'project'` and `'session'` levels — the caller must resolve it
- * beforehand (via {@link resolveProjectName} or an explicit override).
- * For `'session'`, `sessionId` is also required — throws if absent.
+ * beforehand (typically via {@link resolveProjectName} or an explicit
+ * override). For `'session'`, `sessionId` is also required — throws if
+ * absent.
  */
 function pathForLevel(
   repoRoot: string,
@@ -252,9 +157,9 @@ export function loadSettingsAtLevel(
   projectName?: string,
 ): Settings | null {
   // `projectName` is irrelevant at the workspace level; resolve once for
-  // project/session so `pathForLevel` never has to re-read workspace settings.
+  // project/session via the basename fallback.
   const resolvedProjectName =
-    level === 'workspace' ? DEFAULT_PROJECT_NAME : resolveProjectName(repoRoot, projectName);
+    level === 'workspace' ? path.basename(repoRoot) : resolveProjectName(repoRoot, projectName);
   const filePath = pathForLevel(repoRoot, level, resolvedProjectName, sessionId);
   if (!existsSync(filePath)) return null;
 
@@ -328,7 +233,7 @@ export function writeSettingsAtLevel(
   }
 
   const resolvedProjectName =
-    level === 'workspace' ? DEFAULT_PROJECT_NAME : resolveProjectName(repoRoot, projectName);
+    level === 'workspace' ? path.basename(repoRoot) : resolveProjectName(repoRoot, projectName);
   const filePath = pathForLevel(repoRoot, level, resolvedProjectName, sessionId);
   mkdirSync(path.dirname(filePath), { recursive: true });
 
@@ -348,8 +253,8 @@ export function writeSettingsAtLevel(
  * Every field in {@link DEFAULTS} is populated after resolution.
  *
  * Throws {@link ConfigCascadeError} when any level's file is malformed
- * (JSON / schema), or when the cross-field `worktree-pr` + null
- * `baseBranch` invariant fails post-merge.
+ * (JSON / schema), or when the cross-field `pr.open` + null `baseBranch`
+ * invariant fails post-merge.
  *
  * `sessionId` is optional — when absent, the session level is skipped
  * (the session tier is "not present"). The CLI reads
@@ -357,13 +262,9 @@ export function writeSettingsAtLevel(
  * id; env discovery is an orchestrator-skill concern per the
  * `cli-vs-skill-session-id` gotcha.
  *
- * `projectName` is optional — when absent, the project name resolves from
- * the workspace-level `projects.active` field, falling back to the
- * `'gobbi'` literal with a stderr warning when neither is present (see
- * {@link resolveProjectName}). The resolved project name is used for both
- * the project-level and session-level path composition, so a caller that
- * supplies `projectName: 'foo'` reads `projects/foo/settings.json` and
- * `projects/foo/sessions/<id>/settings.json` in a single pass.
+ * `projectName` is optional — when absent, the project name resolves to
+ * `basename(repoRoot)`. Callers that need to address a specific project
+ * pass it explicitly (typically from a `--project <name>` flag).
  */
 export function resolveSettings(args: {
   readonly repoRoot: string;
@@ -372,38 +273,53 @@ export function resolveSettings(args: {
 }): Settings {
   const { repoRoot, sessionId, projectName } = args;
 
-  let acc: Settings = DEFAULTS;
+  // Compose the user cascade FIRST (without DEFAULTS), then merge with
+  // DEFAULTS at the bottom. We need the user-only view to enforce the
+  // PR-FIN-1c cross-field check correctly: the check should only fire
+  // when the USER has explicitly set `pr.open=true` while leaving
+  // `baseBranch=null`. A fresh repo where both values come from DEFAULTS
+  // is not a misconfiguration — there is nothing for the user to fix
+  // until they actually set git config. The post-merge state still gets
+  // every DEFAULT field hydrated for downstream consumers.
+  let userOverlay: Settings | null = null;
 
   const workspace = loadSettingsAtLevel(repoRoot, 'workspace');
   if (workspace !== null) {
-    acc = deepMerge<Settings>(acc, workspace);
+    userOverlay = userOverlay === null ? workspace : deepMerge<Settings>(userOverlay, workspace);
   }
 
-  // Resolve projectName AFTER workspace load so `projects.active` (which
-  // lives on the workspace file) is visible to `readWorkspaceActiveProject`
-  // — the helper reads the same file, but resolving it here keeps a single
-  // place where the three-step priority ladder fires per cascade.
   const resolvedProjectName = resolveProjectName(repoRoot, projectName);
 
   const project = loadSettingsAtLevel(repoRoot, 'project', undefined, resolvedProjectName);
   if (project !== null) {
-    acc = deepMerge<Settings>(acc, project);
+    userOverlay = userOverlay === null ? project : deepMerge<Settings>(userOverlay, project);
   }
 
   if (sessionId !== undefined && sessionId !== '') {
     const session = loadSettingsAtLevel(repoRoot, 'session', sessionId, resolvedProjectName);
     if (session !== null) {
-      acc = deepMerge<Settings>(acc, session);
+      userOverlay = userOverlay === null ? session : deepMerge<Settings>(userOverlay, session);
     }
   }
 
-  // Cross-field invariant — runs on the cascaded state because it depends
-  // on the final resolved values, not on any single level's file.
-  const gitWorkflow = acc.git?.workflow;
-  if (gitWorkflow?.mode === 'worktree-pr' && (gitWorkflow.baseBranch === null || gitWorkflow.baseBranch === undefined)) {
+  // Compose final shape: defaults at the bottom, user overlay on top.
+  const acc: Settings = userOverlay === null ? DEFAULTS : deepMerge<Settings>(DEFAULTS, userOverlay);
+
+  // Cross-field invariant — fires only when the USER has explicitly set
+  // `pr.open=true` somewhere in the cascade AND the resolved
+  // `baseBranch` is null. The "user explicitly set" half avoids tripping
+  // on the DEFAULTS-only case (fresh repo, no git config yet) — the
+  // user has not chosen pr.open=true, so there is nothing to violate.
+  // Once the user opts in to PR opening, they must also set baseBranch.
+  const userPrOpen = userOverlay?.git?.pr?.open;
+  // deepMerge(DEFAULTS, userOverlay) guarantees `baseBranch` is
+  // `'string | null'` here (the type) and never `undefined` at runtime
+  // (DEFAULTS supplies `null`; any user value is a string).
+  if (userPrOpen === true && acc.git?.baseBranch === null) {
     throw new ConfigCascadeError(
       'parse',
-      'git.workflow.mode "worktree-pr" requires git.workflow.baseBranch to be set (non-null).',
+      'git.pr.open=true requires git.baseBranch to be set (non-null). ' +
+        'Either set git.baseBranch (e.g. "main") or set git.pr.open=false.',
     );
   }
 

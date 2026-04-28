@@ -2,13 +2,13 @@
 
 Verification harness for the scenarios in `scenarios.md`. Items are grouped by scenario ID so every check traces directly to the scenario it validates. Each item carries an ISTQB technique tag: `[EP]` equivalence partition, `[BVA]` boundary value, `[DT]` decision table, `[ST]` state transition, `[MANUAL]` manual, `[GAP]` aspirational behaviour not yet shipped.
 
-All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.md`).
+All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.md`) and PR-FIN-1c (commits `362217c` + `954f889`).
 
 ---
 
 ## CFG-1 — Cascade get — session wins
 
-- [ST] `gobbi config get git.workflow.mode` with session set to `'worktree-pr'` and project set to `'direct-commit'` returns `"worktree-pr"` and exit 0.
+- [ST] `gobbi config get git.pr.open` with session set to `true` and project set to `false` returns `true` and exit 0.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-1'`
 - [ST] Without `--session-id`, the session level is skipped and project value wins.
   - Verify: CFG-1 variant in test file asserting project-level wins when no session
@@ -44,7 +44,7 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ## CFG-5 — Set default level writes session
 
-- [EP] `gobbi config set git.workflow.mode worktree-pr` (no `--level`) writes to `.gobbi/projects/<name>/sessions/{id}/settings.json`.
+- [EP] `gobbi config set git.pr.open false` (no `--level`) writes to `.gobbi/projects/<name>/sessions/{id}/settings.json`.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-5'`
 - [ST] Session file uses atomic write (temp+rename) — partial write cannot corrupt the file.
   - Verify: `rg -n 'renameSync\|writeFileSync.*tmp' packages/cli/src/lib/settings-io.ts`
@@ -62,7 +62,7 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ## CFG-7 — Deep-path set preserves siblings
 
-- [EP] Writing `git.pr.draft` does not overwrite `git.workflow.mode` or `git.workflow.baseBranch`.
+- [EP] Writing `git.pr.draft` does not overwrite `git.baseBranch` or `git.pr.open`.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-7'`
 - [BVA] Three-level nesting (`workflow.ideation.discuss.mode`) creates all intermediate nodes without touching other keys at each node level.
   - Verify: CFG-7 extended case in test file checking `workflow.ideation.discuss.mode` deep write
@@ -73,8 +73,8 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 - [EP] Unknown top-level section (e.g., `unknownSection.foo`) fails AJV validation; exit 2; file not modified.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-8'`
-- [EP] Invalid enum value (e.g., `git.workflow.mode: 'invalid-mode'`) fails AJV; exit 2.
-  - Verify: CFG-8 variant testing enum validation
+- [EP] Legacy field (e.g., `git.workflow.mode`) is rejected by the new AJV schema; exit 2.
+  - Verify: CFG-8 variant testing that legacy `git.workflow` path is rejected post-PR-FIN-1c
 - [DT] AJV `additionalProperties: false` fires at every object level — nested unknown keys also rejected.
   - Verify: `rg -n 'additionalProperties' packages/cli/src/lib/settings-validator.ts`
 
@@ -91,21 +91,21 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ## CFG-10 — `null` is explicit leaf
 
-- [EP] Project-level `git.workflow.baseBranch: null` overrides workspace-level `'main'`.
+- [EP] Project-level `git.baseBranch: null` overrides workspace-level `'main'`.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-10'`
 - [BVA] `undefined` / absent key does NOT override — only `null` is an explicit leaf.
   - Verify: CFG-10 test includes a case with absent project key asserting workspace value survives
 
 ---
 
-## CFG-11 — Cross-field check
+## CFG-11 — Cross-field check (PR-FIN-1c)
 
-- [EP] `mode: 'worktree-pr'` + `baseBranch: null` in cascade result → `ConfigCascadeError` thrown, `code === 'parse'`.
+- [EP] User explicitly sets `pr.open: true` at any level AND `baseBranch` resolves to `null` → `ConfigCascadeError` thrown, `code === 'parse'`.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-11'`
-- [EP] `mode: 'worktree-pr'` + `baseBranch: 'main'` resolves cleanly — no error.
+- [EP] User sets `pr.open: true` AND `baseBranch: 'main'` → resolves cleanly, no error.
   - Verify: CFG-11 happy-path variant in test file
-- [ST] `ConfigCascadeError.tier` identifies which level set the offending `mode` value.
-  - Verify: CFG-11 test asserts `err.tier` matches the level that set `worktree-pr`
+- [DT] `ConfigCascadeError` thrown by CFG-11 does NOT carry a `tier` — violation is in the cascaded projection, not attributable to one level.
+  - Verify: CFG-11 test asserts `err.tier === undefined`
 
 ---
 
@@ -133,14 +133,16 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ---
 
-## CFG-14 — T2-v1 upgrade
+## CFG-14 — T2-v1 upgrade (PR-FIN-1c shape)
 
-- [EP] Legacy `project-config.json` with `git.mode`, `eval.ideation`, `eval.plan` is upgraded: fields renamed/restructured; `trivialRange`, `verification.*`, `cost.*` dropped.
+- [EP] Legacy `project-config.json` with `git.mode: 'worktree-pr'` + `git.baseBranch: 'main'` is upgraded: `git.pr.open: true`, `git.baseBranch: 'main'` preserved; `trivialRange`, `verification.*`, `cost.*`, `projects.*` dropped; no `git.workflow` or `git.cleanup` in output.
   - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-14'`
+- [DT] `git.mode === 'direct-commit'` → `git.pr.open: false`; `git.mode === 'worktree-pr'` or `'auto'` → `git.pr.open: true`.
+  - Verify: CFG-14 test covers all three mode values
 - [DT] Boolean `eval.*: true` → `'always'`; boolean `eval.*: false` → `'ask'`. Both cases covered.
-  - Verify: CFG-14 test asserts `workflow.ideation.evaluate.mode === 'always'` (true→'always') and `workflow.planning.evaluate.mode === 'ask'` (legacy `eval.plan` → new `workflow.planning`; false→'ask')
-- [EP] After upgrade, `.gobbi/project-config.json` is absent and `.gobbi/projects/<name>/settings.json` is present with `schemaVersion: 1`.
-  - Verify: CFG-14 test asserts source file gone, target file has correct schema version
+  - Verify: CFG-14 test asserts `workflow.ideation.evaluate.mode === 'always'` and `workflow.planning.evaluate.mode === 'ask'`
+- [EP] After upgrade, `.gobbi/projects/<name>/settings.json` is present with `schemaVersion: 1` and no legacy fields.
+  - Verify: CFG-14 test asserts target file has no `git.workflow`, `git.cleanup`, or `projects` keys
 - [EP] `ensureSettingsCascade` idempotent when target already exists — upgrade does NOT run twice.
   - Verify: CFG-14 idempotency case in test file
 
@@ -165,11 +167,47 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ---
 
+---
+
+## CFG-16 — Fresh repo DEFAULTS do not trigger cross-field error (PR-FIN-1c)
+
+- [EP] No user settings files at all → `resolveSettings` returns DEFAULTS (`pr.open: true`, `baseBranch: null`) without throwing.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-16'`
+- [BVA] The check is gated on `userOverlay?.git?.pr?.open === true` — when `userOverlay` is `null`, the gate is never entered.
+  - Verify: CFG-16 test confirms no error when userOverlay is null (all levels absent)
+
+---
+
+## CFG-17 — Pass-3 current-shape in-place upgrade (PR-FIN-1c)
+
+- [EP] Project settings file with `git.workflow.mode`, `git.cleanup.*`, `projects.*` fields is upgraded in place: output has `git.pr.open`, `git.worktree.autoRemove`, `git.branch.autoRemove`; no `git.workflow`, `git.cleanup`, or `projects` keys.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-17'`
+- [EP] Workspace settings file with Pass-3 shape is upgraded in place by the same `upgradeFileInPlace` path.
+  - Verify: CFG-17 workspace variant in test file
+- [ST] `needsCurrentShapeUpgrade` returns `false` after upgrade — second `ensureSettingsCascade` run is a no-op.
+  - Verify: CFG-17 idempotency case in test file
+- [DT] `projects.active`/`projects.known` fields are silently dropped during upgrade; no validation error.
+  - Verify: CFG-17 test fixture includes `projects.*` and asserts they are absent in output
+
+---
+
+## CFG-18 — `gobbi project list` — filesystem scan (PR-FIN-1c)
+
+- [EP] `gobbi project list` reads `.gobbi/projects/` via filesystem; lists all project directories regardless of settings file content.
+  - Verify: `bun test packages/cli/src/__tests__/` — project list command test
+- [EP] No `projects.known` or `projects.active` entry needed — directories are the source of truth.
+  - Verify: CFG-18 test confirms output without any settings.json `projects` block
+- [ST] Current project (from `basename(repoRoot)` or `--project` flag) is indicated in list output.
+  - Verify: CFG-18 test asserts active indicator on correct entry
+
+---
+
 ## Verification procedure
 
-1. `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts` — exercises CFG-1 through CFG-14
+1. `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts` — exercises CFG-1 through CFG-17
 2. `bun test packages/cli/src/__tests__/features/q2-evalconfig-e2e.test.ts` — exercises CFG-15 (4×3 matrix)
-3. For structural items, use the grep hints in each section to confirm cited code patterns exist
-4. `[GAP]` items represent aspirational behaviour — no items are GAP in Pass 3
+3. `bun test packages/cli/src/__tests__/` — exercises CFG-18 (project list)
+4. For structural items, use the grep hints in each section to confirm cited code patterns exist
+5. `[GAP]` items represent aspirational behaviour — no items are GAP in Pass 3 or PR-FIN-1c
 
 See `scenarios.md` for full Given/When/Then bodies and `review.md` for DRIFT/NOTE/GAP resolutions.

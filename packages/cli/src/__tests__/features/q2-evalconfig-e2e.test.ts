@@ -33,16 +33,13 @@ import {
 } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 
-// `runConfig set --level session` resolves the project name via
-// `settings-io.ts::resolveProjectName`. With no workspace `projects.active`
-// set (this test file never seeds one), the resolver falls through to the
-// `DEFAULT_PROJECT_NAME` transition-period fallback. Pin the same literal
-// here so the on-disk path the test inspects matches the path `runConfig`
-// actually wrote to.
-const FALLBACK_PROJECT_NAME = 'gobbi';
+// PR-FIN-1c: `runConfig set --level session` resolves the project name to
+// `basename(repoRoot)` when no `--project` flag is supplied. The scratch
+// repo's basename is dynamic (mkdtempSync), so paths are constructed at
+// runtime via `basename(repo)`.
 
 // Mock `lib/repo.ts::getRepoRoot` to read from a `globalThis` pointer
 // this file owns during its test run. Same strategy as the sibling
@@ -260,11 +257,9 @@ async function persistAndReadBack(
   }
 
   // On-disk verification — the session settings file should carry the enum.
-  // Post-W2 redesign: sessions live under `.gobbi/projects/<name>/sessions/<id>/`.
-  // `<name>` here is the fallback literal `runConfig` resolved at write time
-  // because no workspace `projects.active` has been seeded.
+  // PR-FIN-1c: sessions live under `.gobbi/projects/<basename(repo)>/sessions/<id>/`.
   const filePath = join(
-    sessionDirForProject(repo, FALLBACK_PROJECT_NAME, sessionId),
+    sessionDirForProject(repo, basename(repo), sessionId),
     'settings.json',
   );
   expect(existsSync(filePath)).toBe(true);

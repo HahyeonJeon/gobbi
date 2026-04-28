@@ -178,7 +178,7 @@ describe('validateProjectName', () => {
 // ===========================================================================
 
 describe('gobbi project create — happy path', () => {
-  test('creates scaffold dirs and registers in settings.known', async () => {
+  test('creates scaffold dirs (PR-FIN-1c: no settings.json mutation)', async () => {
     const repo = makeRepo();
 
     await captureExit(() =>
@@ -193,76 +193,41 @@ describe('gobbi project create — happy path', () => {
       expect(existsSync(join(projectRoot, dir))).toBe(true);
     }
 
-    // Settings updated.
-    const settings = readWorkspaceSettings(repo) as {
-      schemaVersion: number;
-      projects: { active: string | null; known: string[] };
-    };
-    expect(settings.schemaVersion).toBe(1);
-    expect(settings.projects.known).toEqual(['foo']);
-    // `active` stays null — switch is separate.
-    expect(settings.projects.active).toBeNull();
+    // PR-FIN-1c: settings.json is NOT touched by create. The directory
+    // tree is the source of truth for project existence.
+    expect(existsSync(join(repo, '.gobbi', 'settings.json'))).toBe(false);
   });
 
-  test('preserves existing projects.active when creating a new project', async () => {
+  test('does not touch existing settings.json (PR-FIN-1c)', async () => {
     const repo = makeRepo();
-    // Pre-seed settings with an active project.
+    // Pre-seed settings with arbitrary user content; the registry was
+    // removed but workflow / notify / git settings remain.
     mkdirSync(join(repo, '.gobbi'), { recursive: true });
     writeFileSync(
       join(repo, '.gobbi', 'settings.json'),
       JSON.stringify(
         {
           schemaVersion: 1,
-          projects: { active: 'gobbi', known: ['gobbi'] },
+          workflow: { ideation: { discuss: { mode: 'agent' } } },
         },
         null,
         2,
       ),
       'utf8',
     );
-    // And the default project exists (so the workspace-settings-read
-    // fallback doesn't synthesise a null active).
-    mkdirSync(join(repo, '.gobbi', 'projects', 'gobbi'), { recursive: true });
 
     await captureExit(() =>
       runProjectCreateWithOptions(['foo'], { repoRoot: repo }),
     );
 
     expect(captured.exitCode).toBeNull();
+    // settings.json is unchanged by create.
     const settings = readWorkspaceSettings(repo) as {
-      projects: { active: string | null; known: string[] };
+      schemaVersion: number;
+      workflow: { ideation: { discuss: { mode: string } } };
     };
-    expect(settings.projects.active).toBe('gobbi');
-    expect(settings.projects.known.sort()).toEqual(['foo', 'gobbi']);
-  });
-
-  test('dedupes project name if already in settings.known', async () => {
-    const repo = makeRepo();
-    mkdirSync(join(repo, '.gobbi'), { recursive: true });
-    writeFileSync(
-      join(repo, '.gobbi', 'settings.json'),
-      JSON.stringify({
-        schemaVersion: 1,
-        projects: { active: null, known: ['foo'] },
-      }),
-      'utf8',
-    );
-
-    await captureExit(() =>
-      runProjectCreateWithOptions(['foo'], { repoRoot: repo }),
-    );
-
-    // The directory existence check fires first and wins. Intentional —
-    // settings-known membership does not imply the on-disk tree exists
-    // yet, but the on-disk tree always trumps the settings declaration.
-    expect(captured.exitCode).toBeNull();
-    // ...unless the directory itself is absent. In this test the tree
-    // DID NOT exist, so create proceeds and the settings dedup path
-    // keeps `known` = ['foo'] instead of doubling the entry.
-    const settings = readWorkspaceSettings(repo) as {
-      projects: { known: string[] };
-    };
-    expect(settings.projects.known).toEqual(['foo']);
+    expect(settings.schemaVersion).toBe(1);
+    expect(settings.workflow.ideation.discuss.mode).toBe('agent');
   });
 
   test('seeds templates from install module when the helper is exported', async () => {

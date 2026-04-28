@@ -77,9 +77,13 @@ import {
 import { resolveSettings } from '../lib/settings-io.js';
 
 // ---------------------------------------------------------------------------
-// stdout/stderr/process.exit capture — quiet the bootstrap stderr line and
-// the `[settings-io] no projects.active` warning so test output stays clean.
-// Pattern lifted from `commands/workflow/__tests__/init.test.ts`.
+// stdout/stderr/process.exit capture — quiet the `[ensure-settings-cascade]`
+// bootstrap line (seed/upgrade messages) and any `[settings-io]` provenance
+// noise so test output stays clean. Pattern lifted from
+// `commands/workflow/__tests__/init.test.ts`. PR-FIN-1c removed the
+// `projects.active` registry and its associated `[settings-io] no
+// projects.active` warning, so that line no longer needs suppressing —
+// the bootstrap line(s) below are the residual noise.
 // ---------------------------------------------------------------------------
 
 interface Captured {
@@ -494,15 +498,14 @@ describe('cross-pass invariant: init normalises legacy-shape session', () => {
       expect(legacySnap.workspaceSchemaVersion).toBe(1);
       expect(freshSnap.workspaceSchemaVersion).toBe(1);
 
-      // Bootstrap projects.active matches basename(repoRoot) on both arms.
-      // The legacy arm's upgrader wrote a project-level file at
-      // .gobbi/projects/gobbi/settings.json; the fresh arm did not. The
-      // workspace `projects.active` is the same in both cases because
-      // basename(repoRoot) === 'gobbi' for both scratch repos.
-      expect(legacySnap.workspaceProjectsActive).toBe('gobbi');
-      expect(freshSnap.workspaceProjectsActive).toBe('gobbi');
-      expect(legacySnap.workspaceProjectsKnown).toEqual(['gobbi']);
-      expect(freshSnap.workspaceProjectsKnown).toEqual(['gobbi']);
+      // PR-FIN-1c: the workspace `projects` registry was removed. Both
+      // arms produce a minimum-shape settings.json (`schemaVersion: 1`)
+      // with no `projects` block. The workspaceProjectsActive snapshot
+      // is null on both arms because the field no longer exists.
+      expect(legacySnap.workspaceProjectsActive).toBeNull();
+      expect(freshSnap.workspaceProjectsActive).toBeNull();
+      expect(legacySnap.workspaceProjectsKnown).toEqual([]);
+      expect(freshSnap.workspaceProjectsKnown).toEqual([]);
 
       // The legacy-seed run produced a project-level settings.json (T2-v1
       // upgrader output); fresh install did not.
@@ -526,11 +529,12 @@ describe('cross-pass invariant: init normalises legacy-shape session', () => {
       const legacyResolved = resolveSettings({ repoRoot: legacyRepo });
       const freshResolved = resolveSettings({ repoRoot: freshRepo });
 
-      // T2-v1 git.{mode,baseBranch} survived the upgrade.
-      expect(legacyResolved.git?.workflow?.mode).toBe('worktree-pr');
-      expect(legacyResolved.git?.workflow?.baseBranch).toBe('develop');
-      // Default arm: no project overlay → default git.workflow.mode.
-      expect(freshResolved.git?.workflow?.mode).toBe('direct-commit');
+      // PR-FIN-1c: T2-v1 `git.mode='worktree-pr'` migrates to
+      // `git.pr.open=true`; baseBranch moves to top of git.
+      expect(legacyResolved.git?.pr?.open).toBe(true);
+      expect(legacyResolved.git?.baseBranch).toBe('develop');
+      // Default arm: no project overlay → DEFAULTS git.pr.open=true.
+      expect(freshResolved.git?.pr?.open).toBe(true);
 
       // T2-v1 eval booleans translated to evaluate.mode enums.
       expect(legacyResolved.workflow?.ideation?.evaluate?.mode).toBe('always');
@@ -570,11 +574,13 @@ describe('cross-pass invariant: upgrader resolves project name via init ladder',
         ),
       );
 
-      // Active project resolves to basename(repoRoot) — `'my-app'`.
-      const myAppActive = JSON.parse(
+      // PR-FIN-1c: workspace settings.json carries minimum shape (no
+      // projects registry). The directory tree is the source of truth.
+      const myAppSettings = JSON.parse(
         readFileSync(join(repo, '.gobbi', 'settings.json'), 'utf8'),
-      ) as { readonly projects?: { readonly active?: string } };
-      expect(myAppActive.projects?.active).toBe('my-app');
+      ) as Record<string, unknown>;
+      expect(myAppSettings['schemaVersion']).toBe(1);
+      expect(myAppSettings['projects']).toBeUndefined();
 
       // The session lives under `projects/my-app/...`.
       expect(
@@ -586,9 +592,8 @@ describe('cross-pass invariant: upgrader resolves project name via init ladder',
         ),
       ).toBe(true);
 
-      // Post-fix expectation: the upgrade lands at the active project's
-      // slot, and the previously-orphan `projects/gobbi/` slot is
-      // empty (never created).
+      // PR-FIN-1c: the upgrade lands at basename(repoRoot) = 'my-app';
+      // the literal 'gobbi' slot is never created.
       const orphan = join(
         projectDirForName(repo, 'gobbi'),
         'settings.json',
@@ -600,14 +605,12 @@ describe('cross-pass invariant: upgrader resolves project name via init ladder',
       expect(existsSync(orphan)).toBe(false);
       expect(existsSync(activeProject)).toBe(true);
 
-      // The upgraded settings carry the T2-v1 fixture's git workflow
-      // mode, confirming the upgrade path actually executed (not merely
-      // skipped) — the file at `projects/my-app/settings.json` is the
-      // T2-v1 → unified-shape upgrade output, not a fresh-install seed.
+      // PR-FIN-1c reshape: T2-v1 `git.mode='worktree-pr'` migrates to
+      // `git.pr.open=true`.
       const upgraded = JSON.parse(readFileSync(activeProject, 'utf8')) as {
-        readonly git?: { readonly workflow?: { readonly mode?: string } };
+        readonly git?: { readonly pr?: { readonly open?: boolean } };
       };
-      expect(upgraded.git?.workflow?.mode).toBe('worktree-pr');
+      expect(upgraded.git?.pr?.open).toBe(true);
     },
   );
 });

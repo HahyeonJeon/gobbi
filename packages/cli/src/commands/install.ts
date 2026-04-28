@@ -16,16 +16,15 @@
  *
  *   - **Fresh install** (no prior manifest, no preexisting content):
  *     complete setup — copy templates, write `.install-manifest.json`,
- *     write `.gobbi/settings.json` with `projects.active = <projectName>`
- *     and `projects.known` including the project, and build the
+ *     seed a minimum-shape `.gobbi/settings.json` (PR-FIN-1c: no
+ *     `projects` registry), and build the
  *     `.claude/{skills,agents,rules}/` per-file symlink farm. After a
  *     fresh install a user has a working Claude Code integration in one
- *     command — no follow-up `gobbi project switch` needed.
+ *     command.
  *   - **Upgrade install** (target already contains content or manifest):
  *     content-only. 3-way merge of templates vs user edits vs the
  *     manifest baseline. Does NOT touch `settings.json` and does NOT
- *     rebuild the farm — upgrade preserves the operator's existing
- *     activation state.
+ *     rebuild the farm — upgrade preserves the operator's state.
  *
  * ## Scope boundary
  *
@@ -407,11 +406,16 @@ export async function runInstallWithOptions(
 
   // --- 8. Fresh-install activation (settings + farm) --------------------
   //
-  // Fresh installs complete the multi-project setup in one command:
-  // write `projects.active` + `projects.known` to the workspace
-  // settings file, then build the `.claude/{skills,agents,rules}/`
-  // per-file symlink farm. Upgrade installs skip this step to preserve
-  // the operator's existing activation — upgrade is content-only.
+  // Fresh installs complete the per-project setup in one command:
+  // seed `.gobbi/settings.json` at minimum shape (`{schemaVersion: 1}`)
+  // when absent, then build the `.claude/{skills,agents,rules}/`
+  // per-file symlink farm pointing at this project. PR-FIN-1c removed
+  // the `projects` registry, so no `projects.active` / `projects.known`
+  // writes happen — the directory tree under `.gobbi/projects/` is the
+  // sole source of truth, and the active project resolves via
+  // `basename(repoRoot)` (or the `--project` flag) at command time.
+  // Upgrade installs skip this step to preserve the operator's existing
+  // settings + farm — upgrade is content-only.
   //
   // Dry-run still emits the plan lines but does not mutate the
   // filesystem.
@@ -943,7 +947,7 @@ export function renderPlan(input: RenderPlanInput): string {
   if (input.activation !== undefined && input.activation !== null) {
     const a = input.activation;
     lines.push(
-      `${prefix}settings: projects.active = '${input.projectName}', projects.known += '${input.projectName}'`,
+      `${prefix}settings: seeded .gobbi/settings.json (project '${input.projectName}')`,
     );
     lines.push(
       `${prefix}farm: ${a.farmKinds.join(', ')} -> .gobbi/projects/${input.projectName}/`,
@@ -974,14 +978,14 @@ export function renderPlan(input: RenderPlanInput): string {
 /**
  * Result of the fresh-install activation step. Surfaced to the caller
  * so {@link renderPlan} can diagnose what was (or would be) written.
+ *
+ * PR-FIN-1c removed the `projects` registry, so the result no longer
+ * carries `active` / `known` arrays — fresh install only seeds a
+ * minimum-shape `.gobbi/settings.json` and builds the farm.
  */
 export interface FreshActivationResult {
   /** The three farm kinds materialised at `.claude/<kind>/`. */
   readonly farmKinds: readonly ClaudeSymlinkKind[];
-  /** The `projects.active` value written to the workspace settings. */
-  readonly active: string;
-  /** The full `projects.known` array written to the workspace settings. */
-  readonly known: readonly string[];
 }
 
 interface ApplyFreshActivationInput {
@@ -991,8 +995,8 @@ interface ApplyFreshActivationInput {
 }
 
 /**
- * Fresh-install post-copy step: set `projects.active` + `projects.known`
- * in the workspace-level `.gobbi/settings.json` and materialise the
+ * Fresh-install post-copy step: seed a minimum-shape
+ * `.gobbi/settings.json` if absent and materialise the
  * `.claude/{skills,agents,rules}/` per-file symlink farm pointing at
  * the newly-installed project.
  *
@@ -1001,30 +1005,25 @@ interface ApplyFreshActivationInput {
  *
  * Upgrade-install MUST NOT call this function — upgrade is content-only.
  * The caller gates the call at {@link runInstallWithOptions}.
+ *
+ * PR-FIN-1c: no more `projects.active` / `projects.known` writes; the
+ * directory tree under `.gobbi/projects/` is the source of truth.
  */
 function applyFreshInstallActivation(
   input: ApplyFreshActivationInput,
 ): FreshActivationResult {
   const { repoRoot, projectName, dryRun } = input;
-  const existing = loadSettingsAtLevel(repoRoot, 'workspace');
-  const base: Settings =
-    existing !== null
-      ? existing
-      : { schemaVersion: 1, projects: { active: null, known: [] } };
-
-  const knownSet = new Set(base.projects.known);
-  knownSet.add(projectName);
-  const knownSorted = [...knownSet].sort();
-  const updated: Settings = {
-    ...base,
-    projects: {
-      active: projectName,
-      known: knownSorted,
-    },
-  };
 
   if (!dryRun) {
-    writeSettingsAtLevel(repoRoot, 'workspace', updated);
+    // Seed the workspace settings file at minimum shape if absent. We
+    // never overwrite an existing file (the operator may have made
+    // edits we should not stomp). The unified schema allows other
+    // sections; absent sections delegate to DEFAULTS at resolve time.
+    const existing = loadSettingsAtLevel(repoRoot, 'workspace');
+    if (existing === null) {
+      const seed: Settings = { schemaVersion: 1 };
+      writeSettingsAtLevel(repoRoot, 'workspace', seed);
+    }
     // Build the farm directly at `.claude/` (fresh-install = first
     // activation, nothing to rotate). `buildFarmIntoRoot` preserves
     // non-farm siblings under `.claude/` (CLAUDE.md, settings.json,
@@ -1037,8 +1036,6 @@ function applyFreshInstallActivation(
 
   return {
     farmKinds: TEMPLATE_KINDS,
-    active: projectName,
-    known: knownSorted,
   };
 }
 

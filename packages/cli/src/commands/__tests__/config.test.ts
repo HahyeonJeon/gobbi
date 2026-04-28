@@ -40,11 +40,7 @@ import { join } from 'node:path';
 import { COMMAND_ORDER, COMMANDS_BY_NAME } from '../../cli.js';
 import { coerceValue, runConfig } from '../config.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
-
-// Post-W2 redesign: the config writer composes session paths via
-// `resolveProjectName`, which falls back to the literal 'gobbi' when a
-// fresh scratch repo has no `.gobbi/settings.json::projects.active`.
-const FALLBACK_PROJECT_NAME = 'gobbi';
+import { basename } from 'node:path';
 
 // ---------------------------------------------------------------------------
 // stdout / stderr / process.exit capture
@@ -480,7 +476,6 @@ describe('runConfig set argument validation', () => {
     const parsed = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
     expect(parsed).toEqual({
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       workflow: {
         ideation: {
           discuss: {
@@ -537,13 +532,11 @@ describe('runConfig set argument validation', () => {
       ]);
     });
     expect(captured.exitCode).toBeNull();
-    // Post-W2: tolerate the `resolveProjectName` projects.active-not-set
-    // warning on stderr; it fires once per Bun process and the settings
-    // writer still lands the file under the fallback 'gobbi' project.
-    expect(captured.stderr).toMatch(/^(?:\[settings-io\] no projects\.active[^\n]*\n)?$/);
+    // PR-FIN-1c: project name resolves silently to basename(repoRoot).
+    expect(captured.stderr).toBe('');
 
     const filePath = join(
-      sessionDirForProject(repo, FALLBACK_PROJECT_NAME, 'test-session'),
+      sessionDirForProject(repo, basename(repo), 'test-session'),
       'settings.json',
     );
     expect(existsSync(filePath)).toBe(true);

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- PR-FIN-1c — `GitSettings` reshaped: `mode`/`workflow`/`cleanup` sub-objects removed; flat shape with per-concern sub-objects (`baseBranch`, `issue.create`, `worktree.autoRemove`, `branch.autoRemove`, `pr.open`, `pr.draft`). Worktrees always created; PR and issue creation are independent opt-in fields. Cross-field check updated to `pr.open=true` requires `baseBranch !== null`; check exempts DEFAULTS-only case (fresh repos). `ProjectsRegistry` interface and `Settings.projects` field removed; project resolution is `basename(repoRoot)` + `--project` flag. `gobbi project list` runs filesystem scan; `gobbi project switch` removed. T2-v1 upgrader extended to also handle Pass-3-current-shape files in place. Workspace seed simplified to `{schemaVersion: 1}`. Closes #179, #212. (#212)
+
 ### Added
 
 - Wave C.1 — Prompts-as-data: schema v7, `prompt_patches` table, `gobbi prompt patch` and `gobbi prompt render` commands, JSON Patch (RFC 6902) spec evolution, `fast-json-patch` library, `prompt.patch.applied` audit event written to workspace `state.db` (#156, #161)
