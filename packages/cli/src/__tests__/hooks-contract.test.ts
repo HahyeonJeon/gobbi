@@ -13,11 +13,13 @@
  *
  * Both bugs share a class — a registered hook command that does not match
  * the CLI's actual surface, or an emitter shape that does not match Claude
- * Code's per-event JSON contract. This file enumerates every hook in
- * `.claude/settings.json`, asserts each command exists in the
- * `WORKFLOW_COMMANDS` registry, and (for the one hook that emits JSON to
- * stdout — `guard`) asserts the emitted payload conforms to the per-event
- * shape Claude Code accepts.
+ * Code's per-event JSON contract. PR-FIN-1b moved hook registration from
+ * `gobbi workflow <subcommand>` to the `gobbi hook <event>` namespace
+ * (28 events). This file enumerates every hook in `.claude/settings.json`,
+ * asserts each command resolves to a registered subcommand in
+ * `HOOK_COMMANDS`, and (for the one hook that emits JSON to stdout —
+ * `pre-tool-use`, which chains guard) asserts the emitted payload
+ * conforms to Claude Code's per-event shape.
  *
  * Pattern references:
  *   - Hook manifest enumeration / `commandsForHook` shape — adopted from
@@ -37,7 +39,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { runGuardWithOptions } from '../commands/workflow/guard.js';
-import { WORKFLOW_COMMANDS } from '../commands/workflow.js';
+import { HOOK_COMMANDS } from '../commands/hook.js';
 
 // ---------------------------------------------------------------------------
 // Path resolution — this file lives at
@@ -107,13 +109,13 @@ function enumerateHooks(manifest: HooksManifest): readonly HookEntry[] {
 }
 
 /**
- * Parse `gobbi workflow <subcommand> [...]` into the subcommand token. Returns
- * `null` for any string that does not start with the `gobbi workflow ` prefix —
- * such hooks are out of scope for this contract test (the CLI registry it
- * checks is `WORKFLOW_COMMANDS`).
+ * Parse `gobbi hook <event> [...]` into the event subcommand token.
+ * Returns `null` for any string that does not start with the
+ * `gobbi hook ` prefix — such hooks are out of scope for this contract
+ * test (the CLI registry it checks is `HOOK_COMMANDS`).
  */
-function parseWorkflowSubcommand(command: string): string | null {
-  const PREFIX = 'gobbi workflow ';
+function parseHookSubcommand(command: string): string | null {
+  const PREFIX = 'gobbi hook ';
   if (!command.startsWith(PREFIX)) return null;
   const remainder = command.slice(PREFIX.length).trim();
   if (remainder.length === 0) return null;
@@ -178,19 +180,48 @@ async function captureExit(fn: () => Promise<void>): Promise<void> {
 // ---------------------------------------------------------------------------
 
 describe('hooks contract — `.claude/settings.json`', () => {
-  describe('every registered hook command exists in WORKFLOW_COMMANDS', () => {
+  describe('every registered hook command exists in HOOK_COMMANDS', () => {
     const manifest = readJson<HooksManifest>(SETTINGS_PATH);
     const entries = enumerateHooks(manifest);
-    const registered = new Set(WORKFLOW_COMMANDS.map((c) => c.name));
+    const registered = new Set(HOOK_COMMANDS.map((c) => c.name));
 
-    // Sanity check: the manifest enumerates exactly the five hooks the
-    // briefing names. If a future change adds or removes a hook, this
-    // assertion fails loudly so the contract test maintainer is forced
-    // to revisit the per-event shape coverage below.
-    test('manifest enumerates the five expected hook events', () => {
+    // Sanity check: PR-FIN-1b ships all 28 Claude Code hook events. If a
+    // future change adds or removes one, this assertion fails loudly so
+    // the contract test maintainer is forced to revisit the per-event
+    // shape coverage below.
+    test('manifest enumerates all 28 Claude Code hook events', () => {
       const eventKeys = new Set(entries.map((e) => e.event));
       expect(eventKeys).toEqual(
-        new Set(['SessionStart', 'PreToolUse', 'PostToolUse', 'SubagentStop', 'Stop']),
+        new Set([
+          'SessionStart',
+          'SessionEnd',
+          'Stop',
+          'StopFailure',
+          'UserPromptSubmit',
+          'UserPromptExpansion',
+          'PreToolUse',
+          'PostToolUse',
+          'PostToolUseFailure',
+          'PostToolBatch',
+          'PermissionRequest',
+          'PermissionDenied',
+          'Notification',
+          'SubagentStart',
+          'SubagentStop',
+          'TaskCreated',
+          'TaskCompleted',
+          'TeammateIdle',
+          'PreCompact',
+          'PostCompact',
+          'WorktreeCreate',
+          'WorktreeRemove',
+          'FileChanged',
+          'CwdChanged',
+          'InstructionsLoaded',
+          'ConfigChange',
+          'Elicitation',
+          'ElicitationResult',
+        ]),
       );
     });
 
@@ -200,7 +231,7 @@ describe('hooks contract — `.claude/settings.json`', () => {
           ? `${entry.event}[${entry.matcher}] → ${entry.command}`
           : `${entry.event} → ${entry.command}`;
       test(`${label} resolves to a registered subcommand`, () => {
-        const subcommand = parseWorkflowSubcommand(entry.command);
+        const subcommand = parseHookSubcommand(entry.command);
         expect(subcommand).not.toBeNull();
         // Non-null narrowing for the assertion below — the previous
         // expect would have thrown if subcommand were null.

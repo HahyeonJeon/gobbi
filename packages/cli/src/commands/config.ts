@@ -1,12 +1,13 @@
 /**
  * gobbi config — unified settings CLI.
  *
- * Three verbs:
+ * Four verbs:
  *
  *   gobbi config get  <key>         [--level workspace|project|session] [--session-id <id>]
  *   gobbi config set  <key> <value> [--level workspace|project|session] [--session-id <id>]
  *   gobbi config init               [--level workspace|project|session] [--session-id <id>]
  *                                   [--project <name>] [--force]
+ *   gobbi config env                (no flags; reads stdin JSON + native env)
  *
  * `get` without `--level` returns the cascade-resolved value (see
  * `lib/settings-io.ts::resolveSettings`). `get` with `--level` reads ONLY
@@ -52,10 +53,11 @@
  */
 
 import { parseArgs } from 'node:util';
-import { existsSync } from 'node:fs';
-import { basename } from 'node:path';
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 
-import { isRecord } from '../lib/guards.js';
+import { isRecord, isString } from '../lib/guards.js';
+import { readStdinJson } from '../lib/stdin.js';
 import { getRepoRoot } from '../lib/repo.js';
 import {
   ConfigCascadeError,
@@ -90,6 +92,10 @@ Verbs:
   init                  Seed the minimum-valid settings file at one level
                         (workspace by default). Refuses without --force
                         when the file already exists.
+  env                   Persist hook stdin JSON + native CLAUDE_* env vars
+                        as KEY=VALUE lines in \$CLAUDE_ENV_FILE. Idempotent
+                        upsert — repeat invocations overwrite existing
+                        keys, never duplicate.
 
 Options:
   --level <lvl>         Target level: workspace | project | session.
@@ -109,6 +115,7 @@ Examples:
   gobbi config init
   gobbi config init --level project --project foo
   gobbi config init --level session --session-id abc123 --force
+  echo '{"session_id":"abc","hook_event_name":"SessionStart"}' | gobbi config env
 
 Exit codes:
   0  success
@@ -205,6 +212,42 @@ Exit codes:
      refuse-without-force on existing file;
      missing session id when --level session is required`;
 
+const ENV_USAGE = `Usage: gobbi config env
+
+Persist Claude Code hook env vars to \$CLAUDE_ENV_FILE.
+
+Reads a Claude Code hook's stdin JSON payload and the natively-provided
+CLAUDE_* env vars, composes a unified set of KEY=VALUE lines, and upserts
+them into the file pointed to by \$CLAUDE_ENV_FILE. After Claude Code
+sources that file, every subsequent command in the session sees the
+CLAUDE_SESSION_ID / CLAUDE_TRANSCRIPT_PATH / CLAUDE_CWD / etc. without
+needing the orchestrator to thread them.
+
+Stdin JSON fields mapped (each optional):
+  session_id        -> CLAUDE_SESSION_ID
+  transcript_path   -> CLAUDE_TRANSCRIPT_PATH
+  cwd               -> CLAUDE_CWD
+  hook_event_name   -> CLAUDE_HOOK_EVENT_NAME
+  agent_id          -> CLAUDE_AGENT_ID
+  agent_type        -> CLAUDE_AGENT_TYPE
+  permission_mode   -> CLAUDE_PERMISSION_MODE
+
+Native env passthrough (only when set in process.env):
+  CLAUDE_PROJECT_DIR, CLAUDE_PLUGIN_ROOT, CLAUDE_PLUGIN_DATA
+
+Behavior:
+  - TTY (no piped stdin) and no payload-override:  silent exit 0.
+  - \$CLAUDE_ENV_FILE unset:                        stderr WARN, exit 0.
+  - File write succeeds:                           exit 0.
+  - File write fails (permission, disk full, …):   stderr diagnostic, exit 2.
+
+Idempotent: a repeat invocation overwrites existing KEY=VALUE lines for
+each key it produces; lines for unrelated keys (set by other tools) are
+preserved verbatim.
+
+This verb is meant to be invoked from \`gobbi hook session-start\` (and
+other hook events), not by humans directly.`;
+
 // ---------------------------------------------------------------------------
 // parseArgs options — shared between get and set
 // ---------------------------------------------------------------------------
@@ -253,6 +296,11 @@ export async function runConfig(args: string[]): Promise<void> {
 
   if (first === 'init') {
     await runInit(args.slice(1));
+    return;
+  }
+
+  if (first === 'env') {
+    await runConfigEnv(args.slice(1));
     return;
   }
 
@@ -620,6 +668,311 @@ async function runInit(args: string[]): Promise<void> {
   } catch (err) {
     emitCascadeError('init', err);
   }
+}
+
+// ---------------------------------------------------------------------------
+// gobbi config env
+// ---------------------------------------------------------------------------
+
+/**
+ * Stdin JSON shape consumed by `gobbi config env`. Every field is optional
+ * because Claude Code hook events fire with different payload subsets and
+ * a missing field simply produces no `KEY=VALUE` line for that key. The
+ * fields are typed to whatever runtime check `isString` enforces; AJV is
+ * intentionally not used here — the failure mode for hooks must be
+ * "swallow + skip", never "exit 2".
+ *
+ * Source: Claude Code hook payload taxonomy (28 events; SessionStart,
+ * SubagentStop, PreToolUse, etc. share the same envelope shape).
+ */
+export interface HookEnvPayload {
+  readonly session_id?: string;
+  readonly transcript_path?: string;
+  readonly cwd?: string;
+  readonly hook_event_name?: string;
+  readonly agent_id?: string;
+  readonly agent_type?: string;
+  readonly permission_mode?: string;
+}
+
+/**
+ * Mapping from stdin-JSON field name to the corresponding `CLAUDE_*` env
+ * variable. Stable order — the env file lists keys in this order on first
+ * write so subsequent reads are deterministic. Native passthrough vars
+ * (CLAUDE_PROJECT_DIR / CLAUDE_PLUGIN_ROOT / CLAUDE_PLUGIN_DATA) are
+ * appended afterwards.
+ */
+const ENV_KEY_MAP: readonly { readonly stdinKey: keyof HookEnvPayload; readonly envKey: string }[] = [
+  { stdinKey: 'session_id', envKey: 'CLAUDE_SESSION_ID' },
+  { stdinKey: 'transcript_path', envKey: 'CLAUDE_TRANSCRIPT_PATH' },
+  { stdinKey: 'cwd', envKey: 'CLAUDE_CWD' },
+  { stdinKey: 'hook_event_name', envKey: 'CLAUDE_HOOK_EVENT_NAME' },
+  { stdinKey: 'agent_id', envKey: 'CLAUDE_AGENT_ID' },
+  { stdinKey: 'agent_type', envKey: 'CLAUDE_AGENT_TYPE' },
+  { stdinKey: 'permission_mode', envKey: 'CLAUDE_PERMISSION_MODE' },
+];
+
+/**
+ * Native env vars passed through unchanged when present in `process.env`.
+ * Order mirrors `ENV_KEY_MAP` — stdin-derived first, native passthrough
+ * after, so a hand-read of the env file groups related vars together.
+ */
+const NATIVE_PASSTHROUGH_KEYS: readonly string[] = [
+  'CLAUDE_PROJECT_DIR',
+  'CLAUDE_PLUGIN_ROOT',
+  'CLAUDE_PLUGIN_DATA',
+];
+
+/**
+ * Narrow an unknown stdin payload to {@link HookEnvPayload}. Each field is
+ * picked individually — non-string values are dropped. The return is never
+ * `null`; an entirely-missing payload yields an empty object so callers
+ * can still apply native-env passthrough.
+ */
+function asHookEnvPayload(value: unknown): HookEnvPayload {
+  if (!isRecord(value)) return {};
+  const out: Record<string, unknown> = {};
+  for (const { stdinKey } of ENV_KEY_MAP) {
+    const v = value[stdinKey];
+    if (isString(v)) out[stdinKey] = v;
+  }
+  return out as HookEnvPayload;
+}
+
+/**
+ * `gobbi config env` entry point.
+ *
+ * Two acquisition modes:
+ *
+ *   1. **Pre-parsed payload** (in-process callers like `gobbi hook
+ *      session-start`) — pass the parsed JSON through the optional
+ *      `payloadOverride` parameter so we don't re-read stdin (which would
+ *      block / yield empty after the hook entrypoint already drained it).
+ *   2. **Stdin JSON** (direct CLI invocation) — read via
+ *      `lib/stdin.ts::readStdinJson`. TTY callers (no piped input) get
+ *      `null` back; with no payload AND no native-env vars to write, we
+ *      exit 0 silently per the hook contract.
+ *
+ * Composition pipeline:
+ *
+ *   1. Acquire payload (stdin or override).
+ *   2. Pull each {@link ENV_KEY_MAP} field; skip when absent / non-string.
+ *   3. Pull each {@link NATIVE_PASSTHROUGH_KEYS} from `process.env`; skip
+ *      when unset.
+ *   4. Read the existing `$CLAUDE_ENV_FILE` (if any), upsert each composed
+ *      key (replace existing line, or append at the end). Lines whose key
+ *      is not in our map are preserved verbatim — other tools may also
+ *      write to the same file.
+ *   5. Atomic write via temp + rename so a crash mid-write never produces
+ *      a half-truncated file. `Bun.write` is not atomic in the rename
+ *      sense (`_bun` skill §"Atomic writes"), so we use `node:fs` here.
+ *
+ * Exit codes:
+ *
+ *   - `0` — success, OR `$CLAUDE_ENV_FILE` unset (with stderr WARN), OR
+ *           TTY-with-no-payload silent exit.
+ *   - `2` — IO error writing the env file (permission, disk full, etc.).
+ *
+ * Idempotent — running twice with the same payload yields a byte-identical
+ * file. Running with a superseding payload (e.g., a SubagentStop with a
+ * fresh `agent_id`) overwrites only the keys that changed.
+ */
+export async function runConfigEnv(
+  args: string[],
+  payloadOverride?: HookEnvPayload,
+): Promise<void> {
+  if (args.includes('--help') || args.includes('-h')) {
+    process.stdout.write(`${ENV_USAGE}\n`);
+    return;
+  }
+
+  // --- 1. Acquire payload -----------------------------------------------
+  let payload: HookEnvPayload;
+  if (payloadOverride !== undefined) {
+    payload = payloadOverride;
+  } else {
+    const raw = await readStdinJson<unknown>();
+    if (raw === null) {
+      // TTY (no piped stdin) and no override — exit 0 silently. Hooks
+      // invoked outside a real Claude Code event must not fail loudly.
+      return;
+    }
+    payload = asHookEnvPayload(raw);
+  }
+
+  // --- 2. Compose env vars ---------------------------------------------
+  const composed: ReadonlyArray<readonly [string, string]> = collectEnvLines(payload);
+
+  // No vars to write — early exit. Treat as success: a payload with no
+  // mappable fields is not an error (the hook still ran).
+  if (composed.length === 0) {
+    return;
+  }
+
+  // --- 3. Resolve target file ------------------------------------------
+  const envFilePath = process.env['CLAUDE_ENV_FILE'];
+  if (envFilePath === undefined || envFilePath === '') {
+    process.stderr.write(
+      `gobbi config env: WARN — $CLAUDE_ENV_FILE not set; skipping persistence (likely invoked outside a hook)\n`,
+    );
+    return;
+  }
+
+  // --- 4. Read existing + upsert ---------------------------------------
+  let existing = '';
+  try {
+    if (existsSync(envFilePath)) {
+      existing = readFileSync(envFilePath, 'utf8');
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(
+      `gobbi config env: failed to read $CLAUDE_ENV_FILE at ${envFilePath}: ${message}\n`,
+    );
+    process.exit(2);
+  }
+
+  const merged = upsertEnvLines(existing, composed);
+
+  // --- 5. Atomic write -------------------------------------------------
+  try {
+    atomicWriteFile(envFilePath, merged);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(
+      `gobbi config env: failed to write $CLAUDE_ENV_FILE at ${envFilePath}: ${message}\n`,
+    );
+    process.exit(2);
+  }
+}
+
+/**
+ * Collect the ordered list of `[KEY, VALUE]` pairs to write. Stdin-derived
+ * vars come first (in {@link ENV_KEY_MAP} order), then native passthrough
+ * vars from `process.env` (in {@link NATIVE_PASSTHROUGH_KEYS} order).
+ *
+ * Empty strings are admitted for stdin-derived fields when they are
+ * literally present-but-empty in the JSON — that's a deliberate signal
+ * from the caller. Native passthrough only fires when the env var is set
+ * to a non-empty string; an unset var is skipped, never written as
+ * `KEY=`.
+ */
+function collectEnvLines(
+  payload: HookEnvPayload,
+): readonly (readonly [string, string])[] {
+  const out: (readonly [string, string])[] = [];
+  for (const { stdinKey, envKey } of ENV_KEY_MAP) {
+    const v = payload[stdinKey];
+    if (typeof v === 'string') {
+      out.push([envKey, v]);
+    }
+  }
+  for (const envKey of NATIVE_PASSTHROUGH_KEYS) {
+    const v = process.env[envKey];
+    if (typeof v === 'string' && v !== '') {
+      out.push([envKey, v]);
+    }
+  }
+  return out;
+}
+
+/**
+ * Upsert a list of `[KEY, VALUE]` entries into an existing env-file body.
+ *
+ * Semantics:
+ *
+ *   - For each key in `entries`, if a line of the shape `KEY=...` already
+ *     exists, REPLACE that line with `KEY=VALUE` (preserving its position
+ *     in the file).
+ *   - For each key NOT already present, APPEND `KEY=VALUE` at the end in
+ *     the order it appears in `entries`.
+ *   - Lines for keys we don't manage are preserved verbatim.
+ *   - Trailing newline is normalised — the result always ends with `\n`.
+ *
+ * Values are written as `KEY=VALUE` without escaping or quoting. Claude
+ * Code's `$CLAUDE_ENV_FILE` consumer reads the file with bash-style
+ * semantics, so values containing literal `\n` would be a problem;
+ * however the hook payload taxonomy forbids newlines in any of the fields
+ * we map (session_id is UUID-like, paths are POSIX, etc.), so the simple
+ * format is correct. If a field somehow contained a newline, the consumer
+ * would treat the rest as an extra key, which is recoverable on the next
+ * invocation (next call overwrites the bad line). No multi-line values
+ * are emitted by this function.
+ */
+function upsertEnvLines(
+  existing: string,
+  entries: readonly (readonly [string, string])[],
+): string {
+  const newKeys = new Set(entries.map(([k]) => k));
+  // Walk existing lines once. Replace lines matching managed keys; keep
+  // others verbatim. Track which keys we've already replaced so duplicates
+  // in `existing` collapse to one line on the way out (hand-edited files
+  // are not pathological — but a duplicate would leak through the
+  // upsert otherwise).
+  const replaced = new Set<string>();
+  const valueByKey = new Map(entries);
+
+  const inputLines = existing.split('\n');
+  // `String.split('\n')` on a trailing `\n` produces a trailing empty
+  // string. Drop it so we don't emit a blank second-to-last line on
+  // rewrite — the trailing newline is re-added at the end.
+  if (inputLines.length > 0 && inputLines[inputLines.length - 1] === '') {
+    inputLines.pop();
+  }
+
+  const outLines: string[] = [];
+  for (const line of inputLines) {
+    const eq = line.indexOf('=');
+    if (eq <= 0) {
+      // Comment, blank line, or malformed — preserve verbatim.
+      outLines.push(line);
+      continue;
+    }
+    const key = line.slice(0, eq);
+    if (newKeys.has(key)) {
+      if (replaced.has(key)) {
+        // Collapse duplicate of an already-replaced managed key.
+        continue;
+      }
+      const v = valueByKey.get(key);
+      // `valueByKey.get` returns `string | undefined`; the `newKeys.has`
+      // guard above proves the key is present, so `v` is a string. The
+      // explicit fallback is belt-and-braces for the type narrowing.
+      outLines.push(`${key}=${v ?? ''}`);
+      replaced.add(key);
+    } else {
+      outLines.push(line);
+    }
+  }
+
+  // Append new keys (those not already in the file) in entry order.
+  for (const [key, value] of entries) {
+    if (!replaced.has(key)) {
+      outLines.push(`${key}=${value}`);
+      replaced.add(key);
+    }
+  }
+
+  return `${outLines.join('\n')}\n`;
+}
+
+/**
+ * Atomic file write — temp file + rename. Mirrors the pattern in
+ * `lib/settings-io.ts` (which `writeSettingsAtLevel` uses for
+ * settings.json). `Bun.write` cannot stand in here because it always
+ * truncates-and-writes the destination directly (see `_bun` skill §"File
+ * I/O"); a crash mid-write leaves the env file half-truncated and a
+ * subsequent hook reads garbage.
+ *
+ * Temp filename uses a `.gobbi-env.<pid>.tmp` suffix in the same
+ * directory so `renameSync` is a within-fs move (atomic on POSIX). Cross-
+ * filesystem renames are not atomic; the `$CLAUDE_ENV_FILE` always lives
+ * inside the user's session directory, so this is safe in practice.
+ */
+function atomicWriteFile(target: string, body: string): void {
+  const tempPath = join(dirname(target), `.gobbi-env.${process.pid}.tmp`);
+  writeFileSync(tempPath, body, { encoding: 'utf8', mode: 0o600 });
+  renameSync(tempPath, target);
 }
 
 // ---------------------------------------------------------------------------

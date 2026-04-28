@@ -84,6 +84,7 @@ export interface CommandDef {
  */
 export const COMMAND_ORDER = [
   'config',
+  'hook',
   'session',
   'notify',
   'note',
@@ -124,6 +125,14 @@ export const COMMANDS_BY_NAME = {
     run: async (args: string[]): Promise<void> => {
       const { runConfig } = await import('./commands/config.js');
       await runConfig(args);
+    },
+  },
+  hook: {
+    name: 'hook',
+    summary: 'Claude Code hook event entrypoints (28 events)',
+    run: async (args: string[]): Promise<void> => {
+      const { runHook } = await import('./commands/hook.js');
+      await runHook(args);
     },
   },
   session: {
