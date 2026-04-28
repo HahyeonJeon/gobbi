@@ -43,13 +43,12 @@
  *           refuses to overwrite without `--force`. Diagnostic line on
  *           stderr.
  *
- * Session-id resolution is plugin-neutral per the
- * `cli-vs-skill-session-id` gotcha: the CLI reads `$CLAUDE_SESSION_ID`
- * and accepts `--session-id <id>` explicitly. It does NOT know about
- * `$CODEX_COMPANION_SESSION_ID`; that discovery logic belongs to the
- * `/gobbi` orchestrator skill, which passes the resolved id through.
- * The `--session-id` flag takes priority over the env var when both are
- * present — explicit input overrides the ambient env.
+ * Session-id resolution: the CLI reads `$CLAUDE_SESSION_ID` (set by
+ * `gobbi hook session-start` via `$CLAUDE_ENV_FILE`) or the explicit
+ * `--session-id <id>` flag. The orchestrator skill no longer performs
+ * discovery; the env var arrives automatically from the SessionStart hook
+ * (PR-FIN-1b). `--session-id` takes priority over the env var when both
+ * are present — explicit input overrides the ambient env.
  */
 
 import { parseArgs } from 'node:util';
@@ -1104,11 +1103,10 @@ function parseLevel(raw: unknown): SettingsLevel | undefined | 'invalid' {
  * the `$CLAUDE_SESSION_ID` env var. When both are present, the explicit flag
  * wins — more specific input overrides the ambient env.
  *
- * The CLI is plugin-neutral: it reads `$CLAUDE_SESSION_ID` and accepts
- * `--session-id` directly. It does NOT know about `$CODEX_COMPANION_SESSION_ID`.
- * The `/gobbi` orchestrator skill is responsible for env discovery (e.g.
- * `$CODEX_COMPANION_SESSION_ID`) and passes the discovered id via `--session-id`
- * per the `cli-vs-skill-session-id` gotcha.
+ * The CLI consumes session id from env (set by `gobbi hook session-start`
+ * via `$CLAUDE_ENV_FILE`) or the `--session-id` flag. The orchestrator skill
+ * no longer performs discovery — the env var arrives automatically from the
+ * SessionStart hook (PR-FIN-1b).
  *
  * Returns `undefined` when neither source supplies a value.
  */

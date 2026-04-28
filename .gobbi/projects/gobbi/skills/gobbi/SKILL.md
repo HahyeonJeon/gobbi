@@ -14,29 +14,22 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup 
 
 **SECOND — ensure `_gobbi-rule` symlink exists.** Check whether `.claude/rules/_gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in the `_gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated.
 
-#### Discovering the real session ID
+**Session env vars arrive automatically.** The `gobbi hook session-start` SessionStart hook (registered in `plugins/gobbi/hooks/hooks.json`) fires at session start, reads the hook's stdin JSON payload, and persists the following env vars to `$CLAUDE_ENV_FILE`. Claude Code then sources that file, making the vars available to every subsequent command in the session:
 
-`$CLAUDE_SESSION_ID` is **not** populated in the orchestrator's Bash-tool environment. You must discover the real session ID before any `gobbi config` or `gobbi workflow` call:
+| Env var | Source |
+|---|---|
+| `CLAUDE_SESSION_ID` | stdin JSON `session_id` |
+| `CLAUDE_TRANSCRIPT_PATH` | stdin JSON `transcript_path` |
+| `CLAUDE_CWD` | stdin JSON `cwd` |
+| `CLAUDE_HOOK_EVENT_NAME` | stdin JSON `hook_event_name` |
+| `CLAUDE_AGENT_ID` | stdin JSON `agent_id` (when present) |
+| `CLAUDE_AGENT_TYPE` | stdin JSON `agent_type` (when present) |
+| `CLAUDE_PERMISSION_MODE` | stdin JSON `permission_mode` (when present) |
+| `CLAUDE_PROJECT_DIR` | natively-provided env (passthrough) |
+| `CLAUDE_PLUGIN_ROOT` | natively-provided env (passthrough) |
+| `CLAUDE_PLUGIN_DATA` | natively-provided env (passthrough) |
 
-1. **Primary:** check `$CODEX_COMPANION_SESSION_ID` — the Codex companion plugin exports the real Claude session ID into this env var. Run `env | grep CODEX_COMPANION_SESSION_ID` to test.
-2. **Fallback:** if `$CODEX_COMPANION_SESSION_ID` is empty, list `~/.claude/projects/{slug}/*.jsonl` and take the most recently modified file. The filename minus `.jsonl` is the session ID. The slug is derived from the project path (e.g., `-playinganalytics-git-gobbi` for `/playinganalytics/git/gobbi`).
-3. **Do NOT generate a `manual-*` fallback.** A fake session ID writes orphan entries under `.gobbi/projects/<name>/sessions/manual-*/` that need manual cleanup.
-
-**PR-FIN-1a change:** `gobbi workflow init` no longer falls back to `randomUUID()` when session id is missing. If `$CLAUDE_SESSION_ID` is absent and `--session-id` is not passed, the command exits 2 with a remediation hint. Agents MUST resolve the session ID (via one of the two discovery steps above) before calling `gobbi workflow init` or the command will fail.
-
-Once discovered, store the ID in a local variable (`DISCOVERED`). Pass it to every CLI call via inline env assignment or the explicit flag — the CLI is plugin-neutral and reads only `$CLAUDE_SESSION_ID` and `--session-id`:
-
-```
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config get workflow --level session
-```
-
-or equivalently:
-
-```
-gobbi config get workflow --level session --session-id $DISCOVERED
-```
-
-The CLI does NOT know about `$CODEX_COMPANION_SESSION_ID`. Discovery belongs here in the skill; the CLI only consumes the resolved ID. See `cli-vs-skill-session-id.md` in the project gotchas for the full boundary rationale.
+No discovery dance. Call `gobbi config get …` or `gobbi workflow init` directly — `$CLAUDE_SESSION_ID` is already in the process env. If `$CLAUDE_SESSION_ID` is absent (hook not registered or custom Claude Code config), `gobbi workflow init` exits 2 with a remediation hint pointing to the SessionStart hook registration.
 
 **THIRD — check gobbi CLI availability and version.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
 
@@ -49,10 +42,10 @@ After confirming the CLI is present, run `gobbi --is-latest` to check whether th
 **FOURTH — check for existing session settings.** Run:
 
 ```
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config get workflow --level session
+gobbi config get workflow --level session
 ```
 
-This reads `.gobbi/projects/<name>/sessions/{id}/settings.json` at the session level without cascade fallthrough.
+This reads `.gobbi/projects/<name>/sessions/{id}/settings.json` at the session level without cascade fallthrough. `$CLAUDE_SESSION_ID` is already in the process env from the SessionStart hook.
 
 - **Exit 0** — session settings exist (this is a resume or compact). Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`.
 - **Exit 1** — no prior session settings. Proceed to the setup questions in FIFTH.
@@ -86,7 +79,7 @@ Multi-select. If any channel is selected alongside Skip, channels take priority.
 
 After selection, check `$CLAUDE_PROJECT_DIR/.claude/.env` for credentials. If credentials exist for the selected channels, enable notifications. If credentials are missing, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help the user configure them before proceeding.
 
-**After all three questions — persist session choices.** Write the user's selections to `.gobbi/projects/<name>/sessions/{id}/settings.json` via `gobbi config set`. All writes target `--level session` (the default); pass the discovered ID via inline env or `--session-id`. Session settings set defaults for this session only; either can be overridden at any specific step.
+**After all three questions — persist session choices.** Write the user's selections to `.gobbi/projects/<name>/sessions/{id}/settings.json` via `gobbi config set`. All writes target `--level session` (the default). `$CLAUDE_SESSION_ID` is already in the process env from the SessionStart hook. Session settings set defaults for this session only; either can be overridden at any specific step.
 
 Evaluation mode mapping — the same answer applies to all three steps:
 
@@ -96,22 +89,22 @@ Evaluation mode mapping — the same answer applies to all three steps:
 - "Let orchestrator decide" writes `auto` for each step
 
 ```
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.ideation.evaluate.mode ask
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.planning.evaluate.mode ask
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set workflow.execution.evaluate.mode ask
+gobbi config set workflow.ideation.evaluate.mode ask
+gobbi config set workflow.planning.evaluate.mode ask
+gobbi config set workflow.execution.evaluate.mode ask
 ```
 
 Git settings (PR-FIN-1c shape — no `mode` field; worktrees always created):
 
 ```
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set git.pr.open true
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set git.baseBranch develop
+gobbi config set git.pr.open true
+gobbi config set git.baseBranch develop
 ```
 
 Notifications — for each selected channel, set `enabled true`. Do NOT touch `events` or `triggers` (those are advanced config users edit manually):
 
 ```
-CLAUDE_SESSION_ID=$DISCOVERED gobbi config set notify.slack.enabled true
+gobbi config set notify.slack.enabled true
 ```
 
 Discussion modes are NOT asked. Defaults apply: `workflow.ideation.discuss.mode` = `user`, `workflow.planning.discuss.mode` = `user`, `workflow.execution.discuss.mode` = `agent`. Users override these manually via `gobbi config set` if they want different behavior.
@@ -122,7 +115,7 @@ For explicit one-time scaffolding (e.g., first setup in a fresh repo before runn
 gobbi config init                            # workspace seed — .gobbi/settings.json
 gobbi config init --level project            # project seed — .gobbi/projects/<basename>/settings.json
 gobbi config init --level project --project foo   # project seed for a non-basename project name
-gobbi config init --level session --session-id $DISCOVERED   # session seed
+gobbi config init --level session            # session seed (CLAUDE_SESSION_ID from env)
 gobbi config init --level workspace --force  # force re-seed if file already exists
 ```
 

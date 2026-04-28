@@ -34,8 +34,8 @@
  * tests (`beforeEach`). Pattern mirrors `commands/__tests__/config.test.ts`.
  *
  * Env hygiene: `CLAUDE_SESSION_ID` / `CLAUDE_PROJECT_DIR` are set explicitly
- * in `beforeEach` and cleared in `afterEach` per the `cli-vs-skill-session-id`
- * gotcha so sibling tests never leak a stale id into the CLI process env.
+ * in `beforeEach` and cleared in `afterEach` so sibling tests never leak a
+ * stale id into the CLI process env.
  */
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test';

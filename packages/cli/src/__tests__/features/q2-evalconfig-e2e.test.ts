@@ -20,8 +20,7 @@
  * case for 15 tests total.
  *
  * Env hygiene: `CLAUDE_SESSION_ID` / `CLAUDE_PROJECT_DIR` are set explicitly
- * in `beforeEach` and restored in `afterEach` per the `cli-vs-skill-session-id`
- * gotcha.
+ * in `beforeEach` and restored in `afterEach`.
  */
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test';

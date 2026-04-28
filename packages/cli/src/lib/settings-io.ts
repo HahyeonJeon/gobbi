@@ -98,8 +98,9 @@ export function projectSettingsPath(repoRoot: string, projectName: string): stri
 /**
  * Path to `.gobbi/projects/<projectName>/sessions/<sessionId>/settings.json`
  * — session level. Both `projectName` and `sessionId` are required; the
- * caller is responsible for supplying a real session id (discovered per the
- * `session-id-discovery` / `cli-vs-skill-session-id` gotchas).
+ * caller is responsible for supplying a real session id. Post-PR-FIN-1b the
+ * session id arrives via `$CLAUDE_SESSION_ID` set by `gobbi hook
+ * session-start` through `$CLAUDE_ENV_FILE`; no skill-side discovery needed.
  */
 export function sessionSettingsPath(
   repoRoot: string,
@@ -257,10 +258,10 @@ export function writeSettingsAtLevel(
  * invariant fails post-merge.
  *
  * `sessionId` is optional — when absent, the session level is skipped
- * (the session tier is "not present"). The CLI reads
- * `$CLAUDE_SESSION_ID` or a `--session-id` flag and passes an explicit
- * id; env discovery is an orchestrator-skill concern per the
- * `cli-vs-skill-session-id` gotcha.
+ * (the session tier is "not present"). The CLI consumes session id from
+ * env (set by `gobbi hook session-start` via `$CLAUDE_ENV_FILE`) or a
+ * `--session-id` flag; orchestrator skill does not perform discovery
+ * anymore (PR-FIN-1b).
  *
  * `projectName` is optional — when absent, the project name resolves to
  * `basename(repoRoot)`. Callers that need to address a specific project
