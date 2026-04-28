@@ -1,7 +1,6 @@
 /**
  * `gobbi project create <name>` — scaffold a new project directory tree
- * under `.gobbi/projects/<name>/` and register the name in
- * `settings.json`'s `projects.known` array.
+ * under `.gobbi/projects/<name>/`.
  *
  * ## Scaffold
  *
@@ -29,22 +28,19 @@
  *
  *   - Expected shape: `install.ts` exports
  *     `seedProjectFromTemplates({repoRoot, projectName}): SeedResult`.
- *     Landed as part of the W5-eval F1+F2 remediation.
  *   - Fallback (shape drifts): stderr warning pointing at
  *     `gobbi install`; scaffold directories stay empty.
  *
  * The seed helper is content-only. It writes templates and the install
  * manifest, but does NOT touch `settings.json` or build the `.claude/`
- * symlink farm — the farm and activation belong to fresh-install + the
- * `gobbi project switch` path respectively.
+ * symlink farm.
  *
- * ## settings.json update
+ * ## settings.json update (PR-FIN-1c)
  *
- * Appends `<name>` to `projects.known` (deduped) via
- * {@link writeSettingsAtLevel} at the `workspace` tier. Does NOT set
- * `projects.active` — the operator must explicitly run
- * `gobbi project switch <name>` to rotate the symlink farm. Creating
- * a project does not change the loaded skill/agent/rule set.
+ * `gobbi project create` does NOT touch `settings.json`. PR-FIN-1c
+ * removed the `Settings.projects` registry; the directory tree under
+ * `.gobbi/projects/` is the source of truth for which projects exist,
+ * and `--project <name>` on each command selects which one to address.
  *
  * ## Name validation
  *
@@ -77,11 +73,6 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 
 import { getRepoRoot } from '../../lib/repo.js';
-import {
-  loadSettingsAtLevel,
-  writeSettingsAtLevel,
-} from '../../lib/settings-io.js';
-import type { Settings } from '../../lib/settings.js';
 import { projectDir, projectSubdir } from '../../lib/workspace-paths.js';
 
 // ---------------------------------------------------------------------------
@@ -90,9 +81,9 @@ import { projectDir, projectSubdir } from '../../lib/workspace-paths.js';
 
 const USAGE = `Usage: gobbi project create <name>
 
-Scaffold a new project under .gobbi/projects/<name>/ and register the
-name in settings.json's projects.known array. Does NOT activate the
-project — run 'gobbi project switch <name>' to rotate the symlink farm.
+Scaffold a new project under .gobbi/projects/<name>/. Does NOT touch
+settings.json (PR-FIN-1c removed the projects registry); pass
+'--project <name>' to subsequent commands to address the new project.
 
 Name must be lowercase letters, digits, and hyphens only; no leading
 or trailing hyphens, no path separators.
@@ -275,51 +266,24 @@ export async function runProjectCreateWithOptions(
 
   // --- Seeding hook -----------------------------------------------------
   //
-  // W5.3 owns template seeding. W5.4 landed first in this plan execution
-  // order, so we do a best-effort dynamic import guard: if the install
-  // module exposes a re-usable seed function we call it, otherwise we
-  // emit a stderr warning so the operator knows to run `gobbi install`.
-  //
-  // The guard is intentionally narrow — we check for the specific
-  // module and exported function name the W5.3 plan mentions. If W5.3
-  // lands with a different shape, this hook will simply fall through
-  // to the warning path (no crash, no false success).
+  // The install module exposes `seedProjectFromTemplates` for content
+  // copy. We do a best-effort dynamic import: if the helper is present
+  // we call it, otherwise we emit a stderr warning so the operator
+  // knows to run `gobbi install`.
   await trySeedFromInstallTemplates(repoRoot, name);
 
-  // --- settings.json update --------------------------------------------
+  // --- settings.json (PR-FIN-1c: NO mutation) --------------------------
   //
-  // Read the workspace-level `settings.json` DIRECTLY (not through
-  // `resolveSettings`) because we need to rewrite EXACTLY the workspace
-  // tier without picking up cascade-merged fields from project/session
-  // tiers. A round-trip through the cascade would write hydrated
-  // defaults into the workspace file, violating the "keep user files
-  // sparse" discipline from `ensure-settings-cascade.ts`.
+  // PR-FIN-1c removed the `Settings.projects` registry. The directory
+  // tree under `.gobbi/projects/` is the source of truth for which
+  // projects exist; no workspace-level book-keeping is required.
   //
-  // When the workspace file is absent (fresh repo pre-`gobbi install`),
-  // we seed it with the minimal shape the unified schema requires:
-  // `schemaVersion: 1` + an empty `projects` registry. This matches the
-  // seed `ensureSettingsCascade` writes on first-run.
-  const existing = loadSettingsAtLevel(repoRoot, 'workspace');
-  const base: Settings =
-    existing !== null
-      ? existing
-      : { schemaVersion: 1, projects: { active: null, known: [] } };
-
-  const knownSet = new Set(base.projects.known);
-  knownSet.add(name);
-  const updated: Settings = {
-    ...base,
-    projects: {
-      active: base.projects.active,
-      known: [...knownSet].sort(),
-    },
-  };
-  writeSettingsAtLevel(repoRoot, 'workspace', updated);
+  // Operators that want to address the new project pass
+  // `--project <name>` to each subsequent command.
 
   process.stdout.write(
     `Created project '${name}' at ${targetDir}\n` +
-      `Registered in .gobbi/settings.json (projects.known).\n` +
-      `Run 'gobbi project switch ${name}' to activate it.\n`,
+      `Pass '--project ${name}' to subsequent commands to address it.\n`,
   );
 }
 

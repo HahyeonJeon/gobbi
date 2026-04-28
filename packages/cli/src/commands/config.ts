@@ -77,7 +77,7 @@ Options:
   --help, -h           Show this help message.
 
 Examples:
-  gobbi config get git.workflow.mode
+  gobbi config get git.pr.open
   gobbi config get workflow.ideation.discuss.mode --level workspace
   gobbi config set workflow.ideation.discuss.mode user
   gobbi config set notify.slack.events '["workflow.complete","error"]' --level workspace
@@ -132,7 +132,7 @@ Options:
 
 Examples:
   gobbi config set workflow.ideation.discuss.mode user
-  gobbi config set git.workflow.baseBranch main --level workspace
+  gobbi config set git.baseBranch main --level workspace
   gobbi config set notify.slack.events '["workflow.complete","error"]' --level workspace
   gobbi config set notify.slack.enabled true --level workspace
 
@@ -366,16 +366,11 @@ async function runSet(args: string[]): Promise<void> {
   const repoRoot = getRepoRoot();
 
   // Load the current level file (or seed the minimum valid shape when
-  // absent). The seed must include `projects` because AJV rejects an
-  // absent block at write time; the `{active: null, known: []}` pair is
-  // the fresh-install default per `Settings.projects` semantics.
+  // absent). PR-FIN-1c: minimum shape is just `{schemaVersion: 1}`.
   let current: Settings;
   try {
     const loaded = loadSettingsAtLevel(repoRoot, level, sessionId);
-    current = loaded ?? ({
-      schemaVersion: 1,
-      projects: { active: null, known: [] },
-    } satisfies Settings);
+    current = loaded ?? ({ schemaVersion: 1 } satisfies Settings);
   } catch (err) {
     emitCascadeError('set', err);
   }

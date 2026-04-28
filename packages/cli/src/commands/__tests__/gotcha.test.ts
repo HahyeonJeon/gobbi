@@ -353,7 +353,7 @@ describe('runPromote — happy path (project-scoped)', () => {
     writeFileSync(sourceFile, originalBody, 'utf8');
 
     await captureExit(() =>
-      runPromoteWithOptions(['--destination-project', 'testproj'], {
+      runPromoteWithOptions(['--project', 'gobbi', '--destination-project', 'testproj'], {
         repoRoot: repo,
         claudeDir,
       }),
@@ -392,7 +392,7 @@ describe('runPromote — happy path (project-scoped)', () => {
     writeFileSync(join(sourceDir, 'bar.md'), newBody, 'utf8');
 
     await captureExit(() =>
-      runPromoteWithOptions(['--destination-project', 'testproj'], {
+      runPromoteWithOptions(['--project', 'gobbi', '--destination-project', 'testproj'], {
         repoRoot: repo,
         claudeDir,
       }),
@@ -422,7 +422,7 @@ describe('runPromote — happy path (project-scoped)', () => {
     writeFileSync(sourceFile, originalBody, 'utf8');
 
     await captureExit(() =>
-      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(['--project', 'gobbi'], { repoRoot: repo, claudeDir }),
     );
 
     expect(captured.stderr).toBe('');
@@ -442,7 +442,7 @@ describe('runPromote — happy path (skill-scoped)', () => {
     writeFileSync(sourceFile, body, 'utf8');
 
     await captureExit(() =>
-      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(['--project', 'gobbi'], { repoRoot: repo, claudeDir }),
     );
 
     const destFile = join(claudeDir, 'skills', '_git', 'gotchas.md');
@@ -479,7 +479,7 @@ describe('runPromote — happy path (skill-scoped)', () => {
     );
 
     await captureExit(() =>
-      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(['--project', 'gobbi'], { repoRoot: repo, claudeDir }),
     );
 
     expect(captured.exitCode).toBeNull();
@@ -505,7 +505,7 @@ describe('runPromote — --dry-run', () => {
 
     await captureExit(() =>
       runPromoteWithOptions(
-        ['--dry-run', '--destination-project', 'testproj'],
+        ['--project', 'gobbi', '--dry-run', '--destination-project', 'testproj'],
         { repoRoot: repo, claudeDir },
       ),
     );
@@ -570,7 +570,7 @@ describe('runPromote — active-session rejection', () => {
     ]);
 
     await captureExit(() =>
-      runPromoteWithOptions([], {
+      runPromoteWithOptions(['--project', 'gobbi'], {
         repoRoot: repo,
         claudeDir,
         now: () => now,
@@ -622,7 +622,7 @@ describe('runPromote — active-session rejection', () => {
     ]);
 
     await captureExit(() =>
-      runPromoteWithOptions([], {
+      runPromoteWithOptions(['--project', 'gobbi'], {
         repoRoot: repo,
         claudeDir,
         now: () => now,
@@ -659,7 +659,7 @@ describe('runPromote — active-session rejection', () => {
     ]);
 
     await captureExit(() =>
-      runPromoteWithOptions(['--destination-project', 'testproj'], {
+      runPromoteWithOptions(['--project', 'gobbi', '--destination-project', 'testproj'], {
         repoRoot: repo,
         claudeDir,
         now: () => now,
@@ -699,7 +699,7 @@ describe('runPromote — active-session rejection', () => {
     ]);
 
     await captureExit(() =>
-      runPromoteWithOptions(['--destination-project', 'testproj'], {
+      runPromoteWithOptions(['--project', 'gobbi', '--destination-project', 'testproj'], {
         repoRoot: repo,
         claudeDir,
         now: () => now,
@@ -732,7 +732,7 @@ describe('runPromote — edge cases', () => {
     const { repo, claudeDir } = makeRepoLayout('testproj');
     // sourceDir exists but is empty.
     await captureExit(() =>
-      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(['--project', 'gobbi'], { repoRoot: repo, claudeDir }),
     );
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toBe('');
@@ -747,7 +747,7 @@ describe('runPromote — edge cases', () => {
       { recursive: true },
     );
     await captureExit(() =>
-      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(['--project', 'gobbi'], { repoRoot: repo, claudeDir }),
     );
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toBe('');
@@ -774,7 +774,7 @@ describe('runPromote — edge cases', () => {
     mkdirSync(join(repo, '.gobbi', 'projects', 'beta'), { recursive: true });
 
     await captureExit(() =>
-      runPromoteWithOptions([], { repoRoot: repo, claudeDir }),
+      runPromoteWithOptions(['--project', 'gobbi'], { repoRoot: repo, claudeDir }),
     );
 
     expect(captured.exitCode).toBe(1);
@@ -801,7 +801,7 @@ describe('runPromote — edge cases', () => {
 
     await captureExit(() =>
       runPromoteWithOptions(
-        ['--destination-project', 'alpha'],
+        ['--project', 'gobbi', '--destination-project', 'alpha'],
         { repoRoot: repo, claudeDir },
       ),
     );

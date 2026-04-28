@@ -73,7 +73,7 @@ import {
   appendFileSync,
   unlinkSync,
 } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { parseArgs } from 'node:util';
 
@@ -85,13 +85,6 @@ import {
 } from '../../lib/workspace-paths.js';
 import { EventStore } from '../../workflow/store.js';
 import { resolvePartitionKeys } from '../session.js';
-
-/**
- * Fallback project name used by path helpers that run before
- * `projects.active` is resolved.
- * TODO(W2.3): replace `DEFAULT_PROJECT_NAME` with `projects.active` resolution.
- */
-const DEFAULT_PROJECT_NAME = 'gobbi';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -107,15 +100,13 @@ const DEFAULT_PROJECT_NAME = 'gobbi';
 export const HEARTBEAT_TTL_MS = 60 * 60 * 1000;
 
 /**
- * Default source directory — `.gobbi/projects/<project>/learnings/gotchas/` at
- * the repo root. Computed per call because the project name resolution
- * (TODO(W2.3)) lands in a later wave; for now `DEFAULT_PROJECT_NAME` is
- * threaded through the facade.
+ * Default source directory — `.gobbi/projects/<project>/learnings/gotchas/`.
+ * PR-FIN-1c: project name resolves from `--project` flag (caller-supplied)
+ * → `basename(repoRoot)` (closes #179 — no `DEFAULT_PROJECT_NAME` literal).
  */
-function defaultSourceDir(repoRoot: string): string {
-  // TODO(W2.3): replace DEFAULT_PROJECT_NAME with projects.active resolution
+function defaultSourceDir(repoRoot: string, projectName: string): string {
   return join(
-    projectSubdir(repoRoot, DEFAULT_PROJECT_NAME, 'learnings'),
+    projectSubdir(repoRoot, projectName, 'learnings'),
     'gotchas',
   );
 }
@@ -136,6 +127,8 @@ drafts (_skill-<name>.md) land at .claude/skills/<name>/gotchas.md via the
 symlink farm. Refuses to run while any session is active.
 
 Options:
+  --project <name>              Project to read source drafts from
+                                (default: basename(repoRoot))
   --dry-run                     Print planned changes without writing or deleting
   --source <path>               Override the source directory
                                 (default: .gobbi/projects/<project>/learnings/gotchas/)
@@ -182,6 +175,7 @@ export async function runPromoteWithOptions(
       args,
       allowPositionals: false,
       options: {
+        project: { type: 'string' },
         'dry-run': { type: 'boolean', default: false },
         source: { type: 'string' },
         'destination-project': { type: 'string' },
@@ -203,16 +197,23 @@ export async function runPromoteWithOptions(
     typeof values['destination-project'] === 'string'
       ? values['destination-project']
       : undefined;
+  const projectFlag =
+    typeof values['project'] === 'string' && values['project'] !== ''
+      ? values['project']
+      : undefined;
 
   // --- 2. Resolve paths --------------------------------------------------
   const repoRoot = overrides.repoRoot ?? getRepoRoot();
   const claudeDir = overrides.claudeDir ?? join(repoRoot, '.claude');
-  const sourceDir = sourceOverride ?? defaultSourceDir(repoRoot);
+  // PR-FIN-1c: project resolves from `--project` flag → basename(repoRoot).
+  // Closes #179 (no DEFAULT_PROJECT_NAME literal).
+  const sourceProjectName = projectFlag ?? basename(repoRoot);
+  const sourceDir = sourceOverride ?? defaultSourceDir(repoRoot, sourceProjectName);
 
   const now = overrides.now === undefined ? new Date() : overrides.now();
 
   // --- 3. Active-session guard ------------------------------------------
-  const actives = findActiveSessions(repoRoot, now.getTime());
+  const actives = findActiveSessions(repoRoot, now.getTime(), sourceProjectName);
   if (actives.length > 0) {
     process.stderr.write(renderActiveSessionError(actives));
     process.exit(1);
@@ -277,17 +278,22 @@ export interface ActiveSession {
 }
 
 /**
- * Scan `.gobbi/sessions/*` and return every session whose most recent
- * `session.heartbeat` is within the 60-minute TTL AND does not have a
- * `workflow.finish` event. Missing directory / unreadable stores degrade
- * silently — the command errs on the side of allowing promotion.
+ * Scan `.gobbi/projects/<projectName>/sessions/*` and return every session
+ * whose most recent `session.heartbeat` is within the 60-minute TTL AND
+ * does not have a `workflow.finish` event. Missing directory / unreadable
+ * stores degrade silently — the command errs on the side of allowing
+ * promotion.
+ *
+ * PR-FIN-1c: `projectName` defaults to `basename(repoRoot)` when omitted
+ * by the caller. `runPromoteWithOptions` always supplies the resolved
+ * value; tests pass it explicitly.
  */
 export function findActiveSessions(
   repoRoot: string,
   nowMs: number,
+  projectName: string = basename(repoRoot),
 ): readonly ActiveSession[] {
-  // TODO(W2.3): replace DEFAULT_PROJECT_NAME with projects.active resolution
-  const sessionsRoot = sessionsRootForProject(repoRoot, DEFAULT_PROJECT_NAME);
+  const sessionsRoot = sessionsRootForProject(repoRoot, projectName);
   if (!existsSync(sessionsRoot)) return [];
 
   let entries: string[];
@@ -509,14 +515,14 @@ function planPromotion(
  * next.
  *
  * Post-W3.1 subtlety: for a non-skill promotion in the default project
- * (`DEFAULT_PROJECT_NAME === 'gobbi'`), the category source file and its
- * destination resolve to the same absolute path — both live under
- * `.gobbi/projects/gobbi/learnings/gotchas/<category>.md`. Appending to
- * itself and then unlinking would double the body and then delete the
- * file (data loss). When source and destination collide we treat the
- * promotion as already complete (the draft is already in its permanent
- * location by virtue of the W3.1 taxonomy) and skip the file with no
- * writes.
+ * (project name == `basename(repoRoot)`), the category source file and
+ * its destination resolve to the same absolute path — both live under
+ * `.gobbi/projects/<basename>/learnings/gotchas/<category>.md`.
+ * Appending to itself and then unlinking would double the body and then
+ * delete the file (data loss). When source and destination collide we
+ * treat the promotion as already complete (the draft is already in its
+ * permanent location by virtue of the W3.1 taxonomy) and skip the file
+ * with no writes.
  */
 function applyPromotion(plan: PromotionPlan): void {
   if (plan.source === plan.destination) {

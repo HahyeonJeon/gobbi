@@ -1,6 +1,6 @@
 /**
  * `gobbi project list` — enumerate every project directory under
- * `.gobbi/projects/` and mark the currently-active one.
+ * `.gobbi/projects/` and mark the currently-active one (PR-FIN-1c).
  *
  * ## Output format
  *
@@ -10,27 +10,22 @@
  *   <marker>\t<name>
  *   ```
  *
- *   - `<marker>` is `*` when the project is active (matches
- *     `settings.json`'s `projects.active`); single space otherwise.
+ *   - `<marker>` is `*` when the project name matches `basename(repoRoot)`
+ *     (the default project for this repo); single space otherwise.
  *   - A plain `no projects` line is emitted to stdout when the
  *     `.gobbi/projects/` directory is absent or empty — exit code stays
- *     `0` because "no projects" is a valid state for a fresh repo that
- *     has not yet run `gobbi install`.
+ *     `0` because "no projects" is a valid state for a fresh repo.
  *
- * The format is intentionally grep-friendly so that shell pipelines can
- * filter for the active project with `grep '^\*'` and the name with
- * `awk '{print $2}'`. No header row, no trailing summary, no ANSI
- * decoration — matches the style set by other `gobbi <verb> list`
- * commands.
+ * The format is intentionally grep-friendly: `grep '^\*'` filters for
+ * the active project; `awk '{print $2}'` extracts the name.
  *
- * ## Source of truth for "active"
+ * ## Source of truth for "active" (PR-FIN-1c)
  *
- * Reads `projects.active` from the resolved cascade via
- * {@link resolveSettings} — the workspace tier wins at the
- * `projects.active` key (the project-tier file lives INSIDE the
- * workspace-declared active project, so making it overridable there
- * would create a cyclic dependency). Session tier overrides are
- * ignored because `gobbi project list` is session-independent.
+ * Pre-PR-FIN-1c, `projects.active` in `settings.json` named the active
+ * project. PR-FIN-1c removed that registry. The "active" marker now
+ * reflects `basename(repoRoot)` — the project a `--project`-less command
+ * would resolve. Operators that need to address a different project pass
+ * `--project <name>` to each command; this command surfaces the default.
  *
  * ## Exit codes
  *
@@ -38,15 +33,14 @@
  *   - `2` — argument parse error (unknown flags).
  *
  * @see `commands/project.ts` — sibling dispatcher
- * @see `lib/settings-io.ts::resolveSettings`
  * @see `lib/workspace-paths.ts::projectsRoot`
  */
 
 import { existsSync, readdirSync, statSync } from 'node:fs';
+import { basename } from 'node:path';
 import { parseArgs } from 'node:util';
 
 import { getRepoRoot } from '../../lib/repo.js';
-import { resolveSettings } from '../../lib/settings-io.js';
 import { projectsRoot } from '../../lib/workspace-paths.js';
 
 // ---------------------------------------------------------------------------
@@ -56,7 +50,7 @@ import { projectsRoot } from '../../lib/workspace-paths.js';
 const USAGE = `Usage: gobbi project list [options]
 
 List every project directory under .gobbi/projects/ and mark the active
-one (from settings.json's projects.active).
+one (matches basename of the repo root).
 
 Output format: tab-separated "<marker>\\t<name>" rows, sorted by name.
 The marker is '*' for the active project and ' ' (space) otherwise.
@@ -118,23 +112,10 @@ export async function runProjectListWithOptions(
     return;
   }
 
-  // Resolve the active project. `resolveSettings` returns the cascaded
-  // shape with `projects.active` guaranteed to exist (required by the
-  // unified schema + DEFAULTS). May be `null` on a fresh repo that has
-  // not yet picked an active project — rendered as "no active marker on
-  // any row" in that case.
-  //
-  // Wrapped in try/catch because `resolveSettings` can throw
-  // ConfigCascadeError when the on-disk settings file is malformed;
-  // `list` should degrade to showing projects without a marker rather
-  // than crashing.
-  let active: string | null = null;
-  try {
-    const settings = resolveSettings({ repoRoot });
-    active = settings.projects.active;
-  } catch {
-    active = null;
-  }
+  // PR-FIN-1c: the active project is `basename(repoRoot)`. The `*`
+  // marker fires when a directory under `.gobbi/projects/` matches that
+  // name; otherwise every row carries a space marker.
+  const active = basename(repoRoot);
 
   for (const name of projects) {
     const marker = name === active ? '*' : ' ';

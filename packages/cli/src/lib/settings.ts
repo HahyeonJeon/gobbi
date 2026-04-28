@@ -2,7 +2,7 @@
  * Unified `settings.json` schema — the single TypeScript shape for all three
  * settings levels (workspace / project / session) plus the built-in defaults.
  *
- * Pass 3 finalization collapsed the Pass-3 split (T1 user-settings JSON +
+ * Pass 3 finalization collapsed the historical split (T1 user-settings JSON +
  * T2 project-config JSON + T3 SQLite session rows + provenance) into a
  * single unified shape. Every level reads and writes the same interface;
  * `settings-io.ts::resolveSettings` composes them with last-wins semantics
@@ -158,73 +158,54 @@ export interface NotifySettings {
 }
 
 /**
- * Git workflow configuration. `worktree-pr` mode requires a non-null
- * `baseBranch` — the cross-field check in `settings-io.ts::resolveSettings`
- * enforces this post-cascade. `'auto'` defers the choice to the orchestrator
- * (main session agent) at workflow-decision time.
+ * Git configuration (PR-FIN-1c reshape).
+ *
+ * Worktrees are always created for every task — there is no `mode` enum
+ * controlling worktree-vs-direct-commit. PR opening and issue creation
+ * are independent opt-in fields. Per-concern auto-remove flags live on
+ * each sub-object that owns the concern (worktree, branch).
+ *
+ * Cross-field invariant (enforced post-cascade in
+ * `settings-io.ts::resolveSettings`):
+ *
+ *   `git.pr.open === true` requires `git.baseBranch !== null`. A repo
+ *   without a target branch (no GitHub remote, direct-commit-style
+ *   workflow) must set `pr.open: false`.
  */
-export interface GitWorkflow {
-  readonly mode?: 'direct-commit' | 'worktree-pr' | 'auto';
-  readonly baseBranch?: string | null;
-}
-
-export interface GitPr {
-  readonly draft?: boolean;
-}
-
-export interface GitCleanup {
-  readonly worktree?: boolean;
-  readonly branch?: boolean;
-}
-
 export interface GitSettings {
-  readonly workflow?: GitWorkflow;
-  readonly pr?: GitPr;
-  readonly cleanup?: GitCleanup;
-}
-
-/**
- * Multi-project workspace registry. Identifies which project is currently
- * active and enumerates every project known to this workspace. Introduced
- * by gobbi-memory Pass 2 for the `.gobbi/projects/{name}/` redesign.
- *
- *   - `active: null` + `known: []` = fresh install, no project configured
- *     yet; the next `gobbi workflow init` triggers bootstrap.
- *   - `active: "name"` is expected to also appear in `known` (cross-field
- *     invariant enforced by a later wave — NOT in this schema pass).
- *
- * Both fields are required at the runtime/AJV level; callers that write
- * `projects` must supply both. The AJV sub-schema is declared as an
- * unannotated constant rather than `JSONSchemaType<ProjectsRegistry>`
- * because AJV's strict `JSONSchemaType` cannot express
- * required-plus-nullable fields cleanly (mirrors the `_schema/v1.ts`
- * subschema pattern). Drift safety is retained via the top-level
- * `JSONSchemaType<Settings>` annotation in `settings-validator.ts`.
- */
-export interface ProjectsRegistry {
-  readonly active: string | null;
-  readonly known: readonly string[];
+  /** PR target branch. `null` means no remote / no PR target. */
+  readonly baseBranch?: string | null;
+  /** Issue creation policy. */
+  readonly issue?: { readonly create?: boolean };
+  /** Worktree lifecycle policy (worktree itself is always created). */
+  readonly worktree?: { readonly autoRemove?: boolean };
+  /** Branch lifecycle policy. */
+  readonly branch?: { readonly autoRemove?: boolean };
+  /** Pull-request policy — `open` opt-in, `draft` formatting. */
+  readonly pr?: {
+    readonly open?: boolean;
+    readonly draft?: boolean;
+  };
 }
 
 /**
  * The unified settings shape. Written identically at every level
- * (`.gobbi/settings.json`, `.gobbi/project/settings.json`,
- * `.gobbi/sessions/{id}/settings.json`) — narrower levels override wider
- * ones during cascade resolution.
+ * (`.gobbi/settings.json`, `.gobbi/projects/<name>/settings.json`,
+ * `.gobbi/projects/<name>/sessions/<id>/settings.json`) — narrower levels
+ * override wider ones during cascade resolution.
  *
  * `schemaVersion` is required and must equal `1`. Every section is
  * optional; absent sections delegate to the next-wider level (and finally
  * to {@link DEFAULTS}). Arrays replace on overlay (no concat, no dedup).
  *
- * `projects` is required at schemaVersion 1 (additive from gobbi-memory
- * Pass 2) — the defaults carry `{active: null, known: []}` so every
- * existing on-disk file that omits the block surfaces a clean AJV error
- * pointing at the missing field, and `ensureSettingsCascade` bootstraps
- * the field on legacy files.
+ * PR-FIN-1c: `Settings.projects` (the multi-project registry) was removed.
+ * Projects are now resolved by `basename(repoRoot)` plus an optional
+ * `--project <name>` flag on each command; the directory tree under
+ * `.gobbi/projects/` is the single source of truth for which projects
+ * exist.
  */
 export interface Settings {
   readonly schemaVersion: 1;
-  readonly projects: ProjectsRegistry;
   readonly workflow?: WorkflowSettings;
   readonly notify?: NotifySettings;
   readonly git?: GitSettings;
@@ -248,10 +229,14 @@ export type ResolvedSettings = Settings;
  * `notify.*.events: []` means each channel fires on NO events until the user
  * opts in. Absent `events` would mean "all events" — the explicit empty-list
  * default keeps channels silent by default.
+ *
+ * `git.pr.open: true` — most users have a GitHub remote. Repos without one
+ * (or operators preferring direct-commit-style flows) override per-workspace.
+ * `git.baseBranch: null` — must be set explicitly when `pr.open === true`;
+ * the cross-field check in `settings-io.ts::resolveSettings` enforces this.
  */
 export const DEFAULTS: Settings = {
   schemaVersion: 1,
-  projects: { active: null, known: [] },
   workflow: {
     ideation: {
       discuss: { mode: 'user', model: 'auto', effort: 'auto' },
@@ -276,9 +261,11 @@ export const DEFAULTS: Settings = {
     desktop: { enabled: false, events: [], triggers: [] },
   },
   git: {
-    workflow: { mode: 'direct-commit', baseBranch: null },
-    pr: { draft: true },
-    cleanup: { worktree: true, branch: true },
+    baseBranch: null,
+    issue: { create: false },
+    worktree: { autoRemove: true },
+    branch: { autoRemove: true },
+    pr: { open: true, draft: false },
   },
 };
 

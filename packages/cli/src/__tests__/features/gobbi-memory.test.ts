@@ -69,7 +69,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve as pathResolve } from 'node:path';
+import { basename, join, resolve as pathResolve } from 'node:path';
 
 import {
   __INTERNALS__ as INSTALL_INTERNALS,
@@ -79,10 +79,7 @@ import {
 } from '../../commands/install.js';
 import { runProjectCreateWithOptions } from '../../commands/project/create.js';
 import { runProjectListWithOptions } from '../../commands/project/list.js';
-import {
-  runProjectSwitchWithOptions,
-  SwapKindsRollbackFailedError,
-} from '../../commands/project/switch.js';
+import { runProjectSwitchWithOptions } from '../../commands/project/switch.js';
 import { runWipeLegacySessionsWithOptions } from '../../commands/maintenance/wipe-legacy-sessions.js';
 import { runPromoteWithOptions } from '../../commands/gotcha/promote.js';
 import { runInitWithOptions } from '../../commands/workflow/init.js';
@@ -249,10 +246,7 @@ function makeTemplate(files: Readonly<Record<string, string>>): string {
 }
 
 interface SettingsShape {
-  readonly projects: {
-    readonly active: string | null;
-    readonly known: readonly string[];
-  };
+  readonly schemaVersion: 1;
 }
 
 function readSettings(repo: string): SettingsShape {
@@ -360,10 +354,10 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         expect(hash).toMatch(/^[0-9a-f]{64}$/);
       }
 
-      // Workspace settings seeded with active + known.
+      // PR-FIN-1c: workspace settings seeded with minimum shape (no
+      // projects registry — the directory tree is the source of truth).
       const settings = readSettings(repo);
-      expect(settings.projects.active).toBe('gobbi');
-      expect(settings.projects.known).toEqual(['gobbi']);
+      expect(settings.schemaVersion).toBe(1);
 
       // Farm symlinks materialise into the project tree.
       for (const kind of CLAUDE_FARM_KINDS) {
@@ -707,7 +701,7 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
   // Project lifecycle
   // =========================================================================
   describe('project lifecycle', () => {
-    test('G-MEM2-14: `gobbi project list` enumerates known projects and marks the active one', async () => {
+    test('G-MEM2-14: `gobbi project list` enumerates projects (PR-FIN-1c: marker = basename(repo))', async () => {
       const templateRoot = makeTemplate({ 'rules/r.md': '# r\n' });
       const repo = makeRepo();
       await captureExit(() =>
@@ -715,8 +709,6 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
       expect(captured.exitCode).toBeNull();
 
-      // Drop a second project directory in (no create/install needed —
-      // list only enumerates dir names under `.gobbi/projects/`).
       mkdirSync(projectDir(repo, 'demo'), { recursive: true });
 
       resetCaptured();
@@ -725,8 +717,11 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
       expect(captured.exitCode).toBeNull();
 
+      // PR-FIN-1c: the active marker is basename(repoRoot), which for
+      // the scratch tmpdir is none of `demo` / `gobbi`. Both rows carry
+      // the space marker.
       const rows = captured.stdout.trimEnd().split('\n');
-      expect(rows).toEqual([' \tdemo', '*\tgobbi']);
+      expect(rows).toEqual([' \tdemo', ' \tgobbi']);
     });
 
     test('G-MEM2-15: `gobbi project create <name>` scaffolds subdirs and registers it', async () => {
@@ -759,22 +754,17 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         ),
       ).toBe(true);
 
-      // `known` gained `demo`; `active` unchanged.
-      const settings = readSettings(repo);
-      expect(settings.projects.active).toBe('gobbi');
-      expect([...settings.projects.known].sort()).toEqual(['demo', 'gobbi']);
+      // PR-FIN-1c: `gobbi project create` no longer mutates settings.json
+      // (the projects registry was removed); the directory existence at
+      // `.gobbi/projects/<name>/` is the source of truth.
+      expect(existsSync(projectDir(repo, 'demo'))).toBe(true);
 
-      // Idempotent re-run: the unit suite covers the idempotency branch
-      // for create; at the feature level the invariant we lock is that a
-      // repeated create on the same name does not flip `active`.
+      // Idempotent re-run: a repeated create on the same name reports
+      // "already exists" without crashing.
       resetCaptured();
       await captureExit(() =>
         runProjectCreateWithOptions(['demo'], { repoRoot: repo }),
       );
-      // Idempotent or "already exists" — both acceptable as long as
-      // settings didn't flip.
-      const after = readSettings(repo);
-      expect(after.projects.active).toBe('gobbi');
     });
 
     test('G-MEM2-16: `gobbi project create` refuses an invalid name', async () => {
@@ -789,7 +779,11 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       expect(existsSync(projectDir(repo, 'Foo/Bar'))).toBe(false);
     });
 
-    test('G-MEM2-17: `gobbi project switch <name>` atomically rotates the farm', async () => {
+    // PR-FIN-1c: `gobbi project switch` is a deprecated no-op (the
+    // `projects.active` registry was removed). Farm-rotation tests
+    // retired with the registry; project-name resolution lives on the
+    // `--project` flag now.
+    test.skip('G-MEM2-17: `gobbi project switch <name>` atomically rotates the farm', async () => {
       const tpl = makeTemplate({
         'rules/gobbi-source.md': 'gobbi\n',
         'skills/_x/SKILL.md': '# gobbi-x\n',
@@ -849,10 +843,10 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
 
       const settings = readSettings(repo);
-      expect(settings.projects.active).toBe('alt');
+      expect((settings as unknown as Record<string, unknown>)["projects"]).toBeUndefined();
     });
 
-    test('G-MEM2-18: `gobbi project switch` refuses while a session is active', async () => {
+    test.skip('G-MEM2-18: `gobbi project switch` refuses while a session is active', async () => {
       const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
       const repo = makeRepo();
       await captureExit(() =>
@@ -880,10 +874,10 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       expect(captured.exitCode).toBe(1);
       expect(captured.stderr).toContain('live');
       // Active project unchanged.
-      expect(readSettings(repo).projects.active).toBe('gobbi');
+      expect((readSettings(repo) as unknown as Record<string, unknown>)["projects"]).toBeUndefined();
     });
 
-    test('G-MEM2-19: `gobbi project switch` refuses an unknown project', async () => {
+    test.skip('G-MEM2-19: `gobbi project switch` refuses an unknown project', async () => {
       const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
       const repo = makeRepo();
       await captureExit(() =>
@@ -902,21 +896,11 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       expect(captured.stderr).toContain('ghost');
       expect(captured.stderr).toContain('does not exist');
       // Settings + farm unchanged.
-      expect(readSettings(repo).projects.active).toBe('gobbi');
+      expect((readSettings(repo) as unknown as Record<string, unknown>)["projects"]).toBeUndefined();
     });
 
-    test('G-MEM2-20: `gobbi project switch` rolls back on partial swap failure — class is exported', () => {
-      // Runtime reproduction of the mid-swap failure requires a
-      // filesystem the tests cannot reliably produce (cross-device
-      // EXDEV, concurrent rename). The invariant we lock here is the
-      // error-class exposure that enables callers to distinguish
-      // rollback-failed from rollback-succeeded. The unit suite
-      // (`project/__tests__/switch.test.ts`) exercises the happy /
-      // sad paths at finer grain.
-      expect(typeof SwapKindsRollbackFailedError).toBe('function');
-      const err = new SwapKindsRollbackFailedError('test');
-      expect(err.name).toBe('SwapKindsRollbackFailedError');
-      expect(err instanceof Error).toBe(true);
+    test.skip('G-MEM2-20: `gobbi project switch` rolls back on partial swap failure — class retired (PR-FIN-1c)', () => {
+      // Class removed with the switch farm-rotation logic (PR-FIN-1c).
     });
 
     test('G-MEM2-21: install and project verbs are registered in top-level dispatch', async () => {
@@ -977,7 +961,8 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
     });
 
-    test('G-MEM2-23: farm rotation is atomic per-kind via double-rename', async () => {
+    // PR-FIN-1c: project switch farm rotation retired with the registry.
+    test.skip('G-MEM2-23: farm rotation is atomic per-kind via double-rename', async () => {
       // The atomicity property manifests as: after switch, the three
       // farm kinds point at the NEW project and no temp artifacts
       // remain. We assert both, which captures the observable surface
@@ -1398,7 +1383,7 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
 
       await captureExit(() =>
-        runPromoteWithOptions([], {
+        runPromoteWithOptions(['--project', 'gobbi'], {
           repoRoot: repo,
           claudeDir,
           now: () => new Date('2026-04-24T00:00:00Z'),
@@ -1442,7 +1427,7 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       mkdirSync(projectDir(repo, 'demo'), { recursive: true });
 
       await captureExit(() =>
-        runPromoteWithOptions(['--destination-project', 'demo'], {
+        runPromoteWithOptions(['--project', 'gobbi', '--destination-project', 'demo'], {
           repoRoot: repo,
           claudeDir,
           now: () => new Date('2026-04-24T00:00:00Z'),
@@ -1601,14 +1586,12 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         existsSync(join(barRoot, '.install-manifest.json')),
       ).toBe(false);
 
-      // Settings.active points at `foo`; `known` contains both.
+      // PR-FIN-1c: workspace settings has minimum shape; the projects
+      // registry was removed. The directory tree is the source of truth:
+      // `foo` exists (the install target) and `bar` exists (manually
+      // seeded above) — both are visible via `gobbi project list`.
       const settings = readSettings(repo);
-      expect(settings.projects.active).toBe('foo');
-      // `bar` was not in settings before (manually seeded on disk);
-      // `install` adds `foo` to known + sets active, leaving `bar` to
-      // the operator to register via `gobbi project create` or
-      // switch. The invariant: `foo` is present and active.
-      expect(settings.projects.known).toContain('foo');
+      expect(settings.schemaVersion).toBe(1);
     });
 
     test('G-MEM2-MP-02: active session in project `foo` does not block install on project `bar`', async () => {
@@ -1630,7 +1613,9 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       ).toBe(true);
     });
 
-    test('G-MEM2-MP-03: farm rotation between projects points at distinct source trees', async () => {
+    // PR-FIN-1c: project switch farm rotation retired with the registry
+    // removal. Test skipped.
+    test.skip('G-MEM2-MP-03: farm rotation between projects points at distinct source trees', async () => {
       const tpl = makeTemplate({
         'rules/gobbi-mark.md': 'gobbi\n',
         'skills/_gobbi/SKILL.md': '# gobbi skill\n',
@@ -1698,9 +1683,8 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
     });
 
     test('G-MEM2-MP-04: workflow init stamps metadata.projectName at birth', async () => {
-      // Bootstrap a repo so settings.json exists; run init WITHOUT a
-      // --project flag so the bootstrap branch names the project after
-      // basename(repoRoot) and records it as active.
+      // PR-FIN-1c: project name resolves to basename(repoRoot) when no
+      // --project flag is supplied. No more bootstrap registry write.
       const repo = makeRepo();
       await captureExit(() =>
         runInitWithOptions(
@@ -1708,22 +1692,14 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
           { repoRoot: repo },
         ),
       );
-      // Bootstrap fired; the session lives under `basename(repo)`.
-      const settingsAfter = readSettings(repo);
-      const bootstrapName = settingsAfter.projects.active;
-      expect(bootstrapName).not.toBeNull();
-      if (bootstrapName === null) throw new Error('bootstrap did not set active');
+      const expectedName = basename(repo);
 
-      const sessionPath = sessionDirForProject(
-        repo,
-        bootstrapName,
-        'sess-mp04',
-      );
+      const sessionPath = sessionDirForProject(repo, expectedName, 'sess-mp04');
       expect(existsSync(join(sessionPath, 'metadata.json'))).toBe(true);
       const meta = JSON.parse(
         readFileSync(join(sessionPath, 'metadata.json'), 'utf8'),
       ) as { readonly projectName: string };
-      expect(meta.projectName).toBe(bootstrapName);
+      expect(meta.projectName).toBe(expectedName);
 
       // Re-init with a DIFFERENT project flag must refuse — mismatch
       // gate locks the session to the project it was born under.
@@ -1735,7 +1711,7 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         ),
       );
       expect(captured.exitCode).toBe(2);
-      expect(captured.stderr).toContain(`bound to project '${bootstrapName}'`);
+      expect(captured.stderr).toContain(`bound to project '${expectedName}'`);
     });
   });
 });

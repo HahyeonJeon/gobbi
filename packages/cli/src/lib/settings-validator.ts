@@ -1,20 +1,19 @@
 /**
  * Single AJV validator for the unified {@link Settings} shape.
  *
- * Wave-A spike (see `.gobbi/sessions/dfd4ff66.../plan/wave-a-decision.md`)
- * confirmed that `ajv.compile<Settings>(settingsSchema)` with
- * `JSONSchemaType<Settings>` derivation type-checks cleanly under the
- * project's strict flags (`strict: true`, `noUncheckedIndexedAccess: true`,
- * `exactOptionalPropertyTypes: true`). No two-schema dispatch needed —
- * one validator covers every level.
+ * `ajv.compile<Settings>(settingsSchema)` with `JSONSchemaType<Settings>`
+ * derivation type-checks cleanly under the project's strict flags
+ * (`strict: true`, `noUncheckedIndexedAccess: true`,
+ * `exactOptionalPropertyTypes: true`). One validator covers every level.
  *
  * `additionalProperties: false` at every object level rejects unknown keys
  * at write time. `gobbi config set` validates the mutated tree before
  * atomic write and exits 2 on failure.
  *
- * Cross-field checks (e.g. `git.workflow.mode === 'worktree-pr'` requires a
- * non-null `baseBranch`) are enforced post-merge in `settings-io.ts::resolveSettings`,
- * NOT here — they depend on cascaded state, not single-file state.
+ * Cross-field checks (e.g. `git.pr.open === true` requires a non-null
+ * `git.baseBranch`) are enforced post-merge in
+ * `settings-io.ts::resolveSettings`, NOT here — they depend on cascaded
+ * state, not single-file state.
  */
 
 import Ajv2020, { type JSONSchemaType } from 'ajv/dist/2020.js';
@@ -55,52 +54,15 @@ const DISCUSS_MODE_ENUM = ['agent', 'user', 'auto', 'skip'] as const;
 const EVALUATE_MODE_ENUM = ['ask', 'always', 'skip', 'auto'] as const;
 
 // ---------------------------------------------------------------------------
-// Sub-schemas — declared without `JSONSchemaType<Sub>` annotations where the
-// strict inference cannot express the shape (e.g. required fields whose
-// value is `string | null`). Mirrors the pattern in `specs/_schema/v1.ts`
-// §"Shared subschemas" where shared subschemas intentionally omit the
-// `JSONSchemaType<Sub>` annotation. Drift safety is retained because the
-// top-level `JSONSchemaType<Settings>` annotation on `settingsSchema` forces
-// every inline reference to match the TS counterpart.
-// ---------------------------------------------------------------------------
-
-// `ProjectsRegistry` has a required `active: string | null` field. AJV's
-// strict `JSONSchemaType<ProjectsRegistry>` inference cannot express
-// "required key, nullable value" — the `required` list and the
-// `nullable: true` marker on `active` are mutually exclusive under the
-// strict derivation. The projects slot is therefore inlined with a
-// `JSONSchemaType<ProjectsRegistry>` cast at the call-site; the inline
-// literal is still checked structurally against `ProjectsRegistry` via
-// the top-level `JSONSchemaType<Settings>` annotation on
-// `settingsSchema`, so drift between the TS interface and this schema
-// still fails `tsc --noEmit`.
-
-// ---------------------------------------------------------------------------
 // Schema — single AJV JSONSchemaType<Settings>
 // ---------------------------------------------------------------------------
 
 const settingsSchema: JSONSchemaType<Settings> = {
   type: 'object',
-  required: ['schemaVersion', 'projects'],
+  required: ['schemaVersion'],
   additionalProperties: false,
   properties: {
     schemaVersion: { type: 'integer', const: 1 },
-    // See the comment block above: AJV's strict `JSONSchemaType` cannot
-    // derive a required-plus-nullable value schema for `active: string | null`,
-    // so the `projects` slot uses a narrowed cast. The schema is still
-    // load-bearing — AJV compiles and validates the shape at runtime.
-    projects: {
-      type: 'object',
-      required: ['active', 'known'],
-      additionalProperties: false,
-      properties: {
-        active: { type: 'string', nullable: true },
-        known: {
-          type: 'array',
-          items: { type: 'string' },
-        },
-      },
-    } as unknown as JSONSchemaType<Settings>['properties']['projects'],
     workflow: {
       type: 'object',
       nullable: true,
@@ -279,13 +241,29 @@ const settingsSchema: JSONSchemaType<Settings> = {
       nullable: true,
       additionalProperties: false,
       properties: {
-        workflow: {
+        baseBranch: { type: 'string', nullable: true },
+        issue: {
           type: 'object',
           nullable: true,
           additionalProperties: false,
           properties: {
-            mode: { type: 'string', nullable: true, enum: ['direct-commit', 'worktree-pr', 'auto'] },
-            baseBranch: { type: 'string', nullable: true },
+            create: { type: 'boolean', nullable: true },
+          },
+        },
+        worktree: {
+          type: 'object',
+          nullable: true,
+          additionalProperties: false,
+          properties: {
+            autoRemove: { type: 'boolean', nullable: true },
+          },
+        },
+        branch: {
+          type: 'object',
+          nullable: true,
+          additionalProperties: false,
+          properties: {
+            autoRemove: { type: 'boolean', nullable: true },
           },
         },
         pr: {
@@ -293,16 +271,8 @@ const settingsSchema: JSONSchemaType<Settings> = {
           nullable: true,
           additionalProperties: false,
           properties: {
+            open: { type: 'boolean', nullable: true },
             draft: { type: 'boolean', nullable: true },
-          },
-        },
-        cleanup: {
-          type: 'object',
-          nullable: true,
-          additionalProperties: false,
-          properties: {
-            worktree: { type: 'boolean', nullable: true },
-            branch: { type: 'boolean', nullable: true },
           },
         },
       },

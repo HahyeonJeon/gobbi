@@ -56,12 +56,10 @@ import {
   sessionDir as sessionDirForProject,
 } from '../../lib/workspace-paths.js';
 
-// `runConfig` / `resolveSettings` fall back to this project name when the
-// workspace `.gobbi/settings.json` has no `projects.active` entry (see
-// `settings-io.ts::resolveProjectName`). These tests never seed a
-// `projects.active` value, so every on-disk path composes through this
-// fallback and we centralise it here.
-const FALLBACK_PROJECT_NAME = 'gobbi';
+// PR-FIN-1c: `runConfig` / `resolveSettings` resolve the project name to
+// `basename(repoRoot)` when no `--project` flag is supplied. The scratch
+// repo's basename is dynamic (mkdtempSync), so most tests resolve it at
+// runtime via `basename(scratchRepo)` rather than a static literal.
 
 // Override getRepoRoot BEFORE importing anything that captures it — the
 // module-level memoization in `lib/repo.ts` is shared across every test
@@ -281,11 +279,9 @@ describe("CFG-1: gobbi config get returns cascade-resolved value", () => {
     });
     // DEFAULTS.workflow.ideation.discuss.mode === 'user'.
     expect(captured.stdout).toBe('"user"\n');
-    // Post-W2 redesign: `resolveProjectName` emits a one-shot stderr
-    // warning when the workspace settings file lacks `projects.active` and
-    // no explicit `projectName` is passed. The warning is informational,
-    // not a failure — resolution continues with the `'gobbi'` fallback.
-    expect(captured.stderr).toMatch(/^(?:\[settings-io\] no projects\.active[^\n]*\n)?$/);
+    // PR-FIN-1c: project name resolves silently to basename(repoRoot);
+    // no warning fires.
+    expect(captured.stderr).toBe('');
     expect(captured.exitCode).toBeNull();
   });
 
@@ -324,7 +320,6 @@ describe("CFG-2: gobbi config set writes + round-trips through AJV", () => {
     const onDisk = JSON.parse(readFileSync(filePath, 'utf8')) as unknown;
     expect(onDisk).toEqual({
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       workflow: { planning: { discuss: { mode: 'user' } } },
     });
 
@@ -392,11 +387,11 @@ describe("CFG-3: exit codes — 0 success, 1 missing key, 2 validation/IO/argv",
 describe("CFG-4: --level flag reads/writes ONLY that level's file", () => {
   test('CFG-4: --level workspace on a fresh repo exits 1 silently even if DEFAULTS has the key', async () => {
     makeScratchRepo();
-    // git.workflow.mode has a DEFAULT of 'direct-commit'. With --level, we
-    // read only the workspace file (which does not exist), so the result
-    // is "missing at this level" → exit 1. No cascade fallthrough.
+    // git.pr.open has a DEFAULT of true. With --level, we read only the
+    // workspace file (which does not exist), so the result is
+    // "missing at this level" → exit 1. No cascade fallthrough.
     await captureExit(async () => {
-      await runConfig(['get', 'git.workflow.mode', '--level', 'workspace']);
+      await runConfig(['get', 'git.pr.open', '--level', 'workspace']);
     });
     expect(captured.stdout).toBe('');
     expect(captured.exitCode).toBe(1);
@@ -412,7 +407,7 @@ describe("CFG-4: --level flag reads/writes ONLY that level's file", () => {
     expect(captured.stderr).toBe('');
 
     const filePath = join(
-      sessionDirForProject(repo, FALLBACK_PROJECT_NAME, 'cfg-4-session'),
+      sessionDirForProject(repo, basename(repo), 'cfg-4-session'),
       'settings.json',
     );
     expect(existsSync(filePath)).toBe(true);
@@ -434,15 +429,13 @@ describe("CFG-5: cascade order — narrower level wins", () => {
     // Workspace: mode=user, mode at execution.discuss
     writeJson(join(repo, '.gobbi', 'settings.json'), {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       workflow: {
         execution: { discuss: { mode: 'user' } },
       },
     });
     // Project: overrides same key to skip
-    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       workflow: {
         execution: { discuss: { mode: 'skip' } },
       },
@@ -450,12 +443,11 @@ describe("CFG-5: cascade order — narrower level wins", () => {
     // Session: overrides same key to agent
     writeJson(
       join(
-        sessionDirForProject(repo, FALLBACK_PROJECT_NAME, 'sess-5'),
+        sessionDirForProject(repo, basename(repo), 'sess-5'),
         'settings.json',
       ),
       {
         schemaVersion: 1,
-        projects: { active: null, known: [] },
         workflow: {
           execution: { discuss: { mode: 'agent' } },
         },
@@ -480,14 +472,12 @@ describe("CFG-6: arrays replace on overlay", () => {
     const repo = makeScratchRepo();
     writeJson(join(repo, '.gobbi', 'settings.json'), {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       notify: {
         slack: { events: ['workflow.start', 'workflow.complete', 'error'] },
       },
     });
-    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       notify: {
         slack: { events: ['step.start'] },
       },
@@ -504,24 +494,22 @@ describe("CFG-6: arrays replace on overlay", () => {
 // ===========================================================================
 
 describe("CFG-7: null is an explicit leaf, overrides wider non-null value", () => {
-  test('CFG-7: project git.workflow.baseBranch=null overrides workspace "main"', () => {
+  test('CFG-7: project git.baseBranch=null overrides workspace "main"', () => {
     const repo = makeScratchRepo();
     writeJson(join(repo, '.gobbi', 'settings.json'), {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
-      git: { workflow: { mode: 'direct-commit', baseBranch: 'main' } },
+      git: { baseBranch: 'main', pr: { open: false } },
     });
-    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
-      git: { workflow: { baseBranch: null } },
+      git: { baseBranch: null },
     });
 
     const resolved = resolveSettings({ repoRoot: repo });
     // null wins as a leaf (no delegation to workspace 'main').
-    expect(resolved.git?.workflow?.baseBranch).toBeNull();
-    // Sibling workflow.mode retained from workspace.
-    expect(resolved.git?.workflow?.mode).toBe('direct-commit');
+    expect(resolved.git?.baseBranch).toBeNull();
+    // Sibling pr.open retained from workspace.
+    expect(resolved.git?.pr?.open).toBe(false);
   });
 });
 
@@ -532,16 +520,15 @@ describe("CFG-7: null is an explicit leaf, overrides wider non-null value", () =
 describe("CFG-8: absent keys delegate through the cascade to DEFAULTS", () => {
   test('CFG-8: project sets git only; workflow.*.discuss.mode falls to DEFAULTS', () => {
     const repo = makeScratchRepo();
-    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
-      git: { workflow: { mode: 'worktree-pr', baseBranch: 'develop' } },
+      git: { baseBranch: 'develop', pr: { open: true } },
     });
 
     const resolved = resolveSettings({ repoRoot: repo });
     // Project-set values land.
-    expect(resolved.git?.workflow?.mode).toBe('worktree-pr');
-    expect(resolved.git?.workflow?.baseBranch).toBe('develop');
+    expect(resolved.git?.pr?.open).toBe(true);
+    expect(resolved.git?.baseBranch).toBe('develop');
     // Unset keys delegate to DEFAULTS.
     expect(resolved.workflow?.ideation?.discuss?.mode).toBe('user');
     expect(resolved.workflow?.planning?.evaluate?.mode).toBe('always');
@@ -585,17 +572,17 @@ describe("CFG-9: T2-v1 legacy upgrader writes new-shape settings.json", () => {
       process.stderr.write = origErr;
     }
 
-    // Post-#138: the upgrader resolves the project slot via the same
-    // ladder init uses (`projects.active` → `basename(repoRoot)`). With
-    // no `projects.active` seeded by this test, the slot is the scratch
-    // repo's basename — not the legacy `'gobbi'` literal.
+    // PR-FIN-1c: upgrader resolves the project slot via
+    // `--project flag → basename(repoRoot)`. With no flag, the slot is
+    // the scratch repo's basename.
     const newProjectPath = join(projectDirForName(repo, basename(repo)), 'settings.json');
     expect(existsSync(newProjectPath)).toBe(true);
     const upgraded = JSON.parse(readFileSync(newProjectPath, 'utf8')) as Settings;
 
-    // Git: mode + baseBranch moved under git.workflow
-    expect(upgraded.git?.workflow?.mode).toBe('worktree-pr');
-    expect(upgraded.git?.workflow?.baseBranch).toBe('develop');
+    // PR-FIN-1c: legacy `git.mode === 'worktree-pr'` migrates to
+    // `git.pr.open: true`; baseBranch moves to top of git.
+    expect(upgraded.git?.pr?.open).toBe(true);
+    expect(upgraded.git?.baseBranch).toBe('develop');
 
     // Eval booleans → evaluate.mode enums.
     expect(upgraded.workflow?.ideation?.evaluate?.mode).toBe('always');
@@ -630,7 +617,6 @@ describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already e
     // shape minimal.
     const preExisting: Settings = {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       workflow: { ideation: { evaluate: { mode: 'skip' } } },
     };
     writeJson(join(projectDirForName(repo, slotName), 'settings.json'), preExisting);
@@ -663,83 +649,19 @@ describe("CFG-10: T2-v1 upgrader is a no-op when project/settings.json already e
 });
 
 // ===========================================================================
-// CFG-10b: T2-v1 upgrader honours `projects.active` when it disagrees with
-// basename(repoRoot) — regression test for issue #138
+// CFG-10b: explicit projectName routes T2-v1 upgrade to the right slot
 // ===========================================================================
 //
-// Pre-#138, `ensureSettingsCascade` hardcoded the upgrade target at
-// `.gobbi/projects/gobbi/settings.json` regardless of what the workspace
-// `projects.active` declared. A repo whose active project was `'foo'`
-// would have its T2-v1 upgrade silently land in `projects/gobbi/`,
-// orphaning the upgraded settings from the active project. This
-// regression test seeds a workspace `projects.active = 'foo'` BEFORE
-// the cascade runs and asserts the upgrade lands at `projects/foo/`,
-// not `projects/gobbi/`.
+// PR-FIN-1c removed the `projects.active` registry. The upgrade target
+// is now resolved as `--project flag → basename(repoRoot)`. This test
+// asserts the explicit `projectName` argument to `ensureSettingsCascade`
+// directs the legacy upgrade to the matching project slot.
 
-describe('CFG-10b (issue #138): T2-v1 upgrade lands at projects.active slot, not literal "gobbi"', () => {
-  test('non-"gobbi" projects.active routes the upgrade to the right slot', async () => {
+describe('CFG-10b: explicit projectName routes the upgrade to the matching slot', () => {
+  test('explicit projectName argument lands the upgrade at projects/<name>/', async () => {
     const repo = makeScratchRepo();
     mkdirSync(join(repo, '.gobbi'), { recursive: true });
 
-    // Seed the workspace with `projects.active = 'foo'`. The cascade
-    // step 4 (workspace-seed) is a no-op when the file is already
-    // present, so this `'foo'` value survives the cascade run intact.
-    writeJson(join(repo, '.gobbi', 'settings.json'), {
-      schemaVersion: 1,
-      projects: { active: 'foo', known: ['foo'] },
-    });
-
-    // Seed the legacy T2-v1 file. Step 3 must read this and write the
-    // upgrade to `projects/foo/settings.json` (NOT `projects/gobbi/`).
-    writeFileSync(
-      join(repo, '.gobbi', 'project-config.json'),
-      JSON.stringify(
-        {
-          version: 1,
-          git: { mode: 'worktree-pr', baseBranch: 'main' },
-          eval: { ideation: true, plan: true, execution: false },
-        },
-        null,
-        2,
-      ),
-      'utf8',
-    );
-
-    const origErr = process.stderr.write;
-    process.stderr.write = ((): boolean => true) as typeof process.stderr.write;
-    try {
-      await ensureSettingsCascade(repo);
-    } finally {
-      process.stderr.write = origErr;
-    }
-
-    // The active-project slot received the upgrade.
-    const activeSlot = join(projectDirForName(repo, 'foo'), 'settings.json');
-    expect(existsSync(activeSlot)).toBe(true);
-    const upgraded = JSON.parse(readFileSync(activeSlot, 'utf8')) as Settings;
-    expect(upgraded.git?.workflow?.mode).toBe('worktree-pr');
-    expect(upgraded.git?.workflow?.baseBranch).toBe('main');
-    expect(upgraded.workflow?.ideation?.evaluate?.mode).toBe('always');
-    expect(upgraded.workflow?.planning?.evaluate?.mode).toBe('always');
-    expect(upgraded.workflow?.execution?.evaluate?.mode).toBe('ask');
-
-    // The literal `'gobbi'` slot is NOT created — the orphan path the
-    // pre-fix code wrote to is empty.
-    const orphanSlot = join(projectDirForName(repo, 'gobbi'), 'settings.json');
-    expect(existsSync(orphanSlot)).toBe(false);
-  });
-
-  test('explicit projectName argument overrides workspace projects.active', async () => {
-    const repo = makeScratchRepo();
-    mkdirSync(join(repo, '.gobbi'), { recursive: true });
-
-    // Workspace claims `projects.active = 'foo'`, but the caller passes
-    // a different name (mirrors what `runInitWithOptions` does when
-    // `--project bar` is supplied). The explicit argument wins.
-    writeJson(join(repo, '.gobbi', 'settings.json'), {
-      schemaVersion: 1,
-      projects: { active: 'foo', known: ['foo'] },
-    });
     writeFileSync(
       join(repo, '.gobbi', 'project-config.json'),
       JSON.stringify(
@@ -760,7 +682,8 @@ describe('CFG-10b (issue #138): T2-v1 upgrade lands at projects.active slot, not
 
     expect(existsSync(join(projectDirForName(repo, 'bar'), 'settings.json'))).toBe(true);
     expect(existsSync(join(projectDirForName(repo, 'foo'), 'settings.json'))).toBe(false);
-    expect(existsSync(join(projectDirForName(repo, 'gobbi'), 'settings.json'))).toBe(false);
+    // basename(repo) slot is also empty — explicit projectName wins.
+    expect(existsSync(join(projectDirForName(repo, basename(repo)), 'settings.json'))).toBe(false);
   });
 });
 
@@ -848,9 +771,9 @@ describe("CFG-13: malformed JSON at any level → ConfigCascadeError('parse')", 
 
   test('CFG-13b: project settings.json malformed → parse error tagged project', () => {
     const repo = makeScratchRepo();
-    mkdirSync(projectDirForName(repo, FALLBACK_PROJECT_NAME), { recursive: true });
+    mkdirSync(projectDirForName(repo, basename(repo)), { recursive: true });
     writeFileSync(
-      join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'),
+      join(projectDirForName(repo, basename(repo)), 'settings.json'),
       '{ still-not-json',
       'utf8',
     );
@@ -890,21 +813,20 @@ describe("CFG-13: malformed JSON at any level → ConfigCascadeError('parse')", 
 });
 
 // ===========================================================================
-// CFG-14 (new, cross-field check): worktree-pr + null baseBranch → parse error
+// CFG-14 (PR-FIN-1c cross-field check): pr.open=true + null baseBranch → parse error
 // ===========================================================================
 //
-// Added to preserve coverage of the cross-field invariant that the Pass-3
-// provenance-era scenarios implicitly exercised through their worktree-pr
-// fixtures. This consolidation keeps the cross-field check explicit even
-// though the original provenance assertions retired with backlog #124.
+// PR-FIN-1c reshaped the cross-field invariant: instead of the legacy
+// `git.workflow.mode === 'worktree-pr'` check, the new check is
+// `git.pr.open === true` requires `git.baseBranch !== null`. A repo
+// without a target branch must set `pr.open: false`.
 
-describe("CFG-14: cross-field — worktree-pr requires a non-null baseBranch", () => {
-  test('CFG-14: cascade resolves git.workflow.mode=worktree-pr + baseBranch=null → parse error', () => {
+describe("CFG-14: cross-field — pr.open=true requires a non-null baseBranch", () => {
+  test('CFG-14: cascade resolves git.pr.open=true + baseBranch=null → parse error', () => {
     const repo = makeScratchRepo();
-    writeJson(join(projectDirForName(repo, FALLBACK_PROJECT_NAME), 'settings.json'), {
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
-      git: { workflow: { mode: 'worktree-pr', baseBranch: null } },
+      git: { baseBranch: null, pr: { open: true } },
     });
 
     try {
@@ -914,8 +836,83 @@ describe("CFG-14: cross-field — worktree-pr requires a non-null baseBranch", (
       expect(err).toBeInstanceOf(ConfigCascadeError);
       if (err instanceof ConfigCascadeError) {
         expect(err.code).toBe('parse');
-        expect(err.message).toMatch(/worktree-pr/);
+        expect(err.message).toMatch(/pr\.open/);
+        expect(err.message).toMatch(/baseBranch/);
       }
     }
+  });
+});
+
+// ===========================================================================
+// CFG-15 (PR-FIN-1c): T2-v1 upgrader maps legacy git fields to new shape
+// ===========================================================================
+
+describe('CFG-15: T2-v1 upgrader applies the PR-FIN-1c reshape end-to-end', () => {
+  test('legacy git.{mode,cleanup} migrates to new shape; projects dropped', async () => {
+    const repo = makeScratchRepo();
+    mkdirSync(join(repo, '.gobbi'), { recursive: true });
+    writeFileSync(
+      join(repo, '.gobbi', 'project-config.json'),
+      JSON.stringify(
+        {
+          version: 1,
+          git: {
+            mode: 'worktree-pr',
+            baseBranch: 'develop',
+            pr: { draft: true },
+            cleanup: { worktree: false, branch: false },
+          },
+        },
+        null,
+        2,
+      ),
+      'utf8',
+    );
+
+    const origErr = process.stderr.write;
+    process.stderr.write = ((): boolean => true) as typeof process.stderr.write;
+    try {
+      await ensureSettingsCascade(repo);
+    } finally {
+      process.stderr.write = origErr;
+    }
+
+    const upgradedPath = join(projectDirForName(repo, basename(repo)), 'settings.json');
+    const upgraded = JSON.parse(readFileSync(upgradedPath, 'utf8')) as Settings;
+
+    expect(upgraded.git?.baseBranch).toBe('develop');
+    expect(upgraded.git?.pr?.open).toBe(true);
+    expect(upgraded.git?.pr?.draft).toBe(true);
+    expect(upgraded.git?.worktree?.autoRemove).toBe(false);
+    expect(upgraded.git?.branch?.autoRemove).toBe(false);
+    // No `projects` block anywhere.
+    expect((upgraded as unknown as Record<string, unknown>)['projects']).toBeUndefined();
+  });
+
+  test('Pass-3 current shape is upgraded in place by ensureSettingsCascade', async () => {
+    const repo = makeScratchRepo();
+    mkdirSync(projectDirForName(repo, basename(repo)), { recursive: true });
+    // Seed a Pass-3 shape file (with `git.workflow.*`, `projects.*`).
+    writeJson(join(projectDirForName(repo, basename(repo)), 'settings.json'), {
+      schemaVersion: 1,
+      projects: { active: null, known: [] },
+      git: { workflow: { mode: 'worktree-pr', baseBranch: 'main' }, cleanup: { branch: false } },
+    });
+
+    const origErr = process.stderr.write;
+    process.stderr.write = ((): boolean => true) as typeof process.stderr.write;
+    try {
+      await ensureSettingsCascade(repo);
+    } finally {
+      process.stderr.write = origErr;
+    }
+
+    // After the cascade, the file is reshaped to PR-FIN-1c shape.
+    const upgradedPath = join(projectDirForName(repo, basename(repo)), 'settings.json');
+    const upgraded = JSON.parse(readFileSync(upgradedPath, 'utf8')) as Settings;
+    expect(upgraded.git?.baseBranch).toBe('main');
+    expect(upgraded.git?.pr?.open).toBe(true);
+    expect(upgraded.git?.branch?.autoRemove).toBe(false);
+    expect((upgraded as unknown as Record<string, unknown>)['projects']).toBeUndefined();
   });
 });

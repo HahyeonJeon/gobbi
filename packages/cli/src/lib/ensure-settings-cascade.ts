@@ -7,21 +7,23 @@
  *
  *   1. If `.gobbi/config.db` exists → delete it (Pass-3 SQLite path is gone).
  *   2. If `.claude/gobbi.json` exists → delete it (superseded legacy JSON).
- *   3. If `.gobbi/project-config.json` (T2-v1 legacy) exists AND
- *      `.gobbi/project/settings.json` does not → read v1, upgrade to the new
- *      shape, validate, atomic-write at the v2 path. The legacy file stays
- *      in place (orchestrator / user decides when to delete it).
- *   4. If `.gobbi/settings.json` does not exist → seed workspace with
- *      `{schemaVersion: 1, projects: {active: null, known: []}}`. The
- *      `projects` block is required by the unified schema (additive from
- *      gobbi-memory Pass 2); other defaults apply at resolve time. Keeping
- *      the user file otherwise sparse respects the solo-user trust model.
- *   5. Ensure `.gobbi/.gitignore` lists `settings.json` and `sessions/`
+ *   3. If `.gobbi/project-config.json` (T2-v1 legacy) exists AND the
+ *      resolved project's `settings.json` does not → read v1, upgrade to
+ *      the new PR-FIN-1c shape, validate, atomic-write. The legacy file
+ *      stays in place (operator decides when to delete it).
+ *   4. If a Pass-3 shape `.gobbi/projects/<name>/settings.json` (one with
+ *      legacy `git.workflow.*` / `git.cleanup.*` / `projects.*` fields)
+ *      exists → upgrade it in place to the PR-FIN-1c shape. Idempotent
+ *      after one upgrade. Same for the workspace `.gobbi/settings.json`.
+ *   5. If `.gobbi/settings.json` does not exist → seed workspace with
+ *      `{schemaVersion: 1}`. Other defaults apply at resolve time.
+ *      PR-FIN-1c removed the `projects` registry; the seed is now
+ *      minimum-shape.
+ *   6. Ensure `.gobbi/.gitignore` lists `settings.json` and `sessions/`
  *      (append if missing; do not duplicate).
  *
- * Solo-user context per `feedback_solo_user_context.md`: no staged rollout,
- * no backcompat flag, no user-facing migration log beyond the step-level
- * `[ensure-settings-cascade] …` stderr line.
+ * Solo-user context: no staged rollout, no backcompat flag, no user-facing
+ * migration log beyond the step-level `[ensure-settings-cascade] …` stderr line.
  */
 
 import {
@@ -36,14 +38,12 @@ import path from 'node:path';
 import { isRecord } from './guards.js';
 import {
   ConfigCascadeError,
+  type GitSettings,
   type Settings,
   type StepEvaluate,
   type StepSettings,
 } from './settings.js';
-import {
-  readWorkspaceActiveProject,
-  writeSettingsAtLevel,
-} from './settings-io.js';
+import { writeSettingsAtLevel } from './settings-io.js';
 import { formatAjvErrors, validateSettings } from './settings-validator.js';
 import { projectDir, workspaceRoot } from './workspace-paths.js';
 
@@ -53,37 +53,22 @@ import { projectDir, workspaceRoot } from './workspace-paths.js';
 
 /**
  * Resolve the project name that the legacy T2-v1 upgrader (Step 3) and
- * the project-level seed should target. The cascade init runs BEFORE the
- * workspace seed step writes `projects.active`, so this resolver cannot
- * rely on the workspace file having been bootstrapped yet — instead it
- * walks the same priority ladder that {@link resolveProjectNameForInit}
- * uses, terminating at `basename(repoRoot)` so the upgrade always lands
- * in the slot that the subsequent init bootstrap will declare active.
+ * the project-level seed should target. PR-FIN-1c removed the
+ * `projects.active` registry; the resolution is now a two-step ladder:
  *
- * Resolution order:
- *
- *   1. Caller-supplied {@link projectName} argument (highest priority —
- *      `runInitWithOptions` knows the answer once flags + workspace state
- *      have been consulted, and threads it through so cascade and init
- *      agree by construction).
- *   2. Workspace `projects.active` from an existing
- *      `.gobbi/settings.json` (second-and-later inits).
- *   3. `basename(repoRoot)` — fresh-install fallback that matches the
- *      bootstrap value the workspace seed will write.
- *
- * The legacy `'gobbi'` literal `DEFAULT_PROJECT_NAME` (still exported
- * from `settings-io.ts` for downstream resolvers) is intentionally NOT
- * reachable from this path — `basename(repoRoot)` always returns a
- * non-empty string for any real repo (and for the tmpdir scratch repos
- * the test suite uses), so the literal would never fire here.
+ *   1. Caller-supplied `projectName` argument (highest priority — the
+ *      `runInitWithOptions` caller knows the answer once `--project` and
+ *      defaults have been consulted, and threads it through so cascade
+ *      and init agree by construction).
+ *   2. `basename(repoRoot)` — the directory containing the repo. Always
+ *      non-empty for any real repo (and for the tmpdir scratch repos
+ *      tests use).
  */
 function resolveProjectNameForCascade(
   repoRoot: string,
   projectName: string | undefined,
 ): string {
   if (projectName !== undefined && projectName !== '') return projectName;
-  const active = readWorkspaceActiveProject(repoRoot);
-  if (active !== null) return active;
   return path.basename(repoRoot);
 }
 
@@ -103,9 +88,9 @@ function legacyProjectConfigPath(repoRoot: string): string {
  * Path to the project-level settings file for the resolved project. Used
  * for both the Step-3 idempotency probe (`!existsSync(newProject)`) and
  * the post-upgrade log message — both must reflect the resolved name,
- * not a hardcoded literal, otherwise the probe checks the wrong path.
+ * not a hardcoded literal.
  */
-function newProjectSettingsPath(repoRoot: string, projectName: string): string {
+function projectSettingsFile(repoRoot: string, projectName: string): string {
   return path.join(projectDir(repoRoot, projectName), 'settings.json');
 }
 
@@ -118,40 +103,179 @@ function gitignorePath(repoRoot: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Migration primitives — apply to BOTH T2-v1 legacy AND Pass-3 current shapes
+// ---------------------------------------------------------------------------
+
+/**
+ * Reshape a legacy `git` section into the PR-FIN-1c {@link Settings.git}
+ * shape. Handles both T2-v1 (`git.{mode,baseBranch,pr,cleanup}`) and
+ * Pass-3 (`git.{workflow:{mode,baseBranch}, pr, cleanup}`).
+ *
+ * Migration table (per target-state §4.5):
+ *
+ *   - `git.mode === 'worktree-pr'` → `git.pr.open: true`
+ *   - `git.mode === 'direct-commit'` → `git.pr.open: false`
+ *   - `git.mode === 'auto'` → `git.pr.open: true`
+ *   - `git.workflow.mode` → same mapping as `git.mode`
+ *   - `git.baseBranch` / `git.workflow.baseBranch` → `git.baseBranch`
+ *   - `git.pr.draft` → `git.pr.draft` (preserved)
+ *   - `git.cleanup.worktree` → `git.worktree.autoRemove`
+ *   - `git.cleanup.branch` → `git.branch.autoRemove`
+ *
+ * `issue.create` defaults to `false` and is not present in any legacy
+ * shape — emit only when the new shape needs to set it explicitly.
+ *
+ * Returns `null` when nothing recognisable is present (callers omit the
+ * `git` block entirely on the upgraded payload).
+ */
+function reshapeGit(legacyGit: unknown): GitSettings | null {
+  if (!isRecord(legacyGit)) return null;
+
+  // Locate the legacy mode in either T2-v1 or Pass-3 location.
+  const t2Mode = legacyGit['mode'];
+  const passWorkflow = isRecord(legacyGit['workflow']) ? legacyGit['workflow'] : null;
+  const passMode = passWorkflow !== null ? passWorkflow['mode'] : undefined;
+  const legacyMode = passMode ?? t2Mode;
+
+  // Locate baseBranch in either location (Pass-3 wins when both present —
+  // newer files migrated incrementally).
+  const t2Base = legacyGit['baseBranch'];
+  const passBase = passWorkflow !== null ? passWorkflow['baseBranch'] : undefined;
+  const baseBranch =
+    passBase !== undefined ? passBase : t2Base !== undefined ? t2Base : undefined;
+
+  // Pull existing pr / cleanup sub-objects.
+  const legacyPr = isRecord(legacyGit['pr']) ? legacyGit['pr'] : null;
+  const legacyCleanup = isRecord(legacyGit['cleanup']) ? legacyGit['cleanup'] : null;
+
+  // Build the new-shape git object. Only include keys whose source value
+  // was actually present so AJV's additionalProperties: false never fires
+  // and so the cascade can still delegate up for missing values.
+  const out: {
+    -readonly [K in keyof GitSettings]?: GitSettings[K];
+  } = {};
+
+  if (typeof baseBranch === 'string' || baseBranch === null) {
+    out.baseBranch = baseBranch;
+  }
+
+  // Mode → pr.open mapping. Skip when the legacy mode was absent or
+  // unrecognised — let the cascade fall back to the DEFAULTS value.
+  let prOpen: boolean | undefined;
+  if (legacyMode === 'worktree-pr' || legacyMode === 'auto') {
+    prOpen = true;
+  } else if (legacyMode === 'direct-commit') {
+    prOpen = false;
+  }
+
+  const legacyDraft = legacyPr !== null ? legacyPr['draft'] : undefined;
+  if (prOpen !== undefined || typeof legacyDraft === 'boolean') {
+    const pr: { open?: boolean; draft?: boolean } = {};
+    if (prOpen !== undefined) pr.open = prOpen;
+    if (typeof legacyDraft === 'boolean') pr.draft = legacyDraft;
+    out.pr = pr;
+  }
+
+  if (legacyCleanup !== null) {
+    const wt = legacyCleanup['worktree'];
+    if (typeof wt === 'boolean') {
+      out.worktree = { autoRemove: wt };
+    }
+    const br = legacyCleanup['branch'];
+    if (typeof br === 'boolean') {
+      out.branch = { autoRemove: br };
+    }
+  }
+
+  // Note: `issue` is not derivable from any legacy field — leave absent so
+  // the cascade falls through to DEFAULTS (`{create: false}`).
+
+  return Object.keys(out).length > 0 ? out : null;
+}
+
+/**
+ * Returns `true` when the parsed settings record carries any field the
+ * PR-FIN-1c reshape removed — i.e. it is a Pass-3-or-earlier on-disk
+ * shape that needs an in-place upgrade.
+ *
+ * The check is conservative: a missing key alone never triggers an
+ * upgrade (the new shape's optional fields are legitimately absent on
+ * minimal seeds). Only the *presence* of legacy-only keys flags the
+ * file as needing migration.
+ */
+function needsCurrentShapeUpgrade(parsed: unknown): boolean {
+  if (!isRecord(parsed)) return false;
+
+  // `Settings.projects` (registry) was removed entirely.
+  if ('projects' in parsed) return true;
+
+  const git = parsed['git'];
+  if (isRecord(git)) {
+    // Pass-3 had `git.workflow.{mode,baseBranch}`.
+    if ('workflow' in git) return true;
+    // T2-v1 carried mode/baseBranch directly under `git`.
+    if ('mode' in git) return true;
+    // Both eras used `git.cleanup`.
+    if ('cleanup' in git) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Apply the PR-FIN-1c reshape to an in-memory parsed settings record.
+ * Used by both the T2-v1 legacy upgrader and the Pass-3-current
+ * in-place migration path. Returns the upgraded {@link Settings} payload
+ * — caller validates and writes.
+ *
+ * Behaviour:
+ *
+ *   - Drops `Settings.projects` entirely (the registry was removed).
+ *   - Reshapes `git.*` via {@link reshapeGit}.
+ *   - Preserves `workflow.*`, `notify.*`, and any other PR-FIN-1c-shape
+ *     fields verbatim.
+ *   - Always stamps `schemaVersion: 1` (the unified shape version).
+ */
+function reshapeCurrentShape(parsed: unknown): Settings {
+  const root = isRecord(parsed) ? parsed : {};
+  const reshapedGit = reshapeGit(root['git']);
+  return {
+    schemaVersion: 1,
+    ...(isRecord(root['workflow']) ? { workflow: root['workflow'] as NonNullable<Settings['workflow']> } : {}),
+    ...(isRecord(root['notify']) ? { notify: root['notify'] as NonNullable<Settings['notify']> } : {}),
+    ...(reshapedGit !== null ? { git: reshapedGit } : {}),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Step 3 — T2-v1 → new-shape upgrader
 // ---------------------------------------------------------------------------
 
 /**
  * Upgrade a parsed T2-v1 legacy `.gobbi/project-config.json` document to
- * the new unified {@link Settings} shape. Returns the upgraded payload;
- * the caller validates and writes it.
+ * the new unified {@link Settings} shape (PR-FIN-1c). Returns the
+ * upgraded payload; the caller validates and writes it.
  *
  * Transformations:
  *
  *   - `version: 1|2` → dropped; `schemaVersion: 1` set at the top level.
- *   - `git.mode` → `git.workflow.mode` (rename + restructure).
- *   - `git.baseBranch` → `git.workflow.baseBranch`.
- *   - `eval.{step}: boolean` → `workflow.{step}.evaluate.mode`:
+ *   - Legacy `eval.{step}: boolean` → `workflow.{step}.evaluate.mode`:
  *       `true` → `'always'`; `false` → `'ask'`.
+ *   - `git.*` reshape via {@link reshapeGit}.
  *   - `cost.*`, `ui.*`, `trivialRange`, `verification.*` — dropped silently.
- *
- * Anything unrecognised in the v1 file is ignored. Downstream AJV validation
- * catches any shape errors introduced by the upgrade before the write lands.
+ *   - `projects.*` (Pass-3 only) — dropped silently (registry removed).
  */
 function upgradeLegacyToSettings(legacy: unknown): Settings {
   const root = isRecord(legacy) ? legacy : {};
 
   // Workflow — convert eval booleans to evaluate.mode enums.
   //
-  // The `stepMap` below retains BOTH the legacy `'plan'` key and the
-  // post-W4 target `'planning'` because this upgrader translates
-  // T2-v1-era `.gobbi/project-config.json` files that were written
-  // BEFORE the state-machine rename Pass. The mapping array is required
-  // code (not a stale literal): it reads the legacy `eval.plan` boolean
-  // off the pre-rename config and writes it to the post-rename
-  // `workflow.planning` setting. Do not remove the `'plan'` legacy key
-  // here — removing it would silently drop the evaluation preference
-  // when upgrading a pre-W4 project-config.json.
+  // `stepMap` retains BOTH the legacy `'plan'` key and the post-W4
+  // target `'planning'` because this upgrader translates T2-v1-era
+  // `.gobbi/project-config.json` files that were written BEFORE the
+  // state-machine rename Pass. The mapping is required code (not a
+  // stale literal): it reads the legacy `eval.plan` boolean and writes
+  // it to the post-rename `workflow.planning` setting.
   const legacyEval = isRecord(root['eval']) ? root['eval'] : null;
   const workflow: Settings['workflow'] = legacyEval
     ? (() => {
@@ -173,34 +297,16 @@ function upgradeLegacyToSettings(legacy: unknown): Settings {
       })()
     : undefined;
 
-  // Git — restructure mode + baseBranch under git.workflow.
-  const legacyGit = isRecord(root['git']) ? root['git'] : null;
-  let git: Settings['git'] | undefined;
-  if (legacyGit !== null) {
-    const gitWorkflow: { mode?: 'direct-commit' | 'worktree-pr'; baseBranch?: string | null } = {};
-    const legacyMode = legacyGit['mode'];
-    if (legacyMode === 'direct-commit' || legacyMode === 'worktree-pr') {
-      gitWorkflow.mode = legacyMode;
-    }
-    const legacyBase = legacyGit['baseBranch'];
-    if (legacyBase === null || typeof legacyBase === 'string') {
-      gitWorkflow.baseBranch = legacyBase;
-    }
-    if (Object.keys(gitWorkflow).length > 0) {
-      git = { workflow: gitWorkflow };
-    }
-  }
+  // Git — reshape via the shared primitive.
+  const git = reshapeGit(root['git']);
 
   // Build the upgraded Settings. Only include keys we explicitly populated
   // so AJV's additionalProperties: false never fires on phantom branches.
-  // `projects` is required at the unified Settings level; fresh-install
-  // defaults apply (the upgrader does not know about multi-project —
-  // bootstrap happens later via `gobbi workflow init`).
+  // PR-FIN-1c: no `projects` block. Workspace seed is now minimum-shape.
   const upgraded: Settings = {
     schemaVersion: 1,
-    projects: { active: null, known: [] },
     ...(workflow !== undefined ? { workflow } : {}),
-    ...(git !== undefined ? { git } : {}),
+    ...(git !== null ? { git } : {}),
   };
 
   return upgraded;
@@ -240,20 +346,74 @@ function ensureGitignoreLines(repoRoot: string): void {
 }
 
 // ---------------------------------------------------------------------------
+// In-place upgrade for an existing settings.json carrying the Pass-3 shape
+// ---------------------------------------------------------------------------
+
+/**
+ * Read a settings file at `filePath`, decide whether it needs the
+ * PR-FIN-1c reshape, and rewrite it atomically when so. Best-effort: if
+ * the file is malformed JSON we skip silently (the regular cascade load
+ * surfaces the error with proper provenance); if it already conforms we
+ * do nothing. Returns `true` when the file was rewritten.
+ */
+function upgradeFileInPlace(
+  repoRoot: string,
+  level: 'workspace' | 'project',
+  filePath: string,
+  projectName: string,
+): boolean {
+  if (!existsSync(filePath)) return false;
+
+  let raw: string;
+  try {
+    raw = readFileSync(filePath, 'utf8');
+  } catch {
+    return false;
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    // Malformed JSON — let the regular cascade reader surface the error.
+    return false;
+  }
+
+  if (!needsCurrentShapeUpgrade(parsed)) return false;
+
+  const reshaped = reshapeCurrentShape(parsed);
+  if (!validateSettings(reshaped)) {
+    const messages = formatAjvErrors(validateSettings.errors);
+    throw new ConfigCascadeError(
+      'parse',
+      `Reshaped ${path.relative(repoRoot, filePath)} failed validation:\n${messages}`,
+      { tier: level, path: filePath },
+    );
+  }
+
+  if (level === 'workspace') {
+    writeSettingsAtLevel(repoRoot, 'workspace', reshaped);
+  } else {
+    writeSettingsAtLevel(repoRoot, 'project', reshaped, undefined, projectName);
+  }
+  process.stderr.write(
+    `[ensure-settings-cascade] reshaped ${path.relative(repoRoot, filePath)} → PR-FIN-1c shape\n`,
+  );
+  return true;
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
 /**
  * Idempotent migration + seed orchestrator. Safe to call on every
- * `gobbi workflow init`. See module-level JSDoc for the five steps.
+ * `gobbi workflow init`. See module-level JSDoc for the steps.
  *
  * The optional {@link projectName} argument is the resolved project the
  * upgrade target should land under; when absent, the cascade resolves
- * it via the same priority ladder the init bootstrap uses (workspace
- * `projects.active` → `basename(repoRoot)`). Passing it explicitly from
- * `runInitWithOptions` is the preferred path because the init knows the
- * answer once it has consulted flag + workspace state, and threading it
- * here guarantees cascade and init agree on the slot by construction.
+ * it via `basename(repoRoot)` (PR-FIN-1c removed the `projects.active`
+ * registry, simplifying the ladder).
  */
 export async function ensureSettingsCascade(
   repoRoot: string,
@@ -263,13 +423,6 @@ export async function ensureSettingsCascade(
   // tmpdirs (and fresh real repos) may not have it yet.
   mkdirSync(workspaceRoot(repoRoot), { recursive: true });
 
-  // Resolve the project name once at the top of the cascade so every
-  // step that needs it (Step 3 upgrade target, post-write log message)
-  // uses the same value. The resolution lives outside the steps because
-  // Step 4 (workspace seed) writes the settings file that Step 3 would
-  // otherwise read AFTER its own decision — see the §Cascade-ordering
-  // notes in the W3.C review for why probing here, before any cleanup,
-  // is correct.
   const resolvedProjectName = resolveProjectNameForCascade(repoRoot, projectName);
 
   // Step 1 — delete legacy SQLite config.
@@ -286,15 +439,9 @@ export async function ensureSettingsCascade(
     process.stderr.write('[ensure-settings-cascade] deleted legacy .claude/gobbi.json\n');
   }
 
-  // Step 3 — upgrade legacy `.gobbi/project-config.json` (T2-v1) to the
-  // new shape at `.gobbi/projects/<resolved>/settings.json` if the
-  // resolved-project path is absent. Both the existence-check and the
-  // post-upgrade log path go through `newProjectSettingsPath(repoRoot,
-  // resolvedProjectName)` so the idempotency guard checks the SAME slot
-  // we are about to write to — checking the wrong slot is the bug
-  // tracked by issue #138.
+  // Step 3 — upgrade legacy T2-v1 `.gobbi/project-config.json` if present.
   const legacyProject = legacyProjectConfigPath(repoRoot);
-  const newProject = newProjectSettingsPath(repoRoot, resolvedProjectName);
+  const newProject = projectSettingsFile(repoRoot, resolvedProjectName);
   if (existsSync(legacyProject) && !existsSync(newProject)) {
     let raw: string;
     try {
@@ -330,31 +477,28 @@ export async function ensureSettingsCascade(
       );
     }
 
-    // Pass the resolved name explicitly so `writeSettingsAtLevel` does
-    // not re-resolve through the stderr-warning fallback path; we have
-    // already committed to the right slot above and want the on-disk
-    // write to land there without any second-guessing.
     writeSettingsAtLevel(repoRoot, 'project', upgraded, undefined, resolvedProjectName);
     process.stderr.write(
       `[ensure-settings-cascade] upgraded ${path.relative(repoRoot, legacyProject)} → ${path.relative(repoRoot, newProject)}\n`,
     );
   }
 
-  // Step 4 — seed workspace settings.json if absent. Keep sparse — full
-  // DEFAULTS apply at resolve time. `projects` is required by the unified
-  // schema; seed with the fresh-install shape. A later wave's
-  // `gobbi workflow init` bootstrap flow replaces these fresh-install
-  // values with the real project name.
+  // Step 4 — upgrade existing Pass-3-shape settings files in place.
+  // Idempotent: `needsCurrentShapeUpgrade` returns false for files that
+  // already conform to the PR-FIN-1c shape. Workspace and project levels
+  // both run through the same primitive.
+  upgradeFileInPlace(repoRoot, 'workspace', workspaceSettingsFile(repoRoot), resolvedProjectName);
+  upgradeFileInPlace(repoRoot, 'project', newProject, resolvedProjectName);
+
+  // Step 5 — seed workspace settings.json if absent. PR-FIN-1c: minimum
+  // shape (`{schemaVersion: 1}`); the projects registry was removed.
   const workspacePath = workspaceSettingsFile(repoRoot);
   if (!existsSync(workspacePath)) {
-    const seed: Settings = {
-      schemaVersion: 1,
-      projects: { active: null, known: [] },
-    };
+    const seed: Settings = { schemaVersion: 1 };
     writeSettingsAtLevel(repoRoot, 'workspace', seed);
     process.stderr.write('[ensure-settings-cascade] seeded .gobbi/settings.json\n');
   }
 
-  // Step 5 — ensure `.gobbi/.gitignore` lists workspace + sessions paths.
+  // Step 6 — ensure `.gobbi/.gitignore` lists workspace + sessions paths.
   ensureGitignoreLines(repoRoot);
 }

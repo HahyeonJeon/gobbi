@@ -123,21 +123,13 @@ function installFetchMock(): void {
  * Every test in this file operates at workspace scope — the session tier
  * is tested separately via the `sessionId` param.
  *
- * The helper auto-injects the fresh-install `projects` block when a test
- * fixture omits it — `projects` is required by the unified schema
- * (additive from gobbi-memory Pass 2), but every notify fixture in this
- * file is testing NOTIFY behaviour, not projects resolution, so defaulting
- * here keeps per-test noise down. Tests that want to exercise a specific
- * `projects` shape can still supply one explicitly.
+ * PR-FIN-1c: the `projects` registry was removed from Settings; the
+ * helper now writes the fixture verbatim.
  */
-function writeWorkspaceSettings(settings: Omit<Settings, 'projects'> & Partial<Pick<Settings, 'projects'>>): void {
+function writeWorkspaceSettings(settings: Settings): void {
   const dir = join(tmpRoot, '.gobbi');
   mkdirSync(dir, { recursive: true });
-  const hydrated: Settings = {
-    ...settings,
-    projects: settings.projects ?? { active: null, known: [] },
-  };
-  writeFileSync(join(dir, 'settings.json'), `${JSON.stringify(hydrated, null, 2)}\n`, 'utf8');
+  writeFileSync(join(dir, 'settings.json'), `${JSON.stringify(settings, null, 2)}\n`, 'utf8');
 }
 
 function baseOptions(): NotifyOptions {

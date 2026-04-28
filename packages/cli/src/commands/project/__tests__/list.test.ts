@@ -160,18 +160,26 @@ describe('gobbi project list', () => {
     expect(captured.stdout).toBe(' \tgobbi\n');
   });
 
-  test('active project gets an asterisk marker', async () => {
+  test('active project (basename(repoRoot)) gets an asterisk marker', async () => {
+    // PR-FIN-1c: the marker fires for the project whose name matches
+    // `basename(repoRoot)`. We create a project under the basename so
+    // the marker lights up; a second project (different name) carries
+    // the space marker.
     const repo = makeRepo();
-    makeProject(repo, 'gobbi');
-    makeProject(repo, 'foo');
-    writeWorkspaceSettings(repo, { active: 'foo', known: ['foo', 'gobbi'] });
+    const repoBase = require('node:path').basename(repo) as string;
+    makeProject(repo, repoBase);
+    makeProject(repo, 'aother');
 
     await captureExit(() =>
       runProjectListWithOptions([], { repoRoot: repo }),
     );
     expect(captured.exitCode).toBeNull();
-    // Alphabetical: foo first (active), gobbi second.
-    expect(captured.stdout).toBe('*\tfoo\n \tgobbi\n');
+    // Alphabetical sort. The basename (which starts with `gobbi-...`
+    // from mkdtempSync) sorts AFTER 'aother'. The basename row carries
+    // the `*` marker.
+    const rows = captured.stdout.trimEnd().split('\n');
+    const activeRow = rows.find((r) => r.startsWith('*\t'));
+    expect(activeRow).toBe(`*\t${repoBase}`);
   });
 
   test('ignores non-directory entries under .gobbi/projects/', async () => {

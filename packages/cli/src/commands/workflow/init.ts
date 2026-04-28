@@ -1,10 +1,11 @@
 /**
  * gobbi workflow init — initialise a workflow session directory.
  *
- * Creates `.gobbi/sessions/<sessionId>/` under the detected repo root, writes
- * a `metadata.json` at schema v3, opens the SQLite event store (`gobbi.db`),
- * and appends the opening pair of events — `workflow.start` followed by
- * `workflow.eval.decide` — atomically inside a single `store.transaction`.
+ * Creates `.gobbi/projects/<name>/sessions/<sessionId>/` under the detected
+ * repo root, writes a `metadata.json` at schema v3, opens the SQLite event
+ * store (`gobbi.db`), and appends the opening pair of events —
+ * `workflow.start` followed by `workflow.eval.decide` — atomically inside
+ * a single `store.transaction`.
  *
  * ## Idempotency
  *
@@ -21,17 +22,10 @@
  *   2. `CLAUDE_SESSION_ID` env var (hook context — set by Claude Code).
  *   3. Fallback — generate a fresh UUID.
  *
- * ## Project name resolution
+ * ## Project name resolution (PR-FIN-1c)
  *
- * On fresh init, the project name resolves with this priority:
- *
- *   1. `--project <name>` CLI flag (highest priority; per-invocation —
- *      does NOT cascade into `projects.active`).
- *   2. `projects.active` from `.gobbi/settings.json` (workspace level).
- *   3. Bootstrap auto-create — default to `basename(repoRoot)` AND write
- *      `projects.active = basename(repoRoot)` + append to `projects.known`
- *      in `.gobbi/settings.json`. Emits a stderr notification so the
- *      implicit bootstrap is visible.
+ *   1. `--project <name>` CLI flag (per-invocation override).
+ *   2. `basename(repoRoot)` — the directory containing the repo.
  *
  * On existing-session re-init, `metadata.json.projectName` is authoritative.
  * If `--project <name>` is provided AND does not match the stamped
@@ -40,11 +34,10 @@
  *
  * ## Schema
  *
- * `metadata.json` shape is at `schemaVersion: 3` as of the gobbi-memory
- * Pass-2 redesign — v3 adds the required `projectName` field that names
- * the project partition this session belongs to. The metadata schemaVersion
- * is decoupled from the state-machine `WorkflowState.schemaVersion` (which
- * lives in `workflow/state.ts` and tracks state-shape migrations separately).
+ * `metadata.json` shape is at `schemaVersion: 3` — v3 carries the required
+ * `projectName` field that names the project partition this session
+ * belongs to. The metadata schemaVersion is decoupled from the
+ * state-machine `WorkflowState.schemaVersion`.
  */
 
 import { parseArgs } from 'node:util';
@@ -55,11 +48,8 @@ import { randomUUID } from 'node:crypto';
 import { getRepoRoot } from '../../lib/repo.js';
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../../lib/guards.js';
 import { ensureSettingsCascade } from '../../lib/ensure-settings-cascade.js';
-import { type Settings } from '../../lib/settings.js';
 import {
-  loadSettingsAtLevel,
   resolveSettings,
-  writeSettingsAtLevel,
 } from '../../lib/settings-io.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 import { EventStore } from '../../workflow/store.js';
@@ -109,22 +99,21 @@ const PARSE_OPTIONS = {
 // ---------------------------------------------------------------------------
 
 /**
- * On-disk shape of `metadata.json`. Schema v3 adds the required `projectName`
- * field for the gobbi-memory Pass-2 multi-project layout.
+ * On-disk shape of `metadata.json`. Schema v3 carries the required
+ * `projectName` field for the multi-project layout.
  *
  *   - `sessionId` — matches the directory name.
  *   - `createdAt` — ISO-8601 timestamp, set once at init; never rewritten.
  *   - `projectRoot` — absolute path to the repo root at init time.
  *   - `projectName` — name of the project partition this session belongs to
  *     (see `.gobbi/projects/<projectName>/`). Resolved at init time via the
- *     `--project` flag / `projects.active` / bootstrap ladder; never rewritten.
+ *     `--project` flag / `basename(repoRoot)` ladder; never rewritten.
  *     Mid-session re-parent is rejected (see module docblock §Project name
  *     resolution).
  *   - `techStack` — output of {@link detectTechStack} (lowercase, deduped,
  *     alphabetically sorted; empty array when no signals match).
  *   - `configSnapshot` — the setup answers captured at init (task text,
- *     evaluation toggles, free-text context). PR C freezes them once; PR D
- *     may revisit if mid-session reconfig becomes a requirement.
+ *     evaluation toggles, free-text context).
  */
 export interface SessionMetadata {
   readonly schemaVersion: 3;
@@ -198,36 +187,24 @@ export async function runInitWithOptions(
       ? values.project
       : undefined;
 
+  // PR-FIN-1c: project name = `--project` flag → `basename(repoRoot)`.
+  // No more `projects.active` registry; the directory tree is the source
+  // of truth for which projects exist.
+  const cascadeProjectName = projectFlag ?? basename(repoRoot);
+
   // Ensure the unified settings cascade is ready — deletes legacy config
-  // sources (.gobbi/config.db, .claude/gobbi.json), upgrades legacy T2-v1
-  // project-config.json → projects/<name>/settings.json, seeds workspace
-  // defaults, and updates .gobbi/.gitignore. Idempotent; safe to call
-  // every init. This also guarantees `.gobbi/settings.json` exists
-  // (seeded with `{projects: {active: null, known: []}}` on fresh repos)
-  // so the project-name resolution ladder below can always read it.
-  //
-  // Thread the resolved project name through so the T2-v1 upgrader's
-  // existence check and write target use the SAME slot init will declare
-  // active downstream. The pre-resolve walks `--project flag → workspace
-  // projects.active → basename(repoRoot)` — the same ladder
-  // `resolveProjectNameForInit` uses, minus the bootstrap side-effect
-  // (which still happens below at the call site). Threading the value
-  // in avoids cascade and init disagreeing on which project slot the
-  // legacy config belongs to (issue #138).
-  const cascadeProjectName =
-    projectFlag ?? readWorkspaceActiveProject(repoRoot) ?? basename(repoRoot);
+  // sources, upgrades legacy T2-v1 project-config.json + Pass-3 shape
+  // files in place to PR-FIN-1c shape, seeds workspace defaults, and
+  // updates .gobbi/.gitignore. Idempotent; safe to call every init.
   await ensureSettingsCascade(repoRoot, cascadeProjectName);
 
-  // Idempotent fast-path — find any pre-existing session for this sessionId
-  // across every plausible project name (flag, projects.active, basename) so
-  // that re-init with a mismatching flag hits the mismatch gate rather than
-  // fresh-init-ing a second session under the wrong project. Session is
-  // bound to ONE project at birth per metadata.projectName, which is the
-  // authoritative answer once we locate the existing metadata.json.
-  const workspaceActive = readWorkspaceActiveProject(repoRoot);
+  // Idempotent fast-path — find any pre-existing session for this
+  // sessionId across plausible project names so re-init with a
+  // mismatching flag hits the mismatch gate rather than fresh-init-ing
+  // a second session under the wrong project. Session is bound to ONE
+  // project at birth per metadata.projectName.
   const candidateProjectNames: readonly string[] = dedup([
     ...(projectFlag !== undefined ? [projectFlag] : []),
-    ...(workspaceActive !== null ? [workspaceActive] : []),
     basename(repoRoot),
   ]);
   for (const candidate of candidateProjectNames) {
@@ -254,11 +231,7 @@ export async function runInitWithOptions(
     return;
   }
 
-  // Fresh init — resolve projectName via the 3-step ladder. Bootstrap is
-  // the side-effect branch: when no name comes from the flag or workspace
-  // settings, we name the project `basename(repoRoot)` AND cascade it into
-  // `projects.active` + `projects.known` so subsequent inits take the
-  // workspace-read branch without re-bootstrapping.
+  // Fresh init — resolve projectName via the simplified two-step ladder.
   const projectName = resolveProjectNameForInit(repoRoot, projectFlag);
 
   const sessionDir = sessionDirForProject(repoRoot, projectName, sessionId);
@@ -382,9 +355,9 @@ export async function runInitWithOptions(
 
 /**
  * Order-preserving dedup for a short readonly list. Used to collapse the
- * existing-session probe's candidate project names when two legs of the
- * ladder happen to produce the same name (e.g. `--project gobbi` in a repo
- * named `gobbi`, or `projects.active === basename(repoRoot)`).
+ * existing-session probe's candidate project names when both legs of the
+ * ladder happen to produce the same name (e.g. `--project gobbi` in a
+ * repo named `gobbi`).
  */
 function dedup(items: readonly string[]): readonly string[] {
   const seen = new Set<string>();
@@ -411,115 +384,23 @@ export function resolveSessionId(override: string | undefined): string {
 /**
  * Resolve the effective project name for a fresh `workflow init` run.
  *
- *   1. `--project <name>` CLI flag (per-invocation; never cascaded into
- *      `projects.active` — the flag is a one-shot override).
- *   2. `projects.active` from `.gobbi/settings.json` (workspace level).
- *   3. Bootstrap auto-create — default to `basename(repoRoot)`, write
- *      `projects.active` + append to `projects.known` in
- *      `.gobbi/settings.json`, and emit a stderr notification so the
- *      implicit bootstrap is visible.
+ *   1. `--project <name>` CLI flag (per-invocation override).
+ *   2. `basename(repoRoot)` — the directory containing the repo.
+ *
+ * PR-FIN-1c: the `projects.active` registry was removed; the resolution
+ * is a pure function with no side effects (no bootstrap write — there is
+ * nothing to bootstrap).
  *
  * Exported for tests. Production callers reach this via `runInitWithOptions`.
- * Side-effect branch (step 3) mutates the workspace settings file via
- * atomic write.
  */
 export function resolveProjectNameForInit(
   repoRoot: string,
   projectFlag: string | undefined,
 ): string {
   if (projectFlag !== undefined && projectFlag !== '') {
-    // Flag is a per-invocation override — do NOT write to projects.active.
     return projectFlag;
   }
-
-  const active = readWorkspaceActiveProject(repoRoot);
-  if (active !== null) {
-    return active;
-  }
-
-  // Bootstrap — no flag, no active project. Name the project after the repo
-  // directory, record it in workspace settings, and surface the bootstrap
-  // on stderr so callers can see that the implicit branch fired.
-  const bootstrapName = basename(repoRoot);
-  writeBootstrapProjectsRegistry(repoRoot, bootstrapName);
-  process.stderr.write(
-    `[gobbi workflow init] bootstrapped default project '${bootstrapName}' in .gobbi/settings.json\n`,
-  );
-  return bootstrapName;
-}
-
-/**
- * Read `projects.active` from `.gobbi/settings.json` without going through
- * the full cascade resolver — the bootstrap branch needs to know whether
- * a real value is present before it attempts to write one. Returns `null`
- * when the file is absent, fails to parse, or carries a null / empty active
- * project. Never throws; parse / read failures fall back to bootstrap.
- *
- * Note: settings-io.ts has an equivalent private helper. We duplicate the
- * ~20 lines here rather than export the settings-io helper because the
- * init-side semantics are different: settings-io uses the value to compose
- * paths (with a stderr fallback warning); init uses it as one leg of a
- * write-side ladder where the absence triggers bootstrap, not a warning.
- */
-function readWorkspaceActiveProject(repoRoot: string): string | null {
-  const filePath = join(repoRoot, '.gobbi', 'settings.json');
-  if (!existsSync(filePath)) return null;
-
-  let raw: string;
-  try {
-    raw = readFileSync(filePath, 'utf8');
-  } catch {
-    return null;
-  }
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return null;
-  }
-
-  if (!isRecord(parsed)) return null;
-  const projects = parsed['projects'];
-  if (!isRecord(projects)) return null;
-  const active = projects['active'];
-  return typeof active === 'string' && active.length > 0 ? active : null;
-}
-
-/**
- * Bootstrap write — read the workspace `settings.json` (guaranteed to exist
- * post-`ensureSettingsCascade`), overlay `projects.active = name` + dedup
- * `projects.known`, and atomic-write back via `writeSettingsAtLevel`. If
- * the file is somehow missing or malformed, synthesise the minimum-valid
- * shape from defaults so the bootstrap never wedges the init.
- */
-function writeBootstrapProjectsRegistry(
-  repoRoot: string,
-  projectName: string,
-): void {
-  let current: Settings | null;
-  try {
-    current = loadSettingsAtLevel(repoRoot, 'workspace');
-  } catch {
-    // Malformed workspace file — treat as fresh bootstrap. AJV validation
-    // on the write will catch any lingering shape drift.
-    current = null;
-  }
-
-  const knownSet = new Set<string>(current?.projects?.known ?? []);
-  knownSet.add(projectName);
-  const nextKnown = Array.from(knownSet);
-
-  const next: Settings = {
-    ...(current ?? { schemaVersion: 1, projects: { active: null, known: [] } }),
-    schemaVersion: 1,
-    projects: {
-      active: projectName,
-      known: nextKnown,
-    },
-  };
-
-  writeSettingsAtLevel(repoRoot, 'workspace', next);
+  return basename(repoRoot);
 }
 
 /**
@@ -544,7 +425,6 @@ export function readMetadata(path: string): SessionMetadata | null {
 
 export function isValidMetadata(value: unknown): value is SessionMetadata {
   if (!isRecord(value)) return false;
-  // TODO(W6.1): fixture tests asserting schemaVersion: 2 must migrate to 3
   if (!isNumber(value['schemaVersion']) || value['schemaVersion'] !== 3) return false;
   if (!isString(value['sessionId'])) return false;
   if (!isString(value['createdAt'])) return false;

@@ -173,7 +173,6 @@ describe('initialState maxFeedbackRounds wiring', () => {
   it('falls back to planning when execution is absent', () => {
     const settings: ResolvedSettings = {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       workflow: {
         ideation: { maxIterations: 7 },
         planning: { maxIterations: 6 },
@@ -187,7 +186,6 @@ describe('initialState maxFeedbackRounds wiring', () => {
   it('falls back to 3 when no step carries maxIterations', () => {
     const settings: ResolvedSettings = {
       schemaVersion: 1,
-      projects: { active: null, known: [] },
       workflow: {
         ideation: { discuss: { mode: 'user' } },
         planning: { discuss: { mode: 'user' } },
