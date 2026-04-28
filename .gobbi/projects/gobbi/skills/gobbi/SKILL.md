@@ -121,7 +121,9 @@ For explicit one-time scaffolding (e.g., first setup in a fresh repo before runn
 ```
 gobbi config init                            # workspace seed — .gobbi/settings.json
 gobbi config init --level project            # project seed — .gobbi/projects/<basename>/settings.json
+gobbi config init --level project --project foo   # project seed for a non-basename project name
 gobbi config init --level session --session-id $DISCOVERED   # session seed
+gobbi config init --level workspace --force  # force re-seed if file already exists
 ```
 
 Refuses without `--force` if the file already exists. Seed is `{schemaVersion: 1}` only.

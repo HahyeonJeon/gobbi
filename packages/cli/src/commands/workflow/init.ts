@@ -382,10 +382,15 @@ function dedup(items: readonly string[]): readonly string[] {
  * else references, contaminating the workspace and breaking idempotent
  * re-init. Fail loudly with remediation instead.
  *
+ * Return type `string | never` makes the abort path explicit at the
+ * signature level — `string | never` simplifies to `string` for assignable
+ * callers, but the `never` annotation signals the process-exit branch and
+ * matches the `emitCascadeError: never` convention in `commands/config.ts`.
+ *
  * Exits 2 (and never returns) when both sources are absent. Exported so
  * tests can exercise both the success branches and the abort branch.
  */
-export function resolveSessionId(override: string | undefined): string {
+export function resolveSessionId(override: string | undefined): string | never {
   if (override !== undefined && override !== '') return override;
   const env = process.env['CLAUDE_SESSION_ID'];
   if (env !== undefined && env !== '') return env;

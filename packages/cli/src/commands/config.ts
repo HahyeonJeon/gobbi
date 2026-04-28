@@ -556,14 +556,6 @@ async function runInit(args: string[]): Promise<void> {
   const envSessionId = process.env['CLAUDE_SESSION_ID'];
   const sessionId = resolveSessionId(flagSessionId, envSessionId);
 
-  if (level === 'session' && (sessionId === undefined || sessionId === '')) {
-    process.stderr.write(
-      `gobbi config init: --level session requires CLAUDE_SESSION_ID env or --session-id\n` +
-        `  (outside a session, use --level workspace or --level project to bypass)\n`,
-    );
-    process.exit(2);
-  }
-
   const force = values.force === true;
   const projectFlag =
     typeof values['project'] === 'string' && values['project'] !== ''
@@ -576,14 +568,22 @@ async function runInit(args: string[]): Promise<void> {
   // Compute the on-disk path BEFORE writing so the refuse-without-force
   // gate can inspect the existing file and the WARN line / error message
   // can name the exact path the operator would touch.
+  //
+  // `requireSessionIdForInit` exits 2 when `level === 'session'` and the
+  // resolved id is absent. Returning `string` (never `string | undefined`)
+  // narrows naturally for the session branch — no `as string` cast needed.
+  // Matches the `emitCascadeError: never` convention (see line 786 below).
   let filePath: string;
   if (level === 'workspace') {
     filePath = workspaceSettingsPath(repoRoot);
   } else if (level === 'project') {
     filePath = projectSettingsPath(repoRoot, projectName);
   } else {
-    // session — sessionId is non-empty per the gate above.
-    filePath = sessionSettingsPath(repoRoot, projectName, sessionId as string);
+    filePath = sessionSettingsPath(
+      repoRoot,
+      projectName,
+      requireSessionIdForInit(sessionId),
+    );
   }
 
   if (existsSync(filePath)) {
@@ -613,7 +613,7 @@ async function runInit(args: string[]): Promise<void> {
         repoRoot,
         'session',
         seed,
-        sessionId as string,
+        requireSessionIdForInit(sessionId),
         projectName,
       );
     }
@@ -766,6 +766,27 @@ function resolveSessionId(
   if (flagValue !== undefined && flagValue !== '') return flagValue;
   if (envValue !== undefined && envValue !== '') return envValue;
   return undefined;
+}
+
+/**
+ * Narrow an optional session id to a definite `string` for the `init`
+ * verb's `--level session` branch, or exit 2 with a remediation hint.
+ *
+ * Returning `string` (never `string | undefined`) lets call sites in
+ * `runInit` consume the result directly without `as string` casts —
+ * TypeScript narrows naturally through the function signature. The
+ * `: never`-returning failure path mirrors `emitCascadeError`'s
+ * convention so process-exit helpers stay consistent across this file.
+ */
+function requireSessionIdForInit(sessionId: string | undefined): string {
+  if (sessionId === undefined || sessionId === '') {
+    process.stderr.write(
+      `gobbi config init: --level session requires CLAUDE_SESSION_ID env or --session-id\n` +
+        `  (outside a session, use --level workspace or --level project to bypass)\n`,
+    );
+    process.exit(2);
+  }
+  return sessionId;
 }
 
 // ---------------------------------------------------------------------------
