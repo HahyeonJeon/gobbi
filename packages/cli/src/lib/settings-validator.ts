@@ -38,7 +38,12 @@ const NOTIFY_EVENT_ENUM = [
 // Mirrors `HookTrigger` in `settings.ts`. Listed in the same target-state
 // §4.4 canonical order so the AJV schema diff matches a manual scan of the
 // TypeScript union — drift surfaces as a `JSONSchemaType<Settings>` error.
-const HOOK_TRIGGER_ENUM = [
+//
+// Exported so user-facing commands (e.g., `gobbi notify configure --enable
+// <event>`) can validate event-name inputs against the same canonical list
+// the AJV schema enforces. Iteration order is the canonical enum order
+// shared with `HookTrigger` in `settings.ts`.
+export const HOOK_TRIGGER_ENUM = [
   // Session lifecycle
   'SessionStart',
   'SessionEnd',
