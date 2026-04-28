@@ -41,6 +41,7 @@
  * also live inside this catch boundary.
  */
 
+import { dispatchHookNotify, type NotifyOptions } from '../../lib/notify.js';
 import { readStdinJson } from '../../lib/stdin.js';
 import {
   parseHookEnvPayload,
@@ -86,10 +87,19 @@ export async function runHookSessionStart(args: string[]): Promise<void> {
     // means a re-fired SessionStart (resume / compact) is a silent no-op.
     await runInitWithOptions([]);
 
-    // --- 5. Notify dispatch (PR-FIN-1d) ---------------------------------
-    // TODO(PR-FIN-1d) — dispatch notify channels whose `triggers`
-    // include 'SessionStart'. Will read the resolved settings cascade
-    // and POST to whichever channels are configured.
+    // --- 5. Notify dispatch (PR-FIN-1d.3) -------------------------------
+    // Dispatch to channels whose `triggers` include 'SessionStart'.
+    // `dispatchHookNotify` is silent on internal failure; the surrounding
+    // try/catch is defense-in-depth for the hook contract.
+    const notifyOptions: NotifyOptions = {
+      ...(typeof (payload as { session_id?: unknown })?.session_id === 'string'
+        ? { sessionId: (payload as { session_id: string }).session_id }
+        : {}),
+      ...(process.env['CLAUDE_PROJECT_DIR'] !== undefined
+        ? { projectDir: process.env['CLAUDE_PROJECT_DIR'] }
+        : {}),
+    };
+    await dispatchHookNotify(payload, 'SessionStart', notifyOptions);
   } catch (err) {
     // Hook contract: never propagate a non-zero exit. Surface the cause
     // on stderr for the operator, but keep the process zero-exiting so
