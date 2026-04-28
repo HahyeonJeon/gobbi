@@ -4,6 +4,75 @@ This guide documents breaking changes and upgrade steps for major version bumps.
 
 ---
 
+## PR-FIN-1c: GitSettings reshape + ProjectsRegistry removal
+
+### Summary
+
+PR-FIN-1c removes the `mode`/`workflow`/`cleanup` sub-objects from `GitSettings` and replaces them with a flat shape where each concern owns its own sub-object. The `ProjectsRegistry` interface and `Settings.projects` field are deleted; project resolution is now `basename(repoRoot)` + `--project` flag.
+
+Existing on-disk `settings.json` files are migrated automatically on the first `gobbi workflow init` after the upgrade. No manual action is required. The `project-config.json` T2-v1 path is also extended to produce the new shape directly.
+
+---
+
+### Who must migrate
+
+Any caller that reads `git.workflow.mode`, `git.workflow.baseBranch`, `git.cleanup.*`, `git.pr.draft` (via the old `git.pr` sub-object under the Pass-3 shape), `projects.active`, or `projects.known` from a settings file or via `gobbi config get`. This includes skill files, agents, and scripts that reference those paths.
+
+---
+
+### Migration table
+
+| Old field | New location | Mapping |
+|---|---|---|
+| `git.mode === 'worktree-pr'` | `git.pr.open` | `true` |
+| `git.mode === 'direct-commit'` | `git.pr.open` | `false` |
+| `git.mode === 'auto'` | `git.pr.open` | `true` |
+| `git.workflow.mode === 'worktree-pr'` | `git.pr.open` | `true` |
+| `git.workflow.mode === 'direct-commit'` | `git.pr.open` | `false` |
+| `git.workflow.mode === 'auto'` | `git.pr.open` | `true` |
+| `git.baseBranch` | `git.baseBranch` | (preserved) |
+| `git.workflow.baseBranch` | `git.baseBranch` | (preserved) |
+| `git.pr.draft` | `git.pr.draft` | (preserved) |
+| `git.cleanup.worktree` | `git.worktree.autoRemove` | (preserved) |
+| `git.cleanup.branch` | `git.branch.autoRemove` | (preserved) |
+| (no equivalent) | `git.issue.create` | default `false` |
+| `projects.active` | (removed) | dropped silently |
+| `projects.known` | (removed) | dropped silently |
+
+---
+
+### Automatic on-disk migration
+
+`ensureSettingsCascade` (called by `gobbi workflow init`) detects legacy fields and upgrades files automatically:
+
+- `.gobbi/project-config.json` (T2-v1 legacy) → upgraded to PR-FIN-1c shape, written to `.gobbi/projects/<name>/settings.json`. Legacy file kept in place.
+- `.gobbi/projects/<name>/settings.json` with Pass-3 shape (contains `git.workflow.*` or `projects.*`) → upgraded in place. Idempotent.
+- `.gobbi/settings.json` with Pass-3 shape → upgraded in place. Idempotent.
+- Workspace seed, if absent, is written as `{schemaVersion: 1}` (no `projects` block).
+
+---
+
+### Cross-field check change
+
+The cross-field invariant changed:
+
+- **Before PR-FIN-1c:** `git.workflow.mode === 'worktree-pr'` requires `git.workflow.baseBranch !== null`
+- **After PR-FIN-1c:** `git.pr.open === true` (explicitly set by user) requires `git.baseBranch !== null`
+
+The new check only fires when the user has explicitly set `pr.open=true` in a file — DEFAULTS alone do not trigger it. Fresh repos with no git config are not flagged.
+
+---
+
+### `gobbi project` commands
+
+| v0.4.x / Pass-3 | PR-FIN-1c |
+|---|---|
+| `gobbi project switch <name>` | Removed — no `projects.active` to set |
+| `gobbi project list` | Reads `.gobbi/projects/` via filesystem scan — no registry needed |
+| `gobbi project create <name>` | Creates directory only — no `projects.known` mutation |
+
+---
+
 ## v0.4.x → v0.5.0
 
 ### Summary

@@ -3,8 +3,13 @@
 | Pass date  | Session ID               | Verdict    | PR     |
 |------------|--------------------------|------------|--------|
 | 2026-04-21 | `dfd4ff66-a2d4-456f-8fa4-ddd843e4e58b` | shipped | #123 (draft) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1c (TBD) |
 
-Pass-3 finalization replaced the T1/T2 JSON + T3 SQLite + provenance architecture with a unified three-level `settings.json` shape and a two-verb CLI. Waves B through D landed on `feat/120-gobbi-config-pass-3` atop 6 prior commits. This review documents what drifted from the originally-shipped Pass-3 design, notable implementation decisions (NOTEs), and open gaps deferred to follow-up Passes (GAPs).
+Pass-3 finalization replaced the T1/T2 JSON + T3 SQLite + provenance architecture with a unified three-level `settings.json` shape and a two-verb CLI. Waves B through D landed on `feat/120-gobbi-config-pass-3` atop 6 prior commits.
+
+PR-FIN-1c (session `c34ea7e6`) reshaped `GitSettings` around always-on worktrees with independent opt-in fields (`issue.create`, `pr.open`, `pr.draft`), removed the `mode`/`workflow`/`cleanup` sub-objects, and removed the `ProjectsRegistry` interface + `Settings.projects` field entirely. Project resolution is now `basename(repoRoot)` + `--project` flag. The T2-v1 upgrader was extended to handle both the original T2-v1 shape and Pass-3 current-shape files. Commits `362217c` + `954f889` on branch `feat/212-pr-fin-1c-schema-redesign`.
+
+This review documents what drifted from the originally-shipped Pass-3 design, notable implementation decisions (NOTEs), and open gaps deferred to follow-up Passes (GAPs). Entries marked **[superseded by DRIFT-9]** describe changes now themselves changed by PR-FIN-1c.
 
 All SHAs below exist on the branch (`git log --oneline` verified).
 
@@ -12,7 +17,7 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 ## DRIFT entries
 
-### DRIFT-1 — `trivialRange` field removed entirely
+### DRIFT-1 — `trivialRange` field removed entirely *(doc superseded by DRIFT-9 — PR-FIN-1c reshape)*
 
 **Finding:** Pass-3 shipped `trivialRange: 'read-only' | 'simple-edits'` in the project-config schema. Pass-3 finalization drops it entirely per explicit user lock: "Drop trivialRange. Now always follow full workflow with configuration." The field has no runtime consumer after the drop; scope-of-inline-edits is now governed by `workflow.execution.discuss.mode`.
 
@@ -20,7 +25,7 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 **Severity:** Medium — documentation and tests referencing `trivialRange` would fail against the new schema.
 
-**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B): `settings.ts` has no `trivialRange`; all CFG-* scenarios rewritten at `ff20702` (Wave D.2).
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B): `settings.ts` has no `trivialRange`; all CFG-* scenarios rewritten at `ff20702` (Wave D.2). The T2-v1 upgrader path in `ensure-settings-cascade.ts` silently drops `trivialRange` during upgrade.
 
 **Owner:** gobbi-config Pass 3 finalization.
 
@@ -96,7 +101,7 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 ---
 
-### DRIFT-7 — `git.mode`/`git.baseBranch` → `git.workflow.{mode,baseBranch}`
+### DRIFT-7 — `git.mode`/`git.baseBranch` → `git.workflow.{mode,baseBranch}` *(superseded by DRIFT-9 — PR-FIN-1c removed `git.workflow.*` entirely)*
 
 **Finding:** Pass-3 and prior placed `git.mode` and `git.baseBranch` at the top level of the git section. Pass-3 finalization restructures git by concern: `git.workflow.{mode,baseBranch}`, `git.pr.{draft}`, `git.cleanup.{worktree,branch}`.
 
@@ -104,13 +109,13 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 **Severity:** Medium — sibling docs and skill files referencing `git.mode` at the top level would describe the wrong path.
 
-**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B) for code; `cf7733c` (Wave D.1a) rewrites SKILL.md; Wave E sweeps sibling skills and design docs.
+**Resolution:** fix code + doc — resolved at `f9b3925` (Wave B) for code; `cf7733c` (Wave D.1a) rewrites SKILL.md; Wave E sweeps sibling skills and design docs. **Superseded by DRIFT-9:** PR-FIN-1c removed `git.workflow.*` entirely in favour of the flat shape with per-concern sub-objects. The intermediate `git.workflow.{mode,baseBranch}` path described here was a Pass-3 stop; the final shape after PR-FIN-1c is `git.{baseBranch,pr,issue,worktree,branch}`.
 
 **Owner:** gobbi-config Pass 3 finalization.
 
 ---
 
-### DRIFT-8 — `notify.{slack,telegram}: boolean` → per-channel `ChannelSettings` dict
+### DRIFT-8 — `notify.{slack,telegram}: boolean` → per-channel `ChannelSettings` dict *(doc unchanged — notify shape was not affected by PR-FIN-1c)*
 
 **Finding:** Pass-3's T1/T2 schemas used `notify.slack: boolean` and `notify.telegram: boolean`. Pass-3 finalization replaces with per-channel objects (`enabled`, `events`, `triggers`, channel-specific routing). Adds `discord` and `desktop` channels.
 
@@ -121,6 +126,26 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 **Resolution:** fix code + doc — resolved at `f9b3925` (Wave B) + `b671b02` (Wave D.1b) wires `notify.ts` to cascade + inverted events semantic.
 
 **Owner:** gobbi-config Pass 3 finalization.
+
+---
+
+### DRIFT-9 — PR-FIN-1c: `GitSettings` reshaped; `ProjectsRegistry` removed (F2 + F3)
+
+**Finding:** PR-FIN-1c (session `c34ea7e6`) reshaped `GitSettings` and removed `ProjectsRegistry`. The Pass-3 shape (`git.workflow.{mode,baseBranch}`, `git.pr.{draft}`, `git.cleanup.{worktree,branch}`) is replaced with a flat shape where each concern owns its own sub-object: `git.baseBranch`, `git.issue.{create}`, `git.worktree.{autoRemove}`, `git.branch.{autoRemove}`, `git.pr.{open,draft}`. The `mode` enum (and concept of worktree-vs-direct-commit dispatch) is removed — worktrees are always created; PR and issue creation are independent opt-in fields. `Settings.projects` and the `ProjectsRegistry` interface are deleted; project resolution is `basename(repoRoot)` + `--project` flag.
+
+The cross-field check changes from `git.workflow.mode === 'worktree-pr' && baseBranch === null` to `git.pr.open === true && baseBranch === null`. The check now only fires when the user explicitly set `pr.open=true` (not when DEFAULTS supply the value), so a fresh repo is not flagged.
+
+The T2-v1 upgrader is extended to cover both the original T2-v1 shape and Pass-3 current-shape files. Workspace seed changes from `{schemaVersion: 1, projects: {...}}` to `{schemaVersion: 1}` (no `projects` block).
+
+Supersedes the git-related portions of DRIFT-7 (which described the intermediate `git.workflow.*` shape). DRIFT-1's upgrader reference is updated to note that `trivialRange` is also dropped during the extended upgrade.
+
+**Evidence:** ideation.md §F2, §F3 (Round-3 ideation memo at `.claude/project/gobbi/note/20260428-0311-finalize-gobbi-config-c34ea7e6-d5c3-4174-b61e-5176efc8d39b/ideation/ideation.md`); target-state spec §4.5, §4.6, §3.7 at `.gobbi/projects/gobbi/tmp/gobbi-config-target-state.md`; `packages/cli/src/lib/settings.ts` at `362217c`; `packages/cli/src/lib/ensure-settings-cascade.ts` at `362217c`.
+
+**Severity:** High — any doc, skill, or agent referencing `git.workflow.*`, `git.cleanup.*`, `git.mode`, `projects.active`, or `projects.known` now describes stale paths.
+
+**Resolution:** fix code + doc — resolved at `362217c` (schema + consumers + upgrader) + `954f889` (switch deletion). This review updated; README, scenarios, checklist updated in the same commit.
+
+**Owner:** PR-FIN-1c (session `c34ea7e6`).
 
 ---
 
@@ -208,14 +233,15 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 | Finding | Type | Severity | SHAs | Resolution |
 |---------|------|----------|------|-----------|
-| DRIFT-1 | drift | medium | `f9b3925` + `ff20702` | fix code + doc |
+| DRIFT-1 | drift | medium | `f9b3925` + `ff20702` | fix code + doc (upgrader note updated PR-FIN-1c) |
 | DRIFT-2 | drift | medium | `f9b3925` | fix code + doc |
 | DRIFT-3 | drift | high | `f9b3925` + `08fb3d7` + `cf7733c` + `ff20702` | fix code + doc |
 | DRIFT-4 | drift | high | `f9b3925` | fix code + doc |
 | DRIFT-5 | drift | medium | `f9b3925` + `9bcb227` | fix code + doc |
 | DRIFT-6 | drift | medium | `f9b3925` | fix code + doc |
-| DRIFT-7 | drift | medium | `f9b3925` + `cf7733c` + Wave E | fix code + doc |
+| DRIFT-7 | drift | medium | `f9b3925` + `cf7733c` + Wave E | fix code + doc (superseded by DRIFT-9) |
 | DRIFT-8 | drift | high | `f9b3925` + `b671b02` | fix code + doc |
+| DRIFT-9 | drift | high | `362217c` + `954f889` (PR-FIN-1c) | fix code + doc |
 | NOTE-1 | note | — | `f9b3925` (Wave A→B decision) | design decision |
 | NOTE-2 | note | — | `ff20702` | test discipline |
 | NOTE-3 | note | — | — (no code change) | scope boundary |

@@ -1,6 +1,6 @@
 # gobbi-config — Unified Settings Cascade
 
-Feature description for gobbi's three-level configuration cascade. Read this to understand where settings live at each scope, how levels override one another, the unified `settings.json` shape, and the two-verb CLI surface. This is the design-of-record for Pass 3 (session `dfd4ff66`).
+Feature description for gobbi's three-level configuration cascade. Read this to understand where settings live at each scope, how levels override one another, the unified `settings.json` shape, and the two-verb CLI surface. This is the design-of-record for Pass 3 (session `dfd4ff66`) updated in PR-FIN-1c (session `c34ea7e6`) for the GitSettings reshape and ProjectsRegistry removal.
 
 ---
 
@@ -18,7 +18,13 @@ Gobbi resolves every setting by composing three `settings.json` files — worksp
 | project | `.gobbi/projects/<name>/settings.json` | tracked | `ensureSettingsCascade` seed; manual edit |
 | session | `.gobbi/projects/<name>/sessions/{id}/settings.json` | gitignored (inherits `.gobbi/projects/<name>/sessions/`) | `/gobbi` setup FIFTH step; `gobbi config set` |
 
-Session-id resolution: `$CLAUDE_SESSION_ID` env is the CLI-level primary; `--session-id` flag is the fallback. The `/gobbi` skill discovers the real session id per the `session-id-discovery` gotcha (primary env is `$CODEX_COMPANION_SESSION_ID` at the skill level) and passes `--session-id` explicitly when the env is not populated.
+Session-id resolution: `$CLAUDE_SESSION_ID` env is the CLI-level primary; `--session-id` flag is the override.
+
+**Project-name resolution (PR-FIN-1c):** Project name resolves in priority order:
+1. `--project <name>` flag — passed explicitly by CLI commands
+2. `basename(repoRoot)` — the directory containing the repo
+
+No registry. No `projects.active`. The presence of a directory under `.gobbi/projects/` is the only record that a project exists.
 
 ---
 
@@ -42,10 +48,14 @@ The `planning` field name matches the loop name in `deterministic-orchestration.
 - `triggers: HookTrigger[]` — Claude Code hook events (schema-only this Pass; dispatch wiring deferred)
 - Channel-specific routing: `slack.channel`, `telegram.chatId`, `discord.webhookName` (non-secret; null = unset)
 
-**`git`** — Three sub-objects:
-- `workflow: { mode, baseBranch }` — `mode` is `'direct-commit' | 'worktree-pr' | 'auto'` (`'auto'` defers the choice to the orchestrator at workflow-decision time); `baseBranch: string | null`
-- `pr: { draft }` — open PRs as drafts by default
-- `cleanup: { worktree, branch }` — auto-remove worktree/branch after merge
+**`git`** — PR-FIN-1c flat shape with sub-objects per concern (see `packages/cli/src/lib/settings.ts::GitSettings`):
+- `baseBranch: string | null` — PR target branch; `null` means no remote / no PR target
+- `issue: { create: boolean }` — opt-in issue creation; default `false`
+- `worktree: { autoRemove: boolean }` — auto-remove worktree after merge; default `true`
+- `branch: { autoRemove: boolean }` — auto-remove branch after merge; default `true`
+- `pr: { open: boolean, draft: boolean }` — `open` opts in to PR creation (default `true`); `draft` controls draft status (default `false`)
+
+Worktrees are always created for every task — there is no `mode` enum. PR opening and issue creation are independent opt-in fields. The old `workflow`, `cleanup`, and `mode` sub-objects are gone.
 
 **`schemaVersion`** — Required, always `1`. Single discriminator; no per-level versioning.
 
@@ -53,7 +63,7 @@ The `planning` field name matches the loop name in `deterministic-orchestration.
 
 ## Cascade resolution semantics
 
-Resolution order: session → project → workspace → defaults. `resolveSettings({ repoRoot, sessionId })` in `settings-io.ts` loads each level and folds them left-to-right via `deepMerge` from `settings.ts`.
+Resolution order: session → project → workspace → defaults. `resolveSettings({ repoRoot, sessionId?, projectName? })` in `settings-io.ts` loads each level and folds them left-to-right via `deepMerge` from `settings.ts`.
 
 Merge rules (from `deepMerge`):
 - **Primitives** replace at each level boundary
@@ -74,9 +84,11 @@ The built-in defaults seed `events: []` so channels are silent until the user op
 
 ---
 
-## Cross-field check
+## Cross-field check (PR-FIN-1c)
 
-After cascade merge, `resolveSettings` checks: `git.workflow.mode === 'worktree-pr'` requires `git.workflow.baseBranch !== null`. Violation raises `ConfigCascadeError('parse', …)` with `tier` identifying which level asserted the invalid combination. Catching at resolve time prevents worktree creation failures downstream.
+After cascade merge, `resolveSettings` checks: `git.pr.open === true` requires `git.baseBranch !== null`. The check fires only when the user has explicitly set `pr.open=true` somewhere in the cascade — a fresh repo where both values come from DEFAULTS is not flagged (the user has not opted into PR opening yet). Once a user sets `pr.open=true`, they must also set `baseBranch`.
+
+Violation raises `ConfigCascadeError('parse', …)` without a `tier` (the violation is in the cascaded projection, not attributable to one level). For repos without a GitHub remote or preferring direct-commit workflows: set `pr.open: false`; `baseBranch` may stay `null`.
 
 ---
 
@@ -115,15 +127,32 @@ Resolution fires at the eval checkpoint, not at config-write time.
 
 ---
 
-## Legacy cleanup
+## Legacy cleanup (PR-FIN-1c extended)
 
-`ensureSettingsCascade(repoRoot)` (in `ensure-settings-cascade.ts`) runs during `gobbi workflow init`. Steps:
+`ensureSettingsCascade(repoRoot, projectName?)` (in `ensure-settings-cascade.ts`) runs during `gobbi workflow init`. Steps:
 
 1. If `.gobbi/config.db` exists — delete it and log
 2. If `.claude/gobbi.json` exists — delete it and log
-3. If `.gobbi/project-config.json` (T2-v1 legacy) exists and `.gobbi/projects/<name>/settings.json` does not — upgrade: rename path, set `schemaVersion: 1`, restructure `git.mode → git.workflow.mode`, convert `eval.{step}: bool → workflow.{step}.evaluate.mode` enum (`true→'always'`, `false→'ask'`), drop `trivialRange`, `verification.*`, `cost.*`, `ui.*`
-4. Seed workspace and project defaults if absent
-5. Ensure `.gobbi/.gitignore` lists `settings.json` and `sessions/`
+3. If `.gobbi/project-config.json` (T2-v1 legacy) exists and `.gobbi/projects/<name>/settings.json` does not — upgrade via `upgradeLegacyToSettings`: set `schemaVersion: 1`; convert `eval.{step}: bool → workflow.{step}.evaluate.mode` enum (`true→'always'`, `false→'ask'`); reshape `git.*` per the F2 migration table; drop `projects.*`, `trivialRange`, `verification.*`, `cost.*`, `ui.*`
+4. If an existing `.gobbi/projects/<name>/settings.json` or `.gobbi/settings.json` carries legacy fields (`projects.*`, `git.workflow.*`, `git.cleanup.*`, `git.mode`) — upgrade it in place via `reshapeCurrentShape`. Idempotent: files already in the PR-FIN-1c shape are left untouched
+5. Seed workspace `.gobbi/settings.json` if absent — minimum-valid seed is `{schemaVersion: 1}`. PR-FIN-1c removed the `projects` registry; the seed carries no `projects` block
+6. Ensure `.gobbi/.gitignore` lists `settings.json` and `sessions/`
+
+**Migration table for git fields** (applies to both T2-v1 and Pass-3-current shapes):
+
+| Old field | New location | Mapping |
+|---|---|---|
+| `git.mode === 'worktree-pr'` | `git.pr.open` | `true` |
+| `git.mode === 'direct-commit'` | `git.pr.open` | `false` |
+| `git.mode === 'auto'` | `git.pr.open` | `true` |
+| `git.workflow.mode` | (same) | (same) |
+| `git.baseBranch` | `git.baseBranch` | (preserved) |
+| `git.workflow.baseBranch` | `git.baseBranch` | (preserved) |
+| `git.pr.draft` | `git.pr.draft` | (preserved) |
+| `git.cleanup.worktree` | `git.worktree.autoRemove` | (preserved) |
+| `git.cleanup.branch` | `git.branch.autoRemove` | (preserved) |
+| (no equivalent) | `git.issue.create` | default `false` |
+| `projects.active` / `projects.known` | (removed) | dropped silently |
 
 ---
 
