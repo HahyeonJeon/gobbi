@@ -14,6 +14,7 @@
  * @see `commands/workflow/capture-subagent.ts` — body invoked here.
  */
 
+import { dispatchHookNotify, type NotifyOptions } from '../../lib/notify.js';
 import { readStdinJson } from '../../lib/stdin.js';
 import { runCaptureSubagentWithOptions } from '../workflow/capture-subagent.js';
 
@@ -29,7 +30,18 @@ export async function runHookSubagentStop(args: string[]): Promise<void> {
   try {
     await runCaptureSubagentWithOptions(args, { payload });
 
-    // TODO(PR-FIN-1d) — dispatch notify for SubagentStop triggers.
+    // PR-FIN-1d.3 — dispatch notify channels whose `triggers` include
+    // 'SubagentStop'. Silent-on-failure inside; the try/catch is
+    // defense-in-depth for the hook contract.
+    const options: NotifyOptions = {
+      ...(typeof (payload as { session_id?: unknown })?.session_id === 'string'
+        ? { sessionId: (payload as { session_id: string }).session_id }
+        : {}),
+      ...(process.env['CLAUDE_PROJECT_DIR'] !== undefined
+        ? { projectDir: process.env['CLAUDE_PROJECT_DIR'] }
+        : {}),
+    };
+    await dispatchHookNotify(payload, 'SubagentStop', options);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     process.stderr.write(`gobbi hook subagent-stop: ${message}\n`);

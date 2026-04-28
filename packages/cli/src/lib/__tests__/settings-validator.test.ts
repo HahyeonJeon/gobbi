@@ -211,3 +211,93 @@ describe('settings-validator — autoRemove flags', () => {
     ).toBe(false);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Test 9 — HookTrigger enum expansion (PR-FIN-1d.1)
+// ---------------------------------------------------------------------------
+//
+// PR-FIN-1d.1 grew the `HookTrigger` union from 9 to 28 values (purely
+// additive). These tests guard the additive invariant: configs written
+// against the original 9-value enum still validate, every new value is
+// accepted, and unknown trigger strings are still rejected.
+
+describe('settings-validator — HookTrigger enum expansion (PR-FIN-1d.1)', () => {
+  // The 9 trigger values that existed before PR-FIN-1d.1. A settings file
+  // written against this list must continue to validate without any code
+  // change on the user side — that is the additive contract.
+  const ORIGINAL_TRIGGERS_9 = [
+    'PreToolUse',
+    'PostToolUse',
+    'Stop',
+    'SubagentStop',
+    'UserPromptSubmit',
+    'Notification',
+    'PreCompact',
+    'SessionStart',
+    'SessionEnd',
+  ] as const;
+
+  // The 19 trigger values added by PR-FIN-1d.1. Listed in target-state §4.4
+  // canonical order, matching the union and `HOOK_TRIGGER_ENUM`.
+  const NEW_TRIGGERS_19 = [
+    'StopFailure',
+    'UserPromptExpansion',
+    'PostToolUseFailure',
+    'PostToolBatch',
+    'PermissionRequest',
+    'PermissionDenied',
+    'SubagentStart',
+    'TaskCreated',
+    'TaskCompleted',
+    'TeammateIdle',
+    'PostCompact',
+    'WorktreeCreate',
+    'WorktreeRemove',
+    'FileChanged',
+    'CwdChanged',
+    'InstructionsLoaded',
+    'ConfigChange',
+    'Elicitation',
+    'ElicitationResult',
+  ] as const;
+
+  test('backwards-compat: original 9-value triggers list still validates (slack channel)', () => {
+    const raw: unknown = {
+      schemaVersion: 1,
+      notify: {
+        slack: { triggers: [...ORIGINAL_TRIGGERS_9] },
+      },
+    };
+    expect(validateSettings(raw)).toBe(true);
+  });
+
+  test('all 19 new trigger values validate (slack channel)', () => {
+    const raw: unknown = {
+      schemaVersion: 1,
+      notify: {
+        slack: { triggers: [...NEW_TRIGGERS_19] },
+      },
+    };
+    expect(validateSettings(raw)).toBe(true);
+  });
+
+  test('unknown trigger string is rejected with an AJV enum error', () => {
+    const raw: unknown = {
+      schemaVersion: 1,
+      notify: {
+        slack: { triggers: ['Bogus'] },
+      },
+    };
+    expect(validateSettings(raw)).toBe(false);
+    const errs = validateSettings.errors ?? [];
+    // The AJV `enum` keyword fires with `instancePath` pointing at the
+    // offending array index; the message mentions "allowed values".
+    expect(
+      errs.some((e) => {
+        const path = e.instancePath ?? '';
+        const msg = e.message ?? '';
+        return /\/notify\/slack\/triggers\/0$/.test(path) && /allowed values/i.test(msg);
+      }),
+    ).toBe(true);
+  });
+});

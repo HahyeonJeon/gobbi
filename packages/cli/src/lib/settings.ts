@@ -46,20 +46,57 @@ export type NotifyEvent =
   | 'error';
 
 /**
- * Claude Code hook events. Schema-only in this Pass — dispatch wiring to
- * register Claude Code hooks is deferred to a follow-up Pass. Shape is
- * reserved so future wiring does not bump the schema.
+ * Claude Code hook events that gobbi can subscribe to via channel
+ * `triggers` filters. Listed in target-state §4.4 canonical order
+ * (lifecycle → prompt → tool → permission → notification → subagent/task →
+ * compaction → worktree → workspace → config → elicitation).
+ *
+ * PR-FIN-1d.1 expanded the union from the original 9 values to all 28 known
+ * Claude Code hook event names. Phase-1 dispatch (PR-FIN-1d.2/1d.3) wires
+ * 7 of the 28 (`Stop`, `SubagentStop`, `SessionStart`, `SessionEnd`,
+ * `UserPromptSubmit`, `Notification`, `PreCompact`); the remaining 21 are
+ * accepted by the schema and reserved for the Phase-2 follow-up.
  */
 export type HookTrigger =
+  // Session lifecycle
+  | 'SessionStart'
+  | 'SessionEnd'
+  | 'Stop'
+  | 'StopFailure'
+  // Prompt lifecycle
+  | 'UserPromptSubmit'
+  | 'UserPromptExpansion'
+  // Tool lifecycle
   | 'PreToolUse'
   | 'PostToolUse'
-  | 'Stop'
-  | 'SubagentStop'
-  | 'UserPromptSubmit'
+  | 'PostToolUseFailure'
+  | 'PostToolBatch'
+  // Permission
+  | 'PermissionRequest'
+  | 'PermissionDenied'
+  // Notification
   | 'Notification'
+  // Subagent / task
+  | 'SubagentStart'
+  | 'SubagentStop'
+  | 'TaskCreated'
+  | 'TaskCompleted'
+  | 'TeammateIdle'
+  // Compaction
   | 'PreCompact'
-  | 'SessionStart'
-  | 'SessionEnd';
+  | 'PostCompact'
+  // Worktree
+  | 'WorktreeCreate'
+  | 'WorktreeRemove'
+  // Workspace
+  | 'FileChanged'
+  | 'CwdChanged'
+  | 'InstructionsLoaded'
+  // Config
+  | 'ConfigChange'
+  // Elicitation
+  | 'Elicitation'
+  | 'ElicitationResult';
 
 /**
  * Discussion configuration for a workflow step.
@@ -126,12 +163,21 @@ export interface WorkflowSettings {
  * Shared fields for every notification channel. Channel-specific routing
  * (Slack channel, Telegram chatId, Discord webhookName) is added per-channel
  * below. Desktop has no routing fields.
+ *
+ * Exported so the notify dispatcher can type its predicate parameter
+ * against the common parent of `SlackChannel | TelegramChannel |
+ * DiscordChannel | DesktopChannel` without duplicating the shape.
  */
-interface ChannelBase {
+export interface ChannelBase {
   readonly enabled?: boolean;
   /** Workflow events this channel fires on. Absent = all; `[]` = none. */
   readonly events?: readonly NotifyEvent[];
-  /** Claude Code hook events. Schema-only in this Pass. */
+  /**
+   * Claude Code hook events this channel fires on. Consumed by
+   * `dispatchHookNotify` in `lib/notify.ts`. Absent = fire on all hook
+   * events; `[]` = fire on none (silent); `[...]` = fire only when the
+   * hook event matches.
+   */
   readonly triggers?: readonly HookTrigger[];
 }
 

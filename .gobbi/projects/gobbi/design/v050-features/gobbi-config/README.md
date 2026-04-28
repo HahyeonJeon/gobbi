@@ -1,6 +1,6 @@
 # gobbi-config — Unified Settings Cascade
 
-Feature description for gobbi's three-level configuration cascade. Read this to understand where settings live at each scope, how levels override one another, the unified `settings.json` shape, and the three-verb CLI surface. This is the design-of-record for Pass 3 (session `dfd4ff66`) updated in PR-FIN-1c (session `c34ea7e6`) for the GitSettings reshape and ProjectsRegistry removal, PR-FIN-1a (session `c34ea7e6`) for the `gobbi config init` verb and session-id resolution hard-error, and PR-FIN-1b (session `c34ea7e6`) for `gobbi config env`, the `gobbi hook` namespace, and `$CLAUDE_ENV_FILE` persistence.
+Feature description for gobbi's three-level configuration cascade. Read this to understand where settings live at each scope, how levels override one another, the unified `settings.json` shape, and the three-verb CLI surface. This is the design-of-record for Pass 3 (session `dfd4ff66`) updated in PR-FIN-1c (session `c34ea7e6`) for the GitSettings reshape and ProjectsRegistry removal, PR-FIN-1a (session `c34ea7e6`) for the `gobbi config init` verb and session-id resolution hard-error, PR-FIN-1b (session `c34ea7e6`) for `gobbi config env`, the `gobbi hook` namespace, and `$CLAUDE_ENV_FILE` persistence, and PR-FIN-1d (session `c34ea7e6`) for the HookTrigger 28-event enum, `dispatchHookNotify`, and `gobbi notify configure`.
 
 ---
 
@@ -47,7 +47,7 @@ The `planning` field name matches the loop name in `deterministic-orchestration.
 **`notify`** — Per-channel dict. Channels: `slack`, `telegram`, `discord`, `desktop`. Each carries:
 - `enabled: boolean`
 - `events: NotifyEvent[]` — gobbi workflow events; absent = all, `[]` = none, `[…]` = exactly those
-- `triggers: HookTrigger[]` — Claude Code hook events (schema-only this Pass; dispatch wiring deferred). The `HookTrigger` enum currently enumerates 9 events; expansion to all 28 is deferred to PR-FIN-1d (alongside notify dispatch wiring).
+- `triggers: HookTrigger[]` — Claude Code hook events; filters which hook events cause the channel to fire. The `HookTrigger` enum enumerates all 28 Claude Code events (shipped in PR-FIN-1d). `HOOK_TRIGGER_ENUM` exported from `lib/settings-validator.ts` is the canonical source for callers that need the list at runtime (e.g., `gobbi notify configure` validation). Phase-1 dispatch (7 events) and `gobbi notify configure` shipped in PR-FIN-1d alongside the enum expansion.
 - Channel-specific routing: `slack.channel`, `telegram.chatId`, `discord.webhookName` (non-secret; null = unset)
 
 **`git`** — PR-FIN-1c flat shape with sub-objects per concern (see `packages/cli/src/lib/settings.ts::GitSettings`):
@@ -83,6 +83,8 @@ Merge rules (from `deepMerge`):
 `events: [...]` → channel fires on exactly the listed events.
 
 The built-in defaults seed `events: []` so channels are silent until the user opts in. Same rule applies to `triggers`.
+
+**Cascade DEFAULTS caveat for `triggers`:** `lib/settings.ts::DEFAULTS` seeds every channel with `triggers: []`. Because `deepMerge` cannot erase a key the overlay omits, the "triggers absent → fire on all events" arm of the filter contract is unreachable through the cascade — the DEFAULTS always supply an explicit `[]`. Real-world channel configs must always supply an explicit `triggers: [...]` list to enable hook-event delivery. The `dispatchHookNotify` helper correctly handles the `undefined`/`[]`/non-empty distinction at the helper layer (direct `triggersMatch(undefined, …)` tests verify the contract), but the "absent" arm is effectively only reachable in unit tests that bypass cascade resolution.
 
 ---
 
@@ -186,6 +188,22 @@ One canonical hook entrypoint per Claude Code hook event. All 28 events are regi
 
 **Independence:** the existing `gobbi workflow init`, `gobbi workflow guard`, etc. commands remain independently invocable. `gobbi hook <event>` orchestrates them but does not replace them — direct `gobbi workflow init --session-id manual123` continues to work for testing.
 
+### `gobbi notify configure --enable <event> | --disable <event> | --status` (PR-FIN-1d)
+
+User-driven management of gobbi's hook entries in `.claude/settings.json`. Three flags, one at a time.
+
+**Trust boundary:** reads and modifies only hook entries whose `command` field starts with `gobbi ` (note trailing space). Entries owned by other tools or written manually are never touched and never appear in `--status` output. Non-gobbi entries are preserved verbatim — the `configure` command does not know their semantics and makes no assumption about them.
+
+**`--enable <event>`** writes a canonical `gobbi hook <kebab-event>` entry for the named event. The entry does NOT include a `matcher` field — users who want a matcher (e.g., `startup|resume|compact` for `SessionStart`) must hand-edit the entry or use the plugin's `hooks.json`. This is a deliberate trust-boundary trade-off: `configure` manages presence, not matcher semantics.
+
+**`--disable <event>`** removes the gobbi-owned entry for the named event. If no gobbi entry exists for the event, exits 0 silently — never creates or modifies the file.
+
+**Idempotency:** `--enable X` twice produces one entry. Detection uses canonical-command equality — non-canonical entries such as `gobbi --flag hook session-end` are not recognized; a canonical entry would be appended alongside. Users who hand-write gobbi entries in non-canonical form should align them before using `--enable`.
+
+**Validation:** `--enable Bogus` is rejected against `HOOK_TRIGGER_ENUM` from `lib/settings-validator.ts` with a clear error listing valid values. Exit 2 on validation error; exit 0 on success.
+
+**Exempt from hook-chain silence rule:** the `runNotify` router silences errors for hook-invoked subcommands; `configure` is user-invoked and propagates exit codes normally. Future contributors adding hook-side `notify` subcommands must not use the `configure` exemption pattern.
+
 ---
 
 ## Session-id resolution + `$CLAUDE_ENV_FILE` (PR-FIN-1b)
@@ -209,13 +227,15 @@ Claude Code fires SessionStart
   → 2. set process.env.CLAUDE_SESSION_ID = session_id (in-process, for subsequent steps)
   → 3. invoke gobbi config env → writes CLAUDE_* lines to $CLAUDE_ENV_FILE
   → 4. invoke gobbi workflow init → reads CLAUDE_SESSION_ID from env; opens session DB
-  → 5. TODO(PR-FIN-1d) — dispatch notify if SessionStart in channel triggers
+  → 5. dispatch notify if SessionStart in channel triggers (PR-FIN-1d)
   → 6. exit 0 (hooks must not block Claude Code)
 Claude Code sources $CLAUDE_ENV_FILE → all subsequent commands inherit CLAUDE_*
 /gobbi skill calls: gobbi config get workflow --level session  (env var already in env)
 ```
 
 **`/gobbi` skill (post-PR-FIN-1b):** The "Discovering the real session ID" section has been removed from SKILL.md. The skill calls `gobbi config get …` directly — `$CLAUDE_SESSION_ID` is already in env from `$CLAUDE_ENV_FILE`. The `cli-vs-skill-session-id` gotcha has been retired.
+
+**`$CLAUDE_ENV_FILE` regression (Claude Code 2.1.121):** In Claude Code 2.1.121 and earlier, `$CLAUDE_ENV_FILE` is empty in the hook subprocess — the documented env-file persistence mechanism does not function. Upstream issue https://github.com/anthropics/claude-code/issues/15840 was closed `not_planned`. PR-FIN-1d confirms that hook payload-stdin delivery is robust to this regression (`payload.session_id` arrives via stdin independently of `$CLAUDE_ENV_FILE`). The gobbi-side workaround for skill-side session-id discovery is tracked in issue #220. See gotcha `claude-env-file-not-set-2.1.121.md`.
 
 ---
 

@@ -35,16 +35,54 @@ const NOTIFY_EVENT_ENUM = [
   'error',
 ] as const;
 
-const HOOK_TRIGGER_ENUM = [
-  'PreToolUse',
-  'PostToolUse',
-  'Stop',
-  'SubagentStop',
-  'UserPromptSubmit',
-  'Notification',
-  'PreCompact',
+// Mirrors `HookTrigger` in `settings.ts`. Listed in the same target-state
+// §4.4 canonical order so the AJV schema diff matches a manual scan of the
+// TypeScript union — drift surfaces as a `JSONSchemaType<Settings>` error.
+//
+// Exported so user-facing commands (e.g., `gobbi notify configure --enable
+// <event>`) can validate event-name inputs against the same canonical list
+// the AJV schema enforces. Iteration order is the canonical enum order
+// shared with `HookTrigger` in `settings.ts`.
+export const HOOK_TRIGGER_ENUM = [
+  // Session lifecycle
   'SessionStart',
   'SessionEnd',
+  'Stop',
+  'StopFailure',
+  // Prompt lifecycle
+  'UserPromptSubmit',
+  'UserPromptExpansion',
+  // Tool lifecycle
+  'PreToolUse',
+  'PostToolUse',
+  'PostToolUseFailure',
+  'PostToolBatch',
+  // Permission
+  'PermissionRequest',
+  'PermissionDenied',
+  // Notification
+  'Notification',
+  // Subagent / task
+  'SubagentStart',
+  'SubagentStop',
+  'TaskCreated',
+  'TaskCompleted',
+  'TeammateIdle',
+  // Compaction
+  'PreCompact',
+  'PostCompact',
+  // Worktree
+  'WorktreeCreate',
+  'WorktreeRemove',
+  // Workspace
+  'FileChanged',
+  'CwdChanged',
+  'InstructionsLoaded',
+  // Config
+  'ConfigChange',
+  // Elicitation
+  'Elicitation',
+  'ElicitationResult',
 ] as const;
 
 const AGENT_MODEL_ENUM = ['opus', 'sonnet', 'haiku', 'auto'] as const;

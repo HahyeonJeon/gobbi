@@ -18,13 +18,22 @@
  *   3. Channels fire concurrently via `Promise.allSettled` — a failure in one
  *      channel never blocks others and never propagates to the caller.
  *
- * ## `triggers` is schema-only this Pass
+ * ## Two dispatch entry points
  *
- * `notify.<channel>.triggers` (a `readonly HookTrigger[]`) is reserved in the
- * schema for future Claude Code hook-registration wiring. This dispatcher
- * does not read it — the hook-registration side wires triggers separately,
- * once that Pass lands. Leaving the field unread today means opting into a
- * trigger does not silently short-circuit the `events` filter.
+ *   - {@link sendNotifications}`(title, message, event, options)` —
+ *     workflow-internal callers; filters by `notify.<channel>.events`
+ *     ({@link NotifyEvent}).
+ *   - {@link dispatchHookNotify}`(payload, eventName, options)` — hook
+ *     callers; filters by `notify.<channel>.triggers`
+ *     ({@link HookTrigger}). Phase 1 of PR-FIN-1d wires rich messages for
+ *     7 events (`Stop`, `SubagentStop`, `SessionStart`, `SessionEnd`,
+ *     `UserPromptSubmit`, `Notification`, `PreCompact`); the remaining 21
+ *     are silently skipped pending the Phase-2 follow-up.
+ *
+ * The two filters are independent — `dispatchHookNotify` does not consult
+ * `events`, and `sendNotifications` does not consult `triggers`. Both
+ * delegate per-channel credential resolution and concurrent dispatch to
+ * the shared {@link dispatchToChannels} helper.
  *
  * ## Non-secret routing
  *
@@ -50,7 +59,12 @@ import { mkdir, appendFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { resolveSettings } from './settings-io.js';
-import type { NotifyEvent, NotifySettings } from './settings.js';
+import type {
+  ChannelBase,
+  HookTrigger,
+  NotifyEvent,
+  NotifySettings,
+} from './settings.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -82,6 +96,30 @@ export function channelMatchesEvent(
   if (channelEvents === undefined) return true;
   if (channelEvents.length === 0) return false;
   return channelEvents.includes(event);
+}
+
+/**
+ * Mirror of {@link channelMatchesEvent} for the Claude Code hook side.
+ *
+ * Locked Round-3 §F4 contract (the `enabled === true` precondition is
+ * applied by the caller; this helper only decides the `triggers` arm):
+ *
+ *   - `triggers === undefined` → fire on all hook events
+ *   - `triggers.length === 0`  → silent (explicit empty list)
+ *   - `triggers.includes(eventName)` → fire
+ *   - otherwise → silent
+ *
+ * Independent of {@link channelMatchesEvent} — `dispatchHookNotify` does
+ * not consult the `events` filter and `sendNotifications` does not consult
+ * `triggers`.
+ */
+export function triggersMatch(
+  channelTriggers: readonly HookTrigger[] | undefined,
+  eventName: HookTrigger,
+): boolean {
+  if (channelTriggers === undefined) return true;
+  if (channelTriggers.length === 0) return false;
+  return channelTriggers.includes(eventName);
 }
 
 // ---------------------------------------------------------------------------
@@ -258,6 +296,101 @@ async function sendDesktop(title: string, message: string): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// Per-channel dispatch
+// ---------------------------------------------------------------------------
+
+/**
+ * Iterate the four channels in fixed order (slack → telegram → discord →
+ * desktop), apply the caller-supplied `predicate` to each, and dispatch the
+ * channel-specific send when the predicate returns `true` AND the
+ * channel-specific credentials / routing are present.
+ *
+ * The predicate owns filter semantics — `enabled === true`, the inverted
+ * `events` filter, the `triggers` filter, or any composition the caller
+ * needs. This helper is indifferent to which gate the predicate models;
+ * its job is to apply the per-channel credential resolution and push to
+ * the concurrent task list.
+ *
+ * Channel-specific behavior is unchanged from the original inline form:
+ *
+ *   - **slack** — token from `SLACK_BOT_TOKEN`; destination from
+ *     `notify.slack.channel` if a non-empty string, else `SLACK_USER_ID`
+ *     env. Skipped when token or destination is absent.
+ *   - **telegram** — token from `TELEGRAM_BOT_TOKEN`; chat id from
+ *     `notify.telegram.chatId` if a non-empty string, else
+ *     `TELEGRAM_CHAT_ID` env. Skipped when token or chat id is absent.
+ *   - **discord** — webhook URL from `DISCORD_WEBHOOK_URL`. Skipped when
+ *     the URL is absent. `webhookName` is recorded for future named-webhook
+ *     routing but is not used to select a target today.
+ *   - **desktop** — no credential gate; only the predicate.
+ *
+ * All four channels fire concurrently via `Promise.allSettled` so that a
+ * failure in one never blocks the others. Never throws — errors land in
+ * `~/.claude/notification-failures.log` via the per-channel send helpers.
+ *
+ * @internal — exported for tests; production callers use `sendNotifications`.
+ */
+export async function dispatchToChannels(
+  title: string,
+  message: string,
+  notify: NotifySettings | undefined,
+  predicate: (channel: ChannelBase) => boolean,
+): Promise<void> {
+  const tasks: Promise<void>[] = [];
+
+  // ---- slack ----
+  const slack = notify?.slack;
+  if (slack !== undefined && predicate(slack)) {
+    const token = process.env['SLACK_BOT_TOKEN'];
+    // Prefer config routing; fall back to legacy env var. `null` in config
+    // is a terminate-delegation leaf — treated as "no destination", which
+    // silences the channel until the operator sets one.
+    const destination =
+      typeof slack.channel === 'string' && slack.channel !== ''
+        ? slack.channel
+        : process.env['SLACK_USER_ID'];
+    if (token !== undefined && destination !== undefined && destination !== '') {
+      tasks.push(sendSlack(title, message, token, destination));
+    }
+  }
+
+  // ---- telegram ----
+  const telegram = notify?.telegram;
+  if (telegram !== undefined && predicate(telegram)) {
+    const token = process.env['TELEGRAM_BOT_TOKEN'];
+    const chatId =
+      typeof telegram.chatId === 'string' && telegram.chatId !== ''
+        ? telegram.chatId
+        : process.env['TELEGRAM_CHAT_ID'];
+    if (token !== undefined && chatId !== undefined && chatId !== '') {
+      tasks.push(sendTelegram(title, message, token, chatId));
+    }
+  }
+
+  // ---- discord ----
+  // `webhookName` is persisted for future named-webhook routing; today we
+  // only support the single env-var webhook URL, so the field is read for
+  // schema completeness but not used to select a target.
+  const discord = notify?.discord;
+  if (discord !== undefined && predicate(discord)) {
+    const webhookUrl = process.env['DISCORD_WEBHOOK_URL'];
+    if (webhookUrl !== undefined && webhookUrl !== '') {
+      tasks.push(sendDiscord(title, message, webhookUrl));
+    }
+  }
+
+  // ---- desktop ----
+  // No credential/env gate — desktop only needs the local notifier binary.
+  // The predicate is the sole authorization.
+  const desktop = notify?.desktop;
+  if (desktop !== undefined && predicate(desktop)) {
+    tasks.push(sendDesktop(title, message));
+  }
+
+  await Promise.allSettled(tasks);
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
@@ -313,56 +446,233 @@ export async function sendNotifications(
     return;
   }
 
-  const tasks: Promise<void>[] = [];
+  await dispatchToChannels(
+    title,
+    message,
+    notify,
+    (channel) => channel.enabled === true && channelMatchesEvent(channel.events, event),
+  );
+}
 
-  // ---- slack ----
-  const slack = notify?.slack;
-  if (slack?.enabled === true && channelMatchesEvent(slack.events, event)) {
-    const token = process.env['SLACK_BOT_TOKEN'];
-    // Prefer config routing; fall back to legacy env var. `null` in config
-    // is a terminate-delegation leaf — treated as "no destination", which
-    // silences the channel until the operator sets one.
-    const destination =
-      typeof slack.channel === 'string' && slack.channel !== ''
-        ? slack.channel
-        : process.env['SLACK_USER_ID'];
-    if (token !== undefined && destination !== undefined && destination !== '') {
-      tasks.push(sendSlack(title, message, token, destination));
+// ---------------------------------------------------------------------------
+// Hook-side dispatch — dispatchHookNotify
+// ---------------------------------------------------------------------------
+
+/**
+ * Fields the Phase-1 message templates may consult on the hook stdin
+ * payload. All optional — `dispatchHookNotify` defaults missing fields to
+ * `'unknown'` rather than throwing. Mirrors the typed payload shapes in
+ * `commands/notify.ts` (`AttentionPayload`, `CompletionPayload`,
+ * `SessionPayload`, `SubagentPayload`) but unioned into a single shape so
+ * the renderer reads any field it needs without re-narrowing.
+ */
+interface HookPayloadFields {
+  readonly sessionId: string;
+  readonly cwd: string;
+  readonly agentType: string;
+  readonly notificationType: string;
+  readonly source: string;
+  readonly stopHookActive: boolean | string | undefined;
+}
+
+function projectName(cwd: string): string {
+  // Mirror `commands/notify.ts::projectName` — basename of cwd or 'unknown'.
+  if (cwd === '' || cwd === 'unknown') return 'unknown';
+  const trimmed = cwd.replace(/[/\\]+$/, '');
+  const idx = Math.max(trimmed.lastIndexOf('/'), trimmed.lastIndexOf('\\'));
+  return idx === -1 ? trimmed : trimmed.slice(idx + 1);
+}
+
+function sessionPrefix(sessionId: string): string {
+  return sessionId.slice(0, 8);
+}
+
+/**
+ * Defensively extract the fields Phase-1 message templates may consult from
+ * an `unknown` hook payload. Each field defaults to `'unknown'` if missing
+ * or wrongly typed; `stopHookActive` keeps its possibly-string shape because
+ * the loop guard distinguishes `true` from `'true'`.
+ */
+function extractPayloadFields(payload: unknown): HookPayloadFields {
+  const obj: Record<string, unknown> = typeof payload === 'object' && payload !== null
+    ? (payload as Record<string, unknown>)
+    : {};
+
+  const sessionIdRaw = obj['session_id'];
+  const cwdRaw = obj['cwd'];
+  const agentTypeRaw = obj['agent_type'];
+  const notificationTypeRaw = obj['notification_type'];
+  const sourceRaw = obj['source'];
+  const stopHookActiveRaw = obj['stop_hook_active'];
+
+  const fields: HookPayloadFields = {
+    sessionId: typeof sessionIdRaw === 'string' && sessionIdRaw !== '' ? sessionIdRaw : 'unknown',
+    cwd: typeof cwdRaw === 'string' && cwdRaw !== '' ? cwdRaw : 'unknown',
+    agentType: typeof agentTypeRaw === 'string' && agentTypeRaw !== '' ? agentTypeRaw : 'unknown',
+    notificationType:
+      typeof notificationTypeRaw === 'string' && notificationTypeRaw !== ''
+        ? notificationTypeRaw
+        : 'unknown',
+    source: typeof sourceRaw === 'string' && sourceRaw !== '' ? sourceRaw : 'unknown',
+    stopHookActive:
+      typeof stopHookActiveRaw === 'boolean' || typeof stopHookActiveRaw === 'string'
+        ? stopHookActiveRaw
+        : undefined,
+  };
+  return fields;
+}
+
+/**
+ * Render a Phase-1 hook event into a `(title, message)` pair, or `null`
+ * when no template applies (Phase-2 events return `null`; the loop guard
+ * for `Stop` returns `null` when `stop_hook_active` is truthy).
+ */
+function renderHookMessage(
+  eventName: HookTrigger,
+  fields: HookPayloadFields,
+): { readonly title: string; readonly message: string } | null {
+  const project = projectName(fields.cwd);
+  const prefix = sessionPrefix(fields.sessionId);
+
+  switch (eventName) {
+    case 'Stop': {
+      // CRITICAL: loop-guard. `stop_hook_active` arrives as either boolean
+      // `true` or the string `'true'` depending on hook serialiser; mirror
+      // `commands/notify.ts::runNotifyCompletion`.
+      const active = fields.stopHookActive;
+      if (active === true || active === 'true') return null;
+      return {
+        title: 'Task Complete',
+        message: `Session \`${prefix}\` finished in ${project}.`,
+      };
     }
-  }
-
-  // ---- telegram ----
-  const telegram = notify?.telegram;
-  if (telegram?.enabled === true && channelMatchesEvent(telegram.events, event)) {
-    const token = process.env['TELEGRAM_BOT_TOKEN'];
-    const chatId =
-      typeof telegram.chatId === 'string' && telegram.chatId !== ''
-        ? telegram.chatId
-        : process.env['TELEGRAM_CHAT_ID'];
-    if (token !== undefined && chatId !== undefined && chatId !== '') {
-      tasks.push(sendTelegram(title, message, token, chatId));
+    case 'SubagentStop':
+      return {
+        title: 'Subagent Done',
+        message: `Subagent (${fields.agentType}) finished in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'SessionStart':
+      return {
+        title: 'Session Started',
+        message: `Session started (${fields.source}) in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'SessionEnd':
+      return {
+        title: 'Session Ended',
+        message: `Session ended in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'UserPromptSubmit':
+      return {
+        title: 'Prompt Submitted',
+        message: `User prompt in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'Notification': {
+      // Mirror commands/notify.ts:188-224 — switch on notification_type.
+      let body: string;
+      switch (fields.notificationType) {
+        case 'permission_prompt':
+          body = `Waiting for permission approval in ${project}.`;
+          break;
+        case 'idle_prompt':
+          body = `Session idle — waiting for your input in ${project}.`;
+          break;
+        case 'elicitation_dialog':
+          body = `MCP server needs your input in ${project}.`;
+          break;
+        default:
+          body = `Needs attention in ${project} (${fields.notificationType}).`;
+          break;
+      }
+      return {
+        title: 'Attention Needed',
+        message: `${body} Session \`${prefix}\`.`,
+      };
     }
+    case 'PreCompact':
+      return {
+        title: 'Compacting',
+        message: `Session \`${prefix}\` compacting in ${project}.`,
+      };
+    // Phase-2 events: no template wired in this Pass.
+    // TODO(PR-FIN-1d-phase-2 #219): rich message templates
+    //   for the remaining 21 hook events.
+    default:
+      return null;
   }
+}
 
-  // ---- discord ----
-  // `webhookName` is persisted for future named-webhook routing; today we
-  // only support the single env-var webhook URL, so the field is read for
-  // schema completeness but not used to select a target.
-  const discord = notify?.discord;
-  if (discord?.enabled === true && channelMatchesEvent(discord.events, event)) {
-    const webhookUrl = process.env['DISCORD_WEBHOOK_URL'];
-    if (webhookUrl !== undefined && webhookUrl !== '') {
-      tasks.push(sendDiscord(title, message, webhookUrl));
+/**
+ * Dispatch a Claude Code hook event to every channel whose `triggers`
+ * filter matches `eventName`. Independent of {@link sendNotifications} —
+ * this entry point is for hook callers and consults
+ * `notify.<channel>.triggers`, never `events`.
+ *
+ * Filter contract (locked Round-3 §F4):
+ *
+ *   | `enabled` | `triggers` field   | Behavior            |
+ *   |-----------|--------------------|---------------------|
+ *   | `false`   | (any)              | skip                |
+ *   | `true`    | absent             | fire                |
+ *   | `true`    | `[]`               | skip                |
+ *   | `true`    | non-empty list     | fire iff `eventName ∈ triggers` |
+ *
+ * Phase-1 events (7) — `Stop`, `SubagentStop`, `SessionStart`,
+ * `SessionEnd`, `UserPromptSubmit`, `Notification`, `PreCompact` — render
+ * rich message bodies. Phase-2 events (the other 21) return silently
+ * before `dispatchToChannels` is reached; the schema accepts them but no
+ * template is wired in this Pass.
+ *
+ * **Hook contract:** never propagates a non-zero exit. The whole body is
+ * wrapped in a top-level try/catch that swallows every throw silently —
+ * including a thrown `resolveSettings` on malformed `settings.json`. The
+ * caller (a hook handler) already has its own catch boundary and depends
+ * on this function being a no-op on any internal failure.
+ *
+ * @param payload     The hook stdin JSON payload, narrowed defensively.
+ * @param eventName   The {@link HookTrigger} that fired.
+ * @param options     `{ sessionId, projectDir }` — `projectDir` absent
+ *                    causes a silent no-op (no `resolveSettings` call).
+ */
+export async function dispatchHookNotify(
+  payload: unknown,
+  eventName: HookTrigger,
+  options: NotifyOptions,
+): Promise<void> {
+  try {
+    // Mirror sendNotifications: without a repo root the cascade has no
+    // anchor — return silently before touching the cascade.
+    const projectDir = options.projectDir;
+    if (projectDir === undefined) return;
+
+    const fields = extractPayloadFields(payload);
+    const rendered = renderHookMessage(eventName, fields);
+    // Phase-2 events and the Stop-loop guard both return null; both end
+    // the dispatch silently before resolving settings.
+    if (rendered === null) return;
+
+    const sessionId = options.sessionId;
+    let notify: NotifySettings | undefined;
+    try {
+      const resolved = resolveSettings({
+        repoRoot: projectDir,
+        ...(sessionId !== undefined ? { sessionId } : {}),
+      });
+      notify = resolved.notify;
+    } catch {
+      // Malformed settings.json must not crash the hook chain.
+      return;
     }
-  }
 
-  // ---- desktop ----
-  // No credential/env gate — desktop only needs the local notifier binary.
-  // `notify.desktop.enabled === true` is the sole authorization.
-  const desktop = notify?.desktop;
-  if (desktop?.enabled === true && channelMatchesEvent(desktop.events, event)) {
-    tasks.push(sendDesktop(title, message));
+    await dispatchToChannels(
+      rendered.title,
+      rendered.message,
+      notify,
+      (channel) => channel.enabled === true && triggersMatch(channel.triggers, eventName),
+    );
+  } catch {
+    // Top-level containment — hook contract guarantees a no-op on any
+    // internal failure. The caller (a hook handler) already has its own
+    // try/catch boundary; no stderr write here, since duplicating the
+    // failure log would noise up the hook chain.
   }
-
-  await Promise.allSettled(tasks);
 }
