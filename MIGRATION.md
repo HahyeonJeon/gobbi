@@ -4,6 +4,82 @@ This guide documents breaking changes and upgrade steps for major version bumps.
 
 ---
 
+## PR-FIN-1a: gobbi config init verb + session-id resolution change
+
+### Summary
+
+PR-FIN-1a adds the `gobbi config init` verb and removes the `randomUUID()` fallback from `init.ts::resolveSessionId`. The session-id resolution ladder is now: `--session-id` flag → `$CLAUDE_SESSION_ID` env → exit 2 with remediation hint.
+
+---
+
+### Session directories from prior `randomUUID()` runs
+
+Before PR-FIN-1a, `gobbi workflow init` called without `--session-id` or `$CLAUDE_SESSION_ID` silently created session directories with a random UUID name (e.g., `.gobbi/projects/<name>/sessions/3f7a1b2c-.../`). These directories are unreferenced — no subsequent command knows their names.
+
+No automated cleanup is provided. Solo-user trust: manual removal is acceptable and encouraged:
+
+```bash
+# List session dirs under a project (all are legitimate if they match a real session id)
+ls .gobbi/projects/<project-name>/sessions/
+
+# Remove a specific orphan UUID session dir
+rm -rf .gobbi/projects/<project-name>/sessions/<random-uuid>/
+
+# Remove all session dirs older than 30 days (review the list before deleting)
+find .gobbi/projects/*/sessions -maxdepth 1 -mindepth 1 -type d -mtime +30
+```
+
+---
+
+### `gobbi config init` usage
+
+The new verb scaffolds a minimum-valid `{schemaVersion: 1}` seed at the target level. It is the explicit alternative to the implicit "first `ensureSettingsCascade` run seeds the workspace file" behavior.
+
+```bash
+# Workspace level (default) — writes .gobbi/settings.json
+gobbi config init
+
+# Project level — writes .gobbi/projects/<basename>/settings.json
+gobbi config init --level project
+
+# Project level with explicit name
+gobbi config init --level project --project myproject
+
+# Session level — requires session id
+gobbi config init --level session --session-id <id>
+
+# Overwrite an existing file (adds stderr WARN line)
+gobbi config init --force
+gobbi config init --level project --force
+```
+
+The seed is `{schemaVersion: 1}` only — all other defaults are applied at resolve time by `resolveSettings`. Existing content is NOT merged into the seed; `--force` replaces the file completely.
+
+---
+
+### Session-id resolution ladder (updated)
+
+| Priority | Source | Behavior |
+|---|---|---|
+| 1 | `--session-id <id>` flag | Use directly; takes priority over env |
+| 2 | `$CLAUDE_SESSION_ID` env | Use directly |
+| 3 | (none) | Exit 2 with remediation hint |
+
+**Before PR-FIN-1a:** step 3 was `randomUUID()` — a silent UUID was generated.
+
+**After PR-FIN-1a:** step 3 is a hard error with the message:
+
+```
+gobbi: cannot resolve session id.
+  Tried: --session-id flag, CLAUDE_SESSION_ID env.
+  Pass --session-id explicitly or set CLAUDE_SESSION_ID.
+  (SessionStart hook integration arrives in PR-FIN-1b.)
+```
+
+For commands that accept `--level session` (e.g., `gobbi config get/set/init`), the error also includes: `(outside a session, use --level workspace or --level project to bypass)`. Closes #182.
+
+---
+
 ## PR-FIN-1c: GitSettings reshape + ProjectsRegistry removal
 
 ### Summary

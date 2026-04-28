@@ -22,6 +22,8 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup 
 2. **Fallback:** if `$CODEX_COMPANION_SESSION_ID` is empty, list `~/.claude/projects/{slug}/*.jsonl` and take the most recently modified file. The filename minus `.jsonl` is the session ID. The slug is derived from the project path (e.g., `-playinganalytics-git-gobbi` for `/playinganalytics/git/gobbi`).
 3. **Do NOT generate a `manual-*` fallback.** A fake session ID writes orphan entries under `.gobbi/projects/<name>/sessions/manual-*/` that need manual cleanup.
 
+**PR-FIN-1a change:** `gobbi workflow init` no longer falls back to `randomUUID()` when session id is missing. If `$CLAUDE_SESSION_ID` is absent and `--session-id` is not passed, the command exits 2 with a remediation hint. Agents MUST resolve the session ID (via one of the two discovery steps above) before calling `gobbi workflow init` or the command will fail.
+
 Once discovered, store the ID in a local variable (`DISCOVERED`). Pass it to every CLI call via inline env assignment or the explicit flag — the CLI is plugin-neutral and reads only `$CLAUDE_SESSION_ID` and `--session-id`:
 
 ```
@@ -113,6 +115,16 @@ CLAUDE_SESSION_ID=$DISCOVERED gobbi config set notify.slack.enabled true
 ```
 
 Discussion modes are NOT asked. Defaults apply: `workflow.ideation.discuss.mode` = `user`, `workflow.planning.discuss.mode` = `user`, `workflow.execution.discuss.mode` = `agent`. Users override these manually via `gobbi config set` if they want different behavior.
+
+For explicit one-time scaffolding (e.g., first setup in a fresh repo before running `gobbi workflow init`), `gobbi config init` is also available:
+
+```
+gobbi config init                            # workspace seed — .gobbi/settings.json
+gobbi config init --level project            # project seed — .gobbi/projects/<basename>/settings.json
+gobbi config init --level session --session-id $DISCOVERED   # session seed
+```
+
+Refuses without `--force` if the file already exists. Seed is `{schemaVersion: 1}` only.
 
 **SIXTH — project context detection.** This runs automatically at session start without asking. Load [project-setup.md](project-setup.md) to execute detection.
 

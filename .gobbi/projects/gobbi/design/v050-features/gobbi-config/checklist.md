@@ -202,12 +202,75 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ---
 
+## CFG-19 — `gobbi config init --level workspace` (PR-FIN-1a)
+
+- [EP] `gobbi config init` (no `--level`) writes `{schemaVersion: 1}` to `.gobbi/settings.json`; exit 0; stderr empty.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-19'`
+- [EP] `gobbi config init --level workspace` with existing file: exit 2; stderr contains `settings.json already exists at` and `--force`; file not modified.
+  - Verify: CFG-19c test asserts exit 2 and file content unchanged
+- [EP] `gobbi config init --level workspace --force` with existing file: exit 0; file overwritten with `{schemaVersion: 1}`.
+  - Verify: CFG-19d test asserts overwrite and minimum-valid content
+- [BVA] Seed is exactly `{schemaVersion: 1}` — no other keys written.
+  - Verify: CFG-19a test asserts `toEqual({ schemaVersion: 1 })`
+
+---
+
+## CFG-20 — `gobbi config init --level project` (PR-FIN-1a)
+
+- [EP] `gobbi config init --level project --project foo` creates `.gobbi/projects/foo/settings.json` with `{schemaVersion: 1}`; exit 0; stderr empty.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-20'`
+- [EP] Without `--project` flag, project name falls back to `basename(repoRoot)`.
+  - Verify: CFG-20b test asserts file exists at `.gobbi/projects/<basename>/settings.json`
+- [EP] Existing project file without `--force`: exit 2; stderr contains `--force`; file not modified.
+  - Verify: CFG-20c test asserts exit 2 and file unchanged
+- [ST] `--project` flag takes priority over `basename(repoRoot)` — consistent with `runSet` resolution.
+  - Verify: CFG-20a and CFG-20b together confirm both branches
+
+---
+
+## CFG-21 — `gobbi config init --level session` (PR-FIN-1a)
+
+- [EP] `--session-id sess-21` seeds `.gobbi/projects/<basename>/sessions/sess-21/settings.json`; exit 0; stderr empty.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-21'`
+- [EP] `$CLAUDE_SESSION_ID=env-sess-21` (no flag) seeds the env-supplied path; exit 0.
+  - Verify: CFG-21b test confirms env-based session id
+- [EP] Neither flag nor env: exit 2; stderr contains `requires CLAUDE_SESSION_ID env or --session-id` and `use --level workspace or --level project to bypass`.
+  - Verify: CFG-21c test asserts exit 2 and both recovery hint fragments
+- [EP] `--force` with existing session file: exit 0; file overwritten with minimum-valid seed.
+  - Verify: CFG-21d test asserts `{schemaVersion: 1}` after overwrite
+- [DT] Session-id resolution: `--session-id` flag → `$CLAUDE_SESSION_ID` env → exit 2. Flag takes priority when both present.
+  - Verify: CFG-21a and CFG-21b confirm the two happy-path branches; CFG-21c confirms the error branch
+
+---
+
+## CFG-22 — `--force` WARN on overwrite (PR-FIN-1a)
+
+- [EP] `--force` on existing file emits stderr line containing `WARN`, `overwriting existing settings.json`, the full file path, and `--force`.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-22'`
+- [EP] `--force` on absent file is silent — no WARN emitted; stderr is empty string.
+  - Verify: CFG-22b test asserts `captured.stderr === ''`
+- [BVA] WARN fires ONLY when the file existed before the overwrite — not on fresh creates.
+  - Verify: CFG-22a (overwrite) and CFG-22b (fresh) distinguish the WARN condition
+
+---
+
+## CFG-23 — Fresh-setup ordering invariant (#185 lock) (PR-FIN-1a)
+
+- [ST] Pre-init `config set --level session` + `workflow init` land under the same `.gobbi/projects/<basename>/sessions/<id>/` slot; `config get` returns the pre-init value after `workflow init`.
+  - Verify: `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts -t 'CFG-23'`
+- [ST] `metadata.projectName` in the session directory equals `basename(repoRoot)` — confirming `workflow init` resolved the same project as `config set`.
+  - Verify: CFG-23 test asserts `meta.projectName === basename(repo)`
+- [EP] `ensureSettingsCascade` called by `workflow init` does NOT overwrite a pre-existing session file — the pre-init value survives.
+  - Verify: CFG-23 final step asserts `workflow.ideation.evaluate.mode === 'always'` after `workflow init`
+
+---
+
 ## Verification procedure
 
-1. `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts` — exercises CFG-1 through CFG-17
+1. `bun test packages/cli/src/__tests__/features/gobbi-config.test.ts` — exercises CFG-1 through CFG-23
 2. `bun test packages/cli/src/__tests__/features/q2-evalconfig-e2e.test.ts` — exercises CFG-15 (4×3 matrix)
 3. `bun test packages/cli/src/__tests__/` — exercises CFG-18 (project list)
 4. For structural items, use the grep hints in each section to confirm cited code patterns exist
-5. `[GAP]` items represent aspirational behaviour — no items are GAP in Pass 3 or PR-FIN-1c
+5. `[GAP]` items represent aspirational behaviour — no items are GAP in Pass 3, PR-FIN-1c, or PR-FIN-1a
 
 See `scenarios.md` for full Given/When/Then bodies and `review.md` for DRIFT/NOTE/GAP resolutions.
