@@ -2,12 +2,11 @@
  * Unified `settings.json` schema — the single TypeScript shape for all three
  * settings levels (workspace / project / session) plus the built-in defaults.
  *
- * Pass 3 finalization collapsed the historical split (T1 user-settings JSON +
- * T2 project-config JSON + T3 SQLite session rows + provenance) into a
- * single unified shape. Every level reads and writes the same interface;
- * `settings-io.ts::resolveSettings` composes them with last-wins semantics
- * (session > project > workspace > default). Unknown keys fail validation
- * at write time — see `settings-validator.ts`.
+ * The unified three-level cascade: workspace, project, session. Each level
+ * uses the same `Settings` shape; resolution folds session over project
+ * over workspace via `deepMerge` (see `settings-io.ts::resolveSettings`)
+ * with last-wins semantics (session > project > workspace > default).
+ * Unknown keys fail validation at write time — see `settings-validator.ts`.
  *
  * ## Module boundary
  *

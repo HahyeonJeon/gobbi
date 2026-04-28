@@ -237,8 +237,9 @@ describe('runConfig top-level dispatch', () => {
       await runConfig([]);
     });
     expect(captured.stdout).toContain('Usage: gobbi config <verb> [options]');
-    expect(captured.stdout).toContain('get <key>');
-    expect(captured.stdout).toContain('set <key> <value>');
+    expect(captured.stdout).toContain('get');
+    expect(captured.stdout).toContain('set');
+    expect(captured.stdout).toContain('init');
     expect(captured.stderr).toBe('');
     expect(captured.exitCode).toBeNull();
   });

@@ -353,4 +353,138 @@ Evidence:
 
 ---
 
+---
+
+## CLI — init (PR-FIN-1a)
+
+### CFG-19 — `gobbi config init --level workspace` seeds + refuses without `--force`
+
+**Given** no `.gobbi/settings.json` exists
+**When** `gobbi config init` runs (default level is `workspace`)
+**Then** `.gobbi/settings.json` exists with content `{schemaVersion: 1}` and exit code is `0`
+And stderr is empty
+
+**Given** `.gobbi/settings.json` already exists with any content
+**When** `gobbi config init --level workspace` runs (no `--force`)
+**Then** exit code is `2` and stderr contains `settings.json already exists at` and `--force`
+And the existing file is not modified
+
+**Given** `.gobbi/settings.json` already exists
+**When** `gobbi config init --level workspace --force` runs
+**Then** exit code is `0` and `.gobbi/settings.json` content is `{schemaVersion: 1}` (minimum-valid seed)
+And the prior content is overwritten
+
+State trace:
+- `runInit` resolves level to `workspace`; calls `writeSettingsAtLevel` with seed `{schemaVersion: 1}`
+- File-existence check fires before write: if exists and no `--force` → stderr diagnostic + exit 2
+- `--force` path calls `writeSettingsAtLevel` unconditionally after emitting the WARN line
+
+Evidence:
+- `packages/cli/src/commands/config.ts` — `runInit` verb, refuse-without-force branch
+- `packages/cli/src/__tests__/features/gobbi-config.test.ts` — `describe('CFG-19')`
+
+---
+
+### CFG-20 — `gobbi config init --level project` resolves project via `--project` flag → `basename(repoRoot)`
+
+**Given** no `.gobbi/projects/foo/settings.json` exists
+**When** `gobbi config init --level project --project foo` runs
+**Then** `.gobbi/projects/foo/settings.json` exists with content `{schemaVersion: 1}` and exit code is `0`
+And stderr is empty
+
+**Given** no `--project` flag is supplied
+**When** `gobbi config init --level project` runs
+**Then** project name resolves to `basename(repoRoot)` and `.gobbi/projects/<basename>/settings.json` is created
+
+**Given** `.gobbi/projects/foo/settings.json` already exists
+**When** `gobbi config init --level project --project foo` runs (no `--force`)
+**Then** exit code is `2`, stderr contains `--force`, and the existing file is not modified
+
+State trace:
+- Project-name resolution: `--project <name>` flag → `basename(repoRoot)` — same ladder as `runSet`
+- `writeSettingsAtLevel` creates intermediate directories if absent
+
+Evidence:
+- `packages/cli/src/commands/config.ts` — `runInit`, project resolution
+- `packages/cli/src/__tests__/features/gobbi-config.test.ts` — `describe('CFG-20')`
+
+---
+
+### CFG-21 — `gobbi config init --level session` requires `--session-id` flag or `$CLAUDE_SESSION_ID` env
+
+**Given** `--session-id sess-21` flag is provided
+**When** `gobbi config init --level session --session-id sess-21` runs
+**Then** `.gobbi/projects/<basename>/sessions/sess-21/settings.json` exists with `{schemaVersion: 1}` and exit code is `0`
+And stderr is empty
+
+**Given** no `--session-id` flag but `$CLAUDE_SESSION_ID=env-sess-21` is set
+**When** `gobbi config init --level session` runs
+**Then** `.gobbi/projects/<basename>/sessions/env-sess-21/settings.json` is created and exit code is `0`
+
+**Given** neither `--session-id` flag nor `$CLAUDE_SESSION_ID` env is present
+**When** `gobbi config init --level session` runs
+**Then** exit code is `2` and stderr contains `requires CLAUDE_SESSION_ID env or --session-id`
+And stderr contains `use --level workspace or --level project to bypass`
+
+**Given** a session settings file already exists
+**When** `gobbi config init --level session --session-id sess-force --force` runs
+**Then** exit code is `0` and the file is overwritten with `{schemaVersion: 1}`
+
+State trace:
+- Session-id resolution: `--session-id` flag → `$CLAUDE_SESSION_ID` env → exit 2 with recovery hint
+- Recovery hint text mirrors the hint added to `runGet`/`runSet` by #182
+
+Evidence:
+- `packages/cli/src/commands/config.ts` — `runInit`, session-id resolution branch
+- `packages/cli/src/__tests__/features/gobbi-config.test.ts` — `describe('CFG-21')`
+
+---
+
+### CFG-22 — `--force` on existing file emits stderr WARN line; `--force` on absent file is silent
+
+**Given** `.gobbi/settings.json` already exists
+**When** `gobbi config init --level workspace --force` runs
+**Then** exit code is `0` and stderr contains `WARN` and `overwriting existing settings.json`
+And stderr contains the full path of the overwritten file and `--force`
+
+**Given** `.gobbi/settings.json` does not exist
+**When** `gobbi config init --level workspace --force` runs
+**Then** exit code is `0` and stderr is empty (no WARN when nothing was overwritten)
+And `.gobbi/settings.json` is created
+
+State trace:
+- `runInit` checks existence before writing: if file exists + `--force` → emit WARN to `process.stderr`, then write
+- If file is absent + `--force` → no WARN, just write
+
+Evidence:
+- `packages/cli/src/commands/config.ts` — `runInit` WARN branch
+- `packages/cli/src/__tests__/features/gobbi-config.test.ts` — `describe('CFG-22')`
+
+---
+
+### CFG-23 — Fresh-setup `config set --level session` + `workflow init` ordering invariant (#185 lock)
+
+**Given** a fresh repo with no `.gobbi/` directory and `$CLAUDE_SESSION_ID=sess1`
+**When** `gobbi config set workflow.ideation.evaluate.mode always --level session --session-id sess1` runs
+**Then** `.gobbi/projects/<basename>/sessions/sess1/settings.json` exists with the written value
+And exit code is `0`
+
+**When** `gobbi workflow init --session-id sess1` subsequently runs
+**Then** exit code is `0` and `metadata.projectName` in `.gobbi/projects/<basename>/sessions/sess1/metadata.json` equals `basename(repoRoot)`
+
+**When** `gobbi config get workflow.ideation.evaluate.mode --level session --session-id sess1` runs
+**Then** output is `"always"` — the value written before `workflow init` is preserved
+
+State trace:
+- Both `config set` and `workflow init` resolve project via `basename(repoRoot)` (post-PR-FIN-1c — no `projects.active` to diverge on)
+- `ensureSettingsCascade` called by `workflow init` does NOT overwrite the pre-existing session file
+- The ordering invariant holds because both commands land under the same `.gobbi/projects/<basename>/sessions/<id>/` slot
+
+Evidence:
+- `packages/cli/src/lib/settings-io.ts` — `writeSettingsAtLevel` project resolution
+- `packages/cli/src/commands/workflow/init.ts` — `resolveProjectNameForInit`
+- `packages/cli/src/__tests__/features/gobbi-config.test.ts` — `describe('CFG-23')`
+
+---
+
 See `README.md` for the prose overview. `checklist.md` turns each scenario ID into ISTQB-tagged verifiable items; `review.md` reports Pass-3 DRIFT/NOTE/GAP findings with pinned commit SHAs.

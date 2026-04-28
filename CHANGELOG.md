@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- PR-FIN-1a — `gobbi config init [--level workspace|project|session] [--session-id <id>] [--project <name>] [--force]` verb: scaffolds the minimum-valid `{schemaVersion: 1}` seed at the target level; refuses without `--force` if file exists; `--force` overwrites with a stderr WARN line. (#214)
+- PR-FIN-1a — CFG-19..CFG-23 integration tests: workspace init, project init, session init, `--force` WARN assertion, and fresh-setup ordering invariant (#185 lock). (#214)
+
 ### Changed
+
+- PR-FIN-1a — `init.ts::resolveSessionId` no longer falls back to `randomUUID()`. Resolution ladder: `--session-id` flag → `$CLAUDE_SESSION_ID` env → exit 2 with remediation hint. Pre-PR-FIN-1a sessions created with a random UUID fallback are now orphaned; see `MIGRATION.md` for cleanup guidance. (#214)
+- PR-FIN-1a — `gobbi config get/set/init --level session` error message now includes the recovery hint: `(outside a session, use --level workspace or --level project to bypass)`. Closes #182. (#214)
+- PR-FIN-1a — `GET_USAGE`/`SET_USAGE` help text corrected: `--session-id` flag takes priority over `$CLAUDE_SESSION_ID` env when both are present. (#214)
+- PR-FIN-1a — SKILL.md stale `resolveEvalDecision` note removed (the `'plan'` backward-compat bridge was removed in Pass 3; the note was factually wrong post-PR-FIN-1c). (#214)
+- PR-FIN-1a — `lib/settings.ts` module docstring T1/T3 historical narrative trimmed; current three-level cascade is described instead. (#214)
 
 - PR-FIN-1c — `GitSettings` reshaped: `mode`/`workflow`/`cleanup` sub-objects removed; flat shape with per-concern sub-objects (`baseBranch`, `issue.create`, `worktree.autoRemove`, `branch.autoRemove`, `pr.open`, `pr.draft`). Worktrees always created; PR and issue creation are independent opt-in fields. Cross-field check updated to `pr.open=true` requires `baseBranch !== null`; check exempts DEFAULTS-only case (fresh repos). `ProjectsRegistry` interface and `Settings.projects` field removed; project resolution is `basename(repoRoot)` + `--project` flag. `gobbi project list` runs filesystem scan; `gobbi project switch` removed. T2-v1 upgrader extended to also handle Pass-3-current-shape files in place. Workspace seed simplified to `{schemaVersion: 1}`. Closes #179, #212. (#212)
 

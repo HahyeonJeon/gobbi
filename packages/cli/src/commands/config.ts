@@ -1,10 +1,12 @@
 /**
  * gobbi config — unified settings CLI.
  *
- * Two verbs only (per ideation §5):
+ * Three verbs:
  *
- *   gobbi config get <key> [--level workspace|project|session] [--session-id <id>]
- *   gobbi config set <key> <value> [--level workspace|project|session] [--session-id <id>]
+ *   gobbi config get  <key>         [--level workspace|project|session] [--session-id <id>]
+ *   gobbi config set  <key> <value> [--level workspace|project|session] [--session-id <id>]
+ *   gobbi config init               [--level workspace|project|session] [--session-id <id>]
+ *                                   [--project <name>] [--force]
  *
  * `get` without `--level` returns the cascade-resolved value (see
  * `lib/settings-io.ts::resolveSettings`). `get` with `--level` reads ONLY
@@ -23,22 +25,35 @@
  * against the single AJV validator in `settings-validator.ts`, and atomic-
  * write via `writeSettingsAtLevel`.
  *
+ * `init` writes the minimum-valid seed `{schemaVersion: 1}` to the chosen
+ * level's `settings.json`. Default level is `workspace`. Refuses with
+ * exit 2 when the file already exists; `--force` overwrites with a
+ * stderr WARN line. Validates the seed via the AJV validator before
+ * writing (atomic temp+rename, same pattern as `set`). The cascade
+ * supplies all other defaults at resolve time, so the seed stays
+ * minimum-shape on disk.
+ *
  * Exit codes:
- *   - `0` — success (get: key found + JSON value on stdout; set: written).
+ *   - `0` — success (get: key found + JSON value on stdout; set/init: written).
  *   - `1` — get-only: key not found at the selected level / path. Silent
  *           stdout, no stderr line (matches `jq` / `kubectl get -o
  *           jsonpath` conventions for missing keys).
- *   - `2` — parse, validation, I/O, or invalid-argument error. Diagnostic
- *           line on stderr.
+ *   - `2` — parse, validation, I/O, or invalid-argument error. Also: init
+ *           refuses to overwrite without `--force`. Diagnostic line on
+ *           stderr.
  *
  * Session-id resolution is plugin-neutral per the
  * `cli-vs-skill-session-id` gotcha: the CLI reads `$CLAUDE_SESSION_ID`
  * and accepts `--session-id <id>` explicitly. It does NOT know about
  * `$CODEX_COMPANION_SESSION_ID`; that discovery logic belongs to the
  * `/gobbi` orchestrator skill, which passes the resolved id through.
+ * The `--session-id` flag takes priority over the env var when both are
+ * present — explicit input overrides the ambient env.
  */
 
 import { parseArgs } from 'node:util';
+import { existsSync } from 'node:fs';
+import { basename } from 'node:path';
 
 import { isRecord } from '../lib/guards.js';
 import { getRepoRoot } from '../lib/repo.js';
@@ -49,7 +64,10 @@ import {
 } from '../lib/settings.js';
 import {
   loadSettingsAtLevel,
+  projectSettingsPath,
   resolveSettings,
+  sessionSettingsPath,
+  workspaceSettingsPath,
   writeSettingsAtLevel,
 } from '../lib/settings-io.js';
 import {
@@ -64,28 +82,39 @@ import {
 const USAGE = `Usage: gobbi config <verb> [options]
 
 Verbs:
-  get <key>            Read a dot-path key from the resolved cascade (or a
-                       single level with --level).
-  set <key> <value>    Write a dot-path key at one level (session by
-                       default). Validates the full resulting tree before
-                       atomic write.
+  get  <key>            Read a dot-path key from the resolved cascade (or a
+                        single level with --level).
+  set  <key> <value>    Write a dot-path key at one level (session by
+                        default). Validates the full resulting tree before
+                        atomic write.
+  init                  Seed the minimum-valid settings file at one level
+                        (workspace by default). Refuses without --force
+                        when the file already exists.
 
 Options:
-  --level <lvl>        Target level: workspace | project | session.
-  --session-id <id>    Session id for --level session. Falls back to the
-                       CLAUDE_SESSION_ID env var.
-  --help, -h           Show this help message.
+  --level <lvl>         Target level: workspace | project | session.
+  --session-id <id>     Session id for --level session. Takes priority over
+                        CLAUDE_SESSION_ID env when both are present.
+  --project <name>      Project name (init only). Defaults to
+                        basename(repoRoot).
+  --force               Overwrite an existing file (init only). Emits a
+                        stderr WARN line.
+  --help, -h            Show this help message.
 
 Examples:
   gobbi config get git.pr.open
   gobbi config get workflow.ideation.discuss.mode --level workspace
   gobbi config set workflow.ideation.discuss.mode user
   gobbi config set notify.slack.events '["workflow.complete","error"]' --level workspace
+  gobbi config init
+  gobbi config init --level project --project foo
+  gobbi config init --level session --session-id abc123 --force
 
 Exit codes:
   0  success
   1  get: key not found at selected level / path (silent stdout)
-  2  parse / validation / I/O / invalid-argument error (stderr diagnostic)`;
+  2  parse / validation / I/O / invalid-argument error (stderr diagnostic);
+     init: file already exists without --force`;
 
 const GET_USAGE = `Usage: gobbi config get <key> [--level workspace|project|session] [--session-id <id>]
 
@@ -95,8 +124,9 @@ level's file — no cascade fallthrough, no default fallback.
 
 Options:
   --level <lvl>        workspace | project | session.
-  --session-id <id>    Required for --level session when CLAUDE_SESSION_ID
-                       is empty; also accepted for cascade resolution.
+  --session-id <id>    Session id for --level session. Takes priority over
+                       CLAUDE_SESSION_ID env when both are present; either
+                       source is accepted for cascade resolution.
   --help, -h           Show this help message.
 
 Examples:
@@ -127,7 +157,8 @@ values exit 2 with the validator errors on stderr and never touch disk.
 Options:
   --level <lvl>        workspace | project | session (default: session).
   --session-id <id>    Session id for --level session (default target).
-                       Falls back to the CLAUDE_SESSION_ID env var.
+                       Takes priority over CLAUDE_SESSION_ID env when both
+                       are present.
   --help, -h           Show this help message.
 
 Examples:
@@ -140,6 +171,40 @@ Exit codes:
   0  success
   2  parse / validation / I/O / invalid-argument error`;
 
+const INIT_USAGE = `Usage: gobbi config init [--level workspace|project|session] [--session-id <id>] [--project <name>] [--force]
+
+Seed the minimum-valid \`{schemaVersion: 1}\` settings file at the chosen
+level. The cascade supplies all other defaults at resolve time, so the
+seed stays minimum-shape on disk.
+
+Default level is \`workspace\` (no --session-id required). For \`session\`,
+either --session-id or CLAUDE_SESSION_ID env is required. For \`project\`,
+project name resolves via --project flag, then basename(repoRoot).
+
+Refuses with exit 2 when the target file already exists. \`--force\`
+overwrites and emits a stderr WARN line so the operator notices.
+
+Options:
+  --level <lvl>        workspace | project | session (default: workspace).
+  --session-id <id>    Session id for --level session. Takes priority over
+                       CLAUDE_SESSION_ID env when both are present.
+  --project <name>     Project name for --level project | session. Defaults
+                       to basename(repoRoot).
+  --force              Overwrite an existing file. Emits a stderr WARN line.
+  --help, -h           Show this help message.
+
+Examples:
+  gobbi config init
+  gobbi config init --level workspace --force
+  gobbi config init --level project --project foo
+  gobbi config init --level session --session-id abc123
+
+Exit codes:
+  0  success
+  2  parse / validation / I/O / invalid-argument error;
+     refuse-without-force on existing file;
+     missing session id when --level session is required`;
+
 // ---------------------------------------------------------------------------
 // parseArgs options — shared between get and set
 // ---------------------------------------------------------------------------
@@ -147,6 +212,14 @@ Exit codes:
 const VERB_PARSE_OPTIONS = {
   level: { type: 'string' },
   'session-id': { type: 'string' },
+  help: { type: 'boolean', short: 'h', default: false },
+} as const;
+
+const INIT_PARSE_OPTIONS = {
+  level: { type: 'string' },
+  'session-id': { type: 'string' },
+  project: { type: 'string' },
+  force: { type: 'boolean', default: false },
   help: { type: 'boolean', short: 'h', default: false },
 } as const;
 
@@ -175,6 +248,11 @@ export async function runConfig(args: string[]): Promise<void> {
 
   if (first === 'set') {
     await runSet(args.slice(1));
+    return;
+  }
+
+  if (first === 'init') {
+    await runInit(args.slice(1));
     return;
   }
 
@@ -245,7 +323,8 @@ async function runGet(args: string[]): Promise<void> {
 
   if (level === 'session' && (sessionId === undefined || sessionId === '')) {
     process.stderr.write(
-      `gobbi config get: --level session requires CLAUDE_SESSION_ID env or --session-id\n`,
+      `gobbi config get: --level session requires CLAUDE_SESSION_ID env or --session-id\n` +
+        `  (outside a session, use --level workspace or --level project to bypass)\n`,
     );
     process.exit(2);
   }
@@ -349,7 +428,8 @@ async function runSet(args: string[]): Promise<void> {
 
   if (level === 'session' && (sessionId === undefined || sessionId === '')) {
     process.stderr.write(
-      `gobbi config set: --level session requires CLAUDE_SESSION_ID env or --session-id\n`,
+      `gobbi config set: --level session requires CLAUDE_SESSION_ID env or --session-id\n` +
+        `  (outside a session, use --level workspace or --level project to bypass)\n`,
     );
     process.exit(2);
   }
@@ -400,6 +480,145 @@ async function runSet(args: string[]): Promise<void> {
     writeSettingsAtLevel(repoRoot, level, updatedUnknown, sessionId);
   } catch (err) {
     emitCascadeError('set', err);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// gobbi config init
+// ---------------------------------------------------------------------------
+
+/**
+ * Seed the minimum-valid `{schemaVersion: 1}` settings file at the chosen
+ * level. The cascade supplies all other defaults at resolve time so the
+ * on-disk seed stays minimum-shape — adding more here would just create
+ * future drift between the seed and `DEFAULTS`.
+ *
+ * Refuses without `--force` when the target file already exists. `--force`
+ * overwrites and emits a stderr WARN line so an operator who runs init
+ * twice notices that they clobbered prior content.
+ *
+ * Project name (for `--level project | session`) resolves via the same
+ * ladder used by `workflow init` and `writeSettingsAtLevel`:
+ *
+ *   1. `--project <name>` flag.
+ *   2. `basename(repoRoot)`.
+ *
+ * Session id (for `--level session`) resolves via the standard
+ * flag → env ladder; both absent is exit 2 with the same recovery hint
+ * `runGet` / `runSet` use.
+ */
+async function runInit(args: string[]): Promise<void> {
+  let values: ReturnType<typeof parseArgs>['values'];
+  let positionals: readonly string[];
+  try {
+    const parsed = parseArgs({
+      args,
+      options: INIT_PARSE_OPTIONS,
+      allowPositionals: true,
+      strict: true,
+    });
+    values = parsed.values;
+    positionals = parsed.positionals;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`gobbi config init: ${message}\n`);
+    process.stderr.write(`${INIT_USAGE}\n`);
+    process.exit(2);
+  }
+
+  if (values.help === true) {
+    process.stdout.write(`${INIT_USAGE}\n`);
+    return;
+  }
+
+  if (positionals.length > 0) {
+    process.stderr.write(
+      `gobbi config init: unexpected extra arguments: ${positionals.join(' ')}\n`,
+    );
+    process.stderr.write(`${INIT_USAGE}\n`);
+    process.exit(2);
+  }
+
+  // Default level is `workspace` — init is the scaffold verb, and the
+  // workspace file is the most common bootstrap target. Session-level
+  // init is the niche case (per-session overrides).
+  const parsedLevel = parseLevel(values['level']);
+  if (parsedLevel === 'invalid') {
+    process.stderr.write(
+      `gobbi config init: --level must be one of workspace, project, session\n`,
+    );
+    process.exit(2);
+  }
+  const level: SettingsLevel = parsedLevel ?? 'workspace';
+
+  const flagSessionId =
+    typeof values['session-id'] === 'string' ? values['session-id'] : undefined;
+  const envSessionId = process.env['CLAUDE_SESSION_ID'];
+  const sessionId = resolveSessionId(flagSessionId, envSessionId);
+
+  const force = values.force === true;
+  const projectFlag =
+    typeof values['project'] === 'string' && values['project'] !== ''
+      ? values['project']
+      : undefined;
+
+  const repoRoot = getRepoRoot();
+  const projectName = projectFlag ?? basename(repoRoot);
+
+  // Compute the on-disk path BEFORE writing so the refuse-without-force
+  // gate can inspect the existing file and the WARN line / error message
+  // can name the exact path the operator would touch.
+  //
+  // `requireSessionIdForInit` exits 2 when `level === 'session'` and the
+  // resolved id is absent. Returning `string` (never `string | undefined`)
+  // narrows naturally for the session branch — no `as string` cast needed.
+  // Matches the `emitCascadeError: never` convention (see line 786 below).
+  let filePath: string;
+  if (level === 'workspace') {
+    filePath = workspaceSettingsPath(repoRoot);
+  } else if (level === 'project') {
+    filePath = projectSettingsPath(repoRoot, projectName);
+  } else {
+    filePath = sessionSettingsPath(
+      repoRoot,
+      projectName,
+      requireSessionIdForInit(sessionId),
+    );
+  }
+
+  if (existsSync(filePath)) {
+    if (!force) {
+      process.stderr.write(
+        `gobbi config init: settings.json already exists at ${filePath}; pass --force to re-seed\n`,
+      );
+      process.exit(2);
+    }
+    process.stderr.write(
+      `gobbi config init: WARN — overwriting existing settings.json at ${filePath} (--force)\n`,
+    );
+  }
+
+  // Minimum-valid seed — everything else lands via the cascade at resolve
+  // time. AJV validation runs inside `writeSettingsAtLevel`; we don't
+  // duplicate it here.
+  const seed: Settings = { schemaVersion: 1 };
+
+  try {
+    if (level === 'workspace') {
+      writeSettingsAtLevel(repoRoot, 'workspace', seed);
+    } else if (level === 'project') {
+      writeSettingsAtLevel(repoRoot, 'project', seed, undefined, projectName);
+    } else {
+      writeSettingsAtLevel(
+        repoRoot,
+        'session',
+        seed,
+        requireSessionIdForInit(sessionId),
+        projectName,
+      );
+    }
+  } catch (err) {
+    emitCascadeError('init', err);
   }
 }
 
@@ -549,6 +768,27 @@ function resolveSessionId(
   return undefined;
 }
 
+/**
+ * Narrow an optional session id to a definite `string` for the `init`
+ * verb's `--level session` branch, or exit 2 with a remediation hint.
+ *
+ * Returning `string` (never `string | undefined`) lets call sites in
+ * `runInit` consume the result directly without `as string` casts —
+ * TypeScript narrows naturally through the function signature. The
+ * `: never`-returning failure path mirrors `emitCascadeError`'s
+ * convention so process-exit helpers stay consistent across this file.
+ */
+function requireSessionIdForInit(sessionId: string | undefined): string {
+  if (sessionId === undefined || sessionId === '') {
+    process.stderr.write(
+      `gobbi config init: --level session requires CLAUDE_SESSION_ID env or --session-id\n` +
+        `  (outside a session, use --level workspace or --level project to bypass)\n`,
+    );
+    process.exit(2);
+  }
+  return sessionId;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers — error surfacing
 // ---------------------------------------------------------------------------
@@ -558,13 +798,13 @@ function resolveSessionId(
  * on `ConfigCascadeError.code` so the message tells the user what went
  * wrong at which tier (when known).
  *
- * The `verb` prefix (`get` / `set`) disambiguates CLI error lines when
- * users chain commands in a shell script.
+ * The `verb` prefix (`get` / `set` / `init`) disambiguates CLI error
+ * lines when users chain commands in a shell script.
  *
  * Returns `never` — the call always exits the process — so callers can
  * narrow control flow after invoking it.
  */
-function emitCascadeError(verb: 'get' | 'set', err: unknown): never {
+function emitCascadeError(verb: 'get' | 'set' | 'init', err: unknown): never {
   if (err instanceof ConfigCascadeError) {
     const tier = err.tier !== undefined ? ` [${err.tier}]` : '';
     process.stderr.write(`gobbi config ${verb}${tier}: ${err.message}\n`);

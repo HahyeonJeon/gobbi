@@ -1,6 +1,6 @@
 # gobbi-config — Unified Settings Cascade
 
-Feature description for gobbi's three-level configuration cascade. Read this to understand where settings live at each scope, how levels override one another, the unified `settings.json` shape, and the two-verb CLI surface. This is the design-of-record for Pass 3 (session `dfd4ff66`) updated in PR-FIN-1c (session `c34ea7e6`) for the GitSettings reshape and ProjectsRegistry removal.
+Feature description for gobbi's three-level configuration cascade. Read this to understand where settings live at each scope, how levels override one another, the unified `settings.json` shape, and the three-verb CLI surface. This is the design-of-record for Pass 3 (session `dfd4ff66`) updated in PR-FIN-1c (session `c34ea7e6`) for the GitSettings reshape and ProjectsRegistry removal, and PR-FIN-1a (session `c34ea7e6`) for the `gobbi config init` verb and session-id resolution hard-error.
 
 ---
 
@@ -14,11 +14,11 @@ Gobbi resolves every setting by composing three `settings.json` files — worksp
 
 | Level | Path | Git | Written by |
 |---|---|---|---|
-| workspace | `.gobbi/settings.json` | gitignored | `ensureSettingsCascade` seed on first run; manual edit |
-| project | `.gobbi/projects/<name>/settings.json` | tracked | `ensureSettingsCascade` seed; manual edit |
-| session | `.gobbi/projects/<name>/sessions/{id}/settings.json` | gitignored (inherits `.gobbi/projects/<name>/sessions/`) | `/gobbi` setup FIFTH step; `gobbi config set` |
+| workspace | `.gobbi/settings.json` | gitignored | `ensureSettingsCascade` seed on first run; `gobbi config init`; manual edit |
+| project | `.gobbi/projects/<name>/settings.json` | tracked | `ensureSettingsCascade` seed; `gobbi config init --level project`; manual edit |
+| session | `.gobbi/projects/<name>/sessions/{id}/settings.json` | gitignored (inherits `.gobbi/projects/<name>/sessions/`) | `/gobbi` setup FIFTH step; `gobbi config set`; `gobbi config init --level session` |
 
-Session-id resolution: `$CLAUDE_SESSION_ID` env is the CLI-level primary; `--session-id` flag is the override.
+**Session-id resolution (PR-FIN-1a):** `--session-id` flag takes priority over `$CLAUDE_SESSION_ID` env. When neither is present, CLI commands that require a session id exit 2 with a remediation hint — no silent UUID fallback (removed in PR-FIN-1a). `gobbi workflow init` follows the same ladder: flag → env → hard error.
 
 **Project-name resolution (PR-FIN-1c):** Project name resolves in priority order:
 1. `--project <name>` flag — passed explicitly by CLI commands
@@ -94,7 +94,18 @@ Violation raises `ConfigCascadeError('parse', …)` without a `tier` (the violat
 
 ## CLI surface
 
-Two verbs. No `init`, `list`, `delete`, `cleanup`, `resolve`, or `--with-sources`.
+Three verbs. No `list`, `delete`, `cleanup`, `resolve`, or `--with-sources`.
+
+### `gobbi config init [--level workspace|project|session] [--session-id <id>] [--project <name>] [--force]` (PR-FIN-1a)
+
+Scaffolds the minimum-valid `{schemaVersion: 1}` seed at the target level. Workspace is the default level.
+
+- Default `--level workspace`
+- Project resolves via `--project <name>` flag → `basename(repoRoot)` (same ladder as `gobbi config set`)
+- Session level requires `--session-id` flag or `$CLAUDE_SESSION_ID` env; missing both exits 2 with recovery hint suggesting `--level workspace` or `--level project`
+- Refuses with exit 2 if the target `settings.json` already exists; with `--force`, overwrites and emits a stderr WARN line naming the path
+- Seed is minimum-valid only — the cascade supplies all other defaults at resolve time
+- Exit codes: `0` success; `2` parse/validation/IO error, refuse-without-force, or missing session id
 
 ### `gobbi config get <key> [--level workspace|project|session] [--session-id <id>]`
 

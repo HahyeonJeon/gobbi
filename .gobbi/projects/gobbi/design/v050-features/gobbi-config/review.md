@@ -4,10 +4,13 @@
 |------------|--------------------------|------------|--------|
 | 2026-04-21 | `dfd4ff66-a2d4-456f-8fa4-ddd843e4e58b` | shipped | #123 (draft) |
 | 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1c (TBD) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR (TBD) |
 
 Pass-3 finalization replaced the T1/T2 JSON + T3 SQLite + provenance architecture with a unified three-level `settings.json` shape and a two-verb CLI. Waves B through D landed on `feat/120-gobbi-config-pass-3` atop 6 prior commits.
 
 PR-FIN-1c (session `c34ea7e6`) reshaped `GitSettings` around always-on worktrees with independent opt-in fields (`issue.create`, `pr.open`, `pr.draft`), removed the `mode`/`workflow`/`cleanup` sub-objects, and removed the `ProjectsRegistry` interface + `Settings.projects` field entirely. Project resolution is now `basename(repoRoot)` + `--project` flag. The T2-v1 upgrader was extended to handle both the original T2-v1 shape and Pass-3 current-shape files. Commits `362217c` + `954f889` on branch `feat/212-pr-fin-1c-schema-redesign`.
+
+PR-FIN-1a (session `c34ea7e6`) added the `gobbi config init` verb (three levels, minimum-valid seed, `--force` overwrite with stderr WARN), replaced `init.ts::resolveSessionId`'s `randomUUID()` fallback with a hard error and remediation hint, added the `#182` recovery hint to `config get/set/init` missing-session-id errors, and locked the `#185` fresh-setup ordering invariant via CFG-23 integration test. Commit `6909fec` on branch `feat/214-pr-fin-1a-config-init-session-id`.
 
 This review documents what drifted from the originally-shipped Pass-3 design, notable implementation decisions (NOTEs), and open gaps deferred to follow-up Passes (GAPs). Entries marked **[superseded by DRIFT-9]** describe changes now themselves changed by PR-FIN-1c.
 
@@ -129,6 +132,20 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 ---
 
+### DRIFT-10 — PR-FIN-1a: `randomUUID()` fallback removed from `init.ts::resolveSessionId`; `gobbi config init` verb added
+
+**Finding:** `init.ts::resolveSessionId` silently generated a `randomUUID()` UUID when neither `--session-id` flag nor `$CLAUDE_SESSION_ID` env was present. This created orphan session directories under `.gobbi/projects/<name>/sessions/<random>/` that no subsequent command referenced. PR-FIN-1a removes the fallback and replaces it with a hard error (exit 2) plus a remediation hint pointing the user at `--session-id` and `$CLAUDE_SESSION_ID`. Additionally, `gobbi config init` is added as the third CLI verb — an explicit scaffold command for the minimum-valid seed, replacing the implicit "first `ensureSettingsCascade` run creates the file" pattern with an intentional user action.
+
+**Evidence:** Round-3 ideation memo §Item 4a, §Item 1; plan §1a.1 deliverables B and A; `packages/cli/src/commands/workflow/init.ts` at `6909fec` — `resolveSessionId` rewrite; `packages/cli/src/commands/config.ts` at `6909fec` — `runInit` verb.
+
+**Severity:** Medium — prior to this fix, any invocation of `gobbi workflow init` outside a Claude Code session context (e.g., manual testing, CI without `CLAUDE_SESSION_ID`) silently created an unreferenced session directory. The orphan dirs were not harmful but generated noise and consumed disk space.
+
+**Resolution:** fix code + doc — resolved at `6909fec` (PR-FIN-1a). All three verbs now documented in README, scenarios CFG-19..23 added, checklist updated, CHANGELOG + MIGRATION updated.
+
+**Owner:** PR-FIN-1a (session `c34ea7e6`).
+
+---
+
 ### DRIFT-9 — PR-FIN-1c: `GitSettings` reshaped; `ProjectsRegistry` removed (F2 + F3)
 
 **Finding:** PR-FIN-1c (session `c34ea7e6`) reshaped `GitSettings` and removed `ProjectsRegistry`. The Pass-3 shape (`git.workflow.{mode,baseBranch}`, `git.pr.{draft}`, `git.cleanup.{worktree,branch}`) is replaced with a flat shape where each concern owns its own sub-object: `git.baseBranch`, `git.issue.{create}`, `git.worktree.{autoRemove}`, `git.branch.{autoRemove}`, `git.pr.{open,draft}`. The `mode` enum (and concept of worktree-vs-direct-commit dispatch) is removed — worktrees are always created; PR and issue creation are independent opt-in fields. `Settings.projects` and the `ProjectsRegistry` interface are deleted; project resolution is `basename(repoRoot)` + `--project` flag.
@@ -178,6 +195,16 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 **Evidence:** ideation.md §10.10 — "model/effort override vs core-rule tension"; `settings.ts` `AgentModel` / `AgentEffort` types exist; no spawn-pipeline reader yet.
 
 **Owner:** deferred to a future Pass when orchestrator reads per-step model/effort overrides.
+
+---
+
+### NOTE-5 — `gobbi config init --force` emits a stderr WARN line (non-silent overwrite)
+
+**Finding:** When `gobbi config init --force` overwrites an existing `settings.json`, it emits a warning line to stderr naming the overwritten path. This is a deliberate usability decision: `--force` is potentially destructive (it replaces user-edited settings with the minimum-valid seed), so the operator must be notified even on exit 0. The WARN line is on stderr so it does not pollute stdout-piped workflows. When `--force` is used on an absent file, no WARN is emitted (no overwrite occurred).
+
+**Evidence:** plan §1a.1 deliverable A ("Refuses if file exists; with `--force`, overwrites and emits a stderr warning"); `packages/cli/src/commands/config.ts` at `6909fec` — `runInit` WARN branch; `packages/cli/src/__tests__/features/gobbi-config.test.ts` — CFG-22a vs CFG-22b distinction.
+
+**Owner:** PR-FIN-1a (session `c34ea7e6`).
 
 ---
 
@@ -242,10 +269,12 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 | DRIFT-7 | drift | medium | `f9b3925` + `cf7733c` + Wave E | fix code + doc (superseded by DRIFT-9) |
 | DRIFT-8 | drift | high | `f9b3925` + `b671b02` | fix code + doc |
 | DRIFT-9 | drift | high | `362217c` + `954f889` (PR-FIN-1c) | fix code + doc |
+| DRIFT-10 | drift | medium | `6909fec` (PR-FIN-1a) | fix code + doc |
 | NOTE-1 | note | — | `f9b3925` (Wave A→B decision) | design decision |
 | NOTE-2 | note | — | `ff20702` | test discipline |
 | NOTE-3 | note | — | — (no code change) | scope boundary |
 | NOTE-4 | note | — | `b671b02` (schema-only) | scope boundary |
+| NOTE-5 | note | — | `6909fec` (PR-FIN-1a) | usability decision |
 | GAP-1 | gap | — | — | deferred; follow-up Pass |
 | GAP-2 | gap | — | — | deferred; gobbi-rule update |
 | GAP-3 | gap | — | — | deferred; issue #130 post-#119 |
