@@ -102,6 +102,19 @@ Scaffold a new project under .gobbi/projects/<name>/. Does NOT touch
 settings.json (PR-FIN-1c removed the projects registry); pass
 '--project <name>' to subsequent commands to address the new project.
 
+Scaffolds the full taxonomy (14 git-tracked dirs + 3 gitignored runtime
+dirs):
+
+  Narrative (12)  agents, backlogs, checklists, decisions, design,
+                  gotchas, learnings, notes, playbooks, references,
+                  reviews, rules, scenarios, skills
+
+  Runtime (3)     sessions/, tmp/, worktrees/  (gitignored)
+
+Each empty git-tracked dir receives an empty .gitkeep so git records
+the slot. See .gobbi/projects/gobbi/design/v050-features/gobbi-memory/
+for the directory charter.
+
 Name must be lowercase letters, digits, and hyphens only; no leading
 or trailing hyphens, no path separators.
 
@@ -352,8 +365,12 @@ export async function runProjectCreateWithOptions(
   // Operators that want to address the new project pass
   // `--project <name>` to each subsequent command.
 
+  const trackedDirs = SCAFFOLD_DIRS.filter((d) => !SCAFFOLD_GITIGNORED_DIRS.has(d));
+  const runtimeDirs = SCAFFOLD_DIRS.filter((d) => SCAFFOLD_GITIGNORED_DIRS.has(d));
   process.stdout.write(
     `Created project '${name}' at ${targetDir}\n` +
+      `  Scaffolded ${trackedDirs.length} git-tracked dirs: ${trackedDirs.join(', ')}\n` +
+      `  Scaffolded ${runtimeDirs.length} gitignored runtime dirs: ${runtimeDirs.join(', ')}\n` +
       `Pass '--project ${name}' to subsequent commands to address it.\n`,
   );
 }
