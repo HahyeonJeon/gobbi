@@ -52,6 +52,7 @@ import { isRecord, isString, isNumber, isBoolean, isArray } from '../../lib/guar
 import { ensureSettingsCascade } from '../../lib/ensure-settings-cascade.js';
 import {
   resolveSettings,
+  resolveEvalDecision,
 } from '../../lib/settings-io.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 import { EventStore } from '../../workflow/store.js';
@@ -333,9 +334,29 @@ export async function runInitWithOptions(
         'system',
       );
 
+      // PR-FIN-2a-i T-2a.7: stamp the resolved memorization-eval decision
+      // onto the EVAL_DECIDE payload so the new
+      // `memorization → memorization_eval` graph branch fires when the
+      // cascade carries `workflow.memorization.evaluate.mode === 'always'`.
+      // No `--eval-memorization` CLI flag exists today (memorization eval is
+      // settings-driven, not invocation-driven). For `'ask'` / `'auto'`
+      // modes the translation helper requires a user / orchestrator answer
+      // that init has no source for, so we resolve only the deterministic
+      // modes here and treat indeterminate modes as disabled at init —
+      // the cascade still records the user's preference and a future
+      // eval-checkpoint can resolve `'ask'` / `'auto'` interactively.
+      const memorizationMode =
+        resolvedSettings.workflow?.memorization?.evaluate?.mode;
+      const memorizationEnabled =
+        memorizationMode === undefined ||
+        memorizationMode === 'always' ||
+        memorizationMode === 'skip'
+          ? resolveEvalDecision(resolvedSettings, 'memorization').enabled
+          : false;
       const decideEvent = createEvalDecide({
         ideation: configSnapshot.evalIdeation,
         plan: configSnapshot.evalPlanning,
+        memorization: memorizationEnabled,
       });
       appendEventAndUpdateState(
         store,

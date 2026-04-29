@@ -90,6 +90,19 @@ const corePredicates = {
   /** Planning evaluation is disabled or evalConfig not yet set. */
   evalPlanningDisabled: (s) => s.evalConfig?.planning !== true,
 
+  /**
+   * Memorization evaluation is enabled in evalConfig (PR-FIN-2a-i T-2a.7).
+   * Gates the `memorization → memorization_eval` graph transition.
+   */
+  evalMemorizationEnabled: (s) => s.evalConfig?.memorization === true,
+
+  /**
+   * Memorization evaluation is disabled or the slot has not been set
+   * (PR-FIN-2a-i T-2a.7). Drives the `memorization → handoff` direct
+   * transition when no eval is requested.
+   */
+  evalMemorizationDisabled: (s) => s.evalConfig?.memorization !== true,
+
   // --------------------------------------------------------------- Feedback
   //
   // Drive the evaluation-loop-back mechanics described in

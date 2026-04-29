@@ -651,6 +651,13 @@ describe('validatePredicateReferences', () => {
       evalIdeationDisabled: () => true,
       evalPlanningEnabled: () => false,
       evalPlanningDisabled: () => true,
+      // PR-FIN-2a-i T-2a.7 — register memorization predicates so the only
+      // remaining missing reference is `feedbackCapExceeded`. Without these,
+      // the new memorization → memorization_eval / handoff edges also fail
+      // the lookup and the assertion below would balloon beyond the one
+      // intentional miss.
+      evalMemorizationEnabled: () => false,
+      evalMemorizationDisabled: () => true,
       // feedbackCapExceeded intentionally missing
     };
     const errors = validatePredicateReferences(TRANSITION_TABLE, partialRegistry);
@@ -688,7 +695,8 @@ describe('transition table integrity', () => {
   it('all transition targets are valid WorkflowStep values', () => {
     const validSteps: ReadonlySet<string> = new Set([
       'idle', 'ideation', 'ideation_eval', 'planning', 'planning_eval',
-      'execution', 'execution_eval', 'memorization', 'handoff', 'done', 'error',
+      'execution', 'execution_eval', 'memorization', 'memorization_eval',
+      'handoff', 'done', 'error',
     ]);
     for (const rule of TRANSITION_TABLE) {
       expect(validSteps.has(rule.from)).toBe(true);

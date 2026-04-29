@@ -37,6 +37,11 @@
       "spec": "./memorization/spec.json"
     },
     {
+      "id": "memorization_eval",
+      "spec": "./evaluation/spec.json",
+      "evalFor": "memorization"
+    },
+    {
       "id": "handoff",
       "spec": "./handoff/spec.json"
     }
@@ -147,10 +152,32 @@
     },
     {
       "from": "memorization",
-      "to": "handoff",
-      "condition": "always",
+      "to": "memorization_eval",
+      "condition": "evalMemorizationEnabled",
       "trigger": "workflow.step.exit",
-      "label": "memorization complete → handoff"
+      "label": "memorization exit → optional memorization_eval"
+    },
+    {
+      "from": "memorization",
+      "to": "handoff",
+      "condition": "evalMemorizationDisabled",
+      "trigger": "workflow.step.exit",
+      "label": "memorization exit → handoff (eval skipped)"
+    },
+    {
+      "from": "memorization_eval",
+      "to": "memorization",
+      "condition": "verdictRevise",
+      "trigger": "decision.eval.verdict",
+      "feedback": true,
+      "label": "memorization_eval revise → re-enter memorization"
+    },
+    {
+      "from": "memorization_eval",
+      "to": "handoff",
+      "condition": "verdictPass",
+      "trigger": "decision.eval.verdict",
+      "label": "memorization_eval pass → handoff"
     },
     {
       "from": "handoff",
@@ -209,6 +236,13 @@
       "label": "memorization timeout → error"
     },
     {
+      "from": "memorization_eval",
+      "to": "error",
+      "condition": "stepTimeoutFired",
+      "trigger": "workflow.step.timeout",
+      "label": "memorization_eval timeout → error"
+    },
+    {
       "from": "handoff",
       "to": "error",
       "condition": "stepTimeoutFired",
@@ -257,6 +291,14 @@
     },
     {
       "from": "memorization",
+      "to": "ideation",
+      "condition": "skipRequested",
+      "trigger": "workflow.step.skip",
+      "feedback": true,
+      "label": "user skip → restart ideation"
+    },
+    {
+      "from": "memorization_eval",
       "to": "ideation",
       "condition": "skipRequested",
       "trigger": "workflow.step.skip",

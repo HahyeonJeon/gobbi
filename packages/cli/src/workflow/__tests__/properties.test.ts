@@ -49,6 +49,7 @@ const ACTIVE_STEP_NAMES = [
   'execution',
   'execution_eval',
   'memorization',
+  'memorization_eval',
   'handoff',
 ] as const;
 

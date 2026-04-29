@@ -212,10 +212,12 @@ test(
       expect(afterVerdict['lastVerdictOutcome']).toBe('pass');
 
       // -----------------------------------------------------------------
-      // Step 5 — COMPLETE: memorization -> handoff. Wave A.1.5 promoted
-      // handoff to a true state-machine step; memorization fires
-      // workflow.step.exit which routes to handoff per the runtime
-      // transition table.
+      // Step 5 — COMPLETE: memorization -> memorization_eval. Wave A.1.5
+      // promoted handoff to a true state-machine step; PR-FIN-2a-i T-2a.7
+      // added the optional memorization_eval gate. With the DEFAULTS
+      // cascade carrying `workflow.memorization.evaluate.mode === 'always'`
+      // memorization fires workflow.step.exit which routes to
+      // memorization_eval per the runtime transition table.
       // -----------------------------------------------------------------
       const completeMemorization = await $`bun run ${CLI_PATH} workflow transition COMPLETE --session-id ${sessionId}`
         .cwd(tmpRoot)
@@ -234,7 +236,31 @@ test(
             .quiet()
         ).stdout,
       );
-      expect(afterMemorization['currentStep']).toBe('handoff');
+      expect(afterMemorization['currentStep']).toBe('memorization_eval');
+
+      // -----------------------------------------------------------------
+      // Step 5b — PASS: memorization_eval -> handoff. PR-FIN-2a-i T-2a.7
+      // added this verdict-driven exit edge symmetric to the other
+      // *_eval → next-productive-step routes.
+      // -----------------------------------------------------------------
+      const passMemorization = await $`bun run ${CLI_PATH} workflow transition PASS --session-id ${sessionId}`
+        .cwd(tmpRoot)
+        .env(childEnv)
+        .quiet();
+      expect(passMemorization.exitCode).toBe(0);
+      expect(passMemorization.stdout.toString('utf8')).toContain(
+        'decision.eval.verdict',
+      );
+
+      const afterMemorizationEval = parseStatus(
+        (
+          await $`bun run ${CLI_PATH} workflow status --session-id ${sessionId} --json`
+            .cwd(tmpRoot)
+            .env(childEnv)
+            .quiet()
+        ).stdout,
+      );
+      expect(afterMemorizationEval['currentStep']).toBe('handoff');
 
       // -----------------------------------------------------------------
       // Step 6 — FINISH: handoff -> done. workflow.finish gates on the
@@ -271,10 +297,12 @@ test(
         expect(completed).toContain('memorization');
       }
       expect(snapFinal['violationsTotal']).toBe(0);
-      // Wave A.1.5: STEP_EXIT (memorization → handoff) clears the verdict
-      // window, so by the time FINISH commits the run is past the verdict's
-      // scope. The verdict trail is still observable via `workflow events`.
-      expect(snapFinal['lastVerdictOutcome']).toBeNull();
+      // Wave A.1.5 + PR-FIN-2a-i T-2a.7: the second PASS verdict landed in
+      // memorization_eval and routed directly to handoff. Verdict events
+      // do NOT clear `lastVerdictOutcome` — only productive-step
+      // STEP_EXIT does — so the field still reads 'pass' at the end of
+      // the cycle. The verdict trail is observable via `workflow events`.
+      expect(snapFinal['lastVerdictOutcome']).toBe('pass');
 
       // -----------------------------------------------------------------
       // Event-trail spot-check via `workflow events --json`. The cycle

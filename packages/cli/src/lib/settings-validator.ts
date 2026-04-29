@@ -209,6 +209,38 @@ const settingsSchema: JSONSchemaType<Settings> = {
             maxIterations: { type: 'integer', nullable: true, minimum: 1 },
           },
         },
+        // PR-FIN-2a-i T-2a.7: memorization step gains its own settings slot
+        // mirroring `execution` exactly so `gobbi config set
+        // workflow.memorization.evaluate.mode <mode>` writes a valid file.
+        // Required for the new `memorization → memorization_eval` graph
+        // transition to be reachable end-to-end through the cascade.
+        memorization: {
+          type: 'object',
+          nullable: true,
+          additionalProperties: false,
+          properties: {
+            discuss: {
+              type: 'object',
+              nullable: true,
+              additionalProperties: false,
+              properties: {
+                mode: { type: 'string', nullable: true, enum: [...DISCUSS_MODE_ENUM] },
+                agent: agentConfigSchema,
+              },
+            },
+            agent: agentConfigSchema,
+            evaluate: {
+              type: 'object',
+              nullable: true,
+              additionalProperties: false,
+              properties: {
+                mode: { type: 'string', nullable: true, enum: [...EVALUATE_MODE_ENUM] },
+                agent: agentConfigSchema,
+              },
+            },
+            maxIterations: { type: 'integer', nullable: true, minimum: 1 },
+          },
+        },
       },
     },
     notify: {

@@ -359,7 +359,7 @@ export interface EvalDecision {
  */
 export function resolveEvalDecision(
   cascade: Settings,
-  step: 'ideation' | 'planning' | 'execution',
+  step: 'ideation' | 'planning' | 'execution' | 'memorization',
   context?: { userAnswer?: boolean; orchestratorDecision?: boolean },
 ): EvalDecision {
   // Post-Wave-4 rename: state-machine literal and settings field name both
