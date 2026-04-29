@@ -20,6 +20,7 @@ node_modules/
 .gobbi/projects/*/rawdata/
 .gobbi/projects/*/settings.json
 .gobbi/projects/*/worktrees/
+.gobbi/projects/*/tmp/
 
 dist/
 packages/*/dist/
