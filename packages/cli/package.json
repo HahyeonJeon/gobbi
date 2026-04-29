@@ -22,7 +22,7 @@
     "regen-schema": "bun -e \"import('./src/specs/_schema/v1.ts').then(m => process.stdout.write(JSON.stringify(m.StepSpecSchema, null, 2) + '\\n'))\" > src/specs/_schema/v1.json",
     "prebuild": "bun run gen:predicates",
     "build": "bun build ./src/cli.ts --outdir ./dist --target bun --external playwright --external sharp",
-    "build:safe": "bun run gen:predicates && bun build ./src/cli.ts --outdir ./dist.new --target bun --external playwright --external sharp && mv ./dist.new/cli.js ./dist/cli.js && rm -rf ./dist.new",
+    "build:safe": "bun run gen:predicates && bun build ./src/cli.ts --outdir ./dist.new --target bun --external playwright --external sharp && mkdir -p ./dist && mv ./dist.new/cli.js ./dist/cli.js && rm -rf ./dist.new",
     "pretypecheck": "bun run gen:predicates",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
