@@ -35,8 +35,12 @@ import {
 // ---------------------------------------------------------------------------
 
 describe('SECRET_PATTERN_ALLOWLIST', () => {
-  test('contains the four C.12 subtree entries under the multi-project layout', () => {
+  test('contains the C.12 subtree entries under the multi-project layout', () => {
+    // PR-FIN-2a-i: `gotchas/` joined the allowlist as a top-level project
+    // dir alongside `learnings/` (gotcha drafts moved out of
+    // `learnings/gotchas/` into `gotchas/`).
     expect(SECRET_PATTERN_ALLOWLIST).toEqual([
+      '.gobbi/projects/*/gotchas/**',
       '.gobbi/projects/*/learnings/**',
       '.gobbi/projects/*/notes/**',
       '.gobbi/projects/*/sessions/**',
@@ -58,7 +62,8 @@ describe('isAllowlistedPath — admit', () => {
   test.each([
     '.gobbi/projects/*/sessions/foo/state.json',
     '.gobbi/projects/*/worktrees/feat-x/node_modules/something',
-    '.gobbi/projects/*/learnings/gotchas/bar.md',
+    '.gobbi/projects/*/gotchas/bar.md',
+    '.gobbi/projects/*/learnings/post-mortem.md',
     '.gobbi/projects/*/notes/plan.md',
   ])('admits %s', (path) => {
     expect(isAllowlistedPath(path)).toBe(true);

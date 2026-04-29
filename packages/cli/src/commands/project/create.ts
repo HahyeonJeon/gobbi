@@ -7,9 +7,9 @@
  * Creates the following directories (all empty) matching the taxonomy
  * the default `gobbi` project carries:
  *
- *   design/          learnings/gotchas/   notes/
- *   references/      rules/               skills/
- *   agents/          sessions/
+ *   design/          gotchas/             learnings/
+ *   notes/           references/          rules/
+ *   skills/          agents/              sessions/
  *
  * These are a deliberate subset of {@link PROJECT_SUBDIR_KINDS} — only
  * the dirs a freshly-created project actually needs at birth are
@@ -113,16 +113,15 @@ export interface ProjectCreateOverrides {
  * ({@link PROJECT_SUBDIR_KINDS}) is created on-demand by the commands
  * that populate them. See module JSDoc for the rationale.
  *
- * `learnings/gotchas/` is the nested gotcha storage location per
- * `commands/gotcha/promote.ts` which writes gotchas there. Creating
- * the parent `learnings/` dir alone would leave `promote` to mkdir the
- * child, but scaffolding both up front keeps the on-disk shape
- * self-documenting.
+ * PR-FIN-2a-i: `gotchas/` is now top-level (no longer nested under
+ * `learnings/`) so the gotcha promotion ritual and mid-session writes
+ * target the same flat directory. `learnings/` remains as the home for
+ * post-mortems and other learning artifacts that aren't gotchas.
  */
 const SCAFFOLD_DIRS: readonly string[] = [
   'design',
+  'gotchas',
   'learnings',
-  'learnings/gotchas',
   'notes',
   'references',
   'rules',
@@ -249,18 +248,16 @@ export async function runProjectCreateWithOptions(
   // --- Scaffold directories --------------------------------------------
   //
   // Create the project root plus every scaffold subdir. `mkdirSync` with
-  // `recursive: true` makes each call idempotent and handles the parent
-  // chain (e.g. `.gobbi/projects/<name>/learnings/` is materialised by
-  // the `learnings/gotchas/` call's recursive flag even if the plain
-  // `learnings/` call had already returned).
+  // `recursive: true` makes each call idempotent.
+  //
+  // PR-FIN-2a-i: every {@link SCAFFOLD_DIRS} entry is now a single-segment
+  // path that maps 1:1 to a {@link ProjectSubdirKind}. We still call
+  // through to a string join here rather than {@link projectSubdir} to
+  // keep the loop iteration uniform — the facade's narrow union check
+  // is enforced by the central `PROJECT_SUBDIR_KINDS` tuple, which the
+  // scaffold list mirrors.
   mkdirSync(targetDir, { recursive: true });
   for (const dir of SCAFFOLD_DIRS) {
-    // `projectSubdir` only accepts the narrow ProjectSubdirKind union;
-    // `learnings/gotchas/` is a deliberate nested path that the facade
-    // does not model, so fall back to direct path join for the scaffold
-    // list. Staying outside the facade for this single purpose is
-    // deliberate — the facade is designed for known-kind lookups, not
-    // for arbitrary nested trees.
     mkdirSync(`${targetDir}/${dir}`, { recursive: true });
   }
 

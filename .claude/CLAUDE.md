@@ -32,7 +32,7 @@ MUST use AskUserQuestion to discuss with the user at every stage — ideation, p
 
 > **Never repeat the same mistake. Read gotchas before acting, write gotchas after feedback.**
 
-Every agent MUST load `_gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/projects/{name}/learnings/gotchas/` and promoted to permanent storage in the workspace-level skill storage via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
+Every agent MUST load `_gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/projects/{name}/gotchas/` and promoted to permanent storage in the workspace-level skill storage via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
 
 > **Split into narrow tasks. Execute step by step, not all at once.**
 

@@ -7,7 +7,7 @@
  *   - Dispatch: `--help` prints usage to stdout; unknown subcommands exit 1
  *     with a diagnostic on stderr.
  *   - Promote happy path: a regular `.md` file lands at
- *     `.gobbi/projects/<project>/learnings/gotchas/` and the source is
+ *     `.gobbi/projects/<project>/gotchas/` and the source is
  *     deleted.
  *   - Promote skill-scoped: `_skill-<name>.md` lands at
  *     `.claude/skills/<name>/gotchas.md`.
@@ -20,8 +20,8 @@
  *
  * All tests operate on scratch directories under the OS temp dir that
  * mirror the real post-W3.1 layout: source lives at
- * `<repo>/.gobbi/projects/gobbi/learnings/gotchas/` and destinations land
- * at `<repo>/.gobbi/projects/<name>/learnings/gotchas/` (category) or
+ * `<repo>/.gobbi/projects/gobbi/gotchas/` and destinations land
+ * at `<repo>/.gobbi/projects/<name>/gotchas/` (category) or
  * `<repo>/.claude/skills/<name>/gotchas.md` (skill-scoped). No real
  * session or `.claude/` paths are touched.
  */
@@ -148,7 +148,7 @@ function makeScratchRepo(): string {
 
 /**
  * Build a scratch "repo" layout matching the post-W3.1 on-disk shape:
- *   <repo>/.gobbi/projects/gobbi/learnings/gotchas/  — source dir (the
+ *   <repo>/.gobbi/projects/gobbi/gotchas/  — source dir (the
  *       default `DEFAULT_PROJECT_NAME = 'gobbi'` source the command
  *       resolves to when no `--source` is passed)
  *   <repo>/.gobbi/projects/<name>/                    — destination
@@ -162,7 +162,7 @@ function makeScratchRepo(): string {
  * `.gobbi/projects/<name>/` tree.
  *
  * When `projectName` differs from `DEFAULT_PROJECT_NAME` we still create
- * the source dir under `.gobbi/projects/gobbi/learnings/gotchas/` because
+ * the source dir under `.gobbi/projects/gobbi/gotchas/` because
  * that is where the CLI looks by default; the destination project name
  * (`projectName`) is independent.
  */
@@ -177,7 +177,6 @@ function makeRepoLayout(projectName: string | null): {
     '.gobbi',
     'projects',
     'gobbi',
-    'learnings',
     'gotchas',
   );
   mkdirSync(sourceDir, { recursive: true });
@@ -341,7 +340,7 @@ describe('runGotchaWithRegistry — dispatch', () => {
 // ===========================================================================
 
 describe('runPromote — happy path (project-scoped)', () => {
-  test('appends the source file to .gobbi/projects/<project>/learnings/gotchas/ and deletes the source', async () => {
+  test('appends the source file to .gobbi/projects/<project>/gotchas/ and deletes the source', async () => {
     // `makeRepoLayout('testproj')` seeds two project dirs
     // (`gobbi` — the source's default project — and `testproj`), so
     // `inferProjectName` returns null on ambiguity; pass
@@ -365,7 +364,6 @@ describe('runPromote — happy path (project-scoped)', () => {
       '.gobbi',
       'projects',
       'testproj',
-      'learnings',
       'gotchas',
       'foo.md',
     );
@@ -381,7 +379,6 @@ describe('runPromote — happy path (project-scoped)', () => {
       '.gobbi',
       'projects',
       'testproj',
-      'learnings',
       'gotchas',
     );
     mkdirSync(destDir, { recursive: true });
@@ -412,7 +409,7 @@ describe('runPromote — happy path (project-scoped)', () => {
     //
     // For the default project the source path and destination path
     // resolve to the same file (both at
-    // `.gobbi/projects/gobbi/learnings/gotchas/<category>.md`) — the
+    // `.gobbi/projects/gobbi/gotchas/<category>.md`) — the
     // draft is already in its permanent location. `applyPromotion`
     // detects the collision and leaves the file unchanged rather than
     // appending-then-unlinking (which would lose data).
@@ -465,7 +462,6 @@ describe('runPromote — happy path (skill-scoped)', () => {
       '.gobbi',
       'projects',
       'gobbi',
-      'learnings',
       'gotchas',
     );
     mkdirSync(sourceDir, { recursive: true });
@@ -524,7 +520,6 @@ describe('runPromote — --dry-run', () => {
           '.gobbi',
           'projects',
           'testproj',
-          'learnings',
           'gotchas',
           'foo.md',
         ),
@@ -675,7 +670,6 @@ describe('runPromote — active-session rejection', () => {
           '.gobbi',
           'projects',
           'testproj',
-          'learnings',
           'gotchas',
           'foo.md',
         ),
@@ -714,7 +708,6 @@ describe('runPromote — active-session rejection', () => {
           '.gobbi',
           'projects',
           'testproj',
-          'learnings',
           'gotchas',
           'foo.md',
         ),
@@ -761,7 +754,6 @@ describe('runPromote — edge cases', () => {
       '.gobbi',
       'projects',
       'gobbi',
-      'learnings',
       'gotchas',
     );
     mkdirSync(sourceDir, { recursive: true });
@@ -790,7 +782,6 @@ describe('runPromote — edge cases', () => {
       '.gobbi',
       'projects',
       'gobbi',
-      'learnings',
       'gotchas',
     );
     mkdirSync(sourceDir, { recursive: true });
@@ -814,7 +805,6 @@ describe('runPromote — edge cases', () => {
           '.gobbi',
           'projects',
           'alpha',
-          'learnings',
           'gotchas',
           'foo.md',
         ),
@@ -827,7 +817,6 @@ describe('runPromote — edge cases', () => {
           '.gobbi',
           'projects',
           'beta',
-          'learnings',
           'gotchas',
           'foo.md',
         ),
@@ -854,7 +843,6 @@ describe('runPromote — edge cases', () => {
       '.gobbi',
       'projects',
       'testproj',
-      'learnings',
       'gotchas',
       'foo.md',
     );

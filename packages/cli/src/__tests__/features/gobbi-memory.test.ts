@@ -747,7 +747,7 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         true,
       );
       expect(
-        existsSync(join(projectDir(repo, 'demo'), 'learnings', 'gotchas')),
+        existsSync(join(projectDir(repo, 'demo'), 'gotchas')),
       ).toBe(true);
       expect(
         existsSync(
@@ -1197,14 +1197,14 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
   // Gotcha promotion — per-project destination
   // =========================================================================
   describe('gotcha promote', () => {
-    test('G-MEM2-39: `gobbi gotcha promote` writes to the active project learnings', async () => {
+    test('G-MEM2-39: `gobbi gotcha promote` writes to the active project gotchas dir', async () => {
       const repo = makeRepo();
       const projectRoot = projectDir(repo, 'gobbi');
-      const sourceDir = join(projectRoot, 'learnings', 'gotchas');
+      const sourceDir = join(projectRoot, 'gotchas');
       mkdirSync(sourceDir, { recursive: true });
       // Seed ONE draft at a different filename so the append-to-self
       // same-path no-op does not apply (draft `foo.md` lands at
-      // `gobbi/learnings/gotchas/foo.md` post-promotion, same dir).
+      // `gobbi/gotchas/foo.md` post-promotion, same dir).
       // The scenario's invariant is the DESTINATION DIR, which is
       // already the permanent home under the new taxonomy. We lock
       // that same-path-no-op here.
@@ -1240,7 +1240,7 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
 
       // Category-scoped promotion is a same-path no-op — `solo.md`
-      // already sits under `projects/gobbi/learnings/gotchas/`.
+      // already sits under `projects/gobbi/gotchas/`.
       expect(existsSync(join(sourceDir, 'solo.md'))).toBe(true);
 
       // Legacy destination `.gobbi/project/gotchas/` is NOT written.
@@ -1252,10 +1252,9 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
     test('G-MEM2-40: promote destination resolves per --destination-project override', async () => {
       const repo = makeRepo();
       const claudeDir = join(repo, '.claude');
-      // Source is the default project's learnings dir.
+      // Source is the default project's gotchas dir.
       const sourceDir = join(
         projectDir(repo, 'gobbi'),
-        'learnings',
         'gotchas',
       );
       mkdirSync(sourceDir, { recursive: true });
@@ -1276,10 +1275,9 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
       expect(captured.exitCode).toBeNull();
 
-      // Destination is under `.gobbi/projects/demo/learnings/gotchas/`.
+      // Destination is under `.gobbi/projects/demo/gotchas/`.
       const demoDest = join(
         projectDir(repo, 'demo'),
-        'learnings',
         'gotchas',
         'alpha.md',
       );
@@ -1360,17 +1358,18 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
 
       // Assert on the SCAFFOLD set produced by `project create` — the
       // subset that materialises at create time. Per commands/project/
-      // create.ts the scaffold is: design, learnings, learnings/gotchas,
-      // notes, references, rules, skills, agents, sessions. The full
-      // 11-dir taxonomy named in scenarios.md includes decisions,
-      // scenarios, checklists, playbooks, backlogs, reviews — those
-      // materialise on-demand (documented drift; reported to
-      // orchestrator).
+      // create.ts the scaffold is: design, gotchas, learnings, notes,
+      // references, rules, skills, agents, sessions. The full 11-dir
+      // taxonomy named in scenarios.md includes decisions, scenarios,
+      // checklists, playbooks, backlogs, reviews — those materialise
+      // on-demand (documented drift; reported to orchestrator).
+      // PR-FIN-2a-i: `gotchas/` moved to top-level (no longer nested
+      // under `learnings/`).
       const root = projectDir(repo, 'demo');
       const expectedScaffold = [
         'design',
+        'gotchas',
         'learnings',
-        'learnings/gotchas',
         'notes',
         'references',
         'rules',

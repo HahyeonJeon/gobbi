@@ -45,6 +45,7 @@ export const SECRET_PATTERN_ALLOWLIST: readonly string[] = [
   // the `--project` flag (or `basename(repoRoot)` as the default). The
   // allowlist therefore covers every project by name without any registry
   // lookup — a single shared `.gobbi/projects/*/` prefix per branch.
+  '.gobbi/projects/*/gotchas/**',
   '.gobbi/projects/*/learnings/**',
   '.gobbi/projects/*/notes/**',
   '.gobbi/projects/*/sessions/**',

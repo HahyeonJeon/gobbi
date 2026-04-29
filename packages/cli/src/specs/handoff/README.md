@@ -16,7 +16,7 @@ Handoff is the last productive step. Its single transition is unconditional — 
 
 ## Why handoff is its own step
 
-Memorization is **wide** — many rawdata sources (per-step artifacts, subagent transcripts, ExitPlanMode captures, the orchestrator transcript, the full event stream, session-tier gotchas) and many destinations (`learnings/decisions/`, `learnings/gotchas/`, `design/`, `learnings/backlogs/`). Handoff is **narrow** — one source (the just-written `memorization.md` plus last-N events), one destination (`handoff.md` plus one `gobbi.db::memories` row).
+Memorization is **wide** — many rawdata sources (per-step artifacts, subagent transcripts, ExitPlanMode captures, the orchestrator transcript, the full event stream, session-tier gotchas) and many destinations (`learnings/decisions/`, `gotchas/`, `design/`, `learnings/backlogs/`). Handoff is **narrow** — one source (the just-written `memorization.md` plus last-N events), one destination (`handoff.md` plus one `gobbi.db::memories` row).
 
 The synthesis-v1 design folded handoff into memorization as a sub-artifact. Three Pass-4 evaluators flagged that the folded shape risks the handoff content being silently dropped under context pressure — the agent finishes memorization, sees the conversation as complete, and emits the completion signal without ever generating the cover sheet. Promoting handoff to its own step puts a state-machine boundary between memorization's wide sweep and the cover-sheet writer's narrow focus, so the cover sheet cannot be skipped under load. The fresh-context separation that justifies external evaluators justifies handoff as its own step. The user locked this choice (Option B) per `review.md` NOTE-1 / `locked-decisions.md`.
 

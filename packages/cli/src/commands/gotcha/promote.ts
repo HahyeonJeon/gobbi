@@ -1,6 +1,6 @@
 /**
  * gobbi gotcha promote — move gotcha drafts from
- * `.gobbi/projects/<project>/learnings/gotchas/` into their permanent
+ * `.gobbi/projects/<project>/gotchas/` into their permanent
  * resting place.
  *
  * ## Scope (PR C / Wave 9)
@@ -37,7 +37,7 @@
  * source of truth in the project directory while preserving loader
  * compatibility at `.claude/`.
  *
- *   - `{category}.md`             → `.gobbi/projects/<project>/learnings/gotchas/{category}.md`
+ *   - `{category}.md`             → `.gobbi/projects/<project>/gotchas/{category}.md`
  *   - `_skill-{skillName}.md`     → `.claude/skills/{skillName}/gotchas.md`
  *                                   (symlink target:
  *                                   `.gobbi/projects/<project>/skills/{skillName}/gotchas.md`)
@@ -100,15 +100,14 @@ import { resolvePartitionKeys } from '../session.js';
 export const HEARTBEAT_TTL_MS = 60 * 60 * 1000;
 
 /**
- * Default source directory — `.gobbi/projects/<project>/learnings/gotchas/`.
+ * Default source directory — `.gobbi/projects/<project>/gotchas/`.
  * PR-FIN-1c: project name resolves from `--project` flag (caller-supplied)
  * → `basename(repoRoot)` (closes #179 — no `DEFAULT_PROJECT_NAME` literal).
+ * PR-FIN-2a-i: gotcha drafts live at top-level `gotchas/`, no longer
+ * nested under `learnings/`.
  */
 function defaultSourceDir(repoRoot: string, projectName: string): string {
-  return join(
-    projectSubdir(repoRoot, projectName, 'learnings'),
-    'gotchas',
-  );
+  return projectSubdir(repoRoot, projectName, 'gotchas');
 }
 
 /** Skill-scoped prefix convention (see file header). */
@@ -120,9 +119,9 @@ const SKILL_PREFIX = '_skill-';
 
 const USAGE = `Usage: gobbi gotcha promote [options]
 
-Move gotcha drafts from .gobbi/projects/<project>/learnings/gotchas/ into
+Move gotcha drafts from .gobbi/projects/<project>/gotchas/ into
 their permanent resting place. Category drafts land at
-.gobbi/projects/<project>/learnings/gotchas/<category>.md; skill-scoped
+.gobbi/projects/<project>/gotchas/<category>.md; skill-scoped
 drafts (_skill-<name>.md) land at .claude/skills/<name>/gotchas.md via the
 symlink farm. Refuses to run while any session is active.
 
@@ -131,7 +130,7 @@ Options:
                                 (default: basename(repoRoot))
   --dry-run                     Print planned changes without writing or deleting
   --source <path>               Override the source directory
-                                (default: .gobbi/projects/<project>/learnings/gotchas/)
+                                (default: .gobbi/projects/<project>/gotchas/)
   --destination-project <name>  Override the destination project name
                                 (default: the single directory under .gobbi/projects/)
   --help                        Show this help message`;
@@ -481,20 +480,21 @@ function planPromotion(
     const skillPart = filename.slice(SKILL_PREFIX.length, -'.md'.length);
     destination = join(claudeDir, 'skills', skillPart, 'gotchas.md');
   } else {
-    // `<category>.md` → `.gobbi/projects/<project>/learnings/gotchas/<category>.md`
+    // `<category>.md` → `.gobbi/projects/<project>/gotchas/<category>.md`
     //
     // Routes through the `workspace-paths` facade so a future rename of
-    // the taxonomy (e.g., `learnings/` → `memories/`) lands in one
-    // place. `projectName === null` is screened out by the caller when
-    // any non-skill entry is present, so a fallback name here is
-    // unreachable; we still pick a sentinel rather than `!`-asserting so
-    // a future miswiring fails loudly at the filesystem layer instead
-    // of a runtime TypeError.
+    // the taxonomy lands in one place. `projectName === null` is screened
+    // out by the caller when any non-skill entry is present, so a fallback
+    // name here is unreachable; we still pick a sentinel rather than
+    // `!`-asserting so a future miswiring fails loudly at the filesystem
+    // layer instead of a runtime TypeError.
+    //
+    // PR-FIN-2a-i: gotcha drafts live at top-level `gotchas/`, no longer
+    // nested under `learnings/`.
     const projectDir =
       projectName ?? '__unset__project__' /* unreachable — caller checks */;
     destination = join(
-      projectSubdir(repoRoot, projectDir, 'learnings'),
-      'gotchas',
+      projectSubdir(repoRoot, projectDir, 'gotchas'),
       filename,
     );
   }
@@ -514,15 +514,15 @@ function planPromotion(
  * promotions do not fuse the last line of one entry into the first of the
  * next.
  *
- * Post-W3.1 subtlety: for a non-skill promotion in the default project
- * (project name == `basename(repoRoot)`), the category source file and
- * its destination resolve to the same absolute path — both live under
- * `.gobbi/projects/<basename>/learnings/gotchas/<category>.md`.
+ * Post-W3.1 / PR-FIN-2a-i subtlety: for a non-skill promotion in the
+ * default project (project name == `basename(repoRoot)`), the category
+ * source file and its destination resolve to the same absolute path —
+ * both live under `.gobbi/projects/<basename>/gotchas/<category>.md`.
  * Appending to itself and then unlinking would double the body and then
  * delete the file (data loss). When source and destination collide we
  * treat the promotion as already complete (the draft is already in its
- * permanent location by virtue of the W3.1 taxonomy) and skip the file
- * with no writes.
+ * permanent location by virtue of the taxonomy) and skip the file with
+ * no writes.
  */
 function applyPromotion(plan: PromotionPlan): void {
   if (plan.source === plan.destination) {

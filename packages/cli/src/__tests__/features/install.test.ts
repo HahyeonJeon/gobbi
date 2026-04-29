@@ -390,7 +390,7 @@ describe('install + project commands — feature-level flows', () => {
       const created = join(repo, '.gobbi', 'projects', 'my-feature');
       expect(existsSync(join(created, 'design'))).toBe(true);
       expect(existsSync(join(created, 'sessions'))).toBe(true);
-      expect(existsSync(join(created, 'learnings', 'gotchas'))).toBe(true);
+      expect(existsSync(join(created, 'gotchas'))).toBe(true);
 
       // Seed hook fired — install manifest landed under the new project.
       // (Content is the real worktree bundle, which is non-empty by
