@@ -89,11 +89,6 @@ import {
   buildFarmIntoRoot,
 } from '../../lib/symlink-farm.js';
 import {
-  findStateActiveSessions,
-  readCurrentStepRaw,
-  TERMINAL_CURRENT_STEPS,
-} from '../../lib/active-sessions.js';
-import {
   claudeSymlinkTarget,
   projectDir,
   projectSubdir,
@@ -608,23 +603,21 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       expect(manifest.files['rules/r.md']).toBe(v1Hash);
     });
 
-    test('G-MEM2-11: install refuses while a session is active', async () => {
+    test('G-MEM2-11: install proceeds even when a session is on disk (active-session gate retired in PR-FIN-2a-i T-2a.1.5)', async () => {
       const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
       const repo = makeRepo();
+      // Pre-T-2a.1.5 this would have blocked the install. Post-T-2a.1.5
+      // the gate is gone — `gobbi install` runs unconditionally and the
+      // manifest lands as expected.
       seedProjectSession(repo, 'gobbi', 'live-session', 'ideation');
 
       await captureExit(() =>
         runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
       );
-      // Exit code 1 per install.ts — the scenario prose says "2" but the
-      // implementation returns 1; we assert the implementation's actual
-      // behaviour and record the drift in the W6.5 report.
-      expect(captured.exitCode).toBe(1);
-      expect(captured.stderr).toContain('live-session');
-      expect(captured.stderr).toContain('ideation');
+      expect(captured.exitCode).toBeNull();
       expect(
         existsSync(join(projectDir(repo, 'gobbi'), '.install-manifest.json')),
-      ).toBe(false);
+      ).toBe(true);
     });
 
     test('G-MEM2-12: upgrade manifest rewrite excludes conflicts', async () => {
@@ -1107,89 +1100,39 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
   });
 
   // =========================================================================
-  // Active-session safeguards
+  // Legacy-session wipe (PR-FIN-2a-i T-2a.1.5: active-session guard removed)
   // =========================================================================
-  describe('active-session safeguards', () => {
-    test('G-MEM2-36: findStateActiveSessions is the single source of truth', () => {
-      const repo = makeRepo();
-      // Build sessions across BOTH layers — legacy flat + per-project.
-      seedLegacySession(repo, 'legacy-live', 'ideation');
-      seedLegacySession(repo, 'legacy-done', 'done');
-      seedProjectSession(repo, 'gobbi', 'proj-live', 'planning');
-      seedProjectSession(repo, 'gobbi', 'proj-done', 'done');
-      seedProjectSession(repo, 'demo', 'demo-live', 'execution');
-
-      const actives = findStateActiveSessions(repo);
-      const ids = new Set(actives.map((s) => s.sessionId));
-      // Non-terminal sessions on both layers surface; terminal ones do not.
-      expect(ids.has('legacy-live')).toBe(true);
-      expect(ids.has('legacy-done')).toBe(false);
-      expect(ids.has('proj-live')).toBe(true);
-      expect(ids.has('proj-done')).toBe(false);
-      expect(ids.has('demo-live')).toBe(true);
-
-      // Project-name partition key is populated.
-      const legacyLive = actives.find((s) => s.sessionId === 'legacy-live');
-      const projLive = actives.find((s) => s.sessionId === 'proj-live');
-      const demoLive = actives.find((s) => s.sessionId === 'demo-live');
-      expect(legacyLive?.projectName).toBeNull();
-      expect(projLive?.projectName).toBe('gobbi');
-      expect(demoLive?.projectName).toBe('demo');
-
-      // Terminal set is state-based, not heuristic.
-      expect(TERMINAL_CURRENT_STEPS.has('done')).toBe(true);
-      expect(TERMINAL_CURRENT_STEPS.has('error')).toBe(true);
-      expect(TERMINAL_CURRENT_STEPS.has('planning')).toBe(false);
-
-      // Raw read returns the verbatim step value.
-      expect(
-        readCurrentStepRaw(join(repo, '.gobbi', 'sessions', 'legacy-live')),
-      ).toBe('ideation');
-    });
-
-    test('G-MEM2-37: wipe-legacy-sessions deletes terminal legacy sessions only', async () => {
+  describe('legacy-session wipe', () => {
+    test('G-MEM2-37: wipe-legacy-sessions deletes every legacy session', async () => {
       const repo = makeRepo();
       seedLegacySession(repo, 'done-1', 'done');
       seedLegacySession(repo, 'err-1', 'error');
+      seedLegacySession(repo, 'live', 'execution');
       // Per-project sessions are NEVER touched by wipe-legacy-sessions.
       seedProjectSession(repo, 'gobbi', 'proj-done', 'done');
+      seedProjectSession(repo, 'gobbi', 'proj-live', 'planning');
 
       await captureExit(() =>
         runWipeLegacySessionsWithOptions([], { repoRoot: repo }),
       );
       expect(captured.exitCode).toBeNull();
 
-      // Legacy terminal sessions wiped.
+      // Every legacy session — terminal or not — is wiped.
       expect(existsSync(join(repo, '.gobbi', 'sessions', 'done-1'))).toBe(
         false,
       );
       expect(existsSync(join(repo, '.gobbi', 'sessions', 'err-1'))).toBe(
         false,
       );
-      // Per-project session untouched.
+      expect(existsSync(join(repo, '.gobbi', 'sessions', 'live'))).toBe(false);
+      // Per-project sessions untouched.
       expect(
         existsSync(sessionDirForProject(repo, 'gobbi', 'proj-done')),
       ).toBe(true);
-      expect(captured.stdout).toContain('2 session');
-    });
-
-    test('G-MEM2-38: wipe refuses when any legacy session is non-terminal (D5 guard)', async () => {
-      const repo = makeRepo();
-      seedLegacySession(repo, 'live', 'execution');
-      seedLegacySession(repo, 'done-1', 'done');
-
-      await captureExit(() =>
-        runWipeLegacySessionsWithOptions([], { repoRoot: repo }),
-      );
-      // Exit 1 — refuse-all safety model.
-      expect(captured.exitCode).toBe(1);
-      expect(captured.stderr).toContain('live');
-      // `done-1` NOT deleted — the refusal is all-or-nothing.
-      expect(existsSync(join(repo, '.gobbi', 'sessions', 'done-1'))).toBe(
-        true,
-      );
-      // `live` untouched.
-      expect(existsSync(join(repo, '.gobbi', 'sessions', 'live'))).toBe(true);
+      expect(
+        existsSync(sessionDirForProject(repo, 'gobbi', 'proj-live')),
+      ).toBe(true);
+      expect(captured.stdout).toContain('3 session');
     });
   });
 

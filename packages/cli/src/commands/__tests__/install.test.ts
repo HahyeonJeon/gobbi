@@ -1,7 +1,13 @@
 /**
  * Unit tests for `gobbi install` — fresh install, upgrade with 3-way
- * merge, conflict handling, dry-run mode, active-session gate, and
- * template-root resolution fallback.
+ * merge, conflict handling, dry-run mode, and template-root resolution
+ * fallback.
+ *
+ * Post-PR-FIN-2a-i T-2a.1.5: the active-session gate that previously
+ * sat in front of the install pipeline was removed — the JSON-pivot
+ * memory model retired the per-session `state.json` it depended on.
+ * Tests that exercised the rejection path are gone alongside the
+ * helpers.
  *
  * All tests operate against scratch directories in the OS temp dir.
  * Template content is synthesised in a per-test template root to
@@ -25,7 +31,6 @@ import { join, resolve as pathResolve } from 'node:path';
 
 import {
   __INTERNALS__,
-  renderActiveSessionError,
   renderPlan,
   resolveDefaultTemplateRoot,
   runInstallWithOptions,
@@ -185,24 +190,6 @@ function projectRoot(repo: string, name: string): string {
 
 function manifestPath(repo: string, name: string): string {
   return join(projectRoot(repo, name), '.install-manifest.json');
-}
-
-function seedActiveSession(repo: string, name: string, id: string): string {
-  const dir = join(
-    repo,
-    '.gobbi',
-    'projects',
-    name,
-    'sessions',
-    id,
-  );
-  mkdirSync(dir, { recursive: true });
-  writeFileSync(
-    join(dir, 'state.json'),
-    JSON.stringify({ currentStep: 'ideation' }),
-    'utf8',
-  );
-  return dir;
 }
 
 // ===========================================================================
@@ -852,60 +839,6 @@ describe('runInstall --dry-run', () => {
 });
 
 // ===========================================================================
-// Active-session gate
-// ===========================================================================
-
-describe('runInstall — active-session gate', () => {
-  test('active session in target project blocks install without --force', async () => {
-    const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
-    const repo = makeRepo();
-    seedActiveSession(repo, 'gobbi', 'live-session');
-
-    await captureExit(() =>
-      runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
-    );
-
-    expect(captured.exitCode).toBe(1);
-    expect(captured.stderr).toContain('live-session');
-    expect(captured.stderr).toContain('currentStep: ideation');
-    // Install did not run — no manifest written.
-    expect(existsSync(manifestPath(repo, 'gobbi'))).toBe(false);
-  });
-
-  test('--force overrides the active-session gate', async () => {
-    const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
-    const repo = makeRepo();
-    seedActiveSession(repo, 'gobbi', 'live-session');
-
-    await captureExit(() =>
-      runInstallWithOptions(['--force'], {
-        repoRoot: repo,
-        templateRoot: tpl,
-      }),
-    );
-
-    expect(captured.exitCode).toBeNull();
-    expect(existsSync(manifestPath(repo, 'gobbi'))).toBe(true);
-  });
-
-  test('active session in a DIFFERENT project does not block install', async () => {
-    const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
-    const repo = makeRepo();
-    seedActiveSession(repo, 'other', 'live-session');
-
-    await captureExit(() =>
-      runInstallWithOptions(['--project', 'gobbi'], {
-        repoRoot: repo,
-        templateRoot: tpl,
-      }),
-    );
-
-    expect(captured.exitCode).toBeNull();
-    expect(existsSync(manifestPath(repo, 'gobbi'))).toBe(true);
-  });
-});
-
-// ===========================================================================
 // Template-root resolution
 // ===========================================================================
 
@@ -986,8 +919,8 @@ describe('classifyFiles — direct unit checks', () => {
   });
 });
 
-describe('renderPlan + renderActiveSessionError', () => {
-  test('renderPlan emits the summary line and conflict block', () => {
+describe('renderPlan', () => {
+  test('emits the summary line and conflict block', () => {
     const out = renderPlan({
       projectName: 'gobbi',
       actions: [
@@ -1021,23 +954,5 @@ describe('renderPlan + renderActiveSessionError', () => {
     expect(out).toContain('1 added');
     expect(out).toContain('1 conflict(s)');
     expect(out).toContain('Resolve each conflict manually');
-  });
-
-  test('renderActiveSessionError lists each session and suggests --force', () => {
-    const out = renderActiveSessionError(
-      [
-        {
-          sessionId: 'abc',
-          sessionDir: '/tmp/abc',
-          projectName: 'gobbi',
-          currentStep: 'planning',
-        },
-      ],
-      'gobbi',
-    );
-    expect(out).toContain("project 'gobbi'");
-    expect(out).toContain('abc');
-    expect(out).toContain('currentStep: planning');
-    expect(out).toContain('--force');
   });
 });

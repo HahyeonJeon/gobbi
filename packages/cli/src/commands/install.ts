@@ -34,12 +34,11 @@
  *     three content roots. Extending the bundle requires a separate
  *     design decision and a bump of the manifest shape.
  *   - Does NOT register itself in `cli.ts` — wiring is owned by W5.5.
- *   - Runs a state-based active-session gate before any writes. If ANY
- *     session under `.gobbi/projects/<projectName>/sessions/` has a
- *     non-terminal `currentStep`, the command refuses to run (exit 1)
- *     unless `--force` is supplied. Mirrors the
- *     `maintenance/wipe-legacy-sessions.ts` pattern but scoped to ONE
- *     target project.
+ *   - PR-FIN-2a-i T-2a.1.5: the active-session gate that previously
+ *     refused installs while a session was in flight has been removed
+ *     alongside the JSON-pivot retirement of per-session `state.json`.
+ *     The `--force` flag remains, but its only remaining job is the
+ *     seed-helper's "overwrite preexisting target content" override.
  *
  * ## 3-way merge algorithm
  *
@@ -103,9 +102,6 @@
  * first that exists. The dev fallback keeps the dogfooding workflow
  * working without a pre-publish step.
  *
- * @see `commands/maintenance/wipe-legacy-sessions.ts` — active-session
- *      gate pattern.
- * @see `lib/active-sessions.ts::findStateActiveSessions`.
  * @see `lib/workspace-paths.ts::projectSubdir`.
  */
 
@@ -122,10 +118,6 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
-import {
-  findStateActiveSessions,
-  type StateActiveSession,
-} from '../lib/active-sessions.js';
 import { isRecord, isString } from '../lib/guards.js';
 import { getRepoRoot } from '../lib/repo.js';
 import {
@@ -179,12 +171,12 @@ Options:
   --upgrade          Permit overwriting existing project content. Without
                      this flag, a non-empty target exits 1.
   --dry-run          Print the planned actions; write nothing.
-  --force            Override the active-session refusal.
+  --force            Skip over preexisting target files (seed override).
   --help, -h         Show this help message
 
 Exit codes:
   0  install / upgrade / dry-run completed
-  1  refused (active session, conflicts, or non-empty target without --upgrade)
+  1  refused (conflicts, or non-empty target without --upgrade)
   2  argument parse error`;
 
 // ---------------------------------------------------------------------------
@@ -305,17 +297,11 @@ export async function runInstallWithOptions(
     return;
   }
 
-  // --- 3. Active-session gate -------------------------------------------
-  if (!force) {
-    const blockers = collectActiveSessions(repoRoot, projectName);
-    if (blockers.length > 0) {
-      process.stderr.write(renderActiveSessionError(blockers, projectName));
-      process.exit(1);
-      return;
-    }
-  }
-
-  // --- 4. Read current manifest + package version ------------------------
+  // --- 3. Read current manifest + package version ------------------------
+  //
+  // PR-FIN-2a-i T-2a.1.5 retired the state-based active-session gate that
+  // previously sat in this position; the JSON-pivot memory model removed
+  // the per-session `state.json` it depended on.
   const projectRoot = join(repoRoot, '.gobbi', 'projects', projectName);
   const manifestPath = join(projectRoot, MANIFEST_FILENAME);
   const previousManifest = readManifest(manifestPath);
@@ -827,54 +813,6 @@ function copyFile(src: string, dst: string): void {
   mkdirSync(dirname(dst), { recursive: true });
   const content = readFileSync(src);
   writeFileSync(dst, content);
-}
-
-// ---------------------------------------------------------------------------
-// Active-session gate
-// ---------------------------------------------------------------------------
-
-/**
- * Return every active session under
- * `.gobbi/projects/<projectName>/sessions/`. The legacy flat layer
- * (`.gobbi/sessions/`) and sessions belonging to OTHER projects are
- * ignored — the install command only writes under one project's tree
- * and must not refuse to run because an unrelated project has a
- * workflow in flight.
- */
-function collectActiveSessions(
-  repoRoot: string,
-  projectName: string,
-): readonly StateActiveSession[] {
-  const actives = findStateActiveSessions(repoRoot);
-  const out: StateActiveSession[] = [];
-  for (const s of actives) {
-    if (s.projectName === projectName) out.push(s);
-  }
-  return out;
-}
-
-export function renderActiveSessionError(
-  actives: readonly StateActiveSession[],
-  projectName: string,
-): string {
-  const lines: string[] = [];
-  lines.push(
-    `error: Cannot install into project '${projectName}' while one or more of its sessions are active.`,
-  );
-  for (const s of actives) {
-    const step = s.currentStep ?? '(missing or malformed state.json)';
-    lines.push(`       Active session: ${s.sessionId}`);
-    lines.push(`       currentStep: ${step}`);
-    lines.push(`       path: ${s.sessionDir}`);
-  }
-  lines.push('');
-  lines.push('Options:');
-  lines.push(
-    '  1. Finish the session first: gobbi workflow transition FINISH',
-  );
-  lines.push('  2. Pass --force to override this safety check.');
-  lines.push('');
-  return lines.join('\n');
 }
 
 // ---------------------------------------------------------------------------

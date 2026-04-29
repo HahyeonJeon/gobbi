@@ -50,7 +50,7 @@ export const GOTCHA_COMMANDS: readonly GotchaCommand[] = [
   {
     name: 'promote',
     summary:
-      'Move gotcha drafts from .gobbi/projects/<name>/gotchas/ into .claude/ (refuses during active sessions)',
+      'Move gotcha drafts from .gobbi/projects/<name>/gotchas/ into .claude/',
     run: async (args: string[]): Promise<void> => {
       const { runPromote } = await import('./gotcha/promote.js');
       await runPromote(args);
