@@ -201,7 +201,7 @@ export const COMMANDS_BY_NAME = {
   },
   install: {
     name: 'install',
-    summary: 'Fresh / upgrade / 3-way merge of the template bundle',
+    summary: 'Install / overwrite the shipped gobbi template bundle',
     run: async (args: string[]): Promise<void> => {
       const { runInstall } = await import('./commands/install.js');
       await runInstall(args);

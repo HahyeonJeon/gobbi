@@ -1,6 +1,6 @@
 # gobbi-memory — Scenarios
 
-Behaviour specifications for the Pass-2 multi-project memory redesign. Covers the 11-dir taxonomy, per-file symlink farm, bootstrap, `gobbi install` 3-way merge, `gobbi project list|create|switch`, active-session gates, per-step README on STEP_EXIT, and `'plan'` → `'planning'` backward-compat.
+Behaviour specifications for the Pass-2 multi-project memory redesign. Covers the 11-dir taxonomy, per-file symlink farm, bootstrap, `gobbi install` collision-gate + `--force` overwrite policy (PR-FIN-2a-i T-2a.3 replacement for the prior 3-way merge), `gobbi project list|create|switch`, per-step README on STEP_EXIT, and `'plan'` → `'planning'` backward-compat.
 
 This file does NOT cover: the settings cascade itself (see `../gobbi-config/scenarios.md`), state-machine transitions outside the rename (`deterministic-orchestration.md`), or plugin-side template packaging (`one-command-install.md`). Every scenario has a stable ID in the `G-MEM2-NN` format — `rg 'G-MEM2-' .gobbi/projects/gobbi/design/v050-features/gobbi-memory/` surfaces every reference. Scenario IDs, once published, never change; new scenarios get higher numbers.
 
@@ -14,7 +14,7 @@ See `README.md` for the feature overview.
 
 **Given** a repo with no `.gobbi/` and no `.claude/{skills,agents,rules}/` farm
 **When** `gobbi install` runs
-**Then** `.gobbi/projects/gobbi/{skills,agents,rules}/` exist with the bundled template files; `.gobbi/projects/gobbi/.install-manifest.json` records a sha256 per template file; `.gobbi/settings.json` has `projects.active === "gobbi"` and `projects.known === ["gobbi"]`; `.claude/{skills,agents,rules}/` are populated with per-file relative symlinks into the project tree; exit code is `0`.
+**Then** `.gobbi/projects/gobbi/{skills,agents,rules}/` exist with the bundled template files; `.gobbi/settings.json` is seeded at minimum shape (`{schemaVersion: 1}` — PR-FIN-1c retired the `projects` registry); `.claude/{skills,agents,rules}/` are populated with per-file relative symlinks into the project tree; exit code is `0`. **PR-FIN-2a-i T-2a.3:** no `.install-manifest.json` is written.
 
 Evidence: `packages/cli/src/commands/install.ts::runInstallWithOptions` (fresh branch), `applyFreshInstallActivation`. Commits `2b5c4d5` (W5.3), `db6c391` (W5 eval F1+F2).
 
@@ -50,85 +50,75 @@ Evidence: `packages/cli/src/commands/workflow/init.ts` — bootstrap fallback. C
 
 ---
 
-## Install — upgrade & 3-way merge (6 merge actions)
+## Install — collision gate + `--force` overwrite (post-PR-FIN-2a-i T-2a.3)
 
-### G-MEM2-05 — Action `add`: template has a new file the user never had
+PR-FIN-2a-i T-2a.3 retired the install-manifest bookkeeping and the 6-action 3-way-merge classification (`add` / `unchanged` / `template-only` / `user-only` / `converged` / `conflict`). The replacement policy is per-file: collisions refuse without `--force`; with `--force`, plugin-bundled files overwrite while user-authored files outside the bundle survive untouched. The historical G-MEM2-05..G-MEM2-12 IDs (manifest 3-way merge) are preserved in git history (commit `b6cbb00` and prior).
 
-**Given** baseline manifest lacks `skills/_new/SKILL.md`; template now includes it; project tree lacks it
+### G-MEM2-05 — First install copies every bundled file
+
+**Given** a fresh `.gobbi/projects/{name}/` with no skills/agents/rules content yet
 **When** `gobbi install` runs
-**Then** the file is copied into `.gobbi/projects/{active}/skills/_new/SKILL.md`; the new manifest records its hash; the action classification is `add`.
+**Then** every plugin-bundled file is copied into `.gobbi/projects/{name}/{skills,agents,rules}/`; no `.install-manifest.json` is written; exit code is `0`.
 
-Evidence: `install.ts::classifyFiles` (add case). Commit `2b5c4d5`.
+Evidence: `install.ts::runInstallWithOptions` + `planInstall` (`add` arm).
 
 ---
 
-### G-MEM2-06 — Action `unchanged`: all three hashes agree
+### G-MEM2-06 — Re-install without `--force` refuses on collision
 
-**Given** a file whose project, baseline, and template hashes are identical
-**When** `gobbi install` runs
-**Then** no write occurs; the action is `unchanged`; the manifest entry is retained.
+**Given** a project that already contains plugin-bundled paths from a prior install
+**When** `gobbi install` runs (without `--force`)
+**Then** the per-file collision check produces `COLLISION` plan entries; exit code is `1`; stderr lists the colliding paths and points at `--force`; no filesystem writes happen.
 
-Evidence: `install.ts::classifyFiles` (unchanged). Commit `2b5c4d5`.
-
----
-
-### G-MEM2-07 — Action `template-only`: template changed, user still matches baseline
-
-**Given** `currentHash === baseHash && templateHash !== baseHash`
-**When** `gobbi install` runs
-**Then** the template file overwrites the project file; the manifest is updated to the new template hash; the action is `template-only`.
-
-Evidence: `install.ts::classifyFiles` (template-only). Commit `2b5c4d5`.
+Evidence: `install.ts::planInstall` (`collision` arm) + `runInstallWithOptions` collision-gate.
 
 ---
 
-### G-MEM2-08 — Action `user-only`: user changed, template still matches baseline
+### G-MEM2-07 — `--force` overwrites plugin-bundled files
 
-**Given** `currentHash !== baseHash && templateHash === baseHash`
-**When** `gobbi install` runs
-**Then** the project file is NOT overwritten; the manifest retains the baseline hash; the action is `user-only`.
+**Given** a project where one or more bundled paths already exist with prior content
+**When** `gobbi install --force` runs
+**Then** every bundled file is written unconditionally (`OVERWRITE` plan entries); summary line reports the overwrite count; exit code is `0`.
 
-Evidence: `install.ts::classifyFiles` (user-only). Commit `2b5c4d5`.
-
----
-
-### G-MEM2-09 — Action `converged`: user and template changed to the same new hash
-
-**Given** `currentHash === templateHash && currentHash !== baseHash`
-**When** `gobbi install` runs
-**Then** no write occurs; the manifest is updated to the converged hash; the action is `converged`.
-
-Evidence: `install.ts::classifyFiles` (converged). Commit `2b5c4d5`.
+Evidence: `install.ts::planInstall` (`overwrite` arm).
 
 ---
 
-### G-MEM2-10 — Action `conflict`: user and template diverged differently
+### G-MEM2-08 — User-authored files outside the bundle survive `--force`
 
-**Given** all three hashes differ
-**When** `gobbi install` runs
-**Then** the project file is NOT overwritten; the manifest retains the prior baseline for the entry; the plan output lists the path under a `CONFLICT` heading; non-conflict actions still apply; exit code is `0`.
+**Given** a project that contains both plugin-bundled paths AND user-authored files at non-bundle paths
+**When** `gobbi install --force` runs
+**Then** the bundled paths are overwritten; the user-authored paths are never touched (the install loop iterates only over template-bundle paths and never inspects others).
 
-Evidence: `install.ts::classifyFiles` + `renderPlan`. Commit `2b5c4d5`.
-
----
-
-### G-MEM2-11 — Install refuses while a session is active
-
-**Given** at least one session under `.gobbi/projects/*/sessions/` has non-terminal `state.json.currentStep`
-**When** `gobbi install` runs
-**Then** exit code is `2`; stderr names the blocking session id and project; no filesystem write occurs.
-
-Evidence: `install.ts::collectActiveSessions` + `renderActiveSessionError`. Commit `2b5c4d5`.
+Evidence: `install.ts::runInstallWithOptions` — write loop ranges over `templateFiles` only.
 
 ---
 
-### G-MEM2-12 — Upgrade manifest rewrite excludes conflicts
+### G-MEM2-09 — RETIRED (PR-FIN-2a-i T-2a.3)
 
-**Given** an upgrade run with one `conflict` and several `template-only` entries
-**When** `gobbi install` completes
-**Then** the rewritten manifest carries new template hashes for the `template-only` entries; the `conflict` entry retains its baseline hash; re-running with no template change does not re-flag the conflict as new.
+The `converged` arm was specific to the 3-way-merge classification. Under the per-file collision-gate policy, equality between current and template content still produces `OVERWRITE` (with `--force`) or `COLLISION` (without). The historical scenario body is preserved in git history.
 
-Evidence: `install.ts::buildNextManifest`. Commit `2b5c4d5`.
+---
+
+### G-MEM2-10 — RETIRED (PR-FIN-2a-i T-2a.3)
+
+The `conflict` arm was specific to the 3-way-merge classification. The replacement policy treats every preexisting destination as a `COLLISION` (refused without `--force`) or `OVERWRITE` (with `--force`); there is no per-file three-way comparison and no conflict signaling separate from collision. Historical body preserved in git history.
+
+---
+
+### G-MEM2-11 — Install proceeds even with active sessions on disk (PR-FIN-2a-i T-2a.1.5)
+
+**Given** at least one session under `.gobbi/projects/*/sessions/` has a state row in `.gobbi/state.db`
+**When** `gobbi install` runs
+**Then** the install proceeds — the active-session gate retired in PR-FIN-2a-i T-2a.1.5 alongside the JSON-pivot retirement of per-session `state.json`. Exit code is `0` for non-collision runs.
+
+Evidence: `install.ts::runInstallWithOptions` — gate removed.
+
+---
+
+### G-MEM2-12 — RETIRED (PR-FIN-2a-i T-2a.3)
+
+The "upgrade manifest rewrite excludes conflicts" scenario was specific to the manifest-based 3-way merge. The replacement policy writes no manifest. Historical body preserved in git history.
 
 ---
 
@@ -158,7 +148,7 @@ Evidence: `packages/cli/src/commands/project/list.ts`. Commit `8b707ec`.
 
 **Given** `projects.known: ["gobbi"]` and no `.gobbi/projects/demo/`
 **When** `gobbi project create demo` runs
-**Then** `.gobbi/projects/demo/` is created with the 11 taxonomy directories + `.install-manifest.json`; `projects.known` gains `"demo"`; `projects.active` is unchanged; re-running with the same name is idempotent.
+**Then** `.gobbi/projects/demo/` is created with the 11 taxonomy directories and the seeded plugin bundle (skills / agents / rules from the template); re-running with the same name is idempotent. **PR-FIN-2a-i T-2a.3:** no `.install-manifest.json` is written. **PR-FIN-1c:** no `projects.known` / `projects.active` mutation — the directory tree is the source of truth.
 
 Evidence: `packages/cli/src/commands/project/create.ts`. Commit `d6e31c5`.
 

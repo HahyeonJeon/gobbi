@@ -8,9 +8,9 @@ Verification harness for the scenarios in `scenarios.md`. Items are grouped by s
 
 - `@functional` Fresh `gobbi install` creates `.gobbi/projects/gobbi/{skills,agents,rules}/` populated from the bundled template.
   - Evidence: `packages/cli/src/commands/__tests__/install.test.ts` (fresh-install describe block); commit `2b5c4d5`.
-- `@data` `.gobbi/projects/gobbi/.install-manifest.json` records a sha256 per copied file.
-  - Evidence: `install.ts::buildNextManifest`; commit `db6c391`.
-- `@integration` `.gobbi/settings.json` is seeded with `projects.active === "gobbi"` and `projects.known === ["gobbi"]`.
+- `@data` **PR-FIN-2a-i T-2a.3:** no `.install-manifest.json` is written. Verified by negative assertion in fresh-install tests.
+  - Evidence: `install.ts::runInstallWithOptions`; install-manifest bookkeeping removed.
+- `@integration` `.gobbi/settings.json` is seeded at minimum shape (`{schemaVersion: 1}` — PR-FIN-1c retired the `projects` registry).
   - Evidence: `install.ts::applyFreshInstallActivation` + `SeedResult`; commit `db6c391`.
 - `@integration` `.claude/{skills,agents,rules}/` are built as per-file relative symlinks after the copy.
   - Evidence: `symlink-farm.ts::buildFarmIntoRoot`; commits `004eda1`, `db6c391`.
@@ -26,12 +26,12 @@ Verification harness for the scenarios in `scenarios.md`. Items are grouped by s
 
 ---
 
-## G-MEM2-03 — Fresh install refuses pre-existing farm-kind content
+## G-MEM2-03 — Fresh install refuses pre-existing destination content (post-T-2a.3)
 
-- `@functional` Install exits non-zero when `.claude/skills/legacy-skill/SKILL.md` exists as a regular file.
-  - Evidence: `install.ts::targetHasPreexistingContent`; commit `2b5c4d5`.
-- `@boundary` Individual symlinks already in the farm do NOT trigger the refusal (install idempotent over symlinks).
-  - Evidence: `install.test.ts` — mixed preexisting content case.
+- `@functional` Install exits 1 when any plugin-bundled destination path already exists and `--force` is not passed.
+  - Evidence: `install.ts::planInstall` (collision arm) + `runInstallWithOptions` collision-gate.
+- `@boundary` `--force` overwrites bundled paths; user-authored files at non-bundle paths are never iterated.
+  - Evidence: `install.test.ts` — `--force preserves user-authored files outside the bundle`.
 
 ---
 
@@ -44,32 +44,52 @@ Verification harness for the scenarios in `scenarios.md`. Items are grouped by s
 
 ---
 
-## G-MEM2-05 through G-MEM2-10 — The six 3-way-merge actions
+## G-MEM2-05 — First install copies every bundled file (post-T-2a.3)
 
-- `@functional` Each action kind (`add`, `unchanged`, `template-only`, `user-only`, `converged`, `conflict`) is produced by `classifyFiles` for the hash triple defined in its scenario.
-  - Evidence: `install.ts::classifyFiles`; `install.test.ts` — per-action describe blocks; commit `2b5c4d5`.
-- `@data` The action discriminator union in `install.ts` enumerates exactly six kinds.
-  - Evidence: `install.ts` `FileAction` type definition.
-- `@boundary` `conflict` does not abort the run — non-conflict actions still apply and exit code is `0`.
-  - Evidence: `install.ts::runInstallWithOptions` — conflicts accumulate in a separate list; commit `2b5c4d5`.
+- `@functional` Every plugin-bundled file lands at `.gobbi/projects/{name}/{skills,agents,rules}/` on first install.
+  - Evidence: `install.ts::planInstall` (`add` arm) + `runInstallWithOptions` write loop.
+- `@data` No `.install-manifest.json` is written.
+  - Evidence: `install.test.ts` — `copies every template file into the project tree`.
 
 ---
 
-## G-MEM2-11 — Install refuses during active session
+## G-MEM2-06 — Re-install without `--force` refuses on collision
 
-- `@functional` Install exits `2` when any session has non-terminal `state.json.currentStep`.
-  - Evidence: `install.ts::collectActiveSessions` + `renderActiveSessionError`; commit `2b5c4d5`.
-- `@concurrency` Active-session check runs before any manifest / template write.
-  - Evidence: `install.ts::runInstallWithOptions` — gate ordering.
+- `@functional` Per-file collision check produces `COLLISION` plan entries; exit code is `1`; stderr lists colliding paths and points at `--force`.
+  - Evidence: `install.ts::planInstall` (`collision` arm) + collision-gate in `runInstallWithOptions`.
+- `@boundary` No filesystem writes happen on the refused run.
+  - Evidence: `install.test.ts` — `refuses without --force when any destination file exists`.
 
 ---
 
-## G-MEM2-12 — Upgrade manifest excludes conflicts
+## G-MEM2-07 — `--force` overwrites plugin-bundled files
 
-- `@data` `buildNextManifest` carries over prior baseline hash for `conflict` entries.
-  - Evidence: `install.ts::buildNextManifest`; commit `2b5c4d5`.
-- `@functional` Re-running install with no template change does not re-flag the conflict as `add`.
-  - Evidence: `install.test.ts` — re-run idempotency case.
+- `@functional` Bundled destination paths are written unconditionally with the new template content.
+  - Evidence: `install.ts::planInstall` (`overwrite` arm) + write loop.
+- `@boundary` Summary line reports the overwrite count.
+  - Evidence: `install.test.ts` — `--force overwrites preexisting destination files`.
+
+---
+
+## G-MEM2-08 — User-authored files survive `--force`
+
+- `@functional` Files at non-bundle paths inside the project tree are never iterated and so survive the overwrite.
+  - Evidence: `install.test.ts` — `--force preserves user-authored files outside the bundle`.
+- `@boundary` The `_-prefix` naming convention demarcates plugin-owned skills/agents from user-owned ones; user paths do not collide.
+  - Evidence: documented contract in `install.ts` JSDoc.
+
+---
+
+## G-MEM2-09 / G-MEM2-10 / G-MEM2-12 — RETIRED (PR-FIN-2a-i T-2a.3)
+
+The `converged`, `conflict`, and "manifest-rewrite-excludes-conflicts" verifications were specific to the manifest-based 3-way merge. The replacement policy (per-file collision-gate) writes no manifest and runs no three-way comparison; these checklist items have no runtime equivalent. The historical bodies are preserved in git history at commit `b6cbb00` and prior.
+
+---
+
+## G-MEM2-11 — Install proceeds with active sessions on disk (PR-FIN-2a-i T-2a.1.5)
+
+- `@functional` `gobbi install` runs unconditionally; the active-session gate retired alongside the JSON-pivot retirement of per-session `state.json`.
+  - Evidence: `install.test.ts` (gobbi-memory feature suite) — `install proceeds even when a session is on disk`.
 
 ---
 

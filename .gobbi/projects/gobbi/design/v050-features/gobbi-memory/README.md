@@ -217,7 +217,7 @@ See `../orchestration/README.md` §3 for the workspace event-log details and the
 | [`checklist.md`](checklist.md) | ISTQB-tagged verification items grouped by scenario ID |
 | [`review.md`](review.md) | Pass-2 DRIFT / GAP / NOTE entries with pinned commit SHAs |
 | [`packages/cli/src/lib/workspace-paths.ts`](../../../../../../packages/cli/src/lib/workspace-paths.ts) | Path facade; every `.gobbi/` and farm path derives from here |
-| [`packages/cli/src/commands/install.ts`](../../../../../../packages/cli/src/commands/install.ts) | 3-way-merge install implementation |
+| [`packages/cli/src/commands/install.ts`](../../../../../../packages/cli/src/commands/install.ts) | Template-bundle install (per-file collision gate + `--force` overwrite, post-PR-FIN-2a-i T-2a.3) |
 | [`packages/cli/src/commands/project/`](../../../../../../packages/cli/src/commands/project) | `list` / `create` / `switch` subcommands |
 | [`packages/cli/src/lib/symlink-farm.ts`](../../../../../../packages/cli/src/lib/symlink-farm.ts) | Farm build + swap primitives |
 | [`packages/cli/src/workflow/step-readme-writer.ts`](../../../../../../packages/cli/src/workflow/step-readme-writer.ts) | STEP_EXIT README generator |

@@ -31,9 +31,11 @@
  *   - Fallback (shape drifts): stderr warning pointing at
  *     `gobbi install`; scaffold directories stay empty.
  *
- * The seed helper is content-only. It writes templates and the install
- * manifest, but does NOT touch `settings.json` or build the `.claude/`
- * symlink farm.
+ * The seed helper is content-only. It writes the bundled template
+ * files into the new project, but does NOT touch `settings.json` and
+ * does NOT build the `.claude/` symlink farm. PR-FIN-2a-i T-2a.3
+ * removed the install-manifest bookkeeping; the seed helper no longer
+ * writes a manifest either.
  *
  * ## settings.json update (PR-FIN-1c)
  *
@@ -298,10 +300,11 @@ export async function runProjectCreateWithOptions(
  * export), the guard always succeeds.
  *
  * The install seed function is content-only: it copies templates into
- * `.gobbi/projects/<projectName>/{skills,agents,rules}/` and writes the
- * install manifest. It does NOT touch `settings.json` or build the
- * `.claude/` farm — those are fresh-install-only concerns and do not
- * apply to project creation.
+ * `.gobbi/projects/<projectName>/{skills,agents,rules}/`. It does NOT
+ * touch `settings.json` or build the `.claude/` farm — those are
+ * fresh-install-only concerns and do not apply to project creation.
+ * PR-FIN-2a-i T-2a.3 removed the install-manifest bookkeeping; no
+ * `.install-manifest.json` is written either.
  */
 async function trySeedFromInstallTemplates(
   repoRoot: string,

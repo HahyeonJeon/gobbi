@@ -73,7 +73,6 @@ import { basename, join, resolve as pathResolve } from 'node:path';
 
 import {
   __INTERNALS__ as INSTALL_INTERNALS,
-  renderActiveSessionError as renderInstallActiveError,
   renderPlan as renderInstallPlan,
   runInstallWithOptions,
 } from '../../commands/install.js';
@@ -250,20 +249,6 @@ function readSettings(repo: string): SettingsShape {
   return JSON.parse(raw) as SettingsShape;
 }
 
-function readManifest(
-  repo: string,
-  project: string,
-): { readonly files: Readonly<Record<string, string>>; readonly version: string } {
-  const raw = readFileSync(
-    join(projectDir(repo, project), '.install-manifest.json'),
-    'utf8',
-  );
-  return JSON.parse(raw) as {
-    readonly files: Readonly<Record<string, string>>;
-    readonly version: string;
-  };
-}
-
 /**
  * Write a `state.json` under `.gobbi/projects/<project>/sessions/<id>/`
  * with the given `currentStep`. Used to exercise the active-session gate.
@@ -344,11 +329,10 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       expect(existsSync(join(root, 'agents/gobbi-agent.md'))).toBe(true);
       expect(existsSync(join(root, 'rules/naming.md'))).toBe(true);
 
-      // Install manifest records sha256 per copied file.
-      const manifest = readManifest(repo, 'gobbi');
-      for (const hash of Object.values(manifest.files)) {
-        expect(hash).toMatch(/^[0-9a-f]{64}$/);
-      }
+      // PR-FIN-2a-i T-2a.3: no manifest is written by the install loop.
+      expect(
+        existsSync(join(root, '.install-manifest.json')),
+      ).toBe(false);
 
       // PR-FIN-1c: workspace settings seeded with minimum shape (no
       // projects registry — the directory tree is the source of truth).
@@ -406,13 +390,12 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       }
     });
 
-    test('G-MEM2-03: fresh install aborts when farm-kind dirs already contain non-symlink files', async () => {
+    test('G-MEM2-03: fresh install aborts when destination files at bundled paths already exist (post-T-2a.3 collision gate)', async () => {
       const templateRoot = makeTemplate({ 'skills/_a/SKILL.md': '# a\n' });
       const repo = makeRepo();
-      // Pre-seed a regular file inside the target project dir so the
-      // upgrade-gate fires (runtime mirror of the "preexisting content"
-      // refusal).
-      const preseed = join(projectDir(repo, 'gobbi'), 'skills', 'legacy');
+      // Pre-seed a regular file at the SAME path the template ships;
+      // the per-file collision check refuses without --force.
+      const preseed = join(projectDir(repo, 'gobbi'), 'skills', '_a');
       mkdirSync(preseed, { recursive: true });
       writeFileSync(join(preseed, 'SKILL.md'), '# legacy\n', 'utf8');
 
@@ -420,13 +403,13 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         runInstallWithOptions([], { repoRoot: repo, templateRoot }),
       );
 
-      // Non-zero exit + diagnostic that flags preexisting content.
+      // Non-zero exit + diagnostic pointing at --force.
       expect(captured.exitCode).toBe(1);
-      expect(captured.stderr).toContain('already contains');
-      // Manifest was NOT written (install was refused before the copy).
+      expect(captured.stderr).toContain('--force');
+      // User content untouched.
       expect(
-        existsSync(join(projectDir(repo, 'gobbi'), '.install-manifest.json')),
-      ).toBe(false);
+        readFileSync(join(preseed, 'SKILL.md'), 'utf8'),
+      ).toBe('# legacy\n');
     });
 
     test.todo(
@@ -438,89 +421,44 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
   });
 
   // =========================================================================
-  // Install — 3-way merge actions (6 arms)
+  // Install — collision gate + --force overwrite (post-T-2a.3)
   // =========================================================================
-  describe('install — 3-way merge', () => {
-    test('G-MEM2-05: action `add` — template has a new file the user never had', async () => {
-      const tpl1 = makeTemplate({ 'rules/seed.md': 'seed\n' });
+  //
+  // PR-FIN-2a-i T-2a.3 retired the install-manifest bookkeeping and the
+  // 6-action 3-way-merge classification (`add` / `unchanged` /
+  // `template-only` / `user-only` / `converged` / `conflict`). The
+  // replacement policy is:
+  //
+  //   - first install: copy every bundled file
+  //   - re-install without --force: refuse on any per-file collision
+  //   - re-install with --force: bundled files overwrite, user-authored
+  //     files outside the bundle survive (never iterated)
+  //
+  // The historical G-MEM2-05..G-MEM2-12 IDs are preserved in git history
+  // (commit b6cbb00 and prior) along with their original 3-way-merge
+  // bodies. The runtime suite below covers the new policy under fresh IDs.
+  describe('install — collision gate + --force overwrite', () => {
+    test('first install copies every bundled file (no manifest written)', async () => {
+      const tpl = makeTemplate({
+        'skills/_new/SKILL.md': '# new\n',
+        'rules/r.md': 'v1\n',
+      });
       const repo = makeRepo();
       await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl1 }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Template v2 ADDS a new file the user never had.
-      const tpl2 = makeTemplate({
-        'rules/seed.md': 'seed\n',
-        'skills/_new/SKILL.md': '# new\n',
-      });
-      resetCaptured();
-      await captureExit(() =>
-        runInstallWithOptions(['--upgrade'], {
-          repoRoot: repo,
-          templateRoot: tpl2,
-        }),
+        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
       );
       expect(captured.exitCode).toBeNull();
       expect(
         existsSync(join(projectDir(repo, 'gobbi'), 'skills/_new/SKILL.md')),
       ).toBe(true);
-      expect(captured.stdout).toContain('1 added');
-
-      // Manifest now records the new file's hash.
-      const manifest = readManifest(repo, 'gobbi');
-      expect(manifest.files['skills/_new/SKILL.md']).toMatch(
-        /^[0-9a-f]{64}$/,
-      );
-    });
-
-    test('G-MEM2-06: action `unchanged` — all three hashes agree', async () => {
-      const tpl = makeTemplate({ 'rules/stable.md': 'stable\n' });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      resetCaptured();
-      await captureExit(() =>
-        runInstallWithOptions(['--upgrade'], {
-          repoRoot: repo,
-          templateRoot: tpl,
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-      // Upgrade summary — every file unchanged.
-      expect(captured.stdout).toContain('1 unchanged');
-      expect(captured.stdout).toContain('0 added');
-      expect(captured.stdout).toContain('0 updated');
-    });
-
-    test('G-MEM2-07: action `template-only` — template changed, user still matches baseline', async () => {
-      const tpl1 = makeTemplate({ 'rules/r.md': 'v1\n' });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl1 }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      const tpl2 = makeTemplate({ 'rules/r.md': 'v2\n' });
-      resetCaptured();
-      await captureExit(() =>
-        runInstallWithOptions(['--upgrade'], {
-          repoRoot: repo,
-          templateRoot: tpl2,
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-      // File refreshed.
+      expect(captured.stdout).toContain('2 added');
+      // No manifest is written (manifest system removed in T-2a.3).
       expect(
-        readFileSync(join(projectDir(repo, 'gobbi'), 'rules/r.md'), 'utf8'),
-      ).toBe('v2\n');
-      expect(captured.stdout).toContain('1 updated');
+        existsSync(join(projectDir(repo, 'gobbi'), '.install-manifest.json')),
+      ).toBe(false);
     });
 
-    test('G-MEM2-08: action `user-only` — user changed, template still matches baseline', async () => {
+    test('re-install without --force refuses on collision', async () => {
       const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
       const repo = makeRepo();
       await captureExit(() =>
@@ -528,144 +466,65 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       );
       expect(captured.exitCode).toBeNull();
 
-      // User edits the file in place.
-      const path = join(projectDir(repo, 'gobbi'), 'rules/r.md');
-      writeFileSync(path, 'user-edit\n', 'utf8');
-
-      // Template unchanged — re-ship the same bundle.
       resetCaptured();
       await captureExit(() =>
-        runInstallWithOptions(['--upgrade'], {
-          repoRoot: repo,
-          templateRoot: tpl,
-        }),
+        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
       );
-      expect(captured.exitCode).toBeNull();
-      // File preserved (user-only).
-      expect(readFileSync(path, 'utf8')).toBe('user-edit\n');
-      expect(captured.stdout).toContain('1 user-skipped');
+      expect(captured.exitCode).toBe(1);
+      expect(captured.stderr).toContain('--force');
+      expect(captured.stdout).toContain('COLLISION');
     });
 
-    test('G-MEM2-09: action `converged` — user and template changed to the same new hash', async () => {
-      // The only clean way to hit CONVERGED: no prior manifest + the
-      // user's file happens to equal the template.
-      const tpl = makeTemplate({ 'rules/r.md': 'same\n' });
-      const repo = makeRepo();
-      // Pre-seed the file to the same content the template will ship.
-      const path = join(projectDir(repo, 'gobbi'), 'rules/r.md');
-      mkdirSync(join(path, '..'), { recursive: true });
-      writeFileSync(path, 'same\n', 'utf8');
-
-      await captureExit(() =>
-        runInstallWithOptions(['--upgrade'], {
-          repoRoot: repo,
-          templateRoot: tpl,
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-      // File untouched.
-      expect(readFileSync(path, 'utf8')).toBe('same\n');
-      expect(captured.stdout).toContain('1 converged');
-      const manifest = readManifest(repo, 'gobbi');
-      expect(manifest.files['rules/r.md']).toMatch(/^[0-9a-f]{64}$/);
-    });
-
-    test('G-MEM2-10: action `conflict` — user and template diverged differently', async () => {
-      const tpl1 = makeTemplate({ 'rules/r.md': 'v1\n' });
+    test('--force overwrites bundled files; user-authored files survive', async () => {
+      const tpl1 = makeTemplate({ 'rules/bundled.md': 'v1\n' });
       const repo = makeRepo();
       await captureExit(() =>
         runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl1 }),
       );
       expect(captured.exitCode).toBeNull();
 
-      // Both sides move — user edits, template ships v2.
-      const path = join(projectDir(repo, 'gobbi'), 'rules/r.md');
-      writeFileSync(path, 'user-edit\n', 'utf8');
+      // User adds a file at a path that is NOT in the bundle.
+      const userOnly = join(projectDir(repo, 'gobbi'), 'rules', 'user-only.md');
+      writeFileSync(userOnly, 'user-content\n', 'utf8');
 
-      const tpl2 = makeTemplate({ 'rules/r.md': 'v2\n' });
+      const tpl2 = makeTemplate({ 'rules/bundled.md': 'v2\n' });
       resetCaptured();
       await captureExit(() =>
-        runInstallWithOptions(['--upgrade'], {
+        runInstallWithOptions(['--force'], {
           repoRoot: repo,
           templateRoot: tpl2,
         }),
       );
-      // Install exits 1 on conflict and names the path.
-      expect(captured.exitCode).toBe(1);
-      expect(captured.stdout).toContain('1 conflict');
-      expect(captured.stdout).toContain('rules/r.md');
-      // File preserved.
-      expect(readFileSync(path, 'utf8')).toBe('user-edit\n');
-      // Manifest retains the PRIOR v1 hash (so a later user-resolve
-      // to v2 reclassifies as template-only, not unchanged).
-      const v1Hash = INSTALL_INTERNALS.hashFile(join(tpl1, 'rules/r.md'));
-      const manifest = readManifest(repo, 'gobbi');
-      expect(manifest.files['rules/r.md']).toBe(v1Hash);
+      expect(captured.exitCode).toBeNull();
+      // Bundled file overwritten.
+      expect(
+        readFileSync(
+          join(projectDir(repo, 'gobbi'), 'rules', 'bundled.md'),
+          'utf8',
+        ),
+      ).toBe('v2\n');
+      // User-authored file survives — install never iterates non-bundle paths.
+      expect(readFileSync(userOnly, 'utf8')).toBe('user-content\n');
     });
 
-    test('G-MEM2-11: install proceeds even when a session is on disk (active-session gate retired in PR-FIN-2a-i T-2a.1.5)', async () => {
+    test('install proceeds even when a session is on disk (active-session gate retired in PR-FIN-2a-i T-2a.1.5)', async () => {
       const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
       const repo = makeRepo();
       // Pre-T-2a.1.5 this would have blocked the install. Post-T-2a.1.5
-      // the gate is gone — `gobbi install` runs unconditionally and the
-      // manifest lands as expected.
+      // the gate is gone — `gobbi install` runs unconditionally.
       seedProjectSession(repo, 'gobbi', 'live-session', 'ideation');
 
       await captureExit(() =>
         runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
       );
       expect(captured.exitCode).toBeNull();
+      // Bundled file landed.
       expect(
-        existsSync(join(projectDir(repo, 'gobbi'), '.install-manifest.json')),
+        existsSync(join(projectDir(repo, 'gobbi'), 'rules/r.md')),
       ).toBe(true);
     });
 
-    test('G-MEM2-12: upgrade manifest rewrite excludes conflicts', async () => {
-      // Install v1, user edits `conflict.md`, template moves both files;
-      // resulting manifest carries the new hash for the updated file but
-      // retains the baseline for the conflicted file.
-      const tpl1 = makeTemplate({
-        'rules/updated.md': 'v1\n',
-        'rules/conflict.md': 'v1\n',
-      });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl1 }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      writeFileSync(
-        join(projectDir(repo, 'gobbi'), 'rules/conflict.md'),
-        'user-side\n',
-        'utf8',
-      );
-
-      const tpl2 = makeTemplate({
-        'rules/updated.md': 'v2\n',
-        'rules/conflict.md': 'v2\n',
-      });
-      resetCaptured();
-      await captureExit(() =>
-        runInstallWithOptions(['--upgrade'], {
-          repoRoot: repo,
-          templateRoot: tpl2,
-        }),
-      );
-      expect(captured.exitCode).toBe(1); // conflict → non-zero
-      const manifest = readManifest(repo, 'gobbi');
-      // `updated.md` refreshed to v2 hash.
-      const v2UpdatedHash = INSTALL_INTERNALS.hashFile(
-        join(tpl2, 'rules/updated.md'),
-      );
-      expect(manifest.files['rules/updated.md']).toBe(v2UpdatedHash);
-      // `conflict.md` retains baseline (v1 hash).
-      const v1ConflictHash = INSTALL_INTERNALS.hashFile(
-        join(tpl1, 'rules/conflict.md'),
-      );
-      expect(manifest.files['rules/conflict.md']).toBe(v1ConflictHash);
-    });
-
-    test('G-MEM2-13: template bundle discipline — only skills / agents / rules ship', async () => {
+    test('template bundle discipline — only skills / agents / rules ship', async () => {
       // Plant a non-template-kind path ALONGSIDE the template bundle;
       // enumerateTemplateFiles must skip it.
       const tplRoot = makeTemplate({
@@ -734,7 +593,7 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
 
       // Scaffold taxonomy — assert on the subset that project create
       // materialises. G-MEM2-44 covers the full taxonomy check; here
-      // we anchor on three representative dirs + the manifest.
+      // we anchor on three representative dirs.
       expect(existsSync(join(projectDir(repo, 'demo'), 'design'))).toBe(true);
       expect(existsSync(join(projectDir(repo, 'demo'), 'sessions'))).toBe(
         true,
@@ -742,11 +601,12 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       expect(
         existsSync(join(projectDir(repo, 'demo'), 'gotchas')),
       ).toBe(true);
+      // PR-FIN-2a-i T-2a.3: no manifest is written by the seed helper.
       expect(
         existsSync(
           join(projectDir(repo, 'demo'), '.install-manifest.json'),
         ),
-      ).toBe(true);
+      ).toBe(false);
 
       // PR-FIN-1c: `gobbi project create` no longer mutates settings.json
       // (the projects registry was removed); the directory existence at
@@ -1364,9 +1224,14 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       expect(
         readFileSync(join(barRoot, 'rules', 'bar-only.md'), 'utf8'),
       ).toBe('bar-only\n');
-      // No `.install-manifest.json` landed in `bar`.
+      // PR-FIN-2a-i T-2a.3: no manifest is written; verify nothing
+      // landed under `bar` from the install (its sole file is the
+      // pre-seeded user content above).
       expect(
         existsSync(join(barRoot, '.install-manifest.json')),
+      ).toBe(false);
+      expect(
+        existsSync(join(projectDir(repo, 'foo'), '.install-manifest.json')),
       ).toBe(false);
 
       // PR-FIN-1c: workspace settings has minimum shape; the projects
@@ -1391,8 +1256,10 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         }),
       );
       expect(captured.exitCode).toBeNull();
+      // The bundle landed in `bar` even with `foo` carrying an active
+      // session (the active-session gate was retired in T-2a.1.5).
       expect(
-        existsSync(join(projectDir(repo, 'bar'), '.install-manifest.json')),
+        existsSync(join(projectDir(repo, 'bar'), 'rules', 'r.md')),
       ).toBe(true);
     });
 
@@ -1440,12 +1307,10 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Silence the unused-helper check — `renderInstallActiveError` and
-// `renderInstallPlan` are imported so that if install.ts renames them
-// the feature suite fails at compile (static drift detection). They
-// are exercised indirectly via the command calls above; the compile-
-// time import is the load-bearing check.
+// Silence the unused-helper check — `renderInstallPlan` is imported so
+// that if install.ts renames it the feature suite fails at compile
+// (static drift detection). It is exercised indirectly via the command
+// calls above; the compile-time import is the load-bearing check.
 // ---------------------------------------------------------------------------
 
-void renderInstallActiveError;
 void renderInstallPlan;

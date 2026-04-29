@@ -243,7 +243,7 @@ describe('gobbi project create — happy path', () => {
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toContain('Seeded');
     expect(captured.stdout).toContain('template file');
-    // Manifest landed under the new project.
+    // PR-FIN-2a-i T-2a.3: no manifest is written by the seed helper.
     const manifestPath = join(
       repo,
       '.gobbi',
@@ -251,7 +251,7 @@ describe('gobbi project create — happy path', () => {
       'foo',
       '.install-manifest.json',
     );
-    expect(existsSync(manifestPath)).toBe(true);
+    expect(existsSync(manifestPath)).toBe(false);
     // The "run gobbi install" fallback warning must NOT fire when the
     // helper is wired correctly.
     expect(captured.stderr).not.toContain('install templates unavailable');
