@@ -392,12 +392,28 @@ describe('install + project commands — feature-level flows', () => {
       expect(captured.exitCode).toBeNull();
 
       // Scaffold: the create command materialises a known subdir set.
-      // We sample three representative kinds rather than hard-coding
-      // the whole SCAFFOLD_DIRS list (that's the unit suite's job).
+      // We sample representative kinds rather than hard-coding the
+      // whole SCAFFOLD_DIRS list (that's the unit suite's job). Cover
+      // one of each PR-FIN-2a-i T-2a.4 grouping: a long-standing
+      // narrative dir, a runtime gitignored dir, the post-pivot
+      // `gotchas/` slot, and one of the new narrative dirs added in
+      // T-2a.4 so a regression in the expanded taxonomy fails here.
       const created = join(repo, '.gobbi', 'projects', 'my-feature');
       expect(existsSync(join(created, 'design'))).toBe(true);
       expect(existsSync(join(created, 'sessions'))).toBe(true);
       expect(existsSync(join(created, 'gotchas'))).toBe(true);
+      expect(existsSync(join(created, 'decisions'))).toBe(true);
+      expect(existsSync(join(created, 'tmp'))).toBe(true);
+
+      // T-2a.4: empty tracked dirs carry a `.gitkeep` so git records
+      // the slot. `decisions/` is one of the dirs the install seed
+      // never touches, so the marker must be present.
+      expect(existsSync(join(created, 'decisions', '.gitkeep'))).toBe(true);
+      // The gitignored runtime trio must NOT receive a `.gitkeep` —
+      // the marker would never land in version control anyway.
+      expect(existsSync(join(created, 'tmp', '.gitkeep'))).toBe(false);
+      expect(existsSync(join(created, 'sessions', '.gitkeep'))).toBe(false);
+      expect(existsSync(join(created, 'worktrees', '.gitkeep'))).toBe(false);
 
       // Seed hook fired — at least one template file landed in the
       // new project (the worktree bundle is non-empty by construction).

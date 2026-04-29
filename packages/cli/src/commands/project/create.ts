@@ -4,19 +4,34 @@
  *
  * ## Scaffold
  *
- * Creates the following directories (all empty) matching the taxonomy
- * the default `gobbi` project carries:
+ * Materialises the full post-pivot taxonomy locked in
+ * `.gobbi/projects/gobbi/design/v050-features/gobbi-memory/README.md`
+ * (§Directory shape). Every project gets every taxonomy slot at
+ * birth — lazy-create was retired in PR-FIN-2a-i T-2a.4 because skipped
+ * slots forced downstream commands to re-implement scaffolding logic
+ * and confused operators reading `ls .gobbi/projects/<name>/`.
  *
- *   design/          gotchas/             learnings/
- *   notes/           references/          rules/
- *   skills/          agents/              sessions/
+ * The scaffold list is split three ways:
  *
- * These are a deliberate subset of {@link PROJECT_SUBDIR_KINDS} — only
- * the dirs a freshly-created project actually needs at birth are
- * materialised. The rest of the taxonomy (decisions, scenarios,
- * checklists, playbooks, backlogs, reviews, worktrees) are created
- * on-demand by the downstream commands that populate them, following
- * the same lazy-create discipline the default project uses.
+ *   - **12 narrative dirs** (alphabetised): `backlogs`, `checklists`,
+ *     `decisions`, `design`, `gotchas`, `learnings`, `notes`,
+ *     `playbooks`, `references`, `reviews`, `rules`, `scenarios`.
+ *   - **2 farm dirs**: `agents`, `skills`. (`rules` is already in the
+ *     narrative list — it is shared between the narrative tier and the
+ *     `.claude/` symlink farm.)
+ *   - **3 gitignored runtime dirs**: `sessions`, `tmp`, `worktrees`.
+ *
+ * Total: **14 git-tracked dirs + 3 runtime dirs = 17 on disk**. The
+ * runtime trio is matched by `.gitignore` patterns under
+ * `.gobbi/projects/<name>/{sessions,tmp,worktrees}/` so they exist on
+ * disk but never enter version control.
+ *
+ * Every git-tracked dir that ends up empty after the install seed runs
+ * receives an empty `.gitkeep` so git records the otherwise-empty slot.
+ * Dirs the seed populated (typically `skills/`, `agents/`, `rules/`)
+ * do not need a `.gitkeep` — their real contents already keep the dir
+ * tracked. `.gitkeep` is not written into the gitignored runtime dirs;
+ * git would not track it anyway.
  *
  * ## Seeding
  *
@@ -71,7 +86,7 @@
  * @see `lib/settings-io.ts::resolveSettings`, `writeSettingsAtLevel`
  */
 
-import { existsSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 
 import { getRepoRoot } from '../../lib/repo.js';
@@ -110,27 +125,60 @@ export interface ProjectCreateOverrides {
 // ---------------------------------------------------------------------------
 
 /**
- * The subset of the taxonomy materialised at create time. Kept
- * intentionally narrow — the rest of the taxonomy
- * ({@link PROJECT_SUBDIR_KINDS}) is created on-demand by the commands
- * that populate them. See module JSDoc for the rationale.
+ * The full post-pivot taxonomy materialised at create time. See module
+ * JSDoc for the rationale.
  *
- * PR-FIN-2a-i: `gotchas/` is now top-level (no longer nested under
- * `learnings/`) so the gotcha promotion ritual and mid-session writes
- * target the same flat directory. `learnings/` remains as the home for
- * post-mortems and other learning artifacts that aren't gotchas.
+ * Layout: 12 narrative dirs (alphabetised) → 2 farm dirs (`rules` is
+ * already in the narrative list) → 3 gitignored runtime dirs. Order is
+ * for human readability; it has no semantic effect — the scaffolder
+ * iterates the array as-is, and the test suite asserts membership, not
+ * order.
+ *
+ * Each of the 14 git-tracked dirs receives an empty `.gitkeep` if and
+ * only if it is still empty after the install seed runs (see
+ * {@link SCAFFOLD_GITIGNORED_DIRS} for the runtime trio that never
+ * gets a marker). The seed typically populates `skills/`, `agents/`,
+ * `rules/`, so those three usually skip the marker.
+ *
+ * Taxonomy reference: see
+ * `.gobbi/projects/gobbi/design/v050-features/gobbi-memory/README.md`
+ * §Directory shape for the locked charter per dir.
  */
 const SCAFFOLD_DIRS: readonly string[] = [
+  // 12 narrative dirs (alphabetised)
+  'backlogs',
+  'checklists',
+  'decisions',
   'design',
   'gotchas',
   'learnings',
   'notes',
+  'playbooks',
   'references',
+  'reviews',
   'rules',
-  'skills',
+  'scenarios',
+  // 2 farm dirs (`rules` already in narrative list above)
   'agents',
+  'skills',
+  // 3 gitignored runtime dirs (see SCAFFOLD_GITIGNORED_DIRS)
   'sessions',
+  'tmp',
+  'worktrees',
 ];
+
+/**
+ * The gitignored subset of {@link SCAFFOLD_DIRS}. These dirs are
+ * created on disk so subsequent commands can write into them without
+ * a separate `mkdir -p`, but the workspace `.gitignore` matches them
+ * via `.gobbi/projects/<name>/{sessions,tmp,worktrees}/`. We do NOT
+ * write a `.gitkeep` into these dirs — git would not track it anyway.
+ */
+const SCAFFOLD_GITIGNORED_DIRS: ReadonlySet<string> = new Set([
+  'sessions',
+  'tmp',
+  'worktrees',
+]);
 
 // ---------------------------------------------------------------------------
 // Name validation
@@ -252,12 +300,14 @@ export async function runProjectCreateWithOptions(
   // Create the project root plus every scaffold subdir. `mkdirSync` with
   // `recursive: true` makes each call idempotent.
   //
-  // PR-FIN-2a-i: every {@link SCAFFOLD_DIRS} entry is now a single-segment
-  // path that maps 1:1 to a {@link ProjectSubdirKind}. We still call
-  // through to a string join here rather than {@link projectSubdir} to
-  // keep the loop iteration uniform — the facade's narrow union check
-  // is enforced by the central `PROJECT_SUBDIR_KINDS` tuple, which the
-  // scaffold list mirrors.
+  // PR-FIN-2a-i T-2a.4: scaffold the full taxonomy (14 tracked + 3
+  // gitignored = 17 dirs) per the held design lock. Every
+  // {@link SCAFFOLD_DIRS} entry is a single-segment path that maps 1:1
+  // to a {@link ProjectSubdirKind}. We still call through to a string
+  // join here rather than {@link projectSubdir} to keep the loop
+  // iteration uniform — the facade's narrow union check is enforced
+  // by the central `PROJECT_SUBDIR_KINDS` tuple, which the scaffold
+  // list mirrors.
   mkdirSync(targetDir, { recursive: true });
   for (const dir of SCAFFOLD_DIRS) {
     mkdirSync(`${targetDir}/${dir}`, { recursive: true });
@@ -269,7 +319,29 @@ export async function runProjectCreateWithOptions(
   // copy. We do a best-effort dynamic import: if the helper is present
   // we call it, otherwise we emit a stderr warning so the operator
   // knows to run `gobbi install`.
+  //
+  // Seeding runs BEFORE we drop `.gitkeep` markers so the seed's
+  // "already-populated" guard sees genuinely-empty `skills/`, `agents/`,
+  // `rules/` dirs rather than a `.gitkeep`-only layout that would look
+  // populated.
   await trySeedFromInstallTemplates(repoRoot, name);
+
+  // --- .gitkeep markers (post-seed) ------------------------------------
+  //
+  // For each git-tracked scaffold dir (every entry not in
+  // {@link SCAFFOLD_GITIGNORED_DIRS}) that the seed left empty, drop
+  // an empty `.gitkeep` so git records the otherwise-empty slot. Dirs
+  // populated by the seed (typically `skills/`, `agents/`, `rules/`)
+  // do not need a `.gitkeep` — their real contents already keep the
+  // dir tracked. Gitignored runtime dirs (`sessions/`, `tmp/`,
+  // `worktrees/`) never get a marker; git would not track it anyway.
+  for (const dir of SCAFFOLD_DIRS) {
+    if (SCAFFOLD_GITIGNORED_DIRS.has(dir)) continue;
+    const dirPath = `${targetDir}/${dir}`;
+    if (readdirSync(dirPath).length === 0) {
+      writeFileSync(`${dirPath}/.gitkeep`, '');
+    }
+  }
 
   // --- settings.json (PR-FIN-1c: NO mutation) --------------------------
   //
@@ -354,4 +426,8 @@ async function trySeedFromInstallTemplates(
 // Exports for tests
 // ---------------------------------------------------------------------------
 
-export { USAGE as PROJECT_CREATE_USAGE, SCAFFOLD_DIRS };
+export {
+  USAGE as PROJECT_CREATE_USAGE,
+  SCAFFOLD_DIRS,
+  SCAFFOLD_GITIGNORED_DIRS,
+};
