@@ -124,13 +124,10 @@ function getGitBranch(): string {
 }
 
 /**
- * Resolve the `<phase>/subtasks/` directory inside a note-dir, with a
- * backward-compat fallback for pre-W4 layouts. When `phase` is
- * `'planning'` and the new-shape directory is absent but a legacy
- * `plan/subtasks/` directory exists, return the legacy path so existing
- * note trees stay readable. Same mapping applies for `'planning_eval'`
- * -> legacy `plan_eval`. When `phase` is undefined, the flat
- * `noteDir/subtasks/` path is returned (un-phased layout).
+ * Resolve the `<phase>/subtasks/` directory inside a note-dir.
+ * When `phase` is undefined, the flat `noteDir/subtasks/` path is
+ * returned (un-phased layout). When `phase` is provided, returns
+ * `<noteDir>/<phase>/subtasks/`.
  */
 function resolvePhaseSubtasksDir(
   noteDir: string,
@@ -139,20 +136,7 @@ function resolvePhaseSubtasksDir(
   if (phase === undefined) {
     return path.join(noteDir, 'subtasks');
   }
-  const primary = path.join(noteDir, phase, 'subtasks');
-  if (existsSync(primary)) return primary;
-  // Legacy fallback — only applies when the phase was renamed in W4.
-  const legacyName =
-    phase === 'planning'
-      ? 'plan'
-      : phase === 'planning_eval'
-        ? 'plan_eval'
-        : null;
-  if (legacyName !== null) {
-    const legacy = path.join(noteDir, legacyName, 'subtasks');
-    if (existsSync(legacy)) return legacy;
-  }
-  return primary;
+  return path.join(noteDir, phase, 'subtasks');
 }
 
 /**
@@ -238,10 +222,7 @@ async function runNoteInit(args: string[]): Promise<void> {
   const dirName = `${datetime}-${slug}-${sessionId}`;
   const noteDir = path.join(claudeProjectDir, '.claude', 'project', projectName, 'note', dirName);
 
-  // Create per-step subdirectories — subtasks/ in every step. Post-W4,
-  // the planning step uses `planning/`; legacy note directories that
-  // still carry `plan/` are read-only supported in `runNoteCollect` via
-  // the `resolvePhaseDir` helper.
+  // Create per-step subdirectories — subtasks/ in every step.
   await Promise.all([
     mkdir(path.join(noteDir, 'ideation', 'subtasks'), { recursive: true }),
     mkdir(path.join(noteDir, 'ideation', 'evaluation'), { recursive: true }),
@@ -375,10 +356,7 @@ async function runNoteCollect(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  // Post-W4 phase names align with the state-machine loop name `planning`.
-  // Legacy `plan` phase directories on disk are still honoured by
-  // `resolvePhaseSubtasksDir` below — a note-dir created before the rename
-  // retains its `plan/subtasks/` layout and continues to work.
+  // Phase names align with the state-machine loop name `planning`.
   const validPhases = ['ideation', 'planning', 'research', 'execution', 'review'];
   if (phase !== undefined && !validPhases.includes(phase)) {
     console.error(error(`Invalid phase: ${phase}. Must be one of: ${validPhases.join(', ')}.`));
@@ -433,10 +411,7 @@ async function runNoteCollect(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  // Resolve subtasks directory based on --phase flag. Backward-compat:
-  // when `--phase planning` is requested and the new-shape directory
-  // does not exist but a legacy `plan/subtasks/` does, fall back to the
-  // legacy name so pre-W4 note directories stay readable.
+  // Resolve subtasks directory based on --phase flag.
   const subtasksDir = resolvePhaseSubtasksDir(noteDir, phase);
   if (!existsSync(subtasksDir)) {
     console.error(`Error: subtasks/ directory not found: ${subtasksDir}`);

@@ -230,6 +230,78 @@ function buildFixture(): CollectFixture {
 // Tests
 // ---------------------------------------------------------------------------
 
+describe('gobbi note collect — legacy plan/subtasks fallback removed (PR-FIN-5)', () => {
+  test('--phase planning resolves to <noteDir>/planning/subtasks (v0.5.0 schema, no legacy fallback)', async () => {
+    const fx = buildFixture();
+    const mainTranscript = join(fx.transcriptsRoot, `${fx.sessionId}.jsonl`);
+
+    // The fixture builder creates execution/subtasks/ — add planning/subtasks/
+    // alongside so --phase planning has a valid v0.5.0 target.
+    const planningSubtasks = join(fx.noteDir, 'planning', 'subtasks');
+    mkdirSync(planningSubtasks, { recursive: true });
+
+    process.env['CLAUDE_SESSION_ID'] = fx.sessionId;
+    process.env['CLAUDE_TRANSCRIPT_PATH'] = mainTranscript;
+
+    await captureExit(() =>
+      runNote([
+        'collect',
+        fx.agentId,
+        '03',
+        'planning-resolves-new-shape',
+        fx.noteDir,
+        '--phase',
+        'planning',
+      ]),
+    );
+
+    expect(captured.stderr).toBe('');
+    // Output MUST land under planning/subtasks/, not legacy plan/subtasks/.
+    const expected = join(planningSubtasks, '03-planning-resolves-new-shape.json');
+    const written = JSON.parse(readFileSync(expected, 'utf8')) as {
+      readonly sessionId: string;
+    };
+    expect(written.sessionId).toBe(fx.sessionId);
+  });
+
+  test('--phase planning with only legacy plan/subtasks/ on disk fails with subtasks-not-found (no legacy fallback)', async () => {
+    const fx = buildFixture();
+    const mainTranscript = join(fx.transcriptsRoot, `${fx.sessionId}.jsonl`);
+
+    // Construct a pre-W4-style note dir: only legacy plan/subtasks/ exists,
+    // no planning/subtasks/. Pre-PR-FIN-5 the resolver fell back to plan/;
+    // post-removal it must error out cleanly.
+    const legacyPlanSubtasks = join(fx.noteDir, 'plan', 'subtasks');
+    mkdirSync(legacyPlanSubtasks, { recursive: true });
+
+    process.env['CLAUDE_SESSION_ID'] = fx.sessionId;
+    process.env['CLAUDE_TRANSCRIPT_PATH'] = mainTranscript;
+
+    await captureExit(() =>
+      runNote([
+        'collect',
+        fx.agentId,
+        '04',
+        'no-legacy-fallback',
+        fx.noteDir,
+        '--phase',
+        'planning',
+      ]),
+    );
+
+    // Must exit non-zero — pre-PR-FIN-5 the resolver fell back to legacy
+    // plan/subtasks/ and the collect succeeded; post-removal it must error.
+    expect(captured.exitCode).toBe(1);
+    // Must NOT silently route into legacy plan/subtasks/ — assert no
+    // file was written into the legacy directory.
+    const legacyOutput = join(legacyPlanSubtasks, '04-no-legacy-fallback.json');
+    expect(() => readFileSync(legacyOutput, 'utf8')).toThrow();
+    // And no file landed in a planning/subtasks/ either (we never created it).
+    const newShapeOutput = join(fx.noteDir, 'planning', 'subtasks', '04-no-legacy-fallback.json');
+    expect(() => readFileSync(newShapeOutput, 'utf8')).toThrow();
+  });
+});
+
 describe('gobbi note collect — CLAUDE_TRANSCRIPT_PATH path resolution', () => {
   test('main-transcript layout: derives <transcriptDir>/<session>/subagents and collects', async () => {
     const fx = buildFixture();
