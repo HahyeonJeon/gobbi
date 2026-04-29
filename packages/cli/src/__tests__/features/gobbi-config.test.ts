@@ -1479,10 +1479,10 @@ describe('CFG-24..28: gobbi config env — $CLAUDE_ENV_FILE persistence', () => 
 
     expect(existsSync(envFile)).toBe(true);
     const body = readFileSync(envFile, 'utf8');
-    expect(body).toContain('CLAUDE_SESSION_ID=sess-cfg-24\n');
-    expect(body).toContain('CLAUDE_TRANSCRIPT_PATH=/tmp/transcript-24.jsonl\n');
-    expect(body).toContain('CLAUDE_CWD=/tmp/cfg-24\n');
-    expect(body).toContain('CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
+    expect(body).toContain('export CLAUDE_SESSION_ID=sess-cfg-24\n');
+    expect(body).toContain('export CLAUDE_TRANSCRIPT_PATH=/tmp/transcript-24.jsonl\n');
+    expect(body).toContain('export CLAUDE_CWD=/tmp/cfg-24\n');
+    expect(body).toContain('export CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
     // Native passthrough vars are unset → no lines.
     expect(body).not.toContain('CLAUDE_PROJECT_DIR=');
     expect(body).not.toContain('CLAUDE_PLUGIN_ROOT=');
@@ -1516,17 +1516,17 @@ describe('CFG-24..28: gobbi config env — $CLAUDE_ENV_FILE persistence', () => 
 
     const body = readFileSync(envFile, 'utf8');
     // Stdin-derived lines (all 7).
-    expect(body).toContain('CLAUDE_SESSION_ID=sess-cfg-25\n');
-    expect(body).toContain('CLAUDE_TRANSCRIPT_PATH=/tmp/t.jsonl\n');
-    expect(body).toContain('CLAUDE_CWD=/tmp/cfg-25\n');
-    expect(body).toContain('CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
-    expect(body).toContain('CLAUDE_AGENT_ID=agent-cfg-25\n');
-    expect(body).toContain('CLAUDE_AGENT_TYPE=subagent\n');
-    expect(body).toContain('CLAUDE_PERMISSION_MODE=allow\n');
+    expect(body).toContain('export CLAUDE_SESSION_ID=sess-cfg-25\n');
+    expect(body).toContain('export CLAUDE_TRANSCRIPT_PATH=/tmp/t.jsonl\n');
+    expect(body).toContain('export CLAUDE_CWD=/tmp/cfg-25\n');
+    expect(body).toContain('export CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
+    expect(body).toContain('export CLAUDE_AGENT_ID=agent-cfg-25\n');
+    expect(body).toContain('export CLAUDE_AGENT_TYPE=subagent\n');
+    expect(body).toContain('export CLAUDE_PERMISSION_MODE=allow\n');
     // Native passthrough lines (all 3).
-    expect(body).toContain('CLAUDE_PROJECT_DIR=/repo/cfg-25\n');
-    expect(body).toContain('CLAUDE_PLUGIN_ROOT=/plugin/root-25\n');
-    expect(body).toContain('CLAUDE_PLUGIN_DATA=/plugin/data-25\n');
+    expect(body).toContain('export CLAUDE_PROJECT_DIR=/repo/cfg-25\n');
+    expect(body).toContain('export CLAUDE_PLUGIN_ROOT=/plugin/root-25\n');
+    expect(body).toContain('export CLAUDE_PLUGIN_DATA=/plugin/data-25\n');
 
     restoreNativeEnv();
   });
@@ -1604,7 +1604,9 @@ describe('CFG-24..28: gobbi config env — $CLAUDE_ENV_FILE persistence', () => 
 
     // Sanity: file has each managed key exactly once.
     const firstBody = readFileSync(envFile, 'utf8');
-    const countA = firstBody.split('\n').filter((l) => l.startsWith('CLAUDE_SESSION_ID=')).length;
+    const countA = firstBody
+      .split('\n')
+      .filter((l) => l.startsWith('export CLAUDE_SESSION_ID=')).length;
     expect(countA).toBe(1);
 
     resetCapture();
@@ -1630,20 +1632,20 @@ describe('CFG-24..28: gobbi config env — $CLAUDE_ENV_FILE persistence', () => 
     // New session id is present exactly once.
     const sessionLines = secondBody
       .split('\n')
-      .filter((l) => l.startsWith('CLAUDE_SESSION_ID='));
-    expect(sessionLines).toEqual(['CLAUDE_SESSION_ID=sess-B']);
+      .filter((l) => l.startsWith('export CLAUDE_SESSION_ID='));
+    expect(sessionLines).toEqual(['export CLAUDE_SESSION_ID=sess-B']);
     // New key landed.
-    expect(secondBody).toContain('CLAUDE_TRANSCRIPT_PATH=/tmp/replay.jsonl\n');
+    expect(secondBody).toContain('export CLAUDE_TRANSCRIPT_PATH=/tmp/replay.jsonl\n');
     // Old hook_event_name was overwritten.
     const eventLines = secondBody
       .split('\n')
-      .filter((l) => l.startsWith('CLAUDE_HOOK_EVENT_NAME='));
-    expect(eventLines).toEqual(['CLAUDE_HOOK_EVENT_NAME=SubagentStop']);
+      .filter((l) => l.startsWith('export CLAUDE_HOOK_EVENT_NAME='));
+    expect(eventLines).toEqual(['export CLAUDE_HOOK_EVENT_NAME=SubagentStop']);
     // Cwd was overwritten.
     const cwdLines = secondBody
       .split('\n')
-      .filter((l) => l.startsWith('CLAUDE_CWD='));
-    expect(cwdLines).toEqual(['CLAUDE_CWD=/cwd-2']);
+      .filter((l) => l.startsWith('export CLAUDE_CWD='));
+    expect(cwdLines).toEqual(['export CLAUDE_CWD=/cwd-2']);
 
     restoreNativeEnv();
   });

@@ -16,6 +16,7 @@
  */
 
 import { readStdinJson } from '../../lib/stdin.js';
+import { GUARDS } from '../../workflow/guards.js';
 import { runGuardWithOptions } from '../workflow/guard.js';
 
 export async function runHookPreToolUse(args: string[]): Promise<void> {
@@ -24,21 +25,17 @@ export async function runHookPreToolUse(args: string[]): Promise<void> {
     return;
   }
 
-  // Read stdin ONCE in the hook entrypoint. Pass the parsed payload
-  // through to guard so it does not re-read.
+  // Stub gate: registry is empty (workflow/guards.ts:117). Drain stdin
+  // for broken-pipe safety, then exit 0. Falls through to the real guard
+  // body the moment GUARDS gains entries — no source edit needed.
   const payload = await readStdinJson<unknown>();
+  if (GUARDS.length === 0) {
+    return;
+  }
 
   try {
-    // `runGuardWithOptions` accepts `payload` directly (skips its own
-    // stdin read when supplied). We pass `payload` even when `null` —
-    // guard's `isPreToolUsePayload` narrowing will reject and emit the
-    // fail-open default (`permissionDecision: 'allow'`) without
-    // reading stdin.
     await runGuardWithOptions(args, { payload });
-
-    // TODO(PR-FIN-1d) — dispatch notify for PreToolUse triggers.
   } catch (err) {
-    // Hook contract — never propagate.
     const message = err instanceof Error ? err.message : String(err);
     process.stderr.write(`gobbi hook pre-tool-use: ${message}\n`);
   }

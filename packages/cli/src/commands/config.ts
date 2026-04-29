@@ -692,6 +692,8 @@ export interface HookEnvPayload {
   readonly agent_id?: string;
   readonly agent_type?: string;
   readonly permission_mode?: string;
+  readonly source?: string;
+  readonly model?: string;
 }
 
 /**
@@ -709,6 +711,8 @@ const ENV_KEY_MAP: readonly { readonly stdinKey: keyof HookEnvPayload; readonly 
   { stdinKey: 'agent_id', envKey: 'CLAUDE_AGENT_ID' },
   { stdinKey: 'agent_type', envKey: 'CLAUDE_AGENT_TYPE' },
   { stdinKey: 'permission_mode', envKey: 'CLAUDE_PERMISSION_MODE' },
+  { stdinKey: 'source', envKey: 'CLAUDE_SOURCE' },
+  { stdinKey: 'model', envKey: 'CLAUDE_MODEL' },
 ];
 
 /**
@@ -720,6 +724,9 @@ const NATIVE_PASSTHROUGH_KEYS: readonly string[] = [
   'CLAUDE_PROJECT_DIR',
   'CLAUDE_PLUGIN_ROOT',
   'CLAUDE_PLUGIN_DATA',
+  'CLAUDE_CODE_REMOTE',
+  'CLAUDE_CODE_ENTRYPOINT',
+  'CLAUDE_CODE_EXECPATH',
 ];
 
 /**
@@ -926,33 +933,33 @@ function upsertEnvLines(
 
   const outLines: string[] = [];
   for (const line of inputLines) {
-    const eq = line.indexOf('=');
+    // Strip an optional `export ` prefix when matching managed keys, so
+    // legacy plain `KEY=...` lines and current `export KEY=...` lines
+    // upsert against the same key. New output is always `export KEY=...`
+    // — without the prefix, child processes spawned from CC's bash
+    // wrapper (e.g. the `gobbi` binary itself) do not inherit the var.
+    const stripped = line.startsWith('export ') ? line.slice('export '.length) : line;
+    const eq = stripped.indexOf('=');
     if (eq <= 0) {
-      // Comment, blank line, or malformed — preserve verbatim.
       outLines.push(line);
       continue;
     }
-    const key = line.slice(0, eq);
+    const key = stripped.slice(0, eq);
     if (newKeys.has(key)) {
       if (replaced.has(key)) {
-        // Collapse duplicate of an already-replaced managed key.
         continue;
       }
       const v = valueByKey.get(key);
-      // `valueByKey.get` returns `string | undefined`; the `newKeys.has`
-      // guard above proves the key is present, so `v` is a string. The
-      // explicit fallback is belt-and-braces for the type narrowing.
-      outLines.push(`${key}=${v ?? ''}`);
+      outLines.push(`export ${key}=${v ?? ''}`);
       replaced.add(key);
     } else {
       outLines.push(line);
     }
   }
 
-  // Append new keys (those not already in the file) in entry order.
   for (const [key, value] of entries) {
     if (!replaced.has(key)) {
-      outLines.push(`${key}=${value}`);
+      outLines.push(`export ${key}=${value}`);
       replaced.add(key);
     }
   }
