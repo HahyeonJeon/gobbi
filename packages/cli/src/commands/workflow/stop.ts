@@ -52,7 +52,6 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { readStdinJson } from '../../lib/stdin.js';
 import { isRecord, isString } from '../../lib/guards.js';
@@ -67,6 +66,7 @@ import { createStepTimeout } from '../../workflow/events/workflow.js';
 import type { WorkflowState } from '../../workflow/state.js';
 import { isActiveStep } from '../../workflow/state.js';
 import { getStepById, loadGraph } from '../../specs/graph.js';
+import { getSpecsDir } from '../../specs/paths.js';
 import { validateStepSpec } from '../../specs/_schema/v1.js';
 import type { StepSpec } from '../../specs/types.js';
 import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
@@ -100,20 +100,14 @@ function asPayload(value: unknown): StopPayload {
 }
 
 // ---------------------------------------------------------------------------
-// Default spec directory — module-relative for cwd independence. Mirrors
-// the `next.ts` pattern so the timeout-detection branch resolves the same
-// graph + step specs the compile pipeline reads.
+// Default spec directory — delegated to `specs/paths.ts` so source-mode and
+// bundled-mode resolution share one fallback chain. Mirrors `next.ts` so the
+// timeout-detection branch reads the same graph + step specs as the compile
+// pipeline.
 // ---------------------------------------------------------------------------
 
-const THIS_DIR = dirname(fileURLToPath(import.meta.url));
-
-/** Absolute path to the committed `packages/cli/src/specs/` directory. */
-export const DEFAULT_SPECS_DIR: string = resolve(
-  THIS_DIR,
-  '..',
-  '..',
-  'specs',
-);
+/** Absolute path to the canonical specs directory. */
+export const DEFAULT_SPECS_DIR: string = getSpecsDir();
 
 // ---------------------------------------------------------------------------
 // Entry points

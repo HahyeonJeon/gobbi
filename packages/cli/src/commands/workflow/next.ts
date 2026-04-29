@@ -34,11 +34,11 @@ import {
   join,
   resolve,
 } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { compile, type CompileInput, type CompileOptions } from '../../specs/assembly.js';
 import { compileErrorPrompt } from '../../specs/errors.js';
 import { getStepById, loadGraph, type WorkflowGraph } from '../../specs/graph.js';
+import { getSpecsDir } from '../../specs/paths.js';
 import { applyOverlay, validateOverlay } from '../../specs/overlay.js';
 import {
   loadSpecForRuntime,
@@ -85,18 +85,12 @@ const PARSE_OPTIONS = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// Default spec directory — module-relative for cwd independence.
+// Default spec directory — delegated to `specs/paths.ts` so source-mode and
+// bundled-mode resolution share one fallback chain (see paths.ts JSDoc).
 // ---------------------------------------------------------------------------
 
-const THIS_DIR = dirname(fileURLToPath(import.meta.url));
-
-/** Absolute path to the committed `packages/cli/src/specs/` directory. */
-export const DEFAULT_SPECS_DIR: string = resolve(
-  THIS_DIR,
-  '..',
-  '..',
-  'specs',
-);
+/** Absolute path to the canonical specs directory. */
+export const DEFAULT_SPECS_DIR: string = getSpecsDir();
 
 // ---------------------------------------------------------------------------
 // Entry point
