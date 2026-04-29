@@ -20,19 +20,19 @@ The `--project` flag lets a user install into any named project; the default is 
 
 ---
 
-## What `gobbi project create` and `gobbi project switch` do
+## What `gobbi project create` does
 
-`gobbi project create <name>` scaffolds the directory structure for a new project under `.gobbi/projects/<name>/`, seeds it from the same template bundle, and appends the name to `projects.known` in `settings.json`. It deliberately does NOT set `projects.active` and does NOT rotate the symlink farm. Creating a project does not change what Claude Code sees — the intent is to prepare the project, then switch to it when ready.
+`gobbi project create <name>` scaffolds the directory structure for a new project under `.gobbi/projects/<name>/` and seeds it from the same template bundle. The legacy `projects.active` / `projects.known` registry was removed in PR-FIN-1c; project resolution is now `basename(repoRoot)` plus the `--project` flag on each invocation.
 
-`gobbi project switch <name>` rotates the `.claude/` farm to point at the named project and updates `projects.active`. The switch uses a temp-build-then-per-kind-swap strategy that leaves the old farm untouched until every symlink in the new farm is materialised successfully. After the switch, all Claude Code sessions loading from `.claude/` pick up the new project's skills, agents, and rules.
+`gobbi project list` runs a filesystem scan over `.gobbi/projects/` and prints the discovered project names.
 
-`gobbi project list` shows all known projects and which is active.
+> **Historical:** Prior to v0.5.0 PR-FIN-2 a `gobbi project switch <name>` command rotated the `.claude/` symlink farm and updated `projects.active` via a temp-build-then-per-kind-swap strategy. That command was removed once project resolution moved to `basename(repoRoot)` + `--project`; the symlink farm now reflects the workspace's single project, rebuilt by `gobbi install --upgrade`.
 
 ---
 
 ## The `.claude/` symlink farm
 
-The farm is the loader surface for Claude Code. Each file under `.claude/skills/`, `.claude/agents/`, and `.claude/rules/` is a symlink pointing into `.gobbi/projects/<active>/`. The farm is built by `gobbi install` (fresh) and rotated by `gobbi project switch`. It is not hand-maintained — editing symlinks directly is not safe across install upgrades.
+The farm is the loader surface for Claude Code. Each file under `.claude/skills/`, `.claude/agents/`, and `.claude/rules/` is a symlink pointing into `.gobbi/projects/<projectName>/`. The farm is built by `gobbi install` (fresh) and rebuilt by `gobbi install --upgrade`. It is not hand-maintained — editing symlinks directly is not safe across install upgrades.
 
 The farm contains only the three template bundle roots. Project docs (design, decisions, gotchas, sessions) under `.gobbi/projects/<name>/` are not part of the farm and are not loaded by Claude Code automatically. They are accessed directly by agents during workflow steps.
 
@@ -42,11 +42,9 @@ The farm contains only the three template bundle roots. Project docs (design, de
 
 For a first-time setup in a new repository: `gobbi install` covers everything — templates, settings, and farm in one command.
 
-For a second project in the same workspace: `gobbi project create <name>` scaffolds and seeds the directory, then `gobbi project switch <name>` activates it.
+For a second project in the same workspace: `gobbi project create <name>` scaffolds and seeds the directory; subsequent `gobbi workflow` / `gobbi config` invocations pass `--project <name>` to target it.
 
 For upgrading after a CLI update: `gobbi install --upgrade` merges new template content while preserving user edits.
-
-For switching back to a prior project: `gobbi project switch <prior-name>` re-points the farm; no content is re-installed.
 
 ---
 

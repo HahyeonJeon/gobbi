@@ -149,7 +149,7 @@ V0.5.0 resolves it with a hard directory split:
 
 `.gobbi/` is the runtime layer. Session state, worktree management, notes, gotchas recorded mid-session, and context files all live here. Writing to `.gobbi/` does not trigger context reload. Agents write freely.
 
-A single workspace can host multiple projects. Each project gets its own directory under `.gobbi/projects/<name>/` — design docs, learnings, rules, skills, and session directories all scoped to that project. `gobbi project create <name>` provisions the directory; `gobbi project switch <name>` rotates the symlink farm to point at the new project's docs.
+A single workspace can host multiple projects. Each project gets its own directory under `.gobbi/projects/<name>/` — design docs, learnings, rules, skills, and session directories all scoped to that project. `gobbi project create <name>` provisions the directory; project resolution is `basename(repoRoot)` plus the `--project` flag (the legacy `gobbi project switch` command was removed in v0.5.0 PR-FIN-2).
 
 The three settings levels in `.gobbi/` form the cascade: `settings.json` (workspace preferences, gitignored), `projects/<name>/settings.json` (project config, tracked), and `projects/<name>/sessions/<id>/settings.json` (per-session overrides, gitignored). All three use the same unified schema. See `v050-features/gobbi-config/README.md` for cascade resolution semantics.
 

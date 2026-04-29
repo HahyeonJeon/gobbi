@@ -176,12 +176,9 @@ export interface StepSettings {
 }
 
 /**
- * Per-step config keyed by the workflow loop's name. Post-Wave-4 the
- * settings field name (`planning`) and the state-machine literal
- * (`'planning'`) are aligned; `resolveEvalDecision` in `settings-io.ts`
- * accepts only the post-rename literal — the Pass-3 backward-compat
- * bridge that also accepted `'plan'` was removed in W4.3. Callers that
- * still pass the legacy literal now fail at compile time.
+ * Per-step config keyed by the workflow loop's name. Settings field name
+ * and state-machine literal both align on `'planning'`. Callers that pass
+ * the legacy `'plan'` literal fail at compile time.
  */
 export interface WorkflowSettings {
   readonly ideation?: StepSettings;
@@ -398,9 +395,8 @@ export type SettingsLevel = 'workspace' | 'project' | 'session';
  * `tier` / `path` fields carry the failure's provenance for CLI-layer
  * messages.
  *
- * Named `ConfigCascadeError` (not `SettingsError`) to preserve the
- * Pass-3 error-class identity — catch paths in `commands/config.ts` and
- * other surfaces dispatch on this class name.
+ * Named `ConfigCascadeError` (not `SettingsError`) because catch paths in
+ * `commands/config.ts` and other surfaces dispatch on this class name.
  */
 export class ConfigCascadeError extends Error {
   readonly code: 'read' | 'parse' | 'notFound';

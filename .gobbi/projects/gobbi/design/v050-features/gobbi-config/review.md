@@ -3,10 +3,12 @@
 | Pass date  | Session ID               | Verdict    | PR     |
 |------------|--------------------------|------------|--------|
 | 2026-04-21 | `dfd4ff66-a2d4-456f-8fa4-ddd843e4e58b` | shipped | #123 (draft) |
-| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1c (TBD) |
-| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1a (TBD) |
-| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1b (TBD) |
-| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1d (TBD) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1c — #213 (squash `8cd2a0d`) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1a — #215 (squash `69c7cd0`) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1b — #217 (squash `a48ea7c`) |
+| 2026-04-28 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1d — #221 (squash `5bc7a61`) |
+| 2026-04-29 | `c34ea7e6-d5c3-4174-b61e-5176efc8d39b` | shipped | PR-FIN-1e — #224 (squash `5ddffab`) |
+| 2026-04-29 | `e735ee3d-6a43-44da-886b-64dcc8b9aa92` | shipped | PR-FIN-5 — #225 (squash `<TBD-PR225>`) |
 
 Pass-3 finalization replaced the T1/T2 JSON + T3 SQLite + provenance architecture with a unified three-level `settings.json` shape and a two-verb CLI. Waves B through D landed on `feat/120-gobbi-config-pass-3` atop 6 prior commits.
 
@@ -282,6 +284,48 @@ PR-FIN-1b introduces:
 
 ---
 
+### DRIFT-12 — PR-FIN-1d: `HookTrigger` enum expanded; `dispatchHookNotify` + `gobbi notify configure` ship
+
+**Finding:** PR-FIN-1d (session `c34ea7e6`) expanded the `HookTrigger` enum from 9 to 28 values (one per Claude Code hook event), extracted `dispatchToChannels` as the shared per-channel dispatch helper, and added `dispatchHookNotify(payload, eventName, options)` for hook-side notification. Phase-1 wires 7 events end-to-end (`Stop`, `SubagentStop`, `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `Notification`, `PreCompact`) — the remaining 21 Phase-2 events keep `TODO(PR-FIN-1d-phase-2 #219)` markers pending rich-message wiring. New verb `gobbi notify configure --enable/--disable/--status` manages `.claude/settings.json` hook entries with a trust-boundary read-only stance for non-gobbi entries (existing user-managed entries are preserved on `--disable`).
+
+**Evidence:** Round-3 ideation memo §F5 at `.claude/project/gobbi/note/20260428-0311-finalize-gobbi-config-c34ea7e6-d5c3-4174-b61e-5176efc8d39b/ideation/ideation.md`; target-state spec §6.4 at `.gobbi/projects/gobbi/tmp/gobbi-config-target-state.md`; `packages/cli/src/commands/notify.ts` at `5bc7a61`; `packages/cli/src/lib/settings.ts::HookTrigger` at `5bc7a61`; commits `a8980f8` + `001f96b` + `126e898` + `f7674d8` + `5b10500` on branch `feat/218-pr-fin-1d-hooktrigger-notify-dispatch`.
+
+**Severity:** Medium — agents or skills that hard-coded the 9-value `HookTrigger` enum or registered notify channels via direct `.claude/settings.json` edits will need to migrate to the 28-value enum and the `gobbi notify configure` verb.
+
+**Resolution:** fix code + doc — resolved across `a8980f8` + `001f96b` + `126e898` + `f7674d8` + `5b10500` (PR-FIN-1d, squash `5bc7a61`). NOTE-6 referenced this Pass for the deferred wiring; the Phase-1 wiring lands here, Phase-2 remains in #219.
+
+**Owner:** PR-FIN-1d (session `c34ea7e6`).
+
+---
+
+### DRIFT-13 — PR-FIN-1e: `workflow.{step}.{agent,evaluate.agent}` wired into spec spawn pipeline
+
+**Finding:** PR-FIN-1e (session `c34ea7e6`) closes the gap noted in NOTE-3: per-step `workflow.{step}.{agent,evaluate.agent}` settings (model + effort overrides) are now read by the orchestrator spec spawn pipeline. `loadSpecForRuntime` applies a runtime overlay against the per-step `agent-routing` block; `'auto'` (the default) preserves `_delegation`'s table unchanged, and explicit values override the spawn target's model/effort. Closes locked design decision #8.
+
+**Evidence:** Round-3 ideation memo §F8 at `.claude/project/gobbi/note/20260428-0311-finalize-gobbi-config-c34ea7e6-d5c3-4174-b61e-5176efc8d39b/ideation/ideation.md`; target-state spec §9 #11 at `.gobbi/projects/gobbi/tmp/gobbi-config-target-state.md`; `packages/cli/src/specs/loader.ts::loadSpecForRuntime` at `5ddffab`; squash commit `5ddffab` on develop (PR #224).
+
+**Severity:** Medium — closes the long-standing config-vs-spawn-pipeline gap (NOTE-3 superseded). Settings overrides previously stored but not enforced now reach the orchestrator end-to-end.
+
+**Resolution:** fix code + doc — resolved at `5ddffab` (PR-FIN-1e, PR #224). NOTE-3 in this review is superseded; the per-step `model`/`effort` enforcement now ships.
+
+**Owner:** PR-FIN-1e (session `c34ea7e6`).
+
+---
+
+### DRIFT-14 — PR-FIN-5: gobbi-wide cleanup — note.ts legacy fallback, verification.ts tombstone, bundled-spec resolution, docs sweep
+
+**Finding:** PR-FIN-5 (session `e735ee3d`) bundles five gobbi-wide cleanup concerns into one PR per the cluster's smallest-reversible-first ordering: (1) `note.ts` legacy `plan/subtasks/` fallback removed; (2) `verification.ts:53` tombstone comment + dead `VerificationResultData`/`VerificationCommandKind` types removed; (3) `specs/paths.ts` helper + `dist/specs/` post-build cp resolves the `bun build` flatten ENOENT for `gobbi workflow next/validate/stop`; (4) `state-machine.md:121` plan/planning blockquote rewritten — runtime literal is `planning` (not `plan`); (5) Pass-3 narrative trimmed in `settings.ts` + `ensure-settings-cascade.ts` JSDocs; cross-doc `gobbi project switch` references swept to past-tense or annotated as removed; this `review.md` backfilled for PR-FIN-1a/1b/1c/1d/1e + closing entry. Resolves `build-safe-needs-dist-mkdir-on-fresh-worktree` gotcha via `mkdir -p ./dist` guard in `build:safe`. Cluster position 6 of 7 — only PR-FIN-2 (project-name validation, `gobbi project switch` removal) remains.
+
+**Evidence:** ideation.md + plan.md at `.gobbi/projects/gobbi/sessions/e735ee3d-6a43-44da-886b-64dcc8b9aa92/`; commits on branch `feat/pr-fin-5-gobbi-wide-cleanup-225`.
+
+**Severity:** Medium — `bun build` flatten fix is the highest-impact item; the docs sweep removes several stale references that would otherwise contradict PR-FIN-2.
+
+**Resolution:** fix code + doc — resolved at `<TBD-PR225>` (PR #225, squash hash filled post-merge by orchestrator).
+
+**Owner:** PR-FIN-5 (session `e735ee3d`).
+
+---
+
 ### GAP-3 — gobbi-memory/README.md cross-ref sync deferred to post-#119 merge
 
 **Finding:** The `feat/120-gobbi-config-pass-3` branch has `v050-features/gobbi-memory.md` as a flat file. The directory form (`gobbi-memory/README.md`) exists only on `feat/118-gobbi-memory-pass-2` (PR #119, still draft). Cross-ref sync between gobbi-config and gobbi-memory cannot land until #119 merges — doing it now would create a doc pointing to a directory that doesn't exist on this branch.
@@ -307,14 +351,17 @@ PR-FIN-1b introduces:
 | DRIFT-7 | drift | medium | `f9b3925` + `cf7733c` + Wave E | fix code + doc (superseded by DRIFT-9) |
 | DRIFT-8 | drift | high | `f9b3925` + `b671b02` | fix code + doc |
 | DRIFT-9 | drift | high | `362217c` + `954f889` (PR-FIN-1c) | fix code + doc |
-| DRIFT-10 | drift | medium | `6909fec` (PR-FIN-1a) | fix code + doc |
-| DRIFT-11 | drift | medium-high | `2248b72` + `b307214` (PR-FIN-1b) | fix code + doc |
+| DRIFT-10 | drift | medium | `69c7cd0` (PR-FIN-1a, #215) | fix code + doc |
+| DRIFT-11 | drift | medium-high | `a48ea7c` (PR-FIN-1b, #217) | fix code + doc |
+| DRIFT-12 | drift | medium | `5bc7a61` (PR-FIN-1d, #221) | fix code + doc |
+| DRIFT-13 | drift | medium | `5ddffab` (PR-FIN-1e, #224) | fix code + doc (supersedes NOTE-3) |
+| DRIFT-14 | drift | medium | `<TBD-PR225>` (PR-FIN-5, #225) | fix code + doc |
 | NOTE-1 | note | — | `f9b3925` (Wave A→B decision) | design decision |
 | NOTE-2 | note | — | `ff20702` | test discipline |
-| NOTE-3 | note | — | — (no code change) | scope boundary |
+| NOTE-3 | note | — | superseded by DRIFT-13 (PR-FIN-1e) | wiring shipped |
 | NOTE-4 | note | — | `b671b02` (schema-only) | scope boundary |
-| NOTE-5 | note | — | `6909fec` (PR-FIN-1a) | usability decision |
-| NOTE-6 | note | — | `2248b72` (PR-FIN-1b) | scope boundary; wiring in PR-FIN-1d |
+| NOTE-5 | note | — | `69c7cd0` (PR-FIN-1a) | usability decision |
+| NOTE-6 | note | — | `a48ea7c` (PR-FIN-1b) | scope boundary; wiring in PR-FIN-1d (`5bc7a61`) |
 | GAP-1 | gap | — | — | deferred; follow-up Pass |
 | GAP-2 | gap | — | — | deferred; gobbi-rule update |
 | GAP-3 | gap | — | — | deferred; issue #130 post-#119 |

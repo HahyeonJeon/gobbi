@@ -118,7 +118,7 @@ Every valid transition in the state machine. Transitions not in this table are i
 
 The `loopTarget` field on the `decision.eval.verdict` event specifies which step to loop back to. The transition table uses this field to route revise verdicts from `execution_eval` to `ideation`, `plan`, or `execution`. The `feedbackRound` counter distinguishes first-time entries from loop-back entries.
 
-> **Plan vs Planning naming:** the runtime state-machine literal is `plan` / `plan_eval` (as shipped in [`packages/cli/src/specs/index.json`](../../../../packages/cli/src/specs/index.json)). Design prose in [`v050-features/orchestration/README.md`](v050-features/orchestration/README.md) and the loop name in [`gobbi/SKILL.md`](../../skills/gobbi/SKILL.md) use "Planning Loop" / `planning`. The dual form is intentional pending a comprehensive rename Pass tracked in [issue #133](https://github.com/HahyeonJeon/gobbi/issues/133). When in doubt: code says `plan`; design prose says Planning.
+> **Plan vs Planning naming:** runtime state-machine literal is `planning` / `planning_eval` (as shipped in [`packages/cli/src/specs/index.json`](../../../../packages/cli/src/specs/index.json)). Design prose, the loop name in [`gobbi/SKILL.md`](../../../../.claude/skills/gobbi/SKILL.md), and the orchestration [`README.md`](v050-features/orchestration/README.md) all use Planning consistently. The pre-Pass-3 bridge that accepted `'plan'` as an alias was removed in Pass 3.
 
 ### Skip Semantics
 
