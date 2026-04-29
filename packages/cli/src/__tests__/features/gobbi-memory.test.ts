@@ -1456,71 +1456,11 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
 
     // PR-FIN-1c: project switch farm rotation retired with the registry
     // removal. Test skipped.
-    test.skip('G-MEM2-MP-03: farm rotation between projects points at distinct source trees', async () => {
-      const tpl = makeTemplate({
-        'rules/gobbi-mark.md': 'gobbi\n',
-        'skills/_gobbi/SKILL.md': '# gobbi skill\n',
-      });
-      const repo = makeRepo();
-      await captureExit(() =>
-        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // Build a sibling project `alt` with DIFFERENT content so the
-      // farm rotation produces observably different leaves.
-      const altRoot = projectDir(repo, 'alt');
-      for (const kind of CLAUDE_FARM_KINDS) {
-        mkdirSync(join(altRoot, kind), { recursive: true });
-      }
-      mkdirSync(join(altRoot, 'skills', '_alt'), { recursive: true });
-      writeFileSync(
-        join(altRoot, 'skills', '_alt', 'SKILL.md'),
-        '# alt skill\n',
-      );
-      writeFileSync(
-        join(altRoot, 'rules', 'alt-mark.md'),
-        'alt\n',
-        'utf8',
-      );
-      writeFileSync(join(altRoot, 'agents', 'z.md'), '# z\n', 'utf8');
-
-      // Pre-rotation — farm resolves `gobbi`'s skills.
-      expect(
-        readFileSync(
-          join(repo, '.claude', 'skills', '_gobbi', 'SKILL.md'),
-          'utf8',
-        ),
-      ).toBe('# gobbi skill\n');
-
-      // Rotate.
-      resetCaptured();
-      await captureExit(() =>
-        runProjectSwitchWithOptions(['alt'], {
-          repoRoot: repo,
-          tempPidTag: 'mp03',
-        }),
-      );
-      expect(captured.exitCode).toBeNull();
-
-      // `gobbi` leaf is GONE from the farm (per-kind wipe).
-      expect(
-        existsSync(
-          join(repo, '.claude', 'skills', '_gobbi', 'SKILL.md'),
-        ),
-      ).toBe(false);
-      // `alt` leaf is present and resolves into `alt`'s source.
-      const altLeaf = join(
-        repo,
-        '.claude',
-        'skills',
-        '_alt',
-        'SKILL.md',
-      );
-      expect(lstatSync(altLeaf).isSymbolicLink()).toBe(true);
-      expect(
-        pathResolve(join(altLeaf, '..'), readlinkSync(altLeaf)),
-      ).toBe(join(altRoot, 'skills', '_alt', 'SKILL.md'));
+    test.skip('G-MEM2-MP-03: RETIRED — farm rotation deleted in PR-FIN-1c', () => {
+      // Original body asserted farm rotation between projects pointed at
+      // distinct source trees via `runProjectSwitchWithOptions`. The
+      // switch command and farm-rotation logic were deleted with the
+      // registry removal. Preserved in git history.
     });
 
     test('G-MEM2-MP-04: workflow init stamps metadata.projectName at birth', async () => {
