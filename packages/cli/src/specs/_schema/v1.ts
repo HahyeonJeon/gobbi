@@ -124,8 +124,8 @@ const AgentConfigSchema = {
   properties: {
     role: { type: 'string', minLength: 1 },
     stance: { type: 'string', minLength: 1, nullable: true },
-    modelTier: { type: 'string', enum: ['opus', 'sonnet', 'haiku'] },
-    effort: { type: 'string', enum: ['max', 'high', 'medium'] },
+    modelTier: { type: 'string', enum: ['opus', 'sonnet', 'haiku', 'auto'] },
+    effort: { type: 'string', enum: ['low', 'medium', 'high', 'max', 'auto'] },
     skills: { type: 'array', items: { type: 'string', minLength: 1 } },
     artifactTarget: { type: 'string', minLength: 1 },
     blockRef: { type: 'string', minLength: 1 },

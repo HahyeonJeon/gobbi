@@ -46,6 +46,7 @@ import { validateStepSpec } from '../../_schema/v1.js';
 import { initialState } from '../../../workflow/state.js';
 import type { WorkflowState } from '../../../workflow/state.js';
 import { defaultPredicates } from '../../../workflow/predicates.js';
+import { loadSpecForRuntime } from '../../spec-loader.js';
 import type { StepSpec } from '../../types.js';
 
 // ---------------------------------------------------------------------------
@@ -305,6 +306,53 @@ describe('ideation — compile snapshots', () => {
     // The best-practice delegation block is NOT included in the same compile
     // — it runs in a separate delegation invocation.
     expect(text).not.toContain('You are a PI agent working the best-practice stance');
+  });
+});
+
+// ===========================================================================
+// PR-FIN-1e — agent-routing block snapshot (default-provenance fixture)
+// ===========================================================================
+//
+// Captures the new `Agent routing for this step (resolved from settings
+// cascade):` static section emitted by `renderSpec` when the caller threads
+// `originals` through `CompileOptions`. This fixture pins the
+// `(default)`-provenance rendering: settings are `undefined`, so
+// `loadSpecForRuntime` produces an `originals` map mirroring the spec.json
+// hardcoded values, and `renderAgentRoutingBlock` walks every agent and
+// emits `(default)` for each.
+//
+// The fixture is deliberately distinct from the three existing fixtures
+// (which call `compile` without `originals` and therefore stay byte-stable
+// across this PR). Only this new test captures the agent-routing block.
+
+describe('ideation — agent-routing block snapshot (PR-FIN-1e)', () => {
+  test('first-entry with originals threads agent-routing block with (default) provenance for both PI agents', () => {
+    const { spec, originals } = loadSpecForRuntime(
+      SPEC_PATH,
+      undefined,
+      'ideation',
+    );
+    const input = firstEntryFixture(spec);
+    const prompt = compile(input, {
+      allocator: defaultBudgetAllocator,
+      contextWindowTokens: GENEROUS_WINDOW,
+      originals,
+      slotHint: 'workflow.ideation.agent',
+    });
+    expect(prompt.text).toMatchSnapshot();
+
+    // Cross-check intent: the agent-routing block appears with both PI
+    // agents at their hardcoded (opus, max) defaults — one line per agent.
+    expect(prompt.text).toContain(
+      'Agent routing for this step (resolved from settings cascade):',
+    );
+    expect(prompt.text).toContain('role=innovative');
+    expect(prompt.text).toContain('role=best');
+    expect(prompt.text).toContain('model=opus');
+    expect(prompt.text).toContain('effort=max');
+    expect(prompt.text).toContain('(default)');
+    // No (override: ...) suffix should appear because settings are undefined.
+    expect(prompt.text).not.toContain('(override:');
   });
 });
 

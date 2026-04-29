@@ -332,11 +332,11 @@ describe('HOOK-1: gobbi hook session-start chains config env + workflow init', (
     // file-header docstring promises HOOK-1 covers.
     expect(existsSync(envFile)).toBe(true);
     const body = readFileSync(envFile, 'utf8');
-    expect(body).toContain('CLAUDE_SESSION_ID=hook-1-sess\n');
-    expect(body).toContain('CLAUDE_TRANSCRIPT_PATH=/tmp/hook-1-transcript.jsonl\n');
-    expect(body).toContain(`CLAUDE_CWD=${repo}\n`);
-    expect(body).toContain('CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
-    expect(body).toContain(`CLAUDE_PROJECT_DIR=${repo}\n`);
+    expect(body).toContain('export CLAUDE_SESSION_ID=hook-1-sess\n');
+    expect(body).toContain('export CLAUDE_TRANSCRIPT_PATH=/tmp/hook-1-transcript.jsonl\n');
+    expect(body).toContain(`export CLAUDE_CWD=${repo}\n`);
+    expect(body).toContain('export CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
+    expect(body).toContain(`export CLAUDE_PROJECT_DIR=${repo}\n`);
 
     // workflow init created the session directory and metadata.json.
     const projectName = basename(repo);
@@ -358,21 +358,19 @@ describe('HOOK-1: gobbi hook session-start chains config env + workflow init', (
 // HOOK-2: pre-tool-use chain — guard invocation, fail-open allow
 // ===========================================================================
 
-describe('HOOK-2: gobbi hook pre-tool-use chains workflow guard', () => {
-  test('HOOK-2: missing session yields fail-open allow JSON on stdout', async () => {
+describe('HOOK-2: gobbi hook pre-tool-use is stubbed when GUARDS is empty', () => {
+  test('HOOK-2: empty GUARDS short-circuits the stub silently (exit 0, no stdout)', async () => {
     makeScratchRepo();
 
-    // No session directory exists in the scratch repo. guard's resolveSessionDir
-    // returns null → emitAllow() is the fail-open default.
+    // The hook drains stdin then early-returns when GUARDS.length === 0.
+    // CC treats no stdout as "no opinion" → tool call is allowed by default.
     const { runHookPreToolUse } = await import('../../commands/hook/pre-tool-use.js');
     await captureExit(async () => {
       await runHookPreToolUse([]);
     });
     expect(captured.exitCode).toBeNull();
-    // Even with no payload (TTY null + guard's `!isPreToolUsePayload` fallback),
-    // guard emits allow JSON. Confirms the chain reached guard.
-    expect(captured.stdout).toContain('"hookEventName":"PreToolUse"');
-    expect(captured.stdout).toContain('"permissionDecision":"allow"');
+    expect(captured.stdout).toBe('');
+    expect(captured.stderr).toBe('');
   });
 });
 
@@ -478,7 +476,7 @@ describe('HOOK-6: end-to-end SessionStart chain', () => {
     // is set above and should appear.
     expect(existsSync(envFile)).toBe(true);
     const body = readFileSync(envFile, 'utf8');
-    expect(body).toContain(`CLAUDE_PROJECT_DIR=${repo}\n`);
+    expect(body).toContain(`export CLAUDE_PROJECT_DIR=${repo}\n`);
 
     // Session dir created by workflow init.
     const projectName = basename(repo);

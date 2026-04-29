@@ -99,6 +99,25 @@ export type HookTrigger =
   | 'ElicitationResult';
 
 /**
+ * Per-agent model + effort override for a workflow step.
+ *
+ * PR-FIN-1e introduced this nested shape — the prior flat
+ * `{model, effort}` fields on `StepDiscuss` / `StepEvaluate` were lifted
+ * into a sibling `agent` sub-object so the productive-step spawn surface
+ * (`StepSettings.agent`) and the per-mode surfaces (`discuss.agent`,
+ * `evaluate.agent`) share one uniform shape.
+ *
+ * `model: 'auto'` defers to `_delegation`'s model table and `effort:
+ * 'auto'` defers to core-rule's max-effort policy. Concrete tiers
+ * override unconditionally — no per-tier policy lookup at the loader
+ * boundary.
+ */
+export interface AgentConfig {
+  readonly model?: AgentModel;
+  readonly effort?: AgentEffort;
+}
+
+/**
  * Discussion configuration for a workflow step.
  *
  *   - `mode: 'agent'` → delegate to a step-specific subagent (orchestrator
@@ -107,13 +126,14 @@ export type HookTrigger =
  *   - `mode: 'user'` → interactive discussion with the user.
  *   - `mode: 'auto'` → orchestrator decides based on context.
  *   - `mode: 'skip'` → no discussion.
- *   - `model` + `effort` of `'auto'` defer to `_delegation`'s model table
- *     and core-rule's max-effort policy.
+ *   - `agent.{model,effort}` override the agent that the discussion mode
+ *     spawns. Schema slot reserved for future discussion-agent spawn —
+ *     not yet consumed by any spec.json. PR-FIN-1e shipped the schema;
+ *     consumer wiring is a follow-up.
  */
 export interface StepDiscuss {
   readonly mode?: 'agent' | 'user' | 'auto' | 'skip';
-  readonly model?: AgentModel;
-  readonly effort?: AgentEffort;
+  readonly agent?: AgentConfig;
 }
 
 /**
@@ -124,15 +144,25 @@ export interface StepDiscuss {
  *   - `mode: 'ask'` → prompt the user via AskUserQuestion at the eval
  *     checkpoint; translation helper converts the answer to boolean.
  *   - `mode: 'auto'` → orchestrator decides based on context.
+ *   - `agent.{model,effort}` override the evaluator-perspective agents
+ *     spawned for this step's eval-mode (`*_eval` substate).
  */
 export interface StepEvaluate {
   readonly mode?: 'ask' | 'always' | 'skip' | 'auto';
-  readonly model?: AgentModel;
-  readonly effort?: AgentEffort;
+  readonly agent?: AgentConfig;
 }
 
 export interface StepSettings {
   readonly discuss?: StepDiscuss;
+  /**
+   * Step-wide primary-spawn agent override (PI/executor for productive
+   * steps). Applied at the spec-loader boundary to every entry of
+   * `spec.delegation.agents[*]` for productive-step substates
+   * (`ideation`, `planning`, `execution`). Eval-mode substates
+   * (`*_eval`) read from `evaluate.agent` instead — see ideation §2.3.1
+   * step-driven role-to-mode mapping.
+   */
+  readonly agent?: AgentConfig;
   readonly evaluate?: StepEvaluate;
   /**
    * Per-step REVISE-loop iteration cap. Default `3` (matches
@@ -284,18 +314,21 @@ export const DEFAULTS: Settings = {
   schemaVersion: 1,
   workflow: {
     ideation: {
-      discuss: { mode: 'user', model: 'auto', effort: 'auto' },
-      evaluate: { mode: 'always', model: 'auto', effort: 'auto' },
+      discuss: { mode: 'user', agent: { model: 'auto', effort: 'auto' } },
+      agent: { model: 'auto', effort: 'auto' },
+      evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },
       maxIterations: 3,
     },
     planning: {
-      discuss: { mode: 'user', model: 'auto', effort: 'auto' },
-      evaluate: { mode: 'always', model: 'auto', effort: 'auto' },
+      discuss: { mode: 'user', agent: { model: 'auto', effort: 'auto' } },
+      agent: { model: 'auto', effort: 'auto' },
+      evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },
       maxIterations: 3,
     },
     execution: {
-      discuss: { mode: 'agent', model: 'auto', effort: 'auto' },
-      evaluate: { mode: 'always', model: 'auto', effort: 'auto' },
+      discuss: { mode: 'agent', agent: { model: 'auto', effort: 'auto' } },
+      agent: { model: 'auto', effort: 'auto' },
+      evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },
       maxIterations: 3,
     },
   },

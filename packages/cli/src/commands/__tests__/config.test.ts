@@ -400,8 +400,13 @@ describe('runConfig get read paths', () => {
       await runConfig(['get', 'workflow.ideation.discuss']);
     });
     // A subtree — parse and compare rather than relying on key ordering.
+    // PR-FIN-1e reshaped DEFAULTS: `discuss` now nests `agent: {model, effort}`
+    // instead of flat `model`/`effort` siblings.
     const parsed = JSON.parse(captured.stdout.trim()) as unknown;
-    expect(parsed).toEqual({ mode: 'user', model: 'auto', effort: 'auto' });
+    expect(parsed).toEqual({
+      mode: 'user',
+      agent: { model: 'auto', effort: 'auto' },
+    });
   });
 });
 

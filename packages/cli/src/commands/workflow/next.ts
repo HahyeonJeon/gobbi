@@ -36,19 +36,24 @@ import {
 } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { compile, type CompileInput } from '../../specs/assembly.js';
+import { compile, type CompileInput, type CompileOptions } from '../../specs/assembly.js';
 import { compileErrorPrompt } from '../../specs/errors.js';
 import { getStepById, loadGraph, type WorkflowGraph } from '../../specs/graph.js';
 import { applyOverlay, validateOverlay } from '../../specs/overlay.js';
-import { validateStepSpec } from '../../specs/_schema/v1.js';
+import {
+  loadSpecForRuntime,
+  type AgentOriginal,
+} from '../../specs/spec-loader.js';
 import type { StepSpec } from '../../specs/types.js';
 import {
   compileVerificationBlock,
   hasVerificationResultsFor,
 } from '../../specs/verification-block.js';
+import { getRepoRoot } from '../../lib/repo.js';
+import { resolveSettings } from '../../lib/settings-io.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import type { WorkflowState, WorkflowStep } from '../../workflow/state.js';
 import { EventStore } from '../../workflow/store.js';
 import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
@@ -233,8 +238,29 @@ export async function compileCurrentStep(
     );
   }
 
+  // Resolve the settings cascade once per invocation so the spec loader can
+  // overlay `workflow.<step>.{agent,evaluate.agent}.{model,effort}` onto
+  // every entry of `spec.delegation.agents[*]` per the step-driven mapping
+  // (see `spec-loader.ts::loadSpecForRuntime` JSDoc + PR-FIN-1e ideation
+  // §2.3.1). The `partitionKeys.projectId` field carries the resolved
+  // project name from `<sessionDir>/metadata.json`; absent → falls back to
+  // `basename(repoRoot)` inside `resolveSettings`.
+  const repoRoot = getRepoRoot();
+  const partitionKeys = resolvePartitionKeys(sessionDir);
+  const resolvedSettings = resolveSettings({
+    repoRoot,
+    sessionId,
+    ...(partitionKeys.projectId !== null
+      ? { projectName: partitionKeys.projectId }
+      : {}),
+  });
+
   const specPath = resolveSpecPath(graphPath, stepDef.spec);
-  const baseSpec = loadSpec(specPath);
+  const { spec: baseSpec, originals } = loadSpecForRuntime(
+    specPath,
+    resolvedSettings,
+    state.currentStep,
+  );
 
   let spec: StepSpec = baseSpec;
   if (state.currentSubstate !== null) {
@@ -259,7 +285,13 @@ export async function compileCurrentStep(
     activeAgent: null,
   };
 
-  const prompt = compile(input);
+  // Build compile options, threading the agent-routing decoration only
+  // when settings produced a non-empty `originals` map. The decoration
+  // surfaces the per-agent (model, effort) + provenance suffix in the
+  // rendered prompt — orchestrator reads it to drive `Agent()` spawn.
+  const slotHint = slotHintForStep(state.currentStep);
+  const compileOptions: CompileOptions = buildCompileOptions(originals, slotHint);
+  const prompt = compile(input, compileOptions);
 
   // Verification-block rendering (E.8). Emits one block per active subagent
   // whose `verification.result` entries landed in `state.verificationResults`
@@ -290,20 +322,58 @@ function resolveDir(dir: string): string {
   return isAbsolute(dir) ? dir : resolve(process.cwd(), dir);
 }
 
+/**
+ * Map a {@link WorkflowStep} to the dotted-path that names the active
+ * settings slot (used by the agent-routing block as the override
+ * provenance suffix). Mirrors `spec-loader.ts::pickSettingsSlot`'s
+ * step-driven mapping.
+ *
+ * Returns `null` for steps that do not consume a settings slot
+ * (`idle`, `done`, `error`, `memorization`, `handoff`) — the renderer
+ * skips the block entirely for empty `delegation.agents` anyway, so the
+ * `null` return is the symmetric safe default.
+ */
+function slotHintForStep(step: WorkflowStep): string | null {
+  switch (step) {
+    case 'ideation':
+      return 'workflow.ideation.agent';
+    case 'planning':
+      return 'workflow.planning.agent';
+    case 'execution':
+      return 'workflow.execution.agent';
+    case 'ideation_eval':
+      return 'workflow.ideation.evaluate.agent';
+    case 'planning_eval':
+      return 'workflow.planning.evaluate.agent';
+    case 'execution_eval':
+      return 'workflow.execution.evaluate.agent';
+    default:
+      return null;
+  }
+}
+
+/**
+ * Assemble the {@link CompileOptions} bag for `compile()`. Builds
+ * `originals` and `slotHint` fields conditionally so the spread never
+ * sets a value of `undefined` explicitly (incompatible with
+ * `exactOptionalPropertyTypes: true` — both fields are declared as
+ * pure-optional, not `T | undefined`).
+ */
+function buildCompileOptions(
+  originals: Readonly<Record<string, AgentOriginal>>,
+  slotHint: string | null,
+): CompileOptions {
+  // The originals map is always populated by `loadSpecForRuntime` (one
+  // entry per spec.delegation.agents[*]); empty only when the spec has no
+  // agents (planning, memorization, handoff). Forward an empty map and
+  // let `renderAgentRoutingBlock` skip emission internally — the block
+  // gating on `delegation.agents.length === 0` is the canonical guard.
+  return { originals, slotHint };
+}
+
 function resolveSpecPath(graphPath: string, stepSpec: string): string {
   if (isAbsolute(stepSpec)) return stepSpec;
   return resolve(dirname(graphPath), stepSpec);
-}
-
-function loadSpec(path: string): StepSpec {
-  const raw: unknown = JSON.parse(readFileSync(path, 'utf8'));
-  const result = validateStepSpec(raw);
-  if (!result.ok) {
-    throw new Error(
-      `gobbi workflow next: spec ${path} failed validation: ${JSON.stringify(result.errors)}`,
-    );
-  }
-  return result.value;
 }
 
 function applySubstateOverlay(base: StepSpec, overlayPath: string): StepSpec {

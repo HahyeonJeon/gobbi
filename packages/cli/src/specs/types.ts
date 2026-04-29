@@ -55,16 +55,29 @@
 /**
  * Anthropic model tier assigned to a delegated agent. Matches the `model:`
  * front-matter values used in `.claude/agents/*.md`.
+ *
+ * `'auto'` defers tier selection to the orchestrator at spawn time —
+ * consult `_gobbi-rule` Model Selection (innovative/implementation → opus;
+ * evaluators/reviewers/docs → sonnet). Settings cascade may inject
+ * `'auto'` as a step-wide override; spec.json files may also use `'auto'`
+ * if the spec author wants to defer to the rule rather than hardcode a
+ * tier. The CLI does not pre-resolve `'auto'`; it flows verbatim into
+ * `spec.delegation.agents[*].modelTier` and the rendered prompt's
+ * `agent-routing` block annotates it for the orchestrator to resolve.
  */
-export type ModelTier = 'opus' | 'sonnet' | 'haiku';
+export type ModelTier = 'opus' | 'sonnet' | 'haiku' | 'auto';
 
 /**
- * Effort level for the delegated agent. `max` is the only value used by
- * the workflow today — the field exists so downstream specs can opt into
- * lower effort if that becomes useful. `_gobbi-rule.md` currently mandates
- * max effort for all workflow agents.
+ * Effort level for the delegated agent. `max` is the workflow default per
+ * `_gobbi-rule` Model Selection ("All agents run at max effort"); the
+ * field permits lower effort for downstream specs that opt in.
+ *
+ * `'auto'` defers effort selection to the orchestrator at spawn time —
+ * consult `_gobbi-rule` Model Selection. Same flow-verbatim semantics as
+ * `ModelTier`'s `'auto'`: the CLI does not pre-resolve, the rendered
+ * prompt's `agent-routing` block annotates, the orchestrator picks.
  */
-export type EffortLevel = 'max' | 'high' | 'medium';
+export type EffortLevel = 'low' | 'medium' | 'high' | 'max' | 'auto';
 
 // ---------------------------------------------------------------------------
 // Meta — step-level configuration that does not vary per prompt compile

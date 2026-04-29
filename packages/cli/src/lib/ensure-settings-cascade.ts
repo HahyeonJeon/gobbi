@@ -42,6 +42,7 @@ import {
   type Settings,
   type StepEvaluate,
   type StepSettings,
+  type WorkflowSettings,
 } from './settings.js';
 import { writeSettingsAtLevel } from './settings-io.js';
 import { formatAjvErrors, validateSettings } from './settings-validator.js';
@@ -248,6 +249,176 @@ function reshapeCurrentShape(parsed: unknown): Settings {
 }
 
 // ---------------------------------------------------------------------------
+// PR-FIN-1e — agent-shape migration primitives
+// ---------------------------------------------------------------------------
+
+/** The set of step keys whose `discuss` / `evaluate` slots may carry the
+ * legacy flat `{model, effort}` form. Mirrors {@link WorkflowSettings}'s
+ * three productive-step slots — eval-mode steps (`*_eval`) reuse the
+ * productive step's `evaluate` substate, so there is no `*_eval` entry
+ * here. */
+const AGENT_SHAPE_STEP_KEYS = ['ideation', 'planning', 'execution'] as const;
+const AGENT_SHAPE_MODE_KEYS = ['discuss', 'evaluate'] as const;
+
+/**
+ * Returns `true` when the parsed settings record carries any
+ * `workflow.<step>.{discuss,evaluate}.{model,effort}` field at the legacy
+ * flat shape — i.e. PR-FIN-1e moved those keys under a nested
+ * `agent` sub-object and the on-disk file still uses the pre-migration
+ * shape.
+ *
+ * Conservative: a missing key alone never triggers an upgrade (the new
+ * shape's optional fields are legitimately absent on minimal seeds and
+ * already-migrated files). Only the *presence* of a legacy `model`/`effort`
+ * directly under `discuss` or `evaluate` flags the file as needing
+ * migration. The net-new `workflow.<step>.agent` slot has no legacy
+ * precursor and never triggers this predicate by itself.
+ */
+export function needsAgentShapeUpgrade(parsed: unknown): boolean {
+  if (!isRecord(parsed)) return false;
+  const workflow = parsed['workflow'];
+  if (!isRecord(workflow)) return false;
+
+  for (const stepKey of AGENT_SHAPE_STEP_KEYS) {
+    const step = workflow[stepKey];
+    if (!isRecord(step)) continue;
+    for (const modeKey of AGENT_SHAPE_MODE_KEYS) {
+      const slot = step[modeKey];
+      if (!isRecord(slot)) continue;
+      if ('model' in slot || 'effort' in slot) return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Reshape a single step's mode slots (`discuss`, `evaluate`) so that any
+ * legacy flat `{model, effort}` keys move under the nested `agent`
+ * sub-object that PR-FIN-1e introduced.
+ *
+ * Conflict rule (when both legacy and nested form exist on the same slot):
+ * nested wins, legacy is dropped, `mutated` becomes `true` because the
+ * post-state differs from the pre-state — a legacy key the user wrote was
+ * removed. Mirrors PR-FIN-1c's mode/baseBranch precedence at
+ * {@link reshapeGit} (Pass-3 wins when both present).
+ *
+ * The step-wide `agent` slot is net-new (no legacy precursor); it is
+ * carried verbatim if present. `maxIterations` and `mode` are likewise
+ * carried verbatim. `mutated` reflects only changes the agent-shape
+ * migration introduced — moves of legacy `{model, effort}` keys, and
+ * legacy-vs-nested conflict resolution.
+ */
+export function reshapeStepAgentShape(
+  stepCfg: unknown,
+): { readonly out: StepSettings; readonly mutated: boolean } {
+  if (!isRecord(stepCfg)) {
+    // Non-record input — return an empty StepSettings; nothing to migrate.
+    return { out: {}, mutated: false };
+  }
+
+  let mutated = false;
+  const out: { -readonly [K in keyof StepSettings]?: StepSettings[K] } = {};
+
+  for (const modeKey of AGENT_SHAPE_MODE_KEYS) {
+    const slot = stepCfg[modeKey];
+    if (slot === undefined) continue;
+    if (!isRecord(slot)) {
+      // Non-record value at a known mode key (e.g. `null`) — preserve as-is
+      // so AJV surfaces it later; do not flag mutation.
+      (out as Record<string, unknown>)[modeKey] = slot;
+      continue;
+    }
+
+    const legacyModel = 'model' in slot ? slot['model'] : undefined;
+    const legacyEffort = 'effort' in slot ? slot['effort'] : undefined;
+    const hasLegacy = 'model' in slot || 'effort' in slot;
+
+    const nestedAgentRaw = slot['agent'];
+    const nestedAgent = isRecord(nestedAgentRaw) ? nestedAgentRaw : null;
+
+    // Build the migrated agent sub-object. Nested wins on conflict — start
+    // with legacy values, overlay nested values on top.
+    const mergedAgent: { -readonly [K in 'model' | 'effort']?: unknown } = {};
+    if (legacyModel !== undefined) mergedAgent.model = legacyModel;
+    if (legacyEffort !== undefined) mergedAgent.effort = legacyEffort;
+    if (nestedAgent !== null) {
+      if ('model' in nestedAgent) mergedAgent.model = nestedAgent['model'];
+      if ('effort' in nestedAgent) mergedAgent.effort = nestedAgent['effort'];
+    }
+
+    // Build the rebuilt slot, carrying every key that was NOT a legacy
+    // {model, effort} or the `agent` sub-object — those we owned. Other
+    // keys (notably `mode`) survive verbatim.
+    const rebuiltSlot: Record<string, unknown> = {};
+    for (const k of Object.keys(slot)) {
+      if (k === 'model' || k === 'effort' || k === 'agent') continue;
+      rebuiltSlot[k] = slot[k];
+    }
+    if (Object.keys(mergedAgent).length > 0) {
+      rebuiltSlot['agent'] = mergedAgent;
+    } else if (nestedAgent !== null) {
+      // Nested agent was present but empty — preserve verbatim.
+      rebuiltSlot['agent'] = nestedAgent;
+    }
+
+    // Mutation detection: any legacy key present means we removed it from
+    // the slot's top level. That alone counts as a mutation regardless of
+    // whether the nested form already had the same value.
+    if (hasLegacy) mutated = true;
+
+    (out as Record<string, unknown>)[modeKey] = rebuiltSlot;
+  }
+
+  // Carry net-new step-wide `agent` slot verbatim (no legacy precursor).
+  if ('agent' in stepCfg) {
+    (out as Record<string, unknown>)['agent'] = stepCfg['agent'];
+  }
+  // Carry maxIterations verbatim.
+  if ('maxIterations' in stepCfg) {
+    (out as Record<string, unknown>)['maxIterations'] = stepCfg['maxIterations'];
+  }
+
+  return { out, mutated };
+}
+
+/**
+ * Apply {@link reshapeStepAgentShape} across every productive-step entry
+ * under `settings.workflow`. Returns the rewritten workflow tree plus a
+ * `mutated` flag aggregated across all steps. Steps absent from the input
+ * stay absent. Non-record `workflow` payloads are returned as-is with
+ * `mutated: false` so AJV surfaces the malformed shape later.
+ */
+function reshapeWorkflowAgentShape(
+  workflow: unknown,
+): { readonly out: WorkflowSettings | undefined; readonly mutated: boolean } {
+  if (workflow === undefined) return { out: undefined, mutated: false };
+  if (!isRecord(workflow)) {
+    return { out: workflow as WorkflowSettings, mutated: false };
+  }
+
+  let mutated = false;
+  const out: { -readonly [K in keyof WorkflowSettings]?: StepSettings } = {};
+
+  for (const stepKey of AGENT_SHAPE_STEP_KEYS) {
+    if (!(stepKey in workflow)) continue;
+    const stepCfg = workflow[stepKey];
+    const { out: reshapedStep, mutated: stepMutated } =
+      reshapeStepAgentShape(stepCfg);
+    if (stepMutated) mutated = true;
+    out[stepKey] = reshapedStep;
+  }
+
+  // Preserve any unknown step keys verbatim — AJV will reject them later
+  // with the proper validator-side error message rather than silent loss.
+  for (const k of Object.keys(workflow)) {
+    if ((AGENT_SHAPE_STEP_KEYS as readonly string[]).includes(k)) continue;
+    (out as Record<string, unknown>)[k] = workflow[k];
+  }
+
+  return { out: out as WorkflowSettings, mutated };
+}
+
+// ---------------------------------------------------------------------------
 // Step 3 — T2-v1 → new-shape upgrader
 // ---------------------------------------------------------------------------
 
@@ -350,11 +521,27 @@ function ensureGitignoreLines(repoRoot: string): void {
 // ---------------------------------------------------------------------------
 
 /**
- * Read a settings file at `filePath`, decide whether it needs the
- * PR-FIN-1c reshape, and rewrite it atomically when so. Best-effort: if
- * the file is malformed JSON we skip silently (the regular cascade load
- * surfaces the error with proper provenance); if it already conforms we
- * do nothing. Returns `true` when the file was rewritten.
+ * Read a settings file at `filePath`, decide whether it needs any of the
+ * shape reshapes (PR-FIN-1c GitSettings + ProjectsRegistry removal,
+ * PR-FIN-1e agent-shape migration), and rewrite it atomically when so.
+ *
+ * Composition (PR-FIN-1e): both reshapes run in the same pipeline so the
+ * file is read once, validated once, and written once. The two reshapes
+ * are tracked independently — each can fire its own breadcrumb depending
+ * on whether it actually moved anything:
+ *
+ *   - PR-FIN-1c GitSettings reshape — gated on
+ *     {@link needsCurrentShapeUpgrade}; breadcrumb fires whenever that
+ *     gate triggered (legacy-shape detection IS the mutation signal —
+ *     the reshape is unconditional inside the gate).
+ *   - PR-FIN-1e agent-shape reshape — gated on
+ *     {@link needsAgentShapeUpgrade}; breadcrumb fires only when the
+ *     reshape's `mutated` flag is `true` (idempotent on re-run).
+ *
+ * Best-effort: if the file is malformed JSON we skip silently (the
+ * regular cascade load surfaces the error with proper provenance); if it
+ * already conforms to both shapes we do nothing. Returns `true` when the
+ * file was rewritten.
  */
 function upgradeFileInPlace(
   repoRoot: string,
@@ -379,9 +566,34 @@ function upgradeFileInPlace(
     return false;
   }
 
-  if (!needsCurrentShapeUpgrade(parsed)) return false;
+  const gitShapeNeeded = needsCurrentShapeUpgrade(parsed);
+  const agentShapeNeeded = needsAgentShapeUpgrade(parsed);
+  if (!gitShapeNeeded && !agentShapeNeeded) return false;
 
-  const reshaped = reshapeCurrentShape(parsed);
+  // Step 1 — PR-FIN-1c: reshape git/projects when their gate triggered.
+  // When the gate is clean the original payload flows through unchanged
+  // so the agent-shape reshape can apply on top.
+  const afterGitReshape: Settings = gitShapeNeeded
+    ? reshapeCurrentShape(parsed)
+    : (() => {
+        const root = isRecord(parsed) ? parsed : {};
+        return {
+          schemaVersion: 1,
+          ...(isRecord(root['workflow']) ? { workflow: root['workflow'] as NonNullable<Settings['workflow']> } : {}),
+          ...(isRecord(root['notify']) ? { notify: root['notify'] as NonNullable<Settings['notify']> } : {}),
+          ...(isRecord(root['git']) ? { git: root['git'] as NonNullable<Settings['git']> } : {}),
+        };
+      })();
+
+  // Step 2 — PR-FIN-1e: agent-shape migration on the workflow tree.
+  const { out: reshapedWorkflow, mutated: agentShapeMutated } =
+    reshapeWorkflowAgentShape(afterGitReshape.workflow);
+
+  const reshaped: Settings = {
+    ...afterGitReshape,
+    ...(reshapedWorkflow !== undefined ? { workflow: reshapedWorkflow } : {}),
+  };
+
   if (!validateSettings(reshaped)) {
     const messages = formatAjvErrors(validateSettings.errors);
     throw new ConfigCascadeError(
@@ -391,14 +603,29 @@ function upgradeFileInPlace(
     );
   }
 
+  // If neither reshape actually moved anything, skip the write. This
+  // happens when `gitShapeNeeded` was false and the agent-shape pass
+  // produced a no-op (e.g., the file was already migrated and we entered
+  // this branch via a stale predicate — defensive guard, not expected
+  // under correct gate logic).
+  if (!gitShapeNeeded && !agentShapeMutated) return false;
+
   if (level === 'workspace') {
     writeSettingsAtLevel(repoRoot, 'workspace', reshaped);
   } else {
     writeSettingsAtLevel(repoRoot, 'project', reshaped, undefined, projectName);
   }
-  process.stderr.write(
-    `[ensure-settings-cascade] reshaped ${path.relative(repoRoot, filePath)} → PR-FIN-1c shape\n`,
-  );
+
+  if (gitShapeNeeded) {
+    process.stderr.write(
+      `[ensure-settings-cascade] reshaped ${path.relative(repoRoot, filePath)} → PR-FIN-1c shape\n`,
+    );
+  }
+  if (agentShapeMutated) {
+    process.stderr.write(
+      `[ensure-settings-cascade] migrated ${path.relative(repoRoot, filePath)} agent fields → PR-FIN-1e shape\n`,
+    );
+  }
   return true;
 }
 
