@@ -194,7 +194,7 @@ User-driven management of gobbi's hook entries in `.claude/settings.json`. Three
 
 **Trust boundary:** reads and modifies only hook entries whose `command` field starts with `gobbi ` (note trailing space). Entries owned by other tools or written manually are never touched and never appear in `--status` output. Non-gobbi entries are preserved verbatim — the `configure` command does not know their semantics and makes no assumption about them.
 
-**`--enable <event>`** writes a canonical `gobbi hook <kebab-event>` entry for the named event. The entry does NOT include a `matcher` field — users who want a matcher (e.g., `startup|resume|compact` for `SessionStart`) must hand-edit the entry or use the plugin's `hooks.json`. This is a deliberate trust-boundary trade-off: `configure` manages presence, not matcher semantics.
+**`--enable <event>`** writes a canonical `gobbi hook <kebab-event>` entry for the named event. The entry does NOT include a `matcher` field — users who want a matcher (e.g., `startup|resume|clear|compact` for `SessionStart`) must hand-edit the entry or use the plugin's `hooks.json`. This is a deliberate trust-boundary trade-off: `configure` manages presence, not matcher semantics.
 
 **`--disable <event>`** removes the gobbi-owned entry for the named event. If no gobbi entry exists for the event, exits 0 silently — never creates or modifies the file.
 

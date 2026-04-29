@@ -141,7 +141,7 @@ The design-doc claim in `v050-hooks.md` ("Claude Code v2.1 and later auto-load `
 {
   "hooks": {
     "SessionStart": [
-      { "matcher": "startup|resume",
+      { "matcher": "startup|resume|clear|compact",
         "hooks": [{ "type": "command", "command": "gobbi workflow init", "timeout": 10 }] }
     ],
     "PreToolUse": [

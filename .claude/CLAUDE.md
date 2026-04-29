@@ -2,7 +2,7 @@
 
 Gobbi is an open-source ClaudeX (Claude Experience) tool for Claude Code.
 
-MUST load this at session start, resume, and compaction. MUST follow the core principles below. MUST reload skills `/gobbi`
+MUST load this at session start, resume, `/clear`, and compaction. MUST follow the core principles below. MUST reload skills `/gobbi`
 
 ---
 

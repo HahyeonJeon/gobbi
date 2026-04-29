@@ -1,5 +1,4 @@
 ### SessionStart matcher must include `clear`
-
 ---
 priority: high
 tech-stack: claude-code, hooks
