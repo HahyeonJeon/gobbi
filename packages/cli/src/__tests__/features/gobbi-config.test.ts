@@ -49,7 +49,8 @@ import {
 } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
-import { basename, join } from 'node:path';
+import { basename, dirname, join, resolve as resolvePath } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import {
   projectDir as projectDirForName,
@@ -1648,5 +1649,179 @@ describe('CFG-24..28: gobbi config env — $CLAUDE_ENV_FILE persistence', () => 
     expect(cwdLines).toEqual(['export CLAUDE_CWD=/cwd-2']);
 
     restoreNativeEnv();
+  });
+});
+
+// ===========================================================================
+// CFG-29 (PR-FIN-1e): agent-routing block end-to-end vertical
+// ===========================================================================
+//
+// Acceptance criterion #11 from `ideation.md` §4: a `gobbi config set
+// workflow.execution.agent.model haiku` call must surface in the rendered
+// prompt as `model=haiku` with the `(override: workflow.execution.agent)`
+// provenance suffix.
+//
+// This test drives the end-to-end vertical via the public function surface
+// the CLI uses (no shelling out to a child process):
+//
+//   1. `runConfig(['set', 'workflow.execution.agent.model', 'haiku',
+//      '--level', 'workspace'])` writes the override to
+//      `<repo>/.gobbi/settings.json`.
+//   2. `resolveSettings({repoRoot})` walks the cascade and produces the
+//      merged `Settings` shape with `workflow.execution.agent.model = 'haiku'`.
+//   3. `loadSpecForRuntime(executionSpecPath, resolvedSettings, 'execution')`
+//      overlays the slot onto every entry of `spec.delegation.agents[*]` AND
+//      returns the `originals` map carrying the spec.json hardcoded
+//      `(opus, max)` defaults.
+//   4. `compile(input, { originals, slotHint: 'workflow.execution.agent' })`
+//      renders the agent-routing block via `renderAgentRoutingBlock` with
+//      the override-provenance suffix.
+//   5. The rendered prompt text contains the literal heading, the new
+//      `model=haiku` value, and the `(override: workflow.execution.agent)`
+//      suffix.
+//
+// Direct loader+compile invocation (rather than shelling out to
+// `gobbi workflow init` + `gobbi workflow next`) is the lighter integration
+// path: it exercises the same critical seams (config write → cascade
+// resolution → spec overlay → render decoration → prompt text) without
+// requiring a session scaffold, and matches the unit-vs-integration boundary
+// briefing item: "If invoking the actual CLI commands programmatically is
+// heavy, an acceptable alternative: load the execution spec.json with
+// `loadSpecForRuntime` directly with the settings, then call `compile()` …".
+
+describe('CFG-29 (PR-FIN-1e): agent-routing block surfaces config overrides end-to-end', () => {
+  test('CFG-29: gobbi config set workflow.execution.agent.model haiku → rendered prompt contains model=haiku + (override: workflow.execution.agent)', async () => {
+    const repo = makeScratchRepo();
+
+    // Step 1a: write the override via the CLI's own `set` verb for `model`.
+    // Lands at workspace level so the cascade resolves it without needing
+    // a session.
+    await captureExit(async () => {
+      await runConfig([
+        'set',
+        'workflow.execution.agent.model',
+        'haiku',
+        '--level',
+        'workspace',
+      ]);
+    });
+    expect(captured.exitCode).toBeNull();
+    resetCapture();
+
+    // Step 1b: pin `effort` to a concrete tier (`high`) via the CLI too.
+    // Without this, DEFAULTS.workflow.execution.agent.effort = 'auto' would
+    // win the cascade, making `renderAgentRoutingBlock` emit the
+    // `(auto: resolve via _gobbi-rule Model Selection)` provenance suffix
+    // instead of `(override: ...)` — `'auto'` precedence is the locked
+    // behaviour from ideation.md §2.4. Briefing for T7 explicitly calls for
+    // a settings file shape with both `model: 'haiku'` AND `effort: 'high'`
+    // for this same reason.
+    await captureExit(async () => {
+      await runConfig([
+        'set',
+        'workflow.execution.agent.effort',
+        'high',
+        '--level',
+        'workspace',
+      ]);
+    });
+    expect(captured.exitCode).toBeNull();
+
+    // Sanity: the file landed with both values we wrote.
+    const wsFile = join(repo, '.gobbi', 'settings.json');
+    expect(existsSync(wsFile)).toBe(true);
+    const wsBody = JSON.parse(readFileSync(wsFile, 'utf8')) as Settings;
+    expect(wsBody.workflow?.execution?.agent?.model).toBe('haiku');
+    expect(wsBody.workflow?.execution?.agent?.effort).toBe('high');
+
+    // Step 2: resolve the cascade. With only the workspace file present, the
+    // resolved Settings carry the overrides.
+    const resolved = resolveSettings({ repoRoot: repo });
+    expect(resolved.workflow?.execution?.agent?.model).toBe('haiku');
+    expect(resolved.workflow?.execution?.agent?.effort).toBe('high');
+
+    // Steps 3-4: load the execution spec with overlay, then compile with
+    // the originals + slotHint decoration. The execution spec lives in the
+    // CLI source tree, addressed relative to this test file.
+    const HERE = dirname(fileURLToPath(import.meta.url));
+    const executionSpecPath = resolvePath(
+      HERE,
+      '..',
+      '..',
+      'specs',
+      'execution',
+      'spec.json',
+    );
+
+    // Lazy import — avoids loading these modules when unrelated CFG-* tests
+    // run; mirrors the lazy pattern used by CFG-23 / CFG-24..28.
+    const { loadSpecForRuntime } = await import('../../specs/spec-loader.js');
+    const { compile } = await import('../../specs/assembly.js');
+    const { defaultBudgetAllocator } = await import('../../specs/budget.js');
+    const { defaultPredicates } = await import('../../workflow/predicates.js');
+    const { initialState } = await import('../../workflow/state.js');
+
+    const { spec, originals } = loadSpecForRuntime(
+      executionSpecPath,
+      resolved,
+      'execution',
+    );
+
+    // Sanity: the overlay actually applied — every agent on the post-overlay
+    // spec carries `modelTier: 'haiku'` + `effort: 'high'`, and the
+    // originals map still mirrors the spec.json hardcoded `(opus, max)`.
+    for (const agent of spec.delegation.agents) {
+      expect(agent.modelTier).toBe('haiku');
+      expect(agent.effort).toBe('high');
+    }
+    expect(originals['executor']?.modelTier).toBe('opus');
+    expect(originals['executor']?.effort).toBe('max');
+
+    const fixedTimestamp = '2026-04-16T12:00:00.000Z';
+    const state = {
+      ...initialState('cfg-29-session'),
+      currentStep: 'execution' as const,
+    };
+    const input = {
+      spec,
+      state,
+      dynamic: {
+        timestamp: fixedTimestamp,
+        activeSubagentCount: 0,
+        artifacts: [],
+      },
+      predicates: defaultPredicates,
+      activeAgent: null,
+    };
+
+    const prompt = compile(input, {
+      allocator: defaultBudgetAllocator,
+      contextWindowTokens: 200_000,
+      originals,
+      slotHint: 'workflow.execution.agent',
+    });
+
+    // Step 5: the rendered text carries every load-bearing assertion from
+    // ideation.md AC #11.
+    expect(prompt.text).toContain(
+      'Agent routing for this step (resolved from settings cascade):',
+    );
+    expect(prompt.text).toContain('model=haiku');
+    expect(prompt.text).toContain('(override: workflow.execution.agent)');
+    // The (default) suffix must NOT appear for the executor row — it was
+    // overridden. (The string `(default)` may appear in unrelated prose,
+    // but every agent row of the routing block must carry the override
+    // suffix; checked structurally below.)
+    const lines = prompt.text.split('\n');
+    const routingHeaderIdx = lines.findIndex((l) =>
+      l.startsWith('Agent routing for this step'),
+    );
+    expect(routingHeaderIdx).toBeGreaterThan(-1);
+    const executorRow = lines[routingHeaderIdx + 1];
+    expect(executorRow).toContain('role=executor');
+    expect(executorRow).toContain('model=haiku');
+    expect(executorRow).toContain(
+      '(override: workflow.execution.agent)',
+    );
   });
 });

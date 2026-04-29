@@ -46,6 +46,7 @@ import { validateStepSpec } from '../../_schema/v1.js';
 import { initialState } from '../../../workflow/state.js';
 import type { WorkflowState } from '../../../workflow/state.js';
 import { defaultPredicates } from '../../../workflow/predicates.js';
+import { loadSpecForRuntime } from '../../spec-loader.js';
 import type { StepSpec } from '../../types.js';
 
 // ---------------------------------------------------------------------------
@@ -284,6 +285,57 @@ describe('evaluation — compile snapshots', () => {
     // compare-against-prior-findings guidance.
     expect(text).toContain('Feedback round context');
     expect(text).toContain('did the revision actually address');
+  });
+});
+
+// ===========================================================================
+// PR-FIN-1e — agent-routing block snapshot (default-provenance fixture)
+// ===========================================================================
+//
+// Captures the new `Agent routing for this step (resolved from settings
+// cascade):` static section emitted by `renderSpec` when the caller threads
+// `originals` through `CompileOptions`. This fixture pins the
+// `(default)`-provenance rendering: settings are `undefined`, so
+// `loadSpecForRuntime` produces an `originals` map mirroring the spec.json
+// hardcoded values, and `renderAgentRoutingBlock` walks both evaluator
+// agents and emits `(default)` for each.
+//
+// The fixture is deliberately distinct from the three existing fixtures
+// (which call `compile` without `originals` and therefore stay byte-stable
+// across this PR). Only this new test captures the agent-routing block.
+// `step` is `ideation_eval` — the eval-side mapping that surfaces the
+// `workflow.<step>.evaluate.agent` slot in the override provenance suffix
+// when settings are non-empty (here: settings are undefined → all
+// `(default)`).
+
+describe('evaluation — agent-routing block snapshot (PR-FIN-1e)', () => {
+  test('ideation-eval-first-entry with originals threads agent-routing block with (default) provenance for project + overall evaluators', () => {
+    const { spec, originals } = loadSpecForRuntime(
+      SPEC_PATH,
+      undefined,
+      'ideation_eval',
+    );
+    const input = ideationEvalFirstEntryFixture(spec);
+    const prompt = compile(input, {
+      allocator: defaultBudgetAllocator,
+      contextWindowTokens: GENEROUS_WINDOW,
+      originals,
+      slotHint: 'workflow.ideation.evaluate.agent',
+    });
+    expect(prompt.text).toMatchSnapshot();
+
+    // Cross-check intent: the agent-routing block appears with both
+    // evaluator perspectives at their hardcoded (sonnet, max) defaults.
+    expect(prompt.text).toContain(
+      'Agent routing for this step (resolved from settings cascade):',
+    );
+    expect(prompt.text).toContain('role=project');
+    expect(prompt.text).toContain('role=overall');
+    expect(prompt.text).toContain('model=sonnet');
+    expect(prompt.text).toContain('effort=max');
+    expect(prompt.text).toContain('(default)');
+    // No (override: ...) suffix should appear because settings are undefined.
+    expect(prompt.text).not.toContain('(override:');
   });
 });
 

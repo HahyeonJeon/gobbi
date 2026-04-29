@@ -91,6 +91,28 @@ const AGENT_EFFORT_ENUM = ['low', 'medium', 'high', 'max', 'auto'] as const;
 const DISCUSS_MODE_ENUM = ['agent', 'user', 'auto', 'skip'] as const;
 const EVALUATE_MODE_ENUM = ['ask', 'always', 'skip', 'auto'] as const;
 
+// PR-FIN-1e: shared `AgentConfig` sub-schema used by `StepSettings.agent`,
+// `StepDiscuss.agent`, and `StepEvaluate.agent`. Hoisting keeps the three
+// AJV sites byte-identical so a future enum widening only edits one spot.
+//
+// Not annotated with `JSONSchemaType<AgentConfig>` — that annotation collides
+// with `exactOptionalPropertyTypes: true` when the constant is reused at
+// optional-property positions on the outer `JSONSchemaType<Settings>` schema
+// (the `T | undefined` discriminant on optional fields rejects a
+// `JSONSchemaType<T>`-typed constant). Drift safety holds because the outer
+// `settingsSchema: JSONSchemaType<Settings>` annotation type-checks every
+// inline use of `agentConfigSchema` against the matching `AgentConfig`
+// property on `Settings` — the same pattern as `_schema/v1.ts:60-73`.
+const agentConfigSchema = {
+  type: 'object',
+  nullable: true,
+  additionalProperties: false,
+  properties: {
+    model: { type: 'string', nullable: true, enum: [...AGENT_MODEL_ENUM] },
+    effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
+  },
+} as const;
+
 // ---------------------------------------------------------------------------
 // Schema — single AJV JSONSchemaType<Settings>
 // ---------------------------------------------------------------------------
@@ -117,18 +139,17 @@ const settingsSchema: JSONSchemaType<Settings> = {
               additionalProperties: false,
               properties: {
                 mode: { type: 'string', nullable: true, enum: [...DISCUSS_MODE_ENUM] },
-                model: { type: 'string', nullable: true, enum: [...AGENT_MODEL_ENUM] },
-                effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
+                agent: agentConfigSchema,
               },
             },
+            agent: agentConfigSchema,
             evaluate: {
               type: 'object',
               nullable: true,
               additionalProperties: false,
               properties: {
                 mode: { type: 'string', nullable: true, enum: [...EVALUATE_MODE_ENUM] },
-                model: { type: 'string', nullable: true, enum: [...AGENT_MODEL_ENUM] },
-                effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
+                agent: agentConfigSchema,
               },
             },
             maxIterations: { type: 'integer', nullable: true, minimum: 1 },
@@ -145,18 +166,17 @@ const settingsSchema: JSONSchemaType<Settings> = {
               additionalProperties: false,
               properties: {
                 mode: { type: 'string', nullable: true, enum: [...DISCUSS_MODE_ENUM] },
-                model: { type: 'string', nullable: true, enum: [...AGENT_MODEL_ENUM] },
-                effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
+                agent: agentConfigSchema,
               },
             },
+            agent: agentConfigSchema,
             evaluate: {
               type: 'object',
               nullable: true,
               additionalProperties: false,
               properties: {
                 mode: { type: 'string', nullable: true, enum: [...EVALUATE_MODE_ENUM] },
-                model: { type: 'string', nullable: true, enum: [...AGENT_MODEL_ENUM] },
-                effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
+                agent: agentConfigSchema,
               },
             },
             maxIterations: { type: 'integer', nullable: true, minimum: 1 },
@@ -173,18 +193,17 @@ const settingsSchema: JSONSchemaType<Settings> = {
               additionalProperties: false,
               properties: {
                 mode: { type: 'string', nullable: true, enum: [...DISCUSS_MODE_ENUM] },
-                model: { type: 'string', nullable: true, enum: [...AGENT_MODEL_ENUM] },
-                effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
+                agent: agentConfigSchema,
               },
             },
+            agent: agentConfigSchema,
             evaluate: {
               type: 'object',
               nullable: true,
               additionalProperties: false,
               properties: {
                 mode: { type: 'string', nullable: true, enum: [...EVALUATE_MODE_ENUM] },
-                model: { type: 'string', nullable: true, enum: [...AGENT_MODEL_ENUM] },
-                effort: { type: 'string', nullable: true, enum: [...AGENT_EFFORT_ENUM] },
+                agent: agentConfigSchema,
               },
             },
             maxIterations: { type: 'integer', nullable: true, minimum: 1 },

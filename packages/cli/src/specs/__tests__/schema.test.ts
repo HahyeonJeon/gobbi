@@ -249,15 +249,17 @@ describe('validate (negative — const / enum)', () => {
     expect(enumError?.instancePath).toBe('/delegation/agents/0/modelTier');
   });
 
-  test('`effort: "low"` is rejected by the enum constraint', () => {
+  test('`effort: "low"` is accepted by the enum constraint', () => {
+    // PR-FIN-1e widens EffortLevel to include `'low'` and `'auto'` so that
+    // settings cascade may inject either as a step-wide override. The
+    // previous negative assertion (`'low'` rejected) is flipped here to
+    // affirm the widened union: `'low'` validates clean, no enum error.
     const spec = clone(validSpec);
     const first = spec.delegation.agents[0];
     if (!first) throw new Error('fixture invariant: delegation.agents[0] exists');
     (first as { effort: string }).effort = 'low';
-    expect(validate(spec)).toBe(false);
-    const enumError = (validate.errors ?? []).find((e) => e.keyword === 'enum');
-    expect(enumError).toBeDefined();
-    expect(enumError?.instancePath).toBe('/delegation/agents/0/effort');
+    expect(validate(spec)).toBe(true);
+    expect(validate.errors).toBeNull();
   });
 });
 

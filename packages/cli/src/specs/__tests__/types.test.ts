@@ -120,13 +120,15 @@ describe('StepSpec shape', () => {
   });
 
   test('EffortLevel is a closed literal union', () => {
-    // @ts-expect-error — 'low' is not a permitted EffortLevel value
-    const bad: EffortLevel = 'low';
+    // PR-FIN-1e widened EffortLevel to 'low'|'medium'|'high'|'max'|'auto'.
+    // `'extreme'` remains outside the union and serves as the rejection probe.
+    // @ts-expect-error — 'extreme' is not a permitted EffortLevel value
+    const bad: EffortLevel = 'extreme';
     expect(typeof bad).toBe('string');
   });
 
   test('AgentConfig rejects unknown model tiers', () => {
-    // @ts-expect-error — modelTier must be one of opus|sonnet|haiku
+    // @ts-expect-error — modelTier must be one of opus|sonnet|haiku|auto
     const bad: AgentConfig = { ...agent, modelTier: 'o1' };
     expect(bad.role).toBe('innovative');
   });

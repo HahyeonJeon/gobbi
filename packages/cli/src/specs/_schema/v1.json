@@ -153,15 +153,18 @@
                 "enum": [
                   "opus",
                   "sonnet",
-                  "haiku"
+                  "haiku",
+                  "auto"
                 ]
               },
               "effort": {
                 "type": "string",
                 "enum": [
-                  "max",
+                  "low",
+                  "medium",
                   "high",
-                  "medium"
+                  "max",
+                  "auto"
                 ]
               },
               "skills": {
@@ -501,15 +504,18 @@
           "enum": [
             "opus",
             "sonnet",
-            "haiku"
+            "haiku",
+            "auto"
           ]
         },
         "effort": {
           "type": "string",
           "enum": [
-            "max",
+            "low",
+            "medium",
             "high",
-            "medium"
+            "max",
+            "auto"
           ]
         },
         "skills": {
@@ -564,15 +570,18 @@
                 "enum": [
                   "opus",
                   "sonnet",
-                  "haiku"
+                  "haiku",
+                  "auto"
                 ]
               },
               "effort": {
                 "type": "string",
                 "enum": [
-                  "max",
+                  "low",
+                  "medium",
                   "high",
-                  "medium"
+                  "max",
+                  "auto"
                 ]
               },
               "skills": {

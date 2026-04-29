@@ -45,8 +45,11 @@ import type {
   AllocationResult,
   BudgetAllocator,
   TokenBudget,
+  ModelTier,
+  EffortLevel,
 } from './types.js';
 import { defaultBudgetAllocator } from './budget.js';
+import type { AgentOriginal } from './spec-loader.js';
 import type { WorkflowState } from '../workflow/state.js';
 import type { WorkflowGraph } from './graph.js';
 
@@ -514,14 +517,192 @@ function renderDynamicContext(dynamic: DynamicContext): string {
   return parts.join('\n');
 }
 
+// ---------------------------------------------------------------------------
+// Agent-routing block — settings-cascade provenance surfaced in the prompt
+//
+// Emitted as a static section between the active delegation block and the
+// synthesis block (per PR-FIN-1e ideation §2.4). Surfaces the resolved
+// `(model, effort)` plus a provenance suffix for every entry of
+// `spec.delegation.agents`. The orchestrator reads concrete tiers directly;
+// only `'auto'` carries a policy reference, and the policy itself stays in
+// `_gobbi-rule.md` Model Selection (where it already lives).
+//
+// The block is NOT emitted when:
+//   - `spec.delegation.agents` is empty (planning, memorization, handoff);
+//   - `originals` is undefined (caller used {@link loadSpec} directly,
+//     bypassing the runtime settings overlay — preserves backward compat
+//     for spec-authoring tools and test fixtures).
+//
+// Cache-prefix engineering (ideation §2.4):
+//   - Default-only sessions produce a fixed-byte block per step.
+//   - Toggling an override → one-time cache miss; subsequent same-state
+//     sessions are cache-stable again.
+//   - Block content is byte-stable for any given (spec, originals,
+//     resolved settings) triple — the renderer is deterministic.
+// ---------------------------------------------------------------------------
+
+/**
+ * Per-agent entry that drives one rendered line of the agent-routing block.
+ * Values mirror the resolved spec post-overlay, so the renderer can compare
+ * them against `originals[role]` to compute `(default)` vs `(override)`.
+ */
+interface AgentRoutingRow {
+  readonly role: string;
+  readonly modelTier: ModelTier;
+  readonly effort: EffortLevel;
+}
+
+/**
+ * Render the `agent-routing` static section.
+ *
+ * Returns `null` when no block should be emitted:
+ *
+ * - `originals === undefined` — the caller did not opt into the runtime
+ *   overlay path. Preserves backward compatibility for spec-authoring
+ *   tools (`prompt render` / `prompt patch`) and test fixtures.
+ * - `spec.delegation.agents.length === 0` — empty-delegation steps
+ *   (planning, memorization, handoff) emit no block.
+ *
+ * Format (per PR-FIN-1e ideation §2.4):
+ *
+ * ```
+ * Agent routing for this step (resolved from settings cascade):
+ *   - role=<R>   model=<M>   effort=<E>   (<provenance>)
+ * ```
+ *
+ * Provenance suffix rules:
+ *
+ * - `(auto: resolve via _gobbi-rule Model Selection)` — resolved
+ *   `modelTier === 'auto'` OR `effort === 'auto'`. Takes precedence over
+ *   the default/override branches because `'auto'` defers to a policy
+ *   reference regardless of how the value was selected.
+ * - `(override: <slot>)` — resolved value differs from `originals[role]`.
+ *   `<slot>` is the `slotHint` argument when supplied (e.g.
+ *   `'workflow.execution.agent'`); otherwise a bare `(override)` marker.
+ *   The loader (`spec-loader.ts::loadSpecForRuntime`) is the only producer
+ *   that knows the active slot; passing `slotHint` from the caller keeps
+ *   this renderer stateless.
+ * - `(default)` — resolved value matches the spec.json hardcoded literal
+ *   exactly AND no `'auto'` is present.
+ *
+ * Column widths are fixed (role=10, model=8, effort=6) to keep lines
+ * visually scannable across the typical role names. Roles longer than 10
+ * characters extend the line; the suffix sits at the end of each line.
+ *
+ * @param spec  - The post-overlay {@link StepSpec} (`spec.delegation.agents`
+ *   carries the resolved values).
+ * @param originals - Pre-overlay `{modelTier, effort}` keyed by `role`. May
+ *   be `undefined` (returns `null`) or an empty/partial map (roles missing
+ *   from the map are treated as "no original known" — falls back to the
+ *   `'auto'` or bare `(override)` branch as appropriate).
+ * @param slotHint - Optional dotted-path naming the active settings slot
+ *   that produced an override (e.g. `'workflow.ideation.agent'` for
+ *   productive steps, `'workflow.execution.evaluate.agent'` for eval
+ *   steps). When `null` or omitted, override lines render `(override)`
+ *   without the slot tail.
+ */
+export function renderAgentRoutingBlock(
+  spec: StepSpec,
+  originals: Readonly<Record<string, AgentOriginal>> | undefined,
+  slotHint: string | null = null,
+): StaticSection | null {
+  if (originals === undefined) return null;
+  if (spec.delegation.agents.length === 0) return null;
+
+  const rows: readonly AgentRoutingRow[] = spec.delegation.agents.map(
+    (agent) => ({
+      role: agent.role,
+      modelTier: agent.modelTier,
+      effort: agent.effort,
+    }),
+  );
+
+  const lines: string[] = ['Agent routing for this step (resolved from settings cascade):'];
+  for (const row of rows) {
+    const provenance = computeProvenance(row, originals, slotHint);
+    const rolePart = padRight(`role=${row.role}`, 16);
+    const modelPart = padRight(`model=${row.modelTier}`, 14);
+    const effortPart = padRight(`effort=${row.effort}`, 13);
+    lines.push(`  - ${rolePart}${modelPart}${effortPart}${provenance}`);
+  }
+
+  return makeStatic({
+    id: 'blocks.agent-routing',
+    content: lines.join('\n'),
+  });
+}
+
+/**
+ * Compute the provenance suffix for one agent-routing row.
+ *
+ * Precedence: auto > override > default. The `'auto'` branch fires when
+ * either the resolved model or effort carries the literal `'auto'` — both
+ * paths defer to `_gobbi-rule` Model Selection at orchestrator-spawn time,
+ * so a single suffix covers both legs.
+ */
+function computeProvenance(
+  row: AgentRoutingRow,
+  originals: Readonly<Record<string, AgentOriginal>>,
+  slotHint: string | null,
+): string {
+  if (row.modelTier === 'auto' || row.effort === 'auto') {
+    return '(auto: resolve via _gobbi-rule Model Selection)';
+  }
+  const original = originals[row.role];
+  const overridden =
+    original === undefined ||
+    original.modelTier !== row.modelTier ||
+    original.effort !== row.effort;
+  if (overridden) {
+    return slotHint === null ? '(override)' : `(override: ${slotHint})`;
+  }
+  return '(default)';
+}
+
+/**
+ * Right-pad a string with spaces to `width`. Strings already at or beyond
+ * `width` are returned unchanged plus a single trailing space — keeps the
+ * column separators visible even for over-long roles.
+ */
+function padRight(s: string, width: number): string {
+  if (s.length >= width) return `${s} `;
+  return s + ' '.repeat(width - s.length);
+}
+
+/**
+ * Optional decorations consumed only by {@link renderSpec} and forwarded by
+ * {@link compile}/{@link compileWithIssues} from {@link CompileOptions}.
+ *
+ * Kept separate from {@link CompileInput} because these fields are
+ * settings-cascade provenance — a rendering decoration, not part of the
+ * deterministic-input identity (spec/state/dynamic). The sibling-parameter
+ * placement is the locked design choice from PR-FIN-1e plan §"Locked design
+ * choices".
+ */
+export interface RenderDecorations {
+  readonly originals?: Readonly<Record<string, AgentOriginal>>;
+  readonly slotHint?: string | null;
+}
+
 /**
  * Render a `StepSpec` plus the active session and dynamic context into an
  * ordered `KindedSection[]`. The output satisfies Static* → Session* →
  * Dynamic* by construction.
  *
  * Exported for tests; `compile()` is the normal entry point.
+ *
+ * @param input - The deterministic compile inputs.
+ * @param decorations - Optional rendering decorations forwarded by
+ *   {@link compile}/{@link compileWithIssues}. When `decorations.originals`
+ *   is present AND `spec.delegation.agents` is non-empty, an additional
+ *   `agent-routing` static section is inserted between the active
+ *   delegation block (step 3) and the synthesis block (step 4) — see
+ *   {@link renderAgentRoutingBlock} for format and provenance rules.
  */
-export function renderSpec(input: CompileInput): readonly KindedSection[] {
+export function renderSpec(
+  input: CompileInput,
+  decorations: RenderDecorations = {},
+): readonly KindedSection[] {
   const { spec, state, dynamic, predicates, activeAgent } = input;
   const kinded: KindedSection[] = [];
 
@@ -566,6 +747,22 @@ export function renderSpec(input: CompileInput): readonly KindedSection[] {
       });
       kinded.push(staticKinded(s));
     }
+  }
+
+  // 3b) Agent-routing block — settings-cascade provenance surfaced in the
+  //     prompt. Emitted only when `decorations.originals` was supplied (the
+  //     runtime overlay path via {@link loadSpecForRuntime}); spec-authoring
+  //     callers (`prompt render`, `prompt patch`) and unsettings-aware test
+  //     fixtures pass no `originals` and skip this section to preserve their
+  //     deterministic snapshots. See {@link renderAgentRoutingBlock} for
+  //     format, provenance suffix rules, and cache-prefix engineering.
+  {
+    const routing = renderAgentRoutingBlock(
+      spec,
+      decorations.originals,
+      decorations.slotHint ?? null,
+    );
+    if (routing !== null) kinded.push(staticKinded(routing));
   }
 
   // 4) Synthesis blocks — concatenated into one StaticSection.
@@ -709,6 +906,40 @@ export interface CompileOptions {
   readonly contextWindowTokens?: number;
   readonly lintRules?: readonly ContentLintRule[];
   readonly lintMode?: 'throw' | 'collect';
+  /**
+   * Pre-overlay `{modelTier, effort}` for each agent in the spec, keyed by
+   * the agent's `role`. When supplied AND `spec.delegation.agents` is
+   * non-empty, `renderSpec` emits an additional `agent-routing` static
+   * section (between the delegation block and the synthesis block) that
+   * surfaces the resolved model/effort + provenance for each agent. When
+   * omitted (or empty map), no `agent-routing` block is emitted — preserving
+   * backward compatibility for callers that load the spec directly via
+   * {@link loadSpec} without going through the runtime overlay path.
+   *
+   * Sibling-parameter design (locked per PR-FIN-1e plan): `originals` is
+   * NOT a field on {@link CompileInput}. Keeping it on the options bag
+   * preserves the "compile() is deterministic given (spec, state, dynamic)"
+   * contract — settings provenance is a rendering decoration, not part of
+   * the spec/state/dynamic identity.
+   *
+   * The map is small (≤2 entries per step today). It is consumed only by
+   * {@link renderAgentRoutingBlock}; downstream pipeline stages (linter,
+   * allocator, hashes) do not see it.
+   *
+   * @see `loadSpecForRuntime` in `./spec-loader.ts` for the producer.
+   */
+  readonly originals?: Readonly<Record<string, AgentOriginal>>;
+  /**
+   * Optional dotted-path naming the active settings slot that produced an
+   * override (e.g. `'workflow.ideation.agent'` for productive steps,
+   * `'workflow.execution.evaluate.agent'` for eval steps). Surfaces in the
+   * `agent-routing` block as `(override: <slotHint>)`. When absent or
+   * `null`, override lines render as a bare `(override)` marker.
+   *
+   * Only the caller that resolved the cascade knows which slot fired —
+   * `renderAgentRoutingBlock` stays stateless by accepting this as a hint.
+   */
+  readonly slotHint?: string | null;
 }
 
 /**
@@ -756,10 +987,24 @@ export function compileWithIssues(
     contextWindowTokens = DEFAULT_CONTEXT_WINDOW_TOKENS,
     lintRules = STATIC_LINT_RULES,
     lintMode = 'collect',
+    originals,
+    slotHint = null,
   } = options;
 
-  // 1) Render spec + inputs into an ordered kinded list.
-  const kinded = renderSpec(input);
+  // 1) Render spec + inputs into an ordered kinded list. The agent-routing
+  //    decoration is forwarded only to the renderer — downstream stages
+  //    (linter, allocator, hashes) work on the already-decorated section
+  //    list and do not see `originals` directly.
+  //
+  //    Build the decorations record with conditional spread so we never set
+  //    `originals: undefined` explicitly (incompatible with the
+  //    `exactOptionalPropertyTypes: true` compile flag — see `_typescript`
+  //    skill on optional-property semantics).
+  const decorations: RenderDecorations = {
+    ...(originals !== undefined ? { originals } : {}),
+    slotHint,
+  };
+  const kinded = renderSpec(input, decorations);
 
   // 2) Runtime cache-order assertion (belt-and-braces with the compile-time
   //    `CacheOrderedSections<T>` guard in sections.ts).

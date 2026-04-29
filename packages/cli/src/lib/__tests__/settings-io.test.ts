@@ -28,6 +28,10 @@
  *      for the session path too.
  *  11. PR-FIN-1c cross-field check: `pr.open=true` + `baseBranch=null`
  *      throws `ConfigCascadeError('parse', …)`.
+ *  12. PR-FIN-1e nested `agent` cascade: `workflow.<step>.{agent,
+ *      discuss.agent, evaluate.agent}.{model,effort}` deep-merge cleanly
+ *      across workspace + project tiers; DEFAULTS-only resolution returns
+ *      the nested `mode + agent` shape per ideation §2.1.
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
@@ -361,6 +365,88 @@ describe('resolveSettings — cross-project cascade precedence', () => {
     expect(loadSettingsAtLevel(scratchDir, 'project', undefined, 'foo')).toEqual(fooSettings);
     expect(loadSettingsAtLevel(scratchDir, 'project', undefined, 'bar')).toBeNull();
     expect(loadSettingsAtLevel(scratchDir, 'workspace')).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Workflow.agent cascade (PR-FIN-1e) — nested `{model,effort}` merge
+// ---------------------------------------------------------------------------
+
+describe('resolveSettings — workflow.<step>.agent cascade (PR-FIN-1e)', () => {
+  test('project overrides workspace for workflow.ideation.agent.model', () => {
+    writeJson(workspaceSettingsPath(scratchDir), {
+      schemaVersion: 1,
+      workflow: { ideation: { agent: { model: 'opus' } } },
+    });
+    writeJson(projectSettingsPath(scratchDir, 'gobbi'), {
+      schemaVersion: 1,
+      workflow: { ideation: { agent: { model: 'sonnet' } } },
+    });
+
+    const resolved = resolveSettings({ repoRoot: scratchDir, projectName: 'gobbi' });
+    // Project wins per existing precedence; deepMerge of nested `agent`
+    // objects must replace the model leaf without dropping siblings.
+    expect(resolved.workflow?.ideation?.agent?.model).toBe('sonnet');
+  });
+
+  test('workspace-only workflow.execution.discuss.agent.effort flows through to resolved', () => {
+    writeJson(workspaceSettingsPath(scratchDir), {
+      schemaVersion: 1,
+      workflow: { execution: { discuss: { agent: { effort: 'high' } } } },
+    });
+
+    const resolved = resolveSettings({ repoRoot: scratchDir, projectName: 'gobbi' });
+    expect(resolved.workflow?.execution?.discuss?.agent?.effort).toBe('high');
+    // `discuss.mode` defaults to 'agent' for execution per DEFAULTS — the
+    // partial `agent.effort` overlay must not clobber the sibling `mode`.
+    expect(resolved.workflow?.execution?.discuss?.mode).toBe('agent');
+  });
+
+  test('workspace evaluate.agent.model + project evaluate.agent.effort merge into one AgentConfig', () => {
+    writeJson(workspaceSettingsPath(scratchDir), {
+      schemaVersion: 1,
+      workflow: { ideation: { evaluate: { agent: { model: 'haiku' } } } },
+    });
+    writeJson(projectSettingsPath(scratchDir, 'gobbi'), {
+      schemaVersion: 1,
+      workflow: { ideation: { evaluate: { agent: { effort: 'low' } } } },
+    });
+
+    const resolved = resolveSettings({ repoRoot: scratchDir, projectName: 'gobbi' });
+    // Cross-tier nested merge: workspace contributes `model`, project
+    // contributes `effort`; both survive the cascade.
+    expect(resolved.workflow?.ideation?.evaluate?.agent).toEqual({
+      model: 'haiku',
+      effort: 'low',
+    });
+    // `evaluate.mode` from DEFAULTS ('always') must remain intact.
+    expect(resolved.workflow?.ideation?.evaluate?.mode).toBe('always');
+  });
+
+  test('DEFAULTS-only resolution returns the nested mode+agent shape', () => {
+    // No fixture files written — every workflow value comes from DEFAULTS.
+    const resolved = resolveSettings({ repoRoot: scratchDir, projectName: 'gobbi' });
+
+    // Per ideation §2.1 DEFAULTS reshape: each step has `discuss`,
+    // `agent`, `evaluate` with nested `agent: {model, effort}` sub-objects.
+    expect(resolved.workflow?.ideation).toEqual({
+      discuss: { mode: 'user', agent: { model: 'auto', effort: 'auto' } },
+      agent: { model: 'auto', effort: 'auto' },
+      evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },
+      maxIterations: 3,
+    });
+    expect(resolved.workflow?.planning).toEqual({
+      discuss: { mode: 'user', agent: { model: 'auto', effort: 'auto' } },
+      agent: { model: 'auto', effort: 'auto' },
+      evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },
+      maxIterations: 3,
+    });
+    expect(resolved.workflow?.execution).toEqual({
+      discuss: { mode: 'agent', agent: { model: 'auto', effort: 'auto' } },
+      agent: { model: 'auto', effort: 'auto' },
+      evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },
+      maxIterations: 3,
+    });
   });
 });
 
