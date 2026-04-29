@@ -1,6 +1,6 @@
 ---
 name: gobbi
-description: Entry point for gobbi, an open-source ClaudeX tool. MUST load at session start, session resume, and after compaction.
+description: Entry point for gobbi, an open-source ClaudeX tool. MUST load at session start, session resume, after /clear, and after compaction.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 ---
 
@@ -47,7 +47,7 @@ gobbi config get workflow --level session
 
 This reads `.gobbi/projects/<name>/sessions/{id}/settings.json` at the session level without cascade fallthrough. `$CLAUDE_SESSION_ID` is already in the process env from the SessionStart hook.
 
-- **Exit 0** — session settings exist (this is a resume or compact). Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`.
+- **Exit 0** — session settings exist (this is a resume, post-`/clear`, or compact). Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`.
 - **Exit 1** — no prior session settings. Proceed to the setup questions in FIFTH.
 - **Exit 2** — a parse or I/O error occurred. Surface the stderr diagnostic to the user before proceeding.
 

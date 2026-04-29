@@ -6,7 +6,7 @@
  *
  *   1. Read stdin JSON (the SessionStart payload — `session_id`,
  *      `transcript_path`, `cwd`, `hook_event_name="SessionStart"`,
- *      `source` ∈ {startup, resume, compact}, ...).
+ *      `source` ∈ {startup, resume, clear, compact}, ...).
  *   2. Set `process.env.CLAUDE_SESSION_ID` from the payload's `session_id`
  *      so in-process `runInitWithOptions` resolves the session id
  *      reliably without re-reading stdin.

@@ -584,7 +584,7 @@ async function runNotifyConfigure(args: readonly string[]): Promise<void> {
  * The new block is unmatched (no top-level `matcher` field) so it
  * fires for every invocation of the event. Users who need a matcher
  * (e.g., the canonical `SessionStart` block uses
- * `'startup|resume|compact'`) should hand-edit `.claude/settings.json`
+ * `'startup|resume|clear|compact'`) should hand-edit `.claude/settings.json`
  * — the trust boundary then keeps gobbi from clobbering their edit.
  */
 function configureEnable(repoRoot: string, event: HookTrigger): void {

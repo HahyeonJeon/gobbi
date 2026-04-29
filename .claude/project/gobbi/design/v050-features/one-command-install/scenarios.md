@@ -13,7 +13,7 @@ See `README.md` for the prose description of the feature and the navigation tabl
 ### O-CI-H-01: Fresh workspace, CLI missing from PATH
 
 Given a Claude Code project with the gobbi plugin configured in `settings.json`
-And `plugins/gobbi/hooks/hooks.json` registers `SessionStart[startup|resume|compact]` → `gobbi workflow init`
+And `plugins/gobbi/hooks/hooks.json` registers `SessionStart[startup|resume|clear|compact]` → `gobbi workflow init`
 And `@gobbitools/cli` is NOT installed globally (running `gobbi --version` exits non-zero with "command not found")
 And Bun >= 1.2.0 is installed and on PATH
 And no `.gobbi/sessions/{id}/` directory exists for the incoming session id
@@ -41,7 +41,7 @@ Anti-outcome:
   - session agent does NOT hand-write rules, skills, or agents into `.claude/` — those ship with the gobbi repo / plugin, not with the CLI install
   - session agent does NOT attempt `gobbi workflow init` before `gobbi --version` exits 0 (would fail silently via the hook path and corrupt state)
 
-Evidence: `.claude/skills/gobbi/SKILL.md` §THIRD; `.claude/skills/gobbi/cli-setup.md` §Detection; `.claude/skills/gobbi/cli-setup.md` §Installation Option 1; `packages/cli/package.json` `"bin"` entry (maps `gobbi` → `./bin/gobbi.js`); `packages/cli/bin/gobbi.js` (`#!/usr/bin/env bun` shebang); `plugins/gobbi/hooks/hooks.json` SessionStart matcher `startup|resume|compact`; `packages/cli/src/commands/workflow/init.ts` header docblock (`workflow.start` + `workflow.eval.decide` emitted atomically in one transaction at `schemaVersion: 2`)
+Evidence: `.claude/skills/gobbi/SKILL.md` §THIRD; `.claude/skills/gobbi/cli-setup.md` §Detection; `.claude/skills/gobbi/cli-setup.md` §Installation Option 1; `packages/cli/package.json` `"bin"` entry (maps `gobbi` → `./bin/gobbi.js`); `packages/cli/bin/gobbi.js` (`#!/usr/bin/env bun` shebang); `plugins/gobbi/hooks/hooks.json` SessionStart matcher `startup|resume|clear|compact`; `packages/cli/src/commands/workflow/init.ts` header docblock (`workflow.start` + `workflow.eval.decide` emitted atomically in one transaction at `schemaVersion: 2`)
 
 ---
 
@@ -342,7 +342,7 @@ Evidence: `.claude/skills/_git/gotchas.md` "Recommending cleanup of worktrees th
 ### O-CI-X-04: Idempotent SessionStart hook — second `gobbi workflow init` is a silent no-op
 
 Given `@gobbitools/cli 0.5.0` is installed (`gobbi --version` exits 0)
-And `plugins/gobbi/hooks/hooks.json` registers `SessionStart[startup|resume|compact]` → `gobbi workflow init`
+And `plugins/gobbi/hooks/hooks.json` registers `SessionStart[startup|resume|clear|compact]` → `gobbi workflow init`
 And `CLAUDE_SESSION_ID` is set in the hook environment
 And `.gobbi/sessions/{CLAUDE_SESSION_ID}/metadata.json` already exists at `schemaVersion: 2` from an earlier invocation
 
@@ -377,7 +377,7 @@ And the session's conversation context is compacted by Claude Code
 And `CLAUDE.md` instructs the agent to reload the `gobbi` skill after compaction ("MUST reload skills `/gobbi`")
 
 When Claude Code fires `SessionStart` with trigger `compact`
-And the hook runs `gobbi workflow init` (per the SessionStart matcher `startup|resume|compact`)
+And the hook runs `gobbi workflow init` (per the SessionStart matcher `startup|resume|clear|compact`)
 And the session agent also re-invokes `/gobbi` per `CLAUDE.md`
 
 Then `gobbi workflow init` is a silent no-op (same as O-CI-X-04) — existing session state is preserved
@@ -394,7 +394,7 @@ Anti-outcome:
   - the event store is NOT truncated by the compact trigger
   - the session id is NOT regenerated — the same `CLAUDE_SESSION_ID` survives compaction
 
-Evidence: `plugins/gobbi/hooks/hooks.json` SessionStart matcher (`startup|resume|compact`); `packages/cli/src/commands/workflow/init.ts` §Session id resolution and §Idempotency; `.claude/CLAUDE.md` ("MUST load this at session start, resume, and compaction. MUST reload skills `/gobbi`")
+Evidence: `plugins/gobbi/hooks/hooks.json` SessionStart matcher (`startup|resume|clear|compact`); `packages/cli/src/commands/workflow/init.ts` §Session id resolution and §Idempotency; `.claude/CLAUDE.md` ("MUST load this at session start, resume, and compaction. MUST reload skills `/gobbi`")
 
 ---
 
