@@ -104,7 +104,7 @@ Gobbi's runtime state directory, separate from `.claude/`. Created at the projec
 | `projects/{name}/learnings/` | Durable learnings — `gotchas/`, `decisions/`, and other knowledge promoted after sessions |
 | `worktrees/` | Git worktree isolation — moved from `.claude/worktrees/` to prevent idle false-positives during branch operations |
 
-`.claude/` retains only static content: `CLAUDE.md`, hooks, and `settings.json`. Its `skills/`, `agents/`, and `rules/` entries are per-file symlinks into the corresponding `.gobbi/` directories — the symlink farm. The farm is rebuilt by `gobbi install` on first install and rotated by `gobbi project switch` when the active project changes. Nothing written during a workflow session goes into `.claude/` directly.
+`.claude/` retains only static content: `CLAUDE.md`, hooks, and `settings.json`. Its `skills/`, `agents/`, and `rules/` entries are per-file symlinks into the corresponding `.gobbi/` directories — the symlink farm. The farm is built by `gobbi install` on first install and rebuilt by `gobbi install --upgrade`. (The legacy `gobbi project switch` rotation command was removed in v0.5.0 PR-FIN-2; project context now resolves from `basename(repoRoot)` plus `--project`.) Nothing written during a workflow session goes into `.claude/` directly.
 
 ### Step Spec Files
 
@@ -157,7 +157,7 @@ Key entry points:
 |:--------|:--------|
 | `gobbi install` | Install or upgrade gobbi in a target project — copies templates, builds the `.claude/` symlink farm, runs `ensureSettingsCascade` |
 | `gobbi project create` | Provision a new project directory under `.gobbi/projects/<name>/` |
-| `gobbi project switch` | Rotate the `.claude/` symlink farm to point at a different project's docs |
+| `gobbi project switch` | *Removed in v0.5.0 PR-FIN-2.* Project resolution is now `basename(repoRoot)` plus `--project`. |
 | `gobbi project list` | List all known projects and the currently active one |
 | `gobbi workflow init` | Start a new workflow session for the active project |
 | `gobbi workflow status` | Show current step, completed steps, and cost rollup from `gobbi.db` |

@@ -42,6 +42,7 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { validateStepSpec } from '../../specs/_schema/v1.js';
+import { getSpecsDir } from '../../specs/paths.js';
 import {
   validateSpecPredicateReferences,
   validateGraphPredicateReferences,
@@ -124,19 +125,16 @@ export interface ValidateOptions {
 }
 
 // ---------------------------------------------------------------------------
-// Default spec directory — module-relative for cwd independence (mirrors the
-// `DEFAULT_GRAPH_PATH` convention established in B.3 M4).
+// Default spec directory — delegated to `specs/paths.ts` so source-mode and
+// bundled-mode resolution share one fallback chain (see paths.ts JSDoc).
+// `THIS_DIR` is retained for diagnostic-location helpers that must point at
+// the validate.ts neighbours under `workflow/` regardless of bundling.
 // ---------------------------------------------------------------------------
 
 const THIS_DIR = dirname(fileURLToPath(import.meta.url));
 
-/** Absolute path to the committed `packages/cli/src/specs/` directory. */
-export const DEFAULT_SPECS_DIR: string = resolve(
-  THIS_DIR,
-  '..',
-  '..',
-  'specs',
-);
+/** Absolute path to the canonical specs directory. */
+export const DEFAULT_SPECS_DIR: string = getSpecsDir();
 
 // ---------------------------------------------------------------------------
 // Entry point — called from the workflow dispatcher with the argv slice that

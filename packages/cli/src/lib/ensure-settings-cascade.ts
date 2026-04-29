@@ -21,9 +21,6 @@
  *      minimum-shape.
  *   6. Ensure `.gobbi/.gitignore` lists `settings.json` and `sessions/`
  *      (append if missing; do not duplicate).
- *
- * Solo-user context: no staged rollout, no backcompat flag, no user-facing
- * migration log beyond the step-level `[ensure-settings-cascade] …` stderr line.
  */
 
 import {

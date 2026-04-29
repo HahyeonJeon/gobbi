@@ -9,6 +9,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
+import { existsSync } from 'node:fs';
 import { cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -109,10 +110,12 @@ describe('validate — canonical library', () => {
     expect(report.summary.errorCount).toBe(0);
   });
 
-  test('default directory resolves to packages/cli/src/specs (module-relative)', () => {
-    expect(DEFAULT_SPECS_DIR.endsWith(join('packages', 'cli', 'src', 'specs'))).toBe(
-      true,
-    );
+  test('default directory resolves to a real specs tree (works in source + bundled modes)', () => {
+    // Was `endsWith('packages/cli/src/specs')` — that pinned the source-mode
+    // layout and would break under bundled-mode resolution where the path
+    // ends in `dist/specs`. Assert the resolution invariant instead: an
+    // `index.json` lives at the resolved root.
+    expect(existsSync(join(DEFAULT_SPECS_DIR, 'index.json'))).toBe(true);
   });
 });
 

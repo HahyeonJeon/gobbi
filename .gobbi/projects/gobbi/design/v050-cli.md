@@ -101,13 +101,13 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 ### New: installation and project management commands
 
-**`gobbi install`** — Installs or upgrades the gobbi skill/agent/rules bundle into the active project's `.gobbi/projects/<name>/` directory. On first install, seeds the three-tier content directories; with `--upgrade`, performs a three-way merge against the previous installed version. The active project is set by `gobbi project switch`.
+**`gobbi install`** — Installs or upgrades the gobbi skill/agent/rules bundle into the active project's `.gobbi/projects/<name>/` directory. On first install, seeds the three-tier content directories; with `--upgrade`, performs a three-way merge against the previous installed version. The active project resolves from `basename(repoRoot)` plus the `--project` flag (the legacy `gobbi project switch` command was removed in v0.5.0 PR-FIN-2).
 
 **`gobbi project list`** — Lists all projects registered under `.gobbi/projects/`.
 
 **`gobbi project create <name>`** — Creates a new project directory under `.gobbi/projects/<name>/` and seeds it from the gobbi templates.
 
-**`gobbi project switch <name>`** — Switches the active project context. Subsequent workflow and config commands target the named project's sessions and settings.
+**`gobbi project switch <name>`** — *Removed in v0.5.0 PR-FIN-2.* Project resolution is now `basename(repoRoot)` plus the `--project` flag on each `gobbi workflow` / `gobbi config` invocation. There is no persistent "active project" state to switch between.
 
 ### New: `gobbi maintenance` commands
 

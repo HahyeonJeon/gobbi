@@ -54,10 +54,10 @@
  */
 
 import { readFile } from 'node:fs/promises';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { dirname, isAbsolute, resolve } from 'node:path';
 
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../lib/guards.js';
+import { getGraphPath } from './paths.js';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -143,15 +143,15 @@ export interface GraphAnalysis {
 // ---------------------------------------------------------------------------
 // Default path resolution
 //
-// The canonical `index.json` lives next to `graph.ts`. Resolving via
-// `import.meta.url` means the path is correct regardless of the process's
-// cwd. Tests override this via the `path` argument to `loadGraph`.
+// The canonical `index.json` lives next to `paths.ts` in `src/specs/` at
+// author time and next to the bundled `cli.js` at `dist/specs/index.json`
+// after `build:safe`. `paths.ts` owns the runtime fallback chain — see
+// its module JSDoc for the resolution policy. Tests override this via the
+// `path` argument to `loadGraph`.
 // ---------------------------------------------------------------------------
 
-const THIS_DIR = dirname(fileURLToPath(import.meta.url));
-
 /** Absolute path to the committed `index.json`. */
-export const DEFAULT_GRAPH_PATH: string = join(THIS_DIR, 'index.json');
+export const DEFAULT_GRAPH_PATH: string = getGraphPath();
 
 // ---------------------------------------------------------------------------
 // Loader

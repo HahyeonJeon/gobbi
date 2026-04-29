@@ -109,6 +109,8 @@ Verification harness for the scenarios in `scenarios.md`. Items are grouped by s
 
 ---
 
+> **Retired in v0.5.0 PR-FIN-2:** Items G-MEM2-17 through G-MEM2-20 (and the `switch.ts` evidence in G-MEM2-23 / G-MEM2-24) document the legacy `gobbi project switch` command. That command was removed in PR-FIN-2 once project resolution moved to `basename(repoRoot)` plus the `--project` flag. The items below remain in place as the historical record of what Pass 2 shipped; they no longer reflect the current command surface.
+
 ## G-MEM2-17 — `gobbi project switch` rotates the farm
 
 - `@functional` After switch, all three farm kinds point into the new project.

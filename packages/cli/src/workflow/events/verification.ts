@@ -49,11 +49,12 @@ export type VerificationEventType =
 
 /**
  * The closed set of verification command kinds recognised by the
- * verification-block compiler (`specs/verification-block.ts`). The
- * `verification.*` config section and `verification-runner.ts` were removed
- * in Pass 3 finalization (Wave B, `f9b3925`) — this union type is retained
- * because `VerificationResultData` events can still be written by external
- * callers and rendered by the compiler.
+ * verification-block compiler (`specs/verification-block.ts`).
+ *
+ * Producers: external hook callers invoking `appendEventAndUpdateState`
+ * with a `verification.result` event. Consumers:
+ * `specs/verification-block.ts::compileVerificationBlock` renders these
+ * into the verdict-window prompt block.
  *
  * `custom` is a sink for project-defined one-off commands.
  */
