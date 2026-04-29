@@ -342,7 +342,7 @@ Removal is not scheduled. The deprecated skill will remain in v0.5.x as an archi
 
 **Consumer impact.** The gobbi repo itself already has `.gobbi/` in `.gitignore` (line 7). If you are adopting the gobbi plugin in your own project, add `.gobbi/` to your project's `.gitignore`. The `.gobbi/` directory is created on first `gobbi workflow init` run.
 
-Gotchas recorded mid-session land in `.gobbi/projects/gobbi/learnings/gotchas/` and must be promoted to workspace-level skill storage via `gobbi gotcha promote` — run this outside an active session. The promotion step is a deliberate gate that prevents mid-session noise from polluting the permanent gotcha store.
+Gotchas recorded mid-session land in `.gobbi/projects/gobbi/gotchas/` and must be promoted to workspace-level skill storage via `gobbi gotcha promote` — run this outside an active session. The promotion step is a deliberate gate that prevents mid-session noise from polluting the permanent gotcha store.
 
 ---
 

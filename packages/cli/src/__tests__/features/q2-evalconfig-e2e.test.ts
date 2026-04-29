@@ -229,7 +229,7 @@ afterEach(() => {
 // Helper — persist a mode through the CLI + read it back through resolveSettings.
 // ---------------------------------------------------------------------------
 
-type Step = 'ideation' | 'planning' | 'execution';
+type Step = 'ideation' | 'planning' | 'execution' | 'memorization';
 type Mode = 'always' | 'skip' | 'ask' | 'auto';
 
 async function persistAndReadBack(
@@ -267,6 +267,7 @@ async function persistAndReadBack(
       readonly ideation?: { readonly evaluate?: { readonly mode?: Mode } };
       readonly planning?: { readonly evaluate?: { readonly mode?: Mode } };
       readonly execution?: { readonly evaluate?: { readonly mode?: Mode } };
+      readonly memorization?: { readonly evaluate?: { readonly mode?: Mode } };
     };
   };
   const persisted = onDisk.workflow?.[step]?.evaluate?.mode;
@@ -567,6 +568,109 @@ describe("Full e2e — EVAL_DECIDE event lands in state.evalConfig via reducer",
       ideation: false,
       planning: true,
       execution: false,
+    });
+  });
+});
+
+// ===========================================================================
+// PR-FIN-2a-i T-2a.7 — memorization step coverage
+// ===========================================================================
+//
+// Mirrors the existing 4-mode × 3-step matrix for the new memorization step.
+// Validates that:
+//
+//   1. `gobbi config set workflow.memorization.evaluate.mode <mode>` is
+//      accepted by the AJV validator and persists to disk.
+//   2. `resolveEvalDecision(cascade, 'memorization', context?)` translates
+//      every Q2 mode identically to the other three steps.
+//   3. The translated boolean lands in `state.evalConfig.memorization`
+//      after the EVAL_DECIDE event reduces.
+
+describe("Q2 'always' — memorization (T-2a.7)", () => {
+  test("always + memorization → {enabled: true, source: 'always'}", async () => {
+    const repo = makeScratchRepo();
+    const sessionId = 'q2-always-memorization';
+    await persistAndReadBack(repo, sessionId, 'memorization', 'always');
+    const cascade = resolveSettings({ repoRoot: repo, sessionId });
+    const decision = resolveEvalDecision(cascade, 'memorization');
+    expect(decision).toEqual({ enabled: true, source: 'always' });
+  });
+});
+
+describe("Q2 'skip' — memorization (T-2a.7)", () => {
+  test("skip + memorization → {enabled: false, source: 'skip'}", async () => {
+    const repo = makeScratchRepo();
+    const sessionId = 'q2-skip-memorization';
+    await persistAndReadBack(repo, sessionId, 'memorization', 'skip');
+    const cascade = resolveSettings({ repoRoot: repo, sessionId });
+    const decision = resolveEvalDecision(cascade, 'memorization');
+    expect(decision).toEqual({ enabled: false, source: 'skip' });
+  });
+});
+
+describe("Q2 'ask' — memorization (T-2a.7)", () => {
+  test("ask + memorization honours userAnswer; throws when context absent", async () => {
+    const repo = makeScratchRepo();
+    const sessionId = 'q2-ask-memorization';
+    await persistAndReadBack(repo, sessionId, 'memorization', 'ask');
+    const cascade = resolveSettings({ repoRoot: repo, sessionId });
+    expect(
+      resolveEvalDecision(cascade, 'memorization', { userAnswer: true }),
+    ).toEqual({ enabled: true, source: 'ask' });
+    expect(
+      resolveEvalDecision(cascade, 'memorization', { userAnswer: false }),
+    ).toEqual({ enabled: false, source: 'ask' });
+    expect(() => resolveEvalDecision(cascade, 'memorization')).toThrow(
+      /eval mode "ask" at step memorization requires context\.userAnswer/,
+    );
+  });
+});
+
+describe("Q2 'auto' — memorization (T-2a.7)", () => {
+  test("auto + memorization honours orchestratorDecision; throws when context absent", async () => {
+    const repo = makeScratchRepo();
+    const sessionId = 'q2-auto-memorization';
+    await persistAndReadBack(repo, sessionId, 'memorization', 'auto');
+    const cascade = resolveSettings({ repoRoot: repo, sessionId });
+    expect(
+      resolveEvalDecision(cascade, 'memorization', { orchestratorDecision: true }),
+    ).toEqual({ enabled: true, source: 'auto' });
+    expect(
+      resolveEvalDecision(cascade, 'memorization', { orchestratorDecision: false }),
+    ).toEqual({ enabled: false, source: 'auto' });
+    expect(() => resolveEvalDecision(cascade, 'memorization')).toThrow(
+      /eval mode "auto" at step memorization requires context\.orchestratorDecision/,
+    );
+  });
+});
+
+describe("Full e2e — memorization slot lands via reducer (T-2a.7)", () => {
+  test("always memorization → reducer records evalConfig.memorization=true", async () => {
+    const repo = makeScratchRepo();
+    const sessionId = 'q2-e2e-memorization';
+    await persistAndReadBack(repo, sessionId, 'memorization', 'always');
+
+    const cascade = resolveSettings({ repoRoot: repo, sessionId });
+    const memorizationDecision = resolveEvalDecision(cascade, 'memorization');
+    expect(memorizationDecision).toEqual({ enabled: true, source: 'always' });
+
+    const evalEvent: Event = {
+      type: WORKFLOW_EVENTS.EVAL_DECIDE,
+      data: {
+        ideation: false,
+        plan: false,
+        memorization: memorizationDecision.enabled,
+      },
+    };
+
+    const state = initialState(sessionId);
+    const result = reduce(state, evalEvent);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.state.evalConfig).toEqual({
+      ideation: false,
+      planning: false,
+      memorization: true,
     });
   });
 });

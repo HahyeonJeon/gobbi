@@ -104,12 +104,15 @@ describe('loadGraph — canonical index.json', () => {
 
   test('A.1.5 — memorization → handoff → done chain is wired', async () => {
     const graph = await loadGraph();
-    // memorization → handoff on workflow.step.exit / always
+    // memorization → handoff on workflow.step.exit. PR-FIN-2a-i T-2a.7
+    // narrowed the condition from `always` to `evalMemorizationDisabled`
+    // so the optional `memorization → memorization_eval` branch can fire
+    // when the cascade has memorization eval enabled.
     const memToHandoff = graph.transitions.find(
       (t) => t.from === 'memorization' && t.to === 'handoff',
     );
     expect(memToHandoff).toBeDefined();
-    expect(memToHandoff?.condition).toBe('always');
+    expect(memToHandoff?.condition).toBe('evalMemorizationDisabled');
     expect(memToHandoff?.trigger).toBe('workflow.step.exit');
 
     // handoff → done on workflow.finish / always
@@ -515,12 +518,15 @@ describe('structural invariants of the committed graph', () => {
     }
   });
 
-  test('all three eval steps share the same spec file', async () => {
+  test('all four eval steps share the same spec file', async () => {
     const graph = await loadGraph();
     const evalSteps: readonly StepDefinition[] = graph.steps.filter((s) =>
       s.id.endsWith('_eval'),
     );
-    expect(evalSteps.length).toBe(3);
+    // PR-FIN-2a-i T-2a.7 added `memorization_eval` to the canonical eval
+    // step set (ideation_eval / planning_eval / execution_eval /
+    // memorization_eval).
+    expect(evalSteps.length).toBe(4);
     const specs = new Set(evalSteps.map((s) => s.spec));
     expect(specs.size).toBe(1);
   });

@@ -7,21 +7,23 @@
  *   - Dispatch: `--help` prints usage to stdout; unknown subcommands exit 1
  *     with a diagnostic on stderr.
  *   - Promote happy path: a regular `.md` file lands at
- *     `.gobbi/projects/<project>/learnings/gotchas/` and the source is
+ *     `.gobbi/projects/<project>/gotchas/` and the source is
  *     deleted.
  *   - Promote skill-scoped: `_skill-<name>.md` lands at
  *     `.claude/skills/<name>/gotchas.md`.
  *   - `--dry-run`: prints planned moves, writes nothing, deletes nothing.
- *   - Active-session rejection: a session with a fresh heartbeat blocks
- *     promotion; the Git-style Options block appears once.
- *   - Multi-active rejection: every active session is listed individually.
  *   - Empty source: exit 0 silently.
  *   - No destination project inferable: exit 1 with diagnostic.
  *
+ * Post-PR-FIN-2a-i T-2a.1.5: the active-session guard was removed (the
+ * JSON-pivot memory model retires per-session `gobbi.db`, so the
+ * heartbeat read had nothing left to consult). Tests that exercised the
+ * rejection path are gone alongside the helpers.
+ *
  * All tests operate on scratch directories under the OS temp dir that
  * mirror the real post-W3.1 layout: source lives at
- * `<repo>/.gobbi/projects/gobbi/learnings/gotchas/` and destinations land
- * at `<repo>/.gobbi/projects/<name>/learnings/gotchas/` (category) or
+ * `<repo>/.gobbi/projects/gobbi/gotchas/` and destinations land
+ * at `<repo>/.gobbi/projects/<name>/gotchas/` (category) or
  * `<repo>/.claude/skills/<name>/gotchas.md` (skill-scoped). No real
  * session or `.claude/` paths are touched.
  */
@@ -44,18 +46,7 @@ import {
   runGotchaWithRegistry,
   type GotchaCommand,
 } from '../gotcha.js';
-import {
-  runPromoteWithOptions,
-  findActiveSessions,
-  renderActiveSessionError,
-  HEARTBEAT_TTL_MS,
-} from '../gotcha/promote.js';
-import { EventStore } from '../../workflow/store.js';
-import { createSessionHeartbeat } from '../../workflow/events/session.js';
-import {
-  createWorkflowStart,
-  createFinish,
-} from '../../workflow/events/workflow.js';
+import { runPromoteWithOptions } from '../gotcha/promote.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap
@@ -148,7 +139,7 @@ function makeScratchRepo(): string {
 
 /**
  * Build a scratch "repo" layout matching the post-W3.1 on-disk shape:
- *   <repo>/.gobbi/projects/gobbi/learnings/gotchas/  — source dir (the
+ *   <repo>/.gobbi/projects/gobbi/gotchas/  — source dir (the
  *       default `DEFAULT_PROJECT_NAME = 'gobbi'` source the command
  *       resolves to when no `--source` is passed)
  *   <repo>/.gobbi/projects/<name>/                    — destination
@@ -162,7 +153,7 @@ function makeScratchRepo(): string {
  * `.gobbi/projects/<name>/` tree.
  *
  * When `projectName` differs from `DEFAULT_PROJECT_NAME` we still create
- * the source dir under `.gobbi/projects/gobbi/learnings/gotchas/` because
+ * the source dir under `.gobbi/projects/gobbi/gotchas/` because
  * that is where the CLI looks by default; the destination project name
  * (`projectName`) is independent.
  */
@@ -177,7 +168,6 @@ function makeRepoLayout(projectName: string | null): {
     '.gobbi',
     'projects',
     'gobbi',
-    'learnings',
     'gotchas',
   );
   mkdirSync(sourceDir, { recursive: true });
@@ -189,67 +179,6 @@ function makeRepoLayout(projectName: string | null): {
     });
   }
   return { repo, sourceDir, claudeDir };
-}
-
-/**
- * Seed a session directory with a SQLite store containing the supplied
- * events. The events are appended in order with `system` idempotency keyed
- * off the provided timestamps.
- *
- * Sessions are seeded at the post-W3.1 per-project path
- * `<repo>/.gobbi/projects/gobbi/sessions/<id>/` because that is where
- * `findActiveSessions` looks (via
- * `sessionsRootForProject(repoRoot, DEFAULT_PROJECT_NAME)`).
- */
-function seedSession(
-  repo: string,
-  sessionId: string,
-  events: Array<{
-    readonly type: string;
-    readonly data: object;
-    readonly ts: string;
-    readonly step?: string;
-    readonly counter?: number;
-  }>,
-): void {
-  const sessionDir = join(
-    repo,
-    '.gobbi',
-    'projects',
-    'gobbi',
-    'sessions',
-    sessionId,
-  );
-  mkdirSync(sessionDir, { recursive: true });
-  const store = new EventStore(join(sessionDir, 'gobbi.db'));
-  try {
-    for (const e of events) {
-      if (e.type === 'session.heartbeat') {
-        store.append({
-          idempotencyKind: 'counter',
-          sessionId,
-          ts: e.ts,
-          type: e.type,
-          data: JSON.stringify(e.data),
-          actor: 'hook',
-          counter: e.counter ?? 0,
-          ...(e.step !== undefined ? { step: e.step } : {}),
-        });
-      } else {
-        store.append({
-          idempotencyKind: 'system',
-          sessionId,
-          ts: e.ts,
-          type: e.type,
-          data: JSON.stringify(e.data),
-          actor: 'cli',
-          ...(e.step !== undefined ? { step: e.step } : {}),
-        });
-      }
-    }
-  } finally {
-    store.close();
-  }
 }
 
 // ===========================================================================
@@ -341,7 +270,7 @@ describe('runGotchaWithRegistry — dispatch', () => {
 // ===========================================================================
 
 describe('runPromote — happy path (project-scoped)', () => {
-  test('appends the source file to .gobbi/projects/<project>/learnings/gotchas/ and deletes the source', async () => {
+  test('appends the source file to .gobbi/projects/<project>/gotchas/ and deletes the source', async () => {
     // `makeRepoLayout('testproj')` seeds two project dirs
     // (`gobbi` — the source's default project — and `testproj`), so
     // `inferProjectName` returns null on ambiguity; pass
@@ -365,7 +294,6 @@ describe('runPromote — happy path (project-scoped)', () => {
       '.gobbi',
       'projects',
       'testproj',
-      'learnings',
       'gotchas',
       'foo.md',
     );
@@ -381,7 +309,6 @@ describe('runPromote — happy path (project-scoped)', () => {
       '.gobbi',
       'projects',
       'testproj',
-      'learnings',
       'gotchas',
     );
     mkdirSync(destDir, { recursive: true });
@@ -412,7 +339,7 @@ describe('runPromote — happy path (project-scoped)', () => {
     //
     // For the default project the source path and destination path
     // resolve to the same file (both at
-    // `.gobbi/projects/gobbi/learnings/gotchas/<category>.md`) — the
+    // `.gobbi/projects/gobbi/gotchas/<category>.md`) — the
     // draft is already in its permanent location. `applyPromotion`
     // detects the collision and leaves the file unchanged rather than
     // appending-then-unlinking (which would lose data).
@@ -465,7 +392,6 @@ describe('runPromote — happy path (skill-scoped)', () => {
       '.gobbi',
       'projects',
       'gobbi',
-      'learnings',
       'gotchas',
     );
     mkdirSync(sourceDir, { recursive: true });
@@ -524,7 +450,6 @@ describe('runPromote — --dry-run', () => {
           '.gobbi',
           'projects',
           'testproj',
-          'learnings',
           'gotchas',
           'foo.md',
         ),
@@ -537,189 +462,6 @@ describe('runPromote — --dry-run', () => {
     // Nothing deleted at the source.
     expect(existsSync(join(sourceDir, 'foo.md'))).toBe(true);
     expect(existsSync(join(sourceDir, '_skill-_gotcha.md'))).toBe(true);
-  });
-});
-
-// ===========================================================================
-// Active-session rejection
-// ===========================================================================
-
-describe('runPromote — active-session rejection', () => {
-  test('rejects when a single session has a recent heartbeat', async () => {
-    const { repo, sourceDir, claudeDir } = makeRepoLayout('testproj');
-    writeFileSync(join(sourceDir, 'foo.md'), 'body\n', 'utf8');
-
-    const now = new Date('2026-04-16T10:00:00.000Z');
-    const hbAt = new Date(now.getTime() - 3 * 60_000); // 3 minutes ago
-    seedSession(repo, 'active-1', [
-      {
-        type: 'workflow.start',
-        data: createWorkflowStart({
-          sessionId: 'active-1',
-          timestamp: hbAt.toISOString(),
-        }).data,
-        ts: hbAt.toISOString(),
-      },
-      {
-        type: 'session.heartbeat',
-        data: createSessionHeartbeat({ timestamp: hbAt.toISOString() }).data,
-        ts: hbAt.toISOString(),
-        step: 'execution',
-        counter: 0,
-      },
-    ]);
-
-    await captureExit(() =>
-      runPromoteWithOptions(['--project', 'gobbi'], {
-        repoRoot: repo,
-        claudeDir,
-        now: () => now,
-      }),
-    );
-
-    expect(captured.exitCode).toBe(1);
-    expect(captured.stderr).toContain(
-      'Cannot promote gotchas while a session is active',
-    );
-    expect(captured.stderr).toContain('active-1');
-    expect(captured.stderr).toContain('3 minutes ago');
-    expect(captured.stderr).toContain('step: execution');
-    expect(captured.stderr).toContain('Options:');
-    expect(captured.stderr).toContain(
-      'gobbi workflow transition FINISH',
-    );
-    expect(captured.stderr).toContain('gobbi workflow transition ABORT');
-    expect(captured.stderr).toContain('Wait for TTL to expire');
-
-    // Source file remains.
-    expect(existsSync(join(sourceDir, 'foo.md'))).toBe(true);
-  });
-
-  test('lists every active session individually but renders Options once', async () => {
-    const { repo, sourceDir, claudeDir } = makeRepoLayout('testproj');
-    writeFileSync(join(sourceDir, 'foo.md'), 'body\n', 'utf8');
-
-    const now = new Date('2026-04-16T10:00:00.000Z');
-    const hb1 = new Date(now.getTime() - 2 * 60_000);
-    const hb2 = new Date(now.getTime() - 45 * 1000);
-    seedSession(repo, 'active-1', [
-      {
-        type: 'session.heartbeat',
-        data: createSessionHeartbeat({ timestamp: hb1.toISOString() }).data,
-        ts: hb1.toISOString(),
-        step: 'ideation',
-        counter: 0,
-      },
-    ]);
-    seedSession(repo, 'active-2', [
-      {
-        type: 'session.heartbeat',
-        data: createSessionHeartbeat({ timestamp: hb2.toISOString() }).data,
-        ts: hb2.toISOString(),
-        step: 'plan',
-        counter: 0,
-      },
-    ]);
-
-    await captureExit(() =>
-      runPromoteWithOptions(['--project', 'gobbi'], {
-        repoRoot: repo,
-        claudeDir,
-        now: () => now,
-      }),
-    );
-
-    expect(captured.exitCode).toBe(1);
-    expect(captured.stderr).toContain('active-1');
-    expect(captured.stderr).toContain('active-2');
-    // Options block appears exactly once.
-    const occurrences = captured.stderr.split('Options:').length - 1;
-    expect(occurrences).toBe(1);
-  });
-
-  test('skips sessions with a workflow.finish event', async () => {
-    const { repo, sourceDir, claudeDir } = makeRepoLayout('testproj');
-    writeFileSync(join(sourceDir, 'foo.md'), 'body\n', 'utf8');
-
-    const now = new Date('2026-04-16T10:00:00.000Z');
-    const hbAt = new Date(now.getTime() - 10 * 60_000);
-    const finishAt = new Date(now.getTime() - 5 * 60_000);
-    seedSession(repo, 'completed-1', [
-      {
-        type: 'session.heartbeat',
-        data: createSessionHeartbeat({ timestamp: hbAt.toISOString() }).data,
-        ts: hbAt.toISOString(),
-        counter: 0,
-      },
-      {
-        type: 'workflow.finish',
-        data: createFinish({} as Record<string, never>).data,
-        ts: finishAt.toISOString(),
-      },
-    ]);
-
-    await captureExit(() =>
-      runPromoteWithOptions(['--project', 'gobbi', '--destination-project', 'testproj'], {
-        repoRoot: repo,
-        claudeDir,
-        now: () => now,
-      }),
-    );
-
-    expect(captured.exitCode).toBeNull();
-    // Promotion proceeded despite the session being on disk.
-    expect(
-      existsSync(
-        join(
-          repo,
-          '.gobbi',
-          'projects',
-          'testproj',
-          'learnings',
-          'gotchas',
-          'foo.md',
-        ),
-      ),
-    ).toBe(true);
-  });
-
-  test('skips abandoned sessions (heartbeat older than 60 minutes)', async () => {
-    const { repo, sourceDir, claudeDir } = makeRepoLayout('testproj');
-    writeFileSync(join(sourceDir, 'foo.md'), 'body\n', 'utf8');
-
-    const now = new Date('2026-04-16T10:00:00.000Z');
-    const hbAt = new Date(now.getTime() - HEARTBEAT_TTL_MS - 1000);
-    seedSession(repo, 'stale-1', [
-      {
-        type: 'session.heartbeat',
-        data: createSessionHeartbeat({ timestamp: hbAt.toISOString() }).data,
-        ts: hbAt.toISOString(),
-        counter: 0,
-      },
-    ]);
-
-    await captureExit(() =>
-      runPromoteWithOptions(['--project', 'gobbi', '--destination-project', 'testproj'], {
-        repoRoot: repo,
-        claudeDir,
-        now: () => now,
-      }),
-    );
-
-    expect(captured.exitCode).toBeNull();
-    expect(
-      existsSync(
-        join(
-          repo,
-          '.gobbi',
-          'projects',
-          'testproj',
-          'learnings',
-          'gotchas',
-          'foo.md',
-        ),
-      ),
-    ).toBe(true);
   });
 });
 
@@ -761,7 +503,6 @@ describe('runPromote — edge cases', () => {
       '.gobbi',
       'projects',
       'gobbi',
-      'learnings',
       'gotchas',
     );
     mkdirSync(sourceDir, { recursive: true });
@@ -790,7 +531,6 @@ describe('runPromote — edge cases', () => {
       '.gobbi',
       'projects',
       'gobbi',
-      'learnings',
       'gotchas',
     );
     mkdirSync(sourceDir, { recursive: true });
@@ -814,7 +554,6 @@ describe('runPromote — edge cases', () => {
           '.gobbi',
           'projects',
           'alpha',
-          'learnings',
           'gotchas',
           'foo.md',
         ),
@@ -827,7 +566,6 @@ describe('runPromote — edge cases', () => {
           '.gobbi',
           'projects',
           'beta',
-          'learnings',
           'gotchas',
           'foo.md',
         ),
@@ -854,7 +592,6 @@ describe('runPromote — edge cases', () => {
       '.gobbi',
       'projects',
       'testproj',
-      'learnings',
       'gotchas',
       'foo.md',
     );
@@ -863,40 +600,3 @@ describe('runPromote — edge cases', () => {
   });
 });
 
-// ===========================================================================
-// findActiveSessions / renderActiveSessionError helpers
-// ===========================================================================
-
-describe('findActiveSessions', () => {
-  test('returns empty when .gobbi/sessions does not exist', () => {
-    const repo = makeScratchRepo();
-    const result = findActiveSessions(repo, Date.now());
-    expect(result).toEqual([]);
-  });
-});
-
-describe('renderActiveSessionError', () => {
-  test('includes one Active session block per input', () => {
-    const msg = renderActiveSessionError([
-      {
-        sessionId: 'one',
-        heartbeatTs: '2026-04-16T10:00:00.000Z',
-        minutesAgo: 1,
-        ttlRemainingMinutes: 59,
-        step: 'ideation',
-      },
-      {
-        sessionId: 'two',
-        heartbeatTs: '2026-04-16T09:59:00.000Z',
-        minutesAgo: 2,
-        ttlRemainingMinutes: 58,
-        step: null,
-      },
-    ]);
-    expect(msg).toContain('Active session: one');
-    expect(msg).toContain('Active session: two');
-    expect(msg).toContain('step: (none)');
-    // The Wait-TTL suggestion uses the smallest remaining TTL.
-    expect(msg).toContain('Wait for TTL to expire (58 minutes)');
-  });
-});

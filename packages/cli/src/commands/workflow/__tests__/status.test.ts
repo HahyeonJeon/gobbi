@@ -217,7 +217,15 @@ describe('runStatusWithOptions', () => {
     expect(snapshot.schemaVersion).toBe(4);
     expect(snapshot.currentStep).toBe('ideation');
     expect(snapshot.violationsTotal).toBe(0);
-    expect(snapshot.evalConfig).toEqual({ ideation: false, planning: false });
+    // PR-FIN-2a-i T-2a.7: workflow init now also stamps the resolved
+    // memorization-eval decision onto EVAL_DECIDE. With the DEFAULTS
+    // cascade carrying `workflow.memorization.evaluate.mode === 'always'`
+    // the reducer lands `memorization: true` on `state.evalConfig`.
+    expect(snapshot.evalConfig).toEqual({
+      ideation: false,
+      planning: false,
+      memorization: true,
+    });
   });
 
   test('missing event store exits 1', async () => {

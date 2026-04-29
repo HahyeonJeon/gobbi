@@ -21,6 +21,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   rmSync,
   writeFileSync,
@@ -31,6 +32,7 @@ import { join } from 'node:path';
 import {
   runProjectCreateWithOptions,
   SCAFFOLD_DIRS,
+  SCAFFOLD_GITIGNORED_DIRS,
   validateProjectName,
 } from '../create.js';
 
@@ -198,6 +200,89 @@ describe('gobbi project create — happy path', () => {
     expect(existsSync(join(repo, '.gobbi', 'settings.json'))).toBe(false);
   });
 
+  test('scaffolds the full PR-FIN-2 taxonomy (14 tracked + 3 runtime)', async () => {
+    const repo = makeRepo();
+
+    await captureExit(() =>
+      runProjectCreateWithOptions(['foo'], { repoRoot: repo }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    const projectRoot = join(repo, '.gobbi', 'projects', 'foo');
+
+    // 12 narrative dirs.
+    const narrative = [
+      'backlogs',
+      'checklists',
+      'decisions',
+      'design',
+      'gotchas',
+      'learnings',
+      'notes',
+      'playbooks',
+      'references',
+      'reviews',
+      'rules',
+      'scenarios',
+    ];
+    // 2 farm dirs (rules already in narrative; counts once).
+    const farm = ['agents', 'skills'];
+    // 3 gitignored runtime dirs.
+    const runtime = ['sessions', 'tmp', 'worktrees'];
+
+    for (const dir of [...narrative, ...farm, ...runtime]) {
+      expect(existsSync(join(projectRoot, dir))).toBe(true);
+    }
+
+    // SCAFFOLD_DIRS is the public source of truth — the union of the
+    // three buckets above must equal it (modulo ordering).
+    const expectedSet = new Set([...narrative, ...farm, ...runtime]);
+    expect(new Set(SCAFFOLD_DIRS)).toEqual(expectedSet);
+    expect(SCAFFOLD_DIRS.length).toBe(expectedSet.size); // no dup
+    // 14 tracked + 3 runtime = 17 unique entries.
+    expect(SCAFFOLD_DIRS.length).toBe(17);
+
+    // SCAFFOLD_GITIGNORED_DIRS exposes exactly the runtime trio.
+    expect(SCAFFOLD_GITIGNORED_DIRS).toEqual(new Set(runtime));
+  });
+
+  test('writes .gitkeep into every empty git-tracked scaffold dir, never into runtime dirs', async () => {
+    const repo = makeRepo();
+
+    await captureExit(() =>
+      runProjectCreateWithOptions(['foo'], { repoRoot: repo }),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    const projectRoot = join(repo, '.gobbi', 'projects', 'foo');
+
+    for (const dir of SCAFFOLD_DIRS) {
+      const dirPath = join(projectRoot, dir);
+      const gitkeep = join(dirPath, '.gitkeep');
+
+      if (SCAFFOLD_GITIGNORED_DIRS.has(dir)) {
+        // Runtime dirs (sessions, tmp, worktrees) are gitignored — we
+        // do not put a .gitkeep there because git would not track it.
+        expect(existsSync(gitkeep)).toBe(false);
+        continue;
+      }
+
+      // Tracked dir contract: either the seed populated it with real
+      // content (no .gitkeep needed), or the dir is empty and a
+      // .gitkeep is present so git records the slot. Empty .gitkeep
+      // alone counts as the marker case (length === 1).
+      const entries = readdirSync(dirPath);
+      const isEmptyAfterMarker =
+        entries.length === 1 && entries[0] === '.gitkeep';
+      const isPopulated = entries.length > 0 && !isEmptyAfterMarker;
+      expect(isEmptyAfterMarker || isPopulated).toBe(true);
+      if (isEmptyAfterMarker) {
+        // .gitkeep is conventionally empty.
+        expect(readFileSync(gitkeep, 'utf8')).toBe('');
+      }
+    }
+  });
+
   test('does not touch existing settings.json (PR-FIN-1c)', async () => {
     const repo = makeRepo();
     // Pre-seed settings with arbitrary user content; the registry was
@@ -243,7 +328,7 @@ describe('gobbi project create — happy path', () => {
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toContain('Seeded');
     expect(captured.stdout).toContain('template file');
-    // Manifest landed under the new project.
+    // PR-FIN-2a-i T-2a.3: no manifest is written by the seed helper.
     const manifestPath = join(
       repo,
       '.gobbi',
@@ -251,7 +336,7 @@ describe('gobbi project create — happy path', () => {
       'foo',
       '.install-manifest.json',
     );
-    expect(existsSync(manifestPath)).toBe(true);
+    expect(existsSync(manifestPath)).toBe(false);
     // The "run gobbi install" fallback warning must NOT fire when the
     // helper is wired correctly.
     expect(captured.stderr).not.toContain('install templates unavailable');

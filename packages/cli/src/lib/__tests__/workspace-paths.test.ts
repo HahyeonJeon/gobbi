@@ -100,14 +100,15 @@ describe('projectSubdir — every ProjectSubdirKind value', () => {
     });
   }
 
-  test('tuple contains exactly 15 kinds', () => {
+  test('tuple contains exactly 16 kinds', () => {
     // Guards against accidental removal from the taxonomy; matches the
-    // ideation §11 charter (11 dirs) + 2 claude-doc dirs + sessions +
-    // worktrees.
-    expect(PROJECT_SUBDIR_KINDS.length).toBe(15);
+    // ideation §11 charter (11 dirs) + top-level `gotchas/` (PR-FIN-2a-i
+    // migration out of `learnings/gotchas/`) + 2 claude-doc dirs +
+    // sessions + worktrees.
+    expect(PROJECT_SUBDIR_KINDS.length).toBe(16);
   });
 
-  test('tuple includes the full ideation §11 taxonomy', () => {
+  test('tuple includes the full ideation §11 taxonomy plus top-level gotchas', () => {
     const taxonomy: readonly ProjectSubdirKind[] = [
       'design',
       'decisions',
@@ -116,6 +117,7 @@ describe('projectSubdir — every ProjectSubdirKind value', () => {
       'checklists',
       'playbooks',
       'learnings',
+      'gotchas',
       'rules',
       'backlogs',
       'notes',

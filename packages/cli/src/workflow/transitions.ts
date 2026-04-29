@@ -227,15 +227,43 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     priority: 2,
   },
 
-  // memorization -> handoff (productive exit; see specs/index.json::transitions)
-  // Wave A.1.5 promoted handoff to a true state-machine step so the cover-sheet
-  // artifact never collapses into the wide memorization sweep. The runtime
-  // routing is workflow.step.exit (memorization) → handoff, matching the
-  // declarative graph in `specs/index.json`.
+  // memorization -> memorization_eval (eval enabled) or handoff (eval disabled)
+  // Wave A.1.5 promoted handoff to a true state-machine step so the
+  // cover-sheet artifact never collapses into the wide memorization sweep.
+  // PR-FIN-2a-i T-2a.7 split the productive exit on
+  // `evalConfig.memorization` so the optional memorization_eval loop can
+  // gate handoff just like ideation_eval gates planning. The runtime
+  // routing is workflow.step.exit (memorization) →
+  // {memorization_eval | handoff}, matching the declarative graph in
+  // `specs/index.json`.
+  {
+    from: 'memorization',
+    to: 'memorization_eval',
+    trigger: WORKFLOW_EVENTS.STEP_EXIT,
+    condition: 'evalMemorizationEnabled',
+    priority: 0,
+  },
   {
     from: 'memorization',
     to: 'handoff',
     trigger: WORKFLOW_EVENTS.STEP_EXIT,
+    condition: 'evalMemorizationDisabled',
+    priority: 0,
+  },
+
+  // memorization_eval -> memorization (revise) or handoff (pass)
+  {
+    from: 'memorization_eval',
+    to: 'memorization',
+    trigger: DECISION_EVENTS.EVAL_VERDICT,
+    verdict: 'revise',
+    priority: 0,
+  },
+  {
+    from: 'memorization_eval',
+    to: 'handoff',
+    trigger: DECISION_EVENTS.EVAL_VERDICT,
+    verdict: 'pass',
     priority: 0,
   },
 
@@ -294,6 +322,12 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
     priority: 10,
   },
   {
+    from: 'memorization_eval',
+    to: 'error',
+    trigger: WORKFLOW_EVENTS.STEP_TIMEOUT,
+    priority: 10,
+  },
+  {
     from: 'handoff',
     to: 'error',
     trigger: WORKFLOW_EVENTS.STEP_TIMEOUT,
@@ -336,6 +370,12 @@ export const TRANSITION_TABLE: readonly TransitionRule[] = [
   },
   {
     from: 'memorization',
+    to: 'ideation',
+    trigger: WORKFLOW_EVENTS.STEP_SKIP,
+    priority: 20,
+  },
+  {
+    from: 'memorization_eval',
     to: 'ideation',
     trigger: WORKFLOW_EVENTS.STEP_SKIP,
     priority: 20,

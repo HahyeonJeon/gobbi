@@ -336,10 +336,19 @@ describe('runTransitionWithOptions — happy paths', () => {
     );
     expect(captured.exitCode).toBeNull();
 
-    // memorization → handoff via COMPLETE.
+    // memorization → memorization_eval via COMPLETE (DEFAULTS keep
+    // memorization eval mode at 'always', so the runtime routes through
+    // the optional eval branch). PR-FIN-2a-i T-2a.7 added this branch.
     captured = { stdout: '', stderr: '', exitCode: null };
     await captureExit(() =>
       runTransitionWithOptions(['COMPLETE'], { sessionDir }),
+    );
+    expect(captured.exitCode).toBeNull();
+
+    // memorization_eval → handoff via PASS verdict.
+    captured = { stdout: '', stderr: '', exitCode: null };
+    await captureExit(() =>
+      runTransitionWithOptions(['PASS'], { sessionDir }),
     );
     expect(captured.exitCode).toBeNull();
 

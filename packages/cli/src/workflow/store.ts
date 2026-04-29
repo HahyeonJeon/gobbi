@@ -13,7 +13,8 @@
  * for the design rationale + backfill semantics (gobbi-memory Pass 2,
  * issue #118). `session_id` is read from the constructor's inferred
  * sessionId (derived from the session directory name); `project_id` is
- * the `basename(projectRoot)` captured from the session's metadata.json.
+ * `metadata.projectName` captured from the session's metadata.json
+ * (schema v3+; previously `basename(projectRoot)` — see issue #178).
  */
 
 import { Database } from 'bun:sqlite';
@@ -396,12 +397,19 @@ function resolveSessionId(sessionDir: string | null): string | null {
 }
 
 /**
- * Resolve `basename(projectRoot)` from the session's `metadata.json`.
+ * Resolve `metadata.projectName` from the session's `metadata.json`.
  * Silent on every failure mode (missing file, parse error, unexpected
- * shape) — the project_id column stays NULL until a future open
- * recovers a valid metadata.
+ * shape, missing or non-string `projectName`) — the project_id column
+ * stays NULL until a future open recovers a valid metadata.
+ *
+ * Schema v3+ `metadata.json` carries `projectName` directly (see
+ * `commands/workflow/init.ts::SessionMetadata`). The previous
+ * `basename(projectRoot)` derivation read the repo root directory, so
+ * a multi-project workspace stamped every event with the same
+ * `project_id` regardless of which project the session belonged to
+ * (issue #178).
  */
-function resolveProjectRootBasename(
+function resolveProjectIdFromMetadata(
   sessionDir: string | null,
 ): string | null {
   if (sessionDir === null) return null;
@@ -420,10 +428,9 @@ function resolveProjectRootBasename(
   if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
     return null;
   }
-  const projectRoot = (parsed as Record<string, unknown>)['projectRoot'];
-  if (typeof projectRoot !== 'string' || projectRoot === '') return null;
-  const name = basename(projectRoot);
-  return name === '' ? null : name;
+  const projectName = (parsed as Record<string, unknown>)['projectName'];
+  if (typeof projectName !== 'string' || projectName === '') return null;
+  return projectName;
 }
 
 // ---------------------------------------------------------------------------
@@ -444,12 +451,15 @@ export class EventStore implements WriteStore {
   private readonly sessionId: string | null;
 
   /**
-   * Project partition key — `basename(metadata.projectRoot)` read from
-   * the session's `metadata.json` at construction. `null` when
-   * `metadata.json` is missing, unreadable, or malformed. Populated on
-   * every v5 INSERT alongside `session_id`; NULL rows are left alone
-   * unless {@link backfillSessionAndProjectIds} stamps them during a
-   * later open.
+   * Project partition key — `metadata.projectName` read from the
+   * session's `metadata.json` at construction (schema v3+). `null` when
+   * `metadata.json` is missing, unreadable, malformed, or lacks a
+   * non-empty `projectName`. Populated on every v5 INSERT alongside
+   * `session_id`; NULL rows are left alone unless
+   * {@link backfillSessionAndProjectIds} stamps them during a later
+   * open. Field name retained for git-history continuity — semantically
+   * it is now the project name, not a directory basename (see issue
+   * #178).
    */
   private readonly projectRootBasename: string | null;
 
@@ -483,11 +493,13 @@ export class EventStore implements WriteStore {
    * The same two-step policy applies to `opts.projectId`:
    *
    * 1. Non-empty `opts.projectId` takes precedence.
-   * 2. Otherwise {@link resolveProjectRootBasename} parses the
-   *    sibling `metadata.json` and extracts
-   *    `basename(metadata.projectRoot)`. Missing or malformed
-   *    metadata yields `null` (silent — the column stays NULL until
-   *    a future open recovers a valid metadata).
+   * 2. Otherwise {@link resolveProjectIdFromMetadata} parses the
+   *    sibling `metadata.json` and extracts `metadata.projectName`
+   *    (schema v3+). Missing or malformed metadata yields `null`
+   *    (silent — the column stays NULL until a future open recovers
+   *    a valid metadata). Issue #178 fixed the previous derivation
+   *    `basename(metadata.projectRoot)` which conflated all
+   *    multi-project sessions onto the same project_id.
    *
    * Empty-string and `null` are treated identically as "explicitly
    * unset" — see {@link EventStoreOptions} for why empty strings
@@ -515,7 +527,7 @@ export class EventStore implements WriteStore {
     this.projectRootBasename =
       isExplicitOverride(opts?.projectId)
         ? opts.projectId
-        : resolveProjectRootBasename(sessionDir);
+        : resolveProjectIdFromMetadata(sessionDir);
 
     this.initSchema();
     // v4 → v5 row-level backfill. Idempotent — writes only to rows whose

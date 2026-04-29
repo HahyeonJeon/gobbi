@@ -8,7 +8,7 @@ Authoritative design: [`v050-features/orchestration/README.md`](../../../../../.
 
 ## Purpose in the v0.5.0 workflow
 
-Memorization is orchestrator-authored — there are no delegated subagents or evaluators. The orchestrator reads the session's conversation and durable artifacts, writes session-scoped gotchas to `.gobbi/projects/<name>/learnings/gotchas/`, writes durable decisions to `.gobbi/projects/<name>/learnings/decisions/`, updates project documentation for any convention or precedent the session introduced, refreshes the user-level MEMORY index when warranted, and commits `memorization.md` to the session's memorization directory.
+Memorization is orchestrator-authored — there are no delegated subagents or evaluators. The orchestrator reads the session's conversation and durable artifacts, writes session-scoped gotchas to `.gobbi/projects/<name>/gotchas/`, writes durable decisions to `.gobbi/projects/<name>/learnings/decisions/`, updates project documentation for any convention or precedent the session introduced, refreshes the user-level MEMORY index when warranted, and commits `memorization.md` to the session's memorization directory.
 
 Memorization is the wide step in the memorization → handoff pair: many rawdata sources, many extraction destinations. Handoff is the narrow step: one source (this artifact plus last-N events), one destination (`handoff.md` plus one `gobbi.db::memories` row). The state machine advances `memorization → handoff → done` on `workflow.step.exit` then `workflow.finish` per the graph in [`../index.json`](../index.json).
 
@@ -41,7 +41,7 @@ The synthesis block enumerates seven rawdata source classes the memorization age
 2. **Subagent transcripts** — `~/.claude/projects/-playinganalytics-git-gobbi/<session-id>/subagents/*.jsonl`. Per-subagent runs.
 3. **Captured rawdata** — `.gobbi/projects/<name>/sessions/<session-id>/raw-data/transcripts/*.jsonl`. Files copied by capture hooks.
 4. **Recent project decisions** — `.gobbi/projects/<name>/learnings/decisions/*.md`. Latest entries (often subsume what would otherwise be re-recorded).
-5. **Mid-session gotchas** — `.gobbi/projects/<name>/learnings/gotchas/*.md`. Gotchas written during the session, candidates for cross-session escalation.
+5. **Mid-session gotchas** — `.gobbi/projects/<name>/gotchas/*.md`. Gotchas written during the session, candidates for cross-session escalation.
 6. **Per-step durable artifacts** — `sessions/<session-id>/{ideation,planning,execution,execution_eval}/*.md`.
 7. **State-snapshot extracts** — workspace event-store rows for this session via `gobbi workflow events`, surfaced as `state-snapshot` manifest entries.
 
@@ -51,7 +51,7 @@ The synthesis block enumerates seven rawdata source classes the memorization age
 |---|---|---|
 | `sessions/<id>/memorization/memorization.md` | The per-session record (the artifact named in `meta.expectedArtifacts`). Six-section structure from `blocks.static.artifact-shape`. | Permanent; future sessions read it via handoff's pointer |
 | `.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md` | One file per durable decision the session locked. Cross-linked from `memorization.md::Decisions`. | Permanent; promoted at memorization |
-| `.gobbi/projects/<name>/learnings/gotchas/<slug>.md` | One file per non-obvious correction the user surfaced. Written before `memorization.md` so the artifact's `Gotchas recorded` section has real files to point at. | Permanent; `gobbi gotcha promote` for cross-project escalation |
+| `.gobbi/projects/<name>/gotchas/<slug>.md` | One file per non-obvious correction the user surfaced. Written before `memorization.md` so the artifact's `Gotchas recorded` section has real files to point at. | Permanent; `gobbi gotcha promote` for cross-project escalation |
 | User-level MEMORY index + per-topic memory file | Auto-memory updates when a session warrants an index entry (e.g. shipped PR, phase milestone). | Permanent |
 | Project README / design docs | Convention, precedent, or directory-structure changes the session introduced. | Permanent |
 

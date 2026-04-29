@@ -517,9 +517,13 @@ export interface ResolvedPartitionKeys {
  *   - `sessionId` = `basename(sessionDir)` (matches the per-session layout
  *     `.gobbi/projects/<name>/sessions/<sessionId>/`). `null` only when the
  *     basename resolves to the empty string (filesystem root).
- *   - `projectId` = `basename(metadata.projectRoot)` read from the session's
- *     `metadata.json`. Silent on every failure mode (missing file, parse
- *     error, unexpected shape) — `null` defers to the constructor fallback,
+ *   - `projectId` = `metadata.projectName` read verbatim from the session's
+ *     `metadata.json` (schema v3+). The previous derivation read
+ *     `basename(metadata.projectRoot)`, but `projectRoot` is the repo root
+ *     directory — in a multi-project workspace (`.gobbi/projects/{a,b,c}/`)
+ *     every event would be stamped with the same project_id (issue #178).
+ *     Silent on every failure mode (missing file, parse error, missing or
+ *     non-string `projectName`) — `null` defers to the constructor fallback,
  *     which performs the same read.
  *
  * Empty-string and `null` are treated identically as "explicitly unset" by
@@ -534,10 +538,17 @@ export function resolvePartitionKeys(sessionDir: string): ResolvedPartitionKeys 
 }
 
 /**
- * Read `basename(metadata.projectRoot)` from `<sessionDir>/metadata.json`.
- * Silent on every failure mode — the `EventStore` constructor's
- * `resolveProjectRootBasename` performs the same read with the same fallback
- * semantics, so a `null` here defers cleanly to the constructor's fallback.
+ * Read `metadata.projectName` from `<sessionDir>/metadata.json`. Silent on
+ * every failure mode — the `EventStore` constructor's
+ * `resolveProjectIdFromMetadata` performs the same read with the same
+ * fallback semantics, so a `null` here defers cleanly to the constructor's
+ * fallback.
+ *
+ * Schema v3+ `metadata.json` carries the `projectName` field directly (see
+ * `commands/workflow/init.ts::SessionMetadata`). The legacy
+ * `basename(metadata.projectRoot)` derivation is dropped: `projectRoot` is
+ * always the repo root, so it conflated every project under a multi-project
+ * workspace into the same `project_id` (issue #178).
  */
 function readProjectIdFromMetadata(sessionDir: string): string | null {
   let raw: string;
@@ -555,10 +566,9 @@ function readProjectIdFromMetadata(sessionDir: string): string | null {
   if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
     return null;
   }
-  const projectRoot = (parsed as Record<string, unknown>)['projectRoot'];
-  if (typeof projectRoot !== 'string' || projectRoot === '') return null;
-  const name = basename(projectRoot);
-  return name === '' ? null : name;
+  const projectName = (parsed as Record<string, unknown>)['projectName'];
+  if (typeof projectName !== 'string' || projectName === '') return null;
+  return projectName;
 }
 
 /**

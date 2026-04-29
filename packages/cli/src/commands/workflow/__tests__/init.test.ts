@@ -433,3 +433,105 @@ describe('runInit — PR-FIN-1c project name resolution', () => {
     expect(readFileSync(metaPath, 'utf8')).toBe(firstMeta);
   });
 });
+
+// ---------------------------------------------------------------------------
+// #178 — project_id partition key sourced from metadata.projectName, not
+// basename(repoRoot). A multi-project workspace stamps every event with
+// the actual project the session belongs to, so cross-project queries
+// against state.db can partition by `project_id`.
+// ---------------------------------------------------------------------------
+
+describe('runInit — project_id stamping (#178)', () => {
+  test('--project foo stamps every event with project_id="foo"', async () => {
+    const repo = makeScratchRepo();
+    await captureExit(() =>
+      runInitWithOptions(
+        ['--session-id', 'sess-foo', '--project', 'foo', '--task', 'demo'],
+        { repoRoot: repo },
+      ),
+    );
+    expect(captured.exitCode).toBeNull();
+
+    const dbPath = join(
+      sessionDirForProject(repo, 'foo', 'sess-foo'),
+      'gobbi.db',
+    );
+    const store = new EventStore(dbPath);
+    try {
+      const rows = store.replayAll();
+      // workflow init emits workflow.start + workflow.eval.decide.
+      expect(rows.length).toBeGreaterThan(0);
+      // EVERY row must carry project_id='foo' — the bug was every event
+      // landing on the same project_id (basename(repoRoot)) regardless of
+      // which project the session belonged to.
+      for (const row of rows) {
+        expect(row.project_id).toBe('foo');
+        expect(row.session_id).toBe('sess-foo');
+      }
+    } finally {
+      store.close();
+    }
+  });
+
+  test('--project bar stamps every event with project_id="bar" (cross-project sanity)', async () => {
+    const repo = makeScratchRepo();
+    await captureExit(() =>
+      runInitWithOptions(
+        ['--session-id', 'sess-bar', '--project', 'bar', '--task', 'demo'],
+        { repoRoot: repo },
+      ),
+    );
+    expect(captured.exitCode).toBeNull();
+
+    const dbPath = join(
+      sessionDirForProject(repo, 'bar', 'sess-bar'),
+      'gobbi.db',
+    );
+    const store = new EventStore(dbPath);
+    try {
+      const rows = store.replayAll();
+      expect(rows.length).toBeGreaterThan(0);
+      for (const row of rows) {
+        expect(row.project_id).toBe('bar');
+        expect(row.session_id).toBe('sess-bar');
+      }
+    } finally {
+      store.close();
+    }
+  });
+
+  test('project_id matches metadata.projectName, not basename(repoRoot)', async () => {
+    // The hard regression case from issue #178: a repo named gobbi-repo
+    // initialised under --project=foo must stamp project_id='foo', NOT
+    // 'gobbi-repo' (basename(repoRoot)).
+    const repo = mkdtempSync(join(tmpdir(), 'gobbi-repo-'));
+    scratchDirs.push(repo);
+    expect(basename(repo).startsWith('gobbi-repo-')).toBe(true);
+
+    await captureExit(() =>
+      runInitWithOptions(
+        ['--session-id', 'sess-178', '--project', 'foo'],
+        { repoRoot: repo },
+      ),
+    );
+    expect(captured.exitCode).toBeNull();
+
+    const dbPath = join(
+      sessionDirForProject(repo, 'foo', 'sess-178'),
+      'gobbi.db',
+    );
+    const store = new EventStore(dbPath);
+    try {
+      const rows = store.replayAll();
+      expect(rows.length).toBeGreaterThan(0);
+      for (const row of rows) {
+        // Issue #178: this MUST be 'foo' (metadata.projectName) — never
+        // basename(repo) which would be `gobbi-repo-<random>`.
+        expect(row.project_id).toBe('foo');
+        expect(row.project_id).not.toMatch(/^gobbi-repo-/);
+      }
+    } finally {
+      store.close();
+    }
+  });
+});

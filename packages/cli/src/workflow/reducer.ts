@@ -163,19 +163,21 @@ function reduceWorkflow(
 
     case WORKFLOW_EVENTS.EVAL_DECIDE: {
       // Write-once for ideation/plan — the first EVAL_DECIDE locks them.
-      // `execution` (Wave C.2, optional slot) uses a symmetric write-once
-      // rule per its own field: the first EVAL_DECIDE whose payload carries
-      // `execution !== undefined` writes it; subsequent EVAL_DECIDE events
-      // whose payload omits `execution` are no-ops with respect to that
-      // slot. This preserves the "evalConfig immutable once set"
-      // property-test invariant for the two original fields while making
-      // the new slot additively mergeable — the common case (translation
-      // layer emits all three booleans in one event) is the first-call
-      // path below and writes everything in a single step.
+      // `execution` (Wave C.2) and `memorization` (PR-FIN-2a-i T-2a.7),
+      // both optional slots, use a symmetric write-once rule per their own
+      // fields: the first EVAL_DECIDE whose payload carries the slot
+      // `!== undefined` writes it; subsequent EVAL_DECIDE events whose
+      // payload omits the slot are no-ops with respect to that slot. This
+      // preserves the "evalConfig immutable once set" property-test
+      // invariant for the two original fields while making the new slots
+      // additively mergeable — the common case (translation layer emits
+      // every boolean in one event) is the first-call path below and
+      // writes everything in a single step.
       //
       // EOPT discipline: build the evalConfig record with a conditional
-      // spread so the `execution` key is absent when `event.data.execution`
-      // is undefined — never `execution: undefined`, which would violate
+      // spread so the optional keys are absent when their event-data
+      // counterparts are undefined — never `execution: undefined` /
+      // `memorization: undefined`, which would violate
       // `exactOptionalPropertyTypes`.
       if (state.evalConfig === null) {
         const nextEvalConfig = {
@@ -191,23 +193,33 @@ function reduceWorkflow(
           ...(event.data.execution !== undefined
             ? { execution: event.data.execution }
             : {}),
+          ...(event.data.memorization !== undefined
+            ? { memorization: event.data.memorization }
+            : {}),
         };
         return ok({
           ...state,
           evalConfig: nextEvalConfig,
         });
       }
-      // evalConfig already set — ideation/planning locked. If the event carries
-      // an execution value and state has not yet recorded one, merge it in.
-      if (
+      // evalConfig already set — ideation/planning locked. Merge in any
+      // optional slots that the event carries and state has not yet
+      // recorded. Each slot is independently write-once.
+      const mergeExecution =
         event.data.execution !== undefined &&
-        state.evalConfig.execution === undefined
-      ) {
+        state.evalConfig.execution === undefined;
+      const mergeMemorization =
+        event.data.memorization !== undefined &&
+        state.evalConfig.memorization === undefined;
+      if (mergeExecution || mergeMemorization) {
         return ok({
           ...state,
           evalConfig: {
             ...state.evalConfig,
-            execution: event.data.execution,
+            ...(mergeExecution ? { execution: event.data.execution } : {}),
+            ...(mergeMemorization
+              ? { memorization: event.data.memorization }
+              : {}),
           },
         });
       }
@@ -408,18 +420,23 @@ function reduceDecision(
       // null for non-eval origins because the transition table contains no
       // verdict-triggered rules for productive or terminal steps). The
       // escalate arm has no transition-table rule, so we enforce the same
-      // rule explicitly here for a single source of truth across all three
+      // rule explicitly here for a single source of truth across all four
       // verdict variants. See CV-11 in the v0.5.0 adversarial review
       // campaign synthesis (issue #168) for the failure mode this guards
       // against — pre-fix, escalate from any step fell through to
       // `ok(state)` and silently committed a no-op event.
+      //
+      // PR-FIN-2a-i T-2a.7 added `memorization_eval` as the fourth eval
+      // step; it accepts pass/revise/escalate identically to the other
+      // three.
       if (
         state.currentStep !== 'ideation_eval' &&
         state.currentStep !== 'planning_eval' &&
-        state.currentStep !== 'execution_eval'
+        state.currentStep !== 'execution_eval' &&
+        state.currentStep !== 'memorization_eval'
       ) {
         return err(
-          `decision.eval.verdict requires an eval step (ideation_eval / planning_eval / execution_eval), got ${state.currentStep}`,
+          `decision.eval.verdict requires an eval step (ideation_eval / planning_eval / execution_eval / memorization_eval), got ${state.currentStep}`,
         );
       }
 

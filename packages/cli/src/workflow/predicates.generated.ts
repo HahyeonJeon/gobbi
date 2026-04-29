@@ -19,6 +19,8 @@ export type PredicateName =
   | 'always'
   | 'evalIdeationDisabled'
   | 'evalIdeationEnabled'
+  | 'evalMemorizationDisabled'
+  | 'evalMemorizationEnabled'
   | 'evalPlanningDisabled'
   | 'evalPlanningEnabled'
   | 'feedbackCapExceeded'
@@ -48,6 +50,8 @@ export const PREDICATE_NAMES: readonly PredicateName[] = [
   'always',
   'evalIdeationDisabled',
   'evalIdeationEnabled',
+  'evalMemorizationDisabled',
+  'evalMemorizationEnabled',
   'evalPlanningDisabled',
   'evalPlanningEnabled',
   'feedbackCapExceeded',

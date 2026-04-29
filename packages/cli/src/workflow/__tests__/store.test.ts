@@ -9,7 +9,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 
 import { EventStore } from '../store.js';
 import type {
@@ -1224,17 +1224,23 @@ describe('ReadStore / WriteStore — structural read-only enforcement (#97)', ()
 function makeSessionDir(
   sessionId: string,
   projectRoot: string,
+  projectName?: string,
 ): { readonly sessionDir: string; readonly dbPath: string } {
   const sessionDir = join(
     mkdtempSync(join(tmpdir(), 'gobbi-store-partition-')),
     sessionId,
   );
   mkdirSync(sessionDir, { recursive: true });
+  // Schema v3 metadata.json — `projectName` is the project_id partition
+  // key (issue #178 dropped the old basename(projectRoot) derivation).
+  // Default to `basename(projectRoot)` so legacy callsites that rely on
+  // the project_id matching the projectRoot basename continue to do so.
   const metadata = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     sessionId,
     createdAt: '2026-04-21T00:00:00.000Z',
     projectRoot,
+    projectName: projectName ?? basename(projectRoot),
     techStack: [],
     configSnapshot: { task: '', evalIdeation: false, evalPlan: false, context: '' },
   };
@@ -1308,7 +1314,7 @@ describe('schema v5 — session_id + project_id columns', () => {
     }
   });
 
-  it('fresh-session append stamps session_id (dir basename) + project_id (basename(projectRoot))', () => {
+  it('fresh-session append stamps session_id (dir basename) + project_id (metadata.projectName, #178)', () => {
     const { sessionDir, dbPath } = makeSessionDir(
       'sess-stamp',
       '/home/alice/projects/my-repo',
@@ -1347,8 +1353,9 @@ describe('schema v5 — session_id + project_id columns', () => {
         // present.
         expect(rows).toHaveLength(1);
         expect(rows[0]?.session_id).toBe('sess-stamp');
-        // `basename('/home/alice/projects/my-repo')` — lifted from
-        // metadata.json at store-open time.
+        // metadata.projectName, lifted from metadata.json at store-open
+        // time. The helper defaults projectName to basename(projectRoot)
+        // for legacy-shape continuity, so 'my-repo' here.
         expect(rows[0]?.project_id).toBe('my-repo');
       } finally {
         inspector.close();

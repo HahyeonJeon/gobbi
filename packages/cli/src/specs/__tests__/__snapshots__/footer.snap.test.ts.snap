@@ -222,7 +222,7 @@ Scope boundary:
 - Memorization does not evaluate the work. Execution_eval has already run (it is mandatory); do not re-litigate its verdict here.
 - Memorization does not re-open prior steps. If you find a gap while memorizing, record it as an open question in the memorization artifact — the user decides in the next session whether to loop back.
 - Memorization does not implement deferred work. The Out-of-scope list from the plan, plus any adjacent improvements surfaced during execution, belong in the memorization artifact as named open items, not as new edits.
-- Write only to memorization-scope locations: the session's \`memorization/\` directory, the project's \`learnings/decisions/\`, the project's \`learnings/gotchas/\`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps.
+- Write only to memorization-scope locations: the session's \`memorization/\` directory, the project's \`learnings/decisions/\`, the project's \`gotchas/\`, and the project's README/design files when the session affected them. Do not touch artifacts of prior steps.
 
 Memorization artifact shape:
 
@@ -263,7 +263,7 @@ Rawdata sources you may need to read (the manifest enumerates these as path poin
 2. Subagent transcripts — \`~/.claude/projects/-playinganalytics-git-gobbi/<session-id>/subagents/*.jsonl\`. Per-subagent runs, useful for verifying what each delegated agent actually did.
 3. Captured rawdata — \`.gobbi/projects/<name>/sessions/<session-id>/raw-data/transcripts/*.jsonl\`. Files copied into the session by \`gobbi capture-subagent\` / capture hooks.
 4. Recent project decisions — \`.gobbi/projects/<name>/learnings/decisions/*.md\`. The latest entries (including spike outcomes) often subsume what you would otherwise re-record.
-5. Mid-session gotchas — \`.gobbi/projects/<name>/learnings/gotchas/*.md\`. Gotchas written during the session you may need to escalate or cross-reference.
+5. Mid-session gotchas — \`.gobbi/projects/<name>/gotchas/*.md\`. Gotchas written during the session you may need to escalate or cross-reference.
 6. Per-step durable artifacts — \`sessions/<session-id>/{ideation,planning,execution,execution_eval}/*.md\`. The committed records of each prior step.
 7. State-snapshot extracts — rows from the workspace event store for this session, available via \`gobbi workflow events\` and surfaced by the manifest as \`state-snapshot\` entries.
 
@@ -271,7 +271,7 @@ Extraction destinations (where you write):
 
 1. \`.gobbi/projects/<name>/sessions/<session-id>/memorization/memorization.md\` — the per-session record (the artifact named in \`meta.expectedArtifacts\`). Use the structure from \`Memorization artifact shape\`.
 2. \`.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md\` — one file per durable decision the session locked. Cross-link from \`memorization.md::Decisions\`.
-3. \`.gobbi/projects/<name>/learnings/gotchas/<slug>.md\` — one file per non-obvious correction the user surfaced. Write these BEFORE writing \`memorization.md\` so the artifact's \`Gotchas recorded\` section has real files to point at.
+3. \`.gobbi/projects/<name>/gotchas/<slug>.md\` — one file per non-obvious correction the user surfaced. Write these BEFORE writing \`memorization.md\` so the artifact's \`Gotchas recorded\` section has real files to point at.
 4. Auto-memory updates — when a session's outcome warrants an entry in the user-level \`MEMORY.md\` index (e.g. a shipped PR, a phase milestone), update the index and add or update the per-topic memory file alongside it.
 5. Project documentation — README/design entries for any convention, precedent, or directory-structure change the session introduced.
 
@@ -280,7 +280,7 @@ Pipeline:
 1. Read the rawdata manifest in the artifact section. Note which paths each section of \`memorization.md\` will need.
 2. Walk the session end-to-end via the manifest's main + subagent + captured-rawdata entries. Note every correction the user issued, every decision that replaced a recommended option, every deferral. These are the highest-value entries.
 3. Cross-check against each step's artifact (\`ideation.md\`, \`plan.md\`, \`execution.md\`, \`evaluation.md\`) — read them via the manifest's \`step-artifact\` rows — to confirm the decisions and state you are about to record match the durable artifacts.
-4. Write gotchas first under \`learnings/gotchas/\`. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.
+4. Write gotchas first under \`gotchas/\`. Every non-obvious correction becomes a gotcha entry. A correction not recorded is a correction repeated across sessions.
 5. Write durable decisions next under \`learnings/decisions/\`, one file per locked decision.
 6. Update project documentation and the user-level MEMORY index for any session-level change.
 7. Commit \`memorization.md\` at \`sessions/<session-id>/memorization/memorization.md\` using the structure in the \`Memorization artifact shape\` section. Cross-link the gotcha and decision files you just wrote in \`Gotchas recorded\` and \`Pointers\`.
@@ -290,7 +290,7 @@ Emit the Stop completion signal once \`memorization.md\` is written, gotchas hav
 
 Criteria:
   1. memorization.md is written at the session's memorization directory with Summary, Decisions, State at completion, Open questions, Gotchas recorded, and Pointers sections
-  2. every non-obvious correction from the session has a corresponding entry under \`.gobbi/projects/<name>/learnings/gotchas/\`
+  2. every non-obvious correction from the session has a corresponding entry under \`.gobbi/projects/<name>/gotchas/\`
   3. every durable decision the session locked has a corresponding entry under \`.gobbi/projects/<name>/learnings/decisions/<YYYY-MM-DD>-<slug>.md\`, cross-linked from memorization.md
   4. the user-level MEMORY.md index has been updated with any per-session entry the session warrants (e.g. shipped PR, phase milestone)
   5. project README and design docs reflect any convention, precedent, or scope change the session introduced

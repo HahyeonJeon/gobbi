@@ -179,11 +179,19 @@ export interface StepSettings {
  * Per-step config keyed by the workflow loop's name. Settings field name
  * and state-machine literal both align on `'planning'`. Callers that pass
  * the legacy `'plan'` literal fail at compile time.
+ *
+ * `memorization` (PR-FIN-2a-i T-2a.7) gates the optional `memorization →
+ * memorization_eval` graph transition. When `memorization.evaluate.mode`
+ * resolves to `'always'` (or `'ask'` with a true user answer / `'auto'`
+ * with a true orchestrator decision) the workflow init pipeline stamps
+ * `memorization: true` onto the `EVAL_DECIDE` event payload and the
+ * reducer lands the boolean in `state.evalConfig.memorization`.
  */
 export interface WorkflowSettings {
   readonly ideation?: StepSettings;
   readonly planning?: StepSettings;
   readonly execution?: StepSettings;
+  readonly memorization?: StepSettings;
 }
 
 /**
@@ -323,6 +331,12 @@ export const DEFAULTS: Settings = {
       maxIterations: 3,
     },
     execution: {
+      discuss: { mode: 'agent', agent: { model: 'auto', effort: 'auto' } },
+      agent: { model: 'auto', effort: 'auto' },
+      evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },
+      maxIterations: 3,
+    },
+    memorization: {
       discuss: { mode: 'agent', agent: { model: 'auto', effort: 'auto' } },
       agent: { model: 'auto', effort: 'auto' },
       evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },

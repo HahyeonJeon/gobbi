@@ -1,6 +1,6 @@
 # Orchestration — Deterministic Workflow Engine + JIT Prompt Injection
 
-Feature description for gobbi's v0.5.0 orchestration core: the L0–L3 layering, the deterministic state machine, the `state.db` / `gobbi.db` two-DB partition, the JIT prompt-footer pattern, the Inner-mode hook surface, the Outer-mode `gobbi workflow run` driver, and the new `handoff` state-machine step. This is the design-of-record for Pass 4 (session `6e00d3d6-6833-4e8e-ae25-3f42165aebc3`). It supersedes the conceptual content in `../deterministic-orchestration.md` and absorbs the JIT framing from `../just-in-time-prompt-injection.md`. Wave A.2 will retire those two predecessor files.
+Feature description for gobbi's v0.5.0 orchestration core: the L0–L3 layering, the deterministic state machine, the `state.db` / `gobbi.db` two-DB partition, the JIT prompt-footer pattern, the Inner-mode hook surface, the Outer-mode `gobbi workflow run` driver, and the `handoff` state-machine step. This is the design-of-record for Pass 4 (session `6e00d3d6-6833-4e8e-ae25-3f42165aebc3`), updated by **PR-FIN-2 finalization** (session `9755a2cb-0981-455b-915e-643de6de2500`, 2026-04-29) for the `memorization_eval` step addition (memorization now runs an evaluation loop), the workspace-DB-only lock (per-session `gobbi.db` and `state.json` removed), and the per-step session structure simplification (uniform `README.md` + freeform `*.md` + `rawdata/` + optional `evaluation/`). It supersedes the conceptual content in `../deterministic-orchestration.md` and absorbs the JIT framing from `../just-in-time-prompt-injection.md`. Wave A.2 will retire those two predecessor files.
 
 ---
 
@@ -14,7 +14,9 @@ The same architecture pattern is well-established at scale — Temporal, AWS Ste
 
 ## 1. The 6-step workflow
 
-Every workflow is six steps. Evaluation is a sub-phase **inside** Ideation, Planning, and Execution — not a standalone step. `handoff` is a **true state-machine step**, not a memorization sub-artifact. The 6-step model is now the authoritative framing in `../../v050-overview.md` and `.claude/CLAUDE.md` (reconciled in Wave A.2).
+**Updated by PR-FIN-2 finalization (2026-04-29):** every productive step that emits durable artifacts now runs an evaluation loop — `memorization_eval` is added alongside `ideation_eval`, `planning_eval`, `execution_eval`. Memorization is no longer a one-shot productive step; it loops until the evaluator confirms full coverage of the session's decisions, gotchas, learnings, and design changes. Memorization no longer has a single canonical `memorization.md` — the step holds freeform `*.md` files indexed by `README.md`, and the durable destinations are the project's narrative dirs (`design/`, `decisions/`, `learnings/`, `gotchas/`, `backlogs/`, `notes/`) plus the workspace `.gobbi/gobbi.db` `memories` projection.
+
+Every workflow is six productive steps + four optional evaluations. Evaluation is a sub-phase **inside** Ideation, Planning, Execution, and Memorization — not a standalone step. `handoff` is a **true state-machine step**, not a memorization sub-artifact, and runs without its own evaluator. The 6-step model is now the authoritative framing in `../../v050-overview.md` and `.claude/CLAUDE.md` (reconciled in Wave A.2).
 
 | Step | State literal in `index.json` | Purpose | Productive or terminal? |
 |---|---|---|---|
@@ -25,18 +27,26 @@ Every workflow is six steps. Evaluation is a sub-phase **inside** Ideation, Plan
 | (2e) | `planning_eval` | Evaluation of plan. | optional eval |
 | 3 | `execution` | **Execution Loop** — `Plan → Loop[Discussion → Execute → Evaluation] → Results`. | productive |
 | (3e) | `execution_eval` | Evaluation of execution. | optional eval |
-| 4 | `memorization` | **Memorization** — full session rawdata → permanent project memory; emits `workflow.step.exit`. | productive |
-| **5** | **`handoff`** | **Handoff** — narrow summary for next session; writes `handoff.md` and one `class='handoff'` row in `gobbi.db::memories`; emits `workflow.finish`. | **productive (NEW)** |
+| 4 | `memorization` | **Memorization Loop** — `Results → Loop[Memorize → Evaluation → REVISE if not fully covered] → Persisted memory`. Writes durable artifacts to project narrative dirs and `.gobbi/gobbi.db::memories`. Emits `workflow.step.exit`. | productive |
+| **(4e)** | **`memorization_eval`** | **NEW (PR-FIN-2)** — evaluation that verifies the session's decisions, gotchas, learnings, and design changes were fully captured. Verdict REVISE re-enters memorization; PASS advances to handoff. | optional eval |
+| 5 | `handoff` | **Handoff** — narrow summary for next session; writes freeform `*.md` files into `sessions/{id}/handoff/` plus one `class='handoff'` row in `.gobbi/gobbi.db::memories`; emits `workflow.finish`. No evaluator. | productive |
 | done | `done` | Terminal. | terminal |
 | error | `error` | Reached via `step.timeout` or `eval.verdict=ESCALATE`; recoverable via `workflow.resume`. | recoverable terminal |
 
 Each Loop runs `[Discussion → Work → Evaluation]` until either the verdict is PASS or `maxIterations` is exceeded. Discussion is governed by `workflow.{step}.discuss.mode`; evaluation by `workflow.{step}.evaluate.mode` (see `../gobbi-config/README.md`). Evaluation runs only when `evalEnabled` is true at step entry. The orchestrator never auto-applies evaluation findings — the user discusses and decides.
 
+**Spec graph diff (PR-FIN-2):**
+- `specs/index.json` adds `memorization_eval` step (entry: `evaluation/spec.json`, `evalFor: "memorization"`).
+- New transitions: `memorization → memorization_eval` (`evalMemorizationEnabled`), `memorization → handoff` (`evalMemorizationDisabled`), `memorization_eval → memorization` (`verdictRevise`, feedback: true), `memorization_eval → handoff` (`verdictPass`).
+- `specs/predicates.ts` adds `evalMemorizationEnabled`, `evalMemorizationDisabled`.
+- `lib/settings.ts` adds `workflow.memorization.evaluate.mode` (enum: `ask | always | skip | auto`).
+- `WorkflowSettings` interface (`lib/settings.ts:186-190`) gains optional `memorization?: StepSettings` field, parallel to `ideation`, `planning`, `execution`. (No `EvalConfig` type exists in the codebase — the per-step settings live on `WorkflowSettings.<step>.evaluate: StepEvaluate`.)
+
 ### 1.1 Why split memorization from handoff
 
-Memorization is **wide**: many rawdata sources (per-step artifacts, subagent transcripts, ExitPlanMode captures, the orchestrator transcript, the full event stream, session-tier gotchas), many destinations (`learnings/decisions/`, `learnings/gotchas/`, `design/`, `learnings/backlogs/`).
+Memorization is **wide**: many rawdata sources (per-step `rawdata/` directories, subagent transcripts, the orchestrator transcript, the full event stream, session-tier gotchas), many destinations (`design/`, `decisions/`, `learnings/`, `gotchas/`, `backlogs/`, `notes/`, plus the workspace `.gobbi/gobbi.db::memories` projection). Its evaluation loop verifies that nothing was dropped on the way to durability.
 
-Handoff is **narrow**: one source (the just-written `memorization.md` plus last-N events), one destination (`handoff.md` plus one `gobbi.db::memories` row).
+Handoff is **narrow**: one source (the persisted memorization output plus last-N events), one destination (`sessions/{id}/handoff/*.md` plus one `gobbi.db::memories` row of class `handoff`). No evaluator — the writer is mechanical.
 
 Different artifact-shape, different prompt focus, different agent context. The same separation principle that justifies external evaluators justifies handoff as its own step rather than a sub-artifact of memorization.
 
@@ -58,15 +68,28 @@ The four layers each own a distinct slice of the orchestration stack. The user a
 
 ---
 
-## 3. State.db and gobbi.db — the two-DB partition
+## 3. State.db + JSON memory model — workspace storage
 
-The two-DB split is a CQRS read-model partition (Greg Young / EventStoreDB canon): the per-session `gobbi.db` is the append-only workflow event log; the workspace `gobbi.db` is the cross-session memory projection; the workspace `state.db` holds prompt-patch events. Full workspace consolidation of workflow events is a Wave A.1 migration target, partially shipped.
+**Updated by PR-FIN-2 Planning lock (2026-04-29):** the prior two-DB design is replaced with **one workspace SQLite + two-tier JSON memory**. SQLite is reduced to the gitignored runtime event log (`.gobbi/state.db`); cross-session memory and per-session operational metadata move to AJV-validated JSON files (`project.json` per project; `session.json` per session). The `.gobbi/gobbi.db` workspace SQLite file is **dropped entirely**; the `!.gobbi/gobbi.db` `.gitignore` exception is removed.
 
-### 3.1 Current state vs target state
+### 3.1 Final state (PR-FIN-2 Planning lock)
 
-**Today** (per `init.ts`): workflow events write to a per-session `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db`. The workspace `state.db` at `.gobbi/state.db` holds only `prompt.patch.applied` events (Wave C.1). The workspace `gobbi.db` at `.gobbi/gobbi.db` holds cross-session memories (git-tracked). Schema v7 applies to both DB openings.
+| Storage | Git | Scope | Holds |
+|---|---|---|---|
+| `.gobbi/state.db` | gitignored | workspace | append-only state-machine event log; partition keys `(project_id, session_id)`; powers `gobbi workflow status` / resume / stats aggregation |
+| `.gobbi/projects/{name}/project.json` | **tracked** | per-project | cross-session promoted memory: sessions index, gotchas, decisions, learnings; AJV schema v1; sorted writes for stable git diffs |
+| `.gobbi/projects/{name}/sessions/{id}/session.json` | gitignored | per-session | consolidated per-session operational metadata: steps, agents, agent_calls (provisional), evaluations; AJV schema v1; written once at memorization-step entry by aggregating `state.db` events; arrays sorted by `state.db.seq` ascending |
 
-**Target (post-Wave A.1, full consolidation pending):** workspace-scoped `state.db` for workflow events + workspace-scoped `gobbi.db` for memories. Wave A.1 partially shipped the migration infrastructure (`gobbi maintenance migrate-state-db`, explicit EventStore partition keys, schema v6); full workspace event-log consolidation remains in progress.
+Per-session `gobbi.db`, per-session `state.json` (+ `.backup`), per-session `metadata.json`, and per-session `artifacts/` are all removed entirely. `gobbi maintenance wipe-legacy-sessions` cleans up the on-disk legacy artifacts during the PR-FIN-2 cutover. The `EventStore` constructor takes explicit `(projectId, sessionId)` partition keys at every call site — no path-derivation fallback.
+
+**Why JSON, not SQLite, for memory.** Solo-developer iteration; schema is unstable while v0.5.0 finalization is in flight; binary-diff opacity in git makes review of every iteration commit unworkable. JSON gives text-diffable history, AJV gives boundary type safety, sorted writes give stable diffs, and cross-session queries walk the filesystem on demand (workspace scale is tens of sessions / hundreds of files — fast enough).
+
+### 3.1.1 What's not present anymore
+
+- **`.gobbi/gobbi.db`** SQLite file at workspace level — gone.
+- **Docs-metadata manifest** — gone. Search-by-content uses ripgrep over markdown; drift detection uses git status.
+- **`gobbi memory rebuild` command** — gone. JSON files are the source of truth; no projection to rebuild.
+- **`findActiveSessions` / `findStateActiveSessions` helpers** — removed. `gobbi gotcha promote` and `gobbi maintenance wipe-legacy-sessions` no longer guard on other sessions in flight (callers will be redesigned in a later session).
 
 ### 3.2 EventStore constructor must accept explicit partition keys
 
@@ -100,28 +123,30 @@ Note: `prompt_patches` shipped in Wave C.1 (schema v7). Wave A.1 schema v6 did n
 
 **Indices added in v6:** `(session_id, seq)`, `(project_id, seq DESC)` for "most recent N", `(type, step, session_id)` for predicate matchers; UNIQUE `idempotency_key` already exists at `store.ts:130-134`. Schema v7 (Wave C.1) added the `prompt_patches` table.
 
-### 3.4 `.gobbi/gobbi.db` (workspace, **git-tracked**, project + session memories)
+### 3.4 `project.json` + `session.json` — JSON memory model (post-Planning lock)
 
-```
-memories
-  id            TEXT PRIMARY KEY     -- ULID
-  project_id    TEXT NOT NULL
-  session_id    TEXT                 -- NULL = workspace-scoped
-  class         TEXT NOT NULL        -- 'decision'|'gotcha'|'design'|'backlog'|'handoff'
-  source_seq    INTEGER              -- back-link into state.db
-  source_path   TEXT                 -- back-link into rawdata/
-  title         TEXT NOT NULL
-  body_md       TEXT NOT NULL
-  tags_json     TEXT
-  created_at    TEXT NOT NULL
-  promoted_at   TEXT
-  superseded_by TEXT
-  -- FTS5 virtual table on (title, body_md) — supports document-search Tier 2 (deferred to Wave F.1)
-```
+**SUPERSEDES the prior SQLite manifest design.** Two JSON files replace the workspace `.gobbi/gobbi.db`. See `../gobbi-memory/README.md` §"Memory storage — two-tier JSON model" for the full schema; this section captures the orchestration-side hooks.
 
-Memories live **both** in SQLite (queryable + FTS) and rendered to markdown under `.gobbi/projects/<name>/learnings/{decisions,gotchas,design,backlogs}/` (git-tracked, human-readable). The directory tree is the source of truth for git; `gobbi.db` is the read-optimized projection, regenerable from the markdown tree.
+**`project.json` writers** — invoked at the orchestration boundary:
 
-The `.gitignore` exception is required: today `.gobbi/*` covers everything; Wave A.1 must add `!.gobbi/gobbi.db` immediately after the `.gobbi/*` line, following the existing `!.gobbi/projects/` pattern (System F-1). Without the exception the file silently stays gitignored, defeating the entire point of the cross-session memory store.
+- `gobbi gotcha promote` — appends to `gotchas[]`.
+- Memorization step — appends to `sessions[]` (one row per workflow run with `handoffSummary` once handoff lands), and appends extracted `decisions[]` / `learnings[]` from the session record.
+
+Sorted-rewrite (whole-file rewrite with deterministic sort) on every write so git diffs are reviewable. AJV schema v1; no migration framework (development state).
+
+**`session.json` writer** — single-write, invoked at memorization-step entry:
+
+- Aggregates from `state.db` events (`SELECT * FROM events WHERE session_id = ? ORDER BY seq`), per-step rawdata transcripts (`sessions/{id}/{step}/rawdata/`), and the orchestrator transcript pointer.
+- Produces one consolidated file per session at `.gobbi/projects/{name}/sessions/{id}/session.json`.
+- Array fields (`steps[]`, `agents[]`, `agent_calls[]`, `evaluations[]`) sort by `state.db.seq` ascending — deterministic across parallel evaluator spawns.
+
+**`agent_calls[]` is provisional** — schema subject to revalidation when the `gobbi stats` query surface lands (deferred follow-up). Inline AJV-schema comment marks it as provisional.
+
+**No `gobbi memory rebuild`** — JSON files are source of truth; nothing to rebuild. Drift detection via git status (project.json) and filesystem mtime (session.json).
+
+**Read paths** — `gobbi memory list <class>` walks per-project `project.json`; cross-session aggregation walks per-session `session.json` files. Filesystem-walk performance is acceptable at solo-developer workspace scale.
+
+**FTS5 not adopted.** Without bodies in any DB or JSON file, ripgrep over markdown is the search surface.
 
 ### 3.5 Event types — 24 total (current)
 

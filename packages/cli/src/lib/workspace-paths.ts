@@ -44,6 +44,10 @@ import path from 'node:path';
  * references / scenarios / checklists / playbooks / learnings / rules /
  * backlogs / notes / reviews) plus:
  *
+ *   - `gotchas` — top-level gotcha drafts (PR-FIN-2a-i taxonomy migration:
+ *     promoted out of `learnings/gotchas/` so the gotcha promotion ritual
+ *     and hot mid-session writes target the same directory rather than
+ *     a nested subpath).
  *   - `skills` / `agents` — per-file symlink-farm source for
  *     `.claude/skills/` + `.claude/agents/` (D3 post-eval flip).
  *   - `sessions` — per-project session storage (gitignored).
@@ -60,6 +64,7 @@ export const PROJECT_SUBDIR_KINDS = [
   'checklists',
   'playbooks',
   'learnings',
+  'gotchas',
   'rules',
   'backlogs',
   'notes',

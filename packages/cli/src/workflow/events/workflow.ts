@@ -93,6 +93,16 @@ export interface EvalDecideData {
    * event and the reducer merges it into `state.evalConfig.execution`.
    */
   readonly execution?: boolean;
+  /**
+   * Memorization-eval gate (PR-FIN-2a-i T-2a.7). Optional for
+   * backward-compat — legacy emitters carry no `memorization` field. When
+   * `gobbi workflow init` resolves `workflow.memorization.evaluate.mode`
+   * via the settings translation layer the resulting boolean is attached
+   * to the EVAL_DECIDE event and the reducer merges it into
+   * `state.evalConfig.memorization`. Gates the
+   * `memorization → memorization_eval` graph transition.
+   */
+  readonly memorization?: boolean;
 }
 
 export type FinishData = Record<string, never>;

@@ -18,9 +18,10 @@
  *   F-INST-01 — Fresh `gobbi install`: project root materialises, farm
  *               symlinks resolve to the installed source, workspace
  *               settings.json is seeded with the minimum-shape.
- *   F-INST-02 — Upgrade path: template v1 → edit → template v2
- *               `gobbi install --upgrade` overwrites unmodified files and
- *               leaves user-edited files intact (3-way merge contract).
+ *   F-INST-02 — Re-install policy (post-PR-FIN-2a-i T-2a.3):
+ *               second run without `--force` refuses on collision;
+ *               with `--force`, plugin-bundled files overwrite while
+ *               user-authored files outside the bundle survive.
  *   F-INST-03 — `gobbi project create <name>`: scaffold dir + seeded
  *               templates under `.gobbi/projects/<name>/`.
  *   F-INST-05 — `gobbi project list`: active marker follows
@@ -260,9 +261,9 @@ describe('install + project commands — feature-level flows', () => {
       );
       expect(existsSync(join(projectRoot, 'agents/gobbi-agent.md'))).toBe(true);
       expect(existsSync(join(projectRoot, 'rules/naming.md'))).toBe(true);
-      // Install manifest recorded every copied file with a sha256 hash.
+      // PR-FIN-2a-i T-2a.3: no manifest is written by the install loop.
       expect(existsSync(join(projectRoot, '.install-manifest.json'))).toBe(
-        true,
+        false,
       );
 
       // PR-FIN-1c: workspace settings seeded with minimum shape;
@@ -295,14 +296,15 @@ describe('install + project commands — feature-level flows', () => {
   });
 
   // -------------------------------------------------------------------------
-  // F-INST-02 — Upgrade path honours user edits via the 3-way merge.
+  // F-INST-02 — Re-install policy: collisions refuse without --force;
+  // --force overwrites bundled files; user-authored files survive.
   // -------------------------------------------------------------------------
-  describe('F-INST-02 — upgrade install with user edits', () => {
-    test('3-way merge overwrites unmodified files and preserves user edits', async () => {
+  describe('F-INST-02 — re-install with --force', () => {
+    test('--force overwrites bundled files and preserves user-authored files', async () => {
       // Round 1: fresh install at v1.
       const templateV1 = makeTemplate({
-        'rules/untouched.md': 'v1-untouched\n',
-        'rules/user-edited.md': 'v1-user-edited\n',
+        'rules/bundled-a.md': 'v1-bundled-a\n',
+        'rules/bundled-b.md': 'v1-bundled-b\n',
       });
       const repo = makeRepo();
       await captureExit(() =>
@@ -314,46 +316,51 @@ describe('install + project commands — feature-level flows', () => {
       expect(captured.exitCode).toBeNull();
 
       const projectRoot = join(repo, '.gobbi', 'projects', 'gobbi');
-      const untouchedPath = join(projectRoot, 'rules', 'untouched.md');
-      const editedPath = join(projectRoot, 'rules', 'user-edited.md');
+      const bundledA = join(projectRoot, 'rules', 'bundled-a.md');
+      const bundledB = join(projectRoot, 'rules', 'bundled-b.md');
+      // User adds a file that does NOT correspond to any bundled path.
+      const userOnly = join(projectRoot, 'rules', 'user-only.md');
+      writeFileSync(userOnly, 'user-local-content\n', 'utf8');
 
-      // User edits one of the two files.
-      writeFileSync(editedPath, 'user-local-edit\n', 'utf8');
-
-      // Round 2: template moves `untouched.md` forward to v2 while
-      // leaving `user-edited.md` at v1 (template didn't touch it).
-      // Expected merge outcome:
-      //   - untouched.md: base == v1, current == v1, template == v2
-      //                   → template-only → overwritten with v2.
-      //   - user-edited.md: base == v1, current == user-edit,
-      //                     template == v1 → user-only → preserved.
-      // No conflict arm is triggered — both changes happened on one
-      // side only.
+      // Round 2: re-install with --force at v2. Both bundled files
+      // overwrite; user-only file is never iterated and so survives.
       const templateV2 = makeTemplate({
-        'rules/untouched.md': 'v2-untouched\n',
-        'rules/user-edited.md': 'v1-user-edited\n',
+        'rules/bundled-a.md': 'v2-bundled-a\n',
+        'rules/bundled-b.md': 'v2-bundled-b\n',
       });
       resetCaptured();
       await captureExit(() =>
-        runInstallWithOptions(['--upgrade'], {
+        runInstallWithOptions(['--force'], {
           repoRoot: repo,
           templateRoot: templateV2,
         }),
       );
 
-      // Upgrade exited cleanly (one user-only, one template-only — no
-      // conflicts because the user's file matched the v1 baseline the
-      // manifest carried for `user-edited.md`).
+      expect(captured.exitCode).toBeNull();
+      // Both bundled files refreshed to v2.
+      expect(readFileSync(bundledA, 'utf8')).toBe('v2-bundled-a\n');
+      expect(readFileSync(bundledB, 'utf8')).toBe('v2-bundled-b\n');
+      // User-authored file untouched.
+      expect(readFileSync(userOnly, 'utf8')).toBe('user-local-content\n');
+      // Summary line.
+      expect(captured.stdout).toContain('2 overwritten');
+    });
+
+    test('re-install without --force refuses with exit 1 and a remediation hint', async () => {
+      const tpl = makeTemplate({ 'rules/r.md': 'v1\n' });
+      const repo = makeRepo();
+      await captureExit(() =>
+        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
+      );
       expect(captured.exitCode).toBeNull();
 
-      // Unmodified file refreshed.
-      expect(readFileSync(untouchedPath, 'utf8')).toBe('v2-untouched\n');
-      // User-edited file preserved.
-      expect(readFileSync(editedPath, 'utf8')).toBe('user-local-edit\n');
-
-      // Summary line diagnoses the 3-way outcome.
-      expect(captured.stdout).toContain('1 updated');
-      expect(captured.stdout).toContain('1 user-skipped');
+      resetCaptured();
+      await captureExit(() =>
+        runInstallWithOptions([], { repoRoot: repo, templateRoot: tpl }),
+      );
+      expect(captured.exitCode).toBe(1);
+      expect(captured.stderr).toContain('--force');
+      expect(captured.stdout).toContain('COLLISION');
     });
   });
 
@@ -385,19 +392,35 @@ describe('install + project commands — feature-level flows', () => {
       expect(captured.exitCode).toBeNull();
 
       // Scaffold: the create command materialises a known subdir set.
-      // We sample three representative kinds rather than hard-coding
-      // the whole SCAFFOLD_DIRS list (that's the unit suite's job).
+      // We sample representative kinds rather than hard-coding the
+      // whole SCAFFOLD_DIRS list (that's the unit suite's job). Cover
+      // one of each PR-FIN-2a-i T-2a.4 grouping: a long-standing
+      // narrative dir, a runtime gitignored dir, the post-pivot
+      // `gotchas/` slot, and one of the new narrative dirs added in
+      // T-2a.4 so a regression in the expanded taxonomy fails here.
       const created = join(repo, '.gobbi', 'projects', 'my-feature');
       expect(existsSync(join(created, 'design'))).toBe(true);
       expect(existsSync(join(created, 'sessions'))).toBe(true);
-      expect(existsSync(join(created, 'learnings', 'gotchas'))).toBe(true);
+      expect(existsSync(join(created, 'gotchas'))).toBe(true);
+      expect(existsSync(join(created, 'decisions'))).toBe(true);
+      expect(existsSync(join(created, 'tmp'))).toBe(true);
 
-      // Seed hook fired — install manifest landed under the new project.
-      // (Content is the real worktree bundle, which is non-empty by
-      // construction, so the manifest is guaranteed to be present.)
+      // T-2a.4: empty tracked dirs carry a `.gitkeep` so git records
+      // the slot. `decisions/` is one of the dirs the install seed
+      // never touches, so the marker must be present.
+      expect(existsSync(join(created, 'decisions', '.gitkeep'))).toBe(true);
+      // The gitignored runtime trio must NOT receive a `.gitkeep` —
+      // the marker would never land in version control anyway.
+      expect(existsSync(join(created, 'tmp', '.gitkeep'))).toBe(false);
+      expect(existsSync(join(created, 'sessions', '.gitkeep'))).toBe(false);
+      expect(existsSync(join(created, 'worktrees', '.gitkeep'))).toBe(false);
+
+      // Seed hook fired — at least one template file landed in the
+      // new project (the worktree bundle is non-empty by construction).
+      // PR-FIN-2a-i T-2a.3: no manifest is written.
       expect(
         existsSync(join(created, '.install-manifest.json')),
-      ).toBe(true);
+      ).toBe(false);
       expect(captured.stdout).toContain('Seeded');
 
       // PR-FIN-1c: settings.json carries minimum shape; the

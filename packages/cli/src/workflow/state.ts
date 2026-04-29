@@ -47,6 +47,7 @@ export type WorkflowStep =
   | 'execution'
   | 'execution_eval'
   | 'memorization'
+  | 'memorization_eval'
   | 'handoff'
   | 'done'
   | 'error';
@@ -68,6 +69,7 @@ export const ACTIVE_STEPS: ReadonlySet<WorkflowStep> = new Set<WorkflowStep>([
   'execution',
   'execution_eval',
   'memorization',
+  'memorization_eval',
   'handoff',
 ]);
 
@@ -112,6 +114,19 @@ export interface EvalConfig {
    * today and will gate the step in a follow-up Pass.
    */
   readonly execution?: boolean;
+  /**
+   * Memorization-eval gate (PR-FIN-2a-i T-2a.7). Optional for
+   * backward-compat — pre-T-2a.7 EVAL_DECIDE payloads carry no
+   * `memorization` field, and on-disk state files written under those
+   * semantics have no `memorization` key.
+   *
+   * Under `exactOptionalPropertyTypes`, absence means "field not set";
+   * presence means the EVAL_DECIDE payload carried an explicit boolean.
+   * Read by the `evalMemorizationEnabled` / `evalMemorizationDisabled`
+   * predicates that gate the `memorization → memorization_eval` graph
+   * transition.
+   */
+  readonly memorization?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -298,6 +313,7 @@ const VALID_STEPS: ReadonlySet<string> = new Set<string>([
   'execution',
   'execution_eval',
   'memorization',
+  'memorization_eval',
   'handoff',
   'done',
   'error',
@@ -361,6 +377,10 @@ export function isValidState(value: unknown): value is WorkflowState {
     // a boolean; when absent the field is simply not set on the record.
     const execution = evalConfig['execution'];
     if (execution !== undefined && !isBoolean(execution)) return false;
+    // memorization is optional (T-2a.7 additive slot). Same semantics as
+    // execution: absent = "not set", present must be a boolean.
+    const memorization = evalConfig['memorization'];
+    if (memorization !== undefined && !isBoolean(memorization)) return false;
   }
 
   // activeSubagents: array of objects

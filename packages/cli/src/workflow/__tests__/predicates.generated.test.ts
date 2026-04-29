@@ -48,16 +48,22 @@ describe('PREDICATE_NAMES ↔ defaultPredicates — coverage', () => {
     }
   });
 
-  test('codegen produced the expected canonical 21-name roster', () => {
+  test('codegen produced the expected canonical 23-name roster', () => {
     // The roster is intentionally brittle — changes to the spec library
     // should cycle through regen, triggering both a new generated file
     // AND an updated assertion here. A bump without this test failing
     // means the codegen or the spec edits silently diverged.
+    //
+    // PR-FIN-2a-i T-2a.7: roster grew from 21 → 23 with the addition of
+    // `evalMemorizationEnabled` / `evalMemorizationDisabled` to gate the
+    // `memorization → memorization_eval` graph branch.
     expect([...PREDICATE_NAMES]).toEqual([
       'abortRequested',
       'always',
       'evalIdeationDisabled',
       'evalIdeationEnabled',
+      'evalMemorizationDisabled',
+      'evalMemorizationEnabled',
       'evalPlanningDisabled',
       'evalPlanningEnabled',
       'feedbackCapExceeded',

@@ -76,7 +76,12 @@ export interface StatusSnapshot {
   readonly currentSubstate: string | null;
   readonly completedSteps: readonly string[];
   readonly activeSubagents: readonly { readonly subagentId: string; readonly agentType: string; readonly step: string }[];
-  readonly evalConfig: { readonly ideation: boolean; readonly planning: boolean; readonly execution?: boolean } | null;
+  readonly evalConfig: {
+    readonly ideation: boolean;
+    readonly planning: boolean;
+    readonly execution?: boolean;
+    readonly memorization?: boolean;
+  } | null;
   readonly feedbackRound: number;
   readonly maxFeedbackRounds: number;
   readonly lastVerdictOutcome: 'pass' | 'revise' | null;
@@ -435,9 +440,21 @@ function renderHuman(snapshot: StatusSnapshot): string {
   if (snapshot.evalConfig === null) {
     lines.push(`Eval: unset`);
   } else {
-    lines.push(
-      `Eval: ideation=${snapshot.evalConfig.ideation ? 'on' : 'off'}, planning=${snapshot.evalConfig.planning ? 'on' : 'off'}`,
-    );
+    const ec = snapshot.evalConfig;
+    const segments: string[] = [
+      `ideation=${ec.ideation ? 'on' : 'off'}`,
+      `planning=${ec.planning ? 'on' : 'off'}`,
+    ];
+    // Optional slots — render only when set so the human output mirrors
+    // `renderSessionSummary` (assembly.ts) and stays compact for sessions
+    // that have not opted into the new gates.
+    if (ec.execution !== undefined) {
+      segments.push(`execution=${ec.execution ? 'on' : 'off'}`);
+    }
+    if (ec.memorization !== undefined) {
+      segments.push(`memorization=${ec.memorization ? 'on' : 'off'}`);
+    }
+    lines.push(`Eval: ${segments.join(', ')}`);
   }
   lines.push(
     `Feedback round: ${snapshot.feedbackRound}/${snapshot.maxFeedbackRounds}`,
