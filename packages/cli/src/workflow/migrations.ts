@@ -118,10 +118,14 @@ export interface EventRow {
    */
   readonly session_id: string | null;
   /**
-   * Project partition key — `basename(metadata.projectRoot)` at the
-   * time the row was written. `null` when `metadata.json` is absent
-   * or malformed, and on legacy v4 rows until backfill runs. Distinct
-   * from session_id so cross-session queries can still scope by repo.
+   * Project partition key — `metadata.projectName` at the time the row
+   * was written (schema v3+ `metadata.json`). `null` when
+   * `metadata.json` is absent, malformed, or lacks a non-empty
+   * `projectName`, and on legacy v4 rows until backfill runs. Distinct
+   * from session_id so cross-session queries can still scope by
+   * project. Issue #178 replaced the previous
+   * `basename(metadata.projectRoot)` derivation, which conflated all
+   * multi-project workspaces onto a single project_id.
    */
   readonly project_id: string | null;
 }
