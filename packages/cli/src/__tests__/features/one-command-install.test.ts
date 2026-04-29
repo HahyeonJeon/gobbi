@@ -163,7 +163,7 @@ describe('one-command-install feature — code surface', () => {
       const commands = commandsForHook(
         manifest,
         'SessionStart',
-        'startup|resume|compact',
+        'startup|resume|clear|compact',
       );
       expect(commands).toContain('gobbi hook session-start');
     });
