@@ -162,7 +162,7 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     path: '.gobbi/projects/gobbi/skills/_typescript/SKILL.md',
     tokens: new Set(['state.json']),
     rationale:
-      "Lists `state.json` as an example of external JSON narrowed via `isValidState`. Educational reference; updates if/when `workflow/state.ts` orphans land (PR-FIN-2a-iii Tier B.2).",
+      "Lists `state.json` as an example of external JSON narrowed via `isValidState`. Educational reference describing migration-only narrowing patterns (PR-FIN-2a-iii Tier B.2 retired the orphan exports; the documentation example survives).",
   },
 
   // ---- _orchestration skill — entire dir is archived in PR-FIN-5 -----------
@@ -285,7 +285,7 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
   {
     path: 'packages/cli/src/workflow/state.ts',
     rationale:
-      "Legacy `writeState` / `readState` / `backupState` / `restoreBackup` orphans — under removal in PR-FIN-2a-iii Tier B.2 (sibling task). Until B.2 lands, the file legitimately writes/reads `state.json` for migration-only paths.",
+      "Migration-only paths reference `state.json` post-PR-FIN-2a-iii Tier B.2 (orphan exports removed). Surviving references describe the legacy on-disk shape that migration code converts away.",
   },
   {
     path: 'packages/cli/src/workflow/migrations.ts',
@@ -360,13 +360,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     tokens: new Set(['metadata.json']),
     rationale:
       'Note-system metadata.json writer (homonym of retired session metadata.json) — surviving file.',
-  },
-
-  // ---- This test file itself -----------------------------------------------
-  {
-    path: 'packages/cli/src/__tests__/integration/jsonpivot-drift.test.ts',
-    rationale:
-      'This test file declares the banned-token regexes as string literals and lists banned filenames in allow-list rationales — must allow-list itself.',
   },
 
 ];
