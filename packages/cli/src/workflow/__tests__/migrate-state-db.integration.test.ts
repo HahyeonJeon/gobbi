@@ -350,12 +350,12 @@ describe('Wave A.1.10 — replay-equivalence after migration', () => {
   });
 
   test('NULL project_id rows survive the migration round-trip when the store opens without an explicit projectId override', () => {
-    // The backfill at `store.ts:469-475` only runs when `sessionId !==
-    // null`, and the project_id UPDATE inside `backfillSessionAndProjectIds`
-    // only runs when `projectRootBasename !== null` (migrations.ts:281).
-    // Constructing the store with `projectId: undefined` and no resolvable
-    // metadata.json leaves `projectRootBasename` null, so legacy NULL
-    // project_id rows are preserved verbatim.
+    // The backfill at `store.ts` only runs when `sessionId !== null`,
+    // and the project_id UPDATE inside `backfillSessionAndProjectIds`
+    // only runs when `projectId !== null` (migrations.ts). Constructing
+    // the store with `projectId: undefined` (and no metadata fallback —
+    // dropped in PR-FIN-2a-ii / T-2a.9.unified) leaves `projectId` null,
+    // so legacy NULL project_id rows are preserved verbatim.
     const repo = makeScratch();
     const seed: readonly SeedRow[] = [
       {

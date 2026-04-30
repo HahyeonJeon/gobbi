@@ -5,21 +5,40 @@
  * Uses WAL mode, cached prepared statements via db.query(), and
  * ON CONFLICT(idempotency_key) DO NOTHING RETURNING * for atomic dedup.
  *
+ * ## Partition-aware reads (PR-FIN-2a-ii / T-2a.9.unified — Option α)
+ *
+ * Every read method (`replayAll`, `byType`, `byStep`, `since`, `last`,
+ * `lastN`, `lastNAny`, `eventCount`, `aggregateDelegationCosts`) bakes a
+ * `WHERE session_id=? AND project_id=?` clause derived from the
+ * constructor-bound partition keys. Production callers always supply
+ * explicit `EventStoreOptions{sessionId, projectId}` (the workspace
+ * `.gobbi/state.db` is the only writer surface; it carries events for
+ * every session in the workspace). With Option α the implicit filter
+ * matches caller intent — every query "scope to my session" — without
+ * threading a partition arg through every callsite.
+ *
+ * When either partition key is `null` (in-memory tests, fixture stores,
+ * `:memory:`), the filter degrades gracefully: a `null` projectId
+ * matches via `IS NULL` so legacy single-key tests (where project_id
+ * stayed unstamped) still see their events. Tests that need
+ * cross-partition reads must construct two stores or stamp matching
+ * partition keys at append time.
+ *
  * Schema v5+ adds explicit `session_id` and `project_id` columns to the
  * `events` table — previously these partition keys were only implicit
  * in the row's `idempotency_key` string. The column-level encoding makes
  * per-session and per-project queries a direct projection rather than a
  * string-parse. See DRIFT-3 in `.claude/project/gobbi/design/v050-features/gobbi-memory/review.md`
  * for the design rationale + backfill semantics (gobbi-memory Pass 2,
- * issue #118). `session_id` is read from the constructor's inferred
- * sessionId (derived from the session directory name); `project_id` is
- * `metadata.projectName` captured from the session's metadata.json
- * (schema v3+; previously `basename(projectRoot)` — see issue #178).
+ * issue #118). `session_id` is taken verbatim from `EventStoreOptions`
+ * (or path-derived as a test fallback); `project_id` is supplied
+ * explicitly via `EventStoreOptions.projectId` — the legacy
+ * `metadata.json` reader was retired in PR-FIN-2a-ii (T-2a.9.unified)
+ * because metadata.json is itself being dropped in this PR.
  */
 
 import { Database } from 'bun:sqlite';
-import { readFileSync } from 'node:fs';
-import { basename, dirname, join } from 'node:path';
+import { basename, dirname } from 'node:path';
 import {
   CURRENT_SCHEMA_VERSION,
   backfillSessionAndProjectIds,
@@ -186,23 +205,38 @@ VALUES ($ts, $schema_version, $type, $step, $data, $actor, $parent_seq, $idempot
 ON CONFLICT(idempotency_key) DO NOTHING
 RETURNING *`;
 
-const SQL_REPLAY_ALL = `SELECT * FROM events ORDER BY seq ASC`;
+// ---------------------------------------------------------------------------
+// Partition-filter clause — every read method scopes to the constructor-
+// bound `(sessionId, projectId)` pair. The clause uses `IS` (not `=`) so
+// `null` partition keys match `NULL` columns: legacy in-memory tests and
+// fixtures that stamp NULL partition keys still see their events, while
+// production callers (which always supply non-null keys) get an
+// equality filter that respects the partition.
+//
+// Equivalent to:
+//   WHERE (session_id = $session_id OR (session_id IS NULL AND $session_id IS NULL))
+//     AND (project_id = $project_id OR (project_id IS NULL AND $project_id IS NULL))
+// — but `IS` is the SQLite shortcut for the same null-aware comparison.
+// ---------------------------------------------------------------------------
+const PARTITION_CLAUSE = 'session_id IS $session_id AND project_id IS $project_id';
 
-const SQL_BY_TYPE = `SELECT * FROM events WHERE type = $type ORDER BY seq ASC`;
+const SQL_REPLAY_ALL = `SELECT * FROM events WHERE ${PARTITION_CLAUSE} ORDER BY seq ASC`;
 
-const SQL_BY_STEP = `SELECT * FROM events WHERE step = $step ORDER BY seq ASC`;
+const SQL_BY_TYPE = `SELECT * FROM events WHERE ${PARTITION_CLAUSE} AND type = $type ORDER BY seq ASC`;
 
-const SQL_BY_STEP_TYPE = `SELECT * FROM events WHERE step = $step AND type = $type ORDER BY seq ASC`;
+const SQL_BY_STEP = `SELECT * FROM events WHERE ${PARTITION_CLAUSE} AND step = $step ORDER BY seq ASC`;
 
-const SQL_SINCE = `SELECT * FROM events WHERE seq > $seq ORDER BY seq ASC`;
+const SQL_BY_STEP_TYPE = `SELECT * FROM events WHERE ${PARTITION_CLAUSE} AND step = $step AND type = $type ORDER BY seq ASC`;
 
-const SQL_LAST = `SELECT * FROM events WHERE type = $type ORDER BY seq DESC LIMIT 1`;
+const SQL_SINCE = `SELECT * FROM events WHERE ${PARTITION_CLAUSE} AND seq > $seq ORDER BY seq ASC`;
 
-const SQL_LAST_N = `SELECT * FROM events WHERE type = $type ORDER BY seq DESC LIMIT $n`;
+const SQL_LAST = `SELECT * FROM events WHERE ${PARTITION_CLAUSE} AND type = $type ORDER BY seq DESC LIMIT 1`;
 
-const SQL_LAST_N_ANY = `SELECT * FROM events ORDER BY seq DESC LIMIT $n`;
+const SQL_LAST_N = `SELECT * FROM events WHERE ${PARTITION_CLAUSE} AND type = $type ORDER BY seq DESC LIMIT $n`;
 
-const SQL_COUNT = `SELECT count(*) as cnt FROM events`;
+const SQL_LAST_N_ANY = `SELECT * FROM events WHERE ${PARTITION_CLAUSE} ORDER BY seq DESC LIMIT $n`;
+
+const SQL_COUNT = `SELECT count(*) as cnt FROM events WHERE ${PARTITION_CLAUSE}`;
 
 /**
  * Cost-rollup SELECT over all `delegation.complete` events, ordered by
@@ -235,7 +269,7 @@ SELECT
   json_extract(data, '$.model')                   AS model,
   json_extract(data, '$.sizeProxyBytes')          AS bytes
 FROM events
-WHERE type = 'delegation.complete'
+WHERE ${PARTITION_CLAUSE} AND type = 'delegation.complete'
 ORDER BY seq ASC
 `;
 
@@ -343,9 +377,10 @@ export interface WriteStore extends ReadStore {
  * Optional explicit partition-key overrides for the {@link EventStore}
  * constructor. Both fields participate in the same fallback policy:
  *
- * - A non-empty string overrides the on-disk derivation.
+ * - A non-empty string overrides the path-derivation fallback.
  * - `null`, `undefined`, or the empty string `''` defers to the
- *   path-derivation fallback (existing behavior).
+ *   path-derivation fallback (sessionId only — projectId has no
+ *   path fallback after PR-FIN-2a-ii / T-2a.9.unified).
  *
  * Empty-string and `null` are treated identically as "explicitly unset"
  * so callers cannot accidentally stamp empty-string columns on every
@@ -353,12 +388,13 @@ export interface WriteStore extends ReadStore {
  * query that powers `gobbi workflow status` and would silently degrade
  * the cost rollup.
  *
- * Wave A.1's workspace re-scope (`.gobbi/state.db`) needs both keys
- * supplied explicitly because the path derivation yields `'.gobbi'`
- * for the session id and `null` for the project id at workspace root.
- * Per-session callers (legacy `<sessionDir>/gobbi.db` layout) keep
- * working unchanged by passing no options object — Wave A.1.7 sweeps
- * the 11 callsites separately.
+ * Production callers always supply both keys explicitly (the workspace
+ * `.gobbi/state.db` is the only writer surface and its filesystem path
+ * carries no per-session signal). Tests using `<sessionDir>/gobbi.db`
+ * continue to work via the sessionId path fallback (basename of the
+ * containing directory). The legacy `metadata.json` projectId reader
+ * was retired in T-2a.9.unified — projectId has no path fallback, so a
+ * caller that omits it stamps `null` into the column.
  */
 export interface EventStoreOptions {
   readonly sessionId?: string | null;
@@ -380,7 +416,10 @@ function isExplicitOverride(
 
 // ---------------------------------------------------------------------------
 // Partition-key resolution helpers — used by the EventStore constructor
-// to derive `session_id` + `project_id` from on-disk layout.
+// when callers omit explicit `EventStoreOptions`. Production callers
+// always supply both keys; the path fallback exists only for the test
+// surface that constructs `new EventStore('<sessionDir>/gobbi.db')`
+// without an options object.
 // ---------------------------------------------------------------------------
 
 /**
@@ -396,43 +435,6 @@ function resolveSessionId(sessionDir: string | null): string | null {
   return name === '' ? null : name;
 }
 
-/**
- * Resolve `metadata.projectName` from the session's `metadata.json`.
- * Silent on every failure mode (missing file, parse error, unexpected
- * shape, missing or non-string `projectName`) — the project_id column
- * stays NULL until a future open recovers a valid metadata.
- *
- * Schema v3+ `metadata.json` carries `projectName` directly (see
- * `commands/workflow/init.ts::SessionMetadata`). The previous
- * `basename(projectRoot)` derivation read the repo root directory, so
- * a multi-project workspace stamped every event with the same
- * `project_id` regardless of which project the session belonged to
- * (issue #178).
- */
-function resolveProjectIdFromMetadata(
-  sessionDir: string | null,
-): string | null {
-  if (sessionDir === null) return null;
-  let raw: string;
-  try {
-    raw = readFileSync(join(sessionDir, 'metadata.json'), 'utf8');
-  } catch {
-    return null;
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return null;
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return null;
-  }
-  const projectName = (parsed as Record<string, unknown>)['projectName'];
-  if (typeof projectName !== 'string' || projectName === '') return null;
-  return projectName;
-}
-
 // ---------------------------------------------------------------------------
 // EventStore class
 // ---------------------------------------------------------------------------
@@ -441,27 +443,42 @@ export class EventStore implements WriteStore {
   private readonly db: Database;
 
   /**
-   * Session partition key — derived from the session directory name (the
-   * parent of the `gobbi.db` file). Populated on every v5 INSERT so the
-   * per-session partition is queryable by column rather than by parsing
-   * the `idempotency_key` prefix. `null` when the store is opened on
-   * `:memory:` or any path where the containing directory is the
-   * filesystem root (tests).
+   * Session partition key — supplied verbatim via
+   * {@link EventStoreOptions}, or path-derived as a test fallback (the
+   * basename of the directory containing `gobbi.db`). Populated on
+   * every v5 INSERT so the per-session partition is queryable by column
+   * rather than by parsing the `idempotency_key` prefix. `null` when
+   * the store is opened on `:memory:` or any path where the containing
+   * directory is the filesystem root (tests).
    */
   private readonly sessionId: string | null;
 
   /**
-   * Project partition key — `metadata.projectName` read from the
-   * session's `metadata.json` at construction (schema v3+). `null` when
-   * `metadata.json` is missing, unreadable, malformed, or lacks a
-   * non-empty `projectName`. Populated on every v5 INSERT alongside
-   * `session_id`; NULL rows are left alone unless
-   * {@link backfillSessionAndProjectIds} stamps them during a later
-   * open. Field name retained for git-history continuity — semantically
-   * it is now the project name, not a directory basename (see issue
-   * #178).
+   * Project partition key — supplied verbatim via
+   * {@link EventStoreOptions.projectId}. After PR-FIN-2a-ii
+   * (T-2a.9.unified) there is no path-derivation fallback: the legacy
+   * `metadata.json` reader was retired alongside the metadata.json file
+   * itself. A caller that omits `projectId` stamps `null` into the
+   * column; partition-aware read queries (`SELECT … WHERE project_id IS
+   * NULL`) still match those rows.
+   *
+   * Populated on every v5 INSERT alongside `session_id`; NULL rows are
+   * left alone unless {@link backfillSessionAndProjectIds} stamps them
+   * during a later open. The field's prior identifier referenced the
+   * project-root basename derivation; issue #178 fixed that to
+   * `metadata.projectName`, and PR-FIN-2a-ii (T-2a.9.unified) retired
+   * the metadata.json read entirely in favour of explicit
+   * {@link EventStoreOptions.projectId}.
    */
-  private readonly projectRootBasename: string | null;
+  private readonly projectId: string | null;
+
+  /**
+   * Pre-computed partition-key bindings for every read prepared
+   * statement. Hoisted into a single object so the cached statements
+   * receive the same shape across calls — bun:sqlite's binding cache
+   * performs better when the parameter shape is stable.
+   */
+  private readonly partitionBindings: SqlBindings;
 
   // Cached prepared statements — db.query() returns cached compiled bytecode.
   // Using SqlBindings as the param type to satisfy bun-types' SQLQueryBindings
@@ -490,22 +507,15 @@ export class EventStore implements WriteStore {
    *    on the on-disk layout. `:memory:` and filesystem-root paths
    *    yield `null`.
    *
-   * The same two-step policy applies to `opts.projectId`:
-   *
-   * 1. Non-empty `opts.projectId` takes precedence.
-   * 2. Otherwise {@link resolveProjectIdFromMetadata} parses the
-   *    sibling `metadata.json` and extracts `metadata.projectName`
-   *    (schema v3+). Missing or malformed metadata yields `null`
-   *    (silent — the column stays NULL until a future open recovers
-   *    a valid metadata). Issue #178 fixed the previous derivation
-   *    `basename(metadata.projectRoot)` which conflated all
-   *    multi-project sessions onto the same project_id.
+   * For `opts.projectId` there is no path fallback after PR-FIN-2a-ii
+   * (T-2a.9.unified). The legacy `metadata.json` reader was retired
+   * alongside the metadata.json file. Production callers always supply
+   * `projectId` explicitly; tests that omit it stamp `null` and rely
+   * on the partition-aware read clause (`project_id IS NULL`) to match.
    *
    * Empty-string and `null` are treated identically as "explicitly
    * unset" — see {@link EventStoreOptions} for why empty strings
-   * cannot reach the column. Wave A.1's workspace mode supplies both
-   * keys; legacy per-session callers omit the options object and keep
-   * the original path-derived behavior.
+   * cannot reach the column.
    */
   constructor(pathOrMemory: string, opts?: EventStoreOptions) {
     this.db = new Database(pathOrMemory, { strict: true });
@@ -515,37 +525,43 @@ export class EventStore implements WriteStore {
     this.db.run('PRAGMA busy_timeout = 5000');
 
     // Resolve partition keys. Explicit non-empty overrides win; null,
-    // undefined, and the empty string defer to on-disk derivation.
-    // In-memory stores and filesystem-root paths yield null keys when
-    // no override is supplied.
+    // undefined, and the empty string defer to on-disk derivation
+    // (sessionId only) or stay null (projectId).
     const sessionDir =
       pathOrMemory === ':memory:' ? null : dirname(pathOrMemory);
     this.sessionId =
       isExplicitOverride(opts?.sessionId)
         ? opts.sessionId
         : resolveSessionId(sessionDir);
-    this.projectRootBasename =
-      isExplicitOverride(opts?.projectId)
-        ? opts.projectId
-        : resolveProjectIdFromMetadata(sessionDir);
+    this.projectId = isExplicitOverride(opts?.projectId)
+      ? opts.projectId
+      : null;
+
+    // Pre-bind the partition keys for every read statement. Same object
+    // reused across calls so bun:sqlite's binding cache stays warm.
+    this.partitionBindings = {
+      session_id: this.sessionId,
+      project_id: this.projectId,
+    };
 
     this.initSchema();
     // v4 → v5 row-level backfill. Idempotent — writes only to rows whose
     // partition keys are NULL (the legacy-v4 shape). Runs outside the
     // SQL_CREATE_TABLE / ALTER path because it depends on the resolved
-    // `sessionId` + `projectRootBasename`, which `initSchema` does not
-    // know about.
+    // `sessionId` + `projectId`, which `initSchema` does not know about.
     if (this.sessionId !== null) {
       backfillSessionAndProjectIds(
         this.db,
         this.sessionId,
-        this.projectRootBasename,
+        this.projectId,
       );
     }
 
-    // Cache all prepared statements with typed return values
+    // Cache all prepared statements with typed return values. Read
+    // statements bind the partition keys via $session_id + $project_id
+    // (Option α — see module header).
     this.stmtAppend = this.db.query<EventRow, [SqlBindings]>(SQL_APPEND);
-    this.stmtReplayAll = this.db.query<EventRow, []>(SQL_REPLAY_ALL);
+    this.stmtReplayAll = this.db.query<EventRow, [SqlBindings]>(SQL_REPLAY_ALL);
     this.stmtByType = this.db.query<EventRow, [SqlBindings]>(SQL_BY_TYPE);
     this.stmtByStep = this.db.query<EventRow, [SqlBindings]>(SQL_BY_STEP);
     this.stmtByStepType = this.db.query<EventRow, [SqlBindings]>(SQL_BY_STEP_TYPE);
@@ -553,10 +569,11 @@ export class EventStore implements WriteStore {
     this.stmtLast = this.db.query<EventRow, [SqlBindings]>(SQL_LAST);
     this.stmtLastN = this.db.query<EventRow, [SqlBindings]>(SQL_LAST_N);
     this.stmtLastNAny = this.db.query<EventRow, [SqlBindings]>(SQL_LAST_N_ANY);
-    this.stmtCount = this.db.query<{ cnt: number }, []>(SQL_COUNT);
-    this.stmtAggregateDelegationCosts = this.db.query<CostAggregateRow, []>(
-      SQL_AGGREGATE_DELEGATION_COSTS,
-    );
+    this.stmtCount = this.db.query<{ cnt: number }, [SqlBindings]>(SQL_COUNT);
+    this.stmtAggregateDelegationCosts = this.db.query<
+      CostAggregateRow,
+      [SqlBindings]
+    >(SQL_AGGREGATE_DELEGATION_COSTS);
   }
 
   // -------------------------------------------------------------------------
@@ -641,11 +658,13 @@ export class EventStore implements WriteStore {
   append(input: AppendInput): EventRow | null {
     const idempotencyKey = EventStore.computeIdempotencyKey(input);
     // With strict: true, bun:sqlite binds by name WITHOUT the $ prefix.
-    // Schema v5 stamps `session_id` + `project_id` explicitly. The
-    // constructor-resolved `sessionId` falls back to the input's
-    // `sessionId` when a store opened on `:memory:` (no session directory
-    // to infer from) still needs to author rows for a specific session
-    // during tests.
+    // Schema v5 stamps `session_id` + `project_id` explicitly using the
+    // constructor-bound partition keys (Option α — see module header).
+    // Stamped values must match the bound values exactly so the
+    // partition-aware read queries (`WHERE session_id IS $session_id
+    // AND project_id IS $project_id`) find their own rows. A `null`
+    // bound key produces a NULL stamp, which the `IS` operator matches
+    // null-aware on read.
     const params: SqlBindings = {
       ts: input.ts,
       schema_version: CURRENT_SCHEMA_VERSION,
@@ -655,8 +674,8 @@ export class EventStore implements WriteStore {
       actor: input.actor,
       parent_seq: input.parent_seq ?? null,
       idempotency_key: idempotencyKey,
-      session_id: this.sessionId ?? input.sessionId,
-      project_id: this.projectRootBasename,
+      session_id: this.sessionId,
+      project_id: this.projectId,
     };
     const row = this.stmtAppend.get(params);
     // Concurrent-writer durability mitigation (#146 A.1.9 / SC-ORCH-25):
@@ -729,32 +748,53 @@ export class EventStore implements WriteStore {
   // Read operations
   // -------------------------------------------------------------------------
 
-  /** Replay all events ordered by seq ASC. */
+  /**
+   * Replay all events for the constructor-bound `(sessionId, projectId)`
+   * partition, ordered by seq ASC. Cross-partition reads are not
+   * supported through this API — open a separate `EventStore` with
+   * matching partition keys.
+   */
   replayAll(): EventRow[] {
-    return this.stmtReplayAll.all();
+    return this.stmtReplayAll.all(this.partitionBindings);
   }
 
-  /** Return events filtered by type, ordered by seq ASC. */
+  /**
+   * Return events filtered by type within the bound partition, ordered
+   * by seq ASC.
+   */
   byType(type: string): EventRow[] {
-    return this.stmtByType.all({ type });
+    return this.stmtByType.all({ ...this.partitionBindings, type });
   }
 
-  /** Return events filtered by step (and optionally type), ordered by seq ASC. */
+  /**
+   * Return events filtered by step (and optionally type) within the
+   * bound partition, ordered by seq ASC.
+   */
   byStep(step: string, type?: string): EventRow[] {
     if (type !== undefined) {
-      return this.stmtByStepType.all({ step, type });
+      return this.stmtByStepType.all({
+        ...this.partitionBindings,
+        step,
+        type,
+      });
     }
-    return this.stmtByStep.all({ step });
+    return this.stmtByStep.all({ ...this.partitionBindings, step });
   }
 
-  /** Return events with seq > the given value, ordered by seq ASC. */
+  /**
+   * Return events with seq > the given value within the bound
+   * partition, ordered by seq ASC.
+   */
   since(seq: number): EventRow[] {
-    return this.stmtSince.all({ seq });
+    return this.stmtSince.all({ ...this.partitionBindings, seq });
   }
 
-  /** Return the most recent event of the given type, or null if none exist. */
+  /**
+   * Return the most recent event of the given type within the bound
+   * partition, or null if none exist.
+   */
   last(type: string): EventRow | null {
-    return this.stmtLast.get({ type });
+    return this.stmtLast.get({ ...this.partitionBindings, type });
   }
 
   /**
@@ -770,7 +810,7 @@ export class EventStore implements WriteStore {
    */
   lastN(type: string, n: number): readonly EventRow[] {
     if (n <= 0) return [];
-    return this.stmtLastN.all({ type, n });
+    return this.stmtLastN.all({ ...this.partitionBindings, type, n });
   }
 
   /**
@@ -783,12 +823,14 @@ export class EventStore implements WriteStore {
    */
   lastNAny(n: number): readonly EventRow[] {
     if (n <= 0) return [];
-    return this.stmtLastNAny.all({ n });
+    return this.stmtLastNAny.all({ ...this.partitionBindings, n });
   }
 
-  /** Return total event count (for diagnostics). */
+  /**
+   * Return total event count for the bound partition (for diagnostics).
+   */
   eventCount(): number {
-    const row = this.stmtCount.get();
+    const row = this.stmtCount.get(this.partitionBindings);
     return row?.cnt ?? 0;
   }
 
@@ -812,7 +854,7 @@ export class EventStore implements WriteStore {
    * raw-SQL surface.
    */
   aggregateDelegationCosts(): readonly CostAggregateRow[] {
-    return this.stmtAggregateDelegationCosts.all();
+    return this.stmtAggregateDelegationCosts.all(this.partitionBindings);
   }
 
   // -------------------------------------------------------------------------

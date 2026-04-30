@@ -1314,13 +1314,16 @@ describe('schema v5 — session_id + project_id columns', () => {
     }
   });
 
-  it('fresh-session append stamps session_id (dir basename) + project_id (metadata.projectName, #178)', () => {
+  it('fresh-session append stamps session_id (dir basename) + project_id (explicit opts, post-T-2a.9.unified)', () => {
     const { sessionDir, dbPath } = makeSessionDir(
       'sess-stamp',
       '/home/alice/projects/my-repo',
     );
     try {
-      using store = new EventStore(dbPath);
+      // PR-FIN-2a-ii / T-2a.9.unified: projectId must be passed
+      // explicitly; the legacy metadata.json reader was retired with
+      // metadata.json itself.
+      using store = new EventStore(dbPath, { projectId: 'my-repo' });
       store.append({
         ts: '2026-04-21T00:00:00.000Z',
         type: 'workflow.start',
@@ -1353,9 +1356,6 @@ describe('schema v5 — session_id + project_id columns', () => {
         // present.
         expect(rows).toHaveLength(1);
         expect(rows[0]?.session_id).toBe('sess-stamp');
-        // metadata.projectName, lifted from metadata.json at store-open
-        // time. The helper defaults projectName to basename(projectRoot)
-        // for legacy-shape continuity, so 'my-repo' here.
         expect(rows[0]?.project_id).toBe('my-repo');
       } finally {
         inspector.close();
@@ -1462,34 +1462,48 @@ describe('schema v5 — session_id + project_id columns', () => {
     using store = new EventStore(':memory:');
     const row = store.append(makeSystemInput({ sessionId: 'sess-mem' }));
     expect(row).not.toBeNull();
-    // The constructor could not resolve a session directory, so
-    // `this.sessionId` and `this.projectRootBasename` are null. The
-    // append fallback uses `input.sessionId` so the row still carries a
-    // sensible value; project_id stays NULL.
-    expect(row!.session_id).toBe('sess-mem');
+    // The constructor could not resolve a session directory and no
+    // explicit opts were passed, so both partition keys are NULL.
+    // PR-FIN-2a-ii (T-2a.9.unified) drops the `?? input.sessionId`
+    // append-time fallback — stamped values must match the bound
+    // values exactly so partition-aware reads find their own rows.
+    expect(row!.session_id).toBeNull();
     expect(row!.project_id).toBeNull();
+  });
+
+  it(':memory: store with explicit opts stamps both partition keys', () => {
+    using store = new EventStore(':memory:', {
+      sessionId: 'sess-explicit',
+      projectId: 'project-explicit',
+    });
+    const row = store.append(makeSystemInput({ sessionId: 'sess-explicit' }));
+    expect(row).not.toBeNull();
+    expect(row!.session_id).toBe('sess-explicit');
+    expect(row!.project_id).toBe('project-explicit');
   });
 });
 
 // ===========================================================================
-// EventStoreOptions — explicit partition-key constructor params (#146 A.1.2)
+// EventStoreOptions — explicit partition-key constructor params
 //
-// Wave A.1's workspace re-scope (`.gobbi/state.db`) requires explicit
-// partition-key overrides because the path-derivation fallback yields
-// `'.gobbi'` for session_id and `null` for project_id at the workspace
-// root. The legacy per-session callers (omitting the options object)
-// keep working unchanged via path derivation.
+// Production callers always pass both keys via opts; the workspace
+// `.gobbi/state.db` is the only writer surface and its filesystem path
+// carries no per-session signal. Tests using `<sessionDir>/gobbi.db`
+// continue to work via the sessionId path-derivation fallback (basename
+// of the containing directory). The legacy `metadata.json` projectId
+// reader was retired in PR-FIN-2a-ii (T-2a.9.unified) — projectId has
+// no path fallback, so a caller that omits it stamps `null` into the
+// column.
 //
 // Policy under test (mirrors the constructor's JSDoc):
 //   - non-empty string in opts → use verbatim
-//   - `null`     in opts → defer to derivation
-//   - `undefined` in opts → defer to derivation
-//   - `''`       in opts → defer to derivation (empty-string columns
-//                          would defeat the per-session partition query)
+//   - `null` / `undefined` in opts.sessionId → defer to path derivation
+//   - `null` / `undefined` in opts.projectId → stay null (no fallback)
+//   - `''` (empty string) → treated as "explicitly unset" for both keys
 // ===========================================================================
 
-describe('EventStoreOptions — explicit partition-key constructor params (#146 A.1.2)', () => {
-  it('falls back to path/metadata derivation when no opts are passed', () => {
+describe('EventStoreOptions — explicit partition-key constructor params', () => {
+  it('with no opts: sessionId path-derived, projectId stays NULL (no metadata fallback)', () => {
     const { sessionDir, dbPath } = makeSessionDir(
       'sess-fallback',
       '/home/alice/projects/repo-fallback',
@@ -1519,8 +1533,12 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
             'SELECT session_id, project_id FROM events WHERE seq = 1',
           )
           .get();
+        // sessionId path-derived from basename(dirname(dbPath)).
         expect(row?.session_id).toBe('sess-fallback');
-        expect(row?.project_id).toBe('repo-fallback');
+        // projectId has no path fallback after PR-FIN-2a-ii — opts must
+        // be supplied explicitly. metadata.json on disk is no longer
+        // consulted.
+        expect(row?.project_id).toBeNull();
       } finally {
         inspector.close();
       }
@@ -1529,9 +1547,7 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
     }
   });
 
-  it('explicit sessionId override beats path-derived basename', () => {
-    // Session dir basename would be `sess-on-disk`, but the override is
-    // `workspace-session` — the workspace re-scope use case.
+  it('explicit sessionId override beats path-derived basename; projectId stays NULL when omitted', () => {
     const { sessionDir, dbPath } = makeSessionDir(
       'sess-on-disk',
       '/home/alice/projects/dir-derived',
@@ -1564,8 +1580,8 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
           )
           .get();
         expect(row?.session_id).toBe('workspace-session');
-        // projectId not overridden — derivation still runs.
-        expect(row?.project_id).toBe('dir-derived');
+        // projectId not supplied — stays NULL (no metadata fallback).
+        expect(row?.project_id).toBeNull();
       } finally {
         inspector.close();
       }
@@ -1574,12 +1590,10 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
     }
   });
 
-  it('explicit projectId override beats metadata.json lookup', () => {
-    // metadata.projectRoot basename would be `metadata-derived`, but the
-    // override is `workspace-project`.
+  it('explicit projectId stamps the column directly — no metadata.json read', () => {
     const { sessionDir, dbPath } = makeSessionDir(
       'sess-proj-override',
-      '/home/alice/projects/metadata-derived',
+      '/home/alice/projects/metadata-ignored',
     );
     try {
       using store = new EventStore(dbPath, {
@@ -1608,7 +1622,7 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
             'SELECT session_id, project_id FROM events WHERE seq = 1',
           )
           .get();
-        // sessionId not overridden — derivation still runs.
+        // sessionId not overridden — path derivation still runs.
         expect(row?.session_id).toBe('sess-proj-override');
         expect(row?.project_id).toBe('workspace-project');
       } finally {
@@ -1619,7 +1633,7 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
     }
   });
 
-  it('null in opts is treated as "explicitly unset" and falls back to derivation', () => {
+  it('null in opts: sessionId falls back to path derivation, projectId stays NULL', () => {
     const { sessionDir, dbPath } = makeSessionDir(
       'sess-null-opts',
       '/home/alice/projects/null-derived',
@@ -1653,9 +1667,9 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
             'SELECT session_id, project_id FROM events WHERE seq = 1',
           )
           .get();
-        // Both keys derived — null in opts did not stamp a NULL column.
+        // sessionId path-derived; projectId stays NULL (no fallback).
         expect(row?.session_id).toBe('sess-null-opts');
-        expect(row?.project_id).toBe('null-derived');
+        expect(row?.project_id).toBeNull();
       } finally {
         inspector.close();
       }
@@ -1664,7 +1678,7 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
     }
   });
 
-  it('empty string in opts falls back to derivation (no empty-string columns)', () => {
+  it('empty string in opts: sessionId falls back, projectId stays NULL', () => {
     const { sessionDir, dbPath } = makeSessionDir(
       'sess-empty-opts',
       '/home/alice/projects/empty-derived',
@@ -1698,16 +1712,138 @@ describe('EventStoreOptions — explicit partition-key constructor params (#146 
             'SELECT session_id, project_id FROM events WHERE seq = 1',
           )
           .get();
-        // Empty strings did not reach the columns — derivation populated
-        // both keys.
+        // sessionId path-derived; projectId stays NULL (empty string is
+        // "explicitly unset" but no metadata fallback chain anymore).
         expect(row?.session_id).toBe('sess-empty-opts');
-        expect(row?.project_id).toBe('empty-derived');
+        expect(row?.project_id).toBeNull();
       } finally {
         inspector.close();
       }
     } finally {
       rmSync(join(sessionDir, '..'), { recursive: true, force: true });
     }
+  });
+});
+
+// ===========================================================================
+// Partition-aware reads (Option α — PR-FIN-2a-ii / T-2a.9.unified)
+//
+// Every read method bakes a `WHERE session_id IS $session_id AND
+// project_id IS $project_id` clause, so a store opened with bound
+// partition keys only sees its own rows even when the underlying table
+// holds events for multiple partitions.
+// ===========================================================================
+
+describe('partition-aware reads (Option α)', () => {
+  it('replayAll filters by bound (sessionId, projectId)', () => {
+    const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-store-partition-'));
+    const dbPath = join(tmpRoot, 'state.db');
+    try {
+      // Author rows under partition A.
+      {
+        using storeA = new EventStore(dbPath, {
+          sessionId: 'sess-A',
+          projectId: 'proj-1',
+        });
+        storeA.append(
+          makeInput({ sessionId: 'sess-A', toolCallId: 'tc-A-1' }),
+        );
+        storeA.append(
+          makeInput({ sessionId: 'sess-A', toolCallId: 'tc-A-2' }),
+        );
+      }
+      // Author rows under partition B (different project).
+      {
+        using storeB = new EventStore(dbPath, {
+          sessionId: 'sess-B',
+          projectId: 'proj-2',
+        });
+        storeB.append(
+          makeInput({ sessionId: 'sess-B', toolCallId: 'tc-B-1' }),
+        );
+      }
+
+      // Read partition A: sees only its 2 rows.
+      {
+        using readerA = new EventStore(dbPath, {
+          sessionId: 'sess-A',
+          projectId: 'proj-1',
+        });
+        const rowsA = readerA.replayAll();
+        expect(rowsA).toHaveLength(2);
+        expect(rowsA.every((r) => r.session_id === 'sess-A')).toBe(true);
+        expect(rowsA.every((r) => r.project_id === 'proj-1')).toBe(true);
+      }
+
+      // Read partition B: sees only its 1 row.
+      {
+        using readerB = new EventStore(dbPath, {
+          sessionId: 'sess-B',
+          projectId: 'proj-2',
+        });
+        const rowsB = readerB.replayAll();
+        expect(rowsB).toHaveLength(1);
+        expect(rowsB[0]?.session_id).toBe('sess-B');
+        expect(rowsB[0]?.project_id).toBe('proj-2');
+      }
+    } finally {
+      rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('cross-partition rows are NOT visible to a partition-bound EventStore', () => {
+    const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-store-partition-'));
+    const dbPath = join(tmpRoot, 'state.db');
+    try {
+      // Author rows under partition X only.
+      {
+        using storeX = new EventStore(dbPath, {
+          sessionId: 'sess-X',
+          projectId: 'proj-X',
+        });
+        storeX.append(
+          makeInput({ sessionId: 'sess-X', toolCallId: 'tc-X-1' }),
+        );
+      }
+      // Open a different partition Y. eventCount/byType/last all return
+      // empty even though the underlying table has 1 row.
+      {
+        using readerY = new EventStore(dbPath, {
+          sessionId: 'sess-Y',
+          projectId: 'proj-Y',
+        });
+        expect(readerY.eventCount()).toBe(0);
+        expect(readerY.byType('workflow.start')).toHaveLength(0);
+        expect(readerY.last('workflow.start')).toBeNull();
+        expect(readerY.lastN('workflow.start', 5)).toHaveLength(0);
+        expect(readerY.lastNAny(5)).toHaveLength(0);
+        expect(readerY.replayAll()).toHaveLength(0);
+        expect(readerY.since(0)).toHaveLength(0);
+      }
+      // Re-open X — still sees its row.
+      {
+        using readerX = new EventStore(dbPath, {
+          sessionId: 'sess-X',
+          projectId: 'proj-X',
+        });
+        expect(readerX.eventCount()).toBe(1);
+        expect(readerX.last('workflow.start')?.session_id).toBe('sess-X');
+      }
+    } finally {
+      rmSync(tmpRoot, { recursive: true, force: true });
+    }
+  });
+
+  it('NULL partition keys match NULL columns via IS clause', () => {
+    using store = new EventStore(':memory:');
+    // No opts → both partition keys NULL → row stamps NULL → reads
+    // filter by NULL and find the row.
+    store.append(makeInput());
+    expect(store.eventCount()).toBe(1);
+    expect(store.replayAll()).toHaveLength(1);
+    expect(store.byType('workflow.start')).toHaveLength(1);
+    expect(store.last('workflow.start')?.session_id).toBeNull();
+    expect(store.last('workflow.start')?.project_id).toBeNull();
   });
 });
 

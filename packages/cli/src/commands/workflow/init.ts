@@ -343,14 +343,12 @@ export async function runInitWithOptions(
   // pattern.
   const dbPath = join(sessionDir, 'gobbi.db');
   // PR-FIN-2a-ii (T-2a.8.5): supply the partition keys explicitly rather
-  // than calling `resolvePartitionKeys(sessionDir)`. The legacy resolver
-  // reads `metadata.projectName` from `<sessionDir>/metadata.json`, which
-  // this code path no longer writes. We already have both values in this
-  // scope (`sessionId` from the resolver above; `projectName` from the
-  // PR-FIN-1c project-name resolution), so passing them in directly is
-  // strictly more correct than the disk-roundtrip — it also avoids
-  // depending on the dead `resolvePartitionKeys`/`resolveProjectIdFromMetadata`
-  // path that T-2a.9.unified will retire.
+  // than calling `resolvePartitionKeys(sessionDir)`. We already have
+  // both values in this scope (`sessionId` from the resolver above;
+  // `projectName` from the PR-FIN-1c project-name resolution), so
+  // passing them in directly is strictly more correct than the
+  // disk-roundtrip — it also avoids the path-derivation fallback that
+  // T-2a.9.unified retired alongside metadata.json.
   const store = new EventStore(dbPath, {
     sessionId,
     projectId: projectName,
