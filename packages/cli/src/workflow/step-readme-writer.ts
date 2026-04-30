@@ -11,7 +11,7 @@
  * is NOT the authoritative artifact for the step (those are the per-step
  * synthesis files like `ideation.md` / `plan.md` / `execution.md`); it is
  * a CLI-maintained snapshot that mirrors information already present in
- * `gobbi.db` and `state.json`.
+ * `WorkflowState` at exit time and the per-step `artifacts/` directory.
  *
  * ## Discipline
  *

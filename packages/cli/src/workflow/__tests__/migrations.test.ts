@@ -642,7 +642,7 @@ describe('v4 → v5 schema ALTER + backfill', () => {
       insert.run(1, '2026-04-01T00:00:00Z', 4, 'workflow.start', null, '{}', 'cli', null, 'k-1', null, null);
 
       const { backfillSessionAndProjectIds } = await import('../migrations.js');
-      // Missing metadata.json → projectRootBasename is null.
+      // No projectId supplied → projectId is null (post-T-2a.9.unified).
       backfillSessionAndProjectIds(db, 'sess-nometa', null);
 
       interface PartitionRow {
