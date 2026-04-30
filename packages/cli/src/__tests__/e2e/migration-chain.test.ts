@@ -4,26 +4,25 @@
  * L-F11 / ARCH-P2).
  *
  * Flow:
- *   1. `gobbi workflow init` seeds a session (metadata.json, gobbi.db at
- *      v4, state.json).
- *   2. Inject schema_version=1 rows directly via `bun:sqlite`.
- *   3. Delete state.json (ARCH-P2) so resolveWorkflowState can no longer
- *      short-circuit through readState — next CLI call falls through to
- *      store.replayAll → deriveState → rowToEvent → migrateEvent.
- *   4. `gobbi workflow status --json` triggers the chain. Assert the
- *      resulting schemaVersion equals CURRENT_SCHEMA_VERSION (imported,
- *      NOT literal 4 — L-F11 + R2 canary).
- *   5. Triangulation (innovative I11): stored rows still carry
+ *   1. `gobbi workflow init` seeds a session (`session.json`, `gobbi.db`).
+ *   2. Inject schema_version=1 rows directly via `bun:sqlite`. The seeded
+ *      rows are stamped with the same `(session_id, project_id)`
+ *      partition keys init wrote so they survive the partition-aware
+ *      read filter (Option α — see `workflow/store.ts` module header).
+ *   3. `gobbi workflow status --json` triggers the chain.
+ *      `resolveWorkflowState` walks `replayAll → rowToEvent →
+ *      migrateEvent` on every replayed row (PR-FIN-2a-ii / T-2a.9.unified
+ *      retired the `state.json` projection — every call is a pure
+ *      derive). Assert the resulting schemaVersion equals
+ *      `CURRENT_SCHEMA_VERSION` (imported, NOT literal 4 — L-F11 + R2
+ *      canary).
+ *   4. Triangulation (innovative I11): stored rows still carry
  *      schema_version=1 — migration must stay lazy/in-memory.
  *
  * Complements `workflow/__tests__/migrations.test.ts` (function-level) by
  * locking the full CLI binary path — if a future refactor caches
- * schemaVersion on metadata.json and bypasses deriveState, the in-process
+ * schemaVersion at the row level and bypasses deriveState, the in-process
  * test still passes but this one fails.
- *
- * Option A (state.json delete + `workflow status`) chosen over Option B
- * (`workflow resume`) because resume requires currentStep==='error',
- * forcing extra fixture complexity; Option A is strictly simpler.
  */
 
 import { test, describe, expect } from 'bun:test';
@@ -55,27 +54,41 @@ function parseStatus(buf: Buffer): Record<string, unknown> {
 }
 
 /**
- * v1 fixture events, shapes from `workflow/__tests__/migrations.test.ts:103-183`.
- * Inlined rather than shared-extracted — duplication locks the v1 wire
- * format in each test. `seq` starts at 100 to dodge init's v4 events
- * (PRIMARY KEY at seq 1 + 2). `parent_seq` is null so we don't create
- * dangling FKs to init's rows — migration is orthogonal to parent-seq.
+ * v1 fixture event factory — shapes from
+ * `workflow/__tests__/migrations.test.ts:103-183`. Inlined rather than
+ * shared-extracted: duplication locks the v1 wire format in each test.
+ * `seq` starts at 100 to dodge init's v4 events (PRIMARY KEY at seq 1 +
+ * 2). `parent_seq` is null so we don't create dangling FKs to init's
+ * rows — migration is orthogonal to parent-seq.
+ *
+ * Partition keys: PR-FIN-2a-ii (T-2a.9.unified) `EventStore` reads bake
+ * a `WHERE session_id IS $session_id AND project_id IS $project_id`
+ * filter (Option α). The seeded rows must match the same `(sessionId,
+ * projectId)` pair init stamped on `workflow.start` /
+ * `workflow.eval.decide` or the lazy migration walk skips them. The
+ * factory accepts both keys verbatim and writes them on every fixture
+ * row.
  */
-const v1Events: readonly EventRow[] = [
-  { seq: 100, ts: '2026-01-01T00:00:00.000Z', schema_version: 1, type: 'workflow.step.exit', step: 'ideation',
-    data: JSON.stringify({ step: 'ideation' }),
-    actor: 'orchestrator', parent_seq: null, idempotency_key: 'tool-call:tc-mig-001:workflow.step.exit',
-    session_id: null, project_id: null },
-  { seq: 101, ts: '2026-01-01T00:00:01.000Z', schema_version: 1, type: 'guard.violation', step: 'plan',
-    data: JSON.stringify({ guardId: 'g-scope', toolName: 'Write', reason: 'outside scope', step: 'plan',
-      timestamp: '2026-01-01T00:00:01.000Z' }),
-    actor: 'hook', parent_seq: null, idempotency_key: 'tool-call:tc-mig-002:guard.violation',
-    session_id: null, project_id: null },
-  { seq: 102, ts: '2026-01-01T00:00:02.000Z', schema_version: 1, type: 'artifact.write', step: 'execution',
-    data: JSON.stringify({ step: 'execution', filename: 'research.md', artifactType: 'note' }),
-    actor: 'executor', parent_seq: null, idempotency_key: 'tool-call:tc-mig-003:artifact.write',
-    session_id: null, project_id: null },
-];
+function buildV1Events(
+  sessionId: string,
+  projectId: string,
+): readonly EventRow[] {
+  return [
+    { seq: 100, ts: '2026-01-01T00:00:00.000Z', schema_version: 1, type: 'workflow.step.exit', step: 'ideation',
+      data: JSON.stringify({ step: 'ideation' }),
+      actor: 'orchestrator', parent_seq: null, idempotency_key: 'tool-call:tc-mig-001:workflow.step.exit',
+      session_id: sessionId, project_id: projectId },
+    { seq: 101, ts: '2026-01-01T00:00:01.000Z', schema_version: 1, type: 'guard.violation', step: 'plan',
+      data: JSON.stringify({ guardId: 'g-scope', toolName: 'Write', reason: 'outside scope', step: 'plan',
+        timestamp: '2026-01-01T00:00:01.000Z' }),
+      actor: 'hook', parent_seq: null, idempotency_key: 'tool-call:tc-mig-002:guard.violation',
+      session_id: sessionId, project_id: projectId },
+    { seq: 102, ts: '2026-01-01T00:00:02.000Z', schema_version: 1, type: 'artifact.write', step: 'execution',
+      data: JSON.stringify({ step: 'execution', filename: 'research.md', artifactType: 'note' }),
+      actor: 'executor', parent_seq: null, idempotency_key: 'tool-call:tc-mig-003:artifact.write',
+      session_id: sessionId, project_id: projectId },
+  ];
+}
 
 describe('migration chain e2e', () => {
   test(
@@ -92,30 +105,36 @@ describe('migration chain e2e', () => {
       };
 
       try {
-        // Step A — init a session shell (state.json at v4).
+        // Step A — init a session shell (writes session.json + opens
+        // gobbi.db with the v5+ partition columns).
         const initResult = await $`bun run ${CLI_PATH} workflow init --session-id ${sessionId} --task migration-e2e`
           .cwd(tmpRoot)
           .env(childEnv)
           .quiet();
         expect(initResult.exitCode).toBe(0);
 
+        const projectName = basename(tmpRoot);
         const sessionDir = sessionDirForProject(
           tmpRoot,
-          basename(tmpRoot),
+          projectName,
           sessionId,
         );
         const dbPath = join(sessionDir, 'gobbi.db');
-        const statePath = join(sessionDir, 'state.json');
-        const stateBackupPath = join(sessionDir, 'state.json.backup');
-        expect(existsSync(join(sessionDir, 'metadata.json'))).toBe(true);
+        // PR-FIN-2a-ii: `metadata.json` retired in favour of
+        // `session.json`; the engine no longer writes `state.json`.
+        expect(existsSync(join(sessionDir, 'session.json'))).toBe(true);
         expect(existsSync(dbPath)).toBe(true);
 
-        // Step B — inject schema_version=1 rows directly.
+        // Step B — inject schema_version=1 rows directly. Stamp the
+        // partition keys init wrote so the partition-aware read filter
+        // (`WHERE session_id IS $session_id AND project_id IS
+        // $project_id`) admits the rows on the `replayAll` walk.
+        const v1Events = buildV1Events(sessionId, projectName);
         const db = new Database(dbPath);
         try {
           const insert = db.prepare(
-            'INSERT INTO events (seq, ts, schema_version, type, step, data, actor, parent_seq, idempotency_key) ' +
-              'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO events (seq, ts, schema_version, type, step, data, actor, parent_seq, idempotency_key, session_id, project_id) ' +
+              'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
           );
           for (const row of v1Events) {
             insert.run(
@@ -128,23 +147,19 @@ describe('migration chain e2e', () => {
               row.actor,
               row.parent_seq,
               row.idempotency_key,
+              row.session_id,
+              row.project_id,
             );
           }
         } finally {
           db.close();
         }
 
-        // ARCH-P2 fix + innovative I11 pre-triangulation: delete state.json
-        // so the next CLI call falls through to deriveState. The pre-assert
-        // locks the intent (we deliberately removed a file we know existed).
-        expect(existsSync(statePath)).toBe(true);
-        rmSync(statePath);
-        rmSync(stateBackupPath, { force: true }); // defensive — init may add one later
-        expect(existsSync(statePath)).toBe(false);
-
-        // Step C — trigger migration via `workflow status --json`. With
-        // state.json gone, resolveWorkflowState walks replayAll → rowToEvent
-        // → migrateEvent on every seeded v1 row.
+        // Step C — trigger migration via `workflow status --json`.
+        // PR-FIN-2a-ii (T-2a.9.unified) retired `state.json`;
+        // `resolveWorkflowState` is now a pure derive over the partition-
+        // filtered event stream every call. The seeded v1 rows flow
+        // through `replayAll → rowToEvent → migrateEvent`.
         const statusResult = await $`bun run ${CLI_PATH} workflow status --session-id ${sessionId} --json`
           .cwd(tmpRoot)
           .env(childEnv)

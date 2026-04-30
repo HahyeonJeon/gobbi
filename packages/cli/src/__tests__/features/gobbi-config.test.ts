@@ -1392,17 +1392,18 @@ describe('CFG-23: fresh-setup config set + workflow init resolve to the same pro
     });
     expect(captured.exitCode).toBeNull();
 
-    // The metadata.projectName must match the project the pre-init `set`
-    // landed under.
-    const metaPath = join(
+    // The session.projectId must match the project the pre-init `set`
+    // landed under. PR-FIN-2a-ii: `metadata.projectName` was retired in
+    // favour of `session.json.projectId`.
+    const sessionPath = join(
       sessionDirForProject(repo, expectedProject, 'sess1'),
-      'metadata.json',
+      'session.json',
     );
-    expect(existsSync(metaPath)).toBe(true);
-    const meta = JSON.parse(readFileSync(metaPath, 'utf8')) as {
-      readonly projectName: string;
+    expect(existsSync(sessionPath)).toBe(true);
+    const session = JSON.parse(readFileSync(sessionPath, 'utf8')) as {
+      readonly projectId: string;
     };
-    expect(meta.projectName).toBe(expectedProject);
+    expect(session.projectId).toBe(expectedProject);
 
     // Step 3: read the value back via `config get --level session` — it
     // must still be the value we set in step 1.
