@@ -1030,7 +1030,6 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         runPromoteWithOptions(['--project', 'gobbi'], {
           repoRoot: repo,
           claudeDir,
-          now: () => new Date('2026-04-24T00:00:00Z'),
         }),
       );
       expect(captured.exitCode).toBeNull();
@@ -1073,7 +1072,6 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         runPromoteWithOptions(['--project', 'gobbi', '--destination-project', 'demo'], {
           repoRoot: repo,
           claudeDir,
-          now: () => new Date('2026-04-24T00:00:00Z'),
         }),
       );
       expect(captured.exitCode).toBeNull();
@@ -1272,9 +1270,13 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       // registry removal. Preserved in git history.
     });
 
-    test('G-MEM2-MP-04: workflow init stamps metadata.projectName at birth', async () => {
+    test('G-MEM2-MP-04: workflow init stamps session.json.projectId at birth', async () => {
       // PR-FIN-1c: project name resolves to basename(repoRoot) when no
       // --project flag is supplied. No more bootstrap registry write.
+      // PR-FIN-2a-ii: `metadata.json` retired; the per-session payload is
+      // `session.json`. `session.json.projectId` carries the project the
+      // session is bound to at birth — read it here for the same lock the
+      // legacy `metadata.projectName` assertion provided.
       const repo = makeRepo();
       await captureExit(() =>
         runInitWithOptions(
@@ -1285,11 +1287,11 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
       const expectedName = basename(repo);
 
       const sessionPath = sessionDirForProject(repo, expectedName, 'sess-mp04');
-      expect(existsSync(join(sessionPath, 'metadata.json'))).toBe(true);
-      const meta = JSON.parse(
-        readFileSync(join(sessionPath, 'metadata.json'), 'utf8'),
-      ) as { readonly projectName: string };
-      expect(meta.projectName).toBe(expectedName);
+      expect(existsSync(join(sessionPath, 'session.json'))).toBe(true);
+      const session = JSON.parse(
+        readFileSync(join(sessionPath, 'session.json'), 'utf8'),
+      ) as { readonly projectId: string };
+      expect(session.projectId).toBe(expectedName);
 
       // Re-init with a DIFFERENT project flag must refuse — mismatch
       // gate locks the session to the project it was born under.
