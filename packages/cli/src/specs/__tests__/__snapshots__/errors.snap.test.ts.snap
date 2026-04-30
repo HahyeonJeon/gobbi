@@ -223,7 +223,7 @@ exports[`errors — pathway-compiler snapshots unknown pathway compiles to a sta
 
 Pathway: unknown.
 
-The workflow is in the error step but the event store carries no evidence that attributes the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The classifier's diagnostic hint appears below — it usually indicates either an empty store (state.json written manually) or a store-read race during classification. Recovery means inspecting the hint to pick between retry-from-last-valid-state, force-memorization, and abort.
+The workflow is in the error step but the event store carries no evidence that attributes the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The classifier's diagnostic hint appears below — it usually indicates either an empty store (likely a fresh init or manual \`gobbi.db\` truncation) or a store-read race during classification. Recovery means inspecting the hint to pick between retry-from-last-valid-state, force-memorization, and abort.
 
 session.schemaVersion=4
 session.currentStep=error
@@ -243,7 +243,7 @@ Recovery options (no pathway-specific recommendation — inspect the diagnostic 
   - Abort the session:                  gobbi workflow transition --type abort"
 `;
 
-exports[`errors — pathway-compiler snapshots unknown pathway compiles to a stable prompt 2`] = `"34e819ce3ec72c826d23a45384c649a1b5ae4b3ff4804282dfc4909354e49d51"`;
+exports[`errors — pathway-compiler snapshots unknown pathway compiles to a stable prompt 2`] = `"badf1523de2730e83f6e35d3fc33ccf41dd7bd610434de37514b2d913c4eb029"`;
 
 exports[`errors — pathway-compiler snapshots unknown pathway compiles to a stable prompt 3`] = `
 [

@@ -336,7 +336,7 @@ The reducer rejected an event because the transition was not valid from the curr
  */
 export const STATIC_PREAMBLE_UNKNOWN = `Pathway: unknown.
 
-The workflow is in the error step but the event store carries no evidence that attributes the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The classifier's diagnostic hint appears below — it usually indicates either an empty store (state.json written manually) or a store-read race during classification. Recovery means inspecting the hint to pick between retry-from-last-valid-state, force-memorization, and abort.`;
+The workflow is in the error step but the event store carries no evidence that attributes the error to one of the four observable pathways (crash, timeout, feedback cap, invalid transition). The classifier's diagnostic hint appears below — it usually indicates either an empty store (likely a fresh init or manual \`gobbi.db\` truncation) or a store-read race during classification. Recovery means inspecting the hint to pick between retry-from-last-valid-state, force-memorization, and abort.`;
 
 // ---------------------------------------------------------------------------
 // Per-pathway dynamic render helpers — evidence + recovery-options text.
