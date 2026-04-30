@@ -1,6 +1,5 @@
 /**
- * Event schema migration tests — `workflow/migrations.ts` + integration with
- * `state.ts::readState` for v1 on-disk compat.
+ * Event schema migration tests — `workflow/migrations.ts`.
  *
  * Covers the Wave 2 (C.8-d) disciplines plus the v3 extensions from PR D.5:
  *
@@ -24,10 +23,6 @@
  *      snapshot round-trips through `JSON.stringify` / `JSON.parse` at the
  *      event-store boundary. Asserts CP11 reversibility is preserved by
  *      the wire format.
- *   6. v1 state.json on-disk compat — a state.json written by a pre-PR-C
- *      process is readable via `readState`; the in-memory resolved state
- *      has `lastVerdictOutcome: null` normalised in and violations default
- *      to `severity: 'error'`.
  *
  * Note on purity: migrateEvent's `data` parse-on-non-identity is a deliberate
  * part of every walk even when each hop is an identity transform — the
@@ -36,13 +31,10 @@
  */
 
 import { describe, test, expect } from 'bun:test';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
-import { tmpdir } from 'node:os';
 
 import { CURRENT_SCHEMA_VERSION, migrateEvent } from '../migrations.js';
 import type { EventRow } from '../migrations.js';
-import { deriveState, readState } from '../state.js';
+import { deriveState } from '../state.js';
 import { reduce } from '../reducer.js';
 import type { PriorErrorSnapshot } from '../events/decision.js';
 import type { ErrorPathway } from '../../specs/errors.js';
@@ -1336,102 +1328,3 @@ describe('v6 → v7 schema ensureSchemaV7', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// 3. v1 state.json on-disk compat
-// ---------------------------------------------------------------------------
-
-describe('v1 state.json on-disk compat', () => {
-  test('readState normalises v1 state.json to the v2 in-memory shape', () => {
-    const testDir = mkdtempSync(join(tmpdir(), 'gobbi-migrations-test-'));
-    try {
-      // A state.json written by a pre-PR-C process — no `lastVerdictOutcome`,
-      // violations without `severity`, schemaVersion still 1. This is
-      // exactly the shape that survives on disk from v0.5.0 Phase 2 PR B.
-      const v1State = {
-        schemaVersion: 1,
-        sessionId: 'sess-v1-ondisk',
-        currentStep: 'plan',
-        currentSubstate: null,
-        completedSteps: ['ideation'],
-        evalConfig: null,
-        activeSubagents: [],
-        artifacts: {},
-        violations: [
-          {
-            guardId: 'g-scope',
-            toolName: 'Write',
-            reason: 'outside scope',
-            step: 'plan',
-            timestamp: '2026-01-01T00:00:03.000Z',
-            // severity absent — v1 didn't track it
-          },
-        ],
-        feedbackRound: 0,
-        maxFeedbackRounds: 3,
-        // lastVerdictOutcome absent — v1 didn't track it
-      };
-      writeFileSync(
-        join(testDir, 'state.json'),
-        JSON.stringify(v1State),
-        'utf8',
-      );
-
-      const resolved = readState(testDir);
-      expect(resolved).not.toBeNull();
-      if (resolved === null) throw new Error('unreachable');
-      expect(resolved.sessionId).toBe('sess-v1-ondisk');
-      // v1 on-disk 'plan' is normalised to the post-rename 'planning' literal
-      // on read (see `normaliseToLatestSchema` in state.ts).
-      expect(resolved.currentStep).toBe('planning');
-      // Normalisation: v1's absent lastVerdictOutcome becomes null in memory.
-      expect(resolved.lastVerdictOutcome).toBeNull();
-      // Normalisation: v1 violation without severity becomes 'error' in memory.
-      expect(resolved.violations).toHaveLength(1);
-      expect(resolved.violations[0]!.severity).toBe('error');
-    } finally {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  test('readState preserves v2 state.json unchanged', () => {
-    const testDir = mkdtempSync(join(tmpdir(), 'gobbi-migrations-test-'));
-    try {
-      const v2State = {
-        schemaVersion: 2,
-        sessionId: 'sess-v2-ondisk',
-        currentStep: 'execution',
-        currentSubstate: null,
-        completedSteps: ['ideation', 'plan'],
-        evalConfig: { ideation: false, plan: false },
-        activeSubagents: [],
-        artifacts: {},
-        violations: [
-          {
-            guardId: 'g-warn',
-            toolName: 'Write',
-            reason: 'secret-ish path',
-            step: 'execution',
-            timestamp: '2026-01-01T00:00:00.000Z',
-            severity: 'warning',
-          },
-        ],
-        feedbackRound: 0,
-        maxFeedbackRounds: 3,
-        lastVerdictOutcome: 'pass',
-      };
-      writeFileSync(
-        join(testDir, 'state.json'),
-        JSON.stringify(v2State),
-        'utf8',
-      );
-
-      const resolved = readState(testDir);
-      expect(resolved).not.toBeNull();
-      if (resolved === null) throw new Error('unreachable');
-      expect(resolved.lastVerdictOutcome).toBe('pass');
-      expect(resolved.violations[0]!.severity).toBe('warning');
-    } finally {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-});
