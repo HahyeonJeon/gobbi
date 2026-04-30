@@ -236,9 +236,11 @@ export async function compileCurrentStep(
   // overlay `workflow.<step>.{agent,evaluate.agent}.{model,effort}` onto
   // every entry of `spec.delegation.agents[*]` per the step-driven mapping
   // (see `spec-loader.ts::loadSpecForRuntime` JSDoc + PR-FIN-1e ideation
-  // §2.3.1). The `partitionKeys.projectId` field carries the resolved
-  // project name from `<sessionDir>/metadata.json`; absent → falls back to
-  // `basename(repoRoot)` inside `resolveSettings`.
+  // §2.3.1). `resolvePartitionKeys` (see `commands/session.ts`) extracts
+  // `(sessionId, projectId)` purely from the session-dir path segments —
+  // post-PR-FIN-2a-ii there is no per-session `metadata.json` to read.
+  // When `projectId` is null (legacy-flat session layout) the cascade
+  // falls back to `basename(repoRoot)` inside `resolveSettings`.
   const repoRoot = getRepoRoot();
   const partitionKeys = resolvePartitionKeys(sessionDir);
   const resolvedSettings = resolveSettings({
