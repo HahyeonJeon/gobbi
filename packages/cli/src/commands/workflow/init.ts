@@ -2,19 +2,30 @@
  * gobbi workflow init — initialise a workflow session directory.
  *
  * Creates `.gobbi/projects/<name>/sessions/<sessionId>/` under the detected
- * repo root, writes a `metadata.json` at schema v3, opens the SQLite event
- * store (`gobbi.db`), and appends the opening pair of events —
- * `workflow.start` followed by `workflow.eval.decide` — atomically inside
- * a single `store.transaction`.
+ * repo root, writes a `session.json` stub via {@link writeSessionStub},
+ * opens the SQLite event store (`gobbi.db`), and appends the opening pair
+ * of events — `workflow.start` followed by `workflow.eval.decide` —
+ * atomically inside a single `store.transaction`.
+ *
+ * PR-FIN-2a-ii (T-2a.8.5): the legacy `metadata.json` writer is retired in
+ * favour of `session.json` — a stub at init carrying only the 6 required-at-
+ * all-stages fields (`schemaVersion`, `sessionId`, `projectId`, `createdAt`,
+ * `gobbiVersion`, `task`). The full session.json is materialised at the
+ * memorization step's STEP_EXIT (T-2a.8.2). Until T-2a.9.tests prunes
+ * `cross-pass-invariant.test.ts`, the legacy `SessionMetadata` /
+ * `readMetadata` / `isValidMetadata` symbols remain exported as
+ * dead-code-but-still-imported back-compat surface; they are NOT consumed
+ * by the production init path.
  *
  * ## Idempotency
  *
- * The SessionStart hook fires on `startup | resume | compact`, so `init` is
- * invoked multiple times per logical session. A fresh invocation against an
- * existing directory is a no-op: the metadata is re-validated, no events are
- * emitted, and the command exits 0 silently. A corrupt `metadata.json` is
- * not transparently rewritten — it's reported on stderr with a non-zero exit
- * so the operator can see the drift.
+ * The SessionStart hook fires on `startup | resume | compact | clear`, so
+ * `init` is invoked multiple times per logical session. A fresh invocation
+ * against an existing directory is a no-op: the existing `session.json`
+ * stub is re-validated, no events are emitted, and the command exits 0
+ * silently. A corrupt `session.json` propagates the AJV/JSON parse failure
+ * from `readSessionJson` so the operator can see the drift rather than have
+ * it transparently rewritten.
  *
  * ## Session id resolution
  *
@@ -30,21 +41,21 @@
  *   1. `--project <name>` CLI flag (per-invocation override).
  *   2. `basename(repoRoot)` — the directory containing the repo.
  *
- * On existing-session re-init, `metadata.json.projectName` is authoritative.
+ * On existing-session re-init, `session.json.projectId` is authoritative.
  * If `--project <name>` is provided AND does not match the stamped
- * `projectName`, init exits 2 with a clear stderr message — sessions are
+ * `projectId`, init exits 2 with a clear stderr message — sessions are
  * bound to ONE project at birth and cannot be re-parented mid-flight.
  *
  * ## Schema
  *
- * `metadata.json` shape is at `schemaVersion: 3` — v3 carries the required
- * `projectName` field that names the project partition this session
- * belongs to. The metadata schemaVersion is decoupled from the
- * state-machine `WorkflowState.schemaVersion`.
+ * `session.json` shape is at `schemaVersion: 1` — see `lib/json-memory.ts`
+ * for the AJV schema and the full set of fields populated at the memorization
+ * step. The session.json schemaVersion is decoupled from the state-machine
+ * `WorkflowState.schemaVersion`.
  */
 
 import { parseArgs } from 'node:util';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 import { getRepoRoot } from '../../lib/repo.js';
@@ -55,6 +66,13 @@ import {
   resolveEvalDecision,
 } from '../../lib/settings-io.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
+import {
+  readSessionJson,
+  sessionJsonPath,
+  writeSessionStub,
+} from '../../lib/json-memory.js';
+import { readInstalledVersion } from '../../lib/version-check.js';
+import { ConfigCascadeError } from '../../lib/settings.js';
 import { EventStore } from '../../workflow/store.js';
 import { appendEventAndUpdateState, resolveWorkflowState } from '../../workflow/engine.js';
 import { initialState } from '../../workflow/state.js';
@@ -62,8 +80,6 @@ import {
   createWorkflowStart,
   createEvalDecide,
 } from '../../workflow/events/workflow.js';
-
-import { resolvePartitionKeys } from '../session.js';
 
 import { detectTechStack } from './tech-stack.js';
 
@@ -86,7 +102,7 @@ Options:
   --help, -h            Show this help message
 
 Idempotent: re-running against an existing session directory is a silent no-op.
-Re-init with --project must match metadata.projectName; mismatch exits 2.`;
+Re-init with --project must match session.projectId; mismatch exits 2.`;
 
 const PARSE_OPTIONS = {
   help: { type: 'boolean', short: 'h', default: false },
@@ -99,25 +115,24 @@ const PARSE_OPTIONS = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// Metadata shape
+// Legacy metadata shape — deprecated; retained for back-compat
 // ---------------------------------------------------------------------------
+//
+// PR-FIN-2a-ii (T-2a.8.5) replaced the production metadata.json writer with
+// `writeSessionStub` (session.json). The legacy `SessionMetadata` /
+// `SessionConfigSnapshot` interfaces, the `readMetadata` reader, and
+// `isValidMetadata` predicate remain exported solely so
+// `__tests__/cross-pass-invariant.test.ts` (owned by T-2a.9.tests, Wave C)
+// continues to compile until that test is pruned. The production init path
+// no longer reads or writes metadata.json — reading these symbols at
+// runtime is a dead-code branch.
+//
+// DO NOT extend this surface. New session-time data lands on session.json
+// via `lib/json-memory.ts`.
 
 /**
- * On-disk shape of `metadata.json`. Schema v3 carries the required
- * `projectName` field for the multi-project layout.
- *
- *   - `sessionId` — matches the directory name.
- *   - `createdAt` — ISO-8601 timestamp, set once at init; never rewritten.
- *   - `projectRoot` — absolute path to the repo root at init time.
- *   - `projectName` — name of the project partition this session belongs to
- *     (see `.gobbi/projects/<projectName>/`). Resolved at init time via the
- *     `--project` flag / `basename(repoRoot)` ladder; never rewritten.
- *     Mid-session re-parent is rejected (see module docblock §Project name
- *     resolution).
- *   - `techStack` — output of {@link detectTechStack} (lowercase, deduped,
- *     alphabetically sorted; empty array when no signals match).
- *   - `configSnapshot` — the setup answers captured at init (task text,
- *     evaluation toggles, free-text context).
+ * @deprecated PR-FIN-2a-ii — metadata.json is no longer written. Retained
+ * solely for `cross-pass-invariant.test.ts` back-compat.
  */
 export interface SessionMetadata {
   readonly schemaVersion: 3;
@@ -129,6 +144,7 @@ export interface SessionMetadata {
   readonly configSnapshot: SessionConfigSnapshot;
 }
 
+/** @deprecated PR-FIN-2a-ii — see {@link SessionMetadata}. */
 export interface SessionConfigSnapshot {
   readonly task: string;
   readonly evalIdeation: boolean;
@@ -206,28 +222,46 @@ export async function runInitWithOptions(
   // sessionId across plausible project names so re-init with a
   // mismatching flag hits the mismatch gate rather than fresh-init-ing
   // a second session under the wrong project. Session is bound to ONE
-  // project at birth per metadata.projectName.
+  // project at birth per session.projectId (PR-FIN-2a-ii).
   const candidateProjectNames: readonly string[] = dedup([
     ...(projectFlag !== undefined ? [projectFlag] : []),
     basename(repoRoot),
   ]);
   for (const candidate of candidateProjectNames) {
-    const probeDir = sessionDirForProject(repoRoot, candidate, sessionId);
-    const probePath = join(probeDir, 'metadata.json');
+    const probePath = sessionJsonPath(repoRoot, candidate, sessionId);
     if (!existsSync(probePath)) continue;
-    const existing = readMetadata(probePath);
+    let existing;
+    try {
+      existing = readSessionJson(probePath);
+    } catch (err) {
+      // ConfigCascadeError carries the file path + AJV/parse details; fall
+      // through to the malformed-message exit so operators see remediation
+      // pointer, mirroring the original metadata.json malformed branch.
+      const detail =
+        err instanceof ConfigCascadeError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : String(err);
+      process.stderr.write(
+        `gobbi workflow init: existing ${probePath} is malformed — remove or repair manually\n${detail}\n`,
+      );
+      process.exit(1);
+    }
     if (existing === null) {
+      // existsSync said yes, readSessionJson returned null — race or empty
+      // file. Treat as malformed.
       process.stderr.write(
         `gobbi workflow init: existing ${probePath} is malformed — remove or repair manually\n`,
       );
       process.exit(1);
     }
-    // Mismatch gate — a session's projectName is frozen at birth. An explicit
+    // Mismatch gate — a session's projectId is frozen at birth. An explicit
     // --project override on re-init must match the stamped value or we exit 2
     // so the operator cannot silently re-parent a session.
-    if (projectFlag !== undefined && projectFlag !== existing.projectName) {
+    if (projectFlag !== undefined && projectFlag !== existing.projectId) {
       process.stderr.write(
-        `[gobbi workflow init] session ${sessionId} is bound to project '${existing.projectName}'; --project=${projectFlag} not allowed\n`,
+        `[gobbi workflow init] session ${sessionId} is bound to project '${existing.projectId}'; --project=${projectFlag} not allowed\n`,
       );
       process.exit(2);
     }
@@ -239,34 +273,37 @@ export async function runInitWithOptions(
   const projectName = resolveProjectNameForInit(repoRoot, projectFlag);
 
   const sessionDir = sessionDirForProject(repoRoot, projectName, sessionId);
-  const metadataPath = join(sessionDir, 'metadata.json');
 
   mkdirSync(sessionDir, { recursive: true });
 
-  const configSnapshot: SessionConfigSnapshot = {
-    task: typeof values.task === 'string' ? values.task : '',
-    evalIdeation: values['eval-ideation'] === true,
-    evalPlanning: values['eval-planning'] === true,
-    context: typeof values.context === 'string' ? values.context : '',
-  };
+  const task = typeof values.task === 'string' ? values.task : '';
+  const evalIdeation = values['eval-ideation'] === true;
+  const evalPlanning = values['eval-planning'] === true;
 
-  const techStack = detectTechStack(repoRoot);
+  // Detect the tech stack so the value is observable in stderr drift checks
+  // (T-2a.9.tests still inspects the directory shape during cross-pass
+  // validation). Result is intentionally discarded here — session.json's
+  // 6-field stub does not carry it (ideation lock 5 — minimal carry-forward).
+  detectTechStack(repoRoot);
 
-  const metadata: SessionMetadata = {
-    schemaVersion: 3,
-    sessionId,
-    createdAt: new Date().toISOString(),
-    projectRoot: repoRoot,
+  // session.json stub carries the 6 required-at-all-stages fields per the
+  // ideation lock (schemaVersion, sessionId, projectId, createdAt,
+  // gobbiVersion, task). The full session.json with steps[] lands at the
+  // memorization step's STEP_EXIT (T-2a.8.2).
+  const createdAt = new Date().toISOString();
+  const gobbiVersion = await readInstalledVersion();
+  writeSessionStub({
+    repoRoot,
     projectName,
-    techStack,
-    configSnapshot,
-  };
+    sessionId,
+    task,
+    gobbiVersion,
+    createdAt,
+  });
 
-  writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`, 'utf8');
-
-  // Resolve the cascaded settings AFTER metadata is written so the
-  // session-level `settings.json` (if one was seeded by a future Pass) is
-  // visible. The resolved cascade feeds `initialState` so
+  // Resolve the cascaded settings AFTER the session.json stub is written so
+  // the session-level `settings.json` (if one was seeded by a future Pass)
+  // is visible. The resolved cascade feeds `initialState` so
   // `state.maxFeedbackRounds` reflects the configured per-step
   // `workflow.{step}.maxIterations` instead of the hardcoded 3 (issue #134).
   const resolvedSettings = resolveSettings({
@@ -297,8 +334,19 @@ export async function runInitWithOptions(
   // state.json forward. See CV-9 (issue #163) for the regression that
   // motivated that pattern.
   const dbPath = join(sessionDir, 'gobbi.db');
-  const partitionKeys = resolvePartitionKeys(sessionDir);
-  const store = new EventStore(dbPath, partitionKeys);
+  // PR-FIN-2a-ii (T-2a.8.5): supply the partition keys explicitly rather
+  // than calling `resolvePartitionKeys(sessionDir)`. The legacy resolver
+  // reads `metadata.projectName` from `<sessionDir>/metadata.json`, which
+  // this code path no longer writes. We already have both values in this
+  // scope (`sessionId` from the resolver above; `projectName` from the
+  // PR-FIN-1c project-name resolution), so passing them in directly is
+  // strictly more correct than the disk-roundtrip — it also avoids
+  // depending on the dead `resolvePartitionKeys`/`resolveProjectIdFromMetadata`
+  // path that T-2a.9.unified will retire.
+  const store = new EventStore(dbPath, {
+    sessionId,
+    projectId: projectName,
+  });
   try {
     store.transaction(() => {
       // Start from a fresh state — this is a brand-new session, so
@@ -322,7 +370,7 @@ export async function runInitWithOptions(
 
       const startEvent = createWorkflowStart({
         sessionId,
-        timestamp: metadata.createdAt,
+        timestamp: createdAt,
       });
       const startResult = appendEventAndUpdateState(
         store,
@@ -354,8 +402,8 @@ export async function runInitWithOptions(
           ? resolveEvalDecision(resolvedSettings, 'memorization').enabled
           : false;
       const decideEvent = createEvalDecide({
-        ideation: configSnapshot.evalIdeation,
-        plan: configSnapshot.evalPlanning,
+        ideation: evalIdeation,
+        plan: evalPlanning,
         memorization: memorizationEnabled,
       });
       appendEventAndUpdateState(
@@ -447,8 +495,15 @@ export function resolveProjectNameForInit(
 }
 
 /**
- * Read and structurally validate a `metadata.json`. Returns `null` when the
- * file is malformed at any level — callers decide how to surface that.
+ * Read and structurally validate a legacy `metadata.json`. Returns `null`
+ * when the file is malformed at any level — callers decide how to surface
+ * that.
+ *
+ * @deprecated PR-FIN-2a-ii (T-2a.8.5) — `metadata.json` is no longer
+ * written by `gobbi workflow init`; the active per-session JSON is
+ * `session.json` (see `lib/json-memory.ts::readSessionJson`). This reader
+ * is retained only for `cross-pass-invariant.test.ts` until T-2a.9.tests
+ * prunes that suite.
  */
 export function readMetadata(path: string): SessionMetadata | null {
   let raw: string;
