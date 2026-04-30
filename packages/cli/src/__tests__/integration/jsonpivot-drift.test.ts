@@ -345,12 +345,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
       'Docblock at the second `resolvePartitionKeys` callsite describes the post-PR-FIN-2a-ii retirement of the per-session metadata.json reader (PR-FIN-2a-iii Tier A.6 docs sweep). Naming the retired file is necessary to document what was retired.',
   },
   {
-    path: 'packages/cli/src/commands/workflow/tech-stack.ts',
-    tokens: new Set(['metadata.json']),
-    rationale:
-      'Module + `detectTechStack` docblocks describe the post-PR-FIN-2a-ii retirement of metadata.json.techStack and the still-pending session.json slot decision (PR-FIN-2a-iii Tier A.10). Function is kept live for the underlying signal; deletion vs. wiring is a deferred follow-up. Naming the retired file is necessary to document what was retired.',
-  },
-  {
     path: 'packages/cli/src/commands/maintenance/wipe-legacy-sessions.ts',
     rationale:
       'Wipe tool — its purpose IS to delete the retired filenames. The hardcoded literal list of retired filenames at lines 111-113 is load-bearing.',
