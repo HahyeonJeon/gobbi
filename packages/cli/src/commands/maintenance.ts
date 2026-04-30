@@ -68,6 +68,17 @@ export const MAINTENANCE_COMMANDS: readonly MaintenanceCommand[] = [
       await runMigrateStateDb(args);
     },
   },
+  {
+    name: 'verify-state-projections',
+    summary:
+      'Diff event-derived state against project.json projection; exits 1 on any divergence',
+    run: async (args: string[]): Promise<void> => {
+      const { runVerifyStateProjections } = await import(
+        './maintenance/verify-state-projections.js'
+      );
+      await runVerifyStateProjections(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
