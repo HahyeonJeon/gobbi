@@ -1,7 +1,7 @@
 /**
  * Tech-stack detection — a cheap, best-effort signal map currently called
  * by `gobbi workflow init` for observability. The `techStack` field is
- * not yet persisted (deferred follow-up — see issue #N): post-PR-FIN-2a-ii
+ * not yet persisted (deferred follow-up — see issue #234): post-PR-FIN-2a-ii
  * the per-session `metadata.json` was retired, and a `techStack` slot has
  * not yet landed in the `session.json` schema. The function is kept live so
  * the underlying signal remains computed at init time even before a
@@ -50,7 +50,7 @@ import { isRecord, isString } from '../../lib/guards.js';
  *
  * Always returns — never throws. Currently called by `init.ts` for
  * observability; the `techStack` field is not yet persisted (deferred
- * follow-up — see issue #N) since the per-session `metadata.json` was
+ * follow-up — see issue #234) since the per-session `metadata.json` was
  * retired in PR-FIN-2a-ii and no `session.json` slot has replaced it yet.
  */
 export function detectTechStack(projectRoot: string): readonly string[] {
