@@ -13,19 +13,30 @@
  * This helper exposes the single resolution policy used by every
  * caller (`graph.ts`, `next.ts`, `validate.ts`, `stop.ts`). The
  * fallback chain is purely runtime — no build-time conditionals, no
- * marker files, no environment heuristics. It tries each candidate in
- * turn and gates on `existsSync(<candidate>/index.json)`:
+ * marker files, no environment heuristics. It tries each of three
+ * candidates in turn and gates on `existsSync(<candidate>/index.json)`:
  *
  *   1. Bundled-mode candidate — `<this-dir>/specs/`. When `paths.ts`
  *      is bundled into `dist/cli.js`, `<this-dir>` is `dist/`, so the
  *      sibling `specs/` subdir created by `build:safe`'s post-build
- *      `cp` lands at `dist/specs/`. This is the production path.
+ *      `cp` lands at `dist/specs/`. This is the production path and
+ *      the path that wins after `build:safe` has run in any mode.
  *   2. Source-mode candidate — `<this-dir>` itself. At author time
  *      `paths.ts` lives in `src/specs/`, so `<this-dir>` IS the specs
- *      directory. `bun test` and unit tests resolve here.
+ *      directory. Wins for `bun test` and unit tests that import
+ *      `paths.ts` directly from source without going through `dist`.
+ *   3. Dev-worktree fallback — `<this-dir>/../src/specs/`. Wins only
+ *      in repo-local worktrees where the binary at `dist/cli.js` is
+ *      executed before `build:safe` has populated `dist/specs/` (e.g.
+ *      a fresh-checkout worktree running tests via the bundled
+ *      entrypoint). The relative traversal lands on the source-tree
+ *      `src/specs/` sibling of `dist/`. In a published npm package
+ *      `src/` is filtered by `package.json::files` so this candidate
+ *      fails gracefully and the throw fires — no leak of dev-only
+ *      resolution into shipped artifacts.
  *
- * If neither candidate exists, `getSpecsDir` throws with both
- * attempted paths in the diagnostic so the failure is debuggable
+ * If none of the three candidates exists, `getSpecsDir` throws with
+ * all attempted paths in the diagnostic so the failure is debuggable
  * without source-diving.
  *
  * Tests still inject a custom `specsDir` via the `--dir` flag or
@@ -43,9 +54,9 @@ const THIS_DIR = dirname(fileURLToPath(import.meta.url));
 /**
  * Resolve the canonical specs directory at runtime.
  *
- * @throws when neither the bundled-mode nor source-mode candidate
- *   contains an `index.json`. The error message lists both attempted
- *   paths so the failure is self-diagnosing.
+ * @throws when none of the three candidates (bundled-mode, source-mode,
+ *   dev-worktree fallback) contains an `index.json`. The error message
+ *   lists all three attempted paths so the failure is self-diagnosing.
  */
 export function getSpecsDir(): string {
   // Bundled-mode candidate: <dist>/specs/ when paths.ts is in <dist>/cli.js.
@@ -55,10 +66,19 @@ export function getSpecsDir(): string {
   // Source-mode candidate: paths.ts itself lives in src/specs/.
   if (existsSync(join(THIS_DIR, 'index.json'))) return THIS_DIR;
 
+  // Dev-worktree fallback: <dist>/../src/specs/ when the bundled binary
+  // runs before build:safe populated dist/specs/. Candidate 3 only ever
+  // wins in repo-local worktrees where `bun test` runs from outside
+  // `src/specs/`. In a published package, `src/` is filtered by
+  // `package.json::files`.
+  const devSrc = join(THIS_DIR, '..', 'src', 'specs');
+  if (existsSync(join(devSrc, 'index.json'))) return devSrc;
+
   throw new Error(
-    `[specs/paths] Cannot locate specs directory. Tried: ${bundled}, ${THIS_DIR}. ` +
+    `[specs/paths] Cannot locate specs directory. Tried: ${bundled}, ${THIS_DIR}, ${devSrc}. ` +
       `In bundled mode, ensure 'build:safe' has run and 'dist/specs/' exists. ` +
-      `In source mode, ensure 'paths.ts' is co-located with 'index.json' under 'src/specs/'.`,
+      `In source mode, ensure 'paths.ts' is co-located with 'index.json' under 'src/specs/'. ` +
+      `In a dev worktree without 'build:safe', ensure 'src/specs/index.json' exists at the sibling of 'dist/'.`,
   );
 }
 

@@ -32,7 +32,7 @@ import {
 } from '../step-readme-writer.js';
 import { appendEventAndUpdateState } from '../engine.js';
 import { EventStore } from '../store.js';
-import { initialState, writeState } from '../state.js';
+import { initialState } from '../state.js';
 import type { WorkflowState } from '../state.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';
 import type { Event } from '../events/index.js';
@@ -292,8 +292,11 @@ describe('writeStepReadmeForExit', () => {
 
 describe('engine STEP_EXIT hook', () => {
   function seedIdeationState(sessionDir: string, sessionId: string): WorkflowState {
-    // Seed a state.json in the `ideation` productive step so STEP_EXIT is
-    // a valid transition. Callers drive the exit via the engine.
+    // Seed a legacy `state.json` fixture in the `ideation` productive step
+    // so STEP_EXIT is a valid transition. Callers drive the exit via the
+    // engine, which reads the in-memory `prev` argument — production code
+    // no longer reads `state.json` (retired in PR-FIN-2a-ii); the fixture
+    // is preserved as a regression scaffold.
     const state: WorkflowState = {
       ...initialState(sessionId),
       currentStep: 'ideation',
@@ -301,7 +304,11 @@ describe('engine STEP_EXIT hook', () => {
       stepStartedAt: '2026-04-20T09:00:00.000Z',
       artifacts: { ideation: ['ideation.md'] },
     };
-    writeState(sessionDir, state);
+    writeFileSync(
+      join(sessionDir, 'state.json'),
+      JSON.stringify(state, null, 2),
+      'utf8',
+    );
     return state;
   }
 

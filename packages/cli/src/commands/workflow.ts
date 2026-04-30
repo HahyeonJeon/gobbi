@@ -73,7 +73,7 @@ export const WORKFLOW_COMMANDS: readonly WorkflowCommand[] = [
   {
     name: 'init',
     summary:
-      'Initialise the session directory (metadata.json, gobbi.db, opening events)',
+      'Initialise the session directory (gobbi.db event store, session.json stub, opening events)',
     run: async (args: string[]): Promise<void> => {
       const { runInit } = await import('./workflow/init.js');
       await runInit(args);

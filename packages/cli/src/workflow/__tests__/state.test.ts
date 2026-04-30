@@ -1,20 +1,13 @@
 import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, existsSync, copyFileSync, readFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
 import {
   initialState,
   isValidState,
-  writeState,
-  readState,
-  backupState,
-  restoreBackup,
-  restoreStateFromBackup,
   rowToEvent,
   deriveState,
-  resolveState,
-  normaliseToLatestSchema,
 } from '../state.js';
 import type { WorkflowState, ReduceFn } from '../state.js';
 import type { ResolvedSettings } from '../../lib/settings.js';
@@ -198,84 +191,6 @@ describe('initialState maxFeedbackRounds wiring', () => {
 });
 
 // ===========================================================================
-// writeState + readState
-// ===========================================================================
-
-describe('writeState + readState', () => {
-  it('round-trips a state to disk and back', () => {
-    const state = makeState({ currentStep: 'execution', feedbackRound: 2 });
-    writeState(testDir, state);
-    const read = readState(testDir);
-    expect(read).toEqual(state);
-  });
-
-  it('creates the directory if it does not exist', () => {
-    const nested = join(testDir, 'nested', 'deep');
-    const state = makeState();
-    writeState(nested, state);
-    const read = readState(nested);
-    expect(read).toEqual(state);
-  });
-
-  it('overwrites an existing state.json', () => {
-    const state1 = makeState({ currentStep: 'idle' });
-    const state2 = makeState({ currentStep: 'execution' });
-    writeState(testDir, state1);
-    writeState(testDir, state2);
-    const read = readState(testDir);
-    expect(read).toEqual(state2);
-  });
-});
-
-// ===========================================================================
-// readState returns null
-// ===========================================================================
-
-describe('readState returns null', () => {
-  it('returns null for missing file', () => {
-    expect(readState(testDir)).toBeNull();
-  });
-
-  it('returns null for invalid JSON', () => {
-    writeFileSync(join(testDir, 'state.json'), 'not-json{{{', 'utf8');
-    expect(readState(testDir)).toBeNull();
-  });
-
-  it('returns null for wrong shape', () => {
-    writeFileSync(join(testDir, 'state.json'), JSON.stringify({ foo: 'bar' }), 'utf8');
-    expect(readState(testDir)).toBeNull();
-  });
-});
-
-// ===========================================================================
-// backupState + restoreBackup
-// ===========================================================================
-
-describe('backupState + restoreBackup', () => {
-  it('creates a backup and restores it', () => {
-    const state = makeState({ currentStep: 'planning', feedbackRound: 1 });
-    writeState(testDir, state);
-    backupState(testDir);
-
-    // Corrupt the primary
-    writeFileSync(join(testDir, 'state.json'), 'corrupted', 'utf8');
-
-    const restored = restoreBackup(testDir);
-    expect(restored).toEqual(state);
-  });
-
-  it('backupState is a no-op when state.json does not exist', () => {
-    // Should not throw
-    backupState(testDir);
-    expect(restoreBackup(testDir)).toBeNull();
-  });
-
-  it('restoreBackup returns null when no backup exists', () => {
-    expect(restoreBackup(testDir)).toBeNull();
-  });
-});
-
-// ===========================================================================
 // rowToEvent
 // ===========================================================================
 
@@ -408,58 +323,6 @@ describe('deriveState', () => {
 });
 
 // ===========================================================================
-// resolveState
-// ===========================================================================
-
-describe('resolveState', () => {
-  it('prefers state.json when available', () => {
-    using store = new EventStore(':memory:');
-
-    // Write a state.json that says execution
-    const diskState = makeState({ currentStep: 'execution' });
-    writeState(testDir, diskState);
-
-    // Store has a start event (which would derive to ideation)
-    store.append(makeAppendInput({ toolCallId: 'tc-1' }));
-    const events = store.replayAll();
-
-    const resolved = resolveState(testDir, events, 'test-session', reduce);
-    expect(resolved.currentStep).toBe('execution');
-  });
-
-  it('falls back to backup when state.json is corrupt', () => {
-    using store = new EventStore(':memory:');
-
-    // Write valid state, backup it, then corrupt primary
-    const backupStateObj = makeState({ currentStep: 'planning' });
-    writeState(testDir, backupStateObj);
-    backupState(testDir);
-    writeFileSync(join(testDir, 'state.json'), 'corrupt', 'utf8');
-
-    store.append(makeAppendInput({ toolCallId: 'tc-1' }));
-    const events = store.replayAll();
-
-    const resolved = resolveState(testDir, events, 'test-session', reduce);
-    expect(resolved.currentStep).toBe('planning');
-  });
-
-  it('falls back to event replay when both state.json and backup are missing', () => {
-    using store = new EventStore(':memory:');
-
-    store.append(makeAppendInput({
-      toolCallId: 'tc-1',
-      type: WORKFLOW_EVENTS.START,
-      data: JSON.stringify({ sessionId: 'sess-1', timestamp: '2026-01-01T00:00:00Z' }),
-    }));
-    const events = store.replayAll();
-
-    // No state.json, no backup — derive from events
-    const resolved = resolveState(testDir, events, 'sess-1', reduce);
-    expect(resolved.currentStep).toBe('ideation');
-  });
-});
-
-// ===========================================================================
 // Engine: deduplication
 // ===========================================================================
 
@@ -493,39 +356,6 @@ describe('appendEventAndUpdateState deduplication', () => {
     // events.jsonl is no longer written — gobbi.db is the authoritative
     // source of truth for the event log.
     expect(existsSync(join(testDir, 'events.jsonl'))).toBe(false);
-  });
-});
-
-// ===========================================================================
-// restoreStateFromBackup
-// ===========================================================================
-
-describe('restoreStateFromBackup', () => {
-  it('copies backup back to state.json', () => {
-    const original = makeState({ currentStep: 'planning' });
-    writeState(testDir, original);
-    backupState(testDir);
-
-    // Advance state.json to a different step
-    const advanced = makeState({ currentStep: 'execution' });
-    writeState(testDir, advanced);
-
-    // Restore from backup
-    restoreStateFromBackup(testDir);
-
-    const restored = readState(testDir);
-    expect(restored).toEqual(original);
-  });
-
-  it('is a no-op when no backup exists', () => {
-    const state = makeState({ currentStep: 'execution' });
-    writeState(testDir, state);
-
-    // Should not throw and should not modify state.json
-    restoreStateFromBackup(testDir);
-
-    const read = readState(testDir);
-    expect(read).toEqual(state);
   });
 });
 
@@ -624,213 +454,6 @@ describe('appendEventAndUpdateState crash-safety', () => {
 });
 
 // ===========================================================================
-// normaliseToLatestSchema — Wave 4 backward-compat translation
-// ===========================================================================
-
-describe('normaliseToLatestSchema', () => {
-  it('translates currentStep: "plan" → "planning"', () => {
-    const input = { currentStep: 'plan' };
-    const result = normaliseToLatestSchema(input);
-    expect(result).toEqual({ currentStep: 'planning' });
-  });
-
-  it('translates currentStep: "plan_eval" → "planning_eval"', () => {
-    const input = { currentStep: 'plan_eval' };
-    const result = normaliseToLatestSchema(input);
-    expect(result).toEqual({ currentStep: 'planning_eval' });
-  });
-
-  it('translates completedSteps entries ["ideation", "plan"] → ["ideation", "planning"]', () => {
-    const input = { completedSteps: ['ideation', 'plan'] };
-    const result = normaliseToLatestSchema(input);
-    expect(result).toEqual({ completedSteps: ['ideation', 'planning'] });
-  });
-
-  it('translates completedSteps mixed old/new shapes', () => {
-    const input = { completedSteps: ['ideation', 'plan', 'planning', 'plan_eval'] };
-    const result = normaliseToLatestSchema(input) as { completedSteps: string[] };
-    expect(result.completedSteps).toEqual([
-      'ideation',
-      'planning',
-      'planning',
-      'planning_eval',
-    ]);
-  });
-
-  it('moves evalConfig.plan → evalConfig.planning', () => {
-    const input = { evalConfig: { ideation: false, plan: false } };
-    const result = normaliseToLatestSchema(input) as {
-      evalConfig: Record<string, unknown>;
-    };
-    expect(result.evalConfig).toEqual({ ideation: false, planning: false });
-    expect('plan' in result.evalConfig).toBe(false);
-  });
-
-  it('moves evalConfig.plan when value is true', () => {
-    const input = { evalConfig: { ideation: true, plan: true } };
-    const result = normaliseToLatestSchema(input) as {
-      evalConfig: Record<string, unknown>;
-    };
-    expect(result.evalConfig).toEqual({ ideation: true, planning: true });
-  });
-
-  it('preserves sibling evalConfig keys while renaming plan', () => {
-    const input = {
-      evalConfig: { ideation: false, plan: false, execution: true },
-    };
-    const result = normaliseToLatestSchema(input) as {
-      evalConfig: Record<string, unknown>;
-    };
-    expect(result.evalConfig).toEqual({
-      ideation: false,
-      planning: false,
-      execution: true,
-    });
-  });
-
-  it('is idempotent on already-new-shape input (no double translation)', () => {
-    const input = {
-      currentStep: 'planning',
-      completedSteps: ['ideation', 'planning'],
-      evalConfig: { ideation: false, planning: false },
-    };
-    const result = normaliseToLatestSchema(input);
-    expect(result).toEqual(input);
-  });
-
-  it('handles mixed-version state (some old literals, some new)', () => {
-    const input = {
-      currentStep: 'execution',
-      completedSteps: ['ideation', 'plan'],
-      evalConfig: { ideation: false, plan: false },
-    };
-    const result = normaliseToLatestSchema(input);
-    expect(result).toEqual({
-      currentStep: 'execution',
-      completedSteps: ['ideation', 'planning'],
-      evalConfig: { ideation: false, planning: false },
-    });
-  });
-
-  it('returns non-record input unchanged', () => {
-    expect(normaliseToLatestSchema(null)).toBeNull();
-    expect(normaliseToLatestSchema(42)).toBe(42);
-    expect(normaliseToLatestSchema('string')).toBe('string');
-    expect(normaliseToLatestSchema([1, 2, 3])).toEqual([1, 2, 3]);
-  });
-
-  it('does not touch unrelated fields', () => {
-    const input = {
-      sessionId: 'abc',
-      schemaVersion: 4,
-      artifacts: { plan: ['file.md'] }, // `plan` as artifact key is NOT renamed
-      feedbackRound: 2,
-    };
-    const result = normaliseToLatestSchema(input);
-    expect(result).toEqual(input);
-  });
-
-  it('prefers existing planning key over legacy plan when both present', () => {
-    // Defensive: if somehow both keys exist (only possible via hand-crafted
-    // bad data), the post-rename key wins — we drop the legacy key silently.
-    const input = {
-      evalConfig: { ideation: false, plan: true, planning: false },
-    };
-    const result = normaliseToLatestSchema(input) as {
-      evalConfig: Record<string, unknown>;
-    };
-    expect(result.evalConfig).toEqual({ ideation: false, planning: false });
-    expect('plan' in result.evalConfig).toBe(false);
-  });
-});
-
-// ===========================================================================
-// readState backward-compat — legacy on-disk `plan` literals survive W4
-// ===========================================================================
-
-describe('readState backward-compat (W4 step rename)', () => {
-  it('reads a legacy state.json with currentStep:"plan" + evalConfig.plan', () => {
-    const legacy = {
-      schemaVersion: 4,
-      sessionId: 'legacy-sess-1',
-      currentStep: 'plan',
-      currentSubstate: null,
-      completedSteps: ['ideation'],
-      evalConfig: { ideation: false, plan: false },
-      activeSubagents: [],
-      artifacts: {},
-      violations: [],
-      feedbackRound: 0,
-      maxFeedbackRounds: 3,
-      lastVerdictOutcome: null,
-      verificationResults: {},
-      stepStartedAt: null,
-    };
-    writeFileSync(join(testDir, 'state.json'), JSON.stringify(legacy), 'utf8');
-
-    const resolved = readState(testDir);
-    expect(resolved).not.toBeNull();
-    if (resolved === null) throw new Error('unreachable');
-    expect(resolved.currentStep).toBe('planning');
-    expect(resolved.evalConfig).toEqual({ ideation: false, planning: false });
-  });
-
-  it('reads a state.json with completedSteps containing "plan"', () => {
-    const legacy = {
-      schemaVersion: 4,
-      sessionId: 'legacy-sess-2',
-      currentStep: 'execution',
-      currentSubstate: null,
-      completedSteps: ['ideation', 'plan'],
-      evalConfig: { ideation: false, plan: false },
-      activeSubagents: [],
-      artifacts: {},
-      violations: [],
-      feedbackRound: 0,
-      maxFeedbackRounds: 3,
-      lastVerdictOutcome: null,
-      verificationResults: {},
-      stepStartedAt: null,
-    };
-    writeFileSync(join(testDir, 'state.json'), JSON.stringify(legacy), 'utf8');
-
-    const resolved = readState(testDir);
-    expect(resolved).not.toBeNull();
-    if (resolved === null) throw new Error('unreachable');
-    expect(resolved.currentStep).toBe('execution');
-    expect(resolved.completedSteps).toEqual(['ideation', 'planning']);
-  });
-
-  it('does not rewrite state.json (Greg Young discipline)', () => {
-    const legacy = {
-      schemaVersion: 4,
-      sessionId: 'legacy-sess-3',
-      currentStep: 'plan',
-      currentSubstate: null,
-      completedSteps: ['ideation'],
-      evalConfig: { ideation: false, plan: false },
-      activeSubagents: [],
-      artifacts: {},
-      violations: [],
-      feedbackRound: 0,
-      maxFeedbackRounds: 3,
-      lastVerdictOutcome: null,
-      verificationResults: {},
-      stepStartedAt: null,
-    };
-    const filePath = join(testDir, 'state.json');
-    const raw = JSON.stringify(legacy);
-    writeFileSync(filePath, raw, 'utf8');
-
-    readState(testDir);
-
-    // File unchanged — translation is in-memory-only.
-    const after = readFileSync(filePath, 'utf8');
-    expect(after).toBe(raw);
-  });
-});
-
-// ===========================================================================
 // deriveState backward-compat — legacy `step:"plan"` events replay cleanly
 // ===========================================================================
 
@@ -873,7 +496,7 @@ describe('deriveState backward-compat (W4 step rename)', () => {
       const rows = store.replayAll();
 
       // Drive deriveState through the fresh initial state (emulating cold-path
-      // replay after readState returned null on an old file).
+      // replay against the event store).
       // We need to craft a start event first so the reducer is happy.
       // Actually: with currentStep:'idle', STEP_EXIT requires currentStep to
       // match `step`. The first exit carries step:'ideation' but initialState

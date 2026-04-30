@@ -65,12 +65,17 @@ import type { ReadStore } from './store.js';
 /**
  * Arguments for {@link writeSessionJsonAtMemorizationExit}. The engine
  * supplies `sessionDir` + `store` from the committed transaction context;
- * the rest derive from {@link readSessionJson} on the init-time stub.
+ * the carry-forward stub fields (`schemaVersion`, `sessionId`, `projectId`,
+ * `createdAt`, `gobbiVersion`, `task`) are read from the init-time
+ * `session.json` stub via {@link readSessionJson}.
  *
- * `repoRoot` is required because both `sessionJsonPath` and `projectJsonPath`
- * compose paths off the repo root rather than the session directory — the
- * session directory is internal to the repo's `.gobbi/projects/<name>/`
- * layout but the paths-helpers expect the workspace anchor explicitly.
+ * The repo root, project name, and session id are NOT caller-supplied —
+ * they are derived internally from `sessionDir` by `deriveSessionLocation`,
+ * which path-segment-parses the canonical
+ * `<repoRoot>/.gobbi/projects/<projectName>/sessions/<sessionId>` shape.
+ * `sessionJsonPath` and `projectJsonPath` then re-compose paths off the
+ * derived repo root rather than the session directory, because the
+ * paths-helpers expect the workspace anchor explicitly.
  *
  * `finishedAt` is exposed so tests can pin the value; production callers
  * leave it unset and the aggregator returns `null` (memorization fires

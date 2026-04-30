@@ -24,7 +24,7 @@ V0.5.0 splits runtime and static-knowledge into separate root directories:
 
 `.claude/` is the static-knowledge layer. Skills, rules, agents, and project docs live here. This directory is not written to during an active session — it is read-only during workflow.
 
-`.gobbi/` is the runtime layer. Per-session directories (`sessions/{session-id}/`) hold the event store (`gobbi.db`), `metadata.json`, and `state.json`. Notes recorded during an active session write to `.gobbi/sessions/{id}/` via `gobbi workflow capture-subagent`. This directory is gitignored and does not persist across repository clones.
+`.gobbi/` is the runtime layer. Per-session directories (`sessions/{session-id}/`) hold the per-session event store (`gobbi.db`) plus `session.json` (per-session telemetry, written once at memorization-step entry). Notes recorded during an active session write to `.gobbi/sessions/{id}/` via `gobbi workflow capture-subagent`. This directory is gitignored and does not persist across repository clones.
 
 When `gobbi workflow init` runs, it creates `.gobbi/sessions/{session-id}/` automatically. Detection below determines whether the static-knowledge layer is also ready.
 

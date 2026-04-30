@@ -1,6 +1,6 @@
 # Orchestration — Deterministic Workflow Engine + JIT Prompt Injection
 
-Feature description for gobbi's v0.5.0 orchestration core: the L0–L3 layering, the deterministic state machine, the `state.db` / `gobbi.db` two-DB partition, the JIT prompt-footer pattern, the Inner-mode hook surface, the Outer-mode `gobbi workflow run` driver, and the `handoff` state-machine step. This is the design-of-record for Pass 4 (session `6e00d3d6-6833-4e8e-ae25-3f42165aebc3`), updated by **PR-FIN-2 finalization** (session `9755a2cb-0981-455b-915e-643de6de2500`, 2026-04-29) for the `memorization_eval` step addition (memorization now runs an evaluation loop), the workspace-DB-only lock (per-session `gobbi.db` and `state.json` removed), and the per-step session structure simplification (uniform `README.md` + freeform `*.md` + `rawdata/` + optional `evaluation/`). It supersedes the conceptual content in `../deterministic-orchestration.md` and absorbs the JIT framing from `../just-in-time-prompt-injection.md`. Wave A.2 will retire those two predecessor files.
+Feature description for gobbi's v0.5.0 orchestration core: the L0–L3 layering, the deterministic state machine, the workspace `state.db` + per-session `gobbi.db` event-store split, the two-tier JSON memory model (`session.json` + `project.json`), the JIT prompt-footer pattern, the Inner-mode hook surface, the Outer-mode `gobbi workflow run` driver, and the `handoff` state-machine step. This is the design-of-record for Pass 4 (session `6e00d3d6-6833-4e8e-ae25-3f42165aebc3`), updated by **PR-FIN-2 finalization** (session `9755a2cb-0981-455b-915e-643de6de2500`, 2026-04-29) for the `memorization_eval` step addition (memorization now runs an evaluation loop) and the per-step session structure simplification (uniform `README.md` + freeform `*.md` + `rawdata/` + optional `evaluation/`), and again by **PR-FIN-2a-ii** (2026-04-30) for the JSON memory pivot (per-session `state.json` retired; per-session `gobbi.db` preserved as the per-session event store). It supersedes the conceptual content in `../deterministic-orchestration.md` and absorbs the JIT framing from `../just-in-time-prompt-injection.md`. Wave A.2 will retire those two predecessor files.
 
 ---
 
@@ -76,11 +76,12 @@ The four layers each own a distinct slice of the orchestration stack. The user a
 
 | Storage | Git | Scope | Holds |
 |---|---|---|---|
-| `.gobbi/state.db` | gitignored | workspace | append-only state-machine event log; partition keys `(project_id, session_id)`; powers `gobbi workflow status` / resume / stats aggregation |
+| `.gobbi/state.db` | gitignored | workspace | append-only event log; partition keys `(project_id, session_id)`; currently `prompt.patch.applied` events only — full workspace consolidation of workflow events is Wave A.1 work, partially shipped |
+| `.gobbi/projects/{name}/sessions/{id}/gobbi.db` | gitignored | per-session | **preserved** per-session event store; source of truth for workflow events; powers `gobbi workflow status` / resume / state derivation; aggregated into `session.json` at memorization-step entry |
 | `.gobbi/projects/{name}/project.json` | **tracked** | per-project | cross-session promoted memory: sessions index, gotchas, decisions, learnings; AJV schema v1; sorted writes for stable git diffs |
-| `.gobbi/projects/{name}/sessions/{id}/session.json` | gitignored | per-session | consolidated per-session operational metadata: steps, agents, agent_calls (provisional), evaluations; AJV schema v1; written once at memorization-step entry by aggregating `state.db` events; arrays sorted by `state.db.seq` ascending |
+| `.gobbi/projects/{name}/sessions/{id}/session.json` | gitignored | per-session | consolidated per-session operational metadata: steps, agents, agent_calls (provisional), evaluations; AJV schema v1; written once at memorization-step entry by aggregating per-session `gobbi.db` events; arrays sorted by `gobbi.db.seq` ascending |
 
-Per-session `gobbi.db`, per-session `state.json` (+ `.backup`), per-session `metadata.json`, and per-session `artifacts/` are all removed entirely. `gobbi maintenance wipe-legacy-sessions` cleans up the on-disk legacy artifacts during the PR-FIN-2 cutover. The `EventStore` constructor takes explicit `(projectId, sessionId)` partition keys at every call site — no path-derivation fallback.
+Per-session `state.json` (+ `.backup`), per-session `metadata.json` (the per-session homonym — the v0.4.x note-system `metadata.json` under `.claude/project/<name>/note/<task>/` is unaffected), and per-session session-root `artifacts/` are removed entirely. `gobbi maintenance wipe-legacy-sessions` cleans up the on-disk legacy artifacts during the PR-FIN-2 cutover. The `EventStore` constructor takes explicit `(projectId, sessionId)` partition keys at every call site — no path-derivation fallback.
 
 **Why JSON, not SQLite, for memory.** Solo-developer iteration; schema is unstable while v0.5.0 finalization is in flight; binary-diff opacity in git makes review of every iteration commit unworkable. JSON gives text-diffable history, AJV gives boundary type safety, sorted writes give stable diffs, and cross-session queries walk the filesystem on demand (workspace scale is tens of sessions / hundreds of files — fast enough).
 
@@ -93,7 +94,7 @@ Per-session `gobbi.db`, per-session `state.json` (+ `.backup`), per-session `met
 
 ### 3.2 EventStore constructor must accept explicit partition keys
 
-`store.ts:369-370` derives `sessionId = basename(dirname(path))` from the DB path. For `.gobbi/state.db` that yields `'.gobbi'` as the session ID, and `resolveProjectRootBasename` reads `.gobbi/metadata.json` (absent), so `projectRootBasename` becomes permanently `null`. **Wave A.1 must add explicit partition-key parameters** to `EventStore`'s constructor: `new EventStore(path, { sessionId?: string; projectId?: string })`. Workspace-scoped callers supply both; the legacy path-derivation stays as a fallback during migration.
+`store.ts:369-370` derives `sessionId = basename(dirname(path))` from the DB path. For workspace `.gobbi/state.db` that yields `'.gobbi'` as the session ID, and the legacy project-name probe (since retired in PR-FIN-2a-ii) returned `null` because the per-session `metadata.json` no longer exists. The post-PR-FIN-2a-ii `EventStore` constructor takes explicit `(projectId, sessionId)` partition keys via `new EventStore(path, { sessionId?: string; projectId?: string })` — `resolvePartitionKeys` parses them from the session-dir path segments rather than reading any file. Workspace-scoped callers supply both keys explicitly.
 
 ### 3.3 `.gobbi/state.db` (workspace, gitignored, append-only event log + materialized views)
 
@@ -181,7 +182,7 @@ Verbatim from `packages/cli/src/workflow/events/workflow.ts:21-31`:
 
 | Event | Purpose |
 |---|---|
-| `workflow.start` | Inaugural event; pairs with `metadata.json` write; fixes `currentStep = 'ideation'` |
+| `workflow.start` | Inaugural event; pairs with the per-session `gobbi.db` open + `session.json` stub write at `gobbi workflow init`; fixes `currentStep = 'ideation'` |
 | `workflow.step.exit` | Productive step finished; reducer evaluates `evalEnabled` predicate to choose `<step>_eval` vs next productive step |
 | `workflow.step.skip` | User opted to skip a step (typically eval); routes to `ideation` per `index.json:200-247` |
 | `workflow.step.timeout` | Step's `meta.timeoutMs` exceeded; routes to `error` |
@@ -218,7 +219,7 @@ Token cost: ~180 tokens uncached; identical across same-step compilations so ful
 | **SubagentStop** | Read transcript, write to `.gobbi/projects/<name>/sessions/<id>/<step>/`, emit `delegation.complete`/`fail` (existing). | `commands/workflow/capture-subagent.ts` | Yes — same path issue |
 | **Stop** | Heartbeat + timeout + state flush (existing). **+ Missed-advancement safety net (new):** if no `step.advancement.observed` since the last `step.exit`/`start`/`resume` AND `turns_since_step_start ≥ 2`, inject `additionalContext` reminder; at `≥ 5` mark in `state_snapshots` and surface in `gobbi workflow status`. | `commands/workflow/stop.ts` | **Yes** — `stop.ts:181-183` looks for `<sessionDir>/gobbi.db`; same as `guard.ts` (System F-5). |
 | **UserPromptSubmit** | New: route `/gobbi` invocations; emit `decision.user` for workflow-control intents ("revise the plan", "evaluate first") for audit trail. | `commands/workflow/user-prompt.ts` (new) | n/a (new file) |
-| **SessionStart** | Idempotent init; **+ schema-drift detection (new):** if `metadata.json.schemaVersion < CURRENT_SCHEMA_VERSION`, run migration BEFORE appending any event. | `commands/workflow/init.ts` (extended) | **Yes** — `init.ts:281` opens the DB; needs the new path |
+| **SessionStart** | Idempotent init; **+ schema-drift detection (new):** if the per-session `gobbi.db` `schema_meta` row reports `schemaVersion < CURRENT_SCHEMA_VERSION`, run migration BEFORE appending any event. (Per-session `metadata.json` was retired in PR-FIN-2a-ii; the schema-version probe now reads the DB's `schema_meta` table.) | `commands/workflow/init.ts` (extended) | n/a — per-session `gobbi.db` path is unchanged |
 | **SessionEnd** (Claude Code 2.x) | Emit `session.end` event so abandoned-session detection is precise. Falls back to heartbeat-gap heuristic on older Claude Code. | `commands/workflow/session-end.ts` (new) | n/a |
 
 **Path-resolution sweep (Wave A.1 task A.1.7).** Every place the codebase grep'd `join(sessionDir, 'gobbi.db')` returns must change to either the workspace path or the explicit constructor params. Confirmed callsites: `commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `commands/session.ts:320`, `commands/gotcha/promote.ts:308`. (`commands/workflow/events.ts` has no direct DB path — it delegates to `runSessionEvents` in `commands/session.ts`.) The sweep MUST grep both `join(sessionDir, 'gobbi.db')` and `<sessionDir>/gobbi.db` patterns across `packages/cli/src/` to catch any callsite this list misses. Architecture F-3's fix recommendation is a `resolveDbPath(sessionDir)` helper in `commands/session.ts` so the path construction is a single source of truth — Wave A.1 must implement this helper rather than apply 11 independent substitutions.
@@ -278,8 +279,8 @@ The memorization step's compiled prompt names these paths so the agent reads the
 1. Step artifacts — `sessions/<id>/{ideation,planning,execution}/...md` and `_eval/evaluation.md` per step.
 2. Subagent transcripts — every file `capture-subagent.ts` wrote under `sessions/<id>/<step>/rawdata/`.
 3. `ExitPlanMode` captures — `sessions/<id>/planning/rawdata/`.
-4. Orchestrator transcript — `transcript_path` from hook payloads, recorded in `metadata.json`.
-5. Full event stream — `SELECT * FROM events WHERE session_id = ? ORDER BY seq` against workspace `state.db`.
+4. Orchestrator transcript — `transcript_path` from hook payloads, recorded in `session.json` (per-session telemetry, post-PR-FIN-2a-ii).
+5. Full event stream — `SELECT * FROM events ORDER BY seq` against the per-session `gobbi.db`. (Workspace `state.db` partial consolidation is Wave A.1; until that lands, per-session `gobbi.db` is the workflow-event source of truth.)
 6. Per-step `README.md` — when present (written by the STEP_EXIT writer per `gobbi-memory/scenarios.md G-MEM2-26`).
 7. Session-tier gotchas — `.gobbi/projects/<name>/learnings/gotchas/` written mid-session.
 

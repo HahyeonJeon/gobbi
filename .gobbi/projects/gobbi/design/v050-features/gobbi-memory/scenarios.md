@@ -362,13 +362,9 @@ Evidence: Commit `fcd1171` (W4.4 snapshot regeneration).
 
 ## Active-session safeguards
 
-### G-MEM2-36 — `findStateActiveSessions` is the single source of truth
+### G-MEM2-36 — RETIRED (PR-FIN-2a-i)
 
-**Given** any command that must gate on active sessions (install, switch, wipe)
-**When** the command invokes `findStateActiveSessions(repoRoot)`
-**Then** the return is derived from `state.json.currentStep ∉ {done, error}` (state-based, not heuristic); all `.gobbi/projects/*/sessions/` are scanned.
-
-Evidence: `packages/cli/src/lib/session-scan.ts::findStateActiveSessions`. Commits `f428f18` (W3.3), `f257779` (W3 eval).
+The `findStateActiveSessions` helper was removed in PR-FIN-2a-i alongside the JSON-pivot retirement of per-session `state.json`. `gobbi gotcha promote` and `gobbi maintenance wipe-legacy-sessions` no longer guard on other in-flight sessions. A future redesign will reintroduce active-session detection on top of the per-session `gobbi.db` event-log shape. Historical scenario body preserved in git history.
 
 ---
 

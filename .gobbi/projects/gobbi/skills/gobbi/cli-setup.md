@@ -75,7 +75,7 @@ The gobbi CLI manages workflow state, session configuration, notes, and validati
 
 | Command | Purpose |
 |---|---|
-| `gobbi workflow init` | Initialize a session directory under `.gobbi/sessions/{id}/`, write `metadata.json`, open `gobbi.db`, emit the first `workflow.start` event |
+| `gobbi workflow init` | Initialize a session directory under `.gobbi/sessions/{id}/`, open the per-session `gobbi.db` event store, write the `session.json` stub (6 required fields), emit the first `workflow.start` event |
 | `gobbi workflow guard` | Evaluate guard predicates against current workflow state before each tool call |
 | `gobbi workflow capture-subagent` | Record subagent completion — called by the SubagentStop hook |
 | `gobbi workflow capture-planning` | Record the current plan when ExitPlanMode fires |

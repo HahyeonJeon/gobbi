@@ -423,7 +423,7 @@ const anthropicAgentSchema = {
     claudeCodeVersion: { type: ['string', 'null'] },
     transcriptPath: { type: ['string', 'null'] },
     transcriptSha256: { type: ['string', 'null'] },
-    tokensUsed: { ...anthropicTokensUsedSchema, nullable: true } as unknown as Record<string, unknown>,
+    tokensUsed: { ...anthropicTokensUsedSchema, type: ['object', 'null'] as const },
     cacheHitRatio: { type: ['number', 'null'], minimum: 0 },
     sizeProxyBytes: { type: ['integer', 'null'], minimum: 0 },
   },
@@ -1130,10 +1130,6 @@ function computeCacheHitRatio(tokens: AnthropicTokensUsed | null): number | null
 const PRODUCTIVE_STEPS = ['ideation', 'planning', 'execution', 'memorization'] as const;
 
 type ProductiveStep = (typeof PRODUCTIVE_STEPS)[number];
-
-function isProductiveStep(value: string): value is ProductiveStep {
-  return (PRODUCTIVE_STEPS as readonly string[]).includes(value);
-}
 
 function buildSteps(
   rows: readonly EventRow[],

@@ -324,7 +324,7 @@ export function detectPathway(
       kind: 'unknown',
       reason: 'empty-store',
       diagnosticHint:
-        'The event store is empty — state.json appears to have been manually written into the error step without any triggering event.',
+        'The event store is empty — likely a fresh init or manual `gobbi.db` truncation without any triggering event.',
     };
     return pathway;
   }

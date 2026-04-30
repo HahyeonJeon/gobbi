@@ -1,6 +1,6 @@
 # gobbi-memory — Multi-Project Memory Model
 
-Feature description for gobbi's cross-session persistence model under `.gobbi/projects/{name}/`. Read this to understand how memory is organized per project, how `.claude/` relates to `.gobbi/` via a symlink farm, how the `gobbi install` bootstrap seeds a fresh repo, and how `gobbi project list|create|switch` manages the multi-project lifecycle. This is the design-of-record for Pass 2 redesign (session `35742566-2697-4318-bb06-558346b77b4a`), updated by **PR-FIN-2 finalization** (session `9755a2cb-0981-455b-915e-643de6de2500`, 2026-04-29) for the taxonomy expansion (`gotchas/` and `tmp/` promoted to top-level), the manifest removal (`.install-manifest.json` and 3-way merge logic dropped), the session structure simplification (`metadata.json`, `gobbi.db`, `state.json` dropped from session root), and the `memorization_eval` state-machine step addition.
+Feature description for gobbi's cross-session persistence model under `.gobbi/projects/{name}/`. Read this to understand how memory is organized per project, how `.claude/` relates to `.gobbi/` via a symlink farm, how the `gobbi install` bootstrap seeds a fresh repo, and how `gobbi project list|create|switch` manages the multi-project lifecycle. This is the design-of-record for Pass 2 redesign (session `35742566-2697-4318-bb06-558346b77b4a`), updated by **PR-FIN-2 finalization** (session `9755a2cb-0981-455b-915e-643de6de2500`, 2026-04-29) for the taxonomy expansion (`gotchas/` and `tmp/` promoted to top-level), the manifest removal (`.install-manifest.json` and 3-way merge logic dropped), the session-root simplification (`metadata.json`, `state.json`, session-root `artifacts/` dropped — per-session `gobbi.db` preserved as the per-session event store), and the `memorization_eval` state-machine step addition. PR-FIN-2a-ii (2026-04-30) landed the JSON memory pivot — durable memory now lives in git-tracked `project.json`; per-session telemetry in `session.json`.
 
 ---
 
@@ -12,13 +12,14 @@ Pass 2 replaces the Pass-1 layout — where skills/agents/rules/project-docs liv
 
 ## Directory shape
 
-**Updated by PR-FIN-2 finalization (2026-04-29):** `gotchas/` promoted to top-level (separated from `learnings/`); `tmp/` formalized as gitignored project-scoped scratch; `.install-manifest.json` removed (3-way merge logic dropped); session-root files reduced to `settings.json` only (`metadata.json`, `gobbi.db`, `state.json`, `state.json.backup`, `artifacts/` all dropped — operational state moves to workspace `.gobbi/gobbi.db` + `.gobbi/state.db`).
+**Updated by PR-FIN-2 finalization (2026-04-29):** `gotchas/` promoted to top-level (separated from `learnings/`); `tmp/` formalized as gitignored project-scoped scratch; `.install-manifest.json` removed (3-way merge logic dropped); session-root retirements (`metadata.json`, `state.json`, `state.json.backup`, session-root `artifacts/` all dropped) — durable cross-session memory moves to git-tracked `project.json`, in-flight per-session telemetry moves to `session.json`. **Per-session `gobbi.db` is preserved** as the per-session event store; workspace `.gobbi/state.db` partially holds workflow events (Wave A.1 in progress).
 
 | Path | Git | Purpose |
 |---|---|---|
 | `.gobbi/settings.json` | gitignored | Workspace-tier settings. |
-| `.gobbi/gobbi.db` | tracked | Cross-project memories projection + per-step operational metadata (sessionId, step timings, agent spawns, evaluation verdicts, artifact list). |
-| `.gobbi/state.db` | gitignored | Workspace-scoped state-machine event log. Per-session `gobbi.db` and `state.json` no longer exist; this DB is the single source of state-machine truth. |
+| `.gobbi/projects/{name}/project.json` | tracked | Cross-session promoted memory (sessions index, gotchas, decisions, learnings). Replaces the prior workspace `.gobbi/gobbi.db` SQLite memory projection. |
+| `.gobbi/state.db` | gitignored | Workspace-scoped state-machine event log (currently `prompt.patch.applied` only; full workflow-event consolidation is Wave A.1, partially shipped). |
+| `.gobbi/projects/{name}/sessions/{id}/gobbi.db` | gitignored | **Per-session event store — preserved.** Source of truth for per-session workflow events; powers `gobbi workflow status` / resume / state derivation; aggregated into `session.json` at memorization-step entry. |
 | `.gobbi/projects/` | tracked | Parent of all projects in this workspace. |
 | `.gobbi/projects/{name}/` | tracked except `sessions/`, `tmp/`, `worktrees/` | Root of one project. |
 | `.gobbi/projects/{name}/skills/` | tracked | Project's skill definitions; plugin-bundled and user-authored mixed; mirrored into `.claude/skills/` via per-file symlink farm. |
@@ -49,9 +50,9 @@ Everything about memory and configuration decomposes across three scopes:
 
 - **Workspace** — `.gobbi/settings.json` at the repo root. Cross-project defaults. One file; shared by every project in the workspace.
 - **Project** — `.gobbi/projects/{name}/settings.json` + the 12 taxonomy subdirectories. Each project is self-contained; renaming or deleting `{name}/` does not affect its siblings.
-- **Session** — `.gobbi/projects/{name}/sessions/{session_id}/`. One directory per workflow run, gitignored. Five step subdirectories (`ideation/`, `planning/`, `execution/`, `memorization/`, `handoff/`) — each holds a prose-summary `README.md` (written on `STEP_EXIT`), arbitrary freeform `*.md` topic files, a `rawdata/` directory of raw transcripts (Claude Code + subagent JSON/JSONL), and an `evaluation/` subdir for productive steps that run an `*_eval` step (`ideation`, `planning`, `execution`, `memorization`). The `README.md` at each step is **prose summary + index table**, not frontmatter — operational metadata (sessionId, step timings, agent spawns, verdicts, artifact lists) lives in `.gobbi/gobbi.db` keyed by `(session_id, step)`.
+- **Session** — `.gobbi/projects/{name}/sessions/{session_id}/`. One directory per workflow run, gitignored. Five step subdirectories (`ideation/`, `planning/`, `execution/`, `memorization/`, `handoff/`) — each holds a prose-summary `README.md` (written on `STEP_EXIT`), arbitrary freeform `*.md` topic files, a `rawdata/` directory of raw transcripts (Claude Code + subagent JSON/JSONL), and an `evaluation/` subdir for productive steps that run an `*_eval` step (`ideation`, `planning`, `execution`, `memorization`). The `README.md` at each step is **prose summary + index table**, not frontmatter — operational metadata (sessionId, step timings, agent spawns, verdicts, artifact lists) lives in per-session `gobbi.db` (event log) and is consolidated into `session.json` at memorization-step entry.
 
-Session-to-project binding is established at `gobbi workflow init`: the command resolves the project name from `--project <name>` flag → `basename(repoRoot)` (PR-FIN-1c project resolution; the prior `projects.active` registry was removed) and writes the binding into the workspace `.gobbi/gobbi.db` `sessions` row at session creation. Mid-flight project switch is not supported.
+Session-to-project binding is established at `gobbi workflow init`: the command resolves the project name from `--project <name>` flag → `basename(repoRoot)` (PR-FIN-1c project resolution; the prior `projects.active` registry was removed) and stamps the binding into the per-session `gobbi.db` and the `session.json` stub at init time. Mid-flight project switch is not supported.
 
 ---
 
@@ -101,13 +102,13 @@ Five step directories per session, all uniform:
 | `memorization/` | yes | yes | yes | yes (`memorization_eval` — **NEW** in PR-FIN-2) |
 | `handoff/` | yes | yes | yes | no |
 
-**`README.md` content** — prose summary of the step's outcome plus an index table listing every `*.md` topic file and every `rawdata/` artifact in the step dir with a one-line description. **No frontmatter** — operational metadata (sessionId, step timings, agent spawns, evaluation verdicts, artifact lists) lives in `.gobbi/gobbi.db` keyed by `(session_id, step)` and is queried by readers that need it. The `README.md` writer (CLI-only) renders the prose summary by reading those `gobbi.db` rows on `STEP_EXIT` and joining them with the file inventory of the step dir.
+**`README.md` content** — prose summary of the step's outcome plus an index table listing every `*.md` topic file and every `rawdata/` artifact in the step dir with a one-line description. **No frontmatter** — operational metadata (sessionId, step timings, agent spawns, evaluation verdicts, artifact lists) lives in `session.json` (per-session, written once at memorization-step entry by aggregating per-session `gobbi.db` events). The `README.md` writer (CLI-only) renders the prose summary by reading `WorkflowState` (derived from per-session `gobbi.db` events on `STEP_EXIT`) plus the per-step `artifacts/` inventory (the runtime spec subdir under `sessions/<id>/<step>/artifacts/`, distinct from the retired session-root `artifacts/` directory) and joins them with the file inventory of the step dir. Final consolidated session telemetry then lands in `session.json` at memorization-step entry. See `lib/json-memory.ts` for the JSON schemas and `workflow/session-json-writer.ts` for the writer.
 
 **`rawdata/`** — raw Claude Code transcript JSONL plus subagent transcript captures (one JSON/JSONL per subagent spawn). Subagents and the orchestrator's transcript both land here; this is the original-source archive for the step.
 
 **`evaluation/`** — flat `*.md` files, one per perspective (e.g., `architecture.md`, `project.md`, `overall.md`). Authoritative inputs to the corresponding `*_eval` step's verdict.
 
-**Memorization gets an evaluation loop (NEW):** unlike Pass 2, where memorization was a one-shot productive step, PR-FIN-2 adds `memorization_eval` to verify that the session's decisions, gotchas, learnings, and design changes actually landed in `.gobbi/gobbi.db` memories and on disk in the project's narrative dirs. The loop runs `[Memorize → memorization_eval → REVISE if not fully covered → Memorize → …]` until verdict PASS or `maxIterations` exceeded. State-machine implications are detailed in `../orchestration/README.md`.
+**Memorization gets an evaluation loop (NEW):** unlike Pass 2, where memorization was a one-shot productive step, PR-FIN-2 adds `memorization_eval` to verify that the session's decisions, gotchas, learnings, and design changes actually landed in `project.json` (durable cross-session memory) and on disk in the project's narrative dirs. The loop runs `[Memorize → memorization_eval → REVISE if not fully covered → Memorize → …]` until verdict PASS or `maxIterations` exceeded. State-machine implications are detailed in `../orchestration/README.md`.
 
 Writing is exit-only (D4 lock); in-flight visibility is via `gobbi workflow status --step <name>` rather than a mutable README.
 
@@ -115,12 +116,12 @@ Writing is exit-only (D4 lock); in-flight visibility is via `gobbi workflow stat
 
 ## State / event backward-compat
 
-Pass 2 renames the state-machine literal `'plan'` to `'planning'`. PR-FIN-2 drops per-session `gobbi.db` and `state.json` entirely — workflow state lives in workspace `.gobbi/state.db` only.
+Pass 2 renames the state-machine literal `'plan'` to `'planning'`. PR-FIN-2 drops session-root `metadata.json`, `state.json`, and `state.json.backup`; per-session `gobbi.db` is preserved as the per-session event store.
 
-- **Legacy `state.json` files** — sessions started under Pass 2 still have a `state.json` on disk. The `gobbi maintenance wipe-legacy-sessions` command deletes any session whose state row in `.gobbi/state.db` is terminal (`done`/`error`) AND has a stale on-disk layout. Active sessions are never touched.
-- **Legacy per-session `gobbi.db` files** — same wipe semantics; the file is removed when the session is cleaned.
+- **Legacy `state.json` files** — sessions started under Pass 2 still have a `state.json` on disk. The `gobbi maintenance wipe-legacy-sessions` command deletes the legacy file when the session reaches a terminal state. Active sessions are never touched.
+- **Legacy session-root `metadata.json` / `artifacts/`** — same wipe semantics; cleaned when the session is wiped.
 
-The pre-validation state normalization shim from Pass 2 is no longer needed under PR-FIN-2 because `state.json` is no longer read at all.
+The pre-validation state normalization shim from Pass 2 is no longer needed because `state.json` is no longer read at all — workflow state derives from per-session `gobbi.db` events.
 
 ---
 
@@ -150,7 +151,7 @@ Configuration (covered in `../gobbi-config/README.md`) answers "how does this wo
 
 ## Memory storage — two-tier JSON model (PR-FIN-2 Planning lock)
 
-**SUPERSEDES the prior `.gobbi/gobbi.db` SQLite design.** PR-FIN-2's Planning step locked a JSON-only model for cross-session memory and per-session operational metadata. The prior `.gobbi/gobbi.db` workspace SQLite file is **dropped entirely**. The `!.gobbi/gobbi.db` `.gitignore` exception is removed (no DB to track). SQLite remains in the workspace only as `.gobbi/state.db` — the gitignored runtime workflow event log.
+**SUPERSEDES the prior workspace `.gobbi/gobbi.db` SQLite memory design.** PR-FIN-2's Planning step locked a JSON-only model for cross-session memory (`project.json`) and per-session operational metadata (`session.json`). The workspace `.gobbi/gobbi.db` file is **dropped entirely**. SQLite remains in the workspace as `.gobbi/state.db` (gitignored runtime workflow event log; partial workspace consolidation per Wave A.1) and per-session as `<sessionDir>/gobbi.db` (the live per-session event store, preserved).
 
 **Why JSON, not SQLite.** Solo-developer iteration. Schema is unstable while v0.5.0 finalization is in flight. Binary-diff opacity in git makes review of every iteration commit unworkable. JSON files give text-diffable history; AJV schemas give type safety; sorted writes give stable diffs. Cross-session queries walk the filesystem on demand — at workspace scale (tens of sessions, hundreds of markdown files) this is fast enough without a materialized index.
 
@@ -177,21 +178,27 @@ Top-level fields:
 
 - `schemaVersion: 1`
 - `sessionId`, `projectId`, `createdAt`, `finishedAt`, `gobbiVersion`, `task`
-- `steps[]` — `{id, startedAt, finishedAt, feedbackRound, verdict?}`
-- `agents[]` — subagent spawns: `{id, name, stance, model, effort, role?, specialties?, startedAt, finishedAt, transcriptSha256}`
-- `agent_calls[]` — **provisional schema** (subject to revalidation when `gobbi stats` query surface lands): per-LLM-turn telemetry `{model, inputTokens, outputTokens, cacheRead, cacheWrite, durationMs, parentAgentId}`
-- `evaluations[]` — `{step, perspectives[], verdict, verdictAt}`
+- `steps[]` — one entry per productive step the session entered. Each step is **nested**, not flat:
+  - `{id, startedAt, finishedAt, skippedAt, timedOutAt, iterations[]}` per step.
+  - `iterations[]` — by feedback-round: `{round, startedAt, finishedAt, terminationReason, agents[] | substeps[]}`.
+  - `substeps[]` (optional axis — typical for ideation/planning/execution) — `{id, startedAt, finishedAt, agents[]}` for `discussion → research → delegation → evaluation`.
+  - `agents[]` — subagent spawns lifted onto either an iteration or a substep: `{id, name, stance, role?, specialties?, model, effort, provider, startedAt, finishedAt, transcriptSha256, tokensUsed (SUM-fold over calls[]), calls[]}`.
+  - `calls[]` — **provisional schema** (subject to revalidation when `gobbi stats` query surface lands): per-LLM-turn telemetry `{turnIndex, model, inputTokens, outputTokens, cacheRead, cacheWrite, durationMs, ...}`.
+- `evaluations[]` — `{step, perspectives[], verdict, verdictAt}`.
 
-All array fields sort by **`state.db.seq` ascending** (the workflow event-log sequence number) so parallel writers produce deterministic diffs.
+Sort axes (deterministic across parallel writers): `steps[]` by canonical step order; `iterations[]` by `round` ASC; `substeps[]` by `seq` ASC of first nested event; `agents[]` by `seq` ASC of first event mentioning the subagent id; `calls[]` by `turnIndex` ASC (monotonically aligned with the per-session `gobbi.db.seq` within an agent).
 
-Writer: memorization step writes `session.json` once at memorization-step entry by aggregating from `state.db` events + per-step rawdata transcripts. No per-step writers — single-write semantics avoid concurrency contention.
+Writer: memorization step writes `session.json` once at memorization-step entry by aggregating from per-session `gobbi.db` events + per-step rawdata transcripts (Anthropic JSONL under `~/.claude/projects/<encoded-cwd>/<sessionId>/subagents/`). No per-step writers — single-write semantics avoid concurrency contention. See `lib/json-memory.ts` (schemas + builder) and `workflow/session-json-writer.ts` (orchestration entry).
+
+**Concurrency caveat (solo-user assumption).** `project.json` writers (`gobbi gotcha promote`, memorization step) use whole-file read-modify-write without inter-process locking. The solo-user model assumes at most one writer at a time; if two sessions race a write, the loser's append is silently overwritten. Manual recovery: re-run the losing writer (e.g. re-promote the gotcha) after the conflict is detected via `git diff project.json`. A future multi-user redesign would replace this with file locking or move durable memory back to a transactional store.
 
 ### What's gone
 
-- **`.gobbi/gobbi.db`** — removed entirely. No workspace SQLite for memory.
-- **Per-session `gobbi.db`** — removed; events route to workspace `.gobbi/state.db`.
-- **`metadata.json`** — fields move into `session.json`.
-- **`state.json` + `state.json.backup`** — state is derived from `state.db` events; no on-disk JSON state file.
+- **`.gobbi/gobbi.db` (workspace)** — removed entirely. No workspace SQLite for memory; cross-session memory lives in git-tracked `project.json`.
+- **Per-session `gobbi.db`** — **NOT retired**: remains the live per-session event store under `sessions/<id>/gobbi.db`. Workspace consolidation onto `.gobbi/state.db` is Wave A.1 work (partially shipped — currently `prompt.patch.applied` only).
+- **Per-session `metadata.json`** — fields move into `session.json`. (The `metadata.json` homonym under `.claude/project/<name>/note/<task>/` belongs to the v0.4.x note-system and is unaffected.)
+- **Per-session `state.json` + `state.json.backup`** — state is derived from `gobbi.db` events; no on-disk JSON state file.
+- **Per-session session-root `artifacts/`** — removed. (The per-step runtime spec subdir `sessions/<id>/<step>/artifacts/` is a different directory and is preserved.)
 - **Per-step `README.md` frontmatter** — operational metadata moves to `session.json`. Per-step `README.md` becomes prose summary + index table only.
 - **`gobbi memory rebuild` command** — no projection to rebuild. The JSON files are the source of truth.
 - **Docs metadata manifest** — no materialized index of `.md` files. Search-by-content uses ripgrep; drift detection uses git status.
@@ -201,9 +208,9 @@ Writer: memorization step writes `session.json` once at memorization-step entry 
 
 `project.json` is git-tracked → cross-clone state survives. `session.json` is gitignored (lives inside the gitignored `sessions/`) → per-session operational metadata is workspace-local; only the durable extracts (decisions, gotchas, learnings) survive a clone via `project.json` and the markdown narrative dirs. This is intentional: in-flight session state is not portable across clones.
 
-### State.db — workspace event log (unchanged)
+### State.db — workspace event log (Wave A.1, partial)
 
-`.gobbi/state.db` remains the gitignored workspace-scoped append-only state-machine event log, partition-keyed by `(project_id, session_id)`. It powers `gobbi workflow status`, resume, and stats aggregation. The two-DB design from prior passes is now **one DB + two JSON files**: events in `state.db`, durable memory in `project.json`, in-flight session metadata in `session.json`.
+`.gobbi/state.db` is the gitignored workspace-scoped append-only event log, partition-keyed by `(project_id, session_id)`. It currently holds `prompt.patch.applied` events only; full workspace consolidation of workflow events is Wave A.1 work, partially shipped. Until A.1 completes, per-session `gobbi.db` remains the source of truth for workflow events powering `gobbi workflow status`, resume, and state derivation. The post-PR-FIN-2 split is **one workspace DB (`state.db`) + per-session `gobbi.db` event store + two-tier JSON memory (`session.json` + `project.json`)**: workspace prompt-patch events in `state.db`, per-session workflow events in `gobbi.db`, durable memory in `project.json`, in-flight session metadata in `session.json`.
 
 See `../orchestration/README.md` §3 for the workspace event-log details and the JSON-pivot impact on the spec graph (`memorization_eval` step).
 

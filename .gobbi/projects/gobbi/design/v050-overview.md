@@ -95,7 +95,7 @@ V0.5.0 collapsed the v0.4.x seven-step cycle into the current 6-step workflow (C
   │            Handoff               │
   │                                  │
   │  Tight next-session summary      │
-  │  Writes handoff.md + gobbi.db    │
+  │  Writes handoff.md + project.json │
   └────────────────┬─────────────────┘
                    │  workflow.finish
                    ▼
@@ -116,7 +116,7 @@ Each step has a single defined responsibility:
 
 **Memorization** answers "what should persist." Read the conversation log, extract decisions, state, open questions, and gotchas. Write them where the next session can find them. Without Memorization, every session restarts from zero.
 
-**Handoff** answers "what does the next session need to know." Reads the memorization output and writes a tight summary: what was shipped, open threads, decisions to respect, and pointers to key artifacts. Emits `workflow.finish` and writes one `gobbi.db::memories` row with `class='handoff'`.
+**Handoff** answers "what does the next session need to know." Reads the memorization output and writes a tight summary: what was shipped, open threads, decisions to respect, and pointers to key artifacts. Emits `workflow.finish` and writes the handoff summary into the session's `project.json::sessions[]` entry alongside the freeform `handoff.md` file.
 
 ---
 
@@ -136,13 +136,15 @@ V0.5.0 resolves it with a hard directory split:
   Read-only during workflow         Runtime state — write freely
 
   CLAUDE.md                         settings.json              (workspace prefs — gitignored)
-  rules/          ← symlinks →      state.db                   (workspace prompt-patch journal — gitignored)
-  skills/         from .gobbi/      gobbi.db                   (workspace memories projection — tracked)
-  agents/         skills|agents|    projects/<name>/
-  settings.json   rules               settings.json            (project config — tracked)
+  rules/          ← symlinks →      state.db                   (workspace event log, partial — gitignored)
+  skills/         from .gobbi/      projects/<name>/
+  agents/         skills|agents|      settings.json            (project config — tracked)
+  settings.json   rules               project.json             (cross-session memory — tracked)
   hooks/                              sessions/<id>/           (per-session — gitignored)
                                       sessions/<id>/gobbi.db   (per-session event log — gitignored)
-                                    projects/<name>/learnings/ (gotchas, decisions)
+                                      sessions/<id>/session.json (per-session telemetry — gitignored)
+                                    projects/<name>/learnings/ (general post-mortems)
+                                    projects/<name>/gotchas/   (anti-patterns)
 ```
 
 `.claude/` is the static knowledge layer. During a workflow session, no agent writes to it. The hooks enforce this at the tool layer — a PreToolUse hook blocks any write to `.claude/` while a session is active. The `skills/`, `agents/`, and `rules/` entries in `.claude/` are per-file symlinks pointing into `.gobbi/projects/<name>/skills/`, `.gobbi/projects/<name>/agents/`, and `.gobbi/projects/<name>/rules/` — the symlink farm lets Claude Code load docs from `.claude/` without storing the canonical copies there.
@@ -210,7 +212,7 @@ The five components of v0.5.0 form a closed feedback loop:
 
 **Hooks** are the constraint layer. PreToolUse hooks enforce guards — blocking writes to `.claude/` during sessions, preventing scope violations, enforcing step preconditions. PostToolUse and SubagentStop hooks capture events — when a subagent finishes, its output is automatically recorded in the event store without the orchestrator needing to remember to collect it.
 
-**SQLite event store** is the source of truth for workflow state. Workflow events (step transitions, subagent results, evaluation verdicts) write to per-session `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db`. The workspace `state.db` at `.gobbi/state.db` currently holds only `prompt.patch.applied` events (Wave C.1); full workspace consolidation of workflow events is Wave A.1 work, partially shipped. The CLI reads the per-session event store to determine what to generate next; hooks write events. A separate workspace `gobbi.db` at `.gobbi/gobbi.db` holds the cross-session memories projection (decisions, gotchas, design notes, handoff rows) — git-tracked so it persists across sessions.
+**Storage** is **one workspace SQLite (`state.db`) + per-session `gobbi.db` event store + two-tier JSON memory (`session.json` + `project.json`)**. Workflow events (step transitions, subagent results, evaluation verdicts) write to per-session `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db` — the source of truth for workflow state. The workspace `state.db` at `.gobbi/state.db` currently holds only `prompt.patch.applied` events (Wave C.1); full workspace consolidation of workflow events is Wave A.1 work, partially shipped. The CLI reads the per-session event store to determine what to generate next; hooks write events. Per-session telemetry (steps, agents, agent_calls, evaluations) is consolidated once at memorization-step entry into `<sessionDir>/session.json` (gitignored). Cross-session promoted memory (sessions index, gotchas, decisions, learnings) lives in `.gobbi/projects/<name>/project.json` (git-tracked) — this replaces the prior workspace `.gobbi/gobbi.db` SQLite memories projection retired in PR-FIN-2a-ii.
 
 **Skills** still exist and still matter. They provide domain knowledge that the CLI incorporates into generated prompts as materials — git conventions, evaluation perspectives, documentation standards. Skills no longer drive orchestration; they inform it.
 

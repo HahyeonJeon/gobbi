@@ -1,30 +1,25 @@
 /**
- * Workflow state types, initial state factory, and persistence.
+ * Workflow state types, initial state factory, and event-derived state.
  *
  * Defines the WorkflowState interface, step/substate types, evaluation
  * configuration, active subagent tracking, and guard violation records.
  * State is immutable — all fields use readonly modifiers.
  *
- * Persistence functions are synchronous (writeFileSync, renameSync)
- * because they execute inside bun:sqlite transactions which cannot
- * contain async calls.
+ * Per PR-FIN-2a-ii (T-2a.9.unified) the per-session `state.json`
+ * projection (and its `state.json.backup` companion) was retired in
+ * favour of pure event-derived state via `deriveState`. This module
+ * therefore exposes types, the initial-state factory, the runtime
+ * shape guard, and the EventRow → WorkflowState replay path —
+ * filesystem persistence helpers no longer live here. PR-FIN-2a-iii
+ * removed the orphaned `writeState` / `readState` / `backupState` /
+ * `restoreBackup` / `restoreStateFromBackup` / `resolveState` /
+ * `normaliseToLatestSchema` exports + the private `normaliseReadState`
+ * helper that the four read paths shared.
  *
- * This module does NOT import from reducer.ts — deriveState and
- * resolveState accept a reduce function as a parameter to avoid
- * circular dependencies. engine.ts is the module that bridges
- * state.ts and reducer.ts.
+ * This module does NOT import from reducer.ts — `deriveState` accepts
+ * a reduce function as a parameter to avoid circular dependencies.
+ * engine.ts is the module that bridges state.ts and reducer.ts.
  */
-
-import {
-  writeFileSync,
-  readFileSync,
-  renameSync,
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-} from 'node:fs';
-import { join } from 'node:path';
-import { randomUUID } from 'node:crypto';
 
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../lib/guards.js';
 import type { ResolvedSettings } from '../lib/settings.js';
@@ -147,9 +142,9 @@ export interface ActiveSubagent {
 /**
  * One persisted guard record. Both `guard.violation` (error) and `guard.warn`
  * (warning) events append records here; the `severity` field discriminates
- * them. `severity` is optional for on-disk v1 backward-compat — pre-schema-v2
- * files never stored it. `readState` normalises absent severity to `'error'`
- * so in-memory state always carries the field.
+ * them. `severity` is optional for v1 event-payload backward-compat —
+ * pre-schema-v2 events never carried it; the v1→v2 migration in
+ * `migrations.ts` defaults absent severity to `'error'`.
  */
 export interface GuardViolationRecord {
   readonly guardId: string;
@@ -198,17 +193,14 @@ export interface WorkflowState {
    * the form `"sub-123:typecheck"`. Populated by E.3's `reduceVerification`
    * sub-reducer; read by E.8's verification-block dynamic section.
    *
-   * Empty record on a fresh state; v3 on-disk shapes are normalised in to
-   * `{}` on read (Greg Young discipline — the persisted file itself is not
-   * rewritten until the next `writeState`). Added by PR E (schema v4).
+   * Empty record on a fresh state. Added by PR E (schema v4).
    */
   readonly verificationResults: Readonly<Record<string, VerificationResultData>>;
 
   // E.10 ZONE: stepStartedAt field insertion
   /**
    * ISO-8601 timestamp of the current step's entry, or `null` when no
-   * step has been entered yet (fresh-init state, or pre-v4 on-disk
-   * shapes normalised on read).
+   * step has been entered yet (fresh-init state).
    *
    * Set by the reducer on `workflow.step.exit` (for the next step the
    * transition advances to) and on `workflow.resume` (for the target
@@ -411,8 +403,9 @@ export function isValidState(value: unknown): value is WorkflowState {
     if (!isString(v['reason'])) return false;
     if (!isString(v['step'])) return false;
     if (!isString(v['timestamp'])) return false;
-    // severity is optional (schema v2+); `undefined` passes for v1 on-disk
-    // compat and is normalised to `'error'` by readState.
+    // severity is optional (schema v2+); `undefined` passes for v1 event
+    // backward-compat. The v1→v2 migration in `migrations.ts` defaults
+    // absent severity to `'error'` before it reaches state.
     const severity = v['severity'];
     if (severity !== undefined) {
       if (!isString(severity)) return false;
@@ -425,8 +418,8 @@ export function isValidState(value: unknown): value is WorkflowState {
   if (!isNumber(value['maxFeedbackRounds'])) return false;
 
   // lastVerdictOutcome: 'pass' | 'revise' | null (schema v2+).
-  // `undefined` is tolerated for v1 on-disk compat and is normalised to
-  // `null` by readState.
+  // `undefined` is tolerated for v1 event backward-compat (the field
+  // didn't exist pre-PR-C; replay produces `null`).
   const outcome = value['lastVerdictOutcome'];
   if (outcome !== undefined) {
     if (outcome !== null && !isString(outcome)) return false;
@@ -434,11 +427,11 @@ export function isValidState(value: unknown): value is WorkflowState {
   }
 
   // verificationResults: Record<string, VerificationResultData> (schema v4+).
-  // `undefined` is tolerated for v1/v2/v3 on-disk compat and is normalised
-  // to `{}` by readState. When present, we validate the outer record shape
-  // and every entry's top-level key/type invariants — nested string/number
-  // fields are spot-checked for corruption detection rather than strict
-  // full-schema conformance (the same approach taken for `violations`).
+  // `undefined` is tolerated for v1/v2/v3 event backward-compat. When
+  // present, we validate the outer record shape and every entry's
+  // top-level key/type invariants — nested string/number fields are
+  // spot-checked for corruption detection rather than strict full-schema
+  // conformance (the same approach taken for `violations`).
   const verifResults = value['verificationResults'];
   if (verifResults !== undefined) {
     if (!isRecord(verifResults)) return false;
@@ -458,241 +451,15 @@ export function isValidState(value: unknown): value is WorkflowState {
   }
 
   // stepStartedAt: string | null (schema v4+).
-  // `undefined` is tolerated for v1/v2/v3 on-disk compat and is normalised
-  // to `null` by readState. When present, must be an ISO timestamp string
-  // or explicit `null` — numbers/objects/booleans are rejected.
+  // `undefined` is tolerated for v1/v2/v3 event backward-compat. When
+  // present, must be an ISO timestamp string or explicit `null` —
+  // numbers/objects/booleans are rejected.
   const startedAt = value['stepStartedAt'];
   if (startedAt !== undefined) {
     if (startedAt !== null && !isString(startedAt)) return false;
   }
 
   return true;
-}
-
-// ---------------------------------------------------------------------------
-// State persistence — synchronous for use inside bun:sqlite transactions
-// ---------------------------------------------------------------------------
-
-/**
- * Synchronous atomic write: write to temp file, then rename.
- * Creates the directory if it does not exist.
- */
-export function writeState(dir: string, state: WorkflowState): void {
-  mkdirSync(dir, { recursive: true });
-  const filePath = join(dir, 'state.json');
-  const tmpPath = join(dir, `state.json.${randomUUID()}.tmp`);
-  writeFileSync(tmpPath, JSON.stringify(state, null, 2), 'utf8');
-  renameSync(tmpPath, filePath);
-}
-
-/**
- * Translate legacy step literals in a parsed (but not-yet-validated)
- * `state.json` payload to the post-Wave-4 names BEFORE `isValidState`
- * runs. This is the backward-compatibility shim for sessions written
- * under the pre-rename shape (`'plan'` / `'plan_eval'` / `evalConfig.plan`).
- *
- * Translations applied:
- *
- *   - `currentStep: 'plan'`        → `'planning'`
- *   - `currentStep: 'plan_eval'`   → `'planning_eval'`
- *   - `completedSteps` entries     → same pair-wise rename
- *   - `evalConfig.plan`            → `evalConfig.planning` (key moves;
- *                                     the old key is dropped)
- *   - `evalConfig.plan_eval`       → `evalConfig.planning_eval`
- *     (defensive — schema never had this key in practice, but the
- *     symmetric treatment guards future drift)
- *
- * Everything else is untouched. We do NOT bump `schemaVersion` — that
- * field tracks state-shape migrations, not the post-W4 name alignment.
- * The next `writeState` promotes the on-disk file to the current shape
- * naturally, matching the Greg Young discipline that `normaliseReadState`
- * applies post-validation.
- *
- * Accepts `unknown` because it runs BEFORE `isValidState` — translation
- * must tolerate any parsed JSON shape. When the input is not a record
- * or does not carry the legacy literals, it is returned unchanged.
- *
- * Idempotent: running this over already-translated (new-shape) input
- * produces the same output (no legacy literals survive).
- */
-export function normaliseToLatestSchema(parsed: unknown): unknown {
-  if (!isRecord(parsed)) return parsed;
-
-  const out: Record<string, unknown> = { ...parsed };
-
-  // currentStep: string rename
-  const currentStep = out['currentStep'];
-  if (currentStep === 'plan') {
-    out['currentStep'] = 'planning';
-  } else if (currentStep === 'plan_eval') {
-    out['currentStep'] = 'planning_eval';
-  }
-
-  // completedSteps: array of strings, pair-wise rename
-  const completedSteps = out['completedSteps'];
-  if (isArray(completedSteps)) {
-    let mutated = false;
-    const translated: unknown[] = completedSteps.map((entry) => {
-      if (entry === 'plan') {
-        mutated = true;
-        return 'planning';
-      }
-      if (entry === 'plan_eval') {
-        mutated = true;
-        return 'planning_eval';
-      }
-      return entry;
-    });
-    if (mutated) {
-      out['completedSteps'] = translated;
-    }
-  }
-
-  // evalConfig: move the `plan` key to `planning` (same for plan_eval).
-  // Preserve every other key on the record.
-  const evalConfig = out['evalConfig'];
-  if (isRecord(evalConfig)) {
-    const hasLegacyPlan = Object.prototype.hasOwnProperty.call(evalConfig, 'plan');
-    const hasLegacyPlanEval = Object.prototype.hasOwnProperty.call(
-      evalConfig,
-      'plan_eval',
-    );
-    if (hasLegacyPlan || hasLegacyPlanEval) {
-      const nextEval: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(evalConfig)) {
-        if (key === 'plan') {
-          // Only rename if the post-rename key is not already set — new-shape
-          // writes always win (idempotency).
-          if (!Object.prototype.hasOwnProperty.call(evalConfig, 'planning')) {
-            nextEval['planning'] = value;
-          }
-          continue;
-        }
-        if (key === 'plan_eval') {
-          if (
-            !Object.prototype.hasOwnProperty.call(evalConfig, 'planning_eval')
-          ) {
-            nextEval['planning_eval'] = value;
-          }
-          continue;
-        }
-        nextEval[key] = value;
-      }
-      out['evalConfig'] = nextEval;
-    }
-  }
-
-  return out;
-}
-
-/**
- * Normalise a validated `WorkflowState` read from disk so in-memory state
- * always carries the current (v4) shape:
- *
- *   - Absent `lastVerdictOutcome` (v1) → `null`.
- *   - Absent `severity` on any violation (v1) → `'error'` (the pre-v2
- *     event `guard.violation` was error-severity by definition).
- *   - Absent `verificationResults` (v1/v2/v3) → `{}` (the pre-v4 state had
- *     no verification channel).
- *
- * We deliberately do NOT rewrite the on-disk file — this is Greg Young
- * discipline (see `v050-session.md`). Old files stay their original shape
- * until the next writeState() call naturally promotes them.
- */
-function normaliseReadState(state: WorkflowState): WorkflowState {
-  const violations = state.violations.map((v) =>
-    v.severity === undefined ? { ...v, severity: 'error' as const } : v,
-  );
-  return {
-    ...state,
-    lastVerdictOutcome: state.lastVerdictOutcome ?? null,
-    verificationResults: state.verificationResults ?? {},
-    stepStartedAt: state.stepStartedAt ?? null,
-    violations,
-  };
-}
-
-/**
- * Read state.json from disk.
- * Returns null if the file is absent, contains invalid JSON, or has
- * an unexpected shape.
- *
- * Applies two normalisation passes:
- *
- *   1. `normaliseToLatestSchema` — translates pre-Wave-4 step literals
- *      (`'plan'` → `'planning'`, `evalConfig.plan` → `evalConfig.planning`,
- *      etc.) so legacy on-disk state files survive the rename. Runs BEFORE
- *      `isValidState` because the validator rejects the old literals.
- *   2. `normaliseReadState` — fills in absent v2+ fields
- *      (`lastVerdictOutcome`, violation `severity`, `verificationResults`,
- *      `stepStartedAt`) on a validated state. Runs AFTER validation.
- *
- * The file itself is not rewritten in either pass — next `writeState`
- * naturally promotes.
- */
-export function readState(dir: string): WorkflowState | null {
-  const filePath = join(dir, 'state.json');
-  if (!existsSync(filePath)) return null;
-  try {
-    const raw = readFileSync(filePath, 'utf8');
-    const parsed: unknown = JSON.parse(raw);
-    const normalized = normaliseToLatestSchema(parsed);
-    if (!isValidState(normalized)) return null;
-    return normaliseReadState(normalized);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Copy state.json to state.json.backup.
- * No-op if state.json does not exist.
- */
-export function backupState(dir: string): void {
-  const src = join(dir, 'state.json');
-  const dest = join(dir, 'state.json.backup');
-  if (existsSync(src)) {
-    copyFileSync(src, dest);
-  }
-}
-
-/**
- * Restore WorkflowState from the backup file.
- * Returns null if the backup is absent, invalid JSON, or wrong shape.
- *
- * Applies the same two-pass normalisation as {@link readState} —
- * `normaliseToLatestSchema` translates legacy step literals before
- * validation, `normaliseReadState` fills in absent v2+ fields after.
- */
-export function restoreBackup(dir: string): WorkflowState | null {
-  const filePath = join(dir, 'state.json.backup');
-  if (!existsSync(filePath)) return null;
-  try {
-    const raw = readFileSync(filePath, 'utf8');
-    const parsed: unknown = JSON.parse(raw);
-    const normalized = normaliseToLatestSchema(parsed);
-    if (!isValidState(normalized)) return null;
-    return normaliseReadState(normalized);
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Restore state.json from state.json.backup on disk.
- *
- * Unlike restoreBackup() which reads and returns the backup state,
- * this function copies the backup file back to state.json so that
- * subsequent resolveState() calls find the pre-operation state.
- *
- * No-op if the backup file does not exist.
- */
-export function restoreStateFromBackup(dir: string): void {
-  const backup = join(dir, 'state.json.backup');
-  const target = join(dir, 'state.json');
-  if (existsSync(backup)) {
-    copyFileSync(backup, target);
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -814,20 +581,3 @@ export function deriveState(
   return state;
 }
 
-/**
- * Resolve state using a three-level fallback chain:
- *
- * 1. Read state.json (primary)
- * 2. Read state.json.backup (fallback)
- * 3. Derive from full event replay (ultimate fallback)
- *
- * Always returns a valid WorkflowState.
- */
-export function resolveState(
-  dir: string,
-  events: readonly EventRow[],
-  sessionId: string,
-  reduceFn: ReduceFn,
-): WorkflowState {
-  return readState(dir) ?? restoreBackup(dir) ?? deriveState(sessionId, events, reduceFn);
-}

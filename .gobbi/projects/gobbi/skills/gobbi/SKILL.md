@@ -133,7 +133,7 @@ This skill defines the agent principles, rules, and skill map you must follow.
 | [project-setup.md](project-setup.md) | Project-specific context and technology stack signals |
 | [notification-setup.md](notification-setup.md) | Notification channel and credential detection |
 | [git-setup.md](git-setup.md) | Git tooling and repository state detection |
-| [design/v050-overview.md](../../design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, two-DB workspace split — authoritative architecture doc |
+| [design/v050-overview.md](../../design/v050-overview.md) | v0.5.0 state machine, 6-step state machine, workspace `state.db` + per-session `gobbi.db` + JSON memory (`session.json` + `project.json`) — authoritative architecture doc |
 
 ---
 
