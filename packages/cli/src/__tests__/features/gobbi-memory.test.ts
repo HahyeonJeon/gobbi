@@ -960,24 +960,32 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
   });
 
   // =========================================================================
-  // Legacy-session wipe (PR-FIN-2a-i T-2a.1.5: active-session guard removed)
+  // Legacy-session wipe
+  //   - PR-FIN-2a-i T-2a.1.5: active-session guard for the FLAT layer removed
+  //   - PR-FIN-2a-ii T-2a.10: per-project sweep extension — pre-pivot
+  //     artifacts (state.json, gobbi.db, …) are reaped from per-project
+  //     sessions while the session DIR (and any session.json + step
+  //     subdirs) is preserved.
   // =========================================================================
   describe('legacy-session wipe', () => {
-    test('G-MEM2-37: wipe-legacy-sessions deletes every legacy session', async () => {
+    test('G-MEM2-37: wipe-legacy-sessions deletes every flat-layout session AND reaps per-project legacy artifacts', async () => {
       const repo = makeRepo();
       seedLegacySession(repo, 'done-1', 'done');
       seedLegacySession(repo, 'err-1', 'error');
       seedLegacySession(repo, 'live', 'execution');
-      // Per-project sessions are NEVER touched by wipe-legacy-sessions.
-      seedProjectSession(repo, 'gobbi', 'proj-done', 'done');
-      seedProjectSession(repo, 'gobbi', 'proj-live', 'planning');
+      // `seedProjectSession` writes a pre-pivot `state.json` but no
+      // `session.json` — under T-2a.10 these are now per-project legacy
+      // sessions. Their state.json artifacts are wiped; the directories
+      // themselves remain.
+      const projDoneDir = seedProjectSession(repo, 'gobbi', 'proj-done', 'done');
+      const projLiveDir = seedProjectSession(repo, 'gobbi', 'proj-live', 'planning');
 
       await captureExit(() =>
         runWipeLegacySessionsWithOptions([], { repoRoot: repo }),
       );
       expect(captured.exitCode).toBeNull();
 
-      // Every legacy session — terminal or not — is wiped.
+      // Every flat-layout legacy session — terminal or not — is wiped.
       expect(existsSync(join(repo, '.gobbi', 'sessions', 'done-1'))).toBe(
         false,
       );
@@ -985,14 +993,38 @@ describe('gobbi-memory — G-MEM2 scenarios', () => {
         false,
       );
       expect(existsSync(join(repo, '.gobbi', 'sessions', 'live'))).toBe(false);
-      // Per-project sessions untouched.
-      expect(
-        existsSync(sessionDirForProject(repo, 'gobbi', 'proj-done')),
-      ).toBe(true);
-      expect(
-        existsSync(sessionDirForProject(repo, 'gobbi', 'proj-live')),
-      ).toBe(true);
-      expect(captured.stdout).toContain('3 session');
+      // Per-project session DIRECTORIES remain (T-2a.10 only reaps the
+      // five legacy artifacts, never the dir itself).
+      expect(existsSync(projDoneDir)).toBe(true);
+      expect(existsSync(projLiveDir)).toBe(true);
+      // The legacy `state.json` inside each per-project session was wiped.
+      expect(existsSync(join(projDoneDir, 'state.json'))).toBe(false);
+      expect(existsSync(join(projLiveDir, 'state.json'))).toBe(false);
+      // Combined-form summary: 3 flat + 2 per-project artifacts.
+      expect(captured.stdout).toContain('3 flat-layout sessions');
+      expect(captured.stdout).toContain('2 legacy artifacts wiped');
+    });
+
+    test('G-MEM2-37b: per-project session with a session.json marker is preserved untouched', async () => {
+      const repo = makeRepo();
+      const dir = sessionDirForProject(repo, 'gobbi', 'native');
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(
+        join(dir, 'session.json'),
+        JSON.stringify({ schemaVersion: 1, sessionId: 'native' }),
+        'utf8',
+      );
+      // A stray legacy artifact alongside session.json must NOT trigger
+      // a reap — session.json's presence marks the session as post-pivot.
+      writeFileSync(join(dir, 'state.json'), '{}', 'utf8');
+
+      await captureExit(() =>
+        runWipeLegacySessionsWithOptions([], { repoRoot: repo }),
+      );
+      expect(captured.exitCode).toBeNull();
+      // Both files preserved — the post-pivot marker wins over stray legacy.
+      expect(existsSync(join(dir, 'session.json'))).toBe(true);
+      expect(existsSync(join(dir, 'state.json'))).toBe(true);
     });
   });
 
