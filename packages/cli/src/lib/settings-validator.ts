@@ -241,6 +241,26 @@ const settingsSchema: JSONSchemaType<Settings> = {
             maxIterations: { type: 'integer', nullable: true, minimum: 1 },
           },
         },
+        // PR-CFM-C T4: dormant gate for the `step.advancement.observed`
+        // PostToolUse emitter (#197). Default `false`; T5 wires the
+        // emitter to read this value via `resolveSettings()`. Schema
+        // mirrors `additionalProperties: false` discipline at every
+        // nest level — sibling memorization slot is the structural model.
+        observability: {
+          type: 'object',
+          nullable: true,
+          additionalProperties: false,
+          properties: {
+            advancement: {
+              type: 'object',
+              nullable: true,
+              additionalProperties: false,
+              properties: {
+                enabled: { type: 'boolean', nullable: true },
+              },
+            },
+          },
+        },
       },
     },
     notify: {
