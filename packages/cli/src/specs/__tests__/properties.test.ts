@@ -38,8 +38,8 @@ import {
 } from '../assembly.js';
 import { compileVerificationBlock } from '../verification-block.js';
 import type { StepSpec } from '../types.js';
-import { initialState } from '../../workflow/state.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
 import { EventStore } from '../../workflow/store.js';
 import {
   aggregateCost,

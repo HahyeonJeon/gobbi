@@ -1760,7 +1760,7 @@ describe('CFG-29 (PR-FIN-1e): agent-routing block surfaces config overrides end-
     const { compile } = await import('../../specs/assembly.js');
     const { defaultBudgetAllocator } = await import('../../specs/budget.js');
     const { defaultPredicates } = await import('../../workflow/predicates.js');
-    const { initialState } = await import('../../workflow/state.js');
+    const { initialState } = await import('../../workflow/state-derivation.js');
 
     const { spec, originals } = loadSpecForRuntime(
       executionSpecPath,

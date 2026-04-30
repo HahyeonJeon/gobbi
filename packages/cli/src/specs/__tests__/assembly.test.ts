@@ -30,8 +30,8 @@ import type {
   AllocationResult,
   CompiledSectionLike,
 } from '../types.js';
-import { initialState } from '../../workflow/state.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
 
 // ===========================================================================
 // Fixture helpers — a minimal but non-trivial `StepSpec`

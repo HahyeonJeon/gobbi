@@ -2,8 +2,8 @@ import { describe, it, expect } from 'bun:test';
 
 import { reduce } from '../reducer.js';
 import type { ReducerResult } from '../reducer.js';
-import { initialState, isValidState } from '../state.js';
-import type { WorkflowState, WorkflowStep, EvalConfig } from '../state.js';
+import { initialState, isValidState } from '../state-derivation.js';
+import type { WorkflowState, WorkflowStep, EvalConfig } from '../state-derivation.js';
 import { defaultPredicates } from '../predicates.js';
 import type { Event } from '../events/index.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';
@@ -1053,7 +1053,7 @@ describe('E.10 — stepStartedAt', () => {
 
   it('stepStartedAt round-trips through JSON.stringify / JSON.parse unchanged', () => {
     // ISO-string choice (over epoch-number) is explicitly justified for
-    // round-trip safety in state.ts. Guard it at the reducer-output level
+    // round-trip safety in state-derivation.ts. Guard it at the reducer-output level
     // so any future switch to epoch-ms is caught here.
     const ts = '2026-04-18T13:35:00.000Z';
     const state = stateAt('ideation', {

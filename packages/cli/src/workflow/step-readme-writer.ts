@@ -35,7 +35,7 @@ import { join, sep } from 'node:path';
 
 import { ensureSessionStepDir } from '../lib/session-dirs.js';
 import type { StepId } from '../specs/artifact-selector.js';
-import type { WorkflowState } from './state.js';
+import type { WorkflowState } from './state-derivation.js';
 
 // ---------------------------------------------------------------------------
 // Productive-step narrowing

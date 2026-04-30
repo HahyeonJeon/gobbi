@@ -37,7 +37,7 @@
  * Substates — the `meta.substates` field on a `StepSpec` — model non-productive
  * sub-states inside a productive step's lifecycle. Today only Ideation
  * declares substates (`['discussing', 'researching']`, per
- * `workflow/state.ts::IdeationSubstate`). The overlay system exists to adapt
+ * `workflow/state-derivation.ts::IdeationSubstate`). The overlay system exists to adapt
  * that step's compiled prompt when the state machine is in a given substate,
  * without duplicating the base spec per substate.
  *

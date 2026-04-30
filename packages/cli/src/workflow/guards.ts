@@ -48,7 +48,7 @@
 import type { DiagnosticCode } from './diagnostics.js';
 import type { PredicateName } from './predicates.generated.js';
 import type { VerdictPredicateName } from './predicates.js';
-import type { WorkflowStep } from './state.js';
+import type { WorkflowStep } from './state-derivation.js';
 
 // ---------------------------------------------------------------------------
 // Guard type

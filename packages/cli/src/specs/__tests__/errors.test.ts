@@ -19,8 +19,8 @@
 import { describe, it, expect } from 'bun:test';
 
 import { EventStore } from '../../workflow/store.js';
-import { initialState } from '../../workflow/state.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
 import { WORKFLOW_EVENTS } from '../../workflow/events/workflow.js';
 import { DECISION_EVENTS } from '../../workflow/events/decision.js';
 import { SESSION_EVENTS } from '../../workflow/events/session.js';

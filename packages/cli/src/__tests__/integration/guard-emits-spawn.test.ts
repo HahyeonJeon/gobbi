@@ -51,7 +51,7 @@ import {
 import { defaultPredicates } from '../../workflow/predicates.js';
 import { generateStepReadme } from '../../workflow/step-readme-writer.js';
 import { compileVerificationBlock } from '../../specs/verification-block.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
 
 // ---------------------------------------------------------------------------
 // stdout / stderr capture + process.exit trap

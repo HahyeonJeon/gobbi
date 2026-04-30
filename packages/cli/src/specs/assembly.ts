@@ -50,7 +50,7 @@ import type {
 } from './types.js';
 import { defaultBudgetAllocator } from './budget.js';
 import type { AgentOriginal } from './spec-loader.js';
-import type { WorkflowState } from '../workflow/state.js';
+import type { WorkflowState } from '../workflow/state-derivation.js';
 import type { WorkflowGraph } from './graph.js';
 
 // Note: `CompiledPrompt`, `CompiledSectionSummary`, `CompiledSectionLike`,

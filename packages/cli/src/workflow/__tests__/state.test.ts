@@ -8,8 +8,8 @@ import {
   isValidState,
   rowToEvent,
   deriveState,
-} from '../state.js';
-import type { WorkflowState, ReduceFn } from '../state.js';
+} from '../state-derivation.js';
+import type { WorkflowState, ReduceFn } from '../state-derivation.js';
 import type { ResolvedSettings } from '../../lib/settings.js';
 import { DEFAULTS } from '../../lib/settings.js';
 import { EventStore } from '../store.js';

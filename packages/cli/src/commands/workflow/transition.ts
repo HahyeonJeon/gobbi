@@ -60,7 +60,7 @@ import {
   createResume,
 } from '../../workflow/events/workflow.js';
 import { createEvalVerdict } from '../../workflow/events/decision.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
 import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------

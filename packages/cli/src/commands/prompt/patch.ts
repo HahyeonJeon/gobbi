@@ -81,8 +81,8 @@ import {
   STEP_SPEC_SCHEMA_ID,
 } from '../../specs/_schema/v1.js';
 import type { StepSpec } from '../../specs/types.js';
-import { initialState } from '../../workflow/state.js';
-import type { WorkflowStep } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
+import type { WorkflowStep } from '../../workflow/state-derivation.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
 import { EventStore } from '../../workflow/store.js';
 import {

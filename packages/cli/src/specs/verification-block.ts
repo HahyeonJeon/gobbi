@@ -60,7 +60,7 @@ import {
   type BuildErrorCompiledPromptInput,
 } from './errors.sections.js';
 import type { CompiledPrompt } from './types.js';
-import type { WorkflowState } from '../workflow/state.js';
+import type { WorkflowState } from '../workflow/state-derivation.js';
 import type {
   VerificationCommandKind,
   VerificationResultData,

@@ -36,8 +36,8 @@ import {
   resolveWorkflowState,
 } from '../../../workflow/engine.js';
 import { createStepTimeout } from '../../../workflow/events/workflow.js';
-import { initialState } from '../../../workflow/state.js';
-import type { WorkflowState } from '../../../workflow/state.js';
+import { initialState } from '../../../workflow/state-derivation.js';
+import type { WorkflowState } from '../../../workflow/state-derivation.js';
 import { EventStore } from '../../../workflow/store.js';
 
 // ---------------------------------------------------------------------------

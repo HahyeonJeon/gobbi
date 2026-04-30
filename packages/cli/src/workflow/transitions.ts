@@ -38,8 +38,8 @@
 import type { Event } from './events/index.js';
 import { WORKFLOW_EVENTS } from './events/workflow.js';
 import { DECISION_EVENTS } from './events/decision.js';
-import type { WorkflowState, WorkflowStep } from './state.js';
-import { ACTIVE_STEPS, TERMINAL_STEPS, isActiveStep } from './state.js';
+import type { WorkflowState, WorkflowStep } from './state-derivation.js';
+import { ACTIVE_STEPS, TERMINAL_STEPS, isActiveStep } from './state-derivation.js';
 import type { PredicateRegistry, VerdictPredicateName } from './predicates.js';
 import type { PredicateName } from './predicates.generated.js';
 

@@ -74,7 +74,7 @@ import {
   createDelegationFail,
 } from '../../workflow/events/delegation.js';
 import { createArtifactWrite } from '../../workflow/events/artifact.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
 import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 import type { StepId } from '../../specs/artifact-selector.js';
 

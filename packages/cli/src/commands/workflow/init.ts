@@ -74,13 +74,11 @@ import { readInstalledVersion } from '../../lib/version-check.js';
 import { ConfigCascadeError } from '../../lib/settings.js';
 import { EventStore } from '../../workflow/store.js';
 import { appendEventAndUpdateState, resolveWorkflowState } from '../../workflow/engine.js';
-import { initialState } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
 import {
   createWorkflowStart,
   createEvalDecide,
 } from '../../workflow/events/workflow.js';
-
-import { detectTechStack } from './tech-stack.js';
 
 // ---------------------------------------------------------------------------
 // Usage
@@ -240,12 +238,6 @@ export async function runInitWithOptions(
   const task = typeof values.task === 'string' ? values.task : '';
   const evalIdeation = values['eval-ideation'] === true;
   const evalPlanning = values['eval-planning'] === true;
-
-  // Detect the tech stack so the value is observable in stderr drift checks
-  // (T-2a.9.tests still inspects the directory shape during cross-pass
-  // validation). Result is intentionally discarded here — session.json's
-  // 6-field stub does not carry it (ideation lock 5 — minimal carry-forward).
-  detectTechStack(repoRoot);
 
   // session.json stub carries the 6 required-at-all-stages fields per the
   // ideation lock (schemaVersion, sessionId, projectId, createdAt,

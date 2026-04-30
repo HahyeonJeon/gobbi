@@ -239,7 +239,7 @@ async function warnOnMissingSpecFiles(
 // ---------------------------------------------------------------------------
 // Shape validation
 //
-// Plain-object guard — mirrors the pattern in `state.ts::isValidState`.
+// Plain-object guard — mirrors the pattern in `state-derivation.ts::isValidState`.
 // No third-party schema library is pulled in here; ajv lands in A.6 for
 // per-step `spec.json` files. The graph shape is small enough to validate
 // in-place.

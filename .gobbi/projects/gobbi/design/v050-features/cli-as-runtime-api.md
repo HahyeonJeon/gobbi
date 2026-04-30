@@ -22,7 +22,7 @@ The two verbs are `gobbi config get <key>` (cascade-resolved across workspace �
 
 ## Memory
 
-The memory group operates on the session event store and the memory stores described in `gobbi-memory.md`. It includes: a command to promote a gotcha from session-level capture (transient) into the project-level gotcha store at `.gobbi/project/{project_name}/gotchas/`, or into cross-project plugin gotchas at `.claude/skills/_gotcha/`; a command to extract subagent transcripts from JSONL and write the result into the active step's `rawdata/` directory; and a command to extract plan artifacts from session transcripts. The JSONL schema is not self-evident — the CLI knows the schema and where to look, so agents do not have to parse it.
+The memory group operates on the session event store and the memory stores described in `gobbi-memory/README.md`. It includes: a command to promote a gotcha from session-level capture (transient) into the project-level gotcha store at `.gobbi/project/{project_name}/gotchas/`, or into cross-project plugin gotchas at `.claude/skills/_gotcha/`; a command to extract subagent transcripts from JSONL and write the result into the active step's `rawdata/` directory; and a command to extract plan artifacts from session transcripts. The JSONL schema is not self-evident — the CLI knows the schema and where to look, so agents do not have to parse it.
 
 ## Rendering
 
@@ -66,5 +66,5 @@ When an agent does not know which command fits its need, it consults an intent m
 |----------|--------|
 | `deterministic-orchestration.md` | The workflow commands and the six-step state machine they drive |
 | `gobbi-config/README.md` | The three-tier configuration cascade that config commands navigate |
-| `gobbi-memory.md` | The session event store and memory stores that memory commands operate on |
+| `gobbi-memory/README.md` | The session event store and memory stores that memory commands operate on |
 | `claude-docs-management.md` | The render command and the JSON-source-to-`.claude/` pipeline |

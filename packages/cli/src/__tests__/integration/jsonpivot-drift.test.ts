@@ -283,7 +283,7 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
 
   // ---- Production code: legacy schema readers + retirement docblocks -------
   {
-    path: 'packages/cli/src/workflow/state.ts',
+    path: 'packages/cli/src/workflow/state-derivation.ts',
     rationale:
       "Migration-only paths reference `state.json` post-PR-FIN-2a-iii Tier B.2 (orphan exports removed). Surviving references describe the legacy on-disk shape that migration code converts away.",
   },
@@ -343,12 +343,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     tokens: new Set(['metadata.json']),
     rationale:
       'Docblock at the second `resolvePartitionKeys` callsite describes the post-PR-FIN-2a-ii retirement of the per-session metadata.json reader (PR-FIN-2a-iii Tier A.6 docs sweep). Naming the retired file is necessary to document what was retired.',
-  },
-  {
-    path: 'packages/cli/src/commands/workflow/tech-stack.ts',
-    tokens: new Set(['metadata.json']),
-    rationale:
-      'Module + `detectTechStack` docblocks describe the post-PR-FIN-2a-ii retirement of metadata.json.techStack and the still-pending session.json slot decision (PR-FIN-2a-iii Tier A.10). Function is kept live for the underlying signal; deletion vs. wiring is a deferred follow-up. Naming the retired file is necessary to document what was retired.',
   },
   {
     path: 'packages/cli/src/commands/maintenance/wipe-legacy-sessions.ts',

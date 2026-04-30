@@ -51,8 +51,8 @@ import {
 import { defaultBudgetAllocator } from '../../budget.js';
 import { makeStatic, type StaticSection } from '../../sections.js';
 import { validateStepSpec } from '../../_schema/v1.js';
-import { initialState } from '../../../workflow/state.js';
-import type { WorkflowState } from '../../../workflow/state.js';
+import { initialState } from '../../../workflow/state-derivation.js';
+import type { WorkflowState } from '../../../workflow/state-derivation.js';
 import { defaultPredicates } from '../../../workflow/predicates.js';
 import { loadSpecForRuntime } from '../../spec-loader.js';
 import type { StepSpec } from '../../types.js';

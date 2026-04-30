@@ -38,6 +38,6 @@ When evaluator agents review docs changes — whether examining JSON source for 
 
 | Document | Covers |
 |----------|--------|
-| `gobbi-memory.md` | How `.gobbi/` is organized and where project memory lives |
+| `gobbi-memory/README.md` | How `.gobbi/` is organized and where project memory lives |
 | `cli-as-runtime-api.md` | The gobbi CLI surface, including the render command |
 | `prompts-as-data.md` | Related data-driven generation pattern applied to workflow prompts |

@@ -116,7 +116,7 @@ export function contentHash(value: unknown): string {
 // JSONL append (thin wrapper around appendFileSync)
 //
 // Architecture F-4 fix: there is no shared append-jsonl helper in
-// `state.ts` (the line referenced in the briefing is inside another
+// `state-derivation.ts` (the line referenced in the briefing is inside another
 // function, not a usable export). Synthesis §15 instructs us to
 // publish a thin helper here rather than reuse a non-existent one.
 // ---------------------------------------------------------------------------
@@ -130,7 +130,7 @@ export function contentHash(value: unknown): string {
  * The single `appendFileSync` call gives us POSIX-level append-atomic
  * line semantics (under the small-write threshold) and recoverable
  * partial-write semantics under SIGKILL: the file always parses up to
- * the last `\n`. Mirrors `state.ts:464-465`'s temp+rename pattern in
+ * the last `\n`. Mirrors `state-derivation.ts:464-465`'s temp+rename pattern in
  * intent (least-surprising filesystem write) but for an append-only
  * log, not a single-file overwrite.
  */

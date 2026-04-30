@@ -42,8 +42,8 @@ import {
 import { appendEventAndUpdateState } from '../engine.js';
 import { writeSessionJsonAtMemorizationExit } from '../session-json-writer.js';
 import { EventStore } from '../store.js';
-import { initialState } from '../state.js';
-import type { WorkflowState } from '../state.js';
+import { initialState } from '../state-derivation.js';
+import type { WorkflowState } from '../state-derivation.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';
 import type { Event } from '../events/index.js';
 

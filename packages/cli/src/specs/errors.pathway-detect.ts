@@ -47,7 +47,7 @@
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-import type { WorkflowState } from '../workflow/state.js';
+import type { WorkflowState } from '../workflow/state-derivation.js';
 import type { ReadStore } from '../workflow/store.js';
 import { WORKFLOW_EVENTS } from '../workflow/events/workflow.js';
 import { DECISION_EVENTS } from '../workflow/events/decision.js';

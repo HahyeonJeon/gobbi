@@ -26,8 +26,8 @@ import { describe, it, test, expect } from 'bun:test';
 
 import { reduce } from '../reducer.js';
 import type { ReducerResult } from '../reducer.js';
-import { initialState } from '../state.js';
-import type { WorkflowState } from '../state.js';
+import { initialState } from '../state-derivation.js';
+import type { WorkflowState } from '../state-derivation.js';
 import { defaultPredicates } from '../predicates.js';
 import { findTransition } from '../transitions.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';

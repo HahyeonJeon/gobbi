@@ -1,13 +1,13 @@
 /**
- * Shared workflow types — consumed by both state.ts and reducer.ts.
+ * Shared workflow types — consumed by both state-derivation.ts and reducer.ts.
  *
- * This module exists to avoid circular dependencies: state.ts cannot
+ * This module exists to avoid circular dependencies: state-derivation.ts cannot
  * import from reducer.ts (and vice versa), but both need the reducer
  * result type. Type-only imports are erased at runtime, so this module
  * introduces no dependency cycle risk.
  */
 
-import type { WorkflowState } from './state.js';
+import type { WorkflowState } from './state-derivation.js';
 import type { Event } from './events/index.js';
 import type { PredicateRegistry } from './predicates.js';
 

@@ -22,7 +22,7 @@
  * in `errors.snap.test.ts` locks this property.
  */
 
-import type { WorkflowState } from '../workflow/state.js';
+import type { WorkflowState } from '../workflow/state-derivation.js';
 import type { ReadStore } from '../workflow/store.js';
 import type { CompiledPrompt } from './types.js';
 import type {

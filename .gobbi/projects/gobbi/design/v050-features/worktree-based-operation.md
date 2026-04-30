@@ -25,5 +25,5 @@ After a PR is merged, the worktree is cleaned up. The branch is removed, the wor
 | Document | Covers |
 |----------|--------|
 | `deterministic-orchestration.md` | How Workflow Configuration creates the worktree when git mode is worktree-PR |
-| `gobbi-memory.md` | How worktree-scoped work writes artifacts into the active session's `rawdata/` directories |
+| `gobbi-memory/README.md` | How worktree-scoped work writes artifacts into the active session's `rawdata/` directories |
 | `cli-as-runtime-api.md` | The CLI surface that manages the worktree lifecycle (creation, cleanup, base-branch verification) |
