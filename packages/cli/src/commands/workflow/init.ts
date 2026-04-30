@@ -11,11 +11,11 @@
  * favour of `session.json` — a stub at init carrying only the 6 required-at-
  * all-stages fields (`schemaVersion`, `sessionId`, `projectId`, `createdAt`,
  * `gobbiVersion`, `task`). The full session.json is materialised at the
- * memorization step's STEP_EXIT (T-2a.8.2). Until T-2a.9.tests prunes
- * `cross-pass-invariant.test.ts`, the legacy `SessionMetadata` /
- * `readMetadata` / `isValidMetadata` symbols remain exported as
- * dead-code-but-still-imported back-compat surface; they are NOT consumed
- * by the production init path.
+ * memorization step's STEP_EXIT (T-2a.8.2). T-2a.9.tests pruned
+ * `cross-pass-invariant.test.ts` to read `session.json` directly and
+ * removed the legacy `SessionMetadata` / `SessionConfigSnapshot` /
+ * `readMetadata` / `isValidMetadata` re-exports that were temporarily
+ * preserved here as dead-code back-compat surface.
  *
  * ## Idempotency
  *
@@ -55,11 +55,10 @@
  */
 
 import { parseArgs } from 'node:util';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 import { getRepoRoot } from '../../lib/repo.js';
-import { isRecord, isString, isNumber, isBoolean, isArray } from '../../lib/guards.js';
 import { ensureSettingsCascade } from '../../lib/ensure-settings-cascade.js';
 import {
   resolveSettings,
@@ -113,44 +112,6 @@ const PARSE_OPTIONS = {
   'eval-planning': { type: 'boolean', default: false },
   context: { type: 'string' },
 } as const;
-
-// ---------------------------------------------------------------------------
-// Legacy metadata shape — deprecated; retained for back-compat
-// ---------------------------------------------------------------------------
-//
-// PR-FIN-2a-ii (T-2a.8.5) replaced the production metadata.json writer with
-// `writeSessionStub` (session.json). The legacy `SessionMetadata` /
-// `SessionConfigSnapshot` interfaces, the `readMetadata` reader, and
-// `isValidMetadata` predicate remain exported solely so
-// `__tests__/cross-pass-invariant.test.ts` (owned by T-2a.9.tests, Wave C)
-// continues to compile until that test is pruned. The production init path
-// no longer reads or writes metadata.json — reading these symbols at
-// runtime is a dead-code branch.
-//
-// DO NOT extend this surface. New session-time data lands on session.json
-// via `lib/json-memory.ts`.
-
-/**
- * @deprecated PR-FIN-2a-ii — metadata.json is no longer written. Retained
- * solely for `cross-pass-invariant.test.ts` back-compat.
- */
-export interface SessionMetadata {
-  readonly schemaVersion: 3;
-  readonly sessionId: string;
-  readonly createdAt: string;
-  readonly projectRoot: string;
-  readonly projectName: string;
-  readonly techStack: readonly string[];
-  readonly configSnapshot: SessionConfigSnapshot;
-}
-
-/** @deprecated PR-FIN-2a-ii — see {@link SessionMetadata}. */
-export interface SessionConfigSnapshot {
-  readonly task: string;
-  readonly evalIdeation: boolean;
-  readonly evalPlanning: boolean;
-  readonly context: string;
-}
 
 // ---------------------------------------------------------------------------
 // Entry point
@@ -498,49 +459,3 @@ export function resolveProjectNameForInit(
   return basename(repoRoot);
 }
 
-/**
- * Read and structurally validate a legacy `metadata.json`. Returns `null`
- * when the file is malformed at any level — callers decide how to surface
- * that.
- *
- * @deprecated PR-FIN-2a-ii (T-2a.8.5) — `metadata.json` is no longer
- * written by `gobbi workflow init`; the active per-session JSON is
- * `session.json` (see `lib/json-memory.ts::readSessionJson`). This reader
- * is retained only for `cross-pass-invariant.test.ts` until T-2a.9.tests
- * prunes that suite.
- */
-export function readMetadata(path: string): SessionMetadata | null {
-  let raw: string;
-  try {
-    raw = readFileSync(path, 'utf8');
-  } catch {
-    return null;
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return null;
-  }
-  return isValidMetadata(parsed) ? parsed : null;
-}
-
-export function isValidMetadata(value: unknown): value is SessionMetadata {
-  if (!isRecord(value)) return false;
-  if (!isNumber(value['schemaVersion']) || value['schemaVersion'] !== 3) return false;
-  if (!isString(value['sessionId'])) return false;
-  if (!isString(value['createdAt'])) return false;
-  if (!isString(value['projectRoot'])) return false;
-  if (!isString(value['projectName'])) return false;
-  if (!isArray(value['techStack'])) return false;
-  for (const tag of value['techStack']) {
-    if (!isString(tag)) return false;
-  }
-  const snapshot = value['configSnapshot'];
-  if (!isRecord(snapshot)) return false;
-  if (!isString(snapshot['task'])) return false;
-  if (!isBoolean(snapshot['evalIdeation'])) return false;
-  if (!isBoolean(snapshot['evalPlanning'])) return false;
-  if (!isString(snapshot['context'])) return false;
-  return true;
-}
