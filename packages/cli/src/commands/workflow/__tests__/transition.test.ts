@@ -20,7 +20,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -33,6 +33,7 @@ import {
 } from '../transition.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
 import { EventStore } from '../../../workflow/store.js';
+import { resolveWorkflowState } from '../../../workflow/engine.js';
 import { initialState } from '../../../workflow/state.js';
 import type { WorkflowState } from '../../../workflow/state.js';
 
@@ -121,21 +122,35 @@ function makeScratchRepo(): string {
 
 async function initScratchSession(
   sessionId: string,
-): Promise<{ sessionDir: string; repo: string }> {
+): Promise<{ sessionDir: string; repo: string; projectId: string }> {
   const repo = makeScratchRepo();
+  const projectId = basename(repo);
   await captureExit(() =>
     runInitWithOptions(
       ['--session-id', sessionId, '--task', 'transition-test'],
       { repoRoot: repo },
     ),
   );
-  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
+  const sessionDir = sessionDirForProject(repo, projectId, sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
-  return { sessionDir, repo };
+  return { sessionDir, repo, projectId };
 }
 
-function openStore(sessionDir: string): EventStore {
-  return new EventStore(join(sessionDir, 'gobbi.db'));
+/**
+ * Open the per-session event store with explicit partition keys (PR-FIN-
+ * 2a-ii / T-2a.9.unified Option α). Tests pass the same `(sessionId,
+ * projectId)` pair init stamped at write time so the partition-aware
+ * read filter admits the session's events.
+ */
+function openStore(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): EventStore {
+  return new EventStore(join(sessionDir, 'gobbi.db'), {
+    sessionId,
+    projectId,
+  });
 }
 
 // ===========================================================================
@@ -260,7 +275,7 @@ describe('buildEvent — keyword mapping', () => {
 
 describe('runTransitionWithOptions — happy paths', () => {
   test('COMPLETE from fresh ideation fires workflow.step.exit and advances state', async () => {
-    const { sessionDir } = await initScratchSession('trans-complete');
+    const { sessionDir, projectId } = await initScratchSession('trans-complete');
 
     await captureExit(() =>
       runTransitionWithOptions(['COMPLETE'], { sessionDir }),
@@ -271,7 +286,7 @@ describe('runTransitionWithOptions — happy paths', () => {
     expect(captured.stdout).toContain('Step: plan');
 
     // Verify the event landed in the store.
-    const store = openStore(sessionDir);
+    const store = openStore(sessionDir, 'trans-complete', projectId);
     try {
       const last = store.last('workflow.step.exit');
       expect(last).not.toBeNull();
@@ -282,7 +297,7 @@ describe('runTransitionWithOptions — happy paths', () => {
   });
 
   test('SKIP from plan fires workflow.step.skip and lands back at ideation', async () => {
-    const { sessionDir } = await initScratchSession('trans-skip');
+    const { sessionDir, projectId } = await initScratchSession('trans-skip');
 
     // Advance to plan via COMPLETE first.
     await captureExit(() =>
@@ -296,7 +311,7 @@ describe('runTransitionWithOptions — happy paths', () => {
     );
 
     expect(captured.exitCode).toBeNull();
-    const store = openStore(sessionDir);
+    const store = openStore(sessionDir, 'trans-skip', projectId);
     try {
       const last = store.last('workflow.step.skip');
       expect(last).not.toBeNull();
@@ -314,7 +329,7 @@ describe('runTransitionWithOptions — happy paths', () => {
   // This test drives the full workflow through to handoff and asserts
   // FINISH terminates the session.
   test('FINISH from handoff fires workflow.finish and reaches `done`', async () => {
-    const { sessionDir } = await initScratchSession('trans-handoff-finish');
+    const { sessionDir, projectId } = await initScratchSession('trans-handoff-finish');
 
     // Drive ideation → planning → execution → execution_eval. The
     // execution → execution_eval edge is unconditional in the
@@ -365,7 +380,7 @@ describe('runTransitionWithOptions — happy paths', () => {
     // After FINISH the runtime transition graph routes handoff → done.
     expect(captured.stdout).toContain('done');
 
-    const store = openStore(sessionDir);
+    const store = openStore(sessionDir, 'trans-handoff-finish', projectId);
     try {
       const finishRow = store.last('workflow.finish');
       expect(finishRow).not.toBeNull();
@@ -376,17 +391,25 @@ describe('runTransitionWithOptions — happy paths', () => {
       store.close();
     }
 
-    // state.json reflects the terminal `done` state via the same
-    // resolveWorkflowState fast path the runtime guards / status
-    // commands use.
-    const finalState = JSON.parse(
-      readFileSync(join(sessionDir, 'state.json'), 'utf8'),
-    ) as { readonly currentStep: string };
-    expect(finalState.currentStep).toBe('done');
+    // PR-FIN-2a-ii (T-2a.9.unified) retired `state.json`; derive the
+    // terminal step by replaying the partition-filtered event stream.
+    {
+      const store = openStore(sessionDir, 'trans-handoff-finish', projectId);
+      try {
+        const finalState = resolveWorkflowState(
+          sessionDir,
+          store,
+          'trans-handoff-finish',
+        );
+        expect(finalState.currentStep).toBe('done');
+      } finally {
+        store.close();
+      }
+    }
   });
 
   test('REVISE with --loop-target carries the target to EvalVerdictData', async () => {
-    const { sessionDir } = await initScratchSession('trans-revise');
+    const { sessionDir, projectId } = await initScratchSession('trans-revise');
 
     // Drive to execution_eval so REVISE is meaningful. The state machine
     // path from a fresh session without eval flags is:
@@ -408,7 +431,7 @@ describe('runTransitionWithOptions — happy paths', () => {
     );
 
     expect(captured.exitCode).toBeNull();
-    const store = openStore(sessionDir);
+    const store = openStore(sessionDir, 'trans-revise', projectId);
     try {
       const last = store.last('decision.eval.verdict');
       expect(last).not.toBeNull();
@@ -424,7 +447,7 @@ describe('runTransitionWithOptions — happy paths', () => {
   });
 
   test('--json emits a structured result on stdout', async () => {
-    const { sessionDir } = await initScratchSession('trans-json');
+    const { sessionDir, projectId } = await initScratchSession('trans-json');
 
     await captureExit(() =>
       runTransitionWithOptions(['COMPLETE', '--json'], { sessionDir }),
@@ -452,7 +475,7 @@ describe('runTransitionWithOptions — happy paths', () => {
 
 describe('runTransitionWithOptions — idempotency', () => {
   test('PASS with --tool-call-id uses the tool-call formula and dedupes on repeat', async () => {
-    const { sessionDir } = await initScratchSession('trans-idem');
+    const { sessionDir, projectId } = await initScratchSession('trans-idem');
 
     // Drive fresh session (ideation/discussing) to ideation_eval so PASS is
     // a valid verdict with a matching transition. The plan-off default
@@ -471,9 +494,10 @@ describe('runTransitionWithOptions — idempotency', () => {
         { repoRoot: evalRepo },
       ),
     );
+    const evalProjectId = basename(evalRepo);
     const evalSessionDir = sessionDirForProject(
       evalRepo,
-      basename(evalRepo),
+      evalProjectId,
       'trans-idem-eval',
     );
     captured = { stdout: '', stderr: '', exitCode: null };
@@ -502,7 +526,7 @@ describe('runTransitionWithOptions — idempotency', () => {
     expect(first.idempotencyKind).toBe('tool-call');
 
     // Count events after first PASS.
-    const store1 = openStore(evalSessionDir);
+    const store1 = openStore(evalSessionDir, 'trans-idem-eval', evalProjectId);
     const countAfterFirst = store1.byType('decision.eval.verdict').length;
     store1.close();
 
@@ -520,7 +544,7 @@ describe('runTransitionWithOptions — idempotency', () => {
     const second = JSON.parse(captured.stdout) as { persisted?: unknown };
     expect(second.persisted).toBe(false);
 
-    const store2 = openStore(evalSessionDir);
+    const store2 = openStore(evalSessionDir, 'trans-idem-eval', evalProjectId);
     try {
       expect(store2.byType('decision.eval.verdict').length).toBe(
         countAfterFirst,
@@ -540,7 +564,7 @@ describe('runTransitionWithOptions — idempotency', () => {
 
 describe('runTransitionWithOptions — error paths', () => {
   test('RESUME from a non-error state exits 1 with the reducer error on stderr', async () => {
-    const { sessionDir } = await initScratchSession('trans-reject');
+    const { sessionDir, projectId } = await initScratchSession('trans-reject');
 
     // Fresh init lands at ideation/discussing — not error, so RESUME fails
     // the reducer guard at `reducer.ts:177-187`.
@@ -553,7 +577,7 @@ describe('runTransitionWithOptions — error paths', () => {
   });
 
   test('unknown keyword exits 2 with the supported list on stderr', async () => {
-    const { sessionDir } = await initScratchSession('trans-unknown');
+    const { sessionDir, projectId } = await initScratchSession('trans-unknown');
 
     await captureExit(() =>
       runTransitionWithOptions(['FLY_AWAY'], { sessionDir }),
@@ -568,7 +592,7 @@ describe('runTransitionWithOptions — error paths', () => {
   });
 
   test('missing positional keyword exits 2 with usage', async () => {
-    const { sessionDir } = await initScratchSession('trans-miss');
+    const { sessionDir, projectId } = await initScratchSession('trans-miss');
 
     await captureExit(() =>
       runTransitionWithOptions([], { sessionDir }),

@@ -237,6 +237,7 @@ describe('runInit — fresh session (session.json)', () => {
 
   test('opens gobbi.db and appends workflow.start + workflow.eval.decide', async () => {
     const repo = makeScratchRepo();
+    const projectId = basename(repo);
     await captureExit(() =>
       runInitWithOptions(
         ['--session-id', 'fresh-events', '--task', 'demo'],
@@ -245,10 +246,16 @@ describe('runInit — fresh session (session.json)', () => {
     );
 
     const dbPath = join(
-      sessionDirForProject(repo, basename(repo), 'fresh-events'),
+      sessionDirForProject(repo, projectId, 'fresh-events'),
       'gobbi.db',
     );
-    const store = new EventStore(dbPath);
+    // PR-FIN-2a-ii: every read on the v5+ store filters by partition keys
+    // (`session_id`, `project_id`). Pass the same keys init stamped at
+    // write time or the read returns zero rows.
+    const store = new EventStore(dbPath, {
+      sessionId: 'fresh-events',
+      projectId,
+    });
     try {
       const rows = store.replayAll();
       expect(rows).toHaveLength(2);
@@ -261,6 +268,7 @@ describe('runInit — fresh session (session.json)', () => {
 
   test('--eval-ideation flag drives the eval.decide payload (not session.json)', async () => {
     const repo = makeScratchRepo();
+    const projectId = basename(repo);
     await captureExit(() =>
       runInitWithOptions(
         ['--session-id', 'eval-flags', '--eval-ideation'],
@@ -269,10 +277,13 @@ describe('runInit — fresh session (session.json)', () => {
     );
 
     const dbPath = join(
-      sessionDirForProject(repo, basename(repo), 'eval-flags'),
+      sessionDirForProject(repo, projectId, 'eval-flags'),
       'gobbi.db',
     );
-    const store = new EventStore(dbPath);
+    const store = new EventStore(dbPath, {
+      sessionId: 'eval-flags',
+      projectId,
+    });
     try {
       const rows = store.replayAll();
       const decideRow = rows.find((row) => row.type === 'workflow.eval.decide');
@@ -331,7 +342,10 @@ describe('runInit — idempotency', () => {
     expect(readFileSync(sessionPath, 'utf8')).toBe(firstSessionJson);
 
     // No duplicate events.
-    const store = new EventStore(dbPath);
+    const store = new EventStore(dbPath, {
+      sessionId: 'idem',
+      projectId: basename(repo),
+    });
     try {
       const rows = store.replayAll();
       expect(rows).toHaveLength(2);
@@ -504,7 +518,10 @@ describe('runInit — project_id stamping (#178)', () => {
       sessionDirForProject(repo, 'foo', 'sess-foo'),
       'gobbi.db',
     );
-    const store = new EventStore(dbPath);
+    const store = new EventStore(dbPath, {
+      sessionId: 'sess-foo',
+      projectId: 'foo',
+    });
     try {
       const rows = store.replayAll();
       // workflow init emits workflow.start + workflow.eval.decide.
@@ -535,7 +552,10 @@ describe('runInit — project_id stamping (#178)', () => {
       sessionDirForProject(repo, 'bar', 'sess-bar'),
       'gobbi.db',
     );
-    const store = new EventStore(dbPath);
+    const store = new EventStore(dbPath, {
+      sessionId: 'sess-bar',
+      projectId: 'bar',
+    });
     try {
       const rows = store.replayAll();
       expect(rows.length).toBeGreaterThan(0);
@@ -568,7 +588,10 @@ describe('runInit — project_id stamping (#178)', () => {
       sessionDirForProject(repo, 'foo', 'sess-178'),
       'gobbi.db',
     );
-    const store = new EventStore(dbPath);
+    const store = new EventStore(dbPath, {
+      sessionId: 'sess-178',
+      projectId: 'foo',
+    });
     try {
       const rows = store.replayAll();
       expect(rows.length).toBeGreaterThan(0);

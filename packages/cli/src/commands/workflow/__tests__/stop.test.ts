@@ -31,10 +31,14 @@ import { WORKFLOW_COMMANDS } from '../../workflow.js';
 import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import { EventStore } from '../../../workflow/store.js';
 import {
-  readState,
-  writeState,
-  type WorkflowState,
-} from '../../../workflow/state.js';
+  appendEventAndUpdateState,
+  resolveWorkflowState,
+} from '../../../workflow/engine.js';
+import {
+  createStepExit,
+  createStepTimeout,
+  createResume,
+} from '../../../workflow/events/workflow.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap
@@ -121,17 +125,38 @@ function makeScratchRepo(): string {
 
 async function initScratchSession(
   sessionId: string,
-): Promise<{ sessionDir: string; repo: string }> {
+): Promise<{ sessionDir: string; repo: string; projectId: string }> {
   const repo = makeScratchRepo();
+  const projectId = basename(repo);
   await captureExit(() =>
     runInitWithOptions(
       ['--session-id', sessionId, '--task', 'stop-test'],
       { repoRoot: repo },
     ),
   );
-  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
+  const sessionDir = sessionDirForProject(repo, projectId, sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
-  return { sessionDir, repo };
+  return { sessionDir, repo, projectId };
+}
+
+/**
+ * Open the per-session event store with explicit partition keys
+ * (PR-FIN-2a-ii / T-2a.9.unified Option α). Tests that previously
+ * called `new EventStore(<sessionDir>/gobbi.db)` relied on the now-
+ * retired `metadata.json` reader to fill in `project_id`; with that
+ * fallback gone, every read filters `WHERE project_id IS NULL` and
+ * returns zero rows. Pass the same `(sessionId, projectId)` init
+ * stamped at write time.
+ */
+function openStore(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): EventStore {
+  return new EventStore(join(sessionDir, 'gobbi.db'), {
+    sessionId,
+    projectId,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -151,9 +176,9 @@ describe('WORKFLOW_COMMANDS registration', () => {
 
 describe('runStop — stop_hook_active', () => {
   test('stop_hook_active: true → no heartbeat, empty stdout, exit 0', async () => {
-    const { sessionDir } = await initScratchSession('stop-reentrant');
+    const { sessionDir, projectId } = await initScratchSession('stop-reentrant');
 
-    const beforeCount = countHeartbeats(sessionDir);
+    const beforeCount = countHeartbeats(sessionDir, 'stop-reentrant', projectId);
 
     await captureExit(() =>
       runStopWithOptions([], {
@@ -169,7 +194,9 @@ describe('runStop — stop_hook_active', () => {
     expect(captured.stdout).toBe('');
 
     // No heartbeat written — reentrance branch runs before any store open.
-    expect(countHeartbeats(sessionDir)).toBe(beforeCount);
+    expect(countHeartbeats(sessionDir, 'stop-reentrant', projectId)).toBe(
+      beforeCount,
+    );
   });
 });
 
@@ -179,10 +206,10 @@ describe('runStop — stop_hook_active', () => {
 
 describe('runStop — heartbeat emission', () => {
   test('writes a session.heartbeat event via counter idempotency (counter=0)', async () => {
-    const { sessionDir } = await initScratchSession('stop-happy');
+    const { sessionDir, projectId } = await initScratchSession('stop-happy');
     const frozen = new Date('2026-04-16T10:00:00.000Z');
 
-    const store0 = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store0 = openStore(sessionDir, 'stop-happy', projectId);
     const lastSeqBefore = store0.eventCount();
     store0.close();
 
@@ -197,7 +224,7 @@ describe('runStop — heartbeat emission', () => {
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toBe(''); // observational — no JSON response
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'stop-happy', projectId);
     try {
       const heartbeats = store.byType('session.heartbeat');
       expect(heartbeats).toHaveLength(1);
@@ -220,13 +247,20 @@ describe('runStop — heartbeat emission', () => {
   });
 
   test('heartbeat does NOT mutate state — currentStep unchanged', async () => {
-    const { sessionDir } = await initScratchSession('stop-nomutate');
+    const { sessionDir, projectId } = await initScratchSession('stop-nomutate');
 
-    // Snapshot state.json before
-    const { readFileSync } = await import('node:fs');
-    const stateBefore = JSON.parse(
-      readFileSync(join(sessionDir, 'state.json'), 'utf8'),
-    ) as { readonly currentStep: string };
+    // PR-FIN-2a-ii (T-2a.9.unified) retired `state.json`; derive state
+    // by replay over the partition-filtered event stream instead. The
+    // invariant under test is that `runStop` writes only a heartbeat
+    // event — the reducer must not transition currentStep.
+    const stepBefore = (() => {
+      const store = openStore(sessionDir, 'stop-nomutate', projectId);
+      try {
+        return resolveWorkflowState(sessionDir, store, 'stop-nomutate').currentStep;
+      } finally {
+        store.close();
+      }
+    })();
 
     await captureExit(() =>
       runStopWithOptions([], {
@@ -235,11 +269,16 @@ describe('runStop — heartbeat emission', () => {
       }),
     );
 
-    const stateAfter = JSON.parse(
-      readFileSync(join(sessionDir, 'state.json'), 'utf8'),
-    ) as { readonly currentStep: string };
+    const stepAfter = (() => {
+      const store = openStore(sessionDir, 'stop-nomutate', projectId);
+      try {
+        return resolveWorkflowState(sessionDir, store, 'stop-nomutate').currentStep;
+      } finally {
+        store.close();
+      }
+    })();
 
-    expect(stateAfter.currentStep).toBe(stateBefore.currentStep);
+    expect(stepAfter).toBe(stepBefore);
   });
 });
 
@@ -249,7 +288,7 @@ describe('runStop — heartbeat emission', () => {
 
 describe('runStop — same-millisecond collisions', () => {
   test('two invocations at the same ms both persist with counter 0 and 1', async () => {
-    const { sessionDir } = await initScratchSession('stop-collide');
+    const { sessionDir, projectId } = await initScratchSession('stop-collide');
     const frozen = new Date('2026-04-16T11:22:33.456Z');
 
     // Fire twice with the identical clock — the counter must
@@ -269,7 +308,7 @@ describe('runStop — same-millisecond collisions', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'stop-collide', projectId);
     try {
       const heartbeats = store.byType('session.heartbeat');
       expect(heartbeats).toHaveLength(2);
@@ -287,7 +326,7 @@ describe('runStop — same-millisecond collisions', () => {
   });
 
   test('second invocation at a later ms resets the counter bucket to 0', async () => {
-    const { sessionDir } = await initScratchSession('stop-newms');
+    const { sessionDir, projectId } = await initScratchSession('stop-newms');
 
     const t1 = new Date('2026-04-16T11:22:33.456Z');
     const t2 = new Date('2026-04-16T11:22:34.789Z');
@@ -307,7 +346,7 @@ describe('runStop — same-millisecond collisions', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'stop-newms', projectId);
     try {
       const heartbeats = store.byType('session.heartbeat');
       expect(heartbeats).toHaveLength(2);
@@ -331,14 +370,14 @@ describe('runStop — same-millisecond collisions', () => {
 
 describe('runStop — bounded heartbeat tail-scan', () => {
   test('resolves same-ms counter against a 200-heartbeat history without scanning the full stream', async () => {
-    const { sessionDir } = await initScratchSession('stop-bound');
+    const { sessionDir, projectId } = await initScratchSession('stop-bound');
 
     // Seed 200 heartbeats across distinct milliseconds so the stop
     // handler has a long prior stream to walk. The final seeded row
     // shares the `frozen` bucket to force a same-ms collision at the
     // tail — the bounded scan must still find counter=0 and assign 1.
     const frozen = new Date('2026-04-16T12:00:00.000Z');
-    const seedStore = new EventStore(join(sessionDir, 'gobbi.db'));
+    const seedStore = openStore(sessionDir, 'stop-bound', projectId);
     try {
       seedStore.transaction(() => {
         for (let i = 0; i < 199; i += 1) {
@@ -378,7 +417,7 @@ describe('runStop — bounded heartbeat tail-scan', () => {
     }
 
     // Sanity — history is 200 rows deep before the stop fires.
-    const before = new EventStore(join(sessionDir, 'gobbi.db'));
+    const before = openStore(sessionDir, 'stop-bound', projectId);
     const beforeCount = before.byType('session.heartbeat').length;
     before.close();
     expect(beforeCount).toBe(200);
@@ -395,7 +434,7 @@ describe('runStop — bounded heartbeat tail-scan', () => {
       }),
     );
 
-    const after = new EventStore(join(sessionDir, 'gobbi.db'));
+    const after = openStore(sessionDir, 'stop-bound', projectId);
     try {
       const heartbeats = after.byType('session.heartbeat');
       expect(heartbeats).toHaveLength(201);
@@ -463,7 +502,8 @@ describe('runStop — missing session', () => {
 
 describe('runStop — meta.timeoutMs detection (E.11)', () => {
   test('no timeout event emitted when spec.meta.timeoutMs is unset', async () => {
-    const { sessionDir } = await initScratchSession('stop-tm-unset');
+    const sessionId = 'stop-tm-unset';
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     // Scratch specs dir whose ideation spec omits timeoutMs entirely.
     const specsDir = makeTimeoutSpecsDir({
       omitTimeout: true,
@@ -472,76 +512,106 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
     // Drive state.stepStartedAt 60s before `frozen` so elapsed would be
     // 60000 ms — irrelevant here, since the spec has no timeout.
     const frozen = new Date('2026-04-16T10:00:00.000Z');
-    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 60_000));
+    await stampStepStartedAt(
+      sessionDir,
+      sessionId,
+      projectId,
+      new Date(frozen.getTime() - 60_000),
+    );
+    // `stampStepStartedAt` emits one synthetic STEP_TIMEOUT to flip the
+    // session into `error` so RESUME can target ideation. Snapshot the
+    // post-stamp baseline so the assertions below measure the production
+    // stop handler's emit, not the helper's.
+    const baselineTimeouts = countTimeoutEvents(sessionDir, sessionId, projectId);
 
     await captureExit(() =>
       runStopWithOptions([], {
         sessionDir,
         specsDir,
-        payload: { session_id: 'stop-tm-unset' },
+        payload: { session_id: sessionId },
         now: () => frozen,
       }),
     );
 
     expect(captured.exitCode).toBeNull();
-    expect(countTimeoutEvents(sessionDir)).toBe(0);
+    expect(countTimeoutEvents(sessionDir, sessionId, projectId)).toBe(
+      baselineTimeouts,
+    );
   });
 
   test('no timeout event emitted when elapsedMs <= meta.timeoutMs', async () => {
-    const { sessionDir } = await initScratchSession('stop-tm-under');
+    const sessionId = 'stop-tm-under';
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
 
     // 30s elapsed — strictly under 60s budget.
     const frozen = new Date('2026-04-16T10:00:30.000Z');
-    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 30_000));
+    await stampStepStartedAt(
+      sessionDir,
+      sessionId,
+      projectId,
+      new Date(frozen.getTime() - 30_000),
+    );
+    const baselineTimeouts = countTimeoutEvents(sessionDir, sessionId, projectId);
 
     await captureExit(() =>
       runStopWithOptions([], {
         sessionDir,
         specsDir,
-        payload: { session_id: 'stop-tm-under' },
+        payload: { session_id: sessionId },
         now: () => frozen,
       }),
     );
 
     expect(captured.exitCode).toBeNull();
-    expect(countTimeoutEvents(sessionDir)).toBe(0);
+    expect(countTimeoutEvents(sessionDir, sessionId, projectId)).toBe(
+      baselineTimeouts,
+    );
     // State remains on the active step — no transition to error.
-    const state = readState(sessionDir);
-    expect(state?.currentStep).toBe('ideation');
+    expect(readCurrentStep(sessionDir, sessionId, projectId)).toBe('ideation');
   });
 
   test('emits workflow.step.timeout once when elapsedMs > meta.timeoutMs', async () => {
-    const { sessionDir } = await initScratchSession('stop-tm-over');
+    const sessionId = 'stop-tm-over';
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
 
     // 90s elapsed — over the 60s budget.
     const frozen = new Date('2026-04-16T10:01:30.000Z');
-    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 90_000));
+    await stampStepStartedAt(
+      sessionDir,
+      sessionId,
+      projectId,
+      new Date(frozen.getTime() - 90_000),
+    );
 
     await captureExit(() =>
       runStopWithOptions([], {
         sessionDir,
         specsDir,
-        payload: { session_id: 'stop-tm-over' },
+        payload: { session_id: sessionId },
         now: () => frozen,
       }),
     );
 
     expect(captured.exitCode).toBeNull();
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    // The production stop handler emits a timeout row whose
+    // `idempotency_key` is `${sessionId}:${ms}:workflow.step.timeout`
+    // with `ms` derived from `frozen`. Filter to that key so the
+    // synthetic stamp event (which has `step: 'planning'` and a
+    // different ms) is excluded.
+    const expectedKey = `${sessionId}:${frozen.getTime()}:workflow.step.timeout`;
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
-      const timeouts = store.byType('workflow.step.timeout');
+      const timeouts = store
+        .byType('workflow.step.timeout')
+        .filter((row) => row.idempotency_key === expectedKey);
       expect(timeouts).toHaveLength(1);
 
       const row = timeouts[0]!;
       expect(row.actor).toBe('hook');
       expect(row.step).toBe('ideation');
-      // System idempotency key shape: sess:timestampMs:type.
-      expect(row.idempotency_key).toBe(
-        `stop-tm-over:${frozen.getTime()}:workflow.step.timeout`,
-      );
 
       const data = JSON.parse(row.data) as {
         readonly step: string;
@@ -556,16 +626,21 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
     }
 
     // Reducer consumed the event — active step → error.
-    const state = readState(sessionDir);
-    expect(state?.currentStep).toBe('error');
+    expect(readCurrentStep(sessionDir, sessionId, projectId)).toBe('error');
   });
 
   test('idempotent: two stop invocations at the same ms emit exactly one timeout event', async () => {
-    const { sessionDir } = await initScratchSession('stop-tm-idem');
+    const sessionId = 'stop-tm-idem';
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
 
     const frozen = new Date('2026-04-16T10:01:30.000Z');
-    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 90_000));
+    await stampStepStartedAt(
+      sessionDir,
+      sessionId,
+      projectId,
+      new Date(frozen.getTime() - 90_000),
+    );
 
     // Fire twice at the identical clock. The first invocation flips the
     // step to `error` (not an active step), so the second short-circuits
@@ -576,7 +651,7 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
       runStopWithOptions([], {
         sessionDir,
         specsDir,
-        payload: { session_id: 'stop-tm-idem' },
+        payload: { session_id: sessionId },
         now: () => frozen,
       }),
     );
@@ -584,21 +659,43 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
       runStopWithOptions([], {
         sessionDir,
         specsDir,
-        payload: { session_id: 'stop-tm-idem' },
+        payload: { session_id: sessionId },
         now: () => frozen,
       }),
     );
 
-    expect(countTimeoutEvents(sessionDir)).toBe(1);
+    // Filter to the production handler's idempotency key — the synthetic
+    // stamp also produces a STEP_TIMEOUT row with a different key, so a
+    // raw `byType` count would conflate the two.
+    const expectedKey = `${sessionId}:${frozen.getTime()}:workflow.step.timeout`;
+    const store = openStore(sessionDir, sessionId, projectId);
+    try {
+      const productionTimeouts = store
+        .byType('workflow.step.timeout')
+        .filter((row) => row.idempotency_key === expectedKey);
+      expect(productionTimeouts).toHaveLength(1);
+    } finally {
+      store.close();
+    }
   });
 
   test('no crash, no event when state.stepStartedAt is null', async () => {
-    const { sessionDir } = await initScratchSession('stop-tm-null');
+    const sessionId = 'stop-tm-null';
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
 
-    // Fresh init leaves stepStartedAt === null. Don't stamp it.
-    const pre = readState(sessionDir);
-    expect(pre?.stepStartedAt).toBeNull();
+    // Fresh init leaves stepStartedAt === null. Don't stamp it. Verify
+    // via the partition-filtered event stream (PR-FIN-2a-ii: no
+    // state.json projection on disk).
+    {
+      const store = openStore(sessionDir, sessionId, projectId);
+      try {
+        const pre = resolveWorkflowState(sessionDir, store, sessionId);
+        expect(pre.stepStartedAt).toBeNull();
+      } finally {
+        store.close();
+      }
+    }
 
     const frozen = new Date('2026-04-16T10:00:00.000Z');
 
@@ -606,14 +703,15 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
       runStopWithOptions([], {
         sessionDir,
         specsDir,
-        payload: { session_id: 'stop-tm-null' },
+        payload: { session_id: sessionId },
         now: () => frozen,
       }),
     );
 
     expect(captured.exitCode).toBeNull();
-    expect(countTimeoutEvents(sessionDir)).toBe(0);
-    expect(countHeartbeats(sessionDir)).toBe(1); // heartbeat still fires
+    expect(countTimeoutEvents(sessionDir, sessionId, projectId)).toBe(0);
+    // heartbeat still fires
+    expect(countHeartbeats(sessionDir, sessionId, projectId)).toBe(1);
   });
 
   test('clock skew: stepStartedAt in the future does not emit a timeout event', async () => {
@@ -622,27 +720,35 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
     // drift between machines, ntp slew, or synthetic fixtures) yields a
     // negative elapsed and must NOT trigger a spurious timeout — even
     // if a future refactor flips the `<=` boundary to `<`.
-    const { sessionDir } = await initScratchSession('stop-tm-skew');
+    const sessionId = 'stop-tm-skew';
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const specsDir = makeTimeoutSpecsDir({ timeoutMs: 60_000 });
 
     const frozen = new Date('2026-04-16T10:00:00.000Z');
     // Stamp 5 minutes AFTER `frozen` → elapsedMs = -300_000.
-    stampStepStartedAt(sessionDir, new Date(frozen.getTime() + 300_000));
+    await stampStepStartedAt(
+      sessionDir,
+      sessionId,
+      projectId,
+      new Date(frozen.getTime() + 300_000),
+    );
+    const baselineTimeouts = countTimeoutEvents(sessionDir, sessionId, projectId);
 
     await captureExit(() =>
       runStopWithOptions([], {
         sessionDir,
         specsDir,
-        payload: { session_id: 'stop-tm-skew' },
+        payload: { session_id: sessionId },
         now: () => frozen,
       }),
     );
 
     expect(captured.exitCode).toBeNull();
-    expect(countTimeoutEvents(sessionDir)).toBe(0);
+    expect(countTimeoutEvents(sessionDir, sessionId, projectId)).toBe(
+      baselineTimeouts,
+    );
     // State remains on the active step — no transition to error.
-    const state = readState(sessionDir);
-    expect(state?.currentStep).toBe('ideation');
+    expect(readCurrentStep(sessionDir, sessionId, projectId)).toBe('ideation');
   });
 
   test('regression: default specsDir path leaves heartbeat-only behavior unchanged', async () => {
@@ -651,26 +757,34 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
     // used, the stop handler emits only the heartbeat and no timeout
     // event — even if stepStartedAt is stamped. Protects against a
     // future accidental timeoutMs addition to a committed spec.
-    const { sessionDir } = await initScratchSession('stop-tm-default');
+    const sessionId = 'stop-tm-default';
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     const frozen = new Date('2026-04-16T10:00:00.000Z');
-    stampStepStartedAt(sessionDir, new Date(frozen.getTime() - 3_600_000));
+    await stampStepStartedAt(
+      sessionDir,
+      sessionId,
+      projectId,
+      new Date(frozen.getTime() - 3_600_000),
+    );
+    const baselineTimeouts = countTimeoutEvents(sessionDir, sessionId, projectId);
 
     await captureExit(() =>
       runStopWithOptions([], {
         sessionDir,
-        payload: { session_id: 'stop-tm-default' },
+        payload: { session_id: sessionId },
         now: () => frozen,
         // No specsDir override — uses DEFAULT_SPECS_DIR (committed specs).
       }),
     );
 
     expect(captured.exitCode).toBeNull();
-    expect(countTimeoutEvents(sessionDir)).toBe(0);
-    expect(countHeartbeats(sessionDir)).toBe(1);
+    expect(countTimeoutEvents(sessionDir, sessionId, projectId)).toBe(
+      baselineTimeouts,
+    );
+    expect(countHeartbeats(sessionDir, sessionId, projectId)).toBe(1);
     // Sanity — state still on the active step.
-    const state = readState(sessionDir);
-    expect(state?.currentStep).toBe('ideation');
+    expect(readCurrentStep(sessionDir, sessionId, projectId)).toBe('ideation');
     // DEFAULT_SPECS_DIR export is an absolute path — quick sanity so the
     // import is load-bearing.
     expect(DEFAULT_SPECS_DIR.length).toBeGreaterThan(0);
@@ -681,10 +795,14 @@ describe('runStop — meta.timeoutMs detection (E.11)', () => {
 // Test helpers
 // ---------------------------------------------------------------------------
 
-function countHeartbeats(sessionDir: string): number {
+function countHeartbeats(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): number {
   const dbPath = join(sessionDir, 'gobbi.db');
   if (!existsSync(dbPath)) return 0;
-  const store = new EventStore(dbPath);
+  const store = openStore(sessionDir, sessionId, projectId);
   try {
     return store.byType('session.heartbeat').length;
   } finally {
@@ -692,10 +810,14 @@ function countHeartbeats(sessionDir: string): number {
   }
 }
 
-function countTimeoutEvents(sessionDir: string): number {
+function countTimeoutEvents(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): number {
   const dbPath = join(sessionDir, 'gobbi.db');
   if (!existsSync(dbPath)) return 0;
-  const store = new EventStore(dbPath);
+  const store = openStore(sessionDir, sessionId, projectId);
   try {
     return store.byType('workflow.step.timeout').length;
   } finally {
@@ -704,22 +826,109 @@ function countTimeoutEvents(sessionDir: string): number {
 }
 
 /**
- * Stamp the session's state.json with a `stepStartedAt` timestamp so the
- * E.11 branch has a real reference point. Mutates the on-disk file in
- * place — the `resolveWorkflowState` warm path will read it.
+ * Read the current step from the partition-filtered event stream. Used
+ * in lieu of `readState(sessionDir)?.currentStep` after the JSON memory
+ * pivot — `state.json` is no longer materialised on disk.
  */
-function stampStepStartedAt(sessionDir: string, startedAt: Date): void {
-  const state = readState(sessionDir);
-  if (state === null) {
-    throw new Error(
-      `stampStepStartedAt: no state.json at ${sessionDir}`,
-    );
+function readCurrentStep(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): string {
+  const store = openStore(sessionDir, sessionId, projectId);
+  try {
+    return resolveWorkflowState(sessionDir, store, sessionId).currentStep;
+  } finally {
+    store.close();
   }
-  const stamped: WorkflowState = {
-    ...state,
-    stepStartedAt: startedAt.toISOString(),
-  };
-  writeState(sessionDir, stamped);
+}
+
+/**
+ * Drive the session's `state.stepStartedAt` to a specific timestamp via
+ * the event log. PR-FIN-2a-ii (T-2a.9.unified) retired the on-disk
+ * `state.json` projection — `resolveWorkflowState` now derives state
+ * purely by replaying the partition-filtered event stream, so a state
+ * field can only be set by appending events that the reducer translates
+ * into the desired shape.
+ *
+ * The path: STEP_EXIT(ideation→planning) lands the session at planning
+ * with `stepStartedAt = ts`; STEP_TIMEOUT transitions to error;
+ * RESUME(target=ideation, ts=startedAt) brings the session back to
+ * ideation while the reducer's RESUME case stamps
+ * `stepStartedAt: ts ?? state.stepStartedAt` (per
+ * `workflow/reducer.ts:281`). Net result: currentStep === 'ideation'
+ * and stepStartedAt === startedAt.toISOString().
+ *
+ * The intermediate STEP_EXIT carries a placeholder ts ahead of the
+ * `startedAt` value so the synthetic timestamps stay monotonic — the
+ * reducer's audit gate doesn't enforce monotonic ts but the convention
+ * keeps fixture inspection straightforward.
+ */
+async function stampStepStartedAt(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+  startedAt: Date,
+): Promise<void> {
+  const store = openStore(sessionDir, sessionId, projectId);
+  try {
+    const state = resolveWorkflowState(sessionDir, store, sessionId);
+    // Step 1 — exit ideation → planning. Reducer stamps stepStartedAt
+    // from the engine-supplied ts; we use a synthetic past timestamp
+    // (1ms before `startedAt`) so the chain stays monotonic.
+    const exitTs = new Date(startedAt.getTime() - 1).toISOString();
+    const afterExit = await appendEventAndUpdateState(
+      store,
+      sessionDir,
+      state,
+      createStepExit({ step: 'ideation' }),
+      'cli',
+      sessionId,
+      'system',
+      undefined,
+      null,
+      undefined,
+      exitTs,
+    );
+    // Step 2 — STEP_TIMEOUT lands at error. ts unused by the reducer
+    // for STEP_TIMEOUT but supplied for idempotency-key disambiguation.
+    const timeoutTs = new Date(startedAt.getTime()).toISOString();
+    const afterTimeout = await appendEventAndUpdateState(
+      store,
+      sessionDir,
+      afterExit.state,
+      createStepTimeout({
+        step: afterExit.state.currentStep,
+        elapsedMs: 0,
+        configuredTimeoutMs: 0,
+      }),
+      'cli',
+      sessionId,
+      'tool-call',
+      'tc-stamp-timeout',
+      null,
+      undefined,
+      timeoutTs,
+    );
+    // Step 3 — RESUME back to ideation, ts = startedAt. The reducer
+    // stamps stepStartedAt on RESUME (per `workflow/reducer.ts:281`),
+    // so this is the timestamp the timeout-detection branch reads.
+    await appendEventAndUpdateState(
+      store,
+      sessionDir,
+      afterTimeout.state,
+      createResume({ targetStep: 'ideation', fromError: true }),
+      'cli',
+      sessionId,
+      'tool-call',
+      'tc-stamp-resume',
+      null,
+      undefined,
+      startedAt.toISOString(),
+    );
+  } finally {
+    store.close();
+  }
 }
 
 /**

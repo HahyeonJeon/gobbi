@@ -129,17 +129,35 @@ function makeScratchRepo(): string {
 
 async function initScratchSession(
   sessionId: string,
-): Promise<{ sessionDir: string; repo: string }> {
+): Promise<{ sessionDir: string; repo: string; projectId: string }> {
   const repo = makeScratchRepo();
+  const projectId = basename(repo);
   await captureExit(() =>
     runInitWithOptions(
       ['--session-id', sessionId, '--task', 'capture-subagent-test'],
       { repoRoot: repo },
     ),
   );
-  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
+  const sessionDir = sessionDirForProject(repo, projectId, sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
-  return { sessionDir, repo };
+  return { sessionDir, repo, projectId };
+}
+
+/**
+ * Open the per-session event store with explicit partition keys (PR-FIN-
+ * 2a-ii / T-2a.9.unified Option α). Tests that previously relied on the
+ * `metadata.json` fallback for `project_id` now stamp NULL and read no
+ * rows; this helper threads the keys init wrote at write time.
+ */
+function openStore(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): EventStore {
+  return new EventStore(join(sessionDir, 'gobbi.db'), {
+    sessionId,
+    projectId,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -241,7 +259,7 @@ describe('WORKFLOW_COMMANDS registration', () => {
 
 describe('runCaptureSubagent — case 1 (parseable)', () => {
   test('writes artifact + emits delegation.complete + artifact.write', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-case1');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-case1');
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeParseableTranscript(
@@ -273,7 +291,7 @@ describe('runCaptureSubagent — case 1 (parseable)', () => {
       'final assistant text for subtask',
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-case1', projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(1);
@@ -305,7 +323,7 @@ describe('runCaptureSubagent — case 1 (parseable)', () => {
   });
 
   test('passes tokensUsed / cacheHitRatio through when present on stdin', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-cost');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-cost');
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeParseableTranscript(
@@ -328,7 +346,7 @@ describe('runCaptureSubagent — case 1 (parseable)', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-cost', projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(1);
@@ -350,7 +368,7 @@ describe('runCaptureSubagent — case 1 (parseable)', () => {
 
 describe('runCaptureSubagent — case 2 (unparseable)', () => {
   test('tool_use-terminated transcript → marker artifact + delegation.fail with transcriptPath', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-case2a');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-case2a');
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeToolUseTerminatedTranscript(
@@ -375,7 +393,7 @@ describe('runCaptureSubagent — case 2 (unparseable)', () => {
     expect(existsSync(marker)).toBe(true);
     expect(readFileSync(marker, 'utf8')).toContain(transcript);
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-case2a', projectId);
     try {
       const fails = store.byType('delegation.fail');
       expect(fails).toHaveLength(1);
@@ -394,7 +412,7 @@ describe('runCaptureSubagent — case 2 (unparseable)', () => {
   });
 
   test('malformed JSONL transcript → marker artifact + delegation.fail', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-case2b');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-case2b');
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeMalformedTailTranscript(
@@ -417,7 +435,7 @@ describe('runCaptureSubagent — case 2 (unparseable)', () => {
     const marker = join(sessionDir, 'artifacts', 'delegation-fail-r1.md');
     expect(existsSync(marker)).toBe(true);
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-case2b', projectId);
     try {
       expect(store.byType('delegation.fail')).toHaveLength(1);
       expect(store.byType('delegation.complete')).toHaveLength(0);
@@ -433,7 +451,7 @@ describe('runCaptureSubagent — case 2 (unparseable)', () => {
 
 describe('runCaptureSubagent — case 3 (absent)', () => {
   test('nonexistent transcript path → marker artifact + delegation.fail with reason', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-case3');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-case3');
     const missingPath = join(sessionDir, 'does-not-exist.jsonl');
     expect(existsSync(missingPath)).toBe(false);
 
@@ -455,7 +473,7 @@ describe('runCaptureSubagent — case 3 (absent)', () => {
     const content = readFileSync(marker, 'utf8');
     expect(content).toContain('transcript not found');
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-case3', projectId);
     try {
       const fails = store.byType('delegation.fail');
       expect(fails).toHaveLength(1);
@@ -477,7 +495,7 @@ describe('runCaptureSubagent — case 3 (absent)', () => {
 
 describe('runCaptureSubagent — stop_hook_active', () => {
   test('stop_hook_active: true → no events, no artifact', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-sha');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-sha');
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeParseableTranscript(
@@ -503,7 +521,7 @@ describe('runCaptureSubagent — stop_hook_active', () => {
     expect(captured.stdout).toBe('');
     expect(existsSync(join(sessionDir, 'artifacts'))).toBe(false);
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-sha', projectId);
     try {
       expect(store.byType('delegation.complete')).toHaveLength(0);
       expect(store.byType('delegation.fail')).toHaveLength(0);
@@ -551,7 +569,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
   // PreToolUse-emitted spawn does) and the SubagentStop must too —
   // otherwise the lookup refuses to guess.
   test('links delegation.complete.parent_seq to matching delegation.spawn.seq via tool_call_id', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-parent');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-parent');
     const sessionId = 'cap-sub-parent';
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
@@ -565,7 +583,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
     // SubagentStop will land with.
     let spawnSeq: number | null = null;
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, 'cap-sub-parent', projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         await appendEventAndUpdateState(
@@ -605,7 +623,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-parent', projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(1);
@@ -616,7 +634,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
   });
 
   test('omits parent_seq when no matching delegation.spawn exists', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-noparent');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-noparent');
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeParseableTranscript(
@@ -638,7 +656,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-noparent', projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(1);
@@ -655,7 +673,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
 
 describe('runCaptureSubagent — tool-call idempotency', () => {
   test('retried SubagentStop with same tool_call_id produces one delegation.complete', async () => {
-    const { sessionDir } = await initScratchSession('cap-sub-idem');
+    const { sessionDir, projectId } = await initScratchSession('cap-sub-idem');
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeParseableTranscript(
@@ -680,7 +698,7 @@ describe('runCaptureSubagent — tool-call idempotency', () => {
       runCaptureSubagentWithOptions([], { sessionDir, payload }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-sub-idem', projectId);
     try {
       expect(store.byType('delegation.complete')).toHaveLength(1);
       // The artifact.write event uses the same idempotency formula
@@ -707,7 +725,7 @@ describe('runCaptureSubagent — tool-call idempotency', () => {
 describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () => {
   test('env present → spawn event data carries claudeCodeVersion', async () => {
     const sessionId = 'cap-sub-ccv-present';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await withEnv({ CLAUDE_CODE_VERSION: '2.1.110' }, async () => {
       const envVersion = process.env['CLAUDE_CODE_VERSION'];
@@ -717,7 +735,7 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
       const claudeCodeVersion =
         envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
 
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         await appendEventAndUpdateState(
@@ -769,14 +787,14 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
   // mutation through `withEnv` (scoped capture-set-restore in `finally`).
   test('env unset → spawn event data omits claudeCodeVersion', async () => {
     const sessionId = 'cap-sub-ccv-unset';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await withEnv({ CLAUDE_CODE_VERSION: undefined }, async () => {
       const envVersion = process.env['CLAUDE_CODE_VERSION'];
       const claudeCodeVersion =
         envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
 
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         await appendEventAndUpdateState(
@@ -809,14 +827,14 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
 
   test('env empty string → spawn event data omits claudeCodeVersion', async () => {
     const sessionId = 'cap-sub-ccv-empty';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await withEnv({ CLAUDE_CODE_VERSION: '' }, async () => {
       const envVersion = process.env['CLAUDE_CODE_VERSION'];
       const claudeCodeVersion =
         envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
 
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         await appendEventAndUpdateState(
@@ -863,7 +881,7 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
 describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => {
   test('two parallel spawns + two SubagentStops link by tool_call_id, not by recency', async () => {
     const sessionId = 'cap-sub-parallel';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcriptA = writeParseableTranscript(
@@ -886,7 +904,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
     let spawnSeqA: number | null = null;
     let spawnSeqB: number | null = null;
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const stateA = resolveWorkflowState(sessionDir, store, sessionId);
         await appendEventAndUpdateState(
@@ -963,7 +981,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(2);
@@ -985,7 +1003,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
     // refuses to guess. Asserts the fallback contract: missing tool_call_id
     // on SubagentStop → parent_seq is null even when a spawn exists.
     const sessionId = 'cap-sub-no-tcid';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeParseableTranscript(
@@ -995,7 +1013,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
     );
 
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         await appendEventAndUpdateState(
@@ -1032,7 +1050,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(1);
@@ -1050,7 +1068,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
     // path so production hooks (which carry `tool_use_id`) work alongside
     // existing test fixtures (which carry `tool_call_id`).
     const sessionId = 'cap-sub-use-id';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeParseableTranscript(
@@ -1061,7 +1079,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
 
     let spawnSeq: number | null = null;
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         await appendEventAndUpdateState(
@@ -1100,7 +1118,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(1);
@@ -1118,7 +1136,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
 describe('runCaptureSubagent — transcriptSha256 capture', () => {
   test('parseable transcript → delegation.complete carries SHA-256 of file bytes', async () => {
     const sessionId = 'cap-sub-sha';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeParseableTranscript(
@@ -1147,7 +1165,7 @@ describe('runCaptureSubagent — transcriptSha256 capture', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(1);
@@ -1165,7 +1183,7 @@ describe('runCaptureSubagent — transcriptSha256 capture', () => {
     // carries the field. Asserts the additive scope: fail events keep their
     // existing shape unchanged.
     const sessionId = 'cap-sub-fail-sha';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
     scratchDirs.push(transcriptDir);
     const transcript = writeMalformedTailTranscript(
@@ -1185,7 +1203,7 @@ describe('runCaptureSubagent — transcriptSha256 capture', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const fails = store.byType('delegation.fail');
       expect(fails).toHaveLength(1);

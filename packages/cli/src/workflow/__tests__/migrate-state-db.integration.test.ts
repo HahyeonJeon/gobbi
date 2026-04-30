@@ -376,9 +376,9 @@ describe('Wave A.1.10 — replay-equivalence after migration', () => {
 
     migrateStateDbAt(dbPath, () => 1745000000000);
 
-    // No `projectId` override; the dirname of `dbPath` is `<repo>/.gobbi`
-    // which has no `metadata.json`, so `resolveProjectRootBasename`
-    // yields null and the backfill skips the project_id UPDATE.
+    // No `projectId` override; PR-FIN-2a-ii (T-2a.9.unified) retired the
+    // legacy `metadata.json` reader, so an unsupplied projectId stays
+    // `null` and the backfill skips the project_id UPDATE.
     using store = new EventStore(dbPath, { sessionId: SESSION });
     const replayed = store.replayAll();
     expect(replayed).toHaveLength(1);

@@ -20,7 +20,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -125,17 +125,33 @@ function makeScratchRepo(): string {
 
 async function initScratchSession(
   sessionId: string,
-): Promise<{ sessionDir: string; repo: string }> {
+): Promise<{ sessionDir: string; repo: string; projectId: string }> {
   const repo = makeScratchRepo();
+  const projectId = basename(repo);
   await captureExit(() =>
     runInitWithOptions(
       ['--session-id', sessionId, '--task', 'resume-test'],
       { repoRoot: repo },
     ),
   );
-  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
+  const sessionDir = sessionDirForProject(repo, projectId, sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
-  return { sessionDir, repo };
+  return { sessionDir, repo, projectId };
+}
+
+/**
+ * Open the per-session event store with explicit partition keys (PR-FIN-
+ * 2a-ii / T-2a.9.unified Option α).
+ */
+function openStore(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): EventStore {
+  return new EventStore(join(sessionDir, 'gobbi.db'), {
+    sessionId,
+    projectId,
+  });
 }
 
 /**
@@ -146,8 +162,9 @@ async function initScratchSession(
 async function driveToErrorState(
   sessionDir: string,
   sessionId: string,
+  projectId: string,
 ): Promise<void> {
-  const store = new EventStore(join(sessionDir, 'gobbi.db'));
+  const store = openStore(sessionDir, sessionId, projectId);
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
     await appendEventAndUpdateState(
@@ -175,7 +192,7 @@ async function driveToErrorState(
 
 describe('runResumeWithOptions — argv parsing', () => {
   test('missing --target exits 2 with a helpful stderr message', async () => {
-    const { sessionDir } = await initScratchSession('resume-miss-target');
+    const { sessionDir, projectId } = await initScratchSession('resume-miss-target');
 
     await captureExit(() =>
       runResumeWithOptions([], { sessionDir }),
@@ -186,7 +203,7 @@ describe('runResumeWithOptions — argv parsing', () => {
   });
 
   test('unknown flag exits 2 with usage on stderr', async () => {
-    const { sessionDir } = await initScratchSession('resume-unknown-flag');
+    const { sessionDir, projectId } = await initScratchSession('resume-unknown-flag');
 
     await captureExit(() =>
       runResumeWithOptions(
@@ -206,8 +223,8 @@ describe('runResumeWithOptions — argv parsing', () => {
 
 describe('runResumeWithOptions — target validation', () => {
   test('--target error is explicitly rejected (exit 1)', async () => {
-    const { sessionDir } = await initScratchSession('resume-target-error');
-    await driveToErrorState(sessionDir, 'resume-target-error');
+    const { sessionDir, projectId } = await initScratchSession('resume-target-error');
+    await driveToErrorState(sessionDir, 'resume-target-error', projectId);
 
     await captureExit(() =>
       runResumeWithOptions(['--target', 'error'], { sessionDir }),
@@ -218,8 +235,8 @@ describe('runResumeWithOptions — target validation', () => {
   });
 
   test('non-active-step target (e.g. done) exits 1', async () => {
-    const { sessionDir } = await initScratchSession('resume-target-done');
-    await driveToErrorState(sessionDir, 'resume-target-done');
+    const { sessionDir, projectId } = await initScratchSession('resume-target-done');
+    await driveToErrorState(sessionDir, 'resume-target-done', projectId);
 
     await captureExit(() =>
       runResumeWithOptions(['--target', 'done'], { sessionDir }),
@@ -230,7 +247,7 @@ describe('runResumeWithOptions — target validation', () => {
   });
 
   test('resume from non-error state exits 1', async () => {
-    const { sessionDir } = await initScratchSession('resume-nonerror');
+    const { sessionDir, projectId } = await initScratchSession('resume-nonerror');
     // No driveToErrorState — fresh init sits at ideation/discussing.
 
     await captureExit(() =>
@@ -249,8 +266,8 @@ describe('runResumeWithOptions — target validation', () => {
 describe('runResumeWithOptions — default resume', () => {
   test('--target planning from error state appends workflow.resume and emits the resume prompt', async () => {
     const sessionId = 'resume-plan';
-    const { sessionDir } = await initScratchSession(sessionId);
-    await driveToErrorState(sessionDir, sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
+    await driveToErrorState(sessionDir, sessionId, projectId);
 
     await captureExit(() =>
       runResumeWithOptions(['--target', 'planning'], { sessionDir }),
@@ -267,7 +284,7 @@ describe('runResumeWithOptions — default resume', () => {
     expect(captured.stdout).toContain('planning');
 
     // One workflow.resume event is persisted.
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const resumeRows = store.byType('workflow.resume');
       expect(resumeRows.length).toBe(1);
@@ -294,8 +311,8 @@ describe('runResumeWithOptions — default resume', () => {
 describe('runResumeWithOptions — --force-memorization', () => {
   test('atomically appends decision.eval.skip (with priorError) AND workflow.resume', async () => {
     const sessionId = 'resume-force';
-    const { sessionDir } = await initScratchSession(sessionId);
-    await driveToErrorState(sessionDir, sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
+    await driveToErrorState(sessionDir, sessionId, projectId);
 
     await captureExit(() =>
       runResumeWithOptions(
@@ -307,7 +324,7 @@ describe('runResumeWithOptions — --force-memorization', () => {
     expect(captured.exitCode).toBeNull();
     expect(captured.stdout).toContain('Timeout recap:');
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const skipRows = store.byType('decision.eval.skip');
       const resumeRows = store.byType('workflow.resume');
@@ -347,14 +364,14 @@ describe('runResumeWithOptions — --force-memorization', () => {
 
   test('CP11 reversibility — priorError snapshot round-trips through the event store', async () => {
     const sessionId = 'resume-cp11';
-    const { sessionDir } = await initScratchSession(sessionId);
-    await driveToErrorState(sessionDir, sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
+    await driveToErrorState(sessionDir, sessionId, projectId);
 
     // Snapshot the pathway detected BEFORE the resume — this is the
     // baseline the CP11 reversibility gate asserts against.
     let baselinePathway: ErrorPathway;
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         baselinePathway = detectPathway(state, store);
@@ -372,7 +389,7 @@ describe('runResumeWithOptions — --force-memorization', () => {
     expect(captured.exitCode).toBeNull();
 
     // Read the skip event back and reconstruct the pathway snapshot.
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const skipRows = store.byType('decision.eval.skip');
       expect(skipRows.length).toBe(1);
@@ -397,25 +414,27 @@ describe('runResumeWithOptions — --force-memorization', () => {
   });
 
   // CV-9 regression — issue #163. The pre-fix `--force-memorization`
-  // branch appended events via raw `store.transaction(...)` and never
-  // wrote `state.json`. `resolveWorkflowState`'s fast path read the
-  // stale state.json and returned the pre-resume `error` step on every
-  // subsequent invocation — events said `memorization`, state.json
-  // disagreed. The fix derives state via `deriveWorkflowState` and
-  // explicitly calls `writeState` after the transaction commits.
-  //
-  // This test asserts the on-disk state.json content directly, NOT the
-  // event-store rows (the pre-existing tests above already cover those).
-  test('writes state.json with currentStep=memorization after --force-memorization (issue #163)', async () => {
+  // branch appended events via raw `store.transaction(...)` without
+  // re-deriving state — `resolveWorkflowState` returned the pre-resume
+  // `error` step on every subsequent invocation. PR-FIN-2a-ii
+  // (T-2a.9.unified) retired `state.json` entirely; `resolveWorkflowState`
+  // is now a pure derive over the partition-filtered event stream, so
+  // the regression class collapses to "did the resume events land
+  // atomically and does the next derive return memorization?".
+  test('post-force-memorization state derives currentStep=memorization (issue #163)', async () => {
     const sessionId = 'resume-force-statefile';
-    const { sessionDir } = await initScratchSession(sessionId);
-    await driveToErrorState(sessionDir, sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
+    await driveToErrorState(sessionDir, sessionId, projectId);
 
-    // Sanity baseline: state.json reflects the error state pre-resume.
+    // Sanity baseline: derived state reflects the error step pre-resume.
     {
-      const raw = readFileSync(join(sessionDir, 'state.json'), 'utf8');
-      const before = JSON.parse(raw) as { readonly currentStep: string };
-      expect(before.currentStep).toBe('error');
+      const store = openStore(sessionDir, sessionId, projectId);
+      try {
+        const before = resolveWorkflowState(sessionDir, store, sessionId);
+        expect(before.currentStep).toBe('error');
+      } finally {
+        store.close();
+      }
     }
 
     await captureExit(() =>
@@ -426,42 +445,19 @@ describe('runResumeWithOptions — --force-memorization', () => {
     );
     expect(captured.exitCode).toBeNull();
 
-    // The actual regression assertion — state.json materialised the
-    // post-resume state, not just the event-store rows.
-    const raw = readFileSync(join(sessionDir, 'state.json'), 'utf8');
-    const after = JSON.parse(raw) as {
-      readonly currentStep: string;
-      readonly schemaVersion: number;
-    };
-    expect(after.currentStep).toBe('memorization');
-    // The fast-path readers (`resolveWorkflowState`) accept the file by
-    // schemaVersion gate — confirm the persisted shape passes that gate
-    // so downstream guard / status / next reads see the fresh state.
-    expect(after.schemaVersion).toBeGreaterThanOrEqual(4);
-
-    // Cross-check via the same code path the runtime uses — fast-path
-    // readState → resolveWorkflowState. Pre-fix, this returned 'error'
-    // because state.json was stale.
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    // Post-resume derive returns memorization — the regression case
+    // pre-#163 returned `error` here because the event stream was
+    // appended via raw transaction without state re-derivation. After
+    // T-2a.9.unified the engine's pure-derive path always replays the
+    // current event stream, so the same assertion holds without any
+    // on-disk state.json projection.
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const resolved = resolveWorkflowState(sessionDir, store, sessionId);
       expect(resolved.currentStep).toBe('memorization');
     } finally {
       store.close();
     }
-
-    // Backup invariant — `state.json.backup` must trail `state.json` by
-    // at most one state write. The `--force-memorization` branch calls
-    // `backupState` immediately before `writeState`, so the backup
-    // captures the pre-resume `error` state that lived in `state.json`
-    // before the explicit post-transaction projection. This mirrors the
-    // discipline in `appendEventAndUpdateState` (engine.ts).
-    const backupRaw = readFileSync(
-      join(sessionDir, 'state.json.backup'),
-      'utf8',
-    );
-    const backup = JSON.parse(backupRaw) as { readonly currentStep: string };
-    expect(backup.currentStep).toBe('error');
   });
 });
 

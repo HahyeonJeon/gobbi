@@ -138,17 +138,33 @@ function makeScratchRepo(): string {
 
 async function initScratchSession(
   sessionId: string,
-): Promise<{ sessionDir: string; repo: string }> {
+): Promise<{ sessionDir: string; repo: string; projectId: string }> {
   const repo = makeScratchRepo();
+  const projectId = basename(repo);
   await captureExit(() =>
     runInitWithOptions(
       ['--session-id', sessionId, '--task', 'spawn-emit-test'],
       { repoRoot: repo },
     ),
   );
-  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
+  const sessionDir = sessionDirForProject(repo, projectId, sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
-  return { sessionDir, repo };
+  return { sessionDir, repo, projectId };
+}
+
+/**
+ * Open the per-session event store with explicit partition keys (PR-FIN-
+ * 2a-ii / T-2a.9.unified Option α).
+ */
+function openStore(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): EventStore {
+  return new EventStore(join(sessionDir, 'gobbi.db'), {
+    sessionId,
+    projectId,
+  });
 }
 
 function emptyMatcher(): GuardMatcher {
@@ -162,7 +178,7 @@ function emptyMatcher(): GuardMatcher {
 describe('PreToolUse guard — single-agent spawn emission', () => {
   test('Agent tool with subagent_type + tool_call_id → one delegation.spawn', async () => {
     const sessionId = 'spawn-single';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -182,7 +198,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
 
     expect(captured.exitCode).toBeNull();
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const spawns = store.byType('delegation.spawn');
       expect(spawns).toHaveLength(1);
@@ -205,7 +221,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
 
   test('Agent tool via tool_use_id (canonical Claude Code field) emits spawn', async () => {
     const sessionId = 'spawn-use-id';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -220,7 +236,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const spawns = store.byType('delegation.spawn');
       expect(spawns).toHaveLength(1);
@@ -237,7 +253,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
 
   test('non-Agent tool → no delegation.spawn event', async () => {
     const sessionId = 'spawn-no-agent';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -252,7 +268,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       expect(store.byType('delegation.spawn')).toHaveLength(0);
     } finally {
@@ -262,7 +278,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
 
   test('Agent tool without tool_call_id / tool_use_id → no spawn (linkage impossible)', async () => {
     const sessionId = 'spawn-no-tcid';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -277,7 +293,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       expect(store.byType('delegation.spawn')).toHaveLength(0);
     } finally {
@@ -287,7 +303,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
 
   test('Agent tool without subagent_type → no spawn (agentType missing)', async () => {
     const sessionId = 'spawn-no-type';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -302,7 +318,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       expect(store.byType('delegation.spawn')).toHaveLength(0);
     } finally {
@@ -318,7 +334,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
 describe('PreToolUse guard — parallel-agent spawn emission', () => {
   test('two distinct tool_call_ids → two distinct spawn events; SubagentStop links each correctly', async () => {
     const sessionId = 'spawn-parallel';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     // Two PreToolUse invocations land back-to-back from the same orchestrator
     // turn — Claude Code dispatches Agent tool calls in parallel batches.
@@ -351,7 +367,7 @@ describe('PreToolUse guard — parallel-agent spawn emission', () => {
     let spawnA: number | null = null;
     let spawnB: number | null = null;
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const spawns = store.byType('delegation.spawn');
         expect(spawns).toHaveLength(2);
@@ -420,7 +436,7 @@ describe('PreToolUse guard — parallel-agent spawn emission', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const completes = store.byType('delegation.complete');
       expect(completes).toHaveLength(2);
@@ -446,7 +462,7 @@ describe('PreToolUse guard — parallel-agent spawn emission', () => {
 describe('Ripple — reducer.delegation.spawn populates state.activeSubagents', () => {
   test('after guard emits spawn, derived state lists the subagent', async () => {
     const sessionId = 'ripple-reducer';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -461,7 +477,7 @@ describe('Ripple — reducer.delegation.spawn populates state.activeSubagents', 
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const state = resolveWorkflowState(sessionDir, store, sessionId);
       expect(state.activeSubagents).toHaveLength(1);
@@ -484,7 +500,7 @@ describe('Ripple — reducer.delegation.spawn populates state.activeSubagents', 
 describe('Ripple — predicates.piAgentsToSpawn fires once a __pi spawn lands', () => {
   test('false before spawn, true after spawn', async () => {
     const sessionId = 'ripple-pi';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     const pred = defaultPredicates['piAgentsToSpawn'];
     if (pred === undefined) {
@@ -492,7 +508,7 @@ describe('Ripple — predicates.piAgentsToSpawn fires once a __pi spawn lands', 
     }
 
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         expect(pred(state)).toBe(false);
@@ -515,7 +531,7 @@ describe('Ripple — predicates.piAgentsToSpawn fires once a __pi spawn lands', 
     );
 
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
         expect(pred(state)).toBe(true);
@@ -539,7 +555,7 @@ describe('Ripple — predicates.piAgentsToSpawn fires once a __pi spawn lands', 
 describe('Ripple — reducer accepts verification.result when matching spawn exists', () => {
   test('spawn → reducer admits verification.result for the same subagent (no rejection)', async () => {
     const sessionId = 'ripple-verify';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -554,7 +570,7 @@ describe('Ripple — reducer accepts verification.result when matching spawn exi
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const state = resolveWorkflowState(sessionDir, store, sessionId);
       // The subagent is in activeSubagents — the reducer's "must be active"
@@ -585,7 +601,7 @@ describe('Ripple — reducer accepts verification.result when matching spawn exi
 describe('Ripple — step-readme writes correct subagentsActiveAtExit', () => {
   test('one __pi spawn at ideation → frontmatter shows subagentsActiveAtExit: 1', async () => {
     const sessionId = 'ripple-readme';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -600,7 +616,7 @@ describe('Ripple — step-readme writes correct subagentsActiveAtExit', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const state = resolveWorkflowState(sessionDir, store, sessionId);
       // Exercise the writer's pure rendering path. The count is filtered by
@@ -643,7 +659,7 @@ describe('Ripple — step-readme writes correct subagentsActiveAtExit', () => {
 describe('Ripple — verification-block renders for spawned subagent', () => {
   test('compiles a per-subagent block once a spawn has landed', async () => {
     const sessionId = 'ripple-vblock';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     await captureExit(() =>
       runGuardWithOptions([], {
@@ -658,7 +674,7 @@ describe('Ripple — verification-block renders for spawned subagent', () => {
       }),
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       const state = resolveWorkflowState(sessionDir, store, sessionId);
       const sub = state.activeSubagents[0];
