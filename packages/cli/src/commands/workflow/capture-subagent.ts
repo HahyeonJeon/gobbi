@@ -33,10 +33,15 @@
  *
  * ## Parent linkage
  *
- * `parent_seq` is best-effort. On each invocation we scan the most recent
- * `delegation.spawn` event and link to it when `data.subagentId ===
- * payload.agent_id`. When no match, we omit `parent_seq`. PR F will supply
- * `tool_call_id`-based precise linkage.
+ * `parent_seq` is best-effort. On each invocation we scan back through the
+ * `delegation.spawn` events and link to the one whose
+ * `data.tool_call_id` matches the SubagentStop payload's `tool_call_id` /
+ * `tool_use_id`. The `tool_call_id`-scoped match is the precise linkage
+ * needed when multiple subagents are spawned in parallel from a single
+ * orchestrator turn — the previous `last('delegation.spawn')` heuristic
+ * silently misattributed parent linkage in that case. When no match (older
+ * spawn events without the field, transcript missing the tool-call id), we
+ * omit `parent_seq`.
  *
  * ## Cost fields (PR E)
  *
@@ -48,7 +53,8 @@
  * @see `.claude/project/gobbi/reference/subagent-transcripts.md`
  */
 
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { readStdinJson } from '../../lib/stdin.js';
@@ -89,6 +95,7 @@ interface SubagentStopPayload {
   readonly stop_hook_active?: boolean;
   readonly session_id?: string;
   readonly tool_call_id?: string;
+  readonly tool_use_id?: string;
   /** Optional cost passthrough — schema owned by PR E. */
   readonly tokensUsed?: number;
   readonly cacheHitRatio?: number;
@@ -104,6 +111,7 @@ function asPayload(value: unknown): SubagentStopPayload {
     'last_assistant_message',
     'session_id',
     'tool_call_id',
+    'tool_use_id',
   ];
   const out: Record<string, unknown> = {};
   for (const key of keys) {
@@ -116,6 +124,21 @@ function asPayload(value: unknown): SubagentStopPayload {
   const cache = payload['cacheHitRatio'];
   if (isNumber(cache)) out['cacheHitRatio'] = cache;
   return out as SubagentStopPayload;
+}
+
+/**
+ * Resolve the canonical tool-call identifier for this SubagentStop. Claude
+ * Code's authoritative Hooks reference uses `tool_use_id`; existing tests
+ * carry `tool_call_id`. Returns whichever is a non-empty string, preferring
+ * `tool_use_id`. Used both to link back to a `delegation.spawn` row and to
+ * key event idempotency.
+ */
+function resolveToolCallId(payload: SubagentStopPayload): string | undefined {
+  const useId = payload.tool_use_id;
+  if (typeof useId === 'string' && useId !== '') return useId;
+  const callId = payload.tool_call_id;
+  if (typeof callId === 'string' && callId !== '') return callId;
+  return undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -202,6 +225,7 @@ export async function runCaptureSubagentWithOptions(
     const artifactsDir = join(sessionDir, 'artifacts');
     const successFilename = `${agentType}-r${round}.md`;
     const failureFilename = `delegation-fail-r${round}.md`;
+    const toolCallId = resolveToolCallId(payload);
 
     // Lazy step-subdir materialisation — when the current workflow step is
     // one of the five productive steps, ensure `<step>/` and `<step>/rawdata/`
@@ -213,8 +237,11 @@ export async function runCaptureSubagentWithOptions(
       ensureSessionStepDir(sessionDir, stepId);
     }
 
-    // --- 5. Parent-seq best-effort lookup -----------------------------
-    const parentSeq = findParentSpawnSeq(store, agentId);
+    // --- 5. Parent-seq lookup via tool_call_id -----------------------
+    // Precise linkage: the matching delegation.spawn carries the same
+    // `tool_call_id` PreToolUse recorded; parallel-subagent linkage works
+    // even when the orchestrator dispatched multiple Agents in one turn.
+    const parentSeq = findParentSpawnSeq(store, toolCallId);
 
     // --- 6. Three-case extraction + emission -------------------------
     if (transcriptPath === '' || !existsSync(transcriptPath)) {
@@ -234,7 +261,7 @@ export async function runCaptureSubagentWithOptions(
         agentId,
         reason,
         transcriptPath === '' ? undefined : transcriptPath,
-        payload.tool_call_id,
+        toolCallId,
         parentSeq,
       );
       emitArtifactWriteAfter(
@@ -244,7 +271,7 @@ export async function runCaptureSubagentWithOptions(
         sessionId,
         'delegation-fail',
         failureFilename,
-        payload.tool_call_id,
+        toolCallId,
       );
       return;
     }
@@ -268,7 +295,7 @@ export async function runCaptureSubagentWithOptions(
         agentId,
         explanation,
         transcriptPath,
-        payload.tool_call_id,
+        toolCallId,
         parentSeq,
       );
       emitArtifactWriteAfter(
@@ -278,7 +305,7 @@ export async function runCaptureSubagentWithOptions(
         sessionId,
         'delegation-fail',
         failureFilename,
-        payload.tool_call_id,
+        toolCallId,
       );
       return;
     }
@@ -286,6 +313,11 @@ export async function runCaptureSubagentWithOptions(
     // Case 1 — transcript present and parseable.
     writeArtifact(artifactsDir, successFilename, extracted);
     const artifactPath = join(artifactsDir, successFilename);
+    // Capture-time SHA-256 over the transcript bytes. Best-effort: if the
+    // file becomes unreadable between the existsSync probe above and the
+    // hash call (race against an aggressive cleanup), the field is omitted
+    // rather than failing the capture.
+    const transcriptSha256 = computeFileSha256(transcriptPath);
     emitDelegationComplete(
       store,
       sessionDir,
@@ -295,7 +327,8 @@ export async function runCaptureSubagentWithOptions(
       artifactPath,
       payload.tokensUsed,
       payload.cacheHitRatio,
-      payload.tool_call_id,
+      transcriptSha256,
+      toolCallId,
       parentSeq,
     );
     emitArtifactWriteAfter(
@@ -305,10 +338,27 @@ export async function runCaptureSubagentWithOptions(
       sessionId,
       'delegation',
       successFilename,
-      payload.tool_call_id,
+      toolCallId,
     );
   } finally {
     store.close();
+  }
+}
+
+/**
+ * Compute the SHA-256 hex digest of a file's bytes. Returns `undefined` when
+ * the file cannot be opened — caller omits the `transcriptSha256` field
+ * rather than failing the capture. Uses Node's `node:crypto` rather than
+ * `Bun.CryptoHasher` because this command is occasionally invoked under the
+ * Node-shimmed test harness and the synchronous node:crypto API matches the
+ * existing capture-time IO style here.
+ */
+function computeFileSha256(filePath: string): string | undefined {
+  try {
+    const bytes = readFileSync(filePath);
+    return createHash('sha256').update(bytes).digest('hex');
+  } catch {
+    return undefined;
   }
 }
 
@@ -351,28 +401,70 @@ async function extractLastAssistantText(
 // ---------------------------------------------------------------------------
 
 /**
- * Find the `seq` of the most recent `delegation.spawn` event whose data
- * carries `subagentId === agentId`. Returns `null` when no match — the
- * caller then emits the event without parent linkage.
+ * Find the `seq` of the `delegation.spawn` event whose data carries the
+ * given `tool_call_id` — the precise linkage between a SubagentStop and the
+ * PreToolUse spawn that initiated it. The lookup walks back through spawn
+ * events (newest first) so the most recent matching spawn wins, which is
+ * the right behavior when the same `tool_call_id` somehow appears twice
+ * (Claude Code retries, e.g.).
  *
- * Best-effort by design. PR F will supply `tool_call_id`-scoped precise
- * linkage.
+ * Returns `null` when:
+ *   - The caller has no `tool_call_id` to match against (older transcripts).
+ *   - No `delegation.spawn` row exists yet for this session.
+ *   - No spawn carries the matching `tool_call_id` (older spawn events
+ *     written before the field landed in PR-FIN-2a-ii).
+ *
+ * The previous heuristic — `last('delegation.spawn')` filtered by
+ * `subagentId === agent_id` — silently misattributed parent linkage when
+ * multiple subagents were spawned in parallel from a single orchestrator
+ * turn (Architecture H3 finding). The `tool_call_id`-scoped lookup makes
+ * the linkage precise even under parallel dispatch.
+ *
+ * The walk uses `lastN` (capped at 64 spawns) for the common case + falls
+ * through to `byType('delegation.spawn')` when the cap is exceeded — covers
+ * the hot path without an unbounded scan on long sessions.
  */
 function findParentSpawnSeq(
   store: ReadStore,
-  agentId: string,
+  toolCallId: string | undefined,
 ): number | null {
-  if (agentId === '') return null;
-  const row = store.last('delegation.spawn');
-  if (row === null) return null;
+  if (toolCallId === undefined || toolCallId === '') return null;
+
+  const recent = store.lastN('delegation.spawn', 64);
+  for (let i = recent.length - 1; i >= 0; i -= 1) {
+    const row = recent[i];
+    if (row === undefined) continue;
+    const seq = matchSpawnByToolCallId(row, toolCallId);
+    if (seq !== null) return seq;
+  }
+
+  // Cap-overflow fallback: scan the full set in newest-first order.
+  if (recent.length === 64) {
+    const all = store.byType('delegation.spawn');
+    for (let i = all.length - 1; i >= 0; i -= 1) {
+      const row = all[i];
+      if (row === undefined) continue;
+      const seq = matchSpawnByToolCallId(row, toolCallId);
+      if (seq !== null) return seq;
+    }
+  }
+
+  return null;
+}
+
+function matchSpawnByToolCallId(
+  row: { readonly seq: number; readonly data: string },
+  toolCallId: string,
+): number | null {
+  let data: unknown;
   try {
-    const data = JSON.parse(row.data) as unknown;
-    if (!isRecord(data)) return null;
-    if (data['subagentId'] !== agentId) return null;
-    return row.seq;
+    data = JSON.parse(row.data);
   } catch {
     return null;
   }
+  if (!isRecord(data)) return null;
+  if (data['tool_call_id'] !== toolCallId) return null;
+  return row.seq;
 }
 
 // ---------------------------------------------------------------------------
@@ -397,6 +489,7 @@ function emitDelegationComplete(
   artifactPath: string,
   tokensUsed: number | undefined,
   cacheHitRatio: number | undefined,
+  transcriptSha256: string | undefined,
   toolCallId: string | undefined,
   parentSeq: number | null,
 ): void {
@@ -405,6 +498,7 @@ function emitDelegationComplete(
     artifactPath,
     ...(tokensUsed !== undefined ? { tokensUsed } : {}),
     ...(cacheHitRatio !== undefined ? { cacheHitRatio } : {}),
+    ...(transcriptSha256 !== undefined ? { transcriptSha256 } : {}),
   });
   const { kind, toolCallId: tcid } = idempotencyFor(toolCallId);
   try {
