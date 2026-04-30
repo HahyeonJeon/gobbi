@@ -1,7 +1,7 @@
 /**
- * Compound workflow operations — the bridge between state.ts and reducer.ts.
+ * Compound workflow operations — the bridge between state-derivation.ts and reducer.ts.
  *
- * This is the ONLY module that imports from both state.ts and reducer.ts,
+ * This is the ONLY module that imports from both state-derivation.ts and reducer.ts,
  * preventing circular dependencies. All compound operations that need
  * both persistence and reduction go through this module.
  *
@@ -435,7 +435,7 @@ export function resolveWorkflowState(
 /**
  * Derive workflow state from full event replay.
  *
- * Wraps state.ts deriveState() with the concrete reduce function.
+ * Wraps state-derivation.ts deriveState() with the concrete reduce function.
  * Equivalent to {@link resolveWorkflowState} after the state.json
  * retirement; kept as a separate symbol for callers that historically
  * forced a derive path even when state.json was present (`resume.ts`

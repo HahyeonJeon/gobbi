@@ -215,7 +215,7 @@ describe('v1 → v2 event round-trip', () => {
   test('replayed v1 events reduce to a valid in-memory WorkflowState', () => {
     const state = deriveState('sess-v1', v1Events, reduce);
     // The in-memory `initialState().schemaVersion` is currently pinned
-    // at 4 in `state.ts`; `CURRENT_SCHEMA_VERSION` at 5 reflects the
+    // at 4 in `state-derivation.ts`; `CURRENT_SCHEMA_VERSION` at 5 reflects the
     // row-level schema (new `session_id` / `project_id` columns). The
     // two values are intentionally decoupled under gobbi-memory Pass 2
     // because the v5 bump is a pure row-shape change that carries no
