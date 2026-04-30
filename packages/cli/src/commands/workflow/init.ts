@@ -280,28 +280,19 @@ export async function runInitWithOptions(
   // the two-event init pair can no longer share an outer
   // `store.transaction(() => { ... })` envelope (bun:sqlite transaction
   // callbacks cannot await). Each call still runs inside its own IMMEDIATE
-  // transaction with `backupState` + `writeState` discipline; the only
-  // invariant we lose is "both rolls back together on an inter-event crash".
+  // SQLite transaction; the only invariant we lose is "both rolls back
+  // together on an inter-event crash".
   //
   // The downgrade is acceptable here because the SessionStart hook is
   // idempotent: a partial init (workflow.start committed, workflow.eval.decide
   // not) re-runs cleanly on the next hook fire. The first call is a no-op
   // (dedup'd at the idempotency UNIQUE), the second appends the missing
-  // decide event, and state.json converges. No orphan state can survive a
-  // re-init pass.
+  // decide event. No orphan state can survive a re-init pass.
   //
-  // state.json materialisation: each `appendEventAndUpdateState` call calls
-  // `backupState` + `writeState` itself, so the on-disk projection mirrors
-  // the post-decide state when both calls succeed. No post-call explicit
-  // `writeState` is needed.
-  //
-  // Contrast with the `--force-memorization` branch in `resume.ts`: that
-  // path appends events directly via `store.append(...)` inside its raw
-  // transaction (NOT through `appendEventAndUpdateState`), bypassing the
-  // per-append state.json write. It therefore needs an explicit
-  // `backupState` + `writeState` after the commit to bring state.json
-  // forward. See CV-9 (issue #163) for the regression that motivated that
-  // pattern.
+  // PR-FIN-2a-ii (T-2a.9.unified) also retired the per-session `state.json`
+  // projection — workflow state is derived on demand via `deriveState(...)`
+  // from workspace `state.db` events. Neither this path nor the resume
+  // `--force-memorization` branch writes `state.json` any longer.
   const dbPath = join(sessionDir, 'gobbi.db');
   // PR-FIN-2a-ii (T-2a.8.5): supply the partition keys explicitly rather
   // than calling `resolvePartitionKeys(sessionDir)`. We already have

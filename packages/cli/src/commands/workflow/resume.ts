@@ -34,7 +34,6 @@ import { join } from 'node:path';
 import { EventStore } from '../../workflow/store.js';
 import {
   appendEventAndUpdateState,
-  deriveWorkflowState,
   resolveWorkflowState,
 } from '../../workflow/engine.js';
 import { createResume } from '../../workflow/events/workflow.js';
@@ -43,7 +42,6 @@ import {
   type PriorErrorSnapshot,
 } from '../../workflow/events/decision.js';
 import type { WorkflowState } from '../../workflow/state.js';
-import { backupState, writeState } from '../../workflow/state.js';
 import {
   compileResumePrompt,
   detectPathway,
@@ -259,9 +257,9 @@ export async function runResumeWithOptions(
       // Atomic two-event append. Per research Area 7, raw
       // `store.transaction(...)` guarantees both events land or neither —
       // `appendEventAndUpdateState` opens its own transaction per call and
-      // is not a safe substitute here. After the pair commits, refresh
-      // `state.json` once via `resolveWorkflowState` so downstream
-      // readers see the materialised state.
+      // is not a safe substitute here. Post-PR-FIN-2a-ii the engine no
+      // longer projects `state.json`; workflow state is derived on demand
+      // via `deriveState(...)` from workspace `state.db` events.
       const skipEvent = createEvalSkip({
         step: 'memorization',
         priorError,
@@ -301,34 +299,17 @@ export async function runResumeWithOptions(
         process.exit(1);
       }
 
-      // Refresh state.json after the raw transaction.
+      // No state.json refresh required.
       //
-      // The raw transaction bypassed the `writeState` call that lives
-      // inside `appendEventAndUpdateState`, so the on-disk `state.json`
-      // is still the pre-resume state at this point. `resolveWorkflowState`
-      // ALONE would not fix that — its fast path (`readState`) returns
-      // whatever `state.json` currently holds without re-deriving from
-      // events. Without the explicit write below, every subsequent
-      // `workflow status / next / guard` invocation reads stale state
-      // (currentStep: 'error') even though the event log says
-      // 'memorization'. See CV-9 in the v0.5.0 adversarial review
-      // campaign synthesis (issue #163) for the failure mode.
-      //
-      // The fix: force a full replay via `deriveWorkflowState` (cold
-      // path, ignores state.json) and then `writeState` to materialise
-      // the result, mirroring `appendEventAndUpdateState`'s discipline.
-      // The write happens OUTSIDE the SQLite transaction — the atomicity
-      // boundary is the two-event append; state.json is a downstream
-      // projection that follows the commit.
-      //
-      // `backupState` runs immediately before `writeState` to preserve
-      // the invariant that `state.json.backup` trails `state.json` by
-      // at most one state write — matching the discipline in
-      // `appendEventAndUpdateState` (engine.ts), which calls
-      // `backupState` as step 1 inside its transaction.
-      const derived = deriveWorkflowState(sessionId, store);
-      backupState(sessionDir);
-      writeState(sessionDir, derived);
+      // Pre-PR-FIN-2a-ii this branch had to call `backupState` +
+      // `writeState` to keep `<sessionDir>/state.json` in sync with the
+      // event log after the raw transaction (CV-9 in the v0.5.0
+      // adversarial review campaign, issue #163). PR-FIN-2a-ii retired
+      // the per-session `state.json` projection entirely — every
+      // subsequent reader (`workflow status / next / guard`) calls
+      // `resolveWorkflowState` which now pure-derives from workspace
+      // `state.db` events, so the two appended events above are
+      // immediately visible.
     } else {
       const resumeEvent = createResume({
         targetStep: target,
