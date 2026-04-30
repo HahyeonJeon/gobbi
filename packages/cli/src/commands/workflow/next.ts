@@ -53,7 +53,7 @@ import { getRepoRoot } from '../../lib/repo.js';
 import { resolveSettings } from '../../lib/settings-io.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
-import type { WorkflowState, WorkflowStep } from '../../workflow/state.js';
+import type { WorkflowState, WorkflowStep } from '../../workflow/state-derivation.js';
 import { EventStore } from '../../workflow/store.js';
 import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 

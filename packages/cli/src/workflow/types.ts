@@ -7,7 +7,7 @@
  * introduces no dependency cycle risk.
  */
 
-import type { WorkflowState } from './state.js';
+import type { WorkflowState } from './state-derivation.js';
 import type { Event } from './events/index.js';
 import type { PredicateRegistry } from './predicates.js';
 

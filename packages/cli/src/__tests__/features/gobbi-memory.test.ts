@@ -102,7 +102,7 @@ import {
   writeStepReadmeForExit,
   type StepReadmeArgs,
 } from '../../workflow/step-readme-writer.js';
-import { initialState, type WorkflowState } from '../../workflow/state.js';
+import { initialState, type WorkflowState } from '../../workflow/state-derivation.js';
 
 // ---------------------------------------------------------------------------
 // stdout / stderr / process.exit capture harness

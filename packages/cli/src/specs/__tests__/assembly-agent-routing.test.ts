@@ -33,8 +33,8 @@ import {
   type DynamicContext,
 } from '../assembly.js';
 import type { AgentOriginal } from '../spec-loader.js';
-import { initialState } from '../../workflow/state.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
 import type { AgentConfig, StepSpec } from '../types.js';
 
 // ---------------------------------------------------------------------------

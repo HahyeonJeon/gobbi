@@ -74,7 +74,7 @@ import { readInstalledVersion } from '../../lib/version-check.js';
 import { ConfigCascadeError } from '../../lib/settings.js';
 import { EventStore } from '../../workflow/store.js';
 import { appendEventAndUpdateState, resolveWorkflowState } from '../../workflow/engine.js';
-import { initialState } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
 import {
   createWorkflowStart,
   createEvalDecide,

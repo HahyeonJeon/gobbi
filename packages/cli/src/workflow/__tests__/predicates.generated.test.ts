@@ -20,8 +20,8 @@ import { describe, test, expect } from 'bun:test';
 
 import { defaultPredicates, PREDICATE_NAMES } from '../predicates.js';
 import type { PredicateName } from '../predicates.js';
-import { initialState } from '../state.js';
-import type { WorkflowState } from '../state.js';
+import { initialState } from '../state-derivation.js';
+import type { WorkflowState } from '../state-derivation.js';
 
 function freshState(): WorkflowState {
   return initialState('test-session-generated');

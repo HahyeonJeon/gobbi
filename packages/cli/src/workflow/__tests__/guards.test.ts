@@ -16,7 +16,7 @@ import {
   GUARDS,
   type Guard,
 } from '../guards.js';
-import type { WorkflowStep } from '../state.js';
+import type { WorkflowStep } from '../state-derivation.js';
 
 // ---------------------------------------------------------------------------
 // Fixture helpers

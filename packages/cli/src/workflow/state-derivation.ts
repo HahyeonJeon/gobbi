@@ -18,7 +18,7 @@
  *
  * This module does NOT import from reducer.ts — `deriveState` accepts
  * a reduce function as a parameter to avoid circular dependencies.
- * engine.ts is the module that bridges state.ts and reducer.ts.
+ * engine.ts is the module that bridges state-derivation.ts and reducer.ts.
  */
 
 import { isRecord, isString, isNumber, isBoolean, isArray } from '../lib/guards.js';

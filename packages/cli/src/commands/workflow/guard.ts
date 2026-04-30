@@ -71,7 +71,7 @@ import {
   type Guard,
   type GuardMatcher,
 } from '../../workflow/guards.js';
-import type { WorkflowState, WorkflowStep } from '../../workflow/state.js';
+import type { WorkflowState, WorkflowStep } from '../../workflow/state-derivation.js';
 import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------

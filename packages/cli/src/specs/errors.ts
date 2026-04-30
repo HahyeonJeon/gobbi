@@ -40,7 +40,7 @@
  * @see `.claude/project/gobbi/design/v050-session.md` §Resume Briefing with Pathway Differentiation
  */
 
-import type { WorkflowState } from '../workflow/state.js';
+import type { WorkflowState } from '../workflow/state-derivation.js';
 import type { ReadStore } from '../workflow/store.js';
 import type { CompiledPrompt } from './types.js';
 

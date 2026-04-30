@@ -41,7 +41,7 @@ import {
   createEvalSkip,
   type PriorErrorSnapshot,
 } from '../../workflow/events/decision.js';
-import type { WorkflowState } from '../../workflow/state.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
 import {
   compileResumePrompt,
   detectPathway,
@@ -59,7 +59,7 @@ import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 /**
  * The six active steps `--target` may name. Mirrors `ACTIVE_STEPS` from
- * `workflow/state.ts` — kept in sync via the reducer's post-append
+ * `workflow/state-derivation.ts` — kept in sync via the reducer's post-append
  * validation. The CLI check is a fast-fail gate; the reducer is the
  * authoritative gate.
  */

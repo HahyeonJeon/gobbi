@@ -34,7 +34,7 @@ import { describe, test, expect } from 'bun:test';
 
 import { CURRENT_SCHEMA_VERSION, migrateEvent } from '../migrations.js';
 import type { EventRow } from '../migrations.js';
-import { deriveState } from '../state.js';
+import { deriveState } from '../state-derivation.js';
 import { reduce } from '../reducer.js';
 import type { PriorErrorSnapshot } from '../events/decision.js';
 import type { ErrorPathway } from '../../specs/errors.js';

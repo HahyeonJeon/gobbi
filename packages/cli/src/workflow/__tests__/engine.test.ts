@@ -21,8 +21,8 @@ import {
   ReducerRejectionError,
 } from '../engine.js';
 import { EventStore } from '../store.js';
-import { initialState } from '../state.js';
-import type { WorkflowState, WorkflowStep } from '../state.js';
+import { initialState } from '../state-derivation.js';
+import type { WorkflowState, WorkflowStep } from '../state-derivation.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';
 import type { Event } from '../events/index.js';
 

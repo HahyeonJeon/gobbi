@@ -28,7 +28,7 @@ import { isNumber, isRecord, isString } from '../../lib/guards.js';
 import { EventStore } from '../../workflow/store.js';
 import type { CostAggregateRow, ReadStore } from '../../workflow/store.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
-import type { GuardViolationRecord, WorkflowState } from '../../workflow/state.js';
+import type { GuardViolationRecord, WorkflowState } from '../../workflow/state-derivation.js';
 import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
 
 // ---------------------------------------------------------------------------

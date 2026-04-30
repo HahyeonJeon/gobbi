@@ -58,8 +58,8 @@ import type {
   BlockContent,
   ConditionalBlock,
 } from '../../specs/types.js';
-import { initialState } from '../../workflow/state.js';
-import type { WorkflowStep } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
+import type { WorkflowStep } from '../../workflow/state-derivation.js';
 import { defaultPredicates } from '../../workflow/predicates.js';
 import { foldChain } from '../../lib/prompt-evolution.js';
 import {

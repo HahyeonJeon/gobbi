@@ -28,8 +28,8 @@ import {
   runStatusWithOptions,
   type StatusSnapshot,
 } from '../status.js';
-import { initialState } from '../../../workflow/state.js';
-import type { GuardViolationRecord } from '../../../workflow/state.js';
+import { initialState } from '../../../workflow/state-derivation.js';
+import type { GuardViolationRecord } from '../../../workflow/state-derivation.js';
 import { EventStore } from '../../../workflow/store.js';
 
 // ---------------------------------------------------------------------------

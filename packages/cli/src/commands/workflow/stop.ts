@@ -63,8 +63,8 @@ import {
 } from '../../workflow/engine.js';
 import { createSessionHeartbeat } from '../../workflow/events/session.js';
 import { createStepTimeout } from '../../workflow/events/workflow.js';
-import type { WorkflowState } from '../../workflow/state.js';
-import { isActiveStep } from '../../workflow/state.js';
+import type { WorkflowState } from '../../workflow/state-derivation.js';
+import { isActiveStep } from '../../workflow/state-derivation.js';
 import { getStepById, loadGraph } from '../../specs/graph.js';
 import { getSpecsDir } from '../../specs/paths.js';
 import { validateStepSpec } from '../../specs/_schema/v1.js';

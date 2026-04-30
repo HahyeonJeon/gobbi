@@ -42,8 +42,8 @@ import { EventStore } from './store.js';
 import type { AppendInput, ReadStore } from './store.js';
 import { reduce } from './reducer.js';
 import type { ReducerResult } from './reducer.js';
-import { deriveState } from './state.js';
-import type { WorkflowState } from './state.js';
+import { deriveState } from './state-derivation.js';
+import type { WorkflowState } from './state-derivation.js';
 import type { Event } from './events/index.js';
 import {
   WORKFLOW_EVENTS,

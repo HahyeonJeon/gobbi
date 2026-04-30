@@ -7,8 +7,8 @@
  * the reducer to produce final states.
  */
 
-import { initialState } from '../state.js';
-import type { WorkflowState } from '../state.js';
+import { initialState } from '../state-derivation.js';
+import type { WorkflowState } from '../state-derivation.js';
 import { reduce } from '../reducer.js';
 import type { Event } from '../events/index.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';

@@ -92,7 +92,7 @@ import {
   resolveEvalDecision,
   resolveSettings,
 } from '../../lib/settings-io.js';
-import { initialState } from '../../workflow/state.js';
+import { initialState } from '../../workflow/state-derivation.js';
 import { reduce } from '../../workflow/reducer.js';
 import { WORKFLOW_EVENTS } from '../../workflow/events/workflow.js';
 import type { Event } from '../../workflow/events/index.js';

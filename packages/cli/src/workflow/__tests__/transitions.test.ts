@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'bun:test';
 
-import { initialState } from '../state.js';
-import type { WorkflowState, WorkflowStep, EvalConfig } from '../state.js';
-import { ACTIVE_STEPS } from '../state.js';
+import { initialState } from '../state-derivation.js';
+import type { WorkflowState, WorkflowStep, EvalConfig } from '../state-derivation.js';
+import { ACTIVE_STEPS } from '../state-derivation.js';
 import { findTransition, TRANSITION_TABLE } from '../transitions.js';
 import type { TransitionRule } from '../transitions.js';
 import { defaultPredicates, validatePredicateReferences } from '../predicates.js';

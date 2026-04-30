@@ -44,7 +44,7 @@
  * registrations through the runtime validator.
  */
 
-import type { WorkflowState } from './state.js';
+import type { WorkflowState } from './state-derivation.js';
 import type { TransitionRule } from './transitions.js';
 import type { PredicateName } from './predicates.generated.js';
 

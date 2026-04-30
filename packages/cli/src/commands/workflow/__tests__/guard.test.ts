@@ -41,7 +41,7 @@ import {
   type GuardMatcher,
 } from '../../../workflow/guards.js';
 import { EventStore } from '../../../workflow/store.js';
-import type { WorkflowStep } from '../../../workflow/state.js';
+import type { WorkflowStep } from '../../../workflow/state-derivation.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap

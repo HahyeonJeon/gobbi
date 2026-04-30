@@ -283,7 +283,7 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
 
   // ---- Production code: legacy schema readers + retirement docblocks -------
   {
-    path: 'packages/cli/src/workflow/state.ts',
+    path: 'packages/cli/src/workflow/state-derivation.ts',
     rationale:
       "Migration-only paths reference `state.json` post-PR-FIN-2a-iii Tier B.2 (orphan exports removed). Surviving references describe the legacy on-disk shape that migration code converts away.",
   },
