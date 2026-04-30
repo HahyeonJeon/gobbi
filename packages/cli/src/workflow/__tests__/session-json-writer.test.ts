@@ -42,7 +42,7 @@ import {
 import { appendEventAndUpdateState } from '../engine.js';
 import { writeSessionJsonAtMemorizationExit } from '../session-json-writer.js';
 import { EventStore } from '../store.js';
-import { initialState, writeState } from '../state.js';
+import { initialState } from '../state.js';
 import type { WorkflowState } from '../state.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';
 import type { Event } from '../events/index.js';
@@ -100,9 +100,16 @@ function makeSession(
 }
 
 /**
- * Drive a session into `memorization` by stamping `state.json` directly so
- * the engine accepts a STEP_EXIT for that step in a single append. Avoids
- * threading the workflow through every intermediate step in the test.
+ * Drive a session into `memorization` by stamping a legacy `state.json`
+ * fixture directly so the engine accepts a STEP_EXIT for that step in a
+ * single append. Avoids threading the workflow through every intermediate
+ * step in the test.
+ *
+ * Production code no longer reads `state.json` (retired in PR-FIN-2a-ii);
+ * the fixture is preserved as a regression scaffold so the test's intent
+ * — that the engine's STEP_EXIT dispatch operates on the in-memory `prev`
+ * argument, not on a state.json projection — stays explicit at the call
+ * site.
  */
 function seedMemorizationState(
   fixture: SessionFixture,
@@ -112,7 +119,11 @@ function seedMemorizationState(
     currentStep: 'memorization',
     stepStartedAt: '2026-04-29T00:30:00.000Z',
   };
-  writeState(fixture.sessionDir, state);
+  writeFileSync(
+    join(fixture.sessionDir, 'state.json'),
+    JSON.stringify(state, null, 2),
+    'utf8',
+  );
   return state;
 }
 
@@ -271,13 +282,19 @@ describe('engine memorization STEP_EXIT dispatch', () => {
 
   it('does NOT fire the writer when STEP_EXIT commits with step !== "memorization"', async () => {
     const fixture = makeSession('proj-engine-non-mem', 'sess-engine-non-mem');
-    // Seed a state where ideation can validly exit.
+    // Seed a state where ideation can validly exit. Direct fs write of the
+    // legacy state.json shape — production code no longer reads it; the
+    // fixture is preserved as a regression scaffold.
     const prev: WorkflowState = {
       ...initialState(fixture.sessionId),
       currentStep: 'ideation',
       stepStartedAt: '2026-04-29T00:00:30.000Z',
     };
-    writeState(fixture.sessionDir, prev);
+    writeFileSync(
+      join(fixture.sessionDir, 'state.json'),
+      JSON.stringify(prev, null, 2),
+      'utf8',
+    );
 
     using store = new EventStore(join(fixture.sessionDir, 'gobbi.db'));
     const stepExit: Event = {
