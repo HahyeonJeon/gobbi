@@ -5,8 +5,21 @@
  * preventing circular dependencies. All compound operations that need
  * both persistence and reduction go through this module.
  *
- * All operations are synchronous — they execute inside bun:sqlite
- * transactions which cannot contain async calls.
+ * The core SQLite mutation runs inside a synchronous `store.transaction(...)`
+ * envelope — bun:sqlite transactions cannot await — so the mutation half of
+ * `appendEventAndUpdateState` is sync-by-construction. The function itself
+ * is `async` because the post-commit dispatch will host async side effects
+ * (the memorization `session.json` writer landing in T-2a.8.2). The
+ * post-commit dispatch fires AFTER the transaction has committed, so the
+ * await landing outside the SQL boundary preserves the bun:sqlite invariant
+ * while still giving callers a single composable Promise to await.
+ *
+ * Callers that compose multiple appends across an outer atomic boundary
+ * (init's two-event pair) must drop the outer `store.transaction(...)` wrap
+ * because the bun:sqlite transaction callback cannot await the inner async
+ * function. The two-event atomicity guarantee downgrades from "both rolls
+ * back together" to "each commits or rolls back independently" — acceptable
+ * for the SessionStart hook's idempotent re-run semantics.
  */
 
 import { existsSync, unlinkSync } from 'node:fs';
@@ -114,7 +127,7 @@ export class ReducerRejectionError extends Error {
  * colliding counter, then passes the same `ts` down so the key uses the
  * same ms as the scan. When omitted, the engine uses wall-clock time.
  */
-export function appendEventAndUpdateState(
+export async function appendEventAndUpdateState(
   store: EventStore,
   dir: string,
   state: WorkflowState,
@@ -126,7 +139,7 @@ export function appendEventAndUpdateState(
   parentSeq?: number | null,
   counter?: number,
   ts?: string,
-): AppendResult {
+): Promise<AppendResult> {
   // Compute the effective timestamp ONCE — the same wall-clock reading is
   // used for (a) the rejected event's idempotency key (system/counter kinds
   // hash the ms) and (b) the audit-emit payload + audit idempotency key, so

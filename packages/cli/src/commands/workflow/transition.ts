@@ -258,7 +258,7 @@ export async function runTransitionWithOptions(
 
     let result;
     try {
-      result = appendEventAndUpdateState(
+      result = await appendEventAndUpdateState(
         store,
         sessionDir,
         state,

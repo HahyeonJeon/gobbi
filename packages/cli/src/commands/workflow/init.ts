@@ -312,27 +312,35 @@ export async function runInitWithOptions(
     projectName,
   });
 
-  // Open the SQLite store and emit the opening events atomically inside a
-  // single transaction. `appendEventAndUpdateState` already uses IMMEDIATE
-  // locking; composing two calls under `store.transaction` yields a single
-  // outer SAVEPOINT (bun:sqlite promotes nested calls automatically), so a
-  // crash between the two appends rolls the pair back together.
+  // Open the SQLite store and emit the opening events sequentially.
   //
-  // Why no explicit `writeState` after this transaction:
-  // The inner calls go through `appendEventAndUpdateState`, which
-  // calls `backupState` + `writeState` itself on every append (see
-  // `engine.ts`). state.json is materialised twice during this block —
-  // once after `workflow.start`, once after `workflow.eval.decide` —
-  // and the final write reflects the post-decide state. No
-  // post-transaction projection is needed.
+  // PR-FIN-2a-ii (T-2a.8.2): `appendEventAndUpdateState` is async — its
+  // post-commit dispatch awaits the memorization session.json writer — so
+  // the two-event init pair can no longer share an outer
+  // `store.transaction(() => { ... })` envelope (bun:sqlite transaction
+  // callbacks cannot await). Each call still runs inside its own IMMEDIATE
+  // transaction with `backupState` + `writeState` discipline; the only
+  // invariant we lose is "both rolls back together on an inter-event crash".
   //
-  // Contrast with the `--force-memorization` branch in `resume.ts`:
-  // that path appends events directly via `store.append(...)` inside
-  // its raw transaction (NOT through `appendEventAndUpdateState`),
-  // bypassing the per-append state.json write. It therefore needs an
-  // explicit `backupState` + `writeState` after the commit to bring
-  // state.json forward. See CV-9 (issue #163) for the regression that
-  // motivated that pattern.
+  // The downgrade is acceptable here because the SessionStart hook is
+  // idempotent: a partial init (workflow.start committed, workflow.eval.decide
+  // not) re-runs cleanly on the next hook fire. The first call is a no-op
+  // (dedup'd at the idempotency UNIQUE), the second appends the missing
+  // decide event, and state.json converges. No orphan state can survive a
+  // re-init pass.
+  //
+  // state.json materialisation: each `appendEventAndUpdateState` call calls
+  // `backupState` + `writeState` itself, so the on-disk projection mirrors
+  // the post-decide state when both calls succeed. No post-call explicit
+  // `writeState` is needed.
+  //
+  // Contrast with the `--force-memorization` branch in `resume.ts`: that
+  // path appends events directly via `store.append(...)` inside its raw
+  // transaction (NOT through `appendEventAndUpdateState`), bypassing the
+  // per-append state.json write. It therefore needs an explicit
+  // `backupState` + `writeState` after the commit to bring state.json
+  // forward. See CV-9 (issue #163) for the regression that motivated that
+  // pattern.
   const dbPath = join(sessionDir, 'gobbi.db');
   // PR-FIN-2a-ii (T-2a.8.5): supply the partition keys explicitly rather
   // than calling `resolvePartitionKeys(sessionDir)`. The legacy resolver
@@ -348,74 +356,72 @@ export async function runInitWithOptions(
     projectId: projectName,
   });
   try {
-    store.transaction(() => {
-      // Start from a fresh state — this is a brand-new session, so
-      // `resolveWorkflowState` would return `initialState` anyway, but
-      // relying on it keeps the invariant explicit.
-      let state = resolveWorkflowState(sessionDir, store, sessionId);
-      // Empty database: initialState; if somehow we landed here with events,
-      // resolve still returns the derived state and we compose from there.
-      if (state.currentStep !== 'idle' && state.currentStep !== 'ideation') {
-        // Defensive: should never happen on a fresh session. Fall back to
-        // initialState rather than emit events against an unknown base.
-        state = initialState(sessionId, resolvedSettings);
-      } else if (state.currentStep === 'idle') {
-        // Fresh session — overlay the settings-derived feedback cap onto the
-        // initialState the cold fallback returned. The replay path inside
-        // `resolveWorkflowState` calls `initialState(sessionId)` without
-        // settings so the cascaded cap must be threaded in here. All other
-        // initialState fields are unchanged for an empty event stream.
-        state = initialState(sessionId, resolvedSettings);
-      }
+    // Start from a fresh state — this is a brand-new session, so
+    // `resolveWorkflowState` would return `initialState` anyway, but
+    // relying on it keeps the invariant explicit.
+    let state = resolveWorkflowState(sessionDir, store, sessionId);
+    // Empty database: initialState; if somehow we landed here with events,
+    // resolve still returns the derived state and we compose from there.
+    if (state.currentStep !== 'idle' && state.currentStep !== 'ideation') {
+      // Defensive: should never happen on a fresh session. Fall back to
+      // initialState rather than emit events against an unknown base.
+      state = initialState(sessionId, resolvedSettings);
+    } else if (state.currentStep === 'idle') {
+      // Fresh session — overlay the settings-derived feedback cap onto the
+      // initialState the cold fallback returned. The replay path inside
+      // `resolveWorkflowState` calls `initialState(sessionId)` without
+      // settings so the cascaded cap must be threaded in here. All other
+      // initialState fields are unchanged for an empty event stream.
+      state = initialState(sessionId, resolvedSettings);
+    }
 
-      const startEvent = createWorkflowStart({
-        sessionId,
-        timestamp: createdAt,
-      });
-      const startResult = appendEventAndUpdateState(
-        store,
-        sessionDir,
-        state,
-        startEvent,
-        'cli',
-        sessionId,
-        'system',
-      );
-
-      // PR-FIN-2a-i T-2a.7: stamp the resolved memorization-eval decision
-      // onto the EVAL_DECIDE payload so the new
-      // `memorization → memorization_eval` graph branch fires when the
-      // cascade carries `workflow.memorization.evaluate.mode === 'always'`.
-      // No `--eval-memorization` CLI flag exists today (memorization eval is
-      // settings-driven, not invocation-driven). For `'ask'` / `'auto'`
-      // modes the translation helper requires a user / orchestrator answer
-      // that init has no source for, so we resolve only the deterministic
-      // modes here and treat indeterminate modes as disabled at init —
-      // the cascade still records the user's preference and a future
-      // eval-checkpoint can resolve `'ask'` / `'auto'` interactively.
-      const memorizationMode =
-        resolvedSettings.workflow?.memorization?.evaluate?.mode;
-      const memorizationEnabled =
-        memorizationMode === undefined ||
-        memorizationMode === 'always' ||
-        memorizationMode === 'skip'
-          ? resolveEvalDecision(resolvedSettings, 'memorization').enabled
-          : false;
-      const decideEvent = createEvalDecide({
-        ideation: evalIdeation,
-        plan: evalPlanning,
-        memorization: memorizationEnabled,
-      });
-      appendEventAndUpdateState(
-        store,
-        sessionDir,
-        startResult.state,
-        decideEvent,
-        'cli',
-        sessionId,
-        'system',
-      );
+    const startEvent = createWorkflowStart({
+      sessionId,
+      timestamp: createdAt,
     });
+    const startResult = await appendEventAndUpdateState(
+      store,
+      sessionDir,
+      state,
+      startEvent,
+      'cli',
+      sessionId,
+      'system',
+    );
+
+    // PR-FIN-2a-i T-2a.7: stamp the resolved memorization-eval decision
+    // onto the EVAL_DECIDE payload so the new
+    // `memorization → memorization_eval` graph branch fires when the
+    // cascade carries `workflow.memorization.evaluate.mode === 'always'`.
+    // No `--eval-memorization` CLI flag exists today (memorization eval is
+    // settings-driven, not invocation-driven). For `'ask'` / `'auto'`
+    // modes the translation helper requires a user / orchestrator answer
+    // that init has no source for, so we resolve only the deterministic
+    // modes here and treat indeterminate modes as disabled at init —
+    // the cascade still records the user's preference and a future
+    // eval-checkpoint can resolve `'ask'` / `'auto'` interactively.
+    const memorizationMode =
+      resolvedSettings.workflow?.memorization?.evaluate?.mode;
+    const memorizationEnabled =
+      memorizationMode === undefined ||
+      memorizationMode === 'always' ||
+      memorizationMode === 'skip'
+        ? resolveEvalDecision(resolvedSettings, 'memorization').enabled
+        : false;
+    const decideEvent = createEvalDecide({
+      ideation: evalIdeation,
+      plan: evalPlanning,
+      memorization: memorizationEnabled,
+    });
+    await appendEventAndUpdateState(
+      store,
+      sessionDir,
+      startResult.state,
+      decideEvent,
+      'cli',
+      sessionId,
+      'system',
+    );
   } finally {
     store.close();
   }

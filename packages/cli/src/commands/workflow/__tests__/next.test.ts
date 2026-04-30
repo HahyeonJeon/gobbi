@@ -228,7 +228,7 @@ describe('compileCurrentStep — error branch', () => {
       // Drive the session into `error` via STEP_TIMEOUT on the current
       // (active) step — the reducer transitions active → error on timeout.
       const state = resolveWorkflowState(sessionDir, store, sessionId);
-      const result = appendEventAndUpdateState(
+      const result = await appendEventAndUpdateState(
         store,
         sessionDir,
         state,
@@ -317,7 +317,7 @@ describe('runNextWithOptions', () => {
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,

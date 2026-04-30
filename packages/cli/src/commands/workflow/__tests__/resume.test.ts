@@ -150,7 +150,7 @@ async function driveToErrorState(
   const store = new EventStore(join(sessionDir, 'gobbi.db'));
   try {
     const state = resolveWorkflowState(sessionDir, store, sessionId);
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,

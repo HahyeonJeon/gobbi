@@ -568,7 +568,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,
@@ -709,7 +709,7 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
     const sessionId = 'cap-sub-ccv-present';
     const { sessionDir } = await initScratchSession(sessionId);
 
-    await withEnv({ CLAUDE_CODE_VERSION: '2.1.110' }, () => {
+    await withEnv({ CLAUDE_CODE_VERSION: '2.1.110' }, async () => {
       const envVersion = process.env['CLAUDE_CODE_VERSION'];
       // Emitters populate the field only when the env var is a non-empty
       // string — this is the documented pattern (see delegation.ts
@@ -720,7 +720,7 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,
@@ -771,7 +771,7 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
     const sessionId = 'cap-sub-ccv-unset';
     const { sessionDir } = await initScratchSession(sessionId);
 
-    await withEnv({ CLAUDE_CODE_VERSION: undefined }, () => {
+    await withEnv({ CLAUDE_CODE_VERSION: undefined }, async () => {
       const envVersion = process.env['CLAUDE_CODE_VERSION'];
       const claudeCodeVersion =
         envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
@@ -779,7 +779,7 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,
@@ -811,7 +811,7 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
     const sessionId = 'cap-sub-ccv-empty';
     const { sessionDir } = await initScratchSession(sessionId);
 
-    await withEnv({ CLAUDE_CODE_VERSION: '' }, () => {
+    await withEnv({ CLAUDE_CODE_VERSION: '' }, async () => {
       const envVersion = process.env['CLAUDE_CODE_VERSION'];
       const claudeCodeVersion =
         envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
@@ -819,7 +819,7 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,
@@ -889,7 +889,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
       try {
         const stateA = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           stateA,
@@ -908,7 +908,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
         spawnSeqA = store.last('delegation.spawn')?.seq ?? null;
 
         const stateB = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           stateB,
@@ -998,7 +998,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,
@@ -1064,7 +1064,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,

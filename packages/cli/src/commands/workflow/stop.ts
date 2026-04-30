@@ -201,7 +201,7 @@ export async function runStopWithOptions(
 
     // --- 5. Heartbeat ---------------------------------------------------
     const now = overrides.now === undefined ? new Date() : overrides.now();
-    emitHeartbeat(store, sessionDir, state, sessionId, now);
+    await emitHeartbeat(store, sessionDir, state, sessionId, now);
 
     // --- 6. Timeout detection (PR E) -----------------------------------
     // Read `state.stepStartedAt` (E.10) and the current step spec's
@@ -247,19 +247,19 @@ export async function runStopWithOptions(
  * Two Stop invocations in the same wall-clock millisecond therefore
  * write `:0` and `:1` (both persist); a single invocation writes `:0`.
  */
-function emitHeartbeat(
+async function emitHeartbeat(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
   sessionId: string,
   now: Date,
-): void {
+): Promise<void> {
   const timestamp = now.toISOString();
   const counter = computeHeartbeatCounter(store, now.getTime());
 
   const event = createSessionHeartbeat({ timestamp });
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,
@@ -421,7 +421,7 @@ async function detectAndEmitTimeout(
       elapsedMs,
       configuredTimeoutMs: timeoutMs,
     });
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,

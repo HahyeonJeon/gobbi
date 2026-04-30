@@ -336,7 +336,7 @@ export async function runResumeWithOptions(
       });
 
       try {
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,

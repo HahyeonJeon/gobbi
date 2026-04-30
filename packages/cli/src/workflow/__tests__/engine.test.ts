@@ -63,12 +63,16 @@ function instrumentReplayAll(store: EventStore): { store: EventStore; count: () 
   return { store, count: () => count };
 }
 
-function seedStartEvent(store: EventStore, dir: string, sessionId: string): WorkflowState {
+async function seedStartEvent(
+  store: EventStore,
+  dir: string,
+  sessionId: string,
+): Promise<WorkflowState> {
   const event: Event = {
     type: WORKFLOW_EVENTS.START,
     data: { sessionId, timestamp: '2026-01-01T00:00:00.000Z' },
   };
-  const result = appendEventAndUpdateState(
+  const result = await appendEventAndUpdateState(
     store,
     dir,
     initialState(sessionId),
@@ -86,7 +90,7 @@ function seedStartEvent(store: EventStore, dir: string, sessionId: string): Work
 // ===========================================================================
 
 describe('resolveWorkflowState — state.json fast path', () => {
-  it('returns state.json without calling store.replayAll when state is valid', () => {
+  it('returns state.json without calling store.replayAll when state is valid', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'engine-fast';
 
@@ -94,7 +98,7 @@ describe('resolveWorkflowState — state.json fast path', () => {
     // it were called. appendEventAndUpdateState internally uses the
     // transaction + state.json write path — the state.json on disk is
     // the authoritative fast-path source.
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     expect(existsSync(join(testDir, 'state.json'))).toBe(true);
 
     const spied = instrumentReplayAll(store);
@@ -130,13 +134,13 @@ describe('resolveWorkflowState — state.json fast path', () => {
 // ===========================================================================
 
 describe('resolveWorkflowState — state.json missing', () => {
-  it('falls through to replayAll when state.json is absent and no backup exists', () => {
+  it('falls through to replayAll when state.json is absent and no backup exists', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'engine-missing';
 
     // Seed an event then delete state.json (and any backup) so only the
     // SQLite store can answer.
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     const statePath = join(testDir, 'state.json');
     const backupPath = join(testDir, 'state.json.backup');
     if (existsSync(statePath)) rmSync(statePath);
@@ -151,12 +155,12 @@ describe('resolveWorkflowState — state.json missing', () => {
     expect(state.sessionId).toBe(sessionId);
   });
 
-  it('does not call replayAll when backup covers the missing state.json', () => {
+  it('does not call replayAll when backup covers the missing state.json', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'engine-backup';
 
     // Seed → snapshot state.json to backup → delete state.json.
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     backupState(testDir);
     rmSync(join(testDir, 'state.json'));
 
@@ -174,11 +178,11 @@ describe('resolveWorkflowState — state.json missing', () => {
 // ===========================================================================
 
 describe('resolveWorkflowState — state.json corrupt', () => {
-  it('falls through to replayAll when state.json is unparseable and backup missing', () => {
+  it('falls through to replayAll when state.json is unparseable and backup missing', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'engine-corrupt';
 
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     // Corrupt state.json to force readState → null; drop backup so the
     // middle fallback cannot rescue the resolution.
     writeFileSync(join(testDir, 'state.json'), '{not json', 'utf8');
@@ -192,13 +196,13 @@ describe('resolveWorkflowState — state.json corrupt', () => {
     expect(state.currentStep).toBe('ideation');
   });
 
-  it('prefers backup over replay when state.json is corrupt but backup is valid', () => {
+  it('prefers backup over replay when state.json is corrupt but backup is valid', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'engine-corrupt-with-backup';
 
     // Seed an event so the backup captures a valid state, then corrupt
     // the primary.
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     backupState(testDir);
     writeFileSync(join(testDir, 'state.json'), 'corrupt', 'utf8');
 
@@ -210,11 +214,11 @@ describe('resolveWorkflowState — state.json corrupt', () => {
     expect(state.currentStep).toBe('ideation');
   });
 
-  it('falls through to replayAll when state.json has the wrong schema shape', () => {
+  it('falls through to replayAll when state.json has the wrong schema shape', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'engine-wrong-shape';
 
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     // Parseable JSON, but missing required fields → isValidState false.
     writeFileSync(
       join(testDir, 'state.json'),
@@ -231,14 +235,14 @@ describe('resolveWorkflowState — state.json corrupt', () => {
     expect(state.currentStep).toBe('ideation');
   });
 
-  it('does not leave the primary state.json content unchanged — resolveWorkflowState is read-only', () => {
+  it('does not leave the primary state.json content unchanged — resolveWorkflowState is read-only', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'engine-read-only';
 
     // Confirm state.json content is untouched by resolveWorkflowState
     // even when it falls through to replay. Greg-Young discipline:
     // never rewrite on-disk state during a read.
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     const corrupt = '{corrupt';
     writeFileSync(join(testDir, 'state.json'), corrupt, 'utf8');
     const backupPath = join(testDir, 'state.json.backup');
@@ -255,12 +259,12 @@ describe('resolveWorkflowState — state.json corrupt', () => {
 // ===========================================================================
 
 describe('appendEventAndUpdateState — reducer rejection audit', () => {
-  it('emits workflow.invalid_transition AND re-throws the original error', () => {
+  it('emits workflow.invalid_transition AND re-throws the original error', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'audit-emit-basic';
 
     // Seed a valid start so the session is in `ideation`.
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
 
     // Resolve the current state from disk — matches how callers observe
     // state between appends.
@@ -276,7 +280,7 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
       data: { reason: 'synthetic rejection for audit test' },
     };
 
-    expect(() =>
+    await expect(
       appendEventAndUpdateState(
         store,
         testDir,
@@ -290,7 +294,7 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
         undefined,
         '2026-01-02T00:00:00.000Z',
       ),
-    ).toThrow(ReducerRejectionError);
+    ).rejects.toThrow(ReducerRejectionError);
 
     // The audit event persisted.
     const audits = store.byType(WORKFLOW_EVENTS.INVALID_TRANSITION);
@@ -305,11 +309,11 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
     expect(data.timestamp).toBe('2026-01-02T00:00:00.000Z');
   });
 
-  it('state on disk is unchanged after a rejection (backup restore)', () => {
+  it('state on disk is unchanged after a rejection (backup restore)', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'audit-emit-state';
 
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     const before = resolveWorkflowState(testDir, store, sessionId);
 
     const rejected: Event = {
@@ -317,7 +321,7 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
       data: {},
     };
     try {
-      appendEventAndUpdateState(
+      await appendEventAndUpdateState(
         store,
         testDir,
         before,
@@ -336,11 +340,11 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
     expect(after).toEqual(before);
   });
 
-  it('filesystem-only failures do NOT emit an audit event', () => {
+  it('filesystem-only failures do NOT emit an audit event', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'audit-emit-fs';
 
-    seedStartEvent(store, testDir, sessionId);
+    await seedStartEvent(store, testDir, sessionId);
     const before = resolveWorkflowState(testDir, store, sessionId);
 
     // Force writeState to fail by making testDir a non-writable path.
@@ -361,7 +365,7 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
       type: WORKFLOW_EVENTS.STEP_EXIT,
       data: { step: 'ideation' },
     };
-    expect(() =>
+    await expect(
       appendEventAndUpdateState(
         store,
         blockedDir,
@@ -372,14 +376,14 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
         'tool-call',
         'tc-fs-fail',
       ),
-    ).toThrow();
+    ).rejects.toThrow();
 
     // No audit emitted — this was a FS failure, not a reducer rejection.
     const audits = store.byType(WORKFLOW_EVENTS.INVALID_TRANSITION);
     expect(audits).toHaveLength(0);
   });
 
-  it('property test: reducer rejections always produce exactly one audit + original error', () => {
+  it('property test: reducer rejections always produce exactly one audit + original error', async () => {
     const arbActiveStep = fc.constantFrom<WorkflowStep>(
       'ideation',
       'planning',
@@ -390,14 +394,14 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
       .date({ noInvalidDate: true })
       .map((d) => d.toISOString());
 
-    fc.assert(
-      fc.property(arbActiveStep, arbTs, (step, ts) => {
+    await fc.assert(
+      fc.asyncProperty(arbActiveStep, arbTs, async (step, ts) => {
         const store = new EventStore(':memory:');
         try {
           const sessionId = `prop-${step}`;
           const dir = mkdtempSync(join(tmpdir(), `gobbi-prop-${step}-`));
           try {
-            seedStartEvent(store, dir, sessionId);
+            await seedStartEvent(store, dir, sessionId);
 
             // Fabricate a state where `workflow.abort` is invalid (any
             // non-error active step triggers rejection).
@@ -417,7 +421,7 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
 
             let thrown: unknown = null;
             try {
-              appendEventAndUpdateState(
+              await appendEventAndUpdateState(
                 store,
                 dir,
                 state,

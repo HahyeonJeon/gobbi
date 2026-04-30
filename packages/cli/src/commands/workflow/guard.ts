@@ -299,7 +299,7 @@ export async function runGuardWithOptions(
       // between stdout and the next event commits doesn't leak a spawn
       // that never made it into the log. The store-side idempotency
       // formula keeps retries deduped.
-      maybeEmitDelegationSpawn(store, sessionDir, state, sessionId, payload);
+      await maybeEmitDelegationSpawn(store, sessionDir, state, sessionId, payload);
       emitAllow();
       return;
     }
@@ -312,12 +312,12 @@ export async function runGuardWithOptions(
       switch (guard.effect) {
         case 'deny': {
           const reason = buildReason(guard, state.currentStep);
-          writeViolationEvent(store, sessionDir, state, guard, payload);
+          await writeViolationEvent(store, sessionDir, state, guard, payload);
           emitDeny(reason);
           return;
         }
         case 'warn': {
-          writeWarnEvent(store, sessionDir, state, guard, payload);
+          await writeWarnEvent(store, sessionDir, state, guard, payload);
           warns.push(buildReason(guard, state.currentStep));
           continue;
         }
@@ -325,7 +325,7 @@ export async function runGuardWithOptions(
           // Explicit allow short-circuits. Any already-accumulated warns
           // from earlier guards in the chain are surfaced alongside the
           // allow so the orchestrator still receives the advisory context.
-          maybeEmitDelegationSpawn(
+          await maybeEmitDelegationSpawn(
             store,
             sessionDir,
             state,
@@ -341,7 +341,7 @@ export async function runGuardWithOptions(
     }
 
     // Loop fell through with no deny — the guard is allowing the call.
-    maybeEmitDelegationSpawn(store, sessionDir, state, sessionId, payload);
+    await maybeEmitDelegationSpawn(store, sessionDir, state, sessionId, payload);
     emitAllow(warns.length > 0 ? warns.join('\n') : undefined);
   } finally {
     store.close();
@@ -352,13 +352,13 @@ export async function runGuardWithOptions(
 // Event emission
 // ---------------------------------------------------------------------------
 
-function writeViolationEvent(
+async function writeViolationEvent(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
   guard: Guard,
   payload: PreToolUsePayload,
-): void {
+): Promise<void> {
   const event = createGuardViolation({
     guardId: guard.id,
     toolName: payload.tool_name,
@@ -371,7 +371,7 @@ function writeViolationEvent(
   // returning a decision. Swallow errors, keep the audit attempt, but do
   // NOT leak a non-zero exit.
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,
@@ -386,13 +386,13 @@ function writeViolationEvent(
   }
 }
 
-function writeWarnEvent(
+async function writeWarnEvent(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
   guard: Guard & { readonly effect: 'warn' },
   payload: PreToolUsePayload,
-): void {
+): Promise<void> {
   const event = createGuardWarn({
     guardId: guard.id,
     toolName: payload.tool_name,
@@ -404,7 +404,7 @@ function writeWarnEvent(
   });
   const { kind, toolCallId } = idempotencyFor(payload);
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,
@@ -450,13 +450,13 @@ const AGENT_TOOL_NAME = 'Task';
  * without the tool-call id the spawn can't be linked back to its
  * SubagentStop, defeating the purpose of recording it.
  */
-function maybeEmitDelegationSpawn(
+async function maybeEmitDelegationSpawn(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
   sessionId: string,
   payload: PreToolUsePayload,
-): void {
+): Promise<void> {
   if (payload.tool_name !== AGENT_TOOL_NAME) return;
 
   const toolCallId = resolveToolCallId(payload);
@@ -492,7 +492,7 @@ function maybeEmitDelegationSpawn(
   });
 
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,

@@ -253,7 +253,7 @@ export async function runCaptureSubagentWithOptions(
       const artifactContent =
         `# Delegation failure (${agentType}, round ${round})\n\n${reason}\n`;
       writeArtifact(artifactsDir, failureFilename, artifactContent);
-      emitDelegationFail(
+      await emitDelegationFail(
         store,
         sessionDir,
         state,
@@ -264,7 +264,7 @@ export async function runCaptureSubagentWithOptions(
         toolCallId,
         parentSeq,
       );
-      emitArtifactWriteAfter(
+      await emitArtifactWriteAfter(
         store,
         sessionDir,
         state,
@@ -287,7 +287,7 @@ export async function runCaptureSubagentWithOptions(
       const artifactContent =
         `# Delegation failure (${agentType}, round ${round})\n\n${explanation}\n`;
       writeArtifact(artifactsDir, failureFilename, artifactContent);
-      emitDelegationFail(
+      await emitDelegationFail(
         store,
         sessionDir,
         state,
@@ -298,7 +298,7 @@ export async function runCaptureSubagentWithOptions(
         toolCallId,
         parentSeq,
       );
-      emitArtifactWriteAfter(
+      await emitArtifactWriteAfter(
         store,
         sessionDir,
         state,
@@ -318,7 +318,7 @@ export async function runCaptureSubagentWithOptions(
     // hash call (race against an aggressive cleanup), the field is omitted
     // rather than failing the capture.
     const transcriptSha256 = computeFileSha256(transcriptPath);
-    emitDelegationComplete(
+    await emitDelegationComplete(
       store,
       sessionDir,
       state,
@@ -331,7 +331,7 @@ export async function runCaptureSubagentWithOptions(
       toolCallId,
       parentSeq,
     );
-    emitArtifactWriteAfter(
+    await emitArtifactWriteAfter(
       store,
       sessionDir,
       state,
@@ -480,7 +480,7 @@ function writeArtifact(dir: string, filename: string, content: string): void {
 // Event emission helpers
 // ---------------------------------------------------------------------------
 
-function emitDelegationComplete(
+async function emitDelegationComplete(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
@@ -492,7 +492,7 @@ function emitDelegationComplete(
   transcriptSha256: string | undefined,
   toolCallId: string | undefined,
   parentSeq: number | null,
-): void {
+): Promise<void> {
   const event = createDelegationComplete({
     subagentId: agentId,
     artifactPath,
@@ -502,7 +502,7 @@ function emitDelegationComplete(
   });
   const { kind, toolCallId: tcid } = idempotencyFor(toolCallId);
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,
@@ -518,7 +518,7 @@ function emitDelegationComplete(
   }
 }
 
-function emitDelegationFail(
+async function emitDelegationFail(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
@@ -528,7 +528,7 @@ function emitDelegationFail(
   transcriptPath: string | undefined,
   toolCallId: string | undefined,
   parentSeq: number | null,
-): void {
+): Promise<void> {
   const event = createDelegationFail({
     subagentId: agentId,
     reason,
@@ -536,7 +536,7 @@ function emitDelegationFail(
   });
   const { kind, toolCallId: tcid } = idempotencyFor(toolCallId);
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,
@@ -565,7 +565,7 @@ function emitDelegationFail(
  * delegation.complete mutation (which touches `activeSubagents`), so
  * reading a slightly stale `state` is safe for this single append.
  */
-function emitArtifactWriteAfter(
+async function emitArtifactWriteAfter(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
@@ -573,7 +573,7 @@ function emitArtifactWriteAfter(
   artifactType: string,
   filename: string,
   toolCallId: string | undefined,
-): void {
+): Promise<void> {
   const event = createArtifactWrite({
     step: state.currentStep,
     filename,
@@ -581,7 +581,7 @@ function emitArtifactWriteAfter(
   });
   const { kind, toolCallId: tcid } = idempotencyFor(toolCallId);
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,

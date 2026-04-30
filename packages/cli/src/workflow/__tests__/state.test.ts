@@ -464,7 +464,7 @@ describe('resolveState', () => {
 // ===========================================================================
 
 describe('appendEventAndUpdateState deduplication', () => {
-  it('returns persisted=false and unchanged state on duplicate', () => {
+  it('returns persisted=false and unchanged state on duplicate', async () => {
     using store = new EventStore(':memory:');
 
     const state = makeState({ currentStep: 'idle' });
@@ -474,14 +474,14 @@ describe('appendEventAndUpdateState deduplication', () => {
     };
 
     // First append
-    const result1 = appendEventAndUpdateState(
+    const result1 = await appendEventAndUpdateState(
       store, testDir, state, event, 'cli', 'test-session', 'tool-call', 'tc-dedup',
     );
     expect(result1.persisted).toBe(true);
     expect(result1.state.currentStep).toBe('ideation');
 
     // Second append with same idempotency key
-    const result2 = appendEventAndUpdateState(
+    const result2 = await appendEventAndUpdateState(
       store, testDir, result1.state, event, 'cli', 'test-session', 'tool-call', 'tc-dedup',
     );
     expect(result2.persisted).toBe(false);
@@ -534,7 +534,7 @@ describe('restoreStateFromBackup', () => {
 // ===========================================================================
 
 describe('appendEventAndUpdateState crash-safety', () => {
-  it('rolls back the SQLite transaction when a filesystem write inside the transaction throws', () => {
+  it('rolls back the SQLite transaction when a filesystem write inside the transaction throws', async () => {
     using store = new EventStore(':memory:');
 
     const state = makeState({ currentStep: 'idle' });
@@ -558,11 +558,11 @@ describe('appendEventAndUpdateState crash-safety', () => {
 
     // The transaction should throw because the filesystem operation
     // inside it fails.
-    expect(() =>
+    await expect(
       appendEventAndUpdateState(
         store, testDir, state, event, 'cli', 'test-session', 'tool-call', 'tc-crash',
       ),
-    ).toThrow();
+    ).rejects.toThrow();
 
     // Clean up the directory-masquerading-as-state.json and restore from
     // the pre-seeded backup. The pre-operation state survived because we
@@ -577,7 +577,7 @@ describe('appendEventAndUpdateState crash-safety', () => {
     expect(store.eventCount()).toBe(0);
   });
 
-  it('propagates filesystem failure with no event persisted when no prior state existed', () => {
+  it('propagates filesystem failure with no event persisted when no prior state existed', async () => {
     using store = new EventStore(':memory:');
 
     // No state.json written — this simulates the first event ever.
@@ -593,11 +593,11 @@ describe('appendEventAndUpdateState crash-safety', () => {
     mkdirSync(join(testDir, 'state.json'));
     writeFileSync(join(testDir, 'state.json', 'sentinel'), 'x', 'utf8');
 
-    expect(() =>
+    await expect(
       appendEventAndUpdateState(
         store, testDir, state, event, 'cli', 'test-session', 'tool-call', 'tc-first',
       ),
-    ).toThrow();
+    ).rejects.toThrow();
 
     // SQLite transaction should have rolled back — no events persisted
     expect(store.eventCount()).toBe(0);

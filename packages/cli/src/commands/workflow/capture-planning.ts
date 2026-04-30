@@ -169,7 +169,7 @@ export async function runCapturePlanningWithOptions(
     });
     const { kind, toolCallId } = idempotencyFor(payload.tool_call_id);
     try {
-      appendEventAndUpdateState(
+      await appendEventAndUpdateState(
         store,
         sessionDir,
         state,
