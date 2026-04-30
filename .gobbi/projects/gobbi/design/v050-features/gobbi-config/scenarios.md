@@ -2,7 +2,7 @@
 
 Behaviour specifications for gobbi's unified three-level settings cascade. Covers default resolution, per-level overrides, deep-merge semantics, array replacement, null leaf values, migration, cross-field validation, CLI paths, and notify events semantics.
 
-This file does NOT cover: the gobbi-memory tier wiring (`gobbi-memory.md`), notify dispatch wiring for `notify.triggers` (deferred to PR-FIN-1d), or five-step workflow orchestration (`deterministic-orchestration.md`). Every scenario has a stable ID in the `CFG-NN` or `HOOK-N` format — `rg 'CFG-\|HOOK-' .gobbi/projects/gobbi/design/v050-features/gobbi-config/` surfaces every reference. Test files: `packages/cli/src/__tests__/features/gobbi-config.test.ts` (CFG-*) and `packages/cli/src/__tests__/features/hook.test.ts` (HOOK-*).
+This file does NOT cover: the gobbi-memory tier wiring (`gobbi-memory/README.md`), notify dispatch wiring for `notify.triggers` (deferred to PR-FIN-1d), or five-step workflow orchestration (`deterministic-orchestration.md`). Every scenario has a stable ID in the `CFG-NN` or `HOOK-N` format — `rg 'CFG-\|HOOK-' .gobbi/projects/gobbi/design/v050-features/gobbi-config/` surfaces every reference. Test files: `packages/cli/src/__tests__/features/gobbi-config.test.ts` (CFG-*) and `packages/cli/src/__tests__/features/hook.test.ts` (HOOK-*).
 
 See `README.md` for the feature overview.
 

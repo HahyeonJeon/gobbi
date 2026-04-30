@@ -52,6 +52,6 @@ For upgrading after a CLI update: `gobbi install --upgrade` merges new template 
 
 | Document | Covers |
 |----------|--------|
-| `gobbi-memory.md` | `.gobbi/projects/<name>/` directory layout and the Memorization Loop |
+| `gobbi-memory/README.md` | `.gobbi/projects/<name>/` directory layout and the Memorization Loop |
 | `gobbi-config/README.md` | `settings.json` cascade; `projects.active` and `projects.known` fields |
 | `claude-docs-management.md` | How the plugin ships the template bundle and how it reaches `.claude/` |

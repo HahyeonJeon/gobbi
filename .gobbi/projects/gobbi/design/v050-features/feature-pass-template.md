@@ -74,4 +74,4 @@ Before committing the final pass:
 3. All `TODO(PR ...)` markers for this pass are resolved
 4. `review.md` Resolution fields have SHA or issue references, none say TBD
 5. `checklist.md` items trace 1:1 to scenario IDs in `scenarios.md`
-6. `gobbi-memory.md` tier model is consistent with any path references in the new docs
+6. `gobbi-memory/README.md` tier model is consistent with any path references in the new docs
