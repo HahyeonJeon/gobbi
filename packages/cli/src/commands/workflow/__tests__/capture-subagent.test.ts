@@ -28,6 +28,7 @@ import {
   rmSync,
   writeFileSync,
 } from 'node:fs';
+// readFileSync is already imported above; the SHA test uses it for fixture hashing.
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -545,7 +546,11 @@ describe('runCaptureSubagent — missing session', () => {
 // ---------------------------------------------------------------------------
 
 describe('runCaptureSubagent — parent_seq linkage', () => {
-  test('links delegation.complete.parent_seq to matching delegation.spawn.seq', async () => {
+  // PR-FIN-2a-ii T-2a.8.0: linkage now keys on tool_call_id, not on
+  // subagentId === agent_id. The spawn must carry tool_call_id (the new
+  // PreToolUse-emitted spawn does) and the SubagentStop must too —
+  // otherwise the lookup refuses to guess.
+  test('links delegation.complete.parent_seq to matching delegation.spawn.seq via tool_call_id', async () => {
     const { sessionDir } = await initScratchSession('cap-sub-parent');
     const sessionId = 'cap-sub-parent';
     const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
@@ -556,7 +561,8 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
       'child result',
     );
 
-    // Seed a delegation.spawn event for agent-p1 so the lookup finds it.
+    // Seed a delegation.spawn carrying the same tool_call_id the
+    // SubagentStop will land with.
     let spawnSeq: number | null = null;
     {
       const store = new EventStore(join(sessionDir, 'gobbi.db'));
@@ -571,10 +577,12 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
             step: state.currentStep,
             subagentId: 'agent-p1',
             timestamp: new Date().toISOString(),
+            tool_call_id: 'toolu_link',
           }),
           'cli',
           sessionId,
-          'system',
+          'tool-call',
+          'toolu_link',
         );
         const spawnRow = store.last('delegation.spawn');
         spawnSeq = spawnRow?.seq ?? null;
@@ -592,6 +600,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
           agent_type: 'executor',
           agent_transcript_path: transcript,
           session_id: sessionId,
+          tool_call_id: 'toolu_link',
         },
       }),
     );
@@ -624,6 +633,7 @@ describe('runCaptureSubagent — parent_seq linkage', () => {
           agent_type: 'executor',
           agent_transcript_path: transcript,
           session_id: 'cap-sub-noparent',
+          tool_call_id: 'toolu_orphan',
         },
       }),
     );
@@ -835,5 +845,354 @@ describe('delegation.spawn — CLAUDE_CODE_VERSION env capture (issue #92)', () 
         store.close();
       }
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PR-FIN-2a-ii T-2a.8.0 — tool_call_id-scoped parent linkage
+//
+// The previous heuristic — `last('delegation.spawn')` filtered by
+// `subagentId === agent_id` — silently misattributed parent linkage when
+// multiple subagents were spawned in parallel from one orchestrator turn.
+// These tests pin the new behavior: with `tool_call_id` carried on every
+// spawn (PR-FIN-2a-ii adds the field) the SubagentStop's `tool_call_id`
+// picks out the matching spawn even when the most recent spawn belongs to
+// a different sibling.
+// ---------------------------------------------------------------------------
+
+describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => {
+  test('two parallel spawns + two SubagentStops link by tool_call_id, not by recency', async () => {
+    const sessionId = 'cap-sub-parallel';
+    const { sessionDir } = await initScratchSession(sessionId);
+    const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
+    scratchDirs.push(transcriptDir);
+    const transcriptA = writeParseableTranscript(
+      transcriptDir,
+      'agent-A.jsonl',
+      'A done',
+    );
+    const transcriptB = writeParseableTranscript(
+      transcriptDir,
+      'agent-B.jsonl',
+      'B done',
+    );
+
+    // Seed two delegation.spawn events in order — A first, then B. Both
+    // carry tool_call_ids so capture-subagent can match precisely. If the
+    // implementation falls back to last('delegation.spawn'), agent A's
+    // SubagentStop would link to spawn B (the most recent). The test
+    // breaks that path by sequencing the SubagentStops so A arrives BEFORE
+    // B — but A is older, so the heuristic linkage would be wrong.
+    let spawnSeqA: number | null = null;
+    let spawnSeqB: number | null = null;
+    {
+      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      try {
+        const stateA = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          stateA,
+          createDelegationSpawn({
+            agentType: '__pi',
+            step: stateA.currentStep,
+            subagentId: 'sub-A',
+            timestamp: '2026-04-29T00:00:00.001Z',
+            tool_call_id: 'toolu_A',
+          }),
+          'hook',
+          sessionId,
+          'tool-call',
+          'toolu_A',
+        );
+        spawnSeqA = store.last('delegation.spawn')?.seq ?? null;
+
+        const stateB = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          stateB,
+          createDelegationSpawn({
+            agentType: '__pi',
+            step: stateB.currentStep,
+            subagentId: 'sub-B',
+            timestamp: '2026-04-29T00:00:00.002Z',
+            tool_call_id: 'toolu_B',
+          }),
+          'hook',
+          sessionId,
+          'tool-call',
+          'toolu_B',
+        );
+        spawnSeqB = store.last('delegation.spawn')?.seq ?? null;
+      } finally {
+        store.close();
+      }
+    }
+    expect(spawnSeqA).not.toBeNull();
+    expect(spawnSeqB).not.toBeNull();
+    expect(spawnSeqA).not.toBe(spawnSeqB);
+
+    // SubagentStop for A — must link to spawn A even though spawn B is
+    // the most recent in the store.
+    await captureExit(() =>
+      runCaptureSubagentWithOptions([], {
+        sessionDir,
+        payload: {
+          agent_id: 'sub-A',
+          agent_type: '__pi',
+          agent_transcript_path: transcriptA,
+          session_id: sessionId,
+          tool_call_id: 'toolu_A',
+        },
+      }),
+    );
+
+    // SubagentStop for B — must link to spawn B.
+    captured = { stdout: '', stderr: '', exitCode: null };
+    await captureExit(() =>
+      runCaptureSubagentWithOptions([], {
+        sessionDir,
+        payload: {
+          agent_id: 'sub-B',
+          agent_type: '__pi',
+          agent_transcript_path: transcriptB,
+          session_id: sessionId,
+          tool_call_id: 'toolu_B',
+        },
+      }),
+    );
+
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const completes = store.byType('delegation.complete');
+      expect(completes).toHaveLength(2);
+      const byAgent = new Map<string, number | null>();
+      for (const row of completes) {
+        const data = JSON.parse(row.data) as { readonly subagentId: string };
+        byAgent.set(data.subagentId, row.parent_seq);
+      }
+      // Each completion must point at its OWN spawn — not the recent one.
+      expect(byAgent.get('sub-A')).toBe(spawnSeqA);
+      expect(byAgent.get('sub-B')).toBe(spawnSeqB);
+    } finally {
+      store.close();
+    }
+  });
+
+  test('SubagentStop without tool_call_id falls back to parent_seq null', async () => {
+    // The previous heuristic had a chance to guess; the new precise lookup
+    // refuses to guess. Asserts the fallback contract: missing tool_call_id
+    // on SubagentStop → parent_seq is null even when a spawn exists.
+    const sessionId = 'cap-sub-no-tcid';
+    const { sessionDir } = await initScratchSession(sessionId);
+    const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
+    scratchDirs.push(transcriptDir);
+    const transcript = writeParseableTranscript(
+      transcriptDir,
+      'agent-N.jsonl',
+      'no-tcid result',
+    );
+
+    {
+      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      try {
+        const state = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          state,
+          createDelegationSpawn({
+            agentType: 'executor',
+            step: state.currentStep,
+            subagentId: 'sub-N',
+            timestamp: '2026-04-29T00:00:00.000Z',
+            tool_call_id: 'toolu_N',
+          }),
+          'hook',
+          sessionId,
+          'tool-call',
+          'toolu_N',
+        );
+      } finally {
+        store.close();
+      }
+    }
+
+    await captureExit(() =>
+      runCaptureSubagentWithOptions([], {
+        sessionDir,
+        payload: {
+          agent_id: 'sub-N',
+          agent_type: 'executor',
+          agent_transcript_path: transcript,
+          session_id: sessionId,
+          // no tool_call_id, no tool_use_id
+        },
+      }),
+    );
+
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const completes = store.byType('delegation.complete');
+      expect(completes).toHaveLength(1);
+      // Without a tool_call_id on the stop payload, the new lookup
+      // refuses to guess — parent_seq is null.
+      expect(completes[0]!.parent_seq).toBeNull();
+    } finally {
+      store.close();
+    }
+  });
+
+  test('tool_use_id on SubagentStop links the same way as tool_call_id', async () => {
+    // Claude Code's canonical hook reference uses `tool_use_id`; the
+    // resolver accepts either name. This test pins the canonical-name
+    // path so production hooks (which carry `tool_use_id`) work alongside
+    // existing test fixtures (which carry `tool_call_id`).
+    const sessionId = 'cap-sub-use-id';
+    const { sessionDir } = await initScratchSession(sessionId);
+    const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
+    scratchDirs.push(transcriptDir);
+    const transcript = writeParseableTranscript(
+      transcriptDir,
+      'agent-U.jsonl',
+      'tool_use_id linked',
+    );
+
+    let spawnSeq: number | null = null;
+    {
+      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      try {
+        const state = resolveWorkflowState(sessionDir, store, sessionId);
+        appendEventAndUpdateState(
+          store,
+          sessionDir,
+          state,
+          createDelegationSpawn({
+            agentType: 'executor',
+            step: state.currentStep,
+            subagentId: 'sub-U',
+            timestamp: '2026-04-29T00:00:00.000Z',
+            tool_call_id: 'toolu_USE',
+          }),
+          'hook',
+          sessionId,
+          'tool-call',
+          'toolu_USE',
+        );
+        spawnSeq = store.last('delegation.spawn')?.seq ?? null;
+      } finally {
+        store.close();
+      }
+    }
+    expect(spawnSeq).not.toBeNull();
+
+    await captureExit(() =>
+      runCaptureSubagentWithOptions([], {
+        sessionDir,
+        payload: {
+          agent_id: 'sub-U',
+          agent_type: 'executor',
+          agent_transcript_path: transcript,
+          session_id: sessionId,
+          tool_use_id: 'toolu_USE',
+        },
+      }),
+    );
+
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const completes = store.byType('delegation.complete');
+      expect(completes).toHaveLength(1);
+      expect(completes[0]!.parent_seq).toBe(spawnSeq);
+    } finally {
+      store.close();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PR-FIN-2a-ii T-2a.8.0 — transcriptSha256 capture-time hash
+// ---------------------------------------------------------------------------
+
+describe('runCaptureSubagent — transcriptSha256 capture', () => {
+  test('parseable transcript → delegation.complete carries SHA-256 of file bytes', async () => {
+    const sessionId = 'cap-sub-sha';
+    const { sessionDir } = await initScratchSession(sessionId);
+    const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
+    scratchDirs.push(transcriptDir);
+    const transcript = writeParseableTranscript(
+      transcriptDir,
+      'agent-sha.jsonl',
+      'hashed result',
+    );
+
+    // Compute the expected hash with the same primitive the production
+    // path uses (node:crypto). Reading the file with the same default
+    // encoding ensures byte-equivalence regardless of the OS line ending.
+    const { createHash } = await import('node:crypto');
+    const expected = createHash('sha256')
+      .update(readFileSync(transcript))
+      .digest('hex');
+
+    await captureExit(() =>
+      runCaptureSubagentWithOptions([], {
+        sessionDir,
+        payload: {
+          agent_id: 'agent-sha',
+          agent_type: 'executor',
+          agent_transcript_path: transcript,
+          session_id: sessionId,
+        },
+      }),
+    );
+
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const completes = store.byType('delegation.complete');
+      expect(completes).toHaveLength(1);
+      const data = JSON.parse(completes[0]!.data) as {
+        readonly transcriptSha256?: string;
+      };
+      expect(data.transcriptSha256).toBe(expected);
+    } finally {
+      store.close();
+    }
+  });
+
+  test('unparseable transcript → delegation.fail; transcriptSha256 NOT on fail data', async () => {
+    // The fail path has no SHA capture by design — only delegation.complete
+    // carries the field. Asserts the additive scope: fail events keep their
+    // existing shape unchanged.
+    const sessionId = 'cap-sub-fail-sha';
+    const { sessionDir } = await initScratchSession(sessionId);
+    const transcriptDir = mkdtempSync(join(tmpdir(), 'transcripts-'));
+    scratchDirs.push(transcriptDir);
+    const transcript = writeMalformedTailTranscript(
+      transcriptDir,
+      'agent-fail.jsonl',
+    );
+
+    await captureExit(() =>
+      runCaptureSubagentWithOptions([], {
+        sessionDir,
+        payload: {
+          agent_id: 'agent-fail',
+          agent_type: 'executor',
+          agent_transcript_path: transcript,
+          session_id: sessionId,
+        },
+      }),
+    );
+
+    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    try {
+      const fails = store.byType('delegation.fail');
+      expect(fails).toHaveLength(1);
+      const data = JSON.parse(fails[0]!.data) as Record<string, unknown>;
+      expect('transcriptSha256' in data).toBe(false);
+    } finally {
+      store.close();
+    }
   });
 });

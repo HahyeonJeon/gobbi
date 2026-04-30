@@ -567,6 +567,38 @@ describe('factory functions', () => {
       expect('claudeCodeVersion' in event.data).toBe(false);
     });
 
+    // PR-FIN-2a-ii T-2a.8.0 — additive `tool_call_id` field on
+    // DelegationSpawnData. Round-trips through JSON.stringify and the
+    // omit-branch keeps the event shape identical to pre-field behavior.
+    it('createDelegationSpawn passes tool_call_id through when set', () => {
+      const event = createDelegationSpawn({
+        agentType: 'executor',
+        step: 'execution',
+        subagentId: 'sub-tcid',
+        timestamp: '2026-04-29T00:00:00Z',
+        tool_call_id: 'toolu_abc123',
+      });
+      expect(event.data).toEqual({
+        agentType: 'executor',
+        step: 'execution',
+        subagentId: 'sub-tcid',
+        timestamp: '2026-04-29T00:00:00Z',
+        tool_call_id: 'toolu_abc123',
+      });
+      const round = JSON.parse(JSON.stringify(event));
+      expect(round).toEqual(event);
+    });
+
+    it('createDelegationSpawn omits tool_call_id when caller omits it', () => {
+      const event = createDelegationSpawn({
+        agentType: 'executor',
+        step: 'execution',
+        subagentId: 'sub-no-tcid',
+        timestamp: '2026-04-29T00:00:00Z',
+      });
+      expect('tool_call_id' in event.data).toBe(false);
+    });
+
     it('createDelegationComplete with all optional fields', () => {
       const event = createDelegationComplete({
         subagentId: 'sub-1',
@@ -587,6 +619,32 @@ describe('factory functions', () => {
       const event = createDelegationComplete({ subagentId: 'sub-1' });
       expect(event.type).toBe(DELEGATION_EVENTS.COMPLETE);
       expect(event.data).toEqual({ subagentId: 'sub-1' });
+    });
+
+    // PR-FIN-2a-ii T-2a.8.0 — additive `transcriptSha256` field on
+    // DelegationCompleteData. Captured at SubagentStop time over the full
+    // transcript bytes; round-trips through JSON.stringify; absence
+    // preserved when caller omits it (no empty-string sentinel).
+    it('createDelegationComplete passes transcriptSha256 through when set', () => {
+      const event = createDelegationComplete({
+        subagentId: 'sub-sha',
+        artifactPath: '/path/to/artifact.md',
+        transcriptSha256:
+          'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      });
+      expect(event.data).toEqual({
+        subagentId: 'sub-sha',
+        artifactPath: '/path/to/artifact.md',
+        transcriptSha256:
+          'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      });
+      const round = JSON.parse(JSON.stringify(event));
+      expect(round).toEqual(event);
+    });
+
+    it('createDelegationComplete omits transcriptSha256 when caller omits it', () => {
+      const event = createDelegationComplete({ subagentId: 'sub-no-sha' });
+      expect('transcriptSha256' in event.data).toBe(false);
     });
 
     it('createDelegationFail', () => {
