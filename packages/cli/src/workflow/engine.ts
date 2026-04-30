@@ -21,23 +21,28 @@
  * function. The two-event atomicity guarantee downgrades from "both rolls
  * back together" to "each commits or rolls back independently" — acceptable
  * for the SessionStart hook's idempotent re-run semantics.
+ *
+ * ## state.json retired (PR-FIN-2a-ii / T-2a.9.unified)
+ *
+ * Prior to PR-FIN-2a-ii every successful append also wrote a
+ * `state.json` projection alongside the bun:sqlite event row, with
+ * `state.json.backup` providing a restore-on-rollback safety net. Both
+ * files are dropped — the workspace `state.db` is now the only source
+ * of truth for workflow state. `resolveWorkflowState` derives state by
+ * replaying the partition-filtered event stream on every call;
+ * `appendEventAndUpdateState` runs the reducer purely in memory and
+ * returns the new state to the caller without persisting a JSON
+ * projection. Callers that previously relied on `state.json` for the
+ * warm-path read (next/status/guard/stop) accept the cold-path replay
+ * cost — partition-aware reads keep the cost bounded to the session's
+ * own events.
  */
-
-import { existsSync, unlinkSync } from 'node:fs';
-import { join } from 'node:path';
 
 import { EventStore } from './store.js';
 import type { AppendInput, ReadStore } from './store.js';
 import { reduce } from './reducer.js';
 import type { ReducerResult } from './reducer.js';
-import {
-  writeState,
-  backupState,
-  restoreStateFromBackup,
-  readState,
-  restoreBackup,
-  deriveState,
-} from './state.js';
+import { deriveState } from './state.js';
 import type { WorkflowState } from './state.js';
 import type { Event } from './events/index.js';
 import {
@@ -65,10 +70,9 @@ export interface AppendResult {
 //
 // The engine's `appendEventAndUpdateState` wraps its compound transaction
 // in a try-catch. Inside, the reducer can throw when it returns
-// `{ok: false}`. Filesystem-write failures (writeState) can also throw.
-// Both surface at the same catch. To emit the
-// `workflow.invalid_transition` audit event ONLY for reducer rejections
-// (not FS failures), the catch needs a typed discriminator.
+// `{ok: false}`. To emit the `workflow.invalid_transition` audit event
+// ONLY for reducer rejections (not other unexpected failures), the
+// catch needs a typed discriminator.
 //
 // A dedicated class is preferred over a message-prefix check — matches
 // the codebase's `extends Error` precedent and gives downstream tooling
@@ -99,16 +103,14 @@ export class ReducerRejectionError extends Error {
  *
  * Executes atomically inside a bun:sqlite IMMEDIATE transaction:
  *
- * 1. Backup current state.json
- * 2. Append event to the SQLite store (with deduplication)
- * 3. If deduplicated (null return), short-circuit — no state change
- * 4. Reduce to compute new state
- * 5. Write new state.json (synchronous atomic write)
+ * 1. Append event to the SQLite store (with deduplication)
+ * 2. If deduplicated (null return), short-circuit — no state change
+ * 3. Reduce to compute new state
  *
- * If the reducer rejects the event or a filesystem write fails, the
- * transaction rolls back — the SQLite insert is undone by the
- * transaction rollback, and state.json is restored from backup via
- * restoreStateFromBackup().
+ * If the reducer rejects the event, the transaction rolls back — the
+ * SQLite insert is undone. Per PR-FIN-2a-ii (T-2a.9.unified) there is
+ * no `state.json` projection: state lives only in the event store and
+ * is derived on read by `resolveWorkflowState`.
  *
  * `parentSeq` links the new event to a prior event's `seq` — used by
  * the capture commands (C.6) to connect `delegation.complete` /
@@ -128,6 +130,11 @@ export class ReducerRejectionError extends Error {
  * the caller scans existing heartbeats for the same ms to pick a non-
  * colliding counter, then passes the same `ts` down so the key uses the
  * same ms as the scan. When omitted, the engine uses wall-clock time.
+ *
+ * The `dir` parameter is retained for compatibility with downstream
+ * post-commit dispatch hooks (per-step README writer, memorization
+ * session.json writer) that still need a session directory to write
+ * navigational artifacts into.
  */
 export async function appendEventAndUpdateState(
   store: EventStore,
@@ -163,16 +170,7 @@ export async function appendEventAndUpdateState(
   let appendResult: AppendResult;
   try {
     appendResult = store.transaction(() => {
-      // Track whether state.json existed before the operation. When this
-      // is the first event ever, there is no state.json and therefore no
-      // backup — the catch block needs to know so it can delete state.json
-      // instead of restoring from a non-existent backup.
-      const hadPriorState = existsSync(join(dir, 'state.json'));
-
-      // 1. Backup current state
-      backupState(dir);
-
-      // 2. Append event to SQLite store
+      // 1. Append event to SQLite store
       const input: AppendInput = buildAppendInput({
         ts: effectiveTs,
         type: event.type,
@@ -192,45 +190,15 @@ export async function appendEventAndUpdateState(
         return { state, persisted: false };
       }
 
-      // 3. Reduce to get new state. On rejection, throw a typed
-      //    ReducerRejectionError — the OUTER catch distinguishes this
-      //    from filesystem failures and fires the audit-emit branch.
-      //    `effectiveTs` is passed as the event's wall-clock timestamp so
-      //    the reducer can stamp `stepStartedAt` on STEP_EXIT / RESUME
-      //    per L13 — the same ms that keyed the store-layer idempotency.
+      // 2. Reduce to get new state. On rejection, throw a typed
+      //    ReducerRejectionError — the OUTER catch fires the audit-emit
+      //    branch. `effectiveTs` is passed as the event's wall-clock
+      //    timestamp so the reducer can stamp `stepStartedAt` on
+      //    STEP_EXIT / RESUME per L13 — the same ms that keyed the
+      //    store-layer idempotency.
       const result: ReducerResult = reduce(state, event, effectiveTs);
       if (!result.ok) {
         throw new ReducerRejectionError(result.error, event, state);
-      }
-
-      // 4. Write new state.json (synchronous atomic write) — wrapped in
-      // try/catch so that a filesystem failure restores the backup before
-      // re-throwing, keeping state.json consistent with the SQLite rollback.
-      try {
-        writeState(dir, result.state);
-      } catch (err: unknown) {
-        // Restore state.json so it matches the rolled-back SQLite state.
-        // Wrap in its own try/catch so a restore failure (disk full,
-        // permissions) does not replace the original error.
-        try {
-          if (hadPriorState) {
-            // Normal case: restore the backup we created in step 1.
-            restoreStateFromBackup(dir);
-          } else {
-            // First-event edge case: no prior state.json existed, so no
-            // backup was created. Delete the newly-written state.json to
-            // return to the no-file state. resolveState() will fall through
-            // to deriveState() which replays from the (now empty) DB.
-            const statePath = join(dir, 'state.json');
-            if (existsSync(statePath)) {
-              unlinkSync(statePath);
-            }
-          }
-        } catch {
-          // Ignore restore/delete failure — the priority is propagating
-          // the original error so the SQLite transaction rolls back.
-        }
-        throw err;
       }
 
       return { state: result.state, persisted: true };
@@ -241,9 +209,9 @@ export async function appendEventAndUpdateState(
     // top-level transaction, NOT a savepoint of the rolled-back one.
     //
     // Only emit the `workflow.invalid_transition` audit for reducer
-    // rejections — filesystem failures (writeState) also land here but
-    // those are not "invalid transition" events; auditing them here
-    // would misattribute disk errors as reducer bugs.
+    // rejections — other unexpected failures (e.g. SQLite I/O) also land
+    // here but those are not "invalid transition" events; auditing them
+    // would misattribute infrastructure errors as reducer bugs.
     if (outerError instanceof ReducerRejectionError) {
       // Best-effort audit-append. If this inner transaction itself
       // throws (disk full, WAL lock, SQLite busy), swallow the audit
@@ -290,8 +258,9 @@ export async function appendEventAndUpdateState(
   // Post-commit side effect: per-step README writer (W5.1).
   //
   // Fires AFTER the core transaction has committed — the README is a
-  // non-authoritative navigation aid that mirrors info already in
-  // gobbi.db + state.json. Running it outside the transaction means a
+  // non-authoritative navigation aid that mirrors information already
+  // present in `WorkflowState` at exit time and the per-step
+  // `artifacts/` directory. Running it outside the transaction means a
   // filesystem error on README write cannot corrupt the event store,
   // and deduplicated (`persisted: false`) events skip the write entirely.
   //
@@ -432,40 +401,33 @@ function buildAppendInput(args: BuildAppendInputArgs): AppendInput {
 }
 
 // ---------------------------------------------------------------------------
-// State resolution — using concrete reduce function
+// State resolution — pure derive over the event log
 // ---------------------------------------------------------------------------
 
 /**
- * Resolve workflow state from disk with full fallback chain.
+ * Resolve workflow state by replaying the partition-filtered event
+ * stream.
  *
- * Warm-path optimisation: state.json is the primary source on every
- * guard / stop / capture hook invocation. When it exists and parses to
- * a valid `WorkflowState`, return it directly — skipping the full SQLite
- * event replay. The replay only materialises on the cold fallback path
- * (state.json missing or corrupt), preserving PR A's crash-safety
- * invariants: backup restoration and event-sourced derivation still
- * cover any state.json that fails validation.
+ * Per PR-FIN-2a-ii (T-2a.9.unified) there is no `state.json`
+ * projection: the workspace `state.db` is the only source of truth.
+ * Every call replays via `store.replayAll()` and runs the reducer.
+ * Partition-aware reads (Option α at the EventStore layer) cap the
+ * replay cost at the calling session's own events — cross-session
+ * rows in the workspace `state.db` are filtered out at the SQL layer.
  *
- * Avoiding `store.replayAll()` on the happy path saves ~5–10 ms per
- * guard / stop / capture hook invocation at ~500-event scale and scales
- * linearly with event count thereafter.
+ * `dir` is retained for signature stability with the pre-pivot warm-
+ * path API; it is no longer consulted (no `state.json` to read). It
+ * stays in the signature so the 8 production callsites (`init.ts`,
+ * `next.ts`, `status.ts`, `transition.ts`, `resume.ts`, `guard.ts`,
+ * `stop.ts`, capture-{planning,subagent}) need no signature change in
+ * this PR.
  */
 export function resolveWorkflowState(
-  dir: string,
+  _dir: string,
   store: ReadStore,
   sessionId: string,
 ): WorkflowState {
-  // Fast path — valid state.json short-circuits the replay.
-  const primary = readState(dir);
-  if (primary !== null) return primary;
-
-  // First fallback — on-disk backup (used when state.json was mid-write
-  // during a crash, or corrupted after write). Still no replay needed.
-  const backup = restoreBackup(dir);
-  if (backup !== null) return backup;
-
-  // Cold fallback — derive from the full event stream. This is the only
-  // branch that pays the replayAll cost.
+  // _dir retained for signature stability — see function-level docblock.
   const events = store.replayAll();
   return deriveState(sessionId, events, reduce);
 }
@@ -474,6 +436,10 @@ export function resolveWorkflowState(
  * Derive workflow state from full event replay.
  *
  * Wraps state.ts deriveState() with the concrete reduce function.
+ * Equivalent to {@link resolveWorkflowState} after the state.json
+ * retirement; kept as a separate symbol for callers that historically
+ * forced a derive path even when state.json was present (`resume.ts`
+ * `--force-memorization` branch).
  */
 export function deriveWorkflowState(
   sessionId: string,

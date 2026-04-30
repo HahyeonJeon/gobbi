@@ -1,23 +1,17 @@
 /**
- * Engine-level tests for `resolveWorkflowState` — covers the state.json
- * fast path and the three-level fallback chain.
+ * Engine-level tests for `resolveWorkflowState` and
+ * `appendEventAndUpdateState`.
  *
- * Performance invariant: when state.json is present and valid, the
- * resolution path MUST NOT call `store.replayAll()`. Every hook (guard,
- * stop, capture-*) pays the cost of this function on every invocation,
- * so a full-table scan on the warm path would accumulate. A spy on
- * `replayAll` asserts the invariant explicitly.
+ * Per PR-FIN-2a-ii (T-2a.9.unified) the engine no longer maintains a
+ * `state.json` projection; every `resolveWorkflowState` call replays
+ * the partition-filtered event stream and runs the reducer.
+ * Partition-aware reads (Option α at the EventStore layer) cap the
+ * replay cost at the calling session's own events.
  */
 
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
 import fc from 'fast-check';
-import {
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -27,11 +21,7 @@ import {
   ReducerRejectionError,
 } from '../engine.js';
 import { EventStore } from '../store.js';
-import {
-  backupState,
-  initialState,
-  writeState,
-} from '../state.js';
+import { initialState } from '../state.js';
 import type { WorkflowState, WorkflowStep } from '../state.js';
 import { WORKFLOW_EVENTS } from '../events/workflow.js';
 import type { Event } from '../events/index.js';
@@ -86,171 +76,43 @@ async function seedStartEvent(
 }
 
 // ===========================================================================
-// Fast path — state.json valid
+// resolveWorkflowState — pure event replay (PR-FIN-2a-ii / T-2a.9.unified)
 // ===========================================================================
 
-describe('resolveWorkflowState — state.json fast path', () => {
-  it('returns state.json without calling store.replayAll when state is valid', async () => {
+describe('resolveWorkflowState — pure event replay', () => {
+  it('replays the event stream every call (no state.json projection)', async () => {
     using store = new EventStore(':memory:');
-    const sessionId = 'engine-fast';
+    const sessionId = 'engine-replay';
 
-    // Seed one event so replayAll would have something non-trivial if
-    // it were called. appendEventAndUpdateState internally uses the
-    // transaction + state.json write path — the state.json on disk is
-    // the authoritative fast-path source.
     await seedStartEvent(store, testDir, sessionId);
-    expect(existsSync(join(testDir, 'state.json'))).toBe(true);
 
     const spied = instrumentReplayAll(store);
     const state = resolveWorkflowState(testDir, spied.store, sessionId);
 
-    // Fast path must not have triggered replayAll even once.
-    expect(spied.count()).toBe(0);
+    expect(spied.count()).toBe(1);
     expect(state.sessionId).toBe(sessionId);
     expect(state.currentStep).toBe('ideation');
   });
 
-  it('returns the exact state that was written to state.json', () => {
+  it('initial state when the event log is empty', () => {
     using store = new EventStore(':memory:');
-    const sessionId = 'engine-exact';
-
-    // Write state.json directly (no events) — confirms readState is the
-    // only source on the fast path, not deriveState.
-    const written: WorkflowState = {
-      ...initialState(sessionId),
-      currentStep: 'planning',
-      feedbackRound: 2,
-    };
-    writeState(testDir, written);
-
+    const sessionId = 'engine-empty';
     const state = resolveWorkflowState(testDir, store, sessionId);
-    expect(state.currentStep).toBe('planning');
-    expect(state.feedbackRound).toBe(2);
-  });
-});
-
-// ===========================================================================
-// Fallback — state.json missing → replay
-// ===========================================================================
-
-describe('resolveWorkflowState — state.json missing', () => {
-  it('falls through to replayAll when state.json is absent and no backup exists', async () => {
-    using store = new EventStore(':memory:');
-    const sessionId = 'engine-missing';
-
-    // Seed an event then delete state.json (and any backup) so only the
-    // SQLite store can answer.
-    await seedStartEvent(store, testDir, sessionId);
-    const statePath = join(testDir, 'state.json');
-    const backupPath = join(testDir, 'state.json.backup');
-    if (existsSync(statePath)) rmSync(statePath);
-    if (existsSync(backupPath)) rmSync(backupPath);
-
-    const spied = instrumentReplayAll(store);
-    const state = resolveWorkflowState(testDir, spied.store, sessionId);
-
-    // Replay was the only route to a valid state.
-    expect(spied.count()).toBe(1);
-    expect(state.currentStep).toBe('ideation');
     expect(state.sessionId).toBe(sessionId);
+    expect(state.currentStep).toBe('idle');
   });
 
-  it('does not call replayAll when backup covers the missing state.json', async () => {
+  it('every call replays — no state.json fast-path skipping the store', async () => {
     using store = new EventStore(':memory:');
-    const sessionId = 'engine-backup';
+    const sessionId = 'engine-no-fast-path';
 
-    // Seed → snapshot state.json to backup → delete state.json.
     await seedStartEvent(store, testDir, sessionId);
-    backupState(testDir);
-    rmSync(join(testDir, 'state.json'));
 
     const spied = instrumentReplayAll(store);
-    const state = resolveWorkflowState(testDir, spied.store, sessionId);
-
-    // Backup is a disk read — replay should still be skipped.
-    expect(spied.count()).toBe(0);
-    expect(state.currentStep).toBe('ideation');
-  });
-});
-
-// ===========================================================================
-// Fallback — state.json corrupt → replay
-// ===========================================================================
-
-describe('resolveWorkflowState — state.json corrupt', () => {
-  it('falls through to replayAll when state.json is unparseable and backup missing', async () => {
-    using store = new EventStore(':memory:');
-    const sessionId = 'engine-corrupt';
-
-    await seedStartEvent(store, testDir, sessionId);
-    // Corrupt state.json to force readState → null; drop backup so the
-    // middle fallback cannot rescue the resolution.
-    writeFileSync(join(testDir, 'state.json'), '{not json', 'utf8');
-    const backupPath = join(testDir, 'state.json.backup');
-    if (existsSync(backupPath)) rmSync(backupPath);
-
-    const spied = instrumentReplayAll(store);
-    const state = resolveWorkflowState(testDir, spied.store, sessionId);
-
-    expect(spied.count()).toBe(1);
-    expect(state.currentStep).toBe('ideation');
-  });
-
-  it('prefers backup over replay when state.json is corrupt but backup is valid', async () => {
-    using store = new EventStore(':memory:');
-    const sessionId = 'engine-corrupt-with-backup';
-
-    // Seed an event so the backup captures a valid state, then corrupt
-    // the primary.
-    await seedStartEvent(store, testDir, sessionId);
-    backupState(testDir);
-    writeFileSync(join(testDir, 'state.json'), 'corrupt', 'utf8');
-
-    const spied = instrumentReplayAll(store);
-    const state = resolveWorkflowState(testDir, spied.store, sessionId);
-
-    // Backup is still a file read — replay should not fire.
-    expect(spied.count()).toBe(0);
-    expect(state.currentStep).toBe('ideation');
-  });
-
-  it('falls through to replayAll when state.json has the wrong schema shape', async () => {
-    using store = new EventStore(':memory:');
-    const sessionId = 'engine-wrong-shape';
-
-    await seedStartEvent(store, testDir, sessionId);
-    // Parseable JSON, but missing required fields → isValidState false.
-    writeFileSync(
-      join(testDir, 'state.json'),
-      JSON.stringify({ note: 'not a WorkflowState' }),
-      'utf8',
-    );
-    const backupPath = join(testDir, 'state.json.backup');
-    if (existsSync(backupPath)) rmSync(backupPath);
-
-    const spied = instrumentReplayAll(store);
-    const state = resolveWorkflowState(testDir, spied.store, sessionId);
-
-    expect(spied.count()).toBe(1);
-    expect(state.currentStep).toBe('ideation');
-  });
-
-  it('does not leave the primary state.json content unchanged — resolveWorkflowState is read-only', async () => {
-    using store = new EventStore(':memory:');
-    const sessionId = 'engine-read-only';
-
-    // Confirm state.json content is untouched by resolveWorkflowState
-    // even when it falls through to replay. Greg-Young discipline:
-    // never rewrite on-disk state during a read.
-    await seedStartEvent(store, testDir, sessionId);
-    const corrupt = '{corrupt';
-    writeFileSync(join(testDir, 'state.json'), corrupt, 'utf8');
-    const backupPath = join(testDir, 'state.json.backup');
-    if (existsSync(backupPath)) rmSync(backupPath);
-
-    resolveWorkflowState(testDir, store, sessionId);
-
-    expect(readFileSync(join(testDir, 'state.json'), 'utf8')).toBe(corrupt);
+    resolveWorkflowState(testDir, spied.store, sessionId);
+    resolveWorkflowState(testDir, spied.store, sessionId);
+    resolveWorkflowState(testDir, spied.store, sessionId);
+    expect(spied.count()).toBe(3);
   });
 });
 
@@ -309,7 +171,7 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
     expect(data.timestamp).toBe('2026-01-02T00:00:00.000Z');
   });
 
-  it('state on disk is unchanged after a rejection (backup restore)', async () => {
+  it('state from the event log is unchanged after a rejection (transaction rollback)', async () => {
     using store = new EventStore(':memory:');
     const sessionId = 'audit-emit-state';
 
@@ -335,52 +197,10 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
       // Expected.
     }
 
+    // Re-derive — the rejected event's row was rolled back, so the
+    // replay returns the same state we observed before the attempt.
     const after = resolveWorkflowState(testDir, store, sessionId);
-    // Every field preserved.
     expect(after).toEqual(before);
-  });
-
-  it('filesystem-only failures do NOT emit an audit event', async () => {
-    using store = new EventStore(':memory:');
-    const sessionId = 'audit-emit-fs';
-
-    await seedStartEvent(store, testDir, sessionId);
-    const before = resolveWorkflowState(testDir, store, sessionId);
-
-    // Force writeState to fail by making testDir a non-writable path.
-    // Approach: instrument the store to replicate the FS-failure path by
-    // replacing the event data with an object that JSON-serialises but
-    // triggers `writeState` to throw via a tampered state directory.
-    //
-    // Simpler approach: pass a dir that does not exist and is not
-    // creatable — the mkdirSync call inside writeState throws with an
-    // EACCES/ENOENT surface. We simulate by pointing at a path under a
-    // file (writing through a file path returns ENOTDIR).
-    const blockedFile = join(testDir, 'not-a-dir-file');
-    writeFileSync(blockedFile, 'block');
-    const blockedDir = join(blockedFile, 'subpath'); // writeState → ENOTDIR
-
-    // Valid event — reducer accepts, but FS write fails.
-    const validEvent: Event = {
-      type: WORKFLOW_EVENTS.STEP_EXIT,
-      data: { step: 'ideation' },
-    };
-    await expect(
-      appendEventAndUpdateState(
-        store,
-        blockedDir,
-        { ...before, evalConfig: { ideation: false, planning: false } },
-        validEvent,
-        'cli',
-        sessionId,
-        'tool-call',
-        'tc-fs-fail',
-      ),
-    ).rejects.toThrow();
-
-    // No audit emitted — this was a FS failure, not a reducer rejection.
-    const audits = store.byType(WORKFLOW_EVENTS.INVALID_TRANSITION);
-    expect(audits).toHaveLength(0);
   });
 
   it('property test: reducer rejections always produce exactly one audit + original error', async () => {
@@ -401,18 +221,15 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
           const sessionId = `prop-${step}`;
           const dir = mkdtempSync(join(tmpdir(), `gobbi-prop-${step}-`));
           try {
-            await seedStartEvent(store, dir, sessionId);
-
             // Fabricate a state where `workflow.abort` is invalid (any
-            // non-error active step triggers rejection).
+            // non-error active step triggers rejection). The engine
+            // reducer is now driven entirely by the in-memory `state`
+            // argument — there is no state.json projection to keep in
+            // sync, so the synthetic state is supplied directly.
             const state: WorkflowState = {
               ...initialState(sessionId),
               currentStep: step,
             };
-            // Overwrite state.json so the engine's backup matches our
-            // synthetic state, keeping the assertion about "state
-            // unchanged post-rejection" meaningful.
-            writeState(dir, state);
 
             const rejected: Event = {
               type: WORKFLOW_EVENTS.ABORT,
@@ -438,12 +255,17 @@ describe('appendEventAndUpdateState — reducer rejection audit', () => {
               thrown = err;
             }
 
-            // (a) state unchanged — resolveWorkflowState returns the same
-            // record.
-            const resolved = resolveWorkflowState(dir, store, sessionId);
-            if (resolved.currentStep !== step) {
+            // (a) the rejected event was rolled back — the only event in
+            // the store should be the audit row.
+            const replayed = store.replayAll();
+            if (replayed.length !== 1) {
               throw new Error(
-                `state mutated: expected ${step}, got ${resolved.currentStep}`,
+                `expected exactly 1 row in store after rejection, got ${replayed.length}`,
+              );
+            }
+            if (replayed[0]?.type !== WORKFLOW_EVENTS.INVALID_TRANSITION) {
+              throw new Error(
+                `expected single row to be the audit, got ${replayed[0]?.type ?? 'missing'}`,
               );
             }
 
