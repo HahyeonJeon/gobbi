@@ -369,18 +369,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
       'This test file declares the banned-token regexes as string literals and lists banned filenames in allow-list rationales — must allow-list itself.',
   },
 
-  // ---- STOP-and-ask cases (flagged in executor report) ---------------------
-  // The following entries cover files that are NOT in the executor's locked
-  // file list (workflow.ts:76, errors.sections.ts:339) but contain banned
-  // tokens of the same class. They are allow-listed here so the test passes;
-  // executor reports them in the final summary so the orchestrator can
-  // decide whether to extend scope or defer.
-  {
-    path: 'packages/cli/src/specs/errors.pathway-detect.ts',
-    tokens: new Set(['state.json']),
-    rationale:
-      'STOP-and-ask: line 327 `diagnosticHint` is a user-visible error message that references retired `state.json` — same class as errors.sections.ts:339. Out of executor scope; file as follow-up.',
-  },
 ];
 
 // ---------------------------------------------------------------------------
