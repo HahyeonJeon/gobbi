@@ -8,11 +8,12 @@
  * The core SQLite mutation runs inside a synchronous `store.transaction(...)`
  * envelope — bun:sqlite transactions cannot await — so the mutation half of
  * `appendEventAndUpdateState` is sync-by-construction. The function itself
- * is `async` because the post-commit dispatch will host async side effects
- * (the memorization `session.json` writer landing in T-2a.8.2). The
- * post-commit dispatch fires AFTER the transaction has committed, so the
- * await landing outside the SQL boundary preserves the bun:sqlite invariant
- * while still giving callers a single composable Promise to await.
+ * is `async` because the post-commit dispatch awaits the memorization
+ * `session.json` writer (T-2a.8.2): the writer walks per-subagent JSONL
+ * transcripts via `aggregateSessionJson`, which is async. The post-commit
+ * dispatch fires AFTER the transaction has committed, so the await landing
+ * outside the SQL boundary preserves the bun:sqlite invariant while still
+ * giving callers a single composable Promise to await.
  *
  * Callers that compose multiple appends across an outer atomic boundary
  * (init's two-event pair) must drop the outer `store.transaction(...)` wrap
@@ -44,6 +45,7 @@ import {
   createWorkflowInvalidTransition,
 } from './events/workflow.js';
 import { writeStepReadmeForExit } from './step-readme-writer.js';
+import { writeSessionJsonAtMemorizationExit } from './session-json-writer.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -314,6 +316,38 @@ export async function appendEventAndUpdateState(
       const msg = err instanceof Error ? err.message : String(err);
       process.stderr.write(
         `gobbi: per-step README write failed — ${msg}\n`,
+      );
+    }
+  }
+
+  // Post-commit side effect: memorization-step `session.json` writer
+  // (T-2a.8.2 / PR-FIN-2a-ii).
+  //
+  // Fires only on a committed `workflow.step.exit` whose payload reports
+  // `step === 'memorization'`. The writer reads the init-time stub for the
+  // 6 carry-forward fields, runs the JSONL-walking aggregator, and atomically
+  // replaces `session.json` with the populated shape; it also upserts the
+  // matching `project.json.sessions[]` row.
+  //
+  // Same best-effort contract as the README writer: failures emit a
+  // single-line stderr and never propagate. The transaction has already
+  // committed; an aggregator throw cannot corrupt the event store. The
+  // stderr message names the writer so operators can distinguish a JSONL
+  // walk failure from the README path.
+  if (
+    appendResult.persisted &&
+    event.type === WORKFLOW_EVENTS.STEP_EXIT &&
+    event.data.step === 'memorization'
+  ) {
+    try {
+      await writeSessionJsonAtMemorizationExit({
+        sessionDir: dir,
+        store,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      process.stderr.write(
+        `gobbi: session.json memorization write failed — ${msg}\n`,
       );
     }
   }
