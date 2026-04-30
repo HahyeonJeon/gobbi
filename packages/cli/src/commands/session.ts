@@ -17,9 +17,9 @@
  */
 
 import { appendFile, readFile, chmod } from 'node:fs/promises';
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, statSync } from 'node:fs';
 import { parseArgs } from 'node:util';
-import { basename, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 
 import { readStdinJson } from '../lib/stdin.js';
 import { getRepoRoot } from '../lib/repo.js';
@@ -509,22 +509,17 @@ export interface ResolvedPartitionKeys {
 /**
  * Resolve `(sessionId, projectId)` from a session directory so callers of
  * `new EventStore(dbPath, opts)` can supply the partition keys explicitly.
- * Mirrors the on-disk derivation that {@link EventStore} performs internally
- * today — extracted into a single source of truth so the 11 callsites stay
- * in sync once Wave A.1's workspace re-scope (`.gobbi/state.db`) lands and
- * the path-derivation fallback no longer yields the right values.
  *
  *   - `sessionId` = `basename(sessionDir)` (matches the per-session layout
  *     `.gobbi/projects/<name>/sessions/<sessionId>/`). `null` only when the
  *     basename resolves to the empty string (filesystem root).
- *   - `projectId` = `metadata.projectName` read verbatim from the session's
- *     `metadata.json` (schema v3+). The previous derivation read
- *     `basename(metadata.projectRoot)`, but `projectRoot` is the repo root
- *     directory — in a multi-project workspace (`.gobbi/projects/{a,b,c}/`)
- *     every event would be stamped with the same project_id (issue #178).
- *     Silent on every failure mode (missing file, parse error, missing or
- *     non-string `projectName`) — `null` defers to the constructor fallback,
- *     which performs the same read.
+ *   - `projectId` = the `<projectName>` segment from the standard layout
+ *     `<repoRoot>/.gobbi/projects/<projectName>/sessions/<sessionId>/`,
+ *     extracted as `basename(dirname(dirname(sessionDir)))`. The path
+ *     itself is the source of truth after PR-FIN-2a-ii (T-2a.9.unified)
+ *     retired the legacy `metadata.json` reader. `null` for legacy-flat
+ *     sessions under `.gobbi/sessions/<sessionId>/` where the parent
+ *     segment is `'sessions'` rather than a project name.
  *
  * Empty-string and `null` are treated identically as "explicitly unset" by
  * the {@link EventStore} constructor, so empty-string columns can never reach
@@ -533,42 +528,36 @@ export interface ResolvedPartitionKeys {
 export function resolvePartitionKeys(sessionDir: string): ResolvedPartitionKeys {
   const sessionName = basename(sessionDir);
   const sessionId = sessionName === '' ? null : sessionName;
-  const projectId = readProjectIdFromMetadata(sessionDir);
+  const projectId = projectIdFromSessionDir(sessionDir);
   return { sessionId, projectId };
 }
 
 /**
- * Read `metadata.projectName` from `<sessionDir>/metadata.json`. Silent on
- * every failure mode — the `EventStore` constructor's
- * `resolveProjectIdFromMetadata` performs the same read with the same
- * fallback semantics, so a `null` here defers cleanly to the constructor's
- * fallback.
+ * Extract `<projectName>` from a per-project session directory of the
+ * shape `<repoRoot>/.gobbi/projects/<projectName>/sessions/<sessionId>/`.
  *
- * Schema v3+ `metadata.json` carries the `projectName` field directly (see
- * `commands/workflow/init.ts::SessionMetadata`). The legacy
- * `basename(metadata.projectRoot)` derivation is dropped: `projectRoot` is
- * always the repo root, so it conflated every project under a multi-project
- * workspace into the same `project_id` (issue #178).
+ * Returns `null` when:
+ *   - the path does not have at least two ancestor segments (e.g. fs
+ *     root, malformed path),
+ *   - the immediate parent is not literally `'sessions'` — this is the
+ *     signal that the path is NOT inside the per-project layout
+ *     (legacy-flat sessions live at `.gobbi/sessions/<sessionId>/` and
+ *     their parent is `'sessions'` but the grandparent is `'.gobbi'`,
+ *     not `'projects'`),
+ *   - the great-grandparent is not literally `'projects'`.
+ *
+ * Path-only resolution is the post–PR-FIN-2a-ii canonical source — the
+ * legacy `metadata.json` reader was retired alongside metadata.json
+ * itself.
  */
-function readProjectIdFromMetadata(sessionDir: string): string | null {
-  let raw: string;
-  try {
-    raw = readFileSync(join(sessionDir, 'metadata.json'), 'utf8');
-  } catch {
-    return null;
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return null;
-  }
-  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
-    return null;
-  }
-  const projectName = (parsed as Record<string, unknown>)['projectName'];
-  if (typeof projectName !== 'string' || projectName === '') return null;
-  return projectName;
+function projectIdFromSessionDir(sessionDir: string): string | null {
+  const sessionsDir = dirname(sessionDir); // …/sessions
+  if (basename(sessionsDir) !== 'sessions') return null;
+  const projectDirCandidate = dirname(sessionsDir); // …/<projectName>
+  const projectsDirCandidate = dirname(projectDirCandidate); // …/projects
+  if (basename(projectsDirCandidate) !== 'projects') return null;
+  const projectName = basename(projectDirCandidate);
+  return projectName === '' ? null : projectName;
 }
 
 /**

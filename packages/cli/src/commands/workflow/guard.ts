@@ -53,11 +53,13 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { readStdinJson } from '../../lib/stdin.js';
+import { isRecord, isString } from '../../lib/guards.js';
 import { EventStore } from '../../workflow/store.js';
 import {
   appendEventAndUpdateState,
   resolveWorkflowState,
 } from '../../workflow/engine.js';
+import { createDelegationSpawn } from '../../workflow/events/delegation.js';
 import {
   createGuardViolation,
   createGuardWarn,
@@ -81,12 +83,20 @@ import { resolvePartitionKeys, resolveSessionDir } from '../session.js';
  * about. Additional fields (`tool_call_id`, `agent_id`, etc.) are read via
  * optional index access; the type keeps the mandatory ones strict.
  *
- * Source: `v050-hooks.md:19–33`.
+ * The payload field naming is contested across the Claude Code schema: the
+ * canonical Hooks reference uses `tool_use_id`, but earlier surfaces and the
+ * existing test fixtures in this codebase use `tool_call_id`. Both are
+ * accepted here; downstream readers prefer `tool_use_id` then fall back to
+ * `tool_call_id` so live hooks (which carry `tool_use_id`) and existing test
+ * fixtures (which carry `tool_call_id`) both work.
+ *
+ * Source: `v050-hooks.md:19–33`, `v050-integration-tests.md:101`.
  */
 interface PreToolUsePayload {
   readonly tool_name: string;
   readonly session_id?: string;
   readonly tool_call_id?: string;
+  readonly tool_use_id?: string;
   readonly agent_id?: string;
   readonly tool_input?: unknown;
 }
@@ -104,10 +114,30 @@ function isPreToolUsePayload(value: unknown): value is PreToolUsePayload {
   ) {
     return false;
   }
+  if (
+    rec['tool_use_id'] !== undefined &&
+    typeof rec['tool_use_id'] !== 'string'
+  ) {
+    return false;
+  }
   if (rec['agent_id'] !== undefined && typeof rec['agent_id'] !== 'string') {
     return false;
   }
   return true;
+}
+
+/**
+ * Resolve the canonical `tool_use_id` / `tool_call_id` for this PreToolUse
+ * invocation. Returns `undefined` when neither is a non-empty string. Used by
+ * both the spawn-emit path (for `delegation.spawn.tool_call_id`) and the
+ * audit-event idempotency formula.
+ */
+function resolveToolCallId(payload: PreToolUsePayload): string | undefined {
+  const useId = payload.tool_use_id;
+  if (typeof useId === 'string' && useId !== '') return useId;
+  const callId = payload.tool_call_id;
+  if (typeof callId === 'string' && callId !== '') return callId;
+  return undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -264,6 +294,12 @@ export async function runGuardWithOptions(
     const matcher = overrides.matcher ?? DEFAULT_MATCHER;
     const matched = matcher.match(state.currentStep, payload.tool_name);
     if (matched.length === 0) {
+      // No matching guards — the guard is allowing the call. Emit the
+      // delegation.spawn audit BEFORE the allow response so a SIGKILL
+      // between stdout and the next event commits doesn't leak a spawn
+      // that never made it into the log. The store-side idempotency
+      // formula keeps retries deduped.
+      await maybeEmitDelegationSpawn(store, sessionDir, state, sessionId, payload);
       emitAllow();
       return;
     }
@@ -276,12 +312,12 @@ export async function runGuardWithOptions(
       switch (guard.effect) {
         case 'deny': {
           const reason = buildReason(guard, state.currentStep);
-          writeViolationEvent(store, sessionDir, state, guard, payload);
+          await writeViolationEvent(store, sessionDir, state, guard, payload);
           emitDeny(reason);
           return;
         }
         case 'warn': {
-          writeWarnEvent(store, sessionDir, state, guard, payload);
+          await writeWarnEvent(store, sessionDir, state, guard, payload);
           warns.push(buildReason(guard, state.currentStep));
           continue;
         }
@@ -289,6 +325,13 @@ export async function runGuardWithOptions(
           // Explicit allow short-circuits. Any already-accumulated warns
           // from earlier guards in the chain are surfaced alongside the
           // allow so the orchestrator still receives the advisory context.
+          await maybeEmitDelegationSpawn(
+            store,
+            sessionDir,
+            state,
+            sessionId,
+            payload,
+          );
           emitAllow(warns.length > 0 ? warns.join('\n') : undefined);
           return;
         }
@@ -297,6 +340,8 @@ export async function runGuardWithOptions(
       }
     }
 
+    // Loop fell through with no deny — the guard is allowing the call.
+    await maybeEmitDelegationSpawn(store, sessionDir, state, sessionId, payload);
     emitAllow(warns.length > 0 ? warns.join('\n') : undefined);
   } finally {
     store.close();
@@ -307,13 +352,13 @@ export async function runGuardWithOptions(
 // Event emission
 // ---------------------------------------------------------------------------
 
-function writeViolationEvent(
+async function writeViolationEvent(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
   guard: Guard,
   payload: PreToolUsePayload,
-): void {
+): Promise<void> {
   const event = createGuardViolation({
     guardId: guard.id,
     toolName: payload.tool_name,
@@ -326,7 +371,7 @@ function writeViolationEvent(
   // returning a decision. Swallow errors, keep the audit attempt, but do
   // NOT leak a non-zero exit.
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,
@@ -341,13 +386,13 @@ function writeViolationEvent(
   }
 }
 
-function writeWarnEvent(
+async function writeWarnEvent(
   store: EventStore,
   sessionDir: string,
   state: WorkflowState,
   guard: Guard & { readonly effect: 'warn' },
   payload: PreToolUsePayload,
-): void {
+): Promise<void> {
   const event = createGuardWarn({
     guardId: guard.id,
     toolName: payload.tool_name,
@@ -359,7 +404,7 @@ function writeWarnEvent(
   });
   const { kind, toolCallId } = idempotencyFor(payload);
   try {
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       state,
@@ -374,6 +419,108 @@ function writeWarnEvent(
   }
 }
 
+// ---------------------------------------------------------------------------
+// delegation.spawn emission (PR-FIN-2a-ii T-2a.8.0)
+// ---------------------------------------------------------------------------
+
+/**
+ * Tool name Claude Code uses for the Agent (subagent-spawning) tool. The
+ * canonical PreToolUse payload carries `tool_name: 'Task'`; the guard reads
+ * `tool_input.subagent_type` to discover the agent type. Cross-reference
+ * `v050-hooks.md:57-59` for the spawn-emit contract.
+ */
+const AGENT_TOOL_NAME = 'Task';
+
+/**
+ * Per `v050-hooks.md:59`, when the guard ALLOWS an Agent tool call, append a
+ * `delegation.spawn` event to the event store before returning the allow
+ * decision. This is the canonical spawn-emission site (lock 26 of the PR-FIN-
+ * 2a-ii ideation), retiring the previous SubagentStart-based emitter stub.
+ *
+ * Failure discipline: the audit append is best-effort (per the same fail-open
+ * contract that wraps the rest of this command). A throw inside the append
+ * path must NOT escape — we still return `allow` to Claude Code even if the
+ * audit write fails, otherwise hook-write errors would deadlock the
+ * orchestrator. Callers that need spawn linkage (`capture-subagent.ts`'s
+ * `findParentSpawnSeq`) tolerate the missing event and fall back to
+ * `parent_seq: null`.
+ *
+ * No-op when the tool is not the Agent tool, when `tool_input.subagent_type`
+ * is missing, or when no `tool_use_id` / `tool_call_id` is on the payload —
+ * without the tool-call id the spawn can't be linked back to its
+ * SubagentStop, defeating the purpose of recording it.
+ */
+async function maybeEmitDelegationSpawn(
+  store: EventStore,
+  sessionDir: string,
+  state: WorkflowState,
+  sessionId: string,
+  payload: PreToolUsePayload,
+): Promise<void> {
+  if (payload.tool_name !== AGENT_TOOL_NAME) return;
+
+  const toolCallId = resolveToolCallId(payload);
+  if (toolCallId === undefined) return;
+
+  const subagentType = extractSubagentType(payload.tool_input);
+  if (subagentType === undefined) return;
+
+  // `agent_id` rides through unchanged — when present (subagent calls
+  // recursing through Task) we use it as the subagent identifier; otherwise
+  // the tool-call-id doubles as a stable subagent identity. Both are
+  // PreToolUse-time identifiers; capture-subagent.ts will key parent linkage
+  // off `tool_call_id` regardless.
+  const subagentId =
+    payload.agent_id !== undefined && payload.agent_id !== ''
+      ? payload.agent_id
+      : toolCallId;
+
+  // Spawn emitter activates the dormant `claudeCodeVersion` field path
+  // (issue #92) for the first time in production — capture from env per
+  // the documented JSDoc contract.
+  const envVersion = process.env['CLAUDE_CODE_VERSION'];
+  const claudeCodeVersion =
+    envVersion !== undefined && envVersion !== '' ? envVersion : undefined;
+
+  const event = createDelegationSpawn({
+    agentType: subagentType,
+    step: state.currentStep,
+    subagentId,
+    timestamp: new Date().toISOString(),
+    tool_call_id: toolCallId,
+    ...(claudeCodeVersion !== undefined ? { claudeCodeVersion } : {}),
+  });
+
+  try {
+    await appendEventAndUpdateState(
+      store,
+      sessionDir,
+      state,
+      event,
+      'hook',
+      sessionId,
+      'tool-call',
+      toolCallId,
+    );
+  } catch {
+    // Best-effort audit — the allow decision has already been computed and
+    // the response is about to be written. Swallow failures so the hook
+    // exits 0; the parent_seq lookup tolerates missing spawn rows.
+  }
+}
+
+/**
+ * Pull `subagent_type` out of the PreToolUse `tool_input` blob without
+ * trusting the shape. Returns the agent type string when the input is a
+ * record carrying a non-empty `subagent_type` string, `undefined` otherwise.
+ */
+function extractSubagentType(toolInput: unknown): string | undefined {
+  if (!isRecord(toolInput)) return undefined;
+  const value = toolInput['subagent_type'];
+  if (!isString(value) || value === '') return undefined;
+  return value;
+}
+
 interface IdempotencyChoice {
   readonly kind: 'tool-call' | 'system';
   readonly toolCallId: string | undefined;
@@ -381,14 +528,16 @@ interface IdempotencyChoice {
 
 /**
  * Pick the idempotency formula for the guard's event append. The hook
- * contract guarantees a `tool_call_id` on every PreToolUse payload in
- * practice, but we tolerate its absence by falling back to the timestamp-
- * based `'system'` formula. A retry with the same `tool_call_id` dedupes
- * at the store's `UNIQUE(idempotency_key) DO NOTHING` boundary.
+ * contract guarantees a tool-call identifier (`tool_use_id` per the canonical
+ * Hooks reference, or the legacy `tool_call_id`) on every PreToolUse payload
+ * in practice, but we tolerate its absence by falling back to the timestamp-
+ * based `'system'` formula. A retry with the same identifier dedupes at the
+ * store's `UNIQUE(idempotency_key) DO NOTHING` boundary.
  */
 function idempotencyFor(payload: PreToolUsePayload): IdempotencyChoice {
-  if (typeof payload.tool_call_id === 'string' && payload.tool_call_id !== '') {
-    return { kind: 'tool-call', toolCallId: payload.tool_call_id };
+  const toolCallId = resolveToolCallId(payload);
+  if (toolCallId !== undefined) {
+    return { kind: 'tool-call', toolCallId };
   }
   return { kind: 'system', toolCallId: undefined };
 }

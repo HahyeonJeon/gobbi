@@ -113,8 +113,9 @@ function makeScratchRepo(): string {
 
 async function initScratchSession(
   sessionId: string,
-): Promise<{ sessionDir: string; repo: string }> {
+): Promise<{ sessionDir: string; repo: string; projectId: string }> {
   const repo = makeScratchRepo();
+  const projectId = basename(repo);
   await captureExit(() =>
     runInitWithOptions(
       ['--session-id', sessionId, '--task', 'capture-planning-test'],
@@ -127,12 +128,27 @@ async function initScratchSession(
     repo,
     '.gobbi',
     'projects',
-    basename(repo),
+    projectId,
     'sessions',
     sessionId,
   );
   captured = { stdout: '', stderr: '', exitCode: null };
-  return { sessionDir, repo };
+  return { sessionDir, repo, projectId };
+}
+
+/**
+ * Open the per-session event store with explicit partition keys (PR-FIN-
+ * 2a-ii / T-2a.9.unified Option α).
+ */
+function openStore(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): EventStore {
+  return new EventStore(join(sessionDir, 'gobbi.db'), {
+    sessionId,
+    projectId,
+  });
 }
 
 function planPayload(
@@ -175,7 +191,7 @@ describe('WORKFLOW_COMMANDS registration', () => {
 
 describe('runCapturePlanning — happy path', () => {
   test('writes plan.md and emits artifact.write', async () => {
-    const { sessionDir } = await initScratchSession('cap-plan-ok');
+    const { sessionDir, projectId } = await initScratchSession('cap-plan-ok');
 
     await captureExit(() =>
       runCapturePlanningWithOptions([], {
@@ -198,7 +214,7 @@ describe('runCapturePlanning — happy path', () => {
       '# Plan\n\n1. step one\n2. step two\n',
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-plan-ok', projectId);
     try {
       const writes = store.byType('artifact.write');
       expect(writes).toHaveLength(1);
@@ -220,7 +236,7 @@ describe('runCapturePlanning — happy path', () => {
 
 describe('runCapturePlanning — revision overwrite', () => {
   test('re-run with new plan overwrites plan.md and emits a second artifact.write', async () => {
-    const { sessionDir } = await initScratchSession('cap-plan-rev');
+    const { sessionDir, projectId } = await initScratchSession('cap-plan-rev');
 
     // First invocation — uses tool-call idempotency with one id.
     await captureExit(() =>
@@ -253,7 +269,7 @@ describe('runCapturePlanning — revision overwrite', () => {
       '# Plan v2\n\nrevised content\n',
     );
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-plan-rev', projectId);
     try {
       const writes = store.byType('artifact.write');
       expect(writes).toHaveLength(2);
@@ -292,7 +308,7 @@ describe('runCapturePlanning — missing session', () => {
 
 describe('runCapturePlanning — missing plan content', () => {
   test('payload without tool_input.plan → silent no-op (no file, no events)', async () => {
-    const { sessionDir } = await initScratchSession('cap-plan-empty');
+    const { sessionDir, projectId } = await initScratchSession('cap-plan-empty');
 
     await captureExit(() =>
       runCapturePlanningWithOptions([], {
@@ -308,7 +324,7 @@ describe('runCapturePlanning — missing plan content', () => {
     expect(captured.exitCode).toBeNull();
     expect(existsSync(join(sessionDir, 'planning', 'plan.md'))).toBe(false);
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'cap-plan-empty', projectId);
     try {
       expect(store.byType('artifact.write')).toHaveLength(0);
     } finally {

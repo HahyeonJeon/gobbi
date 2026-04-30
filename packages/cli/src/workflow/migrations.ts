@@ -43,7 +43,7 @@
  *   data. The schema ALTER + row backfill run inside the event store's
  *   open path — {@link ensureSchemaV5} adds the columns when missing;
  *   {@link backfillSessionAndProjectIds} populates NULL slots on pre-v5
- *   rows using the store's known `sessionId` + `projectRootBasename`.
+ *   rows using the store's known `sessionId` + `projectId`.
  * - v6 — Wave A.1.3 / orchestration Pass 4 (issue #146). Adds four new
  *   workspace-partitioned tables to the event store DB:
  *
@@ -293,8 +293,8 @@ export function ensureSchemaV5(db: Database): void {
  * NULL` guard — rows that already carry a value (v5 fresh-writes, or an
  * earlier backfill pass) are untouched.
  *
- * `projectRootBasename` may be `null` when `metadata.json` is missing or
- * malformed at store-open time; in that case `project_id` is left NULL
+ * `projectId` may be `null` when the caller did not supply an explicit
+ * `EventStoreOptions.projectId`; in that case `project_id` is left NULL
  * rather than stamped with a sentinel, keeping the absence of metadata
  * distinguishable at query time.
  *
@@ -304,16 +304,16 @@ export function ensureSchemaV5(db: Database): void {
 export function backfillSessionAndProjectIds(
   db: Database,
   sessionId: string,
-  projectRootBasename: string | null,
+  projectId: string | null,
 ): void {
   db.run(
     'UPDATE events SET session_id = ? WHERE session_id IS NULL',
     [sessionId],
   );
-  if (projectRootBasename !== null) {
+  if (projectId !== null) {
     db.run(
       'UPDATE events SET project_id = ? WHERE project_id IS NULL',
-      [projectRootBasename],
+      [projectId],
     );
   }
 }

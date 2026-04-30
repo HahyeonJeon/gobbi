@@ -17,6 +17,11 @@
  *      re-running does not duplicate.
  *   2. `--dry-run` — prints the planned moves; writes nothing, deletes
  *      nothing, exits 0.
+ *   3. Project-scoped promotions also upsert a `ProjectJsonGotcha` entry
+ *      into the destination project's `project.json.gotchas[]` (PR-FIN-2a-ii
+ *      T-2a.8.3 — the JSON-memory pivot retired the legacy SQLite gotcha
+ *      index). Skill-scoped promotions are NOT indexed: skill gotchas live
+ *      colocated with their skill, not in cross-session project memory.
  *
  * ## Active-session guard (removed, PR-FIN-2a-i T-2a.1.5)
  *
@@ -41,18 +46,43 @@
  *                                   (symlink target:
  *                                   `.gobbi/projects/<project>/skills/{skillName}/gotchas.md`)
  *
+ * ## project.json index (PR-FIN-2a-ii T-2a.8.3)
+ *
+ * For each project-scoped promotion, the command upserts a
+ * `ProjectJsonGotcha` entry into
+ * `.gobbi/projects/<project>/project.json.gotchas[]` keyed by `path`. The
+ * stored `path` is the destination relative to `repoRoot`; `sha256` is a
+ * 64-char hex digest of the destination file's bytes after append (so the
+ * digest reflects the indexed file's actual on-disk state, including any
+ * accumulated prior entries). `class` defaults to `'unknown'` — promotion
+ * does not parse the markdown body to extract a Priority line, and the
+ * legacy SQLite index never carried a typed class either. A future
+ * frontmatter-aware promote can populate `class` without a schema change.
+ * `promotedFromSession` reads `$CLAUDE_SESSION_ID` (the canonical session
+ * ID env var per `_gotcha/session-id-discovery.md`); when absent the
+ * literal string `'unknown'` is used so the AJV `minLength: 1` constraint
+ * holds.
+ *
+ * Re-running the command on the same destination file is idempotent: the
+ * `upsertById` keying in `lib/json-memory.ts` replaces an existing entry
+ * keyed by `path`, never duplicates.
+ *
  * ## Future work (out of scope — PR D+)
  *
- * Duplicate-entry detection, structured frontmatter merge, and per-category
- * validation stay out of this file. Research explicitly keeps them deferred
- * so the first shipped version has a small, reviewable surface. The current
- * append-and-delete flow is safe because git diff is the merge review.
+ * Duplicate-entry detection (within a single `gotchas.md` file),
+ * structured frontmatter merge, per-category validation, and class
+ * extraction stay out of this file. Research explicitly keeps them
+ * deferred so the first shipped version has a small, reviewable surface.
+ * The current append-and-delete flow is safe because git diff is the
+ * merge review.
  *
  * @see `.gobbi/projects/gobbi/design/v050-cli.md` §`gobbi gotcha` commands
  * @see `.claude/skills/_gotcha/SKILL.md`
  * @see `.claude/skills/_gotcha/project-gotcha.md`
+ * @see ../../lib/json-memory.ts §`upsertProjectGotcha`
  */
 
+import { createHash } from 'node:crypto';
 import {
   existsSync,
   readdirSync,
@@ -62,10 +92,15 @@ import {
   appendFileSync,
   unlinkSync,
 } from 'node:fs';
-import { basename, join } from 'node:path';
+import { basename, join, relative } from 'node:path';
 
 import { parseArgs } from 'node:util';
 
+import {
+  projectJsonPath,
+  upsertProjectGotcha,
+  type ProjectJsonGotcha,
+} from '../../lib/json-memory.js';
 import { getRepoRoot } from '../../lib/repo.js';
 import {
   projectSubdir,
@@ -222,8 +257,12 @@ export async function runPromoteWithOptions(
     return;
   }
 
+  // The project.json index lives at the destination project's root; only
+  // project-scoped (non-skill) promotions are recorded there. The plan's
+  // discriminant carries the destination project explicitly so this loop
+  // does not re-thread `projectName`.
   for (const item of plan) {
-    applyPromotion(item);
+    applyPromotion(item, repoRoot);
   }
 }
 
@@ -231,12 +270,29 @@ export async function runPromoteWithOptions(
 // Promotion planning
 // ---------------------------------------------------------------------------
 
-interface PromotionPlan {
-  readonly source: string;
-  readonly destination: string;
-  readonly body: string;
-  readonly bytes: number;
-}
+/**
+ * One planned promotion. `scope` discriminates project-scoped (which
+ * upserts a `ProjectJsonGotcha` index entry post-write) vs skill-scoped
+ * (which routes via the `.claude/skills/` symlink farm and is NOT
+ * indexed). `destinationProject` is the project name whose `project.json`
+ * receives the index entry — only meaningful when `scope === 'project'`.
+ */
+type PromotionPlan =
+  | {
+      readonly scope: 'project';
+      readonly source: string;
+      readonly destination: string;
+      readonly body: string;
+      readonly bytes: number;
+      readonly destinationProject: string;
+    }
+  | {
+      readonly scope: 'skill';
+      readonly source: string;
+      readonly destination: string;
+      readonly body: string;
+      readonly bytes: number;
+    };
 
 function isSkillScopedName(filename: string): boolean {
   return filename.startsWith(SKILL_PREFIX);
@@ -304,8 +360,8 @@ function planPromotion(
 ): PromotionPlan {
   const sourcePath = join(sourceDir, filename);
   const body = readFileSync(sourcePath, 'utf8');
+  const bytes = Buffer.byteLength(body, 'utf8');
 
-  let destination: string;
   if (isSkillScopedName(filename)) {
     // `_skill-<name>.md` → `.claude/skills/<name>/gotchas.md`
     //
@@ -316,62 +372,141 @@ function planPromotion(
     // through the farm keeps the source of truth in the project dir
     // while preserving the loader-visible path.
     const skillPart = filename.slice(SKILL_PREFIX.length, -'.md'.length);
-    destination = join(claudeDir, 'skills', skillPart, 'gotchas.md');
-  } else {
-    // `<category>.md` → `.gobbi/projects/<project>/gotchas/<category>.md`
-    //
-    // Routes through the `workspace-paths` facade so a future rename of
-    // the taxonomy lands in one place. `projectName === null` is screened
-    // out by the caller when any non-skill entry is present, so a fallback
-    // name here is unreachable; we still pick a sentinel rather than
-    // `!`-asserting so a future miswiring fails loudly at the filesystem
-    // layer instead of a runtime TypeError.
-    //
-    // PR-FIN-2a-i: gotcha drafts live at top-level `gotchas/`, no longer
-    // nested under `learnings/`.
-    const projectDir =
-      projectName ?? '__unset__project__' /* unreachable — caller checks */;
-    destination = join(
-      projectSubdir(repoRoot, projectDir, 'gotchas'),
-      filename,
-    );
+    const destination = join(claudeDir, 'skills', skillPart, 'gotchas.md');
+    return { scope: 'skill', source: sourcePath, destination, body, bytes };
   }
 
+  // `<category>.md` → `.gobbi/projects/<project>/gotchas/<category>.md`
+  //
+  // Routes through the `workspace-paths` facade so a future rename of
+  // the taxonomy lands in one place. `projectName === null` is screened
+  // out by the caller when any non-skill entry is present, so a fallback
+  // name here is unreachable; we still pick a sentinel rather than
+  // `!`-asserting so a future miswiring fails loudly at the filesystem
+  // layer instead of a runtime TypeError.
+  //
+  // PR-FIN-2a-i: gotcha drafts live at top-level `gotchas/`, no longer
+  // nested under `learnings/`.
+  const destinationProject =
+    projectName ?? '__unset__project__' /* unreachable — caller checks */;
+  const destination = join(
+    projectSubdir(repoRoot, destinationProject, 'gotchas'),
+    filename,
+  );
   return {
+    scope: 'project',
     source: sourcePath,
     destination,
     body,
-    bytes: Buffer.byteLength(body, 'utf8'),
+    bytes,
+    destinationProject,
   };
 }
 
 /**
- * Append-and-delete. The destination file is created if absent, and the
- * source file is removed post-append so re-runs do not duplicate. If the
- * source body does not already end in a newline we add one so successive
- * promotions do not fuse the last line of one entry into the first of the
- * next.
+ * Append-and-delete plus project.json index upsert.
  *
- * Post-W3.1 / PR-FIN-2a-i subtlety: for a non-skill promotion in the
- * default project (project name == `basename(repoRoot)`), the category
- * source file and its destination resolve to the same absolute path —
- * both live under `.gobbi/projects/<basename>/gotchas/<category>.md`.
- * Appending to itself and then unlinking would double the body and then
- * delete the file (data loss). When source and destination collide we
- * treat the promotion as already complete (the draft is already in its
- * permanent location by virtue of the taxonomy) and skip the file with
- * no writes.
+ * Filesystem half (unchanged from pre-PR-FIN-2a-ii):
+ *
+ *   - The destination file is created if absent; otherwise the source body
+ *     is appended (if the body does not already end in a newline we add one
+ *     so successive promotions do not fuse the last line of one entry into
+ *     the first of the next).
+ *   - The source file is removed post-append so re-runs do not duplicate.
+ *   - Post-W3.1 / PR-FIN-2a-i subtlety: for a non-skill promotion in the
+ *     default project (project name == `basename(repoRoot)`), the category
+ *     source file and its destination resolve to the same absolute path —
+ *     both live under `.gobbi/projects/<basename>/gotchas/<category>.md`.
+ *     Appending to itself and then unlinking would double the body and
+ *     then delete the file (data loss). When source and destination
+ *     collide we skip the filesystem write — the draft is already in its
+ *     permanent location.
+ *
+ * Index half (new in PR-FIN-2a-ii T-2a.8.3):
+ *
+ *   - For project-scoped promotions only, after the filesystem write
+ *     resolves (or is skipped on a same-path collision) we upsert a
+ *     `ProjectJsonGotcha` entry into the destination project's
+ *     `project.json.gotchas[]` keyed by destination path. `sha256` is
+ *     computed from the destination file's bytes after the write so the
+ *     digest reflects what's actually on disk (including any prior
+ *     accumulated entries from earlier promotes).
+ *   - Skill-scoped promotions are NOT indexed in `project.json` — skill
+ *     gotchas live colocated with their skill via the `.claude/skills/`
+ *     symlink farm and have no role in cross-session project memory.
  */
-function applyPromotion(plan: PromotionPlan): void {
-  if (plan.source === plan.destination) {
-    // Same-path no-op — the draft already lives at the destination.
+function applyPromotion(plan: PromotionPlan, repoRoot: string): void {
+  const samePath = plan.source === plan.destination;
+  if (!samePath) {
+    const destDir = destinationParent(plan.destination);
+    mkdirSync(destDir, { recursive: true });
+    const payload = plan.body.endsWith('\n') ? plan.body : `${plan.body}\n`;
+    appendFileSync(plan.destination, payload, 'utf8');
+    unlinkSync(plan.source);
+  }
+
+  if (plan.scope === 'skill') {
+    // Skill-scoped gotchas live with their skill, not in project memory.
     return;
   }
-  const destDir = destinationParent(plan.destination);
-  mkdirSync(destDir, { recursive: true });
-  const payload = plan.body.endsWith('\n') ? plan.body : `${plan.body}\n`;
-  appendFileSync(plan.destination, payload, 'utf8');
-  unlinkSync(plan.source);
+
+  // Project-scoped: upsert the index entry. The plan's `destinationProject`
+  // is carved out by `planPromotion`, which itself is reached only after
+  // the caller's needs-project guard has resolved a non-null project name.
+  const destinationProject = plan.destinationProject;
+  const indexPath = projectJsonPath(repoRoot, destinationProject);
+  const sha256 = sha256OfFile(plan.destination);
+  const entry: ProjectJsonGotcha = {
+    path: relative(repoRoot, plan.destination),
+    sha256,
+    class: classifyGotcha(),
+    promotedAt: new Date().toISOString(),
+    promotedFromSession: resolvePromotedFromSession(),
+  };
+  upsertProjectGotcha({
+    path: indexPath,
+    entry,
+    projectName: destinationProject,
+    projectId: destinationProject,
+  });
+}
+
+/** sha256(file_bytes) as 64-char lowercase hex. */
+function sha256OfFile(filePath: string): string {
+  const bytes = readFileSync(filePath);
+  return createHash('sha256').update(bytes).digest('hex');
+}
+
+/**
+ * Default class for promoted gotchas.
+ *
+ * The legacy SQLite gotcha index never carried a typed class; the markdown
+ * body holds a free-text `Priority:` line that this command does not parse.
+ * `'unknown'` keeps the AJV `minLength: 1` constraint satisfied without
+ * inventing a taxonomy. A frontmatter-aware promote in a future PR can
+ * populate this field without a `project.json` schema change.
+ */
+function classifyGotcha(): string {
+  return 'unknown';
+}
+
+/**
+ * Resolve the session ID under which this promote runs.
+ *
+ * `gobbi gotcha promote` is a between-sessions admin command — by design
+ * `$CLAUDE_SESSION_ID` is typically populated only when the operator
+ * invokes it from inside an active Claude Code session (e.g., as part of
+ * an agent's wrap-up). When the env var is absent or empty we fall back
+ * to the literal string `'unknown'` rather than the empty string so the
+ * `project.json` AJV `minLength: 1` constraint holds.
+ *
+ * @see `_gotcha/session-id-discovery.md` for the canonical env-var name.
+ */
+function resolvePromotedFromSession(): string {
+  const envSessionId = process.env['CLAUDE_SESSION_ID'];
+  return envSessionId !== undefined && envSessionId !== ''
+    ? envSessionId
+    : 'unknown';
 }
 
 function destinationParent(destPath: string): string {

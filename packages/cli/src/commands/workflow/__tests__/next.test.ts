@@ -129,22 +129,36 @@ function makeScratchRepo(): string {
 
 async function initScratchSession(
   sessionId: string,
-): Promise<{ sessionDir: string; repo: string }> {
+): Promise<{ sessionDir: string; repo: string; projectId: string }> {
   const repo = makeScratchRepo();
+  const projectId = basename(repo);
   await captureExit(() =>
     runInitWithOptions(
       ['--session-id', sessionId, '--task', 'next-test'],
       { repoRoot: repo },
     ),
   );
-  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
+  const sessionDir = sessionDirForProject(repo, projectId, sessionId);
   // Reset capture between init and the test's real assertions.
   captured = { stdout: '', stderr: '', exitCode: null };
-  return { sessionDir, repo };
+  return { sessionDir, repo, projectId };
 }
 
-function openStore(sessionDir: string): EventStore {
-  return new EventStore(join(sessionDir, 'gobbi.db'));
+/**
+ * Open the per-session event store for the given session. PR-FIN-2a-ii:
+ * every read is partition-filtered by `(session_id, project_id)`, so the
+ * helper mandates both keys — passing them at construction matches the
+ * values init stamps at write time.
+ */
+function openStore(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): EventStore {
+  return new EventStore(join(sessionDir, 'gobbi.db'), {
+    sessionId,
+    projectId,
+  });
 }
 
 // ===========================================================================
@@ -153,8 +167,8 @@ function openStore(sessionDir: string): EventStore {
 
 describe('compileCurrentStep — productive step', () => {
   test('compiles ideation spec when state.currentStep is ideation', async () => {
-    const { sessionDir } = await initScratchSession('next-ideation');
-    const store = openStore(sessionDir);
+    const { sessionDir, projectId } = await initScratchSession('next-ideation');
+    const store = openStore(sessionDir, 'next-ideation', projectId);
     try {
       // Fresh init lands at ideation/discussing. Strip the substate for the
       // no-overlay fixture to exercise the base-spec branch directly.
@@ -188,8 +202,8 @@ describe('compileCurrentStep — productive step', () => {
 
 describe('compileCurrentStep — substate overlay', () => {
   test('applies the discussing.overlay.json when currentSubstate is "discussing"', async () => {
-    const { sessionDir } = await initScratchSession('next-overlay');
-    const store = openStore(sessionDir);
+    const { sessionDir, projectId } = await initScratchSession('next-overlay');
+    const store = openStore(sessionDir, 'next-overlay', projectId);
     try {
       const resolved = resolveWorkflowState(sessionDir, store, 'next-overlay');
       // Fresh init already lands on discussing per the reducer. Assert it
@@ -222,13 +236,13 @@ describe('compileCurrentStep — substate overlay', () => {
 describe('compileCurrentStep — error branch', () => {
   test('dispatches to compileErrorPrompt and returns the timeout-pathway prompt text', async () => {
     const sessionId = 'next-error';
-    const { sessionDir } = await initScratchSession(sessionId);
-    const store = openStore(sessionDir);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
+    const store = openStore(sessionDir, sessionId, projectId);
     try {
       // Drive the session into `error` via STEP_TIMEOUT on the current
       // (active) step — the reducer transitions active → error on timeout.
       const state = resolveWorkflowState(sessionDir, store, sessionId);
-      const result = appendEventAndUpdateState(
+      const result = await appendEventAndUpdateState(
         store,
         sessionDir,
         state,
@@ -267,8 +281,8 @@ describe('compileCurrentStep — error branch', () => {
     // events (timeout / invalid_transition / trailing-revise verdict).
     // This test asserts the fallback emits a coherent prompt rather than
     // throwing.
-    const { sessionDir } = await initScratchSession('next-error-fallback');
-    const store = openStore(sessionDir);
+    const { sessionDir, projectId } = await initScratchSession('next-error-fallback');
+    const store = openStore(sessionDir, 'next-error-fallback', projectId);
     try {
       const errorState: WorkflowState = {
         ...initialState('next-error-fallback'),
@@ -309,15 +323,15 @@ describe('runNextWithOptions', () => {
 
   test('emits the timeout-pathway error-state prompt when the session is in error', async () => {
     const sessionId = 'next-cli-error';
-    const { sessionDir } = await initScratchSession(sessionId);
+    const { sessionDir, projectId } = await initScratchSession(sessionId);
 
     // Drive the session into `error` via STEP_TIMEOUT so the detector
     // classifies the pathway as Timeout.
     {
-      const store = new EventStore(join(sessionDir, 'gobbi.db'));
+      const store = openStore(sessionDir, sessionId, projectId);
       try {
         const state = resolveWorkflowState(sessionDir, store, sessionId);
-        appendEventAndUpdateState(
+        await appendEventAndUpdateState(
           store,
           sessionDir,
           state,

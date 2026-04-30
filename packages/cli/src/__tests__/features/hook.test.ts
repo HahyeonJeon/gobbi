@@ -338,19 +338,22 @@ describe('HOOK-1: gobbi hook session-start chains config env + workflow init', (
     expect(body).toContain('export CLAUDE_HOOK_EVENT_NAME=SessionStart\n');
     expect(body).toContain(`export CLAUDE_PROJECT_DIR=${repo}\n`);
 
-    // workflow init created the session directory and metadata.json.
+    // workflow init created the session directory and session.json.
+    // PR-FIN-2a-ii: `metadata.json` retired in favour of `session.json`
+    // (a 6-field stub at init carrying schemaVersion / sessionId /
+    // projectId / createdAt / gobbiVersion / task).
     const projectName = basename(repo);
-    const metaPath = join(
+    const sessionPath = join(
       sessionDirForProject(repo, projectName, 'hook-1-sess'),
-      'metadata.json',
+      'session.json',
     );
-    expect(existsSync(metaPath)).toBe(true);
-    const meta = JSON.parse(readFileSync(metaPath, 'utf8')) as {
+    expect(existsSync(sessionPath)).toBe(true);
+    const session = JSON.parse(readFileSync(sessionPath, 'utf8')) as {
       readonly sessionId: string;
-      readonly projectName: string;
+      readonly projectId: string;
     };
-    expect(meta.sessionId).toBe('hook-1-sess');
-    expect(meta.projectName).toBe(projectName);
+    expect(session.sessionId).toBe('hook-1-sess');
+    expect(session.projectId).toBe(projectName);
   });
 });
 
@@ -479,15 +482,16 @@ describe('HOOK-6: end-to-end SessionStart chain', () => {
     expect(body).toContain(`export CLAUDE_PROJECT_DIR=${repo}\n`);
 
     // Session dir created by workflow init.
+    // PR-FIN-2a-ii: `metadata.json` retired; check `session.json`.
     const projectName = basename(repo);
-    const metaPath = join(
+    const sessionPath = join(
       sessionDirForProject(repo, projectName, 'hook-6-sess'),
-      'metadata.json',
+      'session.json',
     );
-    expect(existsSync(metaPath)).toBe(true);
-    const meta = JSON.parse(readFileSync(metaPath, 'utf8')) as {
+    expect(existsSync(sessionPath)).toBe(true);
+    const session = JSON.parse(readFileSync(sessionPath, 'utf8')) as {
       readonly sessionId: string;
     };
-    expect(meta.sessionId).toBe('hook-6-sess');
+    expect(session.sessionId).toBe('hook-6-sess');
   });
 });

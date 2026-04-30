@@ -305,7 +305,7 @@ describe('engine STEP_EXIT hook', () => {
     return state;
   }
 
-  it('writes the per-step README when STEP_EXIT commits for a productive step', () => {
+  it('writes the per-step README when STEP_EXIT commits for a productive step', async () => {
     const sessionId = 'engine-exit-productive';
     const sessionDir = makeSessionDir(rootDir, 'gobbi', sessionId);
     const prev = seedIdeationState(sessionDir, sessionId);
@@ -315,7 +315,7 @@ describe('engine STEP_EXIT hook', () => {
       type: WORKFLOW_EVENTS.STEP_EXIT,
       data: { step: 'ideation' },
     };
-    const result = appendEventAndUpdateState(
+    const result = await appendEventAndUpdateState(
       store,
       sessionDir,
       prev,
@@ -341,7 +341,7 @@ describe('engine STEP_EXIT hook', () => {
     expect(contents).toContain(`nextStep: ${result.state.currentStep}`);
   });
 
-  it('second STEP_EXIT for the same step overwrites the README cleanly', () => {
+  it('second STEP_EXIT for the same step overwrites the README cleanly', async () => {
     // The reducer only allows STEP_EXIT from the current step, so to exercise
     // the idempotency path we round-trip through the writer once via the
     // engine hook, then directly invoke the writer again with updated args.
@@ -356,7 +356,7 @@ describe('engine STEP_EXIT hook', () => {
       type: WORKFLOW_EVENTS.STEP_EXIT,
       data: { step: 'ideation' },
     };
-    const result = appendEventAndUpdateState(
+    const result = await appendEventAndUpdateState(
       store,
       sessionDir,
       prev,
@@ -391,7 +391,7 @@ describe('engine STEP_EXIT hook', () => {
     expect(fenceCount).toBe(2);
   });
 
-  it('does NOT write a README for non-STEP_EXIT events', () => {
+  it('does NOT write a README for non-STEP_EXIT events', async () => {
     const sessionId = 'engine-non-exit';
     const sessionDir = makeSessionDir(rootDir, 'gobbi', sessionId);
     // Fresh state → WORKFLOW.START is a valid transition.
@@ -400,7 +400,7 @@ describe('engine STEP_EXIT hook', () => {
       type: WORKFLOW_EVENTS.START,
       data: { sessionId, timestamp: '2026-04-20T09:00:00.000Z' },
     };
-    const result = appendEventAndUpdateState(
+    const result = await appendEventAndUpdateState(
       store,
       sessionDir,
       initialState(sessionId),
@@ -671,7 +671,7 @@ describe('engine STEP_EXIT hook', () => {
     }
   });
 
-  it('does NOT write a README when STEP_EXIT is deduplicated (persisted: false)', () => {
+  it('does NOT write a README when STEP_EXIT is deduplicated (persisted: false)', async () => {
     const sessionId = 'engine-exit-dedup';
     const sessionDir = makeSessionDir(rootDir, 'gobbi', sessionId);
     const prev = seedIdeationState(sessionDir, sessionId);
@@ -683,7 +683,7 @@ describe('engine STEP_EXIT hook', () => {
     };
 
     // First call commits + writes README.
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       prev,
@@ -707,7 +707,7 @@ describe('engine STEP_EXIT hook', () => {
 
     // Replay the SAME event with the same tool-call-id — the store dedupes,
     // the engine returns persisted: false, and the writer must not fire.
-    appendEventAndUpdateState(
+    await appendEventAndUpdateState(
       store,
       sessionDir,
       prev,

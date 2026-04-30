@@ -93,7 +93,9 @@ test(
         basename(tmpRoot),
         sessionId,
       );
-      expect(existsSync(join(sessionDir, 'metadata.json'))).toBe(true);
+      // PR-FIN-2a-ii: `metadata.json` retired; `session.json` stub is
+      // written at init by `lib/json-memory.ts::writeSessionStub`.
+      expect(existsSync(join(sessionDir, 'session.json'))).toBe(true);
       expect(existsSync(join(sessionDir, 'gobbi.db'))).toBe(true);
       // Pass 3 finalize: `ensureSettingsCascade` seeds a sparse workspace
       // `.gobbi/settings.json` on first init. The project-level file

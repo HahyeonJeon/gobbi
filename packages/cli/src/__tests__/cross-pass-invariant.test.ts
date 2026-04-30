@@ -1,5 +1,5 @@
 /**
- * Cross-pass invariant — Wave 3.D.
+ * Cross-pass invariant — Wave 3.D (rewritten under PR-FIN-2a-ii T-2a.9.tests).
  *
  * Pass-1 (Pass 1 / Pass 2 / Pass 3) each landed schema-version handshakes
  * at independent layers:
@@ -7,19 +7,19 @@
  *   - workspace/project/session `settings.json` — `schemaVersion: 1` plus
  *     the pre-Pass-3 `.gobbi/project-config.json` (T2-v1) → unified-shape
  *     upgrade in `ensureSettingsCascade`.
- *   - per-session `metadata.json` — `schemaVersion: 3` (gobbi-memory Pass-2
- *     redesign — multi-project layout).
- *   - per-session `state.json` — `schemaVersion: 4` (Pass-2 reducer state v4
- *     adds `verificationResults` + `stepStartedAt`).
- *   - per-session `gobbi.db` — `CURRENT_SCHEMA_VERSION = 5` (gobbi-memory
- *     Pass 2 adds `session_id` + `project_id` columns; ALTER + backfill
- *     happens on `EventStore` open).
+ *   - per-session `session.json` — `schemaVersion: 1` (PR-FIN-2a-ii — JSON
+ *     memory pivot retired the legacy `metadata.json` v3 + `state.json` v4
+ *     in favour of a single 6-required-field `session.json` stub at init
+ *     and a fully-populated shape at memorization-step exit).
+ *   - per-session `gobbi.db` — `CURRENT_SCHEMA_VERSION = 7` (Wave C.1.2
+ *     adds `prompt_patches`; gobbi-memory Pass 2 v5 adds `session_id` +
+ *     `project_id` columns; ALTER + backfill happens on `EventStore` open).
  *
  * Bugs at the SEAMS between these layers cannot show up in any single
  * pass's tests — each pass's owner only validates their own layer in
  * isolation. This file locks the cross-layer invariant: a session
  * directory built from legacy on-disk shapes must converge to current
- * schemas across ALL four layers in a single `runInitWithOptions` call,
+ * schemas across ALL three layers in a single `runInitWithOptions` call,
  * and the result must be semantically equivalent to a fresh-install
  * session for the same logical inputs.
  *
@@ -43,9 +43,9 @@
  *
  * The fresh-install comparison runs the same `runInitWithOptions` call
  * against a fresh tmpdir with no legacy fixtures, then asserts the
- * resulting `metadata.json` + `state.json` + `gobbi.db` schema versions
- * match the legacy-seed run modulo per-session-unique fields
- * (sessionId, createdAt, projectRoot path).
+ * resulting `session.json` + `gobbi.db` schema versions match the
+ * legacy-seed run modulo per-session-unique fields (sessionId,
+ * createdAt, projectId).
  *
  * Pattern: mirrors `__tests__/features/gobbi-config.test.ts` env-hygiene
  * and stdout-capture conventions; uses `runInitWithOptions({ repoRoot })`
@@ -67,8 +67,8 @@ import { Database } from 'bun:sqlite';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
-import { runInitWithOptions, readMetadata } from '../commands/workflow/init.js';
-import { readState } from '../workflow/state.js';
+import { runInitWithOptions } from '../commands/workflow/init.js';
+import { readSessionJson, sessionJsonPath } from '../lib/json-memory.js';
 import { CURRENT_SCHEMA_VERSION } from '../workflow/migrations.js';
 import {
   projectDir as projectDirForName,
@@ -266,8 +266,8 @@ function seedLegacyClaudeGobbi(repo: string): void {
 // ---------------------------------------------------------------------------
 
 interface LayerSnapshot {
-  readonly metadataSchemaVersion: number;
-  readonly stateSchemaVersion: number;
+  readonly sessionSchemaVersion: number;
+  readonly sessionProjectId: string;
   readonly dbColumnsHaveSessionAndProjectId: boolean;
   readonly workspaceSchemaVersion: number | null;
   readonly workspaceProjectsActive: string | null;
@@ -279,27 +279,21 @@ interface LayerSnapshot {
    * branch explicitly rather than asserting parity.
    */
   readonly projectSettingsExists: boolean;
-  readonly currentStep: string;
-  readonly evalConfigKeys: readonly string[];
 }
 
 function snapshotLayers(repo: string, sessionId: string): LayerSnapshot {
   const projectName = basename(repo);
   const sDir = sessionDirForProject(repo, projectName, sessionId);
 
-  // Layer 1 — metadata.json
-  const meta = readMetadata(join(sDir, 'metadata.json'));
-  if (meta === null) {
-    throw new Error(`metadata.json missing or malformed at ${sDir}`);
+  // Layer 1 — session.json (PR-FIN-2a-ii pivot replaced metadata.json +
+  // state.json with a single 6-field stub at init / fully-populated shape
+  // at memorization exit).
+  const session = readSessionJson(sessionJsonPath(repo, projectName, sessionId));
+  if (session === null) {
+    throw new Error(`session.json missing or malformed at ${sDir}`);
   }
 
-  // Layer 2 — state.json
-  const state = readState(sDir);
-  if (state === null) {
-    throw new Error(`state.json missing or malformed at ${sDir}`);
-  }
-
-  // Layer 3 — gobbi.db: open and confirm `session_id` + `project_id`
+  // Layer 2 — gobbi.db: open and confirm `session_id` + `project_id`
   // columns exist (v5 schema). PRAGMA table_info returns one row per
   // column; we narrow on `name` rather than column index.
   const dbPath = join(sDir, 'gobbi.db');
@@ -315,7 +309,7 @@ function snapshotLayers(repo: string, sessionId: string): LayerSnapshot {
     db.close();
   }
 
-  // Layer 4 — workspace settings.json. The unified resolver gives us the
+  // Layer 3 — workspace settings.json. The unified resolver gives us the
   // bootstrap-populated `projects.active` + `projects.known`; we read the
   // raw file directly so the snapshot reflects what landed on disk
   // (the resolver returns a merged Settings, which doesn't expose
@@ -352,16 +346,13 @@ function snapshotLayers(repo: string, sessionId: string): LayerSnapshot {
   );
 
   return {
-    metadataSchemaVersion: meta.schemaVersion,
-    stateSchemaVersion: state.schemaVersion,
+    sessionSchemaVersion: session.schemaVersion,
+    sessionProjectId: session.projectId,
     dbColumnsHaveSessionAndProjectId: dbHasV5Columns,
     workspaceSchemaVersion,
     workspaceProjectsActive,
     workspaceProjectsKnown,
     projectSettingsExists: existsSync(projectSettingsPath),
-    currentStep: state.currentStep,
-    evalConfigKeys:
-      state.evalConfig === null ? [] : Object.keys(state.evalConfig).sort(),
   };
 }
 
@@ -475,15 +466,17 @@ describe('cross-pass invariant: init normalises legacy-shape session', () => {
       // by construction; everything else MUST agree.
       // ---------------------------------------------------------------------
 
-      // Layer 1 — metadata.json schema (gobbi-memory Pass 2: v3).
-      expect(legacySnap.metadataSchemaVersion).toBe(3);
-      expect(freshSnap.metadataSchemaVersion).toBe(3);
+      // Layer 1 — session.json schema (PR-FIN-2a-ii JSON-memory pivot:
+      // v1). The 6-field stub at init carries `schemaVersion: 1` plus
+      // `sessionId`, `projectId`, `createdAt`, `gobbiVersion`, `task`.
+      // `projectId` is bound to the resolved project name at birth
+      // (basename(repoRoot) when no `--project` flag).
+      expect(legacySnap.sessionSchemaVersion).toBe(1);
+      expect(freshSnap.sessionSchemaVersion).toBe(1);
+      expect(legacySnap.sessionProjectId).toBe(basename(legacyRepo));
+      expect(freshSnap.sessionProjectId).toBe(basename(freshRepo));
 
-      // Layer 2 — state.json schema (Pass-2 reducer state: v4).
-      expect(legacySnap.stateSchemaVersion).toBe(4);
-      expect(freshSnap.stateSchemaVersion).toBe(4);
-
-      // Layer 3 — gobbi.db schema (Wave C.1.2: v7 — `prompt_patches`
+      // Layer 2 — gobbi.db schema (Wave C.1.2: v7 — `prompt_patches`
       // workspace-partitioned audit table on top of v6's
       // workspace-partitioned audit + meta tables, on top of the
       // gobbi-memory Pass 2 v5 events columns). `CURRENT_SCHEMA_VERSION`
@@ -494,7 +487,7 @@ describe('cross-pass invariant: init normalises legacy-shape session', () => {
       expect(legacySnap.dbColumnsHaveSessionAndProjectId).toBe(true);
       expect(freshSnap.dbColumnsHaveSessionAndProjectId).toBe(true);
 
-      // Layer 4 — workspace settings.json schema (Pass-3 unified: v1).
+      // Layer 3 — workspace settings.json schema (Pass-3 unified: v1).
       expect(legacySnap.workspaceSchemaVersion).toBe(1);
       expect(freshSnap.workspaceSchemaVersion).toBe(1);
 
@@ -511,13 +504,6 @@ describe('cross-pass invariant: init normalises legacy-shape session', () => {
       // upgrader output); fresh install did not.
       expect(legacySnap.projectSettingsExists).toBe(true);
       expect(freshSnap.projectSettingsExists).toBe(false);
-
-      // Initial workflow step + evalConfig shape match across arms — the
-      // event-store seed (workflow.start + workflow.eval.decide) lands the
-      // session in `ideation` with both eval gates wired identically.
-      expect(legacySnap.currentStep).toBe('ideation');
-      expect(freshSnap.currentStep).toBe('ideation');
-      expect(legacySnap.evalConfigKeys).toEqual(freshSnap.evalConfigKeys);
 
       // ---------------------------------------------------------------------
       // Cascade-resolution invariant — the legacy arm's upgrader wrote the
@@ -587,7 +573,7 @@ describe('cross-pass invariant: upgrader resolves project name via init ladder',
         existsSync(
           join(
             sessionDirForProject(repo, 'my-app', sessionId),
-            'metadata.json',
+            'session.json',
           ),
         ),
       ).toBe(true);

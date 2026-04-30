@@ -128,17 +128,36 @@ function makeScratchRepo(): string {
 
 async function initScratchSession(
   sessionId: string,
-): Promise<{ sessionDir: string; repo: string }> {
+): Promise<{ sessionDir: string; repo: string; projectId: string }> {
   const repo = makeScratchRepo();
+  const projectId = basename(repo);
   await captureExit(() =>
     runInitWithOptions(
       ['--session-id', sessionId, '--task', 'guard-test'],
       { repoRoot: repo },
     ),
   );
-  const sessionDir = sessionDirForProject(repo, basename(repo), sessionId);
+  const sessionDir = sessionDirForProject(repo, projectId, sessionId);
   captured = { stdout: '', stderr: '', exitCode: null };
-  return { sessionDir, repo };
+  return { sessionDir, repo, projectId };
+}
+
+/**
+ * Open the per-session event store with explicit partition keys (lock 8 —
+ * PR-FIN-2a-ii / T-2a.9.unified). Production callers always supply both
+ * keys; the path-derivation fallback covers tests that don't go through
+ * the helpers but `initScratchSession` callers should use this helper to
+ * keep partition-aware reads aligned with init's stamping.
+ */
+function openStore(
+  sessionDir: string,
+  sessionId: string,
+  projectId: string,
+): EventStore {
+  return new EventStore(join(sessionDir, 'gobbi.db'), {
+    sessionId,
+    projectId,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -236,7 +255,7 @@ describe('WORKFLOW_COMMANDS registration', () => {
 
 describe('runGuard — empty registry', () => {
   test('responds allow + emits no events', async () => {
-    const { sessionDir } = await initScratchSession('guard-empty');
+    const { sessionDir, projectId } = await initScratchSession('guard-empty');
     const payload = makePayload('guard-empty', 'Write');
 
     await captureExit(() =>
@@ -251,7 +270,7 @@ describe('runGuard — empty registry', () => {
     const decision = parseResponse(captured.stdout);
     expect(decision.permissionDecision).toBe('allow');
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'guard-empty', projectId);
     try {
       const guardEvents = [
         ...store.byType('guard.violation'),
@@ -270,7 +289,7 @@ describe('runGuard — empty registry', () => {
 
 describe('runGuard — deny fixture', () => {
   test('emits deny + reason + guard.violation event', async () => {
-    const { sessionDir } = await initScratchSession('guard-deny');
+    const { sessionDir, projectId } = await initScratchSession('guard-deny');
     const payload = makePayload('guard-deny', 'Write', {
       tool_call_id: 'call-deny-1',
     });
@@ -291,7 +310,7 @@ describe('runGuard — deny fixture', () => {
     // `ideation` is the step init lands on once workflow.eval.decide fires.
     expect(decision.permissionDecisionReason).toContain('step: ideation');
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'guard-deny', projectId);
     try {
       const violations = store.byType('guard.violation');
       expect(violations).toHaveLength(1);
@@ -314,7 +333,7 @@ describe('runGuard — deny fixture', () => {
 
 describe('runGuard — warn fixture', () => {
   test('emits allow + additionalContext + guard.warn event carrying code', async () => {
-    const { sessionDir } = await initScratchSession('guard-warn');
+    const { sessionDir, projectId } = await initScratchSession('guard-warn');
     const payload = makePayload('guard-warn', 'Write', {
       tool_call_id: 'call-warn-1',
     });
@@ -333,7 +352,7 @@ describe('runGuard — warn fixture', () => {
     expect(decision.additionalContext).toBeDefined();
     expect(decision.additionalContext!).toContain('warn fixture warn-1');
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'guard-warn', projectId);
     try {
       const warns = store.byType('guard.warn');
       expect(warns).toHaveLength(1);
@@ -358,7 +377,7 @@ describe('runGuard — warn fixture', () => {
 
 describe('runGuard — warn + deny combo', () => {
   test('warn fires first, deny short-circuits — only deny appears in response', async () => {
-    const { sessionDir } = await initScratchSession('guard-combo');
+    const { sessionDir, projectId } = await initScratchSession('guard-combo');
     const payload = makePayload('guard-combo', 'Write', {
       tool_call_id: 'call-combo-1',
     });
@@ -384,7 +403,7 @@ describe('runGuard — warn + deny combo', () => {
     // is the sole surfaced context.
     expect(decision.additionalContext).toBeUndefined();
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'guard-combo', projectId);
     try {
       expect(store.byType('guard.warn')).toHaveLength(1);
       expect(store.byType('guard.violation')).toHaveLength(1);
@@ -444,7 +463,7 @@ describe('runGuard — missing session', () => {
 
 describe('runGuard — invalid stdin', () => {
   test('malformed payload → allow (fail-open), exit 0', async () => {
-    const { sessionDir } = await initScratchSession('guard-bad-stdin');
+    const { sessionDir, projectId } = await initScratchSession('guard-bad-stdin');
 
     // Pass a string where an object is expected — passes the `readStdin`
     // equivalent but fails the type guard.
@@ -460,7 +479,7 @@ describe('runGuard — invalid stdin', () => {
     const decision = parseResponse(captured.stdout);
     expect(decision.permissionDecision).toBe('allow');
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'guard-bad-stdin', projectId);
     try {
       expect(store.byType('guard.violation')).toHaveLength(0);
     } finally {
@@ -507,7 +526,7 @@ describe('runGuard — invalid stdin', () => {
 
 describe('runGuard — tool-call idempotency', () => {
   test('same tool_call_id retried produces a single guard.violation', async () => {
-    const { sessionDir } = await initScratchSession('guard-idem');
+    const { sessionDir, projectId } = await initScratchSession('guard-idem');
     const payload = makePayload('guard-idem', 'Write', {
       tool_call_id: 'call-retry',
     });
@@ -529,7 +548,7 @@ describe('runGuard — tool-call idempotency', () => {
     const decision = parseResponse(captured.stdout);
     expect(decision.permissionDecision).toBe('deny');
 
-    const store = new EventStore(join(sessionDir, 'gobbi.db'));
+    const store = openStore(sessionDir, 'guard-idem', projectId);
     try {
       // Idempotency key is `${sessionId}:${toolCallId}:${eventType}` — the
       // second append collides on UNIQUE and is dropped by DO NOTHING.

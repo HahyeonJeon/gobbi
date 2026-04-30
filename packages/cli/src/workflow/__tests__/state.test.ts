@@ -464,7 +464,7 @@ describe('resolveState', () => {
 // ===========================================================================
 
 describe('appendEventAndUpdateState deduplication', () => {
-  it('returns persisted=false and unchanged state on duplicate', () => {
+  it('returns persisted=false and unchanged state on duplicate', async () => {
     using store = new EventStore(':memory:');
 
     const state = makeState({ currentStep: 'idle' });
@@ -474,14 +474,14 @@ describe('appendEventAndUpdateState deduplication', () => {
     };
 
     // First append
-    const result1 = appendEventAndUpdateState(
+    const result1 = await appendEventAndUpdateState(
       store, testDir, state, event, 'cli', 'test-session', 'tool-call', 'tc-dedup',
     );
     expect(result1.persisted).toBe(true);
     expect(result1.state.currentStep).toBe('ideation');
 
     // Second append with same idempotency key
-    const result2 = appendEventAndUpdateState(
+    const result2 = await appendEventAndUpdateState(
       store, testDir, result1.state, event, 'cli', 'test-session', 'tool-call', 'tc-dedup',
     );
     expect(result2.persisted).toBe(false);
@@ -530,77 +530,96 @@ describe('restoreStateFromBackup', () => {
 });
 
 // ===========================================================================
-// Engine: crash-safety — state.json restored on filesystem failure
+// Engine: transaction discipline — reducer rejection rolls the row back
+//
+// Pre-PR-FIN-2a-ii crash-safety relied on a `state.json` projection that
+// `appendEventAndUpdateState` wrote inside the SQLite transaction; a
+// filesystem failure on that write triggered the rollback path.
+// State.json was retired in T-2a.9.unified, so the only failure mode
+// inside the transaction now is a reducer rejection. The remaining
+// invariant under test: a thrown reducer keeps the event log clean
+// (no orphan row beyond the audit emit handled in engine.test.ts).
 // ===========================================================================
 
 describe('appendEventAndUpdateState crash-safety', () => {
-  it('rolls back the SQLite transaction when a filesystem write inside the transaction throws', () => {
+  it('reducer rejection rolls back the rejected event row (only the audit row survives)', async () => {
     using store = new EventStore(':memory:');
 
-    const state = makeState({ currentStep: 'idle' });
-    const event: Event = {
+    // Drive the session into ideation so that workflow.abort is rejected
+    // by the reducer (abort requires error state).
+    const sessionId = 'test-session';
+    const startEvent: Event = {
       type: WORKFLOW_EVENTS.START,
-      data: { sessionId: 'test-session', timestamp: '2026-01-01T00:00:00Z' },
+      data: { sessionId, timestamp: '2026-01-01T00:00:00Z' },
+    };
+    await appendEventAndUpdateState(
+      store,
+      testDir,
+      makeState({ currentStep: 'idle' }),
+      startEvent,
+      'cli',
+      sessionId,
+      'tool-call',
+      'tc-start',
+    );
+    expect(store.eventCount()).toBe(1);
+
+    const stateAfterStart = makeState({ currentStep: 'ideation' });
+    const rejected: Event = {
+      type: WORKFLOW_EVENTS.ABORT,
+      data: { reason: 'invalid-from-ideation' },
     };
 
-    // Pre-seed a valid backup so the pre-existing on-disk state can be
-    // recovered by the test after the failure.
-    writeState(testDir, state);
-    copyFileSync(join(testDir, 'state.json'), join(testDir, 'state.json.backup'));
-
-    // Replace state.json with a non-empty directory so backupState()
-    // (which runs at the top of the transaction and does a copyFileSync
-    // from state.json to state.json.backup) throws EISDIR. Any throw
-    // inside the transaction rolls back the SQLite insert.
-    rmSync(join(testDir, 'state.json'));
-    mkdirSync(join(testDir, 'state.json'));
-    writeFileSync(join(testDir, 'state.json', 'sentinel'), 'x', 'utf8');
-
-    // The transaction should throw because the filesystem operation
-    // inside it fails.
-    expect(() =>
+    await expect(
       appendEventAndUpdateState(
-        store, testDir, state, event, 'cli', 'test-session', 'tool-call', 'tc-crash',
+        store,
+        testDir,
+        stateAfterStart,
+        rejected,
+        'cli',
+        sessionId,
+        'tool-call',
+        'tc-rejected-abort',
       ),
-    ).toThrow();
+    ).rejects.toThrow();
 
-    // Clean up the directory-masquerading-as-state.json and restore from
-    // the pre-seeded backup. The pre-operation state survived because we
-    // took a backup before the failure.
-    rmSync(join(testDir, 'state.json'), { recursive: true, force: true });
-    copyFileSync(join(testDir, 'state.json.backup'), join(testDir, 'state.json'));
-    const restored = readState(testDir);
-    expect(restored).not.toBeNull();
-    expect(restored!.currentStep).toBe('idle');
-
-    // SQLite transaction should have rolled back — no events persisted
-    expect(store.eventCount()).toBe(0);
+    // The rejected row was rolled back — only the original start row +
+    // the audit row authored on the audit-emit branch survive.
+    const rows = store.replayAll();
+    expect(rows).toHaveLength(2);
+    expect(rows[0]?.type).toBe(WORKFLOW_EVENTS.START);
+    expect(rows[1]?.type).toBe(WORKFLOW_EVENTS.INVALID_TRANSITION);
   });
 
-  it('propagates filesystem failure with no event persisted when no prior state existed', () => {
+  it('first-event reducer rejection leaves the store empty save the audit row', async () => {
     using store = new EventStore(':memory:');
 
-    // No state.json written — this simulates the first event ever.
+    // No prior events — the very first call rejects (abort from idle is
+    // rejected at the reducer).
+    const sessionId = 'test-session';
     const state = makeState({ currentStep: 'idle' });
-    const event: Event = {
-      type: WORKFLOW_EVENTS.START,
-      data: { sessionId: 'test-session', timestamp: '2026-01-01T00:00:00Z' },
+    const rejected: Event = {
+      type: WORKFLOW_EVENTS.ABORT,
+      data: { reason: 'invalid-from-idle' },
     };
 
-    // Create state.json as a non-empty directory so backupState() sees
-    // an existing entry (existsSync → true) and then tries copyFileSync
-    // on a directory, which throws.
-    mkdirSync(join(testDir, 'state.json'));
-    writeFileSync(join(testDir, 'state.json', 'sentinel'), 'x', 'utf8');
-
-    expect(() =>
+    await expect(
       appendEventAndUpdateState(
-        store, testDir, state, event, 'cli', 'test-session', 'tool-call', 'tc-first',
+        store,
+        testDir,
+        state,
+        rejected,
+        'cli',
+        sessionId,
+        'tool-call',
+        'tc-first-reject',
       ),
-    ).toThrow();
+    ).rejects.toThrow();
 
-    // SQLite transaction should have rolled back — no events persisted
-    expect(store.eventCount()).toBe(0);
+    // The audit row survives; the rejected row was rolled back.
+    const rows = store.replayAll();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.type).toBe(WORKFLOW_EVENTS.INVALID_TRANSITION);
   });
 });
 

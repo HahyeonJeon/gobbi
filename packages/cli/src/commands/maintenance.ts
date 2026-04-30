@@ -49,7 +49,7 @@ export const MAINTENANCE_COMMANDS: readonly MaintenanceCommand[] = [
   {
     name: 'wipe-legacy-sessions',
     summary:
-      'Delete terminal sessions from .gobbi/sessions/ (refuses if any legacy session is active)',
+      'Delete pre-pivot session residue from .gobbi/sessions/ (whole-tree) and per-project sessions (5 legacy artifacts only; preserves session.json + step subdirs)',
     run: async (args: string[]): Promise<void> => {
       const { runWipeLegacySessions } = await import(
         './maintenance/wipe-legacy-sessions.js'
