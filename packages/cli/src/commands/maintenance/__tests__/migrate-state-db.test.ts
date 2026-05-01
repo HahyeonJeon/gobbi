@@ -620,6 +620,190 @@ describe('runMigrateStateDb — --json error envelope', () => {
 });
 
 // ===========================================================================
+// Downgrade preflight (PR-CFM-B #190 — `--target-version` + `--force`)
+//
+// `migrate-state-db` must refuse a downgrade attempt at the command level
+// (BEFORE any schema writes) when the live `events.schema_version` exceeds
+// the requested target. The preflight bypasses with `--force` and emits a
+// stderr warning. The per-row throw at `migrations.ts::migrateEvent`
+// remains as the data-level second-line safety net regardless of `--force`.
+// ===========================================================================
+
+/**
+ * Seed an `events` row at the given `schema_version` so the preflight has
+ * a concrete value to inspect via `MAX(schema_version)`. The seed predates
+ * the migrate run; the migration's idempotent v6 + v7 chain runs against
+ * the same db as long as preflight passes.
+ */
+function seedEventRow(dbPath: string, schemaVersion: number): void {
+  const db = new Database(dbPath);
+  try {
+    db.run(
+      `INSERT INTO events
+         (ts, schema_version, type, step, data, actor, idempotency_key)
+       VALUES (?, ?, ?, NULL, ?, ?, ?)`,
+      [
+        '2026-05-01T00:00:00.000Z',
+        schemaVersion,
+        'workflow.start',
+        '{}',
+        'test',
+        `idem-v${schemaVersion}-${Math.random()}`,
+      ],
+    );
+  } finally {
+    db.close();
+  }
+}
+
+describe('runMigrateStateDb — downgrade preflight (#190)', () => {
+  test('--target-version 6 against v7 row, no --force → exit 1, DOWNGRADE_BLOCKED envelope carries liveMaxVersion + targetVersion', async () => {
+    const repo = makeRepo();
+    const dbPath = seedV5StateDb(repo);
+    seedEventRow(dbPath, 7);
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(
+        ['--json', '--target-version', '6'],
+        { repoRoot: repo },
+      ),
+    );
+
+    expect(captured.exitCode).toBe(1);
+    expect(captured.stdout).toBe('');
+    const lines = captured.stderr.split('\n').filter((l) => l.length > 0);
+    expect(lines).toHaveLength(1);
+    const parsed = JSON.parse(lines[0] as string) as Record<
+      string,
+      unknown
+    >;
+    expect(parsed['status']).toBe('error');
+    expect(parsed['code']).toBe('DOWNGRADE_BLOCKED');
+    expect(parsed['liveMaxVersion']).toBe(7);
+    expect(parsed['targetVersion']).toBe(6);
+    expect(parsed['path']).toBe(dbPath);
+    expect(typeof parsed['message']).toBe('string');
+    // Operator-actionable: message names the escape hatch.
+    expect((parsed['message'] as string)).toContain('restore-state-db');
+
+    // Sanity — `schema_meta` was NOT stamped (preflight ran before
+    // any schema writes).
+    const verify = new Database(dbPath);
+    try {
+      const tableExists = verify
+        .query<{ name: string }, [string]>(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+        )
+        .get('schema_meta');
+      expect(tableExists).toBeNull();
+    } finally {
+      verify.close();
+    }
+  });
+
+  test('--target-version 6 against v7 row WITH --force → exit 0, stderr warning, schema_meta stamped at 6', async () => {
+    const repo = makeRepo();
+    const dbPath = seedV5StateDb(repo);
+    seedEventRow(dbPath, 7);
+
+    const fixedNow = 1745000000000;
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(
+        ['--target-version', '6', '--force'],
+        { repoRoot: repo, now: () => fixedNow },
+      ),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    // The stderr warning is the operator-visible bypass marker.
+    expect(captured.stderr).toContain('warning: --force bypassing downgrade preflight');
+    expect(captured.stderr).toContain('v7 rows will throw');
+    expect(captured.stderr).toContain('under v6');
+
+    // Even with --force, the chain runs ensureSchemaV5 + V6 + V7 (the
+    // chain is idempotent and additive — `--target-version` gates the
+    // preflight, not the schema-ensure chain itself). schema_meta is
+    // stamped at CURRENT_SCHEMA_VERSION (7) because the chain runs to
+    // completion regardless of the requested target version. The
+    // preflight's job is "refuse downgrade unless --force"; it does
+    // not partially apply migrations or roll back the chain.
+    const verify = new Database(dbPath);
+    try {
+      interface MetaRow {
+        readonly schema_version: number;
+      }
+      const row = verify
+        .query<MetaRow, [string]>(
+          'SELECT schema_version FROM schema_meta WHERE id = ?',
+        )
+        .get('state_db');
+      expect(row).not.toBeNull();
+      expect(row?.schema_version).toBe(CURRENT_SCHEMA_VERSION);
+    } finally {
+      verify.close();
+    }
+  });
+
+  test('--target-version 7 against v6 row (forward direction) → exit 0, no preflight block', async () => {
+    const repo = makeRepo();
+    const dbPath = seedV5StateDb(repo);
+    seedEventRow(dbPath, 6);
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(
+        ['--target-version', '7'],
+        { repoRoot: repo, now: () => 1 },
+      ),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+    expect(captured.stdout).toContain('new schema_version: 7');
+  });
+
+  test('--target-version 7 against v7 row (no-op direction) → exit 0; preflight maxLive=7=target', async () => {
+    const repo = makeRepo();
+    const dbPath = seedV5StateDb(repo);
+    seedEventRow(dbPath, 7);
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(
+        ['--target-version', '7'],
+        { repoRoot: repo, now: () => 1 },
+      ),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+    // Schema chain still runs idempotently to stamp schema_meta.
+    expect(captured.stdout).toContain(
+      `new schema_version: ${CURRENT_SCHEMA_VERSION}`,
+    );
+  });
+
+  test('empty events table + --target-version 6 → exit 0; MAX returns null, no preflight block', async () => {
+    const repo = makeRepo();
+    seedV5StateDb(repo);
+    // No event rows — preflight queries MAX(schema_version) which
+    // returns NULL on an empty table; the preflight must NOT block.
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(
+        ['--target-version', '6'],
+        { repoRoot: repo, now: () => 1 },
+      ),
+    );
+
+    expect(captured.exitCode).toBeNull();
+    expect(captured.stderr).toBe('');
+    // Chain proceeds; schema_meta gets stamped at CURRENT_SCHEMA_VERSION.
+    expect(captured.stdout).toContain(
+      `new schema_version: ${CURRENT_SCHEMA_VERSION}`,
+    );
+  });
+});
+
+// ===========================================================================
 // Pure helper — migrateStateDbAt
 // ===========================================================================
 
