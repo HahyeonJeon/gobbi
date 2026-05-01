@@ -238,22 +238,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     rationale:
       'Integration-test design references state.json reducer-replay assertions — out-of-scope follow-up.',
   },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/orchestration/checklist.md',
-    rationale:
-      'Pre-pivot checklist names metadata.json — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/orchestration/review.md',
-    rationale:
-      'Historical Pass-4 review GAP-9 references state.json atomicity — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/orchestration/scenarios.md',
-    rationale:
-      'Pre-pivot scenarios still assert metadata.json contents — out-of-scope follow-up.',
-  },
-
   // ---- Production code: legacy schema readers + retirement docblocks -------
   {
     path: 'packages/cli/src/workflow/state-derivation.ts',

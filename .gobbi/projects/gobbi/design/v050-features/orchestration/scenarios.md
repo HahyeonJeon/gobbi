@@ -16,7 +16,7 @@ See `README.md` for the feature overview.
 
 **Given** a fresh repo with `.gobbi/projects/<name>/` populated by `gobbi install`
 **When** `gobbi workflow init --task "<text>"` runs
-**Then** a new session directory `.gobbi/projects/<name>/sessions/<id>/` is created with `metadata.json`; the per-session `gobbi.db` records exactly one `workflow.start` event with `actor='cli'`; reducer sets `currentStep = 'ideation'`; exit code is `0`.
+**Then** a new session directory `.gobbi/projects/<name>/sessions/<id>/` is created with `session.json` (the post-PR-FIN-2a-ii init stub); the per-session `gobbi.db` records exactly one `workflow.start` event with `actor='cli'`; reducer sets `currentStep = 'ideation'`; exit code is `0`.
 
 Evidence: `commands/workflow/init.ts:281` (DB open), `transition.ts:74-84` (TRANSITION_KEYWORDS map), `events/workflow.ts:21` (event constants), `reducer.ts` (workflow.start case).
 
@@ -318,7 +318,7 @@ Evidence: Wave A.1.7 explicit partition-key refactor (commit `8d71fa4`), callsit
 
 ### SC-ORCH-24 — EventStore constructor accepts explicit partition keys
 
-**Given** a workspace with `.gobbi/state.db` and an active session whose `metadata.json` is at `.gobbi/projects/<name>/sessions/<id>/`
+**Given** a workspace with `.gobbi/state.db` and an active session whose `session.json` is at `.gobbi/projects/<name>/sessions/<id>/`
 **When** `new EventStore('.gobbi/state.db', { sessionId: <id>, projectId: <name> })` opens the store and writes an event
 **Then** the persisted row has `session_id === <id>` AND `project_id === <name>` (not the path-derived `'.gobbi'` and `null`); a per-session caller without explicit params still works via the path-derivation fallback.
 

@@ -244,13 +244,13 @@ DRIFT/GAP entries with `Resolution: deferred to Wave X` will gain a commit SHA w
 
 ---
 
-### GAP-9 — `state_snapshots` / `state.json` atomicity (System crash-recovery assessment)
+### GAP-9 — Per-session state-projection atomicity (obsolete by retirement)
 
-**Finding:** If a snapshot is written and the corresponding `state.json` write fails (SIGKILL between the two), the snapshot may represent a state that `state.json` does not reflect. The `appendEventAndUpdateState` pattern in `engine.ts` should be extended to cover snapshot writes in the same transaction.
+**Finding (historical, pre-PR-FIN-2a-ii):** If a snapshot was written and the corresponding state-projection write failed (SIGKILL between the two), the snapshot might represent a state that the projection did not reflect. The `appendEventAndUpdateState` pattern in `engine.ts` was proposed to be extended to cover snapshot writes in the same transaction.
 
-**Resolution:** deferred to Wave A.1.9 (atomicity extension) or A.1.10 (integration test scope). README §6 mentions the bounded-loss-window guarantee but does not yet cover snapshot atomicity.
+**Resolution:** Resolved by PR-FIN-2a-ii — the per-session state-projection file was retired; the snapshot-vs-projection atomicity gap GAP-9 tracked no longer applies because there is no separate state file to write atomically alongside snapshots. SQLite-WAL handles atomicity for `gobbi.db` event appends.
 
-**Owner:** Pass 4 design (gap identified); Wave A.1 implementation.
+**Owner:** Pass 4 design (gap identified); resolved by PR-FIN-2a-ii (artifact retirement).
 
 ---
 
