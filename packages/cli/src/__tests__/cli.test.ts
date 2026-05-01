@@ -251,7 +251,7 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
     expect(registryNames).toEqual(orderNames);
   });
 
-  test('exposes the PR C command set (Wave 9 adds `gotcha`, Pass-2 W3.3 adds `maintenance`, PR-FIN-1b adds `hook`)', () => {
+  test('exposes the PR C command set (Wave 9 adds `gotcha`, Pass-2 W3.3 adds `maintenance`, PR-FIN-1b adds `hook`, PR-CFM-B adds `memory`)', () => {
     // C.1 refactored the dispatch layer; Wave 9 (C.9) added the top-level
     // `gotcha` namespace. v0.5.0 Pass-2 W3.3 added the top-level
     // `maintenance` namespace for out-of-session cleanup commands
@@ -261,7 +261,9 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
     // `prompt` (render / patch / rebuild — operator-only spec.json
     // mutation surface for the prompts-as-data feature). PR-FIN-1b
     // added `hook` (28-event Claude Code hook namespace replacing the
-    // five `gobbi workflow <hook>` direct invocations). Workflow
+    // five `gobbi workflow <hook>` direct invocations). PR-CFM-B
+    // (#236 part 1) added `memory` (per-session memory inspection
+    // dispatcher; ships `check` only at this commit). Workflow
     // subcommands (Waves 2–8) extend the inner `workflow` registry
     // and do not surface here. If this test fails, verify the change
     // belongs in this PR before updating it.
@@ -275,6 +277,7 @@ describe('TOP_LEVEL_COMMANDS — canonical registry', () => {
       'workflow',
       'gotcha',
       'maintenance',
+      'memory',
       'prompt',
       'install',
       'project',

@@ -286,6 +286,8 @@ Evidence: `specs/handoff/spec.json`, `index.json` (handoff transitions added Wav
 
 ### SC-ORCH-21 — `gobbi maintenance migrate-state-db` is reversible via `restore-state-db`
 
+> **PARTIAL FULFILLMENT (PR-CFM-B):** `gobbi maintenance restore-state-db` shipped (file-level revert from operator-created `<target>.bak`; refuses if target exists, `--force` rename-asides to `<target>.pre-restore.<unix-ts>`). Auto-backup-on-migrate (Option A — `migrate-state-db.ts` writing `.bak` before migrating) plus the replay-equivalence integration test remain deferred. See `commands/maintenance/restore-state-db.ts` and issue #242.
+
 **Given** a workspace at schema v5 with per-session `gobbi.db` files under `.gobbi/projects/*/sessions/*/gobbi.db`
 **When** `gobbi maintenance migrate-state-db` runs
 **Then** events are migrated into a new workspace `.gobbi/state.db` at schema v6; partition keys (`session_id`, `project_id`) are preserved on every row; per-session `gobbi.db` files are renamed `.bak` (not deleted) for one-commit reversibility; `gobbi maintenance restore-state-db` reverses the operation; replay-equivalence integration test confirms identical state derivation pre- and post-migration.

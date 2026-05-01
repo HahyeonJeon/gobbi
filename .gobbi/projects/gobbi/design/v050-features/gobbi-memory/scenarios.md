@@ -466,4 +466,24 @@ Evidence: `.gobbi/projects/gobbi/design/v050-features/gobbi-memory/`, `.gobbi/pr
 
 ---
 
+## Crash recovery — `gobbi memory backfill`
+
+### G-MEM2-46 — `gobbi memory backfill` materialises `session.json` after a mid-Memorization crash
+
+**Given** a session that crashed mid-Memorization — the per-session `gobbi.db` has the full event stream including a `workflow.finish` (or `workflow.abort`) row, but `session.json` on disk is still the 6-field init-time stub written at session creation
+**When** `gobbi memory backfill <session-id>` runs (no `--force`, no `--finished-at` override)
+**Then** the three pre-flights pass — stub exists (`BACKFILL_NO_STUB` does not fire), stub `steps[]` is empty (`BACKFILL_ALREADY_POPULATED` does not fire), per-session `gobbi.db` has rows for the session id (`BACKFILL_NO_EVENTS` does not fire); the production memorization-exit writer (`writeSessionJsonAtMemorizationExit`) runs against the same per-session `EventStore` and aggregator the engine uses post-commit; `session.json` is rewritten atomically (temp + rename) with the populated shape; `project.json.sessions[<session-id>]` is upserted to match; exit code is `0`. Re-running with the same arguments is byte-identical (idempotent — aggregator is deterministic on its inputs).
+
+Evidence: `packages/cli/src/commands/memory/backfill.ts::backfillMemoryAt`, reusing `packages/cli/src/workflow/session-json-writer.ts::writeSessionJsonAtMemorizationExit` AS-IS. Per-session `EventStore` against `<sessionDir>/gobbi.db` (NOT `WorkspaceReadStore`) — derives `(sessionId, projectId)` directly from the path. PR-CFM-B (#236).
+
+---
+
+## SC-ORCH-21 deviation — Option B (narrow) shipped, Option A deferred
+
+> **NOTE (PR-CFM-B Option B):** `gobbi maintenance restore-state-db` shipped in PR-CFM-B reverts from an operator-created `.bak` only — `migrate-state-db.ts` does NOT auto-create the `.bak` file as part of the migration. The full SC-ORCH-21 contract (atomic migrate-with-backup, plus the replay-equivalence integration test) remains partially fulfilled and is acknowledged as future-PR scope. Operators take backups manually with `cp <repoRoot>/.gobbi/state.db <repoRoot>/.gobbi/state.db.<tag>` before invoking `migrate-state-db`; the `restore-state-db --help` output documents the workflow. See the upstream contract at `design/v050-features/orchestration/scenarios.md` SC-ORCH-21 and the `pr_cfm_b_shipped` memory entry for rationale.
+
+The SC-ORCH-21 entry in `orchestration/scenarios.md` describes both halves of the original contract — the `.bak`-rename inside `migrate-state-db` AND the reverse via `restore-state-db`. PR-CFM-B closes the second half only. The first half stays open because the user-locked Option B keeps `migrate-state-db.ts` unchanged for this PR; the full Option A (auto-backup-on-migrate, plus an integration test that replays both pre- and post-migration event streams through the reducer and asserts state equality) is left for a future PR if and when the gap blocks operator workflow.
+
+---
+
 See `README.md` for the prose overview. `checklist.md` turns each scenario ID into ISTQB-tagged verifiable items; `review.md` reports Pass-2 redesign DRIFT / GAP / NOTE with pinned commit SHAs.

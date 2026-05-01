@@ -78,7 +78,6 @@
  *      sibling command (pure-core/argv-shell pattern mirror).
  */
 
-import { Database } from 'bun:sqlite';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
@@ -89,13 +88,9 @@ import {
 } from '../../lib/memory-projection-diff.js';
 import { readProjectJson } from '../../lib/json-memory.js';
 import { getRepoRoot } from '../../lib/repo.js';
+import { WorkspaceReadStore } from '../../lib/workspace-read-store.js';
 import { projectDir, workspaceRoot } from '../../lib/workspace-paths.js';
-import type {
-  CostAggregateRow,
-  ReadStore,
-} from '../../workflow/store.js';
 import { reduce } from '../../workflow/reducer.js';
-import type { EventRow } from '../../workflow/migrations.js';
 import type { ReduceFn } from '../../workflow/types.js';
 
 // ---------------------------------------------------------------------------
@@ -370,129 +365,6 @@ export function verifyStateProjectionsAt(
     };
   } finally {
     store.close();
-  }
-}
-
-// ---------------------------------------------------------------------------
-// WorkspaceReadStore — cross-partition ReadStore for the workspace state.db
-// ---------------------------------------------------------------------------
-
-/**
- * Read-only `ReadStore` adapter that returns every row in the events
- * table, NOT scoped to a single `(sessionId, projectId)` partition.
- *
- * The production `EventStore` is partition-bound by design (its read
- * methods filter on the constructor-supplied keys, see
- * `workflow/store.ts:209-223`). Verification needs to walk EVERY session
- * in the workspace state.db — `memoryProjectionDiff` groups rows by the
- * `session_id` column itself rather than by partition binding. This
- * adapter exposes that cross-partition view via the same `ReadStore`
- * interface the library already accepts.
- *
- * The adapter does NOT auto-migrate the schema (no `ensureSchemaV5/V6/V7`
- * call): verification opens a possibly-old DB and should not silently
- * mutate it. The `events` table is the only object queried; if it is
- * missing the call falls through to an empty result (the missing-DB
- * pre-flight in {@link runVerifyStateProjectionsWithOptions} catches the
- * common case before reaching here).
- *
- * Only `replayAll()` is exercised by the diff library today; the other
- * methods are implemented for completeness so the adapter satisfies the
- * `ReadStore` contract without surprising future callers.
- */
-class WorkspaceReadStore implements ReadStore {
-  private readonly db: Database;
-
-  constructor(stateDbPath: string) {
-    this.db = new Database(stateDbPath, { strict: true, readonly: true });
-  }
-
-  close(): void {
-    this.db.close();
-  }
-
-  replayAll(): EventRow[] {
-    return this.db
-      .query<EventRow, []>('SELECT * FROM events ORDER BY seq ASC')
-      .all();
-  }
-
-  byType(type: string): EventRow[] {
-    return this.db
-      .query<EventRow, [string]>(
-        'SELECT * FROM events WHERE type = ? ORDER BY seq ASC',
-      )
-      .all(type);
-  }
-
-  byStep(step: string, type?: string): EventRow[] {
-    if (type !== undefined) {
-      return this.db
-        .query<EventRow, [string, string]>(
-          'SELECT * FROM events WHERE step = ? AND type = ? ORDER BY seq ASC',
-        )
-        .all(step, type);
-    }
-    return this.db
-      .query<EventRow, [string]>(
-        'SELECT * FROM events WHERE step = ? ORDER BY seq ASC',
-      )
-      .all(step);
-  }
-
-  since(seq: number): EventRow[] {
-    return this.db
-      .query<EventRow, [number]>(
-        'SELECT * FROM events WHERE seq > ? ORDER BY seq ASC',
-      )
-      .all(seq);
-  }
-
-  last(type: string): EventRow | null {
-    return this.db
-      .query<EventRow, [string]>(
-        'SELECT * FROM events WHERE type = ? ORDER BY seq DESC LIMIT 1',
-      )
-      .get(type);
-  }
-
-  lastN(type: string, n: number): readonly EventRow[] {
-    return this.db
-      .query<EventRow, [string, number]>(
-        'SELECT * FROM events WHERE type = ? ORDER BY seq DESC LIMIT ?',
-      )
-      .all(type, n);
-  }
-
-  lastNAny(n: number): readonly EventRow[] {
-    return this.db
-      .query<EventRow, [number]>(
-        'SELECT * FROM events ORDER BY seq DESC LIMIT ?',
-      )
-      .all(n);
-  }
-
-  eventCount(): number {
-    const row = this.db
-      .query<{ cnt: number }, []>('SELECT count(*) as cnt FROM events')
-      .get();
-    return row?.cnt ?? 0;
-  }
-
-  aggregateDelegationCosts(): readonly CostAggregateRow[] {
-    return this.db
-      .query<CostAggregateRow, []>(
-        `SELECT
-           step                                            AS step,
-           json_extract(data, '$.subagentId')              AS subagentId,
-           json_extract(data, '$.tokensUsed')              AS tokensJson,
-           json_extract(data, '$.model')                   AS model,
-           json_extract(data, '$.sizeProxyBytes')          AS bytes
-         FROM events
-         WHERE type = 'delegation.complete'
-         ORDER BY seq ASC`,
-      )
-      .all();
   }
 }
 

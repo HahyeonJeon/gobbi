@@ -132,13 +132,36 @@ with the hooks / config-management waves. prompt_patches is populated by
 gobbi prompt patch (Wave C.1.6). schema_meta is the only one this
 command itself writes to.
 
+Downgrade preflight (PR-CFM-B #190):
+  Before any schema writes, the command queries
+  MAX(schema_version) FROM events. If the highest row version exceeds
+  the requested target, the migration is refused with exit code 1 and
+  error code DOWNGRADE_BLOCKED. Use --force to bypass the check; --force
+  does NOT downgrade row data — the per-row safety net in
+  migrations.ts::migrateEvent will still throw when a vN reader visits
+  a v(N+1) row at runtime. The operator escape hatch when downgrade is
+  truly required is gobbi maintenance restore-state-db --backup <path>,
+  which reverts the whole .db file from a pre-existing backup.
+
 Options:
-  --db <path>   Path to state.db (default: <repoRoot>/.gobbi/state.db)
-  --json        Emit a JSON object instead of the human-readable summary.
-                Under --json, error paths emit a structured envelope of
-                shape {"status":"error","code":"<code>","message":"..."}
-                to stderr instead of plain text.
-  --help, -h    Show this help message`;
+  --db <path>             Path to state.db (default: <repoRoot>/.gobbi/state.db)
+  --target-version <n>    Target schema version (default: ${CURRENT_SCHEMA_VERSION}).
+                          Must be a positive integer. When the live max
+                          events.schema_version exceeds <n>, the
+                          downgrade preflight refuses unless --force
+                          is also set.
+  --force                 Bypass the downgrade preflight. Emits a stderr
+                          warning. NOT recommended — per-row reads of
+                          newer rows under an older reader will still
+                          throw at runtime.
+  --json                  Emit a JSON object instead of the human-readable
+                          summary. Under --json, error paths emit a
+                          structured envelope of shape
+                          {"status":"error","code":"<code>","message":"..."}
+                          to stderr instead of plain text.
+                          DOWNGRADE_BLOCKED envelopes additionally carry
+                          {"liveMaxVersion":<n>,"targetVersion":<n>}.
+  --help, -h              Show this help message`;
 
 // ---------------------------------------------------------------------------
 // Overrides (for tests)
@@ -195,17 +218,24 @@ export interface MigrateStateDbResult {
  * not a verbose taxonomy. New codes are additive only; renames break the
  * wire format and require a major-version note.
  *
- *   - `DB_MISSING`     — pre-flight `existsSync` returned false for the
- *                        target path.
- *   - `MIGRATE_FAILED` — `migrateStateDbAt` threw (corrupt db, permission
- *                        denied at open time, transaction rollback after
- *                        a CREATE failure, …).
- *   - `PARSE_ARGS`     — `parseArgs` rejected the supplied flags. Maps to
- *                        exit code 2 (argv error) rather than 1.
+ *   - `DB_MISSING`        — pre-flight `existsSync` returned false for the
+ *                           target path.
+ *   - `MIGRATE_FAILED`    — `migrateStateDbAt` threw (corrupt db,
+ *                           permission denied at open time, transaction
+ *                           rollback after a CREATE failure, …).
+ *   - `DOWNGRADE_BLOCKED` — preflight detected `events` rows whose
+ *                           `schema_version` exceeds the requested target.
+ *                           Produced inside `migrateStateDbAt` as a
+ *                           command-level safeguard before any schema
+ *                           writes; bypassable with `--force`.
+ *                           PR-CFM-B (#190) — additive.
+ *   - `PARSE_ARGS`        — `parseArgs` rejected the supplied flags. Maps
+ *                           to exit code 2 (argv error) rather than 1.
  */
 export type MigrateStateDbErrorCode =
   | 'DB_MISSING'
   | 'MIGRATE_FAILED'
+  | 'DOWNGRADE_BLOCKED'
   | 'PARSE_ARGS';
 
 /**
@@ -221,37 +251,95 @@ export interface MigrateStateDbErrorEnvelope {
   /**
    * The target path, when known at the failure point. Absent on
    * `PARSE_ARGS` (the path is not yet resolved when argv parsing fails)
-   * and present on `DB_MISSING` / `MIGRATE_FAILED`.
+   * and present on `DB_MISSING` / `MIGRATE_FAILED` / `DOWNGRADE_BLOCKED`.
    */
   readonly path?: string;
+  /**
+   * Highest `schema_version` observed in the `events` table at preflight
+   * time. Present on `DOWNGRADE_BLOCKED` so operators can grep the
+   * threshold programmatically; absent on every other code.
+   * PR-CFM-B (#190).
+   */
+  readonly liveMaxVersion?: number;
+  /**
+   * Target schema version for the migration run — either the value of
+   * `--target-version <n>` or {@link CURRENT_SCHEMA_VERSION}. Present on
+   * `DOWNGRADE_BLOCKED`; absent on every other code.
+   * PR-CFM-B (#190).
+   */
+  readonly targetVersion?: number;
+}
+
+/**
+ * Error class thrown by {@link migrateStateDbAt} for command-level
+ * safeguards that need to be re-raised to the argv shell with structured
+ * fields beyond a plain message. The wrapper catches this, dispatches on
+ * `code`, and threads the extra fields into the JSON error envelope.
+ *
+ * Currently the only producer is the downgrade preflight (PR-CFM-B
+ * #190); plain `Error` is still thrown by lower-level SQLite failures
+ * and gets mapped to `MIGRATE_FAILED` by the wrapper.
+ */
+export class MigrateStateDbError extends Error {
+  readonly code: MigrateStateDbErrorCode;
+  readonly liveMaxVersion: number | undefined;
+  readonly targetVersion: number | undefined;
+
+  constructor(args: {
+    readonly code: MigrateStateDbErrorCode;
+    readonly message: string;
+    readonly liveMaxVersion?: number;
+    readonly targetVersion?: number;
+  }) {
+    super(args.message);
+    this.name = 'MigrateStateDbError';
+    this.code = args.code;
+    this.liveMaxVersion = args.liveMaxVersion;
+    this.targetVersion = args.targetVersion;
+  }
 }
 
 /**
  * Emit an error to stderr in the shape demanded by `jsonFlag`.
  *
  * Under `--json` the envelope is a single line of JSON, `{"status":
- * "error", "code":..., "message":..., "path"?:...}` — operators piping
- * to `jq` get the same structured surface on success and failure paths.
- * Under the default (pretty) form the legacy
- * `gobbi maintenance migrate-state-db: <message>\n` shape is preserved
- * so existing terminal output is unchanged.
+ * "error", "code":..., "message":..., "path"?:..., "liveMaxVersion"?:...,
+ * "targetVersion"?:...}` — operators piping to `jq` get the same
+ * structured surface on success and failure paths. Under the default
+ * (pretty) form the legacy `gobbi maintenance migrate-state-db: <message>\n`
+ * shape is preserved so existing terminal output is unchanged.
  *
- * The path is only included in the JSON envelope when the caller passes
- * it — `PARSE_ARGS` failures fire before the path is resolved and pass
- * `undefined`. Object spread in JSON.stringify omits absent fields, so
- * the wire format stays clean either way.
+ * Optional fields (`path`, `liveMaxVersion`, `targetVersion`) are only
+ * included when the caller passes a defined value — under
+ * `exactOptionalPropertyTypes` we conditionally extend the envelope so the
+ * wire format omits absent keys cleanly without `JSON.stringify`-driven
+ * surprises.
  */
 function writeErrorEnvelope(
   jsonFlag: boolean,
   code: MigrateStateDbErrorCode,
   message: string,
   path: string | undefined,
+  extras?: {
+    readonly liveMaxVersion?: number;
+    readonly targetVersion?: number;
+  },
 ): void {
   if (jsonFlag) {
-    const envelope: MigrateStateDbErrorEnvelope =
-      path !== undefined
-        ? { status: 'error', code, message, path }
-        : { status: 'error', code, message };
+    let envelope: MigrateStateDbErrorEnvelope = {
+      status: 'error',
+      code,
+      message,
+    };
+    if (path !== undefined) {
+      envelope = { ...envelope, path };
+    }
+    if (extras?.liveMaxVersion !== undefined) {
+      envelope = { ...envelope, liveMaxVersion: extras.liveMaxVersion };
+    }
+    if (extras?.targetVersion !== undefined) {
+      envelope = { ...envelope, targetVersion: extras.targetVersion };
+    }
     process.stderr.write(`${JSON.stringify(envelope)}\n`);
     return;
   }
@@ -287,17 +375,23 @@ export async function runMigrateStateDbWithOptions(
 
   // --- 1. Parse flags ----------------------------------------------------
   let dbFlag: string | undefined;
+  let targetVersionFlag: string | undefined;
+  let forceFlag = false;
   try {
     const { values } = parseArgs({
       args,
       allowPositionals: false,
       options: {
         db: { type: 'string' },
+        'target-version': { type: 'string' },
+        force: { type: 'boolean', default: false },
         json: { type: 'boolean', default: false },
         help: { type: 'boolean', short: 'h', default: false },
       },
     });
     dbFlag = values.db;
+    targetVersionFlag = values['target-version'];
+    forceFlag = values.force === true;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     writeErrorEnvelope(jsonFlag, 'PARSE_ARGS', message, undefined);
@@ -308,6 +402,29 @@ export async function runMigrateStateDbWithOptions(
       process.stderr.write(`${USAGE}\n`);
     }
     process.exit(2);
+  }
+
+  // --- 1a. Coerce --target-version to a number ---------------------------
+  // The flag is parsed as a string by `parseArgs`; coerce to number here so
+  // the pure core gets a typed `number | undefined`. Reject non-integers
+  // and non-positive values up-front via the same `PARSE_ARGS` path so the
+  // failure mode is consistent with other argv mistakes.
+  let targetVersion: number | undefined;
+  if (targetVersionFlag !== undefined) {
+    const n = Number(targetVersionFlag);
+    if (!Number.isInteger(n) || n < 1) {
+      writeErrorEnvelope(
+        jsonFlag,
+        'PARSE_ARGS',
+        `--target-version must be a positive integer (got ${JSON.stringify(targetVersionFlag)})`,
+        undefined,
+      );
+      if (!jsonFlag) {
+        process.stderr.write(`${USAGE}\n`);
+      }
+      process.exit(2);
+    }
+    targetVersion = n;
   }
 
   // --- 2. Resolve target db path ----------------------------------------
@@ -328,8 +445,33 @@ export async function runMigrateStateDbWithOptions(
   // --- 4. Run migration --------------------------------------------------
   let result: MigrateStateDbResult;
   try {
-    result = migrateStateDbAt(dbPath, overrides.now);
+    const coreOptions: {
+      readonly targetVersion?: number;
+      readonly force?: boolean;
+    } = {
+      ...(targetVersion !== undefined ? { targetVersion } : {}),
+      force: forceFlag,
+    };
+    result = migrateStateDbAt(dbPath, overrides.now, coreOptions);
   } catch (err) {
+    if (err instanceof MigrateStateDbError) {
+      // Structured command-level safeguard (currently only the downgrade
+      // preflight). Thread the extra fields into the JSON envelope so
+      // operators can grep `liveMaxVersion` / `targetVersion`.
+      const extras: {
+        readonly liveMaxVersion?: number;
+        readonly targetVersion?: number;
+      } = {
+        ...(err.liveMaxVersion !== undefined
+          ? { liveMaxVersion: err.liveMaxVersion }
+          : {}),
+        ...(err.targetVersion !== undefined
+          ? { targetVersion: err.targetVersion }
+          : {}),
+      };
+      writeErrorEnvelope(jsonFlag, err.code, err.message, dbPath, extras);
+      process.exit(1);
+    }
     const message = err instanceof Error ? err.message : String(err);
     writeErrorEnvelope(jsonFlag, 'MIGRATE_FAILED', message, dbPath);
     process.exit(1);
@@ -350,7 +492,10 @@ export async function runMigrateStateDbWithOptions(
 /**
  * Open `dbPath`, run the v5 + v6 + v7 schema-ensure chain, and return the
  * structured result. Throws on SQLite-level errors — the caller handles
- * exit-code mapping.
+ * exit-code mapping. Throws {@link MigrateStateDbError} with code
+ * `'DOWNGRADE_BLOCKED'` when the downgrade preflight (PR-CFM-B #190)
+ * detects `events` rows newer than the requested target and
+ * `options.force` is not set.
  *
  * The function is exported for tests so they can assert the result
  * shape without re-running the argv parsing path. Production callers go
@@ -358,16 +503,59 @@ export async function runMigrateStateDbWithOptions(
  *
  * `now` defaults to `Date.now`; tests pass a fixed clock so the
  * `schema_meta.migrated_at` stamp is deterministic in JSON snapshots.
+ *
+ * `options.targetVersion` defaults to {@link CURRENT_SCHEMA_VERSION}.
+ * `options.force` defaults to false; when true, the preflight emits a
+ * stderr warning and proceeds. The per-row throw at
+ * `migrations.ts::migrateEvent` (which fires when an old reader visits a
+ * newer row) remains the data-level second-line safety net regardless of
+ * `--force` — the flag opens the command-level gate only.
  */
 export function migrateStateDbAt(
   dbPath: string,
   now: (() => number) | undefined = undefined,
+  options:
+    | { readonly targetVersion?: number; readonly force?: boolean }
+    | undefined = undefined,
 ): MigrateStateDbResult {
   const clock = now ?? Date.now;
   const startMs = clock();
+  const targetVersion = options?.targetVersion ?? CURRENT_SCHEMA_VERSION;
+  const force = options?.force === true;
   const db = new Database(dbPath);
   try {
     const previousVersion = readSchemaMetaVersion(db);
+
+    // PR-CFM-B (#190) — downgrade preflight.
+    //
+    // The argv shell carries operator concerns; the per-row migration
+    // body owns data concerns. This preflight refuses a downgrade
+    // attempt at the command level so operators get a clear command
+    // refusal *before* any schema writes happen, separately from the
+    // unconditional per-row safety net in `migrations.ts::migrateEvent`
+    // (which fires at READ time when an old reader visits a newer row).
+    //
+    // Empty events table => MAX(schema_version) returns NULL => no
+    // block. Only fires when there is a row strictly newer than
+    // `targetVersion`. Bypassable with `--force` (warning to stderr).
+    const liveMaxVersion = readMaxEventsSchemaVersion(db);
+    if (liveMaxVersion !== null && liveMaxVersion > targetVersion) {
+      if (!force) {
+        throw new MigrateStateDbError({
+          code: 'DOWNGRADE_BLOCKED',
+          message: buildDowngradeBlockedMessage(
+            liveMaxVersion,
+            targetVersion,
+          ),
+          liveMaxVersion,
+          targetVersion,
+        });
+      }
+      process.stderr.write(
+        `warning: --force bypassing downgrade preflight; v${liveMaxVersion} rows will throw on next read under v${targetVersion}.\n`,
+      );
+    }
+
     // The v5 chain is a column-add on the `events` table. The bare
     // event-store CREATE TABLE is owned by `EventStore.initSchema` and
     // not reproduced here — this command only operates on already-
@@ -394,6 +582,25 @@ export function migrateStateDbAt(
   } finally {
     db.close();
   }
+}
+
+/**
+ * Build the operator-actionable downgrade-blocked message. The message
+ * names `gobbi maintenance restore-state-db` — the operator escape hatch
+ * shipped in this same PR (#169) — so the failure mode points at the fix.
+ */
+function buildDowngradeBlockedMessage(
+  liveMaxVersion: number,
+  targetVersion: number,
+): string {
+  return [
+    `Cannot downgrade: events table contains schema_version ${liveMaxVersion} rows, target is ${targetVersion}.`,
+    `Reading v${liveMaxVersion} rows under a v${targetVersion} reader will throw at runtime.`,
+    '',
+    'Either:',
+    '  - Use --force to bypass this check (NOT recommended; some reads will throw).',
+    '  - Run gobbi maintenance restore-state-db --backup <path> to revert from a backup.',
+  ].join('\n');
 }
 
 // ---------------------------------------------------------------------------
@@ -429,6 +636,35 @@ function readSchemaMetaVersion(db: Database): number | null {
     )
     .get('state_db');
   return row === null ? null : row.schema_version;
+}
+
+/**
+ * Read the highest `schema_version` currently stored in the `events`
+ * table. Returns `null` when the events table is empty (no rows to
+ * inspect — a fresh-but-pre-stamped db is the canonical case).
+ *
+ * Used by the downgrade preflight (PR-CFM-B #190): if any row's
+ * `schema_version` exceeds the requested target version, the migration
+ * is refused unless `--force` is set, because a v(N+1) row read under a
+ * vN reader would throw inside `migrations.ts::migrateEvent`. This
+ * preflight catches that condition at the command level rather than
+ * waiting for a runtime read failure.
+ *
+ * The `events` table is guaranteed to exist on every state.db this
+ * command operates on (the command's preconditions assume an
+ * EventStore-shaped file); a missing-table case would surface as a
+ * SQLite error and be caught by `runMigrateStateDbWithOptions` as
+ * `MIGRATE_FAILED`.
+ */
+function readMaxEventsSchemaVersion(db: Database): number | null {
+  interface MaxRow {
+    readonly v: number | null;
+  }
+  const row = db
+    .query<MaxRow, []>('SELECT MAX(schema_version) AS v FROM events')
+    .get();
+  if (row === null) return null;
+  return row.v;
 }
 
 // ---------------------------------------------------------------------------

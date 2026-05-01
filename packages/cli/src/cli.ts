@@ -92,6 +92,7 @@ export const COMMAND_ORDER = [
   'workflow',
   'gotcha',
   'maintenance',
+  'memory',
   'prompt',
   'install',
   'project',
@@ -189,6 +190,14 @@ export const COMMANDS_BY_NAME = {
     run: async (args: string[]): Promise<void> => {
       const { runMaintenance } = await import('./commands/maintenance.js');
       await runMaintenance(args);
+    },
+  },
+  memory: {
+    name: 'memory',
+    summary: 'Inspect and reconcile per-session memory artifacts (check, backfill)',
+    run: async (args: string[]): Promise<void> => {
+      const { runMemory } = await import('./commands/memory.js');
+      await runMemory(args);
     },
   },
   prompt: {

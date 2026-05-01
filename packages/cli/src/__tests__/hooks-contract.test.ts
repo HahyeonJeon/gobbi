@@ -267,6 +267,64 @@ describe('hooks contract — `.claude/settings.json`', () => {
       const commands = (bashBlock?.hooks ?? []).map((h) => h.command);
       expect(commands).toContain('gobbi hook post-tool-use');
     });
+
+    // PR-CFM-B T6 (#241) mirrors the Bash matcher into
+    // `.claude/settings.json` so the dormant emitter also fires when
+    // a developer runs Claude Code against the gobbi repo itself
+    // (project-level config, distinct from the plugin manifest the
+    // gobbi users receive). To prevent future drift between the two
+    // files, this test enforces symmetric equality on the projected
+    // (matcher, command, timeout) triples for every PostToolUse[]
+    // entry. Each entry is assumed to have exactly one hook of
+    // type 'command' — the PostToolUse contract throughout this repo.
+    test('PostToolUse[] triples in .claude/settings.json and plugin manifest are byte-identical', () => {
+      const PLUGIN_MANIFEST_PATH = join(
+        REPO_ROOT,
+        'plugins',
+        'gobbi',
+        'hooks',
+        'hooks.json',
+      );
+      const settings = readJson<HooksManifest>(SETTINGS_PATH);
+      const plugin = readJson<HooksManifest>(PLUGIN_MANIFEST_PATH);
+
+      interface Triple {
+        readonly matcher: string | undefined;
+        readonly command: string | undefined;
+        readonly timeout: number | undefined;
+      }
+
+      function toTriples(manifest: HooksManifest): readonly Triple[] {
+        const blocks = manifest.hooks?.['PostToolUse'] ?? [];
+        return blocks.map((block) => {
+          const hook = (block.hooks ?? [])[0];
+          return {
+            matcher: block.matcher,
+            command: hook?.command,
+            // `timeout` is not declared on the local HookCommand
+            // interface above — read through `unknown` to avoid
+            // expanding the structural type beyond what the other
+            // tests need.
+            timeout:
+              hook && typeof (hook as { timeout?: unknown }).timeout === 'number'
+                ? ((hook as { timeout: number }).timeout)
+                : undefined,
+          };
+        });
+      }
+
+      const sortKey = (t: Triple): string =>
+        `${t.matcher ?? ''}|${t.command ?? ''}|${t.timeout ?? ''}`;
+
+      const settingsTriples = [...toTriples(settings)].sort((a, b) =>
+        sortKey(a).localeCompare(sortKey(b)),
+      );
+      const pluginTriples = [...toTriples(plugin)].sort((a, b) =>
+        sortKey(a).localeCompare(sortKey(b)),
+      );
+
+      expect(settingsTriples).toStrictEqual(pluginTriples);
+    });
   });
 
   describe('per-event emitter shape', () => {
