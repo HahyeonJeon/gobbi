@@ -203,13 +203,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
       'Architecture-of-record describes the v0.5.0 pivot history; references retired filenames as part of the historical narrative.',
   },
 
-  // ---- Design-corpus follow-up sweep (out of 2a-iii scope per ideation) ----
-  // Per ideation §"Out of scope" item 2 — these files have stale present-tense
-  // statements that will be addressed in a follow-up issue. The allow-list
-  // entries are self-removing once the follow-up lands.
-  // TODO(follow-up): file an issue for design-corpus drift sweep and replace
-  // these allow-list entries with `// allow-listed until issue #N` markers
-  // once the issue number is assigned.
   {
     path: '.gobbi/projects/gobbi/design/structure.md',
     rationale:
