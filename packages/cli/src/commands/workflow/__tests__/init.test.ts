@@ -24,7 +24,9 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
+import { randomBytes } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
 import { EventStore } from '../../../workflow/store.js';
@@ -604,5 +606,62 @@ describe('runInit — project_id stamping (#178)', () => {
     } finally {
       store.close();
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PR-CFM-D / #187 — B.0 single-guard rejects invalid `--project` values and
+// invalid basename(repoRoot) fallbacks before any FS write.
+// ---------------------------------------------------------------------------
+
+describe('runInit — rejects invalid --project values', () => {
+  test.each(['../tmp', '../../escape', '..', 'foo/bar', 'foo\\bar'])(
+    'rejects --project=%j with exit 2 + L13 stderr template',
+    async (payload) => {
+      const repo = makeScratchRepo();
+      await captureExit(() =>
+        runInitWithOptions(
+          ['--session-id', 'invalid-flag', '--project', payload],
+          { repoRoot: repo },
+        ),
+      );
+      expect(captured.exitCode).toBe(2);
+      expect(captured.stderr).toMatch(
+        /^gobbi workflow init: invalid --project name '/,
+      );
+      // The raw payload renders verbatim inside the single-quoted slot.
+      expect(captured.stderr).toContain(`'${payload}'`);
+    },
+  );
+
+  test('rejects invalid basename(repoRoot) fallback when no --project flag', async () => {
+    // Deterministic-invalid basename: capital `I` fails NAME_PATTERN's
+    // lowercase-only character class, hex suffix avoids any platform
+    // path-separator / space pitfalls. NOTE: do NOT use
+    // `makeConformingTmpRepo` here — its purpose is the OPPOSITE
+    // (produce a basename that PASSES the validator). This fixture
+    // exercises L7 (basename fallback) by deliberately constructing an
+    // INVALID basename.
+    const invalidDir = join(
+      tmpdir(),
+      `Invalid-${randomBytes(4).toString('hex')}`,
+    );
+    mkdirSync(invalidDir, { recursive: true });
+    scratchDirs.push(invalidDir);
+
+    await captureExit(() =>
+      runInitWithOptions(
+        ['--session-id', 'invalid-basename'],
+        { repoRoot: invalidDir },
+      ),
+    );
+    expect(captured.exitCode).toBe(2);
+    expect(captured.stderr).toMatch(
+      /^gobbi workflow init: invalid --project name '/,
+    );
+    // The basename-derived value (the mixed-case dir name) must appear in
+    // the single-quoted slot — proves the guard validated the FALLBACK,
+    // not a literal flag value.
+    expect(captured.stderr).toContain(`'${basename(invalidDir)}'`);
   });
 });

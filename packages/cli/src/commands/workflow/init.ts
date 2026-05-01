@@ -70,6 +70,7 @@ import {
   sessionJsonPath,
   writeSessionStub,
 } from '../../lib/json-memory.js';
+import { assertValidProjectNameOrExit } from '../../lib/project-name.js';
 import { readInstalledVersion } from '../../lib/version-check.js';
 import { ConfigCascadeError } from '../../lib/settings.js';
 import { EventStore } from '../../workflow/store.js';
@@ -165,6 +166,12 @@ export async function runInitWithOptions(
     typeof values.project === 'string' && values.project !== ''
       ? values.project
       : undefined;
+
+  // PR-CFM-D / #187 — guard before line 179 cascadeProjectName / line 185
+  // ensureSettingsCascade. Validates the SAME expression line 179 then
+  // assigns; covers both --project flag and basename(repoRoot) fallback (L7).
+  const _resolvedForGuard = projectFlag ?? basename(repoRoot);
+  assertValidProjectNameOrExit(_resolvedForGuard, 'gobbi workflow init');
 
   // PR-FIN-1c: project name = `--project` flag → `basename(repoRoot)`.
   // No more `projects.active` registry; the directory tree is the source
