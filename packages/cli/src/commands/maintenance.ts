@@ -79,6 +79,17 @@ export const MAINTENANCE_COMMANDS: readonly MaintenanceCommand[] = [
       await runVerifyStateProjections(args);
     },
   },
+  {
+    name: 'restore-state-db',
+    summary:
+      'Restore state.db from an operator-created .bak (rename-aside under --force)',
+    run: async (args: string[]): Promise<void> => {
+      const { runRestoreStateDb } = await import(
+        './maintenance/restore-state-db.js'
+      );
+      await runRestoreStateDb(args);
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------------
