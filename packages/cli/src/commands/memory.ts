@@ -9,13 +9,13 @@
  * Sub-handlers are dynamic-`import()`-ed so unrelated namespaces pay no
  * cold-start cost when the user only runs the guard hook.
  *
- * ## Scope (v0.5.0 PR-CFM-B — issue #236 part 1)
+ * ## Scope (v0.5.0 PR-CFM-B — issue #236)
  *
- * Ships `check` only in this commit (per PR-CFM-B Architecture F2 lock —
- * each registry entry's dynamic-import target must exist when the entry
- * registers, so bisect across this commit alone stays clean). The next
- * commit (#236 part 2) appends the `backfill` entry atomically with its
- * handler module.
+ * Two subcommands are registered: `check` (#236 part 1, shipped in the
+ * preceding commit) and `backfill` (#236 part 2, shipped atomically
+ * with this entry per PR-CFM-B Architecture F2 lock — each registry
+ * entry's dynamic-import target must exist when the entry registers,
+ * so bisect across either commit alone stays clean).
  *
  * ## Exit codes
  *
@@ -24,7 +24,8 @@
  *   - Subcommand handlers own their own exit codes.
  *
  * @see `commands/maintenance.ts` — sibling dispatcher this file mirrors.
- * @see `commands/memory/check.ts` — first registered subcommand.
+ * @see `commands/memory/check.ts` — per-session memory inspection.
+ * @see `commands/memory/backfill.ts` — crash-recovery from stub.
  */
 
 // ---------------------------------------------------------------------------
@@ -56,6 +57,15 @@ export const MEMORY_COMMANDS: readonly MemoryCommand[] = [
     run: async (args: string[]): Promise<void> => {
       const { runMemoryCheck } = await import('./memory/check.js');
       await runMemoryCheck(args);
+    },
+  },
+  {
+    name: 'backfill',
+    summary:
+      'Materialize session.json from state.db events for a crashed-mid-Memorization session',
+    run: async (args: string[]): Promise<void> => {
+      const { runMemoryBackfill } = await import('./memory/backfill.js');
+      await runMemoryBackfill(args);
     },
   },
 ];

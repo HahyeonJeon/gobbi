@@ -8,14 +8,14 @@
  * with a custom registry to assert the dispatcher framework itself
  * behaves correctly independently of the registered subcommand set.
  *
- * Test surface (3) per PR-CFM-B synthesis §3.3 + plan T4:
+ * Test surface (3) per PR-CFM-B synthesis §3.3 + plan T4 + T5:
  *
  *   1. `runMemoryWithRegistry` test seam works against a custom registry
  *      — the dispatcher invokes the registered handler with the trimmed
  *      argv slice.
- *   2. `gobbi memory --help` listing prints exactly one subcommand at
- *      this commit (`check`) — guards against the next commit adding
- *      `backfill` to the listing prematurely.
+ *   2. `gobbi memory --help` listing prints both registered subcommands
+ *      after T5 lands (`check` + `backfill`). T5 atomically appends the
+ *      `backfill` entry alongside the new handler module.
  *   3. Unknown subcommand fails with exit 1 — registry-agnostic guard.
  */
 
@@ -119,19 +119,17 @@ describe('runMemoryWithRegistry — custom registry', () => {
 });
 
 // ===========================================================================
-// 2. --help listing — only `check` at this commit
+// 2. --help listing — both `check` and `backfill` after T5
 // ===========================================================================
 
 describe('runMemoryWithRegistry — --help listing', () => {
-  test('lists exactly one subcommand at this commit (check)', async () => {
+  test('lists both check and backfill subcommands', async () => {
     await captureExit(() => runMemoryWithRegistry(['--help'], MEMORY_COMMANDS));
 
     expect(captured.stdout).toContain('check');
-    // Backfill is intentionally NOT registered yet — guards against the
-    // next commit registering it before its handler module exists.
-    expect(captured.stdout).not.toContain('backfill');
-    // Registry holds exactly one entry at this commit.
-    expect(MEMORY_COMMANDS).toHaveLength(1);
+    expect(captured.stdout).toContain('backfill');
+    // Registry holds exactly two entries after T5.
+    expect(MEMORY_COMMANDS).toHaveLength(2);
   });
 });
 
