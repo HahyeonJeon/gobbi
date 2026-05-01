@@ -2,6 +2,8 @@
 
 Workflow transition reference for v0.5.0. Read this when implementing or reasoning about step progression, evaluation gating, feedback loops, or guard conditions. Assumes familiarity with the event model in `v050-session.md`.
 
+> **Updated by PR-FIN-2a-ii:** the per-session state-projection file was retired; `currentStep` / `currentSubstate` / `evalConfig` derive from the per-session `gobbi.db` event replay and surface in `session.json` at Memorization STEP_EXIT. Sections below describe the post-pivot model.
+
 ---
 
 ## Workflow Steps and Substates
@@ -71,7 +73,7 @@ The six steps map directly to the workflow defined in `v050-overview.md`. Two st
            invalid transition)
 ```
 
-**Ideation** has two internal substates: `discussing` and `researching`. `discussing` is the orchestrator-user conversation where the approach is shaped. `researching` is where researcher agents investigate how to realize the approach. These loop — more discussion can follow research, and research can be re-run after discussion refines the question. The CLI tracks the active substate via `currentSubstate` in `state.json`. Ideation exits when the approach is concrete enough to plan against, which is a convergence signal the orchestrator emits as an artifact.
+**Ideation** has two internal substates: `discussing` and `researching`. `discussing` is the orchestrator-user conversation where the approach is shaped. `researching` is where researcher agents investigate how to realize the approach. These loop — more discussion can follow research, and research can be re-run after discussion refines the question. The CLI tracks the active substate via `currentSubstate`, derived from the `gobbi.db` event log via reducer-replay and surfaced in `session.json` after Memorization STEP_EXIT. Ideation exits when the approach is concrete enough to plan against, which is a convergence signal the orchestrator emits as an artifact.
 
 **Plan** has no substates. The orchestrator enters plan mode, produces task decomposition with delegation assignments and verification criteria, and exits. Plan is complete when a plan artifact exists in the `plan/` step directory.
 
@@ -138,7 +140,7 @@ The `workflow.step.skip` transition allows the user to jump the workflow forward
 
 > **State is a pure function of events. The reducer is the canonical definition of what each event means.**
 
-The reducer takes the current state and one event, and returns the next state. It is pure — no side effects, no external reads. Replaying all events in sequence order produces the same state as reading `state.json`. When `state.json` is absent or invalid, the CLI replays `state.db` through the reducer to rebuild it.
+The reducer takes the current state and one event, and returns the next state. It is pure — no side effects, no external reads. Replaying all events in sequence order produces the canonical workflow state. State is derived on read by replaying the per-session `gobbi.db` event log through the reducer; there is no on-disk projection cache (post-PR-FIN-2a-ii).
 
 The reducer is structured as a discriminated union switch: the `type` field of the event is the discriminant, and each case handles one event type. The switch has a default branch that assigns to a `never`-typed variable. This TypeScript exhaustiveness pattern means the compiler reports a type error if a new event type is added to the enum without a corresponding reducer case — no event type can be silently ignored. The `error` state is a variant in this discriminated union — its valid events and transitions are handled by the same exhaustiveness mechanism as all other states.
 
@@ -165,9 +167,9 @@ The reducer never mutates state in place. It produces a new state object on ever
 
 > **The evaluation decision is made once, upfront. No mid-workflow prompts for steps the user already decided.**
 
-Evaluation is mandatory after Execution. It is optional at Ideation and Plan. The decision about whether to run optional evaluation steps is made once — at workflow start — and stored in `evalConfig` within `state.json`.
+Evaluation is mandatory after Execution. It is optional at Ideation and Plan. The decision about whether to run optional evaluation steps is made once — at workflow start — and persisted as a `workflow.eval.decide` event in `gobbi.db`; the reducer surfaces it as `evalConfig` on subsequent state-derivation reads.
 
-The `workflow.eval.decide` event captures this decision. It is written during the session initialization flow by `gobbi workflow init`, before Ideation begins. `gobbi workflow init` asks the user four setup questions including whether to evaluate after Ideation and whether to evaluate after Plan. The answers are stored as a `workflow.eval.decide` event immediately, populating `evalConfig` in `state.json`. The first step's generated prompt includes `evalConfig` in its session section. Its `data` payload records `{ ideation: boolean, plan: boolean }`. Once written, the reducer treats `evalConfig` as immutable — no subsequent event overwrites it.
+The `workflow.eval.decide` event captures this decision. It is written during the session initialization flow by `gobbi workflow init`, before Ideation begins. `gobbi workflow init` asks the user four setup questions including whether to evaluate after Ideation and whether to evaluate after Plan. The answers are stored as a `workflow.eval.decide` event immediately, and the reducer's projection surfaces them as `evalConfig` on subsequent state-derivation reads. The first step's generated prompt includes `evalConfig` in its session section. The event's `data` payload records `{ ideation: boolean, plan: boolean }`. Once written, the reducer treats `evalConfig` as immutable — no subsequent event overwrites it.
 
 Why this matters: if evaluation were decided per-step, the orchestrator would ask the user at the Ideation exit and again at the Plan exit. These interruptions mid-workflow are exactly the kind of idle-inducing questions v0.5.0 eliminates. Deciding once, storing the result, and reading it at transition time removes two decision points from the active workflow path.
 

@@ -209,16 +209,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
       'Design-corpus drift — out-of-scope follow-up per ideation §"Out of scope" item 2 (lines 99/103/163).',
   },
   {
-    path: '.gobbi/projects/gobbi/design/v050-cli.md',
-    rationale:
-      'Design-corpus drift — out-of-scope follow-up (lines 57/59/61/72/76/84/86/114).',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-prompts.md',
-    rationale:
-      'Design-corpus drift — out-of-scope follow-up (lines 21/25/27/34/149).',
-  },
-  {
     path: '.gobbi/projects/gobbi/design/v050-hooks.md',
     rationale:
       'Design-corpus drift — out-of-scope follow-up; describes hook-driven state.json / metadata.json reads in present tense.',
@@ -227,11 +217,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     path: '.gobbi/projects/gobbi/design/v050-session.md',
     rationale:
       'Session-architecture design doc — describes per-session state.json / metadata.json contracts in present tense. Out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-state-machine.md',
-    rationale:
-      'Reducer-replay narrative references state.json — out-of-scope follow-up.',
   },
   {
     path: '.gobbi/projects/gobbi/design/v050-integration-tests.md',
