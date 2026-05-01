@@ -56,6 +56,7 @@ import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 
 import { isRecord, isString } from '../lib/guards.js';
+import { assertValidProjectNameOrExit } from '../lib/project-name.js';
 import { readStdinJson } from '../lib/stdin.js';
 import { getRepoRoot } from '../lib/repo.js';
 import {
@@ -611,6 +612,12 @@ async function runInit(args: string[]): Promise<void> {
 
   const repoRoot = getRepoRoot();
   const projectName = projectFlag ?? basename(repoRoot);
+
+  // PR-CFM-D / #187 — guard before projectSettingsPath / sessionSettingsPath
+  // path-joins below. Validates the resolved name (covers both --project
+  // flag and basename(repoRoot) fallback per L7) so traversal payloads
+  // exit 2 with the L13 stderr template before any FS write.
+  assertValidProjectNameOrExit(projectName, 'gobbi config init');
 
   // Compute the on-disk path BEFORE writing so the refuse-without-force
   // gate can inspect the existing file and the WARN line / error message

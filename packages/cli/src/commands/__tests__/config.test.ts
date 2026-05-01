@@ -26,9 +26,11 @@
  * (`__tests__/features/gobbi-config.test.ts`).
  */
 
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'bun:test';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test';
+import { randomBytes } from 'node:crypto';
 import {
   existsSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
@@ -36,6 +38,55 @@ import {
 import { execSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+
+// PR-CFM-D / #187 — Override `getRepoRoot` BEFORE importing anything that
+// captures it. The module-level memoization in `lib/repo.ts` caches the
+// first git rev-parse result for the entire `bun test` process, so without
+// this mock the basename-fallback regression test (below) cannot point
+// `runInit` at an INVALID basename. The `globalThis`-scoped pointer
+// pattern mirrors `__tests__/features/gobbi-config.test.ts`. When the
+// pointer is null, the mock falls through to real git rev-parse so all
+// existing tests in this file (which chdir to `scratchRepo` in beforeAll)
+// see the same behaviour as the un-mocked module.
+interface ScratchState {
+  readonly root: string | null;
+}
+const GLOBAL_KEY = '__gobbiConfigUnitScratchRoot__';
+function setGlobalScratch(root: string | null): void {
+  (globalThis as unknown as Record<string, ScratchState>)[GLOBAL_KEY] = { root };
+}
+function getGlobalScratch(): string | null {
+  const entry = (globalThis as unknown as Record<string, ScratchState | undefined>)[GLOBAL_KEY];
+  return entry?.root ?? null;
+}
+mock.module('../../lib/repo.js', () => ({
+  getRepoRoot: (): string => {
+    const override = getGlobalScratch();
+    if (override !== null) return override;
+    try {
+      return execSync('git rev-parse --show-toplevel', {
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+      }).trim();
+    } catch {
+      return process.cwd();
+    }
+  },
+  getClaudeDir: (): string => {
+    const override = getGlobalScratch();
+    const root = override ?? (() => {
+      try {
+        return execSync('git rev-parse --show-toplevel', {
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+        }).trim();
+      } catch {
+        return process.cwd();
+      }
+    })();
+    return join(root, '.claude');
+  },
+}));
 
 import { COMMAND_ORDER, COMMANDS_BY_NAME } from '../../cli.js';
 import { coerceValue, runConfig } from '../config.js';
@@ -584,5 +635,79 @@ describe('runConfig set argument validation', () => {
     };
     expect(parsed.notify.slack.enabled).toBe(true);
     expect(parsed.notify.slack.channel).toBeNull();
+  });
+});
+
+// ===========================================================================
+// PR-CFM-D / #187 — runInit rejects invalid --project values + invalid
+// basename(repoRoot) fallbacks before any FS write.
+// ===========================================================================
+
+describe('runConfig init — rejects invalid --project values', () => {
+  test.each(['../tmp', '../../escape', '..', 'foo/bar', 'foo\\bar'])(
+    'rejects --project=%j with exit 2 + L13 stderr template + no settings.json write',
+    async (payload) => {
+      const repo = makeScratchRepo();
+      await captureExit(async () => {
+        await runConfig([
+          'init',
+          '--level',
+          'project',
+          '--project',
+          payload,
+        ]);
+      });
+      expect(captured.exitCode).toBe(2);
+      expect(captured.stderr).toMatch(
+        /^gobbi config init: invalid --project name '/,
+      );
+      // The raw payload renders verbatim inside the single-quoted slot.
+      expect(captured.stderr).toContain(`'${payload}'`);
+      // FS-no-write assertion: the would-be settings.json resolved from
+      // join(repoRoot, '.gobbi', 'projects', payload, 'settings.json')
+      // must NOT exist — path.join collapses '..' segments, so this
+      // confirms the validation guard short-circuits BEFORE
+      // projectSettingsPath / writeSettingsAtLevel run.
+      expect(
+        existsSync(join(repo, '.gobbi', 'projects', payload, 'settings.json')),
+      ).toBe(false);
+    },
+  );
+
+  test('rejects invalid basename(repoRoot) fallback when no --project flag', async () => {
+    // Deterministic-invalid basename: capital `I` fails NAME_PATTERN's
+    // lowercase-only character class, hex suffix avoids any platform
+    // path-separator / space pitfalls (RP1). NOTE: do NOT use
+    // `makeConformingTmpRepo` here — its purpose is the OPPOSITE
+    // (produce a basename that PASSES the validator). This fixture
+    // exercises L7 (basename fallback) by deliberately constructing an
+    // INVALID basename, then redirecting `getRepoRoot()` to it via the
+    // file-level `mock.module` pointer.
+    const invalidDir = join(
+      tmpdir(),
+      `Invalid-${randomBytes(4).toString('hex')}`,
+    );
+    mkdirSync(invalidDir, { recursive: true });
+    setGlobalScratch(invalidDir);
+    try {
+      await captureExit(async () => {
+        await runConfig(['init', '--level', 'project']);
+      });
+      expect(captured.exitCode).toBe(2);
+      expect(captured.stderr).toMatch(
+        /^gobbi config init: invalid --project name '/,
+      );
+      // The basename-derived value (the mixed-case dir name) must appear
+      // in the single-quoted slot — proves the guard validated the
+      // FALLBACK, not a literal flag value.
+      expect(captured.stderr).toContain(`'${basename(invalidDir)}'`);
+    } finally {
+      setGlobalScratch(null);
+      try {
+        rmSync(invalidDir, { recursive: true, force: true });
+      } catch {
+        // best-effort cleanup; tmpdir reaper handles residue
+      }
+    }
   });
 });
