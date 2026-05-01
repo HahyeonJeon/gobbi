@@ -316,9 +316,9 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ## HOOK-1 — session-start chains config env + workflow init (PR-FIN-1b)
 
-- [ST] `runHookSessionStart([])` with `$CLAUDE_SESSION_ID` in env → session directory created under `.gobbi/projects/<basename>/sessions/hook-1-sess/`; `metadata.json` exists.
+- [ST] `runHookSessionStart([])` with `$CLAUDE_SESSION_ID` in env → session directory created under `.gobbi/projects/<basename>/sessions/hook-1-sess/`; `session.json` exists.
   - Verify: `bun test packages/cli/src/__tests__/features/hook.test.ts -t 'HOOK-1'`
-- [ST] `metadata.json` fields: `sessionId === 'hook-1-sess'` and `projectName === basename(repo)`.
+- [ST] `session.json` fields: `sessionId === 'hook-1-sess'` and `projectId === basename(repo)`.
   - Verify: HOOK-1 test asserts both fields
 - [EP] Hook exit code is `null` (no `process.exit` call) — hooks must not block Claude Code.
   - Verify: HOOK-1 test asserts `captured.exitCode === null`
@@ -363,7 +363,7 @@ All items target behaviour shipped in Pass 3 (Wave B–D, SHAs cited in `review.
 
 ## HOOK-6 — end-to-end SessionStart (PR-FIN-1b)
 
-- [ST] `runHookSessionStart([])` with `$CLAUDE_PROJECT_DIR` and `$CLAUDE_SESSION_ID` set → env file contains `CLAUDE_PROJECT_DIR` line; session dir with `metadata.json` created; `meta.sessionId === 'hook-6-sess'`.
+- [ST] `runHookSessionStart([])` with `$CLAUDE_PROJECT_DIR` and `$CLAUDE_SESSION_ID` set → env file contains `CLAUDE_PROJECT_DIR` line; session dir with `session.json` created; `session.sessionId === 'hook-6-sess'`.
   - Verify: `bun test packages/cli/src/__tests__/features/hook.test.ts -t 'HOOK-6'`
 - [EP] stderr does NOT contain `gobbi hook session-start:` — no hook-level error message.
   - Verify: HOOK-6 test asserts `captured.stderr.not.toContain('gobbi hook session-start:')`

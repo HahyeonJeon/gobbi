@@ -56,7 +56,7 @@ All SHAs below exist on `feat/118-gobbi-memory-pass-2` (HEAD `5c5ac65` at review
 
 ### DRIFT-4 — State-machine literal `'plan'` renamed to `'planning'` (issue #133 bundled)
 
-**Finding:** Pass-2 bundled the `'plan'` → `'planning'` rename across 42 files and ~239 literal occurrences: `workflow/state.ts` union, `workflow/predicates.ts` (predicate names), `workflow/transitions.ts`, `specs/index.json`, `specs/plan/` → `specs/planning/` directory rename (including `__tests__/`, `README.md`, `spec.json`), `specs/artifact-selector.ts` (StepId union + subdir map + baseName), `EvalConfig.plan` → `EvalConfig.planning` field rename, `capture-plan.ts` → `capture-planning.ts`, and `note.ts` subcommand. The Pass-3 `resolveEvalDecision` `'plan'` backward-compat bridge was removed in the same wave; a pre-validation read-time normalization shim was added to keep legacy `state.json` files loadable.
+**Finding:** Pass-2 bundled the `'plan'` → `'planning'` rename across 42 files and ~239 literal occurrences: `workflow/state.ts` union, `workflow/predicates.ts` (predicate names), `workflow/transitions.ts`, `specs/index.json`, `specs/plan/` → `specs/planning/` directory rename (including `__tests__/`, `README.md`, `spec.json`), `specs/artifact-selector.ts` (StepId union + subdir map + baseName), `EvalConfig.plan` → `EvalConfig.planning` field rename, `capture-plan.ts` → `capture-planning.ts`, and `note.ts` subcommand. The Pass-3 `resolveEvalDecision` `'plan'` backward-compat bridge was removed in the same wave; a pre-validation read-time normalization shim was added to keep legacy per-session JSON state files loadable.
 
 **Evidence:** `6178277` (W4.1 state rename), `f383cce` (W4.2 specs dir), `adb8246` (W4.2 remediation — per-step spec.json + READMEs), `93fc80e` (W4.3 — capture-plan verb + bridge removal), `fcd1171` (W4.4 snapshot regen), `8affaa9` (W4 crit O-1/EP-1 pre-validation normalization), `f1a3bbe` (W4 crit O-2 note.ts rename), `ab0ac9b` (W4 EP-2 — capture-plan → capture-planning test renames), `caa43e4` (W4 minors — evalPlan predicates + --eval-plan flag).
 
@@ -144,9 +144,9 @@ All SHAs below exist on `feat/118-gobbi-memory-pass-2` (HEAD `5c5ac65` at review
 
 ### NOTE-2 — `wipe-legacy-sessions` uses state-based active detection, not directory-age heuristics
 
-**Finding:** The initial W3.3 wipe command used a directory-age heuristic to decide which sessions were "legacy". W3 evaluation flagged that clock skew and stale lockfiles could mis-classify an active session as legacy. Remediation consolidated the check into `findStateActiveSessions` which reads `state.json.currentStep` directly — a session is active if and only if its current step is not `done` or `error`.
+**Finding:** The initial W3.3 wipe command used a directory-age heuristic to decide which sessions were "legacy". W3 evaluation flagged that clock skew and stale lockfiles could mis-classify an active session as legacy. Remediation consolidated the check into `findStateActiveSessions` which reads the `currentStep` field via the persisted state-machine projection (post-PR-FIN-2a-ii: that projection lives in `session.json`) — a session is active if and only if its current step is not `done` or `error`.
 
-**Evidence:** `f257779` (W3 eval S1/A/minors — consolidate state.json reads + tighten wipe semantics), `f428f18` (W3.3 state-based helper).
+**Evidence:** `f257779` (W3 eval S1/A/minors — consolidate per-session state reads + tighten wipe semantics), `f428f18` (W3.3 state-based helper).
 
 **Owner:** gobbi-memory Pass-2 redesign.
 

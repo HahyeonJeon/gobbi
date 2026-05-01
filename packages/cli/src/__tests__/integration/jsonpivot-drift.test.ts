@@ -239,26 +239,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
       'Integration-test design references state.json reducer-replay assertions — out-of-scope follow-up.',
   },
   {
-    path: '.gobbi/projects/gobbi/design/v050-features/gobbi-config/checklist.md',
-    rationale:
-      'Pre-pivot checklist still lists metadata.json existence checks — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/gobbi-config/scenarios.md',
-    rationale:
-      'Pre-pivot scenarios still assert metadata.json contents — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/gobbi-memory/checklist.md',
-    rationale:
-      'Pre-pivot checklist references state.json.currentStep — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/gobbi-memory/review.md',
-    rationale:
-      'Historical Pass-2 review notes mention state.json shim work — out-of-scope follow-up.',
-  },
-  {
     path: '.gobbi/projects/gobbi/design/v050-features/orchestration/checklist.md',
     rationale:
       'Pre-pivot checklist names metadata.json — out-of-scope follow-up.',
