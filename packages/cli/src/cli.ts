@@ -194,7 +194,7 @@ export const COMMANDS_BY_NAME = {
   },
   memory: {
     name: 'memory',
-    summary: 'Inspect and reconcile per-session memory artifacts (check)',
+    summary: 'Inspect and reconcile per-session memory artifacts (check, backfill)',
     run: async (args: string[]): Promise<void> => {
       const { runMemory } = await import('./commands/memory.js');
       await runMemory(args);

@@ -61,6 +61,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 
 import {
+  projectJsonPath,
   readSessionJson,
   sessionJsonPath,
   type SessionJson,
@@ -273,9 +274,20 @@ export async function runMemoryBackfillWithOptions(
   const repoRoot = overrides.repoRoot ?? getRepoRoot();
   const projectName = projectNameFlag ?? path.basename(repoRoot);
   const sessionDirPath = resolveSessionDir(repoRoot, projectName, sessionId);
-  const stubPath = sessionJsonPath(repoRoot, projectName, sessionId);
 
-  // --- 3. Pre-flight A: stub must exist ---------------------------------
+  // --- 3. File-level pre-flights ----------------------------------------
+  // The argv shell owns path-existence; pure-core owns content-existence.
+  // Mirrors `check.ts:281-298` (DB_MISSING / PROJECT_MISSING file-level
+  // pre-flights). Stub-missing precedes dbPath-missing — when both are
+  // absent, BACKFILL_NO_STUB is the more diagnostic envelope (the
+  // operator gets the per-session-dir-empty signal first).
+  //
+  // EventStore construction below would otherwise CREATE an empty
+  // `gobbi.db`, so the dbPath check must precede the open call. The
+  // pure-core re-checks stub-missing (race-safe defense-in-depth) and
+  // throws `BackfillNoEventsError` on `eventCount() === 0` (content-level
+  // check on the open store — partition-empty case).
+  const stubPath = sessionJsonPath(repoRoot, projectName, sessionId);
   if (!existsSync(stubPath)) {
     writeErrorEnvelope(
       jsonFlag,
@@ -285,46 +297,6 @@ export async function runMemoryBackfillWithOptions(
     );
     process.exit(1);
   }
-
-  // Read stub to check the populated-vs-stub indicator (steps[] presence).
-  let stub: SessionJson | null;
-  try {
-    stub = readSessionJson(stubPath);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    writeErrorEnvelope(
-      jsonFlag,
-      'BACKFILL_FAILED',
-      `failed to read stub: ${message}`,
-      stubPath,
-    );
-    process.exit(1);
-  }
-  if (stub === null) {
-    // existsSync said yes but readSessionJson returned null — race or
-    // unreadable file. Surface as BACKFILL_NO_STUB to preserve the
-    // operator's mental model of pre-flight A.
-    writeErrorEnvelope(
-      jsonFlag,
-      'BACKFILL_NO_STUB',
-      `session.json stub not found: ${stubPath}`,
-      stubPath,
-    );
-    process.exit(1);
-  }
-
-  // --- 4. Pre-flight B: refuse populated stub without --force ------------
-  if (isPopulated(stub) && !forceFlag) {
-    writeErrorEnvelope(
-      jsonFlag,
-      'BACKFILL_ALREADY_POPULATED',
-      `session.json is already populated (steps present); pass --force to overwrite: ${stubPath}`,
-      stubPath,
-    );
-    process.exit(1);
-  }
-
-  // --- 5. Open per-session EventStore + run the backfill ----------------
   const dbPath = path.join(sessionDirPath, 'gobbi.db');
   if (!existsSync(dbPath)) {
     writeErrorEnvelope(
@@ -336,74 +308,69 @@ export async function runMemoryBackfillWithOptions(
     process.exit(1);
   }
 
-  const now = overrides.now ?? Date.now;
-  const startedAt = now();
-
+  // --- 4. Open store + delegate to pure-core ----------------------------
+  // Mirrors `commands/memory/check.ts:303-322` — the argv shell opens the
+  // resource, calls the pure-core inside `try`, and dispatches typed
+  // errors onto `--json` envelope codes inside `catch`. The four typed
+  // errors below are the bridge between the pure-core's throw arms and
+  // the operator-facing exit-code mapping.
   const store = new EventStore(dbPath);
   let result: MemoryBackfillResult;
   try {
-    // Pre-flight C: store has events for THIS sessionId. The per-session
-    // EventStore's eventCount() is partition-bound on the resolved
-    // session id (path-derived from the dbPath), so a positive count
-    // proves the partition is non-empty.
-    if (store.eventCount() === 0) {
-      writeErrorEnvelope(
-        jsonFlag,
-        'BACKFILL_NO_EVENTS',
-        `per-session gobbi.db has no events for session id: ${sessionId}`,
-        dbPath,
-      );
-      process.exit(1);
-    }
-
-    let writtenStubPath: string | null;
     try {
-      writtenStubPath = await writeSessionJsonAtMemorizationExit({
-        sessionDir: sessionDirPath,
+      result = await backfillMemoryAt(
+        sessionDirPath,
         store,
-        ...(finishedAtFlag !== undefined ? { finishedAt: finishedAtFlag } : {}),
-      });
+        finishedAtFlag,
+        forceFlag,
+        overrides.now,
+        repoRoot,
+        projectName,
+      );
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      writeErrorEnvelope(
-        jsonFlag,
-        'BACKFILL_FAILED',
-        `aggregator or writer threw: ${message}`,
-        undefined,
-      );
-      process.exit(1);
+      if (err instanceof BackfillNoStubError) {
+        writeErrorEnvelope(
+          jsonFlag,
+          'BACKFILL_NO_STUB',
+          err.message,
+          err.stubPath,
+        );
+        process.exit(1);
+      }
+      if (err instanceof BackfillAlreadyPopulatedError) {
+        writeErrorEnvelope(
+          jsonFlag,
+          'BACKFILL_ALREADY_POPULATED',
+          err.message,
+          err.stubPath,
+        );
+        process.exit(1);
+      }
+      if (err instanceof BackfillNoEventsError) {
+        writeErrorEnvelope(
+          jsonFlag,
+          'BACKFILL_NO_EVENTS',
+          err.message,
+          dbPath,
+        );
+        process.exit(1);
+      }
+      if (err instanceof BackfillFailedError) {
+        writeErrorEnvelope(
+          jsonFlag,
+          'BACKFILL_FAILED',
+          err.message,
+          undefined,
+        );
+        process.exit(1);
+      }
+      throw err;
     }
-
-    if (writtenStubPath === null) {
-      // Defensive — pre-flight A already verified the stub exists, so the
-      // writer should not return null on the success path. If it does,
-      // surface it loudly rather than reporting bogus success.
-      writeErrorEnvelope(
-        jsonFlag,
-        'BACKFILL_FAILED',
-        `writer returned null despite pre-flight stub presence: ${stubPath}`,
-        stubPath,
-      );
-      process.exit(1);
-    }
-
-    const projectJson = path.join(
-      path.dirname(path.dirname(sessionDirPath)),
-      'project.json',
-    );
-    result = {
-      sessionDir: sessionDirPath,
-      sessionJsonPath: writtenStubPath,
-      projectJsonPath: projectJson,
-      sessionId,
-      wrote: true,
-      elapsedMs: Math.max(0, now() - startedAt),
-    };
   } finally {
     store.close();
   }
 
-  // --- 6. Render --------------------------------------------------------
+  // --- 5. Render --------------------------------------------------------
   if (jsonFlag) {
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } else {
@@ -432,6 +399,14 @@ export async function runMemoryBackfillWithOptions(
  * Returns the structured `MemoryBackfillResult` on success. The argv
  * shell maps each typed throw onto its `--json` envelope code.
  *
+ * `repoRoot` and `projectName` are optional — argv-shell production
+ * callers pass both (already in scope from path resolution) so the
+ * canonical {@link projectJsonPath} helper resolves the project.json
+ * path from typed inputs. Standalone-test callers can omit both; the
+ * function falls back to deriving them from `sessionDirPath` via the
+ * locked `<repoRoot>/.gobbi/projects/<projectName>/sessions/<sessionId>`
+ * shape.
+ *
  * Exported for tests so they can assert the result shape without
  * re-running the argv parsing path. Production callers go through
  * {@link runMemoryBackfillWithOptions}.
@@ -442,6 +417,8 @@ export async function backfillMemoryAt(
   finishedAt: string | undefined,
   force: boolean,
   now?: () => number,
+  repoRoot?: string,
+  projectName?: string,
 ): Promise<MemoryBackfillResult> {
   const clock = now ?? Date.now;
   const startedAt = clock();
@@ -482,10 +459,24 @@ export async function backfillMemoryAt(
     );
   }
 
-  const projectJson = path.join(
-    path.dirname(path.dirname(sessionDirPath)),
-    'project.json',
-  );
+  // Resolve project.json via the canonical `projectJsonPath` helper at
+  // `lib/json-memory.ts:578-580`. Argv-shell callers pass `repoRoot` /
+  // `projectName` directly (already in scope from path resolution); the
+  // optional-arg fallback derives both from `sessionDirPath` for the
+  // pure-core's standalone-test path. The session-dir shape is locked
+  // at `<repoRoot>/.gobbi/projects/<projectName>/sessions/<sessionId>`
+  // (see `lib/workspace-paths.ts::sessionDir`).
+  // sessionDirPath = <repoRoot>/.gobbi/projects/<projectName>/sessions/<sessionId>
+  //   dirname x1 = .../sessions
+  //   dirname x2 = .../<projectName>      ← projectDir
+  //   dirname x3 = .../projects
+  //   dirname x4 = .../.gobbi
+  //   dirname x5 = <repoRoot>
+  const projectDirPath = path.dirname(path.dirname(sessionDirPath));
+  const resolvedRepoRoot =
+    repoRoot ?? path.dirname(path.dirname(path.dirname(projectDirPath)));
+  const resolvedProjectName = projectName ?? path.basename(projectDirPath);
+  const projectJson = projectJsonPath(resolvedRepoRoot, resolvedProjectName);
 
   return {
     sessionDir: sessionDirPath,

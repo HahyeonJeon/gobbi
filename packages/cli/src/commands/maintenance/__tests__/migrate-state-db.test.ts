@@ -701,7 +701,7 @@ describe('runMigrateStateDb — downgrade preflight (#190)', () => {
     }
   });
 
-  test('--target-version 6 against v7 row WITH --force → exit 0, stderr warning, schema_meta stamped at 6', async () => {
+  test('--target-version 6 --force succeeds; ensure-chain runs to CURRENT_SCHEMA_VERSION (--force only opens preflight gate)', async () => {
     const repo = makeRepo();
     const dbPath = seedV5StateDb(repo);
     seedEventRow(dbPath, 7);
