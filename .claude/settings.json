@@ -124,6 +124,16 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gobbi hook post-tool-use",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PostToolUseFailure": [
