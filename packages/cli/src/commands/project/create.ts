@@ -89,6 +89,7 @@
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 
+import { validateProjectName } from '../../lib/project-name.js';
 import { getRepoRoot } from '../../lib/repo.js';
 import { projectDir, projectSubdir } from '../../lib/workspace-paths.js';
 
@@ -192,52 +193,6 @@ const SCAFFOLD_GITIGNORED_DIRS: ReadonlySet<string> = new Set([
   'tmp',
   'worktrees',
 ]);
-
-// ---------------------------------------------------------------------------
-// Name validation
-// ---------------------------------------------------------------------------
-
-/**
- * Lowercase letters, digits, and hyphens only. The body-start and
- * body-end characters exclude hyphens so names like `-foo` or `foo-`
- * are rejected upstream of any directory create. One-character names
- * pass (e.g. `a`).
- */
-const NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-
-/**
- * Reserved filesystem names that must never be accepted as a project
- * name even though they pass the {@link NAME_PATTERN}. Kept small —
- * the pattern already excludes `/`, `\`, `.`, `_`, and whitespace, so
- * only the two dot-only sentinels make it this far (but the pattern
- * also excludes `.` entirely via its character class; this array is a
- * defense-in-depth belt against future pattern loosening).
- */
-const RESERVED_NAMES: ReadonlySet<string> = new Set(['', '.', '..']);
-
-export type NameValidationResult =
-  | { readonly ok: true }
-  | { readonly ok: false; readonly reason: string };
-
-/**
- * Validate a candidate project name against the rules documented on
- * the command-level JSDoc. Pure function — no I/O, no existence check
- * (that belongs to the caller, who already has the `repoRoot`).
- */
-export function validateProjectName(name: string): NameValidationResult {
-  if (RESERVED_NAMES.has(name)) {
-    return { ok: false, reason: `name cannot be "${name}"` };
-  }
-  if (!NAME_PATTERN.test(name)) {
-    return {
-      ok: false,
-      reason:
-        'name must be lowercase letters, digits, and hyphens only ' +
-        '(no leading/trailing hyphen, no path separators)',
-    };
-  }
-  return { ok: true };
-}
 
 // ---------------------------------------------------------------------------
 // Public entry points
