@@ -15,14 +15,13 @@
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import {
   existsSync,
-  mkdtempSync,
   readFileSync,
   rmSync,
 } from 'node:fs';
-import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
+import { makeConformingTmpRepo } from '../../../__tests__/helpers/conforming-tmpdir.js';
 import { runCapturePlanningWithOptions } from '../capture-planning.js';
 import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
@@ -106,7 +105,7 @@ afterEach(() => {
 });
 
 function makeScratchRepo(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'gobbi-capture-planning-'));
+  const dir = makeConformingTmpRepo('gobbi-capture-planning');
   scratchDirs.push(dir);
   return dir;
 }

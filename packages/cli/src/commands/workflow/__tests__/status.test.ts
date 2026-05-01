@@ -13,11 +13,11 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { rmSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
+import { makeConformingTmpRepo } from '../../../__tests__/helpers/conforming-tmpdir.js';
 import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
 import {
   aggregateCost,
@@ -104,7 +104,7 @@ afterEach(() => {
 });
 
 function makeScratchRepo(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'gobbi-status-test-'));
+  const dir = makeConformingTmpRepo('gobbi-status-test');
   scratchDirs.push(dir);
   return dir;
 }

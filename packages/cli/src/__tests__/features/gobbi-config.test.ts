@@ -42,16 +42,15 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, tes
 import {
   existsSync,
   mkdirSync,
-  mkdtempSync,
   readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
 import { execSync } from 'node:child_process';
-import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { makeConformingTmpRepo } from '../helpers/conforming-tmpdir.js';
 import {
   projectDir as projectDirForName,
   sessionDir as sessionDirForProject,
@@ -171,7 +170,7 @@ const ORIG_ENV_PROJECT_DIR = process.env['CLAUDE_PROJECT_DIR'];
 
 beforeAll(() => {
   origCwd = process.cwd();
-  scratchRepo = mkdtempSync(join(tmpdir(), 'gobbi-cfg-feat-'));
+  scratchRepo = makeConformingTmpRepo('gobbi-cfg-feat');
   execSync('git init -q', { cwd: scratchRepo });
   process.chdir(scratchRepo);
   // Point the mocked getRepoRoot at this file's scratch dir.

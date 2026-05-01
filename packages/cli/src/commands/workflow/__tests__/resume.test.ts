@@ -20,11 +20,11 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { rmSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
+import { makeConformingTmpRepo } from '../../../__tests__/helpers/conforming-tmpdir.js';
 import { runResumeWithOptions } from '../resume.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
 import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
@@ -118,7 +118,7 @@ afterEach(() => {
 });
 
 function makeScratchRepo(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'gobbi-resume-test-'));
+  const dir = makeConformingTmpRepo('gobbi-resume-test');
   scratchDirs.push(dir);
   return dir;
 }

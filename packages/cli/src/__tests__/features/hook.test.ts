@@ -28,14 +28,13 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test';
 import {
   existsSync,
-  mkdtempSync,
   readFileSync,
   rmSync,
 } from 'node:fs';
 import { execSync } from 'node:child_process';
-import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
+import { makeConformingTmpRepo } from '../helpers/conforming-tmpdir.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 
 // ---------------------------------------------------------------------------
@@ -179,7 +178,7 @@ const ORIG_ENV: Readonly<Record<string, string | undefined>> = {
 
 beforeAll(() => {
   origCwd = process.cwd();
-  scratchRepo = mkdtempSync(join(tmpdir(), 'gobbi-hook-feat-'));
+  scratchRepo = makeConformingTmpRepo('gobbi-hook-feat');
   execSync('git init -q', { cwd: scratchRepo });
   process.chdir(scratchRepo);
   setGlobalScratch(scratchRepo);
