@@ -62,14 +62,14 @@ import {
   existsSync,
   lstatSync,
   mkdirSync,
-  mkdtempSync,
   readFileSync,
   readlinkSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
-import { tmpdir } from 'node:os';
 import { basename, join, resolve as pathResolve } from 'node:path';
+
+import { makeConformingTmpRepo } from '../helpers/conforming-tmpdir.js';
 
 import {
   __INTERNALS__ as INSTALL_INTERNALS,
@@ -205,7 +205,14 @@ afterEach(() => {
 });
 
 function makeScratch(prefix: string): string {
-  const dir = mkdtempSync(join(tmpdir(), prefix));
+  // The prefix is passed to {@link makeConformingTmpRepo} which appends
+  // a `-<hex8>` suffix. Strip a trailing `-` from the caller's prefix
+  // so we don't end up with `gobbi-memory-repo--abcd`. Lowercase-hex
+  // suffixes guarantee the resulting basename satisfies the validator
+  // in `lib/project-name.ts` for any caller that flows the directory
+  // through `runInit` (G-MEM2-MP-04).
+  const cleanPrefix = prefix.endsWith('-') ? prefix.slice(0, -1) : prefix;
+  const dir = makeConformingTmpRepo(cleanPrefix);
   scratchDirs.push(dir);
   return dir;
 }

@@ -857,3 +857,30 @@ describe('renderPlan', () => {
     expect(out).toContain('1 collision(s)');
   });
 });
+
+// ===========================================================================
+// PR-CFM-D / #187 — --project name validation guard
+// ===========================================================================
+
+describe('runInstall — rejects invalid --project values', () => {
+  test.each(['../tmp', '../../escape', '..', 'foo/bar', 'foo\\bar'])(
+    'rejects --project=%j with exit 2 + L13 stderr template + no FS write',
+    async (payload) => {
+      const repo = makeRepo();
+      await captureExit(() =>
+        runInstallWithOptions(['--project', payload], { repoRoot: repo }),
+      );
+      expect(captured.exitCode).toBe(2);
+      expect(captured.stderr).toMatch(
+        /^gobbi install: invalid --project name '/,
+      );
+      // The raw payload renders verbatim inside the single-quoted slot.
+      expect(captured.stderr).toContain(`'${payload}'`);
+      // FS-no-write assertion: the would-be project root resolved from
+      // join(repoRoot, '.gobbi', 'projects', payload) must NOT exist —
+      // path.join collapses '..' segments, so the assertion confirms
+      // the validation guard short-circuits BEFORE any directory create.
+      expect(existsSync(join(repo, '.gobbi', 'projects', payload))).toBe(false);
+    },
+  );
+});

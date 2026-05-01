@@ -24,7 +24,8 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -32,6 +33,7 @@ import { EventStore } from '../../../workflow/store.js';
 import { runInitWithOptions, resolveSessionId } from '../init.js';
 import { readSessionJson, sessionJsonPath } from '../../../lib/json-memory.js';
 import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
+import { makeConformingTmpRepo } from '../../../__tests__/helpers/conforming-tmpdir.js';
 
 // ---------------------------------------------------------------------------
 // stdout/stderr capture + process.exit trap
@@ -93,7 +95,7 @@ const scratchDirs: string[] = [];
 let origSessionIdEnv: string | undefined;
 
 function makeScratchRepo(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'gobbi-init-test-'));
+  const dir = makeConformingTmpRepo('gobbi-init-test');
   scratchDirs.push(dir);
   return dir;
 }
@@ -572,7 +574,7 @@ describe('runInit — project_id stamping (#178)', () => {
     // The hard regression case from issue #178: a repo named gobbi-repo
     // initialised under --project=foo must stamp project_id='foo', NOT
     // 'gobbi-repo' (basename(repoRoot)).
-    const repo = mkdtempSync(join(tmpdir(), 'gobbi-repo-'));
+    const repo = makeConformingTmpRepo('gobbi-repo');
     scratchDirs.push(repo);
     expect(basename(repo).startsWith('gobbi-repo-')).toBe(true);
 
@@ -604,5 +606,62 @@ describe('runInit — project_id stamping (#178)', () => {
     } finally {
       store.close();
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// PR-CFM-D / #187 — B.0 single-guard rejects invalid `--project` values and
+// invalid basename(repoRoot) fallbacks before any FS write.
+// ---------------------------------------------------------------------------
+
+describe('runInit — rejects invalid --project values', () => {
+  test.each(['../tmp', '../../escape', '..', 'foo/bar', 'foo\\bar'])(
+    'rejects --project=%j with exit 2 + L13 stderr template',
+    async (payload) => {
+      const repo = makeScratchRepo();
+      await captureExit(() =>
+        runInitWithOptions(
+          ['--session-id', 'invalid-flag', '--project', payload],
+          { repoRoot: repo },
+        ),
+      );
+      expect(captured.exitCode).toBe(2);
+      expect(captured.stderr).toMatch(
+        /^gobbi workflow init: invalid --project name '/,
+      );
+      // The raw payload renders verbatim inside the single-quoted slot.
+      expect(captured.stderr).toContain(`'${payload}'`);
+    },
+  );
+
+  test('rejects invalid basename(repoRoot) fallback when no --project flag', async () => {
+    // Deterministic-invalid basename: capital `I` fails NAME_PATTERN's
+    // lowercase-only character class, hex suffix avoids any platform
+    // path-separator / space pitfalls. NOTE: do NOT use
+    // `makeConformingTmpRepo` here — its purpose is the OPPOSITE
+    // (produce a basename that PASSES the validator). This fixture
+    // exercises L7 (basename fallback) by deliberately constructing an
+    // INVALID basename.
+    const invalidDir = join(
+      tmpdir(),
+      `Invalid-${randomBytes(4).toString('hex')}`,
+    );
+    mkdirSync(invalidDir, { recursive: true });
+    scratchDirs.push(invalidDir);
+
+    await captureExit(() =>
+      runInitWithOptions(
+        ['--session-id', 'invalid-basename'],
+        { repoRoot: invalidDir },
+      ),
+    );
+    expect(captured.exitCode).toBe(2);
+    expect(captured.stderr).toMatch(
+      /^gobbi workflow init: invalid --project name '/,
+    );
+    // The basename-derived value (the mixed-case dir name) must appear in
+    // the single-quoted slot — proves the guard validated the FALLBACK,
+    // not a literal flag value.
+    expect(captured.stderr).toContain(`'${basename(invalidDir)}'`);
   });
 });

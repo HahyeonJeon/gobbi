@@ -28,10 +28,10 @@
 import { test, describe, expect } from 'bun:test';
 import { $ } from 'bun';
 import { Database } from 'bun:sqlite';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, rmSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
+import { makeConformingTmpRepo } from '../helpers/conforming-tmpdir.js';
 import type { EventRow } from '../../workflow/migrations.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 
@@ -94,7 +94,7 @@ describe('migration chain e2e', () => {
   test(
     'v1 events injected directly into gobbi.db migrate to CURRENT_SCHEMA_VERSION on next CLI read',
     async () => {
-      const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-mig-e2e-'));
+      const tmpRoot = makeConformingTmpRepo('gobbi-mig-e2e');
       const sessionId = 'migrate-e2e';
       // Same env shape as workflow-cycle.test.ts — blank CLAUDE_SESSION_ID
       // so --session-id is authoritative; CLAUDE_TRANSCRIPT_PATH defensive.

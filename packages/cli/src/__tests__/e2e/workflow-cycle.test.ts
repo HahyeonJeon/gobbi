@@ -29,10 +29,10 @@
 
 import { test, expect } from 'bun:test';
 import { $ } from 'bun';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, rmSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
+import { makeConformingTmpRepo } from '../helpers/conforming-tmpdir.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 
 // ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ function parseStatus(buf: Buffer): Record<string, unknown> {
 test(
   'full workflow cycle: init -> ideation -> plan -> execution -> execution_eval -> memorization -> handoff -> done',
   async () => {
-    const tmpRoot = mkdtempSync(join(tmpdir(), 'gobbi-e2e-'));
+    const tmpRoot = makeConformingTmpRepo('gobbi-e2e');
     const sessionId = 'e2e-happy-path';
     // Shared environment for every child: keep the parent's PATH (so `bun`
     // is discoverable) but blank the session-id env so the --session-id

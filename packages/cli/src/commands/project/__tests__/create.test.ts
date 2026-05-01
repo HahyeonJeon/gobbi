@@ -33,7 +33,6 @@ import {
   runProjectCreateWithOptions,
   SCAFFOLD_DIRS,
   SCAFFOLD_GITIGNORED_DIRS,
-  validateProjectName,
 } from '../create.js';
 
 // ---------------------------------------------------------------------------
@@ -129,51 +128,6 @@ function readWorkspaceSettings(repo: string): unknown {
   const raw = readFileSync(join(repo, '.gobbi', 'settings.json'), 'utf8');
   return JSON.parse(raw);
 }
-
-// ===========================================================================
-// Name validation (pure function)
-// ===========================================================================
-
-describe('validateProjectName', () => {
-  test('accepts lowercase letters', () => {
-    expect(validateProjectName('gobbi').ok).toBe(true);
-  });
-  test('accepts letters + digits + hyphens', () => {
-    expect(validateProjectName('my-project-2').ok).toBe(true);
-  });
-  test('accepts single-character names', () => {
-    expect(validateProjectName('a').ok).toBe(true);
-  });
-  test('rejects empty string', () => {
-    expect(validateProjectName('').ok).toBe(false);
-  });
-  test('rejects uppercase', () => {
-    expect(validateProjectName('Foo').ok).toBe(false);
-  });
-  test('rejects underscores', () => {
-    expect(validateProjectName('foo_bar').ok).toBe(false);
-  });
-  test('rejects dots', () => {
-    expect(validateProjectName('foo.bar').ok).toBe(false);
-  });
-  test('rejects path separators', () => {
-    expect(validateProjectName('foo/bar').ok).toBe(false);
-    expect(validateProjectName('foo\\bar').ok).toBe(false);
-  });
-  test('rejects leading hyphen', () => {
-    expect(validateProjectName('-foo').ok).toBe(false);
-  });
-  test('rejects trailing hyphen', () => {
-    expect(validateProjectName('foo-').ok).toBe(false);
-  });
-  test('rejects reserved . and ..', () => {
-    expect(validateProjectName('.').ok).toBe(false);
-    expect(validateProjectName('..').ok).toBe(false);
-  });
-  test('rejects whitespace-only', () => {
-    expect(validateProjectName(' ').ok).toBe(false);
-  });
-});
 
 // ===========================================================================
 // runProjectCreate — happy path

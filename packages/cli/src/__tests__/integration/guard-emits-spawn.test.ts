@@ -41,6 +41,7 @@ import { basename, join } from 'node:path';
 import { runInitWithOptions } from '../../commands/workflow/init.js';
 import { runGuardWithOptions } from '../../commands/workflow/guard.js';
 import { runCaptureSubagentWithOptions } from '../../commands/workflow/capture-subagent.js';
+import { makeConformingTmpRepo } from '../helpers/conforming-tmpdir.js';
 import { sessionDir as sessionDirForProject } from '../../lib/workspace-paths.js';
 import { EventStore } from '../../workflow/store.js';
 import { resolveWorkflowState } from '../../workflow/engine.js';
@@ -131,7 +132,7 @@ afterEach(() => {
 });
 
 function makeScratchRepo(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'gobbi-spawn-emit-'));
+  const dir = makeConformingTmpRepo('gobbi-spawn-emit');
   scratchDirs.push(dir);
   return dir;
 }

@@ -292,7 +292,7 @@ Evidence: `specs/handoff/spec.json`, `index.json` (handoff transitions added Wav
 **When** `gobbi maintenance migrate-state-db` runs
 **Then** events are migrated into a new workspace `.gobbi/state.db` at schema v6; partition keys (`session_id`, `project_id`) are preserved on every row; per-session `gobbi.db` files are renamed `.bak` (not deleted) for one-commit reversibility; `gobbi maintenance restore-state-db` reverses the operation; replay-equivalence integration test confirms identical state derivation pre- and post-migration.
 
-Evidence: `commands/maintenance/migrate-state-db.ts`, `commands/maintenance/restore-state-db.ts`, `commands/maintenance.ts:48-59` registry, replay-equivalence test in Wave A.1.10 integration tests.
+Evidence: `commands/maintenance/migrate-state-db.ts`, `commands/maintenance/restore-state-db.ts`, `commands/maintenance.ts:48-93` registry, replay-equivalence test in Wave A.1.10 integration tests.
 
 ---
 

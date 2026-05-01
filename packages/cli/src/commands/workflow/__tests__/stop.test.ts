@@ -26,6 +26,7 @@ import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
 import { runInitWithOptions } from '../init.js';
+import { makeConformingTmpRepo } from '../../../__tests__/helpers/conforming-tmpdir.js';
 import { runStopWithOptions, DEFAULT_SPECS_DIR } from '../stop.js';
 import { WORKFLOW_COMMANDS } from '../../workflow.js';
 import { sessionDir as sessionDirForProject } from '../../../lib/workspace-paths.js';
@@ -118,7 +119,7 @@ afterEach(() => {
 });
 
 function makeScratchRepo(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'gobbi-stop-'));
+  const dir = makeConformingTmpRepo('gobbi-stop');
   scratchDirs.push(dir);
   return dir;
 }
