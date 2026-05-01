@@ -1,26 +1,39 @@
 /**
  * gobbi hook post-tool-use — PostToolUse hook entrypoint.
  *
- * Replaces the direct `gobbi workflow capture-planning` registration on
- * the `ExitPlanMode` matcher. The plugin manifest still declares the
- * matcher (so this entrypoint only fires when Claude Code's PostToolUse
- * fires for `ExitPlanMode`), but the entrypoint additionally checks
- * `tool_name` defensively — a future per-repo override that registers
- * this command without a matcher should still no-op for non-ExitPlanMode
- * tools.
+ * Single dispatcher for every PostToolUse matcher registered in the
+ * plugin manifest. Two branches today:
+ *
+ *   1. `tool_name === 'ExitPlanMode'` → `capture-planning` (writes
+ *      `planning/plan.md` and emits `artifact.write`).
+ *   2. `tool_name === 'Bash'` AND command starts with
+ *      `gobbi workflow transition` → `capture-advancement` (appends
+ *      `step.advancement.observed` audit-only event when the
+ *      `workflow.observability.advancement.enabled` gate is on; dormant
+ *      otherwise).
+ *
+ * Each branch checks `tool_name` defensively — the plugin manifest
+ * already gates registration via `matcher`, but a per-repo override
+ * might broaden the registration. The defensive check keeps the hot
+ * path lean for non-matching tools.
  *
  * ## Hook contract
  *
- * Observational hook — always exits 0. capture-planning's
- * implementation already silently no-ops on any failure path; this
- * wrapper preserves those semantics.
+ * Observational hook — always exits 0. Both delegate handlers silently
+ * no-op on any failure path; this wrapper preserves those semantics by
+ * catching any thrown error and writing a one-line stderr diagnostic.
  *
- * @see `commands/workflow/capture-planning.ts` — body invoked here.
+ * @see `commands/workflow/capture-planning.ts`
+ * @see `commands/workflow/capture-advancement.ts`
  */
 
 import { readStdinJson } from '../../lib/stdin.js';
 import { isRecord, isString } from '../../lib/guards.js';
 import { runCapturePlanningWithOptions } from '../workflow/capture-planning.js';
+import {
+  isBashTransitionInvocation,
+  runCaptureAdvancementWithOptions,
+} from '../workflow/capture-advancement.js';
 
 export async function runHookPostToolUse(args: string[]): Promise<void> {
   if (args.includes('--help') || args.includes('-h')) {
@@ -29,19 +42,36 @@ export async function runHookPostToolUse(args: string[]): Promise<void> {
   }
 
   // Read stdin ONCE in the hook entrypoint. Pass the parsed payload
-  // through to capture-planning so it does not re-read.
+  // through to each branch so it does not re-read.
   const payload = await readStdinJson<unknown>();
 
   try {
+    // Branch 1 — ExitPlanMode → capture-planning.
+    //
     // Defensive matcher check — only invoke capture-planning when the
-    // payload's `tool_name` is `ExitPlanMode`. The plugin manifest
-    // already gates registration to that matcher, but a per-repo
-    // override might broaden it. capture-planning itself is safe to
-    // call for any tool (it returns early when `tool_input.plan` is
-    // missing), but skipping the call entirely keeps the hot path
-    // lean for non-matching tools.
-    if (isRecord(payload) && isString(payload['tool_name']) && payload['tool_name'] === 'ExitPlanMode') {
+    // payload's `tool_name` is `ExitPlanMode`. capture-planning itself
+    // is safe to call for any tool (it returns early when
+    // `tool_input.plan` is missing), but skipping the call entirely
+    // keeps the hot path lean for non-matching tools.
+    if (
+      isRecord(payload) &&
+      isString(payload['tool_name']) &&
+      payload['tool_name'] === 'ExitPlanMode'
+    ) {
       await runCapturePlanningWithOptions(args, { payload });
+    }
+
+    // Branch 2 — Bash + `gobbi workflow transition` → capture-advancement.
+    //
+    // The `isBashTransitionInvocation` matcher already checks both
+    // `tool_name === 'Bash'` and the command prefix, so the dispatcher
+    // can call it once and let the handler take it from there. The
+    // handler is also safe to call unconditionally (it re-validates
+    // every gate internally), but routing through the matcher here
+    // keeps `gobbi hook post-tool-use` cheap for the common
+    // non-matching Bash invocation.
+    if (isBashTransitionInvocation(payload)) {
+      await runCaptureAdvancementWithOptions(args, { payload });
     }
 
     // TODO(PR-FIN-1d) — dispatch notify for PostToolUse triggers.
@@ -54,8 +84,13 @@ export async function runHookPostToolUse(args: string[]): Promise<void> {
 const USAGE = `Usage: gobbi hook post-tool-use
 
 PostToolUse hook entrypoint. Reads the Claude Code PostToolUse payload on
-stdin and (for ExitPlanMode invocations) persists tool_input.plan to the
-session's planning/plan.md, emitting an artifact.write event.
+stdin and dispatches to one of two handlers:
+
+  - ExitPlanMode → capture-planning (writes planning/plan.md +
+    artifact.write event).
+  - Bash + 'gobbi workflow transition' → capture-advancement (appends
+    step.advancement.observed audit-only event when the
+    workflow.observability.advancement.enabled gate is on).
 
 Observational hook — always exits 0.
 

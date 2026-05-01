@@ -509,7 +509,7 @@ export async function runPromptPatchOnFiles(
         // (NOT the events idempotency `contentId`, which is namespaced
         // by promptId per Architecture F-4).
         const dedupedSeq = readPatchSeqByContent(
-          store,
+          stateDbPath,
           inputs.promptId,
           genesisPatchId,
         );
@@ -523,7 +523,7 @@ export async function runPromptPatchOnFiles(
       }
     } else {
       // Chain exists — link to the last row.
-      const last = readLastPatch(store, inputs.promptId);
+      const last = readLastPatch(stateDbPath, inputs.promptId);
       if (last !== null) {
         parentPatchId = last.patchId;
         parentSeq = last.seq;
@@ -764,41 +764,45 @@ function readPatchSeqByEventSeqOnDb(
   return row === null ? null : row.seq;
 }
 
-/**
- * Read the workspace state.db path from an EventStore. The path is
- * not exposed on the public surface — use a process-environment hint
- * via repoRoot resolution. For C.1 we already know the path
- * (`workspaceRoot(repoRoot)/state.db`) so this helper just restates
- * it.
- */
-function stateDbPathFromStore(_store: EventStore): string {
-  return join(workspaceRoot(getRepoRoot()), 'state.db');
-}
-
 interface LastPatchRow {
   readonly seq: number;
   readonly patchId: string;
   readonly postHash: string;
 }
 
-function readLastPatch(
-  store: EventStore,
+/**
+ * Read the most recent `prompt_patches` row for the given `promptId`.
+ * The caller supplies the workspace `state.db` path explicitly — this
+ * helper does NOT resolve it from the repo root or the supplied
+ * EventStore. Mirrors the dominant pattern in sister helpers
+ * `readLastPostHash` and `readPatchByContent` (issue #199). Returns
+ * `null` when the file does not exist or the table has no matching row.
+ */
+export function readLastPatch(
+  stateDbPath: string,
   promptId: PromptId,
 ): LastPatchRow | null {
-  const db = new Database(stateDbPathFromStore(store), { readonly: true });
+  if (!existsSync(stateDbPath)) return null;
+  const db = new Database(stateDbPath, { readonly: true });
   try {
     interface Row {
       readonly seq: number;
       readonly patch_id: string;
       readonly post_hash: string;
     }
-    const row = db
-      .query<Row, [string]>(
-        `SELECT seq, patch_id, post_hash FROM prompt_patches WHERE prompt_id = ? ORDER BY seq DESC LIMIT 1`,
-      )
-      .get(promptId);
-    if (row === null) return null;
-    return { seq: row.seq, patchId: row.patch_id, postHash: row.post_hash };
+    // Tolerate the prompt_patches table not yet existing (fresh
+    // workspace, never opened by a v7 store).
+    try {
+      const row = db
+        .query<Row, [string]>(
+          `SELECT seq, patch_id, post_hash FROM prompt_patches WHERE prompt_id = ? ORDER BY seq DESC LIMIT 1`,
+        )
+        .get(promptId);
+      if (row === null) return null;
+      return { seq: row.seq, patchId: row.patch_id, postHash: row.post_hash };
+    } catch {
+      return null;
+    }
   } finally {
     db.close();
   }
@@ -831,23 +835,36 @@ function readLastPostHash(
   }
 }
 
+/**
+ * Read the `prompt_patches` row matching `(promptId, patchId)`. The
+ * caller supplies the workspace `state.db` path explicitly — this helper
+ * does NOT resolve it from the repo root or the supplied EventStore.
+ * Mirrors the dominant pattern in sister helpers `readLastPostHash` and
+ * `readPatchByContent` (issue #199). Returns `null` when the file does
+ * not exist or no row matches.
+ */
 function readPatchSeqByContent(
-  store: EventStore,
+  stateDbPath: string,
   promptId: PromptId,
   patchId: string,
 ): { seq: number; patchId: string } | null {
-  const db = new Database(stateDbPathFromStore(store), { readonly: true });
+  if (!existsSync(stateDbPath)) return null;
+  const db = new Database(stateDbPath, { readonly: true });
   try {
     interface Row {
       readonly seq: number;
       readonly patch_id: string;
     }
-    const row = db
-      .query<Row, [string, string]>(
-        `SELECT seq, patch_id FROM prompt_patches WHERE prompt_id = ? AND patch_id = ?`,
-      )
-      .get(promptId, patchId);
-    return row === null ? null : { seq: row.seq, patchId: row.patch_id };
+    try {
+      const row = db
+        .query<Row, [string, string]>(
+          `SELECT seq, patch_id FROM prompt_patches WHERE prompt_id = ? AND patch_id = ?`,
+        )
+        .get(promptId, patchId);
+      return row === null ? null : { seq: row.seq, patchId: row.patch_id };
+    } catch {
+      return null;
+    }
   } finally {
     db.close();
   }

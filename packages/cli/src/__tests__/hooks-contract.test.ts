@@ -241,6 +241,34 @@ describe('hooks contract — `.claude/settings.json`', () => {
     }
   });
 
+  describe('plugin manifest — PostToolUse Bash matcher (#197 dormant emitter)', () => {
+    // PR-CFM-C T5 wires the dormant `step.advancement.observed`
+    // emitter via a second PostToolUse matcher in the plugin manifest
+    // (Bash) routing to the same `gobbi hook post-tool-use`
+    // dispatcher. The hook fires on every Bash tool call but only
+    // appends an event when the command starts with
+    // `gobbi workflow transition` AND
+    // `workflow.observability.advancement.enabled === true`. The
+    // dispatcher branch lives in
+    // `commands/hook/post-tool-use.ts`; the emitter at
+    // `commands/workflow/capture-advancement.ts`.
+    test('plugins/gobbi/hooks/hooks.json registers Bash matcher routing to gobbi hook post-tool-use', () => {
+      const PLUGIN_MANIFEST_PATH = join(
+        REPO_ROOT,
+        'plugins',
+        'gobbi',
+        'hooks',
+        'hooks.json',
+      );
+      const manifest = readJson<HooksManifest>(PLUGIN_MANIFEST_PATH);
+      const postToolUse = manifest.hooks?.['PostToolUse'] ?? [];
+      const bashBlock = postToolUse.find((b) => b.matcher === 'Bash');
+      expect(bashBlock).toBeDefined();
+      const commands = (bashBlock?.hooks ?? []).map((h) => h.command);
+      expect(commands).toContain('gobbi hook post-tool-use');
+    });
+  });
+
   describe('per-event emitter shape', () => {
     // Of the five hooks enumerated above, only `guard` (PreToolUse) emits
     // JSON to stdout that Claude Code parses against a `hookSpecificOutput`

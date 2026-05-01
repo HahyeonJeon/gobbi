@@ -13,9 +13,13 @@
  */
 
 import { describe, test, expect } from 'bun:test';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import type { Operation } from 'fast-json-patch';
 
-import { mergeTestOp } from '../patch.js';
+import { mergeTestOp, readLastPatch } from '../patch.js';
+import { EventStore } from '../../../workflow/store.js';
 
 describe('mergeTestOp', () => {
   test('case 1 — no test op anywhere: synthesizes /version test at index 0', () => {
@@ -110,5 +114,82 @@ describe('mergeTestOp', () => {
       path: '/version',
       value: 1,
     });
+  });
+});
+
+describe('readLastPatch — supplied stateDbPath honored', () => {
+  // Regression test for #199. Pre-fix, `readLastPatch` ignored its
+  // EventStore arg and always opened `workspaceRoot(getRepoRoot())/state.db`
+  // via the now-deleted `stateDbPathFromStore` helper. After the fix, the
+  // helper takes `stateDbPath: string` directly. This test pins the
+  // contract: a future re-introduction of an in-helper hardcoded path
+  // would trip this test.
+  test('readLastPatch reads from supplied stateDbPath, not a hardcoded one', () => {
+    const tmpA = mkdtempSync(join(tmpdir(), 'gobbi-patch-readlast-a-'));
+    const tmpB = mkdtempSync(join(tmpdir(), 'gobbi-patch-readlast-b-'));
+    try {
+      // Path A — a state.db with one prompt_patches row for `ideation`.
+      const dbPathA = join(tmpA, 'state.db');
+      const sessionId = 'patch-test-session';
+      const projectId = 'patch-test-project';
+      const ts = '2026-04-30T00:00:00.000Z';
+      const promptId = 'ideation' as const;
+      const patchId = 'sha256:fixture-patch-id';
+      const preHash = 'sha256:fixture-pre-hash';
+      const postHash = 'sha256:fixture-post-hash';
+
+      const store = new EventStore(dbPathA, { sessionId, projectId });
+      try {
+        store.appendWithProjection(
+          {
+            ts,
+            type: 'prompt.patch.applied',
+            actor: 'operator',
+            idempotencyKind: 'content',
+            contentId: `${promptId}:${patchId}`,
+            sessionId,
+            data: JSON.stringify({ promptId, patchId }),
+          },
+          (db, row) => {
+            db.run(
+              `INSERT INTO prompt_patches (session_id, project_id, prompt_id, parent_seq, event_seq, patch_id, patch_json, pre_hash, post_hash, applied_at, applied_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                sessionId,
+                projectId,
+                promptId,
+                null,
+                row.seq,
+                patchId,
+                '[]',
+                preHash,
+                postHash,
+                Date.parse(ts),
+                'operator',
+              ],
+            );
+          },
+        );
+      } finally {
+        store.close();
+      }
+
+      // Path B — an empty scratch dir; no state.db file.
+      const dbPathB = join(tmpB, 'state.db');
+
+      // Sanity: path A has the row.
+      const fromA = readLastPatch(dbPathA, promptId);
+      expect(fromA).not.toBeNull();
+      expect(fromA?.patchId).toBe(patchId);
+      expect(fromA?.postHash).toBe(postHash);
+
+      // Contract: passing a different (empty/absent) path returns null,
+      // proving the helper honors the supplied path rather than reaching
+      // for a hardcoded workspace state.db.
+      const fromB = readLastPatch(dbPathB, promptId);
+      expect(fromB).toBeNull();
+    } finally {
+      rmSync(tmpA, { recursive: true, force: true });
+      rmSync(tmpB, { recursive: true, force: true });
+    }
   });
 });

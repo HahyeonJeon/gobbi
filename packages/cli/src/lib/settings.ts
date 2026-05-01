@@ -176,6 +176,25 @@ export interface StepSettings {
 }
 
 /**
+ * Observability sub-tree for the workflow step lifecycle. Currently the
+ * only field is `advancement.enabled` — the dormant gate for the
+ * `step.advancement.observed` PostToolUse emitter (PR-CFM-C / #197).
+ *
+ * Default (`enabled: false`) keeps the emitter inert; flipping the flag
+ * to `true` activates the audit-only event path without touching the
+ * reducer. The emitter itself lives at
+ * `commands/workflow/capture-advancement.ts` and reads this gate via
+ * `resolveSettings()` at the dispatcher boundary.
+ */
+export interface WorkflowObservabilityAdvancement {
+  readonly enabled?: boolean;
+}
+
+export interface WorkflowObservability {
+  readonly advancement?: WorkflowObservabilityAdvancement;
+}
+
+/**
  * Per-step config keyed by the workflow loop's name. Settings field name
  * and state-machine literal both align on `'planning'`. Callers that pass
  * the legacy `'plan'` literal fail at compile time.
@@ -186,12 +205,15 @@ export interface StepSettings {
  * with a true orchestrator decision) the workflow init pipeline stamps
  * `memorization: true` onto the `EVAL_DECIDE` event payload and the
  * reducer lands the boolean in `state.evalConfig.memorization`.
+ *
+ * `observability` (PR-CFM-C T4) holds dormant audit-emitter gates.
  */
 export interface WorkflowSettings {
   readonly ideation?: StepSettings;
   readonly planning?: StepSettings;
   readonly execution?: StepSettings;
   readonly memorization?: StepSettings;
+  readonly observability?: WorkflowObservability;
 }
 
 /**
@@ -342,6 +364,7 @@ export const DEFAULTS: Settings = {
       evaluate: { mode: 'always', agent: { model: 'auto', effort: 'auto' } },
       maxIterations: 3,
     },
+    observability: { advancement: { enabled: false } },
   },
   notify: {
     slack: { enabled: false, events: [], triggers: [], channel: null },
