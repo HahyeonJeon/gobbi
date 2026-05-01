@@ -209,19 +209,9 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
       'Design-corpus drift — out-of-scope follow-up per ideation §"Out of scope" item 2 (lines 99/103/163).',
   },
   {
-    path: '.gobbi/projects/gobbi/design/v050-hooks.md',
-    rationale:
-      'Design-corpus drift — out-of-scope follow-up; describes hook-driven state.json / metadata.json reads in present tense.',
-  },
-  {
     path: '.gobbi/projects/gobbi/design/v050-session.md',
     rationale:
       'Session-architecture design doc — describes per-session state.json / metadata.json contracts in present tense. Out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-integration-tests.md',
-    rationale:
-      'Integration-test design references state.json reducer-replay assertions — out-of-scope follow-up.',
   },
   // ---- Production code: legacy schema readers + retirement docblocks -------
   {
