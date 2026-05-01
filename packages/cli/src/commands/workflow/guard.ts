@@ -14,8 +14,9 @@
  *      in `workflow/store.ts`).
  *   2. Pre-computed matcher map (see `workflow/guards.ts::DEFAULT_MATCHER`)
  *      — O(1) lookup per invocation. Built once at module load.
- *   3. State read via `resolveWorkflowState` — hits `state.json` in the
- *      common path, falls back to SQLite replay only on corruption.
+ *   3. State read via `resolveWorkflowState` — replays gobbi.db (per-session
+ *      event log) — single read path, pure event replay (PR-FIN-2a-ii /
+ *      T-2a.9.unified).
  *   4. Predicate evaluation is an in-memory registry lookup, O(state size).
  *   5. Synchronous event writes — `appendEventAndUpdateState` commits the
  *      audit event inside the same transaction that observed the deny.

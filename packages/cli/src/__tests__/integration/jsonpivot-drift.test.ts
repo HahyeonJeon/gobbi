@@ -197,17 +197,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     rationale:
       'Documents the per-session retirements at lines 83 / 184 / 221 / 281 — naming the retired files is necessary to describe what was retired.',
   },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-overview.md',
-    rationale:
-      'Architecture-of-record describes the v0.5.0 pivot history; references retired filenames as part of the historical narrative.',
-  },
-
-  {
-    path: '.gobbi/projects/gobbi/design/structure.md',
-    rationale:
-      'Design-corpus drift — out-of-scope follow-up per ideation §"Out of scope" item 2 (lines 99/103/163).',
-  },
   // ---- Production code: legacy schema readers + retirement docblocks -------
   {
     path: 'packages/cli/src/workflow/state-derivation.ts',
@@ -228,17 +217,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     path: 'packages/cli/src/workflow/engine.ts',
     rationale:
       'Docblocks describe the state.json projection retirement (lines 25-29 / 35 / 112 / 411 / 419 / 439 / 441). Naming the retired file is necessary to document what was retired.',
-  },
-  {
-    path: 'packages/cli/src/workflow/guard-specs.ts',
-    tokens: new Set(['state.json']),
-    rationale:
-      'Docblock example path (line 67) for `isAllowlistedPath` — illustrative, not a live read. Out-of-scope follow-up to update once design-corpus sweep lands.',
-  },
-  {
-    path: 'packages/cli/src/commands/workflow/guard.ts',
-    rationale:
-      'Docblock describes legacy state.json read path (line 17) — pre-pivot historical comment. Out-of-scope follow-up.',
   },
   {
     path: 'packages/cli/src/commands/workflow/init.ts',
