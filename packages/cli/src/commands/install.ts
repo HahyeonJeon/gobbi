@@ -83,6 +83,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 import { isString } from '../lib/guards.js';
+import { assertValidProjectNameOrExit } from '../lib/project-name.js';
 import { getRepoRoot } from '../lib/repo.js';
 import {
   loadSettingsAtLevel,
@@ -207,6 +208,12 @@ export async function runInstallWithOptions(
     process.stderr.write(`${USAGE}\n`);
     process.exit(2);
   }
+
+  // PR-CFM-D / #187 — guard before .gobbi/projects/<projectName>
+  // path-join at line 228. Validates the resolved name (default 'gobbi'
+  // or --project flag override) so traversal payloads exit 2 with the
+  // L13 stderr template before any FS write.
+  assertValidProjectNameOrExit(projectName, 'gobbi install');
 
   // --- 2. Resolve repo + template roots ---------------------------------
   const repoRoot = overrides.repoRoot ?? getRepoRoot();
