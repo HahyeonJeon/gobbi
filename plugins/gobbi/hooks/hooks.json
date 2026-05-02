@@ -2,6 +2,16 @@
   "hooks": {
     "SessionStart": [
       {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "gobbi session metadata",
+            "timeout": 15
+          }
+        ]
+      },
+      {
         "matcher": "startup|resume",
         "hooks": [
           {
