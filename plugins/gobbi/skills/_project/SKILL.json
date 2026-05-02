@@ -1,0 +1,121 @@
+{
+  "$schema": "gobbi-docs/skill",
+  "frontmatter": {
+    "name": "_project",
+    "description": "Guide for authoring project documentation. Load when creating or modifying .claude/project/ files."
+  },
+  "title": "Claude Project Documentation",
+  "opening": "Guide for authoring project-specific documentation in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`. Project docs capture accumulated context — architecture decisions, conventions, technology choices, gotchas — that help agents work effectively on returning sessions. Load this skill when creating, reviewing, or organizing project documentation.\n\nLoad `_claude` for the general documentation writing standard before authoring project docs.",
+  "navigation": {
+    "skills/_project/evaluation.md": "Evaluation criteria for user-created project documentation"
+  },
+  "sections": [
+    {
+      "heading": "Core Principle",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "Project docs live in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`.",
+          "body": "Each project gets its own directory under `$CLAUDE_PROJECT_DIR/.claude/project/`. All project-specific documentation lives inside that directory — design decisions, architecture, rules, gotchas, notes, references. Co-location makes everything about a project navigable from a single entry point."
+        },
+        {
+          "type": "principle",
+          "statement": "Project docs decay fast — currency matters more than completeness.",
+          "body": "Project docs describe a moving target. A stale doc is worse than no doc — it actively misleads agents into wrong assumptions. Scan for staleness whenever touching related code and docs. Delete superseded content rather than leaving it to accumulate."
+        },
+        {
+          "type": "principle",
+          "statement": "Every directory has a README.md as entry point.",
+          "body": "The README summarizes what the directory is about and lists its contents with one-line descriptions. Agents read the README first to decide which docs to load. Without a README, agents cannot navigate efficiently."
+        }
+      ]
+    },
+    {
+      "heading": "Directory Structure",
+      "content": [
+        {
+          "type": "text",
+          "value": "All projects must follow this structure:\n\n```\n.claude/project/{project-name}/\n  README.md             — project overview and directory index\n  design/               — project design and architecture\n  rules/                — project-specific rules and conventions\n  gotchas/              — project-specific gotchas (not cross-project)\n  note/                 — workflow notes per task (managed by _note)\n  reference/            — external references, API docs, research\n  docs/                 — other project documents\n```\n\nNot every project needs every subdirectory. Create only the directories that have content.\n\n**README.md** — Project overview and index. Must list: project name and purpose (one sentence), links to each subdirectory with one-line descriptions, and current status or active work if any.\n\n**design/** — Project design decisions and architecture. How the system is designed, why decisions were made, and what trade-offs were accepted.\n\n**rules/** — Project-specific rules and conventions. Standards that apply only to this project — coding patterns, naming conventions, deployment rules. Separate from cross-project rules in `.claude/rules/`.\n\n**gotchas/** — Project-specific gotchas, categorized by domain. Mistakes and corrections that apply only to this project. Separate from cross-project gotchas in `_gotcha/`.\n\n**note/** — Workflow notes per task, managed by `_note`. Each task gets a directory named `{YYYYMMDD}-{HHMM}-{slug}-{session_id}`.\n\n**reference/** — External references — API docs, research findings, third-party documentation, links to external systems.\n\n**docs/** — Other project documents that do not fit the above categories."
+        }
+      ]
+    },
+    {
+      "heading": "Writing Pattern",
+      "content": [
+        {
+          "type": "text",
+          "value": "**Self-contained.** Each doc makes sense on its own without reading others. First lines tell the agent what it covers and when to read it — without requiring context from sibling docs.\n\n**Archive, don't hoard.** Delete superseded docs. Do not accumulate stale content from prior sessions or completed features.\n\n**Focused scope.** Split by topic, not by length. If a doc covers multiple unrelated systems, split it. Each doc covers one coherent subject."
+        }
+      ]
+    },
+    {
+      "heading": "Anti-Patterns",
+      "content": [
+        {
+          "type": "subsection",
+          "heading": "Must Avoid",
+          "content": [
+            {
+              "type": "text",
+              "value": "**Stale docs left in place.** References deleted files or describes \"planned\" features already built. Agents make wrong assumptions from stale content. Delete or update before leaving a session.\n\n**Inconsistent directory structure.** Missing README.md or standard subdirectories breaks agent navigation. Agents rely on the consistent structure to decide what to read.\n\n**Project gotchas in _gotcha.** Project-specific gotchas must go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`, not in the cross-project gotcha skill. Mixing them pollutes the cross-project knowledge base with project-specific content."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Should Avoid",
+          "content": [
+            {
+              "type": "text",
+              "value": "**Duplicate docs for the same topic.** Created without checking existing docs. Search before creating — a duplicate creates two sources of truth that diverge.\n\n**No cleanup strategy.** Everything accumulates without active deletion. Set an expectation that outdated docs get removed, not archived."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Review Checklist",
+      "content": [
+        {
+          "type": "text",
+          "value": "Before publishing a project doc:\n\n**Core Principle**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "[ ] Lives inside `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`",
+            "[ ] Contains project-specific context, not general domain knowledge",
+            "[ ] Content is current — no references to deleted files or outdated architecture",
+            "[ ] Directory has README.md as entry point"
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**Writing Pattern**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "[ ] Self-contained — makes sense without reading other docs",
+            "[ ] Organized by topic with clear first-line summary",
+            "[ ] Focused on one coherent system or topic"
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**Anti-Pattern**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "[ ] No stale references to removed code or outdated architecture (must avoid)",
+            "[ ] No duplicate covering same topic as existing doc (should avoid)"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "gobbi-docs/gotcha",
+  "parent": "_notification",
+  "title": "Gotcha: _notification",
+  "entries": [
+    {
+      "title": "Stop hook infinite loop",
+      "body": {
+        "priority": "Critical",
+        "what-happened": "A hook registered on the `Stop` event called back into Claude Code without checking whether it was already inside a Stop hook. This caused the hook to fire again on its own completion, looping indefinitely.",
+        "user-feedback": "Always check `stop_hook_active` in the input JSON and exit early if `true`.",
+        "correct-approach": "At the start of any Stop hook script, parse the input JSON and check the `stop_hook_active` field. If it is `true`, exit immediately without taking any action."
+      }
+    },
+    {
+      "title": "Missing jq breaks all notification scripts",
+      "body": {
+        "priority": "High",
+        "what-happened": "Notification scripts depend on `jq` for JSON parsing of hook input. On systems without `jq` installed, every hook silently failed. The failures were not obvious because the scripts exited without output.",
+        "user-feedback": "Check for `jq` availability before assuming scripts will work.",
+        "correct-approach": "**Resolved — no longer applicable after v0.3.2 CLI migration.** Hooks now invoke `gobbi notify` CLI commands directly; `jq` is no longer required for notification delivery. This gotcha is preserved as historical record only."
+      }
+    },
+    {
+      "title": "Script not executable",
+      "body": {
+        "priority": "High",
+        "what-happened": "Hook scripts were written to `.claude/hooks/` but never had `chmod +x` applied. Claude Code silently skipped them. The configuration looked correct but no notifications arrived.",
+        "user-feedback": "Always verify hook scripts are executable after writing them.",
+        "correct-approach": "**Resolved — no longer applicable after v0.3.2 CLI migration.** Hook entries in `settings.json` now invoke `gobbi notify` commands directly — there are no standalone shell scripts in `.claude/hooks/` that require `chmod +x`. This gotcha is preserved as historical record only."
+      }
+    },
+    {
+      "title": "Credentials committed to version control",
+      "body": {
+        "priority": "Critical",
+        "what-happened": "Credentials were saved to `$CLAUDE_PROJECT_DIR/.claude/.env` but `.env` was not in `.gitignore`. The file was committed to the repository, exposing bot tokens and chat IDs.",
+        "user-feedback": "Credentials must never be committed. Always verify `.gitignore` protects `.env` before finishing setup.",
+        "correct-approach": "Before confirming setup complete, verify that `$CLAUDE_PROJECT_DIR/.claude/.env` is listed in `.gitignore`. If it is not, add it immediately and do not proceed until this is confirmed."
+      }
+    },
+    {
+      "title": "Shell profile noise corrupts hook JSON output",
+      "body": {
+        "priority": "High",
+        "what-happened": "Hook scripts sourced the user's shell profile (`.bashrc` or `.zshrc`). Profile files with `echo` statements or other output wrote to stdout, corrupting the JSON output that Claude Code reads from the hook.",
+        "user-feedback": "Scripts should not source shell profiles.",
+        "correct-approach": "Hook scripts must use `#!/bin/bash` without sourcing any profile. All needed environment variables come from `$CLAUDE_ENV_FILE`, not from the shell environment."
+      }
+    },
+    {
+      "title": "export prefix in .env file breaks loading",
+      "body": {
+        "priority": "Medium",
+        "what-happened": "Credentials were saved with `export KEY=value` format in `$CLAUDE_PROJECT_DIR/.claude/.env`. The `load-notification-env.sh` hook adds the `export` prefix when writing to `$CLAUDE_ENV_FILE` — the double prefix caused a syntax error, silently breaking credential loading.",
+        "user-feedback": "The `.env` file uses bare `KEY=value` format without `export`.",
+        "correct-approach": "Write credentials to `$CLAUDE_PROJECT_DIR/.claude/.env` as bare `KEY=value` lines. The hook script handles the `export` wrapping. Lines starting with `#` and blank lines are safely ignored."
+      }
+    },
+    {
+      "title": "Delivery failures disappear silently",
+      "body": {
+        "priority": "Medium",
+        "what-happened": "After initial setup, notifications stopped arriving. There was no obvious error — the hooks ran, scripts executed, but messages never arrived at Slack or Telegram. The failure was being logged but no one was checking the log.",
+        "user-feedback": "Check `~/.claude/notification-failures.log` when notifications stop arriving.",
+        "correct-approach": "When troubleshooting missing notifications, read `~/.claude/notification-failures.log` first. This file captures failures that would otherwise be invisible. Note that the log grows without bound — advise the user to delete it periodically if it becomes large."
+      }
+    }
+  ],
+  "opening": "Mistakes in configuring Claude Code notification hooks and credentials.",
+  "navigation": {}
+}

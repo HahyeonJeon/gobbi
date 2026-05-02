@@ -1,0 +1,62 @@
+{
+  "$schema": "gobbi-docs/child",
+  "parent": "_gotcha",
+  "title": "Skills Gotcha",
+  "opening": "Skill-specific gotchas live inside the skill directory they serve: `$CLAUDE_PROJECT_DIR/.claude/skills/{skill-name}/gotchas.md`, alongside the skill's `SKILL.md`.",
+  "sections": [
+    {
+      "heading": "Core Principle",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "Gotchas belong to the skill they correct.",
+          "body": "A gotcha about `_plan` belongs in `$CLAUDE_PROJECT_DIR/.claude/skills/_plan/gotchas.md`. The agent loading `_plan` reads its own gotchas without loading a separate skill. Locality ensures the agent always checks gotchas — no extra loading step to forget."
+        },
+        {
+          "type": "principle",
+          "statement": "Cross-cutting gotchas stay in `_gotcha/`.",
+          "body": "The `_gotcha` skill holds entries that span multiple skills or belong to no single skill — infrastructure, environment, security, system-level concerns. If a gotcha can be owned by one skill, it belongs in that skill's directory."
+        }
+      ]
+    },
+    {
+      "heading": "What Goes Where",
+      "content": [
+        {
+          "type": "text",
+          "value": "**Write to `$CLAUDE_PROJECT_DIR/.claude/skills/{skill-name}/gotchas.md`** when:"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "The gotcha directly corrects behavior that happens while executing that skill",
+            "The agent making the mistake was working within the skill's scope"
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**Write to `_gotcha/` central files** when:"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "The gotcha cuts across multiple skills and cannot be owned by one",
+            "No single skill exists yet for the domain (infrastructure, environment, security)"
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Migration",
+      "content": [
+        {
+          "type": "text",
+          "value": "Existing entries in `_gotcha/{skill}.md` central files are not automatically moved. They remain valid and readable. When you update or reference an entry from a central file, move it to the skill's own `gotchas.md` if it belongs there. Do not leave duplicates — delete the central entry after moving.\n\nThe `_gotcha/` central files for skill-specific gotchas (`_orchestration.md`, `_plan.md`, etc.) will gradually empty as entries migrate to their owning skills. Cross-cutting files (`__system.md`, `__security.md`) remain in `_gotcha/` permanently."
+        }
+      ]
+    }
+  ],
+  "navigation": {}
+}
