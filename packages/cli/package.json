@@ -4,7 +4,7 @@
   "description": "Gobbi CLI — workflow orchestration and docs management for Claude Code",
   "type": "module",
   "bin": {
-    "gobbi": "./bin/gobbi.js"
+    "gobbi-dev": "./bin/gobbi-dev.js"
   },
   "engines": {
     "bun": ">=1.2.0"

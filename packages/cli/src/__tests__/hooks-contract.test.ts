@@ -109,13 +109,17 @@ function enumerateHooks(manifest: HooksManifest): readonly HookEntry[] {
 }
 
 /**
- * Parse `gobbi hook <event> [...]` into the event subcommand token.
+ * Parse `gobbi-dev hook <event> [...]` into the event subcommand token.
  * Returns `null` for any string that does not start with the
- * `gobbi hook ` prefix — such hooks are out of scope for this contract
+ * `gobbi-dev hook ` prefix — such hooks are out of scope for this contract
  * test (the CLI registry it checks is `HOOK_COMMANDS`).
+ *
+ * The dev branch uses `gobbi-dev` so the dev binary coexists on PATH with
+ * the published stable `gobbi` from `@gobbitools/cli@0.4.x`. The release
+ * branch reverts the prefix to `gobbi` before publishing.
  */
 function parseHookSubcommand(command: string): string | null {
-  const PREFIX = 'gobbi hook ';
+  const PREFIX = 'gobbi-dev hook ';
   if (!command.startsWith(PREFIX)) return null;
   const remainder = command.slice(PREFIX.length).trim();
   if (remainder.length === 0) return null;
@@ -265,7 +269,7 @@ describe('hooks contract — `.claude/settings.json`', () => {
       const bashBlock = postToolUse.find((b) => b.matcher === 'Bash');
       expect(bashBlock).toBeDefined();
       const commands = (bashBlock?.hooks ?? []).map((h) => h.command);
-      expect(commands).toContain('gobbi hook post-tool-use');
+      expect(commands).toContain('gobbi-dev hook post-tool-use');
     });
 
     // PR-CFM-B T6 (#241) mirrors the Bash matcher into

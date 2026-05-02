@@ -8,9 +8,11 @@
  *   - `plugins/gobbi/hooks/hooks.json` wires the five expected Claude Code
  *     hook events to the corresponding `gobbi workflow *` commands
  *     (O-CI-H-01, O-CI-X-04, O-CI-X-05).
- *   - The npm-installable shim (`packages/cli/bin/gobbi.js`) carries a Bun
- *     shebang and `packages/cli/package.json` exposes the `gobbi` command
- *     via its `bin` field (O-CI-H-01, O-CI-E-02).
+ *   - The dev-channel shim (`packages/cli/bin/gobbi-dev.js`) carries a Bun
+ *     shebang and `packages/cli/package.json` exposes the `gobbi-dev` command
+ *     via its `bin` field (O-CI-H-01, O-CI-E-02). Note: this dev branch uses
+ *     `gobbi-dev` to coexist with the published stable `gobbi` from
+ *     `@gobbitools/cli@0.4.x`; the release branch reverts both to `gobbi`.
  *   - The `/gobbi` skill is wired to `gobbi --is-latest` (GAP-01 resolution
  *     for O-CI-H-05) and `cli-setup.md` names `npm install -g
  *     @gobbitools/cli` as a recommended install option (O-CI-H-01).
@@ -54,7 +56,7 @@ const CLI_SHIM_PATH: string = join(
   'packages',
   'cli',
   'bin',
-  'gobbi.js',
+  'gobbi-dev.js',
 );
 const CLI_PACKAGE_JSON_PATH: string = join(
   REPO_ROOT,
@@ -165,13 +167,13 @@ describe('one-command-install feature — code surface', () => {
         'SessionStart',
         'startup|resume|clear|compact',
       );
-      expect(commands).toContain('gobbi hook session-start');
+      expect(commands).toContain('gobbi-dev hook session-start');
     });
 
     test('registers PreToolUse → gobbi hook pre-tool-use', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(manifest, 'PreToolUse');
-      expect(commands).toContain('gobbi hook pre-tool-use');
+      expect(commands).toContain('gobbi-dev hook pre-tool-use');
     });
 
     test('registers PostToolUse[ExitPlanMode] → gobbi hook post-tool-use', () => {
@@ -181,49 +183,45 @@ describe('one-command-install feature — code surface', () => {
         'PostToolUse',
         'ExitPlanMode',
       );
-      expect(commands).toContain('gobbi hook post-tool-use');
+      expect(commands).toContain('gobbi-dev hook post-tool-use');
     });
 
     test('registers SubagentStop → gobbi hook subagent-stop', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(manifest, 'SubagentStop');
-      expect(commands).toContain('gobbi hook subagent-stop');
+      expect(commands).toContain('gobbi-dev hook subagent-stop');
     });
 
     test('registers Stop → gobbi hook stop', () => {
       const manifest = readJson<HooksManifest>(HOOKS_JSON_PATH);
       const commands = commandsForHook(manifest, 'Stop');
-      expect(commands).toContain('gobbi hook stop');
+      expect(commands).toContain('gobbi-dev hook stop');
     });
   });
 
   describe('CLI binary shim', () => {
-    test('packages/cli/bin/gobbi.js has a Bun shebang', () => {
+    test('packages/cli/bin/gobbi-dev.js has a Bun shebang', () => {
       const body = readFileSync(CLI_SHIM_PATH, 'utf8');
       const firstLine = body.split(/\r?\n/, 1)[0] ?? '';
       expect(firstLine).toBe('#!/usr/bin/env bun');
     });
 
-    test('packages/cli/package.json bin field exposes `gobbi`', () => {
+    test('packages/cli/package.json bin field exposes `gobbi-dev`', () => {
       const pkg = readJson<{ readonly bin?: Record<string, string> | string }>(
         CLI_PACKAGE_JSON_PATH,
       );
-      // The `bin` field is `{ "gobbi": "./bin/gobbi.js" }` in this repo; guard
-      // against the string shorthand form in case a future refactor switches
-      // to a single-entry `bin` declaration.
+      // On this dev branch the bin is `{ "gobbi-dev": "./bin/gobbi-dev.js" }`
+      // so the dev binary coexists with the published stable `gobbi` from
+      // `@gobbitools/cli@0.4.x`. The release branch reverts both back to
+      // `gobbi` before publishing.
       const bin = pkg.bin;
       if (typeof bin === 'string') {
-        // string form: `"bin": "./bin/gobbi.js"` — npm installs this as the
-        // package name, which is scoped (`@gobbitools/cli`); the shim is then
-        // linked under the last path segment. Reject this form — this
-        // package deliberately uses the object form to name the `gobbi`
-        // command explicitly.
         throw new Error(
-          `packages/cli/package.json "bin" must be an object exposing "gobbi"; got string ${bin}`,
+          `packages/cli/package.json "bin" must be an object exposing "gobbi-dev"; got string ${bin}`,
         );
       }
       expect(bin).toBeDefined();
-      expect(bin?.gobbi).toBe('./bin/gobbi.js');
+      expect(bin?.['gobbi-dev']).toBe('./bin/gobbi-dev.js');
     });
   });
 
