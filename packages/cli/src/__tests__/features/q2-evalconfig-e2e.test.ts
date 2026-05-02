@@ -24,9 +24,10 @@
  */
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test';
+import { randomBytes } from 'node:crypto';
 import {
   existsSync,
-  mkdtempSync,
+  mkdirSync,
   readFileSync,
   rmSync,
 } from 'node:fs';
@@ -144,7 +145,11 @@ const ORIG_ENV_PROJECT_DIR = process.env['CLAUDE_PROJECT_DIR'];
 
 beforeAll(() => {
   origCwd = process.cwd();
-  scratchRepo = mkdtempSync(join(tmpdir(), 'gobbi-q2-e2e-'));
+  // Deterministic-lowercase suffix per `mkdtemp-suffix-fails-name-pattern.md`
+  // — basename(repoRoot) flows through the lib-seam project-name guard
+  // (#245), so `mkdtempSync`'s mixed-case suffix would trip NAME_PATTERN.
+  scratchRepo = join(tmpdir(), `gobbi-q2-e2e-${randomBytes(4).toString('hex')}`);
+  mkdirSync(scratchRepo, { recursive: true });
   execSync('git init -q', { cwd: scratchRepo });
   process.chdir(scratchRepo);
   setGlobalScratch(scratchRepo);

@@ -35,7 +35,8 @@
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
 
@@ -57,7 +58,11 @@ import { projectDir, sessionDir } from '../workspace-paths.js';
 let scratchDir: string;
 
 beforeEach(() => {
-  scratchDir = mkdtempSync(join(tmpdir(), 'gobbi-settings-io-'));
+  // Deterministic-lowercase suffix per `mkdtemp-suffix-fails-name-pattern.md`
+  // — `mkdtempSync` appends `[a-zA-Z0-9]{6}` which can land uppercase
+  // characters and trip the new lib-seam project-name guard (#245).
+  scratchDir = join(tmpdir(), `gobbi-settings-io-${randomBytes(4).toString('hex')}`);
+  mkdirSync(scratchDir, { recursive: true });
 });
 
 afterEach(() => {

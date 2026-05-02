@@ -53,6 +53,7 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
+import { validateProjectName } from './project-name.js';
 import { ConfigCascadeError, DEFAULTS, deepMerge, type Settings, type SettingsLevel } from './settings.js';
 import { formatAjvErrors, validateSettings } from './settings-validator.js';
 import { projectDir, sessionDir, workspaceRoot } from './workspace-paths.js';
@@ -69,10 +70,45 @@ import { projectDir, sessionDir, workspaceRoot } from './workspace-paths.js';
  *
  * Centralised so every caller (`pathForLevel`, `resolveSettings`,
  * `load/writeSettingsAtLevel`) applies identical resolution semantics.
+ *
+ * ## Path-traversal guard (#245)
+ *
+ * The resolved name is validated via {@link validateProjectName} before
+ * being returned. Any caller that supplies an invalid name (path
+ * separators, traversal sentinels like `..`, uppercase, over-length, …)
+ * causes a {@link ConfigCascadeError} to be thrown HERE — at the
+ * path-resolution boundary — so no `projectName` payload can flow into
+ * `path.join(repoRoot, '.gobbi', 'projects', <name>, …)` without first
+ * passing the central validator.
+ *
+ * The error is constructed with `code: 'parse'` and intentionally NO
+ * `tier`: the cascade-error tier annotates "which level's file was
+ * malformed", but the path-resolution failure happens before any level's
+ * file is read. Callers that wrap this seam (e.g. `commands/config.ts`'s
+ * `emitCascadeError`) decorate their own verb prefix and exit code on
+ * top, which keeps the lib free of `process.exit`. This is a deliberate
+ * divergence from `lib/project-name.ts::assertValidProjectNameOrExit` —
+ * that helper is for argv-shell sites that want a uniform exit-2 + L13
+ * stderr template; the lib seam is for in-flight path resolution where
+ * throwing keeps the error surfacing decision with the caller.
+ *
+ * The `runInit` argv-shell guard at `commands/config.ts` is preserved as
+ * defense-in-depth on top of this seam — it produces the L13 template
+ * for explicit `--project` flag inputs before path resolution runs.
  */
 function resolveProjectName(repoRoot: string, projectName: string | undefined): string {
-  if (projectName !== undefined && projectName !== '') return projectName;
-  return path.basename(repoRoot);
+  const resolved =
+    projectName !== undefined && projectName !== ''
+      ? projectName
+      : path.basename(repoRoot);
+  const result = validateProjectName(resolved);
+  if (!result.ok) {
+    throw new ConfigCascadeError(
+      'parse',
+      `invalid project name '${resolved}': ${result.reason}`,
+    );
+  }
+  return resolved;
 }
 
 // ---------------------------------------------------------------------------

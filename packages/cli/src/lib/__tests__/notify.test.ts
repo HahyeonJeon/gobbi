@@ -32,7 +32,8 @@
  */
 
 import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -146,7 +147,12 @@ function baseOptions(): NotifyOptions {
 }
 
 beforeEach(() => {
-  tmpRoot = mkdtempSync(join(tmpdir(), 'notify-test-'));
+  // Deterministic-lowercase suffix per `mkdtemp-suffix-fails-name-pattern.md`
+  // — basename(repoRoot) flows through the lib-seam project-name guard
+  // (#245), and `mkdtempSync` can land uppercase characters in its random
+  // suffix that trip NAME_PATTERN.
+  tmpRoot = join(tmpdir(), `notify-test-${randomBytes(4).toString('hex')}`);
+  mkdirSync(tmpRoot, { recursive: true });
   savedFetch = globalThis.fetch;
   for (const key of MANAGED_ENV_KEYS) {
     const current = process.env[key];

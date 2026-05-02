@@ -31,7 +31,6 @@ import { randomBytes } from 'node:crypto';
 import {
   existsSync,
   mkdirSync,
-  mkdtempSync,
   readFileSync,
   rmSync,
 } from 'node:fs';
@@ -172,7 +171,12 @@ let origCwd: string | null = null;
 
 beforeAll(() => {
   origCwd = process.cwd();
-  scratchRepo = mkdtempSync(join(tmpdir(), 'gobbi-config-'));
+  // Deterministic-lowercase suffix per `mkdtemp-suffix-fails-name-pattern.md`
+  // — basename(repoRoot) flows into the lib-seam project-name guard (#245),
+  // and `mkdtempSync`'s random suffix can include uppercase characters that
+  // trip NAME_PATTERN.
+  scratchRepo = join(tmpdir(), `gobbi-config-${randomBytes(4).toString('hex')}`);
+  mkdirSync(scratchRepo, { recursive: true });
   execSync('git init -q', { cwd: scratchRepo });
   process.chdir(scratchRepo);
 });
@@ -707,6 +711,79 @@ describe('runConfig init — rejects invalid --project values', () => {
         rmSync(invalidDir, { recursive: true, force: true });
       } catch {
         // best-effort cleanup; tmpdir reaper handles residue
+      }
+    }
+  });
+});
+
+// ===========================================================================
+// #245 — lib-seam guard surfaces ConfigCascadeError via emitCascadeError on
+// non-init verbs (runGet shown; runSet exercises the same seam).
+//
+// `runGet` does NOT accept a `--project` flag, so the threat surface is the
+// `basename(repoRoot)` fallback flowing into `lib/settings-io.ts::resolveProjectName`.
+// PR-CFM-D guarded this only at `runInit` (argv-shell layer); #245 lifts the
+// guard up into the lib seam, so any commands/* path that reaches
+// `loadSettingsAtLevel` / `resolveSettings` with an invalid resolved name
+// surfaces a `ConfigCascadeError('parse', …)`, which `emitCascadeError`
+// translates to exit 2 + stderr.
+// ===========================================================================
+
+describe('runConfig get — lib-seam project-name guard (#245)', () => {
+  test('exits 2 with ConfigCascadeError stderr when basename(repoRoot) is invalid (project level)', async () => {
+    const invalidDir = join(
+      tmpdir(),
+      `Invalid-${randomBytes(4).toString('hex')}`,
+    );
+    mkdirSync(invalidDir, { recursive: true });
+    setGlobalScratch(invalidDir);
+    try {
+      await captureExit(async () => {
+        await runConfig(['get', 'schemaVersion', '--level', 'project']);
+      });
+      expect(captured.exitCode).toBe(2);
+      // emitCascadeError prefixes the verb; ConfigCascadeError has no
+      // tier here (the failure is at path resolution, not at any
+      // level's file), so the line is `gobbi config get: invalid project
+      // name '<basename>': <reason>`.
+      expect(captured.stderr).toMatch(
+        /^gobbi config get: invalid project name '/,
+      );
+      expect(captured.stderr).toContain(`'${basename(invalidDir)}'`);
+    } finally {
+      setGlobalScratch(null);
+      try {
+        rmSync(invalidDir, { recursive: true, force: true });
+      } catch {
+        // best-effort cleanup
+      }
+    }
+  });
+
+  test('exits 2 with ConfigCascadeError stderr on cascade resolve when basename(repoRoot) is invalid', async () => {
+    const invalidDir = join(
+      tmpdir(),
+      `Invalid-${randomBytes(4).toString('hex')}`,
+    );
+    mkdirSync(invalidDir, { recursive: true });
+    setGlobalScratch(invalidDir);
+    try {
+      await captureExit(async () => {
+        // No --level → cascade resolve → resolveSettings → resolveProjectName
+        // → validateProjectName fails on the mixed-case basename.
+        await runConfig(['get', 'workflow.ideation.discuss.mode']);
+      });
+      expect(captured.exitCode).toBe(2);
+      expect(captured.stderr).toMatch(
+        /^gobbi config get: invalid project name '/,
+      );
+      expect(captured.stderr).toContain(`'${basename(invalidDir)}'`);
+    } finally {
+      setGlobalScratch(null);
+      try {
+        rmSync(invalidDir, { recursive: true, force: true });
+      } catch {
+        // best-effort cleanup
       }
     }
   });

@@ -33,9 +33,12 @@
  * invariant assertion passes for them with no allow-list entry. Adding an
  * allow-list entry for a file that already satisfies the invariant would
  * be self-contradictory (mirrors the F-OVR-1 remediation that excluded
- * `commands/project/create.ts`). Note: `config.ts` only validates in
- * `runInit`; the deferred `runGet/runSet/runExplain/runList/runEnv`
- * branches are tracked by the L12 follow-up filed at PR merge time.
+ * `commands/project/create.ts`). Note: post-#245, `config.ts` is fully
+ * covered because `lib/settings-io.ts::resolveProjectName` validates
+ * project names at the path-resolution boundary, so any `commands/*` file
+ * routing through `loadSettingsAtLevel` / `writeSettingsAtLevel` /
+ * `resolveSettings` is automatically guarded — `config.ts`'s explicit
+ * `runInit` callsite stays as defense-in-depth on top of the lib seam.
  *
  * The grep is INTENTIONALLY token-level (no AST parse) — the invariant we
  * care about is "file imports the validator", not "every individual
