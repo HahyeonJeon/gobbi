@@ -1,0 +1,89 @@
+{
+  "$schema": "gobbi-docs/rule",
+  "title": "Gobbi Core Behavioral Rules",
+  "opening": "Always-active behavioral safety net — minimum invariants every agent must follow regardless of which skills are loaded. Skills contain the full contextual guidance; this rule catches violations when the right skill was not loaded.",
+  "sections": [
+    {
+      "heading": "Agent Separation",
+      "content": [
+        {
+          "type": "constraint-list",
+          "items": [
+            "The agent that creates must never evaluate its own output — spawn separate evaluator agents.",
+            "Discuss evaluation findings with the user via AskUserQuestion before acting on them.",
+            "Spawn at least 2 evaluator agents with different perspectives — Project and Overall are the minimum."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "User Authority",
+      "content": [
+        {
+          "type": "constraint-list",
+          "items": [
+            "Use AskUserQuestion for all decision points — never ask decisions in prose text.",
+            "Put the recommended option first with \"(Recommended)\" — always give an opinion.",
+            "User decides what to address, defer, or disagree with — never auto-apply evaluation findings."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Context Loading",
+      "content": [
+        {
+          "type": "constraint-list",
+          "items": [
+            "Load gotchas before starting any work — check skill gotchas and project gotchas.",
+            "When loading a skill, also load its child `gotchas.md` if one exists.",
+            "Study existing code and docs before making changes — the codebase is the source of truth.",
+            "Every subagent prompt must include specific requirements, constraints, and context — never a one-liner.",
+            "Executors must read research materials from the `research/` subdirectory before implementing."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Scope Discipline",
+      "content": [
+        {
+          "type": "constraint-list",
+          "items": [
+            "Stay within scope boundary — note adjacent improvements, do not implement them.",
+            "Re-verify preconditions at point of use, not only at session start.",
+            "Never skip verification — check criteria and run tests before reporting done."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Documentation Discipline",
+      "content": [
+        {
+          "type": "constraint-list",
+          "items": [
+            "Write notes at every workflow step — never defer, never skip.",
+            "Write gotchas immediately after corrections — a correction not recorded is a correction repeated.",
+            "Edit `.json` source and generate `.md` via `gobbi docs json2md` — never edit `.md` directly.",
+            "Run `gobbi note collect` after every subagent completes — directory existence is not collection, only the command populates subtask files."
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Model Selection",
+      "content": [
+        {
+          "type": "constraint-list",
+          "items": [
+            "Innovative stance and implementation agents use opus — creative work needs deep reasoning.",
+            "Evaluators, reviewers, and docs agents use sonnet — assessment follows structured criteria.",
+            "All agents run at max effort — never reduce effort level."
+          ]
+        }
+      ]
+    }
+  ],
+  "navigation": {}
+}

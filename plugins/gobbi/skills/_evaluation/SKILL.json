@@ -1,0 +1,345 @@
+{
+  "$schema": "gobbi-docs/skill",
+  "frontmatter": {
+    "name": "_evaluation",
+    "description": "Evaluation framework — perspective selection, delegation, and verdicts. MUST load at workflow start for evaluation coordination.",
+    "allowed-tools": "Read, Grep, Glob, Bash, Agent, AskUserQuestion"
+  },
+  "title": "Evaluation",
+  "opening": "Evaluation framework for the gobbi workflow. Orchestrators use this to select perspectives and delegate to evaluator agents. Evaluators use this alongside their perspective skill to assess, score, and verdict.",
+  "navigation": {
+    "skills/_evaluation/evaluation.md": "Evaluation criteria for user-created evaluation perspectives"
+  },
+  "sections": [
+    {
+      "heading": "Core Principle",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "The creator must never evaluate its own output.",
+          "body": "Self-evaluation is structurally biased. The creator's mental model prevents them from seeing the work as a fresh reader would. Evaluators must be separate agents with fresh context."
+        },
+        {
+          "type": "principle",
+          "statement": "At least 2 evaluators with different perspectives.",
+          "body": "A single evaluator catches the problems it is trained to see. Multiple evaluators with genuinely different viewpoints catch problems that fall between any single perspective. Disagreements between evaluators are valuable signal — surface them."
+        },
+        {
+          "type": "principle",
+          "statement": "The user's perspective is the most important measure of evaluation.",
+          "body": "Evaluator agents assess from technical perspectives, but the user decides what matters. Evaluation findings are input to a conversation with the user, not autonomous verdicts. An evaluator may flag an issue as critical, but if the user disagrees or defers it, that decision stands. No evaluation outcome bypasses the user."
+        },
+        {
+          "type": "principle",
+          "statement": "Evaluate outcomes against goals, not tasks against checklists.",
+          "body": "Check whether the output achieves what the user actually needs, not just whether individual items were completed. An idea that exists but doesn't solve the root problem fails. A plan that has all tasks but misses a dependency fails."
+        },
+        {
+          "type": "principle",
+          "statement": "Verify by running, not just reading.",
+          "body": "When the output can be verified by running a command — tests, syntax checks, grep for expected patterns, file existence — do it. Reasoning alone misses failures that evidence catches. When tools can provide evidence, use them. When they can't, reason rigorously."
+        },
+        {
+          "type": "principle",
+          "statement": "Recurring issues become gotchas.",
+          "body": "Patterns discovered during evaluation are the highest-value input for the memorization step — they represent non-obvious problems that will recur without explicit recording."
+        }
+      ]
+    },
+    {
+      "heading": "Perspective Selection",
+      "content": [
+        {
+          "type": "text",
+          "value": "The orchestrator selects which perspectives to evaluate from based on the task's domain and the project's needs. The right perspectives vary by project and task type — there is no fixed set that applies everywhere.\n\nCommon perspectives (examples, not exhaustive — must adjust these perspectives to be domain-specific for the project):"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "**Project-level** — Does the output solve the right problem? Does it fit the project's requirements, constraints, and goals?",
+            "**Design / Architecture-level** — Is the architecture sound? Are abstractions appropriate? Is coupling managed?",
+            "**Performance / Optimization-level** — Are there efficiency issues, unnecessary resource usage, or scalability risks?",
+            "**Aesthetics-level** — Is it readable, well-named, consistent, and polished? Would a fresh reader understand it?",
+            "**User-level** — Does it meet the end user's needs? Is the experience intuitive, accessible, and correct from the user's perspective?",
+            "**Overall-level** — What gaps fall between the other perspectives? What works well and must be preserved?"
+          ]
+        },
+        {
+          "type": "text",
+          "value": "The orchestrator matches perspectives to the task. A documentation task may need scope and craft quality but not efficiency. A database migration may need scope, structure, and efficiency but not craft quality. Use judgment — more perspectives catch more problems, but each costs time."
+        }
+      ]
+    },
+    {
+      "heading": "How Evaluation Works",
+      "content": [
+        {
+          "type": "subsection",
+          "heading": "For the Orchestrator",
+          "content": [
+            {
+              "type": "list",
+              "style": "numbered",
+              "items": [
+                "Select the perspectives that match the task's domain",
+                "Spawn each evaluator as a separate agent with skills:"
+              ]
+            },
+            {
+              "type": "text",
+              "value": "   - The stage-specific evaluation skill (what to check at this workflow stage)\n   - The perspective evaluation skill (the lens to assess through)\n   - Domain context — project rules, gotchas, conventions, and relevant knowledge\n   - The output to evaluate\n   - Read-only access — evaluators assess, they do not modify"
+            },
+            {
+              "type": "list",
+              "style": "numbered",
+              "items": [
+                "Collect all verdicts independently — evaluators should not see each other's results",
+                "Act on the results:"
+              ]
+            },
+            {
+              "type": "text",
+              "value": "   - **All pass** — proceed to next stage\n   - **Any revision needed** — present findings to the user, discuss what to address, then revise\n   - **Any escalation** — surface to user for decision immediately\n   - **Perspectives disagree** — the disagreement reveals where the output is borderline, surface it"
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "For the Evaluator",
+          "content": [
+            {
+              "type": "list",
+              "style": "numbered",
+              "items": [
+                "Load the evaluation criteria and domain context provided",
+                "Read the output thoroughly before forming any judgment",
+                "For each finding, assess independently:"
+              ]
+            },
+            {
+              "type": "text",
+              "value": "   - **Confidence** (0-100) — how certain are you this is a real issue?\n   - **Severity** (Critical / High / Medium / Low) — how impactful is this if real?"
+            },
+            {
+              "type": "list",
+              "style": "numbered",
+              "items": [
+                "Verify findings with tools when possible — run tests, grep for patterns, check file existence",
+                "Check findings against known false positive categories before finalizing",
+                "Return a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Scoring",
+      "content": [
+        {
+          "type": "text",
+          "value": "Every finding carries two independent dimensions: confidence and severity. These are separate — a finding can be high-severity but low-confidence, or low-severity but high-confidence."
+        },
+        {
+          "type": "subsection",
+          "heading": "Confidence",
+          "content": [
+            {
+              "type": "text",
+              "value": "How certain the evaluator is that a finding represents a real issue, scored 0-100."
+            },
+            {
+              "type": "table",
+              "headers": [
+                "Score",
+                "Meaning"
+              ],
+              "rows": [
+                [
+                  "0",
+                  "False positive — appears like an issue but isn't one"
+                ],
+                [
+                  "25",
+                  "Possible but unverified — could be an issue, no evidence confirms it"
+                ],
+                [
+                  "50",
+                  "Probable — likely exists, but evidence is indirect or incomplete"
+                ],
+                [
+                  "75",
+                  "Significant and likely — strong reasoning or partial evidence supports it"
+                ],
+                [
+                  "100",
+                  "Definite — verified by evidence, tool output, or incontrovertible reasoning"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Severity",
+          "content": [
+            {
+              "type": "text",
+              "value": "How impactful the issue would be if it is real, independent of confidence."
+            },
+            {
+              "type": "table",
+              "headers": [
+                "Level",
+                "Meaning"
+              ],
+              "rows": [
+                [
+                  "Critical",
+                  "Blocks progress, breaks correctness, or creates security vulnerability"
+                ],
+                [
+                  "High",
+                  "Significant flaw that would cause rework if not addressed now"
+                ],
+                [
+                  "Medium",
+                  "Real issue that should be addressed but doesn't block"
+                ],
+                [
+                  "Low",
+                  "Minor concern, stylistic, or optimization opportunity"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Threshold Filtering",
+          "content": [
+            {
+              "type": "text",
+              "value": "Low-confidence findings are suppressed from the evaluation report by default to prevent noise. They are not discarded — the orchestrator or user can request the full unfiltered list. The threshold exists because evaluation should drive decisions, not generate noise."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "False Positive Categories",
+          "content": [
+            {
+              "type": "text",
+              "value": "Before assigning high confidence, check whether a finding falls into a known false positive category:"
+            },
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "**Pre-existing** — issue exists before this change, not attributable to the evaluated output",
+                "**Out-of-scope** — real issue, but outside the task's scope boundary",
+                "**Style preference** — subjective, not a convention violation",
+                "**Linter-catchable** — mechanical issue that automated tooling should catch",
+                "**Speculative** — hypothetical concern without supporting evidence"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Stage-Specific Focus",
+      "content": [
+        {
+          "type": "subsection",
+          "heading": "Ideation",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Is the root problem identified, or is the idea solving a symptom?",
+                "Is the approach concrete enough to plan against?",
+                "Are trade-offs explicitly stated?",
+                "Are constraints and assumptions surfaced?",
+                "Are risks identified with severity?",
+                "What's missing that should be there?"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Planning",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Is every task narrow enough that scope is unambiguous?",
+                "Are dependencies correctly ordered?",
+                "Does the plan cover the full scope from the approved idea?",
+                "Are verification criteria defined for each task?",
+                "Is anything missing from the ideation discussion?",
+                "Do any tasks overlap on the same files?"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Research",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Are all plan tasks covered by research findings?",
+                "Are implementation paths concrete enough for executors to act without re-researching?",
+                "Are codebase references accurate (verifiable with Grep/Read)?",
+                "Are external sources cited and relevant?",
+                "Does the synthesis effectively combine innovative and best-practice perspectives?",
+                "Would an executor reading this know exactly what to implement?"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Execution",
+          "content": [
+            {
+              "type": "list",
+              "style": "bullet",
+              "items": [
+                "Does the implementation match the task specification?",
+                "Does the code compile and pass existing tests?",
+                "Are there security vulnerabilities?",
+                "Are project-specific gotchas and rules respected?",
+                "Is the change minimal and focused — no scope creep?",
+                "Are edge cases handled that were identified during ideation?"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Constraints",
+      "content": [
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "MUST use separate agents — the creator never evaluates its own output",
+            "MUST spawn at least 2 evaluators with different perspectives",
+            "MUST present evaluation findings to the user before acting on them — the user decides what to address",
+            "MUST surface disagreements between evaluators — they reveal where the output is borderline",
+            "Max 3 revision cycles per evaluation — then escalate to user"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+---
+name: _audit
+description: DEPRECATED — use _doctor instead.
+allowed-tools: Read, Grep, Glob, Bash
+---
+
+# Audit
+
+**This skill is deprecated. Use `_doctor` instead.** The `_doctor` skill provides all the same checks plus completeness scoring, maturity level assessment, and unified reporting via the `gobbi doctor` command. The `gobbi audit` CLI subcommands (`references`, `conventions`, `commands`) remain available as focused tools.
+
+
+
+---
+
+## Migration
+
+The `_doctor` skill supersedes `_audit` by combining reference checking, convention validation, and completeness scoring into a single unified workflow. Load `_doctor` instead of `_audit` for all documentation health tasks.
+
+The `gobbi audit` CLI subcommands continue to work as focused, low-level tools. The `gobbi doctor` command orchestrates these checks alongside additional completeness and maturity assessments.

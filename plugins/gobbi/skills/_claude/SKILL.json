@@ -1,0 +1,307 @@
+{
+  "$schema": "gobbi-docs/skill",
+  "frontmatter": {
+    "name": "_claude",
+    "description": "Writing standard for .claude/ documentation. MUST load when authoring or modifying any .claude/ file.",
+    "allowed-tools": "Read, Grep, Glob, Bash, Write, Edit"
+  },
+  "title": "Claude Skill",
+  "opening": "Writing standard for `.claude/` documentation. MUST load when authoring or modifying any `.claude/` file. Load optionally when reading `.claude/` docs for structural context.",
+  "navigation": {
+    "_rules": "Authoring rule files in `.claude/rules/`",
+    "_project": "Authoring project docs in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/`",
+    "_skills": "Creating and modifying skill definitions in `.claude/skills/`",
+    "_agents": "Creating and modifying agent definitions in `.claude/agents/`",
+    "skills/_claude/transcripts.md": "Subagent transcript recovery — location, JSONL schema, extraction paths, plan data",
+    "skills/_claude/gotchas.md": "Known mistakes and corrections for _claude"
+  },
+  "sections": [
+    {
+      "heading": "Core Principle",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "Chain-of-Docs — think deeply first, then decompose into short docs.",
+          "body": "Agents default to writing short, shallow docs. Chain-of-Docs demands the opposite order: think deeply about the full problem space first — structure, relationships, edge cases, abstraction levels — then decompose that deep understanding into a chain of focused documents. Each file covers one level of abstraction and links to its children via a **\"Navigate deeper from here:\"** table. The depth of thought produces the quality; the decomposition produces the navigability."
+        },
+        {
+          "type": "principle",
+          "statement": "Procedures get detailed steps. Non-procedures get principles, not steps.",
+          "body": "When a doc describes a procedure — a sequence where order matters and deviation causes failure — write specific steps with full detail. When a doc describes non-procedural guidance — design principles, conventions, quality standards — write principles and constraints instead. Step-by-step instructions for non-procedures lock agents into rigid paths and suppress their judgment in situations the doc author didn't anticipate."
+        },
+        {
+          "type": "principle",
+          "statement": "First line tells the agent what this doc is and when to read it.",
+          "body": "Every document opens with a clear statement of its purpose and scope. An agent scanning a file list should know from the first line whether this doc is relevant to its current task — without reading further."
+        }
+      ]
+    },
+    {
+      "heading": "Writing Pattern",
+      "content": [
+        {
+          "type": "text",
+          "value": "What effective `.claude/` documentation looks like:"
+        },
+        {
+          "type": "table",
+          "headers": [
+            "Pattern",
+            "Principle"
+          ],
+          "rows": [
+            [
+              "**Principles over procedures**",
+              "State what matters and why. \"Each component decomposes into X, Y, Z — read existing code for the pattern.\""
+            ],
+            [
+              "**Constraints over templates**",
+              "Tell agents what NOT to do (clear boundary) rather than what TO do (rigid path). Constraints leave room for judgment."
+            ],
+            [
+              "**Codebase over examples**",
+              "Point agents to read existing implementations. The codebase is the single source of truth."
+            ],
+            [
+              "**Line limit**",
+              "**Must** stay under 500 lines per file. **Should** target under 400 lines. If a file exceeds this, decompose into hierarchy."
+            ]
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**CLAUDE.md specifically**: Reference card, not tutorial. Don't duplicate content from skills or rules — link to them. Loaded every session, so make it scannable."
+        }
+      ]
+    },
+    {
+      "heading": "Anti-Pattern",
+      "content": [
+        {
+          "type": "subsection",
+          "heading": "Must Avoid",
+          "content": [
+            {
+              "type": "text",
+              "value": "These directly cause the mimicry problem. Presence of any of these means the doc needs revision."
+            },
+            {
+              "type": "table",
+              "headers": [
+                "Anti-Pattern",
+                "Why It Fails"
+              ],
+              "rows": [
+                [
+                  "**Code examples**",
+                  "Agent copies verbatim without adapting to context. The codebase has real examples."
+                ],
+                [
+                  "**BAD/GOOD comparison blocks**",
+                  "Agent memorizes the GOOD block as a mandatory template."
+                ],
+                [
+                  "**Duplicating codebase patterns**",
+                  "Creates a second source of truth that drifts from reality."
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Context-Dependent",
+          "content": [
+            {
+              "type": "text",
+              "value": "Not universally forbidden. The test: \"Would deviating from this sequence cause failure?\" If yes, the pattern is appropriate."
+            },
+            {
+              "type": "table",
+              "headers": [
+                "Anti-Pattern",
+                "When Forbidden",
+                "When Allowed"
+              ],
+              "rows": [
+                [
+                  "**Step-by-step recipes**",
+                  "In teaching docs (skills, rules, project docs) where agents should reason from principles. Agent follows rigidly, skips steps that matter, adds steps that don't.",
+                  "In procedures — sequences where order matters and skipping or reordering steps causes failure. Orchestration workflows, setup sequences, git lifecycles, deployment pipelines. The test: if the agent reorders or omits a step, does something break? If yes, write detailed steps."
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Should Avoid",
+          "content": [
+            {
+              "type": "text",
+              "value": "These weaken doc quality and lead to subtle issues over time. Acceptable in small doses with good reason."
+            },
+            {
+              "type": "table",
+              "headers": [
+                "Anti-Pattern",
+                "Why It Fails"
+              ],
+              "rows": [
+                [
+                  "**Interface definitions in docs**",
+                  "Get stale, agent uses doc version instead of actual source."
+                ],
+                [
+                  "**Long rationale paragraphs**",
+                  "Agent skips them, reads only the nearby concrete content."
+                ],
+                [
+                  "**Exact numeric values**",
+                  "Agent uses the number without checking if it's still current."
+                ],
+                [
+                  "**Bash verification commands**",
+                  "Agent runs only listed commands, misses other issues."
+                ],
+                [
+                  "**Detailed format templates**",
+                  "Agent copies structure even when content doesn't fit."
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "JSON-First Authoring",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "JSON is the source of truth. Markdown is a generated artifact.",
+          "body": "Every `.claude/` document (except `CLAUDE.md`) has a `.json` source file and a `.md` output file. The JSON file is what agents edit; the Markdown file is what agents and humans read. Both files are committed to git. The JSON structure enforces the block types, section hierarchy, and frontmatter schema that the writing principles above describe — making violations structurally impossible rather than merely discouraged."
+        },
+        {
+          "type": "principle",
+          "statement": "Edit JSON, generate Markdown, validate, commit both.",
+          "body": "The authoring workflow is a procedure where order matters. Edit the `.json` file to change content. Run `gobbi docs json2md <path>` to regenerate the `.md` file. Run `gobbi docs validate <path>` to verify the JSON conforms to the schema. Commit both files together. Editing the `.md` directly creates drift — the next `json2md` run will overwrite the manual change."
+        },
+        {
+          "type": "text",
+          "value": "`CLAUDE.md` is the exception to JSON-first authoring. It is hand-authored Markdown — a reference card loaded every session that links to skills and rules rather than containing structured content blocks."
+        },
+        {
+          "type": "subsection",
+          "heading": "Doc Types and Block Types",
+          "content": [
+            {
+              "type": "text",
+              "value": "The JSON schema supports six doc types, each with a `$schema` field that determines its structure and validation rules: `skill`, `agent`, `rule`, `root`, `child`, `gotcha`. Use `gobbi docs init <type> [name]` to scaffold a new JSON template for any doc type."
+            },
+            {
+              "type": "text",
+              "value": "Section content is built from six block types: `text` (prose paragraphs), `principle` (blockquote statement with optional body), `table` (headers and rows), `constraint-list` (must/should/must-not items), `list` (bullet or numbered items), `subsection` (nested heading with its own content blocks). These block types map directly to the writing patterns and anti-patterns described above — they make the structure explicit rather than inferred from Markdown formatting."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "CLI Commands",
+          "content": [
+            {
+              "type": "table",
+              "headers": [
+                "Command",
+                "Purpose"
+              ],
+              "rows": [
+                [
+                  "`gobbi docs init <type> [name]`",
+                  "Scaffold a new JSON template for the given doc type"
+                ],
+                [
+                  "`gobbi docs json2md <path>`",
+                  "Generate `.md` from the `.json` source file"
+                ],
+                [
+                  "`gobbi docs validate <path>`",
+                  "Validate JSON against the gobbi-docs schema"
+                ],
+                [
+                  "`gobbi docs read <path> [--section]`",
+                  "Section-level access to JSON content without reading the full `.md`"
+                ],
+                [
+                  "`gobbi docs md2json <path>`",
+                  "Migrate existing `.md` to JSON (one-time migration, not part of the regular workflow)"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "value": "For the full schema specification, see `$CLAUDE_PROJECT_DIR/.claude/project/gobbi/design/gobbi-docs-spec.md`."
+        }
+      ]
+    },
+    {
+      "heading": "Review Checklist",
+      "content": [
+        {
+          "type": "text",
+          "value": "Before publishing any `.claude/` documentation:\n\n**Core Principle**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "[ ] Chain-of-Docs — deep thinking decomposed into focused docs with \"Navigate deeper from here:\" links",
+            "[ ] Procedures have detailed steps; non-procedures use principles and constraints, not steps",
+            "[ ] First line declares what the doc is and when to read it"
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**Writing Pattern**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "[ ] Points to codebase for implementation patterns (\"read existing X\")",
+            "[ ] Under 500 lines (must), targeting under 400 (should)",
+            "[ ] No duplication with other `.claude/` files"
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**Anti-Pattern**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "[ ] Zero code blocks or BAD/GOOD comparisons (must avoid)",
+            "[ ] Step-by-step recipes only in procedures where reordering or omitting steps causes failure (context-dependent)",
+            "[ ] Minimal interface definitions, exact values, or bash commands in docs (should avoid)"
+          ]
+        },
+        {
+          "type": "text",
+          "value": "**JSON-First Authoring**"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "[ ] JSON source and `.md` output are in sync (`gobbi docs validate`)",
+            "[ ] Content was edited in the `.json` file, not the `.md` file",
+            "[ ] Both `.json` and `.md` are committed together"
+          ]
+        }
+      ]
+    }
+  ]
+}

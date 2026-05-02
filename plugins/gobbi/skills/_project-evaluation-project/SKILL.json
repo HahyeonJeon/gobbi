@@ -1,0 +1,92 @@
+{
+  "$schema": "gobbi-docs/skill",
+  "frontmatter": {
+    "name": "_project-evaluation-project",
+    "description": "Project perspective for deliverable evaluation. Load when evaluating deliverables for requirements fit and scope.",
+    "allowed-tools": "Read, Grep, Glob, Bash"
+  },
+  "title": "Project Evaluation — Project Perspective",
+  "opening": "This perspective answers one question: does the deliverable solve the right problem? Load this skill when evaluating project output — code implementations, documentation updates, configuration changes, refactoring results — from the requirements and goals angle.\n\nThe evaluator's job is to find gaps and misalignments, not to confirm success.",
+  "sections": [
+    {
+      "heading": "Core Principle",
+      "content": [
+        {
+          "type": "principle",
+          "statement": "The task spec is not the goal. The user's intent is the goal.",
+          "body": "A deliverable can satisfy every written requirement and still miss the point. This perspective checks whether the output serves what the user actually needed — not just what was written in the task description."
+        },
+        {
+          "type": "principle",
+          "statement": "Scope alignment works in both directions — expansion and contraction both fail.",
+          "body": "Over-delivering changes things the user didn't ask for. Under-delivering leaves requested work undone. Both are misalignments. Neither is acceptable without explicit sign-off."
+        }
+      ]
+    },
+    {
+      "heading": "Evaluation Lenses",
+      "content": [
+        {
+          "type": "subsection",
+          "heading": "Requirements Fit",
+          "content": [
+            {
+              "type": "text",
+              "value": "Does the deliverable match what was explicitly asked for?\n\nRead the original task specification and trace each requirement to the output. Requirements that were addressed ambiguously — implemented in a way that technically satisfies the wording but misses the intended behavior — are a failure of requirements fit, not just of aesthetics.\n\nLook for requirements that were silently reinterpreted. When an agent rewrites a requirement as something subtly different and implements that instead, the spec is met on paper but not in substance."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Scope Alignment",
+          "content": [
+            {
+              "type": "text",
+              "value": "Is the scope of the change correct — neither too broad nor too narrow?\n\nScope creep is the more common failure: adjacent code refactored \"while I was in there,\" formatting normalized beyond the task boundary, or additional features added that weren't requested. These changes may be improvements in isolation but represent unauthorized decisions.\n\nScope contraction is less common but equally problematic: partial implementation that stops short of the full requirement, edge cases silently dropped, or deferred handling not flagged as deferred.\n\nWhen scope appears off in either direction, assess whether the deviation was noted and the user given the chance to approve it."
+            }
+          ]
+        },
+        {
+          "type": "subsection",
+          "heading": "Goals Alignment",
+          "content": [
+            {
+              "type": "text",
+              "value": "Does the output serve the user's intent — the problem behind the task?\n\nThis requires understanding the why, not just the what. A bug fix that closes the reported symptom but leaves the root cause intact solves the wrong problem. A documentation update that answers the literal question but confuses the actual workflow the user is trying to understand misses the goal.\n\nAsk: if the user ran this deliverable, would they feel their original problem was resolved? If not, why not?"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Signals Worth Investigating",
+      "content": [
+        {
+          "type": "text",
+          "value": "These patterns are not automatically failures, but each warrants examination:"
+        },
+        {
+          "type": "list",
+          "style": "bullet",
+          "items": [
+            "Changes touching files or components not mentioned in the task",
+            "Requirements that appear in the spec but are absent from the output",
+            "Behavior changes that go beyond the stated scope",
+            "Assumptions about user intent that were not confirmed",
+            "Partial implementations without a noted rationale for deferral"
+          ]
+        }
+      ]
+    },
+    {
+      "heading": "Output Expectations",
+      "content": [
+        {
+          "type": "text",
+          "value": "Report findings as specific, grounded observations — not impressions. For each gap, identify the requirement it traces to, describe the actual output, and explain the misalignment. Rate the severity: whether the gap blocks the deliverable from serving its purpose (critical), creates a visible shortfall (significant), or is a minor deviation that does not affect the core result (minor).\n\nWhere the deliverable is well-aligned to goals, note what is working — not as praise, but because the overall perspective (read by the next evaluator) needs to know what must be preserved."
+        }
+      ]
+    }
+  ],
+  "navigation": {}
+}
