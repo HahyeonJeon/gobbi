@@ -197,90 +197,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     rationale:
       'Documents the per-session retirements at lines 83 / 184 / 221 / 281 — naming the retired files is necessary to describe what was retired.',
   },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-overview.md',
-    rationale:
-      'Architecture-of-record describes the v0.5.0 pivot history; references retired filenames as part of the historical narrative.',
-  },
-
-  // ---- Design-corpus follow-up sweep (out of 2a-iii scope per ideation) ----
-  // Per ideation §"Out of scope" item 2 — these files have stale present-tense
-  // statements that will be addressed in a follow-up issue. The allow-list
-  // entries are self-removing once the follow-up lands.
-  // TODO(follow-up): file an issue for design-corpus drift sweep and replace
-  // these allow-list entries with `// allow-listed until issue #N` markers
-  // once the issue number is assigned.
-  {
-    path: '.gobbi/projects/gobbi/design/structure.md',
-    rationale:
-      'Design-corpus drift — out-of-scope follow-up per ideation §"Out of scope" item 2 (lines 99/103/163).',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-cli.md',
-    rationale:
-      'Design-corpus drift — out-of-scope follow-up (lines 57/59/61/72/76/84/86/114).',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-prompts.md',
-    rationale:
-      'Design-corpus drift — out-of-scope follow-up (lines 21/25/27/34/149).',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-hooks.md',
-    rationale:
-      'Design-corpus drift — out-of-scope follow-up; describes hook-driven state.json / metadata.json reads in present tense.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-session.md',
-    rationale:
-      'Session-architecture design doc — describes per-session state.json / metadata.json contracts in present tense. Out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-state-machine.md',
-    rationale:
-      'Reducer-replay narrative references state.json — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-integration-tests.md',
-    rationale:
-      'Integration-test design references state.json reducer-replay assertions — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/gobbi-config/checklist.md',
-    rationale:
-      'Pre-pivot checklist still lists metadata.json existence checks — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/gobbi-config/scenarios.md',
-    rationale:
-      'Pre-pivot scenarios still assert metadata.json contents — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/gobbi-memory/checklist.md',
-    rationale:
-      'Pre-pivot checklist references state.json.currentStep — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/gobbi-memory/review.md',
-    rationale:
-      'Historical Pass-2 review notes mention state.json shim work — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/orchestration/checklist.md',
-    rationale:
-      'Pre-pivot checklist names metadata.json — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/orchestration/review.md',
-    rationale:
-      'Historical Pass-4 review GAP-9 references state.json atomicity — out-of-scope follow-up.',
-  },
-  {
-    path: '.gobbi/projects/gobbi/design/v050-features/orchestration/scenarios.md',
-    rationale:
-      'Pre-pivot scenarios still assert metadata.json contents — out-of-scope follow-up.',
-  },
-
   // ---- Production code: legacy schema readers + retirement docblocks -------
   {
     path: 'packages/cli/src/workflow/state-derivation.ts',
@@ -301,17 +217,6 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
     path: 'packages/cli/src/workflow/engine.ts',
     rationale:
       'Docblocks describe the state.json projection retirement (lines 25-29 / 35 / 112 / 411 / 419 / 439 / 441). Naming the retired file is necessary to document what was retired.',
-  },
-  {
-    path: 'packages/cli/src/workflow/guard-specs.ts',
-    tokens: new Set(['state.json']),
-    rationale:
-      'Docblock example path (line 67) for `isAllowlistedPath` — illustrative, not a live read. Out-of-scope follow-up to update once design-corpus sweep lands.',
-  },
-  {
-    path: 'packages/cli/src/commands/workflow/guard.ts',
-    rationale:
-      'Docblock describes legacy state.json read path (line 17) — pre-pivot historical comment. Out-of-scope follow-up.',
   },
   {
     path: 'packages/cli/src/commands/workflow/init.ts',

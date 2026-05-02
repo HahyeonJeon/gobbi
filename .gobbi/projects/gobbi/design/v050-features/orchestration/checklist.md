@@ -8,7 +8,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 ## SC-ORCH-01 — `workflow.start` emission on init
 
-- `[ST]` `gobbi workflow init --task "<text>"` against a fresh `.gobbi/projects/<name>/` writes `metadata.json` and emits exactly one `workflow.start` event with `actor='cli'`.
+- `[ST]` `gobbi workflow init --task "<text>"` against a fresh `.gobbi/projects/<name>/` writes `session.json` (the post-PR-FIN-2a-ii init stub) and emits exactly one `workflow.start` event with `actor='cli'`.
   - Verify: `bun test packages/cli/src/commands/workflow/__tests__/init.test.ts` covers the bootstrap path; assertion is `events.length === 1 && events[0].type === 'workflow.start'`.
 - `[BVA]` Repeated `gobbi workflow init` against an already-initialized session is idempotent (returns the existing session id; no duplicate `workflow.start`).
   - Verify: existing init test covers the idempotent re-entry case.

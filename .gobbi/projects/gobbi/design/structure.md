@@ -100,7 +100,7 @@ Gobbi's runtime state directory, separate from `.claude/`. Created at the projec
 | `skills/`, `agents/`, `rules/` | Workspace-level Claude docs — canonical source; `.claude/` symlinks point here |
 | `projects/{name}/` | Per-project directory — settings, design docs, learnings, sessions |
 | `projects/{name}/settings.json` | Project-level config — tracked |
-| `projects/{name}/sessions/{id}/` | Per-session state — `metadata.json`, `state.json`, `state.json.backup`, and one subdirectory per step |
+| `projects/{name}/sessions/{id}/` | Per-session — `gobbi.db` (event log), `session.json` (Memorization-time aggregate), and one subdirectory per step |
 | `projects/{name}/learnings/` | Durable learnings — `gotchas/`, `decisions/`, and other knowledge promoted after sessions |
 | `worktrees/` | Git worktree isolation — moved from `.claude/worktrees/` to prevent idle false-positives during branch operations |
 

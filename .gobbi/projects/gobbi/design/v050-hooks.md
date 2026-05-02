@@ -54,7 +54,7 @@ PreToolUse can rewrite the tool's input before execution via the `updatedInput` 
 
 ### Specific Guard Behaviors
 
-**Agent tool (spawning subagents)** — The guard reads `tool_input.subagent_type` and checks it against the current step's allowed agent types from `state.json`. An orchestrator in the Execution step is allowed to spawn executor-type agents. It is not allowed to spawn evaluator-type agents — evaluation is a separate step and the creating agent must not trigger it. If `subagent_type` is not in the allowed set for the current step, the guard denies.
+**Agent tool (spawning subagents)** — The guard reads `tool_input.subagent_type` and checks it against the current step's allowed agent types, derived from the per-session `gobbi.db` event log via reducer-replay. An orchestrator in the Execution step is allowed to spawn executor-type agents. It is not allowed to spawn evaluator-type agents — evaluation is a separate step and the creating agent must not trigger it. If `subagent_type` is not in the allowed set for the current step, the guard denies.
 
 When the guard allows an Agent tool call, it appends a `delegation.spawn` event to the event store before returning the allow decision. This event records the subagent type, the current step, and the timestamp. The `parent_seq` on the subsequent `delegation.complete` or `delegation.fail` event (written by SubagentStop) references this spawn event, linking the full delegation lifecycle in the event log. All events include `idempotency_key` per the schema in `v050-session.md`.
 
@@ -106,7 +106,7 @@ This defensive approach follows ETL pipeline patterns: every input produces an o
 
 #### Artifact Filename Construction
 
-The capture hook reads `feedbackRound` from `state.json` to construct artifact filenames with a round suffix. First-pass artifacts use `r1` (e.g., `execution-r1.md`). After a feedback loop, the next round uses `r2` (e.g., `execution-r2.md`). Failed rounds get a failure marker: `delegation-fail-r2.md`. Cross-reference `v050-session.md` for the full naming scheme and how the CLI's prompt compilation selects the latest round.
+The capture hook derives `feedbackRound` from the per-session `gobbi.db` reducer-replay to construct artifact filenames with a round suffix. First-pass artifacts use `r1` (e.g., `execution-r1.md`). After a feedback loop, the next round uses `r2` (e.g., `execution-r2.md`). Failed rounds get a failure marker: `delegation-fail-r2.md`. Cross-reference `v050-session.md` for the full naming scheme and how the CLI's prompt compilation selects the latest round.
 
 #### Cost and Token Capture
 
@@ -200,10 +200,10 @@ The SessionStart hook receives a fixed stdin schema:
 |-------|------|-------------|
 | `session_id` | string | Claude Code session identifier — becomes the session directory name |
 | `transcript_path` | string | Absolute path to the session transcript file |
-| `cwd` | string | Working directory at session open time — recorded in `metadata.json` |
+| `cwd` | string | Working directory at session open time — recorded in `session.json` |
 | `source` | string | What triggered the session: `user`, `project`, or `api` |
 
-`gobbi workflow init` uses these fields to create the session directory under `.gobbi/projects/<name>/sessions/{session-id}/`, write `metadata.json`, initialize `state.db` (if not yet present) with the events table schema, and append the first `workflow.start` event. The command is idempotent — if the session directory already exists, it verifies structure and exits cleanly.
+`gobbi workflow init` uses these fields to create the session directory under `.gobbi/projects/<name>/sessions/{session-id}/`, write the post-PR-FIN-2a-ii `session.json` init stub, initialize the per-session `gobbi.db` event log, and append the first `workflow.start` event. The command is idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
 This means the hooks registered in `hooks/hooks.json` are stable across releases. The CLI evolves; the hook wiring does not.
 
@@ -215,9 +215,9 @@ V0.5.0 implements two enforcement levels that reflect different violation severi
 
 **Soft nudge** — For edge cases that are unusual but not structurally invalid, the PreToolUse hook returns a response that includes `additionalContext` rather than a denial. The tool call proceeds. The orchestrator receives the additional context and can adjust its behavior. This is appropriate when the action is technically within scope but warrants attention — for example, writing to a step directory that does not match the currently active step, or when the secret pattern guard detects a potential credential in a Write call.
 
-**Hard block** — For structural violations, the hook returns `permissionDecision: "deny"`. The tool does not execute. A `guard.violation` event is written to `state.db` with `idempotency_key`. The `violations` array in `state.json` is updated. The orchestrator receives the denial and the reason.
+**Hard block** — For structural violations, the hook returns `permissionDecision: "deny"`. The tool does not execute. A `guard.violation` event is written to the per-session `gobbi.db` with `idempotency_key`. The reducer surfaces it on subsequent state-derivation reads as part of the `violations` projection. The orchestrator receives the denial and the reason.
 
-**Escalation on repeat triggers** — The `violations` array in `state.json` tracks both `guard.violation` events (from deny guards) and `guard.warn` events (from warn guards). The CLI reads the trigger count for a specific guard when generating the next prompt. If the same guard has fired more than a configurable threshold (default 3 times), the CLI escalates — it surfaces a warning to the user via the generated prompt. For deny guards, this means the orchestrator is repeatedly attempting a blocked action. For warn guards like the secret pattern detector, this means the orchestrator is repeatedly writing content that triggers the warning. Both are stagnation signals that may require human intervention.
+**Escalation on repeat triggers** — The `violations` projection (derived from `gobbi.db` reducer-replay) tracks both `guard.violation` events (from deny guards) and `guard.warn` events (from warn guards). The CLI reads the trigger count for a specific guard when generating the next prompt. If the same guard has fired more than a configurable threshold (default 3 times), the CLI escalates — it surfaces a warning to the user via the generated prompt. For deny guards, this means the orchestrator is repeatedly attempting a blocked action. For warn guards like the secret pattern detector, this means the orchestrator is repeatedly writing content that triggers the warning. Both are stagnation signals that may require human intervention.
 
 ---
 
@@ -237,7 +237,7 @@ Profile support is planned for v0.5.1 and later. V0.5.0 does not implement enfor
 
 Claude Code v2.1 and later auto-load `hooks/hooks.json` from the plugin directory. Declaring the same hooks in `plugin.json` causes duplicate detection errors at plugin load time. The hook manifest lives in one place — `hooks/hooks.json`. The `plugin.json` manifest does not contain a `hooks` key.
 
-The timeout for command hooks is 600 seconds by default. Guard checks complete in milliseconds — they read `state.json` and evaluate predicate conditions. Capture hooks may take longer if they process large transcripts, but should complete well within the timeout. A hook that approaches the timeout indicates a design problem — the heavy work should be offloaded to an async queue rather than blocking the hook execution path.
+The timeout for command hooks is 600 seconds by default. Guard checks complete in milliseconds — they replay the per-session `gobbi.db` event log and evaluate predicate conditions. Capture hooks may take longer if they process large transcripts, but should complete well within the timeout. A hook that approaches the timeout indicates a design problem — the heavy work should be offloaded to an async queue rather than blocking the hook execution path.
 
 ---
 
@@ -245,4 +245,4 @@ The timeout for command hooks is 600 seconds by default. Guard checks complete i
 
 This document covers the two hook categories and their responsibilities, guard hook mechanics (stdin schema, denial mechanism, input modification, specific guard behaviors, secret pattern detection), capture hook mechanics (SubagentStop with three-case failure handling and cost capture, PostToolUse, Stop with heartbeat and timeout detection), verification command integration, hook-to-CLI delegation, escalating enforcement levels, and plugin hook registration.
 
-For the predicate registry and guard specification format, see `v050-state-machine.md`. For the event types that hooks write and the `state.json` fields they update, see `v050-session.md`. For the CLI commands that hooks delegate to and step spec structure, see `v050-cli.md` and `v050-prompts.md`.
+For the predicate registry and guard specification format, see `v050-state-machine.md`. For the event types that hooks write and the reducer projections they update, see `v050-session.md`. For the CLI commands that hooks delegate to and step spec structure, see `v050-cli.md` and `v050-prompts.md`.

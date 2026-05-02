@@ -54,11 +54,11 @@ The CLI expands from its current eight-command surface to add a `workflow` subco
 
 ### New: `gobbi workflow` commands
 
-**`gobbi workflow init`** — Creates the session directory under `.gobbi/projects/<name>/sessions/{session-id}/`, writes `metadata.json`, initializes `state.db` (if not yet present) with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
+**`gobbi workflow init`** — Creates the session directory under `.gobbi/projects/<name>/sessions/{session-id}/`, writes the post-PR-FIN-2a-ii `session.json` init stub (sessionId / projectId / createdAt / gobbiVersion / task), initializes the per-session `gobbi.db` with the events table schema, and appends the first `workflow.start` event. Called by the SessionStart hook. Idempotent — if the session directory already exists, it verifies structure and exits cleanly.
 
-During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers are stored immediately as a `workflow.eval.decide` event in `state.db`, populating `evalConfig` in `state.json`. The compiled prompt generated for the first step includes the eval decision in its session section.
+During initialization, `gobbi workflow init` asks the user four setup questions: the task description, whether to evaluate after Ideation, whether to evaluate after Plan, and any additional context. The evaluation answers are stored immediately as a `workflow.eval.decide` event in `gobbi.db`; the reducer surfaces them as `evalConfig` on subsequent state-derivation reads. The compiled prompt generated for the first step includes the eval decision in its session section.
 
-**`gobbi workflow next`** — The core command. Reads `state.json` (or replays `state.db` if absent), determines the active step, selects the appropriate step spec, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step.
+**`gobbi workflow next`** — The core command. Replays the per-session `gobbi.db` event log through the reducer to derive state, determines the active step, selects the appropriate step spec, loads relevant skills and artifacts, evaluates token budget, and writes the compiled prompt to stdout. This is what the orchestrator receives at the start of each step.
 
 When the session is in `error` state, `gobbi workflow next` generates a pathway-specific error prompt instead of the normal step prompt. The error prompt is selected based on which pathway caused the error entry. Four pathways produce distinct prompts:
 
@@ -69,11 +69,11 @@ When the session is in `error` state, `gobbi workflow next` generates a pathway-
 
 Each error prompt includes the available recovery options: retry from the errored step, force-advance to memorization (`--force-memorization`), or abort. The prompt also includes available artifacts so the orchestrator or user can assess what was produced before the error. Cross-reference `v050-session.md` for pathway definitions and `v050-prompts.md` for resume prompt compilation.
 
-**`gobbi workflow transition <event>`** — Advances the state machine by appending a typed event to `state.db` and updating `state.json`. Validates that the event produces a valid transition from the current step before writing. Returns the new state summary on stdout. Invalid transitions produce an error with the reason.
+**`gobbi workflow transition <event>`** — Advances the state machine by appending a typed event to the per-session `gobbi.db` event log. Validates that the event produces a valid transition from the current step before writing. Returns the new state summary on stdout. Invalid transitions produce an error with the reason.
 
 The orchestrator calls this command via Bash, instructed by the step spec. Each step's compiled prompt ends with an explicit instruction: when this step is complete, run `gobbi workflow transition COMPLETE`. The CLI validates the transition against the state machine and advances state. The Stop hook can also trigger implicit transitions when it detects a completion signal that the orchestrator did not explicitly transition.
 
-**`gobbi workflow guard`** — Invoked by the PreToolUse hook. Reads the full hook stdin payload, loads `state.json`, evaluates guard conditions by resolving predicate names through the registry, and writes the appropriate JSON response to stdout. If the call violates a guard, appends a `guard.violation` event and returns `permissionDecision: "deny"`. If the call is valid, returns `permissionDecision: "allow"` or defers. Guard evaluation is the hottest code path — it must complete in single-digit milliseconds.
+**`gobbi workflow guard`** — Invoked by the PreToolUse hook. Reads the full hook stdin payload, loads the active state via `gobbi.db` reducer-replay, evaluates guard conditions by resolving predicate names through the registry, and writes the appropriate JSON response to stdout. If the call violates a guard, appends a `guard.violation` event and returns `permissionDecision: "deny"`. If the call is valid, returns `permissionDecision: "allow"` or defers. Guard evaluation is the hottest code path — it must complete in single-digit milliseconds.
 
 **`gobbi workflow capture-subagent`** — Invoked by the SubagentStop hook. Reads the hook stdin payload, extracts the subagent's transcript from `agent_transcript_path`, writes an artifact to the current step directory, and appends a `delegation.complete` event linked to the originating `delegation.spawn` event via `parent_seq`. This replaces manual `gobbi note collect`.
 
@@ -81,9 +81,9 @@ The orchestrator calls this command via Bash, instructed by the step spec. Each 
 
 **`gobbi workflow stop`** — Invoked by the Stop hook. Handles three responsibilities: heartbeat writing, timeout detection, and state flush for pending changes. Respects `stop_hook_active` — exits immediately if true to prevent reentrance loops. Cross-reference `v050-hooks.md` for the full Stop hook behavior.
 
-**`gobbi workflow resume`** — User-facing recovery command. Replays `state.db` through the reducer, writes a fresh `state.json`, and outputs a resume prompt that re-orients the orchestrator to the current step. Used after crash recovery and after context compaction — both cases use the same rebuild path.
+**`gobbi workflow resume`** — User-facing recovery command. Replays the per-session `gobbi.db` through the reducer, derives the current state, and outputs a resume prompt that re-orients the orchestrator to the current step. Used after crash recovery and after context compaction — both cases use the same rebuild path.
 
-**`gobbi workflow status`** — Reads `state.json` and the event store and prints the current workflow step, completed steps, active subagent count, evaluation configuration, feedback round count, and cost summary. Human-readable output.
+**`gobbi workflow status`** — Replays `gobbi.db` through the reducer and reads the workspace `state.db` for cross-session metadata; prints the current workflow step, completed steps, active subagent count, evaluation configuration, feedback round count, and cost summary. Human-readable output.
 
 The cost section displays: cumulative billed tokens (cache-adjusted) across all delegations, per-step token breakdown, and cache hit ratio. Cost data is derived from `delegation.complete` events in the event store (see `v050-session.md` for cost field definitions). When token data was unavailable for some delegations and the CLI fell back to file-size proxy, the output annotates which entries are estimates versus actual measurements. Cost surfaces ONLY in `gobbi workflow status` — it must NOT appear in compiled prompts or guard conditions.
 

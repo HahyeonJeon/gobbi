@@ -470,7 +470,7 @@ Evidence:
 And exit code is `0`
 
 **When** `gobbi workflow init --session-id sess1` subsequently runs
-**Then** exit code is `0` and `metadata.projectName` in `.gobbi/projects/<basename>/sessions/sess1/metadata.json` equals `basename(repoRoot)`
+**Then** exit code is `0` and `session.projectId` in `.gobbi/projects/<basename>/sessions/sess1/session.json` equals `basename(repoRoot)`
 
 **When** `gobbi config get workflow.ideation.evaluate.mode --level session --session-id sess1` runs
 **Then** output is `"always"` — the value written before `workflow init` is preserved
@@ -598,7 +598,7 @@ And `$CLAUDE_SESSION_ID=hook-1-sess` is in env (simulating post-env-file-source 
 **When** `runHookSessionStart([])` is called
 **Then** exit code is `0` (hook contract — never exit non-zero)
 And the session directory `.gobbi/projects/<basename>/sessions/hook-1-sess/` is created
-And `metadata.json` in that directory has `sessionId === 'hook-1-sess'` and `projectName === basename(repo)`
+And `session.json` in that directory has `sessionId === 'hook-1-sess'` and `projectId === basename(repo)`
 
 State trace:
 - `readStdinJson` returns null (TTY) → empty payload → no stdin-derived env vars written
@@ -686,8 +686,8 @@ And `$CLAUDE_SESSION_ID=hook-6-sess` is set (simulating env sourcing in bun:test
 **Then** exit code is `0`
 And stderr does NOT contain `gobbi hook session-start:` (no hook-level error)
 And the env file exists and contains `CLAUDE_PROJECT_DIR=<repo>\n` (native passthrough written)
-And `metadata.json` exists at `.gobbi/projects/<basename>/sessions/hook-6-sess/metadata.json`
-And `metadata.sessionId === 'hook-6-sess'`
+And `session.json` exists at `.gobbi/projects/<basename>/sessions/hook-6-sess/session.json`
+And `session.sessionId === 'hook-6-sess'`
 
 State trace:
 - `runConfigEnv` writes `CLAUDE_PROJECT_DIR` (set in env) and any other native passthrough vars

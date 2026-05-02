@@ -88,7 +88,7 @@ The `converged`, `conflict`, and "manifest-rewrite-excludes-conflicts" verificat
 
 ## G-MEM2-11 — Install proceeds with active sessions on disk (PR-FIN-2a-i T-2a.1.5)
 
-- `@functional` `gobbi install` runs unconditionally; the active-session gate retired alongside the JSON-pivot retirement of per-session `state.json`.
+- `@functional` `gobbi install` runs unconditionally; the active-session gate retired alongside the JSON-pivot retirement of the per-session JSON state reader (retired in PR-FIN-2a-ii).
   - Evidence: `install.test.ts` (gobbi-memory feature suite) — `install proceeds even when a session is on disk`.
 
 ---
@@ -308,7 +308,7 @@ The `converged`, `conflict`, and "manifest-rewrite-excludes-conflicts" verificat
 
 - `@concurrency` All active-session gates (install, switch, wipe) route through `findStateActiveSessions`.
   - Evidence: `packages/cli/src/lib/session-scan.ts`; commits `f428f18` (W3.3), `f257779` (W3 eval).
-- `@data` Active criterion is `state.json.currentStep ∉ {done, error}` — state-based, not heuristic.
+- `@data` Active criterion is `currentStep ∉ {done, error}` — state-based, not heuristic. The `currentStep` field is derived via `gobbi.db` reducer-replay (post-PR-FIN-2a-ii: there is no separate state file to inspect).
   - Evidence: `session-scan.ts` — predicate.
 - `@integration` Scans all `.gobbi/projects/*/sessions/` directories.
   - Evidence: `session-scan.ts` — glob pattern.

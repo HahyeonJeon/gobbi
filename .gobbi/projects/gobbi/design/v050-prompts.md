@@ -18,20 +18,20 @@ prompt = compile(state, artifacts, skills, gotchas, context)
 
 | Input | Source | What it contributes |
 |-------|--------|---------------------|
-| `state` | `state.json` from the active session | Current step, completed steps, eval config, active subagents |
+| `state` | `gobbi.db` reducer-replay (per-session event log) | Current step, completed steps, eval config, active subagents |
 | `artifacts` | Step directories under `.gobbi/projects/<name>/sessions/{id}/` | Prior step outputs inlined as context for the current step |
 | `skills` | `.claude/skills/` — the surviving domain skills | Domain knowledge injected as materials, not instructions |
 | `gotchas` | `.claude/skills/_gotcha/` and `.gobbi/projects/<name>/learnings/gotchas/` | Known failure patterns prepended as guards |
-| `context` | `metadata.json` plus project root scan | Project path, config snapshot, tech stack context |
+| `context` | `session.json` plus project root scan | Project path, config snapshot, tech stack context |
 
-The CLI reads `state.json` first to determine which step is active. It then selects which artifacts are relevant to the current step — an Execution prompt needs Plan artifacts; an Evaluation prompt needs Execution artifacts. It loads the surviving skills that are appropriate for this step and inlines their content as materials. Gotchas are always included. The resulting prompt is the only thing the orchestrator sees.
+The CLI replays `gobbi.db` first to determine which step is active. It then selects which artifacts are relevant to the current step — an Execution prompt needs Plan artifacts; an Evaluation prompt needs Execution artifacts. It loads the surviving skills that are appropriate for this step and inlines their content as materials. Gotchas are always included. The resulting prompt is the only thing the orchestrator sees.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                   Prompt Compilation Pipeline                        │
 └─────────────────────────────────────────────────────────────────────┘
 
-  state.json          skills/            gotchas/
+  gobbi.db            skills/            gotchas/
       │                   │                  │
       ▼                   ▼                  ▼
   ┌────────────────────────────────────────────┐
@@ -146,7 +146,7 @@ Artifacts written by subagents to their step directories are available to the CL
 
 > **The CLI allocates token budget across sections before rendering. Truncation is at section boundaries, never mid-content.**
 
-Each model variant has a fixed context window. The CLI knows the model configured for the session (from `metadata.json`) and computes the available budget before assembling the prompt. Budget is allocated across sections in priority order: static prefix first (it must be complete to preserve cache stability), then gotchas (safety guards must never be truncated), then step instructions, then inlined artifacts, then supplementary materials.
+Each model variant has a fixed context window. The CLI knows the model configured for the session (from `session.json`) and computes the available budget before assembling the prompt. Budget is allocated across sections in priority order: static prefix first (it must be complete to preserve cache stability), then gotchas (safety guards must never be truncated), then step instructions, then inlined artifacts, then supplementary materials.
 
 ### Section Minimums
 
