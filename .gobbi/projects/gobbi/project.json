@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "projectName": "gobbi",
+  "projectId": "gobbi",
+  "sessions": [
+    {
+      "sessionId": "4a234cac-a746-465e-af44-23234486639a",
+      "createdAt": "2026-04-30T18:06:15.770Z",
+      "finishedAt": null,
+      "task": ""
+    },
+    {
+      "sessionId": "de2fabaa-a129-42ff-9a3d-adbe2faed6fd",
+      "createdAt": "2026-05-01T05:26:17.406Z",
+      "finishedAt": null,
+      "task": ""
+    },
+    {
+      "sessionId": "c97dce33-b7a8-4f25-bc6a-1b5cb0da161a",
+      "createdAt": "2026-05-01T10:40:16.806Z",
+      "finishedAt": null,
+      "task": ""
+    }
+  ],
+  "gotchas": [
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/audit-event-projection-via-event-store-transaction.md",
+      "sha256": "9f42d67ab599254ca66b149b33b9cce4b70695cb0ecb0a3bdd96abf5e7b5b7c1",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.667Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/build-safe-must-run-before-bun-test.md",
+      "sha256": "c98689ea4793966a95a5f434040ada339b18987d69e7a10c76bddcee4ce5d5b9",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.668Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/build-safe-needs-dist-mkdir-on-fresh-worktree.md",
+      "sha256": "b274540493862dc3c4d31416681a22fd47fd2e152283ab9b7d178c9c3c189d24",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.668Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/claude-env-file-not-set-2.1.121.md",
+      "sha256": "e83a437205c18c68a98082bde23bcc7fb787f3ec1cc6925eacac65e4abbb4236",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.669Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/code-edits.md",
+      "sha256": "ba18eefb44135ca361e960bfa68e8d39eef36bb3a3baf9bf3fc55da81eaf8b96",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.669Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/codex-overall-perspective-hangs.md",
+      "sha256": "1ded557dd67a7e65449939da7a1b26d7a465a09c9a56ae90765d418ca1b4f378",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.669Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/cross-session-gotcha-bundle.md",
+      "sha256": "be47b43177e3f41a35b75c151d1d17102674f794f956be6e4de27d5ce0050cbe",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.669Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/delegation-discipline.md",
+      "sha256": "290509957d4fd13ecf305499b47be02ad1c1615fdfcf81a426c1e3557fd7f745",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.669Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/edit-tool-respects-absolute-path-not-cwd.md",
+      "sha256": "064b803b14099f32af047c90376292229364054305200884d95f8c1aae0560b8",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.669Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/ensure-schema-vN-stamps-literal-N.md",
+      "sha256": "b073da45c720565f27549590db10fa15b12c423426c0d813e56f08c5d805e2df",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.670Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/executor-boundary-extension-without-asking.md",
+      "sha256": "45613403c715acb40e0ae36c8d27654e0afc52025a3f45ba55508ca110896b39",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.670Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/git-workflow.md",
+      "sha256": "3db0f166adece042557f3b5571b89cc67a5c0bf7f00a28544affbc7df6884229",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.670Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/gobbi-note-collect-cross-session.md",
+      "sha256": "c0f37c75b08c0a3959c4d9dc8e3610c9a533858206b1412db34b61d55d0c7f75",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.670Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/gobbi-workflow-cli-from-main-tree.md",
+      "sha256": "93250f9c5ea5e9c42149f16f1a1d0d41466a9c6dc0a08eff78338d62efbac883",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.670Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/idempotency-formula-must-include-all-scope-keys.md",
+      "sha256": "24b69e2d98be9541c85615762a94fc258fdf0e46a691e9da4092a9215fa9ac55",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.670Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/inline-mode-notes.md",
+      "sha256": "774adb91bc3fb345666233e294b2128a833ffbd9d1824ab1af91943105b6a58e",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.671Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/issue-scope-verify-before-wave.md",
+      "sha256": "9345f1465000a769b049a8cc8d8eca4d20d9b1237f0a723be637f625b64d43ae",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.671Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/paths-ts-needs-dist-specs-cp.md",
+      "sha256": "5d75edac328f7fe7b44f4fd3b0ba4ba477518545912286d0f68d7e8a3e7ceb7a",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.671Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/per-file-sweep-during-edit.md",
+      "sha256": "7b9bbae5683b87ae162978aca27ecbcb5767ef8e6667c1c9c814b55176e81667",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.671Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/per-session-eventstore-needs-null-project-id.md",
+      "sha256": "d16b801a9366999883f3af66b7696daec0e692052a3898854603f3a8ba03eea4",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.671Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/phase2-planning.md",
+      "sha256": "2c14c6f05cd1f877ab15a2418c477892a02debc731a1a3469a460c78ef9383c9",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.671Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/pi-output-paths-step-conditional.md",
+      "sha256": "caa5d30a7fb80d2d5df6b390f21d9954ae96f20bc8a49eac93389edfdcc63ac6",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.672Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/schema-only-not-legacy.md",
+      "sha256": "1f3d9a89ebbe30f8ce74ff57a11b7fc4adeed686f72800bca339f22bdb49bd13",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.672Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/session-id-discovery.md",
+      "sha256": "2f57491d3686acda34bc97872b946243cdbb7a5e6cb3284d2a769ef8c67bc432",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.672Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/sessionstart-matcher-must-include-clear.md",
+      "sha256": "536db636f95ba96e35e2dd9a4c8641debd655e71a824d6047cbe01bc6813b2fc",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.672Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/settings-shell-quoting.md",
+      "sha256": "c2d8de37bc1fffc299b89f3e0eaf754ddc8358490adce048fa7bb273bd78ae39",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.672Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/sibling-parameter-keeps-compile-pure.md",
+      "sha256": "482e0a10b1949996dfa133bcc0ef4d36f25710a774b613f3b4cdef37281663d7",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.673Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/spec-delegation-agents-metadata-only.md",
+      "sha256": "70dbcf6a746cc2f0bbc3152c9b709d7714afed04f6ec6ab8fb0be81d3d7acd20",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.673Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/state-cache-fast-path-stale-on-raw-transaction.md",
+      "sha256": "fff489e55050be6e5b192c296c236ec06514c33810f1285378c64cd54713b445",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.673Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/state-db-redesign.md",
+      "sha256": "37b4100c18a614508acb6fb404f9dc269e9b0756c9723a7590d9d1b062fcf622",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.673Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/test-tooling.md",
+      "sha256": "cfaef4d3d963fbc8fb70320f470bbd9be0832a8e223a5f1f7453d21c24856ee5",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.673Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/verdict-events-only-from-eval-steps.md",
+      "sha256": "88cdf5ea99a25bf790a34a6feec108b914a7740ffe0cf7c20a3a21aaf9b10dd2",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.673Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    },
+    {
+      "path": ".gobbi/projects/gobbi/gotchas/worktree-vs-main-path-confusion.md",
+      "sha256": "0645ae81cbd3b41452cfa7e8cea08d3de9c1a570f342048a91cb8a3efbcc7b06",
+      "class": "unknown",
+      "promotedAt": "2026-05-01T05:05:10.674Z",
+      "promotedFromSession": "115dd07a-5cea-4c73-aeae-244f25b4ccd4"
+    }
+  ],
+  "decisions": [],
+  "learnings": []
+}

@@ -358,6 +358,7 @@
     ]
   },
   "enabledPlugins": {
-    "codex@openai-codex": true
+    "codex@openai-codex": true,
+    "gobbi@gobbi": true
   }
 }
