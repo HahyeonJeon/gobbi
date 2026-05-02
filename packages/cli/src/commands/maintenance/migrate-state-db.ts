@@ -94,7 +94,7 @@
  */
 
 import { Database } from 'bun:sqlite';
-import { existsSync } from 'node:fs';
+import { copyFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 
@@ -117,12 +117,22 @@ Migrate a state.db file's schema in place to the current workspace-level
 version (v${CURRENT_SCHEMA_VERSION}). Idempotent — re-running on an already-current db is
 a no-op other than refreshing the schema_meta migrated_at stamp.
 Non-destructive — only ADD COLUMN / CREATE TABLE IF NOT EXISTS operations;
-no DROP or DELETE. Backup recommended for paranoia, not required.
+no DROP or DELETE.
+
+Auto-bak (#248): before any schema write the command copies <dbPath>
+to <dbPath>.bak so the pre-migration snapshot is always available for
+restore-state-db --backup <dbPath>.bak. Refuses with exit code 1 and
+error code BAK_EXISTS when <dbPath>.bak is already present — operator
+must mv aside or delete the prior backup before re-running. There is
+no flag override; solo-user policy is to never silently clobber a
+prior snapshot.
 
 Re-runnable on partial failure: every CREATE inside ensureSchemaV7 uses
 IF NOT EXISTS, and the chain runs inside a single
 db.transaction(...).immediate() so a mid-chain failure rolls back any
-partial schema rather than leaving the DB half-applied.
+partial schema rather than leaving the DB half-applied. A migration
+failure leaves the operator with both <dbPath> (possibly partially
+migrated) and <dbPath>.bak (pre-migration snapshot).
 
 Schema v6 reserves four tables: state_snapshots, tool_calls,
 config_changes, and schema_meta. Schema v7 adds prompt_patches — one
@@ -195,6 +205,22 @@ export interface MigrateStateDbOverrides {
 export interface MigrateStateDbResult {
   readonly path: string;
   /**
+   * Path of the pre-migration backup file (`${path}.bak`) created by
+   * the argv shell {@link runMigrateStateDbWithOptions} before the
+   * schema-ensure chain runs. The file is a verbatim copy of `path` at
+   * the moment the migration started; `gobbi maintenance restore-state-db
+   * --backup <bakPath>` reverts the whole `.db` from this snapshot.
+   *
+   * The pure core {@link migrateStateDbAt} does NOT create the backup
+   * — it operates on `dbPath` in place. Callers that invoke the core
+   * helper directly receive the backup path the argv shell would have
+   * created (`${path}.bak`) so the result shape stays uniform; on the
+   * pure-core path the file at that location may not actually exist.
+   *
+   * Added in #248 (SC-ORCH-21 Option A).
+   */
+  readonly bakPath: string;
+  /**
    * `schema_version` read from the `schema_meta` row before the
    * migration ran. `null` when the row was absent (pre-v6 db that was
    * never stamped). Pretty-printed as the literal string
@@ -220,6 +246,15 @@ export interface MigrateStateDbResult {
  *
  *   - `DB_MISSING`        — pre-flight `existsSync` returned false for the
  *                           target path.
+ *   - `BAK_EXISTS`        — pre-flight detected `<dbPath>.bak` already
+ *                           present. Operator must mv aside or delete
+ *                           before re-running; no flag override.
+ *                           Solo-user policy: never silently clobber a
+ *                           prior snapshot. #248 (SC-ORCH-21 Option A).
+ *   - `BAK_FAILED`        — `copyFileSync(dbPath, bakPath)` threw
+ *                           (cross-fs error, permission denied, disk
+ *                           full). The migration is aborted; the
+ *                           operator's `<dbPath>` is untouched. #248.
  *   - `MIGRATE_FAILED`    — `migrateStateDbAt` threw (corrupt db,
  *                           permission denied at open time, transaction
  *                           rollback after a CREATE failure, …).
@@ -234,6 +269,8 @@ export interface MigrateStateDbResult {
  */
 export type MigrateStateDbErrorCode =
   | 'DB_MISSING'
+  | 'BAK_EXISTS'
+  | 'BAK_FAILED'
   | 'MIGRATE_FAILED'
   | 'DOWNGRADE_BLOCKED'
   | 'PARSE_ARGS';
@@ -442,6 +479,58 @@ export async function runMigrateStateDbWithOptions(
     process.exit(1);
   }
 
+  // --- 3a. Auto-bak (#248 — SC-ORCH-21 Option A) -------------------------
+  //
+  // Copy `<dbPath>` to `<dbPath>.bak` before any schema write so the
+  // pre-migration snapshot is always available for `restore-state-db
+  // --backup <bakPath>`. The argv shell owns this side effect; the pure
+  // core `migrateStateDbAt` operates on `dbPath` in place and does NOT
+  // touch the bak path. Keeping the file-system side-effect in the
+  // shell preserves the core's testability in isolation.
+  //
+  // Refusal policy: when `<bakPath>` already exists, we exit 1 with the
+  // `BAK_EXISTS` envelope rather than overwriting. Solo-user constraint
+  // — never silently clobber a prior snapshot. The remediation is for
+  // the operator to mv it aside or delete it. There is intentionally
+  // no `--force-bak` flag and no overload of the existing `--force`
+  // flag; the bak hygiene policy is one-rule-no-exceptions.
+  //
+  // We use `copyFileSync` rather than `renameSync` because the source
+  // (`dbPath`) must remain in place — `migrateStateDbAt` opens it
+  // directly. Mirrors the EXDEV copy fallback shape from
+  // `restore-state-db.ts:486-500` for cross-filesystem edge cases:
+  // when `--db` points at a path on a different filesystem than the
+  // bak destination, `copyFileSync` still works (it does its own
+  // file-content read+write at the userspace layer); only `renameSync`
+  // would have raised EXDEV here.
+  //
+  // A copy failure surfaces as `BAK_FAILED` with exit 1 — we do NOT
+  // silently fall back to "skip the bak and try the migration anyway".
+  // The whole point of the contract is that a `.bak` is observed before
+  // any schema write touches `dbPath`.
+  const bakPath = `${dbPath}.bak`;
+  if (existsSync(bakPath)) {
+    writeErrorEnvelope(
+      jsonFlag,
+      'BAK_EXISTS',
+      `pre-existing backup at ${bakPath}; mv it aside or delete before re-running migrate`,
+      dbPath,
+    );
+    process.exit(1);
+  }
+  try {
+    copyFileSync(dbPath, bakPath);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    writeErrorEnvelope(
+      jsonFlag,
+      'BAK_FAILED',
+      `failed to create backup at ${bakPath}: ${message}`,
+      dbPath,
+    );
+    process.exit(1);
+  }
+
   // --- 4. Run migration --------------------------------------------------
   let result: MigrateStateDbResult;
   try {
@@ -510,6 +599,17 @@ export async function runMigrateStateDbWithOptions(
  * `migrations.ts::migrateEvent` (which fires when an old reader visits a
  * newer row) remains the data-level second-line safety net regardless of
  * `--force` — the flag opens the command-level gate only.
+ *
+ * ## `.bak` side-effect ownership (#248 SC-ORCH-21 Option A)
+ *
+ * This pure-core helper does NOT create the `${dbPath}.bak` snapshot —
+ * the auto-bak is a responsibility of the argv shell
+ * {@link runMigrateStateDbWithOptions} (Stage 3a). The core operates on
+ * `dbPath` in place. The returned `bakPath` field is `${dbPath}.bak` by
+ * convention so the result shape stays uniform across both call paths;
+ * direct callers of `migrateStateDbAt` should not assume a file exists
+ * at that location. Tests invoking the core helper get a structured
+ * result without filesystem side-effects beyond the target db.
  */
 export function migrateStateDbAt(
   dbPath: string,
@@ -571,6 +671,10 @@ export function migrateStateDbAt(
     const elapsedMs = clock() - startMs;
     return {
       path: dbPath,
+      // The convention: argv shell creates the bak before invoking us;
+      // we report the path it would have created so JSON consumers see
+      // a uniform shape regardless of entry path. See JSDoc above.
+      bakPath: `${dbPath}.bak`,
       previousVersion,
       newVersion: CURRENT_SCHEMA_VERSION,
       // Single `schema_meta` row is the only meta-table mutation
@@ -679,6 +783,7 @@ export function renderPretty(result: MigrateStateDbResult): string {
   return [
     'gobbi maintenance migrate-state-db',
     `path: ${result.path}`,
+    `backup: ${result.bakPath}`,
     `previous schema_version: ${prevText}`,
     `new schema_version: ${result.newVersion}`,
     `rows touched: ${result.rowsTouched}`,

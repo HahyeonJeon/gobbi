@@ -23,7 +23,15 @@
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';
 import { Database } from 'bun:sqlite';
-import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -271,6 +279,9 @@ describe('runMigrateStateDb — fresh v5 db', () => {
       `new schema_version: ${CURRENT_SCHEMA_VERSION}`,
     );
     expect(captured.stdout).toContain('rows touched: 1');
+    // #248 — pretty output advertises the auto-bak path.
+    expect(captured.stdout).toContain(`backup: ${dbPath}.bak`);
+    expect(existsSync(`${dbPath}.bak`)).toBe(true);
   });
 
   test('--db flag selects an explicit path outside .gobbi/', async () => {
@@ -338,6 +349,12 @@ describe('runMigrateStateDb — idempotency', () => {
     captured.stdout = '';
     captured.stderr = '';
     captured.exitCode = null;
+
+    // The argv shell auto-creates `<dbPath>.bak` (#248). The second
+    // run would otherwise refuse with `BAK_EXISTS`; clean up the prior
+    // bak between runs so we exercise the idempotency path, not the
+    // refusal path.
+    unlinkSync(`${dbPath}.bak`);
 
     // Second run — same db, t1 stamp.
     await captureExit(() =>
@@ -445,6 +462,10 @@ describe('runMigrateStateDb — --json output', () => {
     const obj = parsed as Record<string, unknown>;
 
     expect(obj['path']).toBe(dbPath);
+    // #248 — the JSON contract carries `bakPath` so consumers can plumb
+    // it straight into `restore-state-db --backup <bakPath>`.
+    expect(obj['bakPath']).toBe(`${dbPath}.bak`);
+    expect(existsSync(`${dbPath}.bak`)).toBe(true);
     expect(obj['previousVersion']).toBeNull();
     expect(obj['newVersion']).toBe(CURRENT_SCHEMA_VERSION);
     expect(obj['rowsTouched']).toBe(1);
@@ -454,7 +475,7 @@ describe('runMigrateStateDb — --json output', () => {
 
   test('--json on a v6 db reports previousVersion as 6', async () => {
     const repo = makeRepo();
-    seedV5StateDb(repo);
+    const dbPath = seedV5StateDb(repo);
 
     // First run to bring the db to v6 — no JSON.
     await captureExit(() =>
@@ -466,6 +487,10 @@ describe('runMigrateStateDb — --json output', () => {
     captured.stdout = '';
     captured.stderr = '';
     captured.exitCode = null;
+
+    // The argv shell wrote `<dbPath>.bak` on the first run (#248). The
+    // second run would refuse with `BAK_EXISTS` unless we clean up.
+    unlinkSync(`${dbPath}.bak`);
 
     // Second run with --json — previousVersion is 6 now.
     await captureExit(() =>
@@ -616,6 +641,83 @@ describe('runMigrateStateDb — --json error envelope', () => {
     // No JSON envelope under pretty form.
     expect(captured.stderr).not.toContain('"status"');
     expect(captured.stderr).not.toContain('"code"');
+  });
+});
+
+// ===========================================================================
+// BAK_EXISTS — auto-bak refuses to clobber a prior `.bak` snapshot (#248)
+//
+// The argv shell creates `<dbPath>.bak` before invoking the schema-ensure
+// chain. When `<dbPath>.bak` already exists, the command exits 1 with the
+// `BAK_EXISTS` envelope. There is intentionally no flag override; solo-user
+// policy is "never silently clobber a prior snapshot". The remediation is
+// for the operator to mv the prior bak aside or delete it.
+// ===========================================================================
+
+describe('runMigrateStateDb — BAK_EXISTS auto-bak refusal (#248)', () => {
+  test('--json refuses with BAK_EXISTS envelope when <dbPath>.bak already exists', async () => {
+    const repo = makeRepo();
+    const dbPath = seedV5StateDb(repo);
+    // Plant a pre-existing bak. Contents do not matter — only the
+    // `existsSync` check fires before the copy.
+    const bakPath = `${dbPath}.bak`;
+    writeFileSync(bakPath, 'pre-existing operator backup');
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions(['--json'], { repoRoot: repo }),
+    );
+
+    expect(captured.exitCode).toBe(1);
+    expect(captured.stdout).toBe('');
+    const lines = captured.stderr.split('\n').filter((l) => l.length > 0);
+    expect(lines).toHaveLength(1);
+    const parsed = JSON.parse(lines[0] as string) as Record<
+      string,
+      unknown
+    >;
+    expect(parsed['status']).toBe('error');
+    expect(parsed['code']).toBe('BAK_EXISTS');
+    expect(parsed['path']).toBe(dbPath);
+    // Operator-actionable remediation in the message.
+    expect(typeof parsed['message']).toBe('string');
+    expect((parsed['message'] as string)).toContain(bakPath);
+    expect((parsed['message'] as string)).toMatch(/mv it aside or delete/);
+
+    // Sanity — the prior bak is untouched (we did not clobber it).
+    const bakBytes = readFileSync(bakPath, 'utf8');
+    expect(bakBytes).toBe('pre-existing operator backup');
+
+    // schema_meta was NOT created — refusal happened before any schema write.
+    const verify = new Database(dbPath);
+    try {
+      const tableExists = verify
+        .query<{ name: string }, [string]>(
+          "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+        )
+        .get('schema_meta');
+      expect(tableExists).toBeNull();
+    } finally {
+      verify.close();
+    }
+  });
+
+  test('pretty form refuses with the legacy stderr line shape', async () => {
+    const repo = makeRepo();
+    const dbPath = seedV5StateDb(repo);
+    writeFileSync(`${dbPath}.bak`, '');
+
+    await captureExit(() =>
+      runMigrateStateDbWithOptions([], { repoRoot: repo }),
+    );
+
+    expect(captured.exitCode).toBe(1);
+    expect(captured.stderr).toContain(
+      'gobbi maintenance migrate-state-db:',
+    );
+    expect(captured.stderr).toContain('pre-existing backup at');
+    expect(captured.stderr).toContain(`${dbPath}.bak`);
+    // Pretty form must not emit a JSON envelope.
+    expect(captured.stderr).not.toContain('"status"');
   });
 });
 
@@ -822,6 +924,11 @@ describe('migrateStateDbAt', () => {
     expect(result.newVersion).toBe(CURRENT_SCHEMA_VERSION);
     expect(result.rowsTouched).toBe(1);
     expect(result.elapsedMs).toBeGreaterThanOrEqual(0);
+    // #248 — the pure core advertises the conventional bak path even
+    // though it does NOT create the file. The argv shell owns the
+    // side-effect; the core stays filesystem-pure beyond `dbPath`.
+    expect(result.bakPath).toBe(`${dbPath}.bak`);
+    expect(existsSync(result.bakPath)).toBe(false);
 
     // No stdout/stderr from the pure helper itself.
     expect(captured.stdout).toBe('');
@@ -837,6 +944,7 @@ describe('renderPretty', () => {
   test('formats a stamped previous version as a digit', () => {
     const out = renderPretty({
       path: '/tmp/state.db',
+      bakPath: '/tmp/state.db.bak',
       previousVersion: 5,
       newVersion: 6,
       rowsTouched: 1,
@@ -847,11 +955,14 @@ describe('renderPretty', () => {
     expect(out).toContain('rows touched: 1');
     expect(out).toContain('elapsed: 7 ms');
     expect(out).toContain('path: /tmp/state.db');
+    // #248 — backup line is part of the pretty contract.
+    expect(out).toContain('backup: /tmp/state.db.bak');
   });
 
   test('formats an unstamped previous version as the literal "(unstamped)"', () => {
     const out = renderPretty({
       path: '/tmp/state.db',
+      bakPath: '/tmp/state.db.bak',
       previousVersion: null,
       newVersion: 6,
       rowsTouched: 1,

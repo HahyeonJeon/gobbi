@@ -478,11 +478,9 @@ Evidence: `packages/cli/src/commands/memory/backfill.ts::backfillMemoryAt`, reus
 
 ---
 
-## SC-ORCH-21 deviation — Option B (narrow) shipped, Option A deferred
+## SC-ORCH-21 fulfillment
 
-> **NOTE (PR-CFM-B Option B):** `gobbi maintenance restore-state-db` shipped in PR-CFM-B reverts from an operator-created `.bak` only — `migrate-state-db.ts` does NOT auto-create the `.bak` file as part of the migration. The full SC-ORCH-21 contract (atomic migrate-with-backup, plus the replay-equivalence integration test) remains partially fulfilled and is acknowledged as future-PR scope. Operators take backups manually with `cp <repoRoot>/.gobbi/state.db <repoRoot>/.gobbi/state.db.<tag>` before invoking `migrate-state-db`; the `restore-state-db --help` output documents the workflow. See the upstream contract at `design/v050-features/orchestration/scenarios.md` SC-ORCH-21 and the `pr_cfm_b_shipped` memory entry for rationale.
-
-The SC-ORCH-21 entry in `orchestration/scenarios.md` describes both halves of the original contract — the `.bak`-rename inside `migrate-state-db` AND the reverse via `restore-state-db`. PR-CFM-B closes the second half only. The first half stays open because the user-locked Option B keeps `migrate-state-db.ts` unchanged for this PR; the full Option A (auto-backup-on-migrate, plus an integration test that replays both pre- and post-migration event streams through the reducer and asserts state equality) is left for a future PR if and when the gap blocks operator workflow.
+SC-ORCH-21 fully fulfilled by #248 — `migrate-state-db` auto-creates `<dbPath>.bak` before any schema write, replay-equivalence integration test asserts identical reducer state pre- and post-migration, and `restore-state-db` reverts from the auto-created bak by default. See `commands/maintenance/migrate-state-db.ts` Section 3a and `__tests__/migrate-state-db-replay-equivalence.test.ts`.
 
 ---
 

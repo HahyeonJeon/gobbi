@@ -1,19 +1,16 @@
 /**
  * gobbi maintenance restore-state-db — revert a workspace `state.db` file
- * from an operator-created `.bak` companion. Pure file-level rename (with
- * a cross-filesystem `EXDEV` copy fallback). Companion to
- * `migrate-state-db.ts` per the orchestration design contract at
+ * from a `.bak` snapshot. Pure file-level rename (with a cross-filesystem
+ * `EXDEV` copy fallback). Companion to `migrate-state-db.ts` per the
+ * orchestration design contract at
  * `.gobbi/projects/gobbi/design/v050-features/gobbi-memory/scenarios.md:287-293`.
  *
- * ## Scope (PR-CFM-B — issue #169 narrow / Option B)
+ * ## Scope (#248 — SC-ORCH-21 Option A complete)
  *
- * The narrow Option B scope: this command **reverts** an operator-supplied
- * backup; it does NOT auto-create `.bak` files inside `migrate-state-db`.
- * The full SC-ORCH-21 design contract (auto-backup-on-migrate) remains
- * partially fulfilled and is acknowledged as future-PR scope (Option A
- * deferred per PR-CFM-B user lock 5). Operators take backups manually
- * before invoking migrate; see the `Manual workflow` section in `--help`
- * below.
+ * The companion `migrate-state-db` auto-creates `<dbPath>.bak` before
+ * any schema write (#248), so operators can revert any migration
+ * without taking a manual backup first. Operator-managed backups also
+ * work — pass `--backup <path>` to use a non-default location.
  *
  * ## Mechanism (rename-aside under `--force`)
  *
@@ -117,20 +114,19 @@ import { workspaceRoot } from '../../lib/workspace-paths.js';
 
 const USAGE = `Usage: gobbi maintenance restore-state-db --backup <path> [options]
 
-Revert a state.db file from an operator-created backup. Pure file-level
-rename; does NOT data-level downgrade. Safe to run when the workspace
-state.db has been corrupted or its schema has been advanced past a
-version the operator wants to roll back from.
+Revert a state.db file from a .bak snapshot. Pure file-level rename;
+does NOT data-level downgrade. Safe to run when the workspace state.db
+has been corrupted or its schema has been advanced past a version the
+operator wants to roll back from.
 
-The companion command does NOT auto-create backups inside
-migrate-state-db (see PR-CFM-B / Option B narrow scope). Operators
-take backups manually:
+The companion 'migrate-state-db' auto-creates <dbPath>.bak before any
+schema write (#248), so the default workflow is:
 
-  cp <repoRoot>/.gobbi/state.db <repoRoot>/.gobbi/state.db.pre-v8
+  gobbi maintenance migrate-state-db          # creates <dbPath>.bak
+  gobbi maintenance restore-state-db --backup <dbPath>.bak
 
-Restore later:
-
-  gobbi maintenance restore-state-db --backup <repoRoot>/.gobbi/state.db.pre-v8
+Operator-managed backups also work — pass --backup <path> to use a
+non-default location.
 
 When the target file already exists, the restore refuses by default. Re-
 run with --force to rename the existing target to
