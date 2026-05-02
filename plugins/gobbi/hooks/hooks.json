@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook session-start",
+            "command": "gobbi-dev hook session-start",
             "timeout": 15
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook session-end",
+            "command": "gobbi-dev hook session-end",
             "timeout": 10
           }
         ]
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook stop",
+            "command": "gobbi-dev hook stop",
             "timeout": 10
           }
         ]
@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook stop-failure",
+            "command": "gobbi-dev hook stop-failure",
             "timeout": 10
           }
         ]
@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook user-prompt-submit",
+            "command": "gobbi-dev hook user-prompt-submit",
             "timeout": 5
           }
         ]
@@ -61,7 +61,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook user-prompt-expansion",
+            "command": "gobbi-dev hook user-prompt-expansion",
             "timeout": 5
           }
         ]
@@ -72,7 +72,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook pre-tool-use",
+            "command": "gobbi-dev hook pre-tool-use",
             "timeout": 5
           }
         ]
@@ -84,7 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook post-tool-use",
+            "command": "gobbi-dev hook post-tool-use",
             "timeout": 30
           }
         ]
@@ -94,7 +94,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook post-tool-use",
+            "command": "gobbi-dev hook post-tool-use",
             "timeout": 5
           }
         ]
@@ -105,7 +105,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook post-tool-use-failure",
+            "command": "gobbi-dev hook post-tool-use-failure",
             "timeout": 10
           }
         ]
@@ -116,7 +116,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook post-tool-batch",
+            "command": "gobbi-dev hook post-tool-batch",
             "timeout": 10
           }
         ]
@@ -127,7 +127,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook permission-request",
+            "command": "gobbi-dev hook permission-request",
             "timeout": 5
           }
         ]
@@ -138,7 +138,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook permission-denied",
+            "command": "gobbi-dev hook permission-denied",
             "timeout": 5
           }
         ]
@@ -149,7 +149,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook notification",
+            "command": "gobbi-dev hook notification",
             "timeout": 5
           }
         ]
@@ -160,7 +160,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook subagent-start",
+            "command": "gobbi-dev hook subagent-start",
             "timeout": 5
           }
         ]
@@ -171,7 +171,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook subagent-stop",
+            "command": "gobbi-dev hook subagent-stop",
             "timeout": 60
           }
         ]
@@ -182,7 +182,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook task-created",
+            "command": "gobbi-dev hook task-created",
             "timeout": 5
           }
         ]
@@ -193,7 +193,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook task-completed",
+            "command": "gobbi-dev hook task-completed",
             "timeout": 5
           }
         ]
@@ -204,7 +204,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook teammate-idle",
+            "command": "gobbi-dev hook teammate-idle",
             "timeout": 5
           }
         ]
@@ -215,7 +215,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook pre-compact",
+            "command": "gobbi-dev hook pre-compact",
             "timeout": 10
           }
         ]
@@ -226,7 +226,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook post-compact",
+            "command": "gobbi-dev hook post-compact",
             "timeout": 10
           }
         ]
@@ -237,7 +237,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook worktree-create",
+            "command": "gobbi-dev hook worktree-create",
             "timeout": 5
           }
         ]
@@ -248,7 +248,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook worktree-remove",
+            "command": "gobbi-dev hook worktree-remove",
             "timeout": 5
           }
         ]
@@ -259,7 +259,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook file-changed",
+            "command": "gobbi-dev hook file-changed",
             "timeout": 5
           }
         ]
@@ -270,7 +270,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook cwd-changed",
+            "command": "gobbi-dev hook cwd-changed",
             "timeout": 5
           }
         ]
@@ -281,7 +281,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook instructions-loaded",
+            "command": "gobbi-dev hook instructions-loaded",
             "timeout": 5
           }
         ]
@@ -292,7 +292,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook config-change",
+            "command": "gobbi-dev hook config-change",
             "timeout": 5
           }
         ]
@@ -303,7 +303,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook elicitation",
+            "command": "gobbi-dev hook elicitation",
             "timeout": 5
           }
         ]
@@ -314,7 +314,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "gobbi hook elicitation-result",
+            "command": "gobbi-dev hook elicitation-result",
             "timeout": 5
           }
         ]
