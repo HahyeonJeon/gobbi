@@ -1146,36 +1146,35 @@ describe('dispatchHookNotify', () => {
   });
 
   // -------------------------------------------------------------------------
-  // G. Phase-2 events return silently (1)
+  // G. Tier-B events dispatch when invoked directly (issue #219)
   // -------------------------------------------------------------------------
 
-  describe('Phase-2 events', () => {
-    test('PostToolUse with all channels enabled and matching triggers → silent (no template wired)', async () => {
-      // dispatchHookNotify returns BEFORE dispatchToChannels for Phase-2
-      // events because renderHookMessage returns null. Any HTTP call
-      // would prove the contract is broken — even though every channel
-      // here has the trigger filter passing, no template is wired so
-      // Phase-2 dispatch is a silent no-op.
+  describe('Tier-B direct invocation', () => {
+    test('PostToolUse via dispatchHookNotify directly → fires (Tier-B suppression lives at the stub layer)', async () => {
+      // Issue #219 wired rich templates for the full 28-event hook
+      // surface; per-event flooding policy is enforced upstream by
+      // `commands/hook/_stub.ts::STUB_DISPATCH_EVENTS`. A bespoke handler
+      // (or a test like this one) that reaches `dispatchHookNotify`
+      // directly with a Tier-B event WILL dispatch when the trigger
+      // filter matches — that is the documented escape hatch for
+      // future per-event handlers.
       writeWorkspaceSettings({
         schemaVersion: 1,
         notify: {
           slack: { enabled: true, triggers: ['PostToolUse'] },
-          telegram: { enabled: true, triggers: ['PostToolUse'] },
-          discord: { enabled: true, triggers: ['PostToolUse'] },
-          desktop: { enabled: true, triggers: ['PostToolUse'] },
         },
       });
       stageSlackEnv();
-      stageTelegramEnv();
-      stageDiscordEnv();
-      await expect(
-        dispatchHookNotify(
-          { session_id: 'abcdef0123', cwd: '/repo/x' },
-          'PostToolUse',
-          baseOptions(),
-        ),
-      ).resolves.toBeUndefined();
-      expect(calls.length).toBe(0);
+      await dispatchHookNotify(
+        { session_id: 'abcdef0123456789', cwd: '/repo/myproj' },
+        'PostToolUse',
+        baseOptions(),
+      );
+      expect(calls.length).toBe(1);
+      const body = calls[0]?.init?.body;
+      const parsed = JSON.parse(typeof body === 'string' ? body : '{}') as Record<string, unknown>;
+      const text = typeof parsed['text'] === 'string' ? (parsed['text'] as string) : '';
+      expect(text).toBe('*Tool Use Done*\nTool use done in myproj. Session `abcdef01`.');
     });
   });
 });

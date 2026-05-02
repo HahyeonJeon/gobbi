@@ -25,10 +25,12 @@
  *     ({@link NotifyEvent}).
  *   - {@link dispatchHookNotify}`(payload, eventName, options)` — hook
  *     callers; filters by `notify.<channel>.triggers`
- *     ({@link HookTrigger}). Phase 1 of PR-FIN-1d wires rich messages for
- *     7 events (`Stop`, `SubagentStop`, `SessionStart`, `SessionEnd`,
- *     `UserPromptSubmit`, `Notification`, `PreCompact`); the remaining 21
- *     are silently skipped pending the Phase-2 follow-up.
+ *     ({@link HookTrigger}). Issue #219 (Phase 2 of PR-FIN-1d) extended
+ *     `renderHookMessage` to cover all 28 {@link HookTrigger} values, so
+ *     any hook caller that reaches `dispatchHookNotify` with a matching
+ *     trigger filter dispatches. The Tier-A/Tier-B dispatch policy
+ *     (per-event flooding control) is enforced upstream by the stub
+ *     allow-list in `commands/hook/_stub.ts::STUB_DISPATCH_EVENTS`.
  *
  * The two filters are independent — `dispatchHookNotify` does not consult
  * `events`, and `sendNotifications` does not consult `triggers`. Both
@@ -459,7 +461,7 @@ export async function sendNotifications(
 // ---------------------------------------------------------------------------
 
 /**
- * Fields the Phase-1 message templates may consult on the hook stdin
+ * Fields the hook message templates may consult on the hook stdin
  * payload. All optional — `dispatchHookNotify` defaults missing fields to
  * `'unknown'` rather than throwing. Mirrors the typed payload shapes in
  * `commands/notify.ts` (`AttentionPayload`, `CompletionPayload`,
@@ -488,7 +490,7 @@ function sessionPrefix(sessionId: string): string {
 }
 
 /**
- * Defensively extract the fields Phase-1 message templates may consult from
+ * Defensively extract the fields hook message templates may consult from
  * an `unknown` hook payload. Each field defaults to `'unknown'` if missing
  * or wrongly typed; `stopHookActive` keeps its possibly-string shape because
  * the loop guard distinguishes `true` from `'true'`.
@@ -523,9 +525,15 @@ function extractPayloadFields(payload: unknown): HookPayloadFields {
 }
 
 /**
- * Render a Phase-1 hook event into a `(title, message)` pair, or `null`
- * when no template applies (Phase-2 events return `null`; the loop guard
- * for `Stop` returns `null` when `stop_hook_active` is truthy).
+ * Render a hook event into a `(title, message)` pair, or `null` when the
+ * event is a no-dispatch state (today, the only case is the `Stop`
+ * loop guard returning `null` when `stop_hook_active` is truthy).
+ *
+ * Issue #219 extended this renderer to cover all 28 {@link HookTrigger}
+ * values; the dispatch decision (which events actually fire through the
+ * generic stub) is owned downstream by `STUB_DISPATCH_EVENTS` in
+ * `commands/hook/_stub.ts` plus the per-channel `notify.<channel>.triggers`
+ * filter applied by {@link dispatchHookNotify}.
  */
 function renderHookMessage(
   eventName: HookTrigger,
@@ -593,11 +601,116 @@ function renderHookMessage(
         title: 'Compacting',
         message: `Session \`${prefix}\` compacting in ${project}.`,
       };
-    // Phase-2 events: no template wired in this Pass.
-    // TODO(PR-FIN-1d-phase-2 #219): rich message templates
-    //   for the remaining 21 hook events.
-    default:
-      return null;
+    // ---- Tier A — rich-template events dispatched by the generic stub
+    //      (see `commands/hook/_stub.ts::STUB_DISPATCH_EVENTS`).
+    case 'StopFailure':
+      return {
+        title: 'Task Failed',
+        message: `Session \`${prefix}\` failed in ${project}.`,
+      };
+    case 'PermissionRequest':
+      return {
+        title: 'Permission Requested',
+        message: `Awaiting permission in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'PermissionDenied':
+      return {
+        title: 'Permission Denied',
+        message: `Permission denied in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'SubagentStart':
+      return {
+        title: 'Subagent Started',
+        message: `Subagent (${fields.agentType}) started in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'TaskCreated':
+      return {
+        title: 'Task Created',
+        message: `Task created in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'TaskCompleted':
+      return {
+        title: 'Task Completed',
+        message: `Task completed in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'TeammateIdle':
+      return {
+        title: 'Teammate Idle',
+        message: `Teammate idle in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'PostCompact':
+      return {
+        title: 'Compact Done',
+        message: `Session \`${prefix}\` compaction complete in ${project}.`,
+      };
+    case 'WorktreeCreate':
+      return {
+        title: 'Worktree Created',
+        message: `Worktree created in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'WorktreeRemove':
+      return {
+        title: 'Worktree Removed',
+        message: `Worktree removed in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'ConfigChange':
+      return {
+        title: 'Config Changed',
+        message: `Config changed in ${project}. Session \`${prefix}\`.`,
+      };
+    // ---- Tier B — templates exist but the generic stub does NOT dispatch
+    //      these by default (high-frequency / flooding risk). A bespoke
+    //      handler can call `dispatchHookNotify` directly to opt them in.
+    case 'UserPromptExpansion':
+      return {
+        title: 'Prompt Expanded',
+        message: `User prompt expanded in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'PreToolUse':
+      return {
+        title: 'Tool Use Started',
+        message: `Tool use started in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'PostToolUse':
+      return {
+        title: 'Tool Use Done',
+        message: `Tool use done in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'PostToolUseFailure':
+      return {
+        title: 'Tool Use Failed',
+        message: `Tool use failed in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'PostToolBatch':
+      return {
+        title: 'Tool Batch Done',
+        message: `Tool batch done in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'FileChanged':
+      return {
+        title: 'File Changed',
+        message: `File changed in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'CwdChanged':
+      return {
+        title: 'Directory Changed',
+        message: `Working directory changed in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'InstructionsLoaded':
+      return {
+        title: 'Instructions Loaded',
+        message: `Instructions loaded in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'Elicitation':
+      return {
+        title: 'Input Requested',
+        message: `MCP elicitation requested in ${project}. Session \`${prefix}\`.`,
+      };
+    case 'ElicitationResult':
+      return {
+        title: 'Input Received',
+        message: `MCP elicitation result in ${project}. Session \`${prefix}\`.`,
+      };
   }
 }
 
@@ -616,11 +729,14 @@ function renderHookMessage(
  *   | `true`    | `[]`               | skip                |
  *   | `true`    | non-empty list     | fire iff `eventName ∈ triggers` |
  *
- * Phase-1 events (7) — `Stop`, `SubagentStop`, `SessionStart`,
- * `SessionEnd`, `UserPromptSubmit`, `Notification`, `PreCompact` — render
- * rich message bodies. Phase-2 events (the other 21) return silently
- * before `dispatchToChannels` is reached; the schema accepts them but no
- * template is wired in this Pass.
+ * All 28 {@link HookTrigger} values render a rich message body via
+ * {@link renderHookMessage} (issue #219 closed the Phase-2 gap). The
+ * dispatch decision for the generic stub is enforced at
+ * `commands/hook/_stub.ts::STUB_DISPATCH_EVENTS`; bespoke handlers can
+ * call this entry point directly to opt their event into dispatch
+ * regardless of the stub policy. The `Stop` loop-guard branch returns
+ * `null` from the renderer when `stop_hook_active` is truthy, which still
+ * shortcuts the dispatch path before `dispatchToChannels`.
  *
  * **Hook contract:** never propagates a non-zero exit. The whole body is
  * wrapped in a top-level try/catch that swallows every throw silently —
@@ -646,8 +762,8 @@ export async function dispatchHookNotify(
 
     const fields = extractPayloadFields(payload);
     const rendered = renderHookMessage(eventName, fields);
-    // Phase-2 events and the Stop-loop guard both return null; both end
-    // the dispatch silently before resolving settings.
+    // The `Stop` loop-guard returns null when `stop_hook_active` is
+    // truthy; ending the dispatch silently before resolving settings.
     if (rendered === null) return;
 
     const sessionId = options.sessionId;

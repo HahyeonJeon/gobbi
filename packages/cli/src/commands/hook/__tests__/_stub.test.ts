@@ -1,6 +1,6 @@
 /**
- * Tests for the `runGenericHookStub` Phase-1 allow-list and the bespoke
- * Phase-1 hook handlers (PR-FIN-1d.3).
+ * Tests for the `runGenericHookStub` dispatch allow-list and the bespoke
+ * hook handlers (PR-FIN-1d.3 + issue #219).
  *
  * Coverage:
  *
@@ -8,10 +8,12 @@
  *      `runHookSubagentStop`, `runHookSessionStart` each call
  *      `dispatchHookNotify` exactly once with the correct event name and
  *      `{ sessionId, projectDir }` derived from the payload + env.
- *   B. Stub allow-list (4 tests) — `runGenericHookStub` invokes
- *      `dispatchHookNotify` for the 4 Phase-1 events
- *      (`SessionEnd`, `UserPromptSubmit`, `Notification`, `PreCompact`)
- *      and skips it for Phase-2 events (`FileChanged`, `PostToolUse`).
+ *   B. Stub allow-list (≥6 tests) — `runGenericHookStub` invokes
+ *      `dispatchHookNotify` for Tier-A events (the original 4 Phase-1
+ *      events plus the 11 Tier-A events wired in issue #219) and skips
+ *      it for Tier-B events (`FileChanged`, `PostToolUse`, etc.). Two
+ *      representative Tier-A events (`WorktreeCreate` from the new
+ *      cohort, `PreCompact` from the original cohort) are checked.
  *   C. Throw containment (2 tests) — when `dispatchHookNotify` or
  *      `readStdinJson` throws synchronously, `runGenericHookStub` does
  *      NOT propagate; stderr receives a kebab-cased
@@ -273,8 +275,8 @@ describe('A. bespoke-handler dispatch invokes dispatchHookNotify', () => {
 // B. Stub allow-list
 // ===========================================================================
 
-describe('B. runGenericHookStub — Phase-1 allow-list', () => {
-  test('B.1 PreCompact (Phase-1) → dispatchHookNotify called', async () => {
+describe('B. runGenericHookStub — STUB_DISPATCH_EVENTS allow-list', () => {
+  test('B.1 PreCompact (Tier-A, original Phase-1 cohort) → dispatchHookNotify called', async () => {
     process.env['CLAUDE_PROJECT_DIR'] = '/tmp/proj-pc';
     setStdinPayload({ session_id: 'sess-pc-1' });
 
@@ -287,7 +289,7 @@ describe('B. runGenericHookStub — Phase-1 allow-list', () => {
     expect(call?.options).toEqual({ sessionId: 'sess-pc-1', projectDir: '/tmp/proj-pc' });
   });
 
-  test('B.2 SessionEnd (Phase-1) → dispatchHookNotify called', async () => {
+  test('B.2 SessionEnd (Tier-A, original Phase-1 cohort) → dispatchHookNotify called', async () => {
     process.env['CLAUDE_PROJECT_DIR'] = '/tmp/proj-se';
     setStdinPayload({ session_id: 'sess-se-1' });
 
@@ -298,7 +300,7 @@ describe('B. runGenericHookStub — Phase-1 allow-list', () => {
     expect(state.calls[0]?.eventName).toBe('SessionEnd');
   });
 
-  test('B.3 FileChanged (Phase-2) → dispatchHookNotify NOT called', async () => {
+  test('B.3 FileChanged (Tier-B) → dispatchHookNotify NOT called (template exists, but stub suppresses)', async () => {
     process.env['CLAUDE_PROJECT_DIR'] = '/tmp/proj-fc';
     setStdinPayload({ session_id: 'sess-fc-1' });
 
@@ -308,11 +310,55 @@ describe('B. runGenericHookStub — Phase-1 allow-list', () => {
     expect(state.calls).toHaveLength(0);
   });
 
-  test('B.4 PostToolUse (Phase-2) → dispatchHookNotify NOT called', async () => {
+  test('B.4 PostToolUse (Tier-B) → dispatchHookNotify NOT called (flooding suppression)', async () => {
     process.env['CLAUDE_PROJECT_DIR'] = '/tmp/proj-pt';
     setStdinPayload({ session_id: 'sess-pt-1' });
 
     await runGenericHookStub('PostToolUse', []);
+
+    const state = getDispatchState();
+    expect(state.calls).toHaveLength(0);
+  });
+
+  test('B.5 WorktreeCreate (Tier-A, issue #219 cohort) → dispatchHookNotify called', async () => {
+    // Locks the issue #219 expansion of STUB_DISPATCH_EVENTS to the
+    // 11 Tier-A events. WorktreeCreate is representative of the new
+    // cohort; if a future refactor accidentally drops a Tier-A entry
+    // from the allow-list, this test catches it. Mirror B.1/B.2 shape.
+    process.env['CLAUDE_PROJECT_DIR'] = '/tmp/proj-wc';
+    setStdinPayload({ session_id: 'sess-wc-1' });
+
+    await runGenericHookStub('WorktreeCreate', []);
+
+    const state = getDispatchState();
+    expect(state.calls).toHaveLength(1);
+    const call = state.calls[0];
+    expect(call?.eventName).toBe('WorktreeCreate');
+    expect(call?.options).toEqual({ sessionId: 'sess-wc-1', projectDir: '/tmp/proj-wc' });
+  });
+
+  test('B.6 ConfigChange (Tier-A, issue #219 cohort) → dispatchHookNotify called', async () => {
+    // Second Tier-A spot check — different event family (config vs.
+    // worktree) so a single-bucket regression in the allow-list is
+    // distinguishable from a wholesale break.
+    process.env['CLAUDE_PROJECT_DIR'] = '/tmp/proj-cc';
+    setStdinPayload({ session_id: 'sess-cc-1' });
+
+    await runGenericHookStub('ConfigChange', []);
+
+    const state = getDispatchState();
+    expect(state.calls).toHaveLength(1);
+    expect(state.calls[0]?.eventName).toBe('ConfigChange');
+  });
+
+  test('B.7 Elicitation (Tier-B) → dispatchHookNotify NOT called', async () => {
+    // Third Tier-B representative covering the elicitation slot of the
+    // Tier-B cohort. Distinguishes elicitation suppression from the
+    // file/tool suppression covered by B.3/B.4.
+    process.env['CLAUDE_PROJECT_DIR'] = '/tmp/proj-el';
+    setStdinPayload({ session_id: 'sess-el-1' });
+
+    await runGenericHookStub('Elicitation', []);
 
     const state = getDispatchState();
     expect(state.calls).toHaveLength(0);

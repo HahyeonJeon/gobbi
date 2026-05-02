@@ -52,10 +52,13 @@ export type NotifyEvent =
  * compaction → worktree → workspace → config → elicitation).
  *
  * PR-FIN-1d.1 expanded the union from the original 9 values to all 28 known
- * Claude Code hook event names. Phase-1 dispatch (PR-FIN-1d.2/1d.3) wires
- * 7 of the 28 (`Stop`, `SubagentStop`, `SessionStart`, `SessionEnd`,
- * `UserPromptSubmit`, `Notification`, `PreCompact`); the remaining 21 are
- * accepted by the schema and reserved for the Phase-2 follow-up.
+ * Claude Code hook event names. Issue #219 (Phase 2 of PR-FIN-1d) wired
+ * rich-message templates for the full 28-event surface in
+ * `lib/notify.ts::renderHookMessage`. Per-event dispatch through the
+ * generic stub is governed by `commands/hook/_stub.ts::STUB_DISPATCH_EVENTS`
+ * — Tier-A events fire by default; Tier-B events (high-frequency
+ * tool/file/cwd/prompt-expansion/elicitation) keep templates but are
+ * excluded from default dispatch to avoid flooding.
  */
 export type HookTrigger =
   // Session lifecycle
