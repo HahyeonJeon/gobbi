@@ -457,10 +457,10 @@ describe('engine STEP_EXIT hook', () => {
       lastVerdictOutcome: 'revise',
       feedbackRound: 2,
       activeSubagents: [
-        { subagentId: 'sa-exec-A', agentType: '__executor', step: 'execution', spawnedAt: '2026-04-20T09:10:00.000Z' },
-        { subagentId: 'sa-exec-B', agentType: '__executor', step: 'execution', spawnedAt: '2026-04-20T09:15:00.000Z' },
+        { subagentId: 'sa-exec-A', agentType: 'executor', step: 'execution', spawnedAt: '2026-04-20T09:10:00.000Z' },
+        { subagentId: 'sa-exec-B', agentType: 'executor', step: 'execution', spawnedAt: '2026-04-20T09:15:00.000Z' },
         // Subagent on a different step must not be counted.
-        { subagentId: 'sa-pi-A', agentType: '__pi', step: 'ideation', spawnedAt: '2026-04-20T08:00:00.000Z' },
+        { subagentId: 'sa-pi-A', agentType: 'pi', step: 'ideation', spawnedAt: '2026-04-20T08:00:00.000Z' },
       ],
     };
     const next: WorkflowState = {

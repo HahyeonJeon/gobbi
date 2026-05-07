@@ -1000,7 +1000,7 @@ export function compileWithIssues(
   //
   //    Build the decorations record with conditional spread so we never set
   //    `originals: undefined` explicitly (incompatible with the
-  //    `exactOptionalPropertyTypes: true` compile flag — see `_typescript`
+  //    `exactOptionalPropertyTypes: true` compile flag — see `typescript`
   //    skill on optional-property semantics).
   const decorations: RenderDecorations = {
     ...(originals !== undefined ? { originals } : {}),

@@ -92,7 +92,7 @@ Actively learn before discussing. Don't start from assumptions — start from ev
 Design your investigation or decomposition approach before diving in.
 
 - Identify what's vague or missing in the user's idea
-- Decide which discussion points from _ideation are relevant
+- Decide which discussion points from ideation are relevant
 - Determine what needs codebase exploration vs. web research vs. user discussion
 - When delegated for planning: explore the codebase, identify which files and subsystems the work touches, decide how to split work by domain, deliverable, or dependency layer, and determine wave structure (parallel vs. sequential)
 
@@ -139,7 +139,7 @@ During evaluation sub-phases, assess the completed work through your stance's le
 - Are dependencies between tasks stated and correct?
 - Do any tasks overlap on the same files? If so, combine or sequence them.
 - Is parallelism maximized — are tasks sequenced only when they truly depend on each other?
-- Does the plan match what _plan defines as a good plan?
+- Does the plan match what plan defines as a good plan?
 
 **For review:** Check the review is complete and actionable.
 

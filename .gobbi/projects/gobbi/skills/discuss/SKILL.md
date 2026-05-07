@@ -49,7 +49,7 @@ Use AskUserQuestion to explore each unclear dimension. Not every dimension needs
 ---
 
 
-> **_discuss resolves specification gaps — "what do you want?" when the agent lacks information to act. Contribution points (_ideation) resolve judgment gaps — "which decisions are yours to make?" when the user's domain knowledge would produce better outcomes than agent discretion. Different problems, different tools.**
+> **discuss resolves specification gaps — "what do you want?" when the agent lacks information to act. Contribution points (ideation) resolve judgment gaps — "which decisions are yours to make?" when the user's domain knowledge would produce better outcomes than agent discretion. Different problems, different tools.**
 
 ---
 

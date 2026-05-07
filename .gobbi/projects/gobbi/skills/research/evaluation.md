@@ -2,7 +2,7 @@
 
 # Research Evaluation
 
-Stage-specific evaluation criteria for research output. Load this skill alongside _evaluation when evaluating the result of a research step.
+Stage-specific evaluation criteria for research output. Load this skill alongside evaluation when evaluating the result of a research step.
 
 Research output consists of: `innovative.md` (innovative researcher findings), `best.md` (best-practice researcher findings), `research.md` (orchestrator synthesis), and `results/` (detailed artifacts). Evaluate the synthesis primarily, but check that individual stance notes contribute meaningfully.
 

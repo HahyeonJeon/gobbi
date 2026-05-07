@@ -16,7 +16,7 @@ Every note file must be detailed enough that a reader who has no access to the c
 
 | Document | Covers |
 |----------|--------|
-| [gotchas.md](gotchas.md) | Known mistakes and corrections for _note |
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for note |
 
 ---
 

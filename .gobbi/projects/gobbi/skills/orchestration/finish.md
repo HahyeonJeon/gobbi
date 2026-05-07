@@ -15,7 +15,7 @@ How the workflow concludes with merge, commit, and compact options. FINISH comes
 
 Conditions change between when you checked and when you act. Re-verify at the point of use.
 
-_git establishes the re-verification principle: prerequisites are re-verified at point of use, not only at session start. FINISH extends this to all irreversible actions — committing, pushing, merging, and PR creation. The cost of re-checking is trivial; the cost of acting on a stale assumption is rework or data loss.
+git establishes the re-verification principle: prerequisites are re-verified at point of use, not only at session start. FINISH extends this to all irreversible actions — committing, pushing, merging, and PR creation. The cost of re-checking is trivial; the cost of acting on a stale assumption is rework or data loss.
 
 ---
 
@@ -23,13 +23,13 @@ _git establishes the re-verification principle: prerequisites are re-verified at
 
 When the user selects FINISH after Review (or after a FEEDBACK → Review loop), use AskUserQuestion to present the appropriate options:
 
-**When _git is active (PR exists):**
+**When git is active (PR exists):**
 
 - Merge PR and cleanup (squash merge, delete branch, close issue, remove worktree and empty parent dirs, pull merge into base branch), then compact
 - Merge PR and cleanup only (no compact)
 - Compact only (leave PR open for later)
 
-**When _git is not active (default):**
+**When git is not active (default):**
 
 - Commit and compact
 - Commit only
@@ -77,4 +77,4 @@ A branch can be switched by a concurrent session. A PR can be closed by another 
 - MUST pull the merge into the local base branch after squash merge — keep local and remote in sync
 - Never force-push without explicit user approval
 - Never run `/compact` directly — instruct the user to run it themselves
-- When _git is active, "Merge PR and cleanup" must be a tracked task, not an afterthought
+- When git is active, "Merge PR and cleanup" must be a tracked task, not an afterthought

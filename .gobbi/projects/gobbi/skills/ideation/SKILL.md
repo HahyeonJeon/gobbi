@@ -106,7 +106,7 @@ Use these as a menu of discussion topics to raise with the user via AskUserQuest
 
 After refining an idea, consider whether any remaining decisions are contribution points — judgment calls where the user's domain knowledge would produce a better outcome than agent discretion.
 
-This is distinct from specification gaps (which _discuss resolves). Contribution points arise even after the idea is fully specified, where multiple valid approaches exist and the right choice depends on knowledge the user holds but has not transferred through Q&A.
+This is distinct from specification gaps (which discuss resolves). Contribution points arise even after the idea is fully specified, where multiple valid approaches exist and the right choice depends on knowledge the user holds but has not transferred through Q&A.
 
 Indicators that a decision is a contribution point:
 

@@ -1,4 +1,4 @@
-# Gotcha: _orchestration
+# Gotcha: orchestration
 
 > **⚠ Deprecated in v0.5.0** — see [ARCHIVED.md](ARCHIVED.md) for historical reference.
 > Workflow control now lives in the CLI's step specs; see [`design/v050-overview.md`](../../project/gobbi/design/v050-overview.md).
@@ -50,7 +50,7 @@ priority: high
 
 **User feedback:** Write notes in every workflow cycle.
 
-**Correct approach:** Load _note during Step 5 (Collection). Write notes to the appropriate subdirectories: `ideation/`, `plan/`, `research/`, `execution/`, `review/`. Context disappears after the session — notes are the permanent record.
+**Correct approach:** Load note during Step 5 (Collection). Write notes to the appropriate subdirectories: `ideation/`, `plan/`, `research/`, `execution/`, `review/`. Context disappears after the session — notes are the permanent record.
 
 ---
 
@@ -256,11 +256,11 @@ priority: high
 
 **Priority:** High
 
-**What happened:** The orchestrator wrote note files (ideation.md, plan.md, subtask JSON, evaluation files) to incorrect paths — sometimes to the project root instead of the note directory, sometimes to a sibling step's subdirectory, sometimes to a path missing the session-specific note directory prefix. This caused _collection verification to fail (missing expected files) and downstream agents to read stale or empty directories.
+**What happened:** The orchestrator wrote note files (ideation.md, plan.md, subtask JSON, evaluation files) to incorrect paths — sometimes to the project root instead of the note directory, sometimes to a sibling step's subdirectory, sometimes to a path missing the session-specific note directory prefix. This caused collection verification to fail (missing expected files) and downstream agents to read stale or empty directories.
 
 **User feedback:** Notes are ending up in the wrong path.
 
-**Correct approach:** All note files must be written under the task's note directory initialized by `gobbi note init`. The path format is `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/{YYYYMMDD-HHMM}-{slug}-{session_id}/`. Each step writes to its own subdirectory within this path: `ideation/`, `plan/`, `research/`, `execution/`, `review/`. Always use the note directory path returned by `gobbi note init` as the base — never construct note paths manually or use relative paths. When _git is active, notes must go to the main tree's absolute path, not the worktree.
+**Correct approach:** All note files must be written under the task's note directory initialized by `gobbi note init`. The path format is `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/note/{YYYYMMDD-HHMM}-{slug}-{session_id}/`. Each step writes to its own subdirectory within this path: `ideation/`, `plan/`, `research/`, `execution/`, `review/`. Always use the note directory path returned by `gobbi note init` as the base — never construct note paths manually or use relative paths. When git is active, notes must go to the main tree's absolute path, not the worktree.
 
 ---
 

@@ -28,7 +28,7 @@
  *
  * The closed `SkillName` union lists only the nine skills that v0.5.0 keeps
  * as domain-knowledge materials per `v050-prompts.md` §Skills That Survive.
- * Workflow-control skills (`_orchestration`, `_plan`, `_ideation`, etc.) do
+ * Workflow-control skills (`orchestration`, `plan`, `ideation`, etc.) do
  * NOT appear in this union — their content is translated into step specs,
  * not loaded as materials.
  *
@@ -90,15 +90,15 @@ const REPO_ROOT = resolve(THIS_DIR, '..', '..', '..', '..');
 // ---------------------------------------------------------------------------
 
 export type SkillName =
-  | '_agents'
-  | '_claude'
-  | '_git'
-  | '_gobbi-cli'
-  | '_gotcha'
-  | '_notification'
-  | '_project'
-  | '_rules'
-  | '_skills';
+  | 'agents-doc'
+  | 'claude'
+  | 'git'
+  | 'gobbi-cli'
+  | 'gotcha'
+  | 'notification'
+  | 'project-doc'
+  | 'rules-doc'
+  | 'skills-doc';
 
 /**
  * The canonical list of v0.5.0 surviving skill names. The loader uses this
@@ -106,15 +106,15 @@ export type SkillName =
  * lockstep with the `SkillName` union above.
  */
 export const SKILL_NAMES: readonly SkillName[] = [
-  '_agents',
-  '_claude',
-  '_git',
-  '_gobbi-cli',
-  '_gotcha',
-  '_notification',
-  '_project',
-  '_rules',
-  '_skills',
+  'agents-doc',
+  'claude',
+  'git',
+  'gobbi-cli',
+  'gotcha',
+  'notification',
+  'project-doc',
+  'rules-doc',
+  'skills-doc',
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -253,7 +253,7 @@ async function loadOneSkill(
 //
 //   | Document | Covers |
 //   |----------|--------|
-//   | [gotchas.md](gotchas.md) | Known mistakes and corrections for _git |
+//   | [gotchas.md](gotchas.md) | Known mistakes and corrections for git |
 //
 // Some tables also point at sibling skills (`[../../_rules](...)`) or at
 // subdirectories (`[evaluation/](evaluation/README.md)`). The discovery
@@ -288,7 +288,7 @@ export function extractChildDocFilenames(skillMdContent: string): readonly strin
 
   // The table runs from the heading until the next horizontal rule (`---`)
   // or the end of the file. Sections below the table (e.g. Core Principle)
-  // always start with `---` per the project's `_claude` writing standard.
+  // always start with `---` per the project's `claude` writing standard.
   const afterHeading = skillMdContent.slice(headingIndex);
   const tableEnd = findTableEnd(afterHeading);
   const tableText = afterHeading.slice(0, tableEnd);

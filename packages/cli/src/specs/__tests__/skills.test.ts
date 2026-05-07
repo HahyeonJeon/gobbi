@@ -54,37 +54,37 @@ afterEach(() => {
 // ===========================================================================
 
 describe('loadSkills — real skill tree', () => {
-  test('loads _gotcha SKILL.md with a stable id and non-empty content', async () => {
+  test('loads gotcha SKILL.md with a stable id and non-empty content', async () => {
     const sections = await loadSkills({
-      skillNames: ['_gotcha'],
+      skillNames: ['gotcha'],
       skillsRoot: REAL_SKILLS_ROOT,
     });
 
     // At minimum the main SKILL.md must be present.
-    const main = sections.find((s) => s.id === 'skills._gotcha');
+    const main = sections.find((s) => s.id === 'skills.gotcha');
     expect(main).toBeDefined();
     expect(main?.content.length).toBeGreaterThan(0);
     expect(main?.content).toContain('gotcha'); // sanity-check real content
   });
 
-  test('discovers at least one child doc from _gotcha "Navigate deeper" table', async () => {
+  test('discovers at least one child doc from gotcha "Navigate deeper" table', async () => {
     const sections = await loadSkills({
-      skillNames: ['_gotcha'],
+      skillNames: ['gotcha'],
       skillsRoot: REAL_SKILLS_ROOT,
     });
 
-    // _gotcha's SKILL.md lists __system.md, __security.md, evaluation.md,
+    // gotcha's SKILL.md lists system.md, security.md, evaluation.md,
     // project-gotcha.md, and skills-gotcha.md in its table. The real tree
     // includes all five — assert the loader picked them up.
     const childIds = sections
-      .filter((s) => s.id !== 'skills._gotcha')
+      .filter((s) => s.id !== 'skills.gotcha')
       .map((s) => s.id);
 
-    expect(childIds).toContain('skills._gotcha.__system');
-    expect(childIds).toContain('skills._gotcha.__security');
-    expect(childIds).toContain('skills._gotcha.evaluation');
-    expect(childIds).toContain('skills._gotcha.project-gotcha');
-    expect(childIds).toContain('skills._gotcha.skills-gotcha');
+    expect(childIds).toContain('skills.gotcha.system');
+    expect(childIds).toContain('skills.gotcha.security');
+    expect(childIds).toContain('skills.gotcha.evaluation');
+    expect(childIds).toContain('skills.gotcha.project-gotcha');
+    expect(childIds).toContain('skills.gotcha.skills-gotcha');
   });
 
   test('loads the nine surviving skills without throwing', async () => {
@@ -106,20 +106,20 @@ describe('loadSkills — real skill tree', () => {
       skillsRoot: REAL_SKILLS_ROOT,
     });
 
-    const idPattern = /^skills\.(_[a-z-]+)(?:\.[A-Za-z0-9_-]+)?$/;
+    const idPattern = /^skills\.([a-z][a-z0-9-]*)(?:\.[A-Za-z0-9_-]+)?$/;
     for (const s of sections) {
       expect(s.id).toMatch(idPattern);
     }
   });
 
-  test('_claude main section content mentions the Chain-of-Docs principle', async () => {
+  test('claude main section content mentions the Chain-of-Docs principle', async () => {
     // Content-sanity check: loader passes file bytes through verbatim.
     const sections = await loadSkills({
-      skillNames: ['_claude'],
+      skillNames: ['claude'],
       skillsRoot: REAL_SKILLS_ROOT,
     });
 
-    const main = sections.find((s) => s.id === 'skills._claude');
+    const main = sections.find((s) => s.id === 'skills.claude');
     expect(main?.content).toContain('Chain-of-Docs');
   });
 });
@@ -162,13 +162,13 @@ describe('loadSkills — ordering', () => {
 
   test('within a skill, main SKILL.md section comes before children', async () => {
     const sections = await loadSkills({
-      skillNames: ['_gotcha'],
+      skillNames: ['gotcha'],
       skillsRoot: REAL_SKILLS_ROOT,
     });
 
-    const mainIndex = sections.findIndex((s) => s.id === 'skills._gotcha');
+    const mainIndex = sections.findIndex((s) => s.id === 'skills.gotcha');
     const firstChildIndex = sections.findIndex((s) =>
-      s.id.startsWith('skills._gotcha.'),
+      s.id.startsWith('skills.gotcha.'),
     );
 
     expect(mainIndex).toBeGreaterThanOrEqual(0);
@@ -177,12 +177,12 @@ describe('loadSkills — ordering', () => {
 
   test('children within a skill are alphabetically ordered', async () => {
     const sections = await loadSkills({
-      skillNames: ['_gotcha'],
+      skillNames: ['gotcha'],
       skillsRoot: REAL_SKILLS_ROOT,
     });
 
     const childIds = sections
-      .filter((s) => s.id.startsWith('skills._gotcha.'))
+      .filter((s) => s.id.startsWith('skills.gotcha.'))
       .map((s) => s.id);
 
     const sorted = [...childIds].sort();
@@ -191,11 +191,11 @@ describe('loadSkills — ordering', () => {
 
   test('duplicate skill names in input produce a single set of sections', async () => {
     const sections = await loadSkills({
-      skillNames: ['_gotcha', '_gotcha', '_gotcha'],
+      skillNames: ['gotcha', 'gotcha', 'gotcha'],
       skillsRoot: REAL_SKILLS_ROOT,
     });
 
-    const mainOccurrences = sections.filter((s) => s.id === 'skills._gotcha');
+    const mainOccurrences = sections.filter((s) => s.id === 'skills.gotcha');
     expect(mainOccurrences.length).toBe(1);
   });
 });
@@ -208,7 +208,7 @@ describe('loadSkills — missing files', () => {
   test('non-existent skill is skipped, not thrown', async () => {
     // Point skillsRoot at a non-existent directory so every skill read fails.
     const sections = await loadSkills({
-      skillNames: ['_gotcha'],
+      skillNames: ['gotcha'],
       skillsRoot: '/tmp/gobbi-definitely-not-a-real-path-2026',
     });
 
@@ -223,11 +223,11 @@ describe('loadSkills — missing files', () => {
     // name against a non-existent root and confirm the mix of behaviour
     // in two separate calls.
     const present = await loadSkills({
-      skillNames: ['_gotcha'],
+      skillNames: ['gotcha'],
       skillsRoot: REAL_SKILLS_ROOT,
     });
     const absent = await loadSkills({
-      skillNames: ['_gotcha'],
+      skillNames: ['gotcha'],
       skillsRoot: '/tmp/gobbi-definitely-not-a-real-path-2026',
     });
 
@@ -288,7 +288,7 @@ describe('extractChildDocFilenames', () => {
 
 | Document | Covers |
 |----------|--------|
-| [_rules](../../_rules) | Sibling skill |
+| [rules-doc](../../rules-doc) | Sibling skill |
 | [gotchas.md](gotchas.md) | Real child |
 
 ---
@@ -399,15 +399,15 @@ describe('type-level: SkillName', () => {
     // This test is primarily a compile-time assertion — if a name is
     // removed from the union the line fails to compile.
     const known: readonly SkillName[] = [
-      '_agents',
-      '_claude',
-      '_git',
-      '_gobbi-cli',
-      '_gotcha',
-      '_notification',
-      '_project',
-      '_rules',
-      '_skills',
+      'agents-doc',
+      'claude',
+      'git',
+      'gobbi-cli',
+      'gotcha',
+      'notification',
+      'project-doc',
+      'rules-doc',
+      'skills-doc',
     ];
     expect(known.length).toBe(9);
   });

@@ -28,7 +28,7 @@ The discoverability argument compounds the safety argument. The next session's `
 
 | Section | Purpose |
 |---------|---------|
-| `meta` | Orchestrator-only step: no `allowedAgentTypes`, `maxParallelAgents: 0`, required skill `_project`, optional `_claude`, expected artifact `handoff.md`, completion signal `Stop` |
+| `meta` | Orchestrator-only step: no `allowedAgentTypes`, `maxParallelAgents: 0`, required skill `project-doc`, optional `claude`, expected artifact `handoff.md`, completion signal `Stop` |
 | `transitions` | One exit edge — unconditional `always` routes to the terminal `done` lifecycle state |
 | `delegation.agents` | Empty array — Handoff does not spawn subagents |
 | `tokenBudget` | `staticPrefix: 0.4, session: 0.1, instructions: 0.2, artifacts: 0.2, materials: 0.1` — narrower artifacts slot than memorization (handoff reads one source, not the full session) |

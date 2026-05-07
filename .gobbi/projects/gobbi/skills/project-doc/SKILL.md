@@ -44,7 +44,7 @@ All projects must follow this structure:
   design/               — project design and architecture
   rules/                — project-specific rules and conventions
   gotchas/              — project-specific gotchas (not cross-project)
-  note/                 — workflow notes per task (managed by _note)
+  note/                 — workflow notes per task (managed by note)
   reference/            — external references, API docs, research
   docs/                 — other project documents
 ```
@@ -85,7 +85,7 @@ Not every project needs every subdirectory. Create only the directories that hav
 
 **Inconsistent directory structure.** Missing README.md or standard subdirectories breaks agent navigation. Agents rely on the consistent structure to decide what to read.
 
-**Project gotchas in _gotcha.** Project-specific gotchas must go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`, not in the cross-project gotcha skill. Mixing them pollutes the cross-project knowledge base with project-specific content.
+**Project gotchas in gotcha.** Project-specific gotchas must go in `$CLAUDE_PROJECT_DIR/.claude/project/{project-name}/gotchas/`, not in the cross-project gotcha skill. Mixing them pollutes the cross-project knowledge base with project-specific content.
 
 ### Should Avoid
 

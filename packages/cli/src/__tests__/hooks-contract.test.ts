@@ -30,8 +30,8 @@
  *     no real session — the test only needs to inspect the emitted JSON
  *     shape on the fail-open allow path.
  *
- * @see `_gotcha/__system.md` §"Claude Code hookSpecificOutput requires hookEventName"
- * @see `_gotcha/__system.md` §".claude/settings.json hook command names MUST exist in the CLI registry"
+ * @see `gotcha/system.md` §"Claude Code hookSpecificOutput requires hookEventName"
+ * @see `gotcha/system.md` §".claude/settings.json hook command names MUST exist in the CLI registry"
  */
 
 import { afterEach, beforeEach, describe, expect, test } from 'bun:test';

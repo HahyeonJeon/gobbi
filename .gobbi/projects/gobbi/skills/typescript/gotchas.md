@@ -1,4 +1,4 @@
-# Gotcha: _typescript
+# Gotcha: typescript
 
 TypeScript-flag interactions, JSDoc parser traps, event-store seeding shapes, codegen lifecycle, `bun:sqlite` generic contracts, and empty-object typing misconceptions. Load alongside `typescript/SKILL.md` before writing or reviewing any `packages/cli/src/**/*.ts` file.
 

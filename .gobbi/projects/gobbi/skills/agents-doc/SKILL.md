@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 # Agent Definitions
 
-Reference for understanding agent definition structure and interactive guide for creating new agents through discussion. Load this skill when creating, reviewing, or modifying `.claude/agents/` files. Read existing agent definitions in `.claude/agents/` for real patterns — they are the source of truth. Must load _claude and _discuss before using this skill.
+Reference for understanding agent definition structure and interactive guide for creating new agents through discussion. Load this skill when creating, reviewing, or modifying `.claude/agents/` files. Read existing agent definitions in `.claude/agents/` for real patterns — they are the source of truth. Must load claude and discuss before using this skill.
 
 **Navigate deeper from here:**
 
@@ -48,7 +48,7 @@ Gobbi already provides agents for orchestration (`gobbi-agent`), evaluation (`sk
 
 The structure of an agent definition establishes identity, context, and quality expectations — in that order.
 
-**Frontmatter** — Required fields: `name`, `description`, `tools` (scoped to what the agent actually needs). Model assignments are defined in each agent's YAML frontmatter — refer to the actual agent files in `.claude/agents/` for current assignments rather than maintaining a separate list here. The orchestrator can override via the Agent tool's model parameter when a specific task warrants a different tier — see _delegation's model selection guidance. The `description` field is critical — it answers "when should the orchestrator send work here?" If two agents' descriptions match the same task, boundaries need sharpening.
+**Frontmatter** — Required fields: `name`, `description`, `tools` (scoped to what the agent actually needs). Model assignments are defined in each agent's YAML frontmatter — refer to the actual agent files in `.claude/agents/` for current assignments rather than maintaining a separate list here. The orchestrator can override via the Agent tool's model parameter when a specific task warrants a different tier — see delegation's model selection guidance. The `description` field is critical — it answers "when should the orchestrator send work here?" If two agents' descriptions match the same task, boundaries need sharpening.
 
 **Identity within 20 lines** — The opening paragraph establishes who the agent is ("You are a..."), what it thinks like, and when it receives work. Follow immediately with "Out of scope" — what the agent should NOT do and should defer to other agents.
 
@@ -109,7 +109,7 @@ When creating a new agent, use AskUserQuestion to explore these dimensions. Not 
 
 - **Skills to load** — Which skills should "Before You Start" list? Which are always-load vs load-when-relevant? Is the list minimal — no "just in case" entries?
 - **Project context** — What project docs, rules, and memories does this agent need? Which are always relevant and which are situational?
-- **Model selection** — What model should this agent use? Check current assignments in the agent files in `.claude/agents/`. The orchestrator can override per task — see _delegation's model selection guidance.
+- **Model selection** — What model should this agent use? Check current assignments in the agent files in `.claude/agents/`. The orchestrator can override per task — see delegation's model selection guidance.
 
 ### Lifecycle Emphasis
 
@@ -139,7 +139,7 @@ The interactive creation process produces a single `.md` file in `.claude/agents
 
 ## Constraints
 
-- Must follow _claude writing principles — principles over procedures, constraints over templates, codebase over examples
+- Must follow claude writing principles — principles over procedures, constraints over templates, codebase over examples
 - Agent definitions describe roles, not task scripts — if it reads like a procedure, revise it
 - Tools scoped to what the agent actually needs — no "just in case" grants
 - Clear domain boundaries — no overlap with existing agents in `.claude/agents/`

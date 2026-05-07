@@ -1,4 +1,4 @@
-# Gotcha: _gobbi-cli
+# Gotcha: gobbi-cli
 
 Common CLI usage mistakes that agents make when interacting with the gobbi CLI.
 

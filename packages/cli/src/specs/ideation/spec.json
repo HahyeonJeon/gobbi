@@ -4,10 +4,10 @@
   "meta": {
     "description": "Ideation — PI agents explore what to do across innovative and best-practice stances, then the orchestrator synthesizes a single direction.",
     "substates": ["discussing", "researching"],
-    "allowedAgentTypes": ["__pi"],
+    "allowedAgentTypes": ["pi"],
     "maxParallelAgents": 2,
-    "requiredSkills": ["_gotcha"],
-    "optionalSkills": ["_claude"],
+    "requiredSkills": ["gotcha"],
+    "optionalSkills": ["claude"],
     "expectedArtifacts": ["innovative.md", "best.md", "ideation.md"],
     "completionSignal": "SubagentStop"
   },

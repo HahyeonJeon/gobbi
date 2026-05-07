@@ -969,7 +969,7 @@ function makeTimeoutSpecsDir(options: MakeTimeoutSpecsOptions): string {
   // schema validator requires. Only `meta.timeoutMs` matters for E.11.
   const meta: Record<string, unknown> = {
     description: 'Ideation test spec',
-    allowedAgentTypes: ['__pi'],
+    allowedAgentTypes: ['pi'],
     maxParallelAgents: 1,
     requiredSkills: [],
     optionalSkills: [],

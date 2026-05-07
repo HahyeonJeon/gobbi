@@ -2,7 +2,7 @@
 
 # Ideation Evaluation
 
-Stage-specific evaluation criteria for ideation output. Load this skill alongside _evaluation when evaluating the result of an ideation step.
+Stage-specific evaluation criteria for ideation output. Load this skill alongside evaluation when evaluating the result of an ideation step.
 
 The ideation output should be a refined, detailed idea — not a vague direction. If you can't plan from it, it's not ready.
 

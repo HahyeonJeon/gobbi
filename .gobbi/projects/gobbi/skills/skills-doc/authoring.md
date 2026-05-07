@@ -1,6 +1,6 @@
 # Skill Authoring
 
-How to write skill content that actually helps agents reason — description craft, instruction writing, content pruning, and failure patterns. Loaded from _skills SKILL.md.
+How to write skill content that actually helps agents reason — description craft, instruction writing, content pruning, and failure patterns. Loaded from skills-doc SKILL.md.
 
 ---
 

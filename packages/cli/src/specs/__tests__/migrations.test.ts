@@ -51,7 +51,7 @@ function v1Spec(): StepSpec {
     version: 1,
     meta: {
       description: 'Migration test fixture',
-      allowedAgentTypes: ['__pi'],
+      allowedAgentTypes: ['pi'],
       maxParallelAgents: 1,
       requiredSkills: [],
       optionalSkills: [],

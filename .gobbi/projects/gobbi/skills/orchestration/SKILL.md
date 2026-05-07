@@ -9,7 +9,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 > **⚠ Deprecated in v0.5.0** — see [ARCHIVED.md](ARCHIVED.md) for historical reference.
 > Workflow control now lives in the CLI's step specs; see [`design/v050-overview.md`](../../project/gobbi/design/v050-overview.md).
 
-You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load _gotcha before proceeding. When loading this skill, also load _note, _evaluation, _discuss, and _delegation — they are needed at every workflow step.
+You are an orchestrator. You must delegate everything to specialist subagents except trivial cases. Must load gotcha before proceeding. When loading this skill, also load note, evaluation, discuss, and delegation — they are needed at every workflow step.
 
 **Navigate deeper from here:**
 
@@ -17,7 +17,7 @@ You are an orchestrator. You must delegate everything to specialist subagents ex
 |----------|--------|
 | [feedback.md](feedback.md) | FEEDBACK phase: lightweight fix cycle after Review, iteration tracking, stagnation detection |
 | [finish.md](finish.md) | FINISH phase: merge/commit/compact decision tree, pre-action verification |
-| [gotchas.md](gotchas.md) | Known mistakes and corrections for _orchestration |
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for orchestration |
 
 ---
 
@@ -58,24 +58,24 @@ Create these tasks at the start of every non-trivial workflow:
 | Step 7 | Review — spawn PI agents (innovative + best), verdict + docs |
 | Phase transition | Ask user: FEEDBACK or FINISH? |
 
-Add FEEDBACK tasks when the user selects FEEDBACK after Review. Add FINISH task when selected. When _git is active, also add a "Merge PR and cleanup" task when the user selects FINISH — merge and cleanup must be a tracked step, not an afterthought.
+Add FEEDBACK tasks when the user selects FEEDBACK after Review. Add FINISH task when selected. When git is active, also add a "Merge PR and cleanup" task when the user selects FINISH — merge and cleanup must be a tracked step, not an afterthought.
 
 ---
 
 
-**Must load at workflow start — these are needed at every step:** _note, _evaluation, _discuss, _delegation
+**Must load at workflow start — these are needed at every step:** note, evaluation, discuss, delegation
 
 **Load at each step:**
 
 | Step | Load Skills |
 |---|---|
-| Step 1. Ideation | _ideation + project-specific evaluation skills |
-| Step 2. Planning | _plan + project-specific evaluation skills |
-| Step 3. Research | _research + project-specific evaluation skills |
-| Step 4. Execution | _delegation |
-| Step 5. Collection | _collection |
-| Step 6. Memorization | _memorization |
-| Step 7. Review | _ideation (for context) |
+| Step 1. Ideation | ideation + project-specific evaluation skills |
+| Step 2. Planning | plan + project-specific evaluation skills |
+| Step 3. Research | research + project-specific evaluation skills |
+| Step 4. Execution | delegation |
+| Step 5. Collection | collection |
+| Step 6. Memorization | memorization |
+| Step 7. Review | ideation (for context) |
 
 **Project-specific evaluation skills** — each step that supports evaluation needs the project's evaluation skills loaded into evaluator agents. Projects define their own evaluation criteria tailored to their domain, tech stack, and quality standards. The orchestrator loads the project's evaluation skills for each step.
 
@@ -151,7 +151,7 @@ Refine the idea only based on what the user agreed to address. When the idea is 
 
 Write ideation.md (orchestrator synthesis), innovative.md and best.md (PI agent outputs) to ideation/. If evaluation was performed, evaluation files go to ideation/evaluation/. Notes must contain full content — complete ideas, trade-offs, and evaluation findings — not summaries.
 
-> **Before moving to Step 2**, consider whether any implementation decisions are contribution points — irreducible user judgment calls that should be resolved via AskUserQuestion before the plan encodes them as constraints. See _ideation.
+> **Before moving to Step 2**, consider whether any implementation decisions are contribution points — irreducible user judgment calls that should be resolved via AskUserQuestion before the plan encodes them as constraints. See ideation.
 
 ### Step 2. Planning
 
@@ -217,21 +217,21 @@ Every executor delegation prompt must include a directive to read the `research/
 
 > **Delegate Claude Code tasks to gobbi-agent.**
 
-Any subtask involving `.claude/` documentation — creating or improving skills, agents, rules, CLAUDE.md, hooks, settings, or project docs — MUST be delegated to `gobbi-agent` with the appropriate skills loaded (_claude, _skills, _agents, _rules, etc.). `gobbi-agent` is the Claude Code specialist. The `executor` handles code implementation; `gobbi-agent` handles Claude Code configuration.
+Any subtask involving `.claude/` documentation — creating or improving skills, agents, rules, CLAUDE.md, hooks, settings, or project docs — MUST be delegated to `gobbi-agent` with the appropriate skills loaded (claude, skills-doc, agents-doc, rules-doc, etc.). `gobbi-agent` is the Claude Code specialist. The `executor` handles code implementation; `gobbi-agent` handles Claude Code configuration.
 
 > **Tell specialists what to do, not how to do it.**
 
-Define the goal, constraints, and what to avoid. Detailed "how" instructions suppress specialist agents' ability and potential. Provide guardrails about what not to do, and message that promotes the specialist's best work — project rules, gotchas, conventions, domain knowledge. See _delegation for the full briefing model.
+Define the goal, constraints, and what to avoid. Detailed "how" instructions suppress specialist agents' ability and potential. Provide guardrails about what not to do, and message that promotes the specialist's best work — project rules, gotchas, conventions, domain knowledge. See delegation for the full briefing model.
 
 - Each subtask must be delegated to a specialist subagent with fresh context.
 - Every subagent prompt must include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary.
-- Every subagent must load _gotcha before starting work.
+- Every subagent must load gotcha before starting work.
 - After each subtask completes, run `gobbi note collect` with the `--phase execution` flag to extract the subagent's record from its transcript. The orchestrator extracts the agent-id from the Agent tool result (returned as `agentId` at the end of the result).
 - If evaluation is performed and fails, fix and re-evaluate before proceeding to the next subtask.
 - After all subtasks complete, write `execution.md` to the `execution/` subdirectory. Subtask JSON files are already on disk from the per-subtask `gobbi note collect` calls.
 - After each wave of parallel agents completes and subtask files are written to disk, review the combined outputs for consistency before launching the next wave. Check for contradictory changes, file overlap between subtasks, and findings that affect subsequent waves. This is a lightweight read-through, not a full evaluation spawn.
 
-> **When _git is active**
+> **When git is active**
 
 Before delegating the first subtask, the orchestrator creates a worktree and branch based on the task's issue. The worktree path is included in every delegation prompt. Subagents cd to the worktree as their first action and commit their verified work before completing. After all subtasks are done, the orchestrator pushes all commits and creates the PR. Notes and gotchas must always be written to the main tree's absolute path — `$CLAUDE_PROJECT_DIR/.claude/project/` is gitignored and does not exist in worktrees.
 
@@ -302,7 +302,7 @@ See [feedback.md](feedback.md) for iteration tracking, stagnation detection, rou
 
 ### FINISH
 
-Wrap the workflow with merge, commit, and/or compact options. The decision tree depends on whether _git is active (PR exists) or not. Use AskUserQuestion to present the appropriate options — never assume which the user wants.
+Wrap the workflow with merge, commit, and/or compact options. The decision tree depends on whether git is active (PR exists) or not. Use AskUserQuestion to present the appropriate options — never assume which the user wants.
 
 > **Before any irreversible operation, verify the expected precondition still holds.**
 
@@ -355,12 +355,12 @@ Omit sections that have nothing to report (e.g., no deferred items, no gotchas).
 - Before evaluation, MUST ask user with AskUserQuestion whether to **skip** evaluation — evaluation is the default at Steps 1–4, the user opts out, not in
 - After evaluation, MUST discuss findings with user via AskUserQuestion before improving — the user decides what to address, defer, or disagree with
 - After EVERY subagent completes, MUST run `gobbi note collect` with the agent-id and --phase flag to extract output to `subtasks/`. Then VERIFY the JSON file was actually created by reading it. Directory existence is NOT collection — directories are empty at init. Only `gobbi note collect` populates them.
-- After delegation, MUST write work docs via _collection — immediately, not deferred
+- After delegation, MUST write work docs via collection — immediately, not deferred
 - After Step 7 (Review), MUST call AskUserQuestion to ask: FEEDBACK or FINISH?
 - After FEEDBACK, MUST return to Review (Step 7) — PI agents re-review
 - After FEEDBACK → Review, MUST call AskUserQuestion to ask: FEEDBACK or FINISH?
 - When evaluation is performed, MUST spawn at least 2 perspective evaluators (Project + Overall minimum). Select additional perspectives (Architecture, Performance, Aesthetics) based on task type.
-- MUST write note via _note at every workflow step — ideation, plan, research, execution, review. Never defer, never skip.
+- MUST write note via note at every workflow step — ideation, plan, research, execution, review. Never defer, never skip.
 - MUST use EnterPlanMode when writing or revising plans
 - When using AskUserQuestion, MUST put the recommended option first with "(Recommended)" in the label — give an opinion, don't just present neutral choices
 - Executors MUST read research materials from the `research/` subdirectory before implementing

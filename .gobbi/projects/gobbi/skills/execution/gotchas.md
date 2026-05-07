@@ -1,4 +1,4 @@
-# Gotcha: _execution
+# Gotcha: execution
 
 Mistakes in task implementation and verification.
 
@@ -44,7 +44,7 @@ Mistakes in task implementation and verification.
 
 **Priority:** Medium
 
-**What happened:** A validate-skill.sh check was added to warn when skill descriptions lack trigger-oriented language. The pattern checked for `Use when`, `MUST load when`, `Use this`, `Load when`, `TRIGGER when`, `Load this` — but existing valid skills use phrases like `Use after` (gobbi-validate) and `Use to` (_note), which weren't in the pattern list. Two of five test skills produced false positives.
+**What happened:** A validate-skill.sh check was added to warn when skill descriptions lack trigger-oriented language. The pattern checked for `Use when`, `MUST load when`, `Use this`, `Load when`, `TRIGGER when`, `Load this` — but existing valid skills use phrases like `Use after` (gobbi-validate) and `Use to` (note), which weren't in the pattern list. Two of five test skills produced false positives.
 
 **User feedback:** Found during orchestrator verification of agent output.
 
@@ -59,7 +59,7 @@ priority: medium
 
 **Priority:** Medium
 
-**What happened:** Renamed `_developer.md` → `__executor.md` (file + frontmatter) mid-session. When delegating via Agent tool with `subagent_type: "__executor"`, the system returned "Agent type '__executor' not found" because the available agents list was loaded at session start and caches the original filenames.
+**What happened:** Renamed `_developer.md` → `executor.md` (file + frontmatter) mid-session. When delegating via Agent tool with `subagent_type: "executor"`, the system returned "Agent type 'executor' not found" because the available agents list was loaded at session start and caches the original filenames.
 
 **User feedback:** Discovered during execution — had to use old name `_developer` for delegation within the same session.
 

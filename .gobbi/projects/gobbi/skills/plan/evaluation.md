@@ -2,7 +2,7 @@
 
 # Plan Evaluation
 
-Stage-specific evaluation criteria for plan output. Load this skill alongside _evaluation when evaluating the result of a planning step.
+Stage-specific evaluation criteria for plan output. Load this skill alongside evaluation when evaluating the result of a planning step.
 
 A plan should be a set of narrow, specific, ordered tasks that a delegator can hand off to specialists without ambiguity. If a task requires the agent to guess, the plan isn't ready.
 

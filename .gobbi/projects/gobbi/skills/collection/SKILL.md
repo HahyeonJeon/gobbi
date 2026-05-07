@@ -12,7 +12,7 @@ Verify that all per-step note files are present and write the task-level `README
 
 | Document | Covers |
 |----------|--------|
-| [gotchas.md](gotchas.md) | Known mistakes and corrections for _collection |
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for collection |
 
 ---
 
@@ -33,13 +33,13 @@ If any required file is missing, report the gap and investigate — do not silen
 
 **README.md writing** — After verification passes, write the top-level `README.md` for the task directory. See the README.md section below for format.
 
-**Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via _gotcha before the cycle closes.
+**Gotcha recording** — Any corrections, surprises, or mistakes discovered during the workflow must be recorded via gotcha before the cycle closes.
 
 ---
 
 ## Where to Write
 
-Task note directories follow the structure defined in _note. Each task directory contains per-step subdirectories:
+Task note directories follow the structure defined in note. Each task directory contains per-step subdirectories:
 
 ```
 {YYYYMMDD-HHMM}-{slug}-{session_id}/
@@ -87,7 +87,7 @@ Collection adapts to what the workflow phase produced.
 
 Verify all three subdirectories: `ideation/`, `plan/`, `execution/`. Check that subtask JSON files exist in `execution/subtasks/`. Check that `evaluation/` subdirectories exist for any step where evaluation was performed.
 
-Subtask JSON files are written via `gobbi note collect` with a `--phase` argument. Collection verifies they exist and conform to the subtask JSON format defined in _note — each file must contain the required fields: `agentId`, `agentType`, `description`, `model`, `effort`, `timestamp`, `delegationPrompt`, `finalResult`. Collection does not create these files.
+Subtask JSON files are written via `gobbi note collect` with a `--phase` argument. Collection verifies they exist and conform to the subtask JSON format defined in note — each file must contain the required fields: `agentId`, `agentType`, `description`, `model`, `effort`, `timestamp`, `delegationPrompt`, `finalResult`. Collection does not create these files.
 
 ### After FEEDBACK
 
@@ -111,11 +111,11 @@ This complements per-agent Memorize steps by capturing orchestrator-level insigh
 
 **Capture categories:**
 
-- **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via _gotcha.
+- **Gotchas** — mistakes or wrong assumptions corrected during the session. Record via gotcha.
 - **CLAUDE.md additions** — conventions or patterns discovered that should persist across sessions. Add as one-line entries to CLAUDE.md.
 - **Skill updates** — behavioral patterns identified that a skill should teach. When a learning is categorized as a skill update, the orchestrator MUST propose a concrete change to the skill rather than merely flagging it for later. This is opt-in: only prompt if skill-update-type learnings were identified during the session. To propose a change:
 
-  - Load _claude and _skills for authoring standards
+  - Load claude and skills-doc for authoring standards
   - Run lint/validation on modified skills (`gobbi validate lint`) to catch anti-patterns before presenting
   - Present proposed changes to user via AskUserQuestion: "Would you like to review proposed skill updates before finishing?"
   - If the user approves, apply the change to the skill file. If the user defers, persist the proposed change as a note in the task directory so future sessions can act on it.

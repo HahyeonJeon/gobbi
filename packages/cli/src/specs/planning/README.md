@@ -20,7 +20,7 @@ Planning exits to `planning_eval` when the user enabled planning evaluation at s
 
 | Section | Purpose |
 |---------|---------|
-| `meta` | Orchestrator-only step: no `allowedAgentTypes`, `maxParallelAgents: 0`, required skill `_gotcha`, expected artifact `plan.md`, completion signal `Stop` |
+| `meta` | Orchestrator-only step: no `allowedAgentTypes`, `maxParallelAgents: 0`, required skill `gotcha`, expected artifact `plan.md`, completion signal `Stop` |
 | `transitions` | Exit edges — one to `execution` (eval skipped), one to `planning_eval` (eval enabled) |
 | `delegation.agents` | Empty array — Plan does not spawn subagents |
 | `tokenBudget` | `artifacts` slot raised to 0.2 — prior ideation artifacts are inlined for the orchestrator to plan against |

@@ -47,9 +47,9 @@ function makeSpec(agents: readonly AgentConfig[]): StepSpec {
     version: 1,
     meta: {
       description: 'Agent-routing fixture step',
-      allowedAgentTypes: ['__pi'],
+      allowedAgentTypes: ['pi'],
       maxParallelAgents: 2,
-      requiredSkills: ['_gotcha'],
+      requiredSkills: ['gotcha'],
       optionalSkills: [],
       expectedArtifacts: ['fixture.md'],
       completionSignal: 'SubagentStop',

@@ -1,4 +1,4 @@
-# Gotcha: _note
+# Gotcha: note
 
 Mistakes in note writing, directory structure, and timing.
 

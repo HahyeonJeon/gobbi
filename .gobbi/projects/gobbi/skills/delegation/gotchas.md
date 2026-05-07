@@ -1,4 +1,4 @@
-# Gotcha: _delegation
+# Gotcha: delegation
 
 Mistakes in subagent briefings, context loading, and scope boundaries.
 

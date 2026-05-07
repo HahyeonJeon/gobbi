@@ -20,7 +20,7 @@ For `execution_eval` revise verdicts, the evaluator specifies a `loopTarget` —
 
 | Section | Purpose |
 |---------|---------|
-| `meta` | Delegation step: `allowedAgentTypes` names the three evaluator agent kinds, `maxParallelAgents: 5`, required skill `_gotcha`, completion signal `SubagentStop`, expected artifacts include the two mandatory perspectives plus the synthesis |
+| `meta` | Delegation step: `allowedAgentTypes` names the three evaluator agent kinds, `maxParallelAgents: 5`, required skill `gotcha`, completion signal `SubagentStop`, expected artifacts include the two mandatory perspectives plus the synthesis |
 | `transitions` | Two exit edges — `verdictRevise` back to the preceding step, `verdictPass` forward. The graph-level transitions are per-eval-step (see `index.json`); this spec declares the canonical shape |
 | `delegation.agents` | Two evaluator agents at `sonnet` / `max` — Project and Overall, the minimum two perspectives |
 | `tokenBudget` | `artifacts` slot raised to 0.35 — prior step artifacts drive the evaluation, so they dominate the budget |

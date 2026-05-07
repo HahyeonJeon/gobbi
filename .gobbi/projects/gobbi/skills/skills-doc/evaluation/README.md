@@ -62,7 +62,7 @@ Each dimension provides diagnostic questions that surface the failure modes abov
 
 - Does the frontmatter include `name`, `description`, and `allowed-tools` — with `name` matching the directory and `allowed-tools` scoped to what the skill actually needs?
 - Is the file under the line budget — must stay under 500 lines, should target under 200?
-- Does the file avoid _claude anti-patterns: no code examples, no BAD/GOOD comparisons, no step-by-step recipes in teaching content?
+- Does the file avoid claude anti-patterns: no code examples, no BAD/GOOD comparisons, no step-by-step recipes in teaching content?
 - If child docs exist, does the parent include a "Navigate deeper from here:" table? Are children flat siblings, not nested subdirectories?
 
 ### Integration

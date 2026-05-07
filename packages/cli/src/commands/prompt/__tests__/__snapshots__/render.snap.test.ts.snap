@@ -151,7 +151,7 @@ Write \`plan.md\` with the following structure so Execution and downstream evalu
    - Inputs the task will consume (artifacts, references)
    - Outputs the task will produce (files, commits, tests)
    - Verification — the concrete check that proves the task done
-   - Agent — which agent type executes the task (\`__executor\`, \`_project-evaluator\`, etc.)
+   - Agent — which agent type executes the task (\`executor\`, \`project-evaluator\`, etc.)
 3. \`Dependencies\` — a brief table mapping tasks to prerequisite tasks, if non-trivial.
 4. \`Out-of-scope\` — adjacent work that was considered and deliberately deferred, with a one-line rationale per item. This protects Execution from quietly absorbing deferred work.
 
@@ -206,7 +206,7 @@ The CLI's output is the authoritative record of step completion. No other phrasi
 `;
 
 exports[`renderMarkdown execution markdown render matches snapshot 1`] = `
-"# Execution — run one task at a time from the approved plan, verify against criteria, then move on. Delegates to __executor subagents per task; verification happens between tasks.
+"# Execution — run one task at a time from the approved plan, verify against criteria, then move on. Delegates to executor subagents per task; verification happens between tasks.
 
 ## role
 

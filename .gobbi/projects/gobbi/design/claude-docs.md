@@ -33,8 +33,9 @@ Skills are organized into three top-level categories: **Work** (workflow partici
 | skills-evaluator | `.claude/agents/skills-evaluator.md` | Runs evaluation of skill definitions across all perspectives. |
 | agent-evaluator | `.claude/agents/agent-evaluator.md` | Runs evaluation of agent definitions across all perspectives. |
 | project-evaluator | `.claude/agents/project-evaluator.md` | Runs evaluation of project work output across all perspectives. |
-| __executor | `.claude/agents/executor.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
-| __pi | `.claude/agents/pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation, and task decomposition. |
+| executor | `.claude/agents/executor.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
+| pi | `.claude/agents/pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation, and task decomposition. |
+| researcher | `.claude/agents/researcher.md` | Investigation and research. Explores problem spaces, gathers evidence, and produces research artifacts for downstream steps. |
 
 ### Skills
 
@@ -156,6 +157,10 @@ Skill directory names and agent filenames use **hyphens as word separators** wit
 ### Gotcha System
 
 Cross-cutting gotcha files live in `gotcha/` (`gotcha/system.md`, `gotcha/security.md`). Skill-specific gotchas colocate with their skill at `{skill-name}/gotchas.md`. Guidance on how to record each type of gotcha lives as child docs inside `gotcha/`.
+
+### Plugin Registration
+
+`executor`, `pi`, and `researcher` are orchestrator-internal agents — they are spawned by the orchestrator as delegation targets, not invoked directly by users. They are intentionally not registered in `plugins/gobbi/.claude-plugin/plugin.json`. Only user-invokable agents (`gobbi-agent`, `agent-evaluator`, `project-evaluator`, `skills-evaluator`) appear in the plugin manifest.
 
 ### Pending Decisions
 

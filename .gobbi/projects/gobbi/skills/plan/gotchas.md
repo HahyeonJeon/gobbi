@@ -1,4 +1,4 @@
-# Gotcha: _plan
+# Gotcha: plan
 
 Mistakes in planning and task decomposition.
 

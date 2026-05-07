@@ -2,11 +2,11 @@
   "$schema": "https://gobbi.dev/schemas/step-spec/v1.json",
   "version": 1,
   "meta": {
-    "description": "Execution — run one task at a time from the approved plan, verify against criteria, then move on. Delegates to __executor subagents per task; verification happens between tasks.",
-    "allowedAgentTypes": ["__executor"],
+    "description": "Execution — run one task at a time from the approved plan, verify against criteria, then move on. Delegates to executor subagents per task; verification happens between tasks.",
+    "allowedAgentTypes": ["executor"],
     "maxParallelAgents": 1,
-    "requiredSkills": ["_gotcha", "_execution"],
-    "optionalSkills": ["_claude", "_git", "_project"],
+    "requiredSkills": ["gotcha", "execution"],
+    "optionalSkills": ["claude", "git", "project-doc"],
     "expectedArtifacts": ["execution.md"],
     "completionSignal": "SubagentStop"
   },

@@ -31,7 +31,7 @@
  * read has nothing to consult. The guard was therefore removed in
  * T-2a.1.5; the command runs unconditionally.
  *
- * ## Destination convention (`_gotcha/project-gotcha.md`)
+ * ## Destination convention (`gotcha/project-gotcha.md`)
  *
  * Both destinations live under the per-project layout shipped by the
  * v0.5.0 Pass-2 W3.1 migration. Skill-scoped writes go through the W3.2
@@ -59,7 +59,7 @@
  * legacy SQLite index never carried a typed class either. A future
  * frontmatter-aware promote can populate `class` without a schema change.
  * `promotedFromSession` reads `$CLAUDE_SESSION_ID` (the canonical session
- * ID env var per `_gotcha/session-id-discovery.md`); when absent the
+ * ID env var per `gotcha/session-id-discovery.md`); when absent the
  * literal string `'unknown'` is used so the AJV `minLength: 1` constraint
  * holds.
  *
@@ -77,8 +77,8 @@
  * merge review.
  *
  * @see `.gobbi/projects/gobbi/design/v050-cli.md` §`gobbi gotcha` commands
- * @see `.claude/skills/_gotcha/SKILL.md`
- * @see `.claude/skills/_gotcha/project-gotcha.md`
+ * @see `.claude/skills/gotcha/SKILL.md`
+ * @see `.claude/skills/gotcha/project-gotcha.md`
  * @see ../../lib/json-memory.ts §`upsertProjectGotcha`
  */
 
@@ -500,7 +500,7 @@ function classifyGotcha(): string {
  * to the literal string `'unknown'` rather than the empty string so the
  * `project.json` AJV `minLength: 1` constraint holds.
  *
- * @see `_gotcha/session-id-discovery.md` for the canonical env-var name.
+ * @see `gotcha/session-id-discovery.md` for the canonical env-var name.
  */
 function resolvePromotedFromSession(): string {
   const envSessionId = process.env['CLAUDE_SESSION_ID'];

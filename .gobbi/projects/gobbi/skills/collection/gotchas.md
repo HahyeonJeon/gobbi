@@ -1,4 +1,4 @@
-# Gotcha: _collection
+# Gotcha: collection
 
 Mistakes in work trail persistence, README indexing, and subtask file management.
 
@@ -20,7 +20,7 @@ Mistakes in work trail persistence, README indexing, and subtask file management
 
 **Priority:** High
 
-**What happened:** During the _git skill creation, a developer agent created `gotcha/git.md` as specified. However, the agent did not update the navigation table in `gotcha/SKILL.md` to include the new file. The critical evaluator caught this — an unlisted gotcha file is invisible to agents scanning the table for relevant gotchas before starting work.
+**What happened:** During the git skill creation, a developer agent created `gotcha/git.md` as specified. However, the agent did not update the navigation table in `gotcha/SKILL.md` to include the new file. The critical evaluator caught this — an unlisted gotcha file is invisible to agents scanning the table for relevant gotchas before starting work.
 
 **User feedback:** (Caught by critical evaluator during execution evaluation)
 

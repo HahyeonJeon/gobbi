@@ -1,6 +1,6 @@
 # Skill Verification
 
-Concepts and evaluation agents for verifying skill quality — trigger accuracy, output quality, improvement loops, and blind comparison. Loaded from _skills SKILL.md.
+Concepts and evaluation agents for verifying skill quality — trigger accuracy, output quality, improvement loops, and blind comparison. Loaded from skills-doc SKILL.md.
 
 
 
@@ -34,7 +34,7 @@ Dimensions for evaluating output quality:
 
 - **Mental model accuracy** — Does the skill teach how things work and why, or does it just list rules? An agent that understands the mental model adapts to novel situations. An agent that memorized rules breaks when the situation doesn't match.
 - **Sufficient context** — Does the skill give the agent enough context to make decisions without reading every child doc? The parent should provide the mental model; children provide depth. An agent shouldn't need to read three files to understand the basics.
-- **Anti-pattern compliance** — Does the skill follow _claude writing principles? No code examples, no BAD/GOOD blocks, no step-by-step recipes in teaching content. These anti-patterns cause agents to mimic instead of reason.
+- **Anti-pattern compliance** — Does the skill follow claude writing principles? No code examples, no BAD/GOOD blocks, no step-by-step recipes in teaching content. These anti-patterns cause agents to mimic instead of reason.
 - **Actionable specificity** — Are principles specific enough to guide behavior, or so abstract that an agent can't derive concrete actions? "Write good documentation" is too vague. "Each file opens with purpose and scope so agents know whether to read further" is actionable.
 
 ---
@@ -69,7 +69,7 @@ After the comparator delivers its verdict, the invoker maps A/B back to current/
 
 One agent executes skill verification across all verification roles:
 
-**_skills-evaluator** is loaded with different `skills-doc/evaluation/{perspective}.md` skills depending on the evaluation focus. For grading, load the perspective skills relevant to the skill domain being assessed. For analysis, load `skills-doc/evaluation/overall.md` to synthesize results into prioritized improvements. For blind comparison, load the perspective skills and instruct the agent to evaluate both versions without provenance labels. The data flow is: grading results and comparison verdicts are synthesized by the evaluator into prioritized recommendations.
+**skills-evaluator** is loaded with different `skills-doc/evaluation/{perspective}.md` skills depending on the evaluation focus. For grading, load the perspective skills relevant to the skill domain being assessed. For analysis, load `skills-doc/evaluation/overall.md` to synthesize results into prioritized improvements. For blind comparison, load the perspective skills and instruct the agent to evaluate both versions without provenance labels. The data flow is: grading results and comparison verdicts are synthesized by the evaluator into prioritized recommendations.
 
 ---
 

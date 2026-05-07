@@ -156,9 +156,9 @@ dynamic.activeSubagentCount=1"
 `;
 
 exports[`execution — compile snapshots skill-injection — folded Overall C1 seam: CompileInput.skillSections flows through compile() 1`] = `
-"skills._gotcha fixture: check project gotchas before acting. If you repeat a recorded mistake, the correction was recorded for a reason.
+"skills.gotcha fixture: check project gotchas before acting. If you repeat a recorded mistake, the correction was recorded for a reason.
 
-skills._execution fixture: study before acting, plan before coding, verify before reporting done. One task, one focus.
+skills.execution fixture: study before acting, plan before coding, verify before reporting done. One task, one focus.
 
 You are the orchestrator of the Execution step. Your job is to run the approved plan one task at a time, verifying each task before the next begins, until the plan is complete or a failure surfaces that requires feedback.
 

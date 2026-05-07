@@ -1,4 +1,4 @@
-# _orchestration — Archived (deprecated in v0.5.0)
+# orchestration — Archived (deprecated in v0.5.0)
 
 > Historical reference for gobbi v0.4.x's skill-based 7-step orchestration.
 > The skill remains on disk (per CP6) but is no longer loaded by the v0.5.0

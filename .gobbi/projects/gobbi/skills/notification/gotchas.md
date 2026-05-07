@@ -1,4 +1,4 @@
-# Gotcha: _notification
+# Gotcha: notification
 
 Mistakes in configuring Claude Code notification hooks and credentials.
 

@@ -52,7 +52,7 @@ Identify what documentation is needed and in what order.
 
 ### Execute
 
-Write documentation interactively, following the _claude writing standard.
+Write documentation interactively, following the claude writing standard.
 
 - Use AskUserQuestion at every decision point — scope, naming, content boundaries
 - Write project-specific content with concrete domain knowledge — "check for N+1 queries in Django ORM" not "check performance"

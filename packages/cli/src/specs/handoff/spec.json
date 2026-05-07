@@ -5,8 +5,8 @@
     "description": "Handoff — read the just-written memorization artifact and the session's terminal-state record, then write a tight hand-off note for the next session. Last productive step; the workflow transitions to done after it completes.",
     "allowedAgentTypes": [],
     "maxParallelAgents": 0,
-    "requiredSkills": ["_project"],
-    "optionalSkills": ["_claude"],
+    "requiredSkills": ["project-doc"],
+    "optionalSkills": ["claude"],
     "expectedArtifacts": ["handoff.md"],
     "completionSignal": "Stop"
   },

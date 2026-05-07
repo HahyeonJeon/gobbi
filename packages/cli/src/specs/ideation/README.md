@@ -42,7 +42,7 @@ Callers reading state at compile time should honor `state.currentSubstate` when 
 
 ## PI agents
 
-Both agents use the same infrastructure (opus, max effort, no extra skill injection beyond `meta.requiredSkills: ["_gotcha"]`) but receive distinct prompt bodies via `blocks.delegation.pi.innovative` and `blocks.delegation.pi.best`.
+Both agents use the same infrastructure (opus, max effort, no extra skill injection beyond `meta.requiredSkills: ["gotcha"]`) but receive distinct prompt bodies via `blocks.delegation.pi.innovative` and `blocks.delegation.pi.best`.
 
 The stance is encoded in the delegation block content, not in an agent flag. This matches the [`v050-prompts.md` §Stances as CLI-Managed Configuration](../../../../../.claude/project/gobbi/design/v050-prompts.md) principle: stances are configuration the CLI writes into the prompt, not guidance the orchestrator discovers at runtime.
 

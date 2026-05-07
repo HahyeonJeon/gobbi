@@ -12,7 +12,7 @@ Hand off work to subagents so they succeed on the first attempt. Load this skill
 
 | Document | Covers |
 |----------|--------|
-| [gotchas.md](gotchas.md) | Known mistakes and corrections for _delegation |
+| [gotchas.md](gotchas.md) | Known mistakes and corrections for delegation |
 
 ---
 
@@ -74,7 +74,7 @@ Every subagent needs three layers of context:
 - Existing code in the area they'll modify — the codebase is the source of truth for patterns
 - Research materials from the `ideation/` subdirectory — when delegating execution tasks after Ideation investigation, include the path to the investigation findings so executors can read them during their Study phase. Research materials are guidance, not prescriptions — executors use them to make better-informed decisions but are not bound by the investigators' conclusions
 
-**Load when _git is active:**
+**Load when git is active:**
 
 - Current branch and worktree path — so the subagent knows where it's working and can verify branch state before committing
 - Recent commit history relevant to the task area — files the task will modify, so the subagent understands what has already changed in this session
@@ -142,7 +142,7 @@ Review is assessment, not creation. When the orchestrator spawns any subagent fo
 
 **When to include exploration context** — If the plan was preceded by multi-perspective exploration, include the synthesized findings in every delegation prompt. Exploration findings are context, not constraints — the subagent uses them to make better-informed decisions but is not bound by the explorers' conclusions. If no exploration was performed, the subagent discovers context during Study as usual.
 
-**When to include pre-resolved decisions** — When contribution points were resolved during ideation (via _ideation's contribution-point mechanism), encode those resolutions as explicit constraints in the delegation prompt. This differs from scope boundaries: scope says what not to touch; pre-resolved decisions say which implementation choices the user has already made and the subagent must honor. A subagent that re-opens a settled decision wastes context and risks contradicting the user's intent.
+**When to include pre-resolved decisions** — When contribution points were resolved during ideation (via ideation's contribution-point mechanism), encode those resolutions as explicit constraints in the delegation prompt. This differs from scope boundaries: scope says what not to touch; pre-resolved decisions say which implementation choices the user has already made and the subagent must honor. A subagent that re-opens a settled decision wastes context and risks contradicting the user's intent.
 
 ---
 
@@ -158,7 +158,7 @@ The orchestrator delegates to these agent types. Each has a distinct role in the
 | `skills-evaluator` | Structured assessment — evaluates skill documentation quality | After skill authoring when evaluation is requested. | Sonnet |
 | `project-evaluator` | Structured assessment — evaluates project alignment and conventions | After any step when project-perspective evaluation is requested. | Sonnet |
 | `executor` | "Do it" — code implementation, file changes, concrete deliverables | Execution step. Reads investigation findings for direction, then implements with engineering judgment. Commits verified work. | Opus |
-| `gobbi-agent` | Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks | Execution step for any subtask involving `.claude/` configuration. Loaded with _claude, _skills, _agents, _rules as needed. | Sonnet |
+| `gobbi-agent` | Claude Code specialist — `.claude/` documentation, skills, agents, rules, hooks | Execution step for any subtask involving `.claude/` configuration. Loaded with claude, skills-doc, agents-doc, rules-doc as needed. | Sonnet |
 
 Creative agents (PI, researcher) and implementation agents (executor) run at opus. Evaluators and gobbi-agent run at sonnet — they follow structured criteria and established patterns, not creative reasoning. See Model Selection for the full assignment table.
 

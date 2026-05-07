@@ -93,7 +93,7 @@ function loadSpec(): StepSpec {
 //     entry in `state.artifacts.ideation`.
 //   - `piAgentsToSpawn` — the orchestrator has registered PI agents in
 //     `activeSubagents` and is about to dispatch. Reads the presence of at
-//     least one `__pi` entry in state.activeSubagents.
+//     least one `pi` entry in state.activeSubagents.
 // ---------------------------------------------------------------------------
 
 const predicates: CompilePredicateRegistry = defaultPredicates;
@@ -172,13 +172,13 @@ function subagentSpawningFixture(spec: StepSpec): CompileInput {
     activeSubagents: [
       {
         subagentId: 'subagent-pi-innovative',
-        agentType: '__pi',
+        agentType: 'pi',
         step: 'ideation',
         spawnedAt: FIXED_TIMESTAMP,
       },
       {
         subagentId: 'subagent-pi-best',
-        agentType: '__pi',
+        agentType: 'pi',
         step: 'ideation',
         spawnedAt: FIXED_TIMESTAMP,
       },
@@ -226,7 +226,7 @@ describe('ideation/spec.json — validation', () => {
     if (result.ok) {
       // Narrowed access proves the typed path survives the branch.
       expect(result.value.version).toBe(1);
-      expect(result.value.meta.allowedAgentTypes).toEqual(['__pi']);
+      expect(result.value.meta.allowedAgentTypes).toEqual(['pi']);
       expect(result.value.delegation.agents).toHaveLength(2);
     }
   });

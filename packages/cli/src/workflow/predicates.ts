@@ -135,11 +135,11 @@ const corePredicates = {
     (s.artifacts['ideation'] ?? []).includes('ideation.md'),
 
   /**
-   * At least one `__pi` agent is registered in the session's active-subagents
+   * At least one `pi` agent is registered in the session's active-subagents
    * list and the orchestrator is about to dispatch them.
    */
   piAgentsToSpawn: (s) =>
-    s.activeSubagents.some((a) => a.agentType === '__pi'),
+    s.activeSubagents.some((a) => a.agentType === 'pi'),
 
   // ------------------------------------------------------------ Always-true
   //

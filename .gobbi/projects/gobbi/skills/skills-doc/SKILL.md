@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 # Claude Skills
 
-Reference for understanding skill structure and interactive guide for creating new skills through discussion. Load this when creating, reviewing, or modifying any `.claude/skills/` definition. Load _claude for writing principles and _discuss for discussion mechanics before using this skill.
+Reference for understanding skill structure and interactive guide for creating new skills through discussion. Load this when creating, reviewing, or modifying any `.claude/skills/` definition. Load claude for writing principles and discuss for discussion mechanics before using this skill.
 
 **Navigate deeper from here:**
 
@@ -145,14 +145,14 @@ The interactive creation process produces:
 - A SKILL.md file with valid frontmatter in `.claude/skills/{skill-name}/`
 - Optional child `.md` files for broad domains that exceed the line budget
 - Optional gotcha file if the domain has known non-obvious pitfalls
-- All output reviewed against _claude's review checklist before publishing
+- All output reviewed against claude's review checklist before publishing
 
 ---
 
 ## Constraints
 
-- Must follow _claude writing principles — principles over procedures, constraints over templates, codebase over examples
-- No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes (skills are teaching docs — step-by-step is context-dependent per _claude)
+- Must follow claude writing principles — principles over procedures, constraints over templates, codebase over examples
+- No code examples, no BAD/GOOD comparison blocks, no step-by-step recipes (skills are teaching docs — step-by-step is context-dependent per claude)
 - Under 500 lines per file (must), targeting under 200 (should)
 - Flat documentation structure — SKILL.md plus sibling `.md` files; non-doc subdirectories (`scripts/`, `benchmarks/`, `references/`) are acceptable, nested `.md` hierarchies are not
 - Content must be portable — no project-specific patterns in skills

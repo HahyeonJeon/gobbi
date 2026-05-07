@@ -180,8 +180,8 @@ describe('renderHookMessage — Tier A snapshot', () => {
     },
     {
       trigger: 'SubagentStart',
-      extraPayload: { agent_type: '__executor' },
-      expected: `*Subagent Started*\nSubagent (__executor) started in ${FIXED_PROJECT}. Session \`${FIXED_PREFIX}\`.`,
+      extraPayload: { agent_type: 'executor' },
+      expected: `*Subagent Started*\nSubagent (executor) started in ${FIXED_PROJECT}. Session \`${FIXED_PREFIX}\`.`,
     },
     {
       trigger: 'TaskCreated',
