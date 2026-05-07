@@ -32,6 +32,14 @@ Always-active behavioral safety net — minimum invariants every agent must foll
 
 ---
 
+## Witness-bound Work (Principle 10)
+
+- Every change must reference a witness — a session, error, user request, gotcha, or tracked follow-up — before it is committed.
+- "While I'm here," "for consistency," and "could theoretically" are not witnesses — surface as deferred follow-ups; do not implement.
+- Commits and PR descriptions name the witness explicitly (issue ID, error message, user request, or prior gotcha entry).
+
+---
+
 ## User Authority (Principles 4 + 6)
 
 - Use AskUserQuestion for all decision points — never ask decisions in prose text.
@@ -73,7 +81,7 @@ Always-active behavioral safety net — minimum invariants every agent must foll
 
 ---
 
-## Model Selection (gobbi-specific — outside the 9 principles)
+## Model Selection (gobbi-specific — outside the 10 principles)
 
 - Innovative stance and implementation agents use opus — creative work needs deep reasoning.
 - Evaluators, reviewers, and docs agents use sonnet — assessment follows structured criteria.

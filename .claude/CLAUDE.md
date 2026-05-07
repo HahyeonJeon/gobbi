@@ -28,11 +28,11 @@ Evaluation runs inside Ideation, Planning, and Execution — mandatory after Exe
 
 > **Agent behavioral principles apply on every task. Load [agent-principles](skills/agent-principles/SKILL.md).**
 
-The 9 principles below are the enforceable behavioral discipline for every agent. The [agent-principles](skills/agent-principles/SKILL.md) skill holds the depth; `gobbi-rule` is the always-active enforcement subset.
+The 10 principles below are the enforceable behavioral discipline for every agent. The [agent-principles](skills/agent-principles/SKILL.md) skill holds the depth; `gobbi-rule` is the always-active enforcement subset.
 
 | # | Iron Law |
 |---|---|
-| 1 | NO ACTION WITHOUT INVESTIGATION FIRST. |
+| 1 | NO ACTION WITHOUT INVESTIGATION AND A PLAN. |
 | 2 | ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
 | 3 | BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
 | 4 | SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
@@ -41,6 +41,7 @@ The 9 principles below are the enforceable behavioral discipline for every agent
 | 7 | NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. |
 | 8 | EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
 | 9 | EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
+| 10 | NO CHANGE WITHOUT A REAL MOTIVATOR. |
 
 > **Gobbi-specific tooling: the `gotcha` skill and `gobbi gotcha promote` command.**
 
@@ -54,7 +55,7 @@ Every agent MUST load the `gotcha` skill before starting work. When the user cor
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [agent-principles](skills/agent-principles/SKILL.md) | 9 behavioral principles every agent must follow — depth behind each gobbi-rule bullet |
+| [agent-principles](skills/agent-principles/SKILL.md) | 10 behavioral principles every agent must follow — depth behind each gobbi-rule bullet |
 | [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step workflow, workspace `state.db` + per-session `gobbi.db` + JSON memory (`session.json` + `project.json`) — authoritative architecture doc |
 | [`v050-cli.md`](../../../.gobbi/projects/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` and `gobbi project *` commands |
 | [rules/](rules/) | Project rules |
