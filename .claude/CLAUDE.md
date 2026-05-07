@@ -26,17 +26,25 @@ Every non-trivial task follows these 5 productive steps. Evaluation runs as a su
 
 The agent that creates must never evaluate its own output. Evaluation MUST be performed by independent perspective evaluator agents — the orchestrator selects 2-5 perspectives based on task type, with Project and Overall always included. The evaluator's job is to find problems, not to confirm success. After evaluation, always discuss the findings with the user before improving — the user decides what to address, defer, or disagree with. At every evaluation point: spawn evaluators, discuss findings with user, then improve based on agreed direction — never auto-apply evaluation findings.
 
-> **Detailed prompt first. Vague prompts produce vague work.**
+> **Agent behavioral principles apply on every task. Load [agent-principles](skills/agent-principles/SKILL.md).**
 
-MUST use AskUserQuestion to discuss with the user at every stage — ideation, plan, execution, and completion. Discuss until the prompt becomes a fully detailed specification. Ask about ambiguous requirements, missing constraints, edge cases, and priorities. Give critical opinions — challenge vague ideas, flag potential problems, and suggest alternatives. Never act on assumptions. Every subagent prompt MUST include specific requirements, constraints, expected output, and context — never a one-liner, never ambiguous, never a summary. A subagent that has to guess is a subagent that guesses wrong.
+The 9 principles below are the enforceable behavioral discipline for every agent. Full depth is in the [agent-principles](skills/agent-principles/SKILL.md) skill; `gobbi-rule` is the always-active enforcement subset.
+
+| # | Iron Law |
+|---|---|
+| 1 | NO ACTION WITHOUT INVESTIGATION FIRST. |
+| 2 | ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
+| 3 | BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
+| 4 | SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
+| 5 | NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
+| 6 | REFUSE TO TRANSACT IN VAGUENESS. |
+| 7 | NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. |
+| 8 | EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
+| 9 | EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
 
 > **Never repeat the same mistake. Read gotchas before acting, write gotchas after feedback.**
 
 Every agent MUST load `gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/projects/{name}/gotchas/` and promoted to permanent storage in the workspace-level skill storage via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
-
-> **Split into narrow tasks. Execute step by step, not all at once.**
-
-MUST decompose work into small, specific tasks and track them with TaskCreate. Each task must be narrow enough that its scope is unambiguous. Execute tasks one at a time — complete one, verify it, then move to the next. Broad parallel execution produces broad shallow mistakes.
 
 ---
 
@@ -46,6 +54,7 @@ MUST decompose work into small, specific tasks and track them with TaskCreate. E
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
+| [agent-principles](skills/agent-principles/SKILL.md) | 9 behavioral principles every agent must follow — depth behind each gobbi-rule bullet |
 | [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step workflow, workspace `state.db` + per-session `gobbi.db` + JSON memory (`session.json` + `project.json`) — authoritative architecture doc |
 | [`v050-cli.md`](../../../.gobbi/projects/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` and `gobbi project *` commands |
 | [rules/](rules/) | Project rules |

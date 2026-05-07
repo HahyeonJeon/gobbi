@@ -167,6 +167,7 @@ Workflow participant skills — loaded during the 6-step state machine: Configur
 | **innovation** | Innovation stance skill. Defines how agents think when spawned as the innovative stance — creative, cross-domain, unconventional. |
 | **best-practice** | Best-practice stance skill. Defines how agents think when spawned as the best stance — proven patterns, evidence, community consensus. |
 | **gotcha** | Cross-project mistake recording. Check before acting, write after corrections. |
+| **agent-principles** | 9 behavioral principles every agent must follow. Canonical depth behind each gobbi-rule bullet — load at session start. |
 
 #### Evaluation Perspectives
 
