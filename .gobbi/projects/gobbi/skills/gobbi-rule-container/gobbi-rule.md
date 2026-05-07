@@ -28,7 +28,7 @@ Always-active behavioral safety net — minimum invariants every agent must foll
 - Executors must read investigation materials from the task's note directory before implementing.
 - When loading a skill, also load its child `gotchas.md` if one exists.
 - Re-verify preconditions at point of use, not only at session start.
-- Two agents agreeing on a direction that diverges from the user's stated intent is a signal — surface it, do not act on it.
+- When two agents agree on a direction the user did not authorize, surface it — do not act on it.
 
 ---
 
@@ -38,6 +38,22 @@ Always-active behavioral safety net — minimum invariants every agent must foll
 - Put the recommended option first with "(Recommended)" — always give an opinion.
 - User decides what to address, defer, or disagree with — never auto-apply evaluation findings.
 - Refuse to proceed when input is too vague to be actionable — push for specificity before acting.
+
+---
+
+## Design Discipline (Principle 5)
+
+- Search prior art before designing — codebase, adjacent libraries, community.
+- Discuss design direction with the user via AskUserQuestion before locking design choices.
+- For code interfaces, run the clarity checkpoint before implementing — the consumer must understand without reading internals; internals must be changeable without breaking consumers.
+
+---
+
+## User Perspective (Principle 9)
+
+- Walk through the user's experience explicitly at the end of every plan and at each major step — what they do, what they see, in what order.
+- Treat error messages and failure paths as user-facing surface; the path forward must be obvious from the message.
+- Before reporting completion, sanity-check the deliverable from the user's mental model, not the implementer's.
 
 ---
 
@@ -57,7 +73,7 @@ Always-active behavioral safety net — minimum invariants every agent must foll
 
 ---
 
-## Model Selection
+## Model Selection (gobbi-specific — outside the 9 principles)
 
 - Innovative stance and implementation agents use opus — creative work needs deep reasoning.
 - Evaluators, reviewers, and docs agents use sonnet — assessment follows structured criteria.

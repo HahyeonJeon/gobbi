@@ -22,13 +22,13 @@ Every non-trivial task follows these 5 productive steps. Evaluation runs as a su
 
 **Handoff** — Write a tight summary for the next session: what was shipped, open threads, decisions to respect, and pointers to key artifacts. Emits `workflow.finish` and closes the session.
 
-> **Evaluation must be separated, multi-perspective, and discussed.**
+> **Evaluation is a mandatory sub-phase in the gobbi workflow.**
 
-The agent that creates must never evaluate its own output. Evaluation MUST be performed by independent perspective evaluator agents — the orchestrator selects 2-5 perspectives based on task type, with Project and Overall always included. The evaluator's job is to find problems, not to confirm success. After evaluation, always discuss the findings with the user before improving — the user decides what to address, defer, or disagree with. At every evaluation point: spawn evaluators, discuss findings with user, then improve based on agreed direction — never auto-apply evaluation findings.
+Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The orchestrator selects 2-5 evaluator perspectives based on task type, with Project and Overall always included. After evaluation, discuss findings with the user before improving — the user decides what to address, defer, or disagree with. Never auto-apply evaluation findings. The principle-level discipline (who evaluates whom, perspective separation) lives in `agent-principles` Principle 2.
 
 > **Agent behavioral principles apply on every task. Load [agent-principles](skills/agent-principles/SKILL.md).**
 
-The 9 principles below are the enforceable behavioral discipline for every agent. Full depth is in the [agent-principles](skills/agent-principles/SKILL.md) skill; `gobbi-rule` is the always-active enforcement subset.
+The 9 principles below are the enforceable behavioral discipline for every agent. The [agent-principles](skills/agent-principles/SKILL.md) skill holds the depth; `gobbi-rule` is the always-active enforcement subset.
 
 | # | Iron Law |
 |---|---|
@@ -42,9 +42,9 @@ The 9 principles below are the enforceable behavioral discipline for every agent
 | 8 | EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
 | 9 | EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
 
-> **Never repeat the same mistake. Read gotchas before acting, write gotchas after feedback.**
+> **Gobbi-specific tooling: the `gotcha` skill and `gobbi gotcha promote` command.**
 
-Every agent MUST load `gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/projects/{name}/gotchas/` and promoted to permanent storage in the workspace-level skill storage via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
+Every agent MUST load the `gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha in `.gobbi/projects/{name}/gotchas/`. After the session ends, run `gobbi gotcha promote` to promote corrections to permanent workspace-level skill storage — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
 
 ---
 
