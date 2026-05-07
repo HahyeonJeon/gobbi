@@ -32,7 +32,7 @@ Set CLAUDE_SESSION_ID or pass --session-id.
    cd /playinganalytics/git/gobbi && gobbi workflow transition COMPLETE
    ```
 
-2. **Pair this with the `_git` rule** that the orchestrator owns the workflow lifecycle (status, transitions, eval verdicts). Subagents inside worktrees don't run these commands.
+2. **Pair this with the `git` rule** that the orchestrator owns the workflow lifecycle (status, transitions, eval verdicts). Subagents inside worktrees don't run these commands.
 
 3. **For batched operations**, capture the session ID once and use absolute-path invocations:
 

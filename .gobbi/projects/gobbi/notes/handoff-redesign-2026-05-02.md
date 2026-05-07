@@ -92,5 +92,5 @@ A firmer fix exists if this becomes painful: rename `name: "@gobbitools/cli"` â†
 - **Issue:** #249 (umbrella for the redesign + refactor)
 - **PR just merged:** #250 (`7aad94a`)
 - **Layout README:** `.gobbi/projects/gobbi/README.md`
-- **Active rules touching the redesign:** `.gobbi/projects/gobbi/rules/__gobbi-convention.md` (naming), `.gobbi/projects/gobbi/rules/docs-cleanup-parallelism.md` (when to use single agent vs parallel)
+- **Active rules touching the redesign:** `.gobbi/projects/gobbi/rules/gobbi-convention.md` (naming), `.gobbi/projects/gobbi/rules/docs-cleanup-parallelism.md` (when to use single agent vs parallel)
 - **Memory entry for this session:** `project_v050_redesign_env_prep.md` (created same date)

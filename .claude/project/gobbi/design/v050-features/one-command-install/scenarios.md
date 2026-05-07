@@ -74,7 +74,7 @@ Evidence: `.claude/skills/gobbi/SKILL.md` §THIRD and §FOURTH; `.claude/skills/
 ### O-CI-H-03: Plugin refresh — skills/agents/rules update atomically with plugin
 
 Given the gobbi plugin is already installed in Claude Code
-And `.claude/rules/_gobbi-rule.md` is a symlink into `.claude/skills/_gobbi-rule-container/_gobbi-rule.md`
+And `.claude/rules/gobbi-rule.md` is a symlink into `.claude/skills/gobbi-rule-container/gobbi-rule.md`
 And `plugins/gobbi/skills/` and `plugins/gobbi/agents/` contain symlinks into `.claude/skills/` and `.claude/agents/` respectively
 And the plugin publishes a new version that changes one or more files under `.claude/`
 
@@ -82,19 +82,19 @@ When the user (or the Claude Code plugin system) updates the gobbi plugin
 And opens a new Claude Code session after the update
 
 Then the updated skills, agents, and behavioral rules are loaded by the new session without any manual `.claude/` edit
-And step SECOND of `gobbi/SKILL.md` finds `.claude/rules/_gobbi-rule.md` already present (symlink resolves post-update) and does not re-create it
-And the refreshed `_gobbi-rule.md` content is the one the plugin ships
+And step SECOND of `gobbi/SKILL.md` finds `.claude/rules/gobbi-rule.md` already present (symlink resolves post-update) and does not re-create it
+And the refreshed `gobbi-rule.md` content is the one the plugin ships
 
 State trace:
-  - before update: `_gobbi-rule.md` symlink resolves to the old container file
+  - before update: `gobbi-rule.md` symlink resolves to the old container file
   - after update: the same symlink resolves to the new container file; no stale copies under `.claude/rules/`
-  - negative: no duplicate `_gobbi-rule.md` created alongside the symlink; no orphaned skill directories left over from the previous version
+  - negative: no duplicate `gobbi-rule.md` created alongside the symlink; no orphaned skill directories left over from the previous version
 
 Anti-outcome:
   - session agent does NOT ask the user to hand-merge any `.claude/` file after a plugin update
-  - no non-symlink copy of `_gobbi-rule.md` is created that would shadow future updates
+  - no non-symlink copy of `gobbi-rule.md` is created that would shadow future updates
 
-Evidence: `.claude/skills/gobbi/SKILL.md` §SECOND; `.claude/skills/_gobbi-rule-container/_gobbi-rule.md` (the source target of the symlink); `plugins/gobbi/skills/` contents (symlinks into `.claude/skills/`); `plugins/gobbi/agents/` contents (symlinks into `.claude/agents/`); `plugins/gobbi/.claude-plugin/plugin.json` (`skills` key + `agents` array) — note: the `"plugin install refreshes CLI binary"` claim in `README.md` paragraph 2 is `(ASPIRATIONAL)` — the plugin ships skills/agents via symlinks but does NOT ship the CLI binary (`packages/cli/bin/gobbi.js` is installed separately via `npm install -g @gobbitools/cli`)
+Evidence: `.claude/skills/gobbi/SKILL.md` §SECOND; `.claude/skills/gobbi-rule-container/gobbi-rule.md` (the source target of the symlink); `plugins/gobbi/skills/` contents (symlinks into `.claude/skills/`); `plugins/gobbi/agents/` contents (symlinks into `.claude/agents/`); `plugins/gobbi/.claude-plugin/plugin.json` (`skills` key + `agents` array) — note: the `"plugin install refreshes CLI binary"` claim in `README.md` paragraph 2 is `(ASPIRATIONAL)` — the plugin ships skills/agents via symlinks but does NOT ship the CLI binary (`packages/cli/bin/gobbi.js` is installed separately via `npm install -g @gobbitools/cli`)
 
 ---
 
@@ -229,27 +229,27 @@ Evidence: `.claude/skills/gobbi/cli-setup.md` §Troubleshooting row 1 (`gobbi: c
 
 ---
 
-### O-CI-E-04: `_gobbi-rule.md` symlink missing and cannot be recreated
+### O-CI-E-04: `gobbi-rule.md` symlink missing and cannot be recreated
 
 Given `@gobbitools/cli` is installed (`gobbi --version` exits 0)
-And `.claude/rules/_gobbi-rule.md` does NOT exist at the worktree root
-And the symlink target `.claude/skills/_gobbi-rule-container/_gobbi-rule.md` is present
+And `.claude/rules/gobbi-rule.md` does NOT exist at the worktree root
+And the symlink target `.claude/skills/gobbi-rule-container/gobbi-rule.md` is present
 And the filesystem or policy blocks symlink creation (e.g., Windows without developer mode, restricted FS, read-only `.claude/rules/`)
 
 When the session agent reaches step SECOND of `gobbi/SKILL.md`
-And attempts to create the symlink from `.claude/rules/_gobbi-rule.md` to `_gobbi-rule-container/_gobbi-rule.md`
+And attempts to create the symlink from `.claude/rules/gobbi-rule.md` to `_gobbi-rule-container/gobbi-rule.md`
 And the creation fails
 
 Then the session agent surfaces the failure to the user with the underlying error (e.g., `EPERM`, `EACCES`, "symbolic link not supported")
-And does NOT fall back to copying the rule body inline into `.claude/rules/_gobbi-rule.md` (a copy would be an un-updatable snapshot that defeats the plugin-refresh guarantee of O-CI-H-03)
+And does NOT fall back to copying the rule body inline into `.claude/rules/gobbi-rule.md` (a copy would be an un-updatable snapshot that defeats the plugin-refresh guarantee of O-CI-H-03)
 And does NOT proceed to step THIRD (CLI availability check) until the user resolves the platform constraint
 
 State trace:
-  - before: `.claude/rules/_gobbi-rule.md` missing; target container file present
+  - before: `.claude/rules/gobbi-rule.md` missing; target container file present
   - after failure: still no symlink; no copy created; setup paused at step SECOND
-  - negative: no regular (non-symlink) file at `.claude/rules/_gobbi-rule.md` that would shadow future plugin refreshes
+  - negative: no regular (non-symlink) file at `.claude/rules/gobbi-rule.md` that would shadow future plugin refreshes
 
-Evidence: `.claude/skills/gobbi/SKILL.md` §SECOND ("create a symlink from `.claude/rules/` pointing to `_gobbi-rule.md` in the `_gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated"); `.claude/skills/_gobbi-rule-container/_gobbi-rule.md` (symlink target) — note: "agent surfaces the failure rather than silently copying" is the correct behavior per the SECOND step's auto-update contract, but the skill does not explicitly describe the failure branch — mark the explicit "pause + surface, no copy fallback" clause `(ASPIRATIONAL)` for the first review pass
+Evidence: `.claude/skills/gobbi/SKILL.md` §SECOND ("create a symlink from `.claude/rules/` pointing to `gobbi-rule.md` in the `gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated"); `.claude/skills/gobbi-rule-container/gobbi-rule.md` (symlink target) — note: "agent surfaces the failure rather than silently copying" is the correct behavior per the SECOND step's auto-update contract, but the skill does not explicitly describe the failure branch — mark the explicit "pause + surface, no copy fallback" clause `(ASPIRATIONAL)` for the first review pass
 
 ---
 
@@ -319,7 +319,7 @@ When the session agent runs `/gobbi` and step THIRD confirms `gobbi --version` e
 And the agent proceeds to step FIFTH question 3 (git workflow) or to any detection that surfaces the peer worktree
 
 Then the session agent does NOT recommend "Clean up" as the default option for the peer worktree
-And if it surfaces the peer worktree at all, it does so via AskUserQuestion with "Leave it" recommended per the `_git` gotcha on orphaned-worktree defaults
+And if it surfaces the peer worktree at all, it does so via AskUserQuestion with "Leave it" recommended per the `git` gotcha on orphaned-worktree defaults
 And the session agent's install / setup flow is unaffected by the presence of the peer worktree
 
 State trace:
@@ -333,7 +333,7 @@ Anti-outcome:
   - the peer worktree's branch is NOT deleted
   - the peer session's events in its own `gobbi.db` are NOT overwritten or removed
 
-Evidence: `.claude/skills/_git/gotchas.md` "Recommending cleanup of worktrees that may belong to concurrent sessions" (default must be "Leave it"); `.claude/skills/gobbi/SKILL.md` §FIFTH question 3 (git workflow selection)
+Evidence: `.claude/skills/git/gotchas.md` "Recommending cleanup of worktrees that may belong to concurrent sessions" (default must be "Leave it"); `.claude/skills/gobbi/SKILL.md` §FIFTH question 3 (git workflow selection)
 
 ---
 

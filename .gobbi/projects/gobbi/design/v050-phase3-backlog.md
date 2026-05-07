@@ -93,7 +93,7 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 
 **Source:** #77 Deferred to Phase 3 (item 7)
 
-**Description:** Review how stance skills (`_innovation`, `_best-practice`) embed content into compiled prompts. Current embedding is string-based; the compiler inlines stance text directly without a structured indirection layer. This becomes a maintenance burden when stance content needs updating.
+**Description:** Review how stance skills (`innovation`, `best-practice`) embed content into compiled prompts. Current embedding is string-based; the compiler inlines stance text directly without a structured indirection layer. This becomes a maintenance burden when stance content needs updating.
 
 **Trigger:** Adding a third stance skill, OR any stance-content edit that requires touching the compiler source rather than just the skill file.
 

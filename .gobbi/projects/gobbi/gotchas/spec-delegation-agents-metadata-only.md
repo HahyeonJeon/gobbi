@@ -6,7 +6,7 @@
 
 ## What happened
 
-PR-FIN-1e research surfaced that `spec.delegation.agents[*].modelTier` and `.effort` fields exist in the validated `StepSpec` and are walked by the SubagentStop hook for artifact validation, but **`assembly.ts::renderSpec` (lines 524-623) NEVER reads them into the rendered prompt prose**. The orchestrator's spawn decisions today flow from `_gobbi-rule.md:51-55` Model Selection (always-active via `_gobbi-rule-container` symlink), not from the spec.
+PR-FIN-1e research surfaced that `spec.delegation.agents[*].modelTier` and `.effort` fields exist in the validated `StepSpec` and are walked by the SubagentStop hook for artifact validation, but **`assembly.ts::renderSpec` (lines 524-623) NEVER reads them into the rendered prompt prose**. The orchestrator's spawn decisions today flow from `gobbi-rule.md:51-55` Model Selection (always-active via `gobbi-rule-container` symlink), not from the spec.
 
 The first ideation pass assumed that overlaying settings onto `spec.delegation.agents[*]` would change the orchestrator's spawn behavior. It would not — the orchestrator never sees those fields in the rendered prompt. Both ideation researchers (innovative + best-practice) independently flagged this as load-bearing.
 

@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/gobbi-rule-container/gobbi-rule.md

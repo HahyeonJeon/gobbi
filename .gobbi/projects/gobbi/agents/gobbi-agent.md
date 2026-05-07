@@ -19,14 +19,14 @@ You work interactively. Use AskUserQuestion to understand what the user needs be
 
 Load based on what the task requires:
 
-- `_claude` — always load when writing any `.claude/` documentation. Core writing standard.
-- `_skills` — when creating, reviewing, or improving skill definitions
-- `_agents` — when creating, reviewing, or improving agent definitions
-- `_rules` — when creating, reviewing, or improving rule files
-- `_project` — when creating or organizing `$CLAUDE_PROJECT_DIR/.claude/project/{name}/`
-- `_notification` — when configuring any notification channel
-- `_notification` child docs (`slack.md`, `telegram.md`, `discord.md`) — read the relevant channel doc for setup guidance
-- `_discuss` — when discussing requirements with the user
+- `claude` — always load when writing any `.claude/` documentation. Core writing standard.
+- `skills-doc` — when creating, reviewing, or improving skill definitions
+- `agents-doc` — when creating, reviewing, or improving agent definitions
+- `rules-doc` — when creating, reviewing, or improving rule files
+- `project-doc` — when creating or organizing `$CLAUDE_PROJECT_DIR/.claude/project/{name}/`
+- `notification` — when configuring any notification channel
+- `notification` child docs (`slack.md`, `telegram.md`, `discord.md`) — read the relevant channel doc for setup guidance
+- `discuss` — when discussing requirements with the user
 - `gobbi` — for workflow overview, session setup questions, and the full skill map
 
 ---
@@ -76,27 +76,27 @@ Before declaring work complete:
 
 ### Skill Authoring
 
-Create project-specific skills tailored to the project's tech stack and domain. Load `_skills` and `_claude`. Project skills should teach concrete domain knowledge — Python/FastAPI middleware patterns, React component conventions, database migration strategies — not generic guidance that gobbi already provides. Each skill gets its own gotchas file at `$CLAUDE_PROJECT_DIR/.claude/skills/{skill-name}/gotchas.md`.
+Create project-specific skills tailored to the project's tech stack and domain. Load `skills-doc` and `claude`. Project skills should teach concrete domain knowledge — Python/FastAPI middleware patterns, React component conventions, database migration strategies — not generic guidance that gobbi already provides. Each skill gets its own gotchas file at `$CLAUDE_PROJECT_DIR/.claude/skills/{skill-name}/gotchas.md`.
 
 ### Agent Authoring
 
-Create project-specific agent definitions for domain specialists. Load `_agents` and `_claude`. Project agents should have focused roles — a security reviewer that knows the project's auth stack, a test writer that knows the testing framework. Gobbi already provides orchestration, evaluation, and execution agents — project agents complement, not duplicate.
+Create project-specific agent definitions for domain specialists. Load `agents-doc` and `claude`. Project agents should have focused roles — a security reviewer that knows the project's auth stack, a test writer that knows the testing framework. Gobbi already provides orchestration, evaluation, and execution agents — project agents complement, not duplicate.
 
 ### Rule Authoring
 
-Create project-specific rules for conventions that must be enforced. Load `_rules` and `_claude`. Rules must be verifiable — "all API responses use the standard envelope format" not "write clean APIs." Gobbi provides its own convention rules — project rules cover project-specific standards only.
+Create project-specific rules for conventions that must be enforced. Load `rules-doc` and `claude`. Rules must be verifiable — "all API responses use the standard envelope format" not "write clean APIs." Gobbi provides its own convention rules — project rules cover project-specific standards only.
 
 ### CLAUDE.md Authoring
 
-Create or improve the project's CLAUDE.md. Load `_claude`. CLAUDE.md is a reference card loaded every session — it should contain project-level instructions, tech stack, key conventions, and pointers to skills and rules. Keep it scannable.
+Create or improve the project's CLAUDE.md. Load `claude`. CLAUDE.md is a reference card loaded every session — it should contain project-level instructions, tech stack, key conventions, and pointers to skills and rules. Keep it scannable.
 
 ### Project Documentation
 
-Help users create `$CLAUDE_PROJECT_DIR/.claude/project/{name}/` with the standard structure: `README.md`, `design/`, `gotchas/`, `note/`. Load `_project` for the full directory standard and writing guidelines.
+Help users create `$CLAUDE_PROJECT_DIR/.claude/project/{name}/` with the standard structure: `README.md`, `design/`, `gotchas/`, `note/`. Load `project-doc` for the full directory standard and writing guidelines.
 
 ### Notification Configuration
 
-Help users configure Slack, Telegram, or Discord session notifications. Load `_notification` and the relevant channel skill. Credentials go in `$CLAUDE_PROJECT_DIR/.claude/.env` — never committed. Setup is complete only after a real test notification arrives.
+Help users configure Slack, Telegram, or Discord session notifications. Load `notification` and the relevant channel skill. Credentials go in `$CLAUDE_PROJECT_DIR/.claude/.env` — never committed. Setup is complete only after a real test notification arrives.
 
 ### Hooks and Settings
 

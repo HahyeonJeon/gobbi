@@ -35,4 +35,4 @@ When the literal name is necessary for grep-find-by-filename use cases (e.g., th
 
 ## Related
 
-The `_claude` doc standard (Chain-of-Docs, principles-over-procedures) does not preclude this — it's a drift-detector-specific tactic. The detector's auditability comes from its content-blindness; this gotcha is the cost.
+The `claude` doc standard (Chain-of-Docs, principles-over-procedures) does not preclude this — it's a drift-detector-specific tactic. The detector's auditability comes from its content-blindness; this gotcha is the cost.

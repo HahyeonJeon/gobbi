@@ -367,12 +367,12 @@ The `converged`, `conflict`, and "manifest-rewrite-excludes-conflicts" verificat
 
 ---
 
-## G-MEM2-43 — `_bun` + `_typescript` skills in farm
+## G-MEM2-43 — `bun` + `typescript` skills in farm
 
 - `@functional` After fresh install, both skills resolve through the farm.
   - Evidence: commit `890e6d1` (W3 eval F2).
 - `@data` Template bundle includes both skill directories.
-  - Evidence: `node_modules/@gobbitools/cli/dist/templates/skills/_bun/`, `_typescript/`.
+  - Evidence: `node_modules/@gobbitools/cli/dist/templates/skills/bun/`, `_typescript/`.
 
 ---
 

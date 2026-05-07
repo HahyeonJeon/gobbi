@@ -24,4 +24,4 @@ enforcement: advisory
 2. **Lead with the worktree path** in the briefing: "Use this absolute path for ALL Read/Edit/Write calls; the main repo at `/playinganalytics/git/gobbi/` is OUT OF SCOPE."
 3. **Verify post-commit via `git -C <worktree>`** — `git -C <worktree> log --oneline -1` should show the new commit; if it shows a prior commit, the work landed elsewhere.
 
-**Refs**: issue #149 — fix proposal: update `_delegation` agent briefings to require the pre-flight sanity check, OR add a tooling-level `gobbi worktree assert <path>` guardrail.
+**Refs**: issue #149 — fix proposal: update `delegation` agent briefings to require the pre-flight sanity check, OR add a tooling-level `gobbi worktree assert <path>` guardrail.

@@ -57,7 +57,7 @@ Slack, Telegram, and Discord have `enabled` flags at all three levels (workspace
 
 **Partially configured** — Credentials exist but `enabled` flag is missing or false, or the flag is set but credentials are absent. Report what's missing and offer to fix. Both conditions must be true for delivery.
 
-**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load `_notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help set up. The `enabled: true` flag can be written now via `gobbi config set notify.slack.enabled true --level session` so notifications activate immediately once credentials are added.
+**Not configured** — No `$CLAUDE_PROJECT_DIR/.claude/.env` or no notification credentials. If the user selected notification channels at session start, load `notification` and read the relevant channel doc (`slack.md`, `telegram.md`, `discord.md`) to help set up. The `enabled: true` flag can be written now via `gobbi config set notify.slack.enabled true --level session` so notifications activate immediately once credentials are added.
 
 **Degraded** — Credentials exist but a dependency is missing (e.g., `gobbi` not in PATH, `notify-send` not available for Desktop). Report the dependency gap.
 
@@ -75,5 +75,5 @@ For the exact hook entries to copy into your `~/.claude/settings.json` and the t
 
 - Detection must be lightweight — reading a few files, not running network checks or sending test messages
 - Never modify `$CLAUDE_PROJECT_DIR/.claude/.env`, hook scripts, or settings during detection
-- Never send test notifications during detection — that belongs to the `_notification` setup flow
+- Never send test notifications during detection — that belongs to the `notification` setup flow
 - If `$CLAUDE_PROJECT_DIR/.claude/.env` exists, check file permissions are 600 — warn if not, but do not change them during detection

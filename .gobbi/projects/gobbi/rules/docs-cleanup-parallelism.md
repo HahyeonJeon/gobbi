@@ -6,7 +6,7 @@ When the task is a small docs-cleanup batch — 3 to 5 related markdown files, u
 
 ## Why
 
-Parallel executors produce divergent terminology when the concepts touched are interconnected. PR #104's docs cleanup touched `_collection`, `_delegation`, `_research` — three skills whose semantics reference each other (research output location, collection's dependence on subdirectory naming, delegation's handoff paths). A single agent holding all three files in working context converges on consistent substitutions ("Ideation Investigation Delegation", "investigation findings", `ideation/` paths). Three parallel agents would have made different local choices — one might keep "Research Step" as a header while another removes it — leaving a patchwork that requires a follow-up remediation pass to reconcile.
+Parallel executors produce divergent terminology when the concepts touched are interconnected. PR #104's docs cleanup touched `collection`, `delegation`, `research` — three skills whose semantics reference each other (research output location, collection's dependence on subdirectory naming, delegation's handoff paths). A single agent holding all three files in working context converges on consistent substitutions ("Ideation Investigation Delegation", "investigation findings", `ideation/` paths). Three parallel agents would have made different local choices — one might keep "Research Step" as a header while another removes it — leaving a patchwork that requires a follow-up remediation pass to reconcile.
 
 The same trade-off does not apply to code PRs like #103's CLI velocity bundle: three TypeScript changes with non-overlapping files, no cross-file semantic links, three parallel executors were the right call.
 
@@ -31,4 +31,4 @@ The same trade-off does not apply to code PRs like #103's CLI velocity bundle: t
 
 ## Related
 
-See `_delegation` for the general delegation principles and the "When to split vs combine" judgment call. See `_plan` for how to decide task boundaries during Planning. This rule narrows the split-vs-combine judgment for the specific case of docs-cleanup batches — the default should be combine.
+See `delegation` for the general delegation principles and the "When to split vs combine" judgment call. See `plan` for how to decide task boundaries during Planning. This rule narrows the split-vs-combine judgment for the specific case of docs-cleanup batches — the default should be combine.

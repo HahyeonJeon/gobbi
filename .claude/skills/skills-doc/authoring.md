@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/skills-doc/authoring.md

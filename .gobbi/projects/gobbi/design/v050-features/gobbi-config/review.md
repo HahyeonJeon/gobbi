@@ -100,7 +100,7 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 ### DRIFT-6 — `verification.*` section removed; `verification-runner.ts` decommissioned
 
-**Finding:** Pass-3 schema v2 included `verification: { runAfterSubagentStop, runAfterToolStop, commands }`. Pass-3 finalization drops it per user lock. `verification-runner.ts` is deleted (Option A from ideation §6.6: executor subagents self-verify per `_delegation` lifecycle; the post-workflow-next runner was duplicative).
+**Finding:** Pass-3 schema v2 included `verification: { runAfterSubagentStop, runAfterToolStop, commands }`. Pass-3 finalization drops it per user lock. `verification-runner.ts` is deleted (Option A from ideation §6.6: executor subagents self-verify per `delegation` lifecycle; the post-workflow-next runner was duplicative).
 
 **Evidence:** ideation.md §3.3 — `verification.*` row; plan.md §Wave B — "DELETE `packages/cli/src/workflow/verification-runner.ts`"; `f9b3925` (Wave B) deletes the runner and removes the import from `next.ts`.
 
@@ -198,7 +198,7 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 
 ### NOTE-3 — Per-step `model`/`effort` stored but not yet enforced at spawn time
 
-**Finding:** `workflow.{step}.{discuss,evaluate}.{model,effort}` config allows explicit override of `_delegation`'s model defaults. Values are stored and returned by `resolveSettings`, but the spawn pipeline in the orchestrator skill does not yet read them. `'auto'` (the default) applies `_delegation`'s table unconditionally. A future gobbi-rule update may clamp the ranges.
+**Finding:** `workflow.{step}.{discuss,evaluate}.{model,effort}` config allows explicit override of `delegation`'s model defaults. Values are stored and returned by `resolveSettings`, but the spawn pipeline in the orchestrator skill does not yet read them. `'auto'` (the default) applies `delegation`'s table unconditionally. A future gobbi-rule update may clamp the ranges.
 
 **Evidence:** ideation.md §10.10 — "model/effort override vs core-rule tension"; `settings.ts` `AgentModel` / `AgentEffort` types exist; no spawn-pipeline reader yet.
 
@@ -252,7 +252,7 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 
 ### GAP-2 — `model`/`effort` config override vs core-rule tension not resolved
 
-**Finding:** `_gobbi-rule` mandates "All agents run at max effort" and `_delegation` mandates model by stance (opus for innovative/executor, sonnet for evaluators). The new `workflow.{step}.{discuss,evaluate}.{model,effort}` config permits explicit override of those defaults. A config setting can currently undercut a core-rule invariant. Mitigation: defaults are `'auto'` which applies core-rule policy unchanged; explicit values are opt-in.
+**Finding:** `gobbi-rule` mandates "All agents run at max effort" and `delegation` mandates model by stance (opus for innovative/executor, sonnet for evaluators). The new `workflow.{step}.{discuss,evaluate}.{model,effort}` config permits explicit override of those defaults. A config setting can currently undercut a core-rule invariant. Mitigation: defaults are `'auto'` which applies core-rule policy unchanged; explicit values are opt-in.
 
 **Evidence:** ideation.md §10.10 — "Documented as tension, not resolved in this Pass."
 
@@ -300,7 +300,7 @@ PR-FIN-1b introduces:
 
 ### DRIFT-13 — PR-FIN-1e: `workflow.{step}.{agent,evaluate.agent}` wired into spec spawn pipeline
 
-**Finding:** PR-FIN-1e (session `c34ea7e6`) closes the gap noted in NOTE-3: per-step `workflow.{step}.{agent,evaluate.agent}` settings (model + effort overrides) are now read by the orchestrator spec spawn pipeline. `loadSpecForRuntime` applies a runtime overlay against the per-step `agent-routing` block; `'auto'` (the default) preserves `_delegation`'s table unchanged, and explicit values override the spawn target's model/effort. Closes locked design decision #8.
+**Finding:** PR-FIN-1e (session `c34ea7e6`) closes the gap noted in NOTE-3: per-step `workflow.{step}.{agent,evaluate.agent}` settings (model + effort overrides) are now read by the orchestrator spec spawn pipeline. `loadSpecForRuntime` applies a runtime overlay against the per-step `agent-routing` block; `'auto'` (the default) preserves `delegation`'s table unchanged, and explicit values override the spawn target's model/effort. Closes locked design decision #8.
 
 **Evidence:** Round-3 ideation memo §F8 at `.claude/project/gobbi/note/20260428-0311-finalize-gobbi-config-c34ea7e6-d5c3-4174-b61e-5176efc8d39b/ideation/ideation.md`; target-state spec §9 #11 at `.gobbi/projects/gobbi/tmp/gobbi-config-target-state.md`; `packages/cli/src/specs/loader.ts::loadSpecForRuntime` at `5ddffab`; squash commit `5ddffab` on develop (PR #224).
 

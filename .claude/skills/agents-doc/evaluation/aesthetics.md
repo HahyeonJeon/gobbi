@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/agents-doc/evaluation/aesthetics.md

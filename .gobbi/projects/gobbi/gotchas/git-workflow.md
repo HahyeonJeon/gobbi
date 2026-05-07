@@ -32,7 +32,7 @@ tech-stack: git
 
 **User feedback:** Discovered self-caught via test discrepancy during C.8 execution.
 
-**Correct approach:** When `_git` is active with a worktree, Write/Edit tool `file_path` parameters must resolve to the worktree's `packages/...` path, not the main tree's. The safe pattern: resolve absolute paths as `$(pwd)/<relative>` using the session's actual `cwd`, or prefix with the full worktree path `/playinganalytics/git/gobbi/.claude/worktrees/<branch>/packages/...`. Briefings that quote main-tree-style absolute paths are a trap — translate them at session start. If edits land in the main tree, `git diff --binary > /tmp/foo.patch`, `git checkout -- <files>`, `rm <untracked>`, then `git apply /tmp/foo.patch` in the worktree.
+**Correct approach:** When `git` is active with a worktree, Write/Edit tool `file_path` parameters must resolve to the worktree's `packages/...` path, not the main tree's. The safe pattern: resolve absolute paths as `$(pwd)/<relative>` using the session's actual `cwd`, or prefix with the full worktree path `/playinganalytics/git/gobbi/.claude/worktrees/<branch>/packages/...`. Briefings that quote main-tree-style absolute paths are a trap — translate them at session start. If edits land in the main tree, `git diff --binary > /tmp/foo.patch`, `git checkout -- <files>`, `rm <untracked>`, then `git apply /tmp/foo.patch` in the worktree.
 
 ---
 

@@ -64,7 +64,7 @@ A fresh repo has no `.gobbi/` directory. `gobbi install` is the one-shot bootstr
 
 1. **Detect target state** — fresh means no `.gobbi/projects/{name}/` exists for the chosen project; re-install means it does.
 2. **Fresh path** — copies the plugin-bundled template tree (shipped at `node_modules/@gobbitools/cli/.gobbi/projects/gobbi/{skills,agents,rules}/`) into `.gobbi/projects/{name}/`, scaffolds the 12 narrative dirs (`design`, `decisions`, `scenarios`, `checklists`, `reviews`, `playbooks`, `learnings`, `gotchas`, `references`, `backlogs`, `notes`, `rules`) as empty placeholders, builds the `.claude/{skills,agents,rules}/` per-file symlink farm, and preserves any non-farm content that already lived in `.claude/` (NI-1 lock).
-3. **Re-install path** — without `--force`, exits 2 and refuses; with `--force`, **bundle wins**: every plugin-bundled file under `skills/agents/rules/` is overwritten unconditionally. User-authored files (anything not shipped by the plugin) survive untouched. The `_-prefix` naming convention (`_git`, `_gotcha`, …) demarcates plugin-owned skills/agents from user-owned ones; user-owned files don't collide with plugin paths and so are never touched.
+3. **Re-install path** — without `--force`, exits 2 and refuses; with `--force`, **bundle wins**: every plugin-bundled file under `skills/agents/rules/` is overwritten unconditionally. User-authored files (anything not shipped by the plugin) survive untouched. The `_-prefix` naming convention (`git`, `gotcha`, …) demarcates plugin-owned skills/agents from user-owned ones; user-owned files don't collide with plugin paths and so are never touched.
 4. **Active-session gate** — aborts with exit 2 and a list of active session IDs if any session has a non-terminal `current_step` recorded in `.gobbi/state.db`. Prevents template churn while a workflow is mid-flight.
 
 No manifest is written; no 3-way merge is performed. The `_-prefix` convention is the boundary between plugin-owned and user-owned content.
@@ -127,7 +127,7 @@ The pre-validation state normalization shim from Pass 2 is no longer needed beca
 
 ## Gotcha promotion destination
 
-**Updated by PR-FIN-2 (2026-04-29):** `gobbi gotcha promote` writes promoted gotchas to `.gobbi/projects/{name}/gotchas/` — the new top-level `gotchas/` directory promoted out of `learnings/`. `learnings/` now holds only general post-mortems and learnings; `gotchas/` holds anti-patterns and "do not repeat" entries. Project name resolves via the same ladder as `gobbi config set` (`--project <name>` flag → `basename(repoRoot)`). Per-project gotchas under `gotchas/` apply only to that project; cross-project gotchas ship with the gobbi plugin under `.claude/skills/_gotcha/` (farm-mirrored).
+**Updated by PR-FIN-2 (2026-04-29):** `gobbi gotcha promote` writes promoted gotchas to `.gobbi/projects/{name}/gotchas/` — the new top-level `gotchas/` directory promoted out of `learnings/`. `learnings/` now holds only general post-mortems and learnings; `gotchas/` holds anti-patterns and "do not repeat" entries. Project name resolves via the same ladder as `gobbi config set` (`--project <name>` flag → `basename(repoRoot)`). Per-project gotchas under `gotchas/` apply only to that project; cross-project gotchas ship with the gobbi plugin under `.claude/skills/gotcha/` (farm-mirrored).
 
 ---
 

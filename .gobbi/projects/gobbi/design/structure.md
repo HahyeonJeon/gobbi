@@ -18,23 +18,23 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 
 ### Skills
 
-All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `_skills/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
+All skills live in `.claude/skills/` as plain hyphen-separated directories (e.g. `orchestration/`, `skills-doc/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
 
 Skills are organized into four categories:
 
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
-| **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
-| **Docs** | _claude, _skills, _agents, _rules, _project | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
-| **Tool** | _gobbi-cli | Utility and maintenance tools. Intent-first CLI reference. |
+| **Work** | gobbi, orchestration, discuss, ideation, plan, delegation, execution, note, collection, evaluation, git, notification, gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
+| **Docs** | claude, skills-doc, agents-doc, rules-doc, project-doc | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
+| **Tool** | gobbi-cli | Utility and maintenance tools. Intent-first CLI reference. |
 
 Some skills have child directories grouping related sub-docs:
 
-- **Evaluation perspectives** — each Docs skill that supports evaluation has an `evaluation/` subdirectory with 6 perspective docs (project, architecture, performance, aesthetics, overall, user): `_skills/evaluation/`, `_agents/evaluation/`, `_project/evaluation/`
-- **Notification** (child of _notification): `slack.md`, `telegram.md`, `discord.md` — channel-specific setup docs
-- **Gotcha** (child of _gotcha): child docs (not skills) describing how to record each type of gotcha
+- **Evaluation perspectives** — each Docs skill that supports evaluation has an `evaluation/` subdirectory with 6 perspective docs (project, architecture, performance, aesthetics, overall, user): `skills-doc/evaluation/`, `agents-doc/evaluation/`, `project-doc/evaluation/`
+- **Notification** (child of notification): `slack.md`, `telegram.md`, `discord.md` — channel-specific setup docs
+- **Gotcha** (child of gotcha): child docs (not skills) describing how to record each type of gotcha
 
-The `_gotcha/` skill is special — it contains per-skill gotcha files (`_orchestration.md`, `_git.md`, etc.) that record cross-project mistakes. Every agent checks the relevant gotcha file before starting work.
+The `gotcha/` skill contains cross-cutting gotcha files (`system.md`, `security.md`) for concerns that span multiple skills. Every agent checks the relevant gotcha file before starting work.
 
 ### Agents
 
@@ -43,11 +43,11 @@ Agent definitions live in `.claude/agents/`. Each file defines a specialist suba
 | Agent | Role |
 |:------|:-----|
 | gobbi-agent | Onboarding and setup assistant — helps users configure their Claude Code environment |
-| __pi | Principal Investigator — ideation, planning, and task decomposition through user discussion |
-| __executor | Code implementation and verification |
-| _skills-evaluator | Runs evaluation of skill definitions across all perspectives |
-| _agent-evaluator | Runs evaluation of agent definitions across all perspectives |
-| _project-evaluator | Runs evaluation of project work output across all perspectives |
+| pi | Principal Investigator — ideation, planning, and task decomposition through user discussion |
+| executor | Code implementation and verification |
+| skills-evaluator | Runs evaluation of skill definitions across all perspectives |
+| agent-evaluator | Runs evaluation of agent definitions across all perspectives |
+| project-evaluator | Runs evaluation of project work output across all perspectives |
 
 ### Hooks
 

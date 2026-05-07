@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/project-doc/evaluation/architecture.md

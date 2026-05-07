@@ -1,1 +1,0 @@
-../../../.gobbi/projects/gobbi/skills/_innovation/evaluation.md

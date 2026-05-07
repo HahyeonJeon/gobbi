@@ -74,7 +74,7 @@ All SHAs below exist on `feat/118-gobbi-memory-pass-2` (HEAD `5c5ac65` at review
 
 **Evidence:** `4708aca` (facade), `4bb9d38` (settings-io routing).
 
-**Severity:** Medium — any `_git` workflow that pre-computes worktree paths from the old location breaks.
+**Severity:** Medium — any `git` workflow that pre-computes worktree paths from the old location breaks.
 
 **Resolution:** fix code + doc — facade routes every caller; `v050-overview.md §Directory Split` updated to cite project-scoped worktrees.
 
@@ -120,7 +120,7 @@ All SHAs below exist on `feat/118-gobbi-memory-pass-2` (HEAD `5c5ac65` at review
 
 ### GAP-4 — Claude Code skill-cache empirical confirmation not run
 
-**Finding:** The assumption that Claude Code caches skill content at session start (and does not re-read on reference) was taken as the safer default. A simple experiment — edit `.claude/skills/_git/SKILL.md` mid-session and observe whether the next invocation reflects the change — was proposed but not executed. The mid-session refuse-to-rotate guard was a property of the legacy `gobbi project switch` command (removed in v0.5.0 PR-FIN-2); a cache miss would not have caused user-visible incoherence, only made the switch safer than documented.
+**Finding:** The assumption that Claude Code caches skill content at session start (and does not re-read on reference) was taken as the safer default. A simple experiment — edit `.claude/skills/git/SKILL.md` mid-session and observe whether the next invocation reflects the change — was proposed but not executed. The mid-session refuse-to-rotate guard was a property of the legacy `gobbi project switch` command (removed in v0.5.0 PR-FIN-2); a cache miss would not have caused user-visible incoherence, only made the switch safer than documented.
 
 **Evidence:** ideation §12 OQ2.
 

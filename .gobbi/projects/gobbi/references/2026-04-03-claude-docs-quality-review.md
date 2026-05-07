@@ -1,6 +1,6 @@
 # Claude Docs Quality Review
 
-Quality review of gobbi's `.claude/` docs as of 2026-04-03. This report evaluates the docs against the current `_claude` and `_project` guidance: clarity, navigability, scope control, and whether the docs behave like reliable entry points.
+Quality review of gobbi's `.claude/` docs as of 2026-04-03. This report evaluates the docs against the current `claude` and `project-doc` guidance: clarity, navigability, scope control, and whether the docs behave like reliable entry points.
 
 ## Summary
 
@@ -16,7 +16,7 @@ This is the main quality problem because these files are supposed to reduce look
 
 ### Medium: project-directory entry points are incomplete
 
-The `_project` standard says every directory should have a `README.md` entry point. Under `.claude/project/gobbi/`, only the project root and `note/` currently have one.
+The `project-doc` standard says every directory should have a `README.md` entry point. Under `.claude/project/gobbi/`, only the project root and `note/` currently have one.
 
 Directories missing an entry README in this review:
 
@@ -30,7 +30,7 @@ This slows navigation because readers must list files or open docs blindly.
 
 ### Medium: `.claude/project/gobbi/design/architecture.md` is drifting past the style target
 
-The file is 260 lines long. `_claude` sets a hard cap of 500 lines but recommends targeting under 200. It also relies heavily on fenced ASCII diagrams, with code blocks starting at lines 11, 70, 121, and 163.
+The file is 260 lines long. `claude` sets a hard cap of 500 lines but recommends targeting under 200. It also relies heavily on fenced ASCII diagrams, with code blocks starting at lines 11, 70, 121, and 163.
 
 The document is still readable, but it is becoming harder to scan than the rest of the doc set. If it grows further, splitting it into smaller architecture docs would better match the current writing standard.
 
@@ -48,7 +48,7 @@ That makes the project root readable but not very informative.
 
 - `.claude/CLAUDE.md` stays short and behaves like a session reference card.
 - `.claude/README.md` is concise and clear about gobbi's high-level principles.
-- `.claude/rules/__gobbi-convention.md` is focused, specific, and easy to verify.
+- `.claude/rules/gobbi-convention.md` is focused, specific, and easy to verify.
 - Most individual skills follow a predictable entry-point pattern.
 
 ## Recommended Follow-Up

@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/_project/evaluation/overall.md

@@ -1,1 +1,0 @@
-../../../.gobbi/projects/gobbi/skills/_claude/transcripts.md

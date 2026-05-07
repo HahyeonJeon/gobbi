@@ -220,7 +220,7 @@ Evidence: `packages/cli/src/cli.ts`. Commit `02dce1e` (W5.5).
 
 **Given** a freshly built farm for project `gobbi`
 **When** a symlink target is read under `.claude/skills/`
-**Then** the target is a relative path such as `../../.gobbi/projects/gobbi/skills/_delegation/SKILL.md`; it resolves to a file inside the repo.
+**Then** the target is a relative path such as `../../.gobbi/projects/gobbi/skills/delegation/SKILL.md`; it resolves to a file inside the repo.
 
 Evidence: `packages/cli/src/lib/symlink-farm.ts::mirrorTreeAsSymlinks`. Commit `004eda1`.
 
@@ -434,11 +434,11 @@ Evidence: `workspace-paths.ts::worktreeDir`. Commits `4708aca`, `4bb9d38`.
 
 ## Skill-farm imports
 
-### G-MEM2-43 — Pass-2 ships `_bun` + `_typescript` skills into the farm
+### G-MEM2-43 — Pass-2 ships `bun` + `typescript` skills into the farm
 
 **Given** a fresh `gobbi install` with the new template bundle
 **When** the farm is built
-**Then** `.claude/skills/_bun/SKILL.md` and `.claude/skills/_typescript/SKILL.md` exist as farm symlinks resolving into `.gobbi/projects/gobbi/skills/`.
+**Then** `.claude/skills/bun/SKILL.md` and `.claude/skills/typescript/SKILL.md` exist as farm symlinks resolving into `.gobbi/projects/gobbi/skills/`.
 
 Evidence: Commit `890e6d1` (W3 eval F2).
 

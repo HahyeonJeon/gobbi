@@ -32,7 +32,7 @@ MUST use AskUserQuestion to discuss with the user at every stage — ideation, p
 
 > **Never repeat the same mistake. Read gotchas before acting, write gotchas after feedback.**
 
-Every agent MUST load `_gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/projects/{name}/gotchas/` and promoted to permanent storage in the workspace-level skill storage via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
+Every agent MUST load `gotcha` skill before starting work. When the user corrects any approach, immediately record it as a gotcha. During an active workflow session, gotchas are written to `.gobbi/projects/{name}/gotchas/` and promoted to permanent storage in the workspace-level skill storage via `gobbi gotcha promote` outside the session — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Gotchas are the highest-value knowledge in this system.
 
 > **Split into narrow tasks. Execute step by step, not all at once.**
 
@@ -45,7 +45,7 @@ MUST decompose work into small, specific tasks and track them with TaskCreate. E
 | Document | Covers |
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
-| [_claude skill](skills/_claude/SKILL.md) | Documentation standard for `.claude/` authoring |
+| [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
 | [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step workflow, workspace `state.db` + per-session `gobbi.db` + JSON memory (`session.json` + `project.json`) — authoritative architecture doc |
 | [`v050-cli.md`](../../../.gobbi/projects/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` and `gobbi project *` commands |
-| [rules/](rules/) | Naming conventions and project rules |
+| [rules/](rules/) | Project rules |

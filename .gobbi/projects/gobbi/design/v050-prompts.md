@@ -21,7 +21,7 @@ prompt = compile(state, artifacts, skills, gotchas, context)
 | `state` | `gobbi.db` reducer-replay (per-session event log) | Current step, completed steps, eval config, active subagents |
 | `artifacts` | Step directories under `.gobbi/projects/<name>/sessions/{id}/` | Prior step outputs inlined as context for the current step |
 | `skills` | `.claude/skills/` — the surviving domain skills | Domain knowledge injected as materials, not instructions |
-| `gotchas` | `.claude/skills/_gotcha/` and `.gobbi/projects/<name>/learnings/gotchas/` | Known failure patterns prepended as guards |
+| `gotchas` | `.claude/skills/gotcha/` and `.gobbi/projects/<name>/learnings/gotchas/` | Known failure patterns prepended as guards |
 | `context` | `session.json` plus project root scan | Project path, config snapshot, tech stack context |
 
 The CLI replays `gobbi.db` first to determine which step is active. It then selects which artifacts are relevant to the current step — an Execution prompt needs Plan artifacts; an Evaluation prompt needs Execution artifacts. It loads the surviving skills that are appropriate for this step and inlines their content as materials. Gotchas are always included. The resulting prompt is the only thing the orchestrator sees.
@@ -90,7 +90,7 @@ V0.4.x conflated two concerns: skills taught agents both how the workflow runs a
 
 These skills encoded orchestration logic — what to do at each step, how to transition, what evaluation means. In v0.5.0, this content lives in the CLI's spec library and is never read directly by the orchestrator.
 
-`_orchestration`, `_discuss`, `_ideation`, `_plan`, `_research`, `_delegation`, `_execution`, `_collection`, `_memorization`, `_note`, `_evaluation`, `_innovation`, `_best-practice`
+`orchestration`, `discuss`, `ideation`, `plan`, `research`, `delegation`, `execution`, `collection`, `memorization`, `note`, `evaluation`, `innovation`, `best-practice`
 
 The content of these skills does not disappear — it is translated into step specs. The difference is ownership: in v0.4.x, the orchestrator discovers and follows these skills; in v0.5.0, the CLI encodes them and presents the result as step instructions.
 
@@ -100,19 +100,19 @@ These skills contain domain knowledge that is not orchestration-specific. They r
 
 | Skill | Domain |
 |-------|--------|
-| `_gotcha` | Known failure patterns — always injected as guards |
-| `_claude` | Documentation standard — injected for doc-authoring steps |
-| `_skills` | Skill authoring conventions — injected when writing skill docs |
-| `_agents` | Agent authoring conventions — injected when writing agent docs |
-| `_rules` | Rule authoring conventions — injected when writing rule files |
-| `_project` | Project documentation structure — injected for project doc steps |
-| `_git` | Git conventions — injected for steps that involve commits or branching |
+| `gotcha` | Known failure patterns — always injected as guards |
+| `claude` | Documentation standard — injected for doc-authoring steps |
+| `skills-doc` | Skill authoring conventions — injected when writing skill docs |
+| `agents-doc` | Agent authoring conventions — injected when writing agent docs |
+| `rules-doc` | Rule authoring conventions — injected when writing rule files |
+| `project-doc` | Project documentation structure — injected for project doc steps |
+| `git` | Git conventions — injected for steps that involve commits or branching |
 
 The criterion for survival is simple: if the content teaches the agent how to think about a specific domain — not how the workflow operates — it belongs in a skill. If the content teaches the workflow itself, it belongs in the CLI.
 
 ### How Skills Become Materials
 
-The CLI does not instruct the orchestrator to "load the `_git` skill." It reads the `_git` skill content itself and inlines the relevant portions directly into the generated prompt. The orchestrator receives the knowledge without needing to know where it came from. This eliminates the discovery problem: the orchestrator cannot forget to load a skill because the CLI already loaded it.
+The CLI does not instruct the orchestrator to "load the `git` skill." It reads the `git` skill content itself and inlines the relevant portions directly into the generated prompt. The orchestrator receives the knowledge without needing to know where it came from. This eliminates the discovery problem: the orchestrator cannot forget to load a skill because the CLI already loaded it.
 
 ---
 
