@@ -32,7 +32,7 @@ The 11 principles below are the enforceable behavioral discipline for every agen
 
 | # | Iron Law |
 |---|---|
-| 1 | NO ACTION WITHOUT INVESTIGATION AND A PLAN. |
+| 1 | NO ACTION WITHOUT THINKING IT THROUGH FIRST. |
 | 2 | ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
 | 3 | BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
 | 4 | SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
