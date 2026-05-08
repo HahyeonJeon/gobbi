@@ -6,7 +6,7 @@ Inventory of all `.claude/` documentation files in gobbi. Reflects the current s
 
 ## Category System
 
-Skills are organized into three top-level categories: **Work** (workflow participants loaded during the ideate-plan-execute-collect cycle), **Docs** (skills about writing and maintaining `.claude/` docs), and **Tool** (utility and maintenance tools). Work skills can have child skill categories that describe more specific principles under the parent. The `gobbi` interface skill stands alone with no category.
+Skills are organized into three top-level categories: **Work** (workflow participants — the `orchestration` skill plus supporting skills, with phase-specific guidance in `orchestration/workflow/` sub-documents), **Docs** (skills about writing and maintaining `.claude/` docs), and **Tool** (utility and maintenance tools). The `gobbi` interface skill stands alone with no category.
 
 ---
 
@@ -49,19 +49,13 @@ Standalone interface entry point — no category.
 
 #### Work
 
-**Workflow participants** — skills loaded during the ideate-plan-execute-collect cycle.
+**Workflow participants** — skills loaded during the workflow phases and at session start. Phase-specific guidance lives as sub-documents under `orchestration/workflow/`.
 
 | Name | Path | Description |
 |------|------|-------------|
-| orchestration | `.claude/skills/orchestration/SKILL.md` | Workflow coordinator. Task routing, phase transitions, step tracking. |
-| discuss | `.claude/skills/discuss/SKILL.md` | Structured discussion via AskUserQuestion. Challenges vague thinking, surfaces problems. |
-| ideation | `.claude/skills/ideation/SKILL.md` | Brainstorming and option exploration. Contribution points, trade-offs, risk analysis. |
-| plan | `.claude/skills/plan/SKILL.md` | Task decomposition into narrow, specific, agent-assigned subtasks. |
-| delegation | `.claude/skills/delegation/SKILL.md` | Subagent briefing with context layers and scope boundaries. |
-| execution | `.claude/skills/execution/SKILL.md` | Single-task execution guide: study, plan, implement, verify. |
+| orchestration | `.claude/skills/orchestration/SKILL.md` | Workflow coordinator. Manager role, Chat/Auto modes, the five-step workflow. Phase guidance in `workflow/` sub-docs. |
 | collection | `.claude/skills/collection/SKILL.md` | Workflow trail persistence. Prompt, plan, task results, README. |
 | note | `.claude/skills/note/SKILL.md` | Note writing at every workflow step. Decisions, outcomes, context. |
-| evaluation | `.claude/skills/evaluation/SKILL.md` | Evaluation orchestration. Selecting perspectives, spawning evaluators, synthesizing findings. |
 | git | `.claude/skills/git/SKILL.md` | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management. |
 | notification | `.claude/skills/notification/SKILL.md` | Configure Claude Code notifications (Slack, Telegram, others). |
 | gotcha | `.claude/skills/gotcha/SKILL.md` | Cross-project mistake recording. Check before acting, write after corrections. |
@@ -104,8 +98,14 @@ Standalone interface entry point — no category.
 | authoring.md | skills-doc | `.claude/skills/skills-doc/authoring.md` | How to write skill content: description and instruction writing. |
 | verification.md | skills-doc | `.claude/skills/skills-doc/verification.md` | Skill quality verification: trigger accuracy, output evaluation. |
 | conventions.md | git | `.claude/skills/git/conventions.md` | Branch naming, commit messages, PR template, issue format, sub-issues. |
-| feedback.md | orchestration | `.claude/skills/orchestration/feedback.md` | FEEDBACK phase: iteration tracking, stagnation detection, round cap. |
-| finish.md | orchestration | `.claude/skills/orchestration/finish.md` | FINISH phase: merge/commit/compact decision tree, pre-action verification. |
+| discussion.md | orchestration | `.claude/skills/orchestration/workflow/discussion.md` | Discussion phase: dimensions, recommendation pattern, AskUserQuestion discipline. |
+| ideation.md | orchestration | `.claude/skills/orchestration/workflow/ideation.md` | Ideation phase: PI stances, contribution points, discussion points. |
+| planning.md | orchestration | `.claude/skills/orchestration/workflow/planning.md` | Planning phase: decomposition, plan structure, good/bad plan criteria. |
+| research.md | orchestration | `.claude/skills/orchestration/workflow/research.md` | Research phase: dual-stance investigation, synthesis, references discipline. |
+| delegation.md | orchestration | `.claude/skills/orchestration/workflow/delegation.md` | Delegation: briefing structure, context layers, model selection, agent roster. |
+| execution.md | orchestration | `.claude/skills/orchestration/workflow/execution.md` | Execution phase: study-plan-execute-verify lifecycle, scope discipline. |
+| evaluation.md | orchestration | `.claude/skills/orchestration/workflow/evaluation.md` | Evaluation phase: perspective selection, scoring, false positives, stage focus. |
+| memorization.md | orchestration | `.claude/skills/orchestration/workflow/memorization.md` | Memorization phase: gotchas, rules, project docs, session continuity. |
 
 ### Gotcha Files
 
@@ -136,15 +136,16 @@ Standalone interface entry point — no category.
 | Agents — Evaluators | 3 |
 | Agents — Implementation | 3 |
 | Skills — Interface | 1 |
-| Skills — Work | 12 |
+| Skills — Work | 6 |
+| Skills — Work (child: orchestration/workflow) | 9 |
 | Skills — Work (child: Notification) | 3 |
 | Skills — Docs | 5 |
 | Skills — Tool | 1 |
-| Skill child docs | 6 |
+| Skill child docs | 12 |
 | Evaluation perspective docs | 18 (6 per target: skills-doc, agents-doc, project-doc) |
 | Gotcha files | 2 |
 | Project docs | 5 |
-| **Total** | **56** skills + 18 evaluation child docs |
+| **Total** | Updated — 8 standalone Work skills merged into orchestration/workflow sub-docs |
 
 ---
 

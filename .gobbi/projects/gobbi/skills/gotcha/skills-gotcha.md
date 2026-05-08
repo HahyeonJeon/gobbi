@@ -8,7 +8,7 @@ Skill-specific gotchas live inside the skill directory they serve: `$CLAUDE_PROJ
 
 > **Gotchas belong to the skill they correct.**
 
-A gotcha about `plan` belongs in `$CLAUDE_PROJECT_DIR/.claude/skills/plan/gotchas.md`. The agent loading `plan` reads its own gotchas without loading a separate skill. Locality ensures the agent always checks gotchas — no extra loading step to forget.
+A gotcha about a planning workflow belongs in the relevant skill's `gotchas.md`. The agent loading that skill reads its own gotchas without loading a separate skill. Locality ensures the agent always checks gotchas — no extra loading step to forget.
 
 > **Cross-cutting gotchas stay in `gotcha/`.**
 

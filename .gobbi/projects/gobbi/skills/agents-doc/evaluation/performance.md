@@ -36,9 +36,9 @@ Also evaluate: does the agent load a broad parent skill when a narrow child woul
 
 ### Content Duplication
 
-Read each section of the agent definition and ask: is this content already covered by a skill the agent loads? If the agent loads `claude`, it has access to documentation standards — restating those standards in the definition is duplication. If the agent loads `execution`, it has lifecycle guidance — the definition should adapt, not restate.
+Read each section of the agent definition and ask: is this content already covered by a skill the agent loads? If the agent loads `claude`, it has access to documentation standards — restating those standards in the definition is duplication. If the agent references `workflow/execution.md`, it has lifecycle guidance — the definition should adapt, not restate.
 
-The definition should add domain-specific context on top of what skills provide, not reproduce what skills already teach. Duplication patterns to look for: lifecycle phase descriptions that mirror `execution` verbatim; quality criteria that repeat what a loaded skill already specifies; constraint lists that reproduce a skill's constraint section.
+The definition should add domain-specific context on top of what skills provide, not reproduce what skills already teach. Duplication patterns to look for: lifecycle phase descriptions that mirror `workflow/execution.md` verbatim; quality criteria that repeat what a loaded skill already specifies; constraint lists that reproduce a skill's constraint section.
 
 ### Model Appropriateness
 

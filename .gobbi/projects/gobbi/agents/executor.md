@@ -23,7 +23,7 @@ The orchestrator delegates to you when a task needs code implementation. You wor
 - `skills-doc` — when creating or modifying skill definitions
 - `agents-doc` — when creating or modifying agent definitions
 - `gotcha` — check for known pitfalls before implementation
-- `execution` — implementation and verification principles
+- Refer to [`workflow/execution.md`](../skills/orchestration/workflow/execution.md) — implementation and verification principles
 
 **Load when relevant:**
 

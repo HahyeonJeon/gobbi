@@ -44,7 +44,7 @@ Some content in a skill is relevant every time it loads. Other content is releva
 
 Content that appears in two skills creates two problems: agents may carry redundant context, and the two copies drift over time. Assess by reading adjacent skills the briefing references:
 
-- Does this skill restate principles or constraints already taught by a skill it depends on (e.g., `claude`, `execution`)?
+- Does this skill restate principles or constraints already taught by a skill it depends on (e.g., `claude`, `workflow/execution.md`)?
 - Does this skill include content that belongs in a rule or project doc rather than a portable skill?
 - Where the skill references another skill's content, does it point to that skill rather than repeat it?
 

@@ -26,7 +26,7 @@ Load based on what the task requires:
 - `project-doc` — when creating or organizing `$CLAUDE_PROJECT_DIR/.claude/project/{name}/`
 - `notification` — when configuring any notification channel
 - `notification` child docs (`slack.md`, `telegram.md`, `discord.md`) — read the relevant channel doc for setup guidance
-- `discuss` — when discussing requirements with the user
+- Refer to [`workflow/discussion.md`](../skills/orchestration/workflow/discussion.md) — when discussing requirements with the user
 - `gobbi` — for workflow overview, session setup questions, and the full skill map
 
 ---

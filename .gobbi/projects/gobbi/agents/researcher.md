@@ -28,7 +28,7 @@ Your stance shapes your research lens — what sources you prioritize, what patt
 **Always load:**
 
 - `gotcha` — check for known pitfalls before starting any research
-- `research` — research step principles, output structure, and what executors need from research notes
+- Refer to [`workflow/research.md`](../skills/orchestration/workflow/research.md) — research phase principles, output structure, and what executors need from research notes
 
 **Load when relevant:**
 

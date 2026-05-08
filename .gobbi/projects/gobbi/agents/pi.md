@@ -57,18 +57,18 @@ Stance-specific context will be provided in the delegation prompt — it tells y
 
 **Load for Ideation:**
 
-- `ideation` — discussion points and refinement techniques for idea development
-- `plan` — planning principles, decomposition guidance, and plan structure
+- Refer to [`workflow/ideation.md`](../skills/orchestration/workflow/ideation.md) — discussion points and refinement techniques for idea development
+- Refer to [`workflow/planning.md`](../skills/orchestration/workflow/planning.md) — planning principles, decomposition guidance, and plan structure
 
 **Load for evaluation sub-phases (`ideation_eval`, `planning_eval`, `execution_eval`):**
 
-- `research` — when reviewing research output produced during the investigation phase
+- Refer to [`workflow/research.md`](../skills/orchestration/workflow/research.md) — when reviewing research output produced during the investigation phase
 
 Review criteria are provided in the delegation prompt — no extra skill loading is required for the review itself.
 
 **Load when relevant:**
 
-- `discuss` — when the task starts with an ambiguous user prompt that needs clarification before ideation
+- Refer to [`workflow/discussion.md`](../skills/orchestration/workflow/discussion.md) — when the task starts with an ambiguous user prompt that needs clarification before ideation
 - Project skill — architecture, conventions, and constraints for the project
 - `claude` — when the plan involves documentation changes in `.claude/`
 - `skills-doc` — when the plan involves creating or modifying skills

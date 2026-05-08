@@ -64,7 +64,7 @@ What the orchestrator provides in the delegation prompt:
 
 - **The stance** -- innovative or best, as the first line of the prompt. This tells the PI which thinking lens to adopt.
 - **The context** -- the user's idea and discussion so far (ideation), or the completed work and original goals (review).
-- **Skills to load** -- `gotcha` always. For ideation: `ideation` and `plan`. For review: criteria from the delegation prompt. Project skill when relevant.
+- **Skills to load** -- `gotcha` always. For ideation: refer to [`workflow/ideation.md`](../orchestration/workflow/ideation.md) and [`workflow/planning.md`](../orchestration/workflow/planning.md). For review: criteria from the delegation prompt. Project skill when relevant.
 - **The output location** -- path to the note subdirectory where the PI should write `innovative.md` or `best.md`.
 
 The PI's output is a stance-specific file -- `innovative.md` or `best.md`. The orchestrator synthesizes both stances' outputs after both complete. See the `pi.md` agent definition for the full lifecycle and quality expectations per step.

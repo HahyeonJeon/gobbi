@@ -39,7 +39,7 @@ These four dimensions are the substance of pre-action thinking — not optional 
 
 **3-strike rule:** After three failed hypotheses or fix attempts on the same issue, the issue is no longer a hypothesis problem — it is a wrong architecture or wrong understanding. Stop iterating. Escalate to the user with what you tried and what you observed.
 
-**Mechanism:** the ideation, plan, and research skills are hard-gates before any implementation skill runs. Each addresses different dimensions of thinking — ideation explores the approach and critical considerations; planning sequences the execution; research gathers references and best practices.
+**Mechanism:** the Ideation, Planning, and Research phases are hard-gates before any implementation phase runs. Each addresses different dimensions of thinking — Ideation explores the approach and critical considerations; Planning sequences the execution; Research gathers references and best practices. Phase guidance lives in the `orchestration` skill's `workflow/` sub-documents.
 
 ---
 

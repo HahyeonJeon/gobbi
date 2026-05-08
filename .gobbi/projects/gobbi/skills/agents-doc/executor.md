@@ -67,7 +67,7 @@ The orchestrator does NOT delegate to `executor` for:
 What the orchestrator provides in the delegation prompt:
 
 - **The task** — the specific task from the plan, with acceptance criteria
-- **Skills to load** — `gotcha` (always), `execution` (always), `claude` (when `.claude/` files are involved), project skill (when available), domain skills per the plan
+- **Skills to load** — `gotcha` (always), `claude` (when `.claude/` files are involved), project skill (when available), domain skills per the plan. Refer to [`workflow/execution.md`](../orchestration/workflow/execution.md) for execution phase principles.
 - **Research materials path** — path to the `research/` directory when research was performed before execution
 - **Scope boundary** — what NOT to touch. Explicit boundaries prevent the executor from expanding scope when it sees adjacent improvements
 - **Worktree path** — when `git` is active, the path to the worktree where the executor should work

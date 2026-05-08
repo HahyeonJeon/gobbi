@@ -67,11 +67,11 @@ What the orchestrator provides in the delegation prompt:
 
 - **The stance** -- innovative or best, as a clear directive in the prompt.
 - **The approved plan** -- path to `plan/` or the plan content itself, with specific tasks to research.
-- **Skills to load** -- `gotcha` and `research` always. Project skill when relevant. Domain skills as needed.
+- **Skills to load** -- `gotcha` always. Refer to [`workflow/research.md`](../orchestration/workflow/research.md) for research phase principles. Project skill when relevant. Domain skills as needed.
 - **The output location** -- path to the `research/` subdirectory where findings should be written.
 - **Executor framing** -- frame the research around what executors need to know: "what does the executor need to implement this correctly?"
 
-After both researchers complete, the orchestrator reads `research/innovative.md` and `research/best.md`, then synthesizes into `research/research.md`. The synthesis resolves conflicts -- it does not defer them to executors. See the `research` skill for synthesis guidance and the `delegation` skill for the full delegation checklist.
+After both researchers complete, the orchestrator reads `research/innovative.md` and `research/best.md`, then synthesizes into `research/research.md`. The synthesis resolves conflicts -- it does not defer them to executors. See [`workflow/research.md`](../orchestration/workflow/research.md) for synthesis guidance and [`workflow/delegation.md`](../orchestration/workflow/delegation.md) for the full delegation checklist.
 
 ---
 

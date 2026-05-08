@@ -24,7 +24,7 @@ Skills are organized into four categories:
 
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
-| **Work** | gobbi, orchestration, discuss, ideation, plan, delegation, execution, note, collection, evaluation, git, notification, gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
+| **Work** | gobbi, orchestration, note, collection, git, notification, gotcha | Workflow participants. Skills loaded during the workflow and at session start. Phase-specific guidance (discussion, ideation, planning, research, delegation, execution, evaluation, memorization) lives as sub-documents under `orchestration/workflow/`. |
 | **Docs** | claude, skills-doc, agents-doc, rules-doc, project-doc | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
 | **Tool** | gobbi-cli | Utility and maintenance tools. Intent-first CLI reference. |
 

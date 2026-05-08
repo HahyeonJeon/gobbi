@@ -10,7 +10,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/projects/<name>/sessions/{session-id}/` and record the first `workflow.start` event. The 6-step state machine — Configuration (CLI init phase), Ideation, Planning, Execution, Memorization, Handoff (with Evaluation as a sub-phase) — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
 
-**FIRST — load core skills before anything else.** Load `gobbi-principles`, `gotcha`, `claude`, and `git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`orchestration` is deprecated in v0.5.0 and no longer loads — see `orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
+**FIRST — load core skills before anything else.** Load `gobbi-principles`, `gotcha`, `claude`, and `git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded.
 
 **Session env vars arrive automatically.** The `gobbi hook session-start` SessionStart hook (registered in `plugins/gobbi/hooks/hooks.json`) fires at session start, reads the hook's stdin JSON payload, and persists the following env vars to `$CLAUDE_ENV_FILE`. Claude Code then sources that file, making the vars available to every subsequent command in the session:
 
@@ -160,16 +160,8 @@ Workflow participant skills — loaded during the 6-step state machine: Configur
 
 | Skill | Purpose |
 |---|---|
-| **orchestration** | Adaptive workflow coordinator for v0.4.x skill-based orchestration — deprecated in v0.5.0. See `orchestration/ARCHIVED.md` for historical reference and the v0.4.x-to-v0.5.0 step mapping. |
-| **discuss** | Critical, structured discussion. Challenge vague thinking, surface hidden problems, push ideas toward concrete specificity. |
-| **ideation** | Structured idea refinement. PI agents (innovative + best stances) improve the user's idea through discussion and synthesis. |
-| **plan** | Task decomposition. Break complex work into narrow, ordered, agent-assigned tasks. |
-| **research** | Research investigation. How researcher agents study codebase patterns, external approaches, and implementation paths for approved plans. |
-| **delegation** | Hand off work to subagents with the right context and scope boundaries. |
-| **execution** | Task execution guide. How an executor agent studies, plans, implements, and verifies. |
-| **evaluation** | Parent evaluation framework. How to delegate evaluation, select perspectives, and discuss findings. |
+| **orchestration** | Workflow coordinator. Manager role, Chat/Auto modes, the five-step workflow, and sub-documents under `workflow/` for each phase. |
 | **collection** | Verify note completeness and write task README. Confirm all per-step subdirectories are populated, then write the summary. |
-| **memorization** | Save context for session continuity. Persist task details, gotchas, and rules. |
 | **note** | Write notes at every workflow step. Record decisions, outcomes, and context. |
 | **git** | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
 | **notification** | Configure Claude Code notifications (Slack, Telegram, others) via conversation. |
