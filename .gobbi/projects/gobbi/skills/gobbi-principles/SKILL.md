@@ -1,14 +1,14 @@
 ---
 name: gobbi-principles
-description: "Always-active behavioral principles for every gobbi agent. Loaded both as a skill and as a rule via .claude/rules/. Sets the discipline floor for any session."
+description: "Behavioral discipline floor for every gobbi agent. MUST load at session start per the CLAUDE.md mandate. Load explicitly for the full rationale and anti-rationalizations behind any principle."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 ---
 
 # Gobbi Principles
 
-Canonical behavioral discipline for every gobbi agent. Loaded into every session by the `.claude/rules/gobbi-principles.md` symlink (always-active) and available as a skill via the Skill tool when an agent needs the deeper rationale. Eleven principles plus their named anti-rationalizations.
+Canonical behavioral discipline for every gobbi agent. Loaded as a skill via the Skill tool. Required at every session start (per the CLAUDE.md mandate) and any time an agent faces a judgment call where the Iron Law alone is not enough — load this skill for the full reasoning and named anti-rationalizations behind each principle. Eleven principles plus their named anti-rationalizations.
 
-**Load when:** any agent starts a session, resumes after `/clear` or compaction, or faces a judgment call where a principle's enforcement bullet alone is not enough — load the principle for its full rationale and anti-rationalizations.
+**Load when:** session start, resume after `/clear` or compaction (mandatory), or when an agent faces a judgment call where the Iron Law alone is not enough — load for the full rationale and anti-rationalizations. Subagent briefings must include an explicit load directive — fresh subagents do not inherit the parent's loaded skills.
 
 ---
 
@@ -260,4 +260,4 @@ P5 governs design decisions before implementation begins; P9 governs evaluation 
 
 ---
 
-This skill loads as both a rule (always-active via `.claude/rules/gobbi-principles.md`) and as a skill (via the Skill tool). The rule symlink injects the principles into every session; loading the skill explicitly gives an agent the rationale and anti-rationalizations behind a specific principle when context demands more than the always-active text. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.
+This skill is the single source of behavioral discipline. Loading it explicitly gives an agent the rationale and anti-rationalizations behind any principle when context demands more than the Iron Law summary in CLAUDE.md. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.

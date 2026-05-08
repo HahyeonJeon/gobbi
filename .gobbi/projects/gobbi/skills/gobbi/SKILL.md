@@ -10,9 +10,7 @@ You are an orchestrator based on gobbi. You must delegate everything to speciali
 
 In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup questions below, then drives `gobbi workflow init` to create the session's runtime directory under `.gobbi/projects/<name>/sessions/{session-id}/` and record the first `workflow.start` event. The 6-step state machine — Configuration (CLI init phase), Ideation, Planning, Execution, Memorization, Handoff (with Evaluation as a sub-phase) — is governed by the CLI's step specs at `packages/cli/src/specs/`. Once setup is complete, hand off to `gobbi workflow init`.
 
-**FIRST — load core skills before anything else.** Load `gotcha`, `claude`, and `git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`orchestration` is deprecated in v0.5.0 and no longer loads — see `orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
-
-**SECOND — ensure `gobbi-principles` symlink exists.** Check whether `.claude/rules/gobbi-principles.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/gobbi-principles.md` pointing to `.gobbi/projects/gobbi/skills/gobbi-principles/SKILL.md` (relative path: `../../.gobbi/projects/gobbi/skills/gobbi-principles/SKILL.md` from `.claude/rules/`). This symlink makes the behavioral principles always-active and auto-updates when the gobbi plugin is updated.
+**FIRST — load core skills before anything else.** Load `gobbi-principles`, `gotcha`, `claude`, and `git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`orchestration` is deprecated in v0.5.0 and no longer loads — see `orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
 
 **Session env vars arrive automatically.** The `gobbi hook session-start` SessionStart hook (registered in `plugins/gobbi/hooks/hooks.json`) fires at session start, reads the hook's stdin JSON payload, and persists the following env vars to `$CLAUDE_ENV_FILE`. Claude Code then sources that file, making the vars available to every subsequent command in the session:
 
@@ -31,7 +29,7 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup 
 
 No discovery dance. Call `gobbi config get …` or `gobbi workflow init` directly — `$CLAUDE_SESSION_ID` is already in the process env. If `$CLAUDE_SESSION_ID` is absent (hook not registered or custom Claude Code config), `gobbi workflow init` exits 2 with a remediation hint pointing to the SessionStart hook registration.
 
-**THIRD — check gobbi CLI availability and version.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
+**SECOND — check gobbi CLI availability and version.** Run `gobbi --version` to verify the CLI is installed. If the command fails, load [cli-setup.md](cli-setup.md) and help the user install before proceeding. The CLI is required for workflow initialization, session management, config management, and validation. Without it, the workflow cannot function.
 
 After confirming the CLI is present, run `gobbi --is-latest` to check whether the installed version matches the latest published release on npm. Exit-code semantics:
 
@@ -39,7 +37,7 @@ After confirming the CLI is present, run `gobbi --is-latest` to check whether th
 - **Exit 1** — installed version is stale. Surface the version delta to the user and offer to run the install command from [cli-setup.md](cli-setup.md) to update. Do not block session start — the user may choose to defer.
 - **Exit 2** — indeterminate (network unavailable, registry error). Surface the diagnostic to the user but do not block. Proceed with the installed version.
 
-**FOURTH — check for existing session settings.** Run:
+**THIRD — check for existing session settings.** Run:
 
 ```
 gobbi config get workflow --level session
@@ -48,10 +46,10 @@ gobbi config get workflow --level session
 This reads `.gobbi/projects/<name>/sessions/{id}/settings.json` at the session level without cascade fallthrough. `$CLAUDE_SESSION_ID` is already in the process env from the SessionStart hook.
 
 - **Exit 0** — session settings exist (this is a resume, post-`/clear`, or compact). Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If the user chooses to reuse, skip the setup questions and proceed directly to `gobbi workflow init`.
-- **Exit 1** — no prior session settings. Proceed to the setup questions in FIFTH.
+- **Exit 1** — no prior session settings. Proceed to the setup questions in FOURTH.
 - **Exit 2** — a parse or I/O error occurred. Surface the stderr diagnostic to the user before proceeding.
 
-**FIFTH — ask the user three setup questions** with AskUserQuestion (only if no existing settings were reused).
+**FOURTH — ask the user three setup questions** with AskUserQuestion (only if no existing settings were reused).
 
 **First question — evaluation mode:**
 
@@ -121,7 +119,7 @@ gobbi config init --level workspace --force  # force re-seed if file already exi
 
 Refuses without `--force` if the file already exists. Seed is `{schemaVersion: 1}` only.
 
-**SIXTH — project context detection.** This runs automatically at session start without asking. Load [project-setup.md](project-setup.md) to execute detection.
+**FIFTH — project context detection.** This runs automatically at session start without asking. Load [project-setup.md](project-setup.md) to execute detection.
 
 This skill defines the agent principles, rules, and skill map you must follow.
 
@@ -178,7 +176,7 @@ Workflow participant skills — loaded during the 6-step state machine: Configur
 | **innovation** | Innovation stance skill. Defines how agents think when spawned as the innovative stance — creative, cross-domain, unconventional. |
 | **best-practice** | Best-practice stance skill. Defines how agents think when spawned as the best stance — proven patterns, evidence, community consensus. |
 | **gotcha** | Cross-project mistake recording. Check before acting, write after corrections. |
-| **gobbi-principles** | 11 behavioral principles every agent must follow. Loaded always-active via `.claude/rules/gobbi-principles.md` symlink — load the skill explicitly for the full rationale and anti-rationalizations behind any principle. |
+| **gobbi-principles** | 11 behavioral principles every agent must follow. MUST load at session start — load explicitly for the full rationale and anti-rationalizations behind any principle. |
 
 #### Evaluation Perspectives
 

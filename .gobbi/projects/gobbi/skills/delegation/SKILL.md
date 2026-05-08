@@ -52,6 +52,7 @@ Every subagent needs three layers of context:
 
 **Always load (non-negotiable):**
 
+- `gobbi-principles` — behavioral discipline floor; fresh subagents do not inherit the parent's loaded skills, so every briefing must include an explicit load directive
 - `claude` skill — docs structure, anti-patterns, navigation standard
 - The project skill — project architecture, conventions, constraints
 - Gotchas — MUST check `gotcha` and the project skill's `gotchas/` before starting work
