@@ -24,11 +24,11 @@ Every non-trivial task follows these 5 productive steps. Evaluation runs as a su
 
 > **Evaluation is a mandatory sub-phase in the gobbi workflow.**
 
-Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The orchestrator selects 2-5 evaluator perspectives based on task type, with Project and Overall always included. After evaluation, discuss findings with the user before improving — the user decides what to address, defer, or disagree with. Never auto-apply evaluation findings. The principle-level discipline (who evaluates whom, perspective separation) lives in `agent-principles` Principle 2.
+Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The orchestrator selects 2-5 evaluator perspectives based on task type, with Project and Overall always included. After evaluation, discuss findings with the user before improving — the user decides what to address, defer, or disagree with. Never auto-apply evaluation findings. The principle-level discipline (who evaluates whom, perspective separation) lives in `gobbi-principles` Principle 2.
 
-> **Agent behavioral principles apply on every task. Load [agent-principles](skills/agent-principles/SKILL.md).**
+> **Agent behavioral principles apply on every task. Load [gobbi-principles](skills/gobbi-principles/SKILL.md).**
 
-The 10 principles below are the enforceable behavioral discipline for every agent. The [agent-principles](skills/agent-principles/SKILL.md) skill holds the depth; `gobbi-rule` is the always-active enforcement subset.
+The 11 principles below are the enforceable behavioral discipline for every agent. The [gobbi-principles](skills/gobbi-principles/SKILL.md) skill holds the depth; `.claude/rules/gobbi-principles.md` is the always-active enforcement symlink that injects the principles into every session.
 
 | # | Iron Law |
 |---|---|
@@ -42,6 +42,7 @@ The 10 principles below are the enforceable behavioral discipline for every agen
 | 8 | EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
 | 9 | EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
 | 10 | NO CHANGE WITHOUT A REAL MOTIVATOR. |
+| 11 | NO IMPROVEMENT THAT GAMES THE TOOL. |
 
 > **Gobbi-specific tooling: the `gotcha` skill and `gobbi gotcha promote` command.**
 
@@ -55,7 +56,7 @@ Every agent MUST load the `gotcha` skill before starting work. When the user cor
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [agent-principles](skills/agent-principles/SKILL.md) | 10 behavioral principles every agent must follow — depth behind each gobbi-rule bullet |
+| [gobbi-principles](skills/gobbi-principles/SKILL.md) | 11 behavioral principles every agent must follow — loaded always-active via `.claude/rules/gobbi-principles.md` |
 | [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step workflow, workspace `state.db` + per-session `gobbi.db` + JSON memory (`session.json` + `project.json`) — authoritative architecture doc |
 | [`v050-cli.md`](../../../.gobbi/projects/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` and `gobbi project *` commands |
 | [rules/](rules/) | Project rules |

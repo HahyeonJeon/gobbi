@@ -12,7 +12,7 @@ In v0.5.0, `/gobbi` is the session-bootstrap front door. It completes the setup 
 
 **FIRST — load core skills before anything else.** Load `gotcha`, `claude`, and `git` immediately. Do not ask questions, do not run project setup, do not proceed until skills are loaded. (`orchestration` is deprecated in v0.5.0 and no longer loads — see `orchestration/ARCHIVED.md` only if you need historical reference for v0.4.x terminology.)
 
-**SECOND — ensure `gobbi-rule` symlink exists.** Check whether `.claude/rules/gobbi-rule.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/` pointing to `gobbi-rule.md` in the `gobbi-rule-container` skill directory. This symlink makes the core behavioral rules always-active and auto-updates when the gobbi plugin is updated.
+**SECOND — ensure `gobbi-principles` symlink exists.** Check whether `.claude/rules/gobbi-principles.md` exists in `$CLAUDE_PROJECT_DIR`. If it is missing, create a symlink from `.claude/rules/gobbi-principles.md` pointing to `.gobbi/projects/gobbi/skills/gobbi-principles/SKILL.md` (relative path: `../../.gobbi/projects/gobbi/skills/gobbi-principles/SKILL.md` from `.claude/rules/`). This symlink makes the behavioral principles always-active and auto-updates when the gobbi plugin is updated.
 
 **Session env vars arrive automatically.** The `gobbi hook session-start` SessionStart hook (registered in `plugins/gobbi/hooks/hooks.json`) fires at session start, reads the hook's stdin JSON payload, and persists the following env vars to `$CLAUDE_ENV_FILE`. Claude Code then sources that file, making the vars available to every subsequent command in the session:
 
@@ -143,6 +143,17 @@ This skill defines the agent principles, rules, and skill map you must follow.
 
 ---
 
+## Operating Conventions
+
+These conventions apply to all sessions using gobbi.
+
+**Model selection:**
+- Innovative stance and implementation agents use opus — creative work needs deep reasoning.
+- Evaluators, reviewers, and docs agents use sonnet — assessment follows structured criteria.
+- All agents run at max effort — never reduce effort level.
+
+---
+
 ## Gobbi Skills
 
 ### Work
@@ -167,7 +178,7 @@ Workflow participant skills — loaded during the 6-step state machine: Configur
 | **innovation** | Innovation stance skill. Defines how agents think when spawned as the innovative stance — creative, cross-domain, unconventional. |
 | **best-practice** | Best-practice stance skill. Defines how agents think when spawned as the best stance — proven patterns, evidence, community consensus. |
 | **gotcha** | Cross-project mistake recording. Check before acting, write after corrections. |
-| **agent-principles** | 9 behavioral principles every agent must follow. Canonical depth behind each gobbi-rule bullet — load at session start. |
+| **gobbi-principles** | 11 behavioral principles every agent must follow. Loaded always-active via `.claude/rules/gobbi-principles.md` symlink — load the skill explicitly for the full rationale and anti-rationalizations behind any principle. |
 
 #### Evaluation Perspectives
 
@@ -217,7 +228,6 @@ Utility and maintenance tooling.
 | Skill | Purpose |
 |---|---|
 | **gobbi-cli** | Intent-first CLI reference. Maps agent tasks to gobbi commands and cross-references domain skills for workflow context. |
-| **gobbi-rule-container** | Container for `gobbi-rule` behavioral rule. Source files symlinked into `.claude/rules/` at session start for auto-update with plugin. |
 | **bun** | Bun runtime patterns for `packages/cli/` — subprocess spawning, SQLite access, bun:test runner, module-relative paths, and build/run script surface. Load when writing or reviewing Bun runtime code. |
 | **typescript** | TypeScript strict-mode discipline for `packages/cli/src/` — discriminated unions, `satisfies`/`assertNever` exhaustiveness gates, AJV boundary parsing, readonly conventions, and codegen-branded types. Load when authoring, reviewing, or debugging any `.ts` file. |
 
