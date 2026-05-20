@@ -167,9 +167,9 @@ describe('handoff/spec.json — validation', () => {
     expect(transition?.condition).toBe('always');
   });
 
-  test('required skills include _project — handoff reads project context', () => {
+  test('required skills include project-doc — handoff reads project context', () => {
     const spec = loadSpec();
-    expect(spec.meta.requiredSkills).toContain('_project');
+    expect(spec.meta.requiredSkills).toContain('project-doc');
   });
 
   // CV-10 / issue #188 regression — pre-fix the handoff footer named

@@ -13,7 +13,7 @@
  *                           null (orchestrator view — not a per-task delegate
  *                           dispatch).
  *   2. executor-dispatch  — orchestrator is about to dispatch one task to the
- *                           `__executor` subagent. `activeAgent` is set to
+ *                           `executor` subagent. `activeAgent` is set to
  *                           `'executor'` so the delegation block is inlined.
  *   3. skill-injection    — the PR B folded Overall C1 finding. The compile
  *                           input includes `skillSections: [_gotcha section,
@@ -112,7 +112,7 @@ function firstEntryFixture(spec: StepSpec): CompileInput {
 
 function executorDispatchFixture(spec: StepSpec): CompileInput {
   // Orchestrator is about to dispatch task #2 (Execution spec authoring) to
-  // the `__executor` subagent. One active subagent is registered.
+  // the `executor` subagent. One active subagent is registered.
   // `activeAgent: 'executor'` inlines the delegation block.
   const state: WorkflowState = {
     ...initialState('session-exec-dispatch'),
@@ -122,7 +122,7 @@ function executorDispatchFixture(spec: StepSpec): CompileInput {
     activeSubagents: [
       {
         subagentId: 'subagent-executor-task-2',
-        agentType: '__executor',
+        agentType: 'executor',
         step: 'execution',
         spawnedAt: FIXED_TIMESTAMP,
       },
@@ -141,7 +141,7 @@ function executorDispatchFixture(spec: StepSpec): CompileInput {
 }
 
 // Skill sections used by the skill-injection fixture. They model what
-// `specs/skills.ts::loadSkills` emits for `_gotcha` and `_execution`. The
+// `specs/skills.ts::loadSkills` emits for `gotcha` and `execution`. The
 // content is deliberately short and marker-heavy so the snapshot is readable
 // and easy to eyeball when intentional changes land.
 //
@@ -149,15 +149,15 @@ function executorDispatchFixture(spec: StepSpec): CompileInput {
 // linter catches ISO timestamps, UUIDs, absolute paths, PIDs, and session
 // folder ids. These fixture bodies are hand-written to stay clean.
 const GOTCHA_SKILL_FIXTURE: StaticSection = makeStatic({
-  id: 'skills._gotcha',
+  id: 'skills.gotcha',
   content:
-    'skills._gotcha fixture: check project gotchas before acting. If you repeat a recorded mistake, the correction was recorded for a reason.',
+    'skills.gotcha fixture: check project gotchas before acting. If you repeat a recorded mistake, the correction was recorded for a reason.',
 });
 
 const EXECUTION_SKILL_FIXTURE: StaticSection = makeStatic({
-  id: 'skills._execution',
+  id: 'skills.execution',
   content:
-    'skills._execution fixture: study before acting, plan before coding, verify before reporting done. One task, one focus.',
+    'skills.execution fixture: study before acting, plan before coding, verify before reporting done. One task, one focus.',
 });
 
 function skillInjectionFixture(spec: StepSpec): CompileInput {
@@ -216,7 +216,7 @@ describe('execution/spec.json — validation', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.value.version).toBe(1);
-      expect(result.value.meta.allowedAgentTypes).toEqual(['__executor']);
+      expect(result.value.meta.allowedAgentTypes).toEqual(['executor']);
       expect(result.value.meta.maxParallelAgents).toBe(1);
       expect(result.value.delegation.agents).toHaveLength(1);
       const first = result.value.delegation.agents[0];
@@ -289,8 +289,8 @@ describe('execution — compile snapshots', () => {
 
     // The fixture's intent-level assertions — if any of these regress, the
     // skillSections seam is broken regardless of snapshot text.
-    const gotchaIdx = text.indexOf('skills._gotcha fixture');
-    const executionIdx = text.indexOf('skills._execution fixture');
+    const gotchaIdx = text.indexOf('skills.gotcha fixture');
+    const executionIdx = text.indexOf('skills.execution fixture');
     const roleIdx = text.indexOf('You are the orchestrator of the Execution step');
     // Both skill sections appear, in caller-provided order, before the role.
     expect(gotchaIdx).toBeGreaterThanOrEqual(0);
@@ -388,8 +388,8 @@ describe('execution — skill-injection seam validation', () => {
       allocator: defaultBudgetAllocator,
       contextWindowTokens: GENEROUS_WINDOW,
     });
-    const gotcha = prompt.sections.find((s) => s.id === 'skills._gotcha');
-    const execSkill = prompt.sections.find((s) => s.id === 'skills._execution');
+    const gotcha = prompt.sections.find((s) => s.id === 'skills.gotcha');
+    const execSkill = prompt.sections.find((s) => s.id === 'skills.execution');
     expect(gotcha).toBeDefined();
     expect(gotcha?.kind).toBe('static');
     expect(execSkill).toBeDefined();

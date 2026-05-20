@@ -26,7 +26,7 @@ Historical notes under `.claude/project/gobbi/note/` were excluded.
 The inventory doc claims to reflect the current repository state, but several entries point to files that do not exist.
 
 - `project-context.md` is listed at `.claude/skills/gobbi/project-context.md`, but the actual file is `.claude/skills/gobbi/project-setup.md`. See `claude-docs.md:155`.
-- The gotcha inventory points to centralized files like `.claude/skills/_gotcha/_orchestration.md` and `.claude/skills/_gotcha/_git.md`, but the current repo stores gotchas next to each skill as `gotchas.md` inside the skill directory. See `claude-docs.md:166-177` and `claude-docs.md:239`.
+- The mistake inventory points to centralized files like `.claude/skills/mistake/_orchestration.md` and `.claude/skills/mistake/_git.md`, but the current repo stores mistakes next to each skill as `mistakes.md` inside the skill directory. See `claude-docs.md:166-177` and `claude-docs.md:239`.
 - Benchmark scenario 2 is listed as `.claude/skills/__benchmark/benchmarks/scenario-02-gobbi-claude-skills-skill-creation.md`, but the actual file is `.claude/skills/__benchmark/benchmarks/scenario-02-skills-skill-creation.md`. See `claude-docs.md:186`.
 
 Because the document is an inventory, these stale entries undermine its primary purpose.

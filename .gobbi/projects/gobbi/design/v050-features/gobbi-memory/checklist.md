@@ -333,18 +333,18 @@ The `converged`, `conflict`, and "manifest-rewrite-excludes-conflicts" verificat
 
 ---
 
-## G-MEM2-39 — Gotcha promote writes to active project learnings
+## G-MEM2-39 — Mistake promote writes to active project learnings
 
-- `@functional` `gobbi gotcha promote` writes to `.gobbi/projects/gobbi/learnings/gotchas/{slug}.md`.
-  - Evidence: `packages/cli/src/commands/gotcha/promote.ts`; commit `ab30ccb` (W3 eval F1).
-- `@data` Legacy destination `.gobbi/project/gotchas/` is not written.
+- `@functional` `gobbi mistake promote` writes to `.gobbi/projects/gobbi/learnings/mistakes/{slug}.md`.
+  - Evidence: `packages/cli/src/commands/mistake/promote.ts`; commit `ab30ccb` (W3 eval F1).
+- `@data` Legacy destination `.gobbi/project/mistakes/` is not written.
   - Evidence: `promote.ts` — `SOURCE_DIR_REL` updated.
 
 ---
 
 ## G-MEM2-40 — Promote resolves per active project
 
-- `@functional` With `projects.active: "demo"`, promotion writes under `.gobbi/projects/demo/learnings/gotchas/`.
+- `@functional` With `projects.active: "demo"`, promotion writes under `.gobbi/projects/demo/learnings/mistakes/`.
   - Evidence: `promote.ts` — active-project lookup; commit `ab30ccb`.
 
 ---
@@ -367,12 +367,12 @@ The `converged`, `conflict`, and "manifest-rewrite-excludes-conflicts" verificat
 
 ---
 
-## G-MEM2-43 — `_bun` + `_typescript` skills in farm
+## G-MEM2-43 — `bun` + `typescript` skills in farm
 
 - `@functional` After fresh install, both skills resolve through the farm.
   - Evidence: commit `890e6d1` (W3 eval F2).
 - `@data` Template bundle includes both skill directories.
-  - Evidence: `node_modules/@gobbitools/cli/dist/templates/skills/_bun/`, `_typescript/`.
+  - Evidence: `node_modules/@gobbitools/cli/dist/templates/skills/bun/`, `_typescript/`.
 
 ---
 
@@ -401,7 +401,7 @@ The `converged`, `conflict`, and "manifest-rewrite-excludes-conflicts" verificat
 3. `bun test packages/cli/src/lib/__tests__/symlink-farm.test.ts` — exercises G-MEM2-22, G-MEM2-25.
 4. `bun test packages/cli/src/workflow/__tests__/step-readme-writer.test.ts` — exercises G-MEM2-26 through G-MEM2-30.
 5. `bun test packages/cli/src/commands/maintenance/__tests__/wipe-legacy-sessions.test.ts` — exercises G-MEM2-37, G-MEM2-38.
-6. `bun test packages/cli/src/commands/gotcha/__tests__/promote.test.ts` — exercises G-MEM2-39, G-MEM2-40.
+6. `bun test packages/cli/src/commands/mistake/__tests__/promote.test.ts` — exercises G-MEM2-39, G-MEM2-40.
 7. Full suite (`bun test`) covers every scenario; `@manual` items require filesystem / CLI observation as called out inline.
 
 See `scenarios.md` for the Given/When/Then bodies and `review.md` for the DRIFT / GAP / NOTE log with pinned SHAs.

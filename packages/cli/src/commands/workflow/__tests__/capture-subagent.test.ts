@@ -913,7 +913,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
           sessionDir,
           stateA,
           createDelegationSpawn({
-            agentType: '__pi',
+            agentType: 'pi',
             step: stateA.currentStep,
             subagentId: 'sub-A',
             timestamp: '2026-04-29T00:00:00.001Z',
@@ -932,7 +932,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
           sessionDir,
           stateB,
           createDelegationSpawn({
-            agentType: '__pi',
+            agentType: 'pi',
             step: stateB.currentStep,
             subagentId: 'sub-B',
             timestamp: '2026-04-29T00:00:00.002Z',
@@ -959,7 +959,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
         sessionDir,
         payload: {
           agent_id: 'sub-A',
-          agent_type: '__pi',
+          agent_type: 'pi',
           agent_transcript_path: transcriptA,
           session_id: sessionId,
           tool_call_id: 'toolu_A',
@@ -974,7 +974,7 @@ describe('runCaptureSubagent — tool_call_id parent linkage (parallel)', () => 
         sessionDir,
         payload: {
           agent_id: 'sub-B',
-          agent_type: '__pi',
+          agent_type: 'pi',
           agent_transcript_path: transcriptB,
           session_id: sessionId,
           tool_call_id: 'toolu_B',

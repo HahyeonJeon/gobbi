@@ -319,7 +319,7 @@ Regenerate `predicates.generated.ts` by running `bun run gen:predicates` from `p
 
 - Execute prompts or measure budget allocation — that is the runtime engine's job.
 - Validate predicate *behaviour* — predicates are unit-tested independently.
-- Check gotchas, skill content, or agent definitions — those have their own validators under `gobbi validate`.
+- Check mistakes, skill content, or agent definitions — those have their own validators under `gobbi validate`.
 - Run against arbitrary workflow state — the validator inspects static artifacts, not reducer output.
 
-For runtime verification of a running session, see `gobbi workflow status` (PR C). For skill / agent / gotcha structural checks, see `gobbi validate` (existing command).
+For runtime verification of a running session, see `gobbi workflow status` (PR C). For skill / agent / mistake structural checks, see `gobbi validate` (existing command).

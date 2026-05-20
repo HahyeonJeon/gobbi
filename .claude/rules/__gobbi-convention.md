@@ -1,1 +1,0 @@
-../../.gobbi/projects/gobbi/rules/__gobbi-convention.md

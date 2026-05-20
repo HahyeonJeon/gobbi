@@ -5,8 +5,8 @@
     "description": "Plan — decompose the chosen ideation direction into narrow, ordered tasks with clear scope and verification criteria. Orchestrator-authored artifact; no delegated agents.",
     "allowedAgentTypes": [],
     "maxParallelAgents": 0,
-    "requiredSkills": ["_gotcha"],
-    "optionalSkills": ["_claude"],
+    "requiredSkills": ["gotcha"],
+    "optionalSkills": ["claude"],
     "expectedArtifacts": ["plan.md"],
     "completionSignal": "Stop"
   },
@@ -48,7 +48,7 @@
       },
       {
         "id": "plan-artifact-shape",
-        "content": "Plan artifact shape:\n\nWrite `plan.md` with the following structure so Execution and downstream evaluators can read it deterministically:\n\n1. `Direction` — a one-paragraph restatement of the chosen ideation direction this plan realizes. Grounds the plan in the approved intent.\n2. `Tasks` — an ordered list. Each task has:\n   - A short imperative title\n   - A scope statement in one or two sentences\n   - Inputs the task will consume (artifacts, references)\n   - Outputs the task will produce (files, commits, tests)\n   - Verification — the concrete check that proves the task done\n   - Agent — which agent type executes the task (`__executor`, `_project-evaluator`, etc.)\n3. `Dependencies` — a brief table mapping tasks to prerequisite tasks, if non-trivial.\n4. `Out-of-scope` — adjacent work that was considered and deliberately deferred, with a one-line rationale per item. This protects Execution from quietly absorbing deferred work.\n\nThe shape is stable on purpose: `gobbi workflow validate` and downstream compilation read it structurally."
+        "content": "Plan artifact shape:\n\nWrite `plan.md` with the following structure so Execution and downstream evaluators can read it deterministically:\n\n1. `Direction` — a one-paragraph restatement of the chosen ideation direction this plan realizes. Grounds the plan in the approved intent.\n2. `Tasks` — an ordered list. Each task has:\n   - A short imperative title\n   - A scope statement in one or two sentences\n   - Inputs the task will consume (artifacts, references)\n   - Outputs the task will produce (files, commits, tests)\n   - Verification — the concrete check that proves the task done\n   - Agent — which agent type executes the task (`executor`, `project-evaluator`, etc.)\n3. `Dependencies` — a brief table mapping tasks to prerequisite tasks, if non-trivial.\n4. `Out-of-scope` — adjacent work that was considered and deliberately deferred, with a one-line rationale per item. This protects Execution from quietly absorbing deferred work.\n\nThe shape is stable on purpose: `gobbi workflow validate` and downstream compilation read it structurally."
       }
     ],
     "conditional": [

@@ -25,7 +25,7 @@ import { isRecord } from './guards.js';
 // Public types — Settings shape
 // ---------------------------------------------------------------------------
 
-/** Agent model override for a workflow step. `'auto'` defers to `_delegation` defaults. */
+/** Agent model override for a workflow step. `'auto'` defers to `delegation` defaults. */
 export type AgentModel = 'opus' | 'sonnet' | 'haiku' | 'auto';
 
 /** Agent effort override for a workflow step. `'auto'` defers to core-rule defaults. */
@@ -110,7 +110,7 @@ export type HookTrigger =
  * (`StepSettings.agent`) and the per-mode surfaces (`discuss.agent`,
  * `evaluate.agent`) share one uniform shape.
  *
- * `model: 'auto'` defers to `_delegation`'s model table and `effort:
+ * `model: 'auto'` defers to `delegation`'s model table and `effort:
  * 'auto'` defers to core-rule's max-effort policy. Concrete tiers
  * override unconditionally — no per-tier policy lookup at the loader
  * boundary.
@@ -329,7 +329,7 @@ export type ResolvedSettings = Settings;
  * quality-checking. Downgrade per-step via workspace/project/session override.
  *
  * `discuss.execution.mode: 'agent'` — orchestrator delegates execution to
- * `__executor` subagents by default. Matches current implicit behaviour.
+ * `executor` subagents by default. Matches current implicit behaviour.
  *
  * `notify.*.events: []` means each channel fires on NO events until the user
  * opts in. Absent `events` would mean "all events" — the explicit empty-list

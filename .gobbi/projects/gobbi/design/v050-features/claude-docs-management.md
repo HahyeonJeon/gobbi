@@ -28,7 +28,7 @@ Hand-written markdown is readable but opaque to tooling. JSON source carries met
 
 ## Evaluation Integration
 
-Multi-perspective evaluation for docs quality is embedded in the authoring skills themselves. Each docs-authoring skill — `_skills`, `_agents`, `_rules`, and peers — ships an `evaluation/` subdirectory containing perspective-specific review docs. What a security reviewer looks for in an agent definition differs from what an overall-quality reviewer looks for; each perspective has its own criteria document. Each skill also carries an `evaluation.md` collecting concrete criteria across all perspectives.
+Multi-perspective evaluation for docs quality is embedded in the authoring skills themselves. Each docs-authoring skill — `skills-doc`, `agents-doc`, `rules-doc`, and peers — ships an `evaluation/` subdirectory containing perspective-specific review docs. What a security reviewer looks for in an agent definition differs from what an overall-quality reviewer looks for; each perspective has its own criteria document. Each skill also carries an `evaluation.md` collecting concrete criteria across all perspectives.
 
 When evaluator agents review docs changes — whether examining JSON source for schema correctness or reviewing rendered markdown for clarity and completeness — they load the rubric from the relevant authoring skill. The rubric travels with the skill, so evaluation criteria stay current as the skill evolves. This mechanism predates the JSON-source shift and continues to apply to both layers: source review and rendered-output review.
 

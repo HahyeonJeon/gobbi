@@ -23,7 +23,7 @@ See `feedback_feature_pass_one_session.md` (in memory) for the constraint that l
 
 Every feature pass uses the worktree at `.gobbi/worktrees/` and a branch off the phase integration branch. The PR base is that phase branch, not `main`.
 
-Session state lives at `.gobbi/projects/gobbi/sessions/{session_id}/`. Step dirs: `ideation/`, `planning/`, `execution/`, `memorization/`. Gotchas captured during the pass go into `.gobbi/projects/gobbi/learnings/gotchas/`.
+Session state lives at `.gobbi/projects/gobbi/sessions/{session_id}/`. Step dirs: `ideation/`, `planning/`, `execution/`, `memorization/`. Mistakes captured during the pass go into `.gobbi/projects/gobbi/learnings/mistakes/`.
 
 ---
 

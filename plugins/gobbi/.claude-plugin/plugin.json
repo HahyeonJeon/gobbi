@@ -12,8 +12,8 @@
   "skills": "./skills/",
   "agents": [
     "./agents/gobbi-agent.md",
-    "./agents/_agent-evaluator.md",
-    "./agents/_project-evaluator.md",
-    "./agents/_skills-evaluator.md"
+    "./agents/agent-evaluator.md",
+    "./agents/project-evaluator.md",
+    "./agents/skills-evaluator.md"
   ]
 }

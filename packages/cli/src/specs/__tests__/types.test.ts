@@ -30,9 +30,9 @@ import type {
 
 const meta: StepMeta = {
   description: 'Ideation — explore what to do',
-  allowedAgentTypes: ['__pi'],
+  allowedAgentTypes: ['pi'],
   maxParallelAgents: 2,
-  requiredSkills: ['_gotcha'],
+  requiredSkills: ['gotcha'],
   optionalSkills: [],
   expectedArtifacts: ['innovative.md', 'best.md'],
   completionSignal: 'SubagentStop',
@@ -48,7 +48,7 @@ const agent: AgentConfig = {
   stance: 'innovative',
   modelTier: 'opus',
   effort: 'max',
-  skills: ['_ideation'],
+  skills: ['ideation'],
   artifactTarget: 'innovative.md',
   blockRef: 'pi.innovative',
 };

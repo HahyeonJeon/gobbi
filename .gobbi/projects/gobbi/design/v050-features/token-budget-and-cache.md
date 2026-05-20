@@ -18,7 +18,7 @@ The ordering is not configurable by accident. The spec model enforces that `stat
 
 Allocation priority is a separate lens from the physical three-section ordering: sections are laid out `static → session → dynamic` for cache stability, while truncation priority (below) decides what gets kept when the budget is tight.
 
-Token budget allocation runs before rendering. The CLI knows the configured model's context window, allocates tokens across sections in priority order (static prefix → gotchas → step instructions → inlined artifacts → supplementary materials), and truncates at section boundaries — an artifact is included in full or excluded entirely. If the sum of section minimums exceeds the context window, the CLI emits a descriptive error identifying which sections contribute to the overflow.
+Token budget allocation runs before rendering. The CLI knows the configured model's context window, allocates tokens across sections in priority order (static prefix → mistakes → step instructions → inlined artifacts → supplementary materials), and truncates at section boundaries — an artifact is included in full or excluded entirely. If the sum of section minimums exceeds the context window, the CLI emits a descriptive error identifying which sections contribute to the overflow.
 
 ---
 

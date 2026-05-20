@@ -959,12 +959,12 @@ describe('dispatchHookNotify', () => {
     test('SubagentStop → "Subagent Done" with agent_type', async () => {
       setupSlackFiresAll();
       await dispatchHookNotify(
-        { session_id: 'abcdef0123456789', cwd: '/repo/myproj', agent_type: '__executor' },
+        { session_id: 'abcdef0123456789', cwd: '/repo/myproj', agent_type: 'executor' },
         'SubagentStop',
         baseOptions(),
       );
       expect(slackText()).toBe(
-        '*Subagent Done*\nSubagent (__executor) finished in myproj. Session `abcdef01`.',
+        '*Subagent Done*\nSubagent (executor) finished in myproj. Session `abcdef01`.',
       );
     });
 

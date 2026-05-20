@@ -16,7 +16,7 @@ The entry point for this story is `/gobbi`. When a user installs the gobbi plugi
 
 The CLI package `@gobbitools/cli` is the v0.5.0 distribution target. All subsystems — the workflow engine, prompt compiler, event store, guard evaluation — live in the CLI package and update atomically when the plugin updates. The hook scripts registered in `hooks/hooks.json` contain no logic; they delegate entirely to `gobbi` CLI commands. This separation means hook wiring stays stable across releases while CLI behavior evolves.
 
-The zero-config assumption is intentional: gobbi does not require any project-specific `.claude/` file edits to function. Skills, agents, rules, and hooks all come through the plugin. Project-specific knowledge — design notes, decisions, gotchas, backlog items — belongs in `.gobbi/projects/{project_name}/`, which projects own. Gobbi's own layer is self-contained and self-updating.
+The zero-config assumption is intentional: gobbi does not require any project-specific `.claude/` file edits to function. Skills, agents, rules, and hooks all come through the plugin. Project-specific knowledge — design notes, decisions, mistakes, backlog items — belongs in `.gobbi/projects/{project_name}/`, which projects own. Gobbi's own layer is self-contained and self-updating.
 
 ---
 

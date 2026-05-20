@@ -129,37 +129,37 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
 
   // ---- Note-system metadata.json homonym (surviving file) ------------------
   {
-    path: '.gobbi/projects/gobbi/skills/_note/SKILL.md',
+    path: '.gobbi/projects/gobbi/skills/note/SKILL.md',
     tokens: new Set(['metadata.json']),
     rationale:
       "Note-system metadata.json (`.claude/project/<name>/note/<task>/metadata.json`) — homonym of the retired per-session metadata.json. Surviving file; references must remain.",
   },
   {
-    path: '.gobbi/projects/gobbi/skills/_gobbi-cli/gotchas.md',
+    path: '.gobbi/projects/gobbi/skills/gobbi-cli/gotchas.md',
     tokens: new Set(['metadata.json']),
     rationale:
       'Note-system metadata.json homonym — describes `gobbi note init` behaviour. Surviving file.',
   },
   {
-    path: '.gobbi/projects/gobbi/skills/_gobbi-cli/SKILL.md',
+    path: '.gobbi/projects/gobbi/skills/gobbi-cli/SKILL.md',
     tokens: new Set(['metadata.json']),
     rationale:
       'Note-system metadata.json homonym — `gobbi note init` documentation.',
   },
   {
-    path: '.gobbi/projects/gobbi/skills/_gobbi-cli/commands.md',
+    path: '.gobbi/projects/gobbi/skills/gobbi-cli/commands.md',
     tokens: new Set(['metadata.json']),
     rationale:
       'Note-system metadata.json homonym — `gobbi note init` command table entry.',
   },
   {
-    path: '.gobbi/projects/gobbi/skills/_gotcha/__system.md',
+    path: '.gobbi/projects/gobbi/skills/gotcha/system.md',
     tokens: new Set(['state.json']),
     rationale:
       "Hook-state filename example (`/tmp/claude-state.json`) — generic illustrative path, not the retired per-session state.json.",
   },
   {
-    path: '.gobbi/projects/gobbi/skills/_typescript/SKILL.md',
+    path: '.gobbi/projects/gobbi/skills/typescript/SKILL.md',
     tokens: new Set(['state.json']),
     rationale:
       "Lists `state.json` as an example of external JSON narrowed via `isValidState`. Educational reference describing migration-only narrowing patterns (PR-FIN-2a-iii Tier B.2 retired the orphan exports; the documentation example survives).",
@@ -167,10 +167,10 @@ const ALLOW_LIST: readonly AllowListEntry[] = [
 
   // ---- _orchestration skill — entire dir is archived in PR-FIN-5 -----------
   {
-    path: '.gobbi/projects/gobbi/skills/_orchestration/**/*.md',
+    path: '.gobbi/projects/gobbi/skills/orchestration/**/*.md',
     isGlob: true,
     rationale:
-      'Whole `_orchestration` skill dir is archival (carries an ARCHIVED.md sentinel; full removal is the next-cycle `gobbi-config-target-state` follow-up #13).',
+      'Whole `orchestration` skill dir is archival (carries an ARCHIVED.md sentinel; full removal is the next-cycle `gobbi-config-target-state` follow-up #13).',
   },
 
   // ---- Files that legitimately document the retirement (post-T1 state) -----

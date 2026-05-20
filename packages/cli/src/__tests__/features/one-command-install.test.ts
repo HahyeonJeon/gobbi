@@ -226,14 +226,14 @@ describe('one-command-install feature — code surface', () => {
   });
 
   describe('/gobbi skill wiring', () => {
-    test('.claude/skills/gobbi/SKILL.md §THIRD references `gobbi --is-latest`', () => {
+    test('.claude/skills/gobbi/SKILL.md §SECOND references `gobbi --is-latest`', () => {
       const body = readFileSync(GOBBI_SKILL_PATH, 'utf8');
-      const thirdStart = body.indexOf('**THIRD');
-      const fourthStart = body.indexOf('**FOURTH', thirdStart);
-      expect(thirdStart).toBeGreaterThanOrEqual(0);
-      expect(fourthStart).toBeGreaterThan(thirdStart);
-      const thirdSection = body.slice(thirdStart, fourthStart);
-      expect(thirdSection).toContain('gobbi --is-latest');
+      const secondStart = body.indexOf('**SECOND');
+      const thirdStart = body.indexOf('**THIRD', secondStart);
+      expect(secondStart).toBeGreaterThanOrEqual(0);
+      expect(thirdStart).toBeGreaterThan(secondStart);
+      const secondSection = body.slice(secondStart, thirdStart);
+      expect(secondSection).toContain('gobbi --is-latest');
     });
 
     test('.claude/skills/gobbi/cli-setup.md names `npm install -g @gobbitools/cli` as a recommended option', () => {

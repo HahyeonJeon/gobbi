@@ -16,7 +16,7 @@ All SHAs below exist on `feat/118-gobbi-memory-pass-2` (HEAD `5c5ac65` at review
 
 **Finding:** Pass-1 shipped `.gobbi/project/` as the singular project-memory root. Pass-2 redesign moves every `.gobbi/project/` reference to `.gobbi/projects/{name}/`. ~130 tracked files migrated via `git mv`; all code-path constants rewritten; facade `workspace-paths.ts` added so future renames touch one module instead of N call sites.
 
-**Evidence:** `f94853d` (W3.1 content migration), `4708aca` (route `.gobbi/` callers through workspace-paths facade), `ab30ccb` (`gobbi gotcha promote` destination update).
+**Evidence:** `f94853d` (W3.1 content migration), `4708aca` (route `.gobbi/` callers through workspace-paths facade), `ab30ccb` (`gobbi mistake promote` destination update).
 
 **Severity:** High — any agent or test reading from `.gobbi/project/` directly (no facade) would miss.
 
@@ -40,11 +40,11 @@ All SHAs below exist on `feat/118-gobbi-memory-pass-2` (HEAD `5c5ac65` at review
 
 ---
 
-### DRIFT-3 — Gotcha promote destination moved from `.gobbi/project/gotchas/` to `.gobbi/projects/{active}/learnings/gotchas/`
+### DRIFT-3 — Mistake promote destination moved from `.gobbi/project/mistakes/` to `.gobbi/projects/{active}/learnings/mistakes/`
 
-**Finding:** Pre-W3.1 the gotcha promote command wrote to `.gobbi/project/gotchas/`. Post-W3.1 that directory no longer exists and `projects.active` resolves the destination. The destination resolves at promotion time (not session-bind time), so a user who switches projects between sessions and then promotes will land gotchas under the newly-active project — matching the semantic that gotchas are project-scoped knowledge.
+**Finding:** Pre-W3.1 the mistake promote command wrote to `.gobbi/project/mistakes/`. Post-W3.1 that directory no longer exists and `projects.active` resolves the destination. The destination resolves at promotion time (not session-bind time), so a user who switches projects between sessions and then promotes will land mistakes under the newly-active project — matching the semantic that mistakes are project-scoped knowledge.
 
-**Evidence:** `ab30ccb` (W3 eval F1 — point gotcha promote destinations at `.gobbi/projects/<name>/learnings/gotchas/`).
+**Evidence:** `ab30ccb` (W3 eval F1 — point mistake promote destinations at `.gobbi/projects/<name>/learnings/mistakes/`).
 
 **Severity:** Medium — any hard-coded consumer expecting the old path breaks silently.
 
@@ -74,7 +74,7 @@ All SHAs below exist on `feat/118-gobbi-memory-pass-2` (HEAD `5c5ac65` at review
 
 **Evidence:** `4708aca` (facade), `4bb9d38` (settings-io routing).
 
-**Severity:** Medium — any `_git` workflow that pre-computes worktree paths from the old location breaks.
+**Severity:** Medium — any `git` workflow that pre-computes worktree paths from the old location breaks.
 
 **Resolution:** fix code + doc — facade routes every caller; `v050-overview.md §Directory Split` updated to cite project-scoped worktrees.
 
@@ -120,7 +120,7 @@ All SHAs below exist on `feat/118-gobbi-memory-pass-2` (HEAD `5c5ac65` at review
 
 ### GAP-4 — Claude Code skill-cache empirical confirmation not run
 
-**Finding:** The assumption that Claude Code caches skill content at session start (and does not re-read on reference) was taken as the safer default. A simple experiment — edit `.claude/skills/_git/SKILL.md` mid-session and observe whether the next invocation reflects the change — was proposed but not executed. The mid-session refuse-to-rotate guard was a property of the legacy `gobbi project switch` command (removed in v0.5.0 PR-FIN-2); a cache miss would not have caused user-visible incoherence, only made the switch safer than documented.
+**Finding:** The assumption that Claude Code caches skill content at session start (and does not re-read on reference) was taken as the safer default. A simple experiment — edit `.claude/skills/git/SKILL.md` mid-session and observe whether the next invocation reflects the change — was proposed but not executed. The mid-session refuse-to-rotate guard was a property of the legacy `gobbi project switch` command (removed in v0.5.0 PR-FIN-2); a cache miss would not have caused user-visible incoherence, only made the switch safer than documented.
 
 **Evidence:** ideation §12 OQ2.
 

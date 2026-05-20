@@ -262,7 +262,7 @@ Items tagged `[GAP]` describe what the verification will look like once the corr
 
 - `[GAP]` Zero non-test matches for `join(sessionDir, 'gobbi.db')` across `packages/cli/src/`.
   - Verify (post-A.1.7): `rg -n "join\(sessionDir, 'gobbi\.db'\)" packages/cli/src/ --type ts` returns no lines.
-- `[GAP]` Every callsite in the A.1.7 list (`{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts` + `session.ts:320` + `gotcha/promote.ts:308`) calls `resolveDbPath(sessionDir)` (or equivalent helper) instead of constructing the path inline.
+- `[GAP]` Every callsite in the A.1.7 list (`{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts` + `session.ts:320` + `mistake/promote.ts:308`) calls `resolveDbPath(sessionDir)` (or equivalent helper) instead of constructing the path inline.
   - Verify (post-A.1.7): grep for the helper name; spot-read each file.
 
 ---

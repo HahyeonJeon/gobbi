@@ -14,7 +14,7 @@ The same architecture pattern is well-established at scale — Temporal, AWS Ste
 
 ## 1. The 6-step workflow
 
-**Updated by PR-FIN-2 finalization (2026-04-29):** every productive step that emits durable artifacts now runs an evaluation loop — `memorization_eval` is added alongside `ideation_eval`, `planning_eval`, `execution_eval`. Memorization is no longer a one-shot productive step; it loops until the evaluator confirms full coverage of the session's decisions, gotchas, learnings, and design changes. Memorization no longer has a single canonical `memorization.md` — the step holds freeform `*.md` files indexed by `README.md`, and the durable destinations are the project's narrative dirs (`design/`, `decisions/`, `learnings/`, `gotchas/`, `backlogs/`, `notes/`) plus the workspace `.gobbi/gobbi.db` `memories` projection.
+**Updated by PR-FIN-2 finalization (2026-04-29):** every productive step that emits durable artifacts now runs an evaluation loop — `memorization_eval` is added alongside `ideation_eval`, `planning_eval`, `execution_eval`. Memorization is no longer a one-shot productive step; it loops until the evaluator confirms full coverage of the session's decisions, mistakes, learnings, and design changes. Memorization no longer has a single canonical `memorization.md` — the step holds freeform `*.md` files indexed by `README.md`, and the durable destinations are the project's narrative dirs (`design/`, `decisions/`, `learnings/`, `mistakes/`, `backlogs/`, `notes/`) plus the workspace `.gobbi/gobbi.db` `memories` projection.
 
 Every workflow is six productive steps + four optional evaluations. Evaluation is a sub-phase **inside** Ideation, Planning, Execution, and Memorization — not a standalone step. `handoff` is a **true state-machine step**, not a memorization sub-artifact, and runs without its own evaluator. The 6-step model is now the authoritative framing in `../../v050-overview.md` and `.claude/CLAUDE.md` (reconciled in Wave A.2).
 
@@ -28,7 +28,7 @@ Every workflow is six productive steps + four optional evaluations. Evaluation i
 | 3 | `execution` | **Execution Loop** — `Plan → Loop[Discussion → Execute → Evaluation] → Results`. | productive |
 | (3e) | `execution_eval` | Evaluation of execution. | optional eval |
 | 4 | `memorization` | **Memorization Loop** — `Results → Loop[Memorize → Evaluation → REVISE if not fully covered] → Persisted memory`. Writes durable artifacts to project narrative dirs and `.gobbi/gobbi.db::memories`. Emits `workflow.step.exit`. | productive |
-| **(4e)** | **`memorization_eval`** | **NEW (PR-FIN-2)** — evaluation that verifies the session's decisions, gotchas, learnings, and design changes were fully captured. Verdict REVISE re-enters memorization; PASS advances to handoff. | optional eval |
+| **(4e)** | **`memorization_eval`** | **NEW (PR-FIN-2)** — evaluation that verifies the session's decisions, mistakes, learnings, and design changes were fully captured. Verdict REVISE re-enters memorization; PASS advances to handoff. | optional eval |
 | 5 | `handoff` | **Handoff** — narrow summary for next session; writes freeform `*.md` files into `sessions/{id}/handoff/` plus one `class='handoff'` row in `.gobbi/gobbi.db::memories`; emits `workflow.finish`. No evaluator. | productive |
 | done | `done` | Terminal. | terminal |
 | error | `error` | Reached via `step.timeout` or `eval.verdict=ESCALATE`; recoverable via `workflow.resume`. | recoverable terminal |
@@ -44,7 +44,7 @@ Each Loop runs `[Discussion → Work → Evaluation]` until either the verdict i
 
 ### 1.1 Why split memorization from handoff
 
-Memorization is **wide**: many rawdata sources (per-step `rawdata/` directories, subagent transcripts, the orchestrator transcript, the full event stream, session-tier gotchas), many destinations (`design/`, `decisions/`, `learnings/`, `gotchas/`, `backlogs/`, `notes/`, plus the workspace `.gobbi/gobbi.db::memories` projection). Its evaluation loop verifies that nothing was dropped on the way to durability.
+Memorization is **wide**: many rawdata sources (per-step `rawdata/` directories, subagent transcripts, the orchestrator transcript, the full event stream, session-tier mistakes), many destinations (`design/`, `decisions/`, `learnings/`, `mistakes/`, `backlogs/`, `notes/`, plus the workspace `.gobbi/gobbi.db::memories` projection). Its evaluation loop verifies that nothing was dropped on the way to durability.
 
 Handoff is **narrow**: one source (the persisted memorization output plus last-N events), one destination (`sessions/{id}/handoff/*.md` plus one `gobbi.db::memories` row of class `handoff`). No evaluator — the writer is mechanical.
 
@@ -78,7 +78,7 @@ The four layers each own a distinct slice of the orchestration stack. The user a
 |---|---|---|---|
 | `.gobbi/state.db` | gitignored | workspace | append-only event log; partition keys `(project_id, session_id)`; currently `prompt.patch.applied` events only — full workspace consolidation of workflow events is Wave A.1 work, partially shipped |
 | `.gobbi/projects/{name}/sessions/{id}/gobbi.db` | gitignored | per-session | **preserved** per-session event store; source of truth for workflow events; powers `gobbi workflow status` / resume / state derivation; aggregated into `session.json` at memorization-step entry |
-| `.gobbi/projects/{name}/project.json` | **tracked** | per-project | cross-session promoted memory: sessions index, gotchas, decisions, learnings; AJV schema v1; sorted writes for stable git diffs |
+| `.gobbi/projects/{name}/project.json` | **tracked** | per-project | cross-session promoted memory: sessions index, mistakes, decisions, learnings; AJV schema v1; sorted writes for stable git diffs |
 | `.gobbi/projects/{name}/sessions/{id}/session.json` | gitignored | per-session | consolidated per-session operational metadata: steps, agents, agent_calls (provisional), evaluations; AJV schema v1; written once at memorization-step entry by aggregating per-session `gobbi.db` events; arrays sorted by `gobbi.db.seq` ascending |
 
 Per-session `state.json` (+ `.backup`), per-session `metadata.json` (the per-session homonym — the v0.4.x note-system `metadata.json` under `.claude/project/<name>/note/<task>/` is unaffected), and per-session session-root `artifacts/` are removed entirely. `gobbi maintenance wipe-legacy-sessions` cleans up the on-disk legacy artifacts during the PR-FIN-2 cutover. The `EventStore` constructor takes explicit `(projectId, sessionId)` partition keys at every call site — no path-derivation fallback.
@@ -90,7 +90,7 @@ Per-session `state.json` (+ `.backup`), per-session `metadata.json` (the per-ses
 - **`.gobbi/gobbi.db`** SQLite file at workspace level — gone.
 - **Docs-metadata manifest** — gone. Search-by-content uses ripgrep over markdown; drift detection uses git status.
 - **`gobbi memory rebuild` command** — gone. JSON files are the source of truth; no projection to rebuild.
-- **`findActiveSessions` / `findStateActiveSessions` helpers** — removed. `gobbi gotcha promote` and `gobbi maintenance wipe-legacy-sessions` no longer guard on other sessions in flight (callers will be redesigned in a later session).
+- **`findActiveSessions` / `findStateActiveSessions` helpers** — removed. `gobbi mistake promote` and `gobbi maintenance wipe-legacy-sessions` no longer guard on other sessions in flight (callers will be redesigned in a later session).
 
 ### 3.2 EventStore constructor must accept explicit partition keys
 
@@ -130,7 +130,7 @@ Note: `prompt_patches` shipped in Wave C.1 (schema v7). Wave A.1 schema v6 did n
 
 **`project.json` writers** — invoked at the orchestration boundary:
 
-- `gobbi gotcha promote` — appends to `gotchas[]`.
+- `gobbi mistake promote` — appends to `mistakes[]`.
 - Memorization step — appends to `sessions[]` (one row per workflow run with `handoffSummary` once handoff lands), and appends extracted `decisions[]` / `learnings[]` from the session record.
 
 Sorted-rewrite (whole-file rewrite with deterministic sort) on every write so git diffs are reviewable. AJV schema v1; no migration framework (development state).
@@ -206,7 +206,7 @@ Token cost: ~180 tokens uncached; identical across same-step compilations so ful
 
 **Why prompts-as-data here.** `blocks.footer` is the first data-driven prompt block. Wave B.1 lifts the literal footer string into `_schema/v1.ts::StepBlocks` (TypeScript), `_schema/v1.json` (JSON Schema mirror — `schema.test.ts:399-404` asserts they stay in sync), and `assembly.ts::renderSpec`'s pipeline (rendered as a `StaticSection` immediately after `blocks.completion`). Without the simultaneous update across all three, `tsc --noEmit` fails or the drift test fails. Wave C extends this pattern to every prompt block.
 
-**Why JIT.** A step that has not started yet contributes no tokens. The compiler reads workflow state, selects the step spec, loads the materials the step spec names, and delivers a bounded prompt. The orchestrator sees what this step needs — and only what this step needs. Workflow instructions for steps the orchestrator has not reached, and the working notes of steps already finished, stay out. PreToolUse `additionalContext` injection extends the same precision to the tool-call boundary: gotchas relevant to the specific decision point appear at the moment the decision is made, not in the ambient prompt.
+**Why JIT.** A step that has not started yet contributes no tokens. The compiler reads workflow state, selects the step spec, loads the materials the step spec names, and delivers a bounded prompt. The orchestrator sees what this step needs — and only what this step needs. Workflow instructions for steps the orchestrator has not reached, and the working notes of steps already finished, stay out. PreToolUse `additionalContext` injection extends the same precision to the tool-call boundary: mistakes relevant to the specific decision point appear at the moment the decision is made, not in the ambient prompt.
 
 ---
 
@@ -222,7 +222,7 @@ Token cost: ~180 tokens uncached; identical across same-step compilations so ful
 | **SessionStart** | Idempotent init; **+ schema-drift detection (new):** if the per-session `gobbi.db` `schema_meta` row reports `schemaVersion < CURRENT_SCHEMA_VERSION`, run migration BEFORE appending any event. (Per-session `metadata.json` was retired in PR-FIN-2a-ii; the schema-version probe now reads the DB's `schema_meta` table.) | `commands/workflow/init.ts` (extended) | n/a — per-session `gobbi.db` path is unchanged |
 | **SessionEnd** (Claude Code 2.x) | Emit `session.end` event so abandoned-session detection is precise. Falls back to heartbeat-gap heuristic on older Claude Code. | `commands/workflow/session-end.ts` (new) | n/a |
 
-**Path-resolution sweep (Wave A.1 task A.1.7).** Every place the codebase grep'd `join(sessionDir, 'gobbi.db')` returns must change to either the workspace path or the explicit constructor params. Confirmed callsites: `commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `commands/session.ts:320`, `commands/gotcha/promote.ts:308`. (`commands/workflow/events.ts` has no direct DB path — it delegates to `runSessionEvents` in `commands/session.ts`.) The sweep MUST grep both `join(sessionDir, 'gobbi.db')` and `<sessionDir>/gobbi.db` patterns across `packages/cli/src/` to catch any callsite this list misses. Architecture F-3's fix recommendation is a `resolveDbPath(sessionDir)` helper in `commands/session.ts` so the path construction is a single source of truth — Wave A.1 must implement this helper rather than apply 11 independent substitutions.
+**Path-resolution sweep (Wave A.1 task A.1.7).** Every place the codebase grep'd `join(sessionDir, 'gobbi.db')` returns must change to either the workspace path or the explicit constructor params. Confirmed callsites: `commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `commands/session.ts:320`, `commands/mistake/promote.ts:308`. (`commands/workflow/events.ts` has no direct DB path — it delegates to `runSessionEvents` in `commands/session.ts`.) The sweep MUST grep both `join(sessionDir, 'gobbi.db')` and `<sessionDir>/gobbi.db` patterns across `packages/cli/src/` to catch any callsite this list misses. Architecture F-3's fix recommendation is a `resolveDbPath(sessionDir)` helper in `commands/session.ts` so the path construction is a single source of truth — Wave A.1 must implement this helper rather than apply 11 independent substitutions.
 
 **Industry analogs:** PreToolUse = k8s ValidatingAdmissionWebhook; Stop = Temporal heartbeat + `WorkflowExecutionTimeout`; SubagentStop = Sidekiq `on(:complete)`. The 2-turn / 5-turn safety-net thresholds match Temporal's heartbeat-budget conventions.
 
@@ -282,14 +282,14 @@ The memorization step's compiled prompt names these paths so the agent reads the
 4. Orchestrator transcript — `transcript_path` from hook payloads, recorded in `session.json` (per-session telemetry, post-PR-FIN-2a-ii).
 5. Full event stream — `SELECT * FROM events ORDER BY seq` against the per-session `gobbi.db`. (Workspace `state.db` partial consolidation is Wave A.1; until that lands, per-session `gobbi.db` is the workflow-event source of truth.)
 6. Per-step `README.md` — when present (written by the STEP_EXIT writer per `gobbi-memory/scenarios.md G-MEM2-26`).
-7. Session-tier gotchas — `.gobbi/projects/<name>/learnings/gotchas/` written mid-session.
+7. Session-tier mistakes — `.gobbi/projects/<name>/learnings/mistakes/` written mid-session.
 
 ### 8.2 Extraction destinations
 
 | Source class | Destination (markdown) | `gobbi.db` row | Lifecycle |
 |---|---|---|---|
 | Decisions made | `learnings/decisions/<YYYY-MM-DD-slug>.md` | `class='decision'` | Permanent — promoted at memorization |
-| User corrections | `learnings/gotchas/<slug>.md` | `class='gotcha'` | Permanent — `gobbi gotcha promote` for cross-project |
+| User corrections | `learnings/mistakes/<slug>.md` | `class='mistake'` | Permanent — `gobbi mistake promote` for cross-project |
 | Design changes | `design/<area>/*.md` + `decisions/` link | `class='design'` | Permanent |
 | Deferred items | `learnings/backlogs/<YYYY-MM-DD-slug>.md` | `class='backlog'` | Permanent until acted on |
 
@@ -297,7 +297,7 @@ Memorization writes `memorization.md` and emits `workflow.step.exit`. The state 
 
 ### 8.3 Cleanup boundaries
 
-`gobbi.db::memories` retains all `class='gotcha'`, `'decision'`, `'design'` rows permanently (long-term record). `class='handoff'` caps at the last N sessions per project (default N=5) — older handoff rows can be GC'd by `gobbi project gc` (deferred command). `state.db.tool_calls` and `state_snapshots` follow the existing 7-day TTL / 50-session cap (`v050-session.md:228`); `gobbi maintenance migrate-state-db` includes a post-migration cleanup pass.
+`gobbi.db::memories` retains all `class='mistake'`, `'decision'`, `'design'` rows permanently (long-term record). `class='handoff'` caps at the last N sessions per project (default N=5) — older handoff rows can be GC'd by `gobbi project gc` (deferred command). `state.db.tool_calls` and `state_snapshots` follow the existing 7-day TTL / 50-session cap (`v050-session.md:228`); `gobbi maintenance migrate-state-db` includes a post-migration cleanup pass.
 
 ---
 
@@ -364,7 +364,7 @@ New spec directory: `packages/cli/src/specs/handoff/{spec.json, README.md, __tes
 
 Composition model: Roles (≤7 stable work modes) × Specialties (many domain bundles). Maps to GoF Strategy + Decorator and AWS IAM "Role + Policy". Constraint: role catalog ≤ 7, enforced by a CI lint rule. Deferred to dedicated `roles-and-specialties` future pass (Wave D.1).
 
-Subagents in L3b compose from `(role, specialties[])` rather than being authored as monolithic agent files. The composed delegation prompt is generated by the assembler from the role file + selected specialty bundles. Today's `__pi`, `__executor`, and `*-evaluator` agents migrate to this shape in Wave D.1; specialty content moves out of agent files into `.gobbi/specialties/<name>.json`.
+Subagents in L3b compose from `(role, specialties[])` rather than being authored as monolithic agent files. The composed delegation prompt is generated by the assembler from the role file + selected specialty bundles. Today's `pi`, `executor`, and `*-evaluator` agents migrate to this shape in Wave D.1; specialty content moves out of agent files into `.gobbi/specialties/<name>.json`.
 
 ---
 

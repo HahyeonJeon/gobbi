@@ -126,25 +126,25 @@ DRIFT/GAP entries with `Resolution: deferred to Wave X` will gain a commit SHA w
 
 ---
 
-### DRIFT-10 — `_skills` skill loaded for project-doc authoring (Project Plan F-1, F-6)
+### DRIFT-10 — `skills-doc` skill loaded for project-doc authoring (Project Plan F-1, F-6)
 
-**Finding:** Plan Task 1.1 originally listed `_skills` for the `gobbi-agent` authoring this directory. `_skills` SKILL.md scopes to `.claude/skills/` files. The output is a project doc under `.gobbi/projects/gobbi/design/v050-features/orchestration/`. Wave C.1's design-doc skills list also incorrectly included `_skills`.
+**Finding:** Plan Task 1.1 originally listed `skills-doc` for the `gobbi-agent` authoring this directory. `skills-doc` SKILL.md scopes to `.claude/skills/` files. The output is a project doc under `.gobbi/projects/gobbi/design/v050-features/orchestration/`. Wave C.1's design-doc skills list also incorrectly included `skills-doc`.
 
 **Severity:** Medium (planning) — wrong skill loaded leads to wrong authoring standard.
 
-**Resolution:** deferred to plan revision (or absorbed into the orchestrator briefing for Pass 4). Pass 4's actual briefing for this `gobbi-agent` invocation correctly loads `_claude` + `_project` + `_gotcha` only.
+**Resolution:** deferred to plan revision (or absorbed into the orchestrator briefing for Pass 4). Pass 4's actual briefing for this `gobbi-agent` invocation correctly loads `claude` + `project-doc` + `mistake` only.
 
 **Owner:** Pass 4 plan.
 
 ---
 
-### DRIFT-11 — `__pi` named for evaluation but `__pi` excludes evaluation per its definition (Project Plan F-2)
+### DRIFT-11 — `pi` named for evaluation but `pi` excludes evaluation per its definition (Project Plan F-2)
 
-**Finding:** Plan Task 1.2 named `__pi` for plan evaluation. The `__pi.md` agent definition lists evaluation as out-of-scope. The orchestrator's actual invocation uses `__pi` in its Step-7 Review stance, which is correct — but the plan text named the wrong stance and could mislead a future operator.
+**Finding:** Plan Task 1.2 named `pi` for plan evaluation. The `__pi.md` agent definition lists evaluation as out-of-scope. The orchestrator's actual invocation uses `pi` in its Step-7 Review stance, which is correct — but the plan text named the wrong stance and could mislead a future operator.
 
 **Severity:** Medium (planning).
 
-**Resolution:** deferred to Wave-by-Wave plan revision. Future Wave plans must specify "spawn `__pi` with `Review` stance" rather than "spawn `__pi`."
+**Resolution:** deferred to Wave-by-Wave plan revision. Future Wave plans must specify "spawn `pi` with `Review` stance" rather than "spawn `pi`."
 
 **Owner:** Pass 4 plan.
 
@@ -198,7 +198,7 @@ DRIFT/GAP entries with `Resolution: deferred to Wave X` will gain a commit SHA w
 
 **Finding:** Today subagents are authored as monolithic agent files under `.claude/agents/`. The composition model — Roles (≤7) × Specialties (many domain bundles) — is not implemented; the role catalog is implicit in the agent files; no CI lint enforces ≤7.
 
-**Resolution:** deferred to Wave D.1. Lock the ≤7 role catalog, define the Specialty JSON schema, build the assembler, migrate `__pi`/`__executor`/`*-evaluator` agents, add the CI lint rule.
+**Resolution:** deferred to Wave D.1. Lock the ≤7 role catalog, define the Specialty JSON schema, build the assembler, migrate `pi`/`executor`/`*-evaluator` agents, add the CI lint rule.
 
 **Owner:** Pass 4 design; Wave D.1 implementation.
 
@@ -228,7 +228,7 @@ DRIFT/GAP entries with `Resolution: deferred to Wave X` will gain a commit SHA w
 
 **Finding:** `v050-session.md:228` defines a 7-day TTL / 50-session cap for session directories. The new tables (`state_snapshots`, `tool_calls`, `config_changes`) plus the `gobbi.db::memories` table have no specified cleanup. Long sessions accumulate rows indefinitely; FTS5 segments don't auto-vacuum.
 
-**Resolution:** deferred to Wave A.1.10 (integration test scope) and a future `gobbi project gc` command. README §8.3 cites the cleanup boundaries: `class='gotcha|decision|design'` permanent; `class='handoff'` capped at last N=5 per project; `tool_calls` and `state_snapshots` follow the existing 7-day TTL.
+**Resolution:** deferred to Wave A.1.10 (integration test scope) and a future `gobbi project gc` command. README §8.3 cites the cleanup boundaries: `class='mistake|decision|design'` permanent; `class='handoff'` capped at last N=5 per project; `tool_calls` and `state_snapshots` follow the existing 7-day TTL.
 
 **Owner:** Pass 4 design; Wave A.1 implementation budget; future `gobbi project gc` command.
 
@@ -268,7 +268,7 @@ DRIFT/GAP entries with `Resolution: deferred to Wave X` will gain a commit SHA w
 
 **Finding:** Wave plans cite "Documentation" and "Tests" evaluator perspectives. No `_documentation-evaluator.md` or `_tests-evaluator.md` exists in `.claude/agents/`. Future Wave operators must guess which agent to spawn.
 
-**Resolution:** deferred to each Wave's planning step. Default mapping: "Documentation" → `_project-evaluator` (or `gobbi-agent` with a docs-review prompt); "Tests" → `__pi` in Best stance reviewing test coverage.
+**Resolution:** deferred to each Wave's planning step. Default mapping: "Documentation" → `project-evaluator` (or `gobbi-agent` with a docs-review prompt); "Tests" → `pi` in Best stance reviewing test coverage.
 
 **Owner:** Pass 4 plan; per-Wave planning steps.
 
@@ -322,7 +322,7 @@ Architecture's risk note (and ideation §12 spike #3): memorization reads 30+ ra
 
 ### NOTE-6 — `.gobbi/gobbi.db` git-tracked memory store is solo-user-only (System F-1 + System security)
 
-Per `feedback_solo_user_context` gobbi has one user. `.gobbi/gobbi.db` git-tracking carries the (low) risk of inadvertently committing sensitive content (gotchas referencing internal tool names, backlog items referencing confidential context). For solo-user this is acceptable. If a public-facing gobbi clone ever exists, the `.gitignore` flips back to gitignore-by-default and `gobbi.db` is regenerated from markdown.
+Per `feedback_solo_user_context` gobbi has one user. `.gobbi/gobbi.db` git-tracking carries the (low) risk of inadvertently committing sensitive content (mistakes referencing internal tool names, backlog items referencing confidential context). For solo-user this is acceptable. If a public-facing gobbi clone ever exists, the `.gitignore` flips back to gitignore-by-default and `gobbi.db` is regenerated from markdown.
 
 ---
 
@@ -354,12 +354,12 @@ Gobbi has one user. Decisions in this design ignore: backcompat for external use
 
 | Finding | Severity | Disposition |
 |---|---|---|
-| Project Plan F-1 (`_skills` for project doc) | High | DRIFT-10 — corrected in Pass 4 briefing |
-| Project Plan F-2 (`__pi` for evaluation) | High | DRIFT-11 — Wave plans need stance clarification |
+| Project Plan F-1 (`skills-doc` for project doc) | High | DRIFT-10 — corrected in Pass 4 briefing |
+| Project Plan F-2 (`pi` for evaluation) | High | DRIFT-11 — Wave plans need stance clarification |
 | Project Plan F-3 (9-doc batch exceeds rule) | Medium | NOTE-3 — A.2 planning decides split vs override |
 | Project Plan F-4 (worktree naming) | Medium | DRIFT-12 — Wave plans use `_git/conventions.md` |
 | Project Plan F-5 (Documentation/Tests evaluator perspectives) | Low | GAP-11 — per-Wave planning maps to existing agents |
-| Project Plan F-6 (Wave C.1 `_skills`) | Low | DRIFT-10 — per-Wave plan revision |
+| Project Plan F-6 (Wave C.1 `skills-doc`) | Low | DRIFT-10 — per-Wave plan revision |
 | Overall Plan F-1 (Wave B.1 scope contradiction) | Medium | NOTE — README + plan Wave B.1 pre-condition annotation reconciles |
 | Overall Plan F-2 (Wave list order vs diagram) | Medium | NOTE-4 — execution-order chart is authoritative |
 | Overall Plan F-3 (F.1/F.2 lacking detail) | Low | F-Waves are planning stubs by design |
@@ -422,16 +422,16 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 
 | # | Description | Agent | Skills | Files (high-confidence list — verify in worktree) |
 |---|---|---|---|---|
-| A.1.1 | Run the 3 mandatory spikes (Bash PostToolUse for transition; `claude -p` hook firing; memorization compile latency); document outcomes in `learnings/decisions/`. Defer or branch the design if any spike fails. | `__pi` (research stance) | `_research`, `_bun`, `_gotcha` | `learnings/decisions/<YYYY-MM-DD>-spike-*.md` (3 files) |
-| A.1.2 | Add explicit partition-key parameters to `EventStore` constructor; add fallback path-derivation behavior. | `__executor` | `_typescript`, `_bun`, `_execution` | `packages/cli/src/workflow/store.ts`, store tests |
-| A.1.3 | Add schema v6 migration: new tables (`state_snapshots`, `tool_calls`, `config_changes`, `schema_meta`); workspace-level partitioning queries everywhere; new event type `step.advancement.observed`. **Bump `CURRENT_SCHEMA_VERSION` 5 → 6; add `5: (data) => data` identity migration to the registry walk loop.** | `__executor` | `_typescript`, `_bun`, `_execution` | `packages/cli/src/workflow/migrations.ts`, `packages/cli/src/workflow/events/index.ts`, new event factory file |
-| A.1.4 | Implement `gobbi maintenance migrate-state-db` command **and register it in the `MAINTENANCE_COMMANDS` dispatch array** (`commands/maintenance.ts:48-59`). Without the registry update, the new command is unreachable. | `__executor` | `_typescript`, `_bun`, `_execution`, `_gobbi-cli` | `packages/cli/src/commands/maintenance/migrate-state-db.ts` (new), `packages/cli/src/commands/maintenance.ts` (registry update) |
-| A.1.5 | Add `handoff` state-machine step: new `specs/handoff/{spec.json, README.md}`; update `index.json` (`steps`, `transitions`, `terminal`). | `__executor` | `_typescript`, `_execution` | `packages/cli/src/specs/handoff/spec.json` (new), `packages/cli/src/specs/handoff/README.md` (new), `packages/cli/src/specs/index.json` |
-| A.1.6 | Update memorization spec rawdata sources + extraction destinations per ideation §7.3. | `__executor` | `_typescript`, `_execution` | `packages/cli/src/specs/memorization/spec.json`, `packages/cli/src/specs/memorization/README.md` |
-| A.1.7 | Path-resolution sweep: update every callsite that opens `gobbi.db` per-session to use new workspace path or explicit constructor params. **Confirmed callsite list:** `commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `commands/session.ts:320`, `commands/gotcha/promote.ts:308`. (`commands/workflow/events.ts` has no direct DB path — delegates to `session.ts`.) The sweep MUST grep `join(sessionDir, 'gobbi.db')` and `<sessionDir>/gobbi.db` patterns across `packages/cli/src/` to catch any callsite this list misses. | `__executor` | `_typescript`, `_bun`, `_execution` | `packages/cli/src/commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `packages/cli/src/commands/session.ts`, `packages/cli/src/commands/gotcha/promote.ts` |
-| A.1.8 | Add `.gitignore` exception `!.gobbi/gobbi.db` immediately after `.gobbi/*`; verify via `git check-ignore` test in CI. | `__executor` | `_execution`, `_git` | `.gitignore`, integration test |
-| A.1.9 | Concurrent-writer mitigation: `PRAGMA wal_checkpoint(TRUNCATE)` after every `workflow.step.exit`. **Additive to existing `store.ts::close()` checkpoint at lines 588-590; do not replace.** | `__executor` | `_typescript`, `_bun`, `_execution` | `packages/cli/src/workflow/store.ts`, store tests |
-| A.1.10 | Integration tests: replay-equivalence after migration; atomic-rename safety; concurrent-writer durability under SIGKILL fixture. | `__executor` | `_typescript`, `_bun`, `_execution` | `packages/cli/src/workflow/__tests__/migrate-state-db.test.ts` (new), `store.test.ts` extensions |
+| A.1.1 | Run the 3 mandatory spikes (Bash PostToolUse for transition; `claude -p` hook firing; memorization compile latency); document outcomes in `learnings/decisions/`. Defer or branch the design if any spike fails. | `pi` (research stance) | `research`, `bun`, `mistake` | `learnings/decisions/<YYYY-MM-DD>-spike-*.md` (3 files) |
+| A.1.2 | Add explicit partition-key parameters to `EventStore` constructor; add fallback path-derivation behavior. | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/workflow/store.ts`, store tests |
+| A.1.3 | Add schema v6 migration: new tables (`state_snapshots`, `tool_calls`, `config_changes`, `schema_meta`); workspace-level partitioning queries everywhere; new event type `step.advancement.observed`. **Bump `CURRENT_SCHEMA_VERSION` 5 → 6; add `5: (data) => data` identity migration to the registry walk loop.** | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/workflow/migrations.ts`, `packages/cli/src/workflow/events/index.ts`, new event factory file |
+| A.1.4 | Implement `gobbi maintenance migrate-state-db` command **and register it in the `MAINTENANCE_COMMANDS` dispatch array** (`commands/maintenance.ts:48-59`). Without the registry update, the new command is unreachable. | `executor` | `typescript`, `bun`, `execution`, `gobbi-cli` | `packages/cli/src/commands/maintenance/migrate-state-db.ts` (new), `packages/cli/src/commands/maintenance.ts` (registry update) |
+| A.1.5 | Add `handoff` state-machine step: new `specs/handoff/{spec.json, README.md}`; update `index.json` (`steps`, `transitions`, `terminal`). | `executor` | `typescript`, `execution` | `packages/cli/src/specs/handoff/spec.json` (new), `packages/cli/src/specs/handoff/README.md` (new), `packages/cli/src/specs/index.json` |
+| A.1.6 | Update memorization spec rawdata sources + extraction destinations per ideation §7.3. | `executor` | `typescript`, `execution` | `packages/cli/src/specs/memorization/spec.json`, `packages/cli/src/specs/memorization/README.md` |
+| A.1.7 | Path-resolution sweep: update every callsite that opens `gobbi.db` per-session to use new workspace path or explicit constructor params. **Confirmed callsite list:** `commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `commands/session.ts:320`, `commands/mistake/promote.ts:308`. (`commands/workflow/events.ts` has no direct DB path — delegates to `session.ts`.) The sweep MUST grep `join(sessionDir, 'gobbi.db')` and `<sessionDir>/gobbi.db` patterns across `packages/cli/src/` to catch any callsite this list misses. | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `packages/cli/src/commands/session.ts`, `packages/cli/src/commands/mistake/promote.ts` |
+| A.1.8 | Add `.gitignore` exception `!.gobbi/gobbi.db` immediately after `.gobbi/*`; verify via `git check-ignore` test in CI. | `executor` | `execution`, `git` | `.gitignore`, integration test |
+| A.1.9 | Concurrent-writer mitigation: `PRAGMA wal_checkpoint(TRUNCATE)` after every `workflow.step.exit`. **Additive to existing `store.ts::close()` checkpoint at lines 588-590; do not replace.** | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/workflow/store.ts`, store tests |
+| A.1.10 | Integration tests: replay-equivalence after migration; atomic-rename safety; concurrent-writer durability under SIGKILL fixture. | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/workflow/__tests__/migrate-state-db.test.ts` (new), `store.test.ts` extensions |
 
 **Execution order**:
 - A.1.1 first (sequential — outcomes branch the rest of the wave).
@@ -467,7 +467,7 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 
 **Agent**: `gobbi-agent` (single sequential — per the rule).
 
-**Skills**: `_claude`, `_project`, `_gotcha`.
+**Skills**: `claude`, `project-doc`, `mistake`.
 
 **Scope boundary**: docs only; no code changes; no test changes.
 
@@ -478,7 +478,7 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 - Cross-doc links remain valid.
 - `gobbi docs health` (if applicable) passes.
 
-**Wave evaluation**: 3 perspectives (Project, Overall, Documentation → mapped to `_project-evaluator` or `gobbi-agent` per GAP-11).
+**Wave evaluation**: 3 perspectives (Project, Overall, Documentation → mapped to `project-evaluator` or `gobbi-agent` per GAP-11).
 
 ---
 
@@ -490,13 +490,13 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 
 | # | Description | Agent | Files |
 |---|---|---|---|
-| B.1.1 | Implement data-driven footer in spec.json: add `blocks.footer` field; update `assembly.ts::compile()` to render the footer from spec data. **Schema mirror enforcement (drift-tested):** the `blocks.footer` field MUST be added simultaneously to `_schema/v1.ts` (TypeScript types), `_schema/v1.json` (JSON Schema mirror), and `types.ts::StepBlocks` (which has `additionalProperties: false`). Without all three, `tsc --noEmit` fails OR `schema.test.ts:399-404` drift test fails. | `__executor` | `packages/cli/src/specs/_schema/v1.ts`, `packages/cli/src/specs/_schema/v1.json`, `packages/cli/src/specs/types.ts`, `packages/cli/src/specs/assembly.ts`, every `spec.json` file |
-| B.1.2 | Snapshot tests for compiled prompts before/after — verify cache-prefix bytes are identical for same-step recompile. | `__executor` | `packages/cli/src/specs/__tests__/snapshot.test.ts` |
+| B.1.1 | Implement data-driven footer in spec.json: add `blocks.footer` field; update `assembly.ts::compile()` to render the footer from spec data. **Schema mirror enforcement (drift-tested):** the `blocks.footer` field MUST be added simultaneously to `_schema/v1.ts` (TypeScript types), `_schema/v1.json` (JSON Schema mirror), and `types.ts::StepBlocks` (which has `additionalProperties: false`). Without all three, `tsc --noEmit` fails OR `schema.test.ts:399-404` drift test fails. | `executor` | `packages/cli/src/specs/_schema/v1.ts`, `packages/cli/src/specs/_schema/v1.json`, `packages/cli/src/specs/types.ts`, `packages/cli/src/specs/assembly.ts`, every `spec.json` file |
+| B.1.2 | Snapshot tests for compiled prompts before/after — verify cache-prefix bytes are identical for same-step recompile. | `executor` | `packages/cli/src/specs/__tests__/snapshot.test.ts` |
 | B.1.3 | Expand `orchestration/scenarios.md` and `orchestration/checklist.md` (baselines from Pass 4 Task 1.1) with footer-pattern scenarios that A.1's implementation made concrete. | `gobbi-agent` | `orchestration/scenarios.md`, `orchestration/checklist.md` |
 
-**Agent**: `__executor` for B.1.1–B.1.2; `gobbi-agent` for B.1.3.
+**Agent**: `executor` for B.1.1–B.1.2; `gobbi-agent` for B.1.3.
 
-**Skills**: `_typescript`, `_bun`, `_execution` for code; `_claude`, `_project` for docs.
+**Skills**: `typescript`, `bun`, `execution` for code; `claude`, `project-doc` for docs.
 
 **Scope boundary**: footer code + scenarios/checklist updates; no other features.
 
@@ -523,13 +523,13 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 | C.1.5 | Rendering pipeline: `gobbi prompt render <prompt-id> --format=markdown` and `--format=composed`. |
 | C.1.6 | `gobbi prompt patch <prompt-id> --patch <json-patch-file>` command — applies RFC 6902 patches, validates schema, emits event, appends to JSONL. |
 
-**Agent**: `__executor` (code) + `gobbi-agent` (design doc and tests of the schema).
+**Agent**: `executor` (code) + `gobbi-agent` (design doc and tests of the schema).
 
-**Skills**: `_typescript`, `_bun`, `_execution`, `_project` (for `prompts-as-data` feature doc — corrected per DRIFT-10 to `_project` not `_skills`).
+**Skills**: `typescript`, `bun`, `execution`, `project-doc` (for `prompts-as-data` feature doc — corrected per DRIFT-10 to `project-doc` not `skills-doc`).
 
 **Files modified**: schema files in `packages/cli/src/specs/_schema/`, new commands under `packages/cli/src/commands/prompt/`, schema migrations, every existing `spec.json` if changes are required, design doc `.gobbi/projects/gobbi/design/v050-features/prompts-as-data.md`.
 
-**Wave evaluation**: 4 perspectives (Project, Overall, Architecture, Innovative-PI for design challenge, Best-PI for prior-art compliance) — invoked as `__pi` with explicit stance framing per DRIFT-11.
+**Wave evaluation**: 4 perspectives (Project, Overall, Architecture, Innovative-PI for design challenge, Best-PI for prior-art compliance) — invoked as `pi` with explicit stance framing per DRIFT-11.
 
 **Effort split decision**: defer to Wave C.1's planning step; default 1 session if footer-as-data is the only prompt converted, 2 sessions if all step-spec prompts migrate.
 
@@ -545,17 +545,17 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 |---|---|
 | D.1.1 | Lock the ≤7 role catalog: `researcher`, `executor`, `evaluator`, `planner`, `reviewer` (plus `pi` if treated as a role rather than the workflow-step name); confirm against existing agents in `.claude/agents/`. |
 | D.1.2 | Define Specialty JSON schema; build the (role, specialties[]) → composed-prompt assembler. |
-| D.1.3 | Migrate existing agents (`__pi`, `__executor`, `*-evaluator`, etc.) to (role, specialties[]) composition; specialty content moves out of agent files into `.gobbi/specialties/<name>.json`. |
+| D.1.3 | Migrate existing agents (`pi`, `executor`, `*-evaluator`, etc.) to (role, specialties[]) composition; specialty content moves out of agent files into `.gobbi/specialties/<name>.json`. |
 | D.1.4 | CI lint rule: catalog file `.gobbi/roles/catalog.json` must have ≤ 7 entries; lint fails on overflow. **Add `!.gobbi/roles/` exception to `.gitignore` so the catalog is git-tracked (Architecture P-A-5 / GAP-12).** |
 | D.1.5 | Design doc `.gobbi/projects/gobbi/design/v050-features/roles-and-specialties.md`. |
 
-**Agent**: `__executor` for code + lint; `gobbi-agent` for design doc + agent migration.
+**Agent**: `executor` for code + lint; `gobbi-agent` for design doc + agent migration.
 
-**Skills**: `_typescript`, `_bun`, `_execution`, `_agents`, `_project` (for design doc — corrected per DRIFT-10).
+**Skills**: `typescript`, `bun`, `execution`, `agents-doc`, `project-doc` (for design doc — corrected per DRIFT-10).
 
 **Files modified**: new `.gobbi/roles/catalog.json`, new `.gobbi/specialties/*.json` tree, updated agent files in `.claude/agents/`, new lint rule, design doc, `.gitignore`.
 
-**Wave evaluation**: 5 perspectives (Project, Overall, Architecture, Best-PI for catalog discipline, Innovative-PI for orthogonality stress test) — invoked as `__pi` with explicit stance framing.
+**Wave evaluation**: 5 perspectives (Project, Overall, Architecture, Best-PI for catalog discipline, Innovative-PI for orthogonality stress test) — invoked as `pi` with explicit stance framing.
 
 ---
 
@@ -573,9 +573,9 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 | E.1.4 | UserPromptSubmit handler: route `/gobbi`; emit `decision.user` for workflow-control intents. |
 | E.1.5 | Integration tests for safety net + missed-advancement scenarios. |
 
-**Agent**: `__executor`.
+**Agent**: `executor`.
 
-**Skills**: `_typescript`, `_bun`, `_execution`.
+**Skills**: `typescript`, `bun`, `execution`.
 
 **Files modified**: `packages/cli/src/commands/workflow/{capture-planning,stop,user-prompt}.ts` (capture-planning extended; user-prompt new); new test files.
 
@@ -596,9 +596,9 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 | E.2.3 | Explicit-CLI fallback for hooks if A.1.1 spike found `claude -p` does NOT fire hooks. |
 | E.2.4 | Design doc `.gobbi/projects/gobbi/design/v050-features/inner-vs-outer-execution.md`. |
 
-**Agent**: `__executor` for code; `gobbi-agent` for design doc.
+**Agent**: `executor` for code; `gobbi-agent` for design doc.
 
-**Skills**: `_typescript`, `_bun`, `_execution`, `_gobbi-cli`.
+**Skills**: `typescript`, `bun`, `execution`, `gobbi-cli`.
 
 **Files modified**: `packages/cli/src/commands/workflow/run.ts` (new), integration test, design doc.
 
@@ -617,7 +617,7 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 - F.1.2: `gobbi search <query>` command — Tier 1 SQL metadata + Tier 2 FTS.
 - F.1.3: Design doc `.gobbi/projects/gobbi/design/v050-features/document-search.md`.
 
-**Likely agents**: `__executor` (FTS + command) + `gobbi-agent` (design doc).
+**Likely agents**: `executor` (FTS + command) + `gobbi-agent` (design doc).
 
 ---
 
@@ -632,7 +632,7 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 - F.2.2: `gobbi doctor` reports environment status.
 - F.2.3: Design doc `.gobbi/projects/gobbi/design/v050-features/install-strategy.md`.
 
-**Likely agents**: `__executor` (commands) + `gobbi-agent` (design doc).
+**Likely agents**: `executor` (commands) + `gobbi-agent` (design doc).
 
 ---
 

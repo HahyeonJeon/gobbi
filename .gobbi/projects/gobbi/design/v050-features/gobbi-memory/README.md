@@ -1,6 +1,6 @@
 # gobbi-memory — Multi-Project Memory Model
 
-Feature description for gobbi's cross-session persistence model under `.gobbi/projects/{name}/`. Read this to understand how memory is organized per project, how `.claude/` relates to `.gobbi/` via a symlink farm, how the `gobbi install` bootstrap seeds a fresh repo, and how `gobbi project list|create|switch` manages the multi-project lifecycle. This is the design-of-record for Pass 2 redesign (session `35742566-2697-4318-bb06-558346b77b4a`), updated by **PR-FIN-2 finalization** (session `9755a2cb-0981-455b-915e-643de6de2500`, 2026-04-29) for the taxonomy expansion (`gotchas/` and `tmp/` promoted to top-level), the manifest removal (`.install-manifest.json` and 3-way merge logic dropped), the session-root simplification (`metadata.json`, `state.json`, session-root `artifacts/` dropped — per-session `gobbi.db` preserved as the per-session event store), and the `memorization_eval` state-machine step addition. PR-FIN-2a-ii (2026-04-30) landed the JSON memory pivot — durable memory now lives in git-tracked `project.json`; per-session telemetry in `session.json`.
+Feature description for gobbi's cross-session persistence model under `.gobbi/projects/{name}/`. Read this to understand how memory is organized per project, how `.claude/` relates to `.gobbi/` via a symlink farm, how the `gobbi install` bootstrap seeds a fresh repo, and how `gobbi project list|create|switch` manages the multi-project lifecycle. This is the design-of-record for Pass 2 redesign (session `35742566-2697-4318-bb06-558346b77b4a`), updated by **PR-FIN-2 finalization** (session `9755a2cb-0981-455b-915e-643de6de2500`, 2026-04-29) for the taxonomy expansion (`mistakes/` and `tmp/` promoted to top-level), the manifest removal (`.install-manifest.json` and 3-way merge logic dropped), the session-root simplification (`metadata.json`, `state.json`, session-root `artifacts/` dropped — per-session `gobbi.db` preserved as the per-session event store), and the `memorization_eval` state-machine step addition. PR-FIN-2a-ii (2026-04-30) landed the JSON memory pivot — durable memory now lives in git-tracked `project.json`; per-session telemetry in `session.json`.
 
 ---
 
@@ -12,12 +12,12 @@ Pass 2 replaces the Pass-1 layout — where skills/agents/rules/project-docs liv
 
 ## Directory shape
 
-**Updated by PR-FIN-2 finalization (2026-04-29):** `gotchas/` promoted to top-level (separated from `learnings/`); `tmp/` formalized as gitignored project-scoped scratch; `.install-manifest.json` removed (3-way merge logic dropped); session-root retirements (`metadata.json`, `state.json`, `state.json.backup`, session-root `artifacts/` all dropped) — durable cross-session memory moves to git-tracked `project.json`, in-flight per-session telemetry moves to `session.json`. **Per-session `gobbi.db` is preserved** as the per-session event store; workspace `.gobbi/state.db` partially holds workflow events (Wave A.1 in progress).
+**Updated by PR-FIN-2 finalization (2026-04-29):** `mistakes/` promoted to top-level (separated from `learnings/`); `tmp/` formalized as gitignored project-scoped scratch; `.install-manifest.json` removed (3-way merge logic dropped); session-root retirements (`metadata.json`, `state.json`, `state.json.backup`, session-root `artifacts/` all dropped) — durable cross-session memory moves to git-tracked `project.json`, in-flight per-session telemetry moves to `session.json`. **Per-session `gobbi.db` is preserved** as the per-session event store; workspace `.gobbi/state.db` partially holds workflow events (Wave A.1 in progress).
 
 | Path | Git | Purpose |
 |---|---|---|
 | `.gobbi/settings.json` | gitignored | Workspace-tier settings. |
-| `.gobbi/projects/{name}/project.json` | tracked | Cross-session promoted memory (sessions index, gotchas, decisions, learnings). Replaces the prior workspace `.gobbi/gobbi.db` SQLite memory projection. |
+| `.gobbi/projects/{name}/project.json` | tracked | Cross-session promoted memory (sessions index, mistakes, decisions, learnings). Replaces the prior workspace `.gobbi/gobbi.db` SQLite memory projection. |
 | `.gobbi/state.db` | gitignored | Workspace-scoped state-machine event log (currently `prompt.patch.applied` only; full workflow-event consolidation is Wave A.1, partially shipped). |
 | `.gobbi/projects/{name}/sessions/{id}/gobbi.db` | gitignored | **Per-session event store — preserved.** Source of truth for per-session workflow events; powers `gobbi workflow status` / resume / state derivation; aggregated into `session.json` at memorization-step entry. |
 | `.gobbi/projects/` | tracked | Parent of all projects in this workspace. |
@@ -31,8 +31,8 @@ Pass 2 replaces the Pass-1 layout — where skills/agents/rules/project-docs liv
 | `.gobbi/projects/{name}/checklists/` | tracked | Cross-feature verification lists. |
 | `.gobbi/projects/{name}/reviews/` | tracked | Cross-pass retrospectives, DRIFT/GAP/NOTE logs. |
 | `.gobbi/projects/{name}/playbooks/` | tracked | Procedural runbooks for repeatable tasks. |
-| `.gobbi/projects/{name}/learnings/` | tracked | General post-mortems and learnings. **No longer holds gotchas** — those moved to top-level `gotchas/`. |
-| `.gobbi/projects/{name}/gotchas/` | tracked | **NEW (PR-FIN-2)** — anti-patterns and "do not repeat this mistake" entries. Promoted from `learnings/gotchas/` to a top-level dir to reflect their distinct role. `gobbi gotcha promote` writes here. |
+| `.gobbi/projects/{name}/learnings/` | tracked | General post-mortems and learnings. **No longer holds mistakes** — those moved to top-level `mistakes/`. |
+| `.gobbi/projects/{name}/mistakes/` | tracked | **NEW (PR-FIN-2)** — anti-patterns and "do not repeat this mistake" entries. Promoted from `learnings/mistakes/` to a top-level dir to reflect their distinct role. `gobbi mistake promote` writes here. |
 | `.gobbi/projects/{name}/references/` | tracked | External API docs, third-party ground truth. |
 | `.gobbi/projects/{name}/backlogs/` | tracked | Deferred work items filed during sessions. |
 | `.gobbi/projects/{name}/notes/` | tracked | Freeform cross-session scratch. |
@@ -40,7 +40,7 @@ Pass 2 replaces the Pass-1 layout — where skills/agents/rules/project-docs liv
 | `.gobbi/projects/{name}/sessions/{session_id}/` | gitignored | Per-workflow-run artefacts; not durable memory. |
 | `.gobbi/projects/{name}/worktrees/{branch}/` | gitignored | Project-scoped git worktrees (D6 lock). |
 
-**Final taxonomy:** 12 narrative dirs (`design`, `decisions`, `scenarios`, `checklists`, `reviews`, `playbooks`, `learnings`, `gotchas`, `references`, `backlogs`, `notes`, `rules`) + 3 farm dirs (`skills`, `agents`, `rules` — `rules` shared with narrative) = **14 unique tracked dirs**. Plus 3 gitignored runtime dirs (`tmp/`, `sessions/`, `worktrees/`). Plus 2 root files (`README.md`, `settings.json`). Charter per dir: see `v050-overview.md §Directory Split`.
+**Final taxonomy:** 12 narrative dirs (`design`, `decisions`, `scenarios`, `checklists`, `reviews`, `playbooks`, `learnings`, `mistakes`, `references`, `backlogs`, `notes`, `rules`) + 3 farm dirs (`skills`, `agents`, `rules` — `rules` shared with narrative) = **14 unique tracked dirs**. Plus 3 gitignored runtime dirs (`tmp/`, `sessions/`, `worktrees/`). Plus 2 root files (`README.md`, `settings.json`). Charter per dir: see `v050-overview.md §Directory Split`.
 
 ---
 
@@ -63,8 +63,8 @@ Session-to-project binding is established at `gobbi workflow init`: the command 
 A fresh repo has no `.gobbi/` directory. `gobbi install` is the one-shot bootstrap that makes the workspace usable:
 
 1. **Detect target state** — fresh means no `.gobbi/projects/{name}/` exists for the chosen project; re-install means it does.
-2. **Fresh path** — copies the plugin-bundled template tree (shipped at `node_modules/@gobbitools/cli/.gobbi/projects/gobbi/{skills,agents,rules}/`) into `.gobbi/projects/{name}/`, scaffolds the 12 narrative dirs (`design`, `decisions`, `scenarios`, `checklists`, `reviews`, `playbooks`, `learnings`, `gotchas`, `references`, `backlogs`, `notes`, `rules`) as empty placeholders, builds the `.claude/{skills,agents,rules}/` per-file symlink farm, and preserves any non-farm content that already lived in `.claude/` (NI-1 lock).
-3. **Re-install path** — without `--force`, exits 2 and refuses; with `--force`, **bundle wins**: every plugin-bundled file under `skills/agents/rules/` is overwritten unconditionally. User-authored files (anything not shipped by the plugin) survive untouched. The `_-prefix` naming convention (`_git`, `_gotcha`, …) demarcates plugin-owned skills/agents from user-owned ones; user-owned files don't collide with plugin paths and so are never touched.
+2. **Fresh path** — copies the plugin-bundled template tree (shipped at `node_modules/@gobbitools/cli/.gobbi/projects/gobbi/{skills,agents,rules}/`) into `.gobbi/projects/{name}/`, scaffolds the 12 narrative dirs (`design`, `decisions`, `scenarios`, `checklists`, `reviews`, `playbooks`, `learnings`, `mistakes`, `references`, `backlogs`, `notes`, `rules`) as empty placeholders, builds the `.claude/{skills,agents,rules}/` per-file symlink farm, and preserves any non-farm content that already lived in `.claude/` (NI-1 lock).
+3. **Re-install path** — without `--force`, exits 2 and refuses; with `--force`, **bundle wins**: every plugin-bundled file under `skills/agents/rules/` is overwritten unconditionally. User-authored files (anything not shipped by the plugin) survive untouched. The `_-prefix` naming convention (`git`, `mistake`, …) demarcates plugin-owned skills/agents from user-owned ones; user-owned files don't collide with plugin paths and so are never touched.
 4. **Active-session gate** — aborts with exit 2 and a list of active session IDs if any session has a non-terminal `current_step` recorded in `.gobbi/state.db`. Prevents template churn while a workflow is mid-flight.
 
 No manifest is written; no 3-way merge is performed. The `_-prefix` convention is the boundary between plugin-owned and user-owned content.
@@ -108,7 +108,7 @@ Five step directories per session, all uniform:
 
 **`evaluation/`** — flat `*.md` files, one per perspective (e.g., `architecture.md`, `project.md`, `overall.md`). Authoritative inputs to the corresponding `*_eval` step's verdict.
 
-**Memorization gets an evaluation loop (NEW):** unlike Pass 2, where memorization was a one-shot productive step, PR-FIN-2 adds `memorization_eval` to verify that the session's decisions, gotchas, learnings, and design changes actually landed in `project.json` (durable cross-session memory) and on disk in the project's narrative dirs. The loop runs `[Memorize → memorization_eval → REVISE if not fully covered → Memorize → …]` until verdict PASS or `maxIterations` exceeded. State-machine implications are detailed in `../orchestration/README.md`.
+**Memorization gets an evaluation loop (NEW):** unlike Pass 2, where memorization was a one-shot productive step, PR-FIN-2 adds `memorization_eval` to verify that the session's decisions, mistakes, learnings, and design changes actually landed in `project.json` (durable cross-session memory) and on disk in the project's narrative dirs. The loop runs `[Memorize → memorization_eval → REVISE if not fully covered → Memorize → …]` until verdict PASS or `maxIterations` exceeded. State-machine implications are detailed in `../orchestration/README.md`.
 
 Writing is exit-only (D4 lock); in-flight visibility is via `gobbi workflow status --step <name>` rather than a mutable README.
 
@@ -125,9 +125,9 @@ The pre-validation state normalization shim from Pass 2 is no longer needed beca
 
 ---
 
-## Gotcha promotion destination
+## Mistake promotion destination
 
-**Updated by PR-FIN-2 (2026-04-29):** `gobbi gotcha promote` writes promoted gotchas to `.gobbi/projects/{name}/gotchas/` — the new top-level `gotchas/` directory promoted out of `learnings/`. `learnings/` now holds only general post-mortems and learnings; `gotchas/` holds anti-patterns and "do not repeat" entries. Project name resolves via the same ladder as `gobbi config set` (`--project <name>` flag → `basename(repoRoot)`). Per-project gotchas under `gotchas/` apply only to that project; cross-project gotchas ship with the gobbi plugin under `.claude/skills/_gotcha/` (farm-mirrored).
+**Updated by PR-FIN-2 (2026-04-29):** `gobbi mistake promote` writes promoted mistakes to `.gobbi/projects/{name}/mistakes/` — the new top-level `mistakes/` directory promoted out of `learnings/`. `learnings/` now holds only general post-mortems and learnings; `mistakes/` holds anti-patterns and "do not repeat" entries. Project name resolves via the same ladder as `gobbi config set` (`--project <name>` flag → `basename(repoRoot)`). Per-project mistakes under `mistakes/` apply only to that project; cross-project mistakes ship with the gobbi plugin under `.claude/skills/mistake/` (farm-mirrored).
 
 ---
 
@@ -165,10 +165,10 @@ Top-level fields:
 - `projectName`
 - `projectId`
 - `sessions[]` — index of every workflow session: `{sessionId, createdAt, finishedAt, task, handoffSummary?}`. Sorted by `createdAt` ascending.
-- `gotchas[]` — promoted gotchas: `{path, sha256, class, promotedAt, promotedFromSession}`. Sorted by `path` alphabetically.
+- `mistakes[]` — promoted mistakes: `{path, sha256, class, promotedAt, promotedFromSession}`. Sorted by `path` alphabetically.
 - `decisions[]`, `learnings[]` — analogous shape.
 
-Writers: `gobbi gotcha promote` updates `gotchas[]`; memorization step writes session entries + decisions/learnings extracted from the session record. Sorted-rewrite (whole-file rewrite with deterministic sort) on every write so the git diff is reviewable.
+Writers: `gobbi mistake promote` updates `mistakes[]`; memorization step writes session entries + decisions/learnings extracted from the session record. Sorted-rewrite (whole-file rewrite with deterministic sort) on every write so the git diff is reviewable.
 
 ### `session.json` — per-session, gitignored (lives inside `sessions/`)
 
@@ -190,7 +190,7 @@ Sort axes (deterministic across parallel writers): `steps[]` by canonical step o
 
 Writer: memorization step writes `session.json` once at memorization-step entry by aggregating from per-session `gobbi.db` events + per-step rawdata transcripts (Anthropic JSONL under `~/.claude/projects/<encoded-cwd>/<sessionId>/subagents/`). No per-step writers — single-write semantics avoid concurrency contention. See `lib/json-memory.ts` (schemas + builder) and `workflow/session-json-writer.ts` (orchestration entry).
 
-**Concurrency caveat (solo-user assumption).** `project.json` writers (`gobbi gotcha promote`, memorization step) use whole-file read-modify-write without inter-process locking. The solo-user model assumes at most one writer at a time; if two sessions race a write, the loser's append is silently overwritten. Manual recovery: re-run the losing writer (e.g. re-promote the gotcha) after the conflict is detected via `git diff project.json`. A future multi-user redesign would replace this with file locking or move durable memory back to a transactional store.
+**Concurrency caveat (solo-user assumption).** `project.json` writers (`gobbi mistake promote`, memorization step) use whole-file read-modify-write without inter-process locking. The solo-user model assumes at most one writer at a time; if two sessions race a write, the loser's append is silently overwritten. Manual recovery: re-run the losing writer (e.g. re-promote the mistake) after the conflict is detected via `git diff project.json`. A future multi-user redesign would replace this with file locking or move durable memory back to a transactional store.
 
 ### What's gone
 
@@ -202,11 +202,11 @@ Writer: memorization step writes `session.json` once at memorization-step entry 
 - **Per-step `README.md` frontmatter** — operational metadata moves to `session.json`. Per-step `README.md` becomes prose summary + index table only.
 - **`gobbi memory rebuild` command** — no projection to rebuild. The JSON files are the source of truth.
 - **Docs metadata manifest** — no materialized index of `.md` files. Search-by-content uses ripgrep; drift detection uses git status.
-- **Active-sessions detection helpers** (`findActiveSessions`, `findStateActiveSessions`) — removed for PR-FIN-2; `gobbi gotcha promote` and `gobbi maintenance wipe-legacy-sessions` no longer guard on other sessions. Will be redesigned in a future session.
+- **Active-sessions detection helpers** (`findActiveSessions`, `findStateActiveSessions`) — removed for PR-FIN-2; `gobbi mistake promote` and `gobbi maintenance wipe-legacy-sessions` no longer guard on other sessions. Will be redesigned in a future session.
 
 ### Cross-clone continuity
 
-`project.json` is git-tracked → cross-clone state survives. `session.json` is gitignored (lives inside the gitignored `sessions/`) → per-session operational metadata is workspace-local; only the durable extracts (decisions, gotchas, learnings) survive a clone via `project.json` and the markdown narrative dirs. This is intentional: in-flight session state is not portable across clones.
+`project.json` is git-tracked → cross-clone state survives. `session.json` is gitignored (lives inside the gitignored `sessions/`) → per-session operational metadata is workspace-local; only the durable extracts (decisions, mistakes, learnings) survive a clone via `project.json` and the markdown narrative dirs. This is intentional: in-flight session state is not portable across clones.
 
 ### State.db — workspace event log (Wave A.1, partial)
 

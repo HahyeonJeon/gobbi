@@ -39,7 +39,7 @@ One TypeScript interface. One AJV validator. All levels read and write the same 
 **`workflow`** — Grouped by step (`ideation`, `planning`, `execution`). Each step carries:
 - `discuss: { mode, model, effort }` — `mode` is `'agent' | 'user' | 'auto' | 'skip'`
 - `evaluate: { mode, model, effort }` — `mode` is `'ask' | 'always' | 'skip' | 'auto'`
-- `model` and `effort` default to `'auto'`, deferring to `_delegation` and core-rule defaults
+- `model` and `effort` default to `'auto'`, deferring to `delegation` and core-rule defaults
 - `maxIterations: number` — per-step REVISE-loop iteration cap; default `3`. Schema-only this Pass — wiring to `state.maxFeedbackRounds` is deferred to a follow-up Pass that extends state to carry per-step caps
 
 The `planning` field name matches the loop name in `deterministic-orchestration.md` ("Planning Loop") and the state-machine literal (renamed from `'plan'` in Pass 3). `resolveEvalDecision` accepts only `'planning'` — the `'plan'` backward-compat bridge was removed at Pass 3; callers still passing the legacy literal fail at compile time.
@@ -233,9 +233,9 @@ Claude Code sources $CLAUDE_ENV_FILE → all subsequent commands inherit CLAUDE_
 /gobbi skill calls: gobbi config get workflow --level session  (env var already in env)
 ```
 
-**`/gobbi` skill (post-PR-FIN-1b):** The "Discovering the real session ID" section has been removed from SKILL.md. The skill calls `gobbi config get …` directly — `$CLAUDE_SESSION_ID` is already in env from `$CLAUDE_ENV_FILE`. The `cli-vs-skill-session-id` gotcha has been retired.
+**`/gobbi` skill (post-PR-FIN-1b):** The "Discovering the real session ID" section has been removed from SKILL.md. The skill calls `gobbi config get …` directly — `$CLAUDE_SESSION_ID` is already in env from `$CLAUDE_ENV_FILE`. The `cli-vs-skill-session-id` mistake has been retired.
 
-**`$CLAUDE_ENV_FILE` regression (Claude Code 2.1.121):** In Claude Code 2.1.121 and earlier, `$CLAUDE_ENV_FILE` is empty in the hook subprocess — the documented env-file persistence mechanism does not function. Upstream issue https://github.com/anthropics/claude-code/issues/15840 was closed `not_planned`. PR-FIN-1d confirms that hook payload-stdin delivery is robust to this regression (`payload.session_id` arrives via stdin independently of `$CLAUDE_ENV_FILE`). The gobbi-side workaround for skill-side session-id discovery is tracked in issue #220. See gotcha `claude-env-file-not-set-2.1.121.md`.
+**`$CLAUDE_ENV_FILE` regression (Claude Code 2.1.121):** In Claude Code 2.1.121 and earlier, `$CLAUDE_ENV_FILE` is empty in the hook subprocess — the documented env-file persistence mechanism does not function. Upstream issue https://github.com/anthropics/claude-code/issues/15840 was closed `not_planned`. PR-FIN-1d confirms that hook payload-stdin delivery is robust to this regression (`payload.session_id` arrives via stdin independently of `$CLAUDE_ENV_FILE`). The gobbi-side workaround for skill-side session-id discovery is tracked in issue #220. See mistake `claude-env-file-not-set-2.1.121.md`.
 
 ---
 

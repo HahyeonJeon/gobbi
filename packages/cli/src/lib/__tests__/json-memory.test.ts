@@ -161,7 +161,7 @@ function fixtureAnthropicAgent(overrides: Partial<AnthropicAgentEntry> = {}): An
     provider: 'anthropic',
     id: 'agent-1',
     seq: 5,
-    name: '__pi',
+    name: 'pi',
     model: 'claude-opus-4-7',
     skillsLoaded: [],
     startedAt: '2026-04-29T10:01:00.000Z',
@@ -976,7 +976,7 @@ describe('aggregateSessionJson', () => {
         type: 'delegation.spawn',
         step: 'ideation',
         ts: '2026-04-29T10:00:01.000Z',
-        data: { agentType: '__pi', step: 'ideation', subagentId: 'agent-1', timestamp: '2026-04-29T10:00:01.000Z' },
+        data: { agentType: 'pi', step: 'ideation', subagentId: 'agent-1', timestamp: '2026-04-29T10:00:01.000Z' },
       }),
       makeRow({
         seq: 3,
@@ -1049,7 +1049,7 @@ describe('aggregateSessionJson', () => {
         seq: 1,
         type: 'delegation.spawn',
         step: 'ideation',
-        data: { agentType: '__pi', step: 'ideation', subagentId: 'agent-1', timestamp: '2026-04-29T10:00:00.000Z' },
+        data: { agentType: 'pi', step: 'ideation', subagentId: 'agent-1', timestamp: '2026-04-29T10:00:00.000Z' },
       }),
       makeRow({
         seq: 2,
@@ -1162,6 +1162,6 @@ describe('assertNeverProvider', () => {
       }
     }
 
-    expect(describeAgent(agent)).toBe('__pi@anthropic');
+    expect(describeAgent(agent)).toBe('pi@anthropic');
   });
 });

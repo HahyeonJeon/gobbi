@@ -16,7 +16,7 @@ This checklist is the verification harness for the 15 scenarios in `scenarios.md
 | O-CI-E-01    | `npm install -g` fails — agent surfaces the error         | 5          |
 | O-CI-E-02    | Bun runtime missing — prerequisite failure                | 5          |
 | O-CI-E-03    | Partial install — npm exit 0, but `gobbi` not on PATH     | 5          |
-| O-CI-E-04    | `_gobbi-rule.md` symlink missing and cannot be recreated  | 4          |
+| O-CI-E-04    | `gobbi-rule.md` symlink missing and cannot be recreated  | 4          |
 | O-CI-X-01    | Stale `gobbi.json` entry — offer reuse or clear           | 4          |
 | O-CI-X-02    | Concurrent `/gobbi` invocations in two sessions           | 5          |
 | O-CI-X-03    | `/gobbi` inside active peer worktree — no auto-cleanup    | 4          |
@@ -52,7 +52,7 @@ This checklist is the verification harness for the 15 scenarios in `scenarios.md
 - [x] [EP] `plugins/gobbi/.claude-plugin/plugin.json` `"skills"` key points to `./skills/` — the plugin ships skills via this directory reference, not by embedding them. (Hint: Codebase — `plugins/gobbi/.claude-plugin/plugin.json`.)
 - [x] [EP] `plugins/gobbi/skills/` directory exists and contains skill directories matching those under `.claude/skills/` — confirming the symlink relationship. (Hint: Run — `ls plugins/gobbi/skills/ | head -10`.)
 - [x] [DT] `plugins/gobbi/agents/` directory exists and lists agent files — agents are also shipped via the plugin directory, not the CLI package. (Hint: Run — `ls plugins/gobbi/agents/`.)
-- [x] [ST] `SKILL.md §SECOND` describes creating a symlink from `.claude/rules/_gobbi-rule.md` to `_gobbi-rule-container/_gobbi-rule.md` — the symlink model is the auto-update mechanism. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §SECOND.)
+- [x] [ST] `SKILL.md §SECOND` describes creating a symlink `.claude/rules/gobbi-principles.md` → `.gobbi/projects/gobbi/skills/gobbi-principles/SKILL.md` — the symlink model is the auto-update mechanism. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §SECOND.)
 - [x] [GAP] Verify no CLI binary delivery path exists in `plugins/gobbi/` — the plugin ships skills/agents/hooks but NOT the `@gobbitools/cli` npm package. The claim "plugin install refreshes CLI binary" in `README.md` paragraph 2 is aspirational. (Hint: Run — `ls plugins/gobbi/` confirms absence of `bin/`, `dist/`, or `package.json` at the plugin root.)
 
 ---
@@ -105,10 +105,10 @@ This checklist is the verification harness for the 15 scenarios in `scenarios.md
 
 ---
 
-## O-CI-E-04: `_gobbi-rule.md` symlink missing and cannot be recreated
+## O-CI-E-04: `gobbi-principles.md` symlink missing and cannot be recreated
 
 - [x] [EP] `SKILL.md §SECOND` contains the symlink-creation instruction — confirming the skill drives this step before any CLI or workflow command. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §SECOND.)
-- [x] [EP] `.claude/skills/_gobbi-rule-container/_gobbi-rule.md` exists and is the intended symlink target — the container file is the source of truth for the behavioral rule. (Hint: Run — `ls .claude/skills/_gobbi-rule-container/`.)
+- [x] [EP] `.gobbi/projects/gobbi/skills/gobbi-principles/SKILL.md` exists and is the intended symlink target — the skill file is the source of truth for the behavioral principles. (Hint: Run — `ls .gobbi/projects/gobbi/skills/gobbi-principles/`.)
 - [x] [GAP] Verify `SKILL.md §SECOND` contains no explicit "surface failure + pause, do NOT copy" fallback branch — the instruction to pause rather than copy is aspirational; the skill only describes the success path. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §SECOND, confirm absence of failure-branch text.)
 - [x] [ST] `SKILL.md §SECOND` precedes §THIRD — symlink setup runs before the CLI availability check, so a symlink failure blocks the session at the correct step. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §SECOND and §THIRD ordering.)
 
@@ -135,10 +135,10 @@ This checklist is the verification harness for the 15 scenarios in `scenarios.md
 
 ## O-CI-X-03: `/gobbi` inside active peer worktree — must not auto-cleanup
 
-- [x] [EP] `_git/gotchas.md` "Recommending cleanup of worktrees that may belong to concurrent sessions" gotcha specifies "default to `Leave it` as the recommended option" — the behavioral rule exists and is in the always-active skill set. (Hint: Codebase — `.claude/skills/_git/gotchas.md`, section "Recommending cleanup of worktrees…".)
+- [x] [EP] `_git/mistakes.md` "Recommending cleanup of worktrees that may belong to concurrent sessions" mistake specifies "default to `Leave it` as the recommended option" — the behavioral rule exists and is in the always-active skill set. (Hint: Codebase — `.claude/skills/git/mistakes.md`, section "Recommending cleanup of worktrees…".)
 - [x] [ST] `SKILL.md §FIFTH` question 3 (git workflow) concerns the current session's git mode, not peer worktree management — the install/setup flow has no step that scans or acts on existing worktrees. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §FIFTH "Third question — git workflow mode".)
 - [x] [DT] `plugins/gobbi/hooks/hooks.json` SessionStart hook runs `gobbi workflow init` only — there is no hook command that scans `.claude/worktrees/` or issues `git worktree remove`. (Hint: Codebase — `plugins/gobbi/hooks/hooks.json` SessionStart hook `"command"` value.)
-- [x] [EP] `_gobbi-rule.md` AskUserQuestion rule requires "(Recommended)" to be placed on the non-destructive option — the behavioral rule applies to any prompt about worktrees encountered during setup. (Hint: Codebase — `.claude/skills/_gobbi-rule-container/_gobbi-rule.md` §User Authority.)
+- [x] [EP] `gobbi-principles.md` P6 (Specificity) requires "(Recommended)" to be placed on the non-destructive option — the behavioral principle applies to any prompt about worktrees encountered during setup. (Hint: Codebase — `.claude/skills/gobbi-principles/SKILL.md` §Principle 6.)
 
 ---
 

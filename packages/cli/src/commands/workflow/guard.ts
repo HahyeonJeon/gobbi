@@ -163,7 +163,7 @@ type PermissionDecision = 'allow' | 'deny' | 'ask' | 'defer';
  * The literal type pins the value at compile time so future emitters cannot
  * accidentally drop or mistype it.
  *
- * @see `_gotcha/__system.md` §"Claude Code hookSpecificOutput requires hookEventName"
+ * @see `gotcha/system.md` §"Claude Code hookSpecificOutput requires hookEventName"
  */
 interface HookSpecificOutput {
   readonly hookEventName: 'PreToolUse';

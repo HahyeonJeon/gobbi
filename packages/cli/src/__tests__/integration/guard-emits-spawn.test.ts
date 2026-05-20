@@ -10,7 +10,7 @@
  *   1. `workflow/reducer.ts:314` — the `delegation.spawn` reducer handler
  *      mutates `state.activeSubagents`. Asserts the mutation lands.
  *   2. `predicates.piAgentsToSpawn` — fires `true` when at least one
- *      `__pi`-typed agent is in `state.activeSubagents`. Verifies the
+ *      `pi`-typed agent is in `state.activeSubagents`. Verifies the
  *      end-to-end activation through the guard.
  *   3. `workflow/reducer.ts:681-687` — `verification.result` rejects when
  *      no spawn has been recorded for the subagent. Verifies the rejection
@@ -190,7 +190,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
           session_id: sessionId,
           tool_call_id: 'toolu_single',
           tool_input: {
-            subagent_type: '__executor',
+            subagent_type: 'executor',
             prompt: 'do the thing',
           },
         },
@@ -209,7 +209,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
         readonly subagentId: string;
         readonly step: string;
       };
-      expect(data.agentType).toBe('__executor');
+      expect(data.agentType).toBe('executor');
       expect(data.tool_call_id).toBe('toolu_single');
       // No agent_id in the payload, so subagentId falls back to tool_call_id.
       expect(data.subagentId).toBe('toolu_single');
@@ -232,7 +232,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
           tool_name: 'Task',
           session_id: sessionId,
           tool_use_id: 'toolu_canonical',
-          tool_input: { subagent_type: '__pi' },
+          tool_input: { subagent_type: 'pi' },
         },
       }),
     );
@@ -246,7 +246,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
         readonly agentType: string;
       };
       expect(data.tool_call_id).toBe('toolu_canonical');
-      expect(data.agentType).toBe('__pi');
+      expect(data.agentType).toBe('pi');
     } finally {
       store.close();
     }
@@ -288,7 +288,7 @@ describe('PreToolUse guard — single-agent spawn emission', () => {
         payload: {
           tool_name: 'Task',
           session_id: sessionId,
-          tool_input: { subagent_type: '__executor' },
+          tool_input: { subagent_type: 'executor' },
           // no tool_call_id, no tool_use_id
         },
       }),
@@ -347,7 +347,7 @@ describe('PreToolUse guard — parallel-agent spawn emission', () => {
           tool_name: 'Task',
           session_id: sessionId,
           tool_call_id: 'toolu_par_A',
-          tool_input: { subagent_type: '__pi', stance: 'innovative' },
+          tool_input: { subagent_type: 'pi', stance: 'innovative' },
         },
       }),
     );
@@ -360,7 +360,7 @@ describe('PreToolUse guard — parallel-agent spawn emission', () => {
           tool_name: 'Task',
           session_id: sessionId,
           tool_call_id: 'toolu_par_B',
-          tool_input: { subagent_type: '__pi', stance: 'best' },
+          tool_input: { subagent_type: 'pi', stance: 'best' },
         },
       }),
     );
@@ -416,7 +416,7 @@ describe('PreToolUse guard — parallel-agent spawn emission', () => {
           // agent_id is not present in the spawn payload; capture-subagent
           // uses tool_call_id to find the right parent regardless.
           agent_id: 'toolu_par_B',
-          agent_type: '__pi',
+          agent_type: 'pi',
           agent_transcript_path: trB,
           session_id: sessionId,
           tool_call_id: 'toolu_par_B',
@@ -429,7 +429,7 @@ describe('PreToolUse guard — parallel-agent spawn emission', () => {
         sessionDir,
         payload: {
           agent_id: 'toolu_par_A',
-          agent_type: '__pi',
+          agent_type: 'pi',
           agent_transcript_path: trA,
           session_id: sessionId,
           tool_call_id: 'toolu_par_A',
@@ -473,7 +473,7 @@ describe('Ripple — reducer.delegation.spawn populates state.activeSubagents', 
           tool_name: 'Task',
           session_id: sessionId,
           tool_call_id: 'toolu_R1',
-          tool_input: { subagent_type: '__pi' },
+          tool_input: { subagent_type: 'pi' },
         },
       }),
     );
@@ -483,7 +483,7 @@ describe('Ripple — reducer.delegation.spawn populates state.activeSubagents', 
       const state = resolveWorkflowState(sessionDir, store, sessionId);
       expect(state.activeSubagents).toHaveLength(1);
       const sub = state.activeSubagents[0]!;
-      expect(sub.agentType).toBe('__pi');
+      expect(sub.agentType).toBe('pi');
       expect(sub.subagentId).toBe('toolu_R1');
       expect(sub.step).toBe('ideation');
       // spawnedAt is the spawn event's `data.timestamp` — a non-empty ISO.
@@ -498,7 +498,7 @@ describe('Ripple — reducer.delegation.spawn populates state.activeSubagents', 
 // Ripple — `predicates.piAgentsToSpawn`
 // ===========================================================================
 
-describe('Ripple — predicates.piAgentsToSpawn fires once a __pi spawn lands', () => {
+describe('Ripple — predicates.piAgentsToSpawn fires once a pi spawn lands', () => {
   test('false before spawn, true after spawn', async () => {
     const sessionId = 'ripple-pi';
     const { sessionDir, projectId } = await initScratchSession(sessionId);
@@ -526,7 +526,7 @@ describe('Ripple — predicates.piAgentsToSpawn fires once a __pi spawn lands', 
           tool_name: 'Task',
           session_id: sessionId,
           tool_call_id: 'toolu_pi',
-          tool_input: { subagent_type: '__pi' },
+          tool_input: { subagent_type: 'pi' },
         },
       }),
     );
@@ -566,7 +566,7 @@ describe('Ripple — reducer accepts verification.result when matching spawn exi
           tool_name: 'Task',
           session_id: sessionId,
           tool_call_id: 'toolu_V',
-          tool_input: { subagent_type: '__executor' },
+          tool_input: { subagent_type: 'executor' },
         },
       }),
     );
@@ -600,7 +600,7 @@ describe('Ripple — reducer accepts verification.result when matching spawn exi
 // ===========================================================================
 
 describe('Ripple — step-readme writes correct subagentsActiveAtExit', () => {
-  test('one __pi spawn at ideation → frontmatter shows subagentsActiveAtExit: 1', async () => {
+  test('one pi spawn at ideation → frontmatter shows subagentsActiveAtExit: 1', async () => {
     const sessionId = 'ripple-readme';
     const { sessionDir, projectId } = await initScratchSession(sessionId);
 
@@ -612,7 +612,7 @@ describe('Ripple — step-readme writes correct subagentsActiveAtExit', () => {
           tool_name: 'Task',
           session_id: sessionId,
           tool_call_id: 'toolu_RM',
-          tool_input: { subagent_type: '__pi' },
+          tool_input: { subagent_type: 'pi' },
         },
       }),
     );
@@ -670,7 +670,7 @@ describe('Ripple — verification-block renders for spawned subagent', () => {
           tool_name: 'Task',
           session_id: sessionId,
           tool_call_id: 'toolu_VB',
-          tool_input: { subagent_type: '__executor' },
+          tool_input: { subagent_type: 'executor' },
         },
       }),
     );

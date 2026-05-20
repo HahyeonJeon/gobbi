@@ -34,7 +34,7 @@ The `--project` flag lets a user install into any named project; the default is 
 
 The farm is the loader surface for Claude Code. Each file under `.claude/skills/`, `.claude/agents/`, and `.claude/rules/` is a symlink pointing into `.gobbi/projects/<projectName>/`. The farm is built by `gobbi install` (fresh) and rebuilt by `gobbi install --upgrade`. It is not hand-maintained — editing symlinks directly is not safe across install upgrades.
 
-The farm contains only the three template bundle roots. Project docs (design, decisions, gotchas, sessions) under `.gobbi/projects/<name>/` are not part of the farm and are not loaded by Claude Code automatically. They are accessed directly by agents during workflow steps.
+The farm contains only the three template bundle roots. Project docs (design, decisions, mistakes, sessions) under `.gobbi/projects/<name>/` are not part of the farm and are not loaded by Claude Code automatically. They are accessed directly by agents during workflow steps.
 
 ---
 

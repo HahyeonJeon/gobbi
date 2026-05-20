@@ -4,7 +4,7 @@
 
 This document resolves an empirical question for v0.5.0: how does Claude Code actually discover and load hooks from a plugin? Specifically, does `plugin.json` need to declare `"hooks": "./hooks/hooks.json"` for plugin hooks to fire, and does declaring *other* components (like `skills` or `agents`) in `plugin.json` disable hook auto-discovery?
 
-The Phase 2 executor for PR F.4 (hook wiring) will consume this doc to decide whether the current `plugins/gobbi/.claude-plugin/plugin.json` needs a `hooks` field, and what the exact shape of `plugins/gobbi/hooks/hooks.json` must be. The doc also supersedes the assertion in `_gotcha/__system.md` about "auto-discovery of other components being disabled when `plugin.json` declares any component" — that assertion is refuted for hooks specifically.
+The Phase 2 executor for PR F.4 (hook wiring) will consume this doc to decide whether the current `plugins/gobbi/.claude-plugin/plugin.json` needs a `hooks` field, and what the exact shape of `plugins/gobbi/hooks/hooks.json` must be. The doc also supersedes the assertion in `_mistake/system.md` about "auto-discovery of other components being disabled when `plugin.json` declares any component" — that assertion is refuted for hooks specifically.
 
 ## Claude Code version tested
 
@@ -103,7 +103,7 @@ And the duplicate-detection error message states it directly:
 
 > `"The standard hooks/hooks.json is loaded automatically, so manifest.hooks should only reference additional hook files."`
 
-This refutes the gotcha's overreach. The gotcha at `_gotcha/__system.md` correctly states that plugin `settings.json` does NOT accept hooks (that part is still true — `settings.json` is only for agent/model settings). But its secondary claim is wrong:
+This refutes the mistake's overreach. The mistake at `_mistake/system.md` correctly states that plugin `settings.json` does NOT accept hooks (that part is still true — `settings.json` is only for agent/model settings). But its secondary claim is wrong:
 
 > ~~"When `plugin.json` declares any component paths (`skills`, `agents`), auto-discovery of other components is disabled — hooks must be explicitly listed."~~
 
@@ -166,7 +166,7 @@ The 0.4.5 `gobbi notify *` commands are NOT part of v0.5.0's core hook model —
 **Reminders derived from the source that PR F.4 must honour:**
 
 - The `command` string can use `${CLAUDE_PLUGIN_ROOT}` and `${CLAUDE_PLUGIN_DATA}` placeholders — these are substituted at hook-fire time. Only hooks *declared inside a plugin* can use these; user `settings.json` hooks get an error if they reference them.
-- `plugins/gobbi/settings.json` must stay empty-ish (`{}`). Do NOT add hook config to plugin `settings.json` — Claude Code treats plugin `settings.json` only for agent/model overrides, per the original gotcha, which that part remains true. The `hooks.json` file is the sole plugin-hook surface.
+- `plugins/gobbi/settings.json` must stay empty-ish (`{}`). Do NOT add hook config to plugin `settings.json` — Claude Code treats plugin `settings.json` only for agent/model overrides, per the original mistake, which that part remains true. The `hooks.json` file is the sole plugin-hook surface.
 - Default command-hook timeout is 600 s per `v050-hooks.md` → "Plugin Hook Registration." Per-entry `timeout` keys in `hooks.json` are in seconds (the same units that `0.4.5`'s existing file uses).
 
 ## Open questions for Phase 3

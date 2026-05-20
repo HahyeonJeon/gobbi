@@ -3,10 +3,10 @@
   "version": 1,
   "meta": {
     "description": "Evaluation — independent evaluator agents assess the preceding step's output from distinct perspectives. Reused by ideation_eval, planning_eval, and execution_eval via index.json's evalFor indirection. The creating agent never participates. NOTE: The transitions array below declares ideation_eval defaults (verdictRevise → ideation, verdictPass → planning). For planning_eval and execution_eval, the authoritative routing lives in index.json graph edges (e.g., planning_eval verdictPass → execution, execution_eval verdictPass → memorization). Do not restructure this spec to hold per-eval-variant transitions — the shared-spec design is intentional.",
-    "allowedAgentTypes": ["_project-evaluator", "_agent-evaluator", "_skills-evaluator"],
+    "allowedAgentTypes": ["project-evaluator", "agent-evaluator", "skills-evaluator"],
     "maxParallelAgents": 5,
-    "requiredSkills": ["_gotcha"],
-    "optionalSkills": ["_project", "_claude"],
+    "requiredSkills": ["gotcha"],
+    "optionalSkills": ["project-doc", "claude"],
     "expectedArtifacts": ["project.md", "overall.md", "evaluation.md"],
     "completionSignal": "SubagentStop"
   },

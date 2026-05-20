@@ -6,7 +6,7 @@ Inventory of all `.claude/` documentation files in gobbi. Reflects the current s
 
 ## Category System
 
-Skills are organized into three top-level categories: **Work** (workflow participants loaded during the ideate-plan-execute-collect cycle), **Docs** (skills about writing and maintaining `.claude/` docs), and **Tool** (utility and maintenance tools). Work skills can have child skill categories that describe more specific principles under the parent. The `gobbi` interface skill stands alone with no category.
+Skills are organized into three top-level categories: **Work** (workflow participants — the `orchestration` skill plus supporting skills, with phase-specific guidance in `orchestration/workflow/` sub-documents), **Docs** (skills about writing and maintaining `.claude/` docs), and **Tool** (utility and maintenance tools). The `gobbi` interface skill stands alone with no category.
 
 ---
 
@@ -23,30 +23,19 @@ Skills are organized into three top-level categories: **Work** (workflow partici
 
 | Name | Path | Description |
 |------|------|-------------|
-| __gobbi-convention | `.claude/rules/__gobbi-convention.md` | Naming convention: underscore tiers with hyphen word separators (interface, hidden, internal). |
+| gobbi-rule | `.claude/rules/gobbi-rule.md` | Core behavioral rules always-active safety net. |
 
 ### Agents
-
-#### Interface (no prefix)
 
 | Name | Path | Description |
 |------|------|-------------|
 | gobbi-agent | `.claude/agents/gobbi-agent.md` | Onboarding and setup assistant. Project directory setup, notification configuration, workflow orientation. |
-
-#### Hidden (single `_`)
-
-| Name | Path | Description |
-|------|------|-------------|
-| _skills-evaluator | `.claude/agents/_skills-evaluator.md` | Runs evaluation of skill definitions across all perspectives. |
-| _agent-evaluator | `.claude/agents/_agent-evaluator.md` | Runs evaluation of agent definitions across all perspectives. |
-| _project-evaluator | `.claude/agents/_project-evaluator.md` | Runs evaluation of project work output across all perspectives. |
-
-#### Internal (double `__`)
-
-| Name | Path | Description |
-|------|------|-------------|
-| __executor | `.claude/agents/__executor.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
-| __pi | `.claude/agents/__pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation, and task decomposition. |
+| skills-evaluator | `.claude/agents/skills-evaluator.md` | Runs evaluation of skill definitions across all perspectives. |
+| agent-evaluator | `.claude/agents/agent-evaluator.md` | Runs evaluation of agent definitions across all perspectives. |
+| project-evaluator | `.claude/agents/project-evaluator.md` | Runs evaluation of project work output across all perspectives. |
+| executor | `.claude/agents/executor.md` | Code implementation, file creation/modification, TypeScript development, build system changes. |
+| pi | `.claude/agents/pi.md` | Principal Investigator. Deep problem analysis, requirement refinement, technical investigation, and task decomposition. |
+| researcher | `.claude/agents/researcher.md` | Investigation and research. Explores problem spaces, gathers evidence, and produces research artifacts for downstream steps. |
 
 ### Skills
 
@@ -60,22 +49,16 @@ Standalone interface entry point — no category.
 
 #### Work
 
-**Workflow participants** — skills loaded during the ideate-plan-execute-collect cycle.
+**Workflow participants** — skills loaded during the workflow phases and at session start. Phase-specific guidance lives as sub-documents under `orchestration/workflow/`.
 
 | Name | Path | Description |
 |------|------|-------------|
-| _orchestration | `.claude/skills/_orchestration/SKILL.md` | Workflow coordinator. Task routing, phase transitions, step tracking. |
-| _discuss | `.claude/skills/_discuss/SKILL.md` | Structured discussion via AskUserQuestion. Challenges vague thinking, surfaces problems. |
-| _ideation | `.claude/skills/_ideation/SKILL.md` | Brainstorming and option exploration. Contribution points, trade-offs, risk analysis. |
-| _plan | `.claude/skills/_plan/SKILL.md` | Task decomposition into narrow, specific, agent-assigned subtasks. |
-| _delegation | `.claude/skills/_delegation/SKILL.md` | Subagent briefing with context layers and scope boundaries. |
-| _execution | `.claude/skills/_execution/SKILL.md` | Single-task execution guide: study, plan, implement, verify. |
-| _collection | `.claude/skills/_collection/SKILL.md` | Workflow trail persistence. Prompt, plan, task results, README. |
-| _note | `.claude/skills/_note/SKILL.md` | Note writing at every workflow step. Decisions, outcomes, context. |
-| _evaluation | `.claude/skills/_evaluation/SKILL.md` | Evaluation orchestration. Selecting perspectives, spawning evaluators, synthesizing findings. |
-| _git | `.claude/skills/_git/SKILL.md` | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management. |
-| _notification | `.claude/skills/_notification/SKILL.md` | Configure Claude Code notifications (Slack, Telegram, others). |
-| _gotcha | `.claude/skills/_gotcha/SKILL.md` | Cross-project mistake recording. Check before acting, write after corrections. |
+| orchestration | `.claude/skills/orchestration/SKILL.md` | Workflow coordinator. Manager role, Chat/Auto modes, the five-step workflow. Phase guidance in `workflow/` sub-docs. |
+| collection | `.claude/skills/collection/SKILL.md` | Workflow trail persistence. Prompt, plan, task results, README. |
+| note | `.claude/skills/note/SKILL.md` | Note writing at every workflow step. Decisions, outcomes, context. |
+| git | `.claude/skills/git/SKILL.md` | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management. |
+| notification | `.claude/skills/notification/SKILL.md` | Configure Claude Code notifications (Slack, Telegram, others). |
+| mistake | `.claude/skills/mistake/SKILL.md` | Cross-project mistake recording. Check before acting, write after corrections. |
 
 ##### Notification child skills
 
@@ -83,9 +66,9 @@ Standalone interface entry point — no category.
 
 | Name | Path | Description |
 |------|------|-------------|
-| slack.md | `.claude/skills/_notification/slack.md` | Slack notification setup — child doc of _notification. |
-| telegram.md | `.claude/skills/_notification/telegram.md` | Telegram notification setup — child doc of _notification. |
-| discord.md | `.claude/skills/_notification/discord.md` | Discord notification setup — child doc of _notification. |
+| slack.md | `.claude/skills/notification/slack.md` | Slack notification setup — child doc of notification. |
+| telegram.md | `.claude/skills/notification/telegram.md` | Telegram notification setup — child doc of notification. |
+| discord.md | `.claude/skills/notification/discord.md` | Discord notification setup — child doc of notification. |
 
 #### Docs
 
@@ -93,11 +76,11 @@ Standalone interface entry point — no category.
 
 | Name | Path | Description |
 |------|------|-------------|
-| _claude | `.claude/skills/_claude/SKILL.md` | Core `.claude/` writing standard. Principles, hierarchy, anti-patterns, review checklist. |
-| _skills | `.claude/skills/_skills/SKILL.md` | Reference and guide for creating skill definitions. |
-| _agents | `.claude/skills/_agents/SKILL.md` | Reference and guide for creating agent definitions. |
-| _rules | `.claude/skills/_rules/SKILL.md` | Guide for authoring rule files. |
-| _project | `.claude/skills/_project/SKILL.md` | Guide for authoring project docs in `.claude/project/{project-name}/`. |
+| claude | `.claude/skills/claude/SKILL.md` | Core `.claude/` writing standard. Principles, hierarchy, anti-patterns, review checklist. |
+| skills-doc | `.claude/skills/skills-doc/SKILL.md` | Reference and guide for creating skill definitions. |
+| agents-doc | `.claude/skills/agents-doc/SKILL.md` | Reference and guide for creating agent definitions. |
+| rules-doc | `.claude/skills/rules-doc/SKILL.md` | Guide for authoring rule files. |
+| project-doc | `.claude/skills/project-doc/SKILL.md` | Guide for authoring project docs in `.claude/project/{project-name}/`. |
 
 #### Tool
 
@@ -105,37 +88,31 @@ Standalone interface entry point — no category.
 
 | Name | Path | Description |
 |------|------|-------------|
-| _gobbi-cli | `.claude/skills/_gobbi-cli/SKILL.md` | Intent-first CLI reference. Maps user intentions to gobbi CLI commands. |
+| gobbi-cli | `.claude/skills/gobbi-cli/SKILL.md` | Intent-first CLI reference. Maps user intentions to gobbi CLI commands. |
 
 ### Skill Child Docs
 
 | Name | Parent Skill | Path | Description |
 |------|-------------|------|-------------|
 | project-context.md | gobbi | `.claude/skills/gobbi/project-context.md` | Session-start project detection. Recommend skills based on technology stack. |
-| authoring.md | _skills | `.claude/skills/_skills/authoring.md` | How to write skill content: description and instruction writing. |
-| verification.md | _skills | `.claude/skills/_skills/verification.md` | Skill quality verification: trigger accuracy, output evaluation. |
-| conventions.md | _git | `.claude/skills/_git/conventions.md` | Branch naming, commit messages, PR template, issue format, sub-issues. |
-| feedback.md | _orchestration | `.claude/skills/_orchestration/feedback.md` | FEEDBACK phase: iteration tracking, stagnation detection, round cap. |
-| finish.md | _orchestration | `.claude/skills/_orchestration/finish.md` | FINISH phase: merge/commit/compact decision tree, pre-action verification. |
+| authoring.md | skills-doc | `.claude/skills/skills-doc/authoring.md` | How to write skill content: description and instruction writing. |
+| verification.md | skills-doc | `.claude/skills/skills-doc/verification.md` | Skill quality verification: trigger accuracy, output evaluation. |
+| conventions.md | git | `.claude/skills/git/conventions.md` | Branch naming, commit messages, PR template, issue format, sub-issues. |
+| discussion.md | orchestration | `.claude/skills/orchestration/workflow/discussion.md` | Discussion phase: dimensions, recommendation pattern, AskUserQuestion discipline. |
+| ideation.md | orchestration | `.claude/skills/orchestration/workflow/ideation.md` | Ideation phase: PI stances, contribution points, discussion points. |
+| planning.md | orchestration | `.claude/skills/orchestration/workflow/planning.md` | Planning phase: decomposition, plan structure, good/bad plan criteria. |
+| research.md | orchestration | `.claude/skills/orchestration/workflow/research.md` | Research phase: dual-stance investigation, synthesis, references discipline. |
+| delegation.md | orchestration | `.claude/skills/orchestration/workflow/delegation.md` | Delegation: briefing structure, context layers, model selection, agent roster. |
+| execution.md | orchestration | `.claude/skills/orchestration/workflow/execution.md` | Execution phase: study-plan-execute-verify lifecycle, scope discipline. |
+| evaluation.md | orchestration | `.claude/skills/orchestration/workflow/evaluation.md` | Evaluation phase: perspective selection, scoring, false positives, stage focus. |
+| memorization.md | orchestration | `.claude/skills/orchestration/workflow/memorization.md` | Memorization phase: mistakes, rules, project docs, session continuity. |
 
-### Gotcha Files
+### Mistake Files
 
 | Name | Path | Description |
 |------|------|-------------|
-| _orchestration | `.claude/skills/_gotcha/_orchestration.md` | Coordination, routing, phase transitions. |
-| _git | `.claude/skills/_gotcha/_git.md` | Worktree management, branch handling, PR lifecycle. |
-| _claude | `.claude/skills/_gotcha/_claude.md` | Writing `.claude/` docs, templated output. |
-| _collection | `.claude/skills/_gotcha/_collection.md` | Work trail persistence, README indexing. |
-| _delegation | `.claude/skills/_gotcha/_delegation.md` | Subagent briefings, context loading, scope. |
-| _execution | `.claude/skills/_gotcha/_execution.md` | Implementation, verification. |
-| _note | `.claude/skills/_gotcha/_note.md` | Note writing, directory structure, timing. |
-| _plan | `.claude/skills/_gotcha/_plan.md` | Task decomposition, dependency ordering. |
-| _discuss | `.claude/skills/_gotcha/_discuss.md` | Prompt clarification. (Empty) |
-| _evaluation | `.claude/skills/_gotcha/_evaluation.md` | Quality gates. (Empty) |
-| _ideation | `.claude/skills/_gotcha/_ideation.md` | Brainstorming. (Empty) |
-| _notification | `.claude/skills/_gotcha/_notification.md` | Hook setup, credentials. (Empty) |
-| __security | `.claude/skills/_gotcha/__security.md` | Security vulnerability signals for evaluators. |
-| __system | `.claude/skills/_gotcha/__system.md` | Environment, processes, hooks, infrastructure. |
+| security | `.claude/skills/mistake/security.md` | Security vulnerability signals for evaluators. |
+| system | `.claude/skills/mistake/system.md` | Environment, processes, hooks, infrastructure. |
 
 ### Project Docs
 
@@ -156,18 +133,19 @@ Standalone interface entry point — no category.
 | Root | 2 |
 | Rules | 1 |
 | Agents — Interface | 1 |
-| Agents — Hidden | 3 |
-| Agents — Internal | 2 |
+| Agents — Evaluators | 3 |
+| Agents — Implementation | 3 |
 | Skills — Interface | 1 |
-| Skills — Work | 12 |
+| Skills — Work | 6 |
+| Skills — Work (child: orchestration/workflow) | 9 |
 | Skills — Work (child: Notification) | 3 |
 | Skills — Docs | 5 |
 | Skills — Tool | 1 |
-| Skill child docs | 6 |
-| Evaluation perspective docs | 18 (6 per target: _skills, _agents, _project) |
-| Gotcha files | 14 |
+| Skill child docs | 12 |
+| Evaluation perspective docs | 18 (6 per target: skills-doc, agents-doc, project-doc) |
+| Mistake files | 2 |
 | Project docs | 5 |
-| **Total** | **56** skills + 18 evaluation child docs |
+| **Total** | Updated — 8 standalone Work skills merged into orchestration/workflow sub-docs |
 
 ---
 
@@ -175,17 +153,15 @@ Standalone interface entry point — no category.
 
 ### Naming Convention
 
-Skill directory names and agent filenames use **hyphens as word separators** with three visibility tiers:
+Skill directory names and agent filenames use **hyphens as word separators** with no underscores. `gobbi` is the single interface entry point (no prefix, no hyphen). All other names are plain hyphen-separated words. The exception is `gobbi-agent` and similar plugin-distributed agents that use `gobbi-` for external identity.
 
-- No prefix — interface (user-invokable). Only `gobbi`.
-- `_` prefix — hidden (system-loaded during workflow). Examples: `_plan`, `_skills`.
-- `__` prefix — internal (gobbi machinery). Examples: `__executor`, `__pi`.
+### Mistake System
 
-Single-word names are unaffected by the hyphen rule. The tier prefix is part of the name — omitting it changes visibility. The rule file is `__gobbi-convention.md`.
+Cross-cutting mistake files live in `mistake/` (`mistake/system.md`, `mistake/security.md`). Skill-specific mistakes colocate with their skill at `{skill-name}/mistakes.md`. Guidance on how to record each type of mistake lives as child docs inside `mistake/`.
 
-### Gotcha System
+### Plugin Registration
 
-All gotcha files are centralized under `_gotcha/` (`_gotcha/_orchestration.md`, `_gotcha/_git.md`, etc.). Guidance on how to record each type of gotcha lives as child docs inside `_gotcha/` rather than as separate child skills.
+`executor`, `pi`, and `researcher` are orchestrator-internal agents — they are spawned by the orchestrator as delegation targets, not invoked directly by users. They are intentionally not registered in `plugins/gobbi/.claude-plugin/plugin.json`. Only user-invokable agents (`gobbi-agent`, `agent-evaluator`, `project-evaluator`, `skills-evaluator`) appear in the plugin manifest.
 
 ### Pending Decisions
 

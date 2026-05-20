@@ -61,7 +61,7 @@ The synthesis block enumerates seven rawdata source classes the memorization age
 
 | Section | Purpose |
 |---------|---------|
-| `meta` | Orchestrator-only step: no `allowedAgentTypes`, `maxParallelAgents: 0`, required skills `_gotcha` + `_project`, expected artifact `memorization.md`, completion signal `Stop`. Description references the path-pointer manifest contract. |
+| `meta` | Orchestrator-only step: no `allowedAgentTypes`, `maxParallelAgents: 0`, required skills `gotcha` + `project-doc`, expected artifact `memorization.md`, completion signal `Stop`. Description references the path-pointer manifest contract. |
 | `transitions` | One exit edge — unconditional `always`. Per-step declarative mirror; the authoritative routing is the `memorization → handoff` edge in [`../index.json`](../index.json). |
 | `delegation.agents` | Empty array — Memorization does not spawn subagents |
 | `tokenBudget` | `staticPrefix: 0.3, session: 0.1, instructions: 0.4, artifacts: 0.1, materials: 0.1` — sized for a path-pointer manifest. The `instructions` slot grew to absorb the manifest-reading flow + the rawdata-source / extraction-destination enumeration; the `artifacts` slot shrank because manifest payload is at most a few hundred bytes per entry. See *Token budget rationale* below. |
@@ -95,7 +95,7 @@ Future sessions reading a force-memorized artifact must see that the work is par
 
 ## Project documentation coupling
 
-Memorization is the step that updates project-level documentation — the session's README entries, design-doc changes, the `learnings/` tree, and the user-level MEMORY index. The `_project` required skill provides the project-documentation structure the memorization prose references. If the session added files, changed conventions, or set precedent, the project documentation must reflect that before the step completes; a memorization artifact that references undocumented changes is a broken handoff.
+Memorization is the step that updates project-level documentation — the session's README entries, design-doc changes, the `learnings/` tree, and the user-level MEMORY index. The `project-doc` required skill provides the project-documentation structure the memorization prose references. If the session added files, changed conventions, or set precedent, the project documentation must reflect that before the step completes; a memorization artifact that references undocumented changes is a broken handoff.
 
 ---
 

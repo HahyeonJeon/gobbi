@@ -20,7 +20,7 @@ Sessions are stored under `.gobbi/projects/{project-name}/sessions/{session-id}/
 .gobbi/
 ├── settings.json              workspace prefs — gitignored (see gobbi-config/README.md)
 ├── state.db                   workspace event log — gitignored (append-only SQLite)
-├── gobbi.db                   workspace memories projection — git-tracked (decisions, gotchas, handoffs)
+├── gobbi.db                   workspace memories projection — git-tracked (decisions, mistakes, handoffs)
 └── projects/
     └── {project-name}/
         ├── settings.json          project config — tracked, AJV-validated
@@ -36,7 +36,7 @@ Sessions are stored under `.gobbi/projects/{project-name}/sessions/{session-id}/
                 └── memorization/      step artifacts — flat directory
 ```
 
-Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The workspace memories projection is `gobbi.db` at the `.gobbi/` root — git-tracked, holds decisions, gotchas, design notes, and handoff rows. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
+Note: `.gobbi/config.db` does not exist in this layout. It was a SQLite session-config store used in an earlier design iteration. `ensureSettingsCascade` deletes it on first run if found. The workspace memories projection is `gobbi.db` at the `.gobbi/` root — git-tracked, holds decisions, mistakes, design notes, and handoff rows. See `v050-features/gobbi-config/README.md` for the three-level settings cascade (workspace → project → session).
 
 **Today** (per `init.ts`): workflow events write to a per-session `gobbi.db` at `.gobbi/projects/<name>/sessions/<id>/gobbi.db`. The workspace `state.db` at `.gobbi/state.db` currently holds only `prompt.patch.applied` events (Wave C.1). Full workspace consolidation of workflow events into a shared `state.db` is Wave A.1 work, partially shipped. The descriptions below in File Responsibilities and SQLite Event Store describe the target architecture; current path reality follows the per-session layout above.
 
@@ -50,7 +50,7 @@ Each file and directory has a single responsibility. The per-session `gobbi.db` 
 
 **`state.db`** (target architecture, Wave A.1 full consolidation) — the workspace-scoped event store at `.gobbi/state.db` (gitignored). Every workflow event — step transitions, subagent completions, evaluation verdicts, user decisions, guard violations — is appended as a row. The CLI reads `state.db` to derive workflow state when generating the next prompt. The hooks write to `state.db` when events occur. Each row carries `project_id` and `session_id` columns so queries can be scoped to one project or session without scanning the full log. Today (per `init.ts`): workflow events write to the per-session `gobbi.db` instead; only `prompt.patch.applied` events currently write to `state.db`.
 
-**`gobbi.db`** is the per-session event log — a single SQLite file at `.gobbi/projects/<name>/sessions/<id>/gobbi.db` (gitignored). It holds the append-only workflow event stream for one session. The reducer replays this log to derive live state; `session.json` is the deterministic Memorization-time projection of the same log. Workspace-level cross-session memory lives in `project.json` at `.gobbi/projects/<name>/project.json` (git-tracked). The markdown tree under `.gobbi/projects/<name>/learnings/` is the source of truth for git-tracked decisions / gotchas / handoff records.
+**`gobbi.db`** is the per-session event log — a single SQLite file at `.gobbi/projects/<name>/sessions/<id>/gobbi.db` (gitignored). It holds the append-only workflow event stream for one session. The reducer replays this log to derive live state; `session.json` is the deterministic Memorization-time projection of the same log. Workspace-level cross-session memory lives in `project.json` at `.gobbi/projects/<name>/project.json` (git-tracked). The markdown tree under `.gobbi/projects/<name>/learnings/` is the source of truth for git-tracked decisions / mistakes / handoff records.
 
 **State derivation** (post-pivot) is replay-only. There is no on-disk projection cache for live state — every `resolveWorkflowState` call replays `gobbi.db` events through the pure reducer. SQLite-WAL atomicity on event appends provides the consistency guarantee that the prior projection-plus-backup pattern emulated. See §"State Derivation" below.
 

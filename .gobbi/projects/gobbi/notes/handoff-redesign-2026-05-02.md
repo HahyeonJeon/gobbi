@@ -26,7 +26,7 @@ The 3 catch-up commits were created by the previous session as direct local comm
 | Group | Directories |
 |---|---|
 | Design | `design/`, `decisions/`, `plans/`, `backlogs/`, `features/{feature_name}/{design,decisions,plans,backlogs,scenarios,checklists}/` |
-| Materials | `learnings/`, `gotchas/`, `references/`, `reviews/`, `notes/` |
+| Materials | `learnings/`, `mistakes/`, `references/`, `reviews/`, `notes/` |
 | Utils | `archive/`, `tmp/`, `agents/`, `skills/`, `rules/` |
 
 Removed: `checklists/` (now lives only under `features/`), `playbooks/`, `scenarios/` (now under `features/`), `handoff/` (this file replaces it under `notes/`). Runtime dirs (`sessions/`, `worktrees/`, `tmp/`, `settings.json`, `project.json`) are gitignored and unaffected.
@@ -44,7 +44,7 @@ Plugin hooks in `plugins/gobbi/hooks/hooks.json` and `.claude/settings.json` (29
 
 ---
 
-## Critical environment gotcha — restoration command
+## Critical environment mistake — restoration command
 
 `gobbi-dev` is a **manual symlink**. Any future `npm install -g @gobbitools/cli@<version>` will wipe it (both packages share the name `@gobbitools/cli`; npm install replaces the package directory and removes any bin symlinks not declared in stable's package.json).
 
@@ -92,5 +92,5 @@ A firmer fix exists if this becomes painful: rename `name: "@gobbitools/cli"` �
 - **Issue:** #249 (umbrella for the redesign + refactor)
 - **PR just merged:** #250 (`7aad94a`)
 - **Layout README:** `.gobbi/projects/gobbi/README.md`
-- **Active rules touching the redesign:** `.gobbi/projects/gobbi/rules/__gobbi-convention.md` (naming), `.gobbi/projects/gobbi/rules/docs-cleanup-parallelism.md` (when to use single agent vs parallel)
+- **Active rules touching the redesign:** `.gobbi/projects/gobbi/rules/gobbi-convention.md` (naming), `.gobbi/projects/gobbi/rules/docs-cleanup-parallelism.md` (when to use single agent vs parallel)
 - **Memory entry for this session:** `project_v050_redesign_env_prep.md` (created same date)

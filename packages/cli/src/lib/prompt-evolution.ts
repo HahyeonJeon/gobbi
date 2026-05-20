@@ -29,7 +29,7 @@
  * # Append discipline
  *
  * - Synchronous `appendFileSync` — `Bun.write` has no append mode
- *   (`_bun/SKILL.md:48`, `_bun/gotchas.md:72-87`).
+ *   (`bun/SKILL.md:48`, `bun/gotchas.md:72-87`).
  * - One call per line, line-buffered: the file stays valid even after
  *   partial-write SIGKILL (everything before the last `\n` is
  *   parseable JSONL).

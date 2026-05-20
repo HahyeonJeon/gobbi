@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/memorization/templates/gotchas.md

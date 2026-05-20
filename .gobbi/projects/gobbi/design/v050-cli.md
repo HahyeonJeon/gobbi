@@ -95,9 +95,9 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 **`gobbi session events`** — Formats the event log from `state.db` for human consumption. Provides a readable audit trail without requiring a SQLite client.
 
-### New: `gobbi gotcha` commands
+### New: `gobbi mistake` commands
 
-**`gobbi gotcha promote`** — Moves gotchas from `.gobbi/projects/<name>/learnings/gotchas/` to the permanent store in `.claude/skills/_gotcha/`. Runs outside active sessions only — checks that no session is active before proceeding. The promotion turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session.
+**`gobbi mistake promote`** — Moves mistakes from `.gobbi/projects/<name>/learnings/mistakes/` to the permanent store in `.claude/skills/mistake/`. Runs outside active sessions only — checks that no session is active before proceeding. The promotion turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session.
 
 ### New: installation and project management commands
 
@@ -166,7 +166,7 @@ The command opens a per-session `EventStore` against `<sessionDir>/gobbi.db` rat
 
 > **Executor subagents self-verify. The CLI records the verification block for prompt compilation.**
 
-Pass-3 finalization removed the configurable `verification.*` section from the settings schema and decommissioned `verification-runner.ts`. Executor subagents are responsible for their own verify phase per `_delegation`'s Study→Plan→Execute→Verify lifecycle — the post-subagent-stop runner was duplicative.
+Pass-3 finalization removed the configurable `verification.*` section from the settings schema and decommissioned `verification-runner.ts`. Executor subagents are responsible for their own verify phase per `delegation`'s Study→Plan→Execute→Verify lifecycle — the post-subagent-stop runner was duplicative.
 
 The `verification-block.ts` prompt compiler remains: it renders `verification.result` events already present in `state.verificationResults` into a compiled prompt block. The events are written by any code path that calls `appendEventAndUpdateState` with a `verification.result` event (currently the specs-layer tests and future wiring). The compiler is not spec-driven and is not called by `next.ts` unless verification result events are present.
 

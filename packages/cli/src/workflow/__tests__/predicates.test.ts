@@ -106,7 +106,7 @@ describe('ideationSynthesized', () => {
 });
 
 // ---------------------------------------------------------------------------
-// piAgentsToSpawn — at least one `__pi` active-subagent entry
+// piAgentsToSpawn — at least one `pi` active-subagent entry
 // ---------------------------------------------------------------------------
 
 describe('piAgentsToSpawn', () => {
@@ -123,7 +123,7 @@ describe('piAgentsToSpawn', () => {
       activeSubagents: [
         {
           subagentId: 'researcher-1',
-          agentType: '__researcher',
+          agentType: 'researcher',
           step: 'research',
           spawnedAt: '2026-04-16T12:00:00.000Z',
         },
@@ -132,13 +132,13 @@ describe('piAgentsToSpawn', () => {
     expect(pred(state)).toBe(false);
   });
 
-  test('true when at least one __pi agent is active', () => {
+  test('true when at least one pi agent is active', () => {
     const state: WorkflowState = {
       ...baseState(),
       activeSubagents: [
         {
           subagentId: 'pi-innovative-1',
-          agentType: '__pi',
+          agentType: 'pi',
           step: 'ideation',
           spawnedAt: '2026-04-16T12:00:00.000Z',
         },
@@ -147,19 +147,19 @@ describe('piAgentsToSpawn', () => {
     expect(pred(state)).toBe(true);
   });
 
-  test('true when multiple __pi agents are active', () => {
+  test('true when multiple pi agents are active', () => {
     const state: WorkflowState = {
       ...baseState(),
       activeSubagents: [
         {
           subagentId: 'pi-innovative-1',
-          agentType: '__pi',
+          agentType: 'pi',
           step: 'ideation',
           spawnedAt: '2026-04-16T12:00:00.000Z',
         },
         {
           subagentId: 'pi-best-1',
-          agentType: '__pi',
+          agentType: 'pi',
           step: 'ideation',
           spawnedAt: '2026-04-16T12:00:00.000Z',
         },

@@ -16,7 +16,7 @@ PR-FIN-1c (session `c34ea7e6`) reshaped `GitSettings` around always-on worktrees
 
 PR-FIN-1a (session `c34ea7e6`) added the `gobbi config init` verb (three levels, minimum-valid seed, `--force` overwrite with stderr WARN), replaced `init.ts::resolveSessionId`'s `randomUUID()` fallback with a hard error and remediation hint, added the `#182` recovery hint to `config get/set/init` missing-session-id errors, and locked the `#185` fresh-setup ordering invariant via CFG-23 integration test. Commit `6909fec` on branch `feat/214-pr-fin-1a-config-init-session-id`.
 
-PR-FIN-1b (session `c34ea7e6`) shipped the `gobbi hook` namespace (28 Claude Code events, 5 non-trivial bodies + 23 generic stubs), `gobbi config env` (reads stdin JSON payload + native `CLAUDE_*` env, writes unified `KEY=VALUE` lines to `$CLAUDE_ENV_FILE`), and the `/gobbi` SKILL.md migration (retired the "Discovering the real session ID" section and the `cli-vs-skill-session-id` gotcha). Plugin manifest and per-repo `.claude/settings.json` updated from 5 entries to 28. Commits `2248b72` + `b307214` on branch `feat/216-pr-fin-1b-hook-namespace`.
+PR-FIN-1b (session `c34ea7e6`) shipped the `gobbi hook` namespace (28 Claude Code events, 5 non-trivial bodies + 23 generic stubs), `gobbi config env` (reads stdin JSON payload + native `CLAUDE_*` env, writes unified `KEY=VALUE` lines to `$CLAUDE_ENV_FILE`), and the `/gobbi` SKILL.md migration (retired the "Discovering the real session ID" section and the `cli-vs-skill-session-id` mistake). Plugin manifest and per-repo `.claude/settings.json` updated from 5 entries to 28. Commits `2248b72` + `b307214` on branch `feat/216-pr-fin-1b-hook-namespace`.
 
 PR-FIN-1d (session `c34ea7e6`) expanded the `HookTrigger` enum from 9 to 28 values, extracted `dispatchToChannels` as the shared per-channel dispatch helper, added `dispatchHookNotify(payload, eventName, options)` for hook-side notification, wired 7 Phase-1 events (`Stop`, `SubagentStop`, `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `Notification`, `PreCompact`) end-to-end, and shipped `gobbi notify configure --enable/--disable/--status` for user-driven `.claude/settings.json` management with a trust-boundary read-only stance for non-gobbi entries. The 21 Phase-2 events keep `TODO(PR-FIN-1d-phase-2 #219)` markers; rich-message wiring for them is filed as issue #219. Commits `a8980f8` + `001f96b` + `126e898` + `f7674d8` + `5b10500` on branch `feat/218-pr-fin-1d-hooktrigger-notify-dispatch`.
 
@@ -100,7 +100,7 @@ All SHAs below exist on the branch (`git log --oneline` verified).
 
 ### DRIFT-6 — `verification.*` section removed; `verification-runner.ts` decommissioned
 
-**Finding:** Pass-3 schema v2 included `verification: { runAfterSubagentStop, runAfterToolStop, commands }`. Pass-3 finalization drops it per user lock. `verification-runner.ts` is deleted (Option A from ideation §6.6: executor subagents self-verify per `_delegation` lifecycle; the post-workflow-next runner was duplicative).
+**Finding:** Pass-3 schema v2 included `verification: { runAfterSubagentStop, runAfterToolStop, commands }`. Pass-3 finalization drops it per user lock. `verification-runner.ts` is deleted (Option A from ideation §6.6: executor subagents self-verify per `delegation` lifecycle; the post-workflow-next runner was duplicative).
 
 **Evidence:** ideation.md §3.3 — `verification.*` row; plan.md §Wave B — "DELETE `packages/cli/src/workflow/verification-runner.ts`"; `f9b3925` (Wave B) deletes the runner and removes the import from `next.ts`.
 
@@ -190,7 +190,7 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 
 **Finding:** `getRepoRoot` is memoized at module level. Test files that call it across different temp directories must use `mock.module('../../lib/repo.js', ...)` to reset the memo between tests. Without this, a first test's repo root leaks into subsequent tests.
 
-**Evidence:** plan.md §Wave B gotcha reference — "session-id-discovery.md, code-edits.md"; `ff20702` (Wave D.2) test file comment "judgment call: mock.module for getRepoRoot".
+**Evidence:** plan.md §Wave B mistake reference — "session-id-discovery.md, code-edits.md"; `ff20702` (Wave D.2) test file comment "judgment call: mock.module for getRepoRoot".
 
 **Owner:** gobbi-config Pass 3 finalization.
 
@@ -198,7 +198,7 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 
 ### NOTE-3 — Per-step `model`/`effort` stored but not yet enforced at spawn time
 
-**Finding:** `workflow.{step}.{discuss,evaluate}.{model,effort}` config allows explicit override of `_delegation`'s model defaults. Values are stored and returned by `resolveSettings`, but the spawn pipeline in the orchestrator skill does not yet read them. `'auto'` (the default) applies `_delegation`'s table unconditionally. A future gobbi-rule update may clamp the ranges.
+**Finding:** `workflow.{step}.{discuss,evaluate}.{model,effort}` config allows explicit override of `delegation`'s model defaults. Values are stored and returned by `resolveSettings`, but the spawn pipeline in the orchestrator skill does not yet read them. `'auto'` (the default) applies `delegation`'s table unconditionally. A future gobbi-rule update may clamp the ranges.
 
 **Evidence:** ideation.md §10.10 — "model/effort override vs core-rule tension"; `settings.ts` `AgentModel` / `AgentEffort` types exist; no spawn-pipeline reader yet.
 
@@ -252,7 +252,7 @@ Supersedes the git-related portions of DRIFT-7 (which described the intermediate
 
 ### GAP-2 — `model`/`effort` config override vs core-rule tension not resolved
 
-**Finding:** `_gobbi-rule` mandates "All agents run at max effort" and `_delegation` mandates model by stance (opus for innovative/executor, sonnet for evaluators). The new `workflow.{step}.{discuss,evaluate}.{model,effort}` config permits explicit override of those defaults. A config setting can currently undercut a core-rule invariant. Mitigation: defaults are `'auto'` which applies core-rule policy unchanged; explicit values are opt-in.
+**Finding:** `gobbi-rule` mandates "All agents run at max effort" and `delegation` mandates model by stance (opus for innovative/executor, sonnet for evaluators). The new `workflow.{step}.{discuss,evaluate}.{model,effort}` config permits explicit override of those defaults. A config setting can currently undercut a core-rule invariant. Mitigation: defaults are `'auto'` which applies core-rule policy unchanged; explicit values are opt-in.
 
 **Evidence:** ideation.md §10.10 — "Documented as tension, not resolved in this Pass."
 
@@ -272,13 +272,13 @@ PR-FIN-1b introduces:
 2. `gobbi hook <event>` namespace — 28 handlers (one per Claude Code event). Five non-trivial bodies (`session-start`, `pre-tool-use`, `post-tool-use`, `subagent-stop`, `stop`) replace the prior direct `gobbi workflow *` registrations. 23 generic stubs read stdin and exit 0; notify dispatch deferred to PR-FIN-1d.
 3. Plugin manifest (`hooks.json`) and per-repo `.claude/settings.json` updated from 5 to 28 entries pointing at `gobbi hook <event>`.
 4. `/gobbi` SKILL.md discovery section removed — skill calls `gobbi config get …` directly; env is pre-populated by the SessionStart hook via `$CLAUDE_ENV_FILE`.
-5. `cli-vs-skill-session-id` gotcha retired — the CLI/skill boundary for session id no longer exists.
+5. `cli-vs-skill-session-id` mistake retired — the CLI/skill boundary for session id no longer exists.
 
 **Evidence:** Round-3 ideation memo §F4 at `.claude/project/gobbi/note/20260428-0311-finalize-gobbi-config-c34ea7e6-d5c3-4174-b61e-5176efc8d39b/ideation/ideation.md`; target-state spec §3.3, §3.4, §5, §6 at `.gobbi/projects/gobbi/tmp/gobbi-config-target-state.md`; `packages/cli/src/commands/hook.ts` + `commands/hook/<28 files>.ts` at `2248b72`; `packages/cli/src/commands/config.ts::runConfigEnv` at `2248b72`; `.claude/skills/gobbi/SKILL.md` at `b307214`.
 
 **Severity:** Medium-High — any doc, skill, or agent referencing `$CODEX_COMPANION_SESSION_ID`, the `.jsonl` mtime discovery technique, or the old 5-entry hook registration pattern now describes retired behaviour.
 
-**Resolution:** fix code + doc — resolved at `2248b72` (code + plugin manifest) + `b307214` (SKILL.md migration + gotcha retirement). This review updated; README, scenarios, checklist updated in the same commit.
+**Resolution:** fix code + doc — resolved at `2248b72` (code + plugin manifest) + `b307214` (SKILL.md migration + mistake retirement). This review updated; README, scenarios, checklist updated in the same commit.
 
 **Owner:** PR-FIN-1b (session `c34ea7e6`).
 
@@ -300,7 +300,7 @@ PR-FIN-1b introduces:
 
 ### DRIFT-13 — PR-FIN-1e: `workflow.{step}.{agent,evaluate.agent}` wired into spec spawn pipeline
 
-**Finding:** PR-FIN-1e (session `c34ea7e6`) closes the gap noted in NOTE-3: per-step `workflow.{step}.{agent,evaluate.agent}` settings (model + effort overrides) are now read by the orchestrator spec spawn pipeline. `loadSpecForRuntime` applies a runtime overlay against the per-step `agent-routing` block; `'auto'` (the default) preserves `_delegation`'s table unchanged, and explicit values override the spawn target's model/effort. Closes locked design decision #8.
+**Finding:** PR-FIN-1e (session `c34ea7e6`) closes the gap noted in NOTE-3: per-step `workflow.{step}.{agent,evaluate.agent}` settings (model + effort overrides) are now read by the orchestrator spec spawn pipeline. `loadSpecForRuntime` applies a runtime overlay against the per-step `agent-routing` block; `'auto'` (the default) preserves `delegation`'s table unchanged, and explicit values override the spawn target's model/effort. Closes locked design decision #8.
 
 **Evidence:** Round-3 ideation memo §F8 at `.claude/project/gobbi/note/20260428-0311-finalize-gobbi-config-c34ea7e6-d5c3-4174-b61e-5176efc8d39b/ideation/ideation.md`; target-state spec §9 #11 at `.gobbi/projects/gobbi/tmp/gobbi-config-target-state.md`; `packages/cli/src/specs/loader.ts::loadSpecForRuntime` at `5ddffab`; squash commit `5ddffab` on develop (PR #224).
 
@@ -314,7 +314,7 @@ PR-FIN-1b introduces:
 
 ### DRIFT-14 — PR-FIN-5: gobbi-wide cleanup — note.ts legacy fallback, verification.ts tombstone, bundled-spec resolution, docs sweep
 
-**Finding:** PR-FIN-5 (session `e735ee3d`) bundles five gobbi-wide cleanup concerns into one PR per the cluster's smallest-reversible-first ordering: (1) `note.ts` legacy `plan/subtasks/` fallback removed; (2) `verification.ts:53` tombstone comment + dead `VerificationResultData`/`VerificationCommandKind` types removed; (3) `specs/paths.ts` helper + `dist/specs/` post-build cp resolves the `bun build` flatten ENOENT for `gobbi workflow next/validate/stop`; (4) `state-machine.md:121` plan/planning blockquote rewritten — runtime literal is `planning` (not `plan`); (5) Pass-3 narrative trimmed in `settings.ts` + `ensure-settings-cascade.ts` JSDocs; cross-doc `gobbi project switch` references swept to past-tense or annotated as removed; this `review.md` backfilled for PR-FIN-1a/1b/1c/1d/1e + closing entry. Resolves `build-safe-needs-dist-mkdir-on-fresh-worktree` gotcha via `mkdir -p ./dist` guard in `build:safe`. Cluster position 6 of 7 — only PR-FIN-2 (project-name validation, `gobbi project switch` removal) remains.
+**Finding:** PR-FIN-5 (session `e735ee3d`) bundles five gobbi-wide cleanup concerns into one PR per the cluster's smallest-reversible-first ordering: (1) `note.ts` legacy `plan/subtasks/` fallback removed; (2) `verification.ts:53` tombstone comment + dead `VerificationResultData`/`VerificationCommandKind` types removed; (3) `specs/paths.ts` helper + `dist/specs/` post-build cp resolves the `bun build` flatten ENOENT for `gobbi workflow next/validate/stop`; (4) `state-machine.md:121` plan/planning blockquote rewritten — runtime literal is `planning` (not `plan`); (5) Pass-3 narrative trimmed in `settings.ts` + `ensure-settings-cascade.ts` JSDocs; cross-doc `gobbi project switch` references swept to past-tense or annotated as removed; this `review.md` backfilled for PR-FIN-1a/1b/1c/1d/1e + closing entry. Resolves `build-safe-needs-dist-mkdir-on-fresh-worktree` mistake via `mkdir -p ./dist` guard in `build:safe`. Cluster position 6 of 7 — only PR-FIN-2 (project-name validation, `gobbi project switch` removal) remains.
 
 **Evidence:** ideation.md + plan.md at `.gobbi/projects/gobbi/sessions/e735ee3d-6a43-44da-886b-64dcc8b9aa92/`; commits on branch `feat/pr-fin-5-gobbi-wide-cleanup-225`.
 

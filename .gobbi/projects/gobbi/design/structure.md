@@ -18,23 +18,23 @@ The `.claude/` directory is where gobbi lives as a working system. Everything an
 
 ### Skills
 
-All skills live in `.claude/skills/` under tier-prefixed directories (e.g. `_orchestration/`, `_skills/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
+All skills live in `.claude/skills/` as plain hyphen-separated directories (e.g. `orchestration/`, `skills-doc/`), each with `SKILL.md` as the entry point. Skills decompose into child documents when a single file would exceed the line limit. Some skills include `scripts/` for shell-based automation.
 
 Skills are organized into four categories:
 
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
-| **Work** | gobbi, _orchestration, _discuss, _ideation, _plan, _delegation, _execution, _note, _collection, _evaluation, _git, _notification, _gotcha | Workflow participants. Skills loaded during the ideate-plan-execute-collect cycle and at session start. |
-| **Docs** | _claude, _skills, _agents, _rules, _project | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
-| **Tool** | _gobbi-cli | Utility and maintenance tools. Intent-first CLI reference. |
+| **Work** | gobbi, orchestration, note, collection, git, notification, mistake | Workflow participants. Skills loaded during the workflow and at session start. Phase-specific guidance (discussion, ideation, planning, research, delegation, execution, evaluation, memorization) lives as sub-documents under `orchestration/workflow/`. |
+| **Docs** | claude, skills-doc, agents-doc, rules-doc, project-doc | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
+| **Tool** | gobbi-cli | Utility and maintenance tools. Intent-first CLI reference. |
 
 Some skills have child directories grouping related sub-docs:
 
-- **Evaluation perspectives** — each Docs skill that supports evaluation has an `evaluation/` subdirectory with 6 perspective docs (project, architecture, performance, aesthetics, overall, user): `_skills/evaluation/`, `_agents/evaluation/`, `_project/evaluation/`
-- **Notification** (child of _notification): `slack.md`, `telegram.md`, `discord.md` — channel-specific setup docs
-- **Gotcha** (child of _gotcha): child docs (not skills) describing how to record each type of gotcha
+- **Evaluation perspectives** — each Docs skill that supports evaluation has an `evaluation/` subdirectory with 6 perspective docs (project, architecture, performance, aesthetics, overall, user): `skills-doc/evaluation/`, `agents-doc/evaluation/`, `project-doc/evaluation/`
+- **Notification** (child of notification): `slack.md`, `telegram.md`, `discord.md` — channel-specific setup docs
+- **Mistake** (child of mistake): child docs (not skills) describing how to record each type of mistake
 
-The `_gotcha/` skill is special — it contains per-skill gotcha files (`_orchestration.md`, `_git.md`, etc.) that record cross-project mistakes. Every agent checks the relevant gotcha file before starting work.
+The `mistake/` skill contains cross-cutting mistake files (`system.md`, `security.md`) for concerns that span multiple skills. Every agent checks the relevant mistake file before starting work.
 
 ### Agents
 
@@ -43,11 +43,11 @@ Agent definitions live in `.claude/agents/`. Each file defines a specialist suba
 | Agent | Role |
 |:------|:-----|
 | gobbi-agent | Onboarding and setup assistant — helps users configure their Claude Code environment |
-| __pi | Principal Investigator — ideation, planning, and task decomposition through user discussion |
-| __executor | Code implementation and verification |
-| _skills-evaluator | Runs evaluation of skill definitions across all perspectives |
-| _agent-evaluator | Runs evaluation of agent definitions across all perspectives |
-| _project-evaluator | Runs evaluation of project work output across all perspectives |
+| pi | Principal Investigator — ideation, planning, and task decomposition through user discussion |
+| executor | Code implementation and verification |
+| skills-evaluator | Runs evaluation of skill definitions across all perspectives |
+| agent-evaluator | Runs evaluation of agent definitions across all perspectives |
+| project-evaluator | Runs evaluation of project work output across all perspectives |
 
 ### Hooks
 
@@ -70,7 +70,7 @@ Note: `.gobbi/settings.json` is the gobbi workspace-level preference file — se
 | Directory | Purpose | Git-tracked |
 |:----------|:--------|:------------|
 | `design/` | Design documents — architecture, vision, workflow, evaluation model | Yes |
-| `learnings/gotchas/` | Project-specific gotchas (distinct from cross-project gotchas in skills) | Yes |
+| `learnings/mistakes/` | Project-specific mistakes (distinct from cross-project mistakes in skills) | Yes |
 | `rules/` | Project-specific rules and conventions | Yes |
 | `skills/` | Project-specific skills | Yes |
 | `agents/` | Project-specific agent definitions | Yes |
@@ -101,7 +101,7 @@ Gobbi's runtime state directory, separate from `.claude/`. Created at the projec
 | `projects/{name}/` | Per-project directory — settings, design docs, learnings, sessions |
 | `projects/{name}/settings.json` | Project-level config — tracked |
 | `projects/{name}/sessions/{id}/` | Per-session — `gobbi.db` (event log), `session.json` (Memorization-time aggregate), and one subdirectory per step |
-| `projects/{name}/learnings/` | Durable learnings — `gotchas/`, `decisions/`, and other knowledge promoted after sessions |
+| `projects/{name}/learnings/` | Durable learnings — `mistakes/`, `decisions/`, and other knowledge promoted after sessions |
 | `worktrees/` | Git worktree isolation — moved from `.claude/worktrees/` to prevent idle false-positives during branch operations |
 
 `.claude/` retains only static content: `CLAUDE.md`, hooks, and `settings.json`. Its `skills/`, `agents/`, and `rules/` entries are per-file symlinks into the corresponding `.gobbi/` directories — the symlink farm. The farm is built by `gobbi install` on first install and rebuilt by `gobbi install --upgrade`. (The legacy `gobbi project switch` rotation command was removed in v0.5.0 PR-FIN-2; project context now resolves from `basename(repoRoot)` plus `--project`.) Nothing written during a workflow session goes into `.claude/` directly.

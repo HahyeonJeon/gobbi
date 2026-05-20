@@ -72,4 +72,4 @@ Wave A.2 (PR #151) established this format when reducing `deterministic-orchestr
 
 ## Related
 
-See `_claude/SKILL.md` for the broader docs writing standard. See `docs-cleanup-parallelism.md` for the rule governing single vs split-agent docs cleanups (often the context that triggers stub-redirect work).
+See `_claude/SKILL.md` for the broader docs writing standard. For the judgment call on single vs split-agent docs cleanups, see the `delegation` skill's "When to split vs combine" guidance.

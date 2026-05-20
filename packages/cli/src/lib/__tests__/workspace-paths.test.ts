@@ -244,7 +244,7 @@ describe('claudeSymlinkTarget', () => {
     // shape sees this test fail immediately.
     const { source, target } = claudeSymlinkTarget(
       'agents',
-      '__executor.md',
+      'executor.md',
       PROJECT,
       REPO,
     );
@@ -259,7 +259,7 @@ describe('claudeSymlinkTarget', () => {
     // but we verify no backslash leakage on posix-style input paths.
     const { source, target } = claudeSymlinkTarget(
       'rules',
-      '__gobbi-convention.md',
+      'gobbi-convention.md',
       PROJECT,
       REPO,
     );

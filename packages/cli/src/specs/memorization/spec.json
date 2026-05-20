@@ -5,8 +5,8 @@
     "description": "Memorization — read the session conversation, the rawdata path-pointer manifest, and the prior-step artifacts; extract decisions, state, open questions, and gotchas; and write them where the next session can find them. Productive step before the workflow transitions to handoff. Rawdata reaches the agent as a manifest of paths, not inlined content (per Spike 3, 2026-04-25).",
     "allowedAgentTypes": [],
     "maxParallelAgents": 0,
-    "requiredSkills": ["_gotcha", "_project"],
-    "optionalSkills": ["_claude"],
+    "requiredSkills": ["gotcha", "project-doc"],
+    "optionalSkills": ["claude"],
     "expectedArtifacts": ["memorization.md"],
     "completionSignal": "Stop"
   },

@@ -61,7 +61,7 @@ function baseSpec(): StepSpec {
     version: 1,
     meta: {
       description: 'Property-test spec',
-      allowedAgentTypes: ['__pi'],
+      allowedAgentTypes: ['pi'],
       maxParallelAgents: 2,
       requiredSkills: [],
       optionalSkills: [],

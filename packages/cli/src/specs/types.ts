@@ -108,7 +108,7 @@ export interface StepMeta {
   /**
    * Subagent types this step is allowed to spawn. The CLI enforces this
    * against the delegation configuration and against the Agent tool guard.
-   * Example: `['__pi', '__researcher']` for the Ideation step.
+   * Example: `['pi', 'researcher']` for the Ideation step.
    */
   readonly allowedAgentTypes: readonly string[];
 
@@ -120,7 +120,7 @@ export interface StepMeta {
 
   /**
    * Skills whose materials MUST be injected into this step's prompt.
-   * Identifiers are relative skill names like `_gotcha`, `_claude`.
+   * Identifiers are relative skill names like `gotcha`, `claude`.
    */
   readonly requiredSkills: readonly string[];
 

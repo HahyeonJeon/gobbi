@@ -81,7 +81,7 @@ The six steps map directly to the workflow defined in `v050-overview.md`. Two st
 
 **Evaluation** steps (`ideation_eval`, `plan_eval`, `execution_eval`) have no substates. They are separate workflow steps, not substeps of the preceding step, because the creating agent must not participate in evaluation. Evaluation enters, collects verdicts from independent evaluator agents, and exits with a `decision.eval.verdict` event.
 
-**Memorization** has no substates. The orchestrator reads the conversation log, extracts decisions, open questions, and gotchas, and writes them to `.gobbi/projects/<name>/sessions/{session-id}/memorization/`.
+**Memorization** has no substates. The orchestrator reads the conversation log, extracts decisions, open questions, and mistakes, and writes them to `.gobbi/projects/<name>/sessions/{session-id}/memorization/`.
 
 ---
 

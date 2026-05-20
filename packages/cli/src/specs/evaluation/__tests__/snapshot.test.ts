@@ -113,13 +113,13 @@ function projectEvaluatorDispatchFixture(spec: StepSpec): CompileInput {
     activeSubagents: [
       {
         subagentId: 'subagent-project-eval',
-        agentType: '_project-evaluator',
+        agentType: 'project-evaluator',
         step: 'execution_eval',
         spawnedAt: FIXED_TIMESTAMP,
       },
       {
         subagentId: 'subagent-overall-eval',
-        agentType: '_project-evaluator',
+        agentType: 'project-evaluator',
         step: 'execution_eval',
         spawnedAt: FIXED_TIMESTAMP,
       },

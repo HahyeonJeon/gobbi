@@ -264,7 +264,7 @@ Evidence (post-Wave-E.2): `packages/cli/src/specs/__tests__/snapshot.test.ts` cr
 
 **Given** an active session at `currentStep = 'memorization'` with the productive steps' rawdata under `sessions/<id>/{ideation,planning,execution}/rawdata/` and per-step READMEs written
 **When** the memorization agent reads the rawdata sources (per README §8.1) and writes `sessions/<id>/memorization/memorization.md`
-**Then** `artifact.write` is emitted for the file; for each extraction class, the agent writes the markdown destination (`learnings/decisions/<slug>.md`, `learnings/gotchas/<slug>.md`, `design/<area>/*.md`, `learnings/backlogs/<slug>.md`) and an `INSERT INTO memories` row with the matching `class`; the agent then runs `gobbi workflow transition COMPLETE`; `workflow.step.exit` advances `currentStep` to `handoff`.
+**Then** `artifact.write` is emitted for the file; for each extraction class, the agent writes the markdown destination (`learnings/decisions/<slug>.md`, `learnings/mistakes/<slug>.md`, `design/<area>/*.md`, `learnings/backlogs/<slug>.md`) and an `INSERT INTO memories` row with the matching `class`; the agent then runs `gobbi workflow transition COMPLETE`; `workflow.step.exit` advances `currentStep` to `handoff`.
 
 Evidence: `specs/memorization/spec.json` (rewritten in Wave A.1.6), `events/artifact.ts` (artifact.write), `transition.ts:335` (step.exit emission), README §8.
 
@@ -310,7 +310,7 @@ Evidence: `.gitignore` Wave A.1.8 update (commit `cdaea69`), integration test as
 **When** `grep -rn 'join(sessionDir, .gobbi.db.)' packages/cli/src/` runs
 **Then** zero non-test matches are returned; every callsite that previously hard-coded the per-session `gobbi.db` path now calls `resolveDbPath(sessionDir)` (or equivalent helper) defined in `commands/session.ts`; the workspace rename touches the helper only, not the 11 individual call sites.
 
-Evidence: Wave A.1.7 explicit partition-key refactor (commit `8d71fa4`), callsite list (`{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts` + `session.ts` + `gotcha/promote.ts`).
+Evidence: Wave A.1.7 explicit partition-key refactor (commit `8d71fa4`), callsite list (`{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts` + `session.ts` + `mistake/promote.ts`).
 
 ---
 

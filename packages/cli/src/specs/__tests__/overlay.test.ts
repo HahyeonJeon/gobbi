@@ -43,9 +43,9 @@ function baseSpec(): StepSpec {
     version: 1,
     meta: {
       description: 'Base spec',
-      allowedAgentTypes: ['__pi'],
+      allowedAgentTypes: ['pi'],
       maxParallelAgents: 2,
-      requiredSkills: ['_gotcha'],
+      requiredSkills: ['gotcha'],
       optionalSkills: [],
       expectedArtifacts: ['artifact.md'],
       completionSignal: 'SubagentStop',
@@ -213,9 +213,9 @@ describe('applyOverlay — deep merge', () => {
   test('arrays in the overlay REPLACE the base array (no element-wise merge)', () => {
     const base = baseSpec();
     const merged = applyOverlay(base, {
-      meta: { requiredSkills: ['_gotcha', '_execution'] },
+      meta: { requiredSkills: ['gotcha', 'execution'] },
     } as unknown as OverlayDoc);
-    expect(merged.meta.requiredSkills).toEqual(['_gotcha', '_execution']);
+    expect(merged.meta.requiredSkills).toEqual(['gotcha', 'execution']);
 
     // Replacing `blocks.static` with a shorter array fully replaces — no
     // element-wise merge preserving the old entries.
@@ -309,7 +309,7 @@ describe('applyOverlay — $ops directives', () => {
         {
           op: 'remove',
           path: 'meta.requiredSkills',
-          value: '_gotcha',
+          value: 'gotcha',
         },
       ],
     });

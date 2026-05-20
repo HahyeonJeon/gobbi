@@ -93,7 +93,7 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 
 **Source:** #77 Deferred to Phase 3 (item 7)
 
-**Description:** Review how stance skills (`_innovation`, `_best-practice`) embed content into compiled prompts. Current embedding is string-based; the compiler inlines stance text directly without a structured indirection layer. This becomes a maintenance burden when stance content needs updating.
+**Description:** Review how stance skills (`innovation`, `best-practice`) embed content into compiled prompts. Current embedding is string-based; the compiler inlines stance text directly without a structured indirection layer. This becomes a maintenance burden when stance content needs updating.
 
 **Trigger:** Adding a third stance skill, OR any stance-content edit that requires touching the compiler source rather than just the skill file.
 
@@ -195,13 +195,13 @@ Items are grouped by trigger class for faster Phase 3 scanning. The trigger-clas
 
 ---
 
-### Fast-check + TS-strict gotchas consolidation
+### Fast-check + TS-strict mistakes consolidation
 
 **Source:** #98 (PR E follow-up NEW-10); also deferred per L-F4
 
-**Description:** Verify that fast-check v4 and `exactOptionalPropertyTypes` gotcha entries from `phase2-planning.md` are present in `.gobbi/projects/gobbi/learnings/gotchas/test-tooling.md`. These are generic test-tooling patterns, not phase-specific planning errors. Discoverability for future test authors is lower than it should be at the current location.
+**Description:** Verify that fast-check v4 and `exactOptionalPropertyTypes` mistake entries from `phase2-planning.md` are present in `.gobbi/projects/gobbi/learnings/mistakes/test-tooling.md`. These are generic test-tooling patterns, not phase-specific planning errors. Discoverability for future test authors is lower than it should be at the current location.
 
-**Trigger:** A third fast-check-related or TS-strict gotcha is filed, making the case for a dedicated test-tooling doc unambiguous.
+**Trigger:** A third fast-check-related or TS-strict mistake is filed, making the case for a dedicated test-tooling doc unambiguous.
 
 **Trigger class:** `velocity`
 

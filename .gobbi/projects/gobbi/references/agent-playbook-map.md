@@ -21,7 +21,7 @@ The initial list is directionally right, but it mixes artifact types, workflows,
 
 | Family | Playbooks |
 |---|---|
-| Agent Documentation | Claude Skills, Claude Agents, Claude Rules, Claude Project Docs, Claude Gotchas, Evaluation Perspectives |
+| Agent Documentation | Claude Skills, Claude Agents, Claude Rules, Claude Project Docs, Claude Mistakes, Evaluation Perspectives |
 | Gobbi Runtime | Gobbi Workflow Engine, Gobbi CLI, Gobbi Hooks, Gobbi Session State, Gobbi Prompt Compilation, Gobbi Project Build-up, Gobbi Claude Set-up, Gobbi Delegation, Notification Setup |
 | Playbook System | Gobbi Playbook, Playbook Authoring, Playbook Linking, Playbook Verification |
 | Engineering | Python Coding, TypeScript Coding, Bun CLI Coding, PlayViz CLI Coding, React/Remotion Coding, Docker/Infrastructure |
@@ -36,11 +36,11 @@ The initial list is directionally right, but it mixes artifact types, workflows,
 
 | Playbook | Covers | Links to |
 |---|---|---|
-| Claude Skills | Skill purpose, trigger rules, child docs, gotcha loading, line limits | Claude Rules, Claude Gotchas, Evaluation Perspectives |
+| Claude Skills | Skill purpose, trigger rules, child docs, mistake loading, line limits | Claude Rules, Claude Mistakes, Evaluation Perspectives |
 | Claude Agents | Agent role definitions, executor/evaluator/PI patterns, tool scopes, delegation contracts | Gobbi Workflow Engine, Evaluation Perspectives |
 | Claude Rules | Always-on behavioral constraints, verifiable rules, repository-specific conventions | Claude Skills, Security/Secrets |
-| Claude Project Docs | `.claude/project/{name}/` structure, README indexes, design/rules/gotchas/note/reference/docs split | Playbook Authoring, Gobbi Project Build-up |
-| Claude Gotchas | Recording repeated mistakes, project vs skill gotchas, promotion from runtime notes | Gobbi Session State, Incident Recovery |
+| Claude Project Docs | `.claude/project/{name}/` structure, README indexes, design/rules/mistakes/note/reference/docs split | Playbook Authoring, Gobbi Project Build-up |
+| Claude Mistakes | Recording repeated mistakes, project vs skill mistakes, promotion from runtime notes | Gobbi Session State, Incident Recovery |
 | Evaluation Perspectives | Project, architecture, performance, aesthetics, user, overall review lenses | Code Review, Adversarial Review |
 
 ### Gobbi Runtime
@@ -48,10 +48,10 @@ The initial list is directionally right, but it mixes artifact types, workflows,
 | Playbook | Covers | Links to |
 |---|---|---|
 | Gobbi Workflow Engine | Ideation, Plan, Execution, Evaluation, Memorization; feedback loops and step boundaries | Gobbi Session State, Evaluation Perspectives |
-| Gobbi CLI | `workflow`, `session`, `gotcha`, validation, verification commands, Bun runtime | Bun CLI Coding, Release |
+| Gobbi CLI | `workflow`, `session`, `mistake`, validation, verification commands, Bun runtime | Bun CLI Coding, Release |
 | Gobbi Hooks | PreToolUse guards, SubagentStop capture, Stop heartbeat, hook registration | Security/Secrets, Gobbi Session State |
 | Gobbi Session State | `.gobbi/sessions`, SQLite event store, state derivation, resume, cleanup | Incident Recovery, Gobbi Prompt Compilation |
-| Gobbi Prompt Compilation | State/materials/artifacts/gotchas to bounded prompts, cache ordering, token budgets | Claude Skills, Playbook Verification |
+| Gobbi Prompt Compilation | State/materials/artifacts/mistakes to bounded prompts, cache ordering, token budgets | Claude Skills, Playbook Verification |
 | Gobbi Project Build-up | Project context detection, docs bootstrap, tech stack signals, verification config | Claude Project Docs, Playbook Verification |
 | Gobbi Claude Set-up | Plugin installation, settings, agents, skills, hooks, notifications | Gobbi CLI, Claude Agents |
 | Gobbi Delegation | Task decomposition, subagent briefing, context boundaries, verification criteria | Gobbi Workflow Engine, Claude Agents |
@@ -65,7 +65,7 @@ The initial list is directionally right, but it mixes artifact types, workflows,
 | Gobbi Playbook | What a playbook is, expected scope, relationship to skills/rules/docs | Playbook Authoring |
 | Playbook Authoring | Naming, scope boundaries, source grounding, stable vs task-specific docs | Claude Project Docs |
 | Playbook Linking | Parent/child map, prerequisites, cross-playbook references, avoiding duplicate sources of truth | Playbook Verification |
-| Playbook Verification | How to check a playbook against design docs, code, gotchas, scenarios, and evaluator feedback | Testing, Adversarial Review |
+| Playbook Verification | How to check a playbook against design docs, code, mistakes, scenarios, and evaluator feedback | Testing, Adversarial Review |
 
 ### Engineering
 
@@ -134,7 +134,7 @@ Add these explicitly; otherwise the playbook system will miss major active-proje
 | Gap | Why it matters |
 |---|---|
 | Claude Project Docs | Active docs depend on `.claude/project/{name}/` structure, not only skills/agents/rules |
-| Claude Gotchas and Memorization | Gobbi treats gotchas and memorization as core anti-repeat infrastructure |
+| Claude Mistakes and Memorization | Gobbi treats mistakes and memorization as core anti-repeat infrastructure |
 | Evaluation Perspectives | Gobbi requires independent evaluation; this deserves its own authoring and usage playbook |
 | Gobbi CLI/Hooks/Session/Prompt Compilation | v0.5.0 moved orchestration control from skills into CLI-enforced runtime subsystems |
 | Git Worktree/PR Workflow | Worktree isolation is a major agent-operation invariant |
@@ -150,7 +150,7 @@ Add these explicitly; otherwise the playbook system will miss major active-proje
 
 | Phase | Playbooks |
 |---|---|
-| 1. Agent substrate | Claude Skills, Claude Agents, Claude Rules, Claude Project Docs, Claude Gotchas |
+| 1. Agent substrate | Claude Skills, Claude Agents, Claude Rules, Claude Project Docs, Claude Mistakes |
 | 2. Gobbi substrate | Gobbi Workflow Engine, Gobbi CLI, Gobbi Hooks, Gobbi Session State, Gobbi Prompt Compilation |
 | 3. Playbook mechanics | Gobbi Playbook, Playbook Authoring, Playbook Linking, Playbook Verification |
 | 4. Core engineering | Python Coding, TypeScript Coding, Bun CLI Coding, Testing, Code Review |

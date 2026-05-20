@@ -43,9 +43,9 @@ function baseSpec(): StepSpec {
     version: 1,
     meta: {
       description: 'Test ideation step',
-      allowedAgentTypes: ['__pi'],
+      allowedAgentTypes: ['pi'],
       maxParallelAgents: 2,
-      requiredSkills: ['_gotcha'],
+      requiredSkills: ['gotcha'],
       optionalSkills: [],
       expectedArtifacts: ['innovative.md', 'best.md'],
       completionSignal: 'SubagentStop',
@@ -60,7 +60,7 @@ function baseSpec(): StepSpec {
           stance: 'innovative',
           modelTier: 'opus',
           effort: 'max',
-          skills: ['_ideation'],
+          skills: ['ideation'],
           artifactTarget: 'innovative.md',
           blockRef: 'pi.innovative',
         },
@@ -69,7 +69,7 @@ function baseSpec(): StepSpec {
           stance: 'best-practice',
           modelTier: 'opus',
           effort: 'max',
-          skills: ['_ideation'],
+          skills: ['ideation'],
           artifactTarget: 'best.md',
           blockRef: 'pi.best',
         },
@@ -752,7 +752,7 @@ describe('lintStaticContent — KindedSection input', () => {
 describe('compile — skillSections injection', () => {
   test('prepends skill sections to the compiled text before block-derived content', () => {
     const skillSection = makeStatic({
-      id: 'skills._gotcha',
+      id: 'skills.gotcha',
       content: 'GOTCHA SKILL BODY — marker one two three.',
     });
     const prompt = compile(baseInput({ skillSections: [skillSection] }));
@@ -765,18 +765,18 @@ describe('compile — skillSections injection', () => {
 
   test('skill sections appear in the section list as static-kind summaries', () => {
     const skillSection = makeStatic({
-      id: 'skills._gotcha',
+      id: 'skills.gotcha',
       content: 'Gotcha skill body.',
     });
     const prompt = compile(baseInput({ skillSections: [skillSection] }));
-    const skill = prompt.sections.find((s) => s.id === 'skills._gotcha');
+    const skill = prompt.sections.find((s) => s.id === 'skills.gotcha');
     expect(skill).toBeDefined();
     expect(skill?.kind).toBe('static');
   });
 
   test('multiple skill sections preserve caller-provided order', () => {
-    const first = makeStatic({ id: 'skills._gotcha', content: 'FIRST.' });
-    const second = makeStatic({ id: 'skills._claude', content: 'SECOND.' });
+    const first = makeStatic({ id: 'skills.gotcha', content: 'FIRST.' });
+    const second = makeStatic({ id: 'skills.claude', content: 'SECOND.' });
     const prompt = compile(
       baseInput({ skillSections: [first, second] }),
     );
@@ -800,7 +800,7 @@ describe('compile — skillSections injection', () => {
 
   test('skill sections are linted — a poisoned skill is caught', () => {
     const poisoned = makeStatic({
-      id: 'skills._gotcha',
+      id: 'skills.gotcha',
       content: 'See /home/alice/skills.md for details.',
     });
     expect(() =>
@@ -811,7 +811,7 @@ describe('compile — skillSections injection', () => {
   test('skill sections contribute to staticPrefixHash', () => {
     const a = compile(baseInput());
     const skill = makeStatic({
-      id: 'skills._gotcha',
+      id: 'skills.gotcha',
       content: 'Gotcha skill body.',
     });
     const b = compile(baseInput({ skillSections: [skill] }));
@@ -820,11 +820,11 @@ describe('compile — skillSections injection', () => {
 
   test('skill section appears first in the rendered kinded tuple', () => {
     const skill = makeStatic({
-      id: 'skills._gotcha',
+      id: 'skills.gotcha',
       content: 'Gotcha body.',
     });
     const kinded = renderSpec(baseInput({ skillSections: [skill] }));
-    expect(kinded[0]?.section.id).toBe('skills._gotcha');
+    expect(kinded[0]?.section.id).toBe('skills.gotcha');
     expect(kinded[0]?.kind).toBe('static');
   });
 });
