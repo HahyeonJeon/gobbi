@@ -1,0 +1,78 @@
+# `references/`
+
+**External resources with extracted insights** — links to docs, blog posts, papers, RFCs, open-source code that informed this project's design. Each reference carries the **insight** (one or two sentences of what was learned) plus the source, so future agents skip the re-search work.
+
+## Lifecycle (staging → promotion)
+
+This template covers a file with **two write paths**:
+
+1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{loop}/staging/references/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
+2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+
+---
+
+## When to write
+
+- During **Ideation Sub-step C (Research)** when the leader surfaces a useful external source.
+- During any loop's MEMORIZATION when an evaluator's `general` finding contains a citable external pattern.
+
+The bar is **applicability**, not novelty: a reference belongs here if it informed a design decision, anchored a checklist item, or settled a discussion.
+
+## Location
+
+- Project-level: `.gobbi/projects/{project-name}/references/`
+
+## File naming
+
+`{slug}.md` — short, descriptive. Slug describes the topic, not the source.
+
+Example: `redis-ttl-eviction.md` (not `redis-docs-chapter-7.md`), `karpathy-software-3.md`, `superpowers-brainstorming.md`.
+
+## Item template
+
+```markdown
+---
+title: {Short topic title}
+source: {URL or path}
+type: docs | blog | paper | rfc | code | book | other
+accessed: YYYY-MM-DD
+session: {session_id}
+tags: [{tag1}, {tag2}]
+related: [{related learning / mistake slugs}]
+---
+
+# {Title}
+
+## Insight
+{One or two sentences: the specific lesson this source contributes. NOT a summary of the source — the takeaway.}
+
+## Why it applies
+{In one or two sentences, why this insight matters for this project. The condition under which the insight should be invoked.}
+
+## Source
+- {URL or path}
+- {Optional: author / date / version}
+
+## Excerpt
+{Short verbatim quote if the source's exact wording matters. Keep under a paragraph; full re-read is via the link.}
+
+## Usage history
+
+| Date | Session | Used for |
+|---|---|---|
+| YYYY-MM-DD | {session_id} | {what design / decision / checklist item used this} |
+```
+
+## Insight vs link
+
+A bare link is not a reference. The **insight** field is mandatory; references without insights are dropped at evaluation. The format `{url}\n\n{insight}` versus `{url}: {insight}` does not matter; the insight does.
+
+## Multiple insights from one source
+
+If one source contributes multiple insights to the project, write one reference file per insight, each with a different slug, all citing the same source. The slug names the insight, not the source.
+
+## Usage history
+
+The `Usage history` table grows over time as designs / decisions / checklist items cite this reference. Cap at 20 entries; older usage is recoverable from the cited artifacts.

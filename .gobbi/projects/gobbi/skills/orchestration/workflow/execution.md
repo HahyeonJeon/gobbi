@@ -1,97 +1,108 @@
-Sub-document of the `orchestration` skill. Used during the Execution phase of the workflow. Each planned task is delegated to a fresh `executor` agent, which studies the briefing and codebase, implements the task, and verifies the result against acceptance criteria before reporting back.
+# Workflow — Execution
+
+How the **manager** orchestrates the Execution Loop. The leader / executor / evaluator / assistant participants that own the loop's phases load [`execution/SKILL.md`](../../execution/SKILL.md) (executor's WORK lifecycle, per-task memory access, status contract), [`evaluation/SKILL.md`](../../evaluation/SKILL.md) (evaluator's stages), and [`memorization/SKILL.md`](../../memorization/SKILL.md) (assistant's persistence). This document covers the **orchestration choreography** — when to spawn each specialist, REVISE/PASS/FAIL routing, iteration cap, and Plan-cursor advancement. The substantive discipline is in [`principles`](../../principles/SKILL.md).
+
+The Execution Loop runs once **per planned task** — the loop body is the four-phase iteration shape, and the entire loop body repeats for each task in the Plan.
 
 ---
 
-## Core Principle
+## DISCUSSION Phase (manager + user, direct)
 
-> **Study before acting. The codebase is the source of truth, not the briefing.**
+**Manager's job**: construct the executor delegation prompt for the current task.
 
-Read the relevant code, understand existing patterns, and check gotchas before writing a single line. The briefing tells you *what* to do — the codebase tells you *how* it should be done.
-
-> **Research provides direction and references — you own the implementation quality.**
-
-Research tells you which approach to take and points you to the best references. You figure out the best way to implement it. Consider clean code principles, established patterns, maintainability, and engineering judgment. Do not follow research mechanically — research is strategic guidance, not a step-by-step recipe. If the codebase has evolved since research was conducted, follow the codebase.
-
-> **Think about best practice. Engineering judgment is your responsibility.**
-
-You are not a transcription agent converting research notes into code. You are an engineer making implementation decisions. Consider: Is there a cleaner way to structure this? Does this pattern scale? Will a maintainer understand this in six months? Are there edge cases the research did not cover? When the research direction is clear but the implementation path has multiple valid options, choose the one that best serves readability, correctness, and maintainability.
-
-> **Plan before coding. Outline the approach, then execute.**
-
-For non-trivial tasks, form an internal plan: what files to change, what patterns to follow, what the expected result looks like. A few minutes of planning prevents an hour of rework.
-
-> **One task, one focus. Stay within scope.**
-
-The executor handles one task. Do it well. Don't fix adjacent issues, refactor surrounding code, or add improvements outside the scope boundary. If you notice something worth doing, note it in the final response — don't do it.
-
-> **Verify against criteria, not assumptions.**
-
-Check your work against the task's acceptance criteria and any relevant gotchas. Run tests if applicable. The task is done when the criteria are met, not when the code looks right.
+For each task in the loop's `artifacts/`, the manager:
+1. Identifies the task's scope boundary (which files to touch, which to avoid).
+2. Locates the relevant Step 3 reference (or `novel` marker) from the Ideation insights.
+3. Confirms with the user (AskUserQuestion) any contribution points the task requires.
+4. Constructs the executor delegation prompt per [delegation prompt requirements](../delegation/SKILL.md#what-every-delegation-prompt-contains) with:
+   - The task description and acceptance criteria
+   - Scope boundary (in-scope files, out-of-scope files)
+   - Reference materials (skills to load, mistakes to respect)
+   - Verification criteria (how the executor will know it's done)
 
 ---
 
-## The Lifecycle
+## WORK Phase (delegated to `executor`)
 
-> **This sequence reflects the principle that understanding precedes action and verification precedes delivery. Adapt the depth of each phase to the task's complexity.**
+**Manager's job**: spawn a **fresh** `executor` agent per task — never reuse an executor across tasks.
 
-### Study
+Manager-side responsibilities:
+- Ensure the executor commits to the worktree (per `git` skill), not pushes
+- Collect the work artifact (code/doc diff + verification evidence)
+- Stage transcripts and any executor notes in `execution/rawdata/`
+- On re-entry, pass prior evaluator findings as additional delegation prompt input
 
-Build understanding before acting by loading the context layers specified in your briefing. Each layer adds depth — start with standards, then narrow toward the code you'll change. When reading any documentation directory, read its README first — it provides the overview and index that orients you before diving into details.
+### Executor lifecycle
 
-- **Research materials** — read research notes from the task's `research/` directory. Start with `research.md` (synthesis), then check `results/` for detailed files relevant to your subtask
-- **Documentation standard** (`claude`) — how `.claude/` files work and how to write them
-- **Project skill** — architecture, conventions, and constraints for the project you're working in
-- **Gotchas** — check `gotcha` and project-specific gotchas. Every gotcha exists because a past agent made that exact mistake
-- **Domain skills** — any additional skills specified in the briefing that cover the problem domain
-- **Relevant code** — read existing implementations in the area you'll modify. The codebase is the source of truth for patterns and style
+The executor follows a five-phase lifecycle inside its WORK phase. Each phase depth scales with task complexity. `principles` provides the underlying discipline (Think Before Acting, Bottom-Up Construction, Scope = Contract, Fresh Verification, etc.) — the lifecycle is the executor-specific sequence.
 
-### Plan
+| Phase | What happens |
+|---|---|
+| **Study** | Load the project skill, project mistakes (`.gobbi/projects/{project-name}/mistakes/`) and any feature-specific mistakes, domain skills per the delegation prompt, and the relevant existing code. The codebase is the source of truth for patterns; the delegation prompt tells you *what* to do, the codebase tells you *how* it fits. |
+| **Plan** | Outline the approach before coding: which files to modify, which patterns to follow, which mistakes apply, what the deliverable looks like when done. Non-trivial tasks fail when this is skipped. |
+| **Execute** | Implement per the plan. Follow existing patterns. Keep changes minimal and focused. Do not introduce new patterns when existing ones work. Do not add error handling, abstractions, or features beyond what the delegation prompt specifies. |
+| **Verify** | Before reporting back: implementation meets the acceptance criteria; existing tests pass; mistakes respected; change is minimal (no scope creep); if `.claude/` was touched, related docs are still accurate. Re-verify the precondition: correct branch is checked out and no unexpected state changes occurred. |
+| **Commit** (when git is active) | Commit only after verification passes — never unverified work. One focused commit per subtask. Conventional Commits format. Subagents commit but never push; the manager owns pushing and PR creation. |
 
-Outline your approach before implementing:
-
-- Which files will you modify or create?
-- What existing patterns should you follow?
-- What are the gotchas that apply to this domain?
-- What does the deliverable look like when done?
-
-### Execute
-
-Implement the task according to your plan, applying engineering judgment:
-
-- Follow existing code patterns — the codebase is the style guide
-- Apply best-practice thinking — consider readability, correctness, maintainability, and edge cases
-- Use research direction as a guide, not a script — research tells you which approach to take, you determine the cleanest implementation
-- Keep changes minimal and focused on the task
-- Don't introduce new patterns when existing ones work
-- Don't add error handling, abstractions, or features beyond what's specified
-
-### Verify
-
-Check your work before reporting back:
-
-- Does the implementation meet the acceptance criteria from the briefing?
-- Do existing tests still pass?
-- Are the gotchas for this domain respected?
-- Is the change minimal — no scope creep, no bonus refactoring?
-- If you modified anything in `.claude/`, are related docs still accurate?
-
-> **Before committing, re-verify the precondition: correct branch is checked out and no unexpected state changes occurred since verification.**
-
-This extends git's re-verification principle to the subagent level. A subagent that verifies its work but commits to the wrong branch has produced correct work in the wrong place.
-
-### Final Response
-
-The subagent's final response is automatically captured as the subtask record via `gobbi note collect`. Include in your final response: what was done, what changed, what was learned, and any open items. This is the permanent record of your work — make it self-contained.
-
-### Commit (when git is active)
-
-This phase applies only when the delegation briefing specifies a worktree workflow (git is active). Commit only after verification passes — never commit unverified work. Each subtask should produce one focused commit. Follow Conventional Commits format: the commit type and scope should match what the delegation briefing specifies for the task's domain. See `git/conventions.md` for format details. The orchestrator owns pushing and PR creation — subagents commit but never push.
+The final response the executor returns is captured as the work artifact: what was done, what changed, what was learned, any open items. Self-contained — the manager and downstream agents read it as the permanent record of this task.
 
 ---
 
-## Constraints
+## EVALUATION Phase (delegated to evaluators)
 
-- Never skip context loading — agents without project context produce work that needs rework
-- Never expand scope beyond the briefing's boundary
-- Never modify files outside your task's scope without explicit instruction
-- Never skip verification — check criteria and run tests before reporting done
+**Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Execution-specific notes:
+
+- **Perspectives**: all seven + Overall (no pruning per evaluation contract)
+- **Output path**: per-iter scoped at `sessions/{date}-{session-id}/execution/evaluation/iter{n}/{system}/{perspective}.md`
+- Phase-specific focus is built from [`execution/evaluation.md`](../../execution/evaluation.md) — implementation match, build/test status (verified via tools), security, mistake compliance, scope discipline, supply-chain, observability, privacy
+- **Tool verification is critical at Execution** — evaluators run tests, type checks, and `grep`/`rg` to anchor confidence ≥ 75 (subject to the verification preflight in [`evaluation/SKILL.md`](../../evaluation/SKILL.md))
+
+---
+
+## MEMORIZATION Phase (delegated to `assistant`)
+
+**Manager's job**: spawn the `assistant` agent. For Execution, the assistant integrates the executor's work artifact, both systems' evaluator findings, and the discussion log into the task's `execution/artifacts/` files. The Execution Loop iterates per-task — each task produces its own `artifacts/` directory under its task subdirectory.
+
+---
+
+## ITER / EXIT Decision
+
+Per task:
+
+| Verdict | Action |
+|---|---|
+| `PASS` | Move to next task in the Plan |
+| `REVISE` | Re-enter `DISCUSSION` for THIS task with eval findings |
+| `FAIL` | Escalate; user decides revise / abort / skip |
+
+Iteration cap is `workflow.execution.maxIterations` per task (default 3).
+
+When all tasks `PASS`, the loop exits and the Wrap-up Loop begins.
+
+---
+
+## Output
+
+```
+.gobbi/projects/{project}/sessions/{date}-{session-id}/execution/
+└── {task-id}/
+    ├── artifacts/           ← per-task PASS-iter output files
+    ├── rawdata/
+    └── evaluation/
+        ├── claude/{perspective}.md
+        └── codex/{perspective}.md
+```
+
+---
+
+## Cross-references
+
+- Execution Loop phase contracts (executor lifecycle, memory access, status enum) → [`execution/SKILL.md`](../../execution/SKILL.md)
+- Execution-phase evaluation seed scenarios → [`execution/evaluation.md`](../../execution/evaluation.md)
+- Executor behavioral discipline → [`principles`](../../principles/SKILL.md)
+- Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
+- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Discussion templates → [`discussion`](../../discussion/SKILL.md)
+- Delegation patterns → [`delegation`](../../delegation/SKILL.md)
+- Executor delegation template → [`delegation/templates/executor.md`](../../delegation/templates/executor.md)
+- Git/worktree workflow → [`git` skill](../../git/SKILL.md)

@@ -1,133 +1,161 @@
-Sub-document of the `orchestration` skill. Used during the Ideation phase of the workflow. The manager delegates problem-space exploration to `leader` agents, which investigate the user's idea through innovative and best stances and produce a synthesized `Idea` document concrete enough to plan against.
+# Workflow — Ideation (Orchestration)
+
+How the **manager** orchestrates the Ideation Loop. The `leader`, `evaluator`, and `assistant` specialists that participate load [`ideation/SKILL.md`](../../ideation/SKILL.md) for the loop contract, [`research/SKILL.md`](../../research/SKILL.md) when doing Sub-step C research, [`evaluation/SKILL.md`](../../evaluation/SKILL.md) for the per-perspective procedure, and [`memorization/SKILL.md`](../../memorization/SKILL.md) for template-stamping conventions.
+
+**Ideation focuses on What / Why / How.** Planning concentrates on Who / When / Where; the Ideation Loop's job is to lock the **idea**, not the execution plan.
+
+The Ideation Loop runs the four-phase iteration shape — `DISCUSSION` → `WORK` → `EVALUATION` → `MEMORIZATION` → `ITER / EXIT`. Phase semantics for Ideation:
+
+| Phase | Content semantics for Ideation |
+|---|---|
+| `DISCUSSION` | Manager + user + leader (research-backed opinion) work through four sub-steps (A Frame What/Why / B Lock Scope / C Research / D Design). Every decision is settled via AskUserQuestion before WORK begins. |
+| `WORK` | Leader documents the DISCUSSION outcome into the canonical rawdata draft and stages reference + backlog artifacts under `sessions/{date}-{session-id}/ideation/staging/`. Documentation + session-memory staging — no new content. |
+| `EVALUATION` | Dual-system evaluators (Claude Code + Codex) run the four-stage procedure across all seven perspectives + Overall. Manager reconciles into a `PASS` / `REVISE` verdict. |
+| `MEMORIZATION` | Assistant runs **after every EVALUATION** (PASS or REVISE) to preserve the iteration's transcript and update `session.json`. On `PASS` it additionally emits the loop's `artifacts/` files and stages typed-finding artifacts under `staging/`. **No writes to project memory** — Wrap-up handles session → project promotion. |
 
 ---
 
-## PI Stances
+## DISCUSSION Phase (manager + user + leader)
 
-The orchestrator spawns two PI agents in parallel during Ideation, each with a different stance. Discussion with the user happens before the PI agents are spawned — the orchestrator explores the approach, alternatives, and trade-offs first, then delegates to both stances with the refined context.
+**Manager's job**: orchestrate the What / Why / How discussion with the user, spawning the `leader` for research-backed opinion at the right moments. The detailed sub-step content (forcing questions, Scope Contract template, research procedure, design decisions, evaluation criteria) lives in [`ideation/SKILL.md`](../../ideation/SKILL.md); this section covers the **orchestration choreography**.
 
-### Innovative Stance
+### Leader spawn pattern
 
-Deep thinking, creative ideas, cross-domain inspiration. Challenges established patterns and asks "What if we did it completely differently?" Explores unconventional solutions, draws from adjacent domains, and questions whether the standard approach is actually the best one. Pushes boundaries while staying grounded in feasibility.
+The leader does **not** observe the entire user dialogue. The manager spawns the leader **as needed** to retrieve research-backed input on the next decision point, then continues the user discussion with that input:
 
-Writes output to `innovative.md` in the `ideation/` subdirectory.
+```
+manager → opens DISCUSSION with user (states framed problem at high level)
+manager → spawns leader for Sub-step A: "research root cause / impact / prior attempts; build steel-man counterfactual; apply re-framing check"
+leader → researches + returns to manager
+manager → presents leader's findings as draft proposals → AskUserQuestion → user decides
+manager → spawns leader again for Sub-step B (Lock Scope), then Sub-step C (Research, loads research skill), etc.
+...
+```
 
-### Best Stance
+Multiple leader spawns are normal. The full set of leader transcripts is preserved by MEMORIZATION as the audit trail for "what research informed each decision".
 
-Best-practice focused, proven patterns, industry standards. Asks "What has worked well for others?" Researches established solutions, references industry standards, and identifies proven patterns that apply. Anchors to what works reliably and explains why.
+### Sub-step orchestration
 
-Writes output to `best.md` in the `ideation/` subdirectory.
+The manager runs the user through four sub-steps in order. Each is gated by AskUserQuestion before advancing.
 
-### Synthesis
+| # | Sub-step | Manager's role | Leader's contribution |
+|---|---|---|---|
+| A | Frame What and Why | Run the **six forcing questions** via AskUserQuestion: root cause / impact / success criteria / prior attempts / counterfactual (steel-man) / re-framing check | Research root cause / impact / prior attempts; build steel-man counterfactual; apply re-framing check; draft answers for user to refine |
+| B | Lock Scope (Project-Feature-Task contract) | Run decomposition discussion; AskUserQuestion to pick the workflow's task and lock the Scope Contract | Enumerate candidate tasks; propose pick based on dependency analysis; provide field values for the Scope Contract template |
+| C | Research | Present leader's internal + external insights to user **separately**; let user push back / refine | Load [`research/SKILL.md`](../../research/SKILL.md); run Internal Research and External Research deeply; extract insights using the Insight format. Internal and external insights are managed independently |
+| D | Design | Present leader's scenarios + checklist + directional design decisions + validation strategy to user; iterate until satisfied | Propose scenarios (golden / edge / failure / adversarial); anchored implementation checklist; **directional design decisions** (library / framework / design pattern / API shape / etc.) with rationale anchored to insights. Detailed mechanism deferred to Execution |
 
-After both PI agents complete, the orchestrator synthesizes their outputs into `ideation.md` — merging the strongest elements from both stances, resolving conflicts, and producing a single refined idea. The synthesis is the primary ideation output that proceeds to evaluation and planning.
+After Sub-step B, the manager stamps `project`, `feature`, `task` into `session.json` (top-level fields) and bootstraps the **session loop directory** at `sessions/{date}-{session-id}/ideation/{rawdata,staging,evaluation}/`. The manager does **not** touch `features/{feature-name}/...` during Ideation; that path is owned by Wrap-up's project-memory promotion.
 
----
+### When to escalate to user
 
-## Core Principles
+The leader brings draft proposals; the user makes final calls. Every decision below requires AskUserQuestion:
 
-> **Discuss first. Use AskUserQuestion to understand and refine the user's idea.**
-
-The user has an idea. The manager's job is to make it better through discussion. Ask questions that expose what's vague, what's missing, and what could be stronger. Every question should either clarify the idea or push it toward more detail.
-
-> **Challenge assumptions, not the user.**
-
-Every idea embeds assumptions — about the problem, the constraints, the approach, the technology. Surface these assumptions explicitly and question each one respectfully. Use inversion: "What would make this fail?" Use reframing: "What if the real problem is actually X?" The user's framing may not be the best framing, but the user's intent is always the anchor.
-
-> **Push from vague to concrete. Abstract ideas can't be evaluated or planned.**
-
-"Make it faster" is a wish. "Reduce P95 latency on the /search endpoint from 800ms to 200ms by adding a Redis cache layer in front of the Postgres full-text search" is an idea. Every round of discussion should move the idea closer to this level of specificity — mechanisms, interfaces, data flows, measurable criteria.
-
-> **Explore alternatives to strengthen, not to replace.**
-
-Generating alternative approaches isn't about picking a winner — it's about stress-testing the idea. If the user's idea survives comparison against alternatives, it's stronger. If an alternative reveals a weakness, that weakness gets addressed. Alternatives serve the idea.
-
-> **Make trade-offs visible. Every choice has costs.**
-
-When the idea involves a choice between approaches, don't present one as "clearly best." State what each option optimizes, what it sacrifices, and what it assumes. The user decides which trade-offs are acceptable — the manager's job is to make the trade-offs visible.
-
----
-
-## Discussion Points
-
-Use these as a menu of discussion topics to raise with the user via AskUserQuestion. Not every idea needs every point — pick the ones that address what's vague or missing in this specific idea.
-
-### Understanding the Problem
-
-- **Root cause** — Is the stated problem the real problem, or a symptom? Ask "why" repeatedly until you reach the root. "We need caching" → why? → DB is slow → why? → queries unoptimized. The idea might need to shift.
-- **Impact** — Who is affected? How severely? What happens if we do nothing? This calibrates how much effort and complexity the idea justifies.
-- **Prior attempts** — What's been tried before? What worked, what didn't, and why? Avoids repeating past failures.
-- **Success criteria** — How will we know the idea worked? Define measurable criteria before refining the approach, so discussion stays grounded.
-
-### Mapping Constraints
-
-- **Hard constraints** — Non-negotiable boundaries (tech stack, compatibility, regulatory, performance thresholds). These shape the idea's boundaries.
-- **Soft constraints** — Preferences that could be traded away if the gain is worth it (timeline, team familiarity, consistency with patterns).
-- **Assumed constraints** — Constraints taken for granted that may not be real. Challenge each: "Where did this come from? Is it still valid? What opens up if we remove it?"
-- **Dependencies** — What does this depend on? What depends on this? External systems, team bandwidth, parallel work.
-
-### Deepening the Idea
-
-- **First principles** — Strip away the current approach. What are the fundamental requirements? If you built from scratch, what would you do? This reveals whether the idea is optimizing the right thing.
-- **Inversion / pre-mortem** — Imagine the idea has been implemented and failed. What went wrong? Turn each failure mode into a requirement the idea must address.
-- **Analogy** — Has a similar problem been solved in a different domain? Adapt proven patterns. Cross-domain solutions often reveal approaches that domain insiders overlook.
-- **SCAMPER** — Systematically probe the idea: Could we substitute a component? Combine two steps? Eliminate a layer? Reverse a flow? Each probe either strengthens the current idea or reveals an improvement.
-- **Constraint removal** — Temporarily remove each hard constraint. What becomes possible? Then selectively reintroduce. Sometimes a "hard" constraint is actually negotiable, and removing it dramatically simplifies the idea.
-
-### Making It Concrete
-
-- **Mechanism** — How does it actually work? What's the data flow? What are the key interfaces?
-- **Scope boundary** — What's included and what's explicitly not? Where does this idea end?
-- **Edge cases** — What happens with empty inputs, maximum load, concurrent access, failures? Which edge cases must the idea handle vs. which are out of scope?
-- **Risks** — What could go wrong? What are the unknowns? What would require a spike or prototype to validate?
-- **Trade-offs** — What does this approach optimize for? What does it sacrifice? What alternatives were considered and why were they not chosen?
+- Confirmation of the framed problem — all six forcing questions (Sub-step A)
+- Re-framing go/no-go (Sub-step A, question 6)
+- Scope Contract confirmation (Sub-step B)
+- Backlog routing of non-chosen candidates (Sub-step B)
+- Insight acceptance / rejection — internal AND external, surfaced separately (Sub-step C)
+- Scenario list completeness (Sub-step D)
+- Design decision direction when alternatives exist (Sub-step D)
+- Contribution points surfaced by leader at any sub-step
 
 ---
 
-## Contribution Points
+## WORK Phase (leader documents + stages)
 
-After refining an idea, consider whether any remaining decisions are contribution points — judgment calls where the user's domain knowledge would produce a better outcome than agent discretion.
+**Manager's job**: spawn the leader for documentation + session-memory staging. The leader's job in WORK is to record what was decided in DISCUSSION into a draft at `sessions/{date}-{session-id}/ideation/rawdata/draft-iter{n}.md` and to stage reference + backlog artifacts under `sessions/{date}-{session-id}/ideation/staging/`.
 
-This is distinct from specification gaps (which discussion resolves). Contribution points arise even after the idea is fully specified, where multiple valid approaches exist and the right choice depends on knowledge the user holds but has not transferred through Q&A.
+Manager-side responsibilities:
+- Confirm the leader's rawdata draft contains every required section (Scope Contract / Framed Problem / Research Insights / Scenarios / Implementation Checklist / Design / Decisions Log)
+- Stage the draft in `rawdata/` along with prior leader transcripts (research turns from DISCUSSION)
+- Verify staged artifacts under `staging/{references,backlogs/feature,backlogs/project}/` match the Sub-step B and Sub-step C decision lists
+- On re-entry from a `REVISE` ITER, pass prior evaluator findings as additional input — the leader incorporates the corrections during the next DISCUSSION round, then re-documents
 
-Indicators that a decision is a contribution point:
+WORK is short by design. The substantive thinking happened in DISCUSSION; WORK formalizes and stages it. **No writes to project memory** — every output lives under `sessions/{date}-{session-id}/ideation/`.
 
-- Business logic with multiple valid approaches where the user's domain shapes the right choice
-- Architectural trade-offs between competing values the user has not ranked (performance vs. simplicity, flexibility vs. consistency)
-- Error handling and resilience strategies where the user's user base, SLA, or failure tolerance matters
+---
 
-For each identified contribution point, use AskUserQuestion before the plan is written. The user's answer becomes a constraint the plan encodes — not a suggestion for the planner to interpret.
+## EVALUATION Phase (delegated to evaluators)
 
-Not every task has contribution points. Context-resolvable decisions — where the codebase, constraints, or prior discussion already determines the right approach — do not need this treatment. Apply judgment.
+**Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Ideation-specific notes:
+
+- **Perspectives**: all seven + Overall (no pruning per evaluation contract) — Project / Structure / Performance / Aesthetics / Usage / Consistency / Risk
+- **Cross-system divergence** is derived by comparing per-system files at MEMORIZATION; no separate divergence file is written
+
+Verdict is `PASS` or `REVISE`. **Both verdicts advance to MEMORIZATION first** (so each iteration's transcript + `session.json` entry is preserved regardless of outcome). The ITER / EXIT decision happens after MEMORIZATION.
+
+---
+
+## MEMORIZATION Phase (delegated to `assistant`, runs every iter)
+
+**Manager's job**: spawn the `assistant` agent after every EVALUATION verdict — `PASS` or `REVISE`. The assistant follows [`ideation/SKILL.md` § MEMORIZATION Phase](../../ideation/SKILL.md#memorization-phase) and [`memorization/SKILL.md`](../../memorization/SKILL.md) for template-stamping.
+
+Every iteration the assistant:
+- Preserves the Claude Code transcript window at `sessions/{date}-{session-id}/ideation/rawdata/transcript-iter{n}.jsonl`
+- Appends `{iter: n, verdict, finishedAt}` to `session.json.workflow.ideation.iterations[]`
+
+Only on `PASS` the assistant additionally:
+- Emits the canonical `sessions/{date}-{session-id}/ideation/artifacts/`
+- Stages typed-finding artifacts under `sessions/{date}-{session-id}/ideation/staging/{scenarios,checklists,decisions,references,design,discussions}/`
+- Sets `session.json.workflow.ideation.finishedAt` and the loop's final `verdict: PASS`
+
+**No writes to project memory** under any verdict. All session staging waits for Wrap-up to promote to `features/{feature-name}/...` after the workflow completes.
+
+---
+
+## ITER / EXIT Decision
+
+After `MEMORIZATION` (which always runs), the manager decides based on the reconciled verdict:
+
+| Verdict | Action |
+|---|---|
+| `PASS` | Exit the loop; advance to Planning Loop. `artifacts/` files + `staging/` artifacts are ready for Wrap-up's project-memory promotion |
+| `REVISE` | Re-enter `DISCUSSION` with evaluator findings as additional input. The current iter's transcript + draft + evaluation files are preserved under `rawdata/` and `evaluation/` |
+| `FAIL` | Escalate via AskUserQuestion; user decides revise / abort / reframe |
+| `SKIPPED` | Exit the loop (Ideation was skipped per settings) |
+
+Iteration cap: `workflow.ideation.maxIterations` (default 3). When the cap is reached without `PASS`, the manager forces user escalation.
 
 ---
 
 ## Output
 
-Ideation produces three files in the `ideation/` subdirectory:
+```
+.gobbi/projects/{project}/sessions/{date}-{session-id}/ideation/
+├── artifacts/             ← PASS-iter output files (free filenames + mandatory frontmatter; assistant, MEMORIZATION, PASS only)
+├── rawdata/
+│   ├── draft-iter{n}.md           ← leader's rawdata draft per iteration (WORK)
+│   ├── transcript-iter{n}.jsonl   ← preserved transcript per iteration (MEMORIZATION, every iter)
+│   └── discussion-log.md          ← manager-captured AskUserQuestion exchanges
+├── evaluation/
+│   └── iter{n}/
+│       ├── claude/{perspective}.md
+│       └── codex/{perspective}.md
+└── staging/                ← session-staged artifacts, promoted to project memory by Wrap-up
+    ├── references/{slug}.md
+    ├── backlogs/feature/{slug}.md
+    ├── backlogs/project/{slug}.md
+    ├── scenarios/{slug}.md      ← PASS-only (from scenario_gap findings)
+    ├── checklists/{slug}.md     ← PASS-only (from checklist_gap findings)
+    ├── decisions/{slug}.md      ← PASS-only (from design_flaw / assumption_risk findings)
+    ├── design/{slug}.md         ← PASS-only (from canonical Design section)
+    └── discussions/{slug}.md    ← PASS-only (from discussion log)
+```
 
-- `innovative.md` — Written by the innovative PI agent. Ideas explored through the creative and novel lens.
-- `best.md` — Written by the best-practice PI agent. Ideas explored through the established patterns lens.
-- `ideation.md` — Written by the orchestrator. Synthesis combining both stances and the discussion with the user.
+Plus updates to `sessions/{date}-{session-id}/session.json` — `workflow.ideation.iterations[]` appended every iter; `workflow.ideation.finishedAt` + final `verdict` set on PASS.
 
-Each stance file should cover:
-
-- The problem being solved (root cause, not symptom)
-- The proposed approach with concrete mechanism
-- Constraints and scope boundaries
-- Known risks and trade-offs
-- Success criteria
-
-The synthesis (`ideation.md`) merges the strongest elements from both stances into a single refined idea — concrete enough that a planner can decompose it into tasks and an evaluator can assess its quality.
-
-When evaluation is performed, evaluator agents write their results to `ideation/evaluation/{perspective}.md` — one file per perspective. Evaluation is optional at ideation; the orchestrator asks the user whether to skip.
+**No writes to project memory** during Ideation. The `features/{feature-name}/...` tree is created and populated by Wrap-up using `staging/` as the source — see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md).
 
 ---
 
-## Constraints
+## Cross-references
 
-- Never skip discussion — always use AskUserQuestion to refine the idea with the user
-- Never accept a vague idea as ready — push toward concrete mechanisms, interfaces, and criteria
-- Never ignore the user's intent — challenge assumptions, but anchor to what the user wants
-- Never present alternatives as replacements — use them to stress-test and strengthen the idea
-- Always read relevant codebase before discussing approaches — existing patterns inform the discussion
+- Leader's discussion + documentation procedure → [`ideation/SKILL.md`](../../ideation/SKILL.md)
+- Internal + external research procedure → [`research/SKILL.md`](../../research/SKILL.md)
+- Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
+- Assistant's MEMORIZATION procedure (templates + routing) → [`memorization/SKILL.md`](../../memorization/SKILL.md)
+- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Wrap-up's project-memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
+- Discussion mechanics → [`discussion/SKILL.md`](../../discussion/SKILL.md)
+- Delegation patterns → [`delegation/SKILL.md`](../../delegation/SKILL.md)

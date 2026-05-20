@@ -1,175 +1,307 @@
-Sub-document of the `orchestration` skill. Used during the Evaluation sub-phase at each loop step. The manager selects perspectives, spawns independent evaluator agents, aggregates their verdicts, and discusses the findings with the user before any remediation begins.
+# Workflow — Evaluation (Orchestration)
+
+How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead.
+
+The manager's job at EVALUATION is to **spawn the dual-system evaluators, collect their per-perspective outputs, reconcile the two systems, and emit a verdict** — not to do the evaluation itself. The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `MEMORIZATION` runs; `MEMORIZATION` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § MEMORIZATION Phase](ideation.md#memorization-phase-delegated-to-assistant-runs-every-iter)).
+
+All evaluator output is **session-scoped** under `sessions/{date}-{session-id}/{loop}/evaluation/`. Evaluators never write to project memory.
 
 ---
 
-## Core Principle
+## Why dual-system is mandatory
 
-> **The creator must never evaluate its own output.**
+Self-enhancement bias alone disqualifies single-system evaluation: a model judging artifacts produced by its own family systematically over-rates them. Position, verbosity, sentiment, and fallacy-oversight biases compound the problem. Running both Claude Code and Codex evaluators in parallel forces disagreement to surface and prevents one backend's blind spots from passing unchecked.
 
-Self-evaluation is structurally biased. The creator's mental model prevents them from seeing the work as a fresh reader would. Evaluators must be separate agents with fresh context.
-
-> **At least 2 evaluators with different perspectives.**
-
-A single evaluator catches the problems it is trained to see. Multiple evaluators with genuinely different viewpoints catch problems that fall between any single perspective. Disagreements between evaluators are valuable signal — surface them.
-
-> **The user's perspective is the most important measure of evaluation.**
-
-Evaluator agents assess from technical perspectives, but the user decides what matters. Evaluation findings are input to a conversation with the user, not autonomous verdicts. An evaluator may flag an issue as critical, but if the user disagrees or defers it, that decision stands. No evaluation outcome bypasses the user.
-
-> **Evaluate outcomes against goals, not tasks against checklists.**
-
-Check whether the output achieves what the user actually needs, not just whether individual items were completed. An idea that exists but doesn't solve the root problem fails. A plan that has all tasks but misses a dependency fails.
-
-> **Verify by running, not just reading.**
-
-When the output can be verified by running a command — tests, syntax checks, grep for expected patterns, file existence — do it. Reasoning alone misses failures that evidence catches. When tools can provide evidence, use them. When they can't, reason rigorously.
-
-> **Recurring issues become gotchas.**
-
-Patterns discovered during evaluation are the highest-value input for the memorization step — they represent non-obvious problems that will recur without explicit recording.
+The two systems do **not** see each other's output during evaluation. Inter-system communication would re-introduce bandwagon and position biases that the dual-system mandate was designed to eliminate. Divergence is the signal; silent averaging would destroy it.
 
 ---
 
 ## Perspective Selection
 
-The orchestrator selects which perspectives to evaluate from based on the task's domain and the project's needs. The right perspectives vary by project and task type — there is no fixed set that applies everywhere.
+The evaluator runs **seven perspectives** + a final holistic **Overall** stage. The seven are the per-perspective rotation (Stage 2 in the evaluator skill); Overall is its own stage (Stage 3).
 
-Common perspectives (examples, not exhaustive — must adjust these perspectives to be domain-specific for the project):
-
-- **Project-level** — Does the output solve the right problem? Does it fit the project's requirements, constraints, and goals?
-- **Design / Architecture-level** — Is the architecture sound? Are abstractions appropriate? Is coupling managed?
-- **Performance / Optimization-level** — Are there efficiency issues, unnecessary resource usage, or scalability risks?
-- **Aesthetics-level** — Is it readable, well-named, consistent, and polished? Would a fresh reader understand it?
-- **User-level** — Does it meet the end user's needs? Is the experience intuitive, accessible, and correct from the user's perspective?
-- **Overall-level** — What gaps fall between the other perspectives? What works well and must be preserved?
-
-The orchestrator matches perspectives to the task. A documentation task may need scope and craft quality but not efficiency. A database migration may need scope, structure, and efficiency but not craft quality. Use judgment — more perspectives catch more problems, but each costs time.
-
----
-
-## How Evaluation Works
-
-### For the Orchestrator
-
-1. Select the perspectives that match the task's domain
-2. Spawn each evaluator as a separate agent with skills:
-
-   - The stage-specific evaluation skill (what to check at this workflow stage)
-   - The perspective evaluation skill (the lens to assess through)
-   - Domain context — project rules, gotchas, conventions, and relevant knowledge
-   - The output to evaluate
-   - Read-only access — evaluators assess, they do not modify
-
-3. Collect all verdicts independently — evaluators should not see each other's results
-4. Act on the results:
-
-   - **All pass** — proceed to next stage
-   - **Any revision needed** — present findings to the user, discuss what to address, then revise
-   - **Any escalation** — surface to user for decision immediately
-   - **Perspectives disagree** — the disagreement reveals where the output is borderline, surface it
-
-### For the Evaluator
-
-1. Load the evaluation criteria and domain context provided
-2. Read the output thoroughly before forming any judgment
-3. For each finding, assess independently:
-
-   - **Confidence** (0-100) — how certain are you this is a real issue?
-   - **Severity** (Critical / High / Medium / Low) — how impactful is this if real?
-
-4. Verify findings with tools when possible — run tests, grep for patterns, check file existence
-5. Check findings against known false positive categories before finalizing
-6. Return a verdict: **PASS**, **REVISE**, or **ESCALATE** with specific reasoning
-
----
-
-## Scoring
-
-Every finding carries two independent dimensions: confidence and severity. These are separate — a finding can be high-severity but low-confidence, or low-severity but high-confidence.
-
-### Confidence
-
-How certain the evaluator is that a finding represents a real issue, scored 0-100.
-
-| Score | Meaning |
+| Perspective | Asks |
 |---|---|
-| 0 | False positive — appears like an issue but isn't one |
-| 25 | Possible but unverified — could be an issue, no evidence confirms it |
-| 50 | Probable — likely exists, but evidence is indirect or incomplete |
-| 75 | Significant and likely — strong reasoning or partial evidence supports it |
-| 100 | Definite — verified by evidence, tool output, or incontrovertible reasoning |
+| **Project** | Does the output solve the right problem? Stays inside the locked Scope Contract? Any scope drift? (Scope Contract schema canonical at `evaluation/SKILL.md` § Scope Contract Schema) |
+| **Structure** | Is the organization / decomposition / coupling sound? Boring-by-default? Testable? Two-week smell test? |
+| **Performance** | Efficiency, resource use, scalability risks? |
+| **Aesthetics** | Readability, naming, style conventions, polish — does every element earn its place? |
+| **Usage** | Can the next consumer (agent / user / operator / future-self) use this correctly at 3am? |
+| **Consistency** | Did everything that should change together, change together? Code ↔ docs ↔ tests ↔ types ↔ comments ↔ indexes. Internal contradictions? Cross-loop trace coherent? |
+| **Risk** | Blast radius, reversibility, security surface, rollback, irreversible operations? |
+| **Overall** (Stage 3) | Cross-perspective gaps, strengths to preserve, Karpathy's 4 failure modes (wrong assumptions / overcomplexity / orthogonal edits / imperative-over-declarative) |
 
-### Severity
+Every evaluation runs **all seven perspectives + Overall** for every loop. No pruning. A perspective that produces zero findings for a given artifact is still walked — its empty result is itself a recorded outcome, not a license to skip.
 
-How impactful the issue would be if it is real, independent of confidence.
+The phase child doc loaded at evaluator Stage 0 (`ideation/evaluation.md` / `preparation/evaluation.md` / `planning/evaluation.md` / `execution/evaluation.md` / `wrap-up/evaluation.md`) supplies the per-perspective seed scenarios + seed checklist the evaluator builds Stage 1 from. The manager passes the phase tag in the delegation prompt; the evaluator loads the matching child doc automatically.
 
-| Level | Meaning |
+---
+
+## Spawning the Evaluators
+
+The manager spawns **exactly two evaluator agents in parallel** — one per system. Both receive identical input:
+
+- The artifact under evaluation (the prior phase's `WORK` output, e.g., `sessions/{date}-{session-id}/{loop}/rawdata/draft-iter{n}.md`)
+- Any artifact-embedded evaluation criteria the creator provided (context for Stage 1 frame-build, not a separate measurement pass)
+- The perspective set (always all seven + Overall; no pruning)
+- The workflow phase (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) — selects which evaluation child doc the evaluator loads at Stage 0
+
+Each evaluator is **one agent** that handles **all four stages (Target Understanding → Scenario & Checklist Build → Per-Perspective Sequential Evaluation → Overall) sequentially** — the manager does not spawn one evaluator per perspective. Perspectives iterate inside the agent in the documented order (Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk → Overall). Per-perspective output files come from one agent's sequential pass, not from N parallel spawns.
+
+Model selection follows `settings.json` `models.{system}.evaluator`:
+- Claude Code evaluator: `models.claude.evaluator` (default `opus`)
+- Codex evaluator: `models.codex.evaluator` (default `gpt-5`)
+
+---
+
+## Collecting Outputs
+
+After both evaluators complete, the manager finds:
+
+```
+sessions/{date}-{session-id}/{loop}/evaluation/
+├── iter1/
+│   ├── claude/
+│   │   ├── project.md       ← per-perspective output from Claude Code (iter 1)
+│   │   ├── structure.md
+│   │   ├── performance.md
+│   │   ├── aesthetics.md
+│   │   ├── usage.md
+│   │   ├── consistency.md
+│   │   ├── risk.md
+│   │   └── overall.md       ← Stage 3 holistic output (iter 1)
+│   └── codex/
+│       └── (same 8 files)
+├── iter2/                    ← only exists if iter 1 verdict was REVISE
+│   ├── claude/
+│   │   └── (same 8 files; inherits open findings from iter 1 via Stage 1)
+│   └── codex/
+│       └── (same 8 files)
+└── ...                       ← additional iter directories as REVISE continues
+```
+
+Each per-iter directory contains exactly the 8 files (7 perspectives + overall.md) per system. Prior iter directories are **preserved** as the audit trail; iter n reads iter (n-1) directly via Stage 1 inheritance — no separate ledger file exists.
+
+Each per-perspective file contains: Artifact Summary + W/W/H (Stage 0) → locked Frame, scenarios-with-attached-checklists (Stage 1) → per-scenario per-check yes/no results → typed findings with `disposition:` field (Stage 2) → Low-confidence appendix section. The `overall.md` file contains Stage 3 cross-cutting findings, Karpathy-mode checks, and Preserve list.
+
+---
+
+## Cross-System Reconciliation
+
+The manager reconciles the two systems' outputs **side-by-side**, never averaging.
+
+### Aggregation rule — pessimistic union
+
+Per perspective:
+
+- **Findings**: the union of both systems' findings. If both flagged the same issue **with the same root cause**, recorded once with the higher confidence and higher severity. If only one flagged it, recorded with that system's values, tagged with the surfacing system.
+- **Verdict**: the worst of the two per-perspective verdicts.
+
+> Example: Claude says `PASS` on Structure; Codex says `REVISE` on Structure, citing a missed concurrency edge case. Reconciled Structure verdict is `REVISE`. The concurrency finding is recorded with Codex as the surfacing system.
+
+### Same symptom, different root cause — do not collapse
+
+When both systems flag the **same symptom** but propose **different root causes**, do NOT collapse into a single record. A symptom resolved against the wrong cause leaves the actual cause un-fixed and the high-severity finding persists across iterations.
+
+| Pattern | Manager action |
 |---|---|
-| Critical | Blocks progress, breaks correctness, or creates security vulnerability |
-| High | Significant flaw that would cause rework if not addressed now |
-| Medium | Real issue that should be addressed but doesn't block |
-| Low | Minor concern, stylistic, or optimization opportunity |
+| Both systems: same symptom + same root cause + same remediation | Collapse into one record (standard pessimistic union) |
+| Both systems: same symptom + **different root causes** | Treat as a reconciliation divergence. Preserve both cause hypotheses, both evidence chains, both proposed remediations. Flag for user resolution via AskUserQuestion before DISCUSSION re-entry. The user's decision (or "explore both") is recorded in the manager's discussion-log and reflected in the next iter's per-perspective files via the `disposition:` field |
+| Same symptom + one system has cause, other has none | Use the cause hypothesis; tag the surfacing system; record explicitly that the other system flagged the symptom only |
 
-### Threshold Filtering
+### Severity-gated divergence handling
 
-Low-confidence findings are suppressed from the evaluation report by default to prevent noise. They are not discarded — the orchestrator or user can request the full unfiltered list. The threshold exists because evaluation should drive decisions, not generate noise.
+Not all divergences are equal:
 
-### False Positive Categories
+| Divergence | Example | Manager action |
+|---|---|---|
+| **Minor** | `PASS` ↔ `REVISE` | Auto-proceed with pessimistic union; the divergence summary is captured at MEMORIZATION in the canonical artifact's Evaluation summary section |
+| **Major** | `PASS` ↔ `FAIL`, `REVISE` ↔ `FAIL` | **Stop-the-line**: surface divergence to user via AskUserQuestion before any further loop progress; user decides which verdict to honor. The user's decision is captured in the manager's AskUserQuestion transcript and in the canonical Evaluation summary at MEMORIZATION |
 
-Before assigning high confidence, check whether a finding falls into a known false positive category:
+Major divergences mean the two systems disagree on whether the artifact is acceptable at all. That is exactly the signal the dual-system mandate exists to surface.
 
-- **Pre-existing** — issue exists before this change, not attributable to the evaluated output
-- **Out-of-scope** — real issue, but outside the task's scope boundary
-- **Style preference** — subjective, not a convention violation
-- **Linter-catchable** — mechanical issue that automated tooling should catch
-- **Speculative** — hypothetical concern without supporting evidence
+### Where divergence is recorded
 
----
-
-## Stage-Specific Focus
-
-### Ideation
-
-- Is the root problem identified, or is the idea solving a symptom?
-- Is the approach concrete enough to plan against?
-- Are trade-offs explicitly stated?
-- Are constraints and assumptions surfaced?
-- Are risks identified with severity?
-- What's missing that should be there?
-
-### Planning
-
-- Is every task narrow enough that scope is unambiguous?
-- Are dependencies correctly ordered?
-- Does the plan cover the full scope from the approved idea?
-- Are verification criteria defined for each task?
-- Is anything missing from the ideation discussion?
-- Do any tasks overlap on the same files?
-
-### Research
-
-- Are all plan tasks covered by research findings?
-- Are implementation paths concrete enough for executors to act without re-researching?
-- Are codebase references accurate (verifiable with Grep/Read)?
-- Are external sources cited and relevant?
-- Does the synthesis effectively combine innovative and best-practice perspectives?
-- Would an executor reading this know exactly what to implement?
-
-### Execution
-
-- Does the implementation match the task specification?
-- Does the code compile and pass existing tests?
-- Are there security vulnerabilities?
-- Are project-specific gotchas and rules respected?
-- Is the change minimal and focused — no scope creep?
-- Are edge cases handled that were identified during ideation?
+Per-system per-perspective files already capture each system's findings and verdict — **no separate `divergence.md` is written**. The cross-system reconciliation summary (which perspective verdicts diverged, how the pessimistic union resolved, and the user's decision in major-divergence cases) is written into the canonical artifact's **Evaluation summary** section by the `assistant` during `MEMORIZATION` (PASS only). The user's decision in major-divergence cases is also captured in the manager's AskUserQuestion transcript, which is preserved at MEMORIZATION via the per-iter transcript jsonl.
 
 ---
 
-## Constraints
+## Verdict Aggregation Across Perspectives
 
-- MUST use separate agents — the creator never evaluates its own output
-- MUST spawn at least 2 evaluators with different perspectives
-- MUST present evaluation findings to the user before acting on them — the user decides what to address
-- MUST surface disagreements between evaluators — they reveal where the output is borderline
-- Max 3 revision cycles per evaluation — then escalate to user
+After per-perspective reconciliation across the seven perspectives **and Stage 3 (Overall)**, the manager aggregates across all eight verdicts (7 perspectives + Overall) to produce the loop's verdict:
+
+| Across all eight | Loop verdict | Post-MEMORIZATION transition |
+|---|---|---|
+| All `PASS` | `PASS` | Exit the loop; advance to the next step |
+| Otherwise (any `REVISE`, no `FAIL`) | `REVISE` | Re-enter `DISCUSSION` with findings as new input; iter increments |
+| Any `FAIL` | `FAIL` | Escalate to user via AskUserQuestion |
+
+Overall (Stage 3) is given equal weight in aggregation — a `REVISE` from Overall is a `REVISE` for the loop, even if all seven per-perspective verdicts pass. Cross-cutting issues that only emerge holistically are exactly what Stage 3 is designed to surface.
+
+**Every verdict — `PASS`, `REVISE`, or `FAIL` — advances to MEMORIZATION first.** MEMORIZATION preserves the iteration's transcript and updates `session.json.workflow.{loop}.iterations[]` regardless of outcome; only on `PASS` does it additionally write the canonical artifact and staging directories. The `Post-MEMORIZATION transition` column above describes what happens **after** MEMORIZATION runs.
+
+---
+
+## Routing Findings to MEMORIZATION
+
+The manager passes all evaluator findings to the `assistant` agent in the next `MEMORIZATION` phase. Per the [Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) defined in the evaluator skill, the assistant routes on `PASS` to session staging:
+
+| Finding type | Session staging destination (`PASS` only) |
+|---|---|
+| `scenario_gap` | `sessions/{date}-{session-id}/{loop}/staging/scenarios/{slug}.md` |
+| `checklist_gap` | `sessions/{date}-{session-id}/{loop}/staging/checklists/{slug}.md` |
+| `design_flaw`, `assumption_risk` | `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` |
+| `general` with citable external pattern | `sessions/{date}-{session-id}/{loop}/staging/references/{slug}.md` |
+
+On `REVISE`, MEMORIZATION preserves the transcript + iter entry in `session.json` but does **not** stage findings — those wait for the eventual `PASS` iteration's MEMORIZATION run. On `FAIL`, the loop halts before staging.
+
+Wrap-up later promotes the `staging/` directory to project memory at `features/{feature-name}/...`. The manager never writes directly to project memory.
+
+---
+
+## Dual-system failure handling
+
+Both evaluators are expected to produce 8 well-formed files (7 perspectives + `overall.md`) within a bounded time and cost budget. Real evaluations face timeouts, malformed outputs, partial outputs, and budget exhaustion. The manager applies the following gates **after** spawning the two evaluators in parallel:
+
+### Output validation (mechanical)
+
+For each system, the manager verifies:
+- Exactly 8 files written at the expected paths
+- Each file > 0 bytes
+- Each per-perspective file parses for the required sections (Artifact Summary + W/W/H + locked Frame + per-check results + typed findings + low-confidence appendix)
+- Each finding carries Type + Domain + Confidence + Severity + Evidence (no malformed records)
+
+Failure → retry once, then trigger degraded-mode policy below.
+
+### Budget gates
+
+- **Wall-clock budget** per evaluator (default: 30 min; configurable via `workflow.{loop}.evaluate.timeoutMinutes`)
+- **Cost/token budget** per evaluator (configurable via `workflow.{loop}.evaluate.tokenBudget`)
+- Budget exhaustion → halt that system, retry once if the run was clearly stuck early; otherwise trigger degraded-mode policy
+
+### Retry policy
+
+- One retry per system on: transient error / wall-clock exhaustion before first finding produced / malformed output
+- No retry on: explicit "no findings" verdict / structurally-complete output that the manager rejects on content review
+- Retries inherit the same prompt + inputs; no parameter tuning
+
+### Degraded-mode policy (single-system fallback)
+
+If after retry one system still fails or produces unusable output:
+
+| Scenario | Manager action |
+|---|---|
+| One system succeeds, one fails | **Stop-the-line**: AskUserQuestion: "System X failed (reason). Single-system fallback would weaken the dual-system guarantee. Proceed with system Y only, or halt the loop?" |
+| Single-system fallback approved | Use the surviving system's outputs. Loop verdict **floor is `REVISE`** regardless of the surviving system's verdict (the dual-system guarantee was weakened; cannot exit on PASS without both systems). Record a `process` finding (domain: `process`, severity: `High`) noting the fallback |
+| Both systems fail | **Halt the loop.** AskUserQuestion the user with diagnostic outputs; user decides retry / different model / abort |
+| Cost budget approaching cap | Surface to user proactively before exhaustion: "system X used 80% of budget — continue / abort / raise cap?" |
+
+The dual-system mandate exists to surface divergence. A silent single-system fallback would undermine it; explicit degraded mode preserves auditability.
+
+---
+
+## Iteration Inheritance (no ledger — read prior iter directly)
+
+There is **no separate iter-ledger file**. Per-iter scoping of `evaluation/iter{n}/{system}/{perspective}.md` files means iter (n-1)'s findings, frames, and verdicts are preserved verbatim and read directly by iter n.
+
+### `disposition:` field on findings
+
+Each finding (Stage 1 gap, Stage 2 finding, Stage 3 finding) carries a `disposition:` metadata field in addition to Type / Domain / Confidence / Severity / Evidence:
+
+| Disposition value | Meaning |
+|---|---|
+| `open` | Finding is unresolved and persists from earlier iter, or newly surfaced in current iter |
+| `addressed` | Finding was resolved by a change between iters (commit / diff / section reference cited as evidence) |
+| `deferred` | Finding is acknowledged but explicitly deferred (with backlog pointer or rationale) |
+| `disputed` | Creator / user disputes the finding (rationale cited; finding remains in record) |
+| `superseded` | Finding is replaced by a later finding (cite the superseding finding's ID) |
+
+Iter 1 findings default to `disposition: open`. Iter ≥ 2 must judge a disposition for every prior-iter finding inherited at Stage 1.
+
+### Stage 1 inheritance procedure (iter ≥ 2)
+
+Iter n Stage 1 reads prior iter findings **directly** from `sessions/.../{loop}/evaluation/iter{n-1}/{system}/{perspective}.md`:
+
+| # | Read source | Action |
+|---|---|---|
+| 1 | iter (n-1) per-system per-perspective files (all 8 × N systems) | Enumerate all `open` findings from iter (n-1); also collect all `scenario_gap` and `checklist_gap` findings regardless of disposition |
+| 2 | Per finding | Carry forward as Stage 1 seed input — `open` findings become Frame scenarios / checklist items in iter n's Frame; `scenario_gap` / `checklist_gap` findings become first-class scenarios / checks |
+| 3 | iter n Stage 1 output | Frame includes inherited content + new CRUD on top |
+| 4 | iter n Stage 2 output | For each inherited prior-iter finding, judge its new `disposition:` — typically `open` (still present) / `addressed` (resolved) / `disputed` (creator pushed back) |
+
+A prior-iter `open` or `gap` finding that does NOT show up in iter n's per-perspective file is a **Frame-inheritance failure** — manager's validation step catches this before reconciliation.
+
+### Regression marking (manager-side, post-reconciliation)
+
+After iter n reconciliation, the manager compares iter n findings vs iter (n-1) reconciled findings:
+
+- Findings present in iter n but absent in iter (n-1) → tag `domain: regression` (a REVISE introduced a new finding the prior iter didn't have)
+- A regression at any iter triggers user awareness via AskUserQuestion: "iter n REVISE introduced regressions; the previous fix may have been wrong."
+
+### Stuck detection (manager-side, post-reconciliation)
+
+If the same finding (same Type / Domain / symptom signature) appears in 2 consecutive iters with `disposition: open` in both:
+
+- Tag both records as `stuck` (a finding-level annotation, added by the manager during reconciliation)
+- **Escalate to user BEFORE reaching the iteration cap** via AskUserQuestion: "iter n finding F is unchanged from iter (n-1). The current approach is not converging on this finding. Options: revise differently / accept-with-deferral / abort / change scope."
+- User resolution is captured in the manager's discussion log and reflected as the finding's `disposition:` in iter (n+1)'s file (`addressed` / `deferred` / `disputed` / aborted = loop halt)
+
+This prevents wasted iter-3 cycles on issues the agent cannot resolve and surfaces architecture-level problems that look like fix-loops.
+
+---
+
+## Iteration Caps
+
+The manager tracks the loop's revision count. Settings define:
+- `workflow.{loop}.maxIterations` (default 3 for Ideation/Planning/Execution, 1 for Wrap-up)
+
+When the cap is reached without `PASS`, the manager **escalates to the user** rather than continuing to revise. The escalation is a stop-the-line AskUserQuestion with three options: revise one more time, accept the artifact as-is despite findings, or abort the loop and reframe.
+
+---
+
+## Output paths
+
+All evaluator writes are **session-scoped**. Evaluators never touch project memory.
+
+| Path | Written by | Written |
+|---|---|---|
+| `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/{perspective}.md` | evaluator | One per perspective per system; contains Artifact Summary + W/W/H (Stage 0), locked Frame (Stage 1), per-scenario per-check yes/no results, typed findings (Stage 2), low-confidence appendix |
+| `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/overall.md` | evaluator | One per system; contains Stage 3 cross-cutting findings, Karpathy-4 mode checks, Preserve list |
+
+```
+sessions/{date}-{session-id}/{loop}/evaluation/
+└── iter{n}/                  ← one directory per iteration; iter 1 always; iter ≥ 2 only on REVISE
+    ├── claude/
+    │   ├── project.md
+    │   ├── structure.md
+    │   ├── performance.md
+    │   ├── aesthetics.md
+    │   ├── usage.md
+    │   ├── consistency.md
+    │   ├── risk.md
+    │   └── overall.md
+    └── codex/
+        └── (same shape — 8 files: 7 perspectives + overall.md)
+```
+
+**Mechanical completeness check** — before reconciliation, the manager verifies each system produced exactly these 8 files at `iter{n}/{system}/`: `project.md` / `structure.md` / `performance.md` / `aesthetics.md` / `usage.md` / `consistency.md` / `risk.md` / `overall.md`. Any deviation (missing file, extra file, file ≤ 0 bytes) triggers the dual-system failure handling (see § Dual-system failure handling below).
+
+**Path conventions**
+
+- `{date}` — session start date in `YYYY-MM-DD`
+- `{session-id}` — Claude Code session ID from `$CLAUDE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
+- `{loop}` — the workflow loop being evaluated (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
+- `{system}` — `claude` or `codex` (the system running this evaluator instance)
+- `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`); the holistic Stage 3 output uses the fixed filename `overall.md`
+
+The directory `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/` is bootstrapped by the manager before spawning evaluators. Cross-system divergence is **derived at MEMORIZATION** by comparing per-system files; no separate divergence file is written.
+
+---
+
+## Cross-references
+
+- Evaluator agent procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) → [`evaluation/SKILL.md`](../../evaluation/SKILL.md)
+- Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
+- Memorization synthesis → [`workflow/memorization.md`](memorization.md), [`memorization/SKILL.md`](../../memorization/SKILL.md)
+- Wrap-up's project-memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
+- Verdict aggregation rules in the state machine → [orchestration `SKILL.md` § Verdict aggregation](../SKILL.md#verdict-aggregation)

@@ -1,104 +1,143 @@
-Sub-document of the `orchestration` skill. Used during the Planning phase of the workflow. The manager delegates plan decomposition to `leader` agents, which break the approved Idea into narrow, ordered, agent-assigned tasks with clear scope and verification criteria.
+# Workflow — Planning (Orchestration)
+
+How the **manager** orchestrates the Planning Loop. The `leader` and `assistant` specialists that participate load [`planning/SKILL.md`](../../planning/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`memorization/SKILL.md`](../../memorization/SKILL.md) (assistant's MEMORIZATION procedure).
+
+**Planning focuses on Who / When / Where.** Ideation concentrated on What / Why / How; Planning takes the locked idea and decides who implements what, in what order, where in the codebase.
+
+The Planning Loop runs the four-phase iteration shape — `DISCUSSION` → `WORK` → `EVALUATION` → `MEMORIZATION` → `ITER / EXIT`.
+
+| Phase | Content semantics for Planning |
+|---|---|
+| `DISCUSSION` | Manager + user + leader (research-backed opinion) discuss Who / When / Where. Tasks, dependencies, and agent assignments are decided here. |
+| `WORK` | Leader documents the DISCUSSION outcome into the canonical plan draft. Documentation, not new content. |
+| `EVALUATION` | Dual-system evaluators run the four-stage procedure across all seven perspectives + Overall. |
+| `MEMORIZATION` | Assistant synthesizes loop's `artifacts/` into session staging only — project-memory promotion is the sole responsibility of Wrap-up. |
 
 ---
 
-## Core Principle
+## DISCUSSION Phase (manager + user + leader)
 
-> **Enter plan mode. Use EnterPlanMode to explore, decompose, and write the plan. Use ExitPlanMode to present it for approval.**
+**Manager's job**: orchestrate the Who / When / Where discussion with the user, spawning the `leader` for research-backed opinion at each sub-step. Detailed sub-step content (file decomposition, task slicing, dependency graphing, agent assignment) lives in [`planning/SKILL.md`](../../planning/SKILL.md); this section covers the **orchestration choreography**.
 
-Plan mode lets you explore the codebase with read-only tools, design the approach, and write the plan — all before any implementation begins. ExitPlanMode presents the plan to the user for approval. No delegation happens without user sign-off.
+### Leader spawn pattern
 
-> **Decompose into small, specific tasks. Each task has one agent, one deliverable, one clear scope.**
+Same pattern as Ideation. The leader does not observe the entire user dialogue. The manager spawns the leader **as needed** for the next decision point, then continues the user discussion with the leader's research and proposed decisions:
 
-Vague tasks produce vague results. Break work down until each task is small enough that a single agent can complete it without losing focus. Name the agent, list the skills to load, and define the expected deliverable.
+```
+manager → opens DISCUSSION with user (state: "advancing from Ideation to Planning")
+manager → spawns leader: "read ideation/artifacts/ and produce a draft file map + task list"
+leader → reads ideation outputs + project memory + codebase → returns proposal
+manager → presents leader's proposal → AskUserQuestion → user refines or approves
+manager → spawns leader for next sub-step (dependency graph, agent assignment, etc.)
+...
+```
 
-> **Every task specifies its subagent and skills.**
+Multiple leader spawns are normal. The full set of leader transcripts is preserved by MEMORIZATION as the audit trail for "what research informed each planning decision".
 
-A task without a named subagent gets routed to the wrong specialist. A task without listed skills gets executed without the knowledge the agent needs. The plan must name which agent from `.claude/agents/` handles each task and which skills from `.claude/skills/` it loads — this is what makes delegation precise instead of hopeful.
+### Sub-step orchestration
 
-> **Research before planning when knowledge is insufficient.**
+The manager runs the user through four sub-steps in order. Each is gated by AskUserQuestion before advancing.
 
-When a task requires domain expertise, external context, or codebase understanding that the orchestrator lacks, spawn research agents to investigate before decomposing. A plan built on incomplete knowledge produces tasks with wrong assumptions. The research cost is small compared to the rework cost of a misinformed plan.
+| # | Sub-step | Manager's role | Leader's contribution |
+|---|---|---|---|
+| A | Read Ideation Output | Confirm scope is still valid; user signals readiness to advance | Read `ideation/artifacts/` + accumulated feature scenarios/checklists; enumerate the in-scope checklist items as task seeds |
+| B | File Decomposition + Task Definition | Present proposed file map and task slicing to user; iterate until satisfied | Propose file map (one responsibility per file); slice into medium-granularity tasks; anchor every task to a scenario/checklist item |
+| C | Dependency Graph (When) | Present dependency table + parallel lane grouping to user; user confirms ordering | Build two tables (Task / Lane); flag file-overlap conflicts between parallel lanes |
+| D | Agent Assignment (Who) + Required Skills | Approve agent type and skill list per task via AskUserQuestion | Propose agent type per task (executor default; leader for sub-planning; assistant for trivial); list mandatory skills (`principles` always, plus domain skills per files touched) and project mistakes paths the executor must check |
 
----
+### When to escalate to user
 
-## How to Plan
+The leader brings draft proposals; the user makes final calls. Every decision below requires AskUserQuestion:
 
-> **Always start in plan mode.**
-
-Planning outside of EnterPlanMode means planning without codebase exploration — and plans built on assumptions fail on contact with reality.
-
-> **Explore before decomposing.**
-
-Understanding the existing codebase, patterns, and architecture is a prerequisite to meaningful task breakdown. A plan that doesn't reflect the codebase will produce work that doesn't fit the codebase.
-
-> **Spawn PI-level agents when needed.**
-
-If the task crosses unfamiliar territory — new APIs, unfamiliar subsystems, external dependencies — spawn PI-level agents to investigate before writing the plan. They return findings; the orchestrator synthesizes them into planning context. Do not guess what you can investigate.
-
-> **Decomposition is the core act of planning.**
-
-The plan's quality is determined by how well tasks are broken down — see "How to Decompose" below. Everything else (goal statement, execution order, collection plan) supports the task list.
-
-> **Exit plan mode to present, not to finish.**
-
-ExitPlanMode surfaces the plan for user approval. No delegation happens until the user signs off. If the plan needs revision after feedback, re-enter plan mode — revisions deserve the same structured exploration as the original.
-
----
-
-## What a Good Plan Contains
-
-**Goal** — One sentence restating what the user wants, from Ideation.
-
-**Tasks** — A numbered list of small, specific tasks. Each task specifies:
-
-- What to do (specific deliverable, not vague direction)
-- Which agent handles it
-- Which skills to load
-- Dependencies on other tasks, if any
-- Scope boundary — what this task should NOT touch
-- Files modified — which files this task will create or modify. Making file targets explicit enables overlap detection between parallel tasks, scope verification by evaluators, and post-wave consistency checks. Not every task has meaningful file targets (research, design discussion) — but when files are known, name them.
-- Verification approach — how to confirm the task's output is correct. What should an evaluator check? What conditions prove success? This gives evaluators concrete criteria instead of only reasoning about the output. Pure exploration tasks may not have verifiable outputs — that's fine. The principle is explicitness, not rigidity.
-
-**Execution order** — Which tasks run in parallel (independent) and which run sequentially (dependent). Maximize parallelism — independent tasks launch simultaneously.
-
-**Expected outcome** — What the user will have when all tasks complete.
-
-**Collection plan** — Where work docs will be written after delegation completes. Specify the task directory path and list which subtask `.json` files will be created. This ensures collection has a clear target.
+- Confirmation that ideation's scope is still the right working scope (Sub-step A)
+- File map approval (Sub-step B)
+- Task slicing — granularity boundaries (Sub-step B)
+- Each task's anchor and acceptance criterion (Sub-step B)
+- Dependency table correctness (Sub-step C)
+- Parallel lane assignments + conflict resolutions (Sub-step C)
+- Agent type for any task that isn't a straightforward executor assignment (Sub-step D)
+- Required-skill list for non-obvious tasks (Sub-step D)
+- Contribution points the leader surfaces at any sub-step
 
 ---
 
-## How to Decompose
+## WORK Phase (leader documents the DISCUSSION outcome)
 
-**Start from the deliverable, work backward.** What does the user need? What pieces make up that deliverable? Each piece is a candidate task.
+**Manager's job**: spawn the leader for documentation. The leader writes the draft at `sessions/{date}-{session-id}/planning/rawdata/draft-iter{n}.md` integrating everything decided in DISCUSSION.
 
-**Split by domain, not by file.** Assign tasks by specialist expertise, not by which files they touch. Domain expertise matters more than file boundaries.
+Manager-side responsibilities:
+- Confirm the draft contains every required section (Scope reference / File map / Tasks / Dependency table / Parallel lanes / Agent assignments / Decisions log / NOT in scope)
+- Stage the draft in `rawdata/` along with prior leader transcripts (research turns from DISCUSSION)
+- On re-entry from a `REVISE` ITER, pass prior evaluator findings as additional input — the leader incorporates corrections during the next DISCUSSION round, then re-documents
 
-**Make tasks self-contained.** Each task should make sense on its own without reading the other tasks. The agent receiving it should understand the full scope from the task description alone.
-
-**Keep tasks small.** If a task description uses "and" to join two unrelated concerns, split it. If an agent would need to context-switch between different subsystems, split it.
-
-**Name the agent and skills explicitly.** For each task, state the agent type (from `.claude/agents/`), the skills to load, and any project docs to read.
-
----
-
-## Signs of a Bad Plan
-
-- A task says "improve X" or "work on Y" without specifying the deliverable
-- A task has no agent assigned
-- Two tasks modify the same files (merge conflict risk)
-- A task is so large the agent will lose focus
-- A task is so small it's not worth the delegation overhead
-- Dependencies between tasks aren't stated — agents will block each other
-- More than 8 parallel tasks in one wave (coordination overhead exceeds parallelism benefit)
+WORK is short by design — the substantive thinking happened in DISCUSSION.
 
 ---
 
-## Constraints
+## EVALUATION Phase (delegated to evaluators)
 
-- Always use EnterPlanMode for non-trivial tasks — planning in your head produces worse plans than exploring the codebase first
-- Always re-enter EnterPlanMode when revising a plan after evaluation — revisions need the same structured exploration as the original plan
-- Always assign an agent and skills to each task — implicit selection leads to wrong agents
-- Never delegate before ExitPlanMode approval — the user must sign off on the plan
-- Never decompose into more than 8 parallel tasks per wave — batch larger plans into sequential waves
-- Never plan tasks that overlap on the same files — combine them or sequence them
+**Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Planning-specific notes:
+
+- **Perspectives**: all seven + Overall (no pruning)
+- Planning's evaluator frame is built from [`planning/evaluation.md`](../../planning/evaluation.md) — task narrowness, dependency ordering, scope coverage, verification criteria, file-overlap concerns all live in the per-perspective seed scenarios and attached checklists
+
+---
+
+## MEMORIZATION Phase (delegated to `assistant`)
+
+**Manager's job**: spawn the `assistant` agent. The assistant synthesizes loop's `artifacts/` per [`workflow/memorization.md`](memorization.md) and [`memorization/SKILL.md`](../../memorization/SKILL.md). For Planning, the assistant also:
+
+- On `PASS`: stages the plan at `sessions/{date}-{session-id}/planning/staging/plans/{slug}.md` per the plans template; Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`
+- Stages `scenario_gap` / `checklist_gap` discoveries at `sessions/{date}-{session-id}/planning/staging/{scenarios,checklists}/{slug}.md`; Wrap-up promotes to `features/{feature-name}/`
+- Does NOT write to project memory directly — all promotion is Wrap-up's responsibility
+
+---
+
+## ITER / EXIT Decision
+
+After `MEMORIZATION`, the manager decides based on the reconciled verdict:
+
+| Verdict | Action |
+|---|---|
+| `PASS` | Exit the loop; advance to Execution Loop |
+| `REVISE` | Re-enter `DISCUSSION` with evaluator findings as new input |
+| `FAIL` | Escalate via AskUserQuestion; user decides revise / abort / re-enter Ideation |
+| `SKIPPED` | Exit the loop (Planning was skipped per settings — only valid for trivial tasks where the "plan" is a single task) |
+
+Iteration cap: `workflow.planning.maxIterations` (default 3). When the cap is reached without `PASS`, the manager forces user escalation.
+
+---
+
+## Output
+
+```
+.gobbi/projects/{project}/sessions/{date}-{session-id}/planning/
+├── artifacts/             ← PASS-iter output files (assistant, MEMORIZATION, PASS only)
+├── rawdata/                ← leader drafts (per iter), agent transcripts, discussion-log.md
+├── evaluation/
+│   └── iter{n}/
+│       ├── claude/{perspective}.md
+│       └── codex/{perspective}.md
+└── staging/                ← session-staged artifacts for Wrap-up to promote (PASS only)
+    ├── plans/{slug}.md
+    ├── scenarios/{slug}.md
+    ├── checklists/{slug}.md
+    ├── decisions/{slug}.md
+    ├── references/{slug}.md
+    ├── discussions/{slug}.md
+    └── design/{slug}.md
+```
+
+**No project-memory writes during Planning.** All `features/{feature-name}/...` and project-tier writes happen at Wrap-up — see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md).
+
+---
+
+## Cross-references
+
+- Leader's planning procedure → [`planning/SKILL.md`](../../planning/SKILL.md)
+- Ideation output that becomes Planning's input → [`workflow/ideation.md`](ideation.md)
+- Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
+- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Discussion templates → [`discussion`](../../discussion/SKILL.md)
+- Delegation patterns → [`delegation`](../../delegation/SKILL.md)
+- Delegation prompt fields → [`delegation` § What Every Delegation Prompt Contains](../../delegation/SKILL.md#what-every-delegation-prompt-contains)

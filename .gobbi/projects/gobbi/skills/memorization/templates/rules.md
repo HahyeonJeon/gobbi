@@ -1,0 +1,78 @@
+# `rules/`
+
+**Project-wide behavioral rules** — load-bearing constraints that every agent working on this project must follow. Rules are stronger than mistakes: a mistake records "this approach fails reliably", while a rule records "this is how it must be done, period". Rules are referenced by skills, agent definitions, and CLAUDE.md, and they should be rare — every rule increases the project's surface area for new contributors.
+
+## Lifecycle (Wrap-up direct write)
+
+This template is written **directly by Wrap-up's MEMORIZATION** to its project-memory destination — there is no loop-MEMORIZATION staging path. Wrap-up authors the content (e.g., on first promotion to a new feature, on supersession, or from cross-session synthesis) and stamps this template.
+
+Wrap-up is the sole writer; loop MEMORIZATION (Ideation / Planning / Execution) never writes to this destination.
+
+---
+
+## When to write
+
+- Wrap-up identifies a candidate rule when the session's discussion produced an invariant the team wants enforced going forward (e.g., naming conventions, layering constraints, banned patterns). Rules are authored directly by Wrap-up + maintainer; there is no `staging/rules/` subdirectory and no `rule-candidate: true` upstream flag.
+- Rule promotion **requires explicit user confirmation** via AskUserQuestion during Wrap-up — Wrap-up never promotes a rule unilaterally.
+
+## Location
+
+- Project-level: `.gobbi/projects/{project-name}/rules/`
+
+Rules are project-wide by definition. There is no feature-scoped rules tier — feature-scoped rules belong in `features/{feature-name}/decisions/` with a `precedent: true` marker.
+
+## File naming
+
+`{slug}.md` — short, imperative, names the rule. No date prefix.
+
+Examples: `docs-cleanup-parallelism.md`, `__gobbi-convention.md`, `evaluator-read-only-boundary.md`.
+
+## Item template
+
+```markdown
+---
+title: {Short title — the rule, in imperative form}
+priority: critical | high | medium | low
+established: YYYY-MM-DD
+session: {session_id_that_established_the_rule}
+supersedes: {prior rule slug if this replaces an existing rule}
+tags: [{tag1}, {tag2}]
+---
+
+# {Rule title}
+
+> **{One-line rule statement, blockquoted.}**
+
+{Two-to-four-sentence elaboration: the principle behind the rule.}
+
+---
+
+## Why
+
+{The motivation. What concrete failure or cost does this rule prevent?}
+
+---
+
+## When to apply
+
+{Conditions under which the rule binds. Be specific — under-scoping makes rules dead letters, over-scoping makes them inflexible.}
+
+---
+
+## When NOT to apply
+
+{Counter-conditions. Genuine exceptions, not weasel words. If there are no exceptions, state "always applies" explicitly.}
+
+---
+
+## Related
+
+{Cross-references to mistakes, decisions, design docs, or other rules that interact with this one. Each entry: `[link](path) — one-line relevance note`.}
+```
+
+## Promotion contract
+
+- Wrap-up is the **only** writer to `rules/` — no loop MEMORIZATION writes directly
+- New rules require user confirmation via AskUserQuestion ("Promote this session's recurring invariant to project rules as `{slug}`?")
+- Updating an existing rule uses the `supersedes:` frontmatter field; the prior rule file is preserved for audit
+- Never delete a rule file; supersession + frontmatter is the lifecycle mechanism
