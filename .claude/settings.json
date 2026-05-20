@@ -3,20 +3,20 @@
     "allow": [
       "Skill(gobbi)",
       "Skill(orchestration)",
-      "Skill(gotcha)",
-      "Skill(claude)",
-      "Skill(skills-doc)",
-      "Skill(agents-doc)",
-      "Skill(rules-doc)",
-      "Skill(project-doc)",
-      "Skill(note)",
-      "Skill(note:*)",
-      "Skill(collection)",
-      "Skill(notification)",
       "Skill(git)",
-      "Skill(gobbi-principles)",
-      "Skill(innovation)",
-      "Skill(best-practice)",
+      "Skill(principles)",
+      "Skill(mistake)",
+      "Skill(delegation)",
+      "Skill(discussion)",
+      "Skill(evaluation)",
+      "Skill(execution)",
+      "Skill(ideation)",
+      "Skill(interview)",
+      "Skill(memorization)",
+      "Skill(planning)",
+      "Skill(preparation)",
+      "Skill(research)",
+      "Skill(wrap-up)",
       "Agent(manager)",
       "Agent(leader)",
       "Agent(executor)",
@@ -348,7 +348,6 @@
     ]
   },
   "enabledPlugins": {
-    "codex@openai-codex": true,
-    "gobbi@gobbi": true
+    "codex@openai-codex": true
   }
 }

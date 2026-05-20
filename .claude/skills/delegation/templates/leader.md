@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/delegation/templates/leader.md
