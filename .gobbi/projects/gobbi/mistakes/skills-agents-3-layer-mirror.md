@@ -16,7 +16,7 @@ Layer 4 is the "invisible" layer that evaluation catches after the fact. It incl
 - `packages/cli/src/specs/skills.ts` — the `SkillName` union and `SKILL_NAMES` array
 - `packages/cli/src/workflow/predicates.ts` — agentType string literals
 - `.claude/settings.json` — the `permissions.allow` array entries like `Skill(old-name)` and `Agent(old-name)`
-- All `SKILL.md` and child doc bodies that reference other skills by name (e.g., "load `gotcha` before starting")
+- All `SKILL.md` and child doc bodies that reference other skills by name (e.g., "load `mistake` before starting")
 - Test fixtures that use old string literals for agentType, allowedAgentTypes, skill IDs
 
 **Correct approach:** For any rename of skills or agents:

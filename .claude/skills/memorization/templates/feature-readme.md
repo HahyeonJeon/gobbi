@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/memorization/templates/feature-readme.md

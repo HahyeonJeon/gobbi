@@ -1,4 +1,4 @@
-# Gotcha — Schema-only fields are not legacy by default
+# Mistake — Schema-only fields are not legacy by default
 
 ## Title
 

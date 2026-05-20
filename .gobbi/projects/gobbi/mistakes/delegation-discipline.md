@@ -1,4 +1,4 @@
-Gotchas tied to orchestrator ↔ subagent delegation — briefing accuracy, parallel-executor mechanics, and verification completeness. Read when authoring a delegation brief or when reviewing a multi-executor wave.
+Mistakes tied to orchestrator ↔ subagent delegation — briefing accuracy, parallel-executor mechanics, and verification completeness. Read when authoring a delegation brief or when reviewing a multi-executor wave.
 
 ---
 
@@ -22,7 +22,7 @@ Gotchas tied to orchestrator ↔ subagent delegation — briefing accuracy, para
 
 **User feedback:** Self-caught by V.3 executor 2026-04-20; scope separation held because the type-narrowing rename was entirely in V.3's unstaged diff while V.2's diagnostic rewrite stayed within its function body. No data loss.
 
-**Correct approach:** In a shared worktree with parallel executors, verify staged/unstaged separation with two greps rather than assuming: `git diff --staged <file> | head` and `git diff <file> | head`. If the unstaged portion is entirely peer-scope, commit your staged portion verbatim — the peer will pick up their own unstaged work. Never `git stash` to "clean up" a perceived conflict; stash is shared across the repo and pops back into peer worktrees (see sibling gotcha on stash-across-worktrees). Never `git checkout HEAD -- <file>` to reset a working-tree state that a peer is actively editing.
+**Correct approach:** In a shared worktree with parallel executors, verify staged/unstaged separation with two greps rather than assuming: `git diff --staged <file> | head` and `git diff <file> | head`. If the unstaged portion is entirely peer-scope, commit your staged portion verbatim — the peer will pick up their own unstaged work. Never `git stash` to "clean up" a perceived conflict; stash is shared across the repo and pops back into peer worktrees (see sibling mistake on stash-across-worktrees). Never `git checkout HEAD -- <file>` to reset a working-tree state that a peer is actively editing.
 
 ---
 

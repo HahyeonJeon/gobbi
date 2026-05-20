@@ -14,7 +14,7 @@ In this case the violation was harmless — PR-FIN-5 had merged into develop by 
 
 ## User feedback
 
-(No direct feedback this session; this gotcha was filed by the Project + Overall evaluators in the Execution-eval pass on PR #227.)
+(No direct feedback this session; this mistake was filed by the Project + Overall evaluators in the Execution-eval pass on PR #227.)
 
 ## Correct approach
 

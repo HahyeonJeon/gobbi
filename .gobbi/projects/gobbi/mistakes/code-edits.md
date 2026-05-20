@@ -1,6 +1,6 @@
-# Project Gotchas: Code Edits
+# Project Mistakes: Code Edits
 
-Project-specific gotchas for editing code in the gobbi CLI (TypeScript + bun).
+Project-specific mistakes for editing code in the gobbi CLI (TypeScript + bun).
 
 ---
 
@@ -15,7 +15,7 @@ enforcement: advisory
 
 **What happened:** The v0.5.0 Phase 2 PR C Wave 6 executor (C.5 `gobbi workflow guard` command) embedded a file path containing the literal sequence `*/` inside a JSDoc block — for example a reference such as `* .claude/project/gobbi/note/20260416-2225-.../research/research.md` when the path or a URL actually included `*/`, or a sample docstring that itself contained the characters. TypeScript interpreted the first `*/` as the end of the docblock and started parsing the remainder as code, producing a cascade of `TS1127` (invalid character) and `TS1443` (unterminated block comment) errors pointing at lines far from the true cause. The error messages did not name the offending `*/` sequence, so the root cause was non-obvious.
 
-**User feedback:** Surfaced in the Wave 6 execution report; flagged by the overall-perspective PR C evaluator (m1) as an unrecorded gotcha that should be captured so future executors skip the debugging round.
+**User feedback:** Surfaced in the Wave 6 execution report; flagged by the overall-perspective PR C evaluator (m1) as an unrecorded mistake that should be captured so future executors skip the debugging round.
 
 **Correct approach:** Never write a literal `*/` inside the body of a JSDoc / block comment (`/** ... */` or `/* ... */`). Substitutes when the sequence is unavoidable:
 
@@ -109,4 +109,4 @@ enforcement: advisory
 
 Do NOT reach for `as any` or drop the `JSONSchemaType<T>` annotation entirely. The top-level annotation is what gives drift safety — if `Settings.projects` gains a new field, the inline sub-schema fails `tsc --noEmit` at the call-site even through the cast, because the cast target itself is derived from the outer `Settings` type. The `specs/_schema/v1.ts` shared-subschema pattern is the other precedent for this class of workaround; reach for whichever form reads cleaner at the call-site.
 
-Related: `_typescript/SKILL.md` §"Boundary parsing" covers the general AJV binding pattern; this gotcha covers the required-nullable corner case where the strict inference has no way to express the shape without help.
+Related: `_typescript/SKILL.md` §"Boundary parsing" covers the general AJV binding pattern; this mistake covers the required-nullable corner case where the strict inference has no way to express the shape without help.

@@ -24,7 +24,7 @@ Skills are organized into four categories:
 
 | Category | Skills | Purpose |
 |:---------|:-------|:--------|
-| **Work** | gobbi, orchestration, note, collection, git, notification, gotcha | Workflow participants. Skills loaded during the workflow and at session start. Phase-specific guidance (discussion, ideation, planning, research, delegation, execution, evaluation, memorization) lives as sub-documents under `orchestration/workflow/`. |
+| **Work** | gobbi, orchestration, note, collection, git, notification, mistake | Workflow participants. Skills loaded during the workflow and at session start. Phase-specific guidance (discussion, ideation, planning, research, delegation, execution, evaluation, memorization) lives as sub-documents under `orchestration/workflow/`. |
 | **Docs** | claude, skills-doc, agents-doc, rules-doc, project-doc | `.claude/` documentation authoring. Skills for writing and maintaining claude docs. |
 | **Tool** | gobbi-cli | Utility and maintenance tools. Intent-first CLI reference. |
 
@@ -32,9 +32,9 @@ Some skills have child directories grouping related sub-docs:
 
 - **Evaluation perspectives** — each Docs skill that supports evaluation has an `evaluation/` subdirectory with 6 perspective docs (project, architecture, performance, aesthetics, overall, user): `skills-doc/evaluation/`, `agents-doc/evaluation/`, `project-doc/evaluation/`
 - **Notification** (child of notification): `slack.md`, `telegram.md`, `discord.md` — channel-specific setup docs
-- **Gotcha** (child of gotcha): child docs (not skills) describing how to record each type of gotcha
+- **Mistake** (child of mistake): child docs (not skills) describing how to record each type of mistake
 
-The `gotcha/` skill contains cross-cutting gotcha files (`system.md`, `security.md`) for concerns that span multiple skills. Every agent checks the relevant gotcha file before starting work.
+The `mistake/` skill contains cross-cutting mistake files (`system.md`, `security.md`) for concerns that span multiple skills. Every agent checks the relevant mistake file before starting work.
 
 ### Agents
 
@@ -70,7 +70,7 @@ Note: `.gobbi/settings.json` is the gobbi workspace-level preference file — se
 | Directory | Purpose | Git-tracked |
 |:----------|:--------|:------------|
 | `design/` | Design documents — architecture, vision, workflow, evaluation model | Yes |
-| `learnings/gotchas/` | Project-specific gotchas (distinct from cross-project gotchas in skills) | Yes |
+| `learnings/mistakes/` | Project-specific mistakes (distinct from cross-project mistakes in skills) | Yes |
 | `rules/` | Project-specific rules and conventions | Yes |
 | `skills/` | Project-specific skills | Yes |
 | `agents/` | Project-specific agent definitions | Yes |
@@ -101,7 +101,7 @@ Gobbi's runtime state directory, separate from `.claude/`. Created at the projec
 | `projects/{name}/` | Per-project directory — settings, design docs, learnings, sessions |
 | `projects/{name}/settings.json` | Project-level config — tracked |
 | `projects/{name}/sessions/{id}/` | Per-session — `gobbi.db` (event log), `session.json` (Memorization-time aggregate), and one subdirectory per step |
-| `projects/{name}/learnings/` | Durable learnings — `gotchas/`, `decisions/`, and other knowledge promoted after sessions |
+| `projects/{name}/learnings/` | Durable learnings — `mistakes/`, `decisions/`, and other knowledge promoted after sessions |
 | `worktrees/` | Git worktree isolation — moved from `.claude/worktrees/` to prevent idle false-positives during branch operations |
 
 `.claude/` retains only static content: `CLAUDE.md`, hooks, and `settings.json`. Its `skills/`, `agents/`, and `rules/` entries are per-file symlinks into the corresponding `.gobbi/` directories — the symlink farm. The farm is built by `gobbi install` on first install and rebuilt by `gobbi install --upgrade`. (The legacy `gobbi project switch` rotation command was removed in v0.5.0 PR-FIN-2; project context now resolves from `basename(repoRoot)` plus `--project`.) Nothing written during a workflow session goes into `.claude/` directly.

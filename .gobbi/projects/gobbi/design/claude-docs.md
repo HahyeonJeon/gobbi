@@ -58,7 +58,7 @@ Standalone interface entry point — no category.
 | note | `.claude/skills/note/SKILL.md` | Note writing at every workflow step. Decisions, outcomes, context. |
 | git | `.claude/skills/git/SKILL.md` | Git/GitHub workflow. Worktree isolation, branch lifecycle, PR management. |
 | notification | `.claude/skills/notification/SKILL.md` | Configure Claude Code notifications (Slack, Telegram, others). |
-| gotcha | `.claude/skills/gotcha/SKILL.md` | Cross-project mistake recording. Check before acting, write after corrections. |
+| mistake | `.claude/skills/mistake/SKILL.md` | Cross-project mistake recording. Check before acting, write after corrections. |
 
 ##### Notification child skills
 
@@ -105,14 +105,14 @@ Standalone interface entry point — no category.
 | delegation.md | orchestration | `.claude/skills/orchestration/workflow/delegation.md` | Delegation: briefing structure, context layers, model selection, agent roster. |
 | execution.md | orchestration | `.claude/skills/orchestration/workflow/execution.md` | Execution phase: study-plan-execute-verify lifecycle, scope discipline. |
 | evaluation.md | orchestration | `.claude/skills/orchestration/workflow/evaluation.md` | Evaluation phase: perspective selection, scoring, false positives, stage focus. |
-| memorization.md | orchestration | `.claude/skills/orchestration/workflow/memorization.md` | Memorization phase: gotchas, rules, project docs, session continuity. |
+| memorization.md | orchestration | `.claude/skills/orchestration/workflow/memorization.md` | Memorization phase: mistakes, rules, project docs, session continuity. |
 
-### Gotcha Files
+### Mistake Files
 
 | Name | Path | Description |
 |------|------|-------------|
-| security | `.claude/skills/gotcha/security.md` | Security vulnerability signals for evaluators. |
-| system | `.claude/skills/gotcha/system.md` | Environment, processes, hooks, infrastructure. |
+| security | `.claude/skills/mistake/security.md` | Security vulnerability signals for evaluators. |
+| system | `.claude/skills/mistake/system.md` | Environment, processes, hooks, infrastructure. |
 
 ### Project Docs
 
@@ -143,7 +143,7 @@ Standalone interface entry point — no category.
 | Skills — Tool | 1 |
 | Skill child docs | 12 |
 | Evaluation perspective docs | 18 (6 per target: skills-doc, agents-doc, project-doc) |
-| Gotcha files | 2 |
+| Mistake files | 2 |
 | Project docs | 5 |
 | **Total** | Updated — 8 standalone Work skills merged into orchestration/workflow sub-docs |
 
@@ -155,9 +155,9 @@ Standalone interface entry point — no category.
 
 Skill directory names and agent filenames use **hyphens as word separators** with no underscores. `gobbi` is the single interface entry point (no prefix, no hyphen). All other names are plain hyphen-separated words. The exception is `gobbi-agent` and similar plugin-distributed agents that use `gobbi-` for external identity.
 
-### Gotcha System
+### Mistake System
 
-Cross-cutting gotcha files live in `gotcha/` (`gotcha/system.md`, `gotcha/security.md`). Skill-specific gotchas colocate with their skill at `{skill-name}/gotchas.md`. Guidance on how to record each type of gotcha lives as child docs inside `gotcha/`.
+Cross-cutting mistake files live in `mistake/` (`mistake/system.md`, `mistake/security.md`). Skill-specific mistakes colocate with their skill at `{skill-name}/mistakes.md`. Guidance on how to record each type of mistake lives as child docs inside `mistake/`.
 
 ### Plugin Registration
 

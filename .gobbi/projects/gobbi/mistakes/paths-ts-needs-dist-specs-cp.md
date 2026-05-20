@@ -16,7 +16,7 @@ This was filed proactively from the PR-FIN-2a-i and PR-FIN-2a-ii evaluation roun
 
 ## User feedback
 
-(No direct correction this session — the issue was pre-empted by the evaluators in PR-FIN-2a-i / 2a-ii. This gotcha is filed so future agents working on `paths.ts`, the build pipeline, or worktree bootstrap know why a third candidate is necessary.)
+(No direct correction this session — the issue was pre-empted by the evaluators in PR-FIN-2a-i / 2a-ii. This mistake is filed so future agents working on `paths.ts`, the build pipeline, or worktree bootstrap know why a third candidate is necessary.)
 
 ## Correct approach
 

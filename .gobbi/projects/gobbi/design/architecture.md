@@ -40,7 +40,7 @@ This document describes the four pillars of gobbi's architecture: how work flows
 ┌─────────────────────────────────────────────────────────────────────┐
 │                            Skills                                   │
 │                                                                     │
-│         Specialization  ·  Guidance  ·  Gotcha Prevention           │
+│         Specialization  ·  Guidance  ·  Mistake Prevention           │
 └────────────────────────────┬────────────────────────────────────────┘
                              │
                              ▼
@@ -65,7 +65,7 @@ Every task follows a single workflow. The workflow is sequential — each step c
 
 **Collection** — Persist the workflow trail. Record the prompt, the plan, the subtask outcomes, and the decisions made along the way. This creates an auditable history of what was done and why.
 
-**Memorization** — Capture what matters for the future. Extract learnings, record gotchas, and save context that allows the user or a future session to resume, reference, or build on this work. Without memorization, every session starts from zero.
+**Memorization** — Capture what matters for the future. Extract learnings, record mistakes, and save context that allows the user or a future session to resume, reference, or build on this work. Without memorization, every session starts from zero.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -198,7 +198,7 @@ Three categories of subagents do the actual work.
           ┌─────────────────────────────────────┐
           │               Skills                │
           │  specialization · guidance ·        │
-          │  gotcha prevention                  │
+          │  mistake prevention                  │
           └─────────────────────────────────────┘
                feeds into all agents above
 ```
@@ -243,7 +243,7 @@ Skills serve three functions.
 
 **Guidance** — Skills encode the project's standards and expectations. They define what good work looks like in this specific context — not universally, but here, for this project, with these constraints. Skills prevent agents from producing technically correct work that violates the project's principles.
 
-**Gotcha Prevention** — Skills carry recorded mistakes. When an agent or user encounters a non-obvious failure, the correction is recorded as a gotcha — a specific entry describing what went wrong, why, and what to do instead. Every agent checks the relevant gotchas before starting work. A mistake recorded once is a mistake that never repeats. Gotchas are the highest-value knowledge in the system because they encode hard-won lessons that cannot be derived from reading the codebase alone.
+**Mistake Prevention** — Skills carry recorded mistakes. When an agent or user encounters a non-obvious failure, the correction is recorded as a mistake — a specific entry describing what went wrong, why, and what to do instead. Every agent checks the relevant mistakes before starting work. A mistake recorded once is a mistake that never repeats. Mistakes are the highest-value knowledge in the system because they encode hard-won lessons that cannot be derived from reading the codebase alone.
 
 ---
 
@@ -279,7 +279,7 @@ The v0.5.0 workflow condenses and formalizes the pre-existing steps:
 
 **Evaluation** — Independent evaluators assess the completed work from multiple perspectives. Findings are discussed with the user before any improvement.
 
-**Memorization** — Capture decisions, gotchas, and session state so the next session resumes without re-discovery.
+**Memorization** — Capture decisions, mistakes, and session state so the next session resumes without re-discovery.
 
 Transitions between steps are guarded by predicate conditions evaluated against the session state. A step cannot advance until its preconditions are satisfied.
 

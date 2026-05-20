@@ -13,7 +13,7 @@ enforcement: advisory
 
 **What happened:** Wave A.2 (PR #151) plan listed `gobbi/SKILL.md:11,131,145` as the lines containing 5-step / `.gobbi/sessions/{id}/` drift. Executor edited those exact lines and moved on. Post-commit Sweep 4 revealed 3 additional `.gobbi/sessions/` hits at lines 23, 53, 87 of the same file plus 1 in `v050-cli.md`. Caught in Commit E (`fd4eeeb`) — but only because the executor ran the full sweep BEFORE handing back. If the sweep had been deferred to evaluation, the drift would have shipped to PR.
 
-**User feedback:** Surfaced in Wave A.2 Project execution evaluation as F-7 (medium severity); promoted to gotcha during memorization.
+**User feedback:** Surfaced in Wave A.2 Project execution evaluation as F-7 (medium severity); promoted to mistake during memorization.
 
 **Correct approach:**
 

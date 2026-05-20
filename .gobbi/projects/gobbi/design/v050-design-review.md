@@ -12,13 +12,13 @@ GSD-2 is a shell-driven orchestration framework for Claude Code. It uses Markdow
 
 Where GSD-2 contributes ideas gobbi should adopt: task-size validation ("a task must fit in one context window — if it cannot, it is two tasks"), step-level timeout detection for stuck workflows, and verification command integration after subtask execution. These appear in the recommendations below as C6, B3, and B8.
 
-Where gobbi does better: event-sourced single source of truth versus GSD-2's scattered task files, hook-based enforcement versus prompt-level guidance, multi-perspective evaluation versus mechanical verification, and the gotcha prevention system which GSD-2 lacks entirely. GSD-2's shell scripts are also harder to extend and test than gobbi's TypeScript CLI.
+Where gobbi does better: event-sourced single source of truth versus GSD-2's scattered task files, hook-based enforcement versus prompt-level guidance, multi-perspective evaluation versus mechanical verification, and the mistake prevention system which GSD-2 lacks entirely. GSD-2's shell scripts are also harder to extend and test than gobbi's TypeScript CLI.
 
 ### Everything-Claude-Code (ECC)
 
 ECC is a comprehensive configuration framework that operates primarily at the prompt and rules layer. It uses a layered rule system with domain-specific configurations, an instinct mechanism for learning from past interactions (with confidence scoring and promotion pipelines), and an AgentShield security layer for detecting secrets and unsafe operations. ECC targets cross-harness portability — its configurations are designed to work with multiple AI coding tools, not just Claude Code.
 
-Where ECC contributes ideas gobbi should adopt: secret pattern detection in tool call inputs (AgentShield concept, adapted as C7), and positive pattern recording as a lightweight extension to the gotcha system (deferred as D10 — the full instinct system with confidence scoring exceeds boundary, but structured positive patterns do not).
+Where ECC contributes ideas gobbi should adopt: secret pattern detection in tool call inputs (AgentShield concept, adapted as C7), and positive pattern recording as a lightweight extension to the mistake system (deferred as D10 — the full instinct system with confidence scoring exceeds boundary, but structured positive patterns do not).
 
 Where gobbi does better: runtime enforcement through hooks versus ECC's prompt-level-only guidance, state-driven orchestration versus ECC's guidance-based approach (the same structural problem v0.5.0 solves for gobbi's own v0.4.x), and event sourcing versus ECC's file-based state which has no replay or crash recovery guarantees.
 
@@ -54,7 +54,7 @@ Low risk, no sequencing dependencies. Each can be implemented independently.
 
 **C4 — SubagentStop transcript failure handling.** Three explicit cases: (1) transcript present and parseable — extract and write artifact; (2) transcript present but unparseable — write `delegation.fail` event with transcript path; (3) transcript absent — write `delegation.fail` with reason. The current spec does not address cases 2 and 3, which means silent data loss on transcript failures.
 
-**C5 — Minimum token allocations per prompt section.** Define minimums for static prefix, step instructions, and gotchas. If minimums exceed the model context window, the CLI emits a clear error instead of silently truncating critical prompt sections.
+**C5 — Minimum token allocations per prompt section.** Define minimums for static prefix, step instructions, and mistakes. If minimums exceed the model context window, the CLI emits a clear error instead of silently truncating critical prompt sections.
 
 **C6 — Task-size validation in Plan step.** The CLI estimates token budget for each task's delegation prompt. Tasks exceeding the budget trigger a warning (not a block — the user decides). Drawn from GSD-2's rule that a task must fit in one context window.
 
@@ -110,7 +110,7 @@ Deferred to v0.5.1+ with rationale. These are valid ideas that exceed v0.5.0 sco
 | D7 | Headless/CI mode | Architecture naturally supports it (CLI reads state, generates prompts). Implement when CI integration demand materializes. |
 | D8 | Conditional evaluation triggers | CLI recommends evaluation based on artifact complexity metrics instead of an upfront decision. Needs threshold calibration data from v0.5.0 sessions. |
 | D9 | Codebase map injection | Generate project structure summary during `gobbi workflow init`, include in static prefix. Subagents currently discover structure via tool calls, which works but costs tokens. |
-| D10 | Positive pattern recording | Expand gotcha system to include "what works" alongside "what fails." ECC's instinct system validates the concept. The full confidence-scoring version adds learning burden; a lightweight version (structured positive patterns without scoring) is within boundary but deferred to focus v0.5.0. |
+| D10 | Positive pattern recording | Expand mistake system to include "what works" alongside "what fails." ECC's instinct system validates the concept. The full confidence-scoring version adds learning burden; a lightweight version (structured positive patterns without scoring) is within boundary but deferred to focus v0.5.0. |
 | D11 | Historical stuck detection | Step-duration anomaly detection using historical median across sessions. Requires K>=3 completed sessions per step. V0.5.0 ships with hard timeouts only; historical detection activates after sufficient data accumulates. |
 
 ---

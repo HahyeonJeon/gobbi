@@ -11,7 +11,7 @@ Gobbi v0.5.0 separates runtime state from retrospective records. `.gobbi/session
 ## Directory
 
 - [design/](design/) — Design docs: vision, architecture, workflow, agents, evaluation, state, hacks, distribution, GSD analysis
-- [learnings/](learnings/) — Gotchas and decisions accumulated across sessions
+- [learnings/](learnings/) — Mistakes and decisions accumulated across sessions
 - [references/](references/) — External references, API docs, research
 - [rules/](rules/) — Project-specific rules and conventions
 - [skills/](skills/) — Project-specific skill files (symlinked into `.claude/skills/` per-file)

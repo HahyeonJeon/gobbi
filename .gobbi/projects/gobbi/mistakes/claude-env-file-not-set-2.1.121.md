@@ -1,6 +1,6 @@
 # `$CLAUDE_ENV_FILE` is empty in the hook subprocess — Claude Code 2.1.121 and earlier
 
-Project gotcha documenting the upstream env-file regression and gobbi's stance.
+Project mistake documenting the upstream env-file regression and gobbi's stance.
 
 ## Priority
 

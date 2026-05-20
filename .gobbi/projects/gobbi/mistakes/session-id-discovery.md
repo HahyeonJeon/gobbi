@@ -1,6 +1,6 @@
 # Session ID Discovery
 
-Project gotchas about discovering the real Claude session ID when the `/gobbi` setup runs gobbi CLI commands.
+Project mistakes about discovering the real Claude session ID when the `/gobbi` setup runs gobbi CLI commands.
 
 ---
 

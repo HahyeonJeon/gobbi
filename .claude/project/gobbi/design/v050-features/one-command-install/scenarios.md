@@ -319,21 +319,21 @@ When the session agent runs `/gobbi` and step THIRD confirms `gobbi --version` e
 And the agent proceeds to step FIFTH question 3 (git workflow) or to any detection that surfaces the peer worktree
 
 Then the session agent does NOT recommend "Clean up" as the default option for the peer worktree
-And if it surfaces the peer worktree at all, it does so via AskUserQuestion with "Leave it" recommended per the `git` gotcha on orphaned-worktree defaults
+And if it surfaces the peer worktree at all, it does so via AskUserQuestion with "Leave it" recommended per the `git` mistake on orphaned-worktree defaults
 And the session agent's install / setup flow is unaffected by the presence of the peer worktree
 
 State trace:
   - before: peer worktree present under `.claude/worktrees/`; peer worktree's branch is checked out and possibly in use by a concurrent session; no state change in this session yet
   - after: this session's `/gobbi` completes setup; peer worktree directory is untouched; peer worktree's `.gobbi/sessions/{peerId}/` (if any) is untouched; peer worktree's `.git/worktrees/` entry is intact
   - negative: no `git worktree remove`, `rm -rf`, or similar command is run against the peer worktree by this session's `/gobbi`
-  - negative: no AskUserQuestion defaults to a destructive option (per `_git/gotchas.md` — "Clean up" must never be the default recommendation for orphaned-looking worktrees)
+  - negative: no AskUserQuestion defaults to a destructive option (per `_git/mistakes.md` — "Clean up" must never be the default recommendation for orphaned-looking worktrees)
 
 Anti-outcome:
   - the peer worktree's `.git/worktrees/` entry is NOT pruned
   - the peer worktree's branch is NOT deleted
   - the peer session's events in its own `gobbi.db` are NOT overwritten or removed
 
-Evidence: `.claude/skills/git/gotchas.md` "Recommending cleanup of worktrees that may belong to concurrent sessions" (default must be "Leave it"); `.claude/skills/gobbi/SKILL.md` §FIFTH question 3 (git workflow selection)
+Evidence: `.claude/skills/git/mistakes.md` "Recommending cleanup of worktrees that may belong to concurrent sessions" (default must be "Leave it"); `.claude/skills/gobbi/SKILL.md` §FIFTH question 3 (git workflow selection)
 
 ---
 

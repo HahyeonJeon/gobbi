@@ -1,6 +1,6 @@
-# Test Tooling Gotchas
+# Test Tooling Mistakes
 
-Gotchas for test tooling used in this repo — fast-check property-based testing, TypeScript strict-mode interactions with test generators, and test framework patterns. Read before authoring or modifying property tests.
+Mistakes for test tooling used in this repo — fast-check property-based testing, TypeScript strict-mode interactions with test generators, and test framework patterns. Read before authoring or modifying property tests.
 
 ---
 

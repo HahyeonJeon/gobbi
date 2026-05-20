@@ -1,6 +1,6 @@
-# Phase 2 Planning Gotchas
+# Phase 2 Planning Mistakes
 
-Gotchas discovered during v0.5.0 Phase 2 planning workflow (session 0f8427c1, 2026-04-16).
+Mistakes discovered during v0.5.0 Phase 2 planning workflow (session 0f8427c1, 2026-04-16).
 
 ---
 
@@ -191,7 +191,7 @@ Orchestration-level mitigations:
 
 **User feedback:** Self-caught 2026-04-19 by F.7 executor when `git status` showed "nothing to commit" despite having written the file and `git ls-files` confirmed it was already tracked in a peer commit.
 
-**Correct approach:** Parallel executors must stage ONLY their explicitly assigned files (per the existing parallel-executor gotcha above). Any new file created by a parallel executor in a shared directory — even if in a different subdirectory — is at risk of being picked up by a peer executor's broad add. Two mitigations: (1) each executor stages by explicit file path only; (2) executors writing new files in a shared directory should note the full path in their wave briefing so peers can verify their staging commands skip it. If a file lands in a peer commit, create an `--allow-empty` attribution commit for the wave record rather than attempting a file-level revert.
+**Correct approach:** Parallel executors must stage ONLY their explicitly assigned files (per the existing parallel-executor mistake above). Any new file created by a parallel executor in a shared directory — even if in a different subdirectory — is at risk of being picked up by a peer executor's broad add. Two mitigations: (1) each executor stages by explicit file path only; (2) executors writing new files in a shared directory should note the full path in their wave briefing so peers can verify their staging commands skip it. If a file lands in a peer commit, create an `--allow-empty` attribution commit for the wave record rather than attempting a file-level revert.
 
 ---
 

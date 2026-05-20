@@ -33,6 +33,6 @@ enforcement: advisory
 
 5. **Long-term**: when the orchestrator hands the executor a worktree path, the executor's mental model should anchor on that path. Cite the worktree-relative path in the executor's notes ("worktree:packages/cli/src/workflow/migrations.ts") rather than the main-tree absolute. The Read tool's `file_path` parameter accepts both; prefer worktree paths for files you may edit.
 
-**When to apply this gotcha:** Any wave executed in a `.gobbi/projects/gobbi/worktrees/feat/<n>-<slug>/` worktree. The risk is highest for code edits that span multiple files in deep subdirectories (`packages/cli/src/workflow/`, `packages/cli/src/commands/`) because reading those files for study is natural during the orientation phase, and the absolute path is what the Read tool returns in error messages.
+**When to apply this mistake:** Any wave executed in a `.gobbi/projects/gobbi/worktrees/feat/<n>-<slug>/` worktree. The risk is highest for code edits that span multiple files in deep subdirectories (`packages/cli/src/workflow/`, `packages/cli/src/commands/`) because reading those files for study is natural during the orientation phase, and the absolute path is what the Read tool returns in error messages.
 
 **Refs:** Wave C.1.2 session `320426b9-2fa2-46c1-8f0b-c83fdef97795`. Related: `worktree-vs-main-path-confusion.md`, `gobbi-workflow-cli-from-main-tree.md`.

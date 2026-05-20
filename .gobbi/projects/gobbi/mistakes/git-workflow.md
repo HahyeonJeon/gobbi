@@ -1,6 +1,6 @@
-# Project Gotchas: Git Workflow
+# Project Mistakes: Git Workflow
 
-Project-specific gotchas for git workflow in the gobbi repository.
+Project-specific mistakes for git workflow in the gobbi repository.
 
 ---
 
@@ -12,11 +12,11 @@ tech-stack: git
 
 **Priority:** High
 
-**What happened:** The orchestrator edited design docs at `.claude/project/gobbi/design/` in the main tree working copy while a worktree was active, assuming the whole `.claude/project/` directory was gitignored (as the _git skill's gotcha suggests). When it came time to commit, the changes were in the main tree, not the worktree. The orchestrator had to save a patch, revert the main tree, and apply the patch in the worktree.
+**What happened:** The orchestrator edited design docs at `.claude/project/gobbi/design/` in the main tree working copy while a worktree was active, assuming the whole `.claude/project/` directory was gitignored (as the _git skill's mistake suggests). When it came time to commit, the changes were in the main tree, not the worktree. The orchestrator had to save a patch, revert the main tree, and apply the patch in the worktree.
 
 **User feedback:** (Discovered during issue #75 execution while fixing design doc references to `workflow.step.enter`)
 
-**Correct approach:** Only `.claude/project/*/note/` is gitignored in this project's `.gitignore`. Design docs, README, rules, and gotchas under `.claude/project/` are tracked files and belong in git history. When _git is active and you need to update tracked files under `.claude/project/`, edit them in the worktree and commit them on the feature branch. Notes and (for now) gotchas are safe to write in the main tree because they live under the gitignored `note/` subdirectory. If a future change gitignores the full `.claude/project/` directory, this advice changes.
+**Correct approach:** Only `.claude/project/*/note/` is gitignored in this project's `.gitignore`. Design docs, README, rules, and mistakes under `.claude/project/` are tracked files and belong in git history. When _git is active and you need to update tracked files under `.claude/project/`, edit them in the worktree and commit them on the feature branch. Notes and (for now) mistakes are safe to write in the main tree because they live under the gitignored `note/` subdirectory. If a future change gitignores the full `.claude/project/` directory, this advice changes.
 
 ---
 
@@ -46,7 +46,7 @@ tech-stack: git
 
 **What happened:** The v0.5.0 feature-pass-1 POLISH+TESTS executor was running `bun test` in the worktree and hit a single pre-existing flake in `capture-subagent.test.ts` (issue #92). To rule out whether the executor's own changes had caused the flake, the executor stashed its uncommitted work, re-ran the full suite (still flaked), and then popped the stash. No state leaked this time — the other worktree (`docs/109-v050-feature-docs`) had no pending changes, and the pop returned the work cleanly. But `git stash` is still stored in the shared `.git` directory across all worktrees; a peer worktree could have popped the stash first.
 
-**User feedback:** Self-caught by the POLISH+TESTS executor 2026-04-21; flagged in the executor's report as a gotcha-worthy slip.
+**User feedback:** Self-caught by the POLISH+TESTS executor 2026-04-21; flagged in the executor's report as a mistake-worthy slip.
 
 **Correct approach:** Never `git stash` inside a worktree, including under time pressure when debugging a flake. Alternatives for "is this flake mine?":
 
@@ -54,7 +54,7 @@ tech-stack: git
 - `git commit --amend` or a WIP commit (`git commit -m "wip: testing flake"`) — then `git reset --soft HEAD~1` after verification. State lives on the branch, not in shared stash.
 - Run the test in isolation (`bun test path/to/specific.test.ts`) — usually enough to confirm the flake is unrelated without touching the working tree.
 
-This rule already exists in `_git/gotchas.md` ("Using git stash in a worktree leaks state to other worktrees"). The new wrinkle: the slip happens most often during flake-debugging under time pressure, not during normal feature work. Brief executors explicitly that `git stash` is banned during ANY worktree operation including diagnostic ones.
+This rule already exists in `_git/mistakes.md` ("Using git stash in a worktree leaks state to other worktrees"). The new wrinkle: the slip happens most often during flake-debugging under time pressure, not during normal feature work. Brief executors explicitly that `git stash` is banned during ANY worktree operation including diagnostic ones.
 
 ---
 

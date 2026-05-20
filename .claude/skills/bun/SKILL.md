@@ -1,1 +1,0 @@
-../../../.gobbi/projects/gobbi/skills/bun/SKILL.md

@@ -1,6 +1,6 @@
-# State.db Redesign Gotchas
+# State.db Redesign Mistakes
 
-Six gotchas surfaced during Pass 4 design that Wave A.1 (DB rename + workspace re-scope + handoff state-machine step + state.db schema v6) MUST address. Read this before starting the migration.
+Six mistakes surfaced during Pass 4 design that Wave A.1 (DB rename + workspace re-scope + handoff state-machine step + state.db schema v6) MUST address. Read this before starting the migration.
 
 ---
 
@@ -58,7 +58,7 @@ tech-stack: typescript, bun
 enforcement: advisory
 ---
 
-**What happened**: Hooks like `guard.ts:232`, `stop.ts:182`, `commands/session.ts:320`, `commands/gotcha/promote.ts:308` look for `<sessionDir>/gobbi.db` and fail-open (return `allow` or no-op) when the file is absent. The Wave A.1 rename moves the DB to `.gobbi/state.db`. Without updating every callsite, every hook will allow unconditionally with no error, no warning, no test failure.
+**What happened**: Hooks like `guard.ts:232`, `stop.ts:182`, `commands/session.ts:320`, `commands/mistake/promote.ts:308` look for `<sessionDir>/gobbi.db` and fail-open (return `allow` or no-op) when the file is absent. The Wave A.1 rename moves the DB to `.gobbi/state.db`. Without updating every callsite, every hook will allow unconditionally with no error, no warning, no test failure.
 
 **Correct approach**: Wave A.1 task A.1.7 must include a comprehensive grep sweep for `join(sessionDir, 'gobbi.db')` and `<sessionDir>/gobbi.db` patterns across `packages/cli/src/`. Update every match to use the new workspace path or explicit constructor params. Add an integration test that asserts hooks ERROR (not silently fail-open) when the configured DB path is missing.
 

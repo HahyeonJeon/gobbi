@@ -13,7 +13,7 @@ In v0.4.x, the orchestrator discovers what to do by reading skills. In v0.5.0, t
 The compilation function has five inputs:
 
 ```
-prompt = compile(state, artifacts, skills, gotchas, context)
+prompt = compile(state, artifacts, skills, mistakes, context)
 ```
 
 | Input | Source | What it contributes |
@@ -21,17 +21,17 @@ prompt = compile(state, artifacts, skills, gotchas, context)
 | `state` | `gobbi.db` reducer-replay (per-session event log) | Current step, completed steps, eval config, active subagents |
 | `artifacts` | Step directories under `.gobbi/projects/<name>/sessions/{id}/` | Prior step outputs inlined as context for the current step |
 | `skills` | `.claude/skills/` — the surviving domain skills | Domain knowledge injected as materials, not instructions |
-| `gotchas` | `.claude/skills/gotcha/` and `.gobbi/projects/<name>/learnings/gotchas/` | Known failure patterns prepended as guards |
+| `mistakes` | `.claude/skills/mistake/` and `.gobbi/projects/<name>/learnings/mistakes/` | Known failure patterns prepended as guards |
 | `context` | `session.json` plus project root scan | Project path, config snapshot, tech stack context |
 
-The CLI replays `gobbi.db` first to determine which step is active. It then selects which artifacts are relevant to the current step — an Execution prompt needs Plan artifacts; an Evaluation prompt needs Execution artifacts. It loads the surviving skills that are appropriate for this step and inlines their content as materials. Gotchas are always included. The resulting prompt is the only thing the orchestrator sees.
+The CLI replays `gobbi.db` first to determine which step is active. It then selects which artifacts are relevant to the current step — an Execution prompt needs Plan artifacts; an Evaluation prompt needs Execution artifacts. It loads the surviving skills that are appropriate for this step and inlines their content as materials. Mistakes are always included. The resulting prompt is the only thing the orchestrator sees.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                   Prompt Compilation Pipeline                        │
 └─────────────────────────────────────────────────────────────────────┘
 
-  gobbi.db            skills/            gotchas/
+  gobbi.db            skills/            mistakes/
       │                   │                  │
       ▼                   ▼                  ▼
   ┌────────────────────────────────────────────┐
@@ -40,7 +40,7 @@ The CLI replays `gobbi.db` first to determine which step is active. It then sele
   │  1. Determine active step from state       │
   │  2. Select relevant artifacts for step     │
   │  3. Load surviving skills as materials     │
-  │  4. Load gotchas as guards                 │
+  │  4. Load mistakes as guards                 │
   │  5. Apply cache-aware section ordering     │
   │  6. Apply token budget allocation          │
   │  7. Assemble prompt from spec blocks        │
@@ -100,7 +100,7 @@ These skills contain domain knowledge that is not orchestration-specific. They r
 
 | Skill | Domain |
 |-------|--------|
-| `gotcha` | Known failure patterns — always injected as guards |
+| `mistake` | Known failure patterns — always injected as guards |
 | `claude` | Documentation standard — injected for doc-authoring steps |
 | `skills-doc` | Skill authoring conventions — injected when writing skill docs |
 | `agents-doc` | Agent authoring conventions — injected when writing agent docs |
@@ -134,7 +134,7 @@ Domain-specific stances — project-specific evaluation perspectives, specialist
 
 > **Each subagent receives exactly the context its task requires. No more.**
 
-Prior steps' accumulated conversation context is never passed directly to a subagent. The CLI assembles a delegation prompt with specifically selected artifacts — the subset of prior step output that is actually needed for this task. A subagent working on an execution subtask receives the plan artifact for its subtask, the relevant gotchas, and its step instructions. It does not receive the Ideation conversation, prior execution attempts, or evaluation transcripts from earlier in the session.
+Prior steps' accumulated conversation context is never passed directly to a subagent. The CLI assembles a delegation prompt with specifically selected artifacts — the subset of prior step output that is actually needed for this task. A subagent working on an execution subtask receives the plan artifact for its subtask, the relevant mistakes, and its step instructions. It does not receive the Ideation conversation, prior execution attempts, or evaluation transcripts from earlier in the session.
 
 This boundary has two benefits. First, it prevents context contamination: a subagent executing subtask 3 cannot be distracted by the details of subtasks 1 and 2. Second, it keeps delegation prompts small and their static prefix stable, which preserves cache efficiency even across multiple delegations in the same step.
 
@@ -146,13 +146,13 @@ Artifacts written by subagents to their step directories are available to the CL
 
 > **The CLI allocates token budget across sections before rendering. Truncation is at section boundaries, never mid-content.**
 
-Each model variant has a fixed context window. The CLI knows the model configured for the session (from `session.json`) and computes the available budget before assembling the prompt. Budget is allocated across sections in priority order: static prefix first (it must be complete to preserve cache stability), then gotchas (safety guards must never be truncated), then step instructions, then inlined artifacts, then supplementary materials.
+Each model variant has a fixed context window. The CLI knows the model configured for the session (from `session.json`) and computes the available budget before assembling the prompt. Budget is allocated across sections in priority order: static prefix first (it must be complete to preserve cache stability), then mistakes (safety guards must never be truncated), then step instructions, then inlined artifacts, then supplementary materials.
 
 ### Section Minimums
 
-Each prompt section has a minimum token allocation — the floor that section receives regardless of budget pressure. The static prefix must be complete to preserve cache stability. Gotchas must be complete because they are safety guards. Step instructions must be complete because a partial instruction is worse than no instruction.
+Each prompt section has a minimum token allocation — the floor that section receives regardless of budget pressure. The static prefix must be complete to preserve cache stability. Mistakes must be complete because they are safety guards. Step instructions must be complete because a partial instruction is worse than no instruction.
 
-If the sum of all section minimums exceeds the model's context window, the CLI emits an error rather than silently truncating. The error is descriptive: it identifies which sections' minimums contribute to the overflow and by how many tokens the total exceeds the budget. This makes the problem diagnosable — the operator knows whether the overflow comes from an oversized static prefix, too many gotchas, or step instructions that grew beyond what the model can hold.
+If the sum of all section minimums exceeds the model's context window, the CLI emits an error rather than silently truncating. The error is descriptive: it identifies which sections' minimums contribute to the overflow and by how many tokens the total exceeds the budget. This makes the problem diagnosable — the operator knows whether the overflow comes from an oversized static prefix, too many mistakes, or step instructions that grew beyond what the model can hold.
 
 Sections whose content exceeds their minimum are subject to the priority-based truncation described below. The minimum guarantees a floor; the priority determines how remaining budget is distributed above that floor.
 
@@ -216,7 +216,7 @@ See `v050-hooks.md` for how hooks trigger verification command execution after S
 
 ### Shared Blocks
 
-Reusable content blocks (scope boundary warning, gotcha preamble, system prompt) live in `_shared/` under the specs directory. Spec files reference shared blocks by ID. The CLI resolves these references at compile time before assembling the prompt. Each shared block is defined once; changes propagate to all specs that reference it.
+Reusable content blocks (scope boundary warning, mistake preamble, system prompt) live in `_shared/` under the specs directory. Spec files reference shared blocks by ID. The CLI resolves these references at compile time before assembling the prompt. Each shared block is defined once; changes propagate to all specs that reference it.
 
 ### Substate Overlays
 

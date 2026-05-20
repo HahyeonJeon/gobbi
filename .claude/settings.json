@@ -17,13 +17,11 @@
       "Skill(gobbi-principles)",
       "Skill(innovation)",
       "Skill(best-practice)",
-      "Agent(gobbi-agent)",
+      "Agent(manager)",
+      "Agent(leader)",
       "Agent(executor)",
-      "Agent(pi)",
-      "Agent(researcher)",
-      "Agent(agent-evaluator)",
-      "Agent(skills-evaluator)",
-      "Agent(project-evaluator)",
+      "Agent(evaluator)",
+      "Agent(assistant)",
       "WebSearch"
     ]
   },

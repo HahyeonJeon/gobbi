@@ -22,7 +22,7 @@ Directories missing an entry README in this review:
 
 - `.claude/project/gobbi/design/`
 - `.claude/project/gobbi/docs/` before this report set
-- `.claude/project/gobbi/gotchas/`
+- `.claude/project/gobbi/mistakes/`
 - `.claude/project/gobbi/reference/`
 - `.claude/project/gobbi/rules/`
 
@@ -54,6 +54,6 @@ That makes the project root readable but not very informative.
 ## Recommended Follow-Up
 
 1. Treat `.claude/project/gobbi/design/claude-docs.md` and `.claude/project/gobbi/design/structure.md` as cleanup priorities before adding more project docs.
-2. Add `README.md` files for `design/`, `gotchas/`, `reference/`, and `rules/`.
+2. Add `README.md` files for `design/`, `mistakes/`, `reference/`, and `rules/`.
 3. Decide whether `architecture.md` should stay as one overview doc or split into smaller docs for workflow, agent roles, and evaluation.
 4. Expand the project root README so it points readers to the authoritative design and review docs.

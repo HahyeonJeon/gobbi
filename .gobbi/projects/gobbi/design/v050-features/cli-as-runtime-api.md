@@ -22,7 +22,7 @@ The two verbs are `gobbi config get <key>` (cascade-resolved across workspace �
 
 ## Memory
 
-The memory group operates on the session event store and the memory stores described in `gobbi-memory/README.md`. It includes: a command to promote a gotcha from session-level capture (transient) into the project-level gotcha store at `.gobbi/project/{project_name}/gotchas/`, or into cross-project plugin gotchas at `.claude/skills/gotcha/`; a command to extract subagent transcripts from JSONL and write the result into the active step's `rawdata/` directory; and a command to extract plan artifacts from session transcripts. The JSONL schema is not self-evident — the CLI knows the schema and where to look, so agents do not have to parse it.
+The memory group operates on the session event store and the memory stores described in `gobbi-memory/README.md`. It includes: a command to promote a mistake from session-level capture (transient) into the project-level mistake store at `.gobbi/project/{project_name}/mistakes/`, or into cross-project plugin mistakes at `.claude/skills/mistake/`; a command to extract subagent transcripts from JSONL and write the result into the active step's `rawdata/` directory; and a command to extract plan artifacts from session transcripts. The JSONL schema is not self-evident — the CLI knows the schema and where to look, so agents do not have to parse it.
 
 ## Rendering
 

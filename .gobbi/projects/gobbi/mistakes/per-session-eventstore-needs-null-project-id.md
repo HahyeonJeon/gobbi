@@ -14,4 +14,4 @@ enforcement: advisory
 
 **Correct approach:** When seeding per-session-DB test fixtures, set `project_id = NULL` explicitly (not `'gobbi'`, not the project basename). The workspace `state.db` is a different shape — it carries explicit non-null `project_id`. Per-session and workspace seeds are NOT interchangeable.
 
-**Why:** The path-derivation fallback at `store.ts:369-370` is documented in gotcha `state-db-redesign.md` §2 — it works only for per-session DBs. Workspace mode requires explicit constructor params. Tests that mix the two seed shapes produce `eventCount() === 0` despite the DB containing rows.
+**Why:** The path-derivation fallback at `store.ts:369-370` is documented in mistake `state-db-redesign.md` §2 — it works only for per-session DBs. Workspace mode requires explicit constructor params. Tests that mix the two seed shapes produce `eventCount() === 0` despite the DB containing rows.

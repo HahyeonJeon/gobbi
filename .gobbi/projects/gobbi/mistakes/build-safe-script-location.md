@@ -29,4 +29,4 @@ This applies to both `build:safe` AND `bun test` — the test suite is rooted at
 
 ## Related
 
-The `cross-session-gotcha-bundle.md` "build:safe must run before bun test" companion gotcha covers when to run it. This one covers where.
+The `cross-session-mistake-bundle.md` "build:safe must run before bun test" companion mistake covers when to run it. This one covers where.

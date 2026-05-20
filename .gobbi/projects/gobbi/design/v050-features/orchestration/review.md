@@ -132,7 +132,7 @@ DRIFT/GAP entries with `Resolution: deferred to Wave X` will gain a commit SHA w
 
 **Severity:** Medium (planning) — wrong skill loaded leads to wrong authoring standard.
 
-**Resolution:** deferred to plan revision (or absorbed into the orchestrator briefing for Pass 4). Pass 4's actual briefing for this `gobbi-agent` invocation correctly loads `claude` + `project-doc` + `gotcha` only.
+**Resolution:** deferred to plan revision (or absorbed into the orchestrator briefing for Pass 4). Pass 4's actual briefing for this `gobbi-agent` invocation correctly loads `claude` + `project-doc` + `mistake` only.
 
 **Owner:** Pass 4 plan.
 
@@ -228,7 +228,7 @@ DRIFT/GAP entries with `Resolution: deferred to Wave X` will gain a commit SHA w
 
 **Finding:** `v050-session.md:228` defines a 7-day TTL / 50-session cap for session directories. The new tables (`state_snapshots`, `tool_calls`, `config_changes`) plus the `gobbi.db::memories` table have no specified cleanup. Long sessions accumulate rows indefinitely; FTS5 segments don't auto-vacuum.
 
-**Resolution:** deferred to Wave A.1.10 (integration test scope) and a future `gobbi project gc` command. README §8.3 cites the cleanup boundaries: `class='gotcha|decision|design'` permanent; `class='handoff'` capped at last N=5 per project; `tool_calls` and `state_snapshots` follow the existing 7-day TTL.
+**Resolution:** deferred to Wave A.1.10 (integration test scope) and a future `gobbi project gc` command. README §8.3 cites the cleanup boundaries: `class='mistake|decision|design'` permanent; `class='handoff'` capped at last N=5 per project; `tool_calls` and `state_snapshots` follow the existing 7-day TTL.
 
 **Owner:** Pass 4 design; Wave A.1 implementation budget; future `gobbi project gc` command.
 
@@ -322,7 +322,7 @@ Architecture's risk note (and ideation §12 spike #3): memorization reads 30+ ra
 
 ### NOTE-6 — `.gobbi/gobbi.db` git-tracked memory store is solo-user-only (System F-1 + System security)
 
-Per `feedback_solo_user_context` gobbi has one user. `.gobbi/gobbi.db` git-tracking carries the (low) risk of inadvertently committing sensitive content (gotchas referencing internal tool names, backlog items referencing confidential context). For solo-user this is acceptable. If a public-facing gobbi clone ever exists, the `.gitignore` flips back to gitignore-by-default and `gobbi.db` is regenerated from markdown.
+Per `feedback_solo_user_context` gobbi has one user. `.gobbi/gobbi.db` git-tracking carries the (low) risk of inadvertently committing sensitive content (mistakes referencing internal tool names, backlog items referencing confidential context). For solo-user this is acceptable. If a public-facing gobbi clone ever exists, the `.gitignore` flips back to gitignore-by-default and `gobbi.db` is regenerated from markdown.
 
 ---
 
@@ -422,13 +422,13 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 
 | # | Description | Agent | Skills | Files (high-confidence list — verify in worktree) |
 |---|---|---|---|---|
-| A.1.1 | Run the 3 mandatory spikes (Bash PostToolUse for transition; `claude -p` hook firing; memorization compile latency); document outcomes in `learnings/decisions/`. Defer or branch the design if any spike fails. | `pi` (research stance) | `research`, `bun`, `gotcha` | `learnings/decisions/<YYYY-MM-DD>-spike-*.md` (3 files) |
+| A.1.1 | Run the 3 mandatory spikes (Bash PostToolUse for transition; `claude -p` hook firing; memorization compile latency); document outcomes in `learnings/decisions/`. Defer or branch the design if any spike fails. | `pi` (research stance) | `research`, `bun`, `mistake` | `learnings/decisions/<YYYY-MM-DD>-spike-*.md` (3 files) |
 | A.1.2 | Add explicit partition-key parameters to `EventStore` constructor; add fallback path-derivation behavior. | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/workflow/store.ts`, store tests |
 | A.1.3 | Add schema v6 migration: new tables (`state_snapshots`, `tool_calls`, `config_changes`, `schema_meta`); workspace-level partitioning queries everywhere; new event type `step.advancement.observed`. **Bump `CURRENT_SCHEMA_VERSION` 5 → 6; add `5: (data) => data` identity migration to the registry walk loop.** | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/workflow/migrations.ts`, `packages/cli/src/workflow/events/index.ts`, new event factory file |
 | A.1.4 | Implement `gobbi maintenance migrate-state-db` command **and register it in the `MAINTENANCE_COMMANDS` dispatch array** (`commands/maintenance.ts:48-59`). Without the registry update, the new command is unreachable. | `executor` | `typescript`, `bun`, `execution`, `gobbi-cli` | `packages/cli/src/commands/maintenance/migrate-state-db.ts` (new), `packages/cli/src/commands/maintenance.ts` (registry update) |
 | A.1.5 | Add `handoff` state-machine step: new `specs/handoff/{spec.json, README.md}`; update `index.json` (`steps`, `transitions`, `terminal`). | `executor` | `typescript`, `execution` | `packages/cli/src/specs/handoff/spec.json` (new), `packages/cli/src/specs/handoff/README.md` (new), `packages/cli/src/specs/index.json` |
 | A.1.6 | Update memorization spec rawdata sources + extraction destinations per ideation §7.3. | `executor` | `typescript`, `execution` | `packages/cli/src/specs/memorization/spec.json`, `packages/cli/src/specs/memorization/README.md` |
-| A.1.7 | Path-resolution sweep: update every callsite that opens `gobbi.db` per-session to use new workspace path or explicit constructor params. **Confirmed callsite list:** `commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `commands/session.ts:320`, `commands/gotcha/promote.ts:308`. (`commands/workflow/events.ts` has no direct DB path — delegates to `session.ts`.) The sweep MUST grep `join(sessionDir, 'gobbi.db')` and `<sessionDir>/gobbi.db` patterns across `packages/cli/src/` to catch any callsite this list misses. | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `packages/cli/src/commands/session.ts`, `packages/cli/src/commands/gotcha/promote.ts` |
+| A.1.7 | Path-resolution sweep: update every callsite that opens `gobbi.db` per-session to use new workspace path or explicit constructor params. **Confirmed callsite list:** `commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `commands/session.ts:320`, `commands/mistake/promote.ts:308`. (`commands/workflow/events.ts` has no direct DB path — delegates to `session.ts`.) The sweep MUST grep `join(sessionDir, 'gobbi.db')` and `<sessionDir>/gobbi.db` patterns across `packages/cli/src/` to catch any callsite this list misses. | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/commands/workflow/{guard,stop,init,next,status,resume,capture-subagent,capture-planning,transition}.ts`, `packages/cli/src/commands/session.ts`, `packages/cli/src/commands/mistake/promote.ts` |
 | A.1.8 | Add `.gitignore` exception `!.gobbi/gobbi.db` immediately after `.gobbi/*`; verify via `git check-ignore` test in CI. | `executor` | `execution`, `git` | `.gitignore`, integration test |
 | A.1.9 | Concurrent-writer mitigation: `PRAGMA wal_checkpoint(TRUNCATE)` after every `workflow.step.exit`. **Additive to existing `store.ts::close()` checkpoint at lines 588-590; do not replace.** | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/workflow/store.ts`, store tests |
 | A.1.10 | Integration tests: replay-equivalence after migration; atomic-rename safety; concurrent-writer durability under SIGKILL fixture. | `executor` | `typescript`, `bun`, `execution` | `packages/cli/src/workflow/__tests__/migrate-state-db.test.ts` (new), `store.test.ts` extensions |
@@ -467,7 +467,7 @@ Pass 4's PR opens after PR #137 (the in-flight integration PR for `phase/v050-ph
 
 **Agent**: `gobbi-agent` (single sequential — per the rule).
 
-**Skills**: `claude`, `project-doc`, `gotcha`.
+**Skills**: `claude`, `project-doc`, `mistake`.
 
 **Scope boundary**: docs only; no code changes; no test changes.
 

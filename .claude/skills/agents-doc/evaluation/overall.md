@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/agents-doc/evaluation/overall.md

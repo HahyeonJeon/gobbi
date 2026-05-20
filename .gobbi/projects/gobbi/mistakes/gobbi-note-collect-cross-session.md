@@ -19,7 +19,7 @@ enforcement: advisory
 
 After fixing all three, collect populated `subtasks/01-b11-schema-mirror.json` correctly. Repeated for all three subtasks.
 
-**Why it happens:** The session-id-discovery boundary documented in `learnings/gotchas/cli-vs-skill-session-id.md` resolves which session-id the CLI uses for state-db / config / metadata. But `gobbi note collect` reads from BOTH (a) Claude's transcript file (which is keyed by Claude session-id) and (b) the SubagentStop hook's meta-files (also written under Claude session-id). When `CLAUDE_SESSION_ID` is overridden to the gobbi-session-id (so workflow status / config land correctly), collect can't find the Claude-side artifacts.
+**Why it happens:** The session-id-discovery boundary documented in `learnings/mistakes/cli-vs-skill-session-id.md` resolves which session-id the CLI uses for state-db / config / metadata. But `gobbi note collect` reads from BOTH (a) Claude's transcript file (which is keyed by Claude session-id) and (b) the SubagentStop hook's meta-files (also written under Claude session-id). When `CLAUDE_SESSION_ID` is overridden to the gobbi-session-id (so workflow status / config land correctly), collect can't find the Claude-side artifacts.
 
 **User feedback:** Self-caught during execution step. Costs ~5 minutes friction per executor; ~15 minutes total this wave.
 
@@ -43,6 +43,6 @@ To find the actual Claude session-id: `ls -lt ~/.claude/projects/<slug>/*.jsonl 
 
 **Long-term fix (out of scope for B.1):** The CLI should accept a `--claude-session-id` flag (or auto-discover via `ls -t`) so cross-session-id resolution doesn't require manual file copying. File a backlog issue for the CLI change if friction recurs.
 
-**When to apply this gotcha:** Whenever a gobbi workflow session is initialized with a UUID that differs from `CODEX_COMPANION_SESSION_ID` or the actual Claude session — typically when running a second wave in the same Claude session, or after `/clear` if the gobbi-side session-id is regenerated.
+**When to apply this mistake:** Whenever a gobbi workflow session is initialized with a UUID that differs from `CODEX_COMPANION_SESSION_ID` or the actual Claude session — typically when running a second wave in the same Claude session, or after `/clear` if the gobbi-side session-id is regenerated.
 
 **Refs:** Wave B.1 session `dc016347-d795-4b0b-9439-7d5abe756b34`; SubagentStop hook at `packages/cli/src/commands/workflow/capture-subagent.ts`; collect command at `packages/cli/src/commands/note.ts:342`. Related: `cli-vs-skill-session-id.md`, `gobbi-workflow-cli-from-main-tree.md`.

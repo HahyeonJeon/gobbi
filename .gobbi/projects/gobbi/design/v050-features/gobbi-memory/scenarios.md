@@ -364,7 +364,7 @@ Evidence: Commit `fcd1171` (W4.4 snapshot regeneration).
 
 ### G-MEM2-36 — RETIRED (PR-FIN-2a-i)
 
-The `findStateActiveSessions` helper was removed in PR-FIN-2a-i alongside the JSON-pivot retirement of per-session `state.json`. `gobbi gotcha promote` and `gobbi maintenance wipe-legacy-sessions` no longer guard on other in-flight sessions. A future redesign will reintroduce active-session detection on top of the per-session `gobbi.db` event-log shape. Historical scenario body preserved in git history.
+The `findStateActiveSessions` helper was removed in PR-FIN-2a-i alongside the JSON-pivot retirement of per-session `state.json`. `gobbi mistake promote` and `gobbi maintenance wipe-legacy-sessions` no longer guard on other in-flight sessions. A future redesign will reintroduce active-session detection on top of the per-session `gobbi.db` event-log shape. Historical scenario body preserved in git history.
 
 ---
 
@@ -388,23 +388,23 @@ Evidence: `wipe-legacy-sessions.ts` — skip-active branch. Commit `44dd47a`.
 
 ---
 
-## Gotcha promotion (post-W3.1)
+## Mistake promotion (post-W3.1)
 
-### G-MEM2-39 — `gobbi gotcha promote` writes to the active project's learnings
+### G-MEM2-39 — `gobbi mistake promote` writes to the active project's learnings
 
-**Given** a gotcha drafted with `projects.active: "gobbi"`
-**When** `gobbi gotcha promote` runs
-**Then** the promoted gotcha lands at `.gobbi/projects/gobbi/learnings/gotchas/{slug}.md`; the legacy destination `.gobbi/project/gotchas/` is NOT written.
+**Given** a mistake drafted with `projects.active: "gobbi"`
+**When** `gobbi mistake promote` runs
+**Then** the promoted mistake lands at `.gobbi/projects/gobbi/learnings/mistakes/{slug}.md`; the legacy destination `.gobbi/project/mistakes/` is NOT written.
 
-Evidence: `packages/cli/src/commands/gotcha/promote.ts` — `SOURCE_DIR_REL` updated. Commit `ab30ccb` (W3 eval F1).
+Evidence: `packages/cli/src/commands/mistake/promote.ts` — `SOURCE_DIR_REL` updated. Commit `ab30ccb` (W3 eval F1).
 
 ---
 
 ### G-MEM2-40 — Promote destination resolves per active project
 
-**Given** `projects.active: "demo"` and a gotcha drafted against the demo project's session
-**When** `gobbi gotcha promote` runs
-**Then** the gotcha lands at `.gobbi/projects/demo/learnings/gotchas/{slug}.md`; no write occurs under `.gobbi/projects/gobbi/`.
+**Given** `projects.active: "demo"` and a mistake drafted against the demo project's session
+**When** `gobbi mistake promote` runs
+**Then** the mistake lands at `.gobbi/projects/demo/learnings/mistakes/{slug}.md`; no write occurs under `.gobbi/projects/gobbi/`.
 
 Evidence: `promote.ts` — active-project lookup. Commit `ab30ccb`.
 

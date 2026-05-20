@@ -1,4 +1,4 @@
-# Orchestration Session Gotchas
+# Orchestration Session Mistakes
 
 Learnings from running multi-wave parallel-subagent workflows where the orchestrator coordinates many specialists.
 

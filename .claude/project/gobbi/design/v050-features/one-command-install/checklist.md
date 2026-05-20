@@ -135,7 +135,7 @@ This checklist is the verification harness for the 15 scenarios in `scenarios.md
 
 ## O-CI-X-03: `/gobbi` inside active peer worktree — must not auto-cleanup
 
-- [x] [EP] `_git/gotchas.md` "Recommending cleanup of worktrees that may belong to concurrent sessions" gotcha specifies "default to `Leave it` as the recommended option" — the behavioral rule exists and is in the always-active skill set. (Hint: Codebase — `.claude/skills/git/gotchas.md`, section "Recommending cleanup of worktrees…".)
+- [x] [EP] `_git/mistakes.md` "Recommending cleanup of worktrees that may belong to concurrent sessions" mistake specifies "default to `Leave it` as the recommended option" — the behavioral rule exists and is in the always-active skill set. (Hint: Codebase — `.claude/skills/git/mistakes.md`, section "Recommending cleanup of worktrees…".)
 - [x] [ST] `SKILL.md §FIFTH` question 3 (git workflow) concerns the current session's git mode, not peer worktree management — the install/setup flow has no step that scans or acts on existing worktrees. (Hint: Codebase — `.claude/skills/gobbi/SKILL.md` §FIFTH "Third question — git workflow mode".)
 - [x] [DT] `plugins/gobbi/hooks/hooks.json` SessionStart hook runs `gobbi workflow init` only — there is no hook command that scans `.claude/worktrees/` or issues `git worktree remove`. (Hint: Codebase — `plugins/gobbi/hooks/hooks.json` SessionStart hook `"command"` value.)
 - [x] [EP] `gobbi-principles.md` P6 (Specificity) requires "(Recommended)" to be placed on the non-destructive option — the behavioral principle applies to any prompt about worktrees encountered during setup. (Hint: Codebase — `.claude/skills/gobbi-principles/SKILL.md` §Principle 6.)

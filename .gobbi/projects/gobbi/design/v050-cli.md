@@ -95,9 +95,9 @@ The cost section displays: cumulative billed tokens (cache-adjusted) across all 
 
 **`gobbi session events`** — Formats the event log from `state.db` for human consumption. Provides a readable audit trail without requiring a SQLite client.
 
-### New: `gobbi gotcha` commands
+### New: `gobbi mistake` commands
 
-**`gobbi gotcha promote`** — Moves gotchas from `.gobbi/projects/<name>/learnings/gotchas/` to the permanent store in `.claude/skills/gotcha/`. Runs outside active sessions only — checks that no session is active before proceeding. The promotion turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session.
+**`gobbi mistake promote`** — Moves mistakes from `.gobbi/projects/<name>/learnings/mistakes/` to the permanent store in `.claude/skills/mistake/`. Runs outside active sessions only — checks that no session is active before proceeding. The promotion turns mid-session learnings into permanent `.claude/` knowledge without causing context reload during the session.
 
 ### New: installation and project management commands
 
