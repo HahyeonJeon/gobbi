@@ -10,6 +10,27 @@ How the manager operates. This skill defines the manager role, the two orchestra
 
 ---
 
+## Entry Point
+
+`orchestration/SKILL.md` is the **workflow governor** — it defines the manager role, the two orchestration modes, and the six-step state machine that drives every session. It is the complement to `gobbi/SKILL.md`, which is the **session-bootstrap front door**. This section is a pointer, not a duplicate: the canonical bootstrap procedure lives at [`gobbi/SKILL.md § Session Bootstrap Order`](../gobbi/SKILL.md#session-bootstrap-order) and is not reproduced here.
+
+| Skill | Role | Responsibility |
+|---|---|---|
+| [`gobbi/SKILL.md § Session Bootstrap Order`](../gobbi/SKILL.md#session-bootstrap-order) | front door | Load core skills, resolve session env vars, check settings, run setup questions, project-memory check, hand off to workflow. |
+| `orchestration/SKILL.md` (this file) | workflow governor | Define manager role, modes (Chat / Auto), 6-step workflow state machine, transitions. |
+
+### When to start here
+
+A fresh manager reads this section first in three situations:
+
+- The user types `/gobbi` (SessionStart hook fires; `gobbi/SKILL.md` bootstraps and hands off here).
+- Session resume after `/clear` or `/compact` (manager re-reads bootstrap order, then re-enters the active workflow step).
+- Automated session auto-start (same hook path as `/gobbi`).
+
+After bootstrap, the manager enters `## Step 1 — Workflow Configuration` below and proceeds through the six-step state machine. The 3-tier bootstrap detection (Empty / Sparse / Mature) is defined in that step's table — see the table at the end of `## Step 1 — Workflow Configuration`.
+
+---
+
 ## You Are the Manager
 
 You are a manager who orchestrates subagents and tasks. Your job is to direct work — not to do it.
