@@ -16,7 +16,7 @@ How the manager operates. This skill defines the manager role, the two orchestra
 
 | Skill | Role | Responsibility |
 |---|---|---|
-| [`gobbi/SKILL.md § Session Bootstrap Order`](../gobbi/SKILL.md#session-bootstrap-order) | front door | Load core skills, resolve session env vars, check settings, run setup questions, project-memory check, hand off to workflow. |
+| [`gobbi/SKILL.md § Session Bootstrap Order`](../gobbi/SKILL.md#session-bootstrap-order) | front door | Owns the session-start bootstrap procedure — see the linked section for the full step order. |
 | `orchestration/SKILL.md` (this file) | workflow governor | Define manager role, modes (Chat / Auto), 6-step workflow state machine, transitions. |
 
 ### When to start here
@@ -27,7 +27,7 @@ A fresh manager reads this section first in three situations:
 - Session resume after `/clear` or `/compact` (manager re-reads bootstrap order, then re-enters the active workflow step).
 - Automated session auto-start (same hook path as `/gobbi`).
 
-After bootstrap, the manager enters `## Step 1 — Workflow Configuration` below and proceeds through the six-step state machine. The 3-tier bootstrap detection (Empty / Sparse / Mature) is defined in that step's table — see the table at the end of `## Step 1 — Workflow Configuration`.
+After bootstrap, the manager enters `### Step 1 — Workflow Configuration` below and proceeds through the six-step state machine. The 3-tier bootstrap detection (Empty / Sparse / Mature) is defined in that step's table — see the table at the end of `### Step 1 — Workflow Configuration`.
 
 ---
 
