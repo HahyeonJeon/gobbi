@@ -1,3 +1,0 @@
-# Plan
-
-Only plan exists.

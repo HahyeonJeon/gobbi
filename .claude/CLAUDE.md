@@ -58,5 +58,3 @@ Every agent MUST load the `mistake` skill before starting work. When the user co
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
 | [principles](skills/principles/SKILL.md) | 11 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and anti-rationalizations |
-| [`v050-overview.md`](../../../.gobbi/projects/gobbi/design/v050-overview.md) | v0.5.0 state machine, 6-step workflow, per-session `session.json` + plain-markdown project memory — authoritative architecture doc |
-| [`v050-cli.md`](../../../.gobbi/projects/gobbi/design/v050-cli.md) | CLI command surface, `gobbi workflow *` and `gobbi project *` commands |
