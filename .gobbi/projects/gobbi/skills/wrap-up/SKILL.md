@@ -322,7 +322,7 @@ All session-memory writes during the Wrap-up Loop are scoped to `sessions/{date}
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — the Claude Code session ID from `$CLAUDE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
+- `{session-id}` — the Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
 - `{project-name}` — project slug from `session.json.project`
 - `{feature-name}` — feature slug from `session.json.feature` (set during Ideation Sub-step B Lock Scope)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time or by Wrap-up at promotion time

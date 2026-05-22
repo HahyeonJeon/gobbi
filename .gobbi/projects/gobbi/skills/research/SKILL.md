@@ -142,7 +142,7 @@ Research does not own its own session subdirectory — it writes into the callin
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — the Claude Code session ID from `$CLAUDE_SESSION_ID` (or the Codex session ID under Codex)
+- `{session-id}` — the Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex)
 - `{loop}` — the calling loop's name (`ideation` / `preparation` / `planning`)
 - `{slug}` — slug for a specific reference artifact, set by the writer at stage time
 

@@ -224,7 +224,7 @@ All writes during MEMORIZATION are **session-scoped**. Wrap-up promotes the `sta
 **Path conventions**
 
 - `{date}` — session start date in `YYYY-MM-DD`
-- `{session-id}` — Claude Code session ID from `$CLAUDE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
+- `{session-id}` — Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
 - `{loop}` — the workflow loop being persisted (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time

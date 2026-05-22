@@ -462,7 +462,7 @@ All writes during the Ideation Loop are **session-scoped**. Wrap-up promotes the
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — the Claude Code session ID from `$CLAUDE_SESSION_ID` (or the Codex session ID when running under Codex). This is the runtime-assigned identifier, **not** an arbitrary hash — it must be the actual session ID emitted by the harness so logs, transcripts, and session directories align.
+- `{session-id}` — the Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID when running under Codex). This is the runtime-assigned identifier, **not** an arbitrary hash — it must be the actual session ID emitted by the harness so logs, transcripts, and session directories align.
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time
 
