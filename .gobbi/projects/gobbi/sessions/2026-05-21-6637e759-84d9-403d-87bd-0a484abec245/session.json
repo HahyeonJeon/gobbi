@@ -7,7 +7,7 @@
   "task": null,
   "system": "claude-code",
   "startedAt": "2026-05-21T05:34:31Z",
-  "finishedAt": null,
+  "finishedAt": "2026-05-22T00:50:00Z",
   "git": {
     "repo": "HahyeonJeon/gobbi",
     "baseBranch": "develop",
@@ -21,9 +21,10 @@
     "ideation":      { "startedAt": null, "finishedAt": "2026-05-21T16:20:00Z", "iter": 4, "verdict": "PASS", "iterations": [{ "iter": 1, "verdict": "REVISE", "finishedAt": "2026-05-21T06:50:00Z", "evaluation_dir": "evaluation/iter1/" }, { "iter": 2, "verdict": "REVISE", "finishedAt": "2026-05-21T14:30:00Z", "evaluation_dir": "evaluation/iter2/" }, { "iter": 3, "verdict": "REVISE", "finishedAt": "2026-05-21T15:10:00Z", "evaluation_dir": "evaluation/iter3/" }, { "iter": 4, "verdict": "PASS", "finishedAt": "2026-05-21T16:20:00Z", "evaluation_dir": "evaluation/iter4/" }] },
     "preparation":   { "startedAt": null, "finishedAt": "2026-05-21T17:15:00Z", "iter": 2, "verdict": "PASS", "iterations": [{ "iter": 1, "verdict": "REVISE", "finishedAt": "2026-05-21T16:03:00Z", "evaluation_dir": "evaluation/iter1/" }, { "iter": 2, "verdict": "PASS", "finishedAt": "2026-05-21T17:15:00Z", "evaluation_dir": "evaluation/iter2/" }] },
     "planning":      { "startedAt": null, "finishedAt": "2026-05-21T23:55:00Z", "iter": 4, "verdict": "PASS", "iterations": [{ "iter": 1, "verdict": "FAIL", "finishedAt": "2026-05-21T22:30:00Z", "evaluation_dir": "evaluation/iter1/" }, { "iter": 2, "verdict": "REVISE", "finishedAt": "2026-05-21T23:05:00Z", "evaluation_dir": "evaluation/iter2/" }, { "iter": 3, "verdict": "REVISE", "finishedAt": "2026-05-21T23:11:00Z", "evaluation_dir": "evaluation/iter3/" }, { "iter": 4, "verdict": "PASS", "finishedAt": "2026-05-21T23:45:00Z", "evaluation_dir": "evaluation/iter4/" }] },
-    "execution":     { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null, "tasks": { "01-create-pre-reset-tag": { "verdict": "PASS", "finishedAt": "2026-05-21T00:00:00Z" } }, "iterations": [{ "task_id": "01-create-pre-reset-tag", "iter": 1, "verdict": "PASS", "finishedAt": "2026-05-21T00:00:00Z", "evaluation_dir": "execution/01-create-pre-reset-tag/evaluation/iter1/" }] },
-    "wrap-up":        { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null }
+    "execution":     { "startedAt": null, "finishedAt": "2026-05-22T00:10:00Z", "iter": 0, "verdict": "PASS", "tasks": { "01-create-pre-reset-tag": { "verdict": "PASS", "finishedAt": "2026-05-21T00:00:00Z" }, "02-cleanup-sweep": { "verdict": "PASS", "finishedAt": "2026-05-22T00:10:00Z" } }, "iterations": [{ "task_id": "01-create-pre-reset-tag", "iter": 1, "verdict": "PASS", "finishedAt": "2026-05-21T00:00:00Z", "evaluation_dir": "execution/01-create-pre-reset-tag/evaluation/iter1/" }, { "task_id": "02-cleanup-sweep", "iter": 1, "verdict": "PASS", "finishedAt": "2026-05-22T00:10:00Z", "evaluation_dir": "execution/02-cleanup-sweep/evaluation/iter1/" }] },
+    "wrap-up":        { "startedAt": null, "finishedAt": "2026-05-22T00:50:00Z", "iter": 1, "verdict": "PASS", "iterations": [{ "iter": 1, "verdict": "PASS", "finishedAt": "2026-05-22T00:50:00Z", "evaluation_dir": "wrap-up/evaluation/iter1/" }] }
   },
+  "workflow.finish": { "finishedAt": "2026-05-22T00:50:00Z", "verdict": "PASS", "final_develop_sha": "42db8be" },
   "agents": [
     {
       "id": "6637e759-84d9-403d-87bd-0a484abec245",
