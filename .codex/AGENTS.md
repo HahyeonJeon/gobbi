@@ -1,0 +1,100 @@
+# AGENTS.md
+
+Gobbi is an open-source ClaudeX (Claude Experience) tool. In this repository, Gobbi is exposed to Codex through the official repo-local Codex paths:
+
+- Skills: `.agents/skills/<skill-name>/SKILL.md`
+- Custom agents: `.codex/agents/<role>.toml`
+- Plugin manifest: `.codex-plugin/plugin.json`
+- Plugin skills: `.gobbi/projects/gobbi/skills/<skill-name>/SKILL.md`
+- Canonical Gobbi sources: `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`
+
+MUST read this at session start, resume, `/clear`, and compaction. MUST follow the core principles below. MUST load Gobbi skills from `.agents/skills`, not user-level skill locations.
+
+The repo also exposes Gobbi as a local Codex plugin. The plugin root is the repository root, and `.agents/plugins/marketplace.json` points to `./`. The plugin manifest's `skills` field points directly at `./.gobbi/projects/gobbi/skills/`, the same source-of-truth skill tree used by `.agents/skills`.
+
+---
+
+## Codex Entry Points
+
+`.agents/skills` contains symlinked skill folders pointing to `.gobbi/projects/gobbi/skills/`.
+
+`.gobbi/projects/gobbi/skills` is also the plugin-facing skills directory because `.codex-plugin/plugin.json` points its `skills` field there.
+
+`.codex-plugin/plugin.json` is the Gobbi plugin manifest for local plugin installation from this workspace.
+
+`.codex/agents` contains symlinked TOML custom-agent wrappers pointing to `.gobbi/projects/gobbi/agents/*.toml`. Each wrapper instructs the spawned Codex agent to read the corresponding canonical Markdown role prompt in the same directory.
+
+Available role prompts:
+
+| Custom agent | Codex wrapper | Canonical prompt |
+|--------------|---------------|------------------|
+| `manager` | `.gobbi/projects/gobbi/agents/manager.toml` | `.gobbi/projects/gobbi/agents/manager.md` |
+| `leader` | `.gobbi/projects/gobbi/agents/leader.toml` | `.gobbi/projects/gobbi/agents/leader.md` |
+| `executor` | `.gobbi/projects/gobbi/agents/executor.toml` | `.gobbi/projects/gobbi/agents/executor.md` |
+| `evaluator` | `.gobbi/projects/gobbi/agents/evaluator.toml` | `.gobbi/projects/gobbi/agents/evaluator.md` |
+| `assistant` | `.gobbi/projects/gobbi/agents/assistant.toml` | `.gobbi/projects/gobbi/agents/assistant.md` |
+
+When Codex subagents are explicitly authorized by the user, use these custom agents by role and include explicit load directives for `principles`, project rules, `mistake`, and any phase-specific skills. Fresh subagents do not inherit loaded skills.
+
+---
+
+## Core Principles
+
+> **The logic of good work: Ideation -> Planning -> Execution -> Memorization -> Handoff.**
+
+Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution; it is mandatory after Execution and optional at the earlier steps. The 6-step state machine (Configuration as the CLI init phase, plus the 5 productive steps) lives in `packages/cli/src/specs/` and is driven by `gobbi workflow init`. Per-session telemetry lives in `<sessionDir>/session.json`. Cross-session memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.).
+
+**Ideation** - Explore what to do. PI agents investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
+
+**Planning** - Decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Optional evaluation.
+
+**Execution** - Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Mandatory evaluation after execution.
+
+**Memorization** - Read the conversation log, extract decisions, state, open questions, and mistakes. Write them where the next session can find them.
+
+**Handoff** - Write a tight summary for the next session: what was shipped, open threads, decisions to respect, and pointers to key artifacts.
+
+> **Evaluation is a mandatory sub-phase in the Gobbi workflow.**
+
+Evaluation runs inside Ideation, Planning, and Execution. The orchestrator selects evaluator perspectives based on task type, with Project and Overall always included. After evaluation, discuss findings with the user before improving. Never auto-apply evaluation findings. Producer/evaluator separation and perspective discipline live in `.agents/skills/principles/SKILL.md` Principle 2.
+
+> **MUST load `.agents/skills/principles/SKILL.md` at session start, resume, /clear, and /compact.**
+
+The 12 principles below are the enforceable behavioral discipline for every agent. The Iron Law table is the always-visible summary; load the skill for the full Why, Anti-rationalizations, and Mechanism behind each principle.
+
+| # | Iron Law |
+|---|---|
+| 1 | NO ACTION WITHOUT THINKING IT THROUGH FIRST. |
+| 2 | ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
+| 3 | BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
+| 4 | SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
+| 5 | NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
+| 6 | REFUSE TO TRANSACT IN VAGUENESS. |
+| 7 | NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. |
+| 8 | EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
+| 9 | EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
+| 10 | NO CHANGE WITHOUT A REAL MOTIVATOR. |
+| 11 | NO IMPROVEMENT THAT GAMES THE TOOL. |
+| 12 | NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
+
+> **Gobbi-specific tooling: the `mistake` skill and `gobbi mistake promote` command.**
+
+Every agent MUST load `.agents/skills/mistake/SKILL.md` before starting work. When the user corrects any approach, immediately record it as a mistake in `.gobbi/projects/{name}/mistakes/`. After the session ends, run `gobbi mistake promote` to promote corrections to permanent workspace-level skill storage.
+
+---
+
+## Navigate Deeper
+
+| Document | Covers |
+|----------|--------|
+| `.agents/skills/gobbi/SKILL.md` | Entry point, session setup questions, skill map |
+| `.codex-plugin/plugin.json` | Local Gobbi plugin manifest |
+| `.gobbi/projects/gobbi/skills/` | Plugin-facing Gobbi skills directory |
+| `.agents/skills/principles/SKILL.md` | 12 behavioral principles every agent must follow |
+| `.agents/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
+| `.agents/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |
+| `.codex/agents/manager.toml` | Root session manager custom-agent wrapper |
+| `.codex/agents/leader.toml` | Ideation, preparation, research, and planning custom-agent wrapper |
+| `.codex/agents/executor.toml` | Scoped implementation custom-agent wrapper |
+| `.codex/agents/evaluator.toml` | Independent adversarial evaluation custom-agent wrapper |
+| `.codex/agents/assistant.toml` | Narrow lookup and memorization support custom-agent wrapper |

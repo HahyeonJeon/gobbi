@@ -1,0 +1,25 @@
+{
+  "name": "gobbi",
+  "version": "0.1.0",
+  "description": "Gobbi workflow skills for Codex.",
+  "author": {
+    "name": "Gobbi"
+  },
+  "skills": "./.gobbi/projects/gobbi/skills/",
+  "interface": {
+    "displayName": "Gobbi",
+    "shortDescription": "Use Gobbi workflow skills in Codex.",
+    "longDescription": "Gobbi packages workflow skills for structured ideation, planning, execution, evaluation, memorization, and handoff work in Codex.",
+    "developerName": "Gobbi",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use Gobbi principles for this task.",
+      "Plan this task with Gobbi workflow skills.",
+      "Evaluate this work with Gobbi criteria."
+    ]
+  }
+}

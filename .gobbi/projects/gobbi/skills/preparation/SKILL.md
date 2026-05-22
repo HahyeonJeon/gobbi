@@ -327,7 +327,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 **Inputs**
 - `sessions/{date}-{session-id}/preparation/rawdata/draft-iter{n}.md` — current iteration's WORK output
 - `sessions/{date}-{session-id}/preparation/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
-- `$CLAUDE_TRANSCRIPT_PATH` — Claude Code transcript jsonl for the iteration window
+- `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
 - `sessions/{date}-{session-id}/preparation/rawdata/discussion-log.md`
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 - WORK-staged artifacts under `sessions/{date}-{session-id}/preparation/staging/` (already in place — MEMORIZATION supplements, never replaces)
@@ -372,7 +372,7 @@ All writes during the Preparation Loop are **session-scoped**. Wrap-up promotes 
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — the Claude Code session ID from `$CLAUDE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
+- `{session-id}` — the Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time
 - `{n}` — iter number, supplied by the manager

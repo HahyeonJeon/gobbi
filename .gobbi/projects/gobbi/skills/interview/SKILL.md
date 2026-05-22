@@ -321,7 +321,7 @@ The interview writes both session-scoped audit files and project-scoped baseline
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — the Claude Code session ID from `$CLAUDE_SESSION_ID` (or the Codex session ID under Codex)
+- `{session-id}` — the Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex)
 - `{project-name}` — project slug from `session.json.project`
 - `{feature-name}` — feature slug surfaced during Wave 4
 - `{slug}` — kebab-case slug for the specific artifact

@@ -1,6 +1,6 @@
 ---
 name: wrap-up
-description: MUST load when entering or revising the Wrap-up Loop. Covers staging → project-memory promotion across all loops, handoff summary authoring, feature directory bootstrapping, and the per-session journal. Wrap-up is the sole writer to project memory for cross-loop session artifacts (exception: Preparation promotes its generate-now skills before Planning starts).
+description: "MUST load when entering or revising the Wrap-up Loop. Covers staging → project-memory promotion across all loops, handoff summary authoring, feature directory bootstrapping, and the per-session journal. Wrap-up is the sole writer to project memory for cross-loop session artifacts (exception: Preparation promotes its generate-now skills before Planning starts)."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
@@ -277,7 +277,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 - `sessions/{date}-{session-id}/wrap-up/artifacts/handoff.md` (and any decomposed artifact files) from WORK
 - `sessions/{date}-{session-id}/wrap-up/rawdata/promotion-manifest.md` — the routing audit trail
 - `sessions/{date}-{session-id}/wrap-up/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
-- `$CLAUDE_TRANSCRIPT_PATH` — Claude Code transcript jsonl
+- `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl
 - `sessions/{date}-{session-id}/wrap-up/rawdata/discussion-log.md`
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 
@@ -322,7 +322,7 @@ All session-memory writes during the Wrap-up Loop are scoped to `sessions/{date}
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — the Claude Code session ID from `$CLAUDE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
+- `{session-id}` — the Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
 - `{project-name}` — project slug from `session.json.project`
 - `{feature-name}` — feature slug from `session.json.feature` (set during Ideation Sub-step B Lock Scope)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time or by Wrap-up at promotion time

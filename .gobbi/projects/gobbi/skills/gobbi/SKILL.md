@@ -48,22 +48,41 @@ These six skills give the manager the floor to operate. All other skills are loa
 
 ### 2. Session env vars arrive automatically
 
-A SessionStart hook fires at session start, reads the hook's stdin JSON payload, and persists the following env vars to `$CLAUDE_ENV_FILE`. Claude Code then sources that file, making the vars available to every subsequent command in the session:
+The `.claude/hooks/session-start.sh` script — registered in `.claude/settings.json` under `hooks.SessionStart` with matcher `startup|resume|clear|compact` — fires at every session start event. It reads the hook's stdin JSON payload and appends shell-safe `export VAR=value` lines to `$CLAUDE_ENV_FILE` (serialized via `jq -r @sh`). Claude Code re-sources that file after each fire, making the vars available to every subsequent command in the session:
 
 | Env var | Source |
 |---|---|
-| `CLAUDE_SESSION_ID` | stdin JSON `session_id` |
-| `CLAUDE_TRANSCRIPT_PATH` | stdin JSON `transcript_path` |
+| `CLAUDE_CODE_SESSION_ID` | stdin JSON `session_id` (also mirrored in `session.json.transcriptPath` stamping context) |
+| `CLAUDE_TRANSCRIPT_PATH` | stdin JSON `transcript_path` (also stamped as tilde-form path in `session.json.transcriptPath` by the manager during Configuration Step 1 row 6) |
 | `CLAUDE_CWD` | stdin JSON `cwd` |
-| `CLAUDE_HOOK_EVENT_NAME` | stdin JSON `hook_event_name` |
+| `CLAUDE_HOOK_EVENT_NAME` | stdin JSON `hook_event_name` (always `"SessionStart"`) |
+| `CLAUDE_HOOK_SOURCE` | stdin JSON `source` (one of `startup` / `resume` / `clear` / `compact`; distinct from `CLAUDE_HOOK_EVENT_NAME`) |
 | `CLAUDE_AGENT_ID` | stdin JSON `agent_id` (when present) |
 | `CLAUDE_AGENT_TYPE` | stdin JSON `agent_type` (when present) |
 | `CLAUDE_PERMISSION_MODE` | stdin JSON `permission_mode` (when present) |
-| `CLAUDE_PROJECT_DIR` | natively-provided env (passthrough) |
-| `CLAUDE_PLUGIN_ROOT` | natively-provided env (passthrough) |
-| `CLAUDE_PLUGIN_DATA` | natively-provided env (passthrough) |
+| `CLAUDE_PROJECT_DIR` | natively-provided env (passthrough — re-exported only if already set) |
+| `CLAUDE_PLUGIN_ROOT` | natively-provided env (passthrough — re-exported only if already set) |
+| `CLAUDE_PLUGIN_DATA` | natively-provided env (passthrough — re-exported only if already set) |
 
-If `$CLAUDE_SESSION_ID` is absent (hook not registered or custom Claude Code config), the workflow cannot proceed — surface to the user and ask them to verify the SessionStart hook registration.
+**Two-gate health check.** Run both gates during Configuration Step 1 before proceeding with the workflow:
+
+- **Gate 1 — Runtime check (CCSI presence).** Verify `$CLAUDE_CODE_SESSION_ID` is non-empty. If absent: surface a warning — "`$CLAUDE_CODE_SESSION_ID` is unset. Claude Code should auto-set this as of v2.1.132; the install may be broken or the runtime is older than v2.1.132. Investigate before continuing." CCSI is set by the runtime independently of the hook, so its absence is a runtime/install signal, not a hook failure.
+- **Gate 2 — Hook check (transcript path + file presence).** Verify `$CLAUDE_TRANSCRIPT_PATH` is non-empty AND the file at that path exists (`test -f "$CLAUDE_TRANSCRIPT_PATH"`). If either condition fails while Gate 1 passes: surface a warning — "`$CLAUDE_TRANSCRIPT_PATH` is unset or its target file is missing. The SessionStart hook may not have fired — investigate `.claude/hooks/session-start.sh` (check executable bit, `jq` availability, and `.claude/settings.json` `hooks.SessionStart` registration)."
+
+Both warnings surface to the user (not silent log lines); the manager continues the workflow only after the user acknowledges or remediates.
+
+### 2a. Runtime-set env vars
+
+The following vars are set **by the Claude Code runtime** in every Bash subprocess — no hook required. They are available in all shell tool calls regardless of whether the SessionStart hook fired:
+
+| Env var | Value | Notes |
+|---|---|---|
+| `CLAUDE_CODE_SESSION_ID` | session UUID | Auto-set since Claude Code **v2.1.132** (per official changelog); the session UUID. Also exported by the SessionStart hook as a belt-and-suspenders fallback when the runtime has not yet set it. |
+| `CLAUDE_EFFORT` | `low` / `medium` / `high` / `xhigh` / `max` | Current effort level for this session. |
+| `CLAUDECODE` | `1` | Set to `1` inside Claude Code Bash subprocesses; useful for "am I running inside Claude" detection. |
+| `CLAUDE_CODE_REMOTE` | `"true"` or unset | `"true"` in web/remote deployments; unset locally. |
+
+**Docs-vs-empirical discrepancy.** The Claude Code docs list `CLAUDE_PROJECT_DIR`, `CLAUDE_PLUGIN_ROOT`, and `CLAUDE_PLUGIN_DATA` as runtime-set vars, but empirical observation in session `bac669ad` shows them unset in Bash subshells. The SessionStart hook re-exports them to `$CLAUDE_ENV_FILE` if they are already present in the hook process's env (see passthrough rows in the table above), but skills should not rely on their presence — treat them as conditional.
 
 ### 3. Check for existing session settings
 

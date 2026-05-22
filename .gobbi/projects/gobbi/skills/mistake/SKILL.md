@@ -126,7 +126,7 @@ Wrap-up reads these staging files and promotes to the destination based on user-
 **Path conventions**
 
 - `{date}` — session start date in `YYYY-MM-DD`
-- `{session-id}` — Claude Code session ID from `$CLAUDE_SESSION_ID`
+- `{session-id}` — Claude Code session ID from `$CLAUDE_CODE_SESSION_ID`
 - `{loop}` — the loop during which the mistake was staged (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
 - `{slug}` — kebab-case derived from the mistake's primary symptom (≤ 60 characters)
 - `{project-name}` — project slug from `session.json.project`

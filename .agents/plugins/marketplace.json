@@ -1,0 +1,20 @@
+{
+  "name": "gobbi-workspace",
+  "interface": {
+    "displayName": "Gobbi Workspace"
+  },
+  "plugins": [
+    {
+      "name": "gobbi",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
