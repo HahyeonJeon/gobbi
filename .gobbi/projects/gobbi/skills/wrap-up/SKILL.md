@@ -1,6 +1,6 @@
 ---
 name: wrap-up
-description: MUST load when entering or revising the Wrap-up Loop. Covers staging → project-memory promotion across all loops, handoff summary authoring, feature directory bootstrapping, and the per-session journal. Wrap-up is the sole writer to project memory for cross-loop session artifacts (exception: Preparation promotes its generate-now skills before Planning starts).
+description: "MUST load when entering or revising the Wrap-up Loop. Covers staging → project-memory promotion across all loops, handoff summary authoring, feature directory bootstrapping, and the per-session journal. Wrap-up is the sole writer to project memory for cross-loop session artifacts (exception: Preparation promotes its generate-now skills before Planning starts)."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
