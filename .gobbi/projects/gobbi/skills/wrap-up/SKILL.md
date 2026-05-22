@@ -277,7 +277,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 - `sessions/{date}-{session-id}/wrap-up/artifacts/handoff.md` (and any decomposed artifact files) from WORK
 - `sessions/{date}-{session-id}/wrap-up/rawdata/promotion-manifest.md` — the routing audit trail
 - `sessions/{date}-{session-id}/wrap-up/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
-- `$CLAUDE_TRANSCRIPT_PATH` — Claude Code transcript jsonl
+- `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl
 - `sessions/{date}-{session-id}/wrap-up/rawdata/discussion-log.md`
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 

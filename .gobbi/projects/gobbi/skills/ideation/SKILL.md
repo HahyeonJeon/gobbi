@@ -404,7 +404,7 @@ See [memorization skill](../memorization/SKILL.md) for template-stamping convent
 **Inputs**
 - `sessions/{date}-{session-id}/ideation/rawdata/draft-iter{n}.md` — current iteration's WORK output
 - `sessions/{date}-{session-id}/ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` (cross-system divergence derived by comparing these per-perspective files)
-- `$CLAUDE_TRANSCRIPT_PATH` — Claude Code transcript jsonl for the iteration window
+- `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
 - `sessions/{date}-{session-id}/ideation/rawdata/discussion-log.md` — manager-captured AskUserQuestion exchanges
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 
@@ -412,7 +412,7 @@ See [memorization skill](../memorization/SKILL.md) for template-stamping convent
 
 | # | When | Agent | Operation | Source | Target | Action |
 |---|---|---|---|---|---|---|
-| 1 | every iter | Assistant | **CREATE** | `$CLAUDE_TRANSCRIPT_PATH` | `sessions/{date}-{session-id}/ideation/rawdata/transcript-iter{n}.jsonl` | Preserve raw transcript turns from the iteration window (DISCUSSION start through verdict). Filter to ideation-loop turns; drop unrelated lines if multi-loop transcript |
+| 1 | every iter | Assistant | **CREATE** | `session.json.transcriptPath` (tilde-expand `$HOME` on read; `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env) | `sessions/{date}-{session-id}/ideation/rawdata/transcript-iter{n}.jsonl` | Preserve raw transcript turns from the iteration window (DISCUSSION start through verdict). Filter to ideation-loop turns; drop unrelated lines if multi-loop transcript |
 | 2 | every iter | Assistant | **UPSERT** | This iteration's verdict + iter number | `sessions/{date}-{session-id}/session.json` | Upsert (insert-or-replace) `workflow.ideation.iterations[]` entry keyed by `iter` with full schema `{iter, verdict, finishedAt, evaluation_dir: "evaluation/iter{n}/"}`. Idempotent on re-run: re-running MEMORIZATION on the same iter overwrites the entry, never appends a duplicate. Preserve all prior fields. Do **not** set `workflow.ideation.finishedAt` (loop-level) yet — that's PASS-only, Step 8 |
 | 3 | every iter | Assistant | **GUARD** | This iteration's verdict | — | If verdict is `REVISE`: stop here. The loop re-enters DISCUSSION with this iter's evaluator findings as input. Steps 4–10 are skipped because there is no canonical artifact yet. If verdict is `FAIL`: stop here. The manager escalates via AskUserQuestion (revise / abort-ideation / accept-with-deferral per the EVALUATION phase procedure); Steps 4–10 are skipped. If verdict is `PASS`: continue |
 | 4 | PASS only | Assistant | **CREATE** | Rawdata draft + both systems' evaluator findings + discussion log + cross-system divergence (derived by comparing per-system files) | `sessions/{date}-{session-id}/ideation/artifacts/` | Integrate sources into canonical artifact per the required-sections template. Include cross-system divergence summary in the Evaluation summary section. This is the Planning Loop's briefing source |

@@ -205,7 +205,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 **Inputs**
 - `sessions/{date}-{session-id}/execution/{task-id}/rawdata/draft-iter{n}.md` — executor's notes for this iter
 - `sessions/{date}-{session-id}/execution/{task-id}/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
-- `$CLAUDE_TRANSCRIPT_PATH` — Claude Code transcript jsonl for the iteration window
+- `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
 - `sessions/{date}-{session-id}/execution/{task-id}/rawdata/discussion-log.md` — manager-captured AskUserQuestion exchanges (contribution points, divergence decisions)
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 - WORK-staged artifacts under `sessions/{date}-{session-id}/execution/{task-id}/staging/` (already in place — MEMORIZATION supplements, never replaces)
