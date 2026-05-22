@@ -43,6 +43,7 @@ fi
 # Read stdin JSON payload.
 # ---------------------------------------------------------------------------
 payload="$(cat)"
+[[ -n "$payload" ]] || { printf '%s\n' "session-start.sh: empty stdin — expected JSON payload" >&2; exit 1; }
 
 # ---------------------------------------------------------------------------
 # REQUIRED fields — always present; emit one export line each via @sh.
