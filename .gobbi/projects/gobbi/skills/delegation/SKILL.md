@@ -34,6 +34,10 @@ Every delegation prompt contains a numbered Load Directives block. The subagent 
 
 Every spawned agent reports with an explicit status enum at the end of its response. The enum is the last thing the subagent reads in the prompt before producing output (recency bias). The manager parses the status line first and dispatches deterministically.
 
+> **Any delegation prompt for a MEMORIZATION sub-phase MUST include `memorization/SKILL.md` in tier 3 (Skills) of the Load Directives block.**
+
+MEMORIZATION is a specialized sub-phase with its own memory-tier boundaries, staging rules, and idempotency contract. A fresh subagent dispatched to run MEMORIZATION cannot operate correctly without loading `memorization/SKILL.md`. This is a hard gate: a delegation prompt that omits `memorization/SKILL.md` from the Skills tier when the sub-phase is MEMORIZATION is a malformed prompt — the manager must add it before dispatching.
+
 ---
 
 ## Per-role Templates
@@ -99,6 +103,8 @@ Mandatory in every delegation prompt, ordered top-to-bottom:
 **Why this order.** Principles set the discipline floor (what every agent must never do). Rules narrow that to the project's conventions. Skills give the role-and-domain procedure. Mistakes inject the specific past pitfalls the subagent must avoid in this domain. Loading in this order ensures the most-general discipline is established before the most-specific guidance, so the subagent cannot rationalize a domain skill into violating a principle.
 
 **No inheritance.** Even if the manager already loaded `principles` minutes earlier, every fresh subagent must load it again. There is no session inheritance.
+
+**MEMORIZATION hard gate.** When the delegated phase is MEMORIZATION (or includes a MEMORIZATION sub-phase), `memorization/SKILL.md` MUST appear in tier 3 (Skills). The memorization skill defines the memory-tier access matrix, staging rules, idempotency contract, and exit checklist that the sub-phase agent must follow. Omitting it produces an agent that cannot operate the sub-phase correctly. Per-role templates for `assistant`, `leader`, and `executor` include a placeholder for this entry; see the templates in [`templates/`](templates/).
 
 ---
 
