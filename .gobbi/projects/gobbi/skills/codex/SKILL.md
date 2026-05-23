@@ -74,7 +74,7 @@ The assistant-wrapper fixes this by pushing the validation into the subagent:
 1. Manager spawns 2 `assistant` subagents **in parallel** via `Agent(subagent_type="assistant", run_in_background: true, ...)` — one Claude-side, one Codex-side.
 2. Each assistant delegation prompt includes this `codex` skill in its Load Directives.
 3. The Codex-side assistant's prompt instructs it to run `codex exec` **foreground** (no `run_in_background` inside the subagent's Bash call). The Bash blocks synchronously until codex exits.
-4. After codex exits, the assistant reads the output files at the contracted paths, verifies they exist, greps for required content (verdict lines, perspective files, 5-Type vocabulary), and reports `DONE` only after validation passes.
+4. After codex exits, the assistant reads the output files at the contracted paths, verifies they exist, greps for required content (verdict lines, perspective files, 5-Type vocabulary: `scenario_gap`, `checklist_gap`, `design_flaw`, `assumption_risk`, `general`), and reports `DONE` only after validation passes.
 5. The assistant reports `BLOCKED` if codex output is missing or malformed — never silent `DONE`.
 6. The Claude-side assistant runs its evaluation independently via Read/Grep tools.
 7. Both assistants return via Agent completion notification (background topology from the manager's perspective) — but because each assistant validated its own output, the notification carries a verified result, not a raw "codex finished, hope it worked".
@@ -120,6 +120,21 @@ timeout 600 codex exec --sandbox read-only --cd /playinganalytics/git/gobbi \
 # WRONG — Agent tool is not available to non-manager roles; this call fails
 # Agent(subagent_type="codex:codex-rescue", ...)
 ```
+
+**Empirical witnesses cited above (from session `2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068` Ideation research):**
+
+- I1: `codex exec` is the only invocation path universally available across manager + subagent contexts — `codex:codex-rescue` is a thin Bash forwarder, not a general-purpose wrapper
+- I2: `/codex:adversarial-review` has `disable-model-invocation: true` — user-only; manager must ask user to type it (Section 2(c))
+- I3: Codex sandbox defaults to `read-only`; write requires `--sandbox workspace-write` — Linux sandbox uses bubblewrap; `workspace-write` allows writes to CWD subtree only
+- I4: Codex CWD defaults to `process.cwd()`; set explicitly via `--cd`. The worktree-nested-path mistake traces to this (Section 4)
+- I5: No built-in timeout in `codex exec`. Shell `timeout 600 codex exec ...` is the mechanism (Section 5)
+- I13: `.claude/agents/{leader,executor,evaluator,assistant}.md` — all lack Agent tool. Only manager has `tools: "*"`. `codex:codex-rescue` itself declares `tools: Bash` (thin wrapper)
+- I14: `.agents/skills/` has 16 directory symlinks pre-ship; adding codex brings count to 17. Both `.claude/skills/codex/SKILL.md` (file-level) and `.agents/skills/codex` (directory-level) mandatory — dogfood requires codex to load its own skill
+- E1: Codex CLI uses app-server + thread-based execution; `--resume-last` continues prior thread; no resume = fresh context
+- E2: Linux sandbox: `workspace-write` writes to CWD subtree; `--add-dir <DIR>` extends writable set for cross-tree writes
+- E3: Effort levels `none|minimal|low|medium|high|xhigh`; unset = user config default; leave unset unless user requests
+- E4: Default model from `~/.codex/config.toml`; do NOT override `--model` without user direction
+- E5: `/codex:setup` is the first-use precondition; gobbi does not install codex itself
 
 ---
 
@@ -214,6 +229,8 @@ timeout 600 codex exec --sandbox workspace-write ...
 
 The assistant-wrapper pattern (Section 2(d)) resolves this tradeoff: the manager spawns assistants in background (parallelism at the manager level), but each assistant runs its own codex exec foreground (synchronous from the assistant's perspective). The manager gets verified DONE via the assistant's Agent completion notification.
 
+For longer-running codex jobs that span multiple worktree-bound tool calls, see `git/SKILL.md § Worktree CWD discipline` — codex inherits CWD from the calling shell, and worktree-bound CWD applies to both file reads/writes and `--cd` defaults.
+
 ### Companion plugin controls
 
 For jobs running via the codex companion runtime (not `codex exec` direct):
@@ -270,11 +287,21 @@ Step 1. Run codex exec FOREGROUND via your Bash tool:
     "@/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/staging/codex-eval-prompt.md"
 
 Step 2. Verify output files landed at the absolute main-tree path:
-  - /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/staging/codex-perspective.md MUST exist.
-  - grep -q "VERDICT:" ... MUST succeed.
 
-Step 3. If either check fails, report BLOCKED with the specific failure. Do NOT report DONE if files are missing.
-Step 4. If both checks pass, report DONE.
+  # Must be 8 per-perspective output files (one per evaluation perspective):
+  ls /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/ | wc -l  # must be 8
+
+  # 5-Type vocabulary must appear in output (scenario_gap, checklist_gap, design_flaw, assumption_risk, general):
+  grep -E "scenario_gap|checklist_gap|design_flaw|assumption_risk|general" \
+    /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/*.md | wc -l  # >= 1 hit per file (5 vocab present)
+
+  # Verdict line must be present in overall.md:
+  grep "^VERDICT:" /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/overall.md  # verdict line present
+
+  # If any check fails: STATUS: BLOCKED, do not silent DONE.
+
+Step 3. If any check fails, report BLOCKED with the specific failure. Do NOT report DONE if files are missing or malformed.
+Step 4. If all checks pass, report DONE.
 
 Session writes MUST use the absolute main-tree path above.
 Do NOT use relative paths or pwd-derived paths.
@@ -364,6 +391,8 @@ Wrap every `codex exec` call with `timeout 600`. This prevents cost runaway from
 - **Manager reading its own summary of codex eval results instead of the actual per-perspective files.** A summarized handoff from an assistant may drop findings or compress nuance. After evaluation, the manager MUST read the actual output files at the contracted paths before acting on findings.
 
 - **Using `Co-Authored-By:` instead of `AI-Provenance-Record:` in commits that include codex-spawned work.** Codex work is provenance-tracked with `AI-Provenance-Record:` footer, not `Co-Authored-By:`. Pairing the wrong footer misattributes the contribution type.
+
+- **Missing `.agents/skills/codex` directory symlink**: a codex skill that codex itself cannot load is a contradiction. If you create the codex skill at `.gobbi/projects/gobbi/skills/codex/SKILL.md` and a Claude-facing `.claude/skills/codex/SKILL.md` symlink but DON'T also create the directory-level `.agents/skills/codex -> ../../.gobbi/projects/gobbi/skills/codex`, then codex CLI (running under `.codex` repo-local entry points per `.codex/AGENTS.md`) cannot find this skill. Verify with `ls -la /playinganalytics/git/gobbi/.agents/skills/codex` — should resolve to a directory symlink.
 
 ---
 
