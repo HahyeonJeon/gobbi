@@ -134,7 +134,7 @@ Read accumulated `staging/` directories across all prior loops, promote each fil
 | # | Step | Action |
 |---|---|---|
 | 1 | **Snapshot pre-Wrap-up state** | Capture the current `.gobbi/projects/{project-name}/` state as the baseline. Save to `sessions/{date}-{session-id}/wrap-up/rawdata/pre-wrap-up-snapshot.txt`. This is what Wrap-up evaluation diffs against |
-| 2 | **Enumerate all staging across all loops** | For each loop directory in `sessions/{date}-{session-id}/{ideation,preparation,planning,execution}/`, recursively list `staging/`. Build a master inventory at `sessions/{date}-{session-id}/wrap-up/rawdata/staging-inventory.md` — every staging file path, sized + frontmatter-extracted |
+| 2 | **Enumerate all staging across all loops** | For each loop directory in `sessions/{date}-{session-id}/{ideation,preparation,planning,execution}/`, recursively list `staging/`. Build a master inventory at `sessions/{date}-{session-id}/wrap-up/rawdata/staging-inventory.md` — every staging file path, sized + frontmatter-extracted. **Step 2.5 runs immediately after this step** — see `### Step 2.5` below for the prior-loop MEMORIZATION compliance scan that must complete before Step 3 |
 | 3 | **Determine feature destination** | Read `session.json.feature` for the canonical feature slug `{feature-name}` (set during Ideation Sub-step B Lock Scope). If `.gobbi/projects/{project-name}/features/{feature-name}/` does not exist, plan to bootstrap it lazily at Step 5. If it exists from prior sessions, capture pre-Wrap-up state of each sub-directory for collision detection |
 | 4 | **Apply routing table to each staging file** | For every staging file in the inventory: (a) identify staging type from path; (b) look up destination in the routing table; (c) read frontmatter for `mistake-candidate: true`, `supersedes:`, `project-scope: true`, `disposition: deferred` — these are routing modifiers; (d) resolve final destination per modifiers + collision policy; (e) if user-confirm is required (rules / project-wide design / mistake scope / unrouted file), return `NEEDS_CONTEXT` with a `user-question:` block — the manager runs AskUserQuestion on your behalf, then re-delegates with the confirmed routing decision; (f) record routing decision in `rawdata/promotion-manifest.md`. **Unrouted files escalate — never improvise** |
 | 5 | **Bootstrap + write to project memory** | For each routing decision: create the destination's parent directory if missing (lazy bootstrap); write the file at the destination per collision policy; for first write into `features/{feature-name}/`, also create or update `features/{feature-name}/README.md` per [`memorization/templates/feature-readme.md`](../memorization/templates/feature-readme.md); stamp the appropriate template from [`memorization/templates/`](../memorization/templates/) for each promotion |
@@ -172,6 +172,7 @@ Project-memory writes (the substantive work):
 - [ ] Handoff summary written at `artifacts/handoff.md` with all required sections + frontmatter
 - [ ] Every routing decision applied mechanically per the table; no improvised destinations
 - [ ] User-confirm requested via `NEEDS_CONTEXT` (manager ran AskUserQuestion on your behalf) for: rules promotion, project-wide design, mistake scope, unrouted staging files
+- [ ] Step 2.5 prior-loop compliance scan recorded in `rawdata/promotion-manifest.md`
 
 ### WORK discipline
 
@@ -179,6 +180,64 @@ Project-memory writes (the substantive work):
 - **No improvised destinations.** The routing table is the contract; unrouted files escalate.
 - **Cite the discussion.** Every routing decision that required AskUserQuestion is traceable to the discussion log entry that authorized it.
 - **Stamp templates.** Every promotion uses the appropriate template from [`memorization/templates/`](../memorization/templates/) — freeform writes to project memory are forbidden.
+
+### Step 2.5 — Prior-loop MEMORIZATION compliance check
+
+**Purpose** — Before Step 3 reads `session.json.feature`, verify that every prior loop's staging output is structurally sound for promotion. This is a read-only compliance scan: it detects shape violations and type-vocabulary errors, then either auto-backfills mechanical-class findings or escalates judgment-required findings via `NEEDS_CONTEXT`.
+
+**When it runs** — Immediately after Step 2 builds the staging inventory at `rawdata/staging-inventory.md`. No project-memory writes happen until all Step 2.5 findings are resolved.
+
+**Gap categories**
+
+For each loop directory that appears in the staging inventory, classify any compliance gap into one of four categories:
+
+| Category | Condition | Auto-backfill? | NEEDS_CONTEXT? |
+|---|---|---|---|
+| `zero-staging` | Prior loop's staging dir is empty | N/A | YES |
+| `shape-mismatch` | Files exist but per-finding `{slug}.md` convention violated (bulk files / wrong shape) | mechanical-class only | judgment only |
+| `template-mismatch` | Frontmatter `type:` missing or off-vocabulary | mechanical-class only | judgment only |
+| `directory-absent` | Staging directory does not exist | NO | YES |
+
+**5-Type classification** (source: [`evaluation/SKILL.md` § Type](../evaluation/SKILL.md#type-5-values))
+
+The `type:` frontmatter field in every staging file must be one of the five values defined in `evaluation/SKILL.md`:
+
+- `scenario_gap`
+- `checklist_gap`
+- `design_flaw`
+- `assumption_risk`
+- `general`
+
+Mechanical-class = `{scenario_gap, checklist_gap, general}` — these map to deterministic routing destinations and auto-backfill is safe.
+
+Judgment-required = `{design_flaw, assumption_risk}` — these carry adversarial semantics (broken invariant / unverified assumption) and require the assistant to return `NEEDS_CONTEXT` with a `user-question:` block before any backfill proceeds.
+
+**Classification decision matrix**
+
+| Finding `type:` | Category | Action |
+|---|---|---|
+| `scenario_gap` / `checklist_gap` / `general` | `shape-mismatch` or `template-mismatch` | Auto-backfill: normalize the file to the correct `{slug}.md` shape / insert the missing `type:` field. Apply Slug+collision policy (see below) before writing |
+| `design_flaw` / `assumption_risk` | `shape-mismatch` or `template-mismatch` | Return `NEEDS_CONTEXT`; pause auto-backfill for this finding until the manager responds |
+| any | `zero-staging` | Return `NEEDS_CONTEXT`: "Loop `{loop}` staging dir is empty — was that intentional?" |
+| any | `directory-absent` | Return `NEEDS_CONTEXT`: "Loop `{loop}` staging dir does not exist — verify the loop ran" |
+
+**Slug + collision policy** (source: [`evaluation/SKILL.md` § Slug + collision policy](../evaluation/SKILL.md#slug--collision-policy))
+
+Before writing any auto-backfill file:
+
+1. Slugs are kebab-case, ≤ 60 characters, derived from the finding's primary symptom.
+2. Read the existing file at the target path, if any.
+3. If a file exists and its `finding-id` frontmatter matches the new finding → overwrite (idempotent re-run).
+4. If a file exists and its `finding-id` does NOT match → disambiguate with `-2`, `-3` numeric suffix.
+5. Record the disambiguation in `rawdata/promotion-manifest.md`.
+
+**Gap report destination** — All Step 2.5 findings (gaps detected, classification, action taken, auto-backfill result, or NEEDS_CONTEXT escalation) are appended to `sessions/{date}-{session-id}/wrap-up/rawdata/promotion-manifest.md`. Each entry carries: loop name, staging path, gap category, finding type, action (auto-backfill / NEEDS_CONTEXT), result or escalation reason.
+
+**Exit criteria for Step 2.5** — Step 3 may not begin until:
+- Every `shape-mismatch` and `template-mismatch` gap with a mechanical-class type has been auto-backfilled.
+- Every judgment-required finding has a recorded NEEDS_CONTEXT escalation with a manager response.
+- Every `zero-staging` and `directory-absent` gap has a recorded NEEDS_CONTEXT escalation with a manager response.
+- All Step 2.5 gap report entries are written to `rawdata/promotion-manifest.md`.
 
 ---
 

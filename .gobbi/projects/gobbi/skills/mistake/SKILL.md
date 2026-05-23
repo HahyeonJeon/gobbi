@@ -77,7 +77,7 @@ When a correction occurs:
 
 1. Stop and acknowledge it — do not silently adjust and continue.
 2. Note it as a mistake-candidate with: what went wrong, why (the mistaken assumption), how to recognize it next time, the corrected approach.
-3. Do not defer to MEMORIZATION — write the candidate note immediately so it survives if the session is interrupted.
+3. Write the candidate note **immediately** — do not defer to MEMORIZATION. If the session is interrupted before MEMORIZATION runs, deferred notes are lost. This is the moment-of-capture discipline; see [`memorization/SKILL.md` § Core Principles § Moment-of-capture](../memorization/SKILL.md#core-principles) for the rationale and empirical witness.
 
 ### P3 — Stage a mistake-candidate during MEMORIZATION
 

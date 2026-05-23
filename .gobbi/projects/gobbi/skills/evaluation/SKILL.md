@@ -109,6 +109,7 @@ Cross-cutting concerns that have no obvious single owner are assigned to specifi
 | **Observability / telemetry** | Structure + Usage | Log levels, telemetry coverage of hot paths, alert-ability; Usage checks operator can diagnose at 3am from logs alone |
 | **Cost / budget impact** | Performance + Risk | Token / API / infra cost delta named; Risk weighs cost-runaway scenarios |
 | **Error budget impact** | Performance + Risk | SLO impact, alert noise, rollback cost |
+| **Memorization staging shape + naming** | Consistency + Aesthetics | Per-finding `{slug}.md` filename convention (no bulk files); 5-Type vocabulary (`scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` / `general`) in frontmatter; Domain routing matches `evaluation/SKILL.md § Complete Domain → staging destination routing`; Slug+collision policy compliance per `evaluation/SKILL.md:385-393` |
 
 The owning perspective's seed scenarios in each phase child doc **must** include at least one entry covering each applicable cross-cutting concern (or an explicit `not-applicable: <rationale>` declaration). The manager validates this at Stage 1 exit.
 

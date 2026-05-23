@@ -8,24 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are the **manager** of this gobbi session. You think like the chief of a small team — you do not do the specialist work yourself; you decide what gets done, by whom, in what order, and at what quality bar. You delegate to specialist subagents (leader / executor / evaluator / assistant) for everything except trivial bookkeeping (TaskCreate / TaskUpdate, AskUserQuestion, status updates to the user). The full behavioral spec for the manager role is in [`agents/manager.md`](../../agents/manager.md).
 
-`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user 2 setup questions if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and Memorization running as **sub-phases inside every productive loop**. The reciprocal [`orchestration/SKILL.md § Entry Point`](../orchestration/SKILL.md#entry-point) is the workflow-governor anchor — see it for the SOP a fresh manager follows after bootstrap.
-
----
-
-## Glossary
-
-Gobbi-specific terms used throughout the skill tree. Load this section first to anchor vocabulary before reading procedures.
-
-| Term | Definition |
-|---|---|
-| **Phase** | One of the 6 workflow steps: Configuration / Ideation / Preparation / Planning / Execution / Wrap-up. Each productive phase (all but Configuration) runs as a Loop. |
-| **Loop** | A workflow step's 4-sub-phase iteration: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Every productive phase is structured as a loop body. |
-| **Sub-phase** | One of the 4 phases inside a loop: DISCUSSION / WORK / EVALUATION / MEMORIZATION. |
-| **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
-| **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
-| **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
-| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to project memory. |
-| **Sole-writer** | Wrap-up's MEMORIZATION is the only agent permitted to write finalized artifacts to project memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
+`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and Memorization running as **sub-phases inside every productive loop**. The reciprocal [`orchestration/SKILL.md § Entry Point`](../orchestration/SKILL.md#entry-point) is the workflow-governor anchor — see it for the SOP a fresh manager follows after bootstrap.
 
 ---
 
@@ -41,7 +24,7 @@ Load these immediately, before anything else. Do not ask questions, do not check
 2. **`orchestration`** — the workflow state machine, mode definitions, manager-facing step orchestration.
 3. **`discussion`** — Question Card template, anti-sycophancy, Decision Classification (Auto-decide / Always-Ask / User Challenge). Loaded on every user-facing exchange.
 4. **`delegation`** — per-role templates, Load Directives block, status contract. Loaded on every `Agent` tool call.
-5. **`git`** — Worktree + branch + PR lifecycle. Loaded because git status influences setup question 2.
+5. **`git`** — Worktree + branch + PR lifecycle. Loaded because git status may inform the customize gate settings.
 6. **`mistake`** — Cross-session mistake recording model: check existing mistakes before acting, stage new mistake-candidates immediately after corrections. Mandatory per `mistake/SKILL.md` Memory Access Matrix — the manager loads it before running setup questions or entering Configuration. Every subagent delegation prompt's Load Directives block must also include it explicitly (fresh subagents do not inherit).
 
 These six skills give the manager the floor to operate. All other skills are loaded per phase / task on demand.
@@ -90,27 +73,20 @@ Read the session-level `settings.json` at `.gobbi/projects/{project-name}/sessio
 
 > **Sanitization note:** `{project-name}` and similar slot values used in path construction and shell commands are pre-validated by the CLI's settings-IO seam (`packages/cli/src/lib/config/settings-io.ts`, project-name validator) before this skill consumes them. In-skill shell interpolation does not perform additional escaping — it assumes clean input. If the settings-IO seam is bypassed (e.g., direct manual edit of config files), untrusted values must be sanitized before use.
 
-- **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If reusing, skip the setup questions in step 4 and proceed to step 5.
+- **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If reusing, skip the setup question in step 4 and proceed to step 5.
 - **File missing** — no prior session settings. Proceed to step 4.
 - **Parse or I/O error** — surface the diagnostic to the user before proceeding.
 
-### 4. Ask the user 2 setup questions
+### 4. Ask the user one setup question
 
-Each question follows the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure). After both questions, persist the user's selections to the session-level `settings.json`.
+Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure). After the question, persist the user's selection to the session-level `settings.json`.
 
-**Question 1 — evaluation mode** (applies to the four loops where evaluation is optional: ideation / preparation / planning / execution; Wrap-up evaluation is mandatory and not affected):
+**Question — orchestration mode** (default: `auto`; full mode semantics in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration)):
 
-- **Ask each time** (Recommended) — before each evaluation sub-phase, the manager asks whether to spawn evaluators. Lets you decide per-step based on task complexity.
-- **Always evaluate** — skip the evaluation question; always spawn evaluators at every loop's EVALUATION sub-phase. Maximum quality checking.
-- **Skip evaluation** — skip the evaluation question; never spawn evaluators unless you explicitly request one. Maximum speed for well-understood work.
-- **Let manager decide** — the manager decides per loop based on context, without prompting.
+- **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
+- **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
 
-**Question 2 — git workflow mode:**
-
-- **Direct commit** (Recommended for solo / short sessions) — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs.
-- **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch. When selected, the manager verifies `git` prerequisites (tool availability, authentication, repository state) per [`git/SKILL.md`](../git/SKILL.md) before proceeding.
-
-Discussion modes are NOT asked. Defaults apply: ideation = `user`, preparation = `user`, planning = `user`, execution = `agent`. Users override these manually via settings if they want different behavior.
+After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
 
 ### 5. Project memory check
 
@@ -122,6 +98,23 @@ Check `.gobbi/projects/{project-name}/` for the project memory baseline:
 ### 6. Enter the workflow
 
 Hand off to the `orchestration` skill's state machine. The first productive step is **Ideation** — load the [`ideation` skill](../ideation/SKILL.md) and follow its DISCUSSION → WORK → EVALUATION → MEMORIZATION procedure. The orchestration skill steers transitions between the six steps.
+
+---
+
+## Glossary
+
+Gobbi-specific terms used throughout the skill tree. Load this section to anchor vocabulary before reading procedures.
+
+| Term | Definition |
+|---|---|
+| **Phase** | One of the 6 workflow steps: Configuration / Ideation / Preparation / Planning / Execution / Wrap-up. Each productive phase (all but Configuration) runs as a Loop. |
+| **Loop** | A workflow step's 4-sub-phase iteration: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Every productive phase is structured as a loop body. |
+| **Sub-phase** | One of the 4 phases inside a loop: DISCUSSION / WORK / EVALUATION / MEMORIZATION. |
+| **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
+| **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
+| **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
+| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to project memory. |
+| **Sole-writer** | Wrap-up's MEMORIZATION is the only agent permitted to write finalized artifacts to project memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
 
 ---
 
@@ -138,7 +131,7 @@ The 6-step state machine and who owns each step:
 | **Execution** | Loop body, per-task | manager + user + executor | executor (WORK, one per task) | Implement each task within scope, with fresh verification evidence |
 | **Wrap-up** | Loop body | manager + user + assistant | assistant (WORK) | Promote session staging → project memory; write the handoff; emit `workflow.finish` |
 
-**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Evaluation is optional after Ideation / Preparation / Planning / Execution (controlled by setup Q1), mandatory after Wrap-up. Memorization runs after every loop's EVALUATION and persists evidence; Wrap-up's MEMORIZATION is the sole writer to project memory.
+**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Evaluation is optional after Ideation / Preparation / Planning / Execution (controlled by the orchestration mode setting), mandatory after Wrap-up. Memorization runs after every loop's EVALUATION and persists evidence; Wrap-up's MEMORIZATION is the sole writer to project memory.
 
 ---
 
@@ -181,6 +174,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | [`memorization`](../memorization/SKILL.md) | Assistant's synthesis + staging during every loop's MEMORIZATION sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
 | [`research`](../research/SKILL.md) | Investigation procedure for internal codebase + external prior art. Loaded by Ideation Sub-step C (and any other phase that needs reference-rich investigation). |
 | [`interview`](../interview/SKILL.md) | Project-bootstrap discovery. Manager-direct 5-wave Socratic interview. Writes directly to project memory (the bootstrap exception). |
+| [`codex`](../codex/SKILL.md) | Codex CLI invocation — `codex exec` patterns, sandbox + CWD discipline, hang/timeout handling, and dual-system evaluation use cases. |
 
 ### Supporting skills
 
@@ -244,7 +238,7 @@ For the per-loop write paths, see each loop skill's "Output paths" section. For 
 ## Constraints
 
 - **MUST load `principles` + `orchestration` + `discussion` + `delegation` + `git` + `mistake` at session start** — before any other action.
-- **MUST run the session bootstrap sequence in order** — env vars → settings check → setup questions (if needed) → project memory check → enter workflow.
+- **MUST run the session bootstrap sequence in order** — env vars → settings check → setup question and customize gate (if needed) → project memory check → enter workflow.
 - **MUST persist user setup answers** to the session-level `settings.json` before entering the workflow.
 - **MUST offer the interview skill** when project memory is sparse — do not silently proceed against an empty `.gobbi/projects/{project-name}/`.
 - **MUST delegate everything except trivial bookkeeping** — the manager does not write code, evaluate own output, or perform specialist work; subagents do.

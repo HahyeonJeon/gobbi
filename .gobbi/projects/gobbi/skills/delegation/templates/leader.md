@@ -31,6 +31,7 @@ specific question(s) to answer, the artifact you will produce.>>
    - <<any additional rule files specific to this task>>
 3. Skills:
    - `mistake` skill (mandatory before any decision in this domain)
+   - `memorization/SKILL.md` (mandatory when this delegation includes a MEMORIZATION sub-phase; omit otherwise)
    - Phase doc: <<orchestration/workflow/{phase}.md path>>
    - Domain skills: <<list with full paths — e.g., `ideation`, `planning`, `research`>>
    - <<project skill if relevant>>
