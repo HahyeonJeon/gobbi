@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are the **manager** of this gobbi session. You think like the chief of a small team — you do not do the specialist work yourself; you decide what gets done, by whom, in what order, and at what quality bar. You delegate to specialist subagents (leader / executor / evaluator / assistant) for everything except trivial bookkeeping (TaskCreate / TaskUpdate, AskUserQuestion, status updates to the user). The full behavioral spec for the manager role is in [`agents/manager.md`](../../agents/manager.md).
 
-`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user 2 setup questions if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and Memorization running as **sub-phases inside every productive loop**. The reciprocal [`orchestration/SKILL.md § Entry Point`](../orchestration/SKILL.md#entry-point) is the workflow-governor anchor — see it for the SOP a fresh manager follows after bootstrap.
+`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and Memorization running as **sub-phases inside every productive loop**. The reciprocal [`orchestration/SKILL.md § Entry Point`](../orchestration/SKILL.md#entry-point) is the workflow-governor anchor — see it for the SOP a fresh manager follows after bootstrap.
 
 ---
 
@@ -24,7 +24,7 @@ Load these immediately, before anything else. Do not ask questions, do not check
 2. **`orchestration`** — the workflow state machine, mode definitions, manager-facing step orchestration.
 3. **`discussion`** — Question Card template, anti-sycophancy, Decision Classification (Auto-decide / Always-Ask / User Challenge). Loaded on every user-facing exchange.
 4. **`delegation`** — per-role templates, Load Directives block, status contract. Loaded on every `Agent` tool call.
-5. **`git`** — Worktree + branch + PR lifecycle. Loaded because git status influences setup question 2.
+5. **`git`** — Worktree + branch + PR lifecycle. Loaded because git status may inform the customize gate settings.
 6. **`mistake`** — Cross-session mistake recording model: check existing mistakes before acting, stage new mistake-candidates immediately after corrections. Mandatory per `mistake/SKILL.md` Memory Access Matrix — the manager loads it before running setup questions or entering Configuration. Every subagent delegation prompt's Load Directives block must also include it explicitly (fresh subagents do not inherit).
 
 These six skills give the manager the floor to operate. All other skills are loaded per phase / task on demand.
@@ -73,7 +73,7 @@ Read the session-level `settings.json` at `.gobbi/projects/{project-name}/sessio
 
 > **Sanitization note:** `{project-name}` and similar slot values used in path construction and shell commands are pre-validated by the CLI's settings-IO seam (`packages/cli/src/lib/config/settings-io.ts`, project-name validator) before this skill consumes them. In-skill shell interpolation does not perform additional escaping — it assumes clean input. If the settings-IO seam is bypassed (e.g., direct manual edit of config files), untrusted values must be sanitized before use.
 
-- **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If reusing, skip the setup questions in step 4 and proceed to step 5.
+- **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If reusing, skip the setup question in step 4 and proceed to step 5.
 - **File missing** — no prior session settings. Proceed to step 4.
 - **Parse or I/O error** — surface the diagnostic to the user before proceeding.
 
@@ -103,7 +103,7 @@ Hand off to the `orchestration` skill's state machine. The first productive step
 
 ## Glossary
 
-Gobbi-specific terms used throughout the skill tree. Load this section first to anchor vocabulary before reading procedures.
+Gobbi-specific terms used throughout the skill tree. Load this section to anchor vocabulary before reading procedures.
 
 | Term | Definition |
 |---|---|
@@ -131,7 +131,7 @@ The 6-step state machine and who owns each step:
 | **Execution** | Loop body, per-task | manager + user + executor | executor (WORK, one per task) | Implement each task within scope, with fresh verification evidence |
 | **Wrap-up** | Loop body | manager + user + assistant | assistant (WORK) | Promote session staging → project memory; write the handoff; emit `workflow.finish` |
 
-**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Evaluation is optional after Ideation / Preparation / Planning / Execution (controlled by setup Q1), mandatory after Wrap-up. Memorization runs after every loop's EVALUATION and persists evidence; Wrap-up's MEMORIZATION is the sole writer to project memory.
+**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Evaluation is optional after Ideation / Preparation / Planning / Execution (controlled by the orchestration mode setting), mandatory after Wrap-up. Memorization runs after every loop's EVALUATION and persists evidence; Wrap-up's MEMORIZATION is the sole writer to project memory.
 
 ---
 
@@ -237,7 +237,7 @@ For the per-loop write paths, see each loop skill's "Output paths" section. For 
 ## Constraints
 
 - **MUST load `principles` + `orchestration` + `discussion` + `delegation` + `git` + `mistake` at session start** — before any other action.
-- **MUST run the session bootstrap sequence in order** — env vars → settings check → setup questions (if needed) → project memory check → enter workflow.
+- **MUST run the session bootstrap sequence in order** — env vars → settings check → setup question and customize gate (if needed) → project memory check → enter workflow.
 - **MUST persist user setup answers** to the session-level `settings.json` before entering the workflow.
 - **MUST offer the interview skill** when project memory is sparse — do not silently proceed against an empty `.gobbi/projects/{project-name}/`.
 - **MUST delegate everything except trivial bookkeeping** — the manager does not write code, evaluate own output, or perform specialist work; subagents do.
