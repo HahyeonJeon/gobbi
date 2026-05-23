@@ -36,14 +36,14 @@ Canonical form:
 ```bash
 timeout 600 codex exec \
   --sandbox workspace-write \
-  --cd /playinganalytics/git/gobbi \
-  --add-dir /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id> \
+  --cd <main-tree> \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id> \
   "<inline prompt or @prompt-file>"
 ```
 
 Key flags:
 - `--sandbox workspace-write` — required for any write operation; use `read-only` when no writes are needed.
-- `--cd <main-tree>` — sets the project root that Codex auto-detects. Use the main-tree absolute path (`/playinganalytics/git/gobbi`), not a worktree root. See Section 4 for why.
+- `--cd <main-tree>` — sets the project root that Codex auto-detects. Use the main-tree absolute path (`<main-tree>`), not a worktree root. See Section 4 for why.
 - `--add-dir <session-path>` — extends the writable set to cover session staging paths outside the project root. Pass the full absolute path.
 - `timeout 600` — shell-level timeout wrapper. `codex exec` has no built-in execution cap; see Section 5.
 
@@ -114,7 +114,7 @@ Example (inside an evaluator or assistant):
 
 ```bash
 # CORRECT — Bash is available to all roles
-timeout 600 codex exec --sandbox read-only --cd /playinganalytics/git/gobbi \
+timeout 600 codex exec --sandbox read-only --cd <main-tree> \
   "evaluate the following artifact for consistency..."
 
 # WRONG — Agent tool is not available to non-manager roles; this call fails
@@ -157,17 +157,17 @@ Prefer `read-only` unless writes are required. The principle of least privilege:
 - Relative paths inside the prompt resolve against the worktree root, not the main-tree root.
 - Codex auto-detects the "project root" based on git context, which may be the worktree root rather than the main repository root.
 
-This session (Planning iter1 attempt 2) observed a concrete failure: codex auto-detected the worktree root as the project boundary and rejected absolute session paths as "writing outside of the project". The workaround: `--cd /playinganalytics/git/gobbi` forces codex to anchor on the main-tree root.
+This session (Planning iter1 attempt 2) observed a concrete failure: codex auto-detected the worktree root as the project boundary and rejected absolute session paths as "writing outside of the project". The workaround: `--cd <main-tree>` forces codex to anchor on the main-tree root.
 
 ### Absolute-path mandate
 
 From recorded mistake `codex-eval-session-write-path-nested-in-worktree.md`:
 
-> The Codex evaluator's delegation prompt did not include an explicit, concrete reminder that session writes must use the **main-tree absolute path** (`/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/...`), not a path relative to the current working directory or the worktree root. The evaluator's CWD was inside the worktree, so a relative or `pwd`-derived path construction produced the worktree-nested path.
+> The Codex evaluator's delegation prompt did not include an explicit, concrete reminder that session writes must use the **main-tree absolute path** (`<main-tree>/.gobbi/projects/<project-name>/sessions/...`), not a path relative to the current working directory or the worktree root. The evaluator's CWD was inside the worktree, so a relative or `pwd`-derived path construction produced the worktree-nested path.
 
 Corrected approach from that mistake:
 
-> Every evaluator delegation prompt that involves session writes must carry an explicit line: "All session writes MUST use the absolute main-tree path `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/...`. Do NOT use relative paths or `pwd`-derived paths. The worktree CWD is NOT the session-write root."
+> Every evaluator delegation prompt that involves session writes must carry an explicit line: "All session writes MUST use the absolute main-tree path `<main-tree>/.gobbi/projects/<project-name>/sessions/{session-id}/...`. Do NOT use relative paths or `pwd`-derived paths. The worktree CWD is NOT the session-write root."
 
 This is mandatory. Inline the full absolute main-tree session path in every prompt that involves writes. Do not rely on the evaluator to construct it correctly from its CWD.
 
@@ -178,8 +178,8 @@ When the task requires both workspace writes (worktree) and session writes (main
 ```bash
 timeout 600 codex exec \
   --sandbox workspace-write \
-  --cd /playinganalytics/git/gobbi \
-  --add-dir /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/staging \
+  --cd <main-tree> \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/staging \
   "<prompt>"
 ```
 
@@ -188,7 +188,7 @@ timeout 600 codex exec \
 After any Codex evaluator completes, verify output files landed at the correct main-tree absolute path before advancing:
 
 ```bash
-find /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/<loop>/staging -type f -newer <marker-file>
+find <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/<loop>/staging -type f -newer <marker-file>
 ```
 
 If no files appear under the main-tree path, check for worktree-nested residue and apply manager-proxy write fallback.
@@ -249,8 +249,8 @@ Never treat stdout parsing or broker.json polling as the completion signal. Afte
 
 ```bash
 # After codex exec exits:
-test -f /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<id>/evaluation/iter1/overall.md || echo "MISSING: overall.md"
-grep -q "VERDICT:" /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<id>/evaluation/iter1/overall.md || echo "MISSING: verdict line"
+test -f <main-tree>/.gobbi/projects/<project-name>/sessions/<id>/evaluation/iter1/overall.md || echo "MISSING: overall.md"
+grep -q "VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/<id>/evaluation/iter1/overall.md || echo "MISSING: verdict line"
 ```
 
 ---
@@ -282,21 +282,21 @@ Task: Run the Codex evaluator on [target artifact] and write findings to the ses
 Step 1. Run codex exec FOREGROUND via your Bash tool:
   timeout 600 codex exec \
     --sandbox workspace-write \
-    --cd /playinganalytics/git/gobbi \
-    --add-dir /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/staging \
-    "@/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/staging/codex-eval-prompt.md"
+    --cd <main-tree> \
+    --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/staging \
+    "@<main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/staging/codex-eval-prompt.md"
 
 Step 2. Verify output files landed at the absolute main-tree path:
 
   # Must be 8 per-perspective output files (one per evaluation perspective):
-  ls /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/ | wc -l  # must be 8
+  ls <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/ | wc -l  # must be 8
 
   # 5-Type vocabulary must appear in output (scenario_gap, checklist_gap, design_flaw, assumption_risk, general):
   grep -E "scenario_gap|checklist_gap|design_flaw|assumption_risk|general" \
-    /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/*.md | wc -l  # >= 1 hit per file (5 vocab present)
+    <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/*.md | wc -l  # >= 1 hit per file (5 vocab present)
 
   # Verdict line must be present in overall.md:
-  grep "^VERDICT:" /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/overall.md  # verdict line present
+  grep "^VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/overall.md  # verdict line present
 
   # If any check fails: STATUS: BLOCKED, do not silent DONE.
 
@@ -311,7 +311,7 @@ The worktree CWD is NOT the session-write root.
 After both assistants return DONE, run the post-eval sanity check:
 
 ```bash
-find /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/<session-id>/execution/<task-id>/staging -type f | sort
+find <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/staging -type f | sort
 ```
 
 Aggregate findings by reading the per-perspective output files directly. Do not rely on assistant-reported summaries alone.
@@ -382,7 +382,7 @@ Wrap every `codex exec` call with `timeout 600`. This prevents cost runaway from
 
 - **Running `codex exec` via `Bash(run_in_background: true)` then going idle.** The Claude Code harness delivers background-task completion notifications lazily — batched on the manager's next tool call. If the manager goes fully idle, the notification is delayed indefinitely. Use the assistant-wrapper pattern to get synchronous validation inside the subagent, or run codex foreground.
 
-- **Omitting `--cd` and `--add-dir` when writing to paths outside the auto-detected project root.** Codex auto-detects the project root from git context. In a worktree, the auto-detected root may be the worktree directory, not the main repository root. Writes to main-tree absolute session paths are then rejected as "outside the project." Always pass `--cd /playinganalytics/git/gobbi` and `--add-dir <session-path>` for cross-tree writes.
+- **Omitting `--cd` and `--add-dir` when writing to paths outside the auto-detected project root.** Codex auto-detects the project root from git context. In a worktree, the auto-detected root may be the worktree directory, not the main repository root. Writes to main-tree absolute session paths are then rejected as "outside the project." Always pass `--cd <main-tree>` and `--add-dir <session-path>` for cross-tree writes.
 
 - **Trusting stdout or broker.json as the completion signal.** The companion broker.json may be stale, unused for direct exec, or may show `running` with a dead pid. Verify by file existence and content grep only (Section 5 — files-as-truth discipline).
 
@@ -392,7 +392,7 @@ Wrap every `codex exec` call with `timeout 600`. This prevents cost runaway from
 
 - **Using `Co-Authored-By:` instead of `AI-Provenance-Record:` in commits that include codex-spawned work.** Codex work is provenance-tracked with `AI-Provenance-Record:` footer, not `Co-Authored-By:`. Pairing the wrong footer misattributes the contribution type.
 
-- **Missing `.agents/skills/codex` directory symlink**: a codex skill that codex itself cannot load is a contradiction. If you create the codex skill at `.gobbi/projects/gobbi/skills/codex/SKILL.md` and a Claude-facing `.claude/skills/codex/SKILL.md` symlink but DON'T also create the directory-level `.agents/skills/codex -> ../../.gobbi/projects/gobbi/skills/codex`, then codex CLI (running under `.codex` repo-local entry points per `.codex/AGENTS.md`) cannot find this skill. Verify with `ls -la /playinganalytics/git/gobbi/.agents/skills/codex` — should resolve to a directory symlink.
+- **Missing `.agents/skills/codex` directory symlink**: a codex skill that codex itself cannot load is a contradiction. If you create the codex skill at `.gobbi/projects/<project-name>/skills/codex/SKILL.md` and a Claude-facing `.claude/skills/codex/SKILL.md` symlink but DON'T also create the directory-level `.agents/skills/codex -> ../../.gobbi/projects/<project-name>/skills/codex`, then codex CLI (running under `.codex` repo-local entry points per `.codex/AGENTS.md`) cannot find this skill. Verify with `ls -la <main-tree>/.agents/skills/codex` — should resolve to a directory symlink.
 
 ---
 
@@ -401,8 +401,8 @@ Wrap every `codex exec` call with `timeout 600`. This prevents cost runaway from
 - MUST load this skill before constructing any delegation prompt or Bash invocation that involves Codex.
 - MUST include this skill in every subagent delegation prompt's Load Directives block when the task involves Codex — fresh subagents do not inherit.
 - MUST use `--sandbox workspace-write` (or more restrictive) for any write operation; never assume write access without specifying the sandbox mode.
-- MUST inline the full absolute main-tree session path in every Codex delegation prompt that involves session writes: `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/...` — see `mistakes/codex-eval-session-write-path-nested-in-worktree.md`.
-- MUST pass `--cd /playinganalytics/git/gobbi` when the session path is outside the codex auto-detected project root (worktree context).
+- MUST inline the full absolute main-tree session path in every Codex delegation prompt that involves session writes: `<main-tree>/.gobbi/projects/<project-name>/sessions/{session-id}/...` — see `mistakes/codex-eval-session-write-path-nested-in-worktree.md`.
+- MUST pass `--cd <main-tree>` when the session path is outside the codex auto-detected project root (worktree context).
 - MUST run the post-eval `find` sanity check after any Codex evaluator completes to confirm writes landed at the correct main-tree path.
 - MUST wrap every `codex exec` invocation in `timeout 600` (or an explicitly user-approved timeout) — no built-in execution cap exists.
 - MUST use the assistant-wrapper pattern for dual-system evaluation — not manager-direct background Bash and not `codex:codex-rescue` plugin agent.
