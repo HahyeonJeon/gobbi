@@ -12,23 +12,6 @@ You are the **manager** of this gobbi session. You think like the chief of a sma
 
 ---
 
-## Glossary
-
-Gobbi-specific terms used throughout the skill tree. Load this section first to anchor vocabulary before reading procedures.
-
-| Term | Definition |
-|---|---|
-| **Phase** | One of the 6 workflow steps: Configuration / Ideation / Preparation / Planning / Execution / Wrap-up. Each productive phase (all but Configuration) runs as a Loop. |
-| **Loop** | A workflow step's 4-sub-phase iteration: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Every productive phase is structured as a loop body. |
-| **Sub-phase** | One of the 4 phases inside a loop: DISCUSSION / WORK / EVALUATION / MEMORIZATION. |
-| **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
-| **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
-| **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
-| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to project memory. |
-| **Sole-writer** | Wrap-up's MEMORIZATION is the only agent permitted to write finalized artifacts to project memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
-
----
-
 ## Session Bootstrap Order
 
 Run these steps in order at session start, session resume, `/clear`, and compaction.
@@ -94,23 +77,16 @@ Read the session-level `settings.json` at `.gobbi/projects/{project-name}/sessio
 - **File missing** — no prior session settings. Proceed to step 4.
 - **Parse or I/O error** — surface the diagnostic to the user before proceeding.
 
-### 4. Ask the user 2 setup questions
+### 4. Ask the user one setup question
 
-Each question follows the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure). After both questions, persist the user's selections to the session-level `settings.json`.
+Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure). After the question, persist the user's selection to the session-level `settings.json`.
 
-**Question 1 — evaluation mode** (applies to the four loops where evaluation is optional: ideation / preparation / planning / execution; Wrap-up evaluation is mandatory and not affected):
+**Question — orchestration mode** (default: `auto`; full mode semantics in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration)):
 
-- **Ask each time** (Recommended) — before each evaluation sub-phase, the manager asks whether to spawn evaluators. Lets you decide per-step based on task complexity.
-- **Always evaluate** — skip the evaluation question; always spawn evaluators at every loop's EVALUATION sub-phase. Maximum quality checking.
-- **Skip evaluation** — skip the evaluation question; never spawn evaluators unless you explicitly request one. Maximum speed for well-understood work.
-- **Let manager decide** — the manager decides per loop based on context, without prompting.
+- **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
+- **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
 
-**Question 2 — git workflow mode:**
-
-- **Direct commit** (Recommended for solo / short sessions) — Work happens in the main working tree. Commits are created at FINISH. No worktrees, no PRs.
-- **Git workflow (worktree + PR)** — Each task gets its own worktree and branch. Work is integrated via pull request. If selected, also ask for the base branch. When selected, the manager verifies `git` prerequisites (tool availability, authentication, repository state) per [`git/SKILL.md`](../git/SKILL.md) before proceeding.
-
-Discussion modes are NOT asked. Defaults apply: ideation = `user`, preparation = `user`, planning = `user`, execution = `agent`. Users override these manually via settings if they want different behavior.
+After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
 
 ### 5. Project memory check
 
@@ -122,6 +98,23 @@ Check `.gobbi/projects/{project-name}/` for the project memory baseline:
 ### 6. Enter the workflow
 
 Hand off to the `orchestration` skill's state machine. The first productive step is **Ideation** — load the [`ideation` skill](../ideation/SKILL.md) and follow its DISCUSSION → WORK → EVALUATION → MEMORIZATION procedure. The orchestration skill steers transitions between the six steps.
+
+---
+
+## Glossary
+
+Gobbi-specific terms used throughout the skill tree. Load this section first to anchor vocabulary before reading procedures.
+
+| Term | Definition |
+|---|---|
+| **Phase** | One of the 6 workflow steps: Configuration / Ideation / Preparation / Planning / Execution / Wrap-up. Each productive phase (all but Configuration) runs as a Loop. |
+| **Loop** | A workflow step's 4-sub-phase iteration: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Every productive phase is structured as a loop body. |
+| **Sub-phase** | One of the 4 phases inside a loop: DISCUSSION / WORK / EVALUATION / MEMORIZATION. |
+| **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
+| **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
+| **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
+| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to project memory. |
+| **Sole-writer** | Wrap-up's MEMORIZATION is the only agent permitted to write finalized artifacts to project memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
 
 ---
 
