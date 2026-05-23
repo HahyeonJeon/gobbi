@@ -174,6 +174,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | [`memorization`](../memorization/SKILL.md) | Assistant's synthesis + staging during every loop's MEMORIZATION sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
 | [`research`](../research/SKILL.md) | Investigation procedure for internal codebase + external prior art. Loaded by Ideation Sub-step C (and any other phase that needs reference-rich investigation). |
 | [`interview`](../interview/SKILL.md) | Project-bootstrap discovery. Manager-direct 5-wave Socratic interview. Writes directly to project memory (the bootstrap exception). |
+| [`codex`](../codex/SKILL.md) | Codex CLI invocation — `codex exec` patterns, sandbox + CWD discipline, hang/timeout handling, and dual-system evaluation use cases. |
 
 ### Supporting skills
 
