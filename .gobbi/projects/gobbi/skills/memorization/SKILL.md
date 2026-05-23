@@ -225,7 +225,9 @@ Re-running MEMORIZATION on the same iter (after a crash, partial write, or expli
 
 All writes during MEMORIZATION are **session-scoped**. Wrap-up promotes the `staging/` directory to project memory after the workflow completes — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md). For the full inventory across both tiers (session + project), see [`memory-map.md`](memory-map.md).
 
-**Path conventions**
+### Path conventions
+
+See also: `evaluation/SKILL.md § Coverage Ownership Matrix § Memorization staging shape + naming` for the cross-cutting evaluation seed that covers staging shape and naming compliance.
 
 - `{date}` — session start date in `YYYY-MM-DD`
 - `{session-id}` — Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
