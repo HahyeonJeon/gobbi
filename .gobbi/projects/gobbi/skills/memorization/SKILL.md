@@ -79,6 +79,10 @@ All `CREATE` operations write-or-overwrite the target path; all `session.json` u
 
 `rawdata/` holds the unfiltered audit trail (drafts, transcripts, discussion-log). The `artifacts/` directory holds the distilled outputs the next loop reads. Staging is what Wrap-up will promote — be selective about what becomes a `staging/decisions/{slug}.md` vs noise.
 
+> **Moment-of-capture, not end-of-loop.**
+
+Corrections, decisions, and mistake-candidates are staged at the moment they occur during WORK — not deferred to the MEMORIZATION sub-phase. Deferral silently loses them when a session is interrupted. Empirical witness: session `2026-05-22-bac669ad` — T1 (8 eval files), T2 (13 eval files), T5 (9 eval files) each had full evaluations but empty staging, because capture was deferred and never completed. See [`mistake/SKILL.md` § P2](../mistake/SKILL.md#p2----detect-a-correction-during-work) for the moment-of-capture write procedure.
+
 > **Templates over freeform — for staging. Frontmatter over freeform — for artifacts.**
 
 Every staging subdirectory has a template at [`templates/{directory-name}.md`](templates/) — stamping the template ensures the artifact is structured enough for Wrap-up to promote without parsing prose. The `artifacts/` directory uses a lighter contract: filenames and content are free; only the frontmatter schema is mandatory (see § Artifact frontmatter schema below).
