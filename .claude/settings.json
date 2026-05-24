@@ -39,7 +39,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Task",
+        "matcher": "Task|Agent",
         "hooks": [
           { "type": "command", "command": ".claude/hooks/post-tool-use-agents.sh" }
         ]
@@ -47,7 +47,7 @@
     ],
     "PostToolUseFailure": [
       {
-        "matcher": "Task",
+        "matcher": "Task|Agent",
         "hooks": [
           { "type": "command", "command": ".claude/hooks/post-tool-use-agents.sh" }
         ]
