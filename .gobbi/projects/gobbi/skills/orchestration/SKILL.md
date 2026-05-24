@@ -104,6 +104,29 @@ This section is the SOP for the manager — for each step: definition, inputs, o
 | 6 | Initialize `session.json` for the session by copying the session template into `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/session.json`. Stamp top-level fields in serialization order: `sessionId`; `previousSessionId` (prior session's `sessionId` if this session is a continuation — resume / post-`/clear` / post-`/compact`; otherwise `null`); `project`; `feature` (the broader feature this session targets — leave `null` if not yet clear and stamp later, typically during Ideation); `task`; `system` (`claude-code` or `codex`); `startedAt`; leave `finishedAt` as `null`; stamp `transcriptPath` from `$CLAUDE_TRANSCRIPT_PATH` (env var set by the hook) — substitute `$HOME` prefix with `~/` (tilde form) before storing so the value is portable across machines; leave `null` if the env var is absent. Resolve `git` from settings + environment: stamp `git.repo` and `git.baseBranch` from the cascaded settings; if `git.repo` is `null` in settings (uninitialized project), derive it from `gh repo view --json nameWithOwner -q .nameWithOwner` and write back to project-level settings before stamping the session; if the resolved git workflow mode is `direct`, stamp `git.branch` (current HEAD) and leave `git.worktreePath`/`pr` as `null`; if it is `worktree-pr`, stamp `git.branch` and `git.worktreePath` from the worktree just created in row 5.5. Stamp `git.issue` if known at session start. Fill the manager entry already present in `agents[]` (`type: "manager"`) with the manager's `id`, `name`, `model`, `system`, `transcriptPath`, and `startedAt`; set `step: "configuration"` and `phase: null`. The manager appends specialist entries to `agents[]` as the workflow progresses. **Stamping mechanism (FIX A):** the manager agent reads the updated session docs and stamps the top-level `transcriptPath` field this session; CLI automation of this stamping is deferred to a future session. | [session.template.json](templates/session.template.json) | manager |
 | 7 | **Interview check (bootstrap gate)**: inspect `.gobbi/projects/{project-name}/`. Apply the 3-tier detection below, then act accordingly. The user can always explicitly invoke Interview via `/gobbi interview` regardless of project tier. | [interview/SKILL.md](../interview/SKILL.md) | manager |
 
+**Row 5.5 — Direct-mode opt-out (LOCK #5)**
+
+When `settings.git.workflow.mode == "direct"`, row 5.5 is skipped entirely — no worktree is created, no P2 is invoked, and `session.json.git.worktreePath` stays `null`. `git.branch` is stamped from the current HEAD in row 6. This is the documented escape hatch; it is not a fallback-on-error path.
+
+Direct mode is the correct choice in two situations:
+
+- **Emergency hotfix** — the manager needs to push a single targeted fix to a branch immediately, without the overhead of worktree setup or a PR lifecycle. Example: a production-breaking bug where the round-trip latency of worktree creation + CI wait is unacceptable.
+- **Pure-read session** — the session's entire purpose is investigation, mistake-promotion, doc lookup, or other read-only work that produces no shippable artifact. A worktree and a PR would add ceremony with no benefit.
+
+Outside these two situations the default is `worktree-pr`. The opt-out is a user-level setting (`settings.git.workflow.mode`) resolved at Configuration Step 1, not a per-step override. For the full definition of `direct` vs `worktree-pr` modes and their behavioral contracts, see [`git/SKILL.md` § Core Principles](../git/SKILL.md#core-principles).
+
+**Smoke-test gate (T1.h — verification for post-merge sessions)**
+
+After this feature merges to `develop`, every new session running `worktree-pr` must produce a `session.json.git.branch` value that matches the regex below. Run this check at the first post-merge session's Memorization phase:
+
+```
+jq '.git.branch' .gobbi/projects/gobbi/sessions/<latest>/session.json
+```
+
+Expected match: `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$`
+
+Also verify `jq '.git.worktreePath'` returns a non-null value for `worktree-pr` sessions. A `null` `worktreePath` on a `worktree-pr` session indicates row 5.5 was skipped or P2 failed without surfacing an error.
+
 **3-tier bootstrap detection**
 
 | Tier | Condition | Manager action |
