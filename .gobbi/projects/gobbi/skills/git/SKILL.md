@@ -154,7 +154,7 @@ If any **Critical** prerequisite fails, fall back to Direct commit mode. If any 
 
 P2 is invoked from Configuration row 5.5 for worktree-first sessions (orchestration/SKILL.md Step 1), not from Execution start. The Execution-start invocation path is retired; executors are passed the existing `session.json.git.worktreePath`.
 
-For each task entering Execution:
+Steps (run once at Configuration row 5.5 for worktree-first sessions; not re-invoked per task entering Execution):
 
 1. **Sync the base branch** — `git checkout <base-branch> && git pull --ff-only` to ensure the worktree branches from the up-to-date base.
 2. **Re-verify base branch on remote** — `git ls-remote --heads origin <base-branch>` (the base may have been deleted between session start and now).
@@ -243,7 +243,7 @@ Common failures and their recovery paths.
 
 ## Output paths
 
-Git operations don't write to session memory directly (writes happen via session note / mistake files, which use the main tree path). The main "outputs" of the git skill are git objects: commits, branches, PRs, issues.
+Git operations don't write to session memory directly (writes happen via session note / mistake files, which root at `session.json.git.worktreePath` when set, or fall back to the main tree absolute path in direct mode). The main "outputs" of the git skill are git objects: commits, branches, PRs, issues.
 
 **Path conventions**
 
@@ -258,7 +258,7 @@ Git operations don't write to session memory directly (writes happen via session
 | Remote branch | manager (P4 push, P5 merge+delete) | `origin/<branch-name>` |
 | GitHub issue | manager (P1/orchestration) | GitHub repository issues |
 | GitHub PR | manager (P4 create, P5 merge) | GitHub repository PRs |
-| Session notes / mistakes | manager + subagent (always main tree) | `.gobbi/projects/<name>/sessions/.../`, `.gobbi/projects/<name>/mistakes/` — **never the worktree path** |
+| Session notes / mistakes | manager + subagent | `.gobbi/projects/<name>/sessions/.../`, `.gobbi/projects/<name>/mistakes/` — rooted at `session.json.git.worktreePath` when set (worktree-first mode); falls back to the main tree absolute path when `worktreePath` is null (direct mode). Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees. |
 
 ---
 
@@ -275,7 +275,7 @@ Git operations don't write to session memory directly (writes happen via session
 - **MUST attach `AI-Provenance-Record:`** to every agent-authored commit — never `Co-Authored-By:`.
 - **MUST run the pre-merge gate checklist** before invoking `gh pr merge` (Procedure P5).
 - **MUST close linked issues manually** when the PR targets a non-default branch (closing keywords don't auto-fire — Procedure P5 step 6).
-- **MUST write notes and mistakes to the main tree absolute path** — never the worktree path.
+- **MUST root session notes and mistakes at `session.json.git.worktreePath`** when that field is set (worktree-first mode); fall back to the main tree absolute path when `worktreePath` is null (direct mode). Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees and never redirected.
 - **MUST never modify `~/.gitconfig` or `.git/config`** — user config only.
 - **MUST never `git branch -D` an unmerged branch** without user confirmation.
 - **MUST never `git reset --hard` outside Forbidden Operations exceptions** without user confirmation.
