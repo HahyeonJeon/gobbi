@@ -1,0 +1,78 @@
+# Pre-Wrap-up snapshot of .gobbi/projects/gobbi/
+Captured: 2026-05-24T09:28:31Z
+Session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+
+## Top-level
+drwxrwxr-x 19 jeonhh0061 jeonhh0061 4096 May 24 06:24 .
+drwxrwxr-x  3 jeonhh0061 jeonhh0061 4096 Apr 25 02:17 ..
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 05:14 agents
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 00:14 archive
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 23 13:50 backlogs
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 00:14 decisions
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 00:14 design
+drwxrwxr-x  4 jeonhh0061 jeonhh0061 4096 May 23 13:41 features
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 00:14 learnings
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 23 13:44 mistakes
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 23 13:50 notes
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 00:14 plans
+-rw-rw-r--  1 jeonhh0061 jeonhh0061   84 May 22 00:14 README.md
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 00:14 references
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 00:14 reviews
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 20 16:25 rules
+drwxrwxr-x  9 jeonhh0061 jeonhh0061 4096 May 23 14:40 sessions
+-rw-rw-r--  1 jeonhh0061 jeonhh0061   25 Apr 29 03:03 settings.json
+drwxrwxr-x 19 jeonhh0061 jeonhh0061 4096 May 23 14:27 skills
+drwxrwxr-x  2 jeonhh0061 jeonhh0061 4096 May 22 00:16 tmp
+drwxrwxr-x  3 jeonhh0061 jeonhh0061 4096 May 24 06:24 worktrees
+
+## features/
+env-var-audit
+gobbi-orchestration-workflow-improvements
+README.md
+
+## mistakes/ (file count: 9)
+claude-evaluator-step4-only-vs-codex-whole-file-grep.md
+codex-eval-session-write-path-nested-in-worktree.md
+codex-rescue-agent-fire-and-forget-without-result-capture.md
+evaluator-returned-verdict-inline-no-per-perspective-files.md
+leader-iter2-verification-claim-without-evidence.md
+manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck.md
+manager-rm-rf-without-investigating-tracked-files.md
+memorization-delegation-prompts-must-load-memorization-skill.md
+README.md
+
+## rules/ (file count: 1)
+stub-redirect-format.md
+
+## decisions/
+README.md
+
+## notes/ (count: 4)
+2026-05-22-env-var-audit-sessionstart-hook.md
+2026-05-22-pre-rebuild-sweep.md
+2026-05-23-orch-workflow-improvements.md
+README.md
+
+## backlogs/
+f-risk-01-subagent-ccsi-semantics.md
+f-struct-01-jq-sh-env-passthrough.md
+normalize-path-conventions-h3.md
+README.md
+
+## design/
+README.md
+
+## references/
+README.md
+
+## reviews/
+README.md
+
+## learnings/
+README.md
+
+## plans/
+README.md
+
+## features/session-foundations-bundle-b/
+ls: cannot access '/playinganalytics/git/gobbi/.gobbi/projects/gobbi/features/session-foundations-bundle-b/': No such file or directory
