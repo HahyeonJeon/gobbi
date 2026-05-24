@@ -88,6 +88,8 @@ Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#
 
 After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
 
+See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 5.5 (worktree creation and `git.worktreePath` stamp) which runs after `state.json` initialization and before `session.json` stamping.
+
 ### 5. Project memory check
 
 Check `.gobbi/projects/{project-name}/` for the project memory baseline:

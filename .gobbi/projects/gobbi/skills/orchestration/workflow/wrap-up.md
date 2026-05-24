@@ -38,6 +38,29 @@ The manager:
 
 **Manager's job**: spawn the `assistant` agent for synthesis per [`workflow/memorization.md`](memorization.md). For Wrap-up, the canonical artifact is the handoff summary itself plus any final updates to project memory.
 
+### Per-iteration session-memory commit cadence
+
+After every iteration's MEMORIZATION completes (`PASS`, `REVISE`, or `FAIL`), the manager creates a session-memory commit on the worktree branch capturing the iteration's outputs (`rawdata/`, `evaluation/iter{n}/`, `artifacts/` — including the handoff summary — and the `session.json` upsert; plus any project-memory writes performed by this Wrap-up iter). The commit subject is:
+
+```
+chore(session): record wrap-up iter{n} memory
+```
+
+with the canonical `AI-Provenance-Record:` trailer in the commit body per `git/conventions.md:116-119`. Use the heredoc form so the trailer actually lands:
+
+```
+git -C "$worktreePath" commit -m "$(cat <<'EOF'
+chore(session): record wrap-up iter{n} memory
+
+AI-Provenance-Record: gobbi://session/{session-id}/loop/wrap-up/iter{n}
+EOF
+)"
+```
+
+Substitute `{session-id}` and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 5.5 worktree-first lock) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding. Wrap-up usually runs a single iteration (`workflow.wrap-up.maxIterations` default 1), so this cadence typically produces one final commit that lands before the manager emits `workflow.finish` and closes the session.
+
+**Direct mode opt-out:** when `settings.git.workflow.mode == "direct"`, there is no worktree branch and `git.worktreePath` is `null`; the per-iter commit is skipped. The iteration's session-memory still lives under `sessions/{date}-{session-id}/wrap-up/`, but the commit cadence is a worktree-pr-mode contract. See `orchestration/SKILL.md § Configuration Step 1` row 5.5 footnote for the full direct-mode rationale.
+
 ---
 
 ## ITER / EXIT Decision
