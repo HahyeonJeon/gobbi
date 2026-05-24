@@ -106,6 +106,8 @@ Mandatory in every delegation prompt, ordered top-to-bottom:
 
 **MEMORIZATION hard gate.** When the delegated phase is MEMORIZATION (or includes a MEMORIZATION sub-phase), `memorization/SKILL.md` MUST appear in tier 3 (Skills). The memorization skill defines the memory-tier access matrix, staging rules, idempotency contract, and exit checklist that the sub-phase agent must follow. Omitting it produces an agent that cannot operate the sub-phase correctly. Per-role templates for `assistant`, `leader`, and `executor` include a placeholder for this entry; see the templates in [`templates/`](templates/).
 
+**Session-write path discipline.** When a subagent's task involves session writes (notes, staging files, project memory drafts), the delegation prompt must remind the subagent to follow the qualified write-path rule: use `session.json.git.worktreePath` as the absolute root when that field is set (worktree-first mode); fall back to the main tree's absolute path when `worktreePath` is null (direct mode). See [`git/SKILL.md` § Memory Access Matrix](../git/SKILL.md#memory-access-matrix) for the full qualified rule.
+
 ---
 
 ## The Status Contract
