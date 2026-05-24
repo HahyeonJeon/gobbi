@@ -63,6 +63,29 @@ The final response the executor returns is captured as the work artifact: what w
 
 **Manager's job**: spawn the `assistant` agent. For Execution, the assistant integrates the executor's work artifact, both systems' evaluator findings, and the discussion log into the task's `execution/artifacts/` files. The Execution Loop iterates per-task — each task produces its own `artifacts/` directory under its task subdirectory.
 
+### Per-iteration session-memory commit cadence
+
+After every iteration's MEMORIZATION completes (`PASS`, `REVISE`, or `FAIL`) for the current task, the manager creates a session-memory commit on the worktree branch capturing the iteration's outputs (the task's `rawdata/`, `evaluation/iter{n}/`, `artifacts/`, and the `session.json` upsert). Because Execution iterates per task, the subject embeds the task id so each task's iters are independently identifiable. The commit subject is:
+
+```
+chore(session): record execution-{task-id} iter{n} memory
+```
+
+with the canonical `AI-Provenance-Record:` trailer in the commit body per `git/conventions.md:116-119`. Use the heredoc form so the trailer actually lands:
+
+```
+git -C "$worktreePath" commit -m "$(cat <<'EOF'
+chore(session): record execution-{task-id} iter{n} memory
+
+AI-Provenance-Record: gobbi://session/{session-id}/loop/execution/task/{task-id}/iter{n}
+EOF
+)"
+```
+
+Substitute `{session-id}`, `{task-id}`, and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 5.5 worktree-first lock) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding. This session-memory commit is distinct from the executor's own task-implementation commit (the "Commit" lifecycle phase above) — the implementation commit ships code per the task's contract; the session-memory commit ships the iteration's audit trail.
+
+**Direct mode opt-out:** when `settings.git.workflow.mode == "direct"`, there is no worktree branch and `git.worktreePath` is `null`; the per-iter session-memory commit is skipped. The iteration's session-memory still lives under `sessions/{date}-{session-id}/execution/{task-id}/`, but the commit cadence is a worktree-pr-mode contract. See `orchestration/SKILL.md § Configuration Step 1` row 5.5 footnote for the full direct-mode rationale.
+
 ---
 
 ## ITER / EXIT Decision

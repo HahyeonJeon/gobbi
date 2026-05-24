@@ -102,6 +102,29 @@ Only on `PASS` the assistant additionally:
 
 **No writes to project memory** under any verdict. All session staging waits for Wrap-up to promote to `features/{feature-name}/...` after the workflow completes.
 
+### Per-iteration session-memory commit cadence
+
+After every iteration's MEMORIZATION completes (`PASS`, `REVISE`, or `FAIL`), the manager creates a session-memory commit on the worktree branch capturing the iteration's outputs (`rawdata/`, `evaluation/iter{n}/`, `staging/`, and the `session.json` upsert; plus `artifacts/` on `PASS`). The commit subject is:
+
+```
+chore(session): record ideation iter{n} memory
+```
+
+with the canonical `AI-Provenance-Record:` trailer in the commit body per `git/conventions.md:116-119`. Use the heredoc form so the trailer actually lands:
+
+```
+git -C "$worktreePath" commit -m "$(cat <<'EOF'
+chore(session): record ideation iter{n} memory
+
+AI-Provenance-Record: gobbi://session/{session-id}/loop/ideation/iter{n}
+EOF
+)"
+```
+
+Substitute `{session-id}` and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 5.5 worktree-first lock) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding.
+
+**Direct mode opt-out:** when `settings.git.workflow.mode == "direct"`, there is no worktree branch and `git.worktreePath` is `null`; the per-iter commit is skipped. The iteration's session-memory still lives under `sessions/{date}-{session-id}/ideation/`, but the commit cadence is a worktree-pr-mode contract. See `orchestration/SKILL.md § Configuration Step 1` row 5.5 footnote for the full direct-mode rationale.
+
 ---
 
 ## ITER / EXIT Decision
