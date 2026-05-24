@@ -28,9 +28,9 @@ The agent in any role (manager or subagent) MUST observe these tier boundaries.
 | **GitHub issues** | manager | manager (create / label / close); subagent **never touches** |
 | **GitHub PRs** | manager | manager (create / merge); subagent **never touches** |
 | **Git config (`~/.gitconfig`, `.git/config`)** | both | **never modified by either** — user config only |
-| **Session notes / mistakes** | both | both — always write to the **main tree absolute path** (not the worktree path); worktrees are temporary and get removed after merge |
+| **Session notes / mistakes** | both | both — use `session.json.git.worktreePath` as the absolute root when set; fall back to main tree when `worktreePath` is null (direct mode). Worktree-relative path construction via `git -C "$worktreePath" rev-parse --show-toplevel` for symlink + commit operations. Transcript path (`session.json.transcriptPath`) lives in user home (`~/.claude/projects/`) — not under either tree. |
 
-**Critical rule — write paths**: session writes (notes, mistakes, project memory drafts) MUST use the main tree's absolute path, never the worktree's. The manager passes the main-tree path in every delegation prompt when git is active. A subagent writing to its worktree's `.gobbi/projects/<name>/` instead of the main tree's loses all that work when the worktree is removed.
+**Critical rule — write paths**: session writes (notes, mistakes, project memory drafts) MUST use `session.json.git.worktreePath` as the absolute root when that field is set (worktree-first mode). When `worktreePath` is null (direct mode), fall back to the main tree's absolute path. Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/...` and are outside both trees — never attempt to redirect them. The manager passes the worktree path in every delegation prompt when git is active. A subagent constructing a path relative to its current working directory rather than reading `session.json.git.worktreePath` risks writing to the wrong tree.
 
 **Delete semantics**: this skill never deletes git history (no `branch -D` on un-merged branches without user confirmation; no `git reset --hard` outside Forbidden Operations exceptions). Worktrees are removed during cleanup (Procedure P5), but the local commits on the squash-merged branch are preserved in the reflog.
 
@@ -151,6 +151,8 @@ At session start when the user selects "Git workflow (worktree + PR)":
 If any **Critical** prerequisite fails, fall back to Direct commit mode. If any **Warning** prerequisite fails, inform the user and continue (or remediate per their choice).
 
 ### P2 — Create worktree
+
+P2 is invoked from Configuration row 5.5 for worktree-first sessions (orchestration/SKILL.md Step 1), not from Execution start. The Execution-start invocation path is retired; executors are passed the existing `session.json.git.worktreePath`.
 
 For each task entering Execution:
 
