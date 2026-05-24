@@ -206,6 +206,29 @@ The manager translates this into its own user-facing status (`PROCEED` / `PROCEE
 
 ---
 
+## Hook Integration
+
+Delegation prompts are not only consumed by the spawned subagent — they are also parsed by the [`PostToolUse` hook `.claude/hooks/post-tool-use-agents.sh`](../../../../.claude/hooks/post-tool-use-agents.sh) that upserts `session.json.agents[]` on every `Task` / `Agent` tool call (and on `PostToolUseFailure` for cancellations/errors). For the hook's metadata extraction to populate `step` / `phase` / `iter` / `sub-step` correctly, every delegation prompt MUST place a small block of **structured headers** at the very top of the prompt body (before any other content).
+
+### Structured-Header Convention
+
+The hook reads four headers via case-insensitive line-anchored regex `^Your (phase|iteration|sub-step|step): (.+)$` from `tool_input.prompt`. Place these at the top of the prompt (template-managed — see [`templates/`](templates/)):
+
+| Header | Value shape | Required | Purpose |
+|---|---|---|---|
+| `Your phase:` | `ideation` \| `preparation` \| `planning` \| `execution` \| `wrap-up` (evaluator suffixes `-eval`; research uses `research`) | yes | Routes the entry into `session.json.agents[].phase` and the matching workflow step. |
+| `Your iteration:` | positive integer (the loop iter inside the step; `1` for first pass) | yes | Stamps `agents[].iter`; powers per-iter session-memory commit cadence. |
+| `Your sub-step:` | slug or letter (e.g., `evaluation-claude`, `A`, `B`, `claude-iter1-clean-1of3`) | when more than one spawn shares the same `(step, phase, iter)` | Disambiguates parallel spawns in the same iteration (e.g., dual-system evaluators, batched executors). |
+| `Your step:` | step number `1`–`6` matching the canonical state machine | optional | Manager may include for self-documentation; hook prefers `phase` when both are present. |
+
+These four headers are the **only** machine-readable contract between the delegation prompt and the hook. Everything else in the prompt (Identity line, Task Description, Context, Load Directives, etc.) is for the subagent. Per-role templates ship the headers pre-filled with `<<slot>>` markers; the manager fills them at dispatch time as part of the same template-filling pass that resolves every other slot. Omitting the headers does not break the subagent, but it leaves `session.json.agents[]` entries with `phase` / `iter` / `sub-step` set to `null`, which downstream session-memory queries treat as missing data.
+
+### Serialization safety — `flock -x` on session.json
+
+Both the hook (`post-tool-use-agents.sh`) and its verify-and-fix companion ([`.claude/scripts/reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh)) wrap their `session.json` read-modify-write in a POSIX `flock -x` exclusive lock (held on a sidecar `.lock` file co-located with `session.json`), then commit the new contents via `mv` for atomic replacement. The lock is the design-decision D-3-5 serialization gate: concurrent subagent spawns (e.g., the two parallel evaluators, or a research fan-out) fire PostToolUse events that arrive interleaved, and the lock guarantees the upserts apply in sequence rather than racing each other into a torn write. The manager does not need to throttle spawns or stagger dispatches; the lock makes `agents[]` writes safe under arbitrary spawn concurrency.
+
+---
+
 ## Anti-Patterns
 
 The manager must NOT produce delegation prompts that look like these. Each is a known failure mode.
