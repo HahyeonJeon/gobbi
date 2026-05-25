@@ -6,10 +6,10 @@ severity: medium
 confidence: 75
 scope: project
 source: ideation-iter3-claude-eval
-disposition: open
+disposition: addressed
 created: 2026-05-22
 session-id: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
-status: open
+status: addressed
 project: gobbi
 feature: null
 task: null
@@ -57,3 +57,21 @@ Prerequisites before picking up: the env-var audit session (2026-05-22-bac669ad)
 `.gobbi/projects/gobbi/sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/`
 
 Finding source: `evaluation/iter1/claude/overall.md` Karpathy mode 1 (F-RISK-01), first surfaced iter1, persisted through iter2 and iter3 as open assumption risk. Confidence 75, severity Medium (operational risk is low given current delegation-prompt practice, but documentation risk is high if any agent follows skill docs literally).
+
+## Resolution
+
+Addressed in session `2026-05-24-45388fa9` (Bundle C, task T06, CL-5) by the M2 documentation sweep across 10 skill files.
+
+**Mitigation chosen: M2** (candidate 2 — manager passes parent session-id in the delegation prompt's `session-id:` field; skills now explicitly state to read from the delegation prompt, NOT from `$CLAUDE_CODE_SESSION_ID`).
+
+**M1 and M3 were explicitly NOT chosen:** M1 (read from `session.json.sessionId`) was rejected as it adds an I/O bootstrapping dependency; M3 (separate subagent sessions) was rejected as a large workflow redesign incompatible with the current single-session-directory model. These decisions are locked at DL-5 (idea.md, session `2026-05-24-45388fa9`).
+
+**Scope of the M2 sweep (T06 — this task):** 10 skill files updated — `evaluation/SKILL.md`, `execution/SKILL.md`, `ideation/SKILL.md`, `interview/SKILL.md`, `memorization/SKILL.md`, `orchestration/workflow/evaluation.md`, `planning/SKILL.md`, `preparation/SKILL.md`, `research/SKILL.md`, `wrap-up/SKILL.md`. Each file's `{session-id}` Path-conventions row now states the three locked M2 clauses: (CLAUSE-1) id comes from the delegation prompt's `session-id:` field, (CLAUSE-2) do NOT read `$CLAUDE_CODE_SESSION_ID` for this value, (CLAUSE-3) that env-var holds the subagent's own UUID, not the parent session's.
+
+**T03 (CL-3):** `mistake/SKILL.md` was updated in task T03 (earlier in this session) with the same M2 wording. It was excluded from T06 scope to avoid cross-task conflict.
+
+**gobbi/SKILL.md excluded (iter2 H1 downscoping):** `gobbi/SKILL.md` has no Path-conventions section and no `{session-id}` row. Its 3 CCSI mentions are env-var passthrough tables and Gate-1 runtime health-check prose — not M2 codification surfaces. Adding a section would be CL-5 scope expansion (Iron Law 4). It remains untouched.
+
+**Codification artifact:** idea.md DL-4 (M2 selected) and DL-5 (M2 wording locked verbatim), session `2026-05-24-45388fa9`.
+
+**closed_by:** (set post-merge — placeholder, do not substitute SHA until the PR lands on develop)
