@@ -137,3 +137,7 @@ All paths are relative to `.gobbi/projects/gobbi/sessions/2026-05-24-45388fa9-74
 | Per-session journal entry (Wrap-up direct write) | `.gobbi/projects/gobbi/notes/2026-05-24-session-foundations-bundle-c-partial.md` | Written directly at Wrap-up Step 6 |
 
 Staging originals preserved (not deleted) per supersede-not-delete discipline.
+
+## Post-Wrap-up addendum (user correction, 2026-05-25)
+
+User flagged that **`gobbi mistake promote` is wrong information** — the command does not exist (the installed `gobbi` CLI has no `mistake` subcommand), and "we don't use gobbi command now." It is referenced 7× (CLAUDE.md lines 48/50 + mistake/SKILL.md lines 3/11/27/47/96) as a v0.4.x CLI-era artifact. The real v0.5.0 promotion is the Wrap-up MEMORIZATION mechanism (no CLI). New backlog item: `backlogs/gobbi-mistake-promote-command-does-not-exist.md` (full detail + suggested fix + the "agents never write to project memory" contradiction + the CLAUDE.md line 13 `packages/cli` stale ref). **Deferred per user** — fix in the follow-up session; the `mistake/SKILL.md` portion may fold into T03 (which already edits that file), but CLAUDE.md is a separate Always-Ask surface. Do NOT run `gobbi mistake promote` — the 2 mistakes this session were already promoted by Wrap-up.
