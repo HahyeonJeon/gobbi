@@ -62,3 +62,4 @@ Fixed in PR #270 (session 2026-05-24-45388fa9 / follow-up FU-1, 2026-05-25):
 
 - `git/SKILL.md` lines 155 and 157 corrected from "Configuration row 5.5" to "Configuration row 5" (real target: `.gobbi/projects/gobbi/skills/git/SKILL.md`).
 - `features/session-foundations-bundle-b/design/d-1-worktree-row-5-5.md` (D-1 memorial) left as historical record per user decision 2026-05-25 — forward-pointer blockquote added near the top referencing the bundle-C T02 / commit 2b537ae reorder. Memorial text not rewritten.
+- `gobbi/SKILL.md:91` (found by the FU Codex confirm) carried the same stale "row 5.5 (worktree creation)" reference plus an ordering error ("runs after state.json initialization"). Corrected to "row 5 (worktree creation), which runs before state.json initialization (row 5.5) and before session.json stamping (row 6, where git.worktreePath is recorded)".
