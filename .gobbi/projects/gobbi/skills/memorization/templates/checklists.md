@@ -25,7 +25,7 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 
 ## File naming
 
-Two valid patterns — choose one per feature:
+Bare-slug (evergreen — the date lives in frontmatter). See [`rules.md` § 1](../rules.md). `checklists/` is a **feature-subdir-only** type ([`rules.md` § 3](../rules.md)). Two valid patterns — choose one per feature:
 
 - **Per-scenario file**: `{scenario-slug}.md` (mirrors `scenarios/{scenario-slug}.md`) — checklist items for that scenario in one file
 - **Per-checklist file**: `{checklist-slug}.md` — one file per checklist item
@@ -34,11 +34,20 @@ Per-scenario file is the recommended default; per-checklist file makes sense whe
 
 ## Item template — per-scenario file
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file); `scope: feature` always (feature-subdir-only).
+
 ```markdown
 ---
-scenario: {scenario-slug}
+name: {scenario-slug}
+description: {one-line — implementation checklist for this scenario}
+type: checklists
+scope: feature
 feature: {feature-name}
-last_updated: YYYY-MM-DD
+status: active
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
+scenario: {scenario-slug}
 ---
 
 # {Scenario title} — implementation checklist
@@ -60,16 +69,23 @@ last_updated: YYYY-MM-DD
 
 ## Item template — per-checklist file
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file); `scope: feature` always. The per-item progress lives in the `item_status` extension (distinct from base `status`).
+
 ```markdown
 ---
-scenario: {scenario-slug}
+name: {checklist-slug — short imperative title}
+description: {one-line — the implementation point}
+type: checklists
+scope: feature
 feature: {feature-name}
-status: pending | implemented | deferred
+status: active
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
+scenario: {scenario-slug}
+item_status: pending | implemented | deferred
 anchor: {reference-slug or `novel`}
-added: YYYY-MM-DD
-added_by_session: {session_id}
-implemented: YYYY-MM-DD or null
-implemented_in: {changelog path} or null
+implemented_in: {changelog path} | null
 ---
 
 # {Checklist item — short imperative title}
@@ -91,7 +107,9 @@ implemented_in: {changelog path} or null
 
 Every checklist item must have an anchor — either a reference insight slug from `references/` or the literal string `novel`. Items without anchors are unanchored and become noise. The Step 4 of Ideation enforces this; the assistant carries it through MEMORIZATION.
 
-## Status lifecycle
+## Item-status lifecycle
+
+The `item_status` extension field (distinct from base `status`, which stays `active`) tracks each item's implementation progress:
 
 - **`pending`** — added but not yet implemented; the Execution Loop is expected to address it
 - **`implemented`** — the corresponding work shipped; cross-reference the changelog

@@ -26,20 +26,29 @@ The bar is **applicability**, not novelty: a reference belongs here if it inform
 
 ## File naming
 
-`{slug}.md` — short, descriptive. Slug describes the topic, not the source.
+`{slug}.md` — bare-slug, short, descriptive. Slug describes the topic, not the source. No date prefix (evergreen). See [`rules.md` § 1](../rules.md).
 
 Example: `redis-ttl-eviction.md` (not `redis-docs-chapter-7.md`), `karpathy-software-3.md`, `superpowers-brainstorming.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the references-type extensions (`title`, `source`, `accessed`, `ref_type`). Note: base `type: references` is the memory type; the source genre (docs / blog / paper / …) is the `ref_type` extension, NOT the base `type`.
+
 ```markdown
 ---
+name: {slug — short topic title}
+description: {one-line what insight this source contributes}
+type: references
+scope: project | feature
+feature: {feature-name} | null
+status: active | superseded
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
 title: {Short topic title}
 source: {URL or path}
-type: docs | blog | paper | rfc | code | book | other
 accessed: YYYY-MM-DD
-session: {session_id}
-tags: [{tag1}, {tag2}]
+ref_type: docs | blog | paper | rfc | code | book | other
 related: [{related learning / mistake slugs}]
 ---
 

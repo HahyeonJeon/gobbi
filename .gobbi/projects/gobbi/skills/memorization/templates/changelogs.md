@@ -25,21 +25,28 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 
 ## File naming
 
-`{YYYY-MM-DD}-{slug}.md` — date prefix; slug describes the shipped unit.
+`{YYYY-MM-DD}-{slug}.md` — date-prefixed (changelogs are time-indexed); slug describes the shipped unit. See [`rules.md` § 1](../rules.md). `changelogs/` is a **feature-subdir-only** type ([`rules.md` § 3](../rules.md), [`memory-map.md`](../memory-map.md)).
 
 Example (feature-level, per-task): `2026-05-11-login-ui-shipped.md`.
-Example (project-level, per-session): `2026-05-11-{session-id}.md`.
+Example (project-level, per-session): `2026-05-11-session-summary.md`.
 
 ## Item template — feature-level (per-task)
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the changelogs extension (`shipped_in`); `scope: feature` always (feature-subdir-only).
+
 ```markdown
 ---
-date: YYYY-MM-DD
-session: {session_id}
+name: {slug — what shipped}
+description: {one-line what this task delivered}
+type: changelogs
+scope: feature
 feature: {feature-name}
+status: active
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
+shipped_in: {PR / commit / plan path}
 task: {task name}
-status: shipped | partial | aborted
-plan: {plans/{date}-{slug}.md}
 ---
 
 # {Task title — what shipped}
@@ -62,11 +69,20 @@ plan: {plans/{date}-{slug}.md}
 
 ## Item template — project-level (per-session)
 
+A per-session roll-up may be authored at the project root for the session as a whole. It carries the same base frontmatter with `scope: project` and `feature: null`.
+
 ```markdown
 ---
-date: YYYY-MM-DD
-session: {session_id}
-status: shipped | partial | aborted
+name: {slug — session summary}
+description: {one-line what the session delivered}
+type: changelogs
+scope: project
+feature: null
+status: active
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
+shipped_in: {PR / commit}
 ---
 
 # Session {session-id-or-task-title}

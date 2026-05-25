@@ -23,20 +23,30 @@ Rules are project-wide by definition. There is no feature-scoped rules tier — 
 
 ## File naming
 
-`{slug}.md` — short, imperative, names the rule. No date prefix.
+`{slug}.md` — short, imperative, names the rule. No date prefix (bare-slug; evergreen). See [`rules.md` § 1 naming standard](../rules.md).
 
-Examples: `docs-cleanup-parallelism.md`, `__gobbi-convention.md`, `evaluator-read-only-boundary.md`.
+Examples: `docs-cleanup-parallelism.md`, `evaluator-read-only-boundary.md`.
+
+## Frontmatter
+
+Every rule file carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the rules-type extensions (`priority`, `established`, `supersedes`). **Frontmatter is mandatory on every memory file, the `rules/` type included** — the older "the project uses plain markdown, frontmatter is forbidden" prohibition is rescoped to **stub-redirect TARGET docs only** (the published `.claude/` redirect stubs), NOT to project-memory files.
 
 ## Item template
 
 ```markdown
 ---
-title: {Short title — the rule, in imperative form}
+name: {slug — the rule, in imperative form}
+description: {one-line what-this-rule-enforces}
+type: rules
+scope: project
+feature: null
+status: active
+created: YYYY-MM-DD
+session: {session-id that established the rule}
+tags: [{tag1}, {tag2}]
 priority: critical | high | medium | low
 established: YYYY-MM-DD
-session: {session_id_that_established_the_rule}
-supersedes: {prior rule slug if this replaces an existing rule}
-tags: [{tag1}, {tag2}]
+supersedes: {prior rule slug if this replaces an existing rule} | null
 ---
 
 # {Rule title}

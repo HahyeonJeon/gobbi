@@ -51,16 +51,24 @@ Date is the **review activity date**, not the date the document was written (if 
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reviews-type extensions (`verdict`, `review_kind`, `subject`). Reviews are project-only and append-only (base `status` stays `active`).
+
 ```markdown
 ---
-date: YYYY-MM-DD
+name: {slug — review subject + kind}
+description: {one-line what was reviewed and the outcome}
+type: reviews
+scope: project
+feature: null
+status: active
+created: YYYY-MM-DD
 session: {session-id}
+tags: [{tag1}, {tag2}]
 review_kind: adversarial-review | ultrareview | code-review | retrospective | security-audit | license-audit | dep-audit | other
-reviewed_artifact: {path / branch / PR / system being reviewed}
+subject: {path / branch / PR / system being reviewed}
+verdict: pass | revise | fail | needs-attention | n/a
 reviewer: {agent identity / human author / tool name}
 perspectives: [{perspective list — for evaluator-driven reviews}]
-overall_verdict: pass | revise | fail | needs-attention | n/a
-status: open | acted-on | superseded | archived
 related_reports: [{report slugs that cite this review or were cited by this review}]
 related_decisions: [{decision slugs this review drove}]
 ---

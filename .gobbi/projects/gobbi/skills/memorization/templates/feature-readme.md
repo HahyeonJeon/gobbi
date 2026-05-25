@@ -23,13 +23,21 @@ The README is **lightweight** — it points to the artifacts but does not duplic
 
 ## Template
 
+The README carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the features-type extensions (`value_proposition`, `subsystems`). A feature README is the feature's **identity document**, so it is self-referential: `scope: feature` and `feature: {own-slug}` name the feature itself. The sprint-only keys (`pr`, `commit`, `head-commit`, `first-session`, `last-session`) are NOT on the README — per-ship metadata belongs in `changelogs/` entries, not the value-feature identity.
+
 ```markdown
 ---
-feature: {feature-name}
-project: {project-name}
-status: planned | in-progress | shipped | archived
+name: {feature-name}
+description: {one-line what this feature is}
+type: features
+scope: feature
+feature: {feature-name}   # self-reference — the README names its own feature
+status: active | retired
 created: YYYY-MM-DD
-last_updated: YYYY-MM-DD
+session: {session-id of first promotion to this feature}
+tags: [{tag1}, {tag2}]
+value_proposition: {the one-liner — "what gobbi does for me"}
+subsystems: [{skill / path this value-feature owns}]
 ---
 
 # {Feature display name}
@@ -71,11 +79,9 @@ The "Recent activity" table grows over time. Cap it at the **20 most recent entr
 
 ## When status changes
 
-The `status` field transitions:
+A value-feature is a durable capability, so its base `status` is coarse — `active` while the capability is live, `retired` once it is removed. The fine-grained progress of work within the feature (planned / in-progress / shipped per task) lives in `changelogs/` entries and the Recent-activity table, not in the README `status` field.
 
-- **`planned`** — feature exists in design but no plan shipped yet
-- **`in-progress`** — at least one task shipped, more work outstanding (backlog entries exist)
-- **`shipped`** — primary scope of the feature is complete; backlog is empty or only contains nice-to-haves
-- **`archived`** — feature is retired or superseded; at Wrap-up the entire feature directory is moved (`git mv`) to `archive/features/{feature-name}/` per the move-on-terminal model (never deleted; the active `features/` shows only live features)
+- **`active`** — the feature is a live gobbi capability (the default for every promoted feature)
+- **`retired`** — the feature is removed or superseded; at Wrap-up the entire feature directory is moved (`git mv`) to `archive/features/{feature-name}/` per the move-on-terminal model (never deleted; the active `features/` shows only live features)
 
-The manager updates `status` via AskUserQuestion at session start when reactivating a feature, or the assistant updates it during MEMORIZATION when objective triggers fire (e.g., shipping the last in-scope task moves `in-progress` → `shipped`).
+The manager updates `status` via AskUserQuestion when retiring a feature. Per-task / per-session progress is recorded in `changelogs/` and the Recent-activity table, not by flipping the README `status`.

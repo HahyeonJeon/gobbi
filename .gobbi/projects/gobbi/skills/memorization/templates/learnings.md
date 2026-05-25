@@ -29,18 +29,27 @@ Learnings are cross-cutting by definition. Feature-specific insights belong in t
 
 ## File naming
 
-`{slug}.md` — short, descriptive. No date prefix (learnings are timeless once recorded).
+`{slug}.md` — bare-slug, short, descriptive, ≤6 words. No date prefix (learnings are timeless once recorded); no finding-ID prefix. See [`rules.md` § 1](../rules.md).
 
 Example: `parallel-spawn-rate-limit.md`, `markdown-link-relativization.md`, `bun-sqlite-strict-mode.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the learnings-type extensions (`supersedes`, `superseded_by`). The discovery date folds into base `created`; the originating session into base `session` — the ad-hoc `discovered` / `promoted-from` / `promoted-at` keys are dropped (`git log` + base `session` carry provenance, [`rules.md` § 2.3](../rules.md)).
+
 ```markdown
 ---
-title: {Short title}
-discovered: YYYY-MM-DD
-session: {session_id}
+name: {slug — the insight, named}
+description: {one-line what we now know how to do better}
+type: learnings
+scope: project
+feature: null
+status: active | superseded
+created: YYYY-MM-DD
+session: {session-id}
 tags: [{tag1}, {tag2}]
+supersedes: {prior learning slug} | null
+superseded_by: {newer learning slug} | null
 related: [{related learning slugs}]
 ---
 

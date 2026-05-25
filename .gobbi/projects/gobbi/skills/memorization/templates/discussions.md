@@ -26,19 +26,26 @@ Discussions are always bounded to a feature. Cross-cutting AskUserQuestion excha
 
 ## File naming
 
-`{YYYY-MM-DD}-{slug}.md` — date prefix so chronological order is visible. The slug is short and descriptive.
+`{YYYY-MM-DD}-{slug}.md` — date-prefixed (a discussion is tied to the session that held it); slug is short and descriptive. See [`rules.md` § 1](../rules.md). `discussions/` is a **feature-subdir-only** type ([`rules.md` § 3](../rules.md)).
 
 Example: `2026-05-11-cache-vs-index.md`, `2026-05-11-feature-decomposition.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file); `scope: feature` always (feature-subdir-only). The base `session` field anchors the discussion to its session.
+
 ```markdown
 ---
-date: YYYY-MM-DD
-session: {session_id}
+name: {slug — short topic}
+description: {one-line what was decided}
+type: discussions
+scope: feature
+feature: {feature-name}
+status: active
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
 loop: ideation | preparation | planning | execution | wrap-up
-feature: {feature-name} or null
-topic: {short topic}
 outcome: {one-line summary of what was decided}
 ---
 
