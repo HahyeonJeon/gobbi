@@ -6,7 +6,7 @@ loops_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [T01, T02, T03, T04, T05, T06, T07]
 status: complete
 tags: [bundle-c, session-foundations, worktree, orchestration, hook-authoring, gobbi-mistake-promote, complete]
-supersedes: notes/2026-05-24-session-foundations-bundle-c-partial.md
+supersedes: archive/notes/2026-05-25-session-foundations-bundle-c-partial.md
 ---
 
 # session-foundations-bundle-c — complete (T01-T07 PASS on contracted scope)
