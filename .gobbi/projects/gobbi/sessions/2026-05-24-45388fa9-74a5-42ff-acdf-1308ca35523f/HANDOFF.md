@@ -15,7 +15,7 @@ related:
 
 # Handoff — session-foundations-bundle-c (COMPLETE, 2026-05-25)
 
-Feature `session-foundations-bundle-c`. Branch `chore/session-2026-05-24-45388fa9`, base `develop` @ `cf426f7`. Session ran Configuration through Wrap-up across two sub-sessions (initial 2026-05-24, resume 2026-05-25 after /clear). **All 7 tasks (T01-T07) complete and PASS.** Bundle C is ready for PR.
+Feature `session-foundations-bundle-c`. Branch `chore/session-2026-05-24-45388fa9`, base `develop` @ `cf426f7`. Session ran Configuration through Wrap-up across two sub-sessions (initial 2026-05-24, resume 2026-05-25 after /clear). **T01-T07 complete; all PASS on contracted scope. T04/T05/T07 each had ≥1 REVISE iteration (dual-system caught real defects); T07's iter2 Codex REVISE was a new out-of-contract finding (OVERALL-001 — stale packages/cli refs), which the user dispositioned as DEFERRED, not a contracted-scope failure.** Bundle C is ready for PR.
 
 ---
 
@@ -68,7 +68,7 @@ Feature `session-foundations-bundle-c`. Branch `chore/session-2026-05-24-45388fa
 **Commits:** `f2356ca` (CLAUDE.md + 3 other surfaces), `6bf792a` (iter2: .codex/AGENTS.md 4th surface)
 **Files:** `.gobbi/projects/gobbi/worktrees/chore/session-2026-05-24-45388fa9/.claude/CLAUDE.md`, `gobbi/SKILL.md`, `wrap-up/SKILL.md`, `mistake/SKILL.md` (already done in T03 — verified only), `.codex/AGENTS.md`
 **What:** Eradicated all remaining `gobbi mistake promote` CLI references tree-wide. CLAUDE.md "Gobbi-specific tooling" section rewritten to describe Wrap-up-phase agent-driven promotion (two layers: staging→project mistakes Layer 1; generalizable project mistakes→workspace-level skill storage Layer 2). Required **2 iters**: iter1 fixed 4 surfaces but missed `.codex/AGENTS.md`; iter2 Codex evaluator caught the 4th surface (drift between `.claude/CLAUDE.md` and `.codex/AGENTS.md`) — textbook dual-system cross-mirror detection.
-**Eval:** Dual-system, 2 iters. iter1: Claude PASS, Codex REVISE (CONS-001 High). iter2: both PASS.
+**Eval:** Dual-system, 2 iters. iter1: Claude PASS, Codex REVISE (CONS-001 High — `.codex/AGENTS.md` 4th surface missed). iter2 (commit `6bf792a`) fixed `.codex/AGENTS.md`; Codex iter2 confirmed CONS-001 RESOLVED but raised NEW out-of-contract finding OVERALL-001 (High/90 — stale `packages/cli` refs in `gobbi/SKILL.md:74/129` + delegation template), so the Codex iter2 verdict was REVISE; no Claude iter2 leg (manager verified Claude-side directly); the user dispositioned OVERALL-001 as DEFERRED to `backlogs/stale-packages-cli-architecture-refs.md`; T07 was accepted PASS on its contracted scope (gobbi-mistake-promote defect eradicated tree-wide).
 
 ---
 
@@ -82,6 +82,10 @@ Feature `session-foundations-bundle-c`. Branch `chore/session-2026-05-24-45388fa
 | `stale-packages-cli-architecture-refs` | Medium | `.gobbi/projects/gobbi/backlogs/stale-packages-cli-architecture-refs.md` |
 
 The `gobbi/SKILL.md:74` stale `packages/cli` security claim needs investigation before rewording — it is a security-relevant claim, not a mechanical rename. The `git/SKILL.md` row 5.5 drift fix is a mechanical update, low priority.
+
+**Deferral audit trail:**
+- `git-skill-stale-row-5-5-worktree-reference` — surfaced at T05 iter2 as a follow-up (both eval systems; row-label cross-check lesson). Not a contracted T05 scope item.
+- `stale-packages-cli-architecture-refs` — surfaced as OVERALL-001 (High/90) in T07 iter2 Codex evaluation. OVERALL-001 was a NEW finding outside T07's contracted scope (gobbi-mistake-promote eradication). User dispositioned it DEFERRED; T07 accepted PASS on contracted scope.
 
 ### PR not yet opened
 
@@ -174,7 +178,7 @@ Plus prior sub-session commits (T01-T02): `18cd9c9`, `2b537ae`, `6881d58`.
 - T04: 3 iters (Codex caught High registration defect at iter1; dual-system divergence textbook).
 - T05: 2 iters (both systems caught inherited stale row label; design-doc cross-check lesson).
 - T06: 1 iter, PASS (locked DL-5 wording non-actionable for aesthetics finding).
-- T07: 2 iters (Codex caught 4th surface `.codex/AGENTS.md` that Claude missed; cross-mirror detection lesson).
+- T07: 2 iters. iter1: Claude PASS / Codex REVISE (CONS-001 — missed `.codex/AGENTS.md`). iter2: Codex REVISE on NEW out-of-contract OVERALL-001 (High/90, stale `packages/cli` refs); user DEFERRED OVERALL-001 to `backlogs/stale-packages-cli-architecture-refs.md`; T07 accepted PASS on contracted scope.
 
 ---
 

@@ -9,7 +9,7 @@ tags: [bundle-c, session-foundations, worktree, orchestration, hook-authoring, g
 supersedes: notes/2026-05-24-session-foundations-bundle-c-partial.md
 ---
 
-# session-foundations-bundle-c — complete (T01-T07 all PASS)
+# session-foundations-bundle-c — complete (T01-T07 PASS on contracted scope)
 
 ## What happened
 
@@ -29,7 +29,7 @@ Full workflow across two sub-sessions (2026-05-24 initial, 2026-05-25 resume aft
 - **T04 (CL-2):** New `gobbi-hook-authoring` project skill from N=2 witnesses. 3 commits, 3 iters. Textbook dual-system divergence: Claude rated USAGE-001 as Medium PASS; Codex rated it High REVISE. Codex was correct — registration shape defect + invented payload path. Iter2 fixed both; iter3 completed P7 testing section split by hook class. Four checklists + changelog staged.
 - **T05 (CL-4):** `session-lifecycle-worktree-boundaries` design doc. 2 commits, 2 iters. Both systems caught that executor grounded row-label claims in `git/SKILL.md` (stale) rather than the authoritative `orchestration/SKILL.md`. Iter2 corrected to row 5; `git/SKILL.md` drift filed as follow-up backlog.
 - **T06 (CL-5):** M2 `{session-id}` sweep across 10 skills + close `f-risk-01`. 1 commit, 1 iter PASS. Locked DL-5 wording made evaluator aesthetics finding (F-AES-01 Low) non-actionable.
-- **T07 (CL-7 / follow-up):** `gobbi mistake promote` tree-wide sweep. 2 commits, 2 iters. Iter1 fixed CLAUDE.md + 3 skill surfaces. Iter2: Codex evaluator caught `.codex/AGENTS.md` as a 4th surface — textbook cross-mirror drift detection (Claude evaluator had missed it entirely; Codex reads `.codex/` as its entrypoint). Confirmed: `gobbi mistake promote` defect fully eradicated.
+- **T07 (CL-7 / follow-up):** `gobbi mistake promote` tree-wide sweep. 2 commits, 2 iters. Iter1 fixed CLAUDE.md + 3 skill surfaces. Iter2: Codex evaluator caught `.codex/AGENTS.md` as a 4th surface — textbook cross-mirror drift detection (Claude evaluator had missed it entirely; Codex reads `.codex/` as its entrypoint). Codex iter2 confirmed CONS-001 RESOLVED but raised a NEW out-of-contract finding OVERALL-001 (High/90 — stale `packages/cli` refs in `gobbi/SKILL.md:74/129`), so Codex iter2 verdict was REVISE; user dispositioned OVERALL-001 as DEFERRED to `backlogs/stale-packages-cli-architecture-refs.md`; T07 accepted PASS on its contracted scope (gobbi-mistake-promote defect eradicated tree-wide).
 
 ## What shipped (commits)
 
