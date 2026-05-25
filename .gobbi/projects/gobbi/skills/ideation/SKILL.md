@@ -29,7 +29,7 @@ The agent in the leader role MUST observe these tier boundaries. The only write 
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for overlap detection (Sub-step A) and reuse of prior decisions / scenarios / checklists. Never written; Wrap-up owns feature-memory writes |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for context (project mistakes, rules, prior designs). Never written; Wrap-up owns project-memory writes |
 
-**Delete semantics**: the leader NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); physical deletion is forbidden.
+**Delete semantics**: the leader NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); physical deletion is forbidden. Once an artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 **Write enforcement**: any write attempted outside the WRITE rows above is a constraint violation. Code attempting writes to project memory or feature memory must be revoked and Ideation restarted with a corrected scope.
 

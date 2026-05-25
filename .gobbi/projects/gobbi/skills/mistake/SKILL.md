@@ -22,7 +22,7 @@ The agent MUST observe these tier boundaries. For working-loop agents, the only 
 | **Feature mistakes** | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` | **READ-ONLY** — load when the task is feature-scoped; never written by working-loop agents (Wrap-up assistant is the sole exception) |
 | **Session staging** | `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` with frontmatter `mistake-candidate: true` | **WRITE (PASS only, during MEMORIZATION)** — the only surface agents write to; Wrap-up promotes to project or feature `mistakes/` based on scope confirmed with user |
 
-**Delete semantics**: agents NEVER delete mistake files in any tier. When a mistake is superseded, the new file carries `supersedes: <old-path>` frontmatter; the old file is updated in place with `status: superseded` + `superseded_by: <new-path>`.
+**Delete semantics**: agents NEVER delete mistake files in any tier. When a mistake is superseded, the new file carries `supersedes: <old-path>` frontmatter; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-path>` added. Physical deletion is forbidden. **Active mistakes never move** — the trap stays live in `mistakes/` where agents load it and where `required-mistakes:` paths point. Only a **superseded** mistake is moved (`git mv`) by Wrap-up to `archive/mistakes/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model in [`memorization/templates/archive.md`](../memorization/templates/archive.md).
 
 **Promotion**: The Wrap-up assistant promotes staged mistake-candidates to project memory during the Wrap-up phase (no CLI command). Promotion is NOT a context reload — agents do not re-read project mistakes after promotion; they read them at the start of the next session.
 
@@ -46,9 +46,9 @@ A mistake without its cause and recovery pattern is unactionable. Every mistake 
 
 The Wrap-up assistant promotes staged mistake-candidates from session staging to project memory (`mistakes/`) during the Wrap-up phase. Working-loop agents write to session staging only and never write directly to `mistakes/`. The Wrap-up phase is the sole documented exception to the staging boundary.
 
-> **Supersede, never delete.**
+> **Supersede, never delete. Active mistakes never move.**
 
-When a new mistake supersedes an older one (new understanding overrides the prior correction), write the new mistake with a `supersedes:` frontmatter pointer, and update the older file's frontmatter in place (`status: superseded`, `superseded_by: <new-path>`). Physical deletion is forbidden.
+When a new mistake supersedes an older one (new understanding overrides the prior correction), write the new mistake with a `supersedes:` frontmatter pointer, and flip the older file's frontmatter in place (`status: superseded`, `superseded_by: <new-path>`). Physical deletion is forbidden. The in-place flip is step 1 of two: at session Wrap-up, the now-superseded mistake is moved (`git mv`) to `archive/mistakes/{YYYY-MM-DD}-{slug}.md` — it is never deleted, never left in `mistakes/` once superseded. **Active** mistakes never move — the trap must remain live in `mistakes/` where agents load it and where `required-mistakes:` paths point.
 
 ---
 

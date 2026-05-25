@@ -72,4 +72,4 @@ The Execution Loop's MEMORIZATION updates the status from `partial` to `covered`
 
 ## Append-only
 
-Scenarios accumulate across sessions. Do not delete a scenario when the feature evolves — instead, set status to `uncovered` and document why in the body, or supersede with a more accurate scenario file. Deletion would lose the history of what the feature has been expected to handle.
+Scenarios accumulate across sessions. Do not delete a scenario when the feature evolves — instead, set status to `uncovered` and document why in the body, or supersede with a more accurate scenario file. Deletion would lose the history of what the feature has been expected to handle. When a scenario is superseded, at Wrap-up it is moved (`git mv`) to `archive/scenarios/{date}-{slug}.md` per the move-on-terminal model (never deleted; full content preserved).

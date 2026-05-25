@@ -34,7 +34,7 @@ The agent in the leader role MUST observe these tier boundaries. The only write 
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for scenario/checklist accumulation context. Never written; Wrap-up owns feature-memory writes |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for mistake/rule lookup during task assignment. Never written; Wrap-up owns project-memory writes |
 
-**Delete semantics**: the leader NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); physical deletion is forbidden.
+**Delete semantics**: the leader NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); physical deletion is forbidden. Once an artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 **Restore-point exception**: at REVISE entry, the leader copies the prior iter's draft from `rawdata/draft-iter{n-1}.md` to `rawdata/restore/iter{n-1}-pre-revise.md`. This is a **write**, not a delete or mutation — the original `draft-iter{n-1}.md` is preserved as-is. See § Restore Point below.
 
@@ -498,6 +498,6 @@ The session directory tree at `sessions/{date}-{session-id}/planning/{rawdata,st
 - **MUST take a Restore Point** at every REVISE entry — copy prior `draft-iter{n-1}.md` to `restore/iter{n-1}-pre-revise.md` with re-run header.
 - **MUST escalate via USER CHALLENGE** when the leader substantively disagrees with the user's stated Ideation direction — use the 5-field card; bias defaults to user's original direction.
 - **MUST never write to project memory or feature memory during the Planning Loop** — all staging happens at `sessions/{date}-{session-id}/planning/staging/...`. Wrap-up promotes.
-- **MUST never delete** — supersession via frontmatter (`status: superseded`, `superseded_by:`); physical deletion of any file in any tier is forbidden.
+- **MUST never delete** — supersession via frontmatter (`status: superseded`, `superseded_by:`); physical deletion of any file in any tier is forbidden. Terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json` from the leader role** — the manager owns it.
 - **MUST disagree when you disagree** — surface technical conflicts with evidence; trigger USER CHALLENGE for substantive disagreements with user direction.

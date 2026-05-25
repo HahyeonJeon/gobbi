@@ -74,4 +74,4 @@ created: YYYY-MM-DD
 
 ## Avoid bloat
 
-A backlog file that has not been picked up in months and has no clear "when to pick up" trigger is dead weight. During wrap-up, the assistant flags stale backlogs to the user for explicit decision: keep, archive, or delete.
+A backlog file that has not been picked up in months and has no clear "when to pick up" trigger is dead weight. During wrap-up, the assistant flags stale backlogs to the user for explicit decision: keep, archive (move to `archive/backlogs/`), or drop (move to `archive/backlogs/` with `archive_reason: dropped`). Deletion is never an option — no-delete is a hard invariant.

@@ -1,4 +1,6 @@
 ---
+archived_at: 2026-05-25
+archive_reason: superseded
 date: 2026-05-24
 session: 2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f
 feature: session-foundations-bundle-c

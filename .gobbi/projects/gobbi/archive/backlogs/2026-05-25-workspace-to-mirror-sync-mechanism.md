@@ -1,4 +1,6 @@
 ---
+archived_at: 2026-05-25
+archive_reason: superseded
 title: Workspace → project-mirror sync mechanism for `.claude/skills/` → `.gobbi/projects/gobbi/skills/`
 status: superseded
 superseded_by: "no superseding file; backlog is closed as moot per iter2 corrected lock"

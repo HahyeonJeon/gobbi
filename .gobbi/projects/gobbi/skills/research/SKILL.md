@@ -32,7 +32,7 @@ The agent in the leader role (or any role that loads this skill) MUST observe th
 
 Research does not own its own session subdirectory — it lives inside the loop that invoked it.
 
-**Delete semantics**: research never deletes any file in any tier. Supersession via frontmatter is handled by the calling loop's MEMORIZATION.
+**Delete semantics**: research never deletes any file in any tier. Supersession via frontmatter is handled by the calling loop's MEMORIZATION. Once a project-memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 ---
 

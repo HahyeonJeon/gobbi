@@ -71,7 +71,7 @@ supersedes: {prior-plan-slug} or null
 
 ## Updates
 
-When execution surfaces a need to change the plan (a sub-task was harder than expected, an ordering needed to flip), the assistant writes a new plan document `{date}-{slug}-v2.md` with `supersedes: {old-slug}` rather than editing in place. The old plan stays as history.
+When execution surfaces a need to change the plan (a sub-task was harder than expected, an ordering needed to flip), the assistant writes a new plan document `{date}-{slug}-v2.md` with `supersedes: {old-slug}` rather than editing in place. The superseded plan is never deleted — at Wrap-up, it is moved (`git mv`) to `archive/plans/{date}-{slug}.md` per the move-on-terminal model. The active `plans/` directory then shows only live plans.
 
 ## Sub-task granularity
 

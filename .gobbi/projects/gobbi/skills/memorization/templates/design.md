@@ -67,4 +67,4 @@ related: [decisions/{slug}, plans/{slug}, changelogs/{slug}]
 
 ## Supersedence
 
-When a new design supersedes an older one, set the old one's `status: superseded` and reference the new one in its `related` field. Do not delete superseded designs — they preserve the project's design history.
+When a new design supersedes an older one, set the old one's `status: superseded` and reference the new one in its `related` field. Do not delete superseded designs — they preserve the project's design history. At Wrap-up, the superseded design is moved (`git mv`) to `archive/design/{date}-{slug}.md` per the move-on-terminal model (never deleted; full content preserved in archive).
