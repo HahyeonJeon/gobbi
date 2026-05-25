@@ -1,90 +1,108 @@
 # `archive/`
 
-**Index of retired / superseded / shipped artifacts** — closed sessions, completed backlogs, superseded designs, deprecated features. Active files stay in their active directories; this directory holds index entries pointing back at them with archival metadata.
+**Holding area for terminal artifacts moved here in full** — shipped backlogs, superseded designs, retired features, superseded mistakes, and other project-memory files that have reached a terminal state. Active files stay in their active directories until they reach a terminal state; this directory holds the actual moved files (frontmatter + body intact). Each file in `archive/` is a complete artifact, not a stub or pointer.
 
 ## Lifecycle (Wrap-up direct write)
 
-This template is written **directly by Wrap-up's MEMORIZATION** to its project-memory destination — there is no loop-MEMORIZATION staging path. Wrap-up authors the index entry when a session-level event triggers archival (a backlog ships, a design is superseded, a feature retires) and stamps this template.
+This template is written **directly by Wrap-up's MEMORIZATION** to its project-memory destination — there is no loop-MEMORIZATION staging path. Wrap-up performs the move when a session-level event triggers archival (a backlog ships, a design is superseded, a feature retires) and stamps the archival frontmatter additions described below.
 
 Wrap-up is the sole writer; loop MEMORIZATION (Ideation / Planning / Execution) never writes to this destination.
 
 ---
 
-The archive is the project's **chronological index of state transitions**, not a file mover. Active artifacts stay in their active locations; their lifecycle status is updated **in place** via frontmatter (`status: superseded` / `status: archived` / `superseded_by:` / `archived_at:`). The `archive/` directory holds **archive entries** — small index files — that record the state transition + point at the now-archived active file.
+The archive is the project's **holding area for terminal artifacts moved in full**. When an artifact reaches a terminal state, its complete file (frontmatter + body) is **moved** from its active directory into `archive/{type}/{YYYY-MM-DD}-{slug}.md` using `git mv`. The active directory then shows only live work. The move IS the archival.
 
-This in-place model preserves the system-wide **no-delete + no-move invariant**: every file the workflow ever wrote remains at its original path, with frontmatter explaining its current lifecycle state. The archive index lets readers find "what was archived this quarter" without having to scan every active directory for `status: archived` frontmatter.
+This model is **no-delete + move-on-terminal**: files are never deleted; when an artifact terminates, it moves out of the active directory. Active directories must stay clean so agents reliably find only live work.
 
-## When to write
+## When to move
 
-- **When a backlog entry ships**: update the original `features/{feature-name}/backlogs/{slug}.md` in place — flip `status: shipped` + add `shipped_in: {changelog path}` frontmatter. **Also** write `archive/backlogs/{YYYY-MM-DD}-{slug}.md` index entry pointing back at the now-shipped backlog.
-- **When a design is superseded**: update the original `features/{feature-name}/design/{slug}.md` in place — flip `status: superseded` + add `superseded_by: {new design path}` frontmatter. **Also** write `archive/design/{YYYY-MM-DD}-{slug}.md` index entry.
-- **When a feature is retired**: update `features/{feature-name}/README.md` in place — flip `status: archived` + add `archived_at: {YYYY-MM-DD}` + `archive_reason: <one-line>` frontmatter. **Also** write `archive/features/{YYYY-MM-DD}-{feature-name}.md` index entry pointing at the now-retired feature directory.
-- **When a session is closed and the user wants it archive-indexed**: write `archive/sessions/{YYYY-MM-DD}-{session-id}.md` index entry summarizing the session's outcome. The original `sessions/{date}-{session-id}/` directory is NOT moved.
+Move a file to `archive/` when it reaches one of the following terminal states:
 
-The archive index is **always a NEW file** — never a move of an existing file. The active artifact remains at its original path.
+| Artifact type | Terminal state(s) that trigger a move |
+|---|---|
+| `backlogs/` | `shipped` / `closed` / `addressed` / `dropped` |
+| `design/` | `superseded` |
+| `decisions/` | `superseded` |
+| `plans/` | `superseded` |
+| `references/` | `superseded` |
+| `rules/` | `superseded` |
+| `mistakes/` | `superseded` **only** — active mistakes NEVER move; the trap persists in `mistakes/` where agents load it and where `required-mistakes:` paths point. Only a mistake that is fully superseded by a newer entry moves to archive. |
+| `learnings/` | `superseded` **only** — same rule as mistakes; active learnings stay live. |
+| `features/` | `retired` |
+| `sessions/` | closed + user opts in (session dirs are large; moving is opt-in) |
+
+`reviews/` + `reports/` are append-only history — supersession via `status:` frontmatter, move only if the maintainer explicitly wants the active dir trimmed.
+
+Active artifacts — any artifact not yet at a terminal state — **never** move.
 
 ## Location
 
 - Project-level only: `.gobbi/projects/{project-name}/archive/`
 
-The archive mirrors the project tree's structural categories as **index directories** (not content directories):
+The archive mirrors the project tree's structural categories as subdirectories holding the **full moved files** (not index stubs):
 
 ```
 archive/
-├── sessions/{YYYY-MM-DD}-{session-id}.md   ← index entry per archived session
-├── backlogs/{YYYY-MM-DD}-{slug}.md         ← index entry per shipped/dropped backlog
-├── design/{YYYY-MM-DD}-{slug}.md           ← index entry per superseded design
-├── decisions/{YYYY-MM-DD}-{slug}.md        ← index entry per superseded decision
-├── plans/{YYYY-MM-DD}-{slug}.md            ← index entry per superseded plan
-├── features/{YYYY-MM-DD}-{feature-name}.md ← index entry per retired feature
-└── notes/{YYYY-MM-DD}-{slug}.md            ← index entry per archived note
+├── sessions/{YYYY-MM-DD}-{session-id}.md   ← full moved session file (opt-in)
+├── backlogs/{YYYY-MM-DD}-{slug}.md         ← full moved backlog entry
+├── design/{YYYY-MM-DD}-{slug}.md           ← full moved design doc
+├── decisions/{YYYY-MM-DD}-{slug}.md        ← full moved decision doc
+├── plans/{YYYY-MM-DD}-{slug}.md            ← full moved plan doc
+├── references/{YYYY-MM-DD}-{slug}.md       ← full moved reference doc
+├── rules/{YYYY-MM-DD}-{slug}.md            ← full moved rule doc
+├── mistakes/{YYYY-MM-DD}-{slug}.md         ← full moved mistake (superseded only)
+├── learnings/{YYYY-MM-DD}-{slug}.md        ← full moved learning (superseded only)
+└── features/{YYYY-MM-DD}-{feature-name}.md ← full moved feature README (retired)
 ```
 
 ## Naming
 
-Always date-prefixed: `{YYYY-MM-DD}-{slug}.md`. The date is **the archive date** (when the state transition happened), not the original creation date.
+Always date-prefixed: `{YYYY-MM-DD}-{slug}.md`. The date is **the archive date** (when the terminal state transition happened), not the original creation date.
 
-## Item template (the archive index entry)
+## Move procedure
+
+When an artifact reaches a terminal state, Wrap-up performs these steps:
+
+1. **Stamp archival frontmatter** onto the file: add `archived_at: {YYYY-MM-DD}` and `archive_reason: shipped|superseded|retired|dropped|abandoned`, and ensure the existing terminal `status:` + (`superseded_by:` | `shipped_in:`) are present. The body is preserved verbatim — no content is altered.
+2. **Move** the file: `git mv {active-path} .gobbi/projects/{project-name}/archive/{type}/{YYYY-MM-DD}-{slug}.md`. Using `git mv` preserves history. `{YYYY-MM-DD}` is the archive date (when the transition happened, not the file's creation date).
+3. **Repoint inbound references**: any `[[slug]]` link, `required-mistakes:` path, `supersedes:`/`superseded_by:` pointer, or prose path that pointed at the old active path is updated to point at the new archive path. For mistakes: since only superseded mistakes move, active `required-mistakes:` citations are unaffected; a `superseded_by:` chain that crosses the move is repointed.
+4. **Never delete** — the move preserves the file in `archive/`; it is never removed.
+
+## Archival frontmatter additions
+
+The moved file keeps its original body and its original frontmatter fields. Wrap-up stamps the following additional frontmatter fields onto the file before moving it:
 
 ```yaml
----
 archived_at: YYYY-MM-DD
-archived_session: {session-id at time of archive}
 archive_reason: shipped | superseded | retired | dropped | abandoned
-original_path: {path to the active artifact this entry indexes}
-shipped_in: {changelog path} or null
-superseded_by: {new artifact path} or null
-related: [{related archive entries}]
----
-
-# Archive entry — {one-line subject}
-
-## Original
-Path: `{original_path}`
-Original creation date: `{YYYY-MM-DD from the original artifact's frontmatter}`
-
-## Reason
-{One paragraph: why this artifact moved into archived state.}
-
-## Cross-references
-{Pointers to the changelog that recorded the shipping, the new design that superseded this, or the backlog where dropped items were rationalized.}
+# The terminal status and cross-reference fields below should already be present
+# on the original file; Wrap-up adds them here if they are missing:
+status: shipped | superseded | retired | dropped | archived
+superseded_by: {path in archive/ to the superseding artifact} | null
+shipped_in: {changelog path} | null
 ```
 
-The body is short — the archive entry is an INDEX, not a copy. Readers click `original_path` to see the actual content.
+`original_path` is not required as a persisted field — `git log --follow` recovers the full move history. Wrap-up MAY add an `original_path:` comment for human readability, but it is not mandatory.
 
-## What NOT to archive-index
+The file retains its complete original body. The archive holds the full artifact, not a summary or stub.
 
-- **`mistakes/`** — mistakes stay active forever; the trap persists.
-- **`learnings/`** — learnings transcend any specific feature.
-- **`references/`** — references stay active; the insight remains useful.
-- **`reviews/`** + **`reports/`** — append-only history; supersession via `status:` frontmatter only, no archive index needed unless the maintainer wants a structured "what was retired this quarter" view.
+## What NOT to move
+
+- **Active `mistakes/`** — active mistakes stay in `mistakes/` forever; the trap must remain live where agents load it and where `required-mistakes:` paths point. Only **superseded** mistakes move to `archive/mistakes/`.
+- **Active `learnings/`** — active learnings transcend any specific feature and must stay accessible to every session. Only **superseded** learnings move.
+- **`reviews/` + `reports/`** — append-only history; supersession via `status:` frontmatter only. Move only if the maintainer explicitly wants the active dir trimmed.
 
 ## Recovery (reactivating an archived artifact)
 
-Reactivating an archived artifact is **explicit**:
-1. Update the active artifact's frontmatter in place — flip `status:` back to `active` / `accepted` / etc.
-2. Delete the archive index entry at `archive/{...}/{YYYY-MM-DD}-{slug}.md` — this is the **only** delete operation the workflow allows, and it requires user AskUserQuestion confirmation.
+Reactivating an archived artifact is **explicit and user-confirmed**:
+
+1. `git mv archive/{type}/{YYYY-MM-DD}-{slug}.md {original-active-path}` — move the file back to its active directory.
+2. Flip `status:` back to `active` / `accepted` / `open` (as appropriate).
+3. Remove the `archived_at` and `archive_reason` frontmatter fields.
+4. Repoint any references that were updated during archival back to the active path.
+
+No deletion is involved at any step.
 
 ## Pruning
 
-The archive index is append-only by convention. Pruning archive entries is a user decision, never automatic.
+The archive is append-only by convention. Pruning archived files is a user decision, never automatic. Even pruning is no-delete by default; the user must explicitly direct any physical removal.
