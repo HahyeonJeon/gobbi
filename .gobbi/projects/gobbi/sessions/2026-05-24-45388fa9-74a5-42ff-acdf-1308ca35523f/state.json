@@ -6,8 +6,8 @@
     "ideation":      { "state": "Done", "verdict": "PASS-effective", "iter": 5, "maxIterations": 5, "phase": null, "iterBudgetOverride": "user-authorized 2026-05-24: cap raised 3→4→5. Iter5 verdict: Claude PASS / Codex REVISE on 4+1 non-controlling residuals. User chose Option 1 (patch + accept Claude PASS); all 5 residuals empirically patched post-eval. Effective verdict: PASS." },
     "preparation":   { "state": "Done", "verdict": "PASS", "iter": 1, "maxIterations": 3, "phase": null },
     "planning":      { "state": "Done", "verdict": "PASS-effective", "iter": 3, "maxIterations": 3, "phase": null, "note": "iter3 EVAL: Claude PASS, real-Codex REVISE (Codex-Iter3-H3: clause-2 regex inconsistency — 3 stale literal-dot patterns vs canonical backtick-tolerant). Manager-patched all 3 to canonical; finding empirically closed. Effective PASS." },
-    "execution":     { "state": "Active", "verdict": null, "iter": 0, "maxIterations": 3, "phase": "DISCUSSION", "currentTask": "T01" },
-    "wrap-up":       { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 1,    "phase": null }
+    "execution":     { "state": "Partial", "verdict": "T01+T02 PASS", "iter": 2, "maxIterations": 3, "phase": null, "completedTasks": ["T01", "T02"], "deferredTasks": ["T03", "T04", "T05", "T06"], "note": "Partial execution per budget. T01 (close f-struct-01, 18cd9c9) PASS single-leg. T02 (CL-6 orchestration reorder, 2b537ae + 6881d58 iter2) PASS dual-system — real Codex caught forward-ref C-1-1/C-5-1, fixed iter2. T03-T06 deferred to follow-up session with locked Plan ready." },
+    "wrap-up":       { "state": "Done", "verdict": "PASS", "iter": 1, "maxIterations": 1, "phase": null }
   },
-  "activeNote": "Planning Loop CLOSED (PASS-effective; 3 iters; real Codex caught 3 substantive bugs Claude missed across iters). Plan = 6 tasks T01-T06, strict-sequential DAG. Entering Execution Loop, task T01 (close f-struct-01 backlog inline). User chose push-into-execution this session, continue as budget allows."
+  "activeNote": "Wrap-up CLOSED (PASS). 2 mistakes promoted; HANDOFF written; journal entry created. All 6 workflow steps complete (Execution partial 2/6). Pending: final commit + PR decision with user (push partial Bundle C now vs leave local for follow-up to complete T03-T06)."
 }
