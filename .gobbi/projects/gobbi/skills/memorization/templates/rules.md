@@ -75,4 +75,4 @@ tags: [{tag1}, {tag2}]
 - Wrap-up is the **only** writer to `rules/` — no loop MEMORIZATION writes directly
 - New rules require user confirmation via AskUserQuestion ("Promote this session's recurring invariant to project rules as `{slug}`?")
 - Updating an existing rule uses the `supersedes:` frontmatter field; the prior rule file is preserved for audit
-- Never delete a rule file; supersession + frontmatter is the lifecycle mechanism
+- Never delete a rule file; supersession + frontmatter is the lifecycle mechanism. When the superseded rule reaches a terminal state (`status: superseded`), Wrap-up moves the full file (`git mv`) to `archive/rules/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model — never deleted, just relocated out of the active `rules/` directory.

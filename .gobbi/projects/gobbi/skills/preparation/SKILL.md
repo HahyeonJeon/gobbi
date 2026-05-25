@@ -29,7 +29,7 @@ The agent in the leader role MUST observe these tier boundaries. The only write 
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for readiness scanning (existing scenarios / checklists / design / mistakes). Never written; Wrap-up owns feature-memory writes |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for readiness scanning (project skills, mistakes, rules). Never written; Wrap-up owns project-memory writes |
 
-**Delete semantics**: the leader NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); physical deletion is forbidden.
+**Delete semantics**: the leader NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); physical deletion is forbidden. Once an artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 **Write enforcement**: any write attempted outside the WRITE rows above is a constraint violation. Code attempting writes to project memory or feature memory must be revoked and Preparation restarted with a corrected scope.
 
@@ -427,7 +427,7 @@ The session directory tree at `sessions/{date}-{session-id}/preparation/{rawdata
 - **MUST re-enter Ideation** if any gap reveals an unworkable design (a missing decision, not a missing artifact) — record the trigger, halt Preparation, signal the manager.
 - **MUST record the user's gap-resolution decision per gap** in the Decisions Log.
 - **MUST never write to project memory or feature memory during the Preparation Loop** — all `generate-now` fixes stage at `sessions/{date}-{session-id}/preparation/staging/{type}/{slug}.md`. Wrap-up promotes.
-- **MUST never delete** — supersession via frontmatter (`status: superseded`, `superseded_by:`); physical deletion of any file in any tier is forbidden.
+- **MUST never delete** — supersession via frontmatter (`status: superseded`, `superseded_by:`); physical deletion of any file in any tier is forbidden. Terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json` from the leader role** — the manager owns it.
 - **MUST disagree when you disagree** — surface technical conflicts with evidence; recommend `re-ideate` when the Ideation output is unworkable.
 - **MUST cite the discussion** — every staged gap fix references the AskUserQuestion exchange that authorized it.

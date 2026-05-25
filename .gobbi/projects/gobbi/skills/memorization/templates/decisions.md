@@ -67,7 +67,7 @@ superseded_by: {new-decision-slug} or null
 
 ## Supersedence
 
-When a decision is reversed or refined, create a new decision record with `supersedes: {old-slug}` and update the old one with `status: superseded` and `superseded_by: {new-slug}`. Never delete a decision — the chain is the history.
+When a decision is reversed or refined, create a new decision record with `supersedes: {old-slug}` and flip the old one's `status: superseded` + `superseded_by: {new-slug}`. Never delete a decision — the chain is the history. At session Wrap-up, the superseded decision is moved (`git mv`) to `archive/decisions/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model; the active `decisions/` directory shows only live decisions.
 
 ## Deferred risks
 

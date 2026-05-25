@@ -38,7 +38,7 @@ The agent in the evaluator role MUST observe these tier boundaries. The only wri
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — for verification (e.g., checking existing scenarios / decisions / mistakes). Never written; Wrap-up owns feature-memory writes |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/` | **READ-ONLY** — required for Stage 1 to load applicable mistakes + rules. Never written; Wrap-up owns project-memory writes |
 
-**Delete semantics**: the evaluator NEVER deletes any file in any tier. Supersession is recorded via the `disposition: superseded` field on findings (citing the superseding finding's ID).
+**Delete semantics**: the evaluator NEVER deletes any file in any tier. Supersession is recorded via the `disposition: superseded` field on findings (citing the superseding finding's ID). Once a project-memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 **Read-only enforcement**: any write attempted outside `sessions/.../{loop}/evaluation/iter{n}/{system}/` is a constraint violation. Code attempting writes to other tiers must be revoked and the evaluator restarted with a corrected scope.
 
@@ -585,6 +585,6 @@ The directory `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/`
 - **MUST apply the strongest verification the artifact admits** — for runnable artifacts, tool-verified evidence is required for confidence ≥ 75; for text-only artifacts, close-reading + cross-reference + `grep` / file-existence checks fill the same role. Reasoning-only findings cap at 50 unless the reasoning chain is short and unambiguous.
 - **MUST check every finding against the false-positive categories** before assigning confidence ≥ 50.
 - **MUST be read-only against the artifact AND all memory tiers except own write surface** — never modify the artifact; never write to feature memory, project memory, session.json, or other systems' evaluation dirs. The ONLY allowed write surface is `sessions/.../{loop}/evaluation/iter{n}/{system}/*`. See § Three-Tier Memory Access Matrix for the full table.
-- **MUST never delete** — supersession via `disposition: superseded` field; deletion of any file in any tier is forbidden.
+- **MUST never delete** — supersession via `disposition: superseded` field; deletion of any file in any tier is forbidden. Terminal project-memory artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json`** — the manager owns it. Iter `n` is supplied as a delegation input, not derived by the evaluator.
 - **MUST record memory reads** — every Stage 0 / Stage 1 read of project / feature / prior-iter memory is logged in the per-perspective file's `## Memory reads` register so audit is explicit.

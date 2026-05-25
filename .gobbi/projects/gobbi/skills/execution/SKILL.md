@@ -36,7 +36,7 @@ The agent in the executor role MUST observe these tier boundaries. The only writ
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for mistake / rule lookup. Never written; Wrap-up owns project-memory writes |
 | **`.claude/` documentation** | `.claude/` (CLAUDE.md, skills, agents, rules, hooks) | **READ + WRITE only when the task explicitly scopes them** — `.claude/` edits are workspace codebase edits; same in-scope / out-of-scope rule applies. Reading is always permitted |
 
-**Delete semantics**: the executor NEVER deletes any file in any tier except when the task **explicitly** lists a file for deletion in its `files:` scope. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); unexplained physical deletion is forbidden.
+**Delete semantics**: the executor NEVER deletes any file in any tier except when the task **explicitly** lists a file for deletion in its `files:` scope. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); unexplained physical deletion is forbidden. Once an artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 **Write enforcement**: any write attempted outside the WRITE rows above is a constraint violation. Writes to project memory, feature memory, or out-of-scope workspace files must be revoked and the executor restarted with a corrected scope or BLOCKED back to the manager for re-planning.
 
@@ -282,7 +282,7 @@ The session subdirectory tree at `sessions/{date}-{session-id}/execution/{task-i
 - **MUST commit but never push** — when git is active, commit to the worktree per `git/SKILL.md`; the manager owns pushing and PR creation.
 - **MUST never write outside the task's `files:` scope** — out-of-scope code edits are a constraint violation; revert and re-emit status.
 - **MUST never write to project memory or feature memory during the Execution Loop** — mid-task discoveries stage at `execution/{task-id}/staging/...`. Wrap-up promotes.
-- **MUST never delete** unless the task explicitly lists the file for deletion in `files:` — supersession via frontmatter; physical deletion otherwise is forbidden.
+- **MUST never delete** unless the task explicitly lists the file for deletion in `files:` — supersession via frontmatter; physical deletion otherwise is forbidden. Terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json`** from the executor role — the manager owns it; iter is supplied as an input.
 - **MUST not embed test-writing as a separate task** — verification is anchored by Planning; the executor runs the specified verification commands, doesn't author the test framework itself unless the task explicitly scopes test creation.
 - **MUST emit `NEEDS_CONTEXT` instead of inventing** when the brief is ambiguous — never silently resolve ambiguity and proceed.

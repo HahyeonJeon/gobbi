@@ -42,7 +42,7 @@ The agent in the manager role conducting the interview MUST observe these tier b
 
 **Why bootstrap mode can write project memory directly**: the standard workflow's staging → Wrap-up promotion model exists because Ideation / Planning / Execution loops write speculatively and may be reverted by REVISE. Bootstrap interview is different — it captures user-confirmed facts via AskUserQuestion exchanges. Each output is gated by user confirmation at the wave's intermediate summary. There is no REVISE loop to invalidate the writes. Mature mode does not share this property — existing project memory may already be referenced by ongoing workflows, so speculative writes would create divergence.
 
-**Delete semantics**: the interview NEVER deletes any file. Supersession (when re-running surfaces newer information) is recorded via `supersedes:` frontmatter on the new file; the old file is updated in place with `status: superseded` + `superseded_by:`.
+**Delete semantics**: the interview NEVER deletes any file. Supersession (when re-running surfaces newer information) is recorded via `supersedes:` frontmatter on the new file; the old file has its `status:` flipped to `superseded` + `superseded_by:` added. Once a project-memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 ---
 
@@ -354,4 +354,4 @@ The interview writes both session-scoped audit files and project-scoped baseline
 - **MUST record "don't know" as an open question** in `decisions/{date}-unknowns.md` rather than fabricating an answer.
 - **MUST halt the interview if the user requests it** — the user can drop out mid-flight; the manager records the wave reached and the open items.
 - **MUST follow the `discussion` skill's anti-sycophancy and Question Card discipline** on every AskUserQuestion call.
-- **MUST never delete project-memory files** — supersession via frontmatter only.
+- **MUST never delete project-memory files** — supersession via frontmatter only; terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
