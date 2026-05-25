@@ -2,7 +2,7 @@
 title: "git/SKILL.md § P2 still says \"Configuration row 5.5\" for worktree creation — stale post-T02"
 type: backlog
 severity: low
-status: open
+status: addressed
 source: session-2026-05-24-45388fa9-T05-eval
 created: 2026-05-25
 promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-05/staging/backlogs/project/git-skill-stale-row-5-5-worktree-reference.md
@@ -55,3 +55,10 @@ simultaneously will see contradictory row references, reducing trust in the docs
 - Authoritative source: `.gobbi/projects/gobbi/skills/orchestration/SKILL.md` row 5
   (`**Create worktree (P2 wrapper)...`).
 - Stale reference: `.claude/skills/git/SKILL.md:155,157` ("Configuration row 5.5").
+
+## Resolution
+
+Fixed in PR #270 (session 2026-05-24-45388fa9 / follow-up FU-1, 2026-05-25):
+
+- `git/SKILL.md` lines 155 and 157 corrected from "Configuration row 5.5" to "Configuration row 5" (real target: `.gobbi/projects/gobbi/skills/git/SKILL.md`).
+- `features/session-foundations-bundle-b/design/d-1-worktree-row-5-5.md` (D-1 memorial) left as historical record per user decision 2026-05-25 — forward-pointer blockquote added near the top referencing the bundle-C T02 / commit 2b537ae reorder. Memorial text not rewritten.
