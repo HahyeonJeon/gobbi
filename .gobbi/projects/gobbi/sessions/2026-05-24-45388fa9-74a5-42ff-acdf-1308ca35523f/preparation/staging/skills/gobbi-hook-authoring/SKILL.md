@@ -28,7 +28,7 @@ Two in-tree witnesses ground every rule below. Read them fully before any hook w
 
 > **A hook that blocks Claude is worse than a missed record.**
 
-PostToolUse/PostToolUseFailure hooks MUST always exit 0. Diagnostics go to stderr; the script must never abort the tool call it is hooked to. Use a `bail()` function that logs and `exit 0`s gracefully. The `session-start.sh` is the exception — it exits 1 only if `$CLAUDE_ENV_FILE` is unset or unwritable, because those conditions make the hook entirely useless (nothing can be exported).
+PostToolUse/PostToolUseFailure hooks MUST always exit 0. Diagnostics go to stderr; the script must never abort the tool call it is hooked to. Use a `bail()` function that logs and `exit 0`s gracefully. The `session-start.sh` is the exception — it exits 1 (fatal) for: the `$CLAUDE_ENV_FILE` env-file guard (unset or unwritable), an empty or missing stdin payload, and required-export failures under `set -euo pipefail` strict mode. Any of these makes the env-passthrough entirely unreliable, so exit 1 is correct.
 
 > **Strict mode, but scope it correctly.**
 
@@ -54,23 +54,30 @@ Hooks registered for broad events (PostToolUse fires on every tool) MUST filter 
 
 Register every hook under `hooks.<EventName>[]` in `.claude/settings.json`. Each entry must have:
 
-- `matcher`: a regex string matched against `tool_name` (for PostToolUse/PostToolUseFailure) or `source` (for SessionStart). Use `|` for alternatives: `"Task|Agent"` matches both Task and Agent tool names. For SessionStart, the matcher is matched against `hook_event_name.source`; the current project uses `"startup|resume|clear|compact"` to cover all SessionStart triggers.
-- `hooks[].command`: the shell command that runs the hook script, e.g. `"bash .claude/hooks/session-start.sh"`.
+- `matcher`: a regex string matched against `tool_name` (for PostToolUse/PostToolUseFailure) or the top-level `source` field (for SessionStart). Use `|` for alternatives: `"Task|Agent"` matches both Task and Agent tool names. For SessionStart, the matcher is matched against the top-level `source` field (distinct from `hook_event_name`); the current project uses `"startup|resume|clear|compact"` to cover all SessionStart triggers.
+- `hooks[].type`: must be `"command"` — required field in every hook command object.
+- `hooks[].command`: the bare path to the hook script, e.g. `".claude/hooks/session-start.sh"` (no `bash ` prefix).
 
 Both PostToolUse and PostToolUseFailure entries can point to the same script (as `post-tool-use-agents.sh` does) — the hook reads `hook_event_name` from stdin to distinguish the event type.
 
 Example shape (from project settings):
 ```json
+"SessionStart": [
+  {
+    "matcher": "startup|resume|clear|compact",
+    "hooks": [{ "type": "command", "command": ".claude/hooks/session-start.sh" }]
+  }
+],
 "PostToolUse": [
   {
     "matcher": "Task|Agent",
-    "hooks": [{ "command": "bash .claude/hooks/post-tool-use-agents.sh" }]
+    "hooks": [{ "type": "command", "command": ".claude/hooks/post-tool-use-agents.sh" }]
   }
 ],
 "PostToolUseFailure": [
   {
     "matcher": "Task|Agent",
-    "hooks": [{ "command": "bash .claude/hooks/post-tool-use-agents.sh" }]
+    "hooks": [{ "type": "command", "command": ".claude/hooks/post-tool-use-agents.sh" }]
   }
 ]
 ```
@@ -198,7 +205,17 @@ Then scan `$project_dir/sessions/` for a directory whose suffix matches the `ses
 
 Before merging any hook change:
 
-1. Run the hook manually with a minimal valid stdin payload: `echo '{"session_id":"test","cwd":"/tmp",...}' | bash .claude/hooks/your-hook.sh`. Confirm it exits 0 and produces the expected output.
+1. Run the hook manually with a minimal valid stdin payload. For a SessionStart hook:
+   ```bash
+   echo '{"session_id":"00000000-0000-0000-0000-000000000001","transcript_path":"/tmp/transcript.jsonl","cwd":"/tmp","hook_event_name":"SessionStart","source":"startup"}' \
+     | bash .claude/hooks/session-start.sh
+   ```
+   For a PostToolUse hook:
+   ```bash
+   echo '{"session_id":"00000000-0000-0000-0000-000000000001","transcript_path":"/tmp/transcript.jsonl","cwd":"/tmp","hook_event_name":"PostToolUse","tool_name":"Task","tool_use_id":"tu-001","tool_input":{"prompt":"hello"},"tool_result":{}}' \
+     | bash .claude/hooks/post-tool-use-agents.sh
+   ```
+   Confirm the hook exits 0 and produces the expected output.
 2. Verify the hook is registered in `.claude/settings.json` under the correct event and matcher.
 3. Start a Claude Code session and trigger the event. Inspect the output file or `session.json` to confirm the hook fired.
 4. Test the failure path: pass malformed JSON to stdin, verify the hook exits 0 and logs to stderr without corrupting output files.
