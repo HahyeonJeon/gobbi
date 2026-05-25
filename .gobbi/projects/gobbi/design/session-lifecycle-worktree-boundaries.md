@@ -42,15 +42,17 @@ worktree exists?" and "where does it go when one does not?"
 The v0.5.0 worktree-first model resolves the ambiguity with a single canonical
 decision made at Configuration Step 1 before any loop work begins.
 
-**Worktree creation precedes session.json init (D-1).** Row 5.5 of the
+**Worktree creation precedes session.json init (D-1).** Row 5 of the
 Configuration Step 1 table in `orchestration/SKILL.md` creates the per-session
-worktree via `git/SKILL.md § P2` and stamps `session.json.git.worktreePath` and
-`session.json.git.branch` before row 6 (session.json full stamp) runs. Branch
-naming follows the convention: `chore/session-{date}-{ssid-short}` (e.g.,
+worktree via `git/SKILL.md § P2` and holds the worktree path in-turn for use by
+rows 5.5 (state.json init) and 6 (session.json init). Row 6 stamps
+`session.json.git.worktreePath` and `session.json.git.branch`; from row 6 onward
+`session.json.git.worktreePath` is the canonical write-root. Branch naming follows
+the convention: `chore/session-{date}-{ssid-short}` (e.g.,
 `chore/session-2026-05-24-45388fa9`), where `{ssid-short}` is the first 8
-characters of `$CLAUDE_CODE_SESSION_ID`. The branch name satisfies the
-`git/conventions.md` shape regex and the 3-50 character length constraint (27
-characters).
+characters of `$CLAUDE_CODE_SESSION_ID`. The full branch name is 33 characters;
+the slug portion `session-YYYY-MM-DD-{8chars}` is 27 characters, which satisfies
+the `git/conventions.md` 3-50 character length constraint on description slugs.
 
 **`worktreePath` is the absolute write-root (D-2).** The qualified rule in
 `git/SKILL.md` Memory Access Matrix and Constraints reads: "Use
@@ -66,7 +68,7 @@ the worktree branch via `git -C "$worktreePath" commit`. Subject:
 survives mid-session abort before Wrap-up runs — `git worktree remove` (Procedure
 P5) discards uncommitted state; committed state survives.
 
-**Direct-mode opt-out retained (D-5).** Row 5.5 is guarded: when
+**Direct-mode opt-out retained (D-5).** Row 5 is guarded: when
 `settings.git.workflow.mode == "direct"`, the row is skipped entirely — no
 worktree is created, `session.json.git.worktreePath` stays `null`, and
 `git.branch` is stamped from the current HEAD in row 6. Direct mode is the
@@ -81,14 +83,14 @@ tree and session template:
 
 | Surface | What it carries |
 |---|---|
-| `orchestration/SKILL.md` Step 1 rows 5/5.5/6 | Row 5.5 definition: P2 invocation, idempotency 3-state machine, direct-mode guard, branch naming, `worktreePath` stamp order. Row 6: `git.branch` + `git.worktreePath` stamp source. Row 5.5 footnote: direct-mode opt-out prose (LOCK #5). Smoke-test gate prose. |
+| `orchestration/SKILL.md` Step 1 rows 5/5.5/6 | Row 5: P2 invocation, idempotency 3-state machine, direct-mode guard, branch naming; produces in-turn worktree path. Row 5: footnote — direct-mode opt-out prose (LOCK #5). Row 5.5: state.json init using the in-turn worktree path. Row 6: `git.branch` + `git.worktreePath` stamp source. Smoke-test gate prose. |
 | `orchestration/SKILL.md` Step 1 — smoke-test gate | Post-merge verification: `jq -r '.git.branch'` matches `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$`; `jq -r '.git.worktreePath'` returns non-null for `worktree-pr` sessions. |
 | `git/SKILL.md` Memory Access Matrix | Critical rule (last row): qualified write-path rule — `session.json.git.worktreePath` as absolute root when set; main-tree fallback when null; transcript paths outside both trees. |
-| `git/SKILL.md` § P2 — Create worktree | P2 is invoked from Configuration row 5.5, not from Execution start. Steps for sync, re-verify, create, install, pass path. |
+| `git/SKILL.md` § P2 — Create worktree | P2 is invoked from Configuration row 5, not from Execution start. Steps for sync, re-verify, create, install, pass path. |
 | `git/SKILL.md` § Constraints + Output paths | Constraint: "MUST root session notes and mistakes at `session.json.git.worktreePath` when set." Output paths table: session notes/mistakes row reflects worktree-first vs direct-mode distinction. |
 | Five workflow phase docs (`orchestration/workflow/`) | `execution.md`, `ideation.md`, `planning.md`, `preparation.md`, `wrap-up.md` each carry the per-iter session-memory commit cadence (D-4): heredoc commit subject + `AI-Provenance-Record:` trailer + direct-mode opt-out note. |
 | `delegation/SKILL.md` | Main-tree boilerplate corrected — delegation prompts reference `session.json.git.worktreePath` rather than a main-tree-absolute path. |
-| `orchestration/templates/session.template.json` | `git.worktreePath` and `git.branch` fields present in the template; `git.worktreePath` initializes to `null` (stamped by row 5.5 at runtime). |
+| `orchestration/templates/session.template.json` | `git.worktreePath` and `git.branch` fields present in the template; `git.worktreePath` initializes to `null` (stamped by row 6 at runtime). |
 | `preparation/SKILL.md` | Narrow exception extension: executor commits on the worktree branch via `git -C "$worktreePath"` even for promote-now skills (the exception that applies within Preparation). |
 
 ## Validation
@@ -109,7 +111,7 @@ jq -r '.git.worktreePath' .gobbi/projects/gobbi/sessions/<latest>/session.json
 # Expected: a non-null absolute path
 ```
 
-A null `worktreePath` on a `worktree-pr` session indicates row 5.5 was skipped
+A null `worktreePath` on a `worktree-pr` session indicates row 5 was skipped
 or P2 failed without surfacing an error.
 
 **Session writes landing under `worktreePath`.** For any `worktree-pr` session,
