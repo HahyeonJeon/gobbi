@@ -9,7 +9,8 @@ source: ideation-iter3-claude-eval
 disposition: open
 created: 2026-05-22
 session-id: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
-status: open
+status: closed
+closed_by: 159eb21
 project: gobbi
 feature: env-var-audit
 task: null
@@ -67,3 +68,7 @@ The task spec that authors or refines `.claude/hooks/session-start.sh` should in
 `.gobbi/projects/gobbi/sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/`
 
 Finding source: `evaluation/iter3/claude/overall.md` finding F-STRUCT-01 (struct-01-atsh-passthrough-env-gap), type checklist_gap, domain security, confidence 75, severity Medium.
+
+## Closure (2026-05-24)
+
+Closed — the requested shell-safe passthrough quoting is already shipped in `.claude/hooks/session-start.sh` lines 73-77 (commit `159eb21`, env-var-audit PR #265, merged 2026-05-22). Discovered during Bundle C ideation (session 45388fa9). No new implementation needed; this is the docs catch-up per Iron Law 8.
