@@ -76,6 +76,6 @@ The `status` field transitions:
 - **`planned`** — feature exists in design but no plan shipped yet
 - **`in-progress`** — at least one task shipped, more work outstanding (backlog entries exist)
 - **`shipped`** — primary scope of the feature is complete; backlog is empty or only contains nice-to-haves
-- **`archived`** — feature is retired or superseded; the directory remains for history but no further work is expected
+- **`archived`** — feature is retired or superseded; at Wrap-up the entire feature directory is moved (`git mv`) to `archive/features/{feature-name}/` per the move-on-terminal model (never deleted; the active `features/` shows only live features)
 
 The manager updates `status` via AskUserQuestion at session start when reactivating a feature, or the assistant updates it during MEMORIZATION when objective triggers fire (e.g., shipping the last in-scope task moves `in-progress` → `shipped`).

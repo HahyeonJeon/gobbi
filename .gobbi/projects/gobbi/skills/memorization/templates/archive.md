@@ -63,7 +63,7 @@ Always date-prefixed: `{YYYY-MM-DD}-{slug}.md`. The date is **the archive date**
 
 When an artifact reaches a terminal state, Wrap-up performs these steps:
 
-1. **Stamp archival frontmatter** onto the file: add `archived_at: {YYYY-MM-DD}` and `archive_reason: shipped|superseded|retired|dropped|abandoned`, and ensure the existing terminal `status:` + (`superseded_by:` | `shipped_in:`) are present. The body is preserved verbatim — no content is altered.
+1. **Stamp archival frontmatter** onto the file: add `archived_at: {YYYY-MM-DD}` and `archive_reason: shipped|closed|addressed|superseded|retired|dropped|abandoned`, and ensure the existing terminal `status:` + (`superseded_by:` | `shipped_in:`) are present. The body is preserved verbatim — no content is altered.
 2. **Move** the file: `git mv {active-path} .gobbi/projects/{project-name}/archive/{type}/{YYYY-MM-DD}-{slug}.md`. Using `git mv` preserves history. `{YYYY-MM-DD}` is the archive date (when the transition happened, not the file's creation date).
 3. **Repoint inbound references**: any `[[slug]]` link, `required-mistakes:` path, `supersedes:`/`superseded_by:` pointer, or prose path that pointed at the old active path is updated to point at the new archive path. For mistakes: since only superseded mistakes move, active `required-mistakes:` citations are unaffected; a `superseded_by:` chain that crosses the move is repointed.
 4. **Never delete** — the move preserves the file in `archive/`; it is never removed.
@@ -74,7 +74,7 @@ The moved file keeps its original body and its original frontmatter fields. Wrap
 
 ```yaml
 archived_at: YYYY-MM-DD
-archive_reason: shipped | superseded | retired | dropped | abandoned
+archive_reason: shipped | closed | addressed | superseded | retired | dropped | abandoned
 # The terminal status and cross-reference fields below should already be present
 # on the original file; Wrap-up adds them here if they are missing:
 status: shipped | superseded | retired | dropped | archived
