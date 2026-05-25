@@ -142,7 +142,7 @@ Research does not own its own session subdirectory — it writes into the callin
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — the Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex)
+- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
 - `{loop}` — the calling loop's name (`ideation` / `preparation` / `planning`)
 - `{slug}` — slug for a specific reference artifact, set by the writer at stage time
 

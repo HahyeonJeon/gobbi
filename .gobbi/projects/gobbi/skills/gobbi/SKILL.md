@@ -71,7 +71,7 @@ The following vars are set **by the Claude Code runtime** in every Bash subproce
 
 Read the session-level `settings.json` at `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json`. Three outcomes:
 
-> **Sanitization note:** `{project-name}` and similar slot values used in path construction and shell commands are pre-validated by the CLI's settings-IO seam (`packages/cli/src/lib/config/settings-io.ts`, project-name validator) before this skill consumes them. In-skill shell interpolation does not perform additional escaping — it assumes clean input. If the settings-IO seam is bypassed (e.g., direct manual edit of config files), untrusted values must be sanitized before use.
+> **Sanitization note:** `{project-name}` and similar slot values used in path construction and shell commands are NOT validated by any automated seam in the current markdown-driven design — the v0.4.x CLI settings-IO validator was removed in the v0.5.0 redesign and nothing replaced it. In-skill shell interpolation performs no escaping; treat slot values such as `{project-name}` as untrusted at the point of interpolation and sanitize them before use, especially when the value originates from a manually-edited config file.
 
 - **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If reusing, skip the setup question in step 4 and proceed to step 5.
 - **File missing** — no prior session settings. Proceed to step 4.
@@ -88,7 +88,7 @@ Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#
 
 After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
 
-See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 5.5 (worktree creation and `git.worktreePath` stamp) which runs after `state.json` initialization and before `session.json` stamping.
+See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 5 (worktree creation), which runs before `state.json` initialization (row 5.5) and before `session.json` stamping (row 6, where `git.worktreePath` is recorded).
 
 ### 5. Project memory check
 
@@ -126,7 +126,7 @@ The 6-step state machine and who owns each step:
 
 | Step | Phase | Owner | Specialist agents spawned | Purpose |
 |---|---|---|---|---|
-| **Configuration** | CLI init | manager + user | — | Session start, settings, project memory check, workflow init |
+| **Configuration** | session init | manager + user | — | Session start, settings, project memory check, workflow configuration |
 | **Ideation** | Loop body | manager + user + leader | leader (DISCUSSION) | Refine What / Why / How until the idea is concrete enough to plan against |
 | **Preparation** | Loop body | manager + user + leader | leader (DISCUSSION) | Verify readiness — project memory + workspace skills against the locked Ideation output; close gaps |
 | **Planning** | Loop body | manager + user + leader | leader (DISCUSSION) | Decompose into ordered tasks with agent assignments + verification anchors |
@@ -189,9 +189,9 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 The `mistake` skill lives at `skills/mistake/SKILL.md`. Every agent MUST load it before starting work. Mistake recordings flow through a two-layer promotion model:
 
 - **Layer 1 (in-session):** During every loop's MEMORIZATION sub-phase, the assistant stages mistake-candidates to `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true` frontmatter). At Wrap-up, the Wrap-up loop's MEMORIZATION promotes staged candidates from all loops to `.gobbi/projects/{project-name}/mistakes/` (project memory).
-- **Layer 2 (cross-session):** After the session ends, `gobbi mistake promote` moves promoted project-mistakes from project memory to the workspace-level skill storage so they persist across all projects and future sessions. Run this OUTSIDE the session — promotion does not cause context reload.
+- **Layer 2 (cross-session):** During the Wrap-up phase, the Wrap-up assistant also promotes generalizable project-mistakes from `.gobbi/projects/{project-name}/mistakes/` to workspace-level skill storage so they persist across all projects and future sessions. No CLI command — the Wrap-up assistant performs both layers. Promotion does not cause context reload.
 
-The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during MEMORIZATION), and P4 (reference the cross-session promotion command).
+The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during MEMORIZATION), and P4 (Wrap-up-phase promotion).
 
 ---
 

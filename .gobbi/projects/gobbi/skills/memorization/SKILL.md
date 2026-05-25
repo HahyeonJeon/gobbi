@@ -230,7 +230,7 @@ All writes during MEMORIZATION are **session-scoped**. Wrap-up promotes the `sta
 See also: `evaluation/SKILL.md § Coverage Ownership Matrix § Memorization staging shape + naming` for the cross-cutting evaluation seed that covers staging shape and naming compliance.
 
 - `{date}` — session start date in `YYYY-MM-DD`
-- `{session-id}` — Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
+- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
 - `{loop}` — the workflow loop being persisted (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time

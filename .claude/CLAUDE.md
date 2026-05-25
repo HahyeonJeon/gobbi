@@ -10,7 +10,7 @@ MUST load this at session start, resume, `/clear`, and compaction. MUST follow t
 
 > **The logic of good work: Ideation → Planning → Execution → Memorization → Handoff.**
 
-Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The 6-step state machine (Configuration as the CLI init phase, plus the 5 productive steps) lives in `packages/cli/src/specs/` and is driven by `gobbi workflow init`. Per-session telemetry lives in `<sessionDir>/session.json` (one file per session, generated at Memorization STEP_EXIT). Cross-session memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.) — no per-project database or summary JSON.
+Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The 6-step state machine (Configuration plus the 5 productive steps) is governed by the `orchestration` skill and its per-step `workflow/` sub-documents — markdown-driven, no CLI. Per-session telemetry lives in `<sessionDir>/session.json` (one file per session, generated at Memorization STEP_EXIT). Cross-session memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.) — no per-project database or summary JSON.
 
 **Ideation** — Explore what to do. PI agents (innovative + best stances) investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
 
@@ -45,9 +45,9 @@ The 12 principles below are the enforceable behavioral discipline for every agen
 | 11 | NO IMPROVEMENT THAT GAMES THE TOOL. |
 | 12 | NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
 
-> **Gobbi-specific tooling: the `mistake` skill and `gobbi mistake promote` command.**
+> **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
-Every agent MUST load the `mistake` skill before starting work. When the user corrects any approach, immediately record it as a mistake in `.gobbi/projects/{name}/mistakes/`. After the session ends, run `gobbi mistake promote` to promote corrections to permanent workspace-level skill storage — promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Mistakes are the highest-value knowledge in this system.
+Every agent MUST load the `mistake` skill before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes staged candidates to project memory (`.gobbi/projects/{name}/mistakes/`) — Layer 1. The Wrap-up assistant also performs Layer-2 promotion: moving generalizable project-mistakes to workspace-level skill storage so they persist across all projects and future sessions. Promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Mistakes are the highest-value knowledge in this system.
 
 ---
 

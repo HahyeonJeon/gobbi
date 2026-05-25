@@ -152,9 +152,9 @@ If any **Critical** prerequisite fails, fall back to Direct commit mode. If any 
 
 ### P2 — Create worktree
 
-P2 is invoked from Configuration row 5.5 for worktree-first sessions (orchestration/SKILL.md Step 1), not from Execution start. The Execution-start invocation path is retired; executors are passed the existing `session.json.git.worktreePath`.
+P2 is invoked from Configuration row 5 for worktree-first sessions (orchestration/SKILL.md Step 1), not from Execution start. The Execution-start invocation path is retired; executors are passed the existing `session.json.git.worktreePath`.
 
-Steps (run once at Configuration row 5.5 for worktree-first sessions; not re-invoked per task entering Execution):
+Steps (run once at Configuration row 5 for worktree-first sessions; not re-invoked per task entering Execution):
 
 1. **Sync the base branch** — `git checkout <base-branch> && git pull --ff-only` to ensure the worktree branches from the up-to-date base.
 2. **Re-verify base branch on remote** — `git ls-remote --heads origin <base-branch>` (the base may have been deleted between session start and now).

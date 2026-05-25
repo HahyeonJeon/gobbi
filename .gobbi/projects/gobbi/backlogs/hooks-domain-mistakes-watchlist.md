@@ -1,6 +1,6 @@
 ---
 title: Hooks-domain mistakes watchlist — capture mid-Execution as they emerge
-status: deferred
+status: in-progress
 project: gobbi
 feature: null
 task: null
@@ -31,13 +31,17 @@ Two triggers — pick up at whichever fires first:
 
 ## Suggested approach
 
-Ad-hoc per execution session — no large pre-meditated work. When an executor or evaluator corrects a hook-authoring approach mid-Execution, the existing `mistake` skill P2 / P3 flow handles staging; no separate workflow needed. This backlog file is a reminder, not a workstream.
+This backlog is a **perpetual capture reminder**: it remains `in-progress` until the N≥2 extraction trigger fires or the domain is subsumed by a dedicated skill. No pre-meditated work is required — just moment-of-capture discipline on every hook-touching execution session.
+
+Ad-hoc per execution session — no large pre-meditated work. When an executor or evaluator corrects a hook-authoring approach mid-Execution, the existing `mistake` skill P2 / P3 flow handles staging; no separate workflow needed.
+
+**N≥2 extraction trigger**: when ≥2 hooks-domain mistakes accumulate in `.gobbi/projects/gobbi/mistakes/`, extract a `gobbi-hook-authoring` project skill. At that point, the pattern is witness-backed and a domain-tagged P1 read becomes load-bearing.
 
 If/when N≥2 hooks-domain mistakes exist, consider whether to:
 - Stage a `gobbi-hook-authoring` project skill (see `backlogs/project/gobbi-hook-authoring-skill.md` — separate backlog item already deferred for this trigger).
-- Add a `hooks` domain tag convention to `mistake/SKILL.md` so future P1 loads filter cleanly.
+- Add a `hooks` domain tag convention to `mistake/SKILL.md` so future P1 loads filter cleanly (the `hooks` tag is already added to the domain-tag examples as of Bundle C, T03).
 
-Effort estimate: **ad-hoc per execution session** (no upfront work). Skill extraction at N=2 trigger: separate backlog (gobbi-hook-authoring-skill).
+Effort estimate: **ad-hoc per execution session** (no upfront work). Skill extraction at N≥2 trigger: separate backlog (gobbi-hook-authoring-skill).
 
 ## Originating session
 

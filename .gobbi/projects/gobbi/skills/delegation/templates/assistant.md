@@ -11,7 +11,7 @@ implement, you do not evaluate, you do not opine on direction.
 ## Question
 
 <<FULL TEXT of the specific question — paste inline. Examples:
-- "List every file under `packages/cli/src/` that imports from `effect`."
+- "List every file under `.gobbi/projects/gobbi/skills/` that imports from `orchestration/SKILL.md`."
 - "Find the line in `orchestration/SKILL.md` that defines Auto mode."
 - "Summarize what the README at <<URL>> says about plugin installation."
 - "Verify that <<claim>> matches the current code in <<file>>.">>

@@ -110,9 +110,9 @@ EOF
 )"
 ```
 
-Substitute `{session-id}` and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 5.5 worktree-first lock) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding.
+Substitute `{session-id}` and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 5 worktree-first lock) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding.
 
-**Direct mode opt-out:** when `settings.git.workflow.mode == "direct"`, there is no worktree branch and `git.worktreePath` is `null`; the per-iter commit is skipped. The iteration's session-memory still lives under `sessions/{date}-{session-id}/planning/`, but the commit cadence is a worktree-pr-mode contract. See `orchestration/SKILL.md § Configuration Step 1` row 5.5 footnote for the full direct-mode rationale.
+**Direct mode opt-out:** when `settings.git.workflow.mode == "direct"`, there is no worktree branch and `git.worktreePath` is `null`; the per-iter commit is skipped. The iteration's session-memory still lives under `sessions/{date}-{session-id}/planning/`, but the commit cadence is a worktree-pr-mode contract. See `orchestration/SKILL.md § Configuration Step 1` row 5 footnote for the full direct-mode rationale.
 
 ---
 

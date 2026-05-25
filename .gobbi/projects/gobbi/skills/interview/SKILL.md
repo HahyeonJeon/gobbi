@@ -321,7 +321,7 @@ The interview writes both session-scoped audit files and project-scoped baseline
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — the Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex)
+- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
 - `{project-name}` — project slug from `session.json.project`
 - `{feature-name}` — feature slug surfaced during Wave 4
 - `{slug}` — kebab-case slug for the specific artifact

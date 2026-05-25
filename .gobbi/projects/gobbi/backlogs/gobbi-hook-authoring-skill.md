@@ -1,6 +1,6 @@
 ---
 title: gobbi-hook-authoring project skill — codify bash + jq + flock + strict-mode + guards pattern
-status: deferred
+status: closed
 project: gobbi
 feature: null
 task: null
@@ -65,3 +65,7 @@ Effort estimate: **medium** (one focused session — slug + interview wave + sta
 `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
 
 Pointer: Preparation iter1 Sub-step C Candidate skill 1, Sub-step D gap D-7, AskUserQuestion Card 3. User chose "Recommended: Defer to backlog — generate after T3 ships (N=2 witness pattern)."
+
+## Closure
+
+Closed in session `2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f` (Bundle C / T04 / CL-2). Skill authored at `.gobbi/projects/gobbi/skills/gobbi-hook-authoring/SKILL.md` from N=2 witnesses (`session-start.sh` + `post-tool-use-agents.sh`), M2-compliant from creation.

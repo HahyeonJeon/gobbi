@@ -10,6 +10,8 @@ iter: 3
 
 # D-1 — Configuration Step 1 row 5.5: create worktree + stamp git.worktreePath
 
+> **Superseded note (2026-05-25, bundle-C T02 / commit 2b537ae):** worktree creation was reordered from row 5.5 to **row 5** (state.json init is now row 5.5). This memorial records the original bundle-B numbering; see `orchestration/SKILL.md` Step 1 for the current rows.
+
 ## Decision
 
 Insert new row 5.5 ("Create worktree (P2 wrapper) and stamp `git.worktreePath`") between current row 5 (state.json init) and current row 6 (session.json stamp) in `orchestration/SKILL.md` Step 1 Workflow Configuration table.

@@ -561,7 +561,7 @@ All evaluator writes are **session-scoped**. Evaluators never touch project memo
 **Path conventions**
 
 - `{date}` — session start date in `YYYY-MM-DD`
-- `{session-id}` — Claude Code session ID from `$CLAUDE_CODE_SESSION_ID` (or the Codex session ID under Codex). Must be the harness-emitted session ID, not an arbitrary hash
+- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
 - `{loop}` — the workflow loop being evaluated (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
 - `{system}` — `claude` or `codex` (the system running this evaluator instance)
 - `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`)
