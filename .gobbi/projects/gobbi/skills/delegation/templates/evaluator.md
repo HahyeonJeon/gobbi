@@ -59,6 +59,7 @@ producer says it became.>>
 3. Skills:
    - `mistake` skill (mandatory)
    - `evaluation` skill (mandatory — perspective definitions, severity rubric, finding metadata)
+   - `memorization/rules.md` (load when evaluating project-memory artifacts against the standard — the naming/frontmatter/structure standard)
    - Phase-specific evaluation doc (if applicable): <<full path to the phase-specific evaluation.md — e.g., `skills/ideation/evaluation.md`, `skills/preparation/evaluation.md`, `skills/planning/evaluation.md`, `skills/execution/evaluation.md`, `skills/wrap-up/evaluation.md` — omit if not evaluating a phase artifact>>
 4. Mistakes:
    - <<list of mistake files relevant to this work's domain>>
