@@ -4,7 +4,8 @@ session: 2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f
 feature: session-foundations-bundle-c
 loops_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [session-dir-placed-outside-worktree, codex-subprocess-writes-to-main-tree]
-status: continuing
+status: superseded
+superseded_by: notes/2026-05-25-session-foundations-bundle-c-complete.md
 tags: [bundle-c, session-foundations, worktree, orchestration, partial-execution]
 ---
 
