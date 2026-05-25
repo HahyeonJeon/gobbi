@@ -5,9 +5,9 @@
     "configuration": { "state": "Done",   "verdict": null, "iter": null, "maxIterations": null, "phase": null },
     "ideation":      { "state": "Done", "verdict": "PASS-effective", "iter": 5, "maxIterations": 5, "phase": null, "iterBudgetOverride": "user-authorized 2026-05-24: cap raised 3→4→5. Iter5 verdict: Claude PASS / Codex REVISE on 4+1 non-controlling residuals. User chose Option 1 (patch + accept Claude PASS); all 5 residuals empirically patched post-eval. Effective verdict: PASS." },
     "preparation":   { "state": "Done", "verdict": "PASS", "iter": 1, "maxIterations": 3, "phase": null },
-    "planning":      { "state": "Active", "verdict": null, "iter": 0, "maxIterations": 3, "phase": "DISCUSSION" },
-    "execution":     { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": null },
+    "planning":      { "state": "Done", "verdict": "PASS-effective", "iter": 3, "maxIterations": 3, "phase": null, "note": "iter3 EVAL: Claude PASS, real-Codex REVISE (Codex-Iter3-H3: clause-2 regex inconsistency — 3 stale literal-dot patterns vs canonical backtick-tolerant). Manager-patched all 3 to canonical; finding empirically closed. Effective PASS." },
+    "execution":     { "state": "Active", "verdict": null, "iter": 0, "maxIterations": 3, "phase": "DISCUSSION", "currentTask": "T01" },
     "wrap-up":       { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 1,    "phase": null }
   },
-  "activeNote": "Preparation Loop CLOSED (PASS, both legs). All 6 CLs ready; no generate-now skills needed; one Low note (CL-6 citation-precision, defer-to-execution). Entering Planning Loop DISCUSSION — leader decomposes 6 CLs into ordered tasks with verification anchors."
+  "activeNote": "Planning Loop CLOSED (PASS-effective; 3 iters; real Codex caught 3 substantive bugs Claude missed across iters). Plan = 6 tasks T01-T06, strict-sequential DAG. Entering Execution Loop, task T01 (close f-struct-01 backlog inline). User chose push-into-execution this session, continue as budget allows."
 }
