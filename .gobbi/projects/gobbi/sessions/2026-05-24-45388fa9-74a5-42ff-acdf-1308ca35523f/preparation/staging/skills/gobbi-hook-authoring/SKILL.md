@@ -205,10 +205,13 @@ Then scan `$project_dir/sessions/` for a directory whose suffix matches the `ses
 
 Before merging any hook change:
 
-1. Run the hook manually with a minimal valid stdin payload. For a SessionStart hook:
+1. Run the hook manually with a minimal valid stdin payload. For a SessionStart hook,
+   `$CLAUDE_ENV_FILE` must be set and writable — use a temp file so the env-file guard
+   (lines 32-39 of `session-start.sh`) passes:
    ```bash
-   echo '{"session_id":"00000000-0000-0000-0000-000000000001","transcript_path":"/tmp/transcript.jsonl","cwd":"/tmp","hook_event_name":"SessionStart","source":"startup"}' \
-     | bash .claude/hooks/session-start.sh
+   CLAUDE_ENV_FILE=$(mktemp) \
+     bash .claude/hooks/session-start.sh \
+     <<< '{"session_id":"00000000-0000-0000-0000-000000000001","transcript_path":"/tmp/transcript.jsonl","cwd":"/tmp","hook_event_name":"SessionStart","source":"startup"}'
    ```
    For a PostToolUse hook:
    ```bash
@@ -218,7 +221,13 @@ Before merging any hook change:
    Confirm the hook exits 0 and produces the expected output.
 2. Verify the hook is registered in `.claude/settings.json` under the correct event and matcher.
 3. Start a Claude Code session and trigger the event. Inspect the output file or `session.json` to confirm the hook fired.
-4. Test the failure path: pass malformed JSON to stdin, verify the hook exits 0 and logs to stderr without corrupting output files.
+4. Test the failure path with malformed JSON. The expected behavior differs by hook class:
+   - **PostToolUse/PostToolUseFailure hooks**: must always exit 0 — the `bail()` function logs
+     to stderr and exits 0 even when stdin is malformed; verify no output file is corrupted.
+   - **SessionStart hooks**: exit non-zero (fatal) when stdin is empty or malformed, because
+     `session-start.sh` runs under `set -euo pipefail` and any `jq` failure on a required field
+     is unrecoverable — the entire env passthrough is unreliable; verify the hook exits 1 and
+     logs the error to stderr.
 5. For `flock`-based hooks: confirm concurrent invocations (two background processes simultaneously) produce a valid merged result.
 
 ---
