@@ -95,6 +95,8 @@ The slug is kebab-case derived from the primary symptom — not from "mistake" o
 
 During the Wrap-up phase, the Wrap-up assistant promotes staged mistake-candidates from session staging into `mistakes/`. The next session's P1 load will pick them up. Working-loop agents never perform promotion themselves — staging is their sole write surface during the working loops.
 
+**`mistake-candidate` is a staging-only flag, stripped on promotion.** The `mistake-candidate: true` frontmatter is a **staging-only** routing flag — its sole job is to tell Wrap-up to route a `staging/decisions/{slug}.md` file to `mistakes/` rather than `decisions/`. Once it has routed the file, its job is done: Wrap-up **strips** it when writing the promoted mistake, so a promoted mistake file in `mistakes/` does NOT carry `mistake-candidate`. The promoted file carries only the base + mistakes-type extension frontmatter ([`memorization/rules.md` § 2`](../memorization/rules.md)). This is the reciprocal of the Wrap-up frontmatter-allowlist step (see [`wrap-up/SKILL.md` § Frontmatter allowlist on promotion](../wrap-up/SKILL.md)). A promoted mistake file that still carries `mistake-candidate: true` is a frontmatter-strip miss, not a valid state.
+
 ---
 
 ## Constraints
