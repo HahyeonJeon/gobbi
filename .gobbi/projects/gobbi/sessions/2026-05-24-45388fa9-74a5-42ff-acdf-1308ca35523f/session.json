@@ -15,7 +15,7 @@
     "branch": "chore/session-2026-05-24-45388fa9",
     "worktreePath": "/playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees/chore/session-2026-05-24-45388fa9",
     "issue": null,
-    "pr": null
+    "pr": 270
   },
   "workflow": {
     "configuration": {
@@ -131,9 +131,7 @@
           "verdict": "PASS",
           "finishedAt": "2026-05-25T06:10:00Z"
         }
-      },
-      "verdict": "PASS",
-      "finishedAt": "2026-05-25T06:10:00Z"
+      }
     },
     "wrap-up": {
       "startedAt": "2026-05-25T09:00:00Z",
