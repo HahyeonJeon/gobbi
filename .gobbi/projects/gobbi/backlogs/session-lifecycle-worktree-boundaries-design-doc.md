@@ -1,6 +1,6 @@
 ---
 title: Aggregated "session lifecycle / worktree boundaries" project-level design doc
-status: deferred
+status: closed
 project: gobbi
 feature: null
 task: null
@@ -61,3 +61,7 @@ Effort: **medium** (post-T1 ship; estimated 1 focused session). Should be a clea
 `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
 
 Pointer: Preparation iter1 Sub-step D, gap D-6, AskUserQuestion Card 5. User chose "Recommended: Defer to backlog."
+
+## Closure
+
+Closed 2026-05-24 by session `2026-05-24-45388fa9` (Bundle C T05 / CL-4). Design doc authored at `.gobbi/projects/gobbi/design/session-lifecycle-worktree-boundaries.md`; N=2 condition met (this session as N=2 per DL-1 β-1).
