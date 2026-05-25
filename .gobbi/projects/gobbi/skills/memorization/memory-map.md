@@ -2,6 +2,8 @@
 
 Reference of every memory path the workflow touches. Two tiers: **Session memory** (volatile, per-session) and **Project memory** (persistent, per-project). Use this doc as the single source of truth when deciding where a staging file goes, which template stamps a destination, or whether a path is the assistant's or Wrap-up's to write.
 
+For the naming convention, frontmatter standard, and structure rules every memory file obeys, see [`rules.md`](rules.md).
+
 The assistant in MEMORIZATION writes **only** to session memory. Wrap-up is the sole writer to project memory. Both tiers are plain markdown trees — there is no per-session SQLite (`gobbi.db` was dropped) and no per-project summary JSON (`project.json` was dropped). `session.json` is the only JSON in the session tree, and it is per-session telemetry — not cross-session memory.
 
 Column legend:

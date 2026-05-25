@@ -1,6 +1,8 @@
 # Memory Rules
 
-The consolidated standard for **how gobbi's memory system works** — the naming convention, the frontmatter standard, and the structure rules that govern every file under `.gobbi/projects/{project-name}/`. This doc is the single source of truth an agent links to when deciding how to *name* a memory file, what *frontmatter* it must carry, and which *structure* rules (scope, atomicity, temporal split) apply. The companion [`memory-map.md`](memory-map.md) maps the path-and-type semantics (which directory holds what, who writes it, when); this doc governs the rules those paths obey.
+The consolidated standard for **how gobbi's memory system works** — the naming convention, the frontmatter standard, and the structure rules that govern **every memory file** under `.gobbi/projects/{project-name}/` (the typed memory directories plus the feature-subdir memory types — every file that "carries base frontmatter", §2.1). This doc is the single source of truth an agent links to when deciding how to *name* a memory file, what *frontmatter* it must carry, and which *structure* rules (scope, atomicity, temporal split) apply. The companion [`memory-map.md`](memory-map.md) maps the path-and-type semantics (which directory holds what, who writes it, when); this doc governs the rules those paths obey.
+>
+> **Scope boundary.** This standard governs memory files only. It does **NOT** govern the non-memory surfaces that also live under `.gobbi/projects/{project-name}/` — `skills/`, `agents/`, or session-runtime files (`sessions/`). Those follow their own authoring conventions, not this memory standard.
 
 > **CRITICAL disambiguation — three different "rules" things. Future agents MUST NOT conflate them.**
 >
@@ -74,7 +76,9 @@ tags: [{...}]
 ---
 ```
 
-**`archive` is NOT in the `type` enum.** The enum lists the 13 content types only; `archive` is omitted deliberately. An archived file keeps its original `type` value (e.g., `type: decisions`) and lives under `archive/decisions/`; the directory — not the `type` field — marks it archived. The four feature-subdir-only types (`changelogs` / `discussions` / `scenarios` / `checklists`) reuse the base with `type` set to their own name and `scope: feature`.
+**The `type` enum lists the 12 promotable content types.** `archive` is NOT in the enum — it is a lifecycle destination, not a type enum value. An archived file keeps its original `type` value (e.g., `type: decisions`) and lives under `archive/decisions/`; the directory — not the `type` field — marks it archived.
+
+**Feature-subdir-only types — documented EXCEPTION to the enum.** Beyond the 12 promotable content types in the enum, four feature-subdir-only types exist as `features/{f}/` subdirs (`changelogs` / `discussions` / `scenarios` / `checklists`). These are a *documented exception*: they reuse the base frontmatter but set `type` to their **own name** (`type: changelogs`, `type: discussions`, `type: scenarios`, or `type: checklists`) — values that are intentionally **outside** the 12-value enum — and always carry `scope: feature`. The enum line above stays the 12 promotable types; these four are the only `type` values permitted outside it, and only on feature-subdir files.
 
 ### 2.2 Per-type extension fields + the status model
 
@@ -114,6 +118,7 @@ The structure rules thread through the 13 per-type specs in [`memory-map.md`](me
 - **Directory-as-category.** The type directory is the controlled-vocabulary facet (§1.1 rule 1). The directory name carries the type; the filename carries the concept. A record's *type* is never re-encoded in its slug.
 - **One record, one concept (atomicity).** Every file holds exactly one concept — one decision, one mistake, one design topic. Bundle files (`ideation-decisions.md`, `iter1-user-redirects.md`) are forbidden because supersede / archive / promotion then operate at the wrong granularity. Split bundles into one file per concept.
 - **Declared scope + promote-up.** Each type declares its scope:
+  - **`features/` is its own tier.** A `features/{slug}/` directory is a durable capability dir — not a project-scoped nor feature-tagged content type like the rest of this list. Its `README.md` is the feature's identity document: it carries base frontmatter with `scope: feature` + `feature: {own-slug}` (self-referential — the README names itself). New feature dirs are created only by user-ratified value-feature addition, never by a sprint.
   - **Project-only** types: `notes`, `rules`, `learnings`, `reviews`, `reports` (and `archive` as a destination). These live only at the project root; there is no `features/{f}/` tier for them.
   - **Feature-only (loop path)** types: `plans` — the loop path writes plans only to `features/{f}/plans/`. (A project-level `plans/` may exist for maintainer-authored cross-feature roadmaps, but it is never loop-written.)
   - **Both** types: `decisions`, `design`, `mistakes`, `backlogs`, `references`. They default to feature-level and **promote up** to the project root only when the content sets a project-wide convention / cross-feature architecture (user-confirmed via AskUserQuestion at Wrap-up).
