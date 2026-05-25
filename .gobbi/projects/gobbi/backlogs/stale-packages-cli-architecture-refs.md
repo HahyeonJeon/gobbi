@@ -6,8 +6,8 @@ severity: medium
 confidence: 90
 scope: project
 source: session-2026-05-24-45388fa9-T07-iter2-codex-eval (OVERALL-001)
-disposition: open
-status: open
+disposition: addressed
+status: addressed
 created: 2026-05-25
 feature: session-foundations-bundle-c
 promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-07/staging/backlogs/project/stale-packages-cli-architecture-refs.md
@@ -38,3 +38,11 @@ User decision (2026-05-25): out of T07's contracted scope; deferred to this foll
 ## When to pick up
 
 A dedicated docs-cleanup session (or fold into the next gobbi-config / release-prep pass). Not urgent — the user-flagged mistake-promote defect is already fully resolved.
+
+## Resolution
+
+Fixed in PR #270 (session 2026-05-24-45388fa9 / follow-up FU-2, 2026-05-25):
+
+- `gobbi/SKILL.md:74` sanitization note corrected: investigation confirmed `packages/` directory is absent and no automated sanitization seam replaced the v0.4.x `packages/cli` settings-IO validator; note now states no automated seam exists and slot values must be treated as untrusted at the point of interpolation.
+- `gobbi/SKILL.md:129` Workflow Overview table: "CLI init" relabeled to "session init"; "workflow init" relabeled to "workflow configuration" to match the markdown-driven reality.
+- `delegation/templates/assistant.md:14` example path changed from dead `packages/cli/src/` reference to live `.gobbi/projects/gobbi/skills/` path.

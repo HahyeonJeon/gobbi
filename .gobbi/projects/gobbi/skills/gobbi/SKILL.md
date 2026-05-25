@@ -71,7 +71,7 @@ The following vars are set **by the Claude Code runtime** in every Bash subproce
 
 Read the session-level `settings.json` at `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json`. Three outcomes:
 
-> **Sanitization note:** `{project-name}` and similar slot values used in path construction and shell commands are pre-validated by the CLI's settings-IO seam (`packages/cli/src/lib/config/settings-io.ts`, project-name validator) before this skill consumes them. In-skill shell interpolation does not perform additional escaping — it assumes clean input. If the settings-IO seam is bypassed (e.g., direct manual edit of config files), untrusted values must be sanitized before use.
+> **Sanitization note:** `{project-name}` and similar slot values used in path construction and shell commands are NOT validated by any automated seam in the current markdown-driven design — the v0.4.x CLI settings-IO validator was removed in the v0.5.0 redesign and nothing replaced it. In-skill shell interpolation performs no escaping; treat slot values such as `{project-name}` as untrusted at the point of interpolation and sanitize them before use, especially when the value originates from a manually-edited config file.
 
 - **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask via AskUserQuestion whether to reuse them or reconfigure. If reusing, skip the setup question in step 4 and proceed to step 5.
 - **File missing** — no prior session settings. Proceed to step 4.
@@ -126,7 +126,7 @@ The 6-step state machine and who owns each step:
 
 | Step | Phase | Owner | Specialist agents spawned | Purpose |
 |---|---|---|---|---|
-| **Configuration** | CLI init | manager + user | — | Session start, settings, project memory check, workflow init |
+| **Configuration** | session init | manager + user | — | Session start, settings, project memory check, workflow configuration |
 | **Ideation** | Loop body | manager + user + leader | leader (DISCUSSION) | Refine What / Why / How until the idea is concrete enough to plan against |
 | **Preparation** | Loop body | manager + user + leader | leader (DISCUSSION) | Verify readiness — project memory + workspace skills against the locked Ideation output; close gaps |
 | **Planning** | Loop body | manager + user + leader | leader (DISCUSSION) | Decompose into ordered tasks with agent assignments + verification anchors |
