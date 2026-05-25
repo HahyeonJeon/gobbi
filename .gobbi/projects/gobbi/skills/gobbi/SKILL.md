@@ -189,9 +189,9 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 The `mistake` skill lives at `skills/mistake/SKILL.md`. Every agent MUST load it before starting work. Mistake recordings flow through a two-layer promotion model:
 
 - **Layer 1 (in-session):** During every loop's MEMORIZATION sub-phase, the assistant stages mistake-candidates to `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true` frontmatter). At Wrap-up, the Wrap-up loop's MEMORIZATION promotes staged candidates from all loops to `.gobbi/projects/{project-name}/mistakes/` (project memory).
-- **Layer 2 (cross-session):** After the session ends, `gobbi mistake promote` moves promoted project-mistakes from project memory to the workspace-level skill storage so they persist across all projects and future sessions. Run this OUTSIDE the session — promotion does not cause context reload.
+- **Layer 2 (cross-session):** During the Wrap-up phase, the Wrap-up assistant also promotes generalizable project-mistakes from `.gobbi/projects/{project-name}/mistakes/` to workspace-level skill storage so they persist across all projects and future sessions. No CLI command — the Wrap-up assistant performs both layers. Promotion does not cause context reload.
 
-The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during MEMORIZATION), and P4 (reference the cross-session promotion command).
+The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during MEMORIZATION), and P4 (Wrap-up-phase promotion).
 
 ---
 
