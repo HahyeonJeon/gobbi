@@ -291,6 +291,50 @@ The display is for the user — it is not state storage. The state machine itsel
 
 ---
 
+## Canonical session tree
+
+The on-disk layout every session materializes under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. The manager bootstraps each loop's `{rawdata, staging, evaluation, artifacts}` subdirs at loop entry; the assistant and evaluator write into them per their skills. This is the canonical shape; deviations are normalized going-forward by Wrap-up (see [`wrap-up/SKILL.md` § Non-standard session-subdir cleanup](../wrap-up/SKILL.md)).
+
+```
+sessions/{date}-{session-id}/
+├── session.json              ← per-session telemetry (manager init row 6 + assistant UPSERT)
+├── settings.json             ← resolved session config (cascade)
+├── state.json                ← per-session workflow state-machine file (manager init row 5.5; see § State persistence)
+├── session.json.lock         ← advisory write-lock guarding concurrent session.json writes (manager; safe to ignore on read)
+└── {loop}/                   ← loop ∈ ideation | preparation | planning | execution | wrap-up
+    ├── rawdata/              ← draft-iter{n}.md, transcript-iter{n}.jsonl, discussion-log.md, research/{slug}.md
+    │                            (the ONLY scratch surface — no separate tmp/ tier; resume/restore scratch lives here, not in restore/)
+    ├── staging/{...}/        ← typed-finding stagings (Wrap-up promotion source)
+    ├── evaluation/iter{n}/{claude,codex}/{perspective}.md + overall.md
+    └── artifacts/{free-filename}.md   ← PASS-only
+```
+
+**Session-root files.** `session.json` (telemetry), `settings.json` (resolved config), `state.json` (the workflow state-machine file — see [§ State persistence](#state-persistence)), and `session.json.lock` (advisory write-lock the manager creates / releases around each `session.json` write; not memory content — safe to ignore on read).
+
+**No `tmp/` scratch tier.** `{loop}/rawdata/` is the only scratch surface in the canonical tree. A `tmp/` dir or a `rawdata/restore/` sub-tier is non-canonical — resume / restore scratch lives directly in `rawdata/`. Wrap-up removes `tmp/` going-forward (see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)).
+
+### Per-task Execution layout (the quartet)
+
+The Execution loop is per-task. Each task lives under `execution/task-{NN}/` and carries the **full quartet** — `{rawdata, staging, evaluation, artifacts}`:
+
+```
+execution/
+├── staging/{...}/            ← loop-level (cross-task) staging
+└── task-{NN}/
+    ├── rawdata/draft-iter{n}.md, transcript-iter{n}.jsonl
+    ├── staging/{...}/
+    ├── evaluation/iter{n}/{claude,codex}/{perspective}.md + overall.md
+    └── artifacts/{free-filename}.md
+```
+
+Every `task-{NN}/` gets the full quartet. A task with only `evaluation/` (missing rawdata / staging / artifacts) is an incomplete task layout — the quartet is required unless a task is documented eval-only.
+
+### Per-perspective evaluation file naming
+
+Evaluation outputs are named `evaluation/iter{n}/{system}/{perspective}.md` where `{system} ∈ {claude, codex}` and `{perspective}` is the **bare** perspective name from the fixed 7-vocabulary — `project`, `structure`, `performance`, `aesthetics`, `usage`, `consistency`, `risk` — plus `overall.md`. **Bare names only**: no `pN-` positional prefix, and the **same 7-perspective vocabulary on both systems** so cross-system reconciliation pairs files 1:1. The 7-perspective vocabulary is owned by [`evaluation/SKILL.md`](../evaluation/SKILL.md); the manager's spawn / reconciliation orchestration is in [`workflow/evaluation.md`](workflow/evaluation.md).
+
+---
+
 ## Workflow State Machine
 
 This section specifies the phase mechanics shared by steps 2-6. The manager moves between states only when each state's postcondition is met.
