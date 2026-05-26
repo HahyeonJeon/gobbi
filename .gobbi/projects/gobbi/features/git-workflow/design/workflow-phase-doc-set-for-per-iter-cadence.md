@@ -9,8 +9,8 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [git-workflow, per-iter-cadence, workflow-docs, d4]
 related:
-  - features/git-workflow/decisions/planning-brief-mistake-load-directives-for-t1.md
-  - features/git-workflow/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md
+  - features/workflow/decisions/2026-05-24-planning-brief-mistake-load-directives-for-t1.md
+  - features/install-runtime/decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md
 ---
 
 # Workflow phase doc set for per-iter commit cadence
