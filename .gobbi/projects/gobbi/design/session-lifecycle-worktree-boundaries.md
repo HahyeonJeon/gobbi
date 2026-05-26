@@ -1,7 +1,15 @@
 ---
-title: Session lifecycle and worktree boundaries
-status: accepted
+name: session-lifecycle-worktree-boundaries
+description: Documents the worktree-first session lifecycle — how session dirs, writes, and agent paths are scoped to the worktree in worktree-pr mode.
+type: design
+scope: project
 feature: null
+status: active
+created: 2026-05-24
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
+tags: [session-lifecycle, worktree, orchestration]
+supersedes: null
+superseded_by: null
 related:
   - features/session-foundations-bundle-b/design/d-1-worktree-row-5-5.md
   - features/session-foundations-bundle-b/design/d-2-qualified-git-rule.md

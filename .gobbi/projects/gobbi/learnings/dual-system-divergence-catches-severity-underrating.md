@@ -1,11 +1,15 @@
 ---
-title: Dual-system eval divergence surfaces correctness defects single-system misses
-discovered: 2026-05-25
+name: dual-system-divergence-catches-severity-underrating
+description: Dual-system eval divergence surfaces correctness defects a single system misses by rationalizing them away; the divergence IS the finding.
+type: learnings
+scope: project
+feature: null
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [evaluation, dual-system, docs-quality, process]
-related: []
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-04/staging/learnings/dual-system-divergence-catches-severity-underrating.md
-promoted-at: 2026-05-25
+supersedes: null
+superseded_by: null
 ---
 
 # Dual-system eval divergence surfaces correctness defects single-system misses

@@ -1,20 +1,15 @@
 ---
-title: Normalize repeated "sole exception" phrasings to one canonical form
-discovered: 2026-05-25
+name: sole-exception-phrasing-normalization
+description: When a rule has one exception stated multiple times in a skill file, pick one canonical phrasing and apply it consistently.
+type: learnings
+scope: project
+feature: null
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [docs-sync, aesthetics, skill-authoring]
-related: []
-source-finding: A-1
-source-perspective: aesthetics
-source-iter: 1
-source-system: claude
-finding-type: general
-domain: docs-sync
-disposition: open
-severity: Low
-confidence: 75
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-03/staging/learnings/sole-exception-phrasing-normalization.md
-promoted-at: 2026-05-25
+supersedes: null
+superseded_by: null
 ---
 
 # Normalize repeated "sole exception" phrasings to one canonical form

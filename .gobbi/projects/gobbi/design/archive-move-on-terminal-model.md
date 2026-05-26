@@ -1,12 +1,16 @@
 ---
 name: archive-move-on-terminal-model
 description: "Replaces the no-delete+no-move in-place archive model with no-delete + move-on-terminal: finished artifacts are moved (never deleted) into archive/{type}/ so active dirs show only live work."
-metadata:
-  type: design
-status: accepted
+type: design
+scope: project
+feature: project-memory
+status: active
 created: 2026-05-25
-source: user-decision-2026-05-25 (4 AskUserQuestion locks)
-supersedes: the in-place archive model formerly documented in memorization/templates/archive.md
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [archive, memory-system, project-memory]
+supersedes: null
+superseded_by: null
+related: []
 ---
 
 # Archive model: no-delete + move-on-terminal

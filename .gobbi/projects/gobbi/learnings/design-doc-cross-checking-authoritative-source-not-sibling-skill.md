@@ -1,11 +1,15 @@
 ---
-title: "Design docs memorializing a model must cross-check the AUTHORITATIVE source, not a sibling skill or stale memorial"
-discovered: 2026-05-25
+name: design-doc-cross-checking-authoritative-source-not-sibling-skill
+description: Design docs memorializing a model must cross-check the authoritative source, not a sibling skill or stale memorial.
+type: learnings
+scope: project
+feature: null
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [docs-authoring, evaluation, consistency, docs-sync]
-related: [leader-iter2-verification-claim-without-evidence]
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-05/staging/learnings/design-doc-cross-checking-authoritative-source-not-sibling-skill.md
-promoted-at: 2026-05-25
+supersedes: null
+superseded_by: null
 ---
 
 # Design docs memorializing a model must cross-check the AUTHORITATIVE source, not a sibling skill or stale memorial

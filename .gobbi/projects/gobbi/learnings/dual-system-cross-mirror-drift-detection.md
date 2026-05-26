@@ -1,11 +1,15 @@
 ---
-title: "Dual-system evaluation catches cross-mirror drift invisible to a single system"
-discovered: 2026-05-25
+name: dual-system-cross-mirror-drift-detection
+description: Dual-system evaluation catches cross-mirror drift invisible to a single system — each system checks its own entrypoint.
+type: learnings
+scope: project
+feature: null
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [evaluation, dual-system, drift-detection, docs-sync]
-related: [executor-main-tree-edit-near-miss]
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-07/staging/learnings/dual-system-cross-mirror-drift-detection.md
-promoted-at: 2026-05-25
+supersedes: null
+superseded_by: null
 ---
 
 # Dual-system evaluation catches cross-mirror drift invisible to a single system

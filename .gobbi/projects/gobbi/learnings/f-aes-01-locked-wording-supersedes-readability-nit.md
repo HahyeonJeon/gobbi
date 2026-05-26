@@ -1,11 +1,15 @@
 ---
-title: User-locked wording supersedes evaluator readability nits (DL-5 pattern)
-discovered: 2026-05-25
+name: f-aes-01-locked-wording-supersedes-readability-nit
+description: User-locked wording supersedes evaluator readability nits — when a decision is explicitly locked, aesthetics findings on that wording are non-actionable.
+type: learnings
+scope: project
+feature: null
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [evaluation, locked-decisions, iron-law-4, aesthetics]
-related: []
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-06/staging/learnings/f-aes-01-locked-wording-supersedes-readability-nit.md
-promoted-at: 2026-05-25
+supersedes: null
+superseded_by: null
 ---
 
 # User-locked wording supersedes evaluator readability nits (DL-5 pattern)
