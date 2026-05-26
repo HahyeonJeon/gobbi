@@ -1,12 +1,17 @@
 ---
+name: rbac-matrix-single-source-of-truth
+description: Mature RBAC systems centralize on a single role-permission matrix that all consumers read from — directly analogous to T2's role×phase matrix design to prevent skill-loading drift.
+type: references
 scope: feature
 feature: agents
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [matrix, single-source-of-truth, sync-drift, validation]
 title: RBAC role-permission matrix as authoritative single source of truth
 source: https://www.osohq.com/learn/rbac-role-based-access-control
-type: docs
 accessed: 2026-05-23
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-tags: [matrix, single-source-of-truth, sync-drift, validation]
+ref_type: docs
 related: []
 ---
 

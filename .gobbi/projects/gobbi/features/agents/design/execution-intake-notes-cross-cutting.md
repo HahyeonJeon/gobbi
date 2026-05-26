@@ -1,12 +1,15 @@
 ---
-title: Execution intake notes — cross-cutting requirements for every task brief
-status: accepted
+name: execution-intake-notes-cross-cutting
+description: Mandatory boilerplate every manager must include in every executor task brief — symlink-edit contract, mistake load directives, branch naming, commit trailers.
+type: design
 scope: feature
 feature: agents
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [delegation, executor-brief, intake, cross-cutting]
 related:
   - planning/artifacts/plan.md
-  - preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md
-  - preparation/staging/decisions/planning-brief-mistake-load-directives-for-t1.md
 ---
 
 # Execution intake notes — cross-cutting requirements
@@ -15,7 +18,7 @@ Requirements the manager MUST include in every executor task brief when delegati
 
 ## Edit-tool default for `.claude/skills/` workspace paths
 
-Per `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md` § Symlink-preservation edit contract:
+Per the mirror-propagation symlink-preservation policy (session 1b26cf20 Preparation): edit-tool default for workspace symlink paths, `sed -i` forbidden on `.claude/` symlinks, bulk rewrites target canonical mirror directly:
 
 - **Default**: Edit tool for every modification to `.claude/skills/...` workspace paths (symlinks resolving to canonical mirror).
 - **Forbidden on workspace**: `sed -i`, `perl -i`, any in-place stream editor that re-creates the file and breaks the symlink.
@@ -26,7 +29,7 @@ Per `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-sy
 
 ## 3-mistake load directive for T1 task briefs (Tasks 01-06)
 
-Per Preparation D-3 decision:
+Per session 1b26cf20 Preparation decision: every T1 task brief (Tasks 01-06) must load these three mistakes:
 
 ```
 .gobbi/projects/gobbi/mistakes/codex-eval-session-write-path-nested-in-worktree.md

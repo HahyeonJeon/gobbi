@@ -1,12 +1,17 @@
 ---
+name: autogen-pydantic-tool-schema-validation
+description: AutoGen and LangGraph use Pydantic schema validation with auto-retry loops to enforce tool output shape — informs T2 validator enforcement-action design (block vs auto-correct).
+type: references
 scope: feature
 feature: agents
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [agent-framework, schema-validation, validation, retry]
 title: AutoGen + LangChain — schema-based validation with automatic retries
 source: https://www.truefoundry.com/blog/autogen-vs-langgraph
-type: blog
 accessed: 2026-05-23
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-tags: [agent-framework, schema-validation, validation, retry]
+ref_type: blog
 related: [commitlint-required-fields-validator, langgraph-skill-catalog-pattern]
 ---
 

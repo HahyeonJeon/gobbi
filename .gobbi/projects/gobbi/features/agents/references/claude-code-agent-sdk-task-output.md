@@ -1,12 +1,17 @@
 ---
+name: claude-code-agent-sdk-task-output
+description: Claude Agent SDK TaskOutput interface — the public-API documented shape for Task tool results, narrower than the empirical transcript payload; informs T3 hook design (stable vs rich surface).
+type: references
 scope: feature
 feature: agents
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hook, task-tool, sdk, schema]
 title: Claude Agent SDK TaskOutput interface — documented Task-tool result shape
 source: https://code.claude.com/docs/en/agent-sdk/hooks
-type: docs
 accessed: 2026-05-23
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-tags: [hook, task-tool, sdk, schema]
+ref_type: docs
 related: [claude-code-posttooluse-hook-schema, claude-code-transcript-tooluseresult-empirical]
 ---
 

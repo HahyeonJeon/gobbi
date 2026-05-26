@@ -1,12 +1,14 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: scope-literal-ask-vs-broader-verifier
+description: User decision to scope T2 (skill-loading matrix + Load-Directives validator) to the literal ask rather than a broader delegation contract verifier; broader framing deferred to backlog.
+type: discussions
 scope: feature
 feature: agents
-discussion-id: CP-1-2-beta
-slug: scope-literal-ask-vs-broader-verifier
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [t2, scope, validator, delegation-contract]
 phase: ideation
-sub-step: A-round-2
 loop-iter: 1
 ---
 
@@ -14,12 +16,11 @@ loop-iter: 1
 
 ## Question asked
 
-CP-1.2-β: Should T2's structural fix be scoped to the literal ask (skill-loading matrix + Load-Directives validator), or should it be broadened to a generic "delegation contract verifier"?
+Should T2's structural fix be scoped to the literal ask (skill-loading matrix + Load-Directives validator), or should it be broadened to a generic "delegation contract verifier"?
 
 ## User answer
 
-User locked **literal-ask scope**: matrix + Load-Directives validator. The broader "delegation contract verifier" re-framing is deferred to backlog:
-- `staging/backlogs/project/item-1-2-broader-delegation-contract-verifier.md`
+User locked **literal-ask scope**: matrix + Load-Directives validator. The broader "delegation contract verifier" re-framing is deferred to backlog: `features/agents/backlogs/broader-delegation-contract-verifier.md` (if/when promoted).
 
 Note: T2 itself was subsequently deferred at Sub-step D round 1 ("looks ambiguous"). The literal-ask scope framing is preserved in the backlog for when T2 is picked up.
 
@@ -29,4 +30,4 @@ T2 is fully deferred this session. The literal-ask vs broader-verifier distincti
 
 ## Source
 
-`rawdata/draft-iter3.md:456-457` (Sub-step A round 2, decision #6)
+Session 1b26cf20 ideation round 2, decision #6.

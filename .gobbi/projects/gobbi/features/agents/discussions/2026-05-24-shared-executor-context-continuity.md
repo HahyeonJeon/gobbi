@@ -1,11 +1,15 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: planning
+name: shared-executor-context-continuity
+description: User decision to delegate Tasks 07 and 08 (hook script + reconstructor) to a single executor within one context window, preserving jq snippet continuity.
+type: discussions
 scope: feature
 feature: agents
-topic: Tasks 07+08 — shared executor or separate delegations?
-outcome: Single executor delegation confirmed (LOCK #2); back-to-back within one context window
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [delegation, executor, task-bundling, jq, hook]
+loop: planning
+outcome: Single executor delegation confirmed; back-to-back within one context window
 ---
 
 # Tasks 07+08 shared executor decision (LOCK #2)
@@ -33,7 +37,6 @@ Manager issues ONE delegation prompt covering both Tasks 07 and 08. Executor com
 
 If context saturation occurs mid-Task-08, the manager can re-delegate Task 08 with explicit jq snippets extracted from Task 07's output as literal brief context.
 
-## Related
+## Source
 
-- draft-iter2.md:459 (agent assignment table Tasks 07+08 row)
-- planning/staging/decisions/lock2-shared-executor-mega-task-risk.md
+Session 1b26cf20 planning iteration 2 — agent assignment table (Tasks 07+08 row). Companion decision: `features/agents/design/lock2-shared-executor-mega-task-risk.md` when promoted.

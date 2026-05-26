@@ -1,17 +1,16 @@
 ---
-scenario: Hook ran but session.json agents[] shows no mutation — operator-facing diagnostic missing
-category: failure-mode
+name: hook-silence-no-agents-mutation-diagnostic
+description: Scenario where the PostToolUse hook fires but session.json agents[] shows no new entry — operator has no diagnostic to distinguish hook success from silent failure.
+type: scenarios
 scope: feature
 feature: agents
-added: 2026-05-23
-added_by_session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: uncovered
-finding-id: F-USAGE-iter3-2
-type: scenario_gap
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hook, diagnostics, silent-failure, agents-metadata]
+scenario: Hook ran but session.json agents[] shows no mutation — operator-facing diagnostic missing
+category: failure-mode
 domain: usability
-disposition: deferred
-confidence: 50
-severity: Medium
 ---
 
 # Hook silence — no agents[] mutation visible
@@ -38,9 +37,6 @@ When the hook fails silently (jq error, resolver failure), it SHOULD exit non-ze
 
 After Execution: run a Task spawn with hook enabled; check that a diagnostic line appears in the session output or that the reconstructor run confirms the agents[] population.
 
-## Related
+## Source
 
-- `evaluation/iter2/claude/usage.md` U3
-- `evaluation/iter3/claude/usage.md` F-USAGE-iter3-2
-- `evaluation/iter3/codex/usage.md` CLAUDE-USAGE-U3
-- Suggested fix: add `echo "agents[<id>] appended" >&2` to hook script after successful upsert.
+Session 1b26cf20 evaluation — Claude and Codex usage perspectives (two iterations). Suggested fix: add `echo "agents[<id>] appended" >&2` to hook script after successful upsert.

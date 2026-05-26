@@ -1,16 +1,16 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: deferred
+name: privacy-retention-agents-metadata-deferred
+description: Formal privacy/retention policy for agents[] session.json metadata is not documented; deferred as non-PII for now.
+type: backlogs
 scope: feature
 feature: agents
-finding-id: COD-RISK-003
-type: checklist_gap
-domain: privacy
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [privacy, retention, agents-metadata]
 disposition: deferred
+domain: privacy
 privacy: true
-confidence: 50
-severity: Medium
 supersedes: null
 superseded_by: null
 ---
@@ -19,7 +19,7 @@ superseded_by: null
 
 ## Context
 
-iter1 Codex Risk finding COD-RISK-003 / iter3 Codex Risk carry-forward: the `agents[]` data persisted in `session.json` includes subagent IDs, token counts, model names, transcript paths, and timing data. No formal privacy or retention policy is documented for this data.
+A Codex risk evaluation of the agents[] hook (session 1b26cf20) flagged that the `agents[]` data persisted in `session.json` includes subagent IDs, token counts, model names, transcript paths, and timing data. No formal privacy or retention policy is documented for this data.
 
 ## Decision
 
@@ -39,7 +39,6 @@ Formal retention policy (e.g., auto-purge after N days, redaction on publish) re
 
 Before any session.json data leaves the local filesystem (e.g., if shared via a future analytics feature), a formal privacy review should reference this finding.
 
-## Related
+## Source
 
-- `evaluation/iter1/codex/risk.md` COD-RISK-003
-- `evaluation/iter3/codex/risk.md` COD-RISK-003
+Session 1b26cf20 evaluation — Codex risk perspective, agents[] hook evaluation (two passes). Original finding ref: COD-RISK-003.

@@ -1,10 +1,16 @@
 ---
+name: agents
+description: Multi-agent roster — PI, planner, executors, evaluators, scribe — with role-scoped delegation, clean handoffs, and per-role model selection.
+type: features
 scope: feature
 feature: agents
-project: gobbi
 status: active
-value_proposition: "The multi-agent roster — PI, planner, executors, evaluators, scribe — with role-scoped delegation, clean handoffs, and per-role model selection."
 created: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [agents, delegation, roster]
+value_proposition: "The multi-agent roster — PI, planner, executors, evaluators, scribe — with role-scoped delegation, clean handoffs, and per-role model selection."
+subsystems: [delegation, delegation/templates]
+project: gobbi
 last_updated: 2026-05-26
 ---
 

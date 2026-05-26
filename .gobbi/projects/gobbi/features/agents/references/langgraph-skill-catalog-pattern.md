@@ -1,12 +1,17 @@
 ---
+name: langgraph-skill-catalog-pattern
+description: LangGraph formalizes skills-as-data with a structured catalog (name + description + tags + file names) loaded per-task — validates the role×phase matrix shape for T2's Load-Directives validator.
+type: references
 scope: feature
 feature: agents
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [agent-framework, skill-loading, catalog, prompt-engineering]
 title: LangGraph deep-agents skills catalog — domain knowledge outside the prompt
 source: https://docs.langchain.com/oss/python/deepagents/skills
-type: docs
 accessed: 2026-05-23
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-tags: [agent-framework, skill-loading, catalog, prompt-engineering]
+ref_type: docs
 related: [rbac-matrix-single-source-of-truth]
 ---
 
