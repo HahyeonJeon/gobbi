@@ -37,11 +37,13 @@ A file's filename pattern is keyed to whether the content is intrinsically time-
 
 The four feature-subdir-only types follow the same rule: `changelogs` / `discussions` are date-prefixed; `scenarios` / `checklists` are bare-slug.
 
-### 1.3 Slug anti-pattern blocklist (FORBIDDEN in any slug)
+### 1.3 Slug naming preferences (descriptive concept slugs strongly preferred)
 
-| # | Forbidden | Bad example | Fix |
+The goal is a stable address that names the concept. The patterns below are **smells / preferences**, not a hard-enforced blocklist. Content-word suffixes (`-decisions`, `-discussion`, `-references`) are allowed — they describe content and belong in the slug. The preference is to name the concept rather than use non-descriptive workflow-phase / positional prefixes that add noise without meaning.
+
+| # | Anti-pattern (smell) | Bad example | Preferred instead |
 |---|---|---|---|
-| 1 | loop / phase prefix | `ideation-decisions.md` | one file per decision, concept slug |
+| 1 | loop / phase prefix (non-descriptive) | `ideation-decisions.md` | one file per decision, concept slug |
 | 2 | finding-ID prefix | `f-aes-01-locked-wording-…` | `locked-wording-supersedes-readability-nit` |
 | 3 | item / task / step positional | `item-1-2-skill-loading-discipline` | `skill-loading-discipline` |
 | 4 | restating the parent dir | `gobbi-install-…` inside `features/gobbi-install/` | drop the prefix |
