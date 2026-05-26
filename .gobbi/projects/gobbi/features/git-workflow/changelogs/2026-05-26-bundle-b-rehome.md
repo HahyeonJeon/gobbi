@@ -4,7 +4,7 @@ description: Bundle B (session-foundations-bundle-b) durable artifacts re-homed 
 type: changelogs
 scope: feature
 feature: git-workflow
-status: active
+status: shipped
 created: 2026-05-26
 session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
 tags: [memory-redesign, re-home, bundle-b]

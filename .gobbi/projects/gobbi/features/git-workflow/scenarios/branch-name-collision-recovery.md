@@ -1,20 +1,15 @@
 ---
-scenario: Branch name collision when chore/session-{date}-{ssid-short} already exists
-category: failure-mode
+name: branch-name-collision-recovery
+description: Scenario covering recovery when chore/session-{date}-{ssid-short} already exists at row 5.5 worktree creation time — P2 collision handling not yet confirmed.
+type: scenarios
 scope: feature
 feature: git-workflow
-added: 2026-05-24
-added_by_session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: uncovered
-finding-id: R-002
-finding-type: scenario_gap
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [branch-collision, worktree, failure-mode, row-5-5, p2]
+category: failure-mode
 domain: process
-severity: Low
-confidence: 50
-disposition: open
-source_iter: 1
-source_system: claude
-source_file: execution/task-01/evaluation/iter1/claude/risk.md
 ---
 
 # Scenario: Branch Name Collision — `chore/session-{date}-{ssid-short}` Already Exists
@@ -39,5 +34,5 @@ Read `git/SKILL.md` P2 (line 153+) to confirm whether P2 handles the branch-alre
 
 ## Related
 
-- `execution/task-01/evaluation/iter1/claude/risk.md` — finding R-002
 - `git/SKILL.md` P2 — the invocation target whose collision handling is unconfirmed
+- Session risk evaluation finding from the worktree-create session: risk finding R-002

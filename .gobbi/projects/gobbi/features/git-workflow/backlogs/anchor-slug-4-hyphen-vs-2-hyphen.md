@@ -1,17 +1,16 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: deferred
+name: anchor-slug-4-hyphen-vs-2-hyphen
+description: Deferred risk tracking whether em-dash headings produce 4-hyphen or 2-hyphen anchor slugs in GitHub-rendered markdown, affecting P2/P6 links in orchestration/SKILL.md.
+type: backlogs
 scope: feature
 feature: git-workflow
-supersedes: null
-superseded_by: null
-finding-id: S-001-COD-STRUCT-001
-finding-type: assumption_risk
-domain: docs-sync
-severity: Medium
-confidence: 50-70
+status: deferred
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [anchor, slug, em-dash, markdown, github, docs-sync]
+priority: medium
 disposition: open
+domain: docs-sync
 ---
 
 # Deferred Risk: Anchor Slug Format — 4-Hyphen vs 2-Hyphen for Em-Dash Headings
@@ -24,18 +23,18 @@ Row 5.5 in `orchestration/SKILL.md` links to `git/SKILL.md` via anchors `#p2----
 
 ## Decision
 
-Accepted as a deferred risk for iter1 and iter2. Both iters used 4-hyphen slugs (iter2 mirrored iter1 for consistency). The anchor has not been empirically tested by rendering the markdown in GitHub.
+Accepted as a deferred risk. Both link forms (4-hyphen and 2-hyphen) used consistent within their respective iterations. The anchor has not been empirically tested by rendering the markdown in GitHub.
 
 ## Rationale
 
 - Low priority: link navigation is cosmetic; the text of row 5.5 is clear whether or not the link resolves in a rendered context.
 - Pre-existing pattern: the 4-hyphen form appears to already be in use across the project before this task.
-- Out-of-iter scope: fixing this requires a project-wide anchor sweep of all em-dash headings, which is not scoped to Task 01.
+- Out-of-iter scope: fixing this requires a project-wide anchor sweep of all em-dash headings, which is not scoped to a single task.
 
 ## Alternatives considered
 
-- Fix in iter2: rejected — out of contracted scope; iter2's mandate was the stale-path recovery + footnote reference fixes only.
-- Fix in Task 06: possible but not required.
+- Fix immediately: rejected — out of contracted scope; the mandate was the stale-path recovery + footnote reference fixes only.
+- Fix in a dedicated docs sweep task: possible but not required until link resolution is confirmed broken.
 
 ## Consequences
 
@@ -43,6 +42,5 @@ Until the anchor format is audited and corrected if needed, links using 4-hyphen
 
 ## Related
 
-- `execution/task-01/evaluation/iter1/claude/structure.md` — finding S-001
-- `execution/task-01/evaluation/iter1/codex/structure.md` — finding COD-STRUCT-001
 - `stub-redirect-format.md` anchor verification rule
+- Structural evaluation findings from the session that created this risk: iter1 Codex structural finding COD-STRUCT-001 and Claude structural finding S-001

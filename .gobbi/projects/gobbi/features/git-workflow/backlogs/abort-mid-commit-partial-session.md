@@ -1,24 +1,23 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: deferred
+name: abort-mid-commit-partial-session
+description: Backlog item tracking the undocumented recovery path when a per-iteration session-memory commit is interrupted mid-flight.
+type: backlogs
 scope: feature
 feature: git-workflow
-finding-id: R4-iter1
-type: assumption_risk
-domain: process
+status: deferred
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [recovery, commit-cadence, per-iteration, worktree]
+priority: medium
 disposition: deferred
-confidence: 75
-severity: Medium
-supersedes: null
-superseded_by: null
+domain: process
 ---
 
 # Abort during per-iteration session-memory commit — recovery path implicit, not documented
 
 ## Context
 
-iter1 Claude Risk finding R4: E-3 scenario (draft line 198) covers session abort before merge, but NOT abort mid-commit (interrupted during the `git add` + `git commit` step). If the per-iteration MEMORIZATION commit is interrupted mid-flight (network glitch, OOM, SIGKILL), the worktree branch is in a partially-committed state.
+A per-iteration MEMORIZATION commit (the `git add` + `git commit` step that records session memory to the worktree branch) can be interrupted mid-flight by a network glitch, OOM event, or SIGKILL. The E-3 abort-before-merge scenario is documented, but abort specifically during the commit step is not. If interrupted, the worktree branch is in a partially-staged state with no documented recovery path in the current row 5.5 or MEMORIZATION phase docs.
 
 ## Decision
 
@@ -36,6 +35,6 @@ Execution: ensure the per-iteration commit step in MEMORIZATION phase docs expli
 
 ## Related
 
-- `evaluation/iter1/claude/risk.md` R4
-- `rawdata/draft-iter3.md:228` (E-3 scenario — abort before merge)
-- `rawdata/draft-iter3.md:331-334` (D-4 per-iteration commit cadence)
+- Session evaluation risk finding that surfaced this gap: iter1 risk evaluation R4
+- `rawdata/draft-iter3.md` E-3 scenario (abort before merge)
+- `rawdata/draft-iter3.md` D-4 per-iteration commit cadence

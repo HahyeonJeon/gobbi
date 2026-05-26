@@ -1,11 +1,14 @@
 ---
+name: git-workflow
+description: Worktree-isolated sessions and a branch/PR/issue lifecycle that keep the main tree clean.
+type: features
 scope: feature
 feature: git-workflow
-project: gobbi
 status: active
-value_proposition: "Worktree-isolated sessions and a branch/PR/issue lifecycle that keep the main tree clean."
 created: 2026-05-26
-last_updated: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [worktree, branch-lifecycle, pr-lifecycle, session-isolation]
+value_proposition: "Worktree-isolated sessions and a branch/PR/issue lifecycle that keep the main tree clean."
 ---
 
 # Feature: Git Workflow

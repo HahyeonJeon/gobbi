@@ -1,14 +1,16 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: worktree-create-config-step
+description: Changelog for shipping row 5.5 (worktree creation) into orchestration/SKILL.md Configuration Step 1 procedure table.
+type: changelogs
 scope: feature
 feature: git-workflow
-task: 01-orchestration-row-5-5-worktree-create
 status: shipped
-plan: sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/planning/artifacts/plan.md
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [worktree, orchestration, config-step, row-5-5, idempotency]
 ---
 
-# Task 01 — Configuration Step 1 Row 5.5 Worktree Create
+# Worktree Creation — Configuration Step 1 Row 5.5 Shipped
 
 ## Summary
 
@@ -33,13 +35,13 @@ Shipped row 5.5 into `orchestration/SKILL.md` Configuration Step 1 procedure tab
 
 ## Deferred
 
-- R-001 (Medium/75): `$CLAUDE_CODE_SESSION_ID` absent fallback not in row 5.5 — deferred to Task 06 footnote bundle
-- R-002 (Low/50): branch-name collision case — deferred to P2 coverage verification
-- S-001/COD-STRUCT-001 (Medium/50-70): P2/P6 anchor 4-hyphen slug — deferred to project-wide anchor sweep
-- C-001 (Low/50): `feat` vs `docs` commit type for SKILL.md edits — deferred to user ratification
+- `$CLAUDE_CODE_SESSION_ID` absent fallback not in row 5.5 — deferred to Task 06 footnote bundle (see backlog `ssid-env-var-absent-fallback`)
+- Branch-name collision case — deferred to P2 coverage verification (see backlog `branch-name-collision-recovery`)
+- P2/P6 anchor 4-hyphen slug — deferred to project-wide anchor sweep (see backlog `anchor-slug-4-hyphen-vs-2-hyphen`)
+- `feat` vs `docs` commit type for SKILL.md edits — deferred to user ratification (see checklist `skill-md-commit-type-feat-vs-docs`)
 
 ## Related
 
 - Witness: commit `1829fa3` body (PR #267 symlink gap)
-- Plan: `sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/planning/artifacts/plan.md` Task 01
+- Plan: `features/git-workflow/plans/2026-05-24-session-foundations-bundle-b.md` task 01
 - Mistake candidate: `edit-tool-refuses-symlink-paths.md` (symlink path rejection — empirical correction to Prep edit contract)

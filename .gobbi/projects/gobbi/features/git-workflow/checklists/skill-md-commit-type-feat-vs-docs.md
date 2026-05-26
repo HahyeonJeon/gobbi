@@ -1,15 +1,14 @@
 ---
+name: skill-md-commit-type-feat-vs-docs
+description: Checklist for determining whether a SKILL.md commit that introduces net-new workflow behavior should use feat: or docs: commit type.
+type: checklists
 scope: feature
 feature: git-workflow
-finding-id: C-001
-finding-type: general
+status: open
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [commit-type, feat, docs, skill-md, git-conventions]
 domain: docs-sync
-severity: Low
-confidence: 50
-disposition: open
-source_iter: 1
-source_system: claude
-source_file: execution/task-01/evaluation/iter1/claude/consistency.md
 ---
 
 # Checklist: SKILL.md Commits — `feat:` vs `docs:` Type
@@ -28,9 +27,9 @@ When committing a change to a `SKILL.md` file (or any `.md` workflow specificati
 
 ## Context
 
-`feat(orchestration): add Configuration Step 1 row 5.5 worktree creation` (commit 14da700) is a `.md`-only diff that introduces workflow behavior (worktree creation procedure). `git/conventions.md` says `feat:` is for source features and `docs:` for documentation-only changes, but there is no tie-breaker for SKILL.md edits. The commit was evaluated and not changed retroactively — the question needs ratification as a standing rule.
+The commit that shipped the worktree-create row 5.5 (`feat(orchestration): add Configuration Step 1 row 5.5 worktree creation`) was a `.md`-only diff that introduced workflow behavior (worktree creation procedure). `git/conventions.md` says `feat:` is for source features and `docs:` for documentation-only changes, but there is no tie-breaker for SKILL.md edits. The commit was not changed retroactively — the question needs ratification as a standing rule.
 
 ## Related
 
-- `execution/task-01/evaluation/iter1/claude/consistency.md` — finding C-001
 - `git/conventions.md` § Commit Type registry
+- A Claude consistency evaluation finding from the worktree-create session surfaced this gap (finding C-001)

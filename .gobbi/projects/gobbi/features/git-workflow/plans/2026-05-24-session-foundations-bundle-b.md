@@ -1,11 +1,15 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: session-foundations-bundle-b
+description: Execution plan for session-foundations-bundle-b — worktree-first session architecture (T1 wave, 6 tasks) plus PostToolUse/PostToolUseFailure hook + reconstructor (T3 wave, 4 tasks).
+type: plans
 scope: feature
 feature: git-workflow
-task: "T1 worktree-first session architecture (NEW absorbed) + T3 PostToolUse/PostToolUseFailure hook + reconstructor"
 status: in-progress
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [worktree-first, session-architecture, post-tool-use, hook, reconstructor]
 supersedes: null
+task_count: 10
 ---
 
 # Plan: session-foundations-bundle-b

@@ -1,20 +1,15 @@
 ---
-scenario: $CLAUDE_CODE_SESSION_ID absent — no fallback documented for row 5.5 branch-name derivation
-category: failure-mode
+name: ssid-env-var-absent-fallback
+description: Failure-mode scenario where $CLAUDE_CODE_SESSION_ID is absent at row 5.5 branch-name derivation time — no fallback currently documented, which would produce a malformed branch name.
+type: scenarios
 scope: feature
 feature: git-workflow
-added: 2026-05-24
-added_by_session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: uncovered
-finding-id: R-001
-finding-type: scenario_gap
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [env-var, ssid, branch-naming, failure-mode, row-5-5]
+category: failure-mode
 domain: process
-severity: Medium
-confidence: 75
-disposition: open
-source_iter: 1
-source_system: claude
-source_file: execution/task-01/evaluation/iter1/claude/risk.md
 ---
 
 # Scenario: $CLAUDE_CODE_SESSION_ID Absent — Branch Name Derivation Fallback
@@ -35,10 +30,10 @@ Row 5.5 should specify a fallback: if `$CLAUDE_CODE_SESSION_ID` is absent, deriv
 
 ## Verification
 
-Confirm row 5.5 prose (after Task 06 footnote work or a dedicated fix) includes an explicit absent-env-var branch. Check `git/conventions.md` shape regex accepts the materialized branch name in both env-present and env-absent scenarios.
+Confirm row 5.5 prose (after a dedicated fix task or footnote addition) includes an explicit absent-env-var branch. Check `git/conventions.md` shape regex accepts the materialized branch name in both env-present and env-absent scenarios.
 
 ## Related
 
-- `execution/task-01/evaluation/iter1/claude/risk.md` — finding R-001
-- Plan Task 06 (LOCK #5 footnote bundle) as the deferred resolution locus
 - `git/conventions.md` branch naming rules
+- Backlog: `backlogs/abort-mid-commit-partial-session.md` (related recovery-path coverage gap)
+- Session risk evaluation finding that surfaced this gap: risk finding R-001

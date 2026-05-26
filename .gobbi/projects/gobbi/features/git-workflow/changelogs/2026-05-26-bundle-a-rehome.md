@@ -1,17 +1,19 @@
 ---
-date: 2026-05-26
-session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+name: bundle-a-rehome
+description: Changelog for re-homing git-workflow's share of Bundle A artifacts from the gobbi-orchestration-workflow-improvements sprint into this feature during the memory-system redesign.
+type: changelogs
 scope: feature
 feature: git-workflow
-task: memory-redesign W3-T2
 status: shipped
-plan: null
+created: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [memory-redesign, re-home, bundle-a]
 ---
 
 # Bundle A re-homed — git-workflow's share
 
 ## Summary
-During memory-system redesign W3-T2, the diff-scope / bundled-PR semantics
+During memory-system redesign wave W3-T2, the diff-scope / bundled-PR semantics
 decision from the `gobbi-orchestration-workflow-improvements` sprint (Bundle A)
 was re-homed into `git-workflow` per content (§8 rule 1). `git-workflow` owns
 the branch/PR diff-scope lifecycle.

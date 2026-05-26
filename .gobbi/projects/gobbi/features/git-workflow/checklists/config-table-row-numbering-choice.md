@@ -1,22 +1,21 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: open
+name: config-table-row-numbering-choice
+description: Checklist for resolving the decimal vs integer row numbering choice when inserting row 5.5 into the orchestration/SKILL.md Step 1 Configuration table.
+type: checklists
 scope: feature
 feature: git-workflow
-finding-id: S3-iter1
-type: checklist_gap
+status: open
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [orchestration, config-step, row-numbering, docs-sync]
 domain: docs-sync
-disposition: open
-confidence: 75
-severity: Medium
 ---
 
 # Decimal row numbering at row 5.5 — Execution must choose: insert 5.5 or renumber rows 6+
 
 ## Context
 
-iter1 Claude Structure finding S3: the `orchestration/SKILL.md` Step 1 Workflow Configuration table uses integer row numbers (1 through 7+). Draft D-1 inserts row 5.5 as a half-decimal between current row 5 (state.json) and current row 6 (session.json). The project's existing tables do not use decimal row numbers anywhere verified.
+A Claude Structure evaluation of the iter1 draft surfaced that the `orchestration/SKILL.md` Step 1 Workflow Configuration table uses integer row numbers (1 through 7+). The worktree-create design inserts row 5.5 as a half-decimal between the existing row 5 (state.json) and row 6 (session.json). The project's existing tables do not use decimal row numbers anywhere verified.
 
 Evidence: `orchestration/SKILL.md` lines 95-110 (integer-numbered table rows).
 
@@ -30,6 +29,5 @@ Evidence: `orchestration/SKILL.md` lines 95-110 (integer-numbered table rows).
 
 ## Related
 
-- `evaluation/iter1/claude/structure.md` S3
-- `rawdata/draft-iter3.md:308-313` (D-1 row 5.5 description)
-- `rawdata/draft-iter3.md:274` (T1-I-T1.a implementation checklist item — "insert new row 5.5")
+- `orchestration/SKILL.md` Step 1 Configuration table (the edit target)
+- Structural evaluation finding from the worktree-first session: iter1 Claude Structure finding S3

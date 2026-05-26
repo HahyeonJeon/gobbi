@@ -1,12 +1,17 @@
 ---
+name: claude-code-worktree-isolation-pattern
+description: Claude Code's official per-session worktree isolation pattern — the -w flag and isolation:worktree frontmatter as the runtime-recommended primitive.
+type: references
 scope: feature
 feature: git-workflow
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [worktree, session-isolation, claude-code, parallel-agents]
 title: Claude Code official worktree-isolation pattern (parallel sessions)
 source: https://code.claude.com/docs/en/worktrees
-type: docs
 accessed: 2026-05-23
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-tags: [worktree, session-isolation, claude-code, parallel-agents]
+ref_type: docs
 related: []
 ---
 
@@ -16,7 +21,7 @@ related: []
 Claude Code natively supports per-session worktree isolation: the `-w` flag spins each session in its own working directory + branch, and subagents can carry `isolation: worktree` in their frontmatter so they are placed in a worktree by default. Edits in one session never touch files in another — worktrees are the official isolation primitive the runtime offers, not a project-side hack.
 
 ## Why it applies
-T1's worktree-first proposal aligns with the runtime-recommended isolation model. If gobbi declares every session must bootstrap a worktree at Configuration Step 1, it is harmonizing with the runtime's own pattern rather than inventing a project-local discipline. Importantly, the docs also call out a tightly-relevant constraint that anchors T1's session-memory-survival question: "Git worktrees isolate your files, but they don't isolate your database, environment variables, or running services" — i.e., the runtime treats worktree isolation as filesystem-only; cross-session state (e.g., session memory) must be addressed separately.
+The gobbi worktree-first design aligns with the runtime-recommended isolation model. If gobbi declares every session must bootstrap a worktree at Configuration Step 1, it is harmonizing with the runtime's own pattern rather than inventing a project-local discipline. Importantly, the docs also call out a tightly-relevant constraint for the session-memory-survival design question: "Git worktrees isolate your files, but they don't isolate your database, environment variables, or running services" — i.e., the runtime treats worktree isolation as filesystem-only; cross-session state (e.g., session memory) must be addressed separately.
 
 ## Source
 - https://code.claude.com/docs/en/worktrees
@@ -29,4 +34,4 @@ T1's worktree-first proposal aligns with the runtime-recommended isolation model
 
 | Date | Session | Used for |
 |---|---|---|
-| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | T1 external insight #1 — worktree-first is runtime-aligned; informs Sub-step D design question on session-memory survival |
+| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | External insight supporting worktree-first — worktree-first is runtime-aligned; informs session-memory survival design question |

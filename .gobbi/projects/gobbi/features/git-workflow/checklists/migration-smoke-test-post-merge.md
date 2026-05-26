@@ -1,36 +1,41 @@
 ---
-scenario: worktree-first-bootstrap
+name: migration-smoke-test-post-merge
+description: Post-merge smoke test checklist for the worktree-first bootstrap — verifies that session.json carries worktree fields and that generate-now Preparation lands symlinks on the PR diff after the worktree-create row 5.5 ships.
+type: checklists
 scope: feature
 feature: git-workflow
-last_updated: 2026-05-23
-finding-id: iter1-P4
-type: checklist_gap
+status: open
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [smoke-test, worktree, session-json, generate-now, migration]
 domain: process
-disposition: addressed
-confidence: 100
-severity: Medium
 ---
 
 # Worktree-first bootstrap — post-merge migration smoke test checklist
 
-| # | Item | Anchor | Status | Verification |
-|---|---|---|---|---|
-| 1 | After PR merge, run `jq '.git.branch' .gobbi/projects/gobbi/sessions/<latest>/session.json` on the first new session | T1-I-T1.h | pending | value matches `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$` |
-| 2 | After PR merge, run `jq '.git.worktreePath' .gobbi/projects/gobbi/sessions/<latest>/session.json` on the first new session | T1-I-T1.h | pending | value is non-null |
-| 3 | On next `generate-now` Preparation, verify PR diff contains skill body AND both symlinks on the worktree branch | T1-I-T1.d + T1-E-1 | pending | git diff shows `+` for both `.claude/skills/{slug}/` and `.agents/skills/{slug}/` |
+| # | Item | Status | Verification |
+|---|---|---|---|
+| 1 | After PR merge, run `jq '.git.branch' .gobbi/projects/gobbi/sessions/<latest>/session.json` on the first new session | pending | value matches `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$` |
+| 2 | After PR merge, run `jq '.git.worktreePath' .gobbi/projects/gobbi/sessions/<latest>/session.json` on the first new session | pending | value is non-null |
+| 3 | On next `generate-now` Preparation, verify PR diff contains skill body AND both symlinks on the worktree branch | pending | git diff shows `+` for both `.claude/skills/{slug}/` and `.agents/skills/{slug}/` |
 
 ## Item details
 
 ### 1. Branch regex check
 
-**Anchor reasoning**: iter1 P4 finding identified the absence of a migration smoke test gate. T1-I-T1.h added the smoke test regex `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$` as a Wrap-up gate row.
+**Why this check matters**: The worktree-create design adds a first success criterion that after the row 5.5 change lands, new session branches follow the `chore/session-{date}-{ssid-short}` pattern. This smoke test verifies the runtime materializes that branch correctly.
 
-**Verification approach**: `jq '.git.branch' session.json | grep -E '^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$'` on the first session after the T1 PR merge.
+**Verification approach**: `jq '.git.branch' session.json | grep -E '^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$'` on the first session after the worktree-create PR merge.
 
 ### 2. worktreePath non-null
 
-**Anchor reasoning**: T1's first success criterion: "After T1 lands, `session.json.git.worktreePath` is non-null immediately after Configuration."
+**Why this check matters**: The worktree-first design's first success criterion is that `session.json.git.worktreePath` is non-null immediately after Configuration. A null value means row 5.5 was skipped or failed.
 
 ### 3. generate-now PR diff
 
-**Anchor reasoning**: the `1829fa3` witness commit was the motivating failure — symlinks created in main-tree missed the PR diff. This check is the structural regression test.
+**Why this check matters**: The motivating failure that led to the worktree-first design was commit `1829fa3`, where Preparation generate-now symlinks created in the main tree missed the PR diff. This check is the structural regression test confirming the fix holds post-merge.
+
+## Related
+
+- Design: `features/git-workflow/design/worktree-create-before-session-stamp.md` (the design decision row 5.5 implements)
+- Witness commit: `1829fa3` (the motivating failure)

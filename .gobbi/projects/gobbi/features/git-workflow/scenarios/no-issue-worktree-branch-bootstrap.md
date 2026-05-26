@@ -1,24 +1,22 @@
 ---
-scenario: Non-feature (no issue/task slug) session boots worktree on chore/session-* branch
-category: edge-case
+name: no-issue-worktree-branch-bootstrap
+description: Edge-case scenario where a non-feature session (no issue/task slug) boots a worktree on chore/session-* branch — verifying the branch satisfies git/conventions.md without requiring an issue number.
+type: scenarios
 scope: feature
 feature: git-workflow
-added: 2026-05-23
-added_by_session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: covered
-finding-id: COD-PROJ-002
-type: scenario_gap
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [non-feature-session, chore-branch, worktree, row-5-5]
+category: edge-case
 domain: process
-disposition: addressed
-confidence: 100
-severity: Medium
 ---
 
 # Non-feature session: no issue/task slug dependency at row 5.5
 
 ## Situation
 
-A session that is not associated with a GitHub issue or a task slug (e.g., investigation, mistake-promotion, doc-lookup, or refactor-only session) boots via `/gobbi`. Configuration Step 1 reaches row 5.5 and must create a worktree. Under the prior iter2 branch name `session/{date}-{ssid-short}`, the branch type `session/` is not in the `git/conventions.md:22` registry. The current iter3 locked form `chore/session-{date}-{ssid-short}` uses `chore` which does not require an issue number.
+A session that is not associated with a GitHub issue or a task slug (e.g., investigation, mistake-promotion, doc-lookup, or refactor-only session) boots via `/gobbi`. Configuration Step 1 reaches row 5.5 and must create a worktree. Under a prior branch naming proposal of `session/{date}-{ssid-short}`, the branch type `session/` was not in the `git/conventions.md` type registry. The locked form `chore/session-{date}-{ssid-short}` uses `chore` which does not require an issue number.
 
 ## Inputs
 
@@ -28,7 +26,7 @@ A session that is not associated with a GitHub issue or a task slug (e.g., inves
 
 ## Expected behavior
 
-Row 5.5 creates a worktree on branch `chore/session-{date}-{ssid-short}` (e.g., `chore/session-2026-05-23-1b26cf20`). No issue number prefix is expected or required. The branch name satisfies the `git/conventions.md:22` regex for `chore/` type and the slug `session-...` satisfies the 3-50 char length constraint.
+Row 5.5 creates a worktree on branch `chore/session-{date}-{ssid-short}` (e.g., `chore/session-2026-05-23-1b26cf20`). No issue number prefix is expected or required. The branch name satisfies the `git/conventions.md` type regex for `chore/` and the slug `session-...` satisfies the 3-50 char length constraint.
 
 ## Verification
 
@@ -36,7 +34,6 @@ Post-merge smoke test: `jq '.git.branch' session.json` matches `^chore/session-[
 
 ## Related
 
-- `evaluation/iter1/codex/project.md` COD-PROJ-002
-- `evaluation/iter3/codex/project.md` COD-PROJ-002
-- `rawdata/draft-iter3.md` E-2 scenario (line 227)
-- D-1 in draft-iter3.md (line 308-313)
+- `git/conventions.md` branch naming rules (chore/ type, slug length)
+- Smoke test checklist: `checklists/migration-smoke-test-post-merge.md`
+- Evaluation finding from the worktree-create session: Codex project finding COD-PROJ-002
