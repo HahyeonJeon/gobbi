@@ -37,4 +37,4 @@ SUPERSEDED in iter2. The iter1 empirical scan missed 53 file-level symlinks unde
 ## Related
 
 - `preparation/staging/decisions/mirror-propagation-policy-workspace-canonical.md` (superseded)
-- `preparation/staging/discussions/mirror-policy-round-2-re-lock.md` (superseding)
+- `mirror-policy-mirror-canonical-relock.md` (superseding)

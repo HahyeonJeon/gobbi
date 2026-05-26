@@ -42,5 +42,5 @@ Evidence: `find .claude/skills/ -type l -name "*.md" | wc -l` → 53; sample: `.
 
 - `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md`
 - `preparation/staging/decisions/mirror-propagation-policy-workspace-canonical.md` (superseded)
-- `preparation/staging/discussions/mirror-policy-round-1.md` (superseded)
+- `mirror-policy-workspace-canonical-superseded.md` (superseded)
 - `preparation/staging/discussions/edit-contract-addition.md` (iter3 follow-on)
