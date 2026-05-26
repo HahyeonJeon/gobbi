@@ -3,7 +3,7 @@ name: claude-code-changelog-ccsi-version
 description: "Claude Code changelog — CLAUDE_CODE_SESSION_ID introduced in v2.1.132"
 type: references
 scope: feature
-feature: env-var-audit
+feature: install-runtime
 status: active
 created: 2026-05-22
 session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d

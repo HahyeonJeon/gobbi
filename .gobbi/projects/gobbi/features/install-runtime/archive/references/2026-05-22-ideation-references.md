@@ -2,7 +2,7 @@
 title: External references — Env-Var Audit + SessionStart Hook Ideation
 session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 loop: ideation
-feature: env-var-audit
+feature: install-runtime
 created: 2026-05-22
 promoted_from: sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/ideation/staging/references/ideation-references.md
 promoted_at: 2026-05-22
