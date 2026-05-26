@@ -22,7 +22,10 @@ The bar is **applicability**, not novelty: a reference belongs here if it inform
 
 ## Location
 
-- Project-level: `.gobbi/projects/{project-name}/references/`
+- **Feature-level (default):** `.gobbi/projects/{project-name}/features/{feature-name}/references/` — research happens inside a feature's Ideation, so a reference defaults to that feature (`scope: feature`, `feature: {feature-name}`). Wrap-up routes staging references here (see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing)).
+- **Project-level (promote-up, rare):** `.gobbi/projects/{project-name}/references/` — for cross-feature prior art (`scope: project`, `feature: null`); user-confirmed at Wrap-up.
+
+References are a **Both**-scope type (design §2.9, [`rules.md` § 3](../rules.md)), defaulting feature-level and promoting up only for cross-feature relevance.
 
 ## File naming
 
@@ -49,13 +52,15 @@ title: {Short topic title}
 source: {URL or path}
 accessed: YYYY-MM-DD
 ref_type: docs | blog | paper | rfc | code | book | other
-related: [{related learning / mistake slugs}]
 ---
 
 # {Title}
 
 ## Insight
 {One or two sentences: the specific lesson this source contributes. NOT a summary of the source — the takeaway.}
+
+## Related
+{Related learning / mistake / decision slugs this reference connects to. Body content, not frontmatter — the base+`title`/`source`/`accessed`/`ref_type` allowlist is the only frontmatter references carry.}
 
 ## Why it applies
 {In one or two sentences, why this insight matters for this project. The condition under which the insight should be invoked.}

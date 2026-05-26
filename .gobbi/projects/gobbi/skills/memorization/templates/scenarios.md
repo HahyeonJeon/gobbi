@@ -34,7 +34,7 @@ Example: `cold-start-cache-miss.md`, `password-reset-with-expired-token.md`, `co
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file); `scope: feature` always (feature-subdir-only). The scenario coverage state lives in `category` + the body's status notes; base `status` stays `active`.
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) ONLY; `scope: feature` always (feature-subdir-only). Scenarios carry **base frontmatter only** (design §2.14, [`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model) — no scenarios extension row). The scenario `category` and `coverage` state live in the **body** (below), not frontmatter, so Wrap-up's allowlist strip cannot drop them; base `status` stays `active`.
 
 ```markdown
 ---
@@ -47,11 +47,12 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [{tag1}, {tag2}]
-category: golden-path | edge-case | failure-mode | adversarial
-coverage: covered | partial | uncovered
 ---
 
 # {Scenario title}
+
+**Category:** golden-path | edge-case | failure-mode | adversarial
+**Coverage:** covered | partial | uncovered
 
 ## Situation
 {The concrete situation: who, what, when. Use a narrative one-paragraph form so a reader can picture the scenario without re-reading the design.}
@@ -71,13 +72,13 @@ coverage: covered | partial | uncovered
 
 ## Coverage field
 
-The `coverage` extension field (distinct from the base `status` lifecycle field) tracks how well the scenario is handled:
+The `Coverage` body field (distinct from the base `status` lifecycle field) tracks how well the scenario is handled:
 
 - **`covered`** — the current design and implementation handle this scenario; verified by a test or check
 - **`partial`** — the design intends to handle this but verification is incomplete
 - **`uncovered`** — surfaced as a scenario gap but no design addresses it yet (the next Ideation iteration must address)
 
-The Execution Loop's MEMORIZATION updates `coverage` from `partial` to `covered` when the corresponding verification ships. Base `status` stays `active` until the scenario is superseded.
+The Execution Loop's MEMORIZATION updates the body `Coverage` from `partial` to `covered` when the corresponding verification ships. Base `status` stays `active` until the scenario is superseded.
 
 ## Append-only
 

@@ -22,9 +22,10 @@ A correction not recorded is a correction repeated across sessions. Mistakes are
 
 ## Location
 
-- Project-level: `.gobbi/projects/{project-name}/mistakes/`
+- **Project-level (default):** `.gobbi/projects/{project-name}/mistakes/` — for traps that transcend any single feature (the common case; `scope: project`, `feature: null`).
+- **Feature-level:** `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` — when the trap is specific to one value-feature (`scope: feature`, `feature: {feature-name}`).
 
-Project-wide because mistakes usually transcend any single feature. Feature-scoped mistakes can be filed here with a `feature:` frontmatter tag for filtering.
+Mistakes are a **Both**-scope type (design §2.5, [`rules.md` § 3](../rules.md)). A feature-specific trap lives in that feature's own `mistakes/` subdir — NOT in the project `mistakes/` with a `feature:` tag. Wrap-up routes a `mistake-candidate: true` staging file to `features/{feature-name}/mistakes/` (feature-scope) or `mistakes/` (project-scope) per the user-confirmed scope (see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing)).
 
 ## File naming
 
