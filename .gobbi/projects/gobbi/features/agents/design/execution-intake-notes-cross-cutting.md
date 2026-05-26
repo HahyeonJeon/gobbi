@@ -1,7 +1,7 @@
 ---
 title: Execution intake notes — cross-cutting requirements for every task brief
 status: accepted
-feature: session-foundations-bundle-b
+feature: agents
 related:
   - planning/artifacts/plan.md
   - preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md

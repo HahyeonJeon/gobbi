@@ -1,7 +1,7 @@
 ---
 title: Dependency graph with strict T1→T3 wave ordering
 status: accepted
-feature: session-foundations-bundle-b
+feature: workflow
 related:
   - planning/staging/decisions/lock1-wave-ordering-not-graph-enforced.md
   - planning/artifacts/plan.md

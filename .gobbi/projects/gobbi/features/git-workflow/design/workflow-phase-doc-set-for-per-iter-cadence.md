@@ -1,7 +1,7 @@
 ---
 title: Workflow phase doc set targeted by T1-I-T1.f per-iter commit cadence rule
 status: updated-iter2
-feature: session-foundations-bundle-b
+feature: git-workflow
 related:
   - decisions/planning-brief-mistake-load-directives-for-t1.md
   - decisions/mirror-propagation-policy-mirror-canonical-symlinks.md

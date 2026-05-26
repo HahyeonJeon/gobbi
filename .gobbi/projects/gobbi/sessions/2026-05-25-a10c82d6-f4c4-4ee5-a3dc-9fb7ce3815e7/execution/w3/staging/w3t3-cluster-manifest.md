@@ -16,8 +16,8 @@ status: in-progress
 
 ## Clusters (process in order)
 
-- [x] **(a)** decisions 6 + scenarios 6 + plans 1 + changelogs 1 = **14** — SHA: PENDING-COMMIT
-- [ ] **(b)** design 16 = **16** — SHA: ____
+- [x] **(a)** decisions 6 + scenarios 6 + plans 1 + changelogs 1 = **14** — SHA: f3f3e8b
+- [x] **(b)** design 16 = **16** — SHA: PENDING-COMMIT
 - [ ] **(c)** checklists 15 = **15** — SHA: ____
 - [ ] **(d)** backlogs 15 = **15** — SHA: ____
 - [ ] **(e)** references 12 = **12** — SHA: ____
@@ -53,8 +53,26 @@ changelogs (1):
 Re-home changelogs added (4): git-workflow, workflow, install-runtime, agents.
 `feature:` restamped on all 14. Breakdown: git-workflow 7, install-runtime 4, workflow 2, agents 1.
 
-### Cluster (b) — 16 files
-(pending)
+### Cluster (b) — 16 files — COMMITTED
+- `d-1-worktree-row-5-5` → **git-workflow** (worktree create row 5.5)
+- `d-2-qualified-git-rule` → **git-workflow** (`git/SKILL.md` rule)
+- `d-3-1-hook-bash-jq-stack` → **install-runtime** (session.json agents[] capture hook stack)
+- `d-3-2-reconstructor-verify-and-fix` → **install-runtime** (reconstructor algorithm)
+- `d-3-3-resolver` → **install-runtime** (hook scope + session-dir resolver)
+- `d-3-4-metadata-extraction` → **install-runtime** (hybrid metadata extraction)
+- `d-3-5-flock-serialization` → **install-runtime** (flock on session.json)
+- `d-3-6-correlation-key` → **install-runtime** (tool_use_id correlation)
+- `d-3-promote-now-commit-on-branch` → **git-workflow** (preparation worktree-branch commit)
+- `d-4-per-iter-session-commit` → **git-workflow** (per-iter session-memory commit cadence)
+- `d-5-direct-mode-retained` → **git-workflow** (direct-mode opt-out)
+- `dependency-graph-strict-wave-ordering` → **workflow** (T1→T3 wave ordering)
+- `execution-intake-notes-cross-cutting` → **agents** (delegation-brief boilerplate)
+- `five-locked-decisions` → **workflow** (Planning locked decisions)
+- `task-decomposition-10-tasks` → **workflow** (sprint task decomposition)
+- `workflow-phase-doc-set-for-per-iter-cadence` → **git-workflow** (per-iter commit-cadence doc set; AMBIGUOUS workflow/git-workflow → routed git-workflow as the per-iter commit cadence is the subject, matching d-4)
+
+Breakdown: git-workflow 7, install-runtime 6, workflow 3, agents 1. `feature:` restamped on all 16. No new re-home changelog (all 4 features touched in cluster a).
+Note: D-3-1..D-3-6 (subagent-metadata hook plumbing) → install-runtime per §1.3 "T3 subagent metadata → install-runtime" (the session-runtime hook contract), not agents.
 
 ### Cluster (c) — 15 files
 (pending)

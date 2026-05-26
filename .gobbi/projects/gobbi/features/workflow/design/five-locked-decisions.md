@@ -1,7 +1,7 @@
 ---
 title: 5 locked decisions for session-foundations-bundle-b execution
 status: accepted
-feature: session-foundations-bundle-b
+feature: workflow
 related:
   - planning/artifacts/plan.md
   - ideation/artifacts/bundle-b-ideation-pass.md

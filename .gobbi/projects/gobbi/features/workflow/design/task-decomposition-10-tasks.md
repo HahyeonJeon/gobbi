@@ -1,7 +1,7 @@
 ---
 title: 10-task decomposition for session-foundations-bundle-b
 status: accepted
-feature: session-foundations-bundle-b
+feature: workflow
 related:
   - planning/artifacts/plan.md
   - ideation/artifacts/bundle-b-ideation-pass.md
