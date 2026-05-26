@@ -1,3 +1,18 @@
+---
+name: stub-redirect-format
+description: Format and variant rules for creating stub-redirect docs when a superseded file's URL must be preserved and inbound links kept live.
+type: rules
+scope: project
+feature: null
+status: active
+created: 2026-05-21
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [docs-authoring, stub-redirect, documentation]
+priority: medium
+established: 2026-05-21
+supersedes: null
+---
+
 # Stub-redirect format for superseded docs
 
 When a documentation file is superseded by another and the user chooses **stub redirect** (preserve URL, retain inbound links) over **delete**, follow this format. Establishes a consistent pattern across the project so readers arriving from old links know where to go and authors don't reinvent the format per pass.
@@ -51,7 +66,7 @@ Length cap: 10 lines.
 - **Anchor verification before commit**: every link target with `#anchor` must resolve to an existing `## ` heading in the target file. Verify by running `grep -nE '^## ' <target-file>` and matching exact heading text against GitHub's slug rules (lowercase, spaces → `-`, periods/punctuation stripped, em-dash and en-dash dropped).
 - **Date the supersession**: include the date and the retiring wave/PR identifier so future readers know when the redirect was set up.
 - **Forward-only**: stubs point AT the new doc; never point in both directions or duplicate content.
-- **No frontmatter**: the project uses plain markdown. Hugo/MkDocs/Docusaurus frontmatter syntax is forbidden.
+- **No frontmatter in TARGET docs**: stub-redirect TARGET docs are published `.claude/` redirect stubs — Hugo/MkDocs/Docusaurus frontmatter syntax is forbidden in those published stubs. Project-memory files (under `.gobbi/projects/{name}/`) DO carry base frontmatter per `skills/memorization/rules.md`.
 - **No HTML anchor injection**: `<a id="..."></a>` tags violate `_claude/SKILL.md` anti-pattern guidance and proliferate inconsistently across renderers.
 
 ---
