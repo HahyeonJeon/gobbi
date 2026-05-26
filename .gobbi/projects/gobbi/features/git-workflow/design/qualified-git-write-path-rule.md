@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 design-id: D-2
-slug: d-2-qualified-git-rule
+slug: qualified-git-write-path-rule
 status: locked
 iter: 2
 ---

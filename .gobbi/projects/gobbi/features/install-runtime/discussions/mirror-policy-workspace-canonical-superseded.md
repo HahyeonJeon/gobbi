@@ -7,7 +7,7 @@ feature: install-runtime
 topic: Mirror-propagation policy — iter1 lock (workspace canonical)
 outcome: "Workspace canonical only — mirror auto-syncs (SUPERSEDED iter2 on corrected empirical evidence)"
 status: superseded
-superseded_by: mirror-policy-round-2-re-lock.md
+superseded_by: mirror-policy-mirror-canonical-relock.md
 ---
 
 # Mirror-propagation policy — iter1 lock (superseded)
@@ -32,7 +32,7 @@ Workspace canonical only — mirror auto-syncs. Decision staged at `staging/deci
 
 ## Implication
 
-SUPERSEDED in iter2. The iter1 empirical scan missed 53 file-level symlinks under `.claude/skills/` that resolve to the canonical mirror files. The "workspace canonical" lock was based on a false premise (directory-level scan only). See `mirror-policy-round-2-re-lock.md` for the corrected decision.
+SUPERSEDED in iter2. The iter1 empirical scan missed 53 file-level symlinks under `.claude/skills/` that resolve to the canonical mirror files. The "workspace canonical" lock was based on a false premise (directory-level scan only). See `mirror-policy-mirror-canonical-relock.md` for the corrected decision.
 
 ## Related
 

@@ -11,10 +11,10 @@ tags: [session-lifecycle, worktree, orchestration]
 supersedes: null
 superseded_by: null
 related:
-  - features/session-foundations-bundle-b/design/d-1-worktree-row-5-5.md
-  - features/session-foundations-bundle-b/design/d-2-qualified-git-rule.md
-  - features/session-foundations-bundle-b/design/d-4-per-iter-session-commit.md
-  - features/session-foundations-bundle-b/design/d-5-direct-mode-retained.md
+  - features/git-workflow/design/worktree-create-before-session-stamp.md
+  - features/git-workflow/design/qualified-git-write-path-rule.md
+  - features/git-workflow/design/per-iteration-session-commit-cadence.md
+  - features/git-workflow/design/direct-mode-retained-opt-out.md
 ---
 
 # Session lifecycle and worktree boundaries
@@ -137,7 +137,7 @@ authored this doc) runs in `worktree-pr` mode; its worktree lives at
 `.gobbi/projects/gobbi/worktrees/chore/session-2026-05-24-45388fa9`. Verifying
 that this session's writes land inside that path and that its branch name matches
 the regex constitutes the N=2 empirical pass of the smoke-test gate (Bundle B
-T1.h, `d-1-worktree-row-5-5.md` § Validation).
+T1.h, `worktree-create-before-session-stamp.md` § Validation).
 
 ## Lessons
 

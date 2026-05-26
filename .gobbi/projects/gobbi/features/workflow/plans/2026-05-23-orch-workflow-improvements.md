@@ -1,5 +1,5 @@
 ---
-slug: main
+slug: 2026-05-23-orch-workflow-improvements
 title: "gobbi-orchestration-workflow-improvements — Execution plan"
 scope: feature
 feature: workflow

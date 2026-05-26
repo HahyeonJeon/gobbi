@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 discussion-id: CP-NEW-beta
-slug: new-dependency-on-1-3
+slug: promote-now-depends-on-worktree-first
 phase: ideation
 sub-step: A-round-1
 loop-iter: 1

@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 design-id: D-1
-slug: d-1-worktree-row-5-5
+slug: worktree-create-before-session-stamp
 status: locked
 iter: 3
 ---

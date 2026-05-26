@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: agents
 discussion-id: CP-1-2-beta
-slug: reframing-1-2-broader-verifier
+slug: t2-scope-literal-vs-broader-verifier
 phase: ideation
 sub-step: A-round-2
 loop-iter: 1

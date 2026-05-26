@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 design-id: D-4
-slug: d-4-per-iter-session-commit
+slug: per-iteration-session-commit-cadence
 status: locked
 iter: 2
 ---

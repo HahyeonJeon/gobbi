@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 discussion-id: CP-1-3-beta
-slug: reframing-1-3
+slug: worktree-first-vs-collapsing-strategies
 phase: ideation
 sub-step: A-round-2
 loop-iter: 1

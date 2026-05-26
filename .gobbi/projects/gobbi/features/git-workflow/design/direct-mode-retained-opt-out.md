@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 design-id: D-5
-slug: d-5-direct-mode-retained
+slug: direct-mode-retained-opt-out
 status: locked
 iter: 2
 ---

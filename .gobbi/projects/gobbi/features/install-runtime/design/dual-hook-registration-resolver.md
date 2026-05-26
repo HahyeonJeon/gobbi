@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: install-runtime
 design-id: D-3-3
-slug: d-3-3-resolver
+slug: dual-hook-registration-resolver
 status: locked
 iter: 3
 ---

@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 design-id: D-3
-slug: d-3-promote-now-commit-on-branch
+slug: promote-now-commit-on-branch
 status: locked
 iter: 2
 ---

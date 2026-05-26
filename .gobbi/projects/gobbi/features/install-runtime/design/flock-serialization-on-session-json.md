@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: install-runtime
 design-id: D-3-5
-slug: d-3-5-flock-serialization
+slug: flock-serialization-on-session-json
 status: locked
 iter: 2
 ---

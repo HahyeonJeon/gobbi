@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: workflow
 discussion-id: CP-1-2-alpha
-slug: root-cause-1-2-hypothesis
+slug: skill-loading-discipline-root-cause
 phase: ideation
 sub-step: A-round-1
 loop-iter: 1

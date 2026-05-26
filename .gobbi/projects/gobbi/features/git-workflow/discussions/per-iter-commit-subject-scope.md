@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 discussion-id: CP-D-2
-slug: cp-d-2-commit-subject-scope
+slug: per-iter-commit-subject-scope
 phase: ideation
 sub-step: D-round-2
 loop-iter: 1

@@ -64,5 +64,5 @@ After evaluator returns: check that `ls <worktree-path>/.gobbi/projects/gobbi/se
 ## Related
 
 - `session-dir-placed-outside-worktree.md` — the parent mistake; both originate from subagents defaulting to main-tree CWD when worktree-pr mode is active.
-- `d-2-qualified-git-rule.md` in `features/session-foundations-bundle-b/design/` — the qualified absolute-root rule that both mistakes violate.
+- `qualified-git-write-path-rule.md` in `features/git-workflow/design/` — the qualified absolute-root rule that both mistakes violate.
 - T02 EVAL empirical recurrence (2026-05-24): both Claude and Codex eval legs wrote to main tree; confirmed root cause is broader than Codex-only.

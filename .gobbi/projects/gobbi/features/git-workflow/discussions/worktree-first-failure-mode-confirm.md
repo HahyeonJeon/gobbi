@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: git-workflow
 discussion-id: CP-1-3-alpha
-slug: failure-mode-1-3-confirm
+slug: worktree-first-failure-mode-confirm
 phase: ideation
 sub-step: A-round-1
 loop-iter: 1

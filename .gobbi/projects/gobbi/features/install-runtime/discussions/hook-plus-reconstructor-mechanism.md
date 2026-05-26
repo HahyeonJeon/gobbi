@@ -4,7 +4,7 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 scope: feature
 feature: install-runtime
 discussion-id: CP-4-1-alpha
-slug: mechanism-4-1-option-c
+slug: hook-plus-reconstructor-mechanism
 phase: ideation
 sub-step: A-round-2
 loop-iter: 1
