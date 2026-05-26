@@ -1,7 +1,7 @@
 ---
 feature: env-var-audit
 title: "Env-Var Audit + SessionStart Hook Registration"
-status: shipped
+status: retired
 first-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 last-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 pr: 265

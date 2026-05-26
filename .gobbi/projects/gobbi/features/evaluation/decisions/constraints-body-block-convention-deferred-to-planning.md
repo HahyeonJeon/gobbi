@@ -2,6 +2,7 @@
 date: 2026-05-23
 session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
 status: deferred
+scope: feature
 feature: evaluation
 supersedes: null
 superseded_by: null

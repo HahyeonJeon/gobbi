@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: git-workflow
 finding-id: C-001
 finding-type: general
 domain: docs-sync

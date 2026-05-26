@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: git-workflow
 title: claude-jj-worktree shim — interception pattern for worktree subcommands
 source: https://github.com/jasagiri/claude-jj-worktree
 type: code

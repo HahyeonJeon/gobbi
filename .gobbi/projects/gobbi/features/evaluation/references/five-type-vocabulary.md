@@ -8,6 +8,7 @@ session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
 loop: planning
 created: 2026-05-23
 status: active
+scope: feature
 feature: evaluation
 source_path: /playinganalytics/git/gobbi/.agents/skills/evaluation/SKILL.md
 source_lines: "344-352"

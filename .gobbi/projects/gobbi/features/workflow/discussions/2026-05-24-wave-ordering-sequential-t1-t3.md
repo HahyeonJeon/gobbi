@@ -2,6 +2,7 @@
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 loop: planning
+scope: feature
 feature: workflow
 topic: T1→T3 wave ordering — strict sequential or interleaved?
 outcome: Strict sequential confirmed; graph-enforced via LOCK #1 (05,06 → 07)

@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: git-workflow
 title: commitlint — required-fields validator for structured commit messages
 source: https://commitlint.js.org/guides/local-setup.html
 type: docs

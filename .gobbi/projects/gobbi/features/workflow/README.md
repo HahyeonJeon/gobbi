@@ -1,4 +1,5 @@
 ---
+scope: feature
 feature: workflow
 project: gobbi
 status: active

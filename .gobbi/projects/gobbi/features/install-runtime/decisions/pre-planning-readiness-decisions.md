@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: install-runtime
 name: preparation-decisions-log
 description: Decisions log for the Preparation Loop evaluation cycle — env-var-audit + SessionStart hook.
 type: decisions-log

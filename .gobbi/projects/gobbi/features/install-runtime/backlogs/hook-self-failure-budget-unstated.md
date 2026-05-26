@@ -2,6 +2,7 @@
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: deferred
+scope: feature
 feature: install-runtime
 loop: planning
 finding-id: hook-self-failure-budget-unstated

@@ -1,5 +1,6 @@
 ---
 scenario: worktree-first-bootstrap
+scope: feature
 feature: git-workflow
 last_updated: 2026-05-23
 finding-id: iter1-P4

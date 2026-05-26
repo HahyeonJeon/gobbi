@@ -1,4 +1,5 @@
 ---
+scope: feature
 feature: agents
 project: gobbi
 status: active

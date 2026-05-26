@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: install-runtime
 name: t1-decisions
 description: Locked decisions + commits for Execution Loop task T1 (.claude/hooks/session-start.sh authoring) + T1 hardening follow-up.
 type: decisions-log

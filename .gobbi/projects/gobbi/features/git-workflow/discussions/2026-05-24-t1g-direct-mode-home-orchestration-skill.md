@@ -2,6 +2,7 @@
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 loop: planning
+scope: feature
 feature: git-workflow
 topic: T1.g direct-mode opt-out doc home — orchestration/SKILL.md or git/SKILL.md?
 outcome: orchestration/SKILL.md row 5.5 footnote (LOCK #5)

@@ -2,6 +2,7 @@
 date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 loop: preparation
+scope: feature
 feature: git-workflow
 topic: Gap-resolutions D-1 through D-9 batch confirmation
 outcome: "9 gaps resolved: D-1/5/8/9 skip; D-2/6/7 defer-to-backlog; D-3/4 generate-now"

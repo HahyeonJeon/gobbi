@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: install-runtime
 finding_id: CONSISTENCY-001
 finding_source: T04-iter1-codex-consistency + T04-iter1-claude-consistency
 type: general

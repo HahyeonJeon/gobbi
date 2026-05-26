@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: agents
 title: LangGraph deep-agents skills catalog — domain knowledge outside the prompt
 source: https://docs.langchain.com/oss/python/deepagents/skills
 type: docs

@@ -1,5 +1,6 @@
 ---
 scenario: mirror-policy-empirical-verification
+scope: feature
 feature: install-runtime
 last_updated: 2026-05-24
 finding-id: COD-CONS-PREP1-003

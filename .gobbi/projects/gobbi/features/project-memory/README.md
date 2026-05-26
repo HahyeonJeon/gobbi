@@ -1,4 +1,5 @@
 ---
+scope: feature
 feature: project-memory
 project: gobbi
 status: active

@@ -2,6 +2,7 @@
 date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 loop: preparation
+scope: feature
 feature: install-runtime
 topic: Mirror-propagation policy — iter1 lock (workspace canonical)
 outcome: "Workspace canonical only — mirror auto-syncs (SUPERSEDED iter2 on corrected empirical evidence)"

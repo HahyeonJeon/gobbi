@@ -1,5 +1,6 @@
 ---
 scenario: mirror-policy-workspace-canonical-false-premise
+scope: feature
 feature: install-runtime
 last_updated: 2026-05-24
 finding-id: COD-PROJ-PREP1-002

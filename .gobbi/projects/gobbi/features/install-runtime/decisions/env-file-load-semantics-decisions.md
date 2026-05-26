@@ -3,6 +3,7 @@ date: 2026-05-22
 session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 loop: ideation
 status: accepted
+scope: feature
 feature: install-runtime
 supersedes: null
 superseded_by: null

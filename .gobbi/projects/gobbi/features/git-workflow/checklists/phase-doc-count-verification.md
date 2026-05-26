@@ -1,5 +1,6 @@
 ---
 scenario: phase-doc-count-verification
+scope: feature
 feature: git-workflow
 last_updated: 2026-05-24
 finding-id: COD-OVERALL-PREP1-004

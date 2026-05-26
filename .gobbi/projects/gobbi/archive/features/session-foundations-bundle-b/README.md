@@ -1,7 +1,7 @@
 ---
 feature: session-foundations-bundle-b
 project: gobbi
-status: shipped
+status: retired
 created: 2026-05-24
 last_updated: 2026-05-24
 archived_at: 2026-05-26

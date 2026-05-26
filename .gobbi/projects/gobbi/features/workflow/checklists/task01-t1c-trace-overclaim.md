@@ -1,5 +1,6 @@
 ---
 scenario: plan-task-trace-accuracy
+scope: feature
 feature: workflow
 last_updated: 2026-05-24
 finding-id: task01-overclaims-t1c-trace

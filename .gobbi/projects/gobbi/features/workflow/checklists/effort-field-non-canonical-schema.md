@@ -1,5 +1,6 @@
 ---
 scenario: plan-task-schema-compliance
+scope: feature
 feature: workflow
 last_updated: 2026-05-24
 finding-id: effort-field-non-canonical

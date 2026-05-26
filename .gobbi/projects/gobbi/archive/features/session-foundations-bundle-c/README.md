@@ -1,6 +1,6 @@
 ---
 feature: session-foundations-bundle-c
-status: shipped
+status: retired
 archived_at: 2026-05-26
 archive_reason: retired
 ---

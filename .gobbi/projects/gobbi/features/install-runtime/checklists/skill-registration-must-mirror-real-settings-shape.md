@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: install-runtime
 finding_id: USAGE-001
 finding_source: T04-iter1-codex-usage + T04-iter1-claude-usage
 type: general

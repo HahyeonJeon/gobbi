@@ -1,6 +1,7 @@
 ---
 title: Execution intake notes — cross-cutting requirements for every task brief
 status: accepted
+scope: feature
 feature: agents
 related:
   - planning/artifacts/plan.md

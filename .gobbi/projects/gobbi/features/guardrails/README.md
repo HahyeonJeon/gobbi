@@ -1,4 +1,5 @@
 ---
+scope: feature
 feature: guardrails
 project: gobbi
 status: active

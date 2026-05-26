@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: agents
 title: AutoGen + LangChain — schema-based validation with automatic retries
 source: https://www.truefoundry.com/blog/autogen-vs-langgraph
 type: blog

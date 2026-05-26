@@ -1,6 +1,7 @@
 ---
 date: 2026-05-23
 session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+scope: feature
 feature: evaluation
 loop: ideation
 iter: 3

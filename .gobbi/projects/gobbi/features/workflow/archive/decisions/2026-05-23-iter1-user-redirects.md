@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: workflow
 name: iter1-user-redirects
 session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
 loop: ideation

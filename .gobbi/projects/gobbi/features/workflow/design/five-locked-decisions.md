@@ -1,6 +1,7 @@
 ---
 title: 5 locked decisions for session-foundations-bundle-b execution
 status: accepted
+scope: feature
 feature: workflow
 related:
   - planning/artifacts/plan.md

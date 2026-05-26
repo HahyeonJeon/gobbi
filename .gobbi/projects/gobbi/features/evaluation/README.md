@@ -1,4 +1,5 @@
 ---
+scope: feature
 feature: evaluation
 project: gobbi
 status: active

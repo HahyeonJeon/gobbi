@@ -12,6 +12,7 @@ created: 2026-05-23
 status: active
 supersedes: null
 date: 2026-05-23
+scope: feature
 feature: workflow
 superseded_by: null
 promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/decisions/concern-1-wrap-up-step-2-5-anchor.md

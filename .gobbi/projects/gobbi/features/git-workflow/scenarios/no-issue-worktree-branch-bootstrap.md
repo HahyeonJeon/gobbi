@@ -1,6 +1,7 @@
 ---
 scenario: Non-feature (no issue/task slug) session boots worktree on chore/session-* branch
 category: edge-case
+scope: feature
 feature: git-workflow
 added: 2026-05-23
 added_by_session: 1b26cf20-677b-498c-8c1b-7d7e971597ac

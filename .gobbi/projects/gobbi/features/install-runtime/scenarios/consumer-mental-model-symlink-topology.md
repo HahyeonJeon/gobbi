@@ -1,5 +1,6 @@
 ---
 scenario: consumer-mental-model-symlink-topology
+scope: feature
 feature: install-runtime
 last_updated: 2026-05-24
 finding-id: COD-USAGE-PREP1-003

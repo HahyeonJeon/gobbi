@@ -2,6 +2,7 @@
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: accepted
+scope: feature
 feature: git-workflow
 loop: planning
 finding-id: rollback-semantics-drift-from-ideation

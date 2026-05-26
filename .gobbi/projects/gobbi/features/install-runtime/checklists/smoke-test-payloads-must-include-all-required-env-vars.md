@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: install-runtime
 finding_id: USAGE-002 / USAGE-002-R
 finding_source: T04-iter1-codex-usage + T04-iter2-codex-usage
 type: checklist_gap

@@ -1,6 +1,7 @@
 ---
 title: 10-task decomposition for session-foundations-bundle-b
 status: accepted
+scope: feature
 feature: workflow
 related:
   - planning/artifacts/plan.md

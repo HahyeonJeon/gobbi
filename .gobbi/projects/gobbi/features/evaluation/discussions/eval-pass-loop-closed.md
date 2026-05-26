@@ -1,6 +1,7 @@
 ---
 date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+scope: feature
 feature: evaluation
 discussion-id: iter3-pass-confirmation
 slug: eval-pass-loop-closed

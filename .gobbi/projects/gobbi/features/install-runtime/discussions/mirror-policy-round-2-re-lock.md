@@ -2,6 +2,7 @@
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 loop: preparation
+scope: feature
 feature: install-runtime
 topic: Mirror-propagation policy — iter2 re-lock on corrected empirical evidence
 outcome: "Mirror canonical, workspace = symlink runtime layer; no sync needed — 53 file-level symlinks confirmed"

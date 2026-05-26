@@ -1,6 +1,7 @@
 ---
 date: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
+scope: feature
 feature: install-runtime
 task: T04 / CL-2
 status: shipped

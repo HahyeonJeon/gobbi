@@ -14,6 +14,7 @@ status: active
 supersedes: null
 superseded_by: null
 date: 2026-05-23
+scope: feature
 feature: git-workflow
 promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/execution/T2/staging/decisions/plan-diff-scope-gate-semantics-under-bundled-pr.md
 promoted-at: 2026-05-23T14:00:00Z

@@ -2,6 +2,7 @@
 date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: addressed
+scope: feature
 feature: install-runtime
 finding-id: COD-USAGE-004
 type: checklist_gap

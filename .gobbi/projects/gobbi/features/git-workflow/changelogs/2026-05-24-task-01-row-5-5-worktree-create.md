@@ -1,6 +1,7 @@
 ---
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+scope: feature
 feature: git-workflow
 task: 01-orchestration-row-5-5-worktree-create
 status: shipped

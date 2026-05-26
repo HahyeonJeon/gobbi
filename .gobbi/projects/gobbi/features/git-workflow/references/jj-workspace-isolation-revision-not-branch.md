@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: git-workflow
 title: Jujutsu jj workspace — revision-anchored isolation primitive for sub-agent dev
 source: https://www.joshualyman.com/2026/02/demystifying-jujutsu-jj-workspaces/
 type: blog

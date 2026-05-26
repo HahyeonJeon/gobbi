@@ -1,4 +1,5 @@
 ---
+scope: feature
 feature: install-runtime
 project: gobbi
 status: active

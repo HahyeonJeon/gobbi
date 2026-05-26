@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: agents
 title: RBAC role-permission matrix as authoritative single source of truth
 source: https://www.osohq.com/learn/rbac-role-based-access-control
 type: docs

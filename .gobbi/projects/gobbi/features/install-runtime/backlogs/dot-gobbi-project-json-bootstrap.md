@@ -2,6 +2,7 @@
 title: ".gobbi/project.json bootstrap for D-3-3-resolver step (i) precondition"
 status: deferred
 project: gobbi
+scope: feature
 feature: install-runtime
 task: null
 anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac

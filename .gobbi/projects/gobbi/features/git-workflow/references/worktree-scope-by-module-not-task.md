@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: git-workflow
 title: Worktree scope-by-module rule + commit-at-session-boundaries discipline
 source: https://www.mindstudio.ai/blog/parallel-agentic-development-claude-code-worktrees
 type: blog

@@ -1,5 +1,6 @@
 ---
 scenario: executor-brief-self-sufficiency
+scope: feature
 feature: agents
 last_updated: 2026-05-24
 finding-id: d-ref-codes-missing-inline-expansion

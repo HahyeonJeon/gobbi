@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: agents
 title: Claude Agent SDK TaskOutput interface — documented Task-tool result shape
 source: https://code.claude.com/docs/en/agent-sdk/hooks
 type: docs

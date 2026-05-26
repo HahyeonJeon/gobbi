@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: install-runtime
 name: planning-decisions
 description: Locked decisions across Planning Loop iter1/iter2/iter3 + post-iter3 manager polish for the env-var-audit + SessionStart hook feature
 type: decisions-log

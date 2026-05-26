@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: guardrails
 title: Claude Code 12+ hook lifecycle events including SubagentStop
 source: https://claudefa.st/blog/tools/hooks/hooks-guide
 type: blog

@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: git-workflow
 title: Claude Code official worktree-isolation pattern (parallel sessions)
 source: https://code.claude.com/docs/en/worktrees
 type: docs

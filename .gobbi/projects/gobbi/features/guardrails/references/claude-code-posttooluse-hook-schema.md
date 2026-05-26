@@ -1,4 +1,6 @@
 ---
+scope: feature
+feature: guardrails
 title: Claude Code PostToolUse + PostToolUseFailure hook — official input schema + empirical Task tool payload
 source: https://code.claude.com/docs/en/hooks
 type: docs
