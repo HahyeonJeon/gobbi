@@ -38,8 +38,8 @@
       "phase": null
     },
     "wrap-up": {
-      "state": "Active",
-      "verdict": null,
+      "state": "Done",
+      "verdict": "PASS",
       "iter": 0,
       "maxIterations": 1,
       "phase": "WRAPUP"

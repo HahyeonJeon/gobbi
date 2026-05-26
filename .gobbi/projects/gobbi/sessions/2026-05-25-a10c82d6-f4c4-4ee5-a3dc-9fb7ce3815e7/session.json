@@ -7,7 +7,7 @@
   "task": "Redesign the gobbi memory system: file structure, naming conventions, per-file content specs; add CRUD-thinking documentation principle; propagate guidelines into memorization/wrap-up/orchestration and related skills.",
   "system": "claude-code",
   "startedAt": "2026-05-25T15:02:26Z",
-  "finishedAt": null,
+  "finishedAt": "2026-05-26",
   "transcriptPath": "~/.claude/projects/-playinganalytics-git-gobbi/a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7.jsonl",
   "git": {
     "repo": "HahyeonJeon/gobbi",
@@ -15,7 +15,7 @@
     "branch": "chore/session-2026-05-25-a10c82d6",
     "worktreePath": "/playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees/chore/session-2026-05-25-a10c82d6",
     "issue": null,
-    "pr": null
+    "pr": 272
   },
   "workflow": {
     "configuration": {
