@@ -3,7 +3,7 @@ date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 feature: session-foundations-bundle-b
 discussion-id: iter2-revise-escalation
-slug: iter2-revise-escalation
+slug: eval-fail-revise-escalation
 phase: ideation
 sub-step: evaluation
 loop-iter: 2
