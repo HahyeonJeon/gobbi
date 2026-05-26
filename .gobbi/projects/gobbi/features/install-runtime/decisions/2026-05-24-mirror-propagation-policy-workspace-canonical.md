@@ -2,7 +2,7 @@
 date: 2026-05-23
 session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: superseded
-feature: null
+feature: install-runtime
 supersedes: null
 superseded_by: mirror-propagation-policy-mirror-canonical-symlinks.md
 ---

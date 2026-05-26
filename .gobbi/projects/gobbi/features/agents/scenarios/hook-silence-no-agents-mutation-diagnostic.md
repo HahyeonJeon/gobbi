@@ -1,7 +1,7 @@
 ---
 scenario: Hook ran but session.json agents[] shows no mutation — operator-facing diagnostic missing
 category: failure-mode
-feature: session-foundations-bundle-b
+feature: agents
 added: 2026-05-23
 added_by_session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: uncovered

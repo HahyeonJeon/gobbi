@@ -1,7 +1,7 @@
 ---
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-feature: session-foundations-bundle-b
+feature: git-workflow
 task: "T1 worktree-first session architecture (NEW absorbed) + T3 PostToolUse/PostToolUseFailure hook + reconstructor"
 status: in-progress
 supersedes: null

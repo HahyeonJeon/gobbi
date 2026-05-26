@@ -1,6 +1,6 @@
 ---
 scenario: consumer-mental-model-symlink-topology
-feature: session-foundations-bundle-b
+feature: install-runtime
 last_updated: 2026-05-24
 finding-id: COD-USAGE-PREP1-003
 type: scenario_gap

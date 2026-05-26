@@ -1,7 +1,7 @@
 ---
 scenario: $CLAUDE_CODE_SESSION_ID absent — no fallback documented for row 5.5 branch-name derivation
 category: failure-mode
-feature: session-foundations-bundle-b
+feature: git-workflow
 added: 2026-05-24
 added_by_session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: uncovered

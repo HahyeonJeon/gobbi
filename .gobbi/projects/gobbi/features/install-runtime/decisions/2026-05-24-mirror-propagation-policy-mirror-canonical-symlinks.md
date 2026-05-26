@@ -2,7 +2,7 @@
 date: 2026-05-24
 session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: accepted
-feature: null
+feature: install-runtime
 supersedes: mirror-propagation-policy-workspace-canonical.md
 superseded_by: null
 ---

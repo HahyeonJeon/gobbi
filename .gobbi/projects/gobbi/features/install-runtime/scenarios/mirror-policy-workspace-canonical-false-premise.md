@@ -1,6 +1,6 @@
 ---
 scenario: mirror-policy-workspace-canonical-false-premise
-feature: session-foundations-bundle-b
+feature: install-runtime
 last_updated: 2026-05-24
 finding-id: COD-PROJ-PREP1-002
 type: scenario_gap

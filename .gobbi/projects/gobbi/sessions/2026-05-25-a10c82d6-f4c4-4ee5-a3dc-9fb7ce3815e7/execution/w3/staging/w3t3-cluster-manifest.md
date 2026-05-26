@@ -1,0 +1,72 @@
+---
+loop: execution
+iter: 1
+artifact_type: w3t3-cluster-manifest
+created_at: 2026-05-26
+status: in-progress
+---
+
+# W3-T3 recovery manifest — re-home Bundle B (100 cluster md) into 7 capability features
+
+**Task:** §1.3 row 3 + §8 cat A — re-home `features/session-foundations-bundle-b/` 100 cluster md (README deferred to W3-T5) into the capability features. Primary = `git-workflow`; route per content (§8 rule 1), default ambiguous → `git-workflow` (§8 rule 2).
+
+**Resume protocol:** read this manifest; skip any cluster whose box is `[x]` (it is committed with the SHA shown). Process unchecked clusters in order; commit + mark `[x]` + record SHA after each.
+
+**Routing rule (§8 LOW-16):** destination feature = the capability the file's CONTENT is about, not the sprint it shipped in. Ambiguous/two-spanning → primary (`git-workflow`). All moves are `git mv` (no-delete, no body rewrite). On move, `feature:`/`scope:` frontmatter MAY be updated to the new home; nothing else.
+
+## Clusters (process in order)
+
+- [x] **(a)** decisions 6 + scenarios 6 + plans 1 + changelogs 1 = **14** — SHA: PENDING-COMMIT
+- [ ] **(b)** design 16 = **16** — SHA: ____
+- [ ] **(c)** checklists 15 = **15** — SHA: ____
+- [ ] **(d)** backlogs 15 = **15** — SHA: ____
+- [ ] **(e)** references 12 = **12** — SHA: ____
+- [ ] **(f)** discussions 28 = **28** — SHA: ____
+
+**Total: 100 md across 6 commits.**
+
+## Per-cluster routing log
+
+### Cluster (a) — 14 files — COMMITTED
+decisions (6):
+- `lock1-wave-ordering-not-graph-enforced` → **workflow** (Planning wave-ordering graph enforcement)
+- `mirror-propagation-policy-mirror-canonical-symlinks` → **install-runtime** (skill mirror/symlink topology)
+- `mirror-propagation-policy-workspace-canonical` (superseded) → **install-runtime** (same topic; kept with its successor)
+- `planning-brief-mistake-load-directives-for-t1` → **workflow** (Planning brief discipline)
+- `rollback-semantics-drift-from-ideation` → **git-workflow** (worktree `git rm` rollback)
+- `session-commit-storage-bounds` → **git-workflow** (per-iteration MEMORIZATION commit storage)
+
+scenarios (6):
+- `branch-name-collision-recovery` → **git-workflow** (worktree branch naming)
+- `consumer-mental-model-symlink-topology` → **install-runtime** (symlink topology)
+- `hook-silence-no-agents-mutation-diagnostic` → **agents** (PostToolUse hook agents[] mutation)
+- `mirror-policy-workspace-canonical-false-premise` → **install-runtime** (mirror/symlink topology)
+- `no-issue-worktree-branch-bootstrap` → **git-workflow** (worktree branch bootstrap)
+- `ssid-env-var-absent-fallback` → **git-workflow** (row 5.5 branch-name derivation)
+
+plans (1):
+- `session-foundations-bundle-b` → **git-workflow** (sprint plan; primary)
+
+changelogs (1):
+- `task-01-row-5-5-worktree-create` → **git-workflow** (worktree create)
+
+Re-home changelogs added (4): git-workflow, workflow, install-runtime, agents.
+`feature:` restamped on all 14. Breakdown: git-workflow 7, install-runtime 4, workflow 2, agents 1.
+
+### Cluster (b) — 16 files
+(pending)
+
+### Cluster (c) — 15 files
+(pending)
+
+### Cluster (d) — 15 files
+(pending)
+
+### Cluster (e) — 12 files
+(pending)
+
+### Cluster (f) — 28 files
+(pending)
+
+## Ambiguous routings (defaulted to git-workflow)
+(none yet)

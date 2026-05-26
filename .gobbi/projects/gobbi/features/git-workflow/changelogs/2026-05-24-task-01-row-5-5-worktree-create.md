@@ -1,7 +1,7 @@
 ---
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-feature: session-foundations-bundle-b
+feature: git-workflow
 task: 01-orchestration-row-5-5-worktree-create
 status: shipped
 plan: sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/planning/artifacts/plan.md
