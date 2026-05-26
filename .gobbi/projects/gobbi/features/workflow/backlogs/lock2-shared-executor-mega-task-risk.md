@@ -2,7 +2,7 @@
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: deferred
-feature: session-foundations-bundle-b
+feature: workflow
 loop: planning
 finding-id: lock2-shared-executor-mega-task-risk
 type: assumption_risk

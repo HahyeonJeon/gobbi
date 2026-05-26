@@ -2,7 +2,7 @@
 date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: deferred
-feature: session-foundations-bundle-b
+feature: install-runtime
 finding-id: CLAUDE-STRUCT-S1
 type: design_flaw
 domain: process

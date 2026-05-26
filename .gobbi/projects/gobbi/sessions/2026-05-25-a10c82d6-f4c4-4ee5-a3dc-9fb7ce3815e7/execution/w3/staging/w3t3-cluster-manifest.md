@@ -18,8 +18,8 @@ status: in-progress
 
 - [x] **(a)** decisions 6 + scenarios 6 + plans 1 + changelogs 1 = **14** — SHA: f3f3e8b
 - [x] **(b)** design 16 = **16** — SHA: b43b7cf
-- [x] **(c)** checklists 15 = **15** — SHA: PENDING-COMMIT
-- [ ] **(d)** backlogs 15 = **15** — SHA: ____
+- [x] **(c)** checklists 15 = **15** — SHA: 739d166
+- [x] **(d)** backlogs 15 = **15** — SHA: PENDING-COMMIT
 - [ ] **(e)** references 12 = **12** — SHA: ____
 - [ ] **(f)** discussions 28 = **28** — SHA: ____
 
@@ -93,8 +93,24 @@ Note: D-3-1..D-3-6 (subagent-metadata hook plumbing) → install-runtime per §1
 
 Breakdown: git-workflow 6, workflow 4, install-runtime 3, guardrails 2, agents 1. NEW feature touched: guardrails → re-home changelog added. `feature:` restamped on 14 (skill-md-commit-type had no key).
 
-### Cluster (d) — 15 files
-(pending)
+### Cluster (d) — 15 files — COMMITTED
+- `abort-mid-commit-partial-session` → **git-workflow** (per-iter commit abort recovery)
+- `anchor-slug-4-hyphen-vs-2-hyphen` → **git-workflow** (row 5.5 → git/SKILL.md P2/P6 worktree anchors)
+- `chore-label-line-citation-stale` → **git-workflow** (`git/conventions.md` citation)
+- `ci-symlink-backlog-pseudocode-plumbing` → **install-runtime** (symlink-mode CI check)
+- `consequences-section-unqualified-claim` → **install-runtime** (mirror-canonical decision claim)
+- `dot-gobbi-project-json-bootstrap` → **install-runtime** (resolver project.json bootstrap)
+- `dry-inline-jq-hook-script` → **install-runtime** (agents[] capture hook/reconstructor jq)
+- `goodhart-factor-when-demanded-deferred` → **guardrails** (agents[] metric-gaming / Goodhart)
+- `hook-event-count-31-vs-29-docs-sync` → **guardrails** (hook-event docs sync)
+- `hook-self-failure-budget-unstated` → **install-runtime** (PostToolUseFailure capture-hook budget)
+- `lock2-shared-executor-mega-task-risk` → **workflow** (execution decomposition / context budget)
+- `posttooluse-failure-webfetch-verification-gap` → **guardrails** (hook-event doc verification)
+- `privacy-retention-agents-metadata-deferred` → **agents** (AMBIGUOUS agents/guardrails: content is the agents[] metadata persisted → agents, not git-workflow)
+- `schema-extension-agents-status-field` → **install-runtime** (session.template.json agents[] schema)
+- `sidecar-lock-refinement-deferred` → **install-runtime** (flock on session.json)
+
+Breakdown: install-runtime 7, git-workflow 3, guardrails 3, workflow 1, agents 1. `feature:` restamped on all 15. No new feature touched.
 
 ### Cluster (e) — 12 files
 (pending)
