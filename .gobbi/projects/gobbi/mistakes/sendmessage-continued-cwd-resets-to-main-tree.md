@@ -37,7 +37,7 @@ The manager assumed a `SendMessage`-continued subagent retains the shell cwd fro
 
 ## Related
 
-- `mistakes/executor-main-tree-edit-near-miss.md` — the near-miss this is the realized version of; same root cause (wrong tree), worse outcome (commit actually landed on develop).
-- `mistakes/executor-mirror-path-vs-worktree-physical-copy.md` — broader class: worktree-vs-main-tree path confusion.
-- `mistakes/manager-skipped-dual-system-eval.md` — the independent manager verify (post-WORK grep) that caught this is the same discipline mandated there.
+- [[executor-main-tree-edit-near-miss]] — the near-miss this is the realized version of; same root cause (wrong tree), worse outcome (commit actually landed on develop).
+- [[executor-mirror-path-vs-worktree-physical-copy]] — broader class: worktree-vs-main-tree path confusion.
+- [[manager-skipped-dual-system-eval]] — the independent manager verify (post-WORK grep) that caught this is the same discipline mandated there.
 - `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/execution/w1/staging/decisions/sendmessage-continued-executor-edits-main-tree.md` — originating staged candidate.

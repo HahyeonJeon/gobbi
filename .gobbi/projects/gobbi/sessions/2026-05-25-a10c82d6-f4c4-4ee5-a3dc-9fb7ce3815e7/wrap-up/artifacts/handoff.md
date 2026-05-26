@@ -11,13 +11,14 @@ related:
   - sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/ideation/artifacts/memory-system-redesign-design.md
   - design/memory-system-redesign.md
   - backlogs/memory-redesign-remaining-waves.md
+  - sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/wrap-up/artifacts/wave-verdict-summary.md
 ---
 
 # Handoff — session 2026-05-25-a10c82d6 (FINAL — all waves complete)
 
 ## Summary
 
-The gobbi memory-system redesign is COMPLETE. All 6 waves (W0-rest through W5) shipped in the resumed session (2026-05-26). 42 commits on branch `chore/session-2026-05-25-a10c82d6` — PR opened by manager post-wrap-up (PR number: opened by manager post-wrap-up). The naming standard, frontmatter standard, Principle 13, 7 capability features, and all migration work are live. No deferred redesign waves remain.
+The gobbi memory-system redesign is COMPLETE. All 6 waves (W0-rest through W5) shipped in the resumed session (2026-05-26). ~43 commits (see `wave-verdict-summary.md` for per-wave evidence) on branch `chore/session-2026-05-25-a10c82d6` — PR opened by manager post-wrap-up (PR number: opened by manager post-wrap-up). The naming standard, frontmatter standard, Principle 13, 7 capability features, and all migration work are live. No deferred redesign waves remain. All waves reached final PASS verdict (dual-system evaluation; 4 REVISE → remediated → PASS; 1 no-op PASS; 1 both-system PASS).
 
 ## Shipped
 
