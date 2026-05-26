@@ -31,14 +31,14 @@
       "phase": null
     },
     "execution": {
-      "state": "Active",
+      "state": "Done",
       "verdict": "PASS",
       "iter": 2,
       "maxIterations": 3,
       "phase": null
     },
     "wrap-up": {
-      "state": "Pending",
+      "state": "Active",
       "verdict": null,
       "iter": 0,
       "maxIterations": 1,
