@@ -37,24 +37,36 @@ A file's filename pattern is keyed to whether the content is intrinsically time-
 
 The four feature-subdir-only types follow the same rule: `changelogs` / `discussions` are date-prefixed; `scenarios` / `checklists` are bare-slug.
 
-### 1.3 Slug naming preferences (descriptive concept slugs strongly preferred)
+### 1.3 Slug naming preferences (name the subject, not its position)
 
-The goal is a stable address that names the concept. The patterns below are **smells / preferences**, not a hard-enforced blocklist. Content-word suffixes (`-decisions`, `-discussion`, `-references`) are allowed — they describe content and belong in the slug. The preference is to name the concept rather than use non-descriptive workflow-phase / positional prefixes that add noise without meaning.
+A slug is a **stable address that names the concept**. The test: *could a reader with zero session context tell what this file is about from its name alone?* Name it the way a careful developer names a module — the subject, in clear kebab-case. The patterns below are **smells / preferences**, not a hard-enforced blocklist (no regex gate). Content-word suffixes (`-decisions`, `-discussion`, `-references`, `-rollback`) are **encouraged** — they describe the subject. Date prefixes on the date-prefixed types (§1.2) are meaningful chronology, not a smell. The smell is always a **non-descriptive position / sequence index / cryptic internal reference** — a token that addresses the record inside a session (table rows, checkpoint IDs, task codes, list positions) instead of naming what it is about.
 
-| # | Anti-pattern (smell) | Bad example | Preferred instead |
+**Anti-patterns — by failure category:**
+
+| Category | Bad example | Why it fails the zero-context reader | Fix (name the subject) |
 |---|---|---|---|
-| 1 | loop / phase prefix (non-descriptive) | `ideation-decisions.md` | one file per decision, concept slug |
-| 2 | finding-ID prefix | `f-aes-01-locked-wording-…` | `locked-wording-supersedes-readability-nit` |
-| 3 | item / task / step positional | `item-1-2-skill-loading-discipline` | `skill-loading-discipline` |
-| 4 | restating the parent dir | `gobbi-install-…` inside `features/gobbi-install/` | drop the prefix |
-| 5 | status words | `final-`, `locked-`, `approved-` | status → frontmatter |
-| 6 | version numbers | `v2-`, `schema-v5-` | version → frontmatter |
-| 7 | date in an evergreen slug | `2026-…-design.md` in `design/` | date → frontmatter |
-| 8 | wording excerpts of a finding | `concern-3-coverage-ownership-cell-text` | name the concept |
-| 9 | person / author names | — | omit |
-| 10 | opaque auto-IDs | — | add a human component |
-| 11 | bundled-scope (many topics, one file) | `iter1-user-redirects.md` | split per topic |
-| 12 | uninformative generics | `misc-`, `common-`, `helper-`, `notes.md` | describe the concept |
+| Positional / sequence index | `task-01`, `tasks-07-08`, `d-1`, `d-3-2`, `item-1-2`, `step-2-5` | "task 01 of what plan?" — the number is an address in a vanished session, not a subject | name the work: `worktree-create-row-insertion`, `shared-executor-context-continuity` |
+| Cryptic internal reference | `row-5-5`, `decimal-row-numbering-55`, `1-3`, `4-1`, `t1g`, `t1j` | table coordinates / checkpoint IDs / task codes mean nothing without the session's working state | name the topic: `state-init-before-worktree`, `direct-mode-opt-out-doc-home` |
+| Uninformative generic | `main`, `misc-`, `common-`, `notes.md`, `helper-` | tells the reader nothing about the subject; "main" is a branch/file convention, not a concept | name the deliverable: `orch-workflow-improvements` |
+| Loop / phase prefix (non-descriptive) | `ideation-decisions.md`, `planning-` | the workflow phase is in frontmatter; the prefix adds noise without subject | one file per concept, concept slug |
+| Restating the parent dir | `gobbi-install-…` inside `features/gobbi-install/` | the directory already carries the facet (§1.1 rule 1) | drop the prefix |
+| Status / version words | `final-`, `locked-`, `approved-`, `v2-`, `schema-v5-` | lifecycle / version belong in frontmatter; a transition would force a rename (§1.1 rules 4–5) | status/version → frontmatter |
+| Wording excerpt of a finding | `concern-3-coverage-ownership-cell-text` | quotes the finding instead of naming its subject | name the concept |
+| Bundled scope (many topics, one file) | `iter1-user-redirects.md` | violates one-record-one-concept (§3) | split per topic |
+| Person / author names · opaque auto-IDs | — | not a subject; not human-readable | omit / add a human component |
+
+**Good vs bad — real before/after (from this project's history):**
+
+| Bad (position/index/cryptic) | Good (names the subject) | What the subject actually is |
+|---|---|---|
+| `2026-05-24-task-01-row-5-5-worktree-create` | `2026-05-24-worktree-create-config-step` | changelog: shipped worktree-create into the Config step procedure |
+| `d-1-worktree-row-5-5` | `worktree-create-before-session-stamp` | design: create worktree before session.json stamps git fields |
+| `decimal-row-numbering-55` | `config-table-row-numbering-choice` | checklist: pick integer-renumber vs decimal row in the Config table |
+| `2026-05-24-t1g-direct-mode-home-orchestration-skill` | `2026-05-24-direct-mode-opt-out-doc-home` | discussion: where the direct-mode opt-out is documented |
+| `reframing-1-3` | `worktree-first-vs-collapsing-strategies` | discussion: worktree-first chosen over two-surface / symlink |
+| `2026-05-23-main` | `2026-05-23-orch-workflow-improvements` | plan: the orch/workflow-improvements Execution plan |
+
+The fix is never "delete the date" or "delete a content word" — it is "replace the position / index / cryptic token with a word that names the subject."
 
 ---
 

@@ -370,6 +370,17 @@ lens — not a per-document lifecycle attribute.
    A blast-radius step that misses a genuine co-update file is an incomplete CRUD plan.
 4. **Then edit** — and verify each CRUD line landed (P7).
 
+**Naming is part of the Create operation — name the subject, not its position.** Every file or
+directory a CRUD plan creates must carry a name that lets a reader *with zero session context*
+understand its **subject** — the concept the file is about. Name the concept in clear,
+development-vibe kebab-case (the name a careful developer would choose). A name must NOT encode the
+record's **position in a list, its sequence index, or a cryptic internal reference** — `task-01`,
+`d-1`, `tasks-07-08`, `row-5-5`, `1-3`, `t1g`, `main` are addresses inside a session that no longer
+exists; they are noise to the next reader. This is *positive descriptiveness*, not a regex gate:
+content words that describe the subject (`-decisions`, `-rollback`, date prefixes on chronological
+types) are encouraged. The anti-patterns table, the smell categories, and concrete good/bad
+examples live in `memorization/rules.md` §1.3 — consult it when naming any memory file.
+
 **Delineation from Principle 8.** P8 (Documentation Is a Deliverable) governs *coupling*: every
 implementation change ships its matching doc change in the same diff. P13 governs *scoping*: how to
 structure and bound a documentation change itself — its spec, its CRUD operations, its blast
