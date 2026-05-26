@@ -1,15 +1,13 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: open
+name: hook-event-count-31-vs-29-docs-sync
+description: Implementation checklist — correct all "31 hook events" claims in guardrails docs to "29" (verified count).
+type: checklists
 scope: feature
 feature: guardrails
-finding-id: COD-OVERALL-ITER3-001
-type: general
-domain: docs-sync
-disposition: open
-confidence: 100
-severity: Medium
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hooks, docs-sync, event-count, checklist]
 ---
 
 # Hook event count claim (31) contradicts captured evidence (29)
@@ -22,14 +20,12 @@ The `PostToolUseFailure` event itself is verified by both Claude and Codex evalu
 
 ## Checklist item for Execution / docs sweep
 
-- [ ] In `draft-iter3.md`: update T3-E-5 (line ~205), D-3-3 (line ~366), and F-Fix-B (line ~533) from "31" to "29"
-- [ ] In `staging/references/claude-code-posttooluse-hook-schema.md`: if the header claims "31 events", update to "29"
-- [ ] After update: `grep -n '"31 hook' draft-iter3.md` returns 0 matches (all corrected to 29)
+- [ ] In `features/guardrails/references/claude-code-posttooluse-hook-schema.md`: if the header or body claims "31 events", update to "29" (verified enumerated count).
+- [ ] Scan all guardrails docs for other occurrences of the "31" hook event count claim and correct each.
+- [ ] After update: `grep -rn '"31 hook' features/guardrails/` returns 0 matches (all corrected to 29).
 
 ## Related
 
-- `evaluation/iter3/codex/overall.md` COD-OVERALL-ITER3-001
-- `evaluation/iter3/codex/consistency.md` COD-CONS-ITER3-001
-- `evaluation/iter3/codex/aesthetics.md` COD-AESTH-ITER3-001
-- `staging/references/claude-code-posttooluse-hook-schema.md`
-- Note: a duplicate of this finding is also at `staging/decisions/hook-event-count-31-vs-29-docs-sync.md` (misrouted in prior pass)
+- `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the reference carrying the claim)
+- Codex evaluator overall finding COD-OVERALL-ITER3-001 (provenance — session 1b26cf20 guardrails Ideation evaluation)
+- See also `features/guardrails/backlogs/hook-event-count-31-vs-29-docs-sync.md` (backlog form of same item)

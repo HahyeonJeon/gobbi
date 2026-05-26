@@ -1,13 +1,17 @@
 ---
+name: claude-code-hooks-12-lifecycle-events
+description: Claude Code now has 12+ hook lifecycle events; PostToolUse + "Task" matcher is the shell-command-compatible path for subagent telemetry; SubagentStop is SDK-only.
+type: references
 scope: feature
 feature: guardrails
-title: Claude Code 12+ hook lifecycle events including SubagentStop
-source: https://claudefa.st/blog/tools/hooks/hooks-guide
-type: blog
-accessed: 2026-05-23
+status: active
+created: 2026-05-23
 session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hook, lifecycle, subagent-stop, subagent-start]
-related: [claude-code-posttooluse-hook-schema, claude-code-agent-sdk-task-output]
+title: Claude Code 12+ hook lifecycle events including SubagentStop
+source: https://claudefa.st/blog/tools/hooks/hooks-guide
+accessed: 2026-05-23
+ref_type: blog
 ---
 
 # Claude Code lifecycle events for hooks

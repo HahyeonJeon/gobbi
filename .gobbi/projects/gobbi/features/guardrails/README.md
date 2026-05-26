@@ -1,11 +1,15 @@
 ---
+name: guardrails
+description: The 13 Iron Laws plus the mistake-capture-and-learn loop that keep agents in scope, verifying claims, and not repeating known traps.
+type: features
 scope: feature
 feature: guardrails
-project: gobbi
 status: active
-value_proposition: "The 13 Iron Laws plus the mistake-capture-and-learn loop that keep agents in scope, verifying claims, and not repeating known traps."
 created: 2026-05-26
-last_updated: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [iron-laws, mistake-capture, behavioral-floor]
+value_proposition: "The 13 Iron Laws plus the mistake-capture-and-learn loop that keep agents in scope, verifying claims, and not repeating known traps."
+subsystems: [principles, mistake]
 ---
 
 # Feature: Guardrails

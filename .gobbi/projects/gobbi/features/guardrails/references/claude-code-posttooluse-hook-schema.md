@@ -1,13 +1,17 @@
 ---
+name: claude-code-posttooluse-hook-schema
+description: PostToolUse and PostToolUseFailure hook official input schema; transcript_path is always provided and gives access to the full subagent toolUseResult payload.
+type: references
 scope: feature
 feature: guardrails
-title: Claude Code PostToolUse + PostToolUseFailure hook — official input schema + empirical Task tool payload
-source: https://code.claude.com/docs/en/hooks
-type: docs
-accessed: 2026-05-23
+status: active
+created: 2026-05-23
 session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hook, posttooluse, posttooluse-failure, agent-tool, schema, telemetry]
-related: [claude-code-agent-sdk-task-output]
+title: Claude Code PostToolUse + PostToolUseFailure hook — official input schema + empirical Task tool payload
+source: https://code.claude.com/docs/en/hooks
+accessed: 2026-05-23
+ref_type: docs
 ---
 
 # Claude Code PostToolUse + PostToolUseFailure hooks — official schema

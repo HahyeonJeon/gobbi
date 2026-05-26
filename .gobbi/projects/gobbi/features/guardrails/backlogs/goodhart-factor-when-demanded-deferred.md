@@ -1,43 +1,46 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: deferred
+name: goodhart-factor-when-demanded-deferred
+description: Deferred risk — agents[] population metric may become a gaming target if demanded as a KPI; quality gates are a future extension.
+type: backlogs
 scope: feature
 feature: guardrails
-finding-id: iter1-R3
-type: assumption_risk
-domain: process
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [agents-array, goodhart-law, quality-gate, deferred]
+priority: low
 disposition: deferred
-confidence: 50
-severity: Medium
-supersedes: null
-superseded_by: null
+project-scope: false
+shipped_in: null
 ---
 
 # Goodhart risk: agents[] population metric becomes target when demanded
 
 ## Context
 
-iter1 Claude Risk finding R3: if the project starts treating `agents[]` population rate as a metric, teams may game it by providing trivial or near-empty entries. The design does not add any gate that enforces quality of the populated fields — it only enforces presence.
+Risk identified during guardrails Ideation: if the project starts treating `agents[]` population rate as a metric, teams may game it by providing trivial or near-empty entries. The design does not add any gate that enforces quality of the populated fields — it only enforces presence.
 
-## Decision
+## Why deferred
 
-Deferred from T3 Ideation scope. The hook + reconstructor satisfy the literal ask (populate `agents[]`). Field-quality gates are a future extension.
+Deferred from the hook + reconstructor Ideation scope. The hook + reconstructor satisfy the literal ask (populate `agents[]`). Field-quality gates are a future extension.
 
-## Rationale
+The hook + reconstructor session's success criterion was "≥ 90% population (12 fields × N entries)" — this is a presence threshold, not a quality threshold. Quality gates (e.g., non-null `step/phase/iter`) are downstream of field presence; they require a schema validator which was itself deferred as a separate work item.
 
-T3's success criterion is "≥ 90% population (12 fields × N entries)" — this is a presence threshold, not a quality threshold. Quality gates (e.g., non-null `step/phase/iter`) are downstream of field presence; they require a schema validator which is closer to T2's territory (deferred entirely).
+## When to pick up
 
-## Alternatives considered
+When the project decides to enforce `agents[]` field quality rather than mere presence — for example, when a schema validator for session.json is added.
 
-- Add a schema validator now: out of T3 scope.
-- Accept the risk: chosen. The presence gate is already useful and the Goodhart failure mode requires deliberate gaming.
+## Suggested approach
 
-## Consequences
+- Add a schema validator gate that checks non-null values on critical `agents[]` fields (`step`, `phase`, `iter`).
+- Accept the risk for now: the presence gate is already useful and the Goodhart failure mode requires deliberate gaming.
+- A future session adding `agents[]` quality validation should reference this item as the motivating concern.
 
-A future session adding `agents[]` quality validation should reference this finding as the motivating concern.
+## Originating session
+
+`.gobbi/projects/gobbi/sessions/` — originated in session 1b26cf20 guardrails Ideation.
 
 ## Related
 
-- `evaluation/iter1/claude/risk.md` R3
-- T2 deferred: `staging/backlogs/project/item-1-2-skill-loading-discipline.md`
+- Guardrails Ideation evaluation risk finding (iter1 Claude Risk R3 — evaluator finding provenance)
+- Skill-loading discipline backlog (the schema validator work that was itself deferred)

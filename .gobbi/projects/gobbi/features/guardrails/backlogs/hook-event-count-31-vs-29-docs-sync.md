@@ -1,46 +1,47 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: deferred
+name: hook-event-count-31-vs-29-docs-sync
+description: Deferred docs-sync — correct the "31 hook events" claim to "29" in any surviving references and planning artifacts.
+type: backlogs
 scope: feature
 feature: guardrails
-finding-id: COD-OVERALL-ITER3-001
-type: general
-domain: docs-sync
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hooks, docs-sync, event-count, deferred]
+priority: low
 disposition: open
-confidence: 100
-severity: Medium
-supersedes: null
-superseded_by: null
+project-scope: false
+shipped_in: null
 ---
 
 # Hook event count claim (31) contradicts captured evidence (29)
 
 ## Context
 
-`draft-iter3.md` and the staged reference `claude-code-posttooluse-hook-schema.md` claim the official hooks page lists 31 hook events. The staged reference itself enumerates 29 event names (lines 45-73). The current official page visible lifecycle list also shows 29 events. The Codex evaluator independently fetched the page and confirmed 29.
+The session planning artifact for the hook + reconstructor task, and the reference file `features/guardrails/references/claude-code-posttooluse-hook-schema.md`, claim the official hooks page lists 31 hook events. That reference file itself enumerates 29 event names. The current official page visible lifecycle list also shows 29 events. A Codex evaluator independently fetched the page and confirmed 29.
 
 The `PostToolUseFailure` event itself is verified by both Claude and Codex evaluators — this is a supporting-prose defect, not an operational blocker.
 
-## Decision
+## Why deferred
 
-Accept the discrepancy as a non-blocking docs-sync finding at Ideation exit. Correct the "31" claim to "29" when editing `draft-iter3.md`'s inline sections (T3-E-5, D-3-3, F-Fix-B) and the staged reference file before or during Execution.
+Accepted as a non-blocking docs-sync finding at Ideation exit. The load-bearing claim — that `PostToolUseFailure` is a supported shell-command hook event — is independently verified. The count is support prose. Correcting it requires a 2-3 word change in multiple locations and was not worth blocking Planning.
 
-## Rationale
+## When to pick up
 
-The load-bearing claim — that `PostToolUseFailure` is a supported shell-command hook event — is independently verified. The count is support prose. Correcting it requires a 2-3 word change in multiple locations. Not worth blocking Planning.
+When authoring or editing `.claude/settings.json` hook registration for PostToolUseFailure, or during any sweep of the guardrails references.
 
-## Alternatives considered
+## Suggested approach
 
-Fix in Planning: acceptable. Fix in Execution (alongside hook authoring): also acceptable.
+- In `features/guardrails/references/claude-code-posttooluse-hook-schema.md`: if the header claims "31 events", update to "29".
+- Verify no other guardrails docs repeat the "31" claim.
+- After update: `grep -rn '"31 hook' features/guardrails/` returns 0 matches.
 
-## Consequences
+## Originating session
 
-When the executor authors `.claude/settings.json`, update T3-E-5 / D-3-3 / F-Fix-B references from "31" to "29". Also update `staging/references/claude-code-posttooluse-hook-schema.md` header if it repeats the count.
+`.gobbi/projects/gobbi/sessions/` — originated in session 1b26cf20 guardrails Ideation evaluation (Codex overall finding COD-OVERALL-ITER3-001).
 
 ## Related
 
-- `evaluation/iter3/codex/overall.md` COD-OVERALL-ITER3-001
-- `evaluation/iter3/codex/consistency.md` COD-CONS-ITER3-001
-- `evaluation/iter3/codex/aesthetics.md` COD-AESTH-ITER3-001
-- `staging/references/claude-code-posttooluse-hook-schema.md`
+- `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the reference carrying the "31" claim)
+- Codex evaluator overall finding COD-OVERALL-ITER3-001 (provenance)
+- See also `features/guardrails/checklists/hook-event-count-31-vs-29-docs-sync.md` (checklist form of same item)

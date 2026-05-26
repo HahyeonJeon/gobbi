@@ -1,22 +1,20 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: open
+name: cross-layer-drift-gate
+description: Implementation checklist — add a cross-layer consistency gate verifying hook script, settings.json, skill docs, and session schema stay synchronized.
+type: checklists
 scope: feature
 feature: guardrails
-finding-id: COD-RISK-004
-type: checklist_gap
-domain: docs-sync
-disposition: open
-confidence: 50
-severity: Medium
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hooks, settings-json, drift-gate, cross-layer, checklist]
 ---
 
 # Cross-layer drift gate — hooks / settings / skills / session metadata need a single explicit gate
 
 ## Context
 
-iter2/iter3 Codex Risk finding COD-RISK-004: `draft-iter3.md:437` requires whole-file scans of touched skill files after edits (per `mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md`). However, there is no single explicit cross-layer gate that checks alignment across: `.claude/hooks/post-tool-use-agents.sh`, `.claude/settings.json` (hook registration), `.claude/skills/orchestration/SKILL.md` (row 5.5 description), `.claude/skills/delegation/SKILL.md` (structured-header convention), and `session.template.json` (agents[] schema). These four surfaces must stay synchronized; currently each is verified independently.
+Codex evaluator Risk finding COD-RISK-004 (from guardrails Ideation evaluation): the guardrails design requires whole-file scans of touched skill files after edits (per `mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md`). However, there is no single explicit cross-layer gate that checks alignment across: `.claude/hooks/post-tool-use-agents.sh`, `.claude/settings.json` (hook registration), `.claude/skills/orchestration/SKILL.md` (worktreePath row description), `.claude/skills/delegation/SKILL.md` (structured-header convention), and `session.template.json` (agents[] schema). These four surfaces must stay synchronized; currently each is verified independently.
 
 ## Checklist item for Planning / Execution
 
@@ -33,6 +31,5 @@ A persistent automated drift detector (e.g., a `gobbi doctor` rule that checks h
 
 ## Related
 
-- `evaluation/iter2/codex/risk.md` COD-RISK-004
-- `evaluation/iter3/codex/risk.md` COD-RISK-004
-- `rawdata/draft-iter3.md:437` (cross-cutting validation note)
+- Codex evaluator risk finding COD-RISK-004 (from session 1b26cf20 guardrails Ideation evaluation — provenance)
+- `mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md` (the mistake this gate enforces)
