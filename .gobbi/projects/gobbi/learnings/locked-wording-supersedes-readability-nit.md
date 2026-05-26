@@ -1,5 +1,5 @@
 ---
-name: f-aes-01-locked-wording-supersedes-readability-nit
+name: locked-wording-supersedes-readability-nit
 description: User-locked wording supersedes evaluator readability nits — when a decision is explicitly locked, aesthetics findings on that wording are non-actionable.
 type: learnings
 scope: project

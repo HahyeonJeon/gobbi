@@ -67,7 +67,7 @@ Full workflow across two sub-sessions (2026-05-24 initial, 2026-05-25 resume aft
 
 - `learnings/dual-system-divergence-catches-severity-underrating.md`
 - `learnings/design-doc-cross-checking-authoritative-source-not-sibling-skill.md`
-- `learnings/f-aes-01-locked-wording-supersedes-readability-nit.md`
+- `learnings/locked-wording-supersedes-readability-nit.md`
 - `learnings/dual-system-cross-mirror-drift-detection.md`
 - `learnings/sole-exception-phrasing-normalization.md`
 
