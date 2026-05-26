@@ -1,6 +1,6 @@
 ---
 name: memory-system-redesign
-description: Design-of-record for the gobbi memory-system redesign — 7 value-features, 13 per-type specs, naming and frontmatter standards, Principle 13, and the migration plan.
+description: Design-of-record for the gobbi memory-system redesign — 7 value-features, 13 per-type specs, naming and frontmatter standards, Principle 13, and the migration plan. SHIPPED 2026-05-26 — all 6 waves complete, 42 commits.
 type: design
 scope: project
 feature: project-memory
@@ -16,6 +16,8 @@ related:
 ---
 
 # Memory-System Redesign — Design-of-Record
+
+> **STATUS (2026-05-26): COMPLETE.** All 6 waves (W0-core + W0-rest + W1-W5) shipped. 42 commits on branch `chore/session-2026-05-25-a10c82d6`. Resume anchor `backlogs/memory-redesign-remaining-waves.md` closed. No pending migration work remains.
 
 Full design artifact: `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/ideation/artifacts/memory-system-redesign-design.md` (iter2 PASS, manager-verified 2026-05-25). This file is the durable pointer and summary — it does not duplicate the 480-line design doc.
 
