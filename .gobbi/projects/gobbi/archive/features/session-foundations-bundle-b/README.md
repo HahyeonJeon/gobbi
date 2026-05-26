@@ -4,6 +4,8 @@ project: gobbi
 status: shipped
 created: 2026-05-24
 last_updated: 2026-05-24
+archived_at: 2026-05-26
+archive_reason: retired
 ---
 
 # Session Foundations — Bundle B

@@ -1,3 +1,10 @@
+---
+feature: session-foundations-bundle-c
+status: shipped
+archived_at: 2026-05-26
+archive_reason: retired
+---
+
 # session-foundations-bundle-c
 
 Feature covering the Bundle C session-foundations improvements: gobbi-mistake-promote defect eradication, gobbi-hook-authoring skill, session-lifecycle design doc, M2 CCSI wording sweep, and orchestration row reorder.

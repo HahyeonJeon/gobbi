@@ -6,6 +6,8 @@ first-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 last-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 pr: 265
 commit: 159eb21
+archived_at: 2026-05-26
+archive_reason: retired
 ---
 
 # Feature: Env-Var Audit + SessionStart Hook Registration

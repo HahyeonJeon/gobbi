@@ -8,6 +8,8 @@ pr: 266
 branch: feat/266-orch-workflow-improvements
 head-commit: b9970dc
 issue: 266
+archived_at: 2026-05-26
+archive_reason: retired
 ---
 
 # Feature: Gobbi Orchestration Workflow Improvements
