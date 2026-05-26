@@ -1,22 +1,16 @@
 ---
-slug: constraints-body-block-kept-per-h2-lock
-title: "Constraints body block vs ## Constraints H2 — keep body block per locked 8-H2 Idea contract"
-domain: docs-sync
-type: design_flaw
-disposition: addressed
-mistake-candidate: false
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: planning
-created: 2026-05-23
-status: active
-supersedes: null
-date: 2026-05-23
+name: constraints-body-block-kept-per-h2-lock
+description: Keep the Constraints body block in the codex skill — the 8-H2 Idea Design A contract takes precedence over the H2-per-section convention used by sibling skills.
+type: decisions
 scope: feature
 feature: evaluation
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [codex, constraints, h2-count, codex-skill]
+supersedes: null
 superseded_by: null
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/decisions/concern-5-constraints-body-block-vs-h2.md
-promoted-at: 2026-05-23T14:00:00Z
+decision_status: accepted
 ---
 
 # Constraints body block vs ## Constraints H2 convention
@@ -27,7 +21,7 @@ Sampled existing project skills use `## Constraints` as H2. The codex stub uses 
 
 ## Resolution
 
-**Keep the body block per locked Idea Design A.** The 8-H2 count contract is locked at `idea.md:75-84` (`grep -c "^## " SKILL.md` MUST return 8).
+**Keep the body block per locked Idea Design A.** The codex skill's Idea Design A locked exactly 8 H2 sections (`grep -c "^## " SKILL.md` MUST return 8), so `## Constraints` as a 9th H2 would violate that contract.
 
 **Additional fix:** the codex stub's Constraints block annotation cites `_claude/SKILL.md` as the convention source — but `.agents/skills/_claude/` and `.claude/skills/claude/` BOTH DO NOT EXIST. Task 06 drops the `_claude/SKILL.md` reference and replaces with "body block per locked Idea Design A; H2 count contract."
 
@@ -41,4 +35,4 @@ Sampled existing project skills use `## Constraints` as H2. The codex stub uses 
 
 ## Action
 
-Adopted in Planning draft-iter1.md Task 06 brief: drop `_claude/SKILL.md` reference; keep body block. No User Challenge.
+Adopted in the codex-skill Task 06 brief: drop `_claude/SKILL.md` reference; keep body block. No User Challenge.

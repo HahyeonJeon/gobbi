@@ -1,29 +1,23 @@
 ---
-slug: coverage-ownership-matrix-row-text
-title: "Coverage Ownership Matrix new row — exact cell text (RESOLVED — user selected Draft A)"
-domain: docs-sync
-type: design_flaw
-disposition: addressed
-mistake-candidate: false
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: planning
-created: 2026-05-23
-status: resolved
-supersedes: null
-date: 2026-05-23
+name: coverage-ownership-matrix-row-text
+description: Coverage Ownership Matrix new row exact cell text — user selected Draft A (full) during Planning to cover memorization staging shape and naming.
+type: decisions
 scope: feature
 feature: evaluation
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [coverage-ownership-matrix, memorization, evaluation, staging]
+supersedes: null
 superseded_by: null
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/decisions/concern-3-coverage-ownership-cell-text.md
-promoted-at: 2026-05-23T14:00:00Z
+decision_status: accepted
 ---
 
 # Coverage Ownership Matrix exact cell text
 
 ## Question
 
-Idea Decision E (`idea.md:294-296`) explicitly defers the exact wording of the new row's "Owner perspectives" and "What's verified" cell text to Planning DISCUSSION.
+Idea Decision E explicitly defers the exact wording of the new row's "Owner perspectives" and "What's verified" cell text to Planning DISCUSSION.
 
 ## Resolution (RESOLVED — user selected Draft A)
 
@@ -50,4 +44,4 @@ User selected **Draft A** (full) at Planning Loop iter 2 entry. Manager carries 
 
 ## User-selection note
 
-User explicitly chose Draft A in iter2 REVISE re-entry. Selection captured in `draft-iter2.md` Decision Log row P3.
+User explicitly chose Draft A when re-entering the Planning loop for a second iteration after a REVISE verdict.

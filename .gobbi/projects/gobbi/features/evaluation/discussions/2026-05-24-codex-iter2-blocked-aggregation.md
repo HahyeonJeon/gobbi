@@ -1,11 +1,13 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: planning
+name: codex-iter2-blocked-aggregation
+description: Codex Planning evaluator false-passed due to relative paths resolving to a prior session directory — re-dispatched with absolute paths and marker verification.
+type: discussions
 scope: feature
 feature: evaluation
-topic: Codex iter2 blocked — wrapper relative-path failure; re-dispatch with strict brief
-outcome: Re-dispatched with absolute paths + marker verification; Codex iter2 PASS produced on retry
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [codex, evaluation, relative-paths, re-dispatch]
 ---
 
 # Codex iter2 evaluation blocked — re-dispatched with strict brief
@@ -31,9 +33,4 @@ Re-dispatch with absolute paths + marker verification. Codex iter2 PASS required
 
 ## Implication
 
-The retry produced the correct Codex iter2 PASS. The false-PASS incident is staged as a mistake-candidate for Wrap-up promotion (see `planning/staging/decisions/codex-wrapper-relative-path-wrong-session-write.md`).
-
-## Related
-
-- planning/staging/decisions/codex-wrapper-relative-path-wrong-session-write.md
-- planning/evaluation/iter2/codex/ (correct output from retry)
+The retry produced the correct Codex Planning iter2 PASS. The false-PASS incident was promoted as a mistake to project memory.

@@ -13,10 +13,8 @@ shipped_in: memory-redesign W3-T3
 
 # Bundle B re-home into `evaluation`
 
-**Task:** memory-redesign W3-T3 — re-home `features/session-foundations-bundle-b/` cluster md into the 7 capability value-features.
-
 ## Summary
-Bundle B was a work-sprint, not a value-feature. Its durable artifacts (iter2/iter3 evaluation-result and Codex-eval-dispatch discussions) were re-homed into `evaluation` by content (design §1.3 row 3 + §8 LOW-16 routing heuristic). Files moved via `git mv` (history-preserving); `feature:` frontmatter restamped to `evaluation` on each moved file. Bodies unchanged.
+Bundle B (`features/session-foundations-bundle-b`) was a work-sprint, not a value-feature. Its durable evaluation-result and Codex-eval-dispatch discussion artifacts were re-homed into `evaluation` by content per the memory-system redesign routing heuristic. Files moved via `git mv` (history-preserving); `feature:` frontmatter restamped to `evaluation` on each moved file. Bodies unchanged.
 
 ## What changed
 - Bundle B discussion files about evaluation moved into `features/evaluation/discussions/`.
@@ -25,10 +23,6 @@ Bundle B was a work-sprint, not a value-feature. Its durable artifacts (iter2/it
 ## Verification
 - `git status --short` shows the moves as renames (R), not delete+add.
 - Source files removed from `features/session-foundations-bundle-b/`.
-- Full per-cluster routing logged in `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/execution/w3/staging/w3t3-cluster-manifest.md`.
 
 ## Deferred
-- Bundle B `README.md` retention/supersession handled by W3-T5 (not this task).
-
-## Related
-- Design: `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/ideation/artifacts/memory-system-redesign-design.md` §1.3, §8.
+- Bundle B `README.md` retention/supersession handled by the bundle-rehome cleanup task (not this task).

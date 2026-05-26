@@ -1,16 +1,19 @@
 ---
+name: evaluation
+description: Dual-system review (Claude + Codex) across 7 perspectives, gating each deliverable before acceptance.
+type: features
 scope: feature
 feature: evaluation
-project: gobbi
 status: active
-value_proposition: "Dual-system review (Claude + Codex) across 7 perspectives, gating each deliverable before acceptance."
 created: 2026-05-26
-last_updated: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [evaluation, codex, dual-system, review]
+value_proposition: "Dual-system review (Claude + Codex) across 7 perspectives, gating each deliverable before acceptance."
 ---
 
 # Feature: Evaluation
 
-Dual-system review (Claude + Codex) across 7 perspectives, gating each deliverable before acceptance. This is value-feature #4 of the 7 capability features (design §1.2, RATIFY-1 / L1).
+Dual-system review (Claude + Codex) across 7 perspectives, gating each deliverable before acceptance. This is value-feature #4 of the 7 capability features defined in the memory-system redesign.
 
 ## Overview
 
@@ -39,4 +42,4 @@ Dual-system review (Claude + Codex) across 7 perspectives, gating each deliverab
 
 ## Related
 
-- Memory-system redesign design doc §1.2 (7-feature table), §1.3 (sprint → value-feature routing)
+- Memory-system redesign design doc — 7-feature table and sprint → value-feature routing heuristics

@@ -1,11 +1,13 @@
 ---
-date: 2026-05-26
-session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+name: bundle-a-rehome
+description: Bundle A (gobbi-orchestration-workflow-improvements) evaluation artifacts re-homed into the evaluation feature during the memory-system redesign.
+type: changelogs
 scope: feature
 feature: evaluation
-task: memory-redesign W3-T2
 status: shipped
-plan: null
+created: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [memory-redesign, re-home, bundle-a]
 ---
 
 # Bundle A re-homed — evaluation's share

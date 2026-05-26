@@ -1,25 +1,16 @@
 ---
-slug: codex-skill-assistant-wrapper-pattern-for-dual-system-eval
-title: "Codex skill MUST document the assistant-wrapper pattern as the recommended dual-system evaluator spawn topology"
-domain: docs-sync
-type: design_flaw
-disposition: addressed
-mistake-candidate: false
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: planning
-created: 2026-05-23
-status: active
-supersedes: null
-superseded_by: null
-date: 2026-05-23
+name: codex-skill-assistant-wrapper-pattern-for-dual-system-eval
+description: Codex skill must document the assistant-wrapper pattern as the recommended dual-system evaluator spawn topology.
+type: decisions
 scope: feature
 feature: evaluation
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/decisions/codex-skill-assistant-wrapper-pattern-for-dual-system-eval.md
-promoted-at: 2026-05-23T14:00:00Z
-related:
-  - sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/rawdata/draft-iter2.md
-  - sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/artifacts/idea.md
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [codex, dual-system, evaluation, topology]
+supersedes: null
+superseded_by: null
+decision_status: accepted
 ---
 
 # Codex skill — assistant-wrapper pattern for dual-system evaluation
@@ -28,13 +19,13 @@ related:
 
 Three observed failure modes when running codex from the manager session:
 
-1. **`codex:codex-rescue` plugin agent fire-and-forget** (Ideation iter3, Planning iter1 attempt 1): plugin agent forwards task to companion runtime, returns immediately with placeholder text. Files never written.
-2. **`codex exec` sandbox project-root detection** (Planning iter1 attempt 2): codex auto-detected wrong project root for absolute session paths, rejected writes with "writing outside of the project". Required `--cd /playinganalytics/git/gobbi --add-dir <session-path>` flags.
-3. **`codex exec` background Bash + notification timing** (Planning iter2): codex completed successfully (exit 0, all 8 files written), but the Claude Code harness delivered the completion notification only embedded in the manager's next tool call result.
+1. **`codex:codex-rescue` plugin agent fire-and-forget**: plugin agent forwards task to companion runtime, returns immediately with placeholder text. Files never written.
+2. **`codex exec` sandbox project-root detection**: codex auto-detected wrong project root for absolute session paths, rejected writes with "writing outside of the project". Required `--cd /playinganalytics/git/gobbi --add-dir <session-path>` flags.
+3. **`codex exec` background Bash + notification timing**: codex completed successfully (exit 0, all 8 files written), but the Claude Code harness delivered the completion notification only embedded in the manager's next tool call result.
 
 ## Decision
 
-The codex skill (Task 06 content) MUST document the **assistant-wrapper pattern** as the recommended topology for dual-system parallel evaluation:
+The codex skill MUST document the **assistant-wrapper pattern** as the recommended topology for dual-system parallel evaluation:
 
 1. Manager spawns 2 `assistant` subagents in parallel via `Agent(subagent_type="assistant", run_in_background: true, ...)`, one Claude-side and one Codex-side.
 2. The Codex-side assistant's prompt instructs it to run `codex exec --sandbox workspace-write --cd <main-tree> --add-dir <session-path>` via its own internal Bash tool, **foreground** (no `run_in_background` inside the subagent).
@@ -52,4 +43,4 @@ The codex skill (Task 06 content) MUST document the **assistant-wrapper pattern*
 
 ## Shipped in
 
-Task 06 (T06) Execution, commit `b9970dc` — codex/SKILL.md § Use cases § Dual-system evaluator spawn.
+Commit `b9970dc` — `codex/SKILL.md § Use cases § Dual-system evaluator spawn`.

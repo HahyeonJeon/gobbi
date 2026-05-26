@@ -1,14 +1,13 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+name: codex-skill-structure
+description: Design for the codex skill structure — single SKILL.md with two symlinks and 8 locked H2 sections.
+type: design
 scope: feature
 feature: evaluation
-loop: ideation
-iter: 3
-topic: codex-skill-structure
-status: final
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/design/item-a-codex-skill-structure.md
-promoted-at: 2026-05-23T14:00:00Z
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [codex, skill-structure, symlinks, h2-count]
 ---
 
 # Design A — `codex` Skill Structure
@@ -25,9 +24,7 @@ promoted-at: 2026-05-23T14:00:00Z
 7. Cost + sandbox budget awareness
 8. Anti-patterns
 
-**Rationale**: `codex exec` via Bash is the universal lowest-common-denominator because subagents (leader/executor/evaluator/assistant) lack the Agent tool and cannot spawn the `codex:codex-rescue` plugin agent (empirically verified via `.claude/agents/{role}.md` tool lists). The plugin agent itself reduces to `codex exec` via Bash (per `agents/codex-rescue.md:12`). Two symlinks (not one) ensure codex itself can load the skill (`.agents/skills/codex`) — a codex skill codex cannot load is a contradiction.
-
-**Anchored insights**: I1, I2, I3, I4, I5, I13, I14, E1, E2, E3, E4, E5 + iter1 user redirect § Decision 2.
+**Rationale**: `codex exec` via Bash is the universal lowest-common-denominator because subagents (leader/executor/evaluator/assistant) lack the Agent tool and cannot spawn the `codex:codex-rescue` plugin agent (empirically verified via `.claude/agents/{role}.md` tool lists). The plugin agent itself reduces to `codex exec` via Bash (per `agents/codex-rescue.md`). Two symlinks (not one) ensure codex itself can load the skill (`.agents/skills/codex`) — a codex skill codex cannot load is a contradiction.
 
 **Validation**: `grep -c "^## " .gobbi/projects/gobbi/skills/codex/SKILL.md` returns 8; `ls -la .claude/skills/codex/SKILL.md` shows file symlink; `ls -la .agents/skills/codex` shows directory symlink; `ls /playinganalytics/git/gobbi/.agents/skills/ | wc -l` returns 17 post-ship.
 

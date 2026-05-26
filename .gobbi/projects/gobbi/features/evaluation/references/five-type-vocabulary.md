@@ -1,24 +1,22 @@
 ---
-slug: five-type-vocabulary
-title: "5-Type finding vocabulary — canonical source from evaluation/SKILL.md"
-domain: process
-type: general
-disposition: open
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: planning
-created: 2026-05-23
-status: active
+name: five-type-vocabulary
+description: The 5-type finding vocabulary used in evaluation staging — verbatim capture from evaluation/SKILL.md.
+type: references
 scope: feature
 feature: evaluation
-source_path: /playinganalytics/git/gobbi/.agents/skills/evaluation/SKILL.md
-source_lines: "344-352"
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/references/five-type-vocabulary.md
-promoted-at: 2026-05-23T14:00:00Z
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [evaluation, finding-types, vocabulary, staging]
+title: "5-Type Finding Vocabulary"
+source: /playinganalytics/git/gobbi/.agents/skills/evaluation/SKILL.md
+accessed: 2026-05-23
+ref_type: internal
 ---
 
 # 5-Type Finding Vocabulary (canonical source: evaluation/SKILL.md:344-352)
 
-This reference captures the verbatim 5-Type vocabulary that multiple Execution tasks must use when authoring skill content. Cited by Tasks 04, 05, 06, and 07.
+This reference captures the verbatim 5-Type vocabulary that Execution tasks must use when authoring evaluation skill content.
 
 ## The 5 Types
 

@@ -15,7 +15,7 @@ decision_status: accepted
 
 # Codex skill invocation priority
 
-Split from the iter1 user-redirects bundle (Decision 2). Full session context — including the Wrap-up Step 2.5 escalation decision (Decision 1) — is preserved in `archive/decisions/2026-05-23-iter1-user-redirects.md`.
+This decision was split out from a bundled user-redirect record. Full session context is preserved in `archive/decisions/2026-05-23-iter1-user-redirects.md`.
 
 ## Question
 

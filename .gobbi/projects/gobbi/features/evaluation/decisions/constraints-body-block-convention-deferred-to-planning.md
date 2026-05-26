@@ -1,19 +1,16 @@
 ---
-date: 2026-05-23
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-status: deferred
+name: constraints-body-block-convention-deferred-to-planning
+description: Constraints body block vs H2 convention in the codex skill — deferred from Ideation to Planning DISCUSSION.
+type: decisions
 scope: feature
 feature: evaluation
+status: deferred
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [codex, constraints, h2-count, codex-skill]
 supersedes: null
 superseded_by: null
-finding-id: OVERALL-ITER3-CONSTRAINTS-BODY-BLOCK
-finding-type: general
-domain: docs-sync
-severity: Low
-disposition: deferred
-confidence: 100
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/preparation/staging/decisions/constraints-body-block-convention-deferred-to-planning.md
-promoted-at: 2026-05-23T14:00:00Z
+decision_status: accepted
 ---
 
 # Deferred: `Constraints` body block vs `## Constraints` H2 convention in codex skill stub
@@ -30,8 +27,6 @@ Codex iter3 evaluator (finding OVERALL-ITER3-CONSTRAINTS-BODY-BLOCK) noted that 
 
 Planning DISCUSSION resolution (Concern 5): maintained as body block per locked spec. The user did not override the 8-H2 contract at Planning DISCUSSION. Decision stands — `**Constraints**` body block is the codex-skill-specific pattern, and future normalization across sibling skills is a separate session scope.
 
-## Related
+## Source
 
-- `ideation/staging/design/item-a-codex-skill-structure.md:15-23` — locked 8-section spec
-- `preparation/evaluation/iter3/codex/overall.md` — finding source
-- `planning/staging/decisions/concern-5-constraints-body-block-vs-h2.md` — Planning DISCUSSION resolution
+Session 2026-05-23-7ea62d36. The locked 8-H2 spec and the Codex evaluator finding (OVERALL-ITER3-CONSTRAINTS-BODY-BLOCK) that surfaced this question are in the session's Ideation and Preparation evaluation artifacts. The Planning DISCUSSION resolution is recorded in session staging decisions.

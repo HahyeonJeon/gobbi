@@ -1,17 +1,16 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+name: codex-invocation-priority-redirect
+description: User confirmed codex exec via Bash as the universal primary invocation pattern for all roles; manager empirical investigation revealed subagents cannot spawn plugin agents.
+type: discussions
 scope: feature
 feature: evaluation
-loop: ideation
-iter: 3
-topic: codex-invocation-priority-redirect
-status: final
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/discussions/codex-invocation-priority-redirect.md
-promoted-at: 2026-05-23T14:00:00Z
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [codex, invocation, subagents, plugin-agents]
 ---
 
-# Discussion: Codex Invocation Priority (Post-WORK iter1 Redirect)
+# Discussion: Codex Invocation Priority
 
 ## What was asked
 
@@ -30,8 +29,4 @@ Q: "In Design A, which codex invocation pattern should be the primary one — pl
 
 ## Decision and consequence
 
-Decisions Locked row 14: `codex exec` via Bash is the UNIVERSAL primary pattern (manager AND subagents). `codex:codex-rescue` is manager-only secondary. `/codex:adversarial-review` is user-only tertiary. Design A section 2 reordered accordingly; new subsection "Why subagents must use `codex exec`" added with empirical tool-surface witness.
-
-## Source
-
-iter1-user-redirects.md § Decision 2 + manager empirical investigation post-iter1
+`codex exec` via Bash is the UNIVERSAL primary pattern (manager AND subagents). `codex:codex-rescue` is manager-only secondary. `/codex:adversarial-review` is user-only tertiary. The codex skill Design A section 2 was reordered accordingly; a new subsection "Why subagents must use `codex exec`" was added with empirical tool-surface witness.
