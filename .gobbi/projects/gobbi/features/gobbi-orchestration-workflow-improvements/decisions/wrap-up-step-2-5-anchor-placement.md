@@ -1,5 +1,5 @@
 ---
-slug: concern-1-wrap-up-step-2-5-anchor
+slug: wrap-up-step-2-5-anchor-placement
 title: "Wrap-up Step 2.5 anchor placement — new H3 after ### WORK discipline"
 domain: docs-sync
 type: design_flaw

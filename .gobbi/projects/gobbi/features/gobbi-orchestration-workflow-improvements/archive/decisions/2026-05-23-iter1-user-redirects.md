@@ -10,6 +10,10 @@ mistake-candidate: false
 disposition: addressed
 promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/decisions/iter1-user-redirects.md
 promoted-at: 2026-05-23T14:00:00Z
+status: superseded
+superseded_by: [decisions/wrap-up-step-2-5-escalation-default.md, decisions/codex-exec-universal-invocation-pattern.md]
+archive_reason: "Bundle file (2 decisions) split to one-concept-per-file per blocklist #11; memory-redesign W2-T3."
+archived_at: 2026-05-26
 ---
 
 # Iter1 user redirects (post-WORK DONE_WITH_CONCERNS resolution)

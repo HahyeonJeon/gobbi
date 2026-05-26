@@ -1,5 +1,5 @@
 ---
-slug: concern-3-coverage-ownership-cell-text
+slug: coverage-ownership-matrix-row-text
 title: "Coverage Ownership Matrix new row — exact cell text (RESOLVED — user selected Draft A)"
 domain: docs-sync
 type: design_flaw

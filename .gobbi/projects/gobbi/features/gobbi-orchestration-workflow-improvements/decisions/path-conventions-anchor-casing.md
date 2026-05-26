@@ -1,5 +1,5 @@
 ---
-slug: concern-2-path-conventions-anchor-casing
+slug: path-conventions-anchor-casing
 title: "Memorization Path conventions → H3 promotion for stable cross-link anchor"
 domain: docs-sync
 type: design_flaw

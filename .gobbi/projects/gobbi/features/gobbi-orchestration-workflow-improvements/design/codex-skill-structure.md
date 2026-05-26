@@ -4,7 +4,7 @@ session: 7ea62d36-e826-4ce6-9e90-9e948007b068
 feature: gobbi-orchestration-workflow-improvements
 loop: ideation
 iter: 3
-topic: item-a-codex-skill-structure
+topic: codex-skill-structure
 status: final
 promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/design/item-a-codex-skill-structure.md
 promoted-at: 2026-05-23T14:00:00Z

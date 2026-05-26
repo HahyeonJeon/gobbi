@@ -4,7 +4,7 @@ session: 7ea62d36-e826-4ce6-9e90-9e948007b068
 feature: gobbi-orchestration-workflow-improvements
 loop: ideation
 iter: 3
-topic: item-c-memorization-delegation-hard-gate
+topic: memorization-delegation-hard-gate
 status: final
 promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/design/item-c-memorization-delegation-hard-gate.md
 promoted-at: 2026-05-23T14:00:00Z

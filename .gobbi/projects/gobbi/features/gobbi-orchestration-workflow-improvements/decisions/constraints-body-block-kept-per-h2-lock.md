@@ -1,5 +1,5 @@
 ---
-slug: concern-5-constraints-body-block-vs-h2
+slug: constraints-body-block-kept-per-h2-lock
 title: "Constraints body block vs ## Constraints H2 — keep body block per locked 8-H2 Idea contract"
 domain: docs-sync
 type: design_flaw
