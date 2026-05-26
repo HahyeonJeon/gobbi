@@ -142,6 +142,112 @@ For the authoritative per-type purpose / hard-boundary / scope / CRUD detail, se
 
 ---
 
+## 4. Dev-document quality standard
+
+§1-3 govern a file's *address* (naming), its *machine-readable header* (frontmatter), and its *placement* (structure). §4 governs the **prose quality of the body itself** — what a memory doc must read like to be worth keeping. A file can pass §1-3 (correct slug, valid frontmatter, right directory) and still be a bad memory doc if its body only makes sense to someone who sat in the session that wrote it. §4 is the positive bar that closes that gap.
+
+### 4.1 What a good dev-doc looks like (the positive bar)
+
+**Definition.** A dev-document is a memory doc that a **zero-context reader understands end-to-end without the originating session.** "Zero-context reader" = a future agent (or the user) opening the file cold, months later, with no access to the conversation, the working tree state, the table rows, or the task list that the author had in front of them. If understanding the doc requires reconstructing that vanished context, the doc has failed the bar — the knowledge is trapped, not preserved.
+
+Name the standard by what it *delivers*, not only by what it forbids. A good dev-doc:
+
+- **Names its subject in the first line.** The `# Title` states the concept, not a session coordinate. A reader knows what the file is about before reading the body.
+- **Carries its own context.** It states the situation it arose from in its own words — enough that the reader does not need the originating session to follow the reasoning.
+- **Is self-contained prose.** No load-bearing reference to a session-only coordinate (a table row, a task code, a checkpoint ID, an iteration number) that the reader cannot resolve. See §4.3.
+- **Obeys its type's section contract.** A decision reads like a decision (ADR shape); a mistake reads like a mistake; a learning reads like a learning. See §4.2.
+- **Does one type's job.** Type-purity (§4.1.1) — one doc, one type. A doc that is half-decision, half-journal helps neither reader.
+
+**Type-purity (4.1.1) — one doc, one type's job.** Borrowed from [Diátaxis](diataxis.fr): documentation types serve different reader needs, and mixing them in one doc serves none well. Gobbi keeps its 13 memory types (§1.2, [`memory-map.md`](memory-map.md)); this is a *prose* rule, not a re-home — each doc commits to its declared `type`'s job. A `decisions/` file states a conclusion and its rationale; it does not also narrate the session's blow-by-blow (that is a `notes/` job). A `learnings/` file teaches a transferable technique; it does not also log what shipped (that is `notes/`). When a draft tries to do two type-jobs, split it into one file per type and cross-link (§3 atomicity).
+
+**Real before/after (from this tree).** The same positive-vs-trapped distinction §1.3 applies to slugs applies to bodies:
+
+| Trapped (reader needs the vanished session) | Self-contained (zero-context reader follows it) | Why the fix works |
+|---|---|---|
+| "Per T01 row 5.5 we moved the step as discussed in iter2." | "Worktree creation moved into the Config step procedure: the worktree must exist before `session.json` stamps git fields, so the step now runs at Config-time." | Names the *what* and the *why* in the body instead of pointing at a task code + table row only the author can resolve. |
+| A `decisions/` file whose body is three paragraphs of "then we tried X, then the user said Y, then we…" | A `decisions/` file with `## Context` / `## Decision` / `## Rationale` / `## Alternatives` / `## Consequences` (ADR shape, §4.2). | The narrative belongs in `notes/`; the decision body states the conclusion + rationale a future reader needs. Reclassify the narrative to `notes/` (§4.3) — never delete it. |
+| `state.json` "retire per design §7" — an instruction whose meaning depended on a prior session's reading. | A `mistakes/` doc that states the live mechanism, its callers, and the misread, in its own words. | The reader can act on the doc without re-deriving what "retire" referred to. |
+
+### 4.2 Per-type section contracts
+
+A promoted doc obeys the same section contract its staging template (`memorization/templates/{type}.md`) already encodes. The templates govern *staging*; §4.2 promotes those section shapes to a *quality rule on the promoted doc* so the contract survives promotion:
+
+| Type | Body section contract |
+|---|---|
+| `decisions`, `design` | ADR-shaped: `## Context` → `## Decision` (or `## Approach`) → `## Rationale` → `## Alternatives considered` → `## Consequences`. State the conclusion and why the alternatives lost. |
+| `mistakes` | `## What happened` → `## Why it happens` (the mistaken assumption) → `## How to recognize` (trigger signals before repeating) → `## Corrected approach`. |
+| `learnings` | `## Insight` → `## Context` → `## Why it matters` → `## How to apply` → `## Counter-cases` (where the insight does NOT hold). |
+| `notes` | `## What happened` → `## What shipped` → `## What got stuck` → `## What shifted` → `## Next session`. The session journal — the home for narrative. |
+
+Other types (`features`, `rules`, `references`, `plans`, `reviews`, `reports`, `backlogs`, and the four feature-subdir types) follow their own template's section shape in [`memorization/templates/`](templates/). The principle is uniform: **the promoted body matches its type's template contract**, so a reader of any doc of a given type meets a predictable shape.
+
+### 4.3 Self-contained prose — never delete narrative, reclassify it
+
+**Rule.** A doc body MUST NOT carry **load-bearing** references to session-only coordinates — task codes (`T01`, `t1g`), iteration markers (`iter2`, `draft-iter1`), evaluator finding IDs (`COD-3`, `F4`), table coordinates (`row-5-5`), or checkpoint IDs — where resolving the reference is *required* to understand the doc. Provenance belongs in **frontmatter** (`session` + `created` carry it; `git log` carries the rest) plus, optionally, a single `## Source` footer line pointing at the canonical session artifact for a reader who wants full detail. The body itself stands alone.
+
+**Narrative is not a defect — mislabeling it is.** When a doc *is* a session narrative ("then we tried X, then Y broke, then the user redirected"), that content is valuable history. The fix is **never to delete it** — deleting a thing without a replacement leaves a vacuum (see [`mistakes/design-literal-retire-instruction-without-replacement.md`](../../mistakes/design-literal-retire-instruction-without-replacement.md)). The fix is to **reclassify** the narrative to `notes/` (its correct type, §4.1.1), where chronological session journals belong, and leave the evergreen type (decision/design/learning) carrying only its self-contained conclusion. Strip inline session-coordinates from the *evergreen* types only; `notes/` keeps its narrative voice.
+
+**Grep-assistable check (advisory, not a hard gate).** A scan that surfaces *candidate* session-coordinate leaks in evergreen-type bodies — review each hit, since a literal mention inside a quote or a `## Source` footer is legitimate:
+
+```bash
+grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
+  .gobbi/projects/gobbi/ \
+  --include='*.md' \
+  -l 2>/dev/null | grep -vE '/(archive|sessions|skills|agents|tmp)/'
+```
+
+### 4.4 Frontmatter conformance — the type-aware allowlist (FIX-1)
+
+§2.3 says staging-routing fields are stripped on promotion. §4.4 makes that checkable: a promoted doc carries **only** base + its type's declared extensions (§2.1, §2.2). Any leftover **staging-routing key** is a conformance leak. The strip is a **type-aware allowlist**, never a blanket grep — it must never strip a key that is legitimate for that doc's type/dir (the **safety invariant**).
+
+**Illegitimate staging-routing key-set S** — enumerated in BOTH hyphen and underscore spellings, because both spellings have appeared in real staged frontmatter and both must be caught:
+
+| Concept | Hyphen spelling | Underscore spelling |
+|---|---|---|
+| mistake routing flag | `mistake-candidate` | `mistake_candidate` |
+| evaluator finding id | `finding-id` | `finding_id` |
+| eval confidence | `confidence` | `confidence` |
+| eval severity | `severity` | `severity` |
+| surfacing evaluator | `surfaced-by` | `surfaced_by` |
+| promotion provenance (source) | `promoted-from` | `promoted_from` |
+| promotion provenance (time) | `promoted-at` | `promoted_at` |
+
+**Conditional member — `disposition`.** `disposition` is in S (a leak, must be stripped) **ONLY when the file is NOT under a `backlogs/` directory.** On `backlogs/`, `disposition: open\|deferred` is a **legitimate type extension** (§2.2 line 110) and MUST be preserved — stripping it there violates the safety invariant.
+
+**File-selection predicate P (where the conformance rule operates):**
+
+> Operate on files in `P_live`: NOT under `archive/` (frozen, §4.6), NOT under `sessions/` / `skills/` / `agents/` / `tmp/` (non-memory surfaces). For each file F:
+> - strip every key in `S \ {disposition}` (both spellings) unconditionally;
+> - strip `disposition` from F only if F is NOT under a `backlogs/` directory.
+
+**Safety invariant (locked):** never strip a key that is legitimate for that doc's type/dir. Base keys (`name` / `description` / `type` / `scope` / `feature` / `status` / `created` / `session` / `tags`) and the per-type extensions in §2.2 (`disposition` on `backlogs/`, `verdict` / `review_kind` / `subject` on `reviews/`, `priority` / `domain` on `mistakes/`, etc.) are always preserved.
+
+### 4.5 The archive-safe, underscore-aware grep-gate
+
+The mechanical conformance gate scans `P_live` for any illegitimate-key leak and lists offending files. It MUST be **archive-safe** (`-not -path '*/archive/*'` — frozen archive docs are out of scope, §4.6) and **underscore-aware** (catch both hyphen and underscore spellings of every key in S):
+
+```bash
+# Lists every live memory file carrying an illegitimate staging-routing key.
+# Archive-safe (skips frozen archive/) and underscore-aware (both spellings).
+find .gobbi/projects/gobbi -name '*.md' \
+  -not -path '*/archive/*' \
+  -not -path '*/sessions/*' \
+  -not -path '*/skills/*' \
+  -not -path '*/agents/*' \
+  -not -path '*/tmp/*' \
+  -print0 \
+| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at):' \
+  2>/dev/null
+```
+
+`disposition` is intentionally **omitted** from the gate regex above: it is legitimate on `backlogs/` and only a leak elsewhere, so a blanket `disposition`-match would false-positive on every legitimate backlog file (the safety invariant, §4.4). To check the conditional `disposition` leak separately, run the same `find` and grep for `^disposition:`, then exclude `*/backlogs/*` from the path filter. A clean gate prints nothing (zero leak files); any printed path is a doc to normalize via the type-aware allowlist (§4.4).
+
+### 4.6 Scope edge — `archive/` is excluded
+
+Frozen `archive/` docs are excluded from this standard, from any retrofit pass, and from the gate. An archived file is terminal history; it is not normalized or re-prosed. Every command and predicate in §4 carries the `archive/` exclusion (`-not -path '*/archive/*'` / "NOT under `archive/`") so a sweep never touches frozen history.
+
+---
+
 ## Cross-references
 
 - Path-and-type semantics (which directory holds what, who writes it, when, which template stamps it) → [`memory-map.md`](memory-map.md)
