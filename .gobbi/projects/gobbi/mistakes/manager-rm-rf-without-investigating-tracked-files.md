@@ -1,15 +1,17 @@
 ---
-slug: manager-rm-rf-without-investigating-tracked-files
-title: "Manager rm -rf'd worktree .gobbi/ chain without verifying tracked files — Iron Law 1 violation"
-domain: process
-severity: high
-mistake-candidate: true
-project: gobbi
-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
-loop: wrap-up
-created: 2026-05-22
+name: manager-rm-rf-without-investigating-tracked-files
+description: "Manager ran `rm -rf` on a worktree .gobbi/ chain without verifying tracked files; deleted tracked files visible only via `git status`."
+type: mistakes
+scope: project
+feature: null
 status: active
+created: 2026-05-22
+session: bac669ad-4fec-40b5-8387-51ac57bc0d3d
+tags: [process, worktree, git, iron-law-1]
+priority: high
+domain: process
 supersedes: null
+superseded_by: null
 ---
 
 # Manager rm -rf'd worktree .gobbi/ chain without investigating tracked files

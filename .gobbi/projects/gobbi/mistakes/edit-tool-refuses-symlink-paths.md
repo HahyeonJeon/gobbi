@@ -1,17 +1,16 @@
 ---
-date: 2026-05-24
+name: edit-tool-refuses-symlink-paths
+description: Edit tool refuses to write through symlink paths; always use the canonical worktree-absolute path for Edit operations on skill files.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
-feature: session-foundations-bundle-b
+tags: [process, symlinks, skills, tools]
+domain: process
 supersedes: null
 superseded_by: null
-mistake-candidate: true
-finding-id: O-001
-finding-type: general
-domain: process
-severity: Low
-confidence: 100
-disposition: addressed-by-fallback
 ---
 
 # Mistake Candidate: Edit Tool Refuses Symlink Paths — Use Canonical Path

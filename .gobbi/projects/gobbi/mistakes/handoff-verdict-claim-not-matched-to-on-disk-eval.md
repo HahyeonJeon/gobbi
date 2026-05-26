@@ -1,16 +1,16 @@
 ---
 name: handoff-verdict-claim-not-matched-to-on-disk-eval
 description: "Handoff/summary recorded a PASS verdict for a task iteration where the on-disk evaluator file shows REVISE — claim made from working memory rather than the on-disk artifact."
-metadata:
-  type: feedback
-  domain: process
-  scope: project
-  source: session-2026-05-24-45388fa9-wrapup-eval
-  created: 2026-05-25
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-25
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
+tags: [process, evaluation, iron-law-7]
+domain: process
 supersedes: null
 superseded_by: null
-related:
-  - "[[leader-iter2-verification-claim-without-evidence]]"
 ---
 
 # Handoff Verdict Claim Not Matched to On-Disk Eval

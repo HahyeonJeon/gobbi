@@ -1,10 +1,17 @@
 ---
-title: Evaluator subagents (Claude + Codex) write session EVAL artifacts to main tree instead of worktree
-priority: medium
-discovered: 2026-05-24
-session: 2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f
+name: codex-subprocess-writes-to-main-tree
+description: Both Claude and Codex evaluator subagents wrote session EVAL artifacts to the main tree instead of the worktree path.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [dual-system, worktree, evaluation, session-lifecycle, subagent-dispatch]
-related: [session-dir-placed-outside-worktree]
+priority: medium
+domain: process
+supersedes: null
+superseded_by: null
 ---
 
 # Evaluator subagents (Claude + Codex) write session EVAL artifacts to main tree instead of worktree

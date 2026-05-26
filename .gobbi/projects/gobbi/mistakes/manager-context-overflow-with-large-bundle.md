@@ -1,14 +1,16 @@
 ---
-date: 2026-05-24
+name: manager-context-overflow-with-large-bundle
+description: Bundles of ≥8 plan tasks risk manager-context overflow mid-Execution; scope against context budget at Planning time.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
-feature: session-foundations-bundle-b
-mistake-candidate: true
+tags: [process, orchestration, planning]
 domain: process
-project-scope: true
 supersedes: null
 superseded_by: null
-finding-id: WRAP-MIST-003
 ---
 
 # Bundles with ≥8 plan tasks risk manager-context overflow mid-Execution

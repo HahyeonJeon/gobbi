@@ -1,15 +1,16 @@
 ---
-date: 2026-05-23
+name: claude-evaluator-step4-only-vs-codex-whole-file-grep
+description: Claude evaluator scoped only to the changed section; missed whole-file stale cross-references that Codex caught with rg.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-23
 session: 7ea62d36-e826-4ce6-9e90-9e948007b068
-status: accepted
-feature: gobbi-orchestration-workflow-improvements
+tags: [evaluation, docs-sync, process]
+domain: process
 supersedes: null
 superseded_by: null
-mistake-candidate: true
-domain: process
-severity: medium
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/execution/T1/staging/decisions/claude-evaluator-step4-only-vs-codex-whole-file-grep.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
 # Evaluator Scope-Narrowed to Changed Section; Missed Whole-File Stale Cross-References

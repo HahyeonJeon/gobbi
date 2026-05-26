@@ -1,10 +1,17 @@
 ---
-title: Manager bootstrap placed session dir outside the worktree in worktree-pr mode
-priority: medium
-discovered: 2026-05-24
-session: 2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f
+name: session-dir-placed-outside-worktree
+description: Manager bootstrap placed the session directory at the main-tree path instead of inside the worktree in worktree-pr mode.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [session-lifecycle, worktree, bootstrap, orchestration]
-related: [codex-subprocess-writes-to-main-tree]
+priority: medium
+domain: process
+supersedes: null
+superseded_by: null
 ---
 
 # Manager bootstrap placed session dir outside the worktree in worktree-pr mode

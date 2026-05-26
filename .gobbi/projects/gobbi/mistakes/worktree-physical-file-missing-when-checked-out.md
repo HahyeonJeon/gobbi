@@ -1,13 +1,16 @@
 ---
-date: 2026-05-24
+name: worktree-physical-file-missing-when-checked-out
+description: Worktree may have files in the index but absent from the working-tree filesystem; run a pre-flight integrity check before any executor editing pass.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
-feature: session-foundations-bundle-b
-mistake-candidate: true
+tags: [process, worktree, execution]
 domain: process
 supersedes: null
 superseded_by: null
-finding-id: WRAP-MIST-002
 ---
 
 # Worktree may have files in the index but absent from the working tree filesystem

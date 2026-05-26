@@ -1,14 +1,14 @@
 ---
-date: 2026-05-24
+name: codex-wrapper-relative-path-wrong-session-write
+description: Codex wrapper used relative ellipsis paths in the prompt; Codex resolved them against the wrong session directory and produced a false PASS.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
-feature: session-foundations-bundle-b
-loop: planning
-mistake-candidate: true
+tags: [process, codex, evaluation, session-lifecycle]
 domain: process
-finding-id: codex-wrapper-relative-path-wrong-session-write
-type: general
-disposition: open
 supersedes: null
 superseded_by: null
 ---

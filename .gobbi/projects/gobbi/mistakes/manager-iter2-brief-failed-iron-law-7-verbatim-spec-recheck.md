@@ -1,20 +1,17 @@
 ---
-slug: manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck
-title: "Manager constructed iter2 revision brief from memory instead of re-reading the locked spec verbatim"
-domain: process
-severity: high
-mistake-candidate: true
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: preparation
-created: 2026-05-23
-status: active
-supersedes: null
-date: 2026-05-23
+name: manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck
+description: Manager constructed iter2 revision brief from memory instead of re-reading the locked spec verbatim; diverged from the contract.
+type: mistakes
+scope: project
 feature: null
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [process, orchestration, iron-law-7]
+priority: high
+domain: process
+supersedes: null
 superseded_by: null
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/preparation/staging/decisions/manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
 # Manager constructed iter2 revision brief from memory instead of re-reading the locked spec verbatim

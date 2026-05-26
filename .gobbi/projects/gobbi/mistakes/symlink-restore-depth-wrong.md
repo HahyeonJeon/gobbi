@@ -1,19 +1,16 @@
 ---
-date: 2026-05-24
+name: symlink-restore-depth-wrong
+description: Symlink restore recipe used wrong `../` prefix depth (2 hops) for `.claude/skills/<topic>/SKILL.md`; correct depth is 3 hops (`../../../`).
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
-feature: session-foundations-bundle-b
-loop: planning
-finding-id: symlink-restore-depth-wrong
-type: design_flaw
+tags: [process, symlinks, skills]
 domain: process
-disposition: addressed
-confidence: 98
-severity: High
-surfaced-by: claude+codex (convergent)
-addressed-in: iter2 Fix 1
 supersedes: null
-mistake-candidate: true
+superseded_by: null
 ---
 
 # Symlink restore recipe used wrong `../` prefix depth (addressed in iter2)

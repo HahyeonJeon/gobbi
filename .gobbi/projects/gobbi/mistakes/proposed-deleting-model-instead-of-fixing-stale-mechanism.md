@@ -1,17 +1,16 @@
 ---
 name: proposed-deleting-model-instead-of-fixing-stale-mechanism
-description: "Manager proposed deleting the two-layer promotion MODEL because its CLI mechanism (`gobbi mistake promote`) was stale; user corrected — keep the model, fix the mechanism (Wrap-up-phase agent promotion)."
-metadata:
-  type: feedback
-mistake-candidate: true
-domain: docs-sync
+description: "Manager proposed deleting the two-layer promotion MODEL because its CLI mechanism (`gobbi mistake promote`) was stale; correct approach is to fix the mechanism, not delete the model."
+type: mistakes
 scope: project
-source: user-correction-2026-05-25
-session-id: 2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f
-feature: session-foundations-bundle-c
+feature: null
+status: active
 created: 2026-05-25
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/staging/decisions/proposed-deleting-model-instead-of-fixing-stale-mechanism.md
-promoted-at: 2026-05-25
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
+tags: [process, docs-sync, orchestration]
+domain: docs-sync
+supersedes: null
+superseded_by: null
 ---
 
 # Proposed deleting a documented model when only its mechanism reference was stale

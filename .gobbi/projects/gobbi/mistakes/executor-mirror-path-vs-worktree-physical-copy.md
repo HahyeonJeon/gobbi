@@ -1,13 +1,16 @@
 ---
-date: 2026-05-24
+name: executor-mirror-path-vs-worktree-physical-copy
+description: Worktree-mode executors must use the worktree-absolute canonical path; bare `.gobbi/projects/...` paths resolve to the main tree when the cwd is the main tree.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
-feature: session-foundations-bundle-b
-mistake-candidate: true
+tags: [process, worktree, execution]
 domain: process
 supersedes: null
 superseded_by: null
-finding-id: WRAP-MIST-001
 ---
 
 # Worktree-mode executors must edit worktree-internal canonical mirror, not main-tree canonical mirror

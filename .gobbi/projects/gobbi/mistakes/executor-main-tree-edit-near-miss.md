@@ -1,17 +1,17 @@
 ---
-date: 2026-05-25
+name: executor-main-tree-edit-near-miss
+description: Executor edited the main-tree file instead of the worktree copy when constructing absolute paths without the worktree-root prefix.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
-status: accepted
-feature: session-foundations-bundle-c
+tags: [process, worktree, execution]
+priority: high
+domain: process
 supersedes: null
 superseded_by: null
-mistake-candidate: true
-domain: process
-severity: high
-loop: execution
-iter: 2
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-07/staging/decisions/executor-main-tree-edit-near-miss.md
-promoted-at: 2026-05-25
 ---
 
 # Executor Edited Main-Tree File Instead of Worktree Copy (Near-Miss)

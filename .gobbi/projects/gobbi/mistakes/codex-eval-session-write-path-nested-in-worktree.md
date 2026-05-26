@@ -1,15 +1,16 @@
 ---
-slug: codex-eval-session-write-path-nested-in-worktree
-title: "Codex:codex-rescue evaluator writes session memory to worktree-nested path instead of main-tree absolute"
-domain: process
-severity: medium
-mistake-candidate: true
-project: gobbi
-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
-loop: wrap-up
-created: 2026-05-22
+name: codex-eval-session-write-path-nested-in-worktree
+description: "Codex:codex-rescue evaluator wrote session memory to a worktree-nested path instead of the main-tree absolute path."
+type: mistakes
+scope: project
+feature: null
 status: active
+created: 2026-05-22
+session: bac669ad-4fec-40b5-8387-51ac57bc0d3d
+tags: [process, worktree, session-lifecycle, codex]
+domain: process
 supersedes: null
+superseded_by: null
 ---
 
 # Codex:codex-rescue evaluator writes session memory to worktree-nested path

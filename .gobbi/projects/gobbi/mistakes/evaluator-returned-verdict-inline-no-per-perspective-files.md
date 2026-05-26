@@ -1,22 +1,16 @@
 ---
-slug: evaluator-returned-verdict-inline-no-per-perspective-files
-title: "Claude evaluator returns verdict inline; doesn't write per-perspective files via Bash heredoc when Write tool is absent"
-domain: process
-type: design_flaw
-disposition: open
-mistake-candidate: true
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: execution
-task: 05-coverage-ownership-naming-row
-created: 2026-05-23
+name: evaluator-returned-verdict-inline-no-per-perspective-files
+description: "Claude evaluator returned verdict inline; did not write the contracted per-perspective files when the Write tool was absent."
+type: mistakes
+scope: project
+feature: null
 status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [process, evaluation, orchestration]
+domain: process
 supersedes: null
 superseded_by: null
-date: 2026-05-23
-feature: gobbi-orchestration-workflow-improvements
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/execution/T5/staging/decisions/evaluator-returned-verdict-inline-no-per-perspective-files.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
 # Evaluator returns verdict inline; no per-perspective files written

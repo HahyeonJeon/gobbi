@@ -1,17 +1,17 @@
 ---
-date: 2026-05-23
+name: codex-rescue-agent-fire-and-forget-without-result-capture
+description: "`codex:codex-rescue` agent fires asynchronously and returns a placeholder; it does not await completion or capture real output."
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-23
 session: 7ea62d36-e826-4ce6-9e90-9e948007b068
-status: accepted
-feature: gobbi-orchestration-workflow-improvements
+tags: [process, codex, evaluation, orchestration]
+priority: high
+domain: process
 supersedes: null
 superseded_by: null
-mistake-candidate: true
-domain: process
-severity: high
-loop: ideation
-iter: 3
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/decisions/codex-rescue-agent-fire-and-forget-without-result-capture.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
 # `codex:codex-rescue` Agent Returns Fire-and-Forget Placeholder, Not Real Result

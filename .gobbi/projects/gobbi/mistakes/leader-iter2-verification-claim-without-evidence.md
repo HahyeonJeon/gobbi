@@ -1,15 +1,17 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
-status: accepted
+name: leader-iter2-verification-claim-without-evidence
+description: Leader claimed empirical verification in iter2 but propagated wrong vocabulary values rather than reading the canonical source.
+type: mistakes
+scope: project
 feature: null
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [process, evaluation, verification, iron-law-7]
+priority: high
+domain: process
 supersedes: null
 superseded_by: null
-mistake-candidate: true
-domain: process
-severity: high
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/decisions/leader-iter2-verification-claim-without-evidence.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
 # Leader Claimed Empirical Verification But Propagated Wrong Values

@@ -1,17 +1,16 @@
 ---
 name: codex-exec-at-file-hangs-on-stdin-in-background
 description: "`codex exec \"@promptfile\"` launched via Bash run_in_background can hang reading stdin and exit 0 with zero output files; inline the prompt via \"$(cat file)\" and redirect stdin from /dev/null."
-metadata:
-  type: feedback
-mistake-candidate: true
-domain: process
+type: mistakes
 scope: project
-source: session-2026-05-24-45388fa9-execution-T04-iter2
-session-id: 2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f
-feature: session-foundations-bundle-c
+feature: null
+status: active
 created: 2026-05-25
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-04/staging/decisions/codex-exec-at-file-hangs-on-stdin-in-background.md
-promoted-at: 2026-05-25
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
+tags: [process, codex, evaluation]
+domain: process
+supersedes: null
+superseded_by: null
 ---
 
 # `codex exec "@promptfile"` can silently hang on stdin in a background Bash call
