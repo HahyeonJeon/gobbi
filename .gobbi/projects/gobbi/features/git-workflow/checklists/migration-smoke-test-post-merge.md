@@ -1,6 +1,6 @@
 ---
 scenario: worktree-first-bootstrap
-feature: session-foundations-bundle-b
+feature: git-workflow
 last_updated: 2026-05-23
 finding-id: iter1-P4
 type: checklist_gap

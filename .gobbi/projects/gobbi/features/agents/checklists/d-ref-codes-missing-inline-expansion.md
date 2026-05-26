@@ -1,6 +1,6 @@
 ---
 scenario: executor-brief-self-sufficiency
-feature: session-foundations-bundle-b
+feature: agents
 last_updated: 2026-05-24
 finding-id: d-ref-codes-missing-inline-expansion
 type: checklist_gap

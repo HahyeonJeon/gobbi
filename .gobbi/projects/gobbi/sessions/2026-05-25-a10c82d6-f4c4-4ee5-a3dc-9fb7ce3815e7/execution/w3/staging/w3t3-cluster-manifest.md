@@ -17,8 +17,8 @@ status: in-progress
 ## Clusters (process in order)
 
 - [x] **(a)** decisions 6 + scenarios 6 + plans 1 + changelogs 1 = **14** — SHA: f3f3e8b
-- [x] **(b)** design 16 = **16** — SHA: PENDING-COMMIT
-- [ ] **(c)** checklists 15 = **15** — SHA: ____
+- [x] **(b)** design 16 = **16** — SHA: b43b7cf
+- [x] **(c)** checklists 15 = **15** — SHA: PENDING-COMMIT
 - [ ] **(d)** backlogs 15 = **15** — SHA: ____
 - [ ] **(e)** references 12 = **12** — SHA: ____
 - [ ] **(f)** discussions 28 = **28** — SHA: ____
@@ -74,8 +74,24 @@ Re-home changelogs added (4): git-workflow, workflow, install-runtime, agents.
 Breakdown: git-workflow 7, install-runtime 6, workflow 3, agents 1. `feature:` restamped on all 16. No new re-home changelog (all 4 features touched in cluster a).
 Note: D-3-1..D-3-6 (subagent-metadata hook plumbing) → install-runtime per §1.3 "T3 subagent metadata → install-runtime" (the session-runtime hook contract), not agents.
 
-### Cluster (c) — 15 files
-(pending)
+### Cluster (c) — 15 files — COMMITTED
+- `chore-label-line-citation-stale` → **git-workflow** (`git/conventions.md` citation)
+- `cross-layer-drift-gate` → **guardrails** (drift gate)
+- `decimal-row-numbering-55` → **git-workflow** (row 5.5 numbering)
+- `dq-anchor-readability` → **workflow** (Planning artifact DQ-anchors)
+- `dq-anchor-traceability` → **workflow** (Planning artifact DQ-anchors)
+- `d-ref-codes-missing-inline-expansion` → **agents** (executor delegation-brief ref codes)
+- `effort-field-non-canonical-schema` → **workflow** (planning task YAML schema)
+- `hook-event-count-31-vs-29-docs-sync` → **guardrails** (hook-event docs sync)
+- `hook-latency-bounds` → **install-runtime** (agents[] capture hook/reconstructor latency)
+- `migration-smoke-test-post-merge` → **git-workflow** (worktree-first post-merge smoke test)
+- `mirror-policy-empirical-verification` → **install-runtime** (mirror/symlink topology)
+- `phase-doc-count-verification` → **git-workflow** (per-iter phase-doc set, matches d-4/workflow-phase-doc-set)
+- `skill-md-commit-type-feat-vs-docs` → **git-workflow** (commit-type convention; no feature: key, left unstamped)
+- `structured-header-migration-behavior` → **install-runtime** (session.json agents[] header field population)
+- `task01-t1c-trace-overclaim` → **workflow** (Planning traceability)
+
+Breakdown: git-workflow 6, workflow 4, install-runtime 3, guardrails 2, agents 1. NEW feature touched: guardrails → re-home changelog added. `feature:` restamped on 14 (skill-md-commit-type had no key).
 
 ### Cluster (d) — 15 files
 (pending)

@@ -1,6 +1,6 @@
 ---
 scenario: plan-task-schema-compliance
-feature: session-foundations-bundle-b
+feature: workflow
 last_updated: 2026-05-24
 finding-id: effort-field-non-canonical
 type: checklist_gap

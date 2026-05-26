@@ -1,6 +1,6 @@
 ---
 scenario: plan-task-trace-accuracy
-feature: session-foundations-bundle-b
+feature: workflow
 last_updated: 2026-05-24
 finding-id: task01-overclaims-t1c-trace
 type: checklist_gap

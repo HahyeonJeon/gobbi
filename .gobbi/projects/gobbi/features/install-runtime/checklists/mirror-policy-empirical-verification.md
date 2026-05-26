@@ -1,6 +1,6 @@
 ---
 scenario: mirror-policy-empirical-verification
-feature: session-foundations-bundle-b
+feature: install-runtime
 last_updated: 2026-05-24
 finding-id: COD-CONS-PREP1-003
 type: checklist_gap

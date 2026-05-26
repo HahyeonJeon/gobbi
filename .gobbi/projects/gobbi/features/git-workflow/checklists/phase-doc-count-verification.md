@@ -1,6 +1,6 @@
 ---
 scenario: phase-doc-count-verification
-feature: session-foundations-bundle-b
+feature: git-workflow
 last_updated: 2026-05-24
 finding-id: COD-OVERALL-PREP1-004
 type: checklist_gap

@@ -2,7 +2,7 @@
 date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: open
-feature: session-foundations-bundle-b
+feature: workflow
 finding-id: COD-OVERALL-004
 type: checklist_gap
 domain: process

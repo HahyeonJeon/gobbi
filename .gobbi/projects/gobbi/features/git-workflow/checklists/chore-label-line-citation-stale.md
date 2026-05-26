@@ -2,7 +2,7 @@
 date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 status: open
-feature: session-foundations-bundle-b
+feature: git-workflow
 finding-id: COD-CONS-ITER3-002
 type: general
 domain: docs-sync
