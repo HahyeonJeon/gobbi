@@ -20,8 +20,8 @@ status: in-progress
 - [x] **(b)** design 16 = **16** — SHA: b43b7cf
 - [x] **(c)** checklists 15 = **15** — SHA: 739d166
 - [x] **(d)** backlogs 15 = **15** — SHA: 947ec9f
-- [x] **(e)** references 12 = **12** — SHA: PENDING-COMMIT
-- [ ] **(f)** discussions 28 = **28** — SHA: ____
+- [x] **(e)** references 12 = **12** — SHA: 2db6669
+- [x] **(f)** discussions 28 = **28** — SHA: PENDING-COMMIT
 
 **Total: 100 md across 6 commits.**
 
@@ -128,8 +128,44 @@ Breakdown: install-runtime 7, git-workflow 3, guardrails 3, workflow 1, agents 1
 
 Breakdown: git-workflow 5, agents 4, guardrails 2, install-runtime 1. NOTE: reference files use a `title:`/`source:`/`accessed:` frontmatter shape with NO `feature:` key — none restamped (body + frontmatter unchanged; frontmatter normalization is a separate category-C task). No new feature touched.
 
-### Cluster (f) — 28 files
-(pending)
+### Cluster (f) — 28 files — COMMITTED
+- `codex-iter2-blocked-aggregation` → **evaluation**
+- `iter2-fix-direction-continue-this-session` → **workflow** (orchestration fix-direction)
+- `mistake-bundle-extension-to-t3` → **guardrails** (mistakes bundle)
+- `shared-executor-tasks-07-08` → **agents** (executor delegation bundling)
+- `t1g-direct-mode-home-orchestration-skill` → **git-workflow** (direct-mode opt-out)
+- `t1j-rollback-home-preparation-skill` → **git-workflow** (worktree rollback)
+- `wave-ordering-sequential-t1-t3` → **workflow** (wave ordering)
+- `branch-prefix-sub-option` → **git-workflow** (branch prefix)
+- `bundle-scope-confirmation` → **git-workflow** (AMBIGUOUS sprint-scope → primary git-workflow)
+- `cp-d-1-dual-hook-registration` → **install-runtime** (agents[] capture hook registration)
+- `cp-d-2-commit-subject-scope` → **git-workflow** (per-iter commit subject)
+- `edit-contract-addition` → **install-runtime** (symlink edit contract)
+- `eval-fail-revise-escalation` → **evaluation**
+- `eval-pass-loop-closed` → **evaluation**
+- `failure-mode-1-3-confirm` → **git-workflow** (T1 worktree failure modes)
+- `gap-resolutions-9-batch` → **git-workflow** (AMBIGUOUS spans D-1..D-9 → primary git-workflow)
+- `hook-contract-verification-gate` → **install-runtime** (hook payload contract verification)
+- `matrix-location-ambiguity-defers-t2` → **workflow** (T2 scope deferral)
+- `mechanism-4-1-option-c` → **install-runtime** (PostToolUse hook + reconstructor mechanism)
+- `mirror-policy-round-1` → **install-runtime** (mirror policy iter1)
+- `mirror-policy-round-2-re-lock` → **install-runtime** (mirror policy iter2)
+- `new-dependency-on-1-3` → **git-workflow** (promote-now commit-on-branch dep)
+- `non-feature-session-scope` → **git-workflow** (worktree-first for every session)
+- `reframing-1-2-broader-verifier` → **agents** (delegation contract verifier)
+- `reframing-1-3` → **git-workflow** (worktree-first vs collapsing)
+- `root-cause-1-2-hypothesis` → **workflow** (skill-loading discipline root cause)
+- `scope-contract-lock` → **install-runtime** (session.template agents[] schema)
+- `session-memory-survival` → **git-workflow** (session-memory survival across commits)
+
+Breakdown: git-workflow 11, install-runtime 8, workflow 4, evaluation 3, agents 2, guardrails 1. NEW feature touched: evaluation → re-home changelog added. `feature:` restamped on all 28.
+
+## Final verification
+- `find features/session-foundations-bundle-b -name '*.md' ! -name README.md | wc -l` == **0** ✓
+- Only `README.md` remains in Bundle B (deferred to W3-T5) ✓
+- 100 renames across 6 commits (14+16+15+15+12+28) ✓
+- 6 re-home changelogs added: git-workflow, workflow, install-runtime, agents (cluster a), guardrails (cluster c), evaluation (cluster f). [project-memory was not a destination for any Bundle B file.]
+- All commits: R + A(changelogs/manifest) only, 0 D.
 
 ## Ambiguous routings (defaulted to git-workflow)
 (none yet)

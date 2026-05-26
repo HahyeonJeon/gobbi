@@ -2,7 +2,7 @@
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 loop: planning
-feature: session-foundations-bundle-b
+feature: guardrails
 topic: T3 mistake bundle — extend all 3 T1 mistakes or Iron Law 7 only?
 outcome: Iron Law 7 procedural mistake only for T3 tasks (LOCK #3); other 2 T1 mistakes not extended
 ---

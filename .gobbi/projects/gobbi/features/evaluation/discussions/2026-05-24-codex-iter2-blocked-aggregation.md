@@ -2,7 +2,7 @@
 date: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 loop: planning
-feature: session-foundations-bundle-b
+feature: evaluation
 topic: Codex iter2 blocked — wrapper relative-path failure; re-dispatch with strict brief
 outcome: Re-dispatched with absolute paths + marker verification; Codex iter2 PASS produced on retry
 ---

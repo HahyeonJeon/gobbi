@@ -1,7 +1,7 @@
 ---
 date: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-feature: session-foundations-bundle-b
+feature: agents
 discussion-id: CP-1-2-beta
 slug: reframing-1-2-broader-verifier
 phase: ideation
