@@ -43,15 +43,16 @@ Session `2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068`. Branch `feat/266-orch
 
 ## Design decisions
 
-- `decisions/iter1-user-redirects.md` — Post-iter1 user redirects (Step 2.5 shape + codex invocation priority)
+- `decisions/wrap-up-step-2-5-escalation-default.md` — Post-iter1 redirect, Step 2.5 escalation shape (split from the iter1 user-redirects bundle, Decision 1)
+- `decisions/codex-exec-universal-invocation-pattern.md` — Post-iter1 redirect, codex invocation priority (split from the iter1 user-redirects bundle, Decision 2); full bundle context archived at `archive/decisions/2026-05-23-iter1-user-redirects.md`
 - `decisions/codex-skill-assistant-wrapper-pattern-for-dual-system-eval.md` — Codex assistant-wrapper topology for dual-system eval
-- `decisions/concern-1-wrap-up-step-2-5-anchor.md` — Step 2.5 anchor placement (new H3 after WORK discipline)
-- `decisions/concern-3-coverage-ownership-cell-text.md` — Coverage Ownership Matrix row exact cell text (Draft A selected)
+- `decisions/wrap-up-step-2-5-anchor-placement.md` — Step 2.5 anchor placement (new H3 after WORK discipline)
+- `decisions/coverage-ownership-matrix-row-text.md` — Coverage Ownership Matrix row exact cell text (Draft A selected)
 - `decisions/plan-diff-scope-gate-semantics-under-bundled-pr.md` — Plan diff-scope gate semantics under bundled PR
 
 ## Designs
 
-7 Ideation designs captured at `design/item-{a-g}-*.md`.
+7 Ideation designs captured in `design/` (`codex-skill-structure.md`, `memorization-moment-of-capture.md`, `memorization-delegation-hard-gate.md`, `wrap-up-step-2-5-compliance-check.md`, `naming-convention-enforcement.md`, `glossary-placement.md`, `drop-legacy-setup-questions.md`).
 
 ## Open follow-ups
 

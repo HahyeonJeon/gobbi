@@ -1,15 +1,17 @@
 ---
-title: Claude Code hooks documentation — SessionStart hook stdin contract
-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
-loop: ideation
+name: claude-code-hooks-stdin-contract
+description: "Claude Code hooks documentation — SessionStart hook stdin contract"
+type: references
+scope: feature
 feature: env-var-audit
+status: active
 created: 2026-05-22
-source: https://docs.anthropic.com/en/docs/claude-code/hooks
-type: docs
-accessed: 2026-05-22
+session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 tags: [hooks, env-vars, session-start, stdin-json]
-promoted_from: sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/ideation/staging/references/ideation-references.md
-promoted_at: 2026-05-22
+title: "Claude Code hooks documentation — SessionStart hook stdin contract"
+source: https://docs.anthropic.com/en/docs/claude-code/hooks
+accessed: 2026-05-22
+ref_type: docs
 ---
 
 # Claude Code hooks documentation — SessionStart hook stdin contract

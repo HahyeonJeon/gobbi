@@ -72,13 +72,13 @@ No discussion-log.md rawdata file was written in this session (the file was abse
 
 ## Iter1 Finding Triage (~8 questions, 2026-05-22)
 
-See `decisions/ideation-decisions.md` entries FIX 1-FIX 8 for the full triage dispositions.
+See `decisions/env-file-load-semantics-decisions.md` entries FIX 1-FIX 8 for the full triage dispositions.
 
 ---
 
 ## Iter2 Finding Triage (~3 questions, 2026-05-22)
 
-See `decisions/ideation-decisions.md` entries FIX A-FIX C for the full triage dispositions.
+See `decisions/env-file-load-semantics-decisions.md` entries FIX A-FIX C for the full triage dispositions.
 
 ---
 

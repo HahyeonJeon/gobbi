@@ -1,19 +1,16 @@
 ---
-slug: wrap-up-step-2-5-escalation-default
-title: "Wrap-up Step 2.5 escalation default — hybrid auto-backfill + NEEDS_CONTEXT"
-domain: docs-sync
-type: design_flaw
-disposition: addressed
-mistake-candidate: false
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: ideation
-created: 2026-05-23
-status: active
-supersedes: null
-date: 2026-05-23
+name: wrap-up-step-2-5-escalation-default
+description: "Wrap-up Step 2.5 escalation default — hybrid auto-backfill + NEEDS_CONTEXT"
+type: decisions
+scope: feature
 feature: gobbi-orchestration-workflow-improvements
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [wrap-up, step-2-5, escalation, orchestration]
+supersedes: null
 superseded_by: null
+decision_status: accepted
 ---
 
 # Wrap-up Step 2.5 escalation default

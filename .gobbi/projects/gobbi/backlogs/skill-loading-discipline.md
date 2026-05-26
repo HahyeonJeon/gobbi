@@ -22,7 +22,7 @@ This session (`session-foundations-bundle-b`) framed Item 1-2 in Sub-step A and 
 
 User explicitly deferred at Sub-step D round 1 ("looks ambiguous"). The (D+L) composite root-cause analysis from CP-1.2-α was preserved and is the basis on which a future session can resume. The Sub-step C research (12 staged references include 4 directly for this item) is durable — when picked up, the next session inherits the analysis and references.
 
-The literal-ask scope (matrix + validator) was locked in CP-1.2-β; the broader "delegation contract verifier" re-framing was deferred separately (see `item-1-2-broader-delegation-contract-verifier.md`).
+The literal-ask scope (matrix + validator) was locked in CP-1.2-β; the broader "delegation contract verifier" re-framing was deferred separately (see `broader-delegation-contract-verifier.md`).
 
 ## When to pick up
 

@@ -1,15 +1,17 @@
 ---
-title: Claude Code changelog — CLAUDE_CODE_SESSION_ID introduced in v2.1.132
-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
-loop: ideation
+name: claude-code-changelog-ccsi-version
+description: "Claude Code changelog — CLAUDE_CODE_SESSION_ID introduced in v2.1.132"
+type: references
+scope: feature
 feature: env-var-audit
+status: active
 created: 2026-05-22
-source: https://docs.anthropic.com/en/docs/claude-code/changelog
-type: docs
-accessed: 2026-05-22
+session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 tags: [env-vars, changelog, version, ccsi]
-promoted_from: sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/ideation/staging/references/ideation-references.md
-promoted_at: 2026-05-22
+title: "Claude Code changelog — CLAUDE_CODE_SESSION_ID introduced in v2.1.132"
+source: https://docs.anthropic.com/en/docs/claude-code/changelog
+accessed: 2026-05-22
+ref_type: docs
 ---
 
 # Claude Code changelog — `CLAUDE_CODE_SESSION_ID` introduction version

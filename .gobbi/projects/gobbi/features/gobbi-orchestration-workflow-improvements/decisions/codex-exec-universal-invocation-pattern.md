@@ -1,19 +1,16 @@
 ---
-slug: codex-exec-universal-invocation-pattern
-title: "Codex skill invocation — codex exec via Bash is the universal primary pattern"
-domain: docs-sync
-type: design_flaw
-disposition: addressed
-mistake-candidate: false
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: ideation
-created: 2026-05-23
-status: active
-supersedes: null
-date: 2026-05-23
+name: codex-exec-universal-invocation-pattern
+description: "Codex skill invocation — codex exec via Bash is the universal primary pattern"
+type: decisions
+scope: feature
 feature: gobbi-orchestration-workflow-improvements
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [codex, invocation, orchestration, dual-system]
+supersedes: null
 superseded_by: null
+decision_status: accepted
 ---
 
 # Codex skill invocation priority
