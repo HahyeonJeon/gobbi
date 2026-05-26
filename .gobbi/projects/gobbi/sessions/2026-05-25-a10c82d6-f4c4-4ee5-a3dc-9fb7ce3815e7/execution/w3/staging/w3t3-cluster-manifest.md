@@ -3,7 +3,7 @@ loop: execution
 iter: 1
 artifact_type: w3t3-cluster-manifest
 created_at: 2026-05-26
-status: in-progress
+status: complete
 ---
 
 # W3-T3 recovery manifest — re-home Bundle B (100 cluster md) into 7 capability features
@@ -21,7 +21,7 @@ status: in-progress
 - [x] **(c)** checklists 15 = **15** — SHA: 739d166
 - [x] **(d)** backlogs 15 = **15** — SHA: 947ec9f
 - [x] **(e)** references 12 = **12** — SHA: 2db6669
-- [x] **(f)** discussions 28 = **28** — SHA: PENDING-COMMIT
+- [x] **(f)** discussions 28 = **28** — SHA: 50c911b
 
 **Total: 100 md across 6 commits.**
 
