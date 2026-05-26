@@ -187,3 +187,17 @@ All 8 locks (L1-L8) from the original session are FINAL:
 | `preparation/staging/decisions/claude-doc-standard-skill-missing.md` | `backlogs/claude-doc-standard-skill-missing.md` | ALREADY PRESENT (pre-promoted; confirmed live) |
 | `preparation/staging/decisions/skills-agents-canonical-location.md` | `backlogs/skills-agents-canonical-location.md` | ALREADY PRESENT (pre-promoted; confirmed live) |
 | `wrap-up/staging/decisions/manager-substituted-self-verification-for-mandatory-dual-system-eval.md` | `mistakes/manager-skipped-dual-system-eval.md` | ALREADY PRESENT (pre-promoted; confirmed live) |
+
+---
+
+## Addendum (2026-05-26) — naming-guidance follow-on (post-wrap-up, same PR #272)
+
+User feedback after the redesign shipped: file names still encoded positions/cryptic refs (`task-01`, `d-1`, `row-5-5`, `2026-05-23-main`) — a reader with zero context can't tell the subject. The W5 blocklist-softening removed the mechanical gate but left no positive guidance on what a GOOD name is.
+
+**Shipped (commits 5b5b0d8, 8e42fe2, 6d140e1):**
+- **Principle 13** gained a naming-clarity clause (Create-operation facet): name the SUBJECT in development-vibe kebab-case so a zero-context reader understands the file; detail defers to `memorization/rules.md` §1.3. Iron Law text + Index row 13 unchanged.
+- **`memorization/rules.md` §1.3** expanded from a negative-only softened note to a positive core rule + 9-category anti-patterns table + good/bad examples (positional/sequence-index + cryptic-internal-reference are the new primary categories). No regex gate; content-word suffixes + date-prefixes still allowed.
+- **29 offender files renamed** to subject-names (git mv, slug frontmatter updated, inbound nav-refs repointed) — user ruled rename ALL same-category offenders, not just the listed examples. Residual-positional scan clean. `cross-layer-drift-gate` + `step-2-5`/`lock2` structural coordinates kept.
+- **Mistake recorded:** `mistakes/naming-standard-needs-positive-guidance-not-just-blocklist.md` (a standard must teach what GOOD looks like + examples, not only forbid patterns).
+- Dual-system eval: iter1 REVISE both (a `t2-` residual + incomplete repointing) → iter2 6d140e1 → manager-verified PASS.
+- `design-id: D-*` frontmatter on renamed design files kept (internal stable-ID, out of the filename-clarity scope) — candidate for a future frontmatter-normalization pass (see `feature-dir-frontmatter-full-normalization` backlog).
