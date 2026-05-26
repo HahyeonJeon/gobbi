@@ -1,12 +1,14 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: per-iteration-session-commit-cadence
+description: Each loop's MEMORIZATION step ends with a worktree-branch commit using chore(session) subject format, once per iteration.
+type: design
 scope: feature
 feature: git-workflow
-design-id: D-4
-slug: per-iteration-session-commit-cadence
 status: locked
-iter: 2
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [git-workflow, session-commits, memorization, cadence]
+design-id: D-4
 ---
 
 # D-4 — Per-iteration session-memory commit cadence
@@ -26,11 +28,7 @@ Subject format: `chore(session): record <loop> iter{n} memory` (e.g., `chore(ses
 
 ## Rationale
 
-Worktree removal at Wrap-up (P5) discards uncommitted state. T1-E-2 rule 3 (community-validated): committed = survives worktree removal. Per-iteration cadence (rather than once-at-Wrap-up) ensures session memory survives mid-session abort.
-
-## Anchored insights
-
-T1-E-2, T1-I-5, F-3 mitigation, E-3 abort-recovery scenario.
+Worktree removal at Wrap-up discards uncommitted state; committed changes survive worktree removal. Per-iteration cadence (rather than once-at-Wrap-up) ensures session memory survives mid-session abort — all data up to the last completed iteration is durable.
 
 ## Trade-offs considered
 
@@ -38,12 +36,12 @@ T1-E-2, T1-I-5, F-3 mitigation, E-3 abort-recovery scenario.
 
 ## Validation
 
-Multi-iteration loop: `git log --oneline` inside worktree shows subjects matching `^chore\(session\): record .* iter[0-9]+ memory$`. Evaluator Risk perspective on E-3 (abort-mid-session) coverage.
+Multi-iteration loop: `git log --oneline` inside worktree shows subjects matching `^chore\(session\): record .* iter[0-9]+ memory$`.
 
-## Implementation checklist anchor
+## Implementation note
 
-T1-I-T1.f (5 loop workflow files)
+This decision applies to all 5 workflow loop docs (`ideation.md`, `preparation.md`, `planning.md`, `execution.md`, `wrap-up.md`). See `design/workflow-phase-doc-set-for-per-iter-cadence.md` for the explicit file enumeration.
 
 ## Source
 
-`rawdata/draft-iter3.md:329-334` (D-4 narrative)
+Full session context at `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/ideation/`

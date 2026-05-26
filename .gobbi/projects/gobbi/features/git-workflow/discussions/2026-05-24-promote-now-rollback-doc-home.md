@@ -1,22 +1,27 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: planning
+name: promote-now-rollback-doc-home
+description: User confirmed the promote-now rollback semantics live in preparation/SKILL.md co-located with the narrow-exception text, not in git/SKILL.md.
+type: discussions
 scope: feature
 feature: git-workflow
-topic: T1.j rollback semantics doc home — preparation/SKILL.md or git/SKILL.md?
-outcome: preparation/SKILL.md, co-located with narrow-exception text (LOCK #4)
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [git-workflow, promote-now, rollback, preparation-skill]
+loop: planning
+topic: promote-now rollback semantics doc home — preparation/SKILL.md or git/SKILL.md?
+outcome: preparation/SKILL.md, co-located with narrow-exception text
 ---
 
-# T1.j rollback semantics doc home (LOCK #4)
+# Promote-now rollback semantics doc home
 
 ## Context
 
-Ideation Implementation Checklist T1.j specifies rollback semantics for a failed `generate-now` promote-now commit. The leader asked where these semantics should live — co-located with the promote-now procedure in `preparation/SKILL.md`, or in `git/SKILL.md` alongside the general git discipline.
+Design Decision D-3 (commit-on-branch for Preparation promote-now) includes a partial-failure rollback: if `git commit` fails post-copy, the manager must remove the copied skill file. The question was where to document this rollback sequence.
 
 ## Question
 
-Where should the T1.j rollback semantics documentation live?
+Where should the promote-now rollback semantics live?
 
 ## Options considered
 
@@ -25,23 +30,17 @@ Where should the T1.j rollback semantics documentation live?
 
 ## User decision
 
-preparation/SKILL.md confirmed (LOCK #4). Rollback semantics live co-located with the narrow-exception text.
+`preparation/SKILL.md` confirmed. Rollback semantics live co-located with the narrow-exception promote-now text.
 
-## Rollback sequence (per Ideation:283)
+## Rollback sequence
 
 1. `git commit` fails post-copy
 2. Manager: `git -C "$worktreePath" rm <copied-paths>` — removes the copied skill file
-3. AskUserQuestion: surface failure to user
+3. Surface failure to user via AskUserQuestion
 4. Re-attempt or abort per user response
 
-**Critical**: rollback REMOVES the copied file (NOT `git checkout`). The file did not pre-exist in the worktree before the promote-now operation. git checkout would fail or restore to HEAD (which has no version of this file). Removal is the only correct recovery.
+**Critical**: rollback REMOVES the copied file (NOT `git checkout`). The file did not pre-exist in the worktree before the promote-now operation. `git checkout` would fail or restore to HEAD, which has no version of this file. Removal is the only correct recovery. See `decisions/2026-05-24-rollback-semantics-drift-from-ideation.md` for the formal decision record.
 
 ## Implication
 
-Task 03 (`03-preparation-generate-now-commit-on-branch`) owns both the promote-now path and the rollback semantics. The executor brief for Task 03 MUST cite Ideation:283 verbatim (Iron Law 7 procedural mandate).
-
-## Related
-
-- draft-iter2.md:173 (Task 03 what)
-- planning/staging/decisions/rollback-semantics-drift-from-ideation.md
-- Ideation iter3 draft line 283
+The Execution task implementing the promote-now commit-on-branch owns both the promote-now path and the rollback semantics documentation in `preparation/SKILL.md`.

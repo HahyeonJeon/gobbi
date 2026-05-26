@@ -1,21 +1,25 @@
 ---
-title: Workflow phase doc set targeted by T1-I-T1.f per-iter commit cadence rule
-status: updated-iter2
+name: workflow-phase-doc-set-for-per-iter-cadence
+description: Enumerates the 5 workflow loop docs that must carry the per-iteration session-memory commit cadence rule (D-4), and explains why evaluation.md and memorization.md are excluded.
+type: design
 scope: feature
 feature: git-workflow
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [git-workflow, per-iter-cadence, workflow-docs, d4]
 related:
-  - decisions/planning-brief-mistake-load-directives-for-t1.md
-  - decisions/mirror-propagation-policy-mirror-canonical-symlinks.md
-  - ../../../ideation/artifacts/bundle-b-ideation-pass.md
+  - features/git-workflow/decisions/planning-brief-mistake-load-directives-for-t1.md
+  - features/git-workflow/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md
 ---
 
 # Workflow phase doc set for per-iter commit cadence
 
 ## Problem
 
-T1-I-T1.f calls for adding "per-iteration session-memory commit cadence" (decision D-4: `chore(session): record <loop> iter{n} memory`) to "all 5 workflow phase docs" — but the Ideation artifact and design staging files refer to "5 phase docs" without listing the exact file set. A Planning decomposer reading T1-I-T1.f without explicit enumeration would have to re-derive the file set from `.claude/skills/orchestration/workflow/` directory listing or infer from context, risking off-by-one (missing or extra files).
+Design Decision D-4 (per-iteration session-memory commit cadence) calls for adding the `chore(session): record <loop> iter{n} memory` commit rule to "all 5 workflow phase docs" — but the Ideation artifact and design staging files refer to "5 phase docs" without listing the exact file set. A Planning decomposer reading the D-4 implementation requirement without explicit enumeration would have to re-derive the file set from `.claude/skills/orchestration/workflow/` directory listing or infer from context, risking off-by-one (missing or extra files).
 
-The Sub-step B gap scan (`rawdata/sub-steps-a-d-iter1.md` § B-G6, Low-Medium severity) flagged this as a Planning-ambiguity gap. D-4 closes it with a minimal staging file enumerating the 5 files explicitly.
+A Preparation gap scan flagged this as a Planning-ambiguity gap (low-medium severity). This design file closes it by enumerating the 5 target files explicitly.
 
 ## Scope
 
@@ -66,12 +70,9 @@ Overall T1-I-T1.f completion: the 5-file set carries the cadence rule.
 
 None within Preparation scope. The cadence rule's exact phrasing and placement within each phase doc is a Planning / Execution concern.
 
-## Cite
+## Source
 
-- D-4 lock in Ideation artifact: `sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/ideation/artifacts/bundle-b-ideation-pass.md` § Design table row D-4
-- T1-I-T1.f in Ideation artifact: same file § Implementation Checklist § T1
-- Gap analysis: `rawdata/sub-steps-a-d-iter1.md` § Sub-step B § B-G6
-- AskUserQuestion exchange: Card 2 (D-4), user picked "Recommended: Yes — generate-now"
+Full session context at `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`. D-4 lock in the Ideation PASS artifact; gap analysis in Preparation rawdata; the user confirmed generating this enumeration file rather than deferring.
 
 ---
 

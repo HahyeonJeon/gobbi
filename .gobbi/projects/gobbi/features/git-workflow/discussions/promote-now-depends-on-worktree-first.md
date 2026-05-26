@@ -1,29 +1,26 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: promote-now-depends-on-worktree-first
+description: User confirmed that the Preparation promote-now commit-on-branch feature depends on worktree-first (T1) and is absorbed into T1's implementation tasks.
+type: discussions
 scope: feature
 feature: git-workflow
-discussion-id: CP-NEW-beta
-slug: promote-now-depends-on-worktree-first
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [git-workflow, promote-now, worktree-first, dependency]
 phase: ideation
-sub-step: A-round-1
-loop-iter: 1
 ---
 
-# NEW (promote-now commit-on-branch) dependency on T1 confirmed
+# Promote-now commit-on-branch dependency on worktree-first confirmed
 
 ## Question asked
 
-CP-NEW-β: Is the NEW "Preparation promote-now commit-on-branch" item technically dependent on T1 (worktree-first), or can it ship independently?
+Is the "Preparation promote-now commit-on-branch" item technically dependent on worktree-first, or can it ship independently?
 
 ## User answer
 
-Confirmed Item NEW is **dependent on T1** (Option Recommended). NEW collapses to a 2-line `git add` + `git commit` addition to `preparation/SKILL.md`'s promote-now path once worktree-first is locked. If T1 does not ship first, there is no `$worktreePath` to commit to.
+Confirmed dependent on worktree-first. The promote-now path collapses to a 2-line `git add` + `git commit` addition to `preparation/SKILL.md` once worktree-first is locked. Without worktree-first, there is no `$worktreePath` to commit to.
 
 ## Impact on design
 
-NEW is absorbed into T1's Execution tasks. Checklist item T1-I-T1.d + T1-I-T1.j are the implementation items.
-
-## Source
-
-`rawdata/draft-iter3.md:451` (Sub-step A round 1, decision #3)
+The promote-now commit-on-branch feature is absorbed into T1's Execution tasks rather than standing as its own task. It ships as part of T1 (worktree-first session architecture). See `design/promote-now-commit-on-branch.md` for the locked design.

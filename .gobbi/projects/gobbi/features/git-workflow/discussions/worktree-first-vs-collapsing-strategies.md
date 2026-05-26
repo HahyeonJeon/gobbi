@@ -1,31 +1,26 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: worktree-first-vs-collapsing-strategies
+description: User locked worktree-first over two-surface and symlink-into-worktree alternatives; alternatives deferred to backlog.
+type: discussions
 scope: feature
 feature: git-workflow
-discussion-id: CP-1-3-beta
-slug: worktree-first-vs-collapsing-strategies
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [git-workflow, worktree-first, architecture, collapsing-strategies]
 phase: ideation
-sub-step: A-round-2
-loop-iter: 1
 ---
 
-# T1 worktree-first vs alternative collapsing strategies — worktree-first locked
+# Worktree-first vs alternative collapsing strategies — worktree-first locked
 
 ## Question asked
 
-CP-1.3-β: Should T1 use worktree-first (recommended), two-surface (one main-tree session dir + one worktree for generated files), or symlink-into-worktree?
+Should the session architecture use worktree-first (recommended), two-surface (one main-tree session dir + one worktree for generated files), or symlink-into-worktree?
 
 ## User answer
 
-User locked **worktree-first** (Option Recommended). Two-surface and symlink-into-worktree alternatives deferred to backlog items:
-- `staging/backlogs/project/item-1-3-two-surface-collapsing-strategy.md`
-- `staging/backlogs/project/item-1-3-symlink-into-worktree-alternative.md`
+User locked **worktree-first**. The two-surface and symlink-into-worktree alternatives were deferred to backlog items for future evaluation.
 
 ## Impact on design
 
-T1's architecture is uniformly worktree-first. Every subsequent design decision assumes session dir lives in worktree tree.
-
-## Source
-
-`rawdata/draft-iter3.md:455-456` (Sub-step A round 2, decision #5)
+Every subsequent design decision for the git-workflow feature assumes the session directory lives in the worktree tree. The two alternatives remain as backlog candidates if future evidence motivates revisiting.

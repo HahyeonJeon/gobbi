@@ -1,30 +1,24 @@
 ---
-slug: plan-diff-scope-gate-semantics-under-bundled-pr
-title: "Plan's diff-scope verify gates use branch-vs-develop semantics; bundled PR requires commit-scope semantics"
-domain: process
-type: design_flaw
-disposition: addressed
-mistake-candidate: false
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: execution
-task: 02-memorization-moment-of-capture
-created: 2026-05-23
-status: active
-supersedes: null
-superseded_by: null
-date: 2026-05-23
+name: plan-diff-scope-gate-semantics-under-bundled-pr
+description: Plan's verify gates used branch-vs-develop diff semantics; correct semantics under bundled PR is commit-scope diff.
+type: decisions
 scope: feature
 feature: git-workflow
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/execution/T2/staging/decisions/plan-diff-scope-gate-semantics-under-bundled-pr.md
-promoted-at: 2026-05-23T14:00:00Z
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [git-workflow, diff-scope, bundled-pr, verification]
+domain: process
+loop: execution
+supersedes: null
+superseded_by: null
 ---
 
 # Plan diff-scope gate semantics override (bundled PR)
 
 ## Witness
 
-Codex T02 iter1 flagged F-PROJ-01 (High/100): `git diff --name-only develop...HEAD` returns 3 files (T01's `gobbi/SKILL.md` + T02's `memorization/SKILL.md` + `mistake/SKILL.md`). Plan Task 02 verify spec expected exactly 2 files. Codex elevated to High → REVISE verdict.
+During Execution of Task 02 (memorization moment-of-capture), the Codex evaluator raised a High-severity finding: `git diff --name-only develop...HEAD` returned 3 files (Task 01's `gobbi/SKILL.md` plus Task 02's `memorization/SKILL.md` and `mistake/SKILL.md`). The Plan's verify spec for Task 02 expected exactly 2 files. Codex elevated to High severity and issued a REVISE verdict.
 
 ## Root cause
 
@@ -34,13 +28,13 @@ Under bundled PR, the correct gate semantics:
 - **Branch-vs-develop diff (`develop...HEAD`)** — check at PR-creation time, not per-task.
 - **Commit-scope diff (`HEAD~1..HEAD` or `<sha>^..<sha>`)** — exactly the current task's changes; correct for per-task scope check.
 
-T02's commit `536d22f` shows exactly the 2 expected files when checked at commit scope.
+The Task 02 commit itself showed exactly the 2 expected files when checked at commit scope (rather than the cumulative branch diff).
 
 ## Decision
 
-Manager **overrides** Codex REVISE for T02 iter1: T02's commit scope is correct (2 files: memorization + mistake); Plan's `verifies:` was written for per-task topology that no longer applies.
+The manager overrode the REVISE verdict for Task 02: Task 02's commit scope was correct (2 files: memorization + mistake); the Plan's `verifies:` was written for per-task PR topology that no longer applied after the user switched to bundled PR at Execution entry.
 
-T02 treated as effective PASS (Claude PASS + Codex REVISE-on-plan-misspec → manager-override PASS).
+Task 02 was treated as an effective PASS (Claude PASS + Codex REVISE-on-plan-misspec → manager-override PASS).
 
 ## Forward-applicable rule for T03-T07
 

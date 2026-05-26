@@ -1,45 +1,40 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: preparation
+name: gap-resolutions-9-batch
+description: User resolved 9 Preparation gaps in a batch — 4 skipped, 3 deferred to backlog, 2 generate-now artifacts produced.
+type: discussions
 scope: feature
 feature: git-workflow
-topic: Gap-resolutions D-1 through D-9 batch confirmation
-outcome: "9 gaps resolved: D-1/5/8/9 skip; D-2/6/7 defer-to-backlog; D-3/4 generate-now"
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [git-workflow, preparation, gap-resolution, artifacts]
+loop: preparation
+topic: Gap-resolutions batch confirmation
+outcome: "9 gaps resolved: 4 skipped, 3 deferred to backlog, 2 generate-now"
 ---
 
-# Gap-resolutions D-1..D-9 batch confirmation
+# Gap-resolutions batch confirmation (9 Preparation gaps)
 
 ## Context
 
-Sub-steps A-D of Preparation iter1 identified 9 gaps. Cards 1-9 were presented to the user for resolution: 4 batched-skip cards (D-1/5/8/9) + 5 individual cards (D-2/3/4/6/7).
+The Preparation loop identified 9 gaps that required user resolution before Planning could proceed. Each gap received one of three dispositions: skip (no action; rationale documented), generate-now (produce a staged artifact in this loop), or defer-to-backlog (record as a backlog item for a future session).
 
 ## Question
 
-For each of D-1 through D-9: skip, generate-now, or defer-to-backlog?
-
-## Options considered
-
-Per-gap options per `preparation/SKILL.md` § Gap classification: skip (no action; document rationale) / generate-now (produce staged artifact this loop) / defer-to-backlog (record as backlog item for future session).
+For each of the 9 identified gaps: skip, generate-now, or defer-to-backlog?
 
 ## User decision
 
-- **D-1 (feature dir pre-create)**: Skip. Wrap-up bootstraps.
-- **D-2 (hooks-domain mistakes)**: Defer to backlog. No witnesses yet; capture mid-Execution.
-- **D-3 (Planning brief mistake cite)**: Generate-now. Bind Planning to cite 3 specific mistakes in every T1 task brief's Load Directives tier 4.
-- **D-4 (workflow phase doc set)**: Generate-now. Stage the 5-file enumeration as a design file.
-- **D-5 (`.claude/scripts/` dir)**: Skip. Executor `mkdir -p` at T3-I-T3.b.
-- **D-6 (session-lifecycle design doc)**: Defer to backlog. Post-T1 + N=2 sessions.
-- **D-7 (`gobbi-hook-authoring` skill)**: Defer to backlog. Pick up at N=2 hook scripts.
-- **D-8 (separate `gobbi-session-architecture` skill)**: Skip. T1 edits ARE the codification.
-- **D-9 (`gobbi-shell-script-conventions` skill)**: Skip. N=1 trap; re-evaluate at N≥2.
+- **Gap 1 (feature dir pre-create)**: Skip. Wrap-up bootstraps feature dirs.
+- **Gap 2 (hooks-domain mistakes)**: Defer to backlog. No witnesses yet; capture mid-Execution.
+- **Gap 3 (Planning brief mistake citations)**: Generate-now. Bind Planning to cite 3 specific mistakes in every task brief's Load Directives.
+- **Gap 4 (workflow phase doc set)**: Generate-now. Stage the 5-file enumeration as a design file.
+- **Gap 5 (`.claude/scripts/` dir)**: Skip. Executor handles `mkdir -p` at implementation time.
+- **Gap 6 (session-lifecycle design doc)**: Defer to backlog. Post-Execution follow-up.
+- **Gap 7 (`gobbi-hook-authoring` skill)**: Defer to backlog. Pick up when hook scripts reach N≥2.
+- **Gap 8 (separate `gobbi-session-architecture` skill)**: Skip. The Execution task edits ARE the codification.
+- **Gap 9 (`gobbi-shell-script-conventions` skill)**: Skip. Re-evaluate at N≥2 scripts.
 
 ## Implication
 
-5 staged artifacts produced: `planning-brief-mistake-load-directives-for-t1.md` (decision), `workflow-phase-doc-set-for-per-iter-cadence.md` (design), `hooks-domain-mistakes-watchlist.md` (backlog), `session-lifecycle-worktree-boundaries-design-doc.md` (backlog), `gobbi-hook-authoring-skill.md` (backlog). Plus the mirror-policy decision from round 2.
-
-## Related
-
-- `preparation/rawdata/sub-steps-a-d-iter1.md`
-- `preparation/staging/decisions/planning-brief-mistake-load-directives-for-t1.md`
-- `preparation/staging/design/workflow-phase-doc-set-for-per-iter-cadence.md`
+Two generate-now artifacts produced: `decisions/` (planning brief mistake-citation rule) and `design/workflow-phase-doc-set-for-per-iter-cadence.md` (5-file enumeration). Three backlog items staged. Four gaps closed with rationale only.

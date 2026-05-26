@@ -1,29 +1,28 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: addressed
+name: session-commit-storage-bounds
+description: Per-iteration MEMORIZATION commits add storage to develop's git history; storage estimate accepted with deferred formal budget.
+type: decisions
 scope: feature
 feature: git-workflow
-finding-id: COD-PERF-002
-type: checklist_gap
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [git-workflow, storage, performance, session-commits]
 domain: cost
-disposition: addressed
 cost-impact: ~10-50 KB per session added to develop's git history
-confidence: 75
-severity: Medium
 supersedes: null
 superseded_by: null
 ---
 
-# Session commit / storage bounds — addressed with inline estimate
+# Session commit / storage bounds — inline estimate accepted, formal budget deferred
 
 ## Context
 
-iter1/iter2/iter3 Codex Performance finding COD-PERF-002: per-iteration MEMORIZATION commits add storage to develop's git history. No formal storage budget was locked in Ideation.
+Each loop's MEMORIZATION phase ends with a `git commit` to the worktree branch (Design Decision D-4). These per-iteration session-memory commits accumulate in develop's git history. No formal storage budget was locked during Ideation.
 
-## Addressed by
+## Storage estimate
 
-`draft-iter3.md:439` preserves inline storage estimate:
+The following bounds were confirmed during Planning evaluation and are preserved as the accepted estimate:
 - Per-iteration session-memory commit: ~10-50 KB per session committed to develop's history
 - Upper bound: `maxIterations × 5 loops = 15 commits per session`
 - No API or infra cost; no cost-runaway scenario (bounded by Task spawn count, rate-limited by Claude Code permission system)
@@ -34,10 +33,8 @@ Formal storage budget deferred to post-Execution monitoring. The estimate is non
 
 ## Consequences
 
-If session cadence scales (e.g., multiple sessions per day, long-running projects), a compaction strategy (squash-merge session dirs, prune old worktree branches) may be needed. This is a Planning/Execution follow-up, not an Ideation blocker.
+If session cadence scales (e.g., multiple sessions per day, long-running projects), a compaction strategy (squash-merge session dirs, prune old worktree branches) may be needed. This is a future backlog item, not a blocker for the git-workflow feature.
 
-## Related
+## Source
 
-- `evaluation/iter1/codex/performance.md` COD-PERF-002
-- `evaluation/iter3/codex/performance.md` COD-PERF-002
-- `rawdata/draft-iter3.md:439` (performance bounds paragraph)
+Full session context at `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/planning/`

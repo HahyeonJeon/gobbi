@@ -1,15 +1,17 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: promote-now-commit-on-branch
+description: Preparation promote-now path commits the generated skill to the worktree branch using chore(skills) subject and AI-Provenance-Record trailer.
+type: design
 scope: feature
 feature: git-workflow
-design-id: D-3
-slug: promote-now-commit-on-branch
 status: locked
-iter: 2
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [git-workflow, promote-now, worktree-branch, provenance]
+design-id: D-3
 ---
 
-# D-3 — NEW absorbed: commit-on-branch for Preparation promote-now
+# D-3 — Commit-on-branch for Preparation promote-now
 
 ## Decision
 
@@ -26,11 +28,7 @@ git -C "$worktreePath" commit \
 
 ## Rationale
 
-T1-I-3: the narrow exception is already a sole-writer violation; commit-on-branch is the structural completion. `-C "$worktreePath"` is explicit about which tree. The canonical `AI-Provenance-Record` trailer form is `gobbi://session/{session-id}/task/{task-id}` per `git/conventions.md:118` (verified iter2 + iter3 whole-file scan). Rollback semantics close iter1 R2 (partial promotion failure) and the `1829fa3`-style failure mode.
-
-## Anchored insights
-
-T1-I-3, T1-E-2, `git/conventions.md:118`, T1-DQ-3, iter1 P1/C1, iter1 R2.
+The Preparation promote-now path (narrow exception allowing skill generation during Preparation) was already a sole-writer deviation; commit-on-branch is the structural completion that ties the generated artifact into worktree-first history. The `-C "$worktreePath"` flag is explicit about which tree receives the commit. The canonical `AI-Provenance-Record` trailer form is `gobbi://session/{session-id}/task/{task-id}` per `git/conventions.md`. The rollback mechanism (git rm after failed commit) addresses the partial-promotion failure mode where a copied file must be removed if the commit cannot complete.
 
 ## Trade-offs considered
 
@@ -39,12 +37,8 @@ T1-I-3, T1-E-2, `git/conventions.md:118`, T1-DQ-3, iter1 P1/C1, iter1 R2.
 
 ## Validation
 
-Future-session smoke test: `git log --oneline` for next `generate-now` shows commit subject matching `^chore\(skills\): promote .*`; body contains `AI-Provenance-Record: gobbi://session/[a-f0-9-]+/task/preparation-promote-now-iter[0-9]+`.
-
-## Implementation checklist anchor
-
-T1-I-T1.d, T1-I-T1.j (rollback semantics)
+Future-session smoke test: `git log --oneline` for the next `generate-now` shows commit subject matching `^chore\(skills\): promote .*`; body contains `AI-Provenance-Record: gobbi://session/[a-f0-9-]+/task/preparation-promote-now-iter[0-9]+`.
 
 ## Source
 
-`rawdata/draft-iter3.md:322-327` (D-3 narrative)
+Full session context at `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/ideation/`
