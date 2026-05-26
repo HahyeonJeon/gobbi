@@ -6,6 +6,10 @@ feature: env-var-audit
 created: 2026-05-22
 promoted_from: sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/ideation/staging/references/ideation-references.md
 promoted_at: 2026-05-22
+status: superseded
+superseded_by: [references/claude-code-hooks-stdin-contract.md, references/claude-code-changelog-ccsi-version.md]
+archive_reason: "Bundle file (2 references) split to one-concept-per-file per blocklist #11; memory-redesign W2-T3b."
+archived_at: 2026-05-26
 ---
 
 # External References — Env-Var Audit + SessionStart Hook Ideation
