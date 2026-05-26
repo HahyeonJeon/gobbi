@@ -175,9 +175,9 @@ A promoted doc obeys the same section contract its staging template (`memorizati
 | Type | Body section contract |
 |---|---|
 | `decisions`, `design` | ADR-shaped: `## Context` → `## Decision` (or `## Approach`) → `## Rationale` → `## Alternatives considered` → `## Consequences`. State the conclusion and why the alternatives lost. |
-| `mistakes` | `## What happened` → `## Why it happens` (the mistaken assumption) → `## How to recognize` (trigger signals before repeating) → `## Corrected approach`. |
+| `mistakes` | `## What happened` → `## Why it happens` (the mistaken assumption) → `## Correct approach` → `## How to detect` (trigger signals before repeating). |
 | `learnings` | `## Insight` → `## Context` → `## Why it matters` → `## How to apply` → `## Counter-cases` (where the insight does NOT hold). |
-| `notes` | `## What happened` → `## What shipped` → `## What got stuck` → `## What shifted` → `## Next session`. The session journal — the home for narrative. |
+| `notes` | `## What happened` → `## What shipped` → `## What got stuck` → `## What shifted` → `## Decisions to respect` → `## Next session`. The session journal + handoff — the home for narrative, the in-flight stuck, the standing decisions a future session must not re-litigate, and the next-session pointer. |
 
 Other types (`features`, `rules`, `references`, `plans`, `reviews`, `reports`, `backlogs`, and the four feature-subdir types) follow their own template's section shape in [`memorization/templates/`](templates/). The principle is uniform: **the promoted body matches its type's template contract**, so a reader of any doc of a given type meets a predictable shape.
 
@@ -211,6 +211,7 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 | surfacing evaluator | `surfaced-by` | `surfaced_by` |
 | promotion provenance (source) | `promoted-from` | `promoted_from` |
 | promotion provenance (time) | `promoted-at` | `promoted_at` |
+| finding-disposition provenance | `addressed-by` | `addressed_by` |
 
 **Conditional member — `disposition`.** `disposition` is in S (a leak, must be stripped) **ONLY when the file is NOT under a `backlogs/` directory.** On `backlogs/`, `disposition: open\|deferred` is a **legitimate type extension** (§2.2 line 110) and MUST be preserved — stripping it there violates the safety invariant.
 
@@ -236,7 +237,7 @@ find .gobbi/projects/gobbi -name '*.md' \
   -not -path '*/agents/*' \
   -not -path '*/tmp/*' \
   -print0 \
-| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at):' \
+| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by):' \
   2>/dev/null
 ```
 

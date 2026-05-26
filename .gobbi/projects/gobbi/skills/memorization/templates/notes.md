@@ -73,6 +73,9 @@ shipped: [{slugs of artifacts that landed in project memory this session}]
 ## What shifted
 {Direction changes during the session — decisions that were reconsidered, plans that were rescoped, assumptions that broke. The journal captures *motion*, not just outcomes.}
 
+## Decisions to respect
+{The standing decisions a future session must not silently re-litigate — locks the user ratified, constraints accepted, directions chosen. Distinct from `decisions/` (the durable ADR records): this is the handoff shortlist that says "these are settled; build on them, do not reopen them without cause." Cite the `decisions/` slug where one exists.}
+
 ## Next session
 {Pointer to what the next session should pick up. Could be "continue {feature}", "evaluate {plan}", "react to {finding}". Keep terse — detail belongs in backlogs / handoff summary.}
 ```
