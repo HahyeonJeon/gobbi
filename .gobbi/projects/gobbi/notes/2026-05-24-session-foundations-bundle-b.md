@@ -55,5 +55,5 @@ Concrete artifacts that landed in project memory this session:
 - Process the 12 new project backlogs — recommend cherry-picking `gobbi-hook-authoring-skill` and `ci-symlink-integrity-check` first (both block expansion of the new hook architecture).
 - Apply per-iter session-memory commit cadence retroactively for any sessions still alive that haven't done so.
 - Re-evaluate the Auto Mode mistake-scope determinations: if any of the 6 promoted mistakes feel narrowly bundle-b-only, move to `features/session-foundations-bundle-b/mistakes/` via supersession-style follow-up.
-- Pick up `item-1-2-skill-loading-discipline` from project backlogs if T2 is rescoped.
+- Pick up `skill-loading-discipline` from project backlogs if T2 is rescoped.
 - Process T07+T08 + T10 medium-finding follow-ups from this session's evaluations (CONS-1 system field drop, CONS-2 hook_event coverage, RISK-4 subshell exit, template headers pre-fill, PostToolUseFailure tokens, per-agent record drift, 3-point sync coupling).

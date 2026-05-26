@@ -20,7 +20,7 @@ A more ambitious framing: **introduce a "delegation contract verifier"** — a m
 
 ## Why deferred
 
-User locked the literal-ask scope in CP-1.2-β Option Recommended (matrix + Load-Directives validator). The broader contract verifier was deferred as a follow-up to keep this loop's scope manageable. Note: Item 1-2 itself (the literal-ask version) was further deferred at Sub-step D round 1 — see `item-1-2-skill-loading-discipline.md`. This broader re-framing is therefore deferred behind that deferral.
+User locked the literal-ask scope in CP-1.2-β Option Recommended (matrix + Load-Directives validator). The broader contract verifier was deferred as a follow-up to keep this loop's scope manageable. Note: Item 1-2 itself (the literal-ask version) was further deferred at Sub-step D round 1 — see `skill-loading-discipline.md`. This broader re-framing is therefore deferred behind that deferral.
 
 ## When to pick up
 
