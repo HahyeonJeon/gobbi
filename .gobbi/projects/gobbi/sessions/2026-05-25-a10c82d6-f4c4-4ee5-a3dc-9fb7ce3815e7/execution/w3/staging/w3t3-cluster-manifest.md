@@ -19,8 +19,8 @@ status: in-progress
 - [x] **(a)** decisions 6 + scenarios 6 + plans 1 + changelogs 1 = **14** — SHA: f3f3e8b
 - [x] **(b)** design 16 = **16** — SHA: b43b7cf
 - [x] **(c)** checklists 15 = **15** — SHA: 739d166
-- [x] **(d)** backlogs 15 = **15** — SHA: PENDING-COMMIT
-- [ ] **(e)** references 12 = **12** — SHA: ____
+- [x] **(d)** backlogs 15 = **15** — SHA: 947ec9f
+- [x] **(e)** references 12 = **12** — SHA: PENDING-COMMIT
 - [ ] **(f)** discussions 28 = **28** — SHA: ____
 
 **Total: 100 md across 6 commits.**
@@ -112,8 +112,21 @@ Breakdown: git-workflow 6, workflow 4, install-runtime 3, guardrails 2, agents 1
 
 Breakdown: install-runtime 7, git-workflow 3, guardrails 3, workflow 1, agents 1. `feature:` restamped on all 15. No new feature touched.
 
-### Cluster (e) — 12 files
-(pending)
+### Cluster (e) — 12 files — COMMITTED
+- `autogen-pydantic-tool-schema-validation` → **agents** (agent structured-output schema validation; AMBIGUOUS w/ git-workflow commit-validation — content is agent-output validation)
+- `claude-code-agent-sdk-task-output` → **agents** (Task-tool result interface)
+- `claude-code-hooks-12-lifecycle-events` → **guardrails** (hook lifecycle reference)
+- `claude-code-posttooluse-hook-schema` → **guardrails** (PostToolUse hook schema reference)
+- `claude-code-transcript-tooluseresult-empirical` → **install-runtime** (transcript payload the agents[] capture hook parses)
+- `claude-code-worktree-isolation-pattern` → **git-workflow** (worktree isolation prior art)
+- `claude-jj-worktree-shim-pattern` → **git-workflow** (jj worktree shim)
+- `commitlint-required-fields-validator` → **git-workflow** (commit-msg hook validation)
+- `jj-workspace-isolation-revision-not-branch` → **git-workflow** (jj workspace isolation)
+- `langgraph-skill-catalog-pattern` → **agents** (role × skill catalog)
+- `rbac-matrix-single-source-of-truth` → **agents** (role-permission matrix)
+- `worktree-scope-by-module-not-task` → **git-workflow** (worktree scoping practice)
+
+Breakdown: git-workflow 5, agents 4, guardrails 2, install-runtime 1. NOTE: reference files use a `title:`/`source:`/`accessed:` frontmatter shape with NO `feature:` key — none restamped (body + frontmatter unchanged; frontmatter normalization is a separate category-C task). No new feature touched.
 
 ### Cluster (f) — 28 files
 (pending)
