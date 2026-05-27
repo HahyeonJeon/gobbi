@@ -1,17 +1,17 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+name: wrap-up-step-2-5-compliance-check
+description: Insert Step 2.5 into wrap-up/SKILL.md between staging inventory and feature-destination routing — 4-category gap detection with hybrid auto-backfill + NEEDS_CONTEXT escalation.
+type: design
 scope: feature
 feature: workflow
-loop: ideation
-iter: 3
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [wrap-up, step-2-5, memorization, compliance-check]
 topic: wrap-up-step-2-5-compliance-check
-status: final
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/design/item-d-wrap-up-step-2-5-compliance-check.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
-# Design D — Wrap-up Step 2.5: Prior-Loop Memorization Compliance Check
+# Wrap-up Step 2.5 — prior-loop memorization compliance check
 
 **Chosen direction**: Insert "Step 2.5 — Prior-loop memorization compliance check" between Step 2 (staging inventory) and Step 3 (feature destination) in `wrap-up/SKILL.md § WORK Phase`.
 

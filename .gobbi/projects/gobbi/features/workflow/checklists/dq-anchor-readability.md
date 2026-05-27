@@ -1,22 +1,21 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: open
+name: dq-anchor-readability
+description: DQ-n anchors are defined in sub-step rawdata, not in canonical draft — checklist for Planning to resolve anchors before decomposing tasks.
+type: checklists
 scope: feature
 feature: workflow
-finding-id: COD-AESTH-002
-type: checklist_gap
+status: open
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [dq-anchors, planning, checklist, readability]
 domain: process
-disposition: open
-confidence: 50
-severity: Low
 ---
 
 # DQ-anchor readability — DQ-n anchors defined in sub-step rawdata, not in canonical draft
 
 ## Context
 
-iter2/iter3 Codex Aesthetics finding COD-AESTH-002: the design questions (T1-DQ-1, T1-DQ-2, T1-DQ-3, T3-DQ-1 through T3-DQ-4) are defined in `rawdata/sub-step-d-design-iter1.md` but only referenced by anchor name in the canonical draft. A reader of `draft-iter3.md` alone cannot resolve the DQ anchor back to the question text without consulting the sub-step rawdata file.
+Codex Aesthetics finding: the design questions (T1-DQ-1, T1-DQ-2, T1-DQ-3, T3-DQ-1 through T3-DQ-4) are defined in `rawdata/sub-step-d-design-iter1.md` but only referenced by anchor name in the canonical draft. A reader of `draft-iter3.md` alone cannot resolve the DQ anchor back to the question text without consulting the sub-step rawdata file.
 
 ## Checklist item for Planning
 

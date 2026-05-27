@@ -1,24 +1,25 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: matrix-location-ambiguity-defers-t2
+description: Skill-loading matrix location was ambiguous; user deferred the entire T2 topic from this session — scope reduced to T1+T3 only.
+type: discussions
 scope: feature
 feature: workflow
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [ideation, skill-loading, matrix-location, t2-deferral]
 discussion-id: T2-matrix-deferral
-slug: matrix-location-ambiguity-defers-t2
-phase: ideation
-sub-step: D-round-1
-loop-iter: 1
 ---
 
-# T2 matrix location ambiguity — T2 deferred entirely from this session
+# Skill-loading matrix location ambiguity — T2 deferred from this session
 
 ## Question asked
 
-Sub-step D round 1, DQ-1: Where should the T2 skill-loading matrix live? Leader proposed (b) `delegation/SKILL.md`.
+DQ-1: Where should the skill-loading matrix live? Leader proposed `delegation/SKILL.md`.
 
 ## User answer
 
-User raised concern: "looks ambiguous." User deferred T2 entirely from this session. Post-Sub-step-D scope = T1 + T3 only.
+User raised concern: "looks ambiguous." User deferred T2 entirely from this session. Post-ideation scope = T1 + T3 only.
 
 ## Impact on design
 

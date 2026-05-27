@@ -1,14 +1,18 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: planning
+name: wave-ordering-sequential-t1-t3
+description: User confirmed T1→T3 wave ordering is strict sequential (graph-enforced), not advisory — LOCK #1 applies as hard constraint.
+type: discussions
 scope: feature
 feature: workflow
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, wave-ordering, lock1, dependency-graph]
 topic: T1→T3 wave ordering — strict sequential or interleaved?
 outcome: Strict sequential confirmed; graph-enforced via LOCK #1 (05,06 → 07)
 ---
 
-# T1→T3 wave ordering
+# T1→T3 wave ordering — strict sequential confirmed
 
 ## Context
 

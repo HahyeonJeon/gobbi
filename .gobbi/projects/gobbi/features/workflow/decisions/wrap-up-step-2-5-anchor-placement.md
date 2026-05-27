@@ -1,22 +1,18 @@
 ---
-slug: wrap-up-step-2-5-anchor-placement
-title: "Wrap-up Step 2.5 anchor placement — new H3 after ### WORK discipline"
-domain: docs-sync
-type: design_flaw
-disposition: addressed
-mistake-candidate: false
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: planning
-created: 2026-05-23
-status: active
-supersedes: null
-date: 2026-05-23
+name: wrap-up-step-2-5-anchor-placement
+description: Wrap-up Step 2.5 lands as a new H3 after the WORK discipline block, not as an inline table row — anchor placement decision.
+type: decisions
 scope: feature
 feature: workflow
+status: active
+created: 2026-05-23
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [wrap-up, step-2-5, anchor-placement, orchestration]
+domain: docs-sync
+project: gobbi
+supersedes: null
 superseded_by: null
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/decisions/concern-1-wrap-up-step-2-5-anchor.md
-promoted-at: 2026-05-23T14:00:00Z
+decision_status: accepted
 ---
 
 # Wrap-up Step 2.5 anchor placement

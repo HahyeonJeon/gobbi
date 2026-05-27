@@ -1,17 +1,17 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+name: drop-legacy-setup-questions
+description: Replace the 2-question setup block in gobbi/SKILL.md with 1 mode question plus an optional customize gate, eliminating the legacy eval-mode and git-workflow-mode questions.
+type: design
 scope: feature
 feature: workflow
-loop: ideation
-iter: 3
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [gobbi-skill, session-bootstrap, setup-questions, orchestration]
 topic: drop-legacy-setup-questions
-status: final
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/design/item-g-drop-legacy-setup-questions.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
-# Design G — Drop Legacy Setup Questions in `gobbi/SKILL.md § 4`
+# Drop legacy setup questions — gobbi/SKILL.md session bootstrap rewrite
 
 **Chosen direction**: Rewrite `gobbi/SKILL.md § Step 4` (lines 97-114) from "Ask the user 2 setup questions" to "Ask 1 setup question + optional customize gate":
 - Question 1 — mode (chat/auto), **default auto** per `orchestration/templates/settings.default.json:3`

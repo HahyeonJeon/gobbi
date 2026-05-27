@@ -1,8 +1,14 @@
 ---
-title: Dependency graph with strict T1→T3 wave ordering
-status: accepted
+name: dependency-graph-strict-wave-ordering
+description: The 10-task plan enforces T1→T3 wave ordering via explicit dependency graph edges, not prose-only guidance.
+type: design
 scope: feature
 feature: workflow
+status: accepted
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, dependency-graph, wave-ordering, lock1]
+title: Dependency graph with strict T1→T3 wave ordering
 related:
   - planning/staging/decisions/lock1-wave-ordering-not-graph-enforced.md
   - planning/artifacts/plan.md

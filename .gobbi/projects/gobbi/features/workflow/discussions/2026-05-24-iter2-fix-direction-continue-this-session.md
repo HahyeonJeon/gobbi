@@ -1,14 +1,18 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: planning
+name: iter2-fix-direction-continue-this-session
+description: User confirmed to address all 5 Planning iter1 REVISE findings surgically within the same session rather than deferring to a next-session re-plan.
+type: discussions
 scope: feature
 feature: workflow
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, iter2, fix-direction, evaluation]
 topic: iter2 fix direction — continue-this-session vs. defer to next session
 outcome: Continue this session; iter2 is a surgical 5-fix pass, not a re-do
 ---
 
-# iter2 fix direction (continue-this-session)
+# Fix direction — continue this session with surgical 5-fix pass
 
 ## Context
 

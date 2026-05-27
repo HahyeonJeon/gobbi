@@ -1,10 +1,13 @@
 ---
-date: 2026-05-26
-session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+name: bundle-a-rehome
+description: Bundle A (gobbi-orchestration-workflow-improvements) durable artifacts re-homed into workflow during the memory-system redesign.
+type: changelogs
 scope: feature
 feature: workflow
-task: memory-redesign W3-T2
 status: shipped
+created: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [memory-redesign, re-home, bundle-a]
 plan: null
 ---
 

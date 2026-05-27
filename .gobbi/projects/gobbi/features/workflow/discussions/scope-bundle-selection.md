@@ -1,17 +1,17 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+name: scope-bundle-selection
+description: User selected Bundle A (all 7 items) over codex-only or memorization-only — four items share a session and a root cause, making a single cycle more efficient.
+type: discussions
 scope: feature
 feature: workflow
-loop: ideation
-iter: 3
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [ideation, scope-selection, bundle-a, orchestration]
 topic: scope-bundle-selection
-status: final
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/discussions/scope-bundle-selection.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
-# Discussion: Bundle A Scope Selection
+# Bundle A scope selection — all 7 items chosen
 
 ## What was asked
 

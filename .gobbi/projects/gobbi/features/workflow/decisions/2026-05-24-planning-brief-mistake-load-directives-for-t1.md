@@ -1,14 +1,19 @@
 ---
-date: 2026-05-23
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
+name: planning-brief-mistake-load-directives-for-t1
+description: Planning must explicitly cite 3 project mistakes in the Load Directives block of every worktree-task brief, not rely on passive domain-filter loading.
+type: decisions
 scope: feature
 feature: workflow
+status: accepted
+created: 2026-05-23
+session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, load-directives, mistakes, worktree-tasks]
 supersedes: null
 superseded_by: null
+decision_status: accepted
 ---
 
-# Planning MUST cite 3 specific mistakes in every T1 task brief's Load Directives tier 4
+# Planning briefs must explicitly cite 3 mistakes in worktree-task Load Directives
 
 ## Context
 
@@ -18,7 +23,7 @@ The default `mistake/SKILL.md` P1 load procedure tells executors to filter proje
 
 ## Decision
 
-Planning MUST include the following three mistake file paths in tier 4 (Mistakes) of the Load Directives block of EVERY T1 task brief. Executors load them at Study phase before touching any T1 surface.
+Planning MUST include the following three mistake file paths in tier 4 (Mistakes) of the Load Directives block of EVERY worktree-task brief. Executors load them at Study phase before touching any worktree-task surface.
 
 1. `.gobbi/projects/gobbi/mistakes/codex-eval-session-write-path-nested-in-worktree.md`
    - Relevance: T1 worktree-cwd routing. When `cwd` is inside the worktree, session writes must still resolve to the main-tree absolute path `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/…`. Executors editing `git/SKILL.md:33` qualified rule, `preparation/SKILL.md` narrow exception, or any session-write code path need this loaded.

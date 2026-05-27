@@ -1,19 +1,18 @@
 ---
-scenario: plan-task-trace-accuracy
+name: task01-t1c-trace-overclaim
+description: Task 01 traces-to field overclaims T1.c anchor whose actual edit lives in Task 02 — checklist item to align traces-to with actual task assignments.
+type: checklists
 scope: feature
 feature: workflow
-last_updated: 2026-05-24
-finding-id: task01-overclaims-t1c-trace
-type: checklist_gap
+status: open
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, traces-to, task-accuracy, checklist]
 domain: docs-sync
-disposition: open
-confidence: 96
-severity: Low
-surfaced-by: codex
-loop: planning
+last_updated: 2026-05-24
 ---
 
-# Task 01 traces-to T1-I-T1.c but the actual T1.c edit lives in Task 02
+# Task 01 traces-to overclaim — T1.c edit assigned to Task 02
 
 ## Situation
 

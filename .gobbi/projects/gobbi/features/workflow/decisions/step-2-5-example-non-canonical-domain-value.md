@@ -1,31 +1,28 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
-status: deferred
+name: step-2-5-example-non-canonical-domain-value
+description: Step 2.5 illustrative example uses `testing` instead of canonical domain value `test` — decision to defer micro-fix to Execution.
+type: decisions
 scope: feature
 feature: workflow
+status: deferred
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [wrap-up, step-2-5, domain-value, docs-sync]
+domain: docs-sync
 supersedes: null
 superseded_by: null
-mistake-candidate: false
-domain: docs-sync
-severity: low
-disposition: open
-finding-id: COD-CONS-003
-loop: ideation
-iter: 3
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/decisions/step-2-5-example-non-canonical-domain-value.md
-promoted-at: 2026-05-23T14:00:00Z
+decision_status: accepted
 ---
 
-# Deferred Risk: Step 2.5 Illustrative Example Uses Non-Canonical Domain Value `testing`
+# Step 2.5 example uses non-canonical domain value `testing`
 
 ## Context
 
-Finding COD-CONS-003 from Codex iter3 Consistency evaluation. Low severity, disposition open. Did not require REVISE — below threshold. Preserved for Planning/Execution to address in the Bundle A docs pass.
+Finding from Codex Consistency evaluation. Low severity. Did not require REVISE — below threshold. Preserved for Planning/Execution to address in the Bundle A docs pass.
 
 ## Decision
 
-The illustrative example in Design D / Step 2.5 specification (iter3 line 482) uses `Domain=\`testing\`` as an example of a `general`-Type finding. The canonical Domain value defined in `evaluation/SKILL.md:403` is `test` (without the `-ing` suffix).
+The illustrative example in Design D / Step 2.5 specification uses `Domain=\`testing\`` as an example of a `general`-Type finding. The canonical Domain value defined in `evaluation/SKILL.md:403` is `test` (without the `-ing` suffix).
 
 The mismatch is in an illustrative example, not in normative routing rules or the classification table. The active routing logic delegates to the canonical Domain table at `evaluation/SKILL.md § Complete Domain → staging destination routing (general Type)` (line 356), so the incorrect example does not break runtime behavior.
 

@@ -1,22 +1,21 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: open
+name: dq-anchor-traceability
+description: No DQ index exists; F1/Fix-decision sections provide local trace only — checklist for Planning to decide if a DQ index is worth creating.
+type: checklists
 scope: feature
 feature: workflow
-finding-id: COD-OVERALL-004
-type: checklist_gap
+status: open
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [dq-anchors, planning, checklist, traceability]
 domain: process
-disposition: open
-confidence: 50
-severity: Medium
 ---
 
 # DQ-anchor traceability — no DQ index; F1/Fix-decision sections provide local trace only
 
 ## Context
 
-iter2/iter3 Codex Overall + Consistency finding COD-OVERALL-004 / COD-CONS-002: the design decisions in `draft-iter3.md` cite T-DQ-N anchors inline but there is no stand-alone DQ index document cross-referencing each design question to its resolution. For Planning, the F1/Fix-decision section provides sufficient local trace; the gap is in cross-session discoverability.
+Codex Overall + Consistency finding: the design decisions in `draft-iter3.md` cite T-DQ-N anchors inline but there is no stand-alone DQ index document cross-referencing each design question to its resolution. For Planning, the F1/Fix-decision section provides sufficient local trace; the gap is in cross-session discoverability.
 
 ## Checklist item for Planning
 

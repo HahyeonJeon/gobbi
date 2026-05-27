@@ -1,17 +1,17 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+name: wrap-up-step-2-5-escalation-shape
+description: User selected hybrid escalation for Wrap-up Step 2.5 — auto-backfill mechanical gaps, NEEDS_CONTEXT for design or decision gaps.
+type: discussions
 scope: feature
 feature: workflow
-loop: ideation
-iter: 3
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [wrap-up, step-2-5, escalation, hybrid, memorization]
 topic: wrap-up-step-2-5-escalation-shape
-status: final
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/discussions/wrap-up-step-2-5-escalation-shape.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
-# Discussion: Wrap-up Step 2.5 Escalation Shape (Post-WORK iter1 Redirect)
+# Wrap-up Step 2.5 escalation shape — hybrid auto-backfill selected
 
 ## What was asked
 

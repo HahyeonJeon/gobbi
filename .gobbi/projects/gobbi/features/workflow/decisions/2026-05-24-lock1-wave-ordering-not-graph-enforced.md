@@ -1,22 +1,19 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
+name: lock1-wave-ordering-not-graph-enforced
+description: T1→T3 wave ordering was stated in prose only, not machine-enforced in the task dependency graph — decision to add graph edges.
+type: decisions
 scope: feature
 feature: workflow
-loop: planning
-finding-id: lock-graph-under-enforced
-type: design_flaw
+status: accepted
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, wave-ordering, dependency-graph, lock1]
 domain: structure
-disposition: addressed
-confidence: 96
-severity: High
-surfaced-by: claude+codex (convergent)
-addressed-in: iter2 Fix 2
 supersedes: null
+decision_status: accepted
 ---
 
-# LOCK #1 T1→T3 wave ordering not graph-enforced (addressed in iter2)
+# Wave ordering not graph-enforced — T1→T3 dependency edges added
 
 ## Context
 
@@ -24,7 +21,7 @@ The Planning iter1 draft stated in prose that the T1 wave (Tasks 01-06) must com
 
 ## Decision
 
-In iter2 Fix 2:
+In the iter2 fix pass:
 - Task 07 `requires` changed from `[05]` to `[05, 06]`, graph-enforcing both terminal T1 wave leaves as prerequisites.
 - Task 10 `requires` added `06`, enforcing the orchestration/SKILL.md sequential-edit ordering.
 

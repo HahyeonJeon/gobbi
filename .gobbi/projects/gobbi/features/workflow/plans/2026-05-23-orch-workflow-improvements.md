@@ -1,17 +1,16 @@
 ---
-slug: 2026-05-23-orch-workflow-improvements
-title: "gobbi-orchestration-workflow-improvements — Execution plan"
+name: orch-workflow-improvements
+description: Execution plan for the gobbi-orchestration-workflow-improvements bundle — 7 tasks repairing codex invocation, memorization capture, wrap-up compliance, and naming conventions.
+type: plans
 scope: feature
 feature: workflow
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: planning
-iter: 2
-verdict: PASS
+status: active
 created: 2026-05-23
-status: final
+session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [planning, execution-plan, bundle-a, orchestration]
+title: "gobbi-orchestration-workflow-improvements — Execution plan"
+verdict: PASS
 artifact_ref: /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/artifacts/plan.md
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/plans/main.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
 # Execution Plan — gobbi-orchestration-workflow-improvements

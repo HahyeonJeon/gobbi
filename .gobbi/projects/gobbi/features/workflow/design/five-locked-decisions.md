@@ -1,8 +1,14 @@
 ---
-title: 5 locked decisions for session-foundations-bundle-b execution
-status: accepted
+name: five-locked-decisions
+description: Five user-confirmed locked decisions for session-foundations-bundle-b Execution — non-negotiable during task execution.
+type: design
 scope: feature
 feature: workflow
+status: accepted
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, locked-decisions, execution, wave-ordering]
+title: 5 locked decisions for session-foundations-bundle-b execution
 related:
   - planning/artifacts/plan.md
   - ideation/artifacts/bundle-b-ideation-pass.md

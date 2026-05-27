@@ -1,20 +1,21 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: skill-loading-discipline-root-cause
+description: User confirmed the (D+L) composite root cause for skill-loading discipline failures — 3 of 7 promoted mistakes fit the docs-gap + lazy-load-behavior pattern.
+type: discussions
 scope: feature
 feature: workflow
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [ideation, skill-loading, root-cause, deferred-t2]
 discussion-id: CP-1-2-alpha
-slug: skill-loading-discipline-root-cause
-phase: ideation
-sub-step: A-round-1
-loop-iter: 1
 ---
 
-# Root-cause hypothesis for T2 (skill-loading discipline) confirmed
+# Root-cause hypothesis for skill-loading discipline confirmed
 
 ## Question asked
 
-CP-1.2-α: Is the root cause for Item 1-2 a (D+L) composite — docs gap + lazy-load behavior?
+CP-1.2-α: Is the root cause for Item 1-2 (skill-loading discipline) a (D+L) composite — docs gap + lazy-load behavior?
 
 ## User answer
 

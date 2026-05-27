@@ -1,22 +1,20 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: deferred
+name: lock2-shared-executor-mega-task-risk
+description: Tasks 07+08 shared-executor context-budget risk — deferred assumption
+type: backlogs
 scope: feature
 feature: workflow
-loop: planning
-finding-id: lock2-shared-executor-mega-task-risk
-type: assumption_risk
+status: deferred
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [execution, shared-executor, context-budget, lock2]
+priority: medium
 domain: process
 disposition: open
-confidence: 50
-severity: Medium
-surfaced-by: claude
-addressed-in: null
 supersedes: null
 ---
 
-# LOCK #2 Tasks 07+08 shared-executor context-budget risk (deferred)
+# LOCK #2 Tasks 07+08 shared-executor context-budget risk
 
 ## Context
 

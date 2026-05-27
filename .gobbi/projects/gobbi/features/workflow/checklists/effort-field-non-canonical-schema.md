@@ -1,16 +1,15 @@
 ---
-scenario: plan-task-schema-compliance
+name: effort-field-non-canonical-schema
+description: The effort field in task YAML is not defined in planning/SKILL.md — checklist item to formalize or remove it.
+type: checklists
 scope: feature
 feature: workflow
-last_updated: 2026-05-24
-finding-id: effort-field-non-canonical
-type: checklist_gap
+status: open
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, task-schema, effort-field, checklist]
 domain: docs-sync
-disposition: open
-confidence: 100
-severity: Low
-surfaced-by: claude+codex (convergent)
-loop: planning
+last_updated: 2026-05-24
 ---
 
 # `effort:` field in task YAML is non-canonical per planning/SKILL.md

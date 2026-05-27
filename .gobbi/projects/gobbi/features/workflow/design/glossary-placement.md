@@ -1,17 +1,17 @@
 ---
-date: 2026-05-23
-session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+name: glossary-placement
+description: Move the Glossary block in gobbi/SKILL.md from before the bootstrap steps to after them, so a fresh manager's first read is the actionable bootstrap.
+type: design
 scope: feature
 feature: workflow
-loop: ideation
-iter: 3
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [gobbi-skill, glossary, session-bootstrap, doc-structure]
 topic: glossary-placement
-status: final
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/ideation/staging/design/item-f-glossary-placement.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
-# Design F — Move Glossary Below Session Bootstrap Order in `gobbi/SKILL.md`
+# Move glossary below session bootstrap order in `gobbi/SKILL.md`
 
 **Chosen direction**: Move the `## Glossary` block (currently at `gobbi/SKILL.md:15-29`) to a new position immediately before `## Workflow Overview` (currently line 128) and after `## Session Bootstrap Order` ends (~line 124). Execution: a single Edit (cut Glossary block, paste at new location).
 

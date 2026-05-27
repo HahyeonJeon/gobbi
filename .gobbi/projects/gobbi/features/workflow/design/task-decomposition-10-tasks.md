@@ -1,8 +1,14 @@
 ---
-title: 10-task decomposition for session-foundations-bundle-b
-status: accepted
+name: task-decomposition-10-tasks
+description: The session-foundations-bundle-b work is decomposed into 10 medium-granularity tasks organized into T1 doc-edit and T3 script-authoring waves.
+type: design
 scope: feature
 feature: workflow
+status: accepted
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [planning, task-decomposition, wave-ordering, execution]
+title: 10-task decomposition for session-foundations-bundle-b
 related:
   - planning/artifacts/plan.md
   - ideation/artifacts/bundle-b-ideation-pass.md
