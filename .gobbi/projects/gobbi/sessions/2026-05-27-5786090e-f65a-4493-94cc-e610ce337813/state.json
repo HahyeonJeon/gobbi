@@ -9,5 +9,5 @@
     "execution":     { "state": "Active",  "verdict": null,   "iter": 2,    "maxIterations": 3,    "phase": "ITER/EXIT" },
     "wrap-up":       { "state": "Pending", "verdict": null,   "iter": 0,    "maxIterations": 1,    "phase": null }
   },
-  "activeNote": "2026-05-27 (session 5786090e). PROSE wave: P1 (caad41b), P2 (db50af6), P3a (69a089f), P3b (f899480), P4 (aa901e4) all PASS. Residue committed (56089c1). 4 staged mistake-candidates + 1 deferred backlog. Remaining: P5a → P5b → P6 → P7a → P7b → N1, then Wrap-up. git push pending. Driving to end. See wrap-up/artifacts/handoff.md."
+  "activeNote": "2026-05-27 (session 5786090e). PROSE wave: P1 (caad41b), P2 (db50af6), P3a (69a089f), P3b (f899480), P4 (aa901e4), P5a (5628346) all PASS. Residue committed (56089c1). 4 staged mistake-candidates + 1 deferred backlog. Remaining: P5b → P6 → P7a → P7b → N1, then Wrap-up. P5b NOTE: residual stale staging path in features/install-runtime/backlogs/ci-symlink-backlog-pseudocode-plumbing.md. git push pending. Driving to end. See wrap-up/artifacts/handoff.md."
 }
