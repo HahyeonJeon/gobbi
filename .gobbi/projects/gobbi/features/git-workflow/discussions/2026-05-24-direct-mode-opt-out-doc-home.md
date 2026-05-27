@@ -40,3 +40,8 @@ Co-located with the smoke-test gate: `jq '.git.branch' session.json` must match 
 ## Implication
 
 The Execution task implementing the direct-mode opt-out owns both the footnote and the smoke-test gate. The file home is `orchestration/SKILL.md` at the worktree-creation step. `git/SKILL.md` gets the general critical-rule qualifier (worktreePath resolution) but NOT the direct-mode opt-out documentation.
+
+## Related
+
+- `design/direct-mode-retained-opt-out.md` — Design Decision D-5, the direct-mode opt-out this discussion places.
+- `design/worktree-create-before-session-stamp.md` — the worktree-creation step (D-1) whose footnote holds the opt-out text.

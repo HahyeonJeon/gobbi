@@ -43,3 +43,8 @@ Where should the promote-now rollback semantics live?
 ## Implication
 
 The Execution task implementing the promote-now commit-on-branch owns both the promote-now path and the rollback semantics documentation in `preparation/SKILL.md`.
+
+## Related
+
+- `decisions/2026-05-24-rollback-semantics-drift-from-ideation.md` — the formal decision record for the `git rm` (not `git checkout`) rollback.
+- `design/promote-now-commit-on-branch.md` — Design Decision D-3, the commit-on-branch path whose rollback this discussion places.

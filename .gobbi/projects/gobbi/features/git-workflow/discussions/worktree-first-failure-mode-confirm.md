@@ -12,14 +12,27 @@ tags: [git-workflow, worktree-first, failure-mode, cwd]
 
 # Worktree-first failure-mode framing confirmed
 
-## Question asked
+## Context
 
-Is the worktree-first failure mode correctly framed as: "Preparation/Planning artifacts that should land in PR diff get written to main tree because `cwd` is main tree until Execution"?
+Worktree-first was proposed as the fix for a recurring misroute where session artifacts that should land in the PR diff instead get written to the main tree. Before locking the design, the session needed to confirm the *root cause* framing, because the fix differs depending on whether the cause is a working-directory issue or a symlink / path-resolution issue.
 
-## User answer
+## Question
 
-Confirmed. The framing is accurate. The witness is a real misroute (executor wrote session artifacts to main tree while intending them for the worktree), caught during executor self-review.
+Is the worktree-first failure mode correctly framed as: "Preparation/Planning artifacts that should land in the PR diff get written to the main tree because `cwd` is the main tree until Execution"?
 
-## Impact on design
+## Options considered
 
-T1's problem statement and root cause analysis are locked on this framing: the failure mode is a `cwd` issue, not a symlink or path-resolution issue. Worktree-first resolves it by ensuring session writes use `$worktreePath` as the absolute root from session start.
+1. **A `cwd` issue** — artifacts misroute because the working directory defaults to the main tree until Execution, so relative writes land in the main tree. Fix: root session writes at `$worktreePath` from session start.
+2. **A symlink / path-resolution issue** — artifacts misroute because of how paths resolve through symlinks, which would call for a different fix.
+
+## User decision
+
+Confirmed option 1: the framing is accurate — it is a `cwd` issue, not a symlink or path-resolution issue. The witness is a real misroute (an executor wrote session artifacts to the main tree while intending them for the worktree), caught during executor self-review.
+
+## Implication
+
+The worktree-first problem statement and root-cause analysis are locked on this framing. Worktree-first resolves it by ensuring session writes use `$worktreePath` as the absolute root from session start.
+
+## Related
+
+- `design/qualified-git-write-path-rule.md` — Design Decision D-2, which roots session writes at `worktreePath` to fix this `cwd` failure mode.

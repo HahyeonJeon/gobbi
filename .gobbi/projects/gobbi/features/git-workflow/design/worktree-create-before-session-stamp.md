@@ -13,7 +13,11 @@ design-id: D-1
 
 # Create worktree and stamp git.worktreePath in the Configuration step (D-1)
 
-> **Superseded note (2026-05-25):** worktree creation was reordered from row 5.5 to **row 5** in a later bundle (state.json init is now row 5.5). This file records the original bundle-B numbering; see `orchestration/SKILL.md` Step 1 for the current rows.
+> **Superseded note (2026-05-25):** worktree creation was reordered from row 5.5 to **row 5** in a later bundle (state.json init is now row 5.5). This file records the original numbering; see `orchestration/SKILL.md` Step 1 for the current rows.
+
+## Context
+
+The session.json git-fields stamp writes `git.branch` and `git.worktreePath`, both of which must be non-null. For those values to exist, the worktree must already have been created and its path known. So the Configuration step needed an explicit worktree-creation action placed *before* the session.json git-fields stamp — and a branch-naming scheme that passes the existing branch-type registry and description-slug validation.
 
 ## Decision
 
@@ -30,15 +34,20 @@ Add worktree creation ("Create worktree and stamp `git.worktreePath`") to the Co
 
 The session.json git-fields stamp needs `git.branch` and `git.worktreePath` to be non-null; worktree creation must therefore precede that stamp. The `chore` type is already in the type registry — no registry extension required.
 
-## Trade-offs considered
+## Alternatives considered
 
-- `feat/session-{date}-{ssid-short}` — rejected: `feat` implies a new product feature, not a session-infrastructure branch
-- `session/{date}-{ssid-short}` — rejected: `session/` is not in the registered type registry (causes registry validation failure)
-- Promote to a higher row — rejected: changes more than necessary; state.json init belongs immediately before worktree creation
+- **`feat/session-{date}-{ssid-short}` branch name** — rejected: `feat` implies a new product feature, not a session-infrastructure branch.
+- **`session/{date}-{ssid-short}` branch name** — rejected: `session/` is not in the registered branch-type registry, so it would fail registry validation (and block CI/hooks).
+- **Placing worktree creation at a higher row in the Configuration step** — rejected: it changes more of the step order than necessary; state.json init belongs immediately before worktree creation.
 
-## Validation
+## Consequences
 
-After Configuration: `jq '.git.branch' session.json` matches `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$`; `jq '.git.worktreePath'` returns non-null.
+The Configuration step in `orchestration/SKILL.md` carries the worktree-creation action between state.json init and the session.json git-fields stamp; an idempotency guard skips it when `worktreePath` is already non-null on resume / `/clear` / `/compact`. No branch-type-registry extension is required since `chore` already exists. Verification: after Configuration, `jq '.git.branch' session.json` matches `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$` and `jq '.git.worktreePath'` returns non-null.
+
+## Related
+
+- `discussions/branch-prefix-sub-option.md` — the discussion that selected the `chore/` branch prefix.
+- `design/direct-mode-retained-opt-out.md` — the direct-mode guard (D-5) that can skip this creation step.
 
 ## Source
 

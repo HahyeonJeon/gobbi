@@ -12,14 +12,28 @@ tags: [git-workflow, commit-subject, session-commits, d4]
 
 # Per-iteration session-memory commit subject — chore(session) confirmed
 
-## Question asked
+## Context
 
-What should be the per-iteration session-memory commit subject? Options: (a) `chore(session): record <loop> iter{n} memory` using `session` as the scope (matching the `sessions/` directory), (b) `chore(<loop>): record iter{n} memory` using the loop name as scope.
+Design Decision D-4 commits session memory to the worktree branch once per iteration. The commit subject needed a Conventional-Commits scope token, and the choice was between scoping by the directory being committed (`session`) or by the workflow loop that produced the commit.
 
-## User answer
+## Question
 
-Confirmed option (a): `chore(session): record <loop> iter{n} memory` — the `session` scope matches the directory being committed; the loop name goes in the subject body.
+What should the per-iteration session-memory commit subject be — scope by directory or by loop?
 
-## Impact on design
+## Options considered
 
-Design Decision D-4 commit subject pattern is locked: `chore(session): record <loop> iter{n} memory` (e.g., `chore(session): record ideation iter3 memory`). All 5 workflow loop docs carry this pattern.
+1. **`chore(session): record <loop> iter{n} memory`** — `session` as the scope token, matching the `sessions/` directory being committed; the loop name goes in the subject body.
+2. **`chore(<loop>): record iter{n} memory`** — the loop name as the scope token.
+
+## User decision
+
+Confirmed option 1, `chore(session): record <loop> iter{n} memory` — the `session` scope matches the directory being committed; the loop name goes in the subject body.
+
+## Implication
+
+Design Decision D-4's commit subject pattern is locked: `chore(session): record <loop> iter{n} memory` (e.g., `chore(session): record ideation iter3 memory`). All 5 workflow loop docs carry this pattern.
+
+## Related
+
+- `design/per-iteration-session-commit-cadence.md` — Design Decision D-4, which adopts this subject pattern.
+- `design/workflow-phase-doc-set-for-per-iter-cadence.md` — the 5 loop docs that carry the pattern.

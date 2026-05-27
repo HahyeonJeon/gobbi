@@ -15,32 +15,29 @@ superseded_by: null
 
 # Plan diff-scope gate semantics override (bundled PR)
 
-## Witness
+## Context
 
-During Execution of Task 02 (memorization moment-of-capture), the Codex evaluator raised a High-severity finding: `git diff --name-only develop...HEAD` returned 3 files (Task 01's `gobbi/SKILL.md` plus Task 02's `memorization/SKILL.md` and `mistake/SKILL.md`). The Plan's verify spec for Task 02 expected exactly 2 files. Codex elevated to High severity and issued a REVISE verdict.
+The Plan's per-task verify gates were authored when each task was expected to ship as its own PR, so each task's `verifies:` spec used `git diff --name-only develop...HEAD` to confirm the task touched only its declared files. The user then switched to a single bundled PR (all tasks on one worktree branch) at Execution entry. Under a bundled PR, `develop...HEAD` cumulates ALL commits on the branch since develop diverged — so when a later task's commit was checked, the diff returned every prior task's files too, not just the current task's.
 
-## Root cause
-
-Plan was authored when per-task PR was the working assumption. User switched to bundled PR at Execution entry. Plan's `verifies:` for each task uses `git diff --name-only develop...HEAD` which cumulates ALL commits on the branch since develop diverged.
-
-Under bundled PR, the correct gate semantics:
-- **Branch-vs-develop diff (`develop...HEAD`)** — check at PR-creation time, not per-task.
-- **Commit-scope diff (`HEAD~1..HEAD` or `<sha>^..<sha>`)** — exactly the current task's changes; correct for per-task scope check.
-
-The Task 02 commit itself showed exactly the 2 expected files when checked at commit scope (rather than the cumulative branch diff).
+This surfaced concretely on the memorization moment-of-capture task: its verify spec expected exactly 2 files (`memorization/SKILL.md` + `mistake/SKILL.md`), but `develop...HEAD` returned 3 — the 2 expected files plus the preceding task's `gobbi/SKILL.md`. An evaluator raised this as a High-severity REVISE. Checked at commit scope (`HEAD~1..HEAD`), that task's commit showed exactly the 2 expected files; the extra file was purely an artifact of the cumulative branch-diff semantics.
 
 ## Decision
 
-The manager overrode the REVISE verdict for Task 02: Task 02's commit scope was correct (2 files: memorization + mistake); the Plan's `verifies:` was written for per-task PR topology that no longer applied after the user switched to bundled PR at Execution entry.
+Under a bundled PR, per-task scope gates use **commit-scope diff** (`git diff --name-only HEAD~1..HEAD`, or `<commit-sha>^..<commit-sha>`), NOT branch-vs-develop diff (`develop...HEAD`). The branch-cumulative diff is checked once at PR-creation time (Wrap-up) to confirm the full bundle equals the union of all tasks' files. The REVISE on the memorization task was overridden to an effective PASS: its commit scope was correct; only the Plan's gate command was written for the no-longer-applicable per-task-PR topology.
 
-Task 02 was treated as an effective PASS (Claude PASS + Codex REVISE-on-plan-misspec → manager-override PASS).
+## Rationale
 
-## Forward-applicable rule for T03-T07
+The gate's underlying property — "this task touched only its declared files" — is correctly verified by commit-scope diff under a bundled PR. The branch-vs-develop command did not measure that property under bundled topology; it measured "every file changed on the branch so far," which is a different (and for per-task scope, wrong) quantity. Switching to commit-scope is not gaming the gate (Iron Law 11): it fixes the gate command to measure the property it was always meant to measure, rather than relaxing the property to make a failing number pass.
 
-All remaining task evaluations:
-- **Diff-scope gate uses commit-scope** — `git diff --name-only HEAD~1..HEAD` (or `<commit-sha>^..<commit-sha>`) — NOT `git diff --name-only develop...HEAD`.
-- Branch-cumulative diff is checked once at PR creation (Wrap-up) to confirm full bundle = all 7 tasks' files in union.
+## Alternatives considered
 
-## Iron Law 11 check
+- **Keep `develop...HEAD` and widen each task's expected-file count to include prior tasks' files** — rejected: this games the gate. It would relax the per-task scope property ("touched only its declared files") just to make the cumulative count match, defeating the gate's purpose.
+- **Re-split into per-task PRs to restore the original gate semantics** — rejected: the user chose bundled PR; reverting the PR topology to fit a verification command is backwards. The command adapts to the topology, not the reverse.
 
-This is NOT gaming the tool. The gate's underlying property — "this task touched only its declared files" — is correctly verified via commit-scope. The Plan's gate text used the wrong git command for the bundled-PR topology.
+## Consequences
+
+All remaining task evaluations in the bundle use commit-scope diff (`git diff --name-only HEAD~1..HEAD` or `<commit-sha>^..<commit-sha>`) for the per-task scope gate. The branch-cumulative diff (`develop...HEAD`) is reserved for the single PR-creation check at Wrap-up, where it confirms the full bundle equals the union of all the bundle's tasks' files.
+
+## Related
+
+- `design/per-iteration-session-commit-cadence.md` — the per-iteration commit cadence (D-4) that produces the per-task commits this gate checks.

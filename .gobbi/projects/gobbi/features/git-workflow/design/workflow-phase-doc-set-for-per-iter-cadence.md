@@ -15,29 +15,21 @@ related:
 
 # Workflow phase doc set for per-iter commit cadence
 
-## Problem
+## Context
 
-Design Decision D-4 (per-iteration session-memory commit cadence) calls for adding the `chore(session): record <loop> iter{n} memory` commit rule to "all 5 workflow phase docs" — but the Ideation artifact and design staging files refer to "5 phase docs" without listing the exact file set. A Planning decomposer reading the D-4 implementation requirement without explicit enumeration would have to re-derive the file set from `.claude/skills/orchestration/workflow/` directory listing or infer from context, risking off-by-one (missing or extra files).
-
-A Preparation gap scan flagged this as a Planning-ambiguity gap (low-medium severity). This design file closes it by enumerating the 5 target files explicitly.
-
-## Scope
-
-In-scope (this design artifact): naming the 5 target files and the textual contract each must carry.
-
-Out-of-scope: the per-loop commit-message format itself (already locked by D-4 in the Ideation artifact); the smoke test verifying commit subjects (T1-I-T1.h); rollback semantics for commit failure (T1-I-T1.j).
+Design Decision D-4 (per-iteration session-memory commit cadence) calls for adding the `chore(session): record <loop> iter{n} memory` commit rule to "all 5 workflow phase docs" — but D-4 itself refers to "5 phase docs" without listing the exact file set. The `.claude/skills/orchestration/workflow/` directory actually holds **7** files: the 5 loop docs plus the two cross-cutting sub-phase docs `evaluation.md` and `memorization.md`. Anyone implementing D-4 without an explicit enumeration would have to re-derive the target set from the directory listing and risks an off-by-one — missing a loop doc, or over-editing the two sub-phase docs. This design closes that ambiguity by naming the 5 target files explicitly and stating why the other 2 are excluded.
 
 ## Approach
 
-Each of the 5 workflow phase docs gains a uniform "Per-iteration session-memory commit cadence" rule co-located with the doc's own MEMORIZATION / EVALUATION boundary. The rule reads (substance — exact phrasing is a Planning / Execution concern, not a Preparation design decision):
+Each of the 5 workflow loop docs gains a uniform "Per-iteration session-memory commit cadence" rule, co-located with the doc's own MEMORIZATION boundary. The rule's substance (exact phrasing is an implementation concern):
 
 > After every iteration's MEMORIZATION completes (PASS, REVISE, or FAIL), the manager creates a session-memory commit on the worktree branch with the format:
 >
 > `chore(session): record <loop> iter{n} memory`
 >
-> followed by the canonical AI-Provenance-Record trailer per `git/conventions.md:116-119`. Commit is `git -C "$worktreePath" commit` to keep history on the worktree branch (per T1's worktree-first lock).
+> followed by the canonical AI-Provenance-Record trailer per `git/conventions.md`. The commit is `git -C "$worktreePath" commit` to keep history on the worktree branch (per the worktree-first lock).
 
-The 5 target files (canonical paths under workspace `.claude/`):
+The 5 target loop docs (canonical paths under workspace `.claude/`):
 
 | # | File | Loop |
 |---|---|---|
@@ -47,65 +39,35 @@ The 5 target files (canonical paths under workspace `.claude/`):
 | 4 | `.claude/skills/orchestration/workflow/execution.md` | Execution |
 | 5 | `.claude/skills/orchestration/workflow/wrap-up.md` | Wrap-up |
 
-Mirror propagation: per the iter2 corrected lock (`decisions/mirror-propagation-policy-mirror-canonical-symlinks.md`), the mirror at `.gobbi/projects/gobbi/skills/orchestration/workflow/{ideation,preparation,planning,execution,wrap-up}.md` is the canonical storage; the workspace paths above are symlinks resolving to those same physical files. Editing either path edits the same file; no separate mirror-edit is needed.
+Mirror propagation: per the mirror-canonical-symlinks policy (`decisions/mirror-propagation-policy-mirror-canonical-symlinks.md`), the mirror at `.gobbi/projects/gobbi/skills/orchestration/workflow/{ideation,preparation,planning,execution,wrap-up}.md` is the canonical storage; the workspace paths above are symlinks resolving to those same physical files. Editing either path edits the same file; no separate mirror-edit is needed.
 
-## Scenarios
+## Rationale
 
-- **G-1 (canonical)** — Executor implementing T1-I-T1.f opens each of the 5 files, inserts the per-iter cadence rule in the MEMORIZATION section, runs `git diff` to verify all 5 are touched. Diff shows changes only at the canonical mirror path (`.gobbi/projects/gobbi/skills/orchestration/workflow/...`) because the workspace path is a symlink.
-- **E-1 (verification gate)** — Smoke test T1-I-T1.h's branch-name regex check passes; a separate sanity grep confirms all 5 phase docs contain the literal commit-subject pattern `chore(session): record .* iter.* memory`. Grep against either path returns the same hits.
-- **F-1 (off-by-one)** — Executor scans `ls .claude/skills/orchestration/workflow/` (7 files: 5 loop + `evaluation.md` + `memorization.md`) and accidentally edits all 7 instead of the 5 loop docs. Mitigated by this file's explicit enumeration of the 5 loop docs only. See "Excluded files + rationale" below.
+The cadence rule is applied at the **loop level** — each loop's MEMORIZATION phase emits the commit — so the rule belongs only on docs that own a MEMORIZATION phase. The 5-loop set is fixed by the gobbi workflow's 5 productive steps plus Wrap-up (Configuration is CLI init, not a workflow doc), so an explicit enumeration is durable: change pressure on the set is near-zero. Naming the files in one place is far cheaper than forcing every reader of D-4 to re-derive the set by directory scan, and it prevents the over-edit failure (touching all 7 files).
 
-## Validation
+## Alternatives considered
 
-Per file: `grep -l "chore(session): record .* iter.* memory" .claude/skills/orchestration/workflow/{ideation,preparation,planning,execution,wrap-up}.md` returns all 5 paths.
+- **Leave the file set implicit ("all 5 workflow phase docs") and let each implementer re-derive it** — rejected: the directory holds 7 files, not 5, so re-derivation risks an off-by-one in either direction (missing a loop doc, or wrongly editing the two sub-phase docs).
+- **Apply the cadence rule to all 7 files in the directory** — rejected: `evaluation.md` and `memorization.md` are cross-cutting sub-phase docs with no MEMORIZATION phase or iter cadence of their own (see Consequences); adding the rule there would duplicate it 5× and break their single-source-of-truth shape.
+- **Document the cadence in one shared place (`memorization.md`) for cross-reference** — deferred, not adopted now: a future task could add such a cross-reference in `memorization.md`'s output-paths section, but it is out of scope for the enumeration this design locks.
 
-Overall T1-I-T1.f completion: the 5-file set carries the cadence rule.
+## Consequences
 
-## Trade-offs
-
-- **Optimized**: removes Planning-time ambiguity by naming the file set explicitly; one staging file is much cheaper than re-deriving via directory scan in every Planning decomposition.
-- **Sacrificed**: this design file becomes stale if `.claude/skills/orchestration/workflow/` adds or removes a phase doc. Acceptable because the 5-phase set is fixed by the 5 productive steps + Wrap-up of the gobbi workflow (Configuration is CLI init, not a workflow doc) — change pressure is near-zero.
-
-## Open issues
-
-None within Preparation scope. The cadence rule's exact phrasing and placement within each phase doc is a Planning / Execution concern.
-
-## Source
-
-Full session context at `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`. D-4 lock in the Ideation PASS artifact; gap analysis in Preparation rawdata; the user confirmed generating this enumeration file rather than deferring.
-
----
-
-## Excluded files + rationale (added iter2)
-
-Both iter1 evaluators flagged that `.claude/skills/orchestration/workflow/` contains **7 files**, not 5. Empirical re-verification (iter2):
-
-```
-$ ls .claude/skills/orchestration/workflow/
-evaluation.md  execution.md  ideation.md  memorization.md  planning.md  preparation.md  wrap-up.md
-```
-
-The 2 files NOT included in T1-I-T1.f's targeted set are:
+The 5 loop docs carry the cadence rule; the 2 sub-phase docs are excluded for these reasons:
 
 | File | Why excluded |
 |---|---|
-| `evaluation.md` | Cross-cutting sub-phase document shared by all 5 loop docs. The per-iter commit cadence rule (T1-I-T1.f decision D-4) is applied at the **loop level** — each loop's MEMORIZATION phase emits the commit. `evaluation.md` describes the EVALUATION sub-phase that runs inside each loop; it has no MEMORIZATION phase of its own and no iter cadence at the file level. Editing `evaluation.md` to carry a per-iter commit rule would duplicate the rule (5x — once for each loop that runs evaluation) and break the single-source-of-truth shape of `evaluation.md`. |
-| `memorization.md` | Same rationale. `memorization.md` is the cross-cutting sub-phase doc describing MEMORIZATION procedure; it is loaded BY each loop's own phase doc, not invoked at its own iter cadence. The commit-cadence rule is per-loop, and each of the 5 loop docs references `memorization.md` for the procedure — adding the cadence rule to `memorization.md` itself would create the same duplication issue. |
+| `evaluation.md` | A cross-cutting sub-phase doc shared by all 5 loops. It describes the EVALUATION sub-phase that runs inside each loop; it has no MEMORIZATION phase of its own and no iter cadence at the file level. Carrying a per-iter commit rule here would duplicate it once per loop and break the single-source-of-truth shape. |
+| `memorization.md` | Same rationale: the cross-cutting doc describing the MEMORIZATION procedure, loaded BY each loop's own phase doc rather than invoked at its own iter cadence. The cadence rule is per-loop; each of the 5 loop docs references `memorization.md` for the procedure. |
 
-**Substance of the per-iter cadence rule** (from D-4 of the Ideation artifact + the "Approach" section above):
+Verification: `grep -l "chore(session): record .* iter.* memory" .claude/skills/orchestration/workflow/{ideation,preparation,planning,execution,wrap-up}.md` returns all 5 paths; the same grep against `{evaluation,memorization}.md` returns 0 matches (catches accidental over-edit). Grep against either the workspace or the canonical mirror path returns the same hits because the workspace paths are symlinks. This design becomes stale only if the workflow gains or loses a phase doc — an event with near-zero change pressure.
 
-Per-iter commit cadence per T1-I-T1.f applies to the 5 **loop** docs (`ideation.md`, `preparation.md`, `planning.md`, `execution.md`, `wrap-up.md`). Each loop's MEMORIZATION phase emits the commit. Sub-phase docs (`evaluation.md`, `memorization.md`) don't have iters of their own — the iter cadence belongs to the loops that invoke them.
+## Related
 
-If a future task wants to document the cadence pattern in one place for cross-reference, the natural home is `memorization.md`'s "Output paths" section (which already enumerates the per-iter `session.json` upserts) — but T1-I-T1.f scope is exactly the 5 loop docs and excludes that cross-reference enhancement.
+- `design/per-iteration-session-commit-cadence.md` — Design Decision D-4, the cadence this enumeration implements.
+- `decisions/mirror-propagation-policy-mirror-canonical-symlinks.md` — the mirror-canonical-symlinks policy this design relies on.
+- `notes/2026-05-23-workflow-phase-doc-set-enumeration.md` — the session journal of how this enumeration evolved (the 7-vs-5 file-count correction).
 
-**Planning verification gate** (recommended for the T1 task brief): the smoke test should grep BOTH for the cadence pattern presence in the 5 loop docs AND for its **absence** in `evaluation.md` / `memorization.md`, to catch accidental over-edit:
+## Source
 
-```
-# Expect: 5 matches (one per loop doc)
-grep -l "chore(session): record .* iter.* memory" \
-  .claude/skills/orchestration/workflow/{ideation,preparation,planning,execution,wrap-up}.md
-
-# Expect: 0 matches (sub-phase docs should NOT carry the rule)
-grep -lE "chore.session.: record .* iter" \
-  .claude/skills/orchestration/workflow/{evaluation,memorization}.md
-```
+Full session context at `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`.

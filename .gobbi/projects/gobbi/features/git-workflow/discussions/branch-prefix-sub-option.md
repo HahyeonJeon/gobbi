@@ -12,20 +12,28 @@ tags: [git-workflow, branch-naming, worktree-first, type-registry]
 
 # Branch type prefix selection — chore/session-{date}-{ssid-short}
 
-## Question asked
+## Context
 
-The initial Ideation draft used `session/{date}-{ssid-short}` as the worktree branch name, but `session/` is not in the registered branch type registry. The options for correcting it were: (a) `chore/session-{date}-{ssid-short}`, (b) `feat/session-{date}-{ssid-short}`, (c) leave as `session/` but add `session` to the registry.
+The initial worktree-first design draft used `session/{date}-{ssid-short}` as the worktree branch name. But `session/` is not in the registered branch-type registry (`feat|fix|hotfix|chore|docs|refactor|test|ci|perf|build|style`), so a branch named that way would fail registry validation and block CI/hooks. The branch prefix had to be corrected to a registered type.
 
-## User answer
+## Question
 
-User selected **(a) `chore/session-{date}-{ssid-short}`** — use the existing `chore` type from the registry.
+Which branch-type prefix should the worktree branch use, given `session/` is unregistered?
 
-## Rationale confirmed by user
+## Options considered
 
-- `chore` is in the registered branch type registry
-- The second component `session-{date}-{ssid-short}` satisfies the description-slug regex
-- No need to extend the registry or use `feat` (which implies a product feature)
+1. **`chore/session-{date}-{ssid-short}`** — reuse the existing `chore` type from the registry; the `session-{date}-{ssid-short}` component satisfies the description-slug regex `[a-z0-9]+(-[a-z0-9]+)*`.
+2. **`feat/session-{date}-{ssid-short}`** — reuse the existing `feat` type, but `feat` implies a new product feature, not a session-infrastructure branch.
+3. **Keep `session/` and add `session` to the branch-type registry** — extends the registry to legitimize the original draft name.
 
-## Impact on design
+## User decision
 
-Design Decision D-1 and all branch-naming statements updated to use `chore/session-{date}-{ssid-short}`. The registry-validation failure mode that would have blocked CI/hooks is eliminated.
+User selected option 1, `chore/session-{date}-{ssid-short}` — use the existing `chore` type. `chore` is already registered, the description slug passes validation, and no registry extension is needed; `feat` was rejected because it implies a product feature.
+
+## Implication
+
+Design Decision D-1 and all branch-naming statements use `chore/session-{date}-{ssid-short}`. The registry-validation failure mode that would have blocked CI/hooks is eliminated.
+
+## Related
+
+- `design/worktree-create-before-session-stamp.md` — Design Decision D-1, which adopts this branch-naming scheme.

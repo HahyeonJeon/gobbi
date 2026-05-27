@@ -1,6 +1,6 @@
 ---
 name: bundle-scope-confirmation
-description: User confirmed T1 (worktree-first with promote-now absorbed) and T3 (agents[] hook) in scope for this session; T2 and Codex CI deferred.
+description: User confirmed worktree-first (with promote-now absorbed) and the agents[] hook in scope for this session; the skill-loading-discipline matrix and Codex CI deferred.
 type: discussions
 scope: feature
 feature: git-workflow
@@ -10,22 +10,41 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [git-workflow, session-scope, worktree-first, agents-hook]
 ---
 
-# Bundle scope confirmation — T1 + T3 in scope; T2 deferred
+# Bundle scope confirmation — worktree-first + agents[] hook in scope; skill-loading deferred
 
-## Question asked
+## Context
 
-Scope lock: which of the four candidates (T1 worktree-first, T2 skill-loading discipline, T3 agents[] hook, NEW promote-now commit) should be in scope for this session?
+The session opened with four candidate work items competing for scope: worktree-first session architecture, a skill-loading-discipline matrix, an agents[] PostToolUse hook, and a new promote-now commit-on-branch addition. Plus two adjacent ideas (auto-mode silence, chat-mode redesign) and a Codex CI integration. The session needed an explicit scope lock before Planning could proceed.
 
-## User answer
+## Question
 
-Scope locked:
-- **T1 — Worktree-first session architecture** with NEW (promote-now commit-on-branch) absorbed: in scope
-- **T3 — agents[] PostToolUse hook + reconstructor**: in scope
-- **T2 — skill-loading-discipline matrix + Load-Directives validator**: deferred (user raised concern "looks ambiguous"; deferred entirely from this session)
-- **Codex CI integration**: deferred
-- **Item 2-1 auto-mode silence vs always-ask**: out of scope
-- **Chat-mode tiki-taka redesign**: out of scope
+Which of the candidate items should be in scope for this session?
 
-## Impact on design
+## Options considered
 
-Two Execution tasks ship this session: T1 (with NEW absorbed) and T3. All deferred items are backlogged for future sessions.
+The candidates on the table:
+- **Worktree-first session architecture** — the core proposal; the others depend on or relate to it.
+- **Promote-now commit-on-branch (NEW)** — a small addition that depends on worktree-first.
+- **agents[] PostToolUse hook + reconstructor** — independent feature work.
+- **Skill-loading-discipline matrix + Load-Directives validator** — flagged by the user as "looks ambiguous."
+- **Codex CI integration**, **auto-mode silence vs always-ask**, **chat-mode tiki-taka redesign** — adjacent ideas.
+
+## User decision
+
+Scope locked to two Execution deliverables:
+- **Worktree-first session architecture**, with the **promote-now commit-on-branch** addition absorbed into it — in scope.
+- **agents[] PostToolUse hook + reconstructor** — in scope.
+
+Deferred / out of scope:
+- **Skill-loading-discipline matrix + Load-Directives validator** — deferred entirely (the user found it ambiguous).
+- **Codex CI integration** — deferred.
+- **auto-mode silence vs always-ask** and **chat-mode tiki-taka redesign** — out of scope.
+
+## Implication
+
+Two Execution tasks ship this session: worktree-first (with promote-now absorbed) and the agents[] hook. All deferred items are backlogged for future sessions.
+
+## Related
+
+- `design/worktree-create-before-session-stamp.md` — the worktree-first design (D-1) locked in scope here.
+- `discussions/promote-now-depends-on-worktree-first.md` — the discussion that absorbed promote-now into worktree-first.

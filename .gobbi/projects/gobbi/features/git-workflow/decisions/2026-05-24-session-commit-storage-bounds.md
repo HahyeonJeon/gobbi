@@ -18,22 +18,33 @@ superseded_by: null
 
 ## Context
 
-Each loop's MEMORIZATION phase ends with a `git commit` to the worktree branch (Design Decision D-4). These per-iteration session-memory commits accumulate in develop's git history. No formal storage budget was locked during Ideation.
-
-## Storage estimate
-
-The following bounds were confirmed during Planning evaluation and are preserved as the accepted estimate:
-- Per-iteration session-memory commit: ~10-50 KB per session committed to develop's history
-- Upper bound: `maxIterations × 5 loops = 15 commits per session`
-- No API or infra cost; no cost-runaway scenario (bounded by Task spawn count, rate-limited by Claude Code permission system)
+Each loop's MEMORIZATION phase ends with a `git commit` to the worktree branch (Design Decision D-4). These per-iteration session-memory commits accumulate in develop's git history once the worktree branch's PR merges. No formal storage budget was locked during Ideation, so the question was whether the accumulation needs a budget gate before the feature ships.
 
 ## Decision
 
-Formal storage budget deferred to post-Execution monitoring. The estimate is non-PII operational telemetry; storage cost is acceptable at current session cadence.
+Accept the storage cost at current session cadence and defer a formal storage budget to post-Execution monitoring. The accumulated session-memory data is non-PII operational telemetry; no budget gate blocks the git-workflow feature.
+
+## Rationale
+
+The accumulation is bounded and small. The bounds, confirmed during Planning evaluation, are the accepted estimate:
+- Per-iteration session-memory commit: ~10-50 KB per session committed to develop's history.
+- Upper bound: `maxIterations × 5 loops = 15 commits per session`.
+- No API or infra cost; no cost-runaway scenario — commit count is bounded by Task spawn count and rate-limited by the Claude Code permission system.
+
+At these bounds, the storage cost is acceptable and does not justify the complexity of a formal budget mechanism before there is monitoring evidence that cadence is scaling.
+
+## Alternatives considered
+
+- **Lock a formal storage budget during Ideation** — rejected: premature optimization. With ~10-50 KB per session and no observed cadence pressure, a budget mechanism would add complexity without a witnessed need. Monitoring first, budget only if evidence motivates it.
+- **Squash session-memory commits before merge to minimize history footprint** — deferred, not rejected outright: a compaction strategy is the natural response if cadence scales, but it is future work, not a precondition for shipping.
 
 ## Consequences
 
 If session cadence scales (e.g., multiple sessions per day, long-running projects), a compaction strategy (squash-merge session dirs, prune old worktree branches) may be needed. This is a future backlog item, not a blocker for the git-workflow feature.
+
+## Related
+
+- `design/per-iteration-session-commit-cadence.md` — Design Decision D-4, the per-iteration commit cadence whose storage cost this decision bounds.
 
 ## Source
 

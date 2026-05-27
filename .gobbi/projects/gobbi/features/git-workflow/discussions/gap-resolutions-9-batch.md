@@ -22,6 +22,13 @@ The Preparation loop identified 9 gaps that required user resolution before Plan
 
 For each of the 9 identified gaps: skip, generate-now, or defer-to-backlog?
 
+## Options considered
+
+Each gap could receive one of three dispositions:
+- **Skip** — no action taken this session; the rationale is documented so the gap is not re-raised.
+- **Generate-now** — produce a staged artifact (decision or design file) in this loop to close the gap immediately.
+- **Defer-to-backlog** — record a backlog item for a future session when a witness or precondition (e.g., N≥2 scripts) materializes.
+
 ## User decision
 
 - **Gap 1 (feature dir pre-create)**: Skip. Wrap-up bootstraps feature dirs.
@@ -37,3 +44,7 @@ For each of the 9 identified gaps: skip, generate-now, or defer-to-backlog?
 ## Implication
 
 Two generate-now artifacts produced: `decisions/` (planning brief mistake-citation rule) and `design/workflow-phase-doc-set-for-per-iter-cadence.md` (5-file enumeration). Three backlog items staged. Four gaps closed with rationale only.
+
+## Related
+
+- `design/workflow-phase-doc-set-for-per-iter-cadence.md` — the 5-file enumeration produced by the generate-now disposition of Gap 4.

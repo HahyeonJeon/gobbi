@@ -12,14 +12,29 @@ tags: [git-workflow, worktree-first, architecture, collapsing-strategies]
 
 # Worktree-first vs alternative collapsing strategies — worktree-first locked
 
-## Question asked
+## Context
 
-Should the session architecture use worktree-first (recommended), two-surface (one main-tree session dir + one worktree for generated files), or symlink-into-worktree?
+The session set out to fix the artifact-misroute failure mode (session writes landing in the main tree instead of the worktree). Three architectural strategies could collapse the two surfaces (main tree + worktree) into a coherent session layout, and the session had to choose one before any downstream design decision could be made.
 
-## User answer
+## Question
 
-User locked **worktree-first**. The two-surface and symlink-into-worktree alternatives were deferred to backlog items for future evaluation.
+Should the session architecture use worktree-first, two-surface, or symlink-into-worktree?
 
-## Impact on design
+## Options considered
+
+1. **Worktree-first** (recommended) — the session directory lives in the worktree tree from session start; all writes root at `worktreePath`.
+2. **Two-surface** — one main-tree session dir plus one worktree for generated files; the two surfaces are kept separate.
+3. **Symlink-into-worktree** — the session dir stays in the main tree and is symlinked into the worktree.
+
+## User decision
+
+User locked **worktree-first**. The two-surface and symlink-into-worktree alternatives were deferred to backlog items for future evaluation rather than rejected outright.
+
+## Implication
 
 Every subsequent design decision for the git-workflow feature assumes the session directory lives in the worktree tree. The two alternatives remain as backlog candidates if future evidence motivates revisiting.
+
+## Related
+
+- `design/worktree-create-before-session-stamp.md` — the worktree-creation step (D-1) that implements the chosen worktree-first strategy.
+- `discussions/session-memory-survival.md` — the follow-on discussion on how worktree-resident session memory survives.
