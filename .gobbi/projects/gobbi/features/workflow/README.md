@@ -11,6 +11,7 @@ tags: [workflow, orchestration, state-machine, pipeline]
 value_proposition: "The Ideation → Planning → Execution → Memorization → Handoff pipeline: a gated 6-step state machine that drives every unit of work."
 subsystems: [orchestration, ideation, preparation, planning, execution, wrap-up, research, discussion]
 last_updated: 2026-05-26
+project: gobbi
 ---
 
 # Feature: Workflow

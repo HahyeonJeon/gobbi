@@ -12,7 +12,7 @@ topic: T1→T3 wave ordering — strict sequential or interleaved?
 outcome: Strict sequential confirmed; graph-enforced via LOCK #1 (05,06 → 07)
 ---
 
-# T1→T3 wave ordering — strict sequential confirmed
+# Wave ordering: strict sequential T1→T3 (workflow waves)
 
 ## Context
 

@@ -9,6 +9,7 @@ created: 2026-05-23
 session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
 tags: [wrap-up, step-2-5, anchor-placement, orchestration]
 domain: docs-sync
+title: "Wrap-up Step 2.5 anchor placement — new H3 after ### WORK discipline"
 project: gobbi
 supersedes: null
 superseded_by: null

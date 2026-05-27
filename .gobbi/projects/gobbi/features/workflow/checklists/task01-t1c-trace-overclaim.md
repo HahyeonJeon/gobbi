@@ -12,7 +12,7 @@ domain: docs-sync
 last_updated: 2026-05-24
 ---
 
-# Task 01 traces-to overclaim — T1.c edit assigned to Task 02
+# Conformance task traces-to overclaim — edit assigned to wrong task
 
 ## Situation
 

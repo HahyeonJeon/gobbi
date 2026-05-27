@@ -14,7 +14,7 @@ disposition: open
 supersedes: null
 ---
 
-# LOCK #2 Tasks 07+08 shared-executor context-budget risk
+# Shared-executor context-budget risk (LOCK #2)
 
 ## Context
 

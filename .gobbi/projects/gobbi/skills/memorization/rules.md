@@ -228,7 +228,17 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 | sub-step coordinate | `sub-step` | `sub_step` |
 | session-id (redundant with base `session`) | `session-id` | `session_id` |
 
-**KEEP — never strip:** The following keys are cross-reference/provenance/content-tag keys that carry durable meaning and MUST always be preserved: `related`, `supersedes`, `superseded_by`, `source`, `design-id`, `domain`, `priority`, `ref_type`. These are legitimate type extensions (§2.2) or cross-linking fields — they are NOT members of S.
+**KEEP list — keys that must NEVER be stripped during conformance.** These keys carry durable cross-reference, provenance, supersession, per-type lifecycle, or content-tag meaning. They are legitimate type extensions (§2.2) or cross-linking fields — they are NOT members of S. Stripping any of them violates the safety invariant.
+
+| Category | Keys |
+|---|---|
+| Base (9 keys — always) | `name`, `description`, `type`, `scope`, `feature`, `status`, `created`, `session`, `tags` |
+| Cross-reference / linking | `related`, `supersedes`, `superseded_by` |
+| Provenance / source | `source`, `design-id` |
+| Per-type lifecycle / routing | `domain`, `priority`, `ref_type`, `title`, `accessed`, `verdict`, `review_kind`, `subject`, `decision_status`, `shipped_in`, `value_proposition`, `discussion-id`, `topic`, `outcome`, `category`, `subsystems`, `project`, `last_updated` |
+| Backlog-specific | `project-scope`, `plan`, `artifact_ref`, `disposition` (on `backlogs/` only — see conditional rule below) |
+
+**When in doubt, KEEP.** If a key is not explicitly listed in S (the illegitimate staging-routing key-set above), it must be treated as KEEP — preserved without question. The S-set is a closed, enumerated list of eval-routing and session-routing residue; any key absent from S is by definition not a conformance leak.
 
 **Conditional member — `disposition`.** `disposition` is in S (a leak, must be stripped) **ONLY when the file is NOT under a `backlogs/` directory.** On `backlogs/`, `disposition: open\|deferred` is a **legitimate type extension** (§2.2 line 110) and MUST be preserved — stripping it there violates the safety invariant.
 
