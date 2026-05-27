@@ -11,7 +11,7 @@ tags: [memory, cross-session, persistence]
 value_proposition: "Cross-session durable store: decisions, designs, plans, and references survive in a typed, searchable memory tree."
 subsystems: [memorization, wrap-up, memory-map]
 project: gobbi
-last_updated: 2026-05-26
+last_updated: 2026-05-27
 ---
 
 # Feature: Project Memory
@@ -37,6 +37,8 @@ Cross-session durable store: decisions, designs, plans, and references survive i
 - `references/` — external prior art touching the memory system
 - `plans/` — plan artifacts produced by the Planning loop
 - `changelogs/` — what shipped per task
+- `checklists/` — checklist findings from evaluation
+- `scenarios/` — scenario findings from evaluation
 - `archive/` — superseded project-memory artifacts (move-on-terminal)
 
 ## Recent activity
@@ -44,6 +46,7 @@ Cross-session durable store: decisions, designs, plans, and references survive i
 | Date | Session | What |
 |---|---|---|
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
+| 2026-05-27 | b0a0eaf9 | Dev-doc standard (§4 rules.md) authored + conformance wave (T0–T11) shipped; 7 new subdirs bootstrapped; 17 ideation + 5 prep + 9 planning staging files promoted |
 
 ## Related
 
