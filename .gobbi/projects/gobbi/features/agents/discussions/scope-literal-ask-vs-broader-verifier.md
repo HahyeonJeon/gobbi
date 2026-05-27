@@ -12,7 +12,7 @@ phase: ideation
 loop-iter: 1
 ---
 
-# T2 scope — literal-ask (matrix + validator) vs broader delegation contract verifier
+# Validator scope: literal-ask (skill-loading matrix + validator) vs broader delegation contract verifier
 
 ## Question asked
 

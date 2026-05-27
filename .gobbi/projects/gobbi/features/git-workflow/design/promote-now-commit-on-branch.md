@@ -11,7 +11,7 @@ tags: [git-workflow, promote-now, worktree-branch, provenance]
 design-id: D-3
 ---
 
-# D-3 — Commit-on-branch for Preparation promote-now
+# Commit-on-branch for Preparation promote-now (D-3)
 
 ## Decision
 

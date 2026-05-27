@@ -15,7 +15,7 @@ sub-step: D-round-2
 loop-iter: 1
 ---
 
-# T3 dual hook registration (PostToolUse + PostToolUseFailure) — confirmed; status field deferred
+# Dual hook registration (PostToolUse + PostToolUseFailure) confirmed; agents status field deferred
 
 ## Question asked
 

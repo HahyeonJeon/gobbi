@@ -11,7 +11,7 @@ tags: [git-workflow, session-write-path, worktree-first, direct-mode]
 design-id: D-2
 ---
 
-# D-2 — Qualify the session-write path rule: worktreePath when set, main tree as fallback
+# Qualify the session-write path rule: worktreePath when set, main tree as fallback (D-2)
 
 ## Decision
 

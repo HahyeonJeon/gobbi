@@ -13,7 +13,7 @@ domain: docs-sync
 loop: planning
 ---
 
-# D-3-3/D-4/D-5/D-9 reference codes lack inline expansion for executors
+# Opaque decision reference codes lack inline expansion in executor briefs (D-3-3/D-4/D-5/D-9)
 
 ## Situation
 

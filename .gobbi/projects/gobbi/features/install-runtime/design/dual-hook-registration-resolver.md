@@ -13,7 +13,7 @@ slug: dual-hook-registration-resolver
 iter: 3
 ---
 
-# D-3-3 — Hook scope: PostToolUse + PostToolUseFailure dual registration; session-dir resolver
+# Hook scope: PostToolUse + PostToolUseFailure dual registration with session-dir resolver (D-3-3)
 
 ## Decision
 

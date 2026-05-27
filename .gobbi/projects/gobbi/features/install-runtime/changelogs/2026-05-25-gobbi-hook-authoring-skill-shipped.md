@@ -12,7 +12,7 @@ task: T04 / CL-2
 plan: session-foundations-bundle-c
 ---
 
-# T04 — gobbi-hook-authoring project skill shipped
+# gobbi-hook-authoring project skill shipped
 
 ## Summary
 

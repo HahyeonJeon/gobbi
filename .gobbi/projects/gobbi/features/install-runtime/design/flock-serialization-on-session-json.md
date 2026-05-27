@@ -13,7 +13,7 @@ slug: flock-serialization-on-session-json
 iter: 2
 ---
 
-# D-3-5 — Serialization primitive: POSIX flock -x on session.json
+# Serialization primitive: POSIX flock -x on session.json (D-3-5)
 
 ## Decision
 

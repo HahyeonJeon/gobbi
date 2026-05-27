@@ -15,7 +15,7 @@ sub-step: A-round-2
 loop-iter: 1
 ---
 
-# T3 mechanism — PostToolUse hook + shell-script reconstructor selected
+# PostToolUse hook + shell-script reconstructor selected for agents[] population
 
 ## Question asked
 

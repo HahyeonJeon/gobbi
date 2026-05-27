@@ -11,7 +11,7 @@ tags: [git-workflow, direct-mode, worktree-first, opt-out]
 design-id: D-5
 ---
 
-# D-5 — Direct mode preserved as documented opt-out
+# Direct mode preserved as documented opt-out (D-5)
 
 ## Decision
 

@@ -13,7 +13,7 @@ slug: tool-use-id-correlation-key
 iter: 2
 ---
 
-# D-3-6 — Transcript correlation key: tool_use_id
+# Transcript correlation key: tool_use_id (D-3-6)
 
 ## Decision
 

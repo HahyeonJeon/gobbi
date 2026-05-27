@@ -13,7 +13,7 @@ slug: metadata-extraction-input-vs-result
 iter: 2
 ---
 
-# D-3-4 — Hybrid metadata extraction: input side vs result side
+# Hybrid metadata extraction: input side vs result side (D-3-4)
 
 ## Decision
 

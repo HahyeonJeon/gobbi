@@ -11,7 +11,7 @@ tags: [git-workflow, worktree-first, configuration-step, session-stamp]
 design-id: D-1
 ---
 
-# D-1 — Create worktree and stamp git.worktreePath in the Configuration step
+# Create worktree and stamp git.worktreePath in the Configuration step (D-1)
 
 > **Superseded note (2026-05-25):** worktree creation was reordered from row 5.5 to **row 5** in a later bundle (state.json init is now row 5.5). This file records the original bundle-B numbering; see `orchestration/SKILL.md` Step 1 for the current rows.
 

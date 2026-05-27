@@ -13,7 +13,7 @@ slug: reconstructor-verify-and-fix
 iter: 2
 ---
 
-# D-3-2 — Reconstructor algorithm: verify-and-fix (upsert by id, idempotent, orphan-report only)
+# Reconstructor algorithm: verify-and-fix, idempotent upsert by id, orphan-report only (D-3-2)
 
 ## Decision
 

@@ -15,7 +15,7 @@ sub-step: A-round-2
 loop-iter: 1
 ---
 
-# T3 schema gap check — existing agents[] fields sufficient; no template bump this session
+# Session template agents[] schema sufficient; no template bump needed
 
 ## Question asked
 

@@ -13,7 +13,7 @@ slug: hook-bash-jq-stack
 iter: 2
 ---
 
-# D-3-1 — Hook authoring stack: bash + jq, two-tier extraction
+# Hook authoring stack: bash + jq, two-tier extraction (D-3-1)
 
 ## Decision
 

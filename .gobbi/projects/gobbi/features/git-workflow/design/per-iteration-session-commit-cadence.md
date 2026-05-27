@@ -11,7 +11,7 @@ tags: [git-workflow, session-commits, memorization, cadence]
 design-id: D-4
 ---
 
-# D-4 — Per-iteration session-memory commit cadence
+# Per-iteration session-memory commit cadence (D-4)
 
 ## Decision
 
