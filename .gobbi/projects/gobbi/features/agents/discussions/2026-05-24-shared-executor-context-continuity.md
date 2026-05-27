@@ -39,3 +39,7 @@ If context saturation occurs partway through the reconstructor, the manager can 
 ## Source
 
 Session 1b26cf20 planning — agent-assignment decision bundling the hook-script and reconstructor tasks under one executor.
+
+## Related
+
+- Companion decision (planned, not yet promoted): a `features/agents/design/lock2-shared-executor-mega-task-risk.md` doc capturing LOCK #2's mega-task context-coherence risk. As of this writing that design doc has not been promoted, so this is a forward pointer to where the companion analysis belongs rather than an existing file.

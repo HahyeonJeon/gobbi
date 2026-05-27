@@ -14,6 +14,10 @@ domain: usability
 
 # Hook silence — no agents[] mutation visible
 
+**Category:** failure-mode
+
+**Coverage:** partial — the reconstructor (`reconstruct-agents.sh`) provides a recovery path, but it requires manual invocation and there is no positive-confirmation diagnostic when the hook runs successfully, so the scenario is only partially handled.
+
 ## Situation
 
 After a Task spawn completes, the PostToolUse hook fires (verified by hook registration), but `session.json.agents[]` has not gained a new entry. The manager or operator cannot tell whether the hook ran and produced no output (e.g., jq parse error, transcript not yet flushed, resolver failed silently) vs the hook did not fire at all.
@@ -35,6 +39,11 @@ When the hook fails silently (jq error, resolver failure), it SHOULD exit non-ze
 ## Verification
 
 After Execution: run a Task spawn with hook enabled; check that a diagnostic line appears in the session output or that the reconstructor run confirms the agents[] population.
+
+## Related
+
+- The PostToolUse hook script and `reconstruct-agents.sh` reconstructor (the agents[]-metadata mechanism this scenario stresses); the suggested diagnostic line is the design's positive-confirmation gap.
+- `claude-code-agent-sdk-task-output` (references/) — the Task-tool output shape the hook reads to populate `session.json.agents[]`.
 
 ## Source
 

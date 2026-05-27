@@ -20,6 +20,7 @@ A planning brief referenced internal decision codes (`D-3-3`, `D-4`, `D-5`, `D-9
 | 1 | Hook-script brief inline-expands the `D-3-3` resolver step: the directory-scan fallback in the transcript resolver | novel | pending | Manager adds inline expansion to delegation brief |
 | 2 | session.json-writer brief inline-expands the `D-4` 5-file scope: hook script, reconstructor, session.json writer, unit tests, integration test | novel | pending | Manager adds inline expansion to delegation brief |
 | 3 | Hook-script/reconstructor brief inline-expands the `D-9` rationale: no `gobbi-shell-script-conventions` skill yet (fewer than 2 scripts existed), so codify the conventions in script-header comments | novel | pending | Manager adds inline expansion to delegation brief |
+| 4 | Reconstructor brief inline-expands the `D-5` skip rationale: `.claude/scripts/` is not pre-created; the executor runs `mkdir -p .claude/scripts/` as part of the reconstructor task | novel | pending | Manager adds inline expansion to delegation brief |
 
 ## Item details
 
@@ -38,6 +39,12 @@ The transcript resolver has a fallback step that scans a directory when the prim
 ### 3. `D-9` skip rationale — defer the shell-script-conventions skill
 
 `D-9` was the decision to defer creating a `gobbi-shell-script-conventions` skill because fewer than two scripts existed at the time (the convention being: create the skill once N ≥ 2). The brief said only "D-9 skip rationale — codify in script header until N≥2"; the executor needs the rationale spelled out so it knows to codify the conventions in script-header comments instead.
+
+**Anchor reasoning**: novel — gobbi-internal deferral rationale.
+
+### 4. `D-5` skip rationale — `.claude/scripts/` directory not pre-created
+
+`D-5` was the decision to NOT pre-create the `.claude/scripts/` directory as a separate step. The directory needs to exist only at the moment the reconstructor script (`.claude/scripts/reconstruct-agents.sh`) is written, so the executor runs `mkdir -p .claude/scripts/` at the start of the reconstructor task instead. Pre-creation was rejected because it would be wasted work and would require a separate commit for an otherwise-empty directory (empirically, `ls .claude/scripts/` returned ENOENT at planning time). The brief said only "D-5 skip rationale"; the executor needs the rationale spelled out so it knows to `mkdir -p` inline rather than expecting the directory to already exist.
 
 **Anchor reasoning**: novel — gobbi-internal deferral rationale.
 

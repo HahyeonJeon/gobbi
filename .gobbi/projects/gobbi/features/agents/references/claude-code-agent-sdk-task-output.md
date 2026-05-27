@@ -38,6 +38,11 @@ Subagent-context fields `agent_id` and `agent_type` are also in the hook input �
 
 There is also a `SubagentStop` hook event (separate from `PostToolUse` on the Task tool) which fires when a subagent completes — input includes `agent_id` + `agent_transcript_path` + `stop_hook_active`. This is a parallel mechanism the agents[] hook design could consider, though it requires SDK-level configuration (not shell-command hooks via `.claude/settings.json` `hooks.*`).
 
+## Related
+
+- `claude-code-posttooluse-hook-schema` — the PostToolUse hook input schema the agents[] hook actually consumes.
+- `claude-code-transcript-tooluseresult-empirical` — the empirically-observed rich `toolUseResult` payload (option (b)) that this documented TaskOutput shape (option (a)) is contrasted against.
+
 ## Why it applies
 The agents[] hook design needs to choose between:
 - (a) reading `tool_result` directly from the hook stdin (TaskOutput shape — narrow but stable),

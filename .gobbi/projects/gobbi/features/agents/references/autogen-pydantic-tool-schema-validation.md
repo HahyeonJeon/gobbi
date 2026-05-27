@@ -20,6 +20,11 @@ related: [commitlint-required-fields-validator, langgraph-skill-catalog-pattern]
 ## Insight
 AutoGen registers tools as Python functions with type hints and validates inputs via Pydantic schemas. LangChain/LangGraph go further: when an agent completes a task with a schema, the framework validates the response automatically and invalid outputs trigger automatic retries until the model produces valid data. The architectural pattern is: declarative schema + structural validator + auto-correction loop. This is one tier above commitlint's "fail with structured error" — the agent itself is told what's wrong and re-attempts.
 
+## Related
+
+- `commitlint-required-fields-validator` — the block-with-structured-error pattern this reference contrasts against (option (a) for the validator's enforcement action).
+- `langgraph-skill-catalog-pattern` — the companion agent-framework reference informing the same Load-Directives validator design.
+
 ## Why it applies
 The planned Load-Directives validator must decide what to do when it detects a violation. Three options inform the design question:
 - (a) commitlint-style — block with a structured error, manager re-authors the prompt.

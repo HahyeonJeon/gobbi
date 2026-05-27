@@ -27,7 +27,7 @@ Should the validator be scoped to the literal ask (the skill-loading matrix + a 
 
 ## User decision
 
-The user locked the **literal-ask scope**: the matrix plus the Load-Directives validator. The broader "delegation contract verifier" reframing was deferred to a backlog entry (`features/agents/backlogs/broader-delegation-contract-verifier.md`, if/when promoted) for a future session to pick up.
+The user locked the **literal-ask scope**: the matrix plus the Load-Directives validator. The broader "delegation contract verifier" reframing was deferred to the project-level backlog entry `backlogs/broader-delegation-contract-verifier.md` for a future session to pick up.
 
 ## Implication
 
@@ -35,4 +35,4 @@ The matrix-plus-validator task was itself subsequently deferred for the session 
 
 ## Related
 
-- Backlog (if promoted): `features/agents/backlogs/broader-delegation-contract-verifier.md`
+- Backlog: `.gobbi/projects/gobbi/backlogs/broader-delegation-contract-verifier.md` (project-level — the broader-verifier reframing this discussion deferred).

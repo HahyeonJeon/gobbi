@@ -20,6 +20,10 @@ related: [rbac-matrix-single-source-of-truth]
 ## Insight
 LangGraph's deep-agents framework formalizes "skills" as a first-class concept: domain knowledge lives outside the prompt and is loaded only when a task requires it. The system prompt includes a structured **list of available skills containing name, description, tags, and supporting file names** — small enough to include in every request — and the agent pulls in detailed instructions only when needed. This is the pattern the planned skill-loading matrix is reaching for in reverse: gobbi already has per-skill SKILL.md files at the leaves; what is missing is the structured catalog at the top that names exactly which skills each (role, phase) needs.
 
+## Related
+
+- `rbac-matrix-single-source-of-truth` — the companion external-prior-art reference for the same role × phase skill-matrix design (centralized authoritative matrix that all consumers read from).
+
 ## Why it applies
 The planned role × phase skill matrix needs a shape. The LangGraph skill-catalog pattern provides one validated answer — a structured catalog (matrix) listing each skill with name + description + tags + file names. Adapted to gobbi: a role × phase table where each cell lists the canonical skill files. The deeper architectural takeaway is that the framework treats this catalog as *part of the system prompt* — i.e., it is something every agent sees on every request. In gobbi terms, this maps to the Load Directives block — the catalog *is* the Load Directives content. The matrix and the Load Directives block are two views of the same data; the validator's job is to keep them in sync.
 
