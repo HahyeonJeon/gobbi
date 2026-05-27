@@ -23,7 +23,7 @@ The `gobbi-hook-authoring` project skill was authored from 2 in-tree hook witnes
 
 - **New:** `.gobbi/projects/gobbi/skills/gobbi-hook-authoring/SKILL.md` (final: ~300 lines after the three evaluation rounds)
 - **New (staged twin):** `sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/preparation/staging/skills/gobbi-hook-authoring/SKILL.md`
-- **Modified:** `.gobbi/projects/gobbi/backlogs/gobbi-hook-authoring-skill.md` — status: closed
+- **Modified:** `.gobbi/projects/gobbi/archive/backlogs/2026-05-25-gobbi-hook-authoring-skill.md` — status: closed (since archived; this is its current location)
 
 ## Verification
 

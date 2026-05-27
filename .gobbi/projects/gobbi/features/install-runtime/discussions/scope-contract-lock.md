@@ -36,5 +36,5 @@ The PostToolUse hook task ships without modifying `session.template.json`. The h
 
 ## Related
 
-- Backlog `schema-extension-agents-status-field` — the deferred formal template bump.
+- Backlog [`../backlogs/schema-extension-agents-status-field.md`](../backlogs/schema-extension-agents-status-field.md) — the deferred formal template bump.
 - `discussions/dual-hook-registration-confirm.md` — the companion decision that also deferred the `status` field template extension.

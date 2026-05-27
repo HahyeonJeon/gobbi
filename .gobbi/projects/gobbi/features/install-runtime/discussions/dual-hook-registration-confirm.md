@@ -39,4 +39,4 @@ The dual-hook-registration-resolver design locks dual registration. The `status`
 ## Related
 
 - `design/dual-hook-registration-resolver.md` — the design this decision locks.
-- Backlog `schema-extension-agents-status-field` — the deferred template bump.
+- Backlog [`../backlogs/schema-extension-agents-status-field.md`](../backlogs/schema-extension-agents-status-field.md) — the deferred template bump.

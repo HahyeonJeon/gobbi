@@ -49,5 +49,5 @@ Edit contract content: safety table (10 rows, YES/NO/verify per edit method), 4-
 ## Related
 
 - `decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md` — the decision file the edit contract was added to as an in-place H2 section.
-- Backlog `ci-symlink-integrity-check` — the deferred CI guard.
+- Backlog [`../../../backlogs/ci-symlink-integrity-check.md`](../../../backlogs/ci-symlink-integrity-check.md) — the deferred CI guard.
 - The 5 Codex Preparation-loop evaluation findings (structure / usage / consistency / risk / overall) that drove the edit contract — preserved in the session's evaluation artifacts.
