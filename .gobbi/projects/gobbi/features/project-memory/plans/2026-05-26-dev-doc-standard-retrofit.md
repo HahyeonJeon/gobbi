@@ -15,20 +15,23 @@ task_count: 25
 
 # Dev-doc-level project-memory standard + waved retrofit (all waves this session)
 
-> **iter2 (REVISE remediation).** Synced to `planning/rawdata/draft-iter2.md`. The iter1 plan PASSED
-> counts/ordering/schema; five surgical findings were applied: prose-task splits (P3/P5/P7 → 6 sub-tasks,
-> task_count 22→25), archive-safe `**` globs, underscore-aware leak gate, T10 retargeted to the real
+> **Revision note (post-review remediation).** The first version of this plan passed on
+> counts / ordering / schema; five surgical findings were then applied: prose-task splits
+> (the three oversize prose tasks → 6 sub-tasks, task_count 22→25), archive-safe `**` globs, an
+> underscore-aware leak gate, the entrypoint-reconciliation task retargeted to the real
 > `.codex/AGENTS.md` (AGENTS.md is a symlink), and count-prose normalized to 25 records.
 
 ## Idea anchor
-- `ideation/artifacts/idea.md` + `design-options.md` (D1-D10, FIX-1 type-aware predicate). Standard
-  home: `.gobbi/projects/gobbi/skills/memorization/rules.md` new §4 (CANONICAL; `.claude/...` is a
-  symlink mirror — never edit the symlink).
+- [`design/dev-doc-memory-standard`](../design/dev-doc-memory-standard.md) — the design this plan implements
+  (the three-tier standard + FIX-1 type-aware predicate). Standard home:
+  [`skills/memorization/rules.md`](../../../skills/memorization/rules.md) new §4 (CANONICAL; the
+  `.claude/...` path is a symlink mirror — never edit the symlink).
 
 ## Scope Contract reference
-- `ideation/artifacts/scope-contract.md` — Tier 1 (standard + conformance + prose) / Tier 2 (grep gate)
-  / Tier 3 (nav). Out-of-scope: re-home, big-bang, heavy enforcement / new eval perspective (FLAG-2),
-  `.claude/` published-docs standard (FLAG-3), frozen `archive/`, stripping legitimate per-type keys.
+- Tier 1 (standard + conformance + prose) / Tier 2 (grep gate) / Tier 3 (nav). Out-of-scope: re-home,
+  big-bang, heavy enforcement / new eval perspective (FLAG-2), `.claude/` published-docs standard
+  (FLAG-3), frozen `archive/`, stripping legitimate per-type keys. The scope tiers trace to the
+  [scope-spine-three-tier-priority](../discussions/2026-05-26-scope-spine-three-tier-priority.md) discussion.
 
 ## Population (TRUE P_live at HEAD d2b5b37 — count-corrected from filter-bugged 208 baseline)
 - **222 files / 18 READMEs / 204 content docs / 63 hyphen-form leak files + 5 underscore-form leak files
@@ -36,7 +39,7 @@ task_count: 25
 - Correction (Decision 4): the locked 208/191/59 figures were computed with a `find` predicate that
   wrongly excluded in-scope `features/agents/` (14 docs, 4 leaks). NOT a scope change — agents is T1.
   Re-verified with a corrected `find` (no agents exclusion): 222/18/204/63.
-- iter2 (DOC-CONS-2): the leak gate key-set was hyphen-only; 5 LIVE `features/install-runtime/` docs
+- Correction (underscore-key gate): the leak gate key-set was hyphen-only; 5 LIVE `features/install-runtime/` docs
   carry underscore-spelled staging keys (`promoted_from`/`promoted_at`) and NO hyphen key. The gate now
   detects BOTH spellings; SC2 "0 leaks" target = union of the 63 hyphen-form + 5 underscore-form files → 0.
 

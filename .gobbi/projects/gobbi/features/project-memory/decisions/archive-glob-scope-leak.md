@@ -4,10 +4,8 @@ description: "Design flaw: plan's bare ** globs for files: patterns match archiv
 tags: [archive, glob, scope, conformance]
 created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
-type: design_flaw
+type: decisions
 domain: docs-sync
-addressed-in-iter: 2
-addressed-how: "Every `**` `files:` glob made archive-safe by adding `exclude: \"**/archive/**\"` in `files:` AND `-not -path '*/archive/*'` in `verifies`. T3/T4/T6/T7/T9b/T9c already enumerate subdirs (archive-clean by construction). Re-verified: workflow naive/archive-safe = 27/26; install-runtime = 45/44; READMEs = 23/18 — all match the count predicate."
 status: accepted
 scope: feature
 feature: project-memory
@@ -19,7 +17,7 @@ superseded_by: null
 
 ## Context
 
-The iter1 plan's `files:` globs for T1, T2, T5, T8, T9a, P5, P6, N1 used bare `**` patterns (e.g., `features/workflow/**/*.md`). The project memory tree includes frozen `archive/` subdirs that D10 and the scope-contract Out-of-Scope section explicitly exclude from every wave. The naive `**` glob would have matched those frozen docs.
+An early version of the retrofit plan used bare `**` `files:` globs (e.g., `features/workflow/**/*.md`) for several conformance and prose tasks. The project-memory tree includes frozen `archive/` subdirs that the scope contract's Out-of-Scope section explicitly excludes from every wave. The naive `**` glob would have matched those frozen docs.
 
 ## Decision
 
@@ -27,7 +25,7 @@ Confirmed as a design flaw. Every `**` glob must carry `exclude: "**/archive/**"
 
 ## Rationale
 
-The 7 frozen docs (2 content + 5 READMEs) are enumerated in the plan's Counts note. The `verifies` git-diff check does not detect archive edits — the edit-glob exclusion is the structural fix. Three independent perspectives (Project, Consistency, Risk — DOC-PROJECT-1 / DOC-CONS-1 / DOC-RISK-2) converged on this root.
+The 7 frozen docs (2 content + 5 READMEs) are enumerated in the plan's counts note. The `verifies` git-diff check does not detect archive edits — the edit-glob exclusion is the structural fix. Three independent evaluation perspectives (Project, Consistency, Risk) converged on this root.
 
 ## Alternatives considered
 
@@ -35,12 +33,13 @@ Explicit `not-path` in `verifies` only (no glob exclusion) — rejected: the edi
 
 ## Consequences
 
-All `**` globs in the plan now carry `exclude: "**/archive/**"`. Typed-subdir enumeration (T3/T4/T6/T7/T9b/T9c) is archive-clean by construction. The conformance-wave counts now match the count predicate (workflow 26, install-runtime 44, READMEs 18).
+All `**` globs in the plan now carry `exclude: "**/archive/**"`. The tasks that enumerate typed subdirs explicitly are archive-clean by construction. The conformance-wave counts now match the count predicate (workflow 26, install-runtime 44, READMEs 18).
 
 ## Related
 
-- `planning/evaluation/iter1/claude/project.md` (DOC-PROJECT-1)
-- `planning/evaluation/iter1/claude/consistency.md` (DOC-CONS-1)
-- `planning/evaluation/iter1/claude/risk.md` (DOC-RISK-2)
-- `planning/evaluation/iter1/codex/overall.md` (implied by F1)
-- `planning/rawdata/draft-iter2.md` §DL-I
+- [`memorization/rules.md` §4.6](../../../skills/memorization/rules.md) — the standard's archive-exclusion scope edge this glob fix enforces
+- [`plans/2026-05-26-dev-doc-standard-retrofit`](../plans/2026-05-26-dev-doc-standard-retrofit.md) — the plan whose globs were made archive-safe
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Planning review, Project / Consistency / Risk perspectives + Codex F1.

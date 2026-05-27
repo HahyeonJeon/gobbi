@@ -14,12 +14,34 @@ superseded_by: null
 related: []
 ---
 
-# Memorization Moment-of-Capture Core Principle
+# Memorization moment-of-capture Core Principle
 
-**Chosen direction**: Add new Core Principle bullet "Moment-of-capture, not end-of-loop" to `memorization/SKILL.md § Core Principles`, after "Store what survives, not what's transient" and before "Templates over freeform". Body: 2-3 sentences stating corrections/decisions/mistake-candidates are written to staging/rawdata at moment-of-occurrence during WORK, not deferred to MEMORIZATION. Reciprocal link to `mistake/SKILL.md` P2.
+## Problem
 
-**Rationale**: The write-as-you-go discipline gap exists in WORK, but the corrective documentation lives in MEMORIZATION's contract. Adding it as a Core Principle makes it visible to every agent that loads memorization for any reason. The witness: session `2026-05-22-bac669ad` had full evaluations but empty staging, because corrections from DISCUSSION were never written at moment-of-occurrence. `mistake/SKILL.md` P2 already says "Do not defer to MEMORIZATION" — the reciprocal link from memorization to mistake closes the loop.
+The write-as-you-go discipline gap lives in WORK: corrections, decisions, and mistake-candidates that surface during a loop's DISCUSSION are often deferred to the MEMORIZATION sub-phase and then silently lost when a session is interrupted. The corrective documentation, however, lives in MEMORIZATION's contract, so the discipline needs a home that every agent loading memorization will see.
 
-**Validation**: `grep "Moment-of-capture\|moment-of-capture" memorization/SKILL.md` returns ≥ 1; `grep "memorization/SKILL.md" mistake/SKILL.md` returns the reciprocal link.
+## Scope
 
-**Cross-links Bundle A creates**: memorization/SKILL.md § Core Principle "Moment-of-capture" → mistake/SKILL.md § P2; mistake/SKILL.md § P2 → memorization/SKILL.md § Core Principle (reciprocal).
+In-scope: add one Core Principle bullet to the memorization skill and a reciprocal link to the mistake skill's P2. Out-of-scope: changing the MEMORIZATION procedure steps or the staging routing.
+
+## Approach
+
+Add a new Core Principle bullet, "Moment-of-capture, not end-of-loop," to the memorization skill's Core Principles section — placed after "Store what survives, not what's transient" and before "Templates over freeform." The body states in two or three sentences that corrections / decisions / mistake-candidates are written to staging or rawdata at the moment of occurrence during WORK, not deferred to MEMORIZATION. Add a reciprocal link to the mistake skill's P2, which already says "Do not defer to MEMORIZATION" — the two-way link closes the loop between the two skills.
+
+## Validation
+
+- `grep -i "moment-of-capture" memorization/SKILL.md` returns at least one match.
+- `grep "memorization/SKILL.md" mistake/SKILL.md` returns the reciprocal link.
+
+## Trade-offs
+
+Optimizes for visibility (the discipline appears wherever memorization is loaded) at the cost of a small duplication of intent between the memorization Core Principle and the mistake skill's P2 — accepted because the reciprocal link keeps them in sync.
+
+## Open issues
+
+None — the principle and the reciprocal link are both additive.
+
+## Related
+
+- [`skills/memorization/SKILL.md`](../../../skills/memorization/SKILL.md) — the skill the Core Principle bullet was added to
+- [`skills/mistake/SKILL.md`](../../../skills/mistake/SKILL.md) — the P2 the new bullet reciprocally links to

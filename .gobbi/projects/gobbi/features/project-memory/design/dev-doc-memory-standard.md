@@ -11,9 +11,9 @@ tags: [standard, conformance, prose-quality, wave-based, rules-md]
 supersedes: null
 superseded_by: null
 related:
-  - ideation/artifacts/idea.md
-  - ideation/artifacts/scope-contract.md
-  - ideation/artifacts/design-options.md
+  - ../../../skills/memorization/rules.md
+  - ../decisions/type-aware-strip-disposition-not-blanket-leak.md
+  - ../plans/2026-05-26-dev-doc-standard-retrofit.md
 ---
 
 # Design — development-document-level project-memory standard
@@ -55,7 +55,7 @@ A new section is added to `memorization/rules.md` (canonical:
 - States the type-purity rule (per Diátaxis): one doc, one type's job; do not blend types.
 
 ### Conformance wave (wave 1 — mechanical)
-Apply the FIX-1 type-aware allowlist strip (see D6 in design-options.md for the full predicate).
+Apply the FIX-1 type-aware allowlist strip (see [type-aware-strip-disposition-not-blanket-leak](../decisions/type-aware-strip-disposition-not-blanket-leak.md) for the full predicate).
 Also normalize base schema (add missing base keys) and de-crypt cryptic session-coord body
 references. Absorb backlog `feature-dir-frontmatter-full-normalization.md`.
 

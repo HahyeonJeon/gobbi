@@ -9,12 +9,11 @@ scope: feature
 feature: project-memory
 supersedes: null
 superseded_by: null
-type: general
+type: decisions
 domain: docs-sync
-finding_ids: [F1, F4, F6]
 ---
 
-# Do Not Promote Third Backlog — Triplicate Dangling-claude-skill-link Entries (F1/F4/F6 cluster)
+# Do not promote a third backlog for the triplicate dangling-claude-skill-link entries
 
 ## Context
 
@@ -53,9 +52,11 @@ Do NOT promote the third staged backlog. The redundant file `preparation/staging
 
 ## Related
 
-- `preparation/evaluation/iter1/claude/project.md` — F1 finding
-- `preparation/evaluation/iter1/claude/risk.md` — F4 finding
-- `preparation/evaluation/iter1/claude/usage.md` — F6 finding
-- `preparation/evaluation/iter1/claude/overall.md` — cross-perspective confirmation
-- `.gobbi/projects/gobbi/backlogs/claude-doc-standard-skill-missing.md` (FLAG-2, HIGH/open)
-- `.gobbi/projects/gobbi/backlogs/stub-redirect-dangling-claude-skill-ref.md` (FLAG-3, MEDIUM/open)
+- [`backlogs/claude-doc-standard-skill-missing`](../../../backlogs/claude-doc-standard-skill-missing.md) — FLAG-2 (HIGH, open), the authoritative record kept
+- [`backlogs/stub-redirect-dangling-claude-skill-ref`](../../../backlogs/stub-redirect-dangling-claude-skill-ref.md) — FLAG-3 (MEDIUM, open), the second authoritative record
+- [codex-path-traceability](codex-path-traceability.md) — the path-precision note whose only carrier was the dropped triplicate
+- [coupling-mischaracterization-deferred](coupling-mischaracterization-deferred.md) — the related defer decision on the same dangling-link item
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Preparation readiness review, Project / Risk / Usage perspectives (findings F1 / F4 / F6).

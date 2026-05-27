@@ -22,24 +22,20 @@ Cross-session durable store: decisions, designs, plans, and references survive i
 
 `project-memory` is gobbi's durable cross-session knowledge tree. It captures what survives a session — decisions, designs, plans, references, mistakes — in a typed, named, frontmattered store that the next session can find without restarting from zero.
 
-## Subsystems
+## Status
 
-- `memorization` (synthesis + staging) + `memory-map.md`
-- `wrap-up`'s promotion half
-- The 13 project-memory types + naming standard + frontmatter standard
-- The archive move-on-terminal model (`design/archive-move-on-terminal-model.md`)
+Active. The memory-system redesign shipped the typed directory structure and naming standard (PR #272), and the dev-doc quality standard (§4 of `memorization/rules.md`) plus a conformance wave shipped on top of it. The prose-quality wave that brings each doc into full §4 conformance is in progress. The subsystems this feature owns — `memorization` (synthesis + staging), `wrap-up`'s promotion half, the project-memory types + naming + frontmatter standards, and the archive move-on-terminal model — are all live.
 
 ## Subdirectories
 
-- `decisions/` — memory-system design decisions
-- `design/` — memory-system design topics
-- `discussions/` — substantive AskUserQuestion topics scoped to project-memory
-- `references/` — external prior art touching the memory system
-- `plans/` — plan artifacts produced by the Planning loop
-- `changelogs/` — what shipped per task
-- `checklists/` — checklist findings from evaluation
-- `scenarios/` — scenario findings from evaluation
-- `archive/` — superseded project-memory artifacts (move-on-terminal)
+- `decisions/` — memory-system design decisions (14 files)
+- `design/` — memory-system design topics (2 files)
+- `discussions/` — substantive AskUserQuestion topics scoped to project-memory (3 files)
+- `references/` — external prior art touching the memory system (5 files)
+- `plans/` — plan artifacts produced by the Planning loop (1 file)
+- `changelogs/` — what shipped per task (1 file)
+- `checklists/` — checklist findings from evaluation (4 files)
+- `scenarios/` — scenario findings from evaluation (1 file)
 
 ## Recent activity
 
@@ -48,6 +44,13 @@ Cross-session durable store: decisions, designs, plans, and references survive i
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
 | 2026-05-27 | b0a0eaf9 | Dev-doc standard (§4 rules.md) authored + conformance wave (T0–T11) shipped; 7 new subdirs bootstrapped; 17 ideation + 5 prep + 9 planning staging files promoted |
 
+## Open items
+
+- The prose-quality wave (§4 conformance) is mid-flight across the project-memory tree.
+- The `backlogs/` and `mistakes/` subdirectories exist but currently hold no feature-scoped entries.
+
 ## Related
 
-- Memory-system redesign design doc §1.2 (7-feature table), §1.3 (sprint → value-feature routing)
+- [`design/dev-doc-memory-standard`](design/dev-doc-memory-standard.md) — the design for the dev-doc quality standard this feature governs
+- [`skills/memorization/rules.md`](../../skills/memorization/rules.md) — the memory standard (naming, frontmatter, §4 dev-doc quality) this feature owns
+- [`skills/memorization/memory-map.md`](../../skills/memorization/memory-map.md) — the path-and-type semantics for the memory tree

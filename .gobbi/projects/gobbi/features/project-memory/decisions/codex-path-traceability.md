@@ -9,26 +9,35 @@ scope: feature
 feature: project-memory
 supersedes: null
 superseded_by: null
-type: general
+type: decisions
 domain: docs-sync
-finding_ids: [C-PREP-001]
 ---
 
-# Codex C-PREP-001: Path Precision `.claude/CLAUDE.md:60` vs `CLAUDE.md:60` — Addressed (for the record)
+# Entrypoint doc must be cited as `.claude/CLAUDE.md`, not bare `CLAUDE.md`
 
 ## Context
 
-The Codex evaluator (overall.md, C-PREP-001) noted that the Preparation draft and staged backlog cite the entrypoint doc as `CLAUDE.md:60` when the correct path is `.claude/CLAUDE.md:60` (no root `CLAUDE.md` exists; the file lives under `.claude/`).
+A path-precision concern was raised against the readiness work: the entrypoint document was cited as `CLAUDE.md:60` when the correct path is `.claude/CLAUDE.md:60`. There is no root-level `CLAUDE.md` in this repository — the file lives under `.claude/`, so the bare-path citation would not resolve for a future reader.
 
-The recommended fix was: before Wrap-up promotes the backlog, correct the path in the draft/backlog to `.claude/CLAUDE.md:60`.
+The proposed fix was to correct the path before the related backlog was promoted to project memory.
 
 ## Decision
 
-Addressed by remediation: the staged backlog `dangling-claude-doc-skill-link.md` was DELETED during MEMORIZATION (redundant triplicate — see `triplicate-backlog-remediated.md`). There is no backlog to correct. The path imprecision is moot for the surviving FLAG-2/FLAG-3 records, which are committed files not mutated by this session.
+The imprecise citation was resolved by removing the artifact that carried it: the redundant staged backlog tracking the dangling claude-skill link was dropped as a triplicate (see [triplicate-backlog-remediated](triplicate-backlog-remediated.md)). No surviving record carries the bad path. The remaining authoritative backlogs (the HIGH and MEDIUM dangling-link records) are committed files this work did not mutate, so their citations stand as-is.
 
-The rawdata draft (`preparation/rawdata/draft-iter1.md`) is preserved as-is per the read-only rawdata constraint; the imprecision is noted here for the record only.
+## Rationale
+
+There was no live record left to correct: the only artifact carrying `CLAUDE.md:60` was the triplicate backlog, and that was removed for a separate reason (atomicity). Editing source rawdata after the fact is forbidden by the read-only-rawdata constraint, so the correct path is recorded here as the durable note instead.
+
+## Alternatives considered
+
+Edit the path inline in the originating draft — rejected: that draft is read-only audit rawdata and must not be mutated after the fact. Recording the corrected path in this decision is the durable substitute.
+
+## Consequences
+
+Future work that re-opens the dangling-link tracking must cite the entrypoint as `.claude/CLAUDE.md`, never bare `CLAUDE.md`. No outstanding correction action remains for this session.
 
 ## Related
 
-- `preparation/evaluation/iter1/codex/overall.md` — C-PREP-001 finding
-- `preparation/staging/decisions/triplicate-backlog-remediated.md` — primary remediation
+- [triplicate-backlog-remediated](triplicate-backlog-remediated.md) — the removal of the artifact that carried the imprecise path
+- [`.claude/CLAUDE.md`](../../../../../../.claude/CLAUDE.md) — the entrypoint document whose canonical path this decision pins

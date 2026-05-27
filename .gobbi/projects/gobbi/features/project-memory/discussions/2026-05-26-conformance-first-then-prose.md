@@ -46,5 +46,9 @@ Accept the conformance-first reframe / prose-first / standard-only.
 
 ## Related
 
-- `ideation/rawdata/discussion-log.md` Q5 (scope sequencing)
-- `ideation/artifacts/scope-contract.md` §Decisions Locked (1, 3, 7)
+- [scope-spine-three-tier-priority](2026-05-26-scope-spine-three-tier-priority.md) — the scope discussion this sequencing sits inside
+- [`plans/2026-05-26-dev-doc-standard-retrofit`](../plans/2026-05-26-dev-doc-standard-retrofit.md) — the plan that realizes the conformance-first-then-prose wave order
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Ideation DISCUSSION Q5 (scope sequencing).

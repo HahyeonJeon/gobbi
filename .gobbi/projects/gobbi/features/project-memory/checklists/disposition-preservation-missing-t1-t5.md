@@ -4,10 +4,8 @@ description: "Checklist gap: T1 and T5 conformance tasks must verify that FIX-1 
 tags: [checklist, disposition, backlog, conformance]
 created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
-type: checklist_gap
+type: checklists
 domain: docs-sync
-addressed-in-iter: 2
-addressed-how: "T1 `verifies` now explicitly asserts `disposition` preserved on `features/agents/backlogs/privacy-retention-agents-metadata-deferred.md` (1 backlog file). T5 `verifies` now explicitly asserts `disposition` preserved on all 3 guardrails backlog files (`goodhart-factor-when-demanded-deferred.md`, `posttooluse-failure-webfetch-verification-gap.md`, `hook-event-count-31-vs-29-docs-sync.md`). Self-review coverage row updated to include T1/T5."
 status: accepted
 scope: feature
 feature: project-memory
@@ -15,31 +13,25 @@ supersedes: null
 superseded_by: null
 ---
 
-# Missing checklist item: `disposition` preservation verification on T1 and T5
+# `disposition` preservation verification on backlog-touching conformance tasks — implementation checklist
 
-## Scenario
+| # | Item | Anchor | Status | Verification |
+|---|---|---|---|---|
+| 1 | A conformance task that touches a feature dir containing `backlogs/` must assert `disposition` is preserved on each backlog file | type-aware-strip-disposition-not-blanket-leak | implemented | After edits, each backlog file still carries its original `disposition:` value; the verify gate names the check explicitly rather than inferring it from the leak gate |
+| 2 | The `features/agents` conformance task asserts `disposition` preserved on its 1 backlog file | novel | implemented | `disposition` present on `features/agents/backlogs/privacy-retention-agents-metadata-deferred.md` after the strip |
+| 3 | The `features/guardrails` conformance task asserts `disposition` preserved on all 3 of its backlog files | novel | implemented | `disposition` present on the 3 guardrails backlog files after the strip |
 
-Conformance tasks that handle feature groups containing `backlogs/` subdirs must verify that the FIX-1 strip does NOT remove legitimate `disposition` keys from backlog files (which are NOT subject to the staging-key strip per D6/FIX-1 scope contract).
+## Item details
 
-## Missing check
+### 1. Backlog-touching conformance tasks must assert disposition preservation
 
-T1 and T5 `verifies` gates in iter1 checked only: (a) leak count = 0, (b) 9 base keys present, (c) git diff scope. They did NOT include a `disposition` preservation assertion.
+The original verify gates checked only: leak count = 0, the 9 base keys present, and git-diff scope. None asserted `disposition` preservation. A blanket strip could therefore pass "0 leaks + 9 base keys" while silently deleting a legitimate `disposition` key from a backlog file — `disposition: open|deferred` is a legitimate per-type extension on `backlogs/` and is explicitly out of scope for the staging-key strip.
 
-- T1 covers `features/agents/**` which includes `features/agents/backlogs/privacy-retention-agents-metadata-deferred.md` (carries `disposition: deferred`).
-- T5 covers `features/guardrails/**` which includes 3 backlog files with legitimate `disposition` values.
+**Anchor reasoning:** anchored to the [type-aware-strip-disposition-not-blanket-leak](../decisions/type-aware-strip-disposition-not-blanket-leak.md) decision, which establishes that `disposition` is preserved on `backlogs/` and only stripped elsewhere.
 
-A blanket strip could pass the "0 leaks + 9 base keys" checks after deleting legitimate `disposition` — the gap was real.
-
-## How to verify (corrected)
-
-For any conformance task covering a feature dir that contains `backlogs/` files:
-- Enumerate the backlog files in the feature dir before edits.
-- After edits, confirm each backlog file still carries its original `disposition:` value.
-- The `verifies` gate must name this check explicitly (not infer preservation from the leak gate).
+**Verification approach:** enumerate the backlog files in the feature dir before edits; after edits, confirm each still carries its original `disposition:` value; the verify gate must name this check explicitly.
 
 ## Related
 
-- `planning/evaluation/iter1/codex/overall.md` (F2)
-- `planning/rawdata/draft-iter2.md` §DL-J (Codex F2 closure)
-- `ideation/artifacts/design-options.md` (FIX-1 — `disposition` preserved on backlogs)
-- `ideation/artifacts/scope-contract.md` (Out-of-scope: stripping `disposition` from backlogs)
+- [type-aware-strip-disposition-not-blanket-leak](../decisions/type-aware-strip-disposition-not-blanket-leak.md) — the decision establishing `disposition` is a legitimate backlog extension, not a leak
+- [`memorization/rules.md` §4.4](../../../skills/memorization/rules.md) — the conditional-`disposition` rule (leak everywhere except `backlogs/`)

@@ -4,10 +4,8 @@ description: "Design flaw: hyphen-only leak gate falsely certifies underscore-sp
 tags: [leak-gate, staging-keys, underscore, conformance]
 created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
-type: design_flaw
+type: decisions
 domain: docs-sync
-addressed-in-iter: 2
-addressed-how: "FIX-1 key-set S extended to include underscore spellings of every staging-routing key (`promoted_from`, `promoted_at`, `staged_from`, `staged_at`, etc.) IN ADDITION to hyphen forms. T0 encodes both spellings. T6/T7 verifies explicitly name the 5 underscore-key install-runtime docs. T11 cumulative gate detects both spellings. SC2 leak target = union of 63 hyphen-form + 5 underscore-form → 0."
 status: accepted
 scope: feature
 feature: project-memory
@@ -19,7 +17,7 @@ superseded_by: null
 
 ## Context
 
-The iter1 plan's FIX-1 predicate (D6) and the grep-gate used a key-set containing only hyphen-form staging-routing keys (e.g., `promoted-from`, `staged-from`). However, 5 live `features/install-runtime/` docs carry underscore-spelled staging keys (`promoted_from`, `promoted_at`) and NO hyphen key. The iter1 gate would have reported "0 leaks" (Success Criterion 2 met) while those 5 docs still contained illegitimate staging-routing keys — a direct Goodhart/Iron-Law-11 risk.
+An early version of the plan's FIX-1 predicate and the grep-gate used a key-set containing only hyphen-form staging-routing keys (e.g., `promoted-from`, `staged-from`). However, 5 live `features/install-runtime/` docs carry underscore-spelled staging keys (`promoted_from`, `promoted_at`) and NO hyphen key. That gate would have reported "0 leaks" (Success Criterion 2 met) while those 5 docs still contained illegitimate staging-routing keys — a direct Goodhart / Iron-Law-11 risk.
 
 ## Decision
 
@@ -27,7 +25,7 @@ Confirmed as a design flaw that touches SC2 validity. The key-set S must include
 
 ## Rationale
 
-Re-ran `grep -rlE '^(promoted_from|promoted_at):' .gobbi/projects/gobbi/features/install-runtime --include='*.md' | grep -v '/archive/' | wc -l` = 5. All 5 carry NO hyphen key. Without the underscore extension, the iter1 gate would falsely certify them (the metric passes without the condition being met — Iron Law 11).
+Re-ran `grep -rlE '^(promoted_from|promoted_at):' .gobbi/projects/gobbi/features/install-runtime --include='*.md' | grep -v '/archive/' | wc -l` = 5. All 5 carry NO hyphen key. Without the underscore extension, a hyphen-only gate would falsely certify them (the metric passes without the condition being met — Iron Law 11).
 
 ## Alternatives considered
 
@@ -39,7 +37,9 @@ SC2 "0 leaks" target = union of 63 hyphen-form files ∪ 5 underscore-form files
 
 ## Related
 
-- `planning/evaluation/iter1/claude/consistency.md` (DOC-CONS-2)
-- `planning/evaluation/iter1/claude/overall.md` (cross-cutting finding)
-- `planning/rawdata/draft-iter2.md` §DL-J
-- `ideation/artifacts/design-options.md` D6/FIX-1
+- [type-aware-strip-disposition-not-blanket-leak](type-aware-strip-disposition-not-blanket-leak.md) — the companion decision defining the FIX-1 type-aware key-set S this finding extends
+- [`underscore-aware-leak-gate`](../../../skills/memorization/rules.md) — §4.5 of the memory standard encodes the resulting hyphen-and-underscore-aware gate
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Planning review, Consistency perspective (DOC-CONS-2).

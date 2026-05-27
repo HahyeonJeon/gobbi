@@ -1,13 +1,11 @@
 ---
 name: prose-tasks-exceed-context-ceiling
-description: "Design flaw: iter1 prose tasks P3/P5/P7 exceed the ≤35-doc context ceiling; each split into A/B sub-tasks along conformance-wave boundaries."
+description: "The three largest prose tasks exceeded the ≤35-doc context ceiling; each was split into A/B sub-tasks along the conformance-wave boundaries."
 tags: [prose-tasks, context-ceiling, planning, wave-split]
 created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
-type: design_flaw
+type: decisions
 domain: process
-addressed-in-iter: 2
-addressed-how: "P3 (41 docs) split → P3a (20) + P3b (21) along T3/T4 boundary; P5 (44) → P5a (24) + P5b (20) along T6/T7 boundary; P7 (68) → P7a (35) + P7b (33) along T9b/T9c boundary. Each prose sub-task ≤ 35 docs (the inherited context ceiling). Task total 22→25. N1 now requires all 10 prose tasks. Inputs/outputs re-threaded."
 status: accepted
 scope: feature
 feature: project-memory
@@ -19,7 +17,7 @@ superseded_by: null
 
 ## Context
 
-The Preparation carry-forward (`preparation/staging/decisions/context-budget-wave-ordering-carry-forward.md`) required Planning to bound each wave to a context budget of ≤~35 docs. The iter1 plan correctly applied this to all 11 Wave-1 conformance tasks, but the 10 Wave-2 prose tasks were not split: P3 = 41 docs, P5 = 44 docs, P7 = 68 docs. Prose rewrites are more judgment-heavy than mechanical conformance, making the overflow risk HIGHER, not lower.
+The Preparation carry-forward (see [context-budget-wave-ordering-carry-forward](context-budget-wave-ordering-carry-forward.md)) required Planning to bound each wave to a context budget of roughly 35 docs. The first plan applied this to all 11 conformance tasks, but the 10 prose tasks were not split: the largest were 41, 44, and 68 docs. Prose rewrites are more judgment-heavy than mechanical conformance, making the overflow risk higher, not lower.
 
 ## Decision
 
@@ -35,12 +33,13 @@ Arbitrary subdir splits (not mirroring conformance boundaries) — rejected: the
 
 ## Consequences
 
-Prose wave expanded from 7 tasks (P1-P7) to 10 tasks (P1, P2, P3a, P3b, P4, P5a, P5b, P6, P7a, P7b). Task total 22→25. Each prose task ≤35 docs. N1 prerequisites updated to list all 10 prose tasks. Inputs/outputs re-threaded with `*-a-prose-quality`/`*-b-prose-quality` names.
+The prose wave expanded from 7 tasks to 10 (the three oversize tasks each split into A/B halves), raising the plan's task total from 22 to 25. Each prose task is now bounded to 35 docs or fewer. The nav task's prerequisites were updated to require all 10 prose tasks.
 
 ## Related
 
-- `planning/evaluation/iter1/claude/structure.md` (DOC-STRUCT-1)
-- `planning/evaluation/iter1/claude/performance.md` (DOC-PERF-1)
-- `planning/evaluation/iter1/codex/overall.md` (F1)
-- `preparation/staging/decisions/context-budget-wave-ordering-carry-forward.md`
-- `planning/rawdata/draft-iter2.md` §DL-H
+- [context-budget-wave-ordering-carry-forward](context-budget-wave-ordering-carry-forward.md) — the inherited ≤35-doc ceiling this decision applies to the prose wave
+- [`plans/2026-05-26-dev-doc-standard-retrofit`](../plans/2026-05-26-dev-doc-standard-retrofit.md) — the plan whose task list reflects the split (25 records)
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Planning review, Structure / Performance perspectives and Codex finding F1.

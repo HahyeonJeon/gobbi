@@ -48,5 +48,9 @@ with the explicit note: "avoid unnecessary change / don't think deeply."
 
 ## Related
 
-- `ideation/rawdata/discussion-log.md` Q4 (scope spine) + Q8 (enforcement depth)
-- `ideation/artifacts/scope-contract.md` §In-Scope
+- [conformance-first-then-prose](2026-05-26-conformance-first-then-prose.md) — the sequencing discussion that operationalizes this three-tier scope
+- [tier-2-3-scope-explicitly-placed](../scenarios/tier-2-3-scope-explicitly-placed.md) — the scenario requiring every tier be explicitly enumerated in the Scope Contract
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Ideation DISCUSSION Q4 (scope spine) + Q8 (enforcement depth).

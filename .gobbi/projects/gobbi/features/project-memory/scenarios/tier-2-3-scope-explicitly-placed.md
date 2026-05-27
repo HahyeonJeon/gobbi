@@ -19,15 +19,15 @@ finding-iter: 1
 ## Situation
 
 The user ratified a 3-tier scope in discussion-log Q4: (1) standard + content rewrite [primary],
-(2) skills/principles [optional], (3) organization & navigation. The iter1 Scope Contract only
+(2) skills/principles [optional], (3) organization & navigation. An early Scope Contract only
 enumerated tier-1 items and hand-waved that lower tiers were "folded into the in-scope waves."
 This can cause Planning to silently drop a user-ratified scope tier.
 
 ## Inputs
 
-- `discussion-log.md` Q4: "Cover all three; priority = (1) standard+content rewrite, (2)
-  skills/principles [optional, not mandatory], (3) organization & navigation."
-- iter1 Scope Contract In-Scope: only tier-1 items enumerated; tier-2/3 not labeled.
+- The user's ratified three-tier scope: "Cover all three; priority = (1) standard + content
+  rewrite, (2) skills/principles [optional, not mandatory], (3) organization & navigation."
+- An early Scope Contract that enumerated only tier-1 items and left tier-2/3 unlabeled.
 
 ## Expected behavior
 
@@ -46,6 +46,8 @@ In-Scope blocks, each tracing to the relevant discussion-log exchange.
 
 ## Related
 
-- `ideation/evaluation/iter1/codex/overall.md` (F3, Medium/85)
-- `ideation/artifacts/scope-contract.md` (§In-Scope now enumerates tier 1/2/3)
-- `ideation/rawdata/discussion-log.md` (Q4: scope spine)
+- [scope-spine-three-tier-priority](../discussions/2026-05-26-scope-spine-three-tier-priority.md) — the discussion that ratified the three-tier scope this scenario guards
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Ideation review, Codex finding F3 (Medium).

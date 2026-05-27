@@ -9,18 +9,17 @@ scope: feature
 feature: project-memory
 supersedes: null
 superseded_by: null
-type: assumption_risk
+type: decisions
 domain: docs-sync
-finding_ids: [F2]
 ---
 
-# "Unrelated to Retrofit" Independence Claim Overstated — Defer Stands (F2)
+# "Unrelated to retrofit" independence claim was overstated — but the defer still stands
 
 ## Context
 
-The Preparation draft (lines 22-23, 89-93) characterizes the dangling `[claude skill](skills/claude/SKILL.md)` link as "out-of-scope `.claude/`-surface drift unrelated to the memory-doc retrofit."
+The Preparation readiness work characterized the dangling `[claude skill](skills/claude/SKILL.md)` link as "out-of-scope `.claude/`-surface drift unrelated to the memory-doc retrofit."
 
-The Claude evaluator (Project perspective, F2) found this independence claim overstated: `gobbi/SKILL.md:187` (FLAG-2 row) states the missing `claude` skill's "intended home is the `project-memory` value-feature (the doc-authoring standard Principle 13 leans on)" — the exact feature this session retrofits, under P13 (the No-Document-Work-Without-Spec principle) that governs the doc-work.
+A Project-perspective evaluation found this independence claim overstated: the gobbi entry-point skill (`skills/gobbi/SKILL.md`, the FLAG-2 row) states the missing `claude` skill's intended home is the `project-memory` value-feature — the exact feature this session retrofits, under Principle 13 (No Document Work Without a Spec) that governs the doc-work.
 
 The coupling exists (same feature, same P13). The draft framing understated it by calling it "unrelated."
 
@@ -45,6 +44,10 @@ For future sessions: the correct characterization is "project-memory-feature-adj
 
 ## Related
 
-- `preparation/evaluation/iter1/claude/project.md` — F2 finding
-- `.gobbi/projects/gobbi/backlogs/claude-doc-standard-skill-missing.md` (FLAG-2, HIGH/open)
-- `.gobbi/projects/gobbi/skills/gobbi/SKILL.md:187` — coupling reference
+- [`backlogs/claude-doc-standard-skill-missing`](../../../backlogs/claude-doc-standard-skill-missing.md) — the FLAG-2 (HIGH, open) record that remains canonical
+- [`skills/gobbi/SKILL.md`](../../../skills/gobbi/SKILL.md) — the entry-point skill whose FLAG-2 row names project-memory as the missing `claude` skill's home
+- [triplicate-backlog-remediated](triplicate-backlog-remediated.md) — the sibling decision that dropped the redundant third backlog
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Preparation readiness review, Project-perspective finding F2.

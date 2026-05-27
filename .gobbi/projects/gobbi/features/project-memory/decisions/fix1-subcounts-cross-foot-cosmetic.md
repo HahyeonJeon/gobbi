@@ -16,8 +16,8 @@ finding-iter: 2
 
 ## Context
 
-`draft-iter2.md:187` states: 62 files carry `disposition`, with 28 legitimate backlog files and
-35 non-backlog leak candidates. However:
+The Ideation readiness work stated that 62 files carry `disposition`, with 28 legitimate backlog
+files and 35 non-backlog leak candidates. However:
 - The 28 count used a looser backlog filter (all `*/backlogs/*` not under `sessions/` or `archive/`).
 - Under the single canonical P_live filter (also excludes `agents/`), the backlog-disposition
   count is **27** — because `.gobbi/projects/gobbi/features/agents/backlogs/privacy-retention-agents-metadata-deferred.md` is under the excluded `agents/` surface.
@@ -34,13 +34,28 @@ At Execution, state explicitly: "28 legitimate backlog files (using loose `*/bac
 OR "27 legitimate backlog files (using strict P_live filter)". Do not mix filters in the same
 count narrative.
 
+## Rationale
+
+The discrepancy is purely a filter-choice artifact: the loose filter counts a backlog file under the
+excluded `agents/` surface, the strict P_live filter does not. The FIX-1 predicate and the leak-file
+set reproduce identically under the canonical filter regardless of which sub-count is cited, so the
+cross-foot is cosmetic, not a baseline error.
+
+## Alternatives considered
+
+Pick the loose filter (28) as canonical — rejected: the strict P_live filter is the predicate the
+conformance gate actually uses, so the canonical sub-count must match it (27) to avoid a second drift.
+
 ## Consequences
 
-- No change to the FIX-1 predicate, the key-set S, or the 59-file target.
+- No change to the FIX-1 predicate, the key-set S, or the leak-file target.
 - Execution implementation must use one consistent filter throughout.
 
 ## Related
 
-- `ideation/evaluation/iter2/claude/overall.md` (CN-1, Low/100)
-- `ideation/evaluation/iter2/codex/overall.md` (N1, Low/100)
-- `ideation/artifacts/design-options.md` (D6/FIX-1)
+- [fx1-sub-count-cross-foot](fx1-sub-count-cross-foot.md) — the companion decision recording the same cross-foot from the Preparation side
+- [type-aware-strip-disposition-not-blanket-leak](type-aware-strip-disposition-not-blanket-leak.md) — the FIX-1 predicate whose count this reconciles
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Ideation review, overall perspective (CN-1 / N1, Low).

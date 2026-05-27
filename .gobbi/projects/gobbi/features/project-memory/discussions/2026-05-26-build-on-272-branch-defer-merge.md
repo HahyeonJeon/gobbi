@@ -47,6 +47,9 @@ re-judge #272's structure.
 
 ## Related
 
-- `ideation/rawdata/discussion-log.md` Q3 (starting point relative to PR #272)
-- `ideation/artifacts/scope-contract.md` §Out-of-Scope (re-homing not re-litigated)
-- `ideation/staging/checklists/symlink-edit-target-merge-back-flag.md`
+- [symlink-edit-target-merge-back-flag](../checklists/symlink-edit-target-merge-back-flag.md) — the checklist capturing the additive-edit / merge-back discipline this decision requires
+- [conformance-first-then-prose](2026-05-26-conformance-first-then-prose.md) — the sibling sequencing discussion from the same session
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Ideation DISCUSSION Q3 (starting point relative to PR #272).

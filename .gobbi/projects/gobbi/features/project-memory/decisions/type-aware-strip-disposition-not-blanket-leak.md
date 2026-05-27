@@ -16,7 +16,7 @@ finding-iter: 1
 
 ## Context
 
-The iter1 ideation draft scoped the conformance wave to "strip the 64 staging-key leaks"
+An early ideation draft scoped the conformance wave to "strip the 64 staging-key leaks"
 including `disposition`. This was unsafe as written: `disposition: open|deferred` is a
 **legitimate extension field on `backlogs/` docs** (`rules.md` §2.2 line 110), and the
 stripping rule qualifies `disposition` as staging-only "when used purely as eval routing"
@@ -44,19 +44,23 @@ violates both provisions. The witness file
 `disposition` (kept) AND illegitimate eval-routing keys `finding-id`/`confidence`/`severity`
 (stripped) — the predicate correctly differentiates.
 
+## Alternatives considered
+
+A blanket grep-strip of every key in S including `disposition` everywhere — rejected: it would corrupt backlog lifecycle semantics by deleting the legitimate `disposition: open|deferred` extension that `backlogs/` docs depend on, violating the safety invariant.
+
 ## Consequences
 
 - Planning/Execution must use the FIX-1 predicate + key-set S when implementing the
   mechanical strip. Do not regress to a blanket grep.
 - The "0 leaks" Success Criterion counts only illegitimate keys under predicate P —
   legitimate `disposition`-on-`backlogs/` is excluded from the count.
-- Baseline: 59 files carry ≥1 illegitimate key under predicate P (HEAD d2b5b37).
+- Baseline: 59 files carry at least one illegitimate key under predicate P (at the named baseline commit).
 
 ## Related
 
-- `ideation/evaluation/iter1/codex/overall.md` (F1, High/95)
-- `ideation/evaluation/iter1/claude/consistency.md` (C-3, Medium/75)
-- `ideation/evaluation/iter1/claude/risk.md` (R-2, Medium/75)
-- `ideation/evaluation/iter2/claude/overall.md` (closed)
-- `ideation/evaluation/iter2/codex/overall.md` (F1 closed)
-- `ideation/artifacts/design-options.md` (D6/FIX-1)
+- [underscore-staging-keys-false-clean](underscore-staging-keys-false-clean.md) — the follow-on decision extending key-set S to underscore spellings
+- [`memorization/rules.md` §4.4](../../../skills/memorization/rules.md) — the standard section encoding the type-aware allowlist and the conditional-`disposition` rule
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Ideation review, Codex F1 (High) + Consistency / Risk perspectives.

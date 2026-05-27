@@ -16,10 +16,10 @@ finding-iter: 1
 
 ## Context
 
-The iter1 draft claimed "~147 feature+project content docs" and base-frontmatter presence on
+An early draft claimed "~147 feature+project content docs" and base-frontmatter presence on
 "~14-25 files." These numbers were not reproducible against the current tree and did not name
-the commit or scope-predicate used. The true population at HEAD d2b5b37 is 208 files (P_live_all)
-with 50 fully conformant — nearly double the claimed denominator.
+the commit or scope-predicate used. The true population at the named baseline commit is 208 files
+(P_live_all) with 50 fully conformant — nearly double the claimed denominator.
 
 ## Decision
 
@@ -31,7 +31,7 @@ Population counts for the conformance wave use the explicitly defined predicate 
 - **P_live_all = 208 files** (includes 17 README.md index files) — measured at HEAD d2b5b37.
 - **P_live_content = 191 files** (P_live_all minus 17 READMEs).
 - **Fully conformant today: 50 / 208** (~24%).
-- Commands to reproduce: see `ideation/rawdata/draft-iter2.md` §Decisions Log §iter2 remediation F2.
+- Commands to reproduce the counts are recorded in the originating session's Ideation rawdata (see `## Source`).
 
 ## Rationale
 
@@ -47,9 +47,15 @@ frontmatter work; any pre-work baseline is now stale.
   illegitimate staging-key leaks outside `archive/`.
 - The stale "~147 / ~14-25 / 64 leaks / ~15% realized" numbers are fully superseded.
 
+## Alternatives considered
+
+Keep the original approximate figures ("~147 content docs") without naming a baseline commit — rejected: approximate, commit-less figures are not reproducible and under-counted the true population by roughly half, which would have under-scoped the conformance wave.
+
 ## Related
 
-- `ideation/evaluation/iter1/codex/overall.md` (F2, Medium/90)
-- `ideation/evaluation/iter1/claude/consistency.md` (C-1, Medium/75)
-- `ideation/evaluation/iter1/claude/overall.md` (O-1, Medium/75)
-- `ideation/artifacts/scope-contract.md` (§Population predicate + §Success Criteria)
+- [type-aware-strip-disposition-not-blanket-leak](type-aware-strip-disposition-not-blanket-leak.md) — the FIX-1 predicate counted against this population
+- [`plans/2026-05-26-dev-doc-standard-retrofit`](../plans/2026-05-26-dev-doc-standard-retrofit.md) — the plan that sizes its waves against this population (later count-corrected to 222/204)
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Ideation review; reproduction commands are in that session's Ideation rawdata decisions log.

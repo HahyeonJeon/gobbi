@@ -4,10 +4,8 @@ description: "Checklist gap: plan draft task-count prose contradicts the enumera
 tags: [checklist, task-count, prose, conformance]
 created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
-type: checklist_gap
+type: checklists
 domain: docs-sync
-addressed-in-iter: 2
-addressed-how: "All count prose normalized to 25 executable records (after prose splits 22→25). Staged plan `main.md` `task_count: 25` and 25-row table synced. T11 dependency explained as '10 direct edges covering all 11 conformance records by transitive closure via T3→T4 and T6→T7'. Residual '22' tokens are historical '22→25' references, not active counts."
 status: accepted
 scope: feature
 feature: project-memory
@@ -15,26 +13,27 @@ supersedes: null
 superseded_by: null
 ---
 
-# Task-count prose in the draft contradicts the actual enumerated task list
+# Plan task-count prose must match the enumerated task list — implementation checklist
 
-## Scenario
+| # | Item | Anchor | Status | Verification |
+|---|---|---|---|---|
+| 1 | Every prose claim of a task total must match the count of enumerated heading-level task IDs and the `task_count:` frontmatter field | novel | implemented | `rg '^### (T[0-9]\|P[0-9]\|N[0-9])' <plan-draft> \| wc -l` equals every narrative count and the staged plan's `task_count:` |
+| 2 | A transitive-closure dependency claim (e.g., one task covering more records than it has direct edges) must include an explicit note naming which direct edges cover which records | novel | implemented | The dependency prose states the direct-edge-to-covered-record mapping rather than asserting a bare coverage count |
 
-Plan drafts that enumerate task IDs must have internally consistent count prose. Any disconnect between narrative count claims ("18 tasks", "20 records") and the actual enumerated ID list (22 or 25 IDs) indicates either stale prose or missing records.
+## Item details
 
-## Missing check
+### 1. Count prose must match the enumerated IDs and frontmatter
 
-The iter1 draft said "18 in-session tasks" and "20 records" while enumerating 22 task IDs. The staged `main.md` had `task_count: 22` but the draft body and staged summary were inconsistent. Additionally, the T11 dependency was described as requiring "all 10 Wave-1 conformance tasks" while the conformance record count was 11 (after T9's 3-way split) — the explanation for why T11 has 10 direct edges but covers 11 records by transitive closure was missing.
+An early plan draft claimed "18 in-session tasks" and "20 records" while actually enumerating 22 task IDs, and the staged plan's `task_count:` disagreed with the body. Any disconnect between narrative count claims and the enumerated ID list signals either stale prose or missing records, both of which mislead a future reader sizing the work.
 
-## How to verify (corrected)
+**Anchor reasoning:** novel — there was no prior reference for this self-consistency check; it arose from the count drift observed in this plan.
 
-Before finalizing a plan, run a mechanical count of heading-level task IDs in the draft:
-```
-rg '^### (T[0-9]|P[0-9]|N[0-9])' draft-iter{n}.md | wc -l
-```
-This count must match every prose claim of task totals and the `task_count:` frontmatter field in the staged plan. Any reference to a T11-style transitive-closure dependency must include an explicit note explaining which direct edges cover which records by transitive closure.
+**Verification approach:** before finalizing a plan, mechanically count the heading-level task IDs with `rg '^### (T[0-9]|P[0-9]|N[0-9])' <plan-draft> | wc -l`; that count must match every prose total and the `task_count:` frontmatter field.
+
+### 2. Transitive-closure dependency claims need an explicit mapping
+
+When one task's direct dependency edges cover more records than the edge count (e.g., 10 direct edges covering 11 conformance records because two records chain through their split halves), the prose must name which direct edge transitively covers which extra record. A bare "covers all N" claim is unverifiable.
 
 ## Related
 
-- `planning/evaluation/iter1/codex/overall.md` (F3)
-- `planning/evaluation/iter1/claude/aesthetics.md` (DOC-AESTH-1)
-- `planning/rawdata/draft-iter2.md` §DL-L
+- [`plans/2026-05-26-dev-doc-standard-retrofit`](../plans/2026-05-26-dev-doc-standard-retrofit.md) — the plan whose final task list (25 records) this check is reconciled against

@@ -9,19 +9,18 @@ scope: feature
 feature: project-memory
 supersedes: null
 superseded_by: null
-type: assumption_risk
+type: decisions
 domain: process
 planning-carry-forward: true
-finding_ids: [F5]
 ---
 
-# Context Budget + Wave Ordering Hazard — Planning MUST Inherit (F5)
+# Context budget + wave-ordering hazard — Planning must inherit it
 
 ## Context
 
-The Ideation `idea.md` (lines 110-111) explicitly flagged: "Context budget: 208-file / 191-content population is large. Planning should split waves into bounded tasks against the `manager-context-overflow-with-large-bundle` mistake."
+The Ideation framing explicitly flagged that the population to retrofit is large (208 files / 191 content docs) and that Planning should split waves into bounded tasks against the `manager-context-overflow-with-large-bundle` mistake.
 
-The Preparation readiness draft listed the `manager-context-overflow-with-large-bundle` mistake as "loadable" (draft L48/L66) but did NOT record it as an explicit readiness signal that Planning must honor. The Claude evaluator (Performance perspective, F5) flagged two related hazards not captured in the readiness signals:
+The Preparation readiness work listed that mistake as "loadable" but did NOT record it as an explicit readiness signal Planning must honor. A Performance-perspective evaluation flagged two related hazards not captured in the readiness signals:
 1. **Context budget bounding per wave** — the 208-file population is large; each wave needs an explicit context budget ceiling.
 2. **Conformance-vs-prose wave ordering hazard on shared files** — the conformance wave and the prose wave both touch the same 191 content docs. If not sequenced carefully, a conformance wave could destructively interfere with the prose wave or vice versa (e.g., prose edits that add staging-strip keys overwritten by a conformance pass that strips them again).
 
@@ -50,6 +49,9 @@ Planning MUST produce a wave plan that:
 
 ## Related
 
-- `ideation/artifacts/idea.md` — lines 110-111 (original context-budget flag)
-- `preparation/evaluation/iter1/claude/performance.md` — F5 finding
-- `.gobbi/projects/gobbi/mistakes/manager-context-overflow-with-large-bundle.md` — the referenced mistake
+- [`manager-context-overflow-with-large-bundle`](../../../mistakes/manager-context-overflow-with-large-bundle.md) — the project mistake that motivates the per-wave budget ceiling
+- [`prose-tasks-exceed-context-ceiling`](prose-tasks-exceed-context-ceiling.md) — the Planning-side decision that applied this ceiling by splitting over-large prose tasks
+
+## Source
+
+Originating session `b0a0eaf9-03f7-4dce-a040-c7443653a459` (see the `session` frontmatter field) — Preparation readiness review, Performance-perspective finding F5.
