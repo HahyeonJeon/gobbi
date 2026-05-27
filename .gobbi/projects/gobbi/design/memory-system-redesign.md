@@ -108,6 +108,14 @@ Keeping all 13 types (rather than collapsing them) preserves the sharp "use-this
 - **Treat sprints as the unit of feature organization.** Rejected (L1/L2): sprints are verbs (work episodes), not durable product value; session work now promotes INTO the seven value-features, and sprints become session notes + changelogs.
 - **Relocate `skills/` and `agents/` in the same session.** Deferred (L8): out of scope to keep the migration bounded; tracked in `backlogs/skills-agents-canonical-location.md`.
 
+## Consequences
+
+- The project memory is now organized as **7 durable value-features** (L1), each with its own typed subtree; session work promotes INTO these features rather than accumulating in sprint directories.
+- All **13 memory types are retained** (L3); naming + frontmatter + the dev-doc quality standard are consolidated into the single authority `skills/memorization/rules.md`.
+- **Principle 13** (doc-work-needs-a-spec-and-a-CRUD-plan) is a standing behavioral gate for every agent, shipped in commit `90c46fd` — design work now carries this obligation permanently.
+- The **26-task / 6-wave migration is complete**; the move-on-terminal archive model (no-delete) governs superseded records going forward.
+- **One follow-up remains deferred (L8):** relocating `skills/` and `agents/` to their canonical location is tracked in `backlogs/skills-agents-canonical-location.md` and was intentionally kept out of scope to bound the migration.
+
 ## Related
 
 - `.gobbi/projects/gobbi/skills/memorization/rules.md` — the consolidated naming + frontmatter + dev-doc standard this redesign delivered.
