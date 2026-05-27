@@ -13,12 +13,24 @@ topic: memorization-delegation-hard-gate
 
 # Memorization Delegation Hard Gate
 
-**Chosen direction**: Add a new entry to `delegation/SKILL.md § The Load Directives Block` stating: "When the delegated phase includes MEMORIZATION (every loop's MEMORIZATION sub-phase, plus Wrap-up's WORK promotion routing), `memorization/SKILL.md` MUST appear in tier 3 (Skills)." Add it to the per-role templates under `delegation/templates/`: assistant template explicitly; leader and executor templates when MEMORIZATION is part of their dispatch. Evaluator template excluded (evaluators do not run MEMORIZATION).
+## Context
 
-**Rationale**: Root cause of the pathology this design addresses: Load Directives lacked `memorization/SKILL.md`, so the assistant ran Memorization without the staging procedure loaded. The fix is to make the requirement explicit at the delegation contract level — if it's in Load Directives, it's loaded; no internal self-check saves the agent if it wasn't loaded.
+A delegation prompt's Load Directives block names the skills a spawned agent must load before working — a fresh agent does not inherit the parent's loaded skills. The assistant role runs the MEMORIZATION phase, whose staging procedure lives in `memorization/SKILL.md`. The pathology this design addresses: delegation prompts that included a MEMORIZATION phase were not always listing `memorization/SKILL.md` in their Load Directives, so the assistant ran Memorization without the staging procedure loaded and improvised the staging step.
 
-**Alternative rejected**: Add a self-check inside the assistant's MEMORIZATION procedure Step 1 ("did I load memorization/SKILL.md?"). Rejected as duplicative — if Load Directives include it, it's loaded; if not, no internal check saves the dispatch.
+## Decision
 
-**Validation**: `grep -c "memorization/SKILL.md" delegation/SKILL.md` returns ≥ 2; each relevant template includes `memorization/SKILL.md` in its Skills example.
+Add a hard-gate entry to `delegation/SKILL.md § The Load Directives Block` stating: "When the delegated phase includes MEMORIZATION (every loop's MEMORIZATION sub-phase, plus Wrap-up's WORK promotion routing), `memorization/SKILL.md` MUST appear in tier 3 (Skills)." Propagate the requirement into the per-role templates under `delegation/templates/`: the assistant template lists it explicitly; the leader and executor templates list it when MEMORIZATION is part of their dispatch. The evaluator template is excluded — evaluators do not run MEMORIZATION.
 
-**Cross-links**: delegation/SKILL.md § Load Directives / Core Principles → memorization/SKILL.md § Procedure.
+## Rationale
+
+The requirement is enforced at the delegation-contract level rather than left to the agent's discretion: if a skill is in Load Directives, it is loaded; no internal self-check saves an agent that was never given the directive. Making the gate part of the prompt-construction contract closes the gap at the point where the prompt is authored, which is where the omission originated.
+
+## Alternatives considered
+
+- **Self-check inside the assistant's MEMORIZATION procedure Step 1** ("did I load `memorization/SKILL.md`?"). Rejected as duplicative and unreliable — if Load Directives already include the skill, the check is redundant; if they do not, no internal check can load a skill the dispatch never named.
+
+## Consequences
+
+- Every delegation that includes a MEMORIZATION phase now carries `memorization/SKILL.md` in its Load Directives, so the staging procedure is always loaded before Memorization runs.
+- Verify with `grep -c "memorization/SKILL.md" delegation/SKILL.md` (expect ≥ 2) and confirm each relevant per-role template includes `memorization/SKILL.md` in its Skills example.
+- Cross-reference: `delegation/SKILL.md § Load Directives` / Core Principles point at `memorization/SKILL.md § Procedure`.

@@ -1,6 +1,6 @@
 ---
 name: claude-code-agent-sdk-task-output
-description: Claude Agent SDK TaskOutput interface — the public-API documented shape for Task tool results, narrower than the empirical transcript payload; informs T3 hook design (stable vs rich surface).
+description: Claude Agent SDK TaskOutput interface — the public-API documented shape for Task tool results, narrower than the empirical transcript payload; informs the agents[] hook design (stable vs rich surface).
 type: references
 scope: feature
 feature: agents
@@ -36,10 +36,10 @@ This is the **public-API documented** shape — narrower than the empirically-ob
 
 Subagent-context fields `agent_id` and `agent_type` are also in the hook input — populated when the hook fires inside a subagent. In TypeScript, on the base hook input. In Python, only on PreToolUse / PostToolUse / PostToolUseFailure inputs.
 
-There is also a `SubagentStop` hook event (separate from `PostToolUse` on the Task tool) which fires when a subagent completes — input includes `agent_id` + `agent_transcript_path` + `stop_hook_active`. This is a parallel mechanism the T3 design could consider, though it requires SDK-level configuration (not shell-command hooks via `.claude/settings.json` `hooks.*`).
+There is also a `SubagentStop` hook event (separate from `PostToolUse` on the Task tool) which fires when a subagent completes — input includes `agent_id` + `agent_transcript_path` + `stop_hook_active`. This is a parallel mechanism the agents[] hook design could consider, though it requires SDK-level configuration (not shell-command hooks via `.claude/settings.json` `hooks.*`).
 
 ## Why it applies
-T3's design needs to choose between:
+The agents[] hook design needs to choose between:
 - (a) reading `tool_result` directly from the hook stdin (TaskOutput shape — narrow but stable),
 - (b) reading the rich `toolUseResult` from the transcript file (rich but version-dependent), or
 - (c) using `SubagentStop` instead of `PostToolUse` (different lifecycle event, different schema).
@@ -59,4 +59,4 @@ This reference establishes (a) as the public-stable surface and (b) as the empir
 
 | Date | Session | Used for |
 |---|---|---|
-| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | T3 external insight #3 — public-API documented Task tool output shape; informs forward-compat for the hook |
+| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | agents[] hook design — public-API documented Task tool output shape; informs forward-compat for the hook |

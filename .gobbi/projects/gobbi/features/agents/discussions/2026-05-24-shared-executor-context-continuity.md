@@ -11,31 +11,31 @@ tags: [delegation, executor, task-bundling, jq, hook]
 outcome: Single executor delegation confirmed; back-to-back within one context window
 ---
 
-# Tasks 07+08 shared executor decision (LOCK #2)
+# Hook-script and reconstructor share one executor
 
 ## Context
 
-Task 07 (hook script) and Task 08 (reconstructor) share jq snippets and the hook stdin contract. The leader proposed bundling them into one executor delegation to preserve this context.
+The hook-script task and the reconstructor task share the same `jq` snippets and the same hook-stdin contract. The leader proposed bundling them into a single executor delegation so the shared context (the `jq` snippets, the stdin shape) does not have to be re-derived between two separate executors.
 
 ## Question
 
-Should Tasks 07 and 08 be delegated to a single executor (back-to-back) or separately?
+Should the hook-script task and the reconstructor task be delegated to a single executor (back-to-back, one context window) or to two separate executors?
 
 ## Options considered
 
-1. **Single delegation (LOCK #2)** — executor handles Task 07 then Task 08 within the same context window. Pros: jq snippet continuity; no re-derivation of stdin contract. Cons: combined effort (two Large tasks) may stress context coherence budget.
-2. **Separate delegations** — Task 08 re-derives or receives an explicit jq snippet handoff in its brief. Pros: bounded scope per delegation. Cons: risk of Task 08 diverging from Task 07's established patterns if handoff is imperfect.
+1. **Single delegation** — one executor handles the hook script first, then the reconstructor, within the same context window. Pros: `jq` snippet continuity; no re-derivation of the stdin contract. Cons: the combined effort (two large tasks) may stress the executor's context-coherence budget.
+2. **Separate delegations** — the reconstructor executor re-derives the snippets or receives an explicit `jq`-snippet handoff in its brief. Pros: bounded scope per delegation. Cons: risk that the reconstructor diverges from the hook script's established patterns if the handoff is imperfect.
 
 ## User decision
 
-Single executor delegation confirmed (LOCK #2).
+The user confirmed the **single-executor delegation**: both tasks go to one executor, back-to-back within one context window.
 
 ## Implication
 
-Manager issues ONE delegation prompt covering both Tasks 07 and 08. Executor completes Task 07 first (producing `hook-script-artifact`, `shared-jq-snippets`, `hook-stdin-contract` outputs), then Task 08 (consuming those outputs).
+The manager issues ONE delegation prompt covering both tasks. The executor completes the hook script first (producing the hook-script artifact, the shared `jq` snippets, and the hook-stdin contract), then the reconstructor (consuming those outputs).
 
-If context saturation occurs mid-Task-08, the manager can re-delegate Task 08 with explicit jq snippets extracted from Task 07's output as literal brief context.
+If context saturation occurs partway through the reconstructor, the manager can re-delegate the reconstructor as a fresh executor with the `jq` snippets from the hook-script output pasted in as literal brief context.
 
 ## Source
 
-Session 1b26cf20 planning iteration 2 — agent assignment table (Tasks 07+08 row). Companion decision: `features/agents/design/lock2-shared-executor-mega-task-risk.md` when promoted.
+Session 1b26cf20 planning — agent-assignment decision bundling the hook-script and reconstructor tasks under one executor.

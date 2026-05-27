@@ -30,7 +30,7 @@ This scenario is not in the current design's golden-path coverage. The reconstru
 
 When the hook runs and successfully appends an entry, it SHOULD emit a one-line diagnostic to stderr such as `agents[<id>] appended` (optionally silenceable with a flag). This makes the hook's success visible in the process output without modifying any files.
 
-When the hook fails silently (jq error, resolver failure), it SHOULD exit non-zero with a descriptive error on stderr (already specified in D-3-1 strict mode).
+When the hook fails silently (jq error, resolver failure), it SHOULD exit non-zero with a descriptive error on stderr — the hook's strict-mode design already specifies this failure behavior.
 
 ## Verification
 

@@ -11,25 +11,36 @@ tags: [executor-brief, inline-expansion, docs-sync]
 domain: docs-sync
 ---
 
-# Opaque decision reference codes lack inline expansion in executor briefs (D-3-3/D-4/D-5/D-9)
+# Opaque decision reference codes in executor briefs — implementation checklist
 
-## Situation
+A planning brief referenced internal decision codes (`D-3-3`, `D-4`, `D-5`, `D-9`) without spelling out what each code meant. A fresh executor, with no access to the planning session that minted the codes, cannot resolve them and may misunderstand or skip the referenced logic. The fix is for the manager to inline-expand each code's actual meaning into the relevant task brief at delegation time. This checklist enumerates the briefs that need the expansion.
 
-The session-foundations-bundle-b planning brief (session 1b26cf20) referenced opaque decision codes (D-3-3-resolver step ii, D-4 design file, D-5 skip rationale, D-9 skip rationale) without inline expansion. Without inline expansion, a fresh executor may misunderstand or skip the referenced decision logic.
+| # | Item | Anchor | Status | Verification |
+|---|---|---|---|---|
+| 1 | Hook-script brief inline-expands the `D-3-3` resolver step: the directory-scan fallback in the transcript resolver | novel | pending | Manager adds inline expansion to delegation brief |
+| 2 | session.json-writer brief inline-expands the `D-4` 5-file scope: hook script, reconstructor, session.json writer, unit tests, integration test | novel | pending | Manager adds inline expansion to delegation brief |
+| 3 | Hook-script/reconstructor brief inline-expands the `D-9` rationale: no `gobbi-shell-script-conventions` skill yet (fewer than 2 scripts existed), so codify the conventions in script-header comments | novel | pending | Manager adds inline expansion to delegation brief |
 
-Examples from the original brief:
-- Task 07 brief: "D-3-3-resolver step (ii) directory scan fallback" — refers to a directory scan fallback step in the transcript resolver
-- Task 07+08 agent table: "D-9 skip rationale — codify in script header until N≥2" — refers to a decision to defer the gobbi-shell-script-conventions skill (fewer than 2 scripts existed at the time)
-- Task 05: "per D-4 design file" — refers to a 5-file enumeration of files in scope (the hook script, reconstructor, session.json writer, unit tests, and integration test)
+## Item details
 
-## Checklist Items
+### 1. `D-3-3` resolver step — directory-scan fallback
 
-| # | Item | Status | Verification |
-|---|---|---|---|
-| 1 | Execution brief for Task 07 must inline-expand D-3-3-resolver step (ii): the directory scan fallback in the transcript resolver | pending | Manager adds inline expansion to delegation brief |
-| 2 | Execution brief for Task 05 must inline-expand the D-4 5-file scope: hook script, reconstructor, session.json writer, unit tests, integration test | pending | Manager adds inline expansion |
-| 3 | Execution brief for Task 07+08 must inline-expand D-9 rationale: no `gobbi-shell-script-conventions` skill yet (fewer than 2 scripts); codify rationale in script header comments | pending | Manager adds inline expansion |
+The transcript resolver has a fallback step that scans a directory when the primary lookup misses. The brief referenced this only as "D-3-3-resolver step (ii)"; the executor needs the fallback's actual behavior stated in the brief.
 
-## Notes
+**Anchor reasoning**: novel — this is a gobbi-internal procedural detail with no external reference.
 
-The manager can address this during Execution delegation by embedding the relevant decision text directly in each task's brief, rather than relying on the executor to load Preparation iter3 rawdata. The references are resolvable — the Preparation staging artifacts exist.
+### 2. `D-4` design file — 5-file scope enumeration
+
+`D-4` referred to a 5-file enumeration of the files in scope: the hook script, the reconstructor, the session.json writer, the unit tests, and the integration test. The brief said only "per D-4 design file"; the executor needs the five files listed explicitly.
+
+**Anchor reasoning**: novel — gobbi-internal scope list.
+
+### 3. `D-9` skip rationale — defer the shell-script-conventions skill
+
+`D-9` was the decision to defer creating a `gobbi-shell-script-conventions` skill because fewer than two scripts existed at the time (the convention being: create the skill once N ≥ 2). The brief said only "D-9 skip rationale — codify in script header until N≥2"; the executor needs the rationale spelled out so it knows to codify the conventions in script-header comments instead.
+
+**Anchor reasoning**: novel — gobbi-internal deferral rationale.
+
+## Status notes
+
+The manager addresses every item during Execution delegation by embedding the relevant decision text directly in each task's brief, rather than expecting the executor to reconstruct it from the planning session's working notes. The underlying decisions are recoverable — the planning staging artifacts that defined the codes still exist — but a fresh executor should not have to go find them.

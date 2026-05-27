@@ -1,6 +1,6 @@
 ---
 name: autogen-pydantic-tool-schema-validation
-description: AutoGen and LangGraph use Pydantic schema validation with auto-retry loops to enforce tool output shape — informs T2 validator enforcement-action design (block vs auto-correct).
+description: AutoGen and LangGraph use Pydantic schema validation with auto-retry loops to enforce tool output shape — informs the Load-Directives validator's enforcement-action design (block vs auto-correct).
 type: references
 scope: feature
 feature: agents
@@ -21,11 +21,11 @@ related: [commitlint-required-fields-validator, langgraph-skill-catalog-pattern]
 AutoGen registers tools as Python functions with type hints and validates inputs via Pydantic schemas. LangChain/LangGraph go further: when an agent completes a task with a schema, the framework validates the response automatically and invalid outputs trigger automatic retries until the model produces valid data. The architectural pattern is: declarative schema + structural validator + auto-correction loop. This is one tier above commitlint's "fail with structured error" — the agent itself is told what's wrong and re-attempts.
 
 ## Why it applies
-T2 needs to decide what the Load Directives validator does when it detects a violation. Three options inform the design question:
-- (a) commitlint-style — block with structured error, manager re-authors prompt.
+The planned Load-Directives validator must decide what to do when it detects a violation. Three options inform the design question:
+- (a) commitlint-style — block with a structured error, manager re-authors the prompt.
 - (b) LangChain-style — auto-correct and re-dispatch.
-- (c) hybrid — first attempt blocks, subsequent attempts auto-amend.
-The AutoGen reference shows option (b) works empirically at framework scale. For gobbi, where the manager is the one constructing the prompt, the cheaper option is (a) — the validator fails the construction loop until the manager re-authors. Option (b) requires the validator to mutate the prompt, which is a stronger commitment. Both options exist as validated patterns the user can pick from in Sub-step D.
+- (c) hybrid — the first attempt blocks, subsequent attempts auto-amend.
+The AutoGen reference shows option (b) works empirically at framework scale. For gobbi, where the manager is the one constructing the prompt, the cheaper option is (a) — the validator fails the construction loop until the manager re-authors. Option (b) requires the validator to mutate the prompt, which is a stronger commitment. Both options exist as validated patterns to choose between when the validator is designed.
 
 ## Source
 - https://www.truefoundry.com/blog/autogen-vs-langgraph
@@ -40,4 +40,4 @@ The AutoGen reference shows option (b) works empirically at framework scale. For
 
 | Date | Session | Used for |
 |---|---|---|
-| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | T2 external insight #4 — informs the validator's enforcement action design question (block vs auto-correct) |
+| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | Validator enforcement-action design — informs the block-vs-auto-correct decision for the Load-Directives validator |

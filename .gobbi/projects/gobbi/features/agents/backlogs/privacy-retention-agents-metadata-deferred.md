@@ -19,26 +19,20 @@ superseded_by: null
 
 ## Context
 
-A Codex risk evaluation of the agents[] hook (session 1b26cf20) flagged that the `agents[]` data persisted in `session.json` includes subagent IDs, token counts, model names, transcript paths, and timing data. No formal privacy or retention policy is documented for this data.
+The `agents[]` array persisted in `session.json` by the PostToolUse hook records, per spawned subagent: `id` (UUID), `name` (agent role), `type`, `step`, `phase`, `iter`, `model`, `system`, `transcriptPath` (a local filesystem path), `tokensUsed`, `startedAt`, and `finishedAt`. A Codex risk evaluation of this hook flagged that no formal privacy or retention policy is documented for this persisted data. This backlog entry tracks writing that policy.
 
-## Decision
+## Why deferred
 
-Deferred from T3 scope. The persisted data is non-PII (no user content, no credentials). Formal privacy/retention note is a follow-up.
+The persisted fields are operational telemetry, not personally identifying information: there is no user content and no credentials. The `transcriptPath` points into `~/.claude/projects/...`, which is already under the user's local filesystem control. Because the data is obvious non-PII today, a formal privacy/retention policy (for example, auto-purge after N days or redaction on publish) is a separate design decision that was out of scope for the hook task, and was deferred rather than blocking the ship.
 
-## Rationale
+## When to pick up
 
-The `agents[]` fields are operational telemetry: `id` (UUID), `name` (agent role), `type`, `step`, `phase`, `iter`, `model`, `system`, `transcriptPath` (local path), `tokensUsed`, `startedAt`, `finishedAt`. None of these are personally identifying. The transcript path points to `~/.claude/projects/...` which is already controlled by the user's local filesystem.
+Before any `session.json` data leaves the local filesystem — for example, if a future analytics or sharing feature transmits or publishes session telemetry. At that point a formal privacy review should be run, referencing this entry, and a retention/redaction policy decided.
 
-Formal retention policy (e.g., auto-purge after N days, redaction on publish) requires a separate design decision that is out of scope for T3.
+## Suggested approach
 
-## Alternatives considered
+Add a brief privacy/retention note to `session.template.json` (low effort) documenting that `agents[]` is local-only operational telemetry, and define the retention rule (keep / auto-purge after N days) plus any redaction required before the data leaves the local filesystem.
 
-- Add a brief privacy note to session.template.json: low effort; deferred as "obvious non-PII" for now.
+## Originating session
 
-## Consequences
-
-Before any session.json data leaves the local filesystem (e.g., if shared via a future analytics feature), a formal privacy review should reference this finding.
-
-## Source
-
-Session 1b26cf20 evaluation — Codex risk perspective, agents[] hook evaluation (two passes). Original finding ref: COD-RISK-003.
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/` — Codex risk-perspective evaluation of the `agents[]` hook (two passes).
