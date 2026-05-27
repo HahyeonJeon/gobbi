@@ -2,7 +2,7 @@
 name: t10-symlink-mismodel
 description: "Assumption risk: T10 incorrectly listed AGENTS.md as a real file; it is a symlink to .codex/AGENTS.md and must be edited via the real file only."
 tags: [symlink, agents-md, t10, assumption]
-date: 2026-05-26
+created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 type: assumption_risk
 domain: docs-sync

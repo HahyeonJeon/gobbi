@@ -2,7 +2,7 @@
 name: fx1-sub-count-cross-foot
 description: "Deferred cosmetic: FIX-1 sub-count cross-foot discrepancy (28 vs 27 backlog-disposition files); Execution normalizes to 27 as the canonical strict-filter figure."
 tags: [fix1, sub-count, cross-foot, deferred]
-date: 2026-05-26
+created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 status: deferred
 scope: feature

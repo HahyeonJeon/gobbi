@@ -2,7 +2,7 @@
 name: context-budget-wave-ordering-carry-forward
 description: "Deferred carry-forward: context budget and wave-ordering hazard from Ideation must be inherited by Planning to bound each wave to ≤35 docs."
 tags: [context-budget, wave-ordering, planning, carry-forward]
-date: 2026-05-26
+created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 status: deferred
 scope: feature

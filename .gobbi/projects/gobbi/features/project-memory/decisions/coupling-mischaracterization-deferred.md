@@ -2,7 +2,7 @@
 name: coupling-mischaracterization-deferred
 description: "Deferred finding: independence claim for dangling claude-skill link overstated; the coupling to the project-memory feature exists but the finding is deferred."
 tags: [coupling, claude-skill, scope, deferred]
-date: 2026-05-26
+created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 status: deferred
 scope: feature

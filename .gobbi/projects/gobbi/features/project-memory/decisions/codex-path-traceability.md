@@ -2,7 +2,7 @@
 name: codex-path-traceability
 description: "Decision: Codex C-PREP-001 path-precision finding addressed — entrypoint doc must be cited as .claude/CLAUDE.md not CLAUDE.md."
 tags: [codex, path, traceability, entrypoint]
-date: 2026-05-26
+created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 status: accepted
 scope: feature

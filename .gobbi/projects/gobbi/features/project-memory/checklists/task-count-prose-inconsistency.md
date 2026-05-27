@@ -2,7 +2,7 @@
 name: task-count-prose-inconsistency
 description: "Checklist gap: plan draft task-count prose contradicts the enumerated task list; all count prose must match the canonical 25-record table."
 tags: [checklist, task-count, prose, conformance]
-date: 2026-05-26
+created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 type: checklist_gap
 domain: docs-sync
