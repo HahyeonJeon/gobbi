@@ -25,7 +25,7 @@ Bundle B was a work-sprint, not a value-feature. Its durable artifacts (worktree
 ## Verification
 - `git status --short` shows the moves as renames (R), not delete+add.
 - Source files removed from `features/session-foundations-bundle-b/`.
-- Full per-cluster routing logged in the originating session's execution staging (`sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/execution/w3/staging/`).
+- Full per-cluster routing logged in the originating session's per-cluster manifest at `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/execution/w3/staging/w3t3-cluster-manifest.md`.
 
 ## Deferred
 - Bundle B `README.md` retention/supersession was handled by a separate re-home task, not this one.
