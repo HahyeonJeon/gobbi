@@ -1,4 +1,7 @@
 ---
+name: prose-tasks-exceed-context-ceiling
+description: "Design flaw: iter1 prose tasks P3/P5/P7 exceed the ≤35-doc context ceiling; each split into A/B sub-tasks along conformance-wave boundaries."
+tags: [prose-tasks, context-ceiling, planning, wave-split]
 date: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 type: design_flaw

@@ -1,4 +1,7 @@
 ---
+name: archive-glob-scope-leak
+description: "Design flaw: plan's bare ** globs for files: patterns match archive/ subdirs that are explicitly out of scope; fix by adding archive-exclusion predicates."
+tags: [archive, glob, scope, conformance]
 date: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 type: design_flaw

@@ -1,4 +1,7 @@
 ---
+name: evaluation-perspective-for-dev-doc-quality
+description: "Backlog: deferred enforcement tier — dedicated evaluation perspective for prose-quality and type-purity judgment checks, separate from the mechanical grep gate."
+tags: [evaluation, prose-quality, type-purity, enforcement]
 title: Dedicated dev-doc-quality enforcement (eval perspective / Principle-13 quality facet)
 type: backlogs
 scope: project

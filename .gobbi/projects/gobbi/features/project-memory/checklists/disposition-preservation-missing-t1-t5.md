@@ -1,4 +1,7 @@
 ---
+name: disposition-preservation-missing-t1-t5
+description: "Checklist gap: T1 and T5 conformance tasks must verify that FIX-1 strip preserves legitimate disposition keys in feature backlog files."
+tags: [checklist, disposition, backlog, conformance]
 date: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 type: checklist_gap

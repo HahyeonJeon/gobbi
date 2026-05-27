@@ -1,4 +1,7 @@
 ---
+name: underscore-staging-keys-false-clean
+description: "Design flaw: hyphen-only leak gate falsely certifies underscore-spelled staging keys as clean; key-set S must include both hyphen and underscore spellings."
+tags: [leak-gate, staging-keys, underscore, conformance]
 date: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 type: design_flaw

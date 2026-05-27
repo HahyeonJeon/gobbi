@@ -1,4 +1,7 @@
 ---
+name: triplicate-backlog-remediated
+description: "Decision: do not promote a third backlog entry for the dangling claude-skill link; two committed backlog files already track the same issue, preserving one-record-one-concept atomicity."
+tags: [backlog, deduplication, atomicity, claude-skill]
 date: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
 status: accepted
