@@ -19,7 +19,7 @@ related:
 
 # Session lifecycle and worktree boundaries
 
-## Problem
+## Context
 
 Before the v0.5.0 worktree-first redesign, session writes were ambiguous: session
 notes, project memory drafts, and mistake files could land in either the main tree
@@ -84,7 +84,7 @@ documented escape hatch for emergency hotfixes (where the PR lifecycle overhead 
 unacceptable) and pure-read sessions (no shippable artifact). Outside these two
 situations the default is `worktree-pr`.
 
-## Surfaces
+## Consequences
 
 The worktree-first model is distributed across nine edited surfaces in the skill
 tree and session template:
@@ -101,7 +101,7 @@ tree and session template:
 | `orchestration/templates/session.template.json` | `git.worktreePath` and `git.branch` fields present in the template; `git.worktreePath` initializes to `null` (stamped by row 6 at runtime). |
 | `preparation/SKILL.md` | Narrow exception extension: executor commits on the worktree branch via `git -C "$worktreePath"` even for promote-now skills (the exception that applies within Preparation). |
 
-## Validation
+### Validation
 
 The model is checked at two levels:
 
@@ -139,23 +139,36 @@ that this session's writes land inside that path and that its branch name matche
 the regex constitutes the N=2 empirical pass of the smoke-test gate (Bundle B
 T1.h, `worktree-create-before-session-stamp.md` § Validation).
 
-## Lessons
+## Rationale
 
-Lessons section is intentionally sparse as of 2026-05-24 — authored before
-Wrap-up ran per Bundle C DL-1 (β-1). Deepen after subsequent worktree-pr sessions
-per R-7.
+The single-rule design is grounded in the sessions that have exercised the model:
 
-Two early observations grounded in the two sessions that have exercised the model
-(Bundle B ship session `2026-05-23-1b26cf20` as N=1; this session as N=2):
+- **The `chore` branch-type is the right choice for session branches.** It is
+  already in the `git/conventions.md` type registry and correctly signals
+  "housekeeping, not a product feature." Future sessions should not re-examine the
+  branch-type question; it is closed.
+- **Per-iteration commit cadence pays off on abort-recovery.** Because
+  `git worktree remove` discards uncommitted state, committing each task's session
+  memory immediately after its MEMORIZATION phase means a session aborted mid-loop
+  loses at most one iteration's worth of staging, not the whole session.
 
-- **The `chore` branch-type is the right choice for session branches.** The
-  rejected alternative `session/{date}-{ssid-short}` (iter2 of D-1) was not in
-  the `git/conventions.md` type registry and caused a REVISE verdict from the
-  Codex evaluator. The `chore` type correctly signals "housekeeping, not a product
-  feature" and has been in the registry from the start. Future sessions should not
-  re-examine the branch-type question; it is closed at D-1.
-- **Per-iteration commit cadence pays off on abort-recovery.** The once-at-Wrap-up
-  alternative was rejected at D-4 because `git worktree remove` discards
-  uncommitted state. In practice the per-iter cadence means each task's session
-  memory is committed immediately after its MEMORIZATION phase — a session aborted
-  mid-loop loses at most one iteration's worth of staging, not an entire session.
+## Alternatives considered
+
+- **`session/{date}-{ssid-short}` branch-type.** Rejected: this type was not in the
+  `git/conventions.md` type registry and drew a REVISE verdict from the Codex
+  evaluator; the `chore` type was already registered and carried the right "housekeeping"
+  signal.
+- **Commit session memory once, at Wrap-up.** Rejected: `git worktree remove` discards
+  uncommitted state, so a once-at-Wrap-up cadence would lose the entire session's staging
+  on a mid-loop abort. The per-iteration cadence bounds that loss to one iteration.
+
+## Related
+
+- `.gobbi/projects/gobbi/features/git-workflow/design/worktree-create-before-session-stamp.md` — the companion design: the worktree must exist before `session.json` stamps git fields.
+- `.gobbi/projects/gobbi/features/git-workflow/design/qualified-git-write-path-rule.md` — the qualified write-path rule (`worktreePath` as the absolute root when set).
+- `.gobbi/projects/gobbi/features/git-workflow/design/per-iteration-session-commit-cadence.md` — the per-iteration session-memory commit cadence (D-4).
+- `.gobbi/projects/gobbi/features/git-workflow/design/direct-mode-retained-opt-out.md` — the direct-mode opt-out that keeps the escape hatch.
+
+## Source
+
+Originating session: `.gobbi/projects/gobbi/sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/` — the session that authored this design and serves as its N=2 worktree-pr witness.

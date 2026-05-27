@@ -12,17 +12,15 @@ supersedes: null
 superseded_by: null
 ---
 
-# User-locked wording supersedes evaluator readability nits (DL-5 pattern)
+# User-locked wording supersedes evaluator readability nits
 
 ## Insight
 
-When the user explicitly locks a wording decision (e.g., via `idea.md DL-5`), evaluator findings about that wording's readability or style are non-actionable regardless of severity. The wording is the deliverable, not an aesthetic choice subject to improvement.
+When the user explicitly locks a wording decision, evaluator findings about that wording's readability or style are non-actionable regardless of severity. The wording is the deliverable, not an aesthetic choice subject to improvement.
 
 ## Context
 
-T06 (CL-5) — Aesthetics evaluator raised F-AES-01 (Low, conf 50): the locked M2 `{session-id}` sentence is ~290 chars and denser than neighboring Path-conventions bullets. Verdict was still PASS because the wording is user-locked at `idea.md DL-5`.
-
-Finding: `execution/task-06/evaluation/iter1/claude/aesthetics.md` — F-AES-01 | Type: general | Domain: docs-sync | Disposition: open | Confidence: 50 | Severity: Low.
+While sweeping a user-locked `{session-id}` sentence across ten skill files, an Aesthetics evaluator raised a Low-severity finding (confidence 50): the locked sentence ran ~290 characters and was visibly denser than the neighboring Path-conventions bullets. The verdict stayed PASS anyway — the wording was user-locked, so its density was out of bounds for an aesthetics correction.
 
 ## Why it matters
 
@@ -30,7 +28,7 @@ Without this guard, a future evaluator or executor could "fix" the readability o
 
 ## How to apply
 
-When an evaluator flags a Low-severity style/readability finding on text that is user-locked (any `idea.md DL-*` decision): stage the finding as a learning (non-actionable) and record the lock reference. Do not stage as a decision requiring resolution or as a REVISE trigger.
+When an evaluator flags a Low-severity style/readability finding on text that the user has explicitly locked: stage the finding as a learning (non-actionable) and record the lock reference. Do not stage it as a decision requiring resolution or as a REVISE trigger.
 
 ## Counter-cases
 
@@ -38,6 +36,8 @@ If a locked wording is discovered to be factually wrong (not just stylistically 
 
 ## Related
 
-- `idea.md DL-5` (session 2026-05-24-45388fa9) — locked M2 `{session-id}` wording
-- Iron Law 4: scope bounded by contract with user
-- `execution/task-06/evaluation/iter1/claude/aesthetics.md` — F-AES-01 source finding
+- Iron Law 4 (scope bounded by contract with the user) in `.gobbi/projects/gobbi/skills/principles/SKILL.md` — the principle this learning operationalizes for evaluator findings.
+
+## Source
+
+Originating session: `.gobbi/projects/gobbi/sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/` — the locked-wording sweep and the deferred aesthetics finding that produced this learning.

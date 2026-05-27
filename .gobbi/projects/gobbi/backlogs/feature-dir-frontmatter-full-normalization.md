@@ -36,9 +36,13 @@ Also affected: any files in the live `features/` value-feature dirs that were mi
 
 ## Why deferred
 
-No home wave in the current session's ratified scope. W3 was bounded to: (a) sprint-to-archive moves, (b) value-feature dir creation, (c) scope+feature key addition. Full frontmatter normalization was a known follow-up explicitly left out of W3 to avoid scope expansion. The Final Gate staging-key check excludes `features/` by design (the session lead confirmed this is the right scope boundary for W1). A separate bounded pass is cleaner.
+No home wave in the originating session's ratified scope. The feature re-homing wave was bounded to: (a) sprint-to-archive moves, (b) value-feature dir creation, (c) scope+feature key addition. Full frontmatter normalization was a known follow-up explicitly left out of that wave to avoid scope expansion. The Final Gate staging-key check excludes `features/` by design (the session lead confirmed this is the right scope boundary). A separate bounded pass is cleaner.
 
-## Suggested fix
+## When to pick up
+
+No hard prerequisites — can run any time. Best picked up when a feature-dir frontmatter read or promotion-routing check trips over one of the residual legacy keys, or as a standalone low-risk cleanup pass. Pairs naturally with extending the Final Gate to cover `features/` and `archive/features/`.
+
+## Suggested approach
 
 1. Enumerate files under `archive/features/` and `features/` that carry non-base, non-extension keys (use `grep -rn 'promoted_from\|promoted_at\|^date:\|^loop:\|^slug:\|^topic:'`).
 2. For each file: strip staging-only keys (`promoted_from`, `promoted_at`), remove ad-hoc keys with no base-schema equivalent, fold any durable provenance into base `session` + `created`.

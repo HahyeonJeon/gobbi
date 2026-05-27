@@ -20,7 +20,7 @@ When two separate systems (Claude and Codex) each evaluate the same change, each
 
 ## Context
 
-T07 iter1 fixed 4 contracted surfaces including `.claude/CLAUDE.md`. The Claude evaluator (8 perspectives, PASS) had no finding about `.codex/AGENTS.md` — it checked `.claude/` territory. Codex evaluator found CONS-001 (High/100): `.codex/AGENTS.md:45` and `:80-82` still carried the stale `packages/cli` + `gobbi mistake promote` framing, because the Codex evaluator reads `.codex/AGENTS.md` as its own entrypoint. The manager and Claude evaluator had both missed this 4th surface. Iter2 added `.codex/AGENTS.md` and Codex confirmed CONS-001 resolved.
+A sweep that removed stale `gobbi mistake promote` / `packages/cli` framing fixed four contracted surfaces including `.claude/CLAUDE.md`. The Claude evaluator passed — it checked `.claude/` territory and found nothing wrong. The Codex evaluator, which reads `.codex/AGENTS.md` as its own mandatory entrypoint, found that `.codex/AGENTS.md` still carried the stale framing on the lines the sweep had not touched. The manager and the Claude evaluator had both missed this fourth surface entirely. A follow-up round added `.codex/AGENTS.md`, and the Codex evaluator confirmed the drift resolved.
 
 ## Why it matters
 
@@ -38,6 +38,9 @@ For changes confined to one side of the mirror (e.g., a feature in `.claude/skil
 
 ## Related
 
-- T07 iter1 Codex evaluation: `execution/task-07/evaluation/iter1/codex/consistency.md` (CONS-001)
-- Issue #258 (drift detector): a mechanical drift-detector that diffs the two mirrors would have caught this statically, without needing an evaluator to notice. This session is a witness for that issue.
-- `.gobbi/projects/gobbi/mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md` — related class: each system's grep scope differs
+- Issue #258 (drift detector): a mechanical drift-detector that diffs the two mirrors would have caught this statically, without needing an evaluator to notice. This learning is a witness for that issue.
+- `.gobbi/projects/gobbi/mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md` — related class: each system's grep scope differs.
+
+## Source
+
+Originating session: `.gobbi/projects/gobbi/sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/` — the cross-mirror sweep and the Codex `.codex/AGENTS.md` finding that produced this learning.

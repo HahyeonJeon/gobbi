@@ -23,17 +23,17 @@ project-scope: true
 
 No `_claude/SKILL.md` exists. The `.claude/skills/` tree holds no `_claude` or `claude` skill dir (verified: 18 canonical skill dirs, none named `_claude` or `claude` — FLAG-2 in the Ideation design doc §11). This is a dangling reference to the same missing `claude` doc-standard skill that FLAG-2 tracks.
 
-## Dependency
-
-This item depends on FLAG-2 (`backlogs/claude-doc-standard-skill-missing.md`): once the `claude` skill dir is created at `skills/claude/SKILL.md` and symlinked to `.claude/skills/claude/SKILL.md`, repoint this reference from `_claude/SKILL.md` to the new canonical path.
-
 ## Why deferred
 
-No stub-redirect rule depends on the missing doc-standard skill to function correctly. The dangling reference is cosmetic until FLAG-2 resolves. Fixing it before FLAG-2 creates the skill would require inventing a path that does not yet exist.
+No stub-redirect rule depends on the missing doc-standard skill to function correctly. The dangling reference is cosmetic until the `claude` doc-standard skill exists. Fixing it first would require inventing a path that does not yet exist.
 
-## Suggested fix
+## When to pick up
 
-After FLAG-2 ships:
+This item depends on the `claude` doc-standard skill being created (tracked in `backlogs/claude-doc-standard-skill-missing.md`). Once that skill dir is created at `skills/claude/SKILL.md` and symlinked to `.claude/skills/claude/SKILL.md`, pick this up and repoint the reference from `_claude/SKILL.md` to the new canonical path. No earlier — there is nothing valid to point at until then.
+
+## Suggested approach
+
+After the `claude` doc-standard skill ships:
 
 1. Update the `## Related` section of `rules/stub-redirect-format.md` to reference `skills/claude/SKILL.md` (or the canonical path the new skill lands at).
 2. Verify the link is no longer dangling with `ls .claude/skills/claude/SKILL.md`.

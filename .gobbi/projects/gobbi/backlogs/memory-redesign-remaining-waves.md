@@ -83,6 +83,10 @@ The Final Gate (W5-T3) grep pattern `*-decisions.md` would also catch a legitima
 - `mistakes/skills-mirror-symlinks-not-copies.md` — the `.claude/skills/` mirror is SYMLINKS, not copies; one canonical edit, no double edit. Every delegation brief in worktree mode must cite the worktree-absolute canonical path.
 - `mistakes/manager-skipped-dual-system-eval.md` — self-verification does not substitute for dual-system EVALUATION sub-phase. Budget pressure never justifies skipping evaluator subagents; checkpoint instead.
 
+## Originating session
+
+`.gobbi/projects/gobbi/sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/` — the memory-system-redesign session that decomposed the 26-task plan and deferred waves W0-rest through W5 to a resume.
+
 ---
 
 **CLOSURE NOTE (2026-05-26):** All waves W0-rest through W5 completed in session a10c82d6 (resumed 2026-05-26). 42 commits total on branch `chore/session-2026-05-25-a10c82d6`. All 26 tasks are DONE. See wrap-up handoff at `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/wrap-up/artifacts/handoff.md` (iter 2, final).

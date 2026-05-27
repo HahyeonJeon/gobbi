@@ -16,26 +16,30 @@ disposition: deferred
 
 # Normalize `Path conventions` to H3 — cross-skill backlog
 
-## What
+## Context
 
-Promote `**Path conventions**` bold paragraph to `### Path conventions` H3 at two additional sites not covered in this session:
+Promote the `**Path conventions**` bold paragraph to a `### Path conventions` H3 heading at two skill sites that an earlier pass left in the bold-paragraph form:
 
-- `mistake/SKILL.md:126` — `**Path conventions**`
-- `planning/SKILL.md:459` — `**Path conventions**`
+- `mistake/SKILL.md` — `**Path conventions**`
+- `planning/SKILL.md` — `**Path conventions**`
 
-The `memorization/SKILL.md` site was promoted in this session (Task 05 — Concern 2 resolution). The other two sites retain the `**bold paragraph**` form, creating cross-skill divergence.
+The `memorization/SKILL.md` site was already promoted to H3 in the originating session, so the other two sites now diverge from it. Promoting them to H3 gives the section a stable anchor and removes the cross-skill divergence.
 
 ## Why deferred
 
-Scope constraint per `idea.md:54-61`. Cross-Link 7 only targeted the `memorization/SKILL.md` site. The other two sites are low-traffic (no inbound cross-links requiring a stable anchor today). A single-session cleanup pass with minimal risk is the right vehicle.
+The originating session's scope only targeted the `memorization/SKILL.md` site. The other two sites are low-traffic — no inbound cross-links depend on a stable anchor today — so they were left for a future single-session cleanup pass with minimal risk.
 
-## What to do
+## When to pick up
+
+No hard prerequisites — can run any time. Best paired with any future cross-skill anchor-stability cleanup, or picked up the moment an inbound link needs to target either of the two remaining `Path conventions` sections.
+
+## Suggested approach
 
 In a future session:
-1. `grep -n "Path conventions" .agents/skills/*/SKILL.md` to locate current sites.
-2. Promote each `**Path conventions**` to `### Path conventions` H3.
+1. `grep -n "Path conventions" .gobbi/projects/gobbi/skills/*/SKILL.md` to locate the current sites.
+2. Promote each `**Path conventions**` to a `### Path conventions` H3.
 3. Verify no anchor regressions (these files have no current inbound anchor links requiring the exact bold-paragraph form).
 
-## Witness
+## Originating session
 
-Ideation concern-2 resolution (Planning DISCUSSION iter1): `preparation.md:133-139`. Task 05 in this session handles only the memorization site.
+`.gobbi/projects/gobbi/sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/` — the orchestration-workflow-improvements session that promoted only the `memorization/SKILL.md` site and deferred the other two.
