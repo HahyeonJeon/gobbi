@@ -9,5 +9,5 @@
     "execution":     { "state": "Active",  "verdict": null,   "iter": 2,    "maxIterations": 3,    "phase": "ITER/EXIT" },
     "wrap-up":       { "state": "Pending", "verdict": null,   "iter": 0,    "maxIterations": 1,    "phase": null }
   },
-  "activeNote": "Resume of branch chore/session-2026-05-25-a10c82d6 (PR #272). Conformance wave (T0-T11,T10) done in prior sessions. Entering Execution for the PROSE wave (P1-P7b + N1) per locked plan 2026-05-26-dev-doc-standard-retrofit.md. Cadence: run-until-context-pressure then checkpoint."
+  "activeNote": "CHECKPOINT 2026-05-27 (session 5786090e). PROSE wave progress: P1 (features/agents) PASS+committed (999a403+7a6ecb4, record caad41b). P2 (features/evaluation) executor DONE+ground-truth-clean (5c36142) but dual-system eval PENDING — next session must eval P2 first. Also committed stranded prior-session residue (56089c1). Remaining: P2-eval, P3a-P7b, N1. git push pending. See wrap-up/artifacts/handoff.md."
 }
