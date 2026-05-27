@@ -8,13 +8,13 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [worktree, session-architecture, alternative, symlink, deferred]
-title: "Item 1-3 alternative — symlink-into-worktree model"
+title: "Symlink-into-worktree session-memory model (deferred alternative)"
 project: gobbi
 anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 
-# Item 1-3 alternative — symlink-into-worktree model
+# Symlink-into-worktree session-memory model (deferred alternative)
 
 ## Context
 

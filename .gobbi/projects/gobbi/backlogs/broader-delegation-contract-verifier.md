@@ -8,13 +8,13 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [process, delegation, gate-bypass, contract-verification, deferred]
-title: "Item 1-2 broader re-framing — delegation contract verifier"
+title: "Broader delegation-contract verifier — validate all gate citations (deferred re-framing)"
 project: gobbi
 anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 
-# Item 1-2 broader re-framing — delegation contract verifier
+# Broader delegation-contract verifier — validate all gate citations (deferred re-framing)
 
 ## Context
 

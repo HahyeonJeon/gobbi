@@ -8,13 +8,13 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [process, auto-mode, askuserquestion, categories, deferred]
-title: "Item 2-1 — Auto-mode silence vs Always-Ask categories"
+title: "Auto-mode silence vs Always-Ask categories — codify mandatory AskUserQuestion triggers"
 project: gobbi
 anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 
-# Item 2-1 — Auto-mode silence vs Always-Ask categories
+# Auto-mode silence vs Always-Ask categories — codify mandatory AskUserQuestion triggers
 
 ## Context
 
