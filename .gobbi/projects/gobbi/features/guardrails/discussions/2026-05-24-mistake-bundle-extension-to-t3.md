@@ -11,7 +11,7 @@ tags: [mistake-bundle, task-briefs, iron-law-7, planning-lock]
 outcome: Iron Law 7 procedural mistake only for hook + reconstructor tasks (LOCK #3); the other 2 mistakes from the setup-task bundle are inapplicable
 ---
 
-# Mistake bundle extension to hook + reconstructor tasks (Planning LOCK #3)
+# Mistake bundle extension to hook + reconstructor tasks
 
 ## Context
 
@@ -28,7 +28,7 @@ Should hook + reconstructor tasks receive the full 3-mistake setup-task bundle, 
 
 ## User decision
 
-Iron Law 7 procedural mistake only confirmed (Planning LOCK #3, narrowed from the leader's 3-mistake recommendation).
+The user confirmed: load only the Iron Law 7 procedural mistake for hook + reconstructor task briefs, narrowed from the leader's 3-mistake recommendation. This was locked as a Planning-phase decision.
 
 ## Rationale
 
@@ -42,5 +42,5 @@ Setup task briefs (infrastructure setup group): all three mistakes in their tier
 
 ## Related
 
-- Planning session 1b26cf20 agent assignment table — LOCK #3 rationale (provenance)
-- `planning-brief-mistake-load-directives-for-t1.md` (the setup-task bundle this narrows)
+- This decision was locked in the guardrails Planning phase as part of the agent-assignment rationale (provenance in that session's Planning artifacts).
+- It narrows the 3-mistake load directive that the infrastructure-setup task briefs carry; the hook + reconstructor briefs load only the Iron Law 7 mistake.

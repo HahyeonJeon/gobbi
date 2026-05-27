@@ -14,7 +14,7 @@ tags: [hooks, docs-sync, event-count, checklist]
 
 ## Context
 
-`draft-iter3.md` and the staged reference `claude-code-posttooluse-hook-schema.md` claim the official hooks page lists 31 hook events. The staged reference itself enumerates 29 event names (lines 45-73). The current official page visible lifecycle list also shows 29 events. The Codex evaluator independently fetched the page and confirmed 29.
+The guardrails Ideation artifacts and the reference `features/guardrails/references/claude-code-posttooluse-hook-schema.md` claim the official hooks page lists 31 hook events. That same reference itself enumerates only 29 event names. The current official page visible lifecycle list also shows 29 events. An evaluator independently fetched the page and confirmed 29.
 
 The `PostToolUseFailure` event itself is verified by both Claude and Codex evaluators — this is a supporting-prose defect, not an operational blocker.
 
@@ -27,5 +27,5 @@ The `PostToolUseFailure` event itself is verified by both Claude and Codex evalu
 ## Related
 
 - `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the reference carrying the claim)
-- Codex evaluator overall finding COD-OVERALL-ITER3-001 (provenance — session 1b26cf20 guardrails Ideation evaluation)
+- Surfaced as an Overall-perspective evaluator finding during the guardrails Ideation evaluation (provenance in that session's evaluation artifacts).
 - See also `features/guardrails/backlogs/hook-event-count-31-vs-29-docs-sync.md` (backlog form of same item)

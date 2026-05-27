@@ -41,10 +41,9 @@ When authoring `.claude/settings.json` hook registration for PostToolUseFailure.
 
 ## Originating session
 
-`.gobbi/projects/gobbi/sessions/` — originated in session 1b26cf20 guardrails Ideation evaluation (Claude evaluator project finding F-PROJ-iter3-2).
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/` — surfaced during the guardrails Ideation evaluation as a Project-perspective verification-gap finding.
 
 ## Related
 
-- `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (verbatim quotes preserved here)
-- Claude evaluator project finding F-PROJ-iter3-2 (provenance)
-- Claude evaluator risk finding F-RISK-iter3-2 (provenance)
+- `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the verbatim hook-contract quotes are preserved here)
+- The same gap was independently flagged by both the Project-perspective and Risk-perspective evaluators at Ideation (provenance in that session's evaluation artifacts).

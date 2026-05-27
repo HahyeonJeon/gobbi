@@ -33,8 +33,13 @@ PostToolUse + the matcher pattern `"Task"` is the shell-command-hook-compatible 
 
 A v2.1.119 addition: `PostToolUse` and `PostToolUseFailure` hook inputs now include `duration_ms` — tool execution time excluding permission prompts and PreToolUse hook execution.
 
+## Related
+
+- `claude-code-posttooluse-hook-schema.md` (the companion reference with the full PostToolUse / PostToolUseFailure input schema)
+- `checklists/cross-layer-drift-gate.md` (the drift gate that keeps hook registration aligned across `.claude/settings.json`, skills, and the session schema)
+
 ## Why it applies
-T3 picks PostToolUse + matcher `"Task"` as the mechanism. This reference establishes:
+The subagent-telemetry hook design picks PostToolUse + matcher `"Task"` as its mechanism. This reference establishes:
 1. PostToolUse is the **shell-command-compatible** event for subagent completion telemetry — consistent with the existing `session-start.sh` shell-script precedent.
 2. SubagentStop is a richer alternative but requires SDK integration that gobbi does not currently use — out of scope.
 3. PostToolUse has matured (v2.1.119 added `duration_ms`) — the schema is in active evolution, so the hook script should be defensive about field availability.
@@ -53,4 +58,4 @@ T3 picks PostToolUse + matcher `"Task"` as the mechanism. This reference establi
 
 | Date | Session | Used for |
 |---|---|---|
-| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | T3 external insight #4 — lifecycle landscape; rules out SubagentStop for shell-command path; flags PostToolUseFailure for failed-spawn coverage |
+| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | Mapped the hook lifecycle landscape for the subagent-telemetry design; ruled out SubagentStop for the shell-command path; flagged PostToolUseFailure for failed-spawn coverage |

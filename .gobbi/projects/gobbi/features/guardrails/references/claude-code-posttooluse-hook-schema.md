@@ -28,7 +28,13 @@ The hook's `tool_result` payload schema for Task/Agent calls is documented less 
 
 The hook **also receives `transcript_path`** in every fire — meaning a hook can read the transcript JSONL itself and extract the rich `toolUseResult` payload that Claude Code writes (which contains the full subagent metadata: agentId, agentType, totalDurationMs, totalTokens, totalToolUseCount, usage{input_tokens, cache_creation_input_tokens, cache_read_input_tokens, output_tokens}, toolStats{readCount, searchCount, bashCount, editFileCount, linesAdded, linesRemoved}).
 
-## PostToolUseFailure — verbatim verification (iter2 / iter3)
+## Related
+
+- `claude-code-hooks-12-lifecycle-events.md` (the companion reference covering the broader hook lifecycle-event landscape)
+- `checklists/hook-event-count-31-vs-29-docs-sync.md` and `backlogs/hook-event-count-31-vs-29-docs-sync.md` (the tracked docs-sync item: the "31 events" claim below should be corrected to the verified count of 29)
+- `backlogs/posttooluse-failure-webfetch-verification-gap.md` (the deferred empirical re-verification of the verbatim quotes captured here)
+
+## PostToolUseFailure — verbatim verification
 
 WebFetched `https://code.claude.com/docs/en/hooks` on 2026-05-23. The official docs page lists `PostToolUseFailure` as one of 31 documented hook events and includes it in two tables:
 
@@ -81,13 +87,13 @@ All 31 documented hook events on this page (full enumeration for context):
 (The page's table lists 31; the enumerated names above cover the explicitly captured events from the same WebFetch.)
 
 ## Why it applies
-T3 explicitly locked "Sub-step C must verify the hook contract before Sub-step D." This insight is the verification answer:
+The subagent-telemetry hook design explicitly required verifying the hook contract before committing to the mechanism. This insight is the verification answer:
 - The hook fires after every Agent tool call (matcher `"Task"`).
 - The hook receives `tool_name`, `tool_input` (subagent_type, prompt, model, description), `tool_result` (basic), and `transcript_path` (the route to the rich payload).
-- If hook input alone is insufficient, the hook can `jq` the transcript file to extract the full `toolUseResult` block (proven empirically — see companion reference `claude-code-transcript-tooluseresult-empirical.md`).
-- **PostToolUseFailure** is officially supported for shell-command hooks (verbatim quote above), so T3 D-3-3 dual registration (PostToolUse + PostToolUseFailure) is grounded in the official documentation, not in community attestation.
+- If hook input alone is insufficient, the hook can `jq` the transcript file to extract the full `toolUseResult` block (verified empirically during the guardrails Ideation: the transcript JSONL carries the rich subagent metadata enumerated in the Insight section above).
+- **PostToolUseFailure** is officially supported for shell-command hooks (verbatim quote above), so the dual registration (PostToolUse + PostToolUseFailure) is grounded in the official documentation, not in community attestation.
 
-This gives the design a clear path: even if `tool_result` in the hook payload is impoverished, the hook is rich enough because `transcript_path` is always provided. T3's mechanism (c) — hook for real-time append + shell-script reconstructor for repair — is fully supported, and the dual-event (success + failure) registration is officially documented.
+This gives the design a clear path: even if `tool_result` in the hook payload is impoverished, the hook is rich enough because `transcript_path` is always provided. The design's mechanism — a hook for real-time append plus a shell-script reconstructor for repair — is fully supported, and the dual-event (success + failure) registration is officially documented.
 
 ## Source
 - https://code.claude.com/docs/en/hooks
@@ -106,5 +112,5 @@ This gives the design a clear path: even if `tool_result` in the hook payload is
 
 | Date | Session | Used for |
 |---|---|---|
-| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | T3 external insight #1 — CP-4.1-β hook contract verification gate CLOSED |
-| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | iter3 Fix B — verbatim PostToolUseFailure quote added (T3-E-5 grounding) |
+| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | Closed the hook-contract verification gate for the PostToolUse-based subagent telemetry design |
+| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | Added the verbatim PostToolUseFailure quote to ground the dual-event hook registration in the official docs |

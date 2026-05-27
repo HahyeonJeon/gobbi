@@ -13,10 +13,10 @@ shipped_in: memory-redesign W3-T3
 
 # Bundle B re-home into `guardrails`
 
-**Task:** memory-redesign W3-T3 — re-home `features/session-foundations-bundle-b/` cluster md into the 7 capability value-features.
+**Task:** Re-home the `features/session-foundations-bundle-b/` work-sprint cluster's markdown files into the 7 capability value-features (the re-home task in the memory-system redesign's Wave 3).
 
 ## Summary
-Bundle B was a work-sprint, not a value-feature. Its durable artifacts (cross-layer drift gating and hook-event documentation sync) were re-homed into `guardrails` by content (design §1.3 row 3 + §8 LOW-16 routing heuristic). Files moved via `git mv` (history-preserving); `feature:` frontmatter restamped to `guardrails` on each moved file. Bodies unchanged.
+Bundle B was a work-sprint, not a value-feature. Its durable artifacts (cross-layer drift gating and hook-event documentation sync) were re-homed into `guardrails` by content (memory-system-redesign design doc §1.3 sprint-to-value-feature routing, plus the §8 routing heuristic). Files moved via `git mv` (history-preserving); `feature:` frontmatter restamped to `guardrails` on each moved file. Bodies unchanged.
 
 ## What changed
 - Bundle B subdir files whose content is about guardrails moved into `features/guardrails/{checklists,...}/`.
@@ -28,7 +28,7 @@ Bundle B was a work-sprint, not a value-feature. Its durable artifacts (cross-la
 - Full per-cluster routing logged in `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/execution/w3/staging/w3t3-cluster-manifest.md`.
 
 ## Deferred
-- Bundle B `README.md` retention/supersession handled by W3-T5 (not this task).
+- Retention/supersession of Bundle B's own `README.md` was handled by a separate re-home task, not this one.
 
 ## Related
 - Design: `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/ideation/artifacts/memory-system-redesign-design.md` §1.3, §8.

@@ -14,7 +14,7 @@ tags: [hooks, settings-json, drift-gate, cross-layer, checklist]
 
 ## Context
 
-Codex evaluator Risk finding COD-RISK-004 (from guardrails Ideation evaluation): the guardrails design requires whole-file scans of touched skill files after edits (per `mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md`). However, there is no single explicit cross-layer gate that checks alignment across: `.claude/hooks/post-tool-use-agents.sh`, `.claude/settings.json` (hook registration), `.claude/skills/orchestration/SKILL.md` (worktreePath row description), `.claude/skills/delegation/SKILL.md` (structured-header convention), and `session.template.json` (agents[] schema). These four surfaces must stay synchronized; currently each is verified independently.
+A Risk-perspective evaluator finding from the guardrails Ideation raised this: the guardrails design requires whole-file scans of touched skill files after edits (per `mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md`). However, there is no single explicit cross-layer gate that checks alignment across: `.claude/hooks/post-tool-use-agents.sh`, `.claude/settings.json` (hook registration), `.claude/skills/orchestration/SKILL.md` (worktreePath row description), `.claude/skills/delegation/SKILL.md` (structured-header convention), and `session.template.json` (agents[] schema). These surfaces must stay synchronized; currently each is verified independently.
 
 ## Checklist item for Planning / Execution
 
@@ -27,9 +27,9 @@ Codex evaluator Risk finding COD-RISK-004 (from guardrails Ideation evaluation):
 
 ## Deferred
 
-A persistent automated drift detector (e.g., a `gobbi doctor` rule that checks hook registration alignment) is a follow-up. See `staging/backlogs/project/codex-ci-integration-for-dual-system-eval.md` for related automation context.
+A persistent automated drift detector (e.g., a `gobbi doctor` rule that checks hook registration alignment) is a follow-up. See `.gobbi/projects/gobbi/backlogs/codex-ci-integration-for-dual-system-eval.md` for related automation context.
 
 ## Related
 
-- Codex evaluator risk finding COD-RISK-004 (from session 1b26cf20 guardrails Ideation evaluation — provenance)
+- This gate was prompted by a Risk-perspective evaluator finding during the guardrails Ideation evaluation (provenance in that session's evaluation artifacts).
 - `mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md` (the mistake this gate enforces)

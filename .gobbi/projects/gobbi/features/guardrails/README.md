@@ -14,11 +14,15 @@ subsystems: [principles, mistake]
 
 # Feature: Guardrails
 
-The 13 Iron Laws plus the mistake-capture-and-learn loop that keep agents in scope, verifying claims, and not repeating known traps. This is value-feature #5 of the 7 capability features (design §1.2, RATIFY-1 / L1). Principle #13 lands here.
+The 13 Iron Laws plus the mistake-capture-and-learn loop that keep agents in scope, verifying claims, and not repeating known traps. This is one of the 7 capability value-features the memory-system redesign ratified (memory-system-redesign design doc §1.2). Iron Law #13 (no document work without a spec and a CRUD plan) is the principle this feature most recently added.
 
 ## Overview
 
 `guardrails` unites gobbi's behavioral floor (the Iron Laws) with its learning loop (mistake capture and two-layer promotion): together they keep agents inside scope, verifying before claiming done, and not repeating known traps across sessions.
+
+## Status
+
+Active. The behavioral floor (13 Iron Laws in the `principles` skill) and the mistake-capture loop (the `mistake` skill plus the `mistakes/` tier) are both live. The feature directory itself was created during the memory-system redesign when work-sprint artifacts were re-homed into the 7 capability value-features; durable guardrails artifacts (cross-layer drift gating and hook-event documentation references) now live under this directory's subdirectories.
 
 ## Subsystems
 
@@ -39,8 +43,14 @@ The 13 Iron Laws plus the mistake-capture-and-learn loop that keep agents in sco
 
 | Date | Session | What |
 |---|---|---|
-| 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
+| 2026-05-26 | a10c82d6 | Feature directory created during the memory-system redesign and seeded with re-homed work-sprint artifacts |
+
+## Open items
+
+- Correct the "31 hook events" claim to the verified count of 29 in surviving references — see `backlogs/hook-event-count-31-vs-29-docs-sync.md`.
+- Empirically re-verify the `PostToolUseFailure` hook contract when authoring its `.claude/settings.json` registration — see `backlogs/posttooluse-failure-webfetch-verification-gap.md`.
+- Add a quality gate on `agents[]` field population if presence is ever treated as a metric — see `backlogs/goodhart-factor-when-demanded-deferred.md`.
 
 ## Related
 
-- Memory-system redesign design doc §1.2 (7-feature table), §1.3 (sprint → value-feature routing)
+- Memory-system redesign design doc §1.2 (the table of the 7 capability value-features), §1.3 (how work-sprint artifacts route into value-features)

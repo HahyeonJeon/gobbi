@@ -42,5 +42,5 @@ When the project decides to enforce `agents[]` field quality rather than mere pr
 
 ## Related
 
-- Guardrails Ideation evaluation risk finding (iter1 Claude Risk R3 — evaluator finding provenance)
-- Skill-loading discipline backlog (the schema validator work that was itself deferred)
+- This risk was surfaced as a Risk-perspective evaluation finding during the guardrails Ideation (provenance recorded in that session's evaluation artifacts).
+- The schema-validator work this item depends on was itself deferred as a separate backlog item.
