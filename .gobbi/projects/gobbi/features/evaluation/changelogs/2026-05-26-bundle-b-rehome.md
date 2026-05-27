@@ -13,6 +13,8 @@ shipped_in: memory-redesign W3-T3
 
 # Bundle B re-home into `evaluation`
 
+**Task:** Re-home Bundle B's (`features/session-foundations-bundle-b`) durable evaluation-result and Codex-eval-dispatch discussion artifacts into the `evaluation` value-feature, during the memory-system redesign.
+
 ## Summary
 Bundle B (`features/session-foundations-bundle-b`) was a work-sprint, not a value-feature. Its durable evaluation-result and Codex-eval-dispatch discussion artifacts were re-homed into `evaluation` by content per the memory-system redesign routing heuristic. Files moved via `git mv` (history-preserving); `feature:` frontmatter restamped to `evaluation` on each moved file. Bodies unchanged.
 
@@ -26,3 +28,7 @@ Bundle B (`features/session-foundations-bundle-b`) was a work-sprint, not a valu
 
 ## Deferred
 - Bundle B `README.md` retention/supersession handled by the bundle-rehome cleanup task (not this task).
+
+## Related
+- [`changelogs/2026-05-26-bundle-a-rehome.md`](2026-05-26-bundle-a-rehome.md) — the parallel Bundle A re-home into `evaluation`.
+- [`discussions/2026-05-24-codex-iter2-blocked-aggregation.md`](../discussions/2026-05-24-codex-iter2-blocked-aggregation.md) — a Bundle B Codex-eval-dispatch discussion re-homed by this task.

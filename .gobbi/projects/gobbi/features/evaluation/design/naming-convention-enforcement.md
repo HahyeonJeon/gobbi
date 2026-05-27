@@ -10,20 +10,32 @@ session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
 tags: [naming-convention, coverage-ownership-matrix, memorization, evaluation]
 ---
 
-# Design E — Naming Convention Enforcement via Consistency-Perspective Evaluator Check
+# Naming Convention Enforcement via Consistency-Perspective Evaluator Check
 
-**Chosen direction**: Add one row to `evaluation/SKILL.md § Coverage Ownership Matrix` mapping the new cross-cutting concern "Memorization staging shape + naming" to Consistency + Aesthetics perspectives. Add a cross-link from `memorization/SKILL.md § Path Conventions` pointing at the matrix row.
+## Context
 
-Row content (user-selected in Planning DISCUSSION):
+Memory-file naming and staging-shape violations (bulk files instead of per-finding `{slug}.md`, wrong finding-type vocabulary, mis-routed domains) were being caught only after the fact, by the Wrap-up detection pass. By then the violating files already exist and must be cleaned up. The design needs an earlier signal that catches staging-shape-and-naming problems at evaluation time, before promotion.
+
+## Approach
+
+Add one row to the Coverage Ownership Matrix in `evaluation/SKILL.md`, mapping the cross-cutting concern "Memorization staging shape + naming" to the Consistency + Aesthetics perspectives, and add a cross-link from `memorization/SKILL.md § Path Conventions` pointing at the new matrix row. The row content (the full wording the user selected at the Planning DISCUSSION) is:
 
 | Cross-cutting concern | Owning perspective(s) | What's verified |
 |---|---|---|
-| **Memorization staging shape + naming** | Consistency + Aesthetics | Per-finding `{slug}.md` filename convention (no bulk files); 5-Type vocabulary (`scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` / `general`) in frontmatter; Domain routing matches `evaluation/SKILL.md § Complete Domain → staging destination routing`; Slug+collision policy compliance per `evaluation/SKILL.md:385-393` |
+| **Memorization staging shape + naming** | Consistency + Aesthetics | Per-finding `{slug}.md` filename convention (no bulk files); 5-Type vocabulary (`scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` / `general`) in frontmatter; Domain routing matches `evaluation/SKILL.md § Complete Domain → staging destination routing`; Slug+collision policy compliance per `evaluation/SKILL.md` § Slug + collision policy |
 
-**Rationale**: The Step 2.5 Wrap-up detection pass catches naming violations after the fact. The Coverage Ownership Matrix row is the evaluation-time signal — caught earlier at every loop's EVALUATION. The Consistency + Aesthetics perspectives already run at every loop's EVALUATION gate; adding a seed scenario for staging shape costs zero new infrastructure.
+## Rationale
 
-**Alternative rejected**: A bash one-liner in wrap-up/SKILL.md Step 2.5 checking for missing `mistake-candidate:` frontmatter. Rejected as too narrow; the matrix-row approach generalizes to all staging types.
+The Wrap-up detection pass is a back-stop that fires after violations exist. The Coverage Ownership Matrix row moves the same check to every loop's EVALUATION gate, where the Consistency + Aesthetics perspectives already run — so the violation is caught before the file is promoted, at zero new infrastructure cost (no new gate, no new pass; just one more row the existing perspectives consult).
 
-**Validation**: `grep -A1 "staging shape\|staging shape + naming" evaluation/SKILL.md` returns the new row; `grep "Coverage Ownership Matrix" memorization/SKILL.md` returns ≥ 1 hit.
+## Alternatives considered
 
-**Cross-links Bundle A creates (item E)**: memorization/SKILL.md § Path Conventions → evaluation/SKILL.md § Coverage Ownership Matrix § Memorization staging shape + naming.
+- **A bash one-liner in `wrap-up/SKILL.md` Step 2.5 checking for missing `mistake-candidate:` frontmatter** — rejected: too narrow, it only catches one frontmatter key. The matrix-row approach generalizes to all staging types and all naming/shape rules.
+
+## Consequences
+
+`evaluation/SKILL.md` carries the new matrix row, and `memorization/SKILL.md § Path Conventions` cross-links to it. Verification: `grep -A1 "staging shape\|staging shape + naming" evaluation/SKILL.md` returns the new row, and `grep "Coverage Ownership Matrix" memorization/SKILL.md` returns at least one hit.
+
+## Related
+
+- [`decisions/coverage-ownership-matrix-row-text.md`](../decisions/coverage-ownership-matrix-row-text.md) — the decision fixing the exact cell text of this row.

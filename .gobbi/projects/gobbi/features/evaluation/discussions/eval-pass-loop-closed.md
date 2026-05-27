@@ -14,19 +14,33 @@ tags: [evaluation, ideation, pass-verdict, dual-system]
 
 ## Context
 
-The final Ideation evaluation produced PASS from both Claude (all 8 perspectives) and Codex (all 8 perspectives). Dual-system verdict: PASS. This was the 3rd iteration — the maximum allowed — so the Ideation loop closed.
+The final Ideation evaluation produced PASS from both systems — Claude (all 8 perspectives) and Codex (all 8 perspectives), a dual-system PASS. This was the last iteration allowed under the 3-iteration evaluation budget. Several non-blocking findings remained open at PASS time:
 
-Remaining open findings (all Medium/Low — non-blocking):
-- Hook event count discrepancy (31 counted vs 29 expected in docs) — docs-sync, non-blocking
+- Hook-event count discrepancy (31 counted vs 29 expected in docs) — docs-sync, non-blocking
 - `chore` label line citation off by 2 — docs-sync, Low, non-blocking
-- WebFetch verification gap for `PostToolUseFailure` hook event — assumption_risk, deferred to Execution
-- Hook silence diagnostic scenario — deferred scenario_gap
+- WebFetch verification gap for the `PostToolUseFailure` hook event — assumption_risk, deferred to Execution
+- Hook-silence diagnostic scenario — deferred scenario_gap
 - Cross-layer drift gate — checklist_gap, open
-- Privacy/retention concern — deferred
+- Privacy / retention concern — deferred
 - Sidecar lock refinement — deferred
 
-No Critical or High open findings remain. PASS is defensible per the verdict rules.
+## Question
 
-## Impact on design
+Given a dual-system PASS at the final budgeted iteration, with only Medium/Low findings still open, should the Ideation loop be closed and the session advanced to Preparation, or held open to clear the residual findings first?
 
-Ideation loop closed. The session proceeded to Preparation with 11 design staging files and 17 discussion staging files produced during Ideation.
+## Options considered
+
+- **Close the loop on PASS, carry residual findings forward** — accept the dual-system PASS, advance to Preparation, and route the open Medium/Low findings to Execution / backlog.
+- **Hold the loop open to clear residual findings** — keep iterating, but the 3-iteration budget was already exhausted, so this would mean spending budget that no longer existed.
+
+## User decision
+
+Close the Ideation loop on the dual-system PASS. No Critical or High findings remained open, so PASS is defensible per the verdict rules; the residual Medium/Low findings are carried forward (deferred to Execution or backlog) rather than blocking loop closure.
+
+## Implication
+
+The Ideation loop closed and the session advanced to Preparation, carrying forward the 11 design staging files and 17 discussion staging files produced during Ideation. The deferred findings (notably the `PostToolUseFailure` WebFetch verification) become Execution-phase obligations.
+
+## Related
+
+- [`discussions/eval-fail-revise-escalation.md`](eval-fail-revise-escalation.md) — the prior FAIL iteration whose 3-fix revision led into this PASS.

@@ -19,6 +19,10 @@ Dual-system review (Claude + Codex) across 7 perspectives, gating each deliverab
 
 `evaluation` is gobbi's review subsystem: a 4-stage procedure run by two independent systems (Claude + Codex) across 7 perspectives plus Overall, with finding metadata and cross-system reconciliation, gating each deliverable before it is accepted.
 
+## Status
+
+Active. The dual-system evaluation procedure, the 7-perspective set, the 5-Type finding vocabulary, and the codex-invocation conventions are shipped and in use. The feature directory was created during the memory-system redesign (W3-T0) and the codex / dual-system-evaluation artifacts from the Bundle A and Bundle B sprints have been re-homed here.
+
 ## Subsystems
 
 - `evaluation` (4-stage procedure, 7 perspectives + Overall, finding metadata, cross-system reconciliation) + per-loop `evaluation.md` child docs
@@ -39,6 +43,10 @@ Dual-system review (Claude + Codex) across 7 perspectives, gating each deliverab
 | Date | Session | What |
 |---|---|---|
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
+
+## Open items
+
+No open deferred items tracked at the feature level. Residual non-blocking evaluation findings carried forward from earlier loops are recorded in the feature's `discussions/` (see [`discussions/eval-pass-loop-closed.md`](discussions/eval-pass-loop-closed.md)).
 
 ## Related
 

@@ -12,6 +12,8 @@ tags: [memory-redesign, re-home, bundle-a]
 
 # Bundle A re-homed — evaluation's share
 
+**Task:** Re-home the codex / dual-system-evaluation artifacts from the `gobbi-orchestration-workflow-improvements` sprint (Bundle A) into the `evaluation` value-feature, during the memory-system redesign.
+
 ## Summary
 During memory-system redesign W3-T2, the codex / dual-system-evaluation
 artifacts from the `gobbi-orchestration-workflow-improvements` sprint (Bundle A)
@@ -29,6 +31,10 @@ Re-homed (via `git mv`, history preserved) 9 artifacts into `evaluation/`:
 ## Verification
 `find features/gobbi-orchestration-workflow-improvements -name '*.md' ! -name README.md | wc -l` == 0.
 `git status` shows all moves as renames (R).
+
+## Deferred
+
+Nothing deferred — all 9 Bundle A evaluation artifacts were re-homed in this task. The body-prose conformance of the moved files (frontmatter and §4.2 section contracts) was handled by the later conformance and prose waves, not this re-home task.
 
 ## Related
 - Memory-system redesign design doc §1.2 (evaluation owns codex), §1.3, §8 LOW-16 routing heuristic.

@@ -14,11 +14,11 @@ accessed: 2026-05-23
 ref_type: internal
 ---
 
-# 5-Type Finding Vocabulary (canonical source: evaluation/SKILL.md:344-352)
+# 5-Type Finding Vocabulary
 
-This reference captures the verbatim 5-Type vocabulary that Execution tasks must use when authoring evaluation skill content.
+## Insight
 
-## The 5 Types
+Evaluation findings are classified into exactly five types, and that closed vocabulary is what every evaluation-staging file's frontmatter must use verbatim:
 
 ```
 scenario_gap      — A scenario exists in project memory but no checklist item or task covers it.
@@ -28,15 +28,32 @@ assumption_risk   — An assumption in the artifact that may not hold at executi
 general           — A finding that does not fit the four above categories.
 ```
 
-## Classification
+The split that matters operationally is mechanical-class vs judgment-required:
 
-- **Mechanical-class** (auto-backfill via Step 2.5): `scenario_gap`, `checklist_gap`, `general`
-- **Judgment-required** (trigger NEEDS_CONTEXT): `design_flaw`, `assumption_risk`
+- **Mechanical-class** (auto-backfill via Step 2.5): `scenario_gap`, `checklist_gap`, `general`.
+- **Judgment-required** (trigger NEEDS_CONTEXT): `design_flaw`, `assumption_risk`.
 
-## Canonical source path
+## Related
 
-`/playinganalytics/git/gobbi/.agents/skills/evaluation/SKILL.md` lines 344-352 (5-Type vocabulary) and lines 385-393 (Slug + collision policy).
+- [`design/naming-convention-enforcement.md`](../design/naming-convention-enforcement.md) — the Coverage Ownership Matrix row that has the Consistency + Aesthetics perspectives verify this 5-Type vocabulary appears correctly in staging frontmatter.
+- [`decisions/coverage-ownership-matrix-row-text.md`](../decisions/coverage-ownership-matrix-row-text.md) — fixes the matrix-cell wording that cites this vocabulary.
 
-## Usage note
+## Why it applies
 
-Execution tasks that author content referencing these types MUST `Read` the canonical source file before writing — not reconstruct from this reference or from briefing alone (per Iron Law 7 and `mistakes/manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck.md`).
+Any Execution task that authors evaluation skill content, or any agent that stages an evaluation finding, must use these exact type strings — an invented or misspelled type breaks the mechanical-vs-judgment routing and the staging-shape checks. Invoke this reference whenever writing or reviewing finding frontmatter.
+
+## Source
+
+- `/playinganalytics/git/gobbi/.agents/skills/evaluation/SKILL.md` — § the 5-Type vocabulary (the verbatim block above) and § Slug + collision policy (the staging-filename rules).
+
+## Excerpt
+
+The verbatim 5-Type block is reproduced under Insight above; it is captured from the canonical `evaluation/SKILL.md` 5-Type vocabulary section.
+
+## Usage history
+
+| Date | Session | Used for |
+|---|---|---|
+| 2026-05-23 | 2026-05-23-7ea62d36 | Authoring the Coverage Ownership Matrix row and evaluation skill content during Bundle A |
+
+> Authoring note: tasks that reference these types MUST `Read` the canonical `evaluation/SKILL.md` source before writing — not reconstruct from this reference or from a briefing alone (Iron Law 7; see [`mistakes/manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck.md`](../../../mistakes/manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck.md)).
