@@ -223,6 +223,10 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 | iteration counter | `iter` | `iter` (same) |
 | slug duplicate | `slug` | `slug` (same) |
 | finding source label | `finding-source` | `finding_source` |
+| workflow phase coordinate | `phase` | `phase` (same) |
+| loop iteration counter | `loop-iter` | `loop_iter` |
+| sub-step coordinate | `sub-step` | `sub_step` |
+| session-id (redundant with base `session`) | `session-id` | `session_id` |
 
 **KEEP — never strip:** The following keys are cross-reference/provenance/content-tag keys that carry durable meaning and MUST always be preserved: `related`, `supersedes`, `superseded_by`, `source`, `design-id`, `domain`, `priority`, `ref_type`. These are legitimate type extensions (§2.2) or cross-linking fields — they are NOT members of S.
 
@@ -251,7 +255,7 @@ find .gobbi/projects/gobbi -name '*.md' \
   -not -path '*/agents/*' \
   -not -path '*/tmp/*' \
   -print0 \
-| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|task|loop|scenario|iter|slug|finding[-_]source):' \
+| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|task|loop|scenario|iter|slug|finding[-_]source|phase|loop[-_]iter|sub[-_]step|session[-_]id):' \
   2>/dev/null
 ```
 

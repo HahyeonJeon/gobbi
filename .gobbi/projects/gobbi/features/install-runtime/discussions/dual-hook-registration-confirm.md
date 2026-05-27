@@ -9,9 +9,6 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hooks, agents, session-json]
 discussion-id: CP-D-1
-phase: ideation
-sub-step: D-round-2
-loop-iter: 1
 ---
 
 # Dual hook registration (PostToolUse + PostToolUseFailure) confirmed; agents status field deferred

@@ -9,9 +9,6 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hooks, post-tool-use, agents, session-json]
 discussion-id: CP-4-1-alpha
-phase: ideation
-sub-step: A-round-2
-loop-iter: 1
 ---
 
 # PostToolUse hook + shell-script reconstructor selected for agents[] population

@@ -8,7 +8,6 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [git-workflow, session-scope, worktree-first, agents-hook]
-phase: ideation
 ---
 
 # Bundle scope confirmation — T1 + T3 in scope; T2 deferred

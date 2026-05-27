@@ -8,7 +8,6 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [git-workflow, worktree-first, failure-mode, cwd]
-phase: ideation
 ---
 
 # Worktree-first failure-mode framing confirmed

@@ -8,7 +8,6 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [git-workflow, promote-now, worktree-first, dependency]
-phase: ideation
 ---
 
 # Promote-now commit-on-branch dependency on worktree-first confirmed

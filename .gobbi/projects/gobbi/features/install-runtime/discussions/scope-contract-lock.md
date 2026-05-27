@@ -9,9 +9,6 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [agents, session-template, schema]
 discussion-id: CP-4-1-gamma
-phase: ideation
-sub-step: A-round-2
-loop-iter: 1
 ---
 
 # Session template agents[] schema sufficient; no template bump needed

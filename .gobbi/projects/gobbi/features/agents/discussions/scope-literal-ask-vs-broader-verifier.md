@@ -8,8 +8,6 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [t2, scope, validator, delegation-contract]
-phase: ideation
-loop-iter: 1
 ---
 
 # Validator scope: literal-ask (skill-loading matrix + validator) vs broader delegation contract verifier
