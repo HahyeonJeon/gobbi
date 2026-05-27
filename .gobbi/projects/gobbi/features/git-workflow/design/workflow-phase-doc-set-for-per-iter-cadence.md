@@ -66,7 +66,7 @@ Verification: `grep -l "chore(session): record .* iter.* memory" .claude/skills/
 
 - `design/per-iteration-session-commit-cadence.md` — Design Decision D-4, the cadence this enumeration implements.
 - `decisions/mirror-propagation-policy-mirror-canonical-symlinks.md` — the mirror-canonical-symlinks policy this design relies on.
-- `notes/2026-05-23-workflow-phase-doc-set-enumeration.md` — the session journal of how this enumeration evolved (the 7-vs-5 file-count correction).
+- `../../../notes/2026-05-23-workflow-phase-doc-set-enumeration.md` — the project-level session journal of how this enumeration evolved (the 7-vs-5 file-count correction).
 
 ## Source
 

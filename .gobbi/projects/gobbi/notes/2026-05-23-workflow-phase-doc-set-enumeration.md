@@ -2,8 +2,8 @@
 name: workflow-phase-doc-set-enumeration
 description: Session journal of how the per-iter-cadence workflow-doc enumeration evolved — the 7-vs-5 file-count correction across two evaluation rounds.
 type: notes
-scope: feature
-feature: git-workflow
+scope: project
+feature: null
 status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
@@ -13,7 +13,7 @@ features_touched: [git-workflow]
 
 # Workflow phase doc-set enumeration — how the 5-file set was settled
 
-This is the chronological narrative reclassified out of `design/workflow-phase-doc-set-for-per-iter-cadence.md`, per the dev-doc type-purity rule (a design doc states its conclusion; the session blow-by-blow belongs here). The design doc carries the self-contained conclusion; this note preserves how that conclusion was reached.
+This is the chronological narrative reclassified out of `features/git-workflow/design/workflow-phase-doc-set-for-per-iter-cadence.md`, per the dev-doc type-purity rule (a design doc states its conclusion; the session blow-by-blow belongs here). The design doc carries the self-contained conclusion; this note preserves how that conclusion was reached.
 
 ## What happened
 
@@ -30,7 +30,7 @@ That confirmed 5 loop docs (`ideation`, `preparation`, `planning`, `execution`, 
 
 ## What shipped
 
-- `design/workflow-phase-doc-set-for-per-iter-cadence.md` — the corrected enumeration design (5 loop docs + the exclusion rationale for the 2 sub-phase docs), reshaped to ADR section contract.
+- `features/git-workflow/design/workflow-phase-doc-set-for-per-iter-cadence.md` — the corrected enumeration design (5 loop docs + the exclusion rationale for the 2 sub-phase docs), reshaped to ADR section contract.
 
 ## What got stuck
 
@@ -42,9 +42,9 @@ The target file count shifted from an asserted 5 to a re-verified 5-of-7: the fi
 
 ## Decisions to respect
 
-- The per-iter cadence rule applies to exactly the 5 loop docs; `evaluation.md` and `memorization.md` are excluded by design (see `design/workflow-phase-doc-set-for-per-iter-cadence.md`).
+- The per-iter cadence rule applies to exactly the 5 loop docs; `evaluation.md` and `memorization.md` are excluded by design (see `features/git-workflow/design/workflow-phase-doc-set-for-per-iter-cadence.md`).
 - A future cross-reference of the cadence pattern in `memorization.md` is allowed but out of scope for the enumeration; do not re-litigate the 5-file set without a workflow-doc-set change.
 
 ## Next session
 
-No follow-up required for this enumeration. If the workflow gains or loses a phase doc, update `design/workflow-phase-doc-set-for-per-iter-cadence.md`'s file table accordingly.
+No follow-up required for this enumeration. If the workflow gains or loses a phase doc, update `features/git-workflow/design/workflow-phase-doc-set-for-per-iter-cadence.md`'s file table accordingly.
