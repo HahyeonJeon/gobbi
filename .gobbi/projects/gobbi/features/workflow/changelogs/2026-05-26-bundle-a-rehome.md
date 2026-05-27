@@ -35,7 +35,7 @@ Re-homed (via `git mv`, history preserved) 10 artifacts into `workflow/`:
 `git status` shows all moves as renames (R).
 
 ## Deferred
-- `gobbi-orchestration-workflow-improvements/README.md` retirement → W3-T5.
+- The source feature README was retired (W3-T5); it now lives at `../../../archive/features/gobbi-orchestration-workflow-improvements/README.md`.
 
 ## Related
 - Memory-system redesign design doc §1.2 (7-feature table), §1.3 (Bundle A → workflow primary), §8 LOW-16 routing heuristic.

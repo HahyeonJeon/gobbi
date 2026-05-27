@@ -51,3 +51,13 @@ The execution plan is 10 tasks in two gated waves. Four follow-up items surfaced
 - `checklists/task01-t1c-trace-overclaim.md` — Task 01's `traces-to` overclaims an anchor whose edit belongs to Task 02.
 - `checklists/dq-anchor-readability.md` / `checklists/dq-anchor-traceability.md` — design-question anchors lack inline expansion for executors.
 - `backlogs/lock2-shared-executor-mega-task-risk.md` — the LOCK #2 shared-executor context-budget risk.
+
+## Related
+
+- `design/dependency-graph-strict-wave-ordering.md` — the wave-ordering design this 10-task decomposition sequences against.
+- `design/five-locked-decisions.md` — the five locked decisions that bound the decomposition's scope.
+- `backlogs/lock2-shared-executor-mega-task-risk.md` — the deferred shared-executor risk surfaced during decomposition.
+
+## Source
+
+Originating session `2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac` (session-foundations-bundle-b planning) — the plan, ideation, and preparation artifacts that produced this decomposition.
