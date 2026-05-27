@@ -16,7 +16,7 @@ outcome: orchestration/SKILL.md worktree-creation footnote confirmed
 
 ## Context
 
-The worktree-first design (Design Decision D-5) preserves direct mode as a documented escape hatch: if `workflow.git.mode = 'direct'`, the worktree creation step is skipped and `worktreePath` remains null. The question was where to document this opt-out path.
+The worktree-first design (Design Decision D-5) preserves direct mode as a documented escape hatch: if `settings.git.workflow.mode = 'direct'`, the worktree creation step is skipped and `worktreePath` remains null. The question was where to document this opt-out path.
 
 ## Question
 
@@ -33,7 +33,7 @@ Where should the direct-mode opt-out be documented?
 
 ## Opt-out text
 
-"If `workflow.git.mode = 'direct'`, the worktree creation step is skipped and `worktreePath` remains null."
+"If `settings.git.workflow.mode = 'direct'`, the worktree creation step is skipped and `worktreePath` remains null."
 
 Co-located with the smoke-test gate: `jq '.git.branch' session.json` must match `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$` when worktree mode is active.
 

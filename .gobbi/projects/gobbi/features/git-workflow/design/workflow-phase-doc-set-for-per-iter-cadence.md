@@ -39,7 +39,7 @@ The 5 target loop docs (canonical paths under workspace `.claude/`):
 | 4 | `.claude/skills/orchestration/workflow/execution.md` | Execution |
 | 5 | `.claude/skills/orchestration/workflow/wrap-up.md` | Wrap-up |
 
-Mirror propagation: per the mirror-canonical-symlinks policy (`decisions/mirror-propagation-policy-mirror-canonical-symlinks.md`), the mirror at `.gobbi/projects/gobbi/skills/orchestration/workflow/{ideation,preparation,planning,execution,wrap-up}.md` is the canonical storage; the workspace paths above are symlinks resolving to those same physical files. Editing either path edits the same file; no separate mirror-edit is needed.
+Mirror propagation: per the mirror-canonical-symlinks policy (`../../install-runtime/decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md`), the mirror at `.gobbi/projects/gobbi/skills/orchestration/workflow/{ideation,preparation,planning,execution,wrap-up}.md` is the canonical storage; the workspace paths above are symlinks resolving to those same physical files. Editing either path edits the same file; no separate mirror-edit is needed.
 
 ## Rationale
 
@@ -65,7 +65,7 @@ Verification: `grep -l "chore(session): record .* iter.* memory" .claude/skills/
 ## Related
 
 - `design/per-iteration-session-commit-cadence.md` — Design Decision D-4, the cadence this enumeration implements.
-- `decisions/mirror-propagation-policy-mirror-canonical-symlinks.md` — the mirror-canonical-symlinks policy this design relies on.
+- `../../install-runtime/decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md` — the mirror-canonical-symlinks policy this design relies on.
 - `../../../notes/2026-05-23-workflow-phase-doc-set-enumeration.md` — the project-level session journal of how this enumeration evolved (the 7-vs-5 file-count correction).
 
 ## Source

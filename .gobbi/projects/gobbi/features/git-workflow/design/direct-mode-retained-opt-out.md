@@ -1,6 +1,6 @@
 ---
 name: direct-mode-retained-opt-out
-description: Direct mode is preserved as a documented opt-out from worktree-first; users set git.workflow.mode=direct to bypass worktree creation.
+description: Direct mode is preserved as a documented opt-out from worktree-first; users set settings.git.workflow.mode=direct to bypass worktree creation.
 type: design
 scope: feature
 feature: git-workflow
@@ -19,7 +19,7 @@ Worktree-first makes every session boot on a worktree branch. The open question 
 
 ## Approach
 
-The worktree creation step in the Configuration procedure carries a guard: `skip if session.json.git.workflow.mode == "direct"`. Worktree-first is locked as the **default**, not a **mandate** — the user can set `settings.git.workflow.mode = "direct"` to bypass worktree creation, leaving `worktreePath` null and the session running on the main tree. Direct mode is thus preserved as a documented escape hatch rather than removed.
+The worktree creation step in the Configuration procedure carries a guard: `skip if settings.git.workflow.mode == "direct"`. Worktree-first is locked as the **default**, not a **mandate** — the user can set `settings.git.workflow.mode = "direct"` to bypass worktree creation, leaving `worktreePath` null and the session running on the main tree. Direct mode is thus preserved as a documented escape hatch rather than removed.
 
 ## Rationale
 
