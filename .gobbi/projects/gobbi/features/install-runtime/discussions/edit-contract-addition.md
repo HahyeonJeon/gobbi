@@ -34,7 +34,7 @@ Should the edit contract be: (a) a new H2 section in the existing mirror-canonic
 
 (a) New H2 "## Symlink-preservation edit contract" added to `mirror-propagation-policy-mirror-canonical-symlinks.md` between existing H2 sections "## Consequences" and "## Empirical reference". Empirical witness anchored inline (git ls-files -s modes + /tmp sed -i reproduction).
 
-(b) CI backlog deferred (Fix 3 judged necessary by the leader; Principle 10 rationale: zero current witnesses). Staged at `staging/backlogs/project/ci-symlink-integrity-check.md` with 3 pick-up triggers.
+(b) CI backlog deferred (Fix 3 judged necessary by the leader; Principle 10 rationale: zero current witnesses). It was staged with 3 pick-up triggers and has since been promoted to [`../../../backlogs/ci-symlink-integrity-check.md`](../../../backlogs/ci-symlink-integrity-check.md).
 
 Edit contract content: safety table (10 rows, YES/NO/verify per edit method), 4-point discipline list (prefer Edit tool; canonical mirror path for bulk rewrites; `test -L` post-edit verification gate with `rm + ln -sfn` restore; CI hook deferred), empirical witness.
 
