@@ -1,19 +1,23 @@
 ---
+name: claude-code-transcript-tooluseresult-empirical
+description: Empirical extraction of toolUseResult payload shape from Claude Code transcript JSONL
+type: references
 scope: feature
 feature: install-runtime
-title: Claude Code transcript JSONL toolUseResult shape (empirical extraction)
-source: ~/.claude/projects/-playinganalytics-git-gobbi/7ea62d36-e826-4ce6-9e90-9e948007b068.jsonl
-type: code
-accessed: 2026-05-23
+status: active
+created: 2026-05-23
 session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hook, transcript, telemetry, subagent, empirical]
-related: [claude-code-posttooluse-hook-schema]
+title: Claude Code transcript JSONL toolUseResult shape (empirical extraction)
+source: ~/.claude/projects/-playinganalytics-git-gobbi/7ea62d36-e826-4ce6-9e90-9e948007b068.jsonl
+accessed: 2026-05-23
+ref_type: code
 ---
 
-# Empirical toolUseResult payload from the prior session's transcript
+# Empirical toolUseResult payload — Claude Code transcript JSONL shape
 
 ## Insight
-The Claude Code transcript JSONL contains a top-level `toolUseResult` field on every tool-result line corresponding to an Agent (Task) tool call. The shape — empirically verified from the prior session's transcript at line 165 — is:
+The Claude Code transcript JSONL contains a top-level `toolUseResult` field on every tool-result line corresponding to an Agent (Task) tool call. The shape — empirically verified from a real session transcript — is:
 
 ```json
 {
@@ -68,22 +72,26 @@ Method: read `$CLAUDE_TRANSCRIPT_PATH` JSONL, find the line where `toolUseResult
 | `finishedAt` | timestamp of the tool_result line (line 165) |
 
 ## Why it applies
-T3 mechanism (c) = PostToolUse hook + shell-script reconstructor. Both consume from the same authoritative source (transcript JSONL `toolUseResult`). The hook reads the transcript at fire time (using `$CLAUDE_TRANSCRIPT_PATH` from its stdin), the reconstructor reads at session-end time. The schema gaps surfaced above (`step`, `phase`, `iter`, `model`) inform the design of the delegation prompt structure (these fields must be parseable from the prompt body — e.g., the leader prompt's first three lines already include "Your phase: ideation", "Your iteration: 1", "Your sub-step: C").
+The PostToolUse hook and shell-script reconstructor both consume from the same authoritative source (transcript JSONL `toolUseResult`). The hook reads the transcript at fire time (using `$CLAUDE_TRANSCRIPT_PATH` from its stdin), the reconstructor reads at session-end time. The schema gaps surfaced above (`step`, `phase`, `iter`, `model`) inform the design of the delegation prompt structure (these fields must be parseable from the prompt body — e.g., the leader prompt's first three lines already include "Your phase: ideation", "Your iteration: 1", "Your sub-step: C"). This reference demonstrates empirically that per-spawn metadata IS observable from the transcript.
 
 ## Source
 - File: `~/.claude/projects/-playinganalytics-git-gobbi/7ea62d36-e826-4ce6-9e90-9e948007b068.jsonl`
-- Lines: 164 (tool_use), 165 (tool_result with toolUseResult), 166-167 (post-tool turns)
 - Extracted via direct empirical inspection 2026-05-23
 
 ## Excerpt
-> Line 165 toolUseResult.usage block:
+> toolUseResult.usage block (representative values):
 > `{"input_tokens": 1, "cache_creation_input_tokens": 593, "cache_read_input_tokens": 215214, "output_tokens": 2023, "server_tool_use": {...}, "service_tier": "standard", "cache_creation": {"ephemeral_1h_input_tokens": 0, "ephemeral_5m_input_tokens": 593}, "speed": "standard"}`
 >
-> Line 165 toolUseResult.toolStats:
+> toolUseResult.toolStats:
 > `{"readCount": 24, "searchCount": 0, "bashCount": 39, "editFileCount": 1, "linesAdded": 456, "linesRemoved": 0, "otherToolCount": 0}`
 
 ## Usage history
 
 | Date | Session | Used for |
 |---|---|---|
-| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | T3 external insight #2 — empirical verification of the transcript's full payload; closes CP-4.1-β by demonstrating per-spawn metadata IS observable |
+| 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | Empirical verification of the transcript's full payload — grounded hook and reconstructor design decisions |
+
+## Related
+
+- `features/install-runtime/design/metadata-extraction-input-vs-result.md`
+- `features/install-runtime/design/reconstructor-verify-and-fix.md`

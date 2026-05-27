@@ -1,19 +1,13 @@
 ---
+name: skill-registration-must-mirror-real-settings-shape
+description: Hook registration examples in skills must match the real settings.json command object shape
+type: checklists
 scope: feature
 feature: install-runtime
-finding_id: USAGE-001
-finding_source: T04-iter1-codex-usage + T04-iter1-claude-usage
-type: general
-domain: docs-sync
-disposition: addressed
-addressed_in: T04-iter2 (commit 5d2a7c6)
-confidence: 100
-severity: High (Codex) / Medium (Claude)
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
-task: task-04
-loop: execution
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-04/staging/checklists/skill-registration-must-mirror-real-settings-shape.md
-promoted-at: 2026-05-25
+tags: [hook, settings-json, registration, checklist, docs-sync, usage]
 ---
 
 # Skill registration examples must mirror real settings.json command object shape
@@ -26,7 +20,7 @@ When a project skill teaches hook registration (e.g., `gobbi-hook-authoring`), e
 
 ## Evidence
 
-`gobbi-hook-authoring/SKILL.md` iter1 used `"command": "bash .claude/hooks/..."` without `"type": "command"`. The real `.claude/settings.json:35-36`, `:43-44`, `:51-52` use `{ "type": "command", "command": ".claude/hooks/..." }`. Resolved in iter2 by aligning the P1 examples and adding the SessionStart block that iter1 omitted.
+`gobbi-hook-authoring/SKILL.md` originally used `"command": "bash .claude/hooks/..."` without `"type": "command"`. The real `.claude/settings.json:35-36`, `:43-44`, `:51-52` use `{ "type": "command", "command": ".claude/hooks/..." }`. Corrected by aligning the examples and adding the SessionStart block that was omitted.
 
 ## Scenario gap
 

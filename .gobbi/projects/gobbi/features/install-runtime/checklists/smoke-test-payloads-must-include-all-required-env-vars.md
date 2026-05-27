@@ -1,19 +1,13 @@
 ---
+name: smoke-test-payloads-must-include-all-required-env-vars
+description: Smoke-test commands in skills must include all required env vars to be directly runnable
+type: checklists
 scope: feature
 feature: install-runtime
-finding_id: USAGE-002 / USAGE-002-R
-finding_source: T04-iter1-codex-usage + T04-iter2-codex-usage
-type: checklist_gap
-domain: docs-sync
-disposition: addressed
-addressed_in: T04-iter2 (partial: removed `...`) + T04-iter3 (full: added CLAUDE_ENV_FILE) (commits 5d2a7c6 + a7ac0d7)
-confidence: 95
-severity: Low
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
-task: task-04
-loop: execution
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-04/staging/checklists/smoke-test-payloads-must-include-all-required-env-vars.md
-promoted-at: 2026-05-25
+tags: [smoke-test, env-vars, checklist, docs-sync, usage]
 ---
 
 # Smoke-test examples must include all required runtime prerequisites (env vars, etc.)
@@ -24,7 +18,7 @@ When a skill provides a smoke-test or verification command, the example must be 
 
 ## Evidence
 
-`gobbi-hook-authoring/SKILL.md` iter1 P7 used `...` placeholder in the payload — not a runnable example. iter2 replaced with concrete JSON payloads (SessionStart + PostToolUse) but the SessionStart success test still omitted `CLAUDE_ENV_FILE`, causing it to exit 1 before testing the payload at all. iter3 added `CLAUDE_ENV_FILE=/tmp/...` to make the SessionStart success test directly runnable.
+`gobbi-hook-authoring/SKILL.md` originally used a `...` placeholder in the smoke-test payload — not a runnable example. A first fix replaced the placeholder with concrete JSON payloads (SessionStart + PostToolUse) but the SessionStart success test still omitted `CLAUDE_ENV_FILE`, causing it to exit 1 before testing the payload at all. A second fix added `CLAUDE_ENV_FILE=/tmp/...` to make the SessionStart success test directly runnable.
 
 ## Scenario gap
 
@@ -32,4 +26,4 @@ For any skill with a smoke-test section: before shipping, run the exact command 
 
 ## Addressed
 
-Commit `a7ac0d7` (iter3) completed the fix. Verified: SessionStart exits 0 with CLAUDE_ENV_FILE set.
+Commits `5d2a7c6` + `a7ac0d7` completed the fix. Verified: SessionStart exits 0 with CLAUDE_ENV_FILE set.

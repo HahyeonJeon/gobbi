@@ -1,19 +1,13 @@
 ---
+name: skill-must-not-invent-json-field-paths-not-in-witnesses
+description: Skills must verify all documented JSON payload field paths against the real hook script
+type: checklists
 scope: feature
 feature: install-runtime
-finding_id: CONSISTENCY-001
-finding_source: T04-iter1-codex-consistency + T04-iter1-claude-consistency
-type: general
-domain: docs-sync
-disposition: addressed
-addressed_in: T04-iter2 (commit 5d2a7c6)
-confidence: 100
-severity: Medium
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
-task: task-04
-loop: execution
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-04/staging/checklists/skill-must-not-invent-json-field-paths-not-in-witnesses.md
-promoted-at: 2026-05-25
+tags: [hook, json-fields, witness, checklist, docs-sync, consistency]
 ---
 
 # Skills must not invent JSON field paths that don't exist in the witness payload
@@ -24,7 +18,7 @@ When a project skill documents hook payload fields, every field path reference m
 
 ## Evidence
 
-`gobbi-hook-authoring/SKILL.md` iter1 described the SessionStart matcher as matched against `hook_event_name.source` — a nested path that does not exist. The real witnesses have top-level `hook_event_name` and top-level `source` as separate fields (exported separately at `session-start.sh:54-55`). Resolved in iter2 by replacing with real top-level `source` field and clarifying the distinction.
+`gobbi-hook-authoring/SKILL.md` originally described the SessionStart matcher as matched against `hook_event_name.source` — a nested path that does not exist. The real witnesses have top-level `hook_event_name` and top-level `source` as separate fields (exported separately at `session-start.sh:54-55`). Corrected by replacing with the real top-level `source` field and clarifying the distinction.
 
 ## Scenario gap
 

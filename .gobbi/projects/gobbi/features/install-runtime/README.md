@@ -1,16 +1,20 @@
 ---
+name: install-runtime
+description: One-command install and per-session runtime contract for the gobbi tool
+type: features
 scope: feature
 feature: install-runtime
-project: gobbi
 status: active
-value_proposition: "One-command install (stable/dev channel) + project bootstrap interview + the per-session runtime contract (env-vars, hooks, session config)."
 created: 2026-05-26
-last_updated: 2026-05-26
+session: a10c82d6-03f7-4dce-a040-c7443653a459
+tags: [install, runtime, hooks, env-vars, session-config]
+value_proposition: "One-command install (stable/dev channel) + project bootstrap interview + the per-session runtime contract (env-vars, hooks, session config)."
+subsystems: [interview, gobbi-hook-authoring, channel-split-install, mirror-sync, session-runtime-contract]
 ---
 
 # Feature: Install Runtime
 
-One-command install (stable/dev channel) + project bootstrap interview + the per-session runtime contract (env-vars, hooks, session config). This is value-feature #7 of the 7 capability features (design §1.2, RATIFY-1 / L1).
+One-command install (stable/dev channel) + project bootstrap interview + the per-session runtime contract (env-vars, hooks, session config). This is value-feature #7 of the 7 capability features (see memory-system redesign design doc, 7-feature table).
 
 ## Overview
 
@@ -40,4 +44,4 @@ One-command install (stable/dev channel) + project bootstrap interview + the per
 
 ## Related
 
-- Memory-system redesign design doc §1.2 (7-feature table), §1.3 (sprint → value-feature routing)
+- Memory-system redesign design doc (7-feature table; sprint → value-feature routing)
