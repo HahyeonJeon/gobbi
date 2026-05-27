@@ -1,11 +1,16 @@
 ---
-date: 2026-05-22
-session: 6637e759-84d9-403d-87bd-0a484abec245
+name: 2026-05-22-pre-rebuild-sweep
+description: Session journal — v0.5.0 pre-rebuild sweep (2026-05-22) that reset the gobbi repo to placeholder state via PR #264; survivor set intact, sessions/ gitignore removed.
+type: notes
+scope: project
 feature: null
+status: active
+created: 2026-05-22
+session: 6637e759-84d9-403d-87bd-0a484abec245
+tags: [pre-rebuild, sweep, cleanup, repo-reset, placeholder-state]
+date: 2026-05-22
 loops_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: []
-status: completed
-tags: [pre-rebuild, sweep, cleanup, repo-reset, placeholder-state]
 ---
 
 # Pre-Rebuild Sweep — 2026-05-22

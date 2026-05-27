@@ -1,18 +1,17 @@
 ---
-slug: normalize-path-conventions-h3
+name: normalize-path-conventions-h3
+description: Promote **Path conventions** bold paragraph to H3 at mistake/SKILL.md and planning/SKILL.md — two sites left after memorization/SKILL.md was promoted in this session.
+type: backlogs
+scope: project
+feature: null
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [docs-sync, h3, path-conventions, skill-authoring]
 title: "Normalize Path conventions to H3 across mistake/SKILL.md and planning/SKILL.md"
 domain: docs-sync
-type: general
-disposition: deferred
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: planning
-created: 2026-05-23
-status: active
-feature: gobbi-orchestration-workflow-improvements
-scope: project
 priority: low
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/backlogs/project/normalize-path-conventions-h3.md
-promoted-at: 2026-05-23T14:00:00Z
+disposition: deferred
 ---
 
 # Normalize `Path conventions` to H3 — cross-skill backlog

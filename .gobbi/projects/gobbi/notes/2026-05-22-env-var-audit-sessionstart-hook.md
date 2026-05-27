@@ -1,11 +1,17 @@
 ---
-date: 2026-05-22
-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
+name: 2026-05-22-env-var-audit-sessionstart-hook
+description: Session journal — env-var-audit session (2026-05-22) that repaired three CLAUDE_* env-var defects and introduced the SessionStart hook; PR #265 squash-merged.
+type: notes
+scope: project
 feature: env-var-audit
+status: active
+created: 2026-05-22
+session: bac669ad-4fec-40b5-8387-51ac57bc0d3d
+tags: [env-var-audit, sessionstart-hook, journal, pr-265]
+date: 2026-05-22
 pr: 265
 commit: 159eb21
 stamp-commit: 00a11ae
-type: session-journal
 ---
 
 # Session Journal — Env-Var Audit + SessionStart Hook (2026-05-22)

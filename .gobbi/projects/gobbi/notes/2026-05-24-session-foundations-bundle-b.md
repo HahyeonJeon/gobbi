@@ -1,11 +1,16 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: 2026-05-24-session-foundations-bundle-b
+description: Session journal — session-foundations-bundle-b (2026-05-24); 10 tasks shipped, 6 mistakes + 12 backlogs + 1 review promoted, worktree-first + PostToolUse hook implementation.
+type: notes
+scope: project
 feature: session-foundations-bundle-b
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [worktree, hooks, session-architecture, bundle, manager-context-budget]
+date: 2026-05-24
 loops_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [session-foundations-bundle-b/plans/2026-05-24-session-foundations-bundle-b, session-foundations-bundle-b/README.md, 6 mistakes, 12 project-backlogs, 1 project-review, 100 feature-memory files]
-status: completed
-tags: [worktree, hooks, session-architecture, bundle, manager-context-budget]
 ---
 
 # Session Foundations Bundle B — resume + complete in one session

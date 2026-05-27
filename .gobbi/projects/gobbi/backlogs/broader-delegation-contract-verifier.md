@@ -1,12 +1,16 @@
 ---
-title: "Item 1-2 broader re-framing — delegation contract verifier"
-status: deferred
-project: gobbi
+name: broader-delegation-contract-verifier
+description: Broader re-framing of skill-loading gap — a mechanical delegation contract verifier that validates all gate citations, not just Load Directives; deferred behind item-1-2.
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [process, delegation, gate-bypass, contract-verification, deferred]
+title: "Item 1-2 broader re-framing — delegation contract verifier"
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 

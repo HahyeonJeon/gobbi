@@ -1,12 +1,16 @@
 ---
-title: "Item 1-3 alternative — two-surface collapsing strategy"
-status: deferred
-project: gobbi
+name: two-surface-collapsing-strategy
+description: Alternative session-architecture — worktree as per-session staging, main tree as durable cross-session surface; deferred in favor of worktree-first uniform (CP-1.3-β).
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [worktree, session-architecture, alternative, deferred]
+title: "Item 1-3 alternative — two-surface collapsing strategy"
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 

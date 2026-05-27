@@ -1,12 +1,16 @@
 ---
-title: "Item 2-1 — Auto-mode silence vs Always-Ask categories"
-status: deferred
-project: gobbi
+name: auto-mode-silence-vs-always-ask
+description: Codify Always-Ask categories that must trigger AskUserQuestion regardless of Auto Mode (approvals, scope locks, divergent eval findings); currently implicit; deferred out of bundle scope.
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [process, auto-mode, askuserquestion, categories, deferred]
+title: "Item 2-1 — Auto-mode silence vs Always-Ask categories"
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 

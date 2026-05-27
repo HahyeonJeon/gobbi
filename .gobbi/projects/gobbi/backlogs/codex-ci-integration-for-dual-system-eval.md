@@ -1,12 +1,16 @@
 ---
-title: "Codex CI integration for dual-system evaluation"
-status: deferred
-project: gobbi
+name: codex-ci-integration-for-dual-system-eval
+description: Automate Codex evaluation runs at PR and iteration boundaries via CI; deferred as too large to bundle with session-foundations-bundle-b.
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [evaluation, codex, ci, dual-system, deferred]
+title: "Codex CI integration for dual-system evaluation"
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 

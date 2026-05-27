@@ -1,12 +1,16 @@
 ---
-title: "Item 1-2 — Skill-loading-discipline matrix + Load-Directives validator"
-status: deferred
-project: gobbi
+name: skill-loading-discipline
+description: Role × phase × required-skills matrix + pre-dispatch Load-Directives validator; deferred at Sub-step D on user-flagged validator-location ambiguity.
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [process, delegation, skill-loading, matrix, validator, deferred]
+title: "Item 1-2 — Skill-loading-discipline matrix + Load-Directives validator"
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 

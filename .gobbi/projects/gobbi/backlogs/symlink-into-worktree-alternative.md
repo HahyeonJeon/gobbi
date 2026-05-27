@@ -1,12 +1,16 @@
 ---
-title: "Item 1-3 alternative — symlink-into-worktree model"
-status: deferred
-project: gobbi
+name: symlink-into-worktree-alternative
+description: Alternative session-architecture — cwd stays in main tree; worktree session dir symlinked back so durable session memory is the worktree's session dir; deferred in favor of worktree-first uniform.
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [worktree, session-architecture, alternative, symlink, deferred]
+title: "Item 1-3 alternative — symlink-into-worktree model"
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 
