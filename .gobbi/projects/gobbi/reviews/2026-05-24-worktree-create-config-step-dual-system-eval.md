@@ -1,6 +1,12 @@
 ---
-date: 2026-05-24
+name: 2026-05-24-worktree-create-config-step-dual-system-eval
+description: Dual-system adversarial review of the worktree-create insertion into the Configuration step procedure (orchestration/SKILL.md), two evaluation rounds.
+type: reviews
+scope: project
+feature: null
+created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [evaluation, dual-system, orchestration, worktree]
 review_kind: adversarial-review
 reviewed_artifact: commits 14da700 + 05e446b on chore/268-session-foundations-bundle-b
 reviewer: dual-system (claude + codex)
@@ -13,7 +19,7 @@ related_decisions:
   - edit-tool-refuses-symlink-paths.md
 ---
 
-# Execution Task 01 — Dual-System Adversarial Review
+# Worktree-Create Config Step Insertion — Dual-System Adversarial Review
 
 ## Subject
 

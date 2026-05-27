@@ -13,7 +13,7 @@ supersedes: null
 superseded_by: null
 ---
 
-# Mistake Candidate: Edit Tool Refuses Symlink Paths — Use Canonical Path
+# Edit Tool Refuses Symlink Paths — Use Canonical Path
 
 ## What went wrong
 

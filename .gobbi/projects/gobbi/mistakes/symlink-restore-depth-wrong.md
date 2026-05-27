@@ -13,7 +13,7 @@ supersedes: null
 superseded_by: null
 ---
 
-# Symlink restore recipe used wrong `../` prefix depth (addressed in iter2)
+# Symlink restore recipe used wrong `../` prefix depth for `.claude/skills/` paths
 
 ## What went wrong
 

@@ -14,7 +14,7 @@ supersedes: null
 superseded_by: null
 ---
 
-# Manager constructed iter2 revision brief from memory instead of re-reading the locked spec verbatim
+# Manager built revision brief from memory instead of re-reading the locked spec verbatim
 
 ## What went wrong
 

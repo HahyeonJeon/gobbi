@@ -7,13 +7,14 @@ feature: project-memory
 status: active
 created: 2026-05-26
 session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [docs-authoring, naming, process]
 domain: docs-sync
 priority: high
 supersedes: null
 superseded_by: null
 ---
 
-# Mistake — a naming standard must teach what GOOD looks like, not only forbid patterns
+# A naming standard must teach what GOOD looks like, not only forbid patterns
 
 ## What went wrong
 The memory-redesign shipped a slug naming standard (`memorization/rules.md` §1) expressed as a **forbidden-pattern blocklist** (phase prefixes, positional indices). When the blocklist proved over-broad (it failed on legitimate content words like `-decisions`), it was **softened to a non-enforced preference** — but nothing positive replaced it. Result: the standard told agents what NOT to do (and then stopped even doing that), but never taught what a GOOD name IS. Cryptic, position-encoding names (`task-01`, `d-1-worktree-row-5-5`, `row-5-5`, `2026-05-23-main`, `reframing-1-3`) kept being created and survived the migration. The user had to point out the names were still "garbage information" to a reader.
