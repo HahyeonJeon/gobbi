@@ -9,5 +9,5 @@
     "execution":     { "state": "Active",  "verdict": null,   "iter": 2,    "maxIterations": 3,    "phase": "ITER/EXIT" },
     "wrap-up":       { "state": "Pending", "verdict": null,   "iter": 0,    "maxIterations": 1,    "phase": null }
   },
-  "activeNote": "CHECKPOINT 2026-05-27 (session 5786090e). PROSE wave: P1 PASS (caad41b), P2 PASS (db50af6). P3a (git-workflow A, 20 docs) executor DONE + notes-placement-fixed (183dbfb+dc0e5a9) but dual-system eval PENDING — next session must eval P3a first. Also committed stranded residue (56089c1). 3 staged mistake-candidates (prose-brief-light-pass; subagent-stray-recurred; prose-reclassification-target-project-notes) + 1 deferred backlog (frontmatter sweep). Remaining: P3a-eval, P3b-P7b, N1. git push pending. See wrap-up/artifacts/handoff.md."
+  "activeNote": "2026-05-27 (session 5786090e). PROSE wave: P1 PASS (caad41b), P2 PASS (db50af6), P3a PASS (183dbfb+dc0e5a9 work + 3e9c5e7 iter2; dual-system REVISE→remediated). Also committed stranded residue (56089c1). 3 staged mistake-candidates + 1 deferred backlog. Remaining: P3b → P4 → P5a → P5b → P6 → P7a → P7b → N1, then Wrap-up. git push pending. Driving to end. See wrap-up/artifacts/handoff.md."
 }
