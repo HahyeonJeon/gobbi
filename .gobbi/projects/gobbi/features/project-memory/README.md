@@ -1,11 +1,15 @@
 ---
+name: project-memory
+description: "Cross-session durable store: decisions, designs, plans, and references survive in a typed, searchable memory tree."
+type: features
 scope: feature
 feature: project-memory
-project: gobbi
 status: active
-value_proposition: "Cross-session durable store: decisions, designs, plans, and references survive in a typed, searchable memory tree."
 created: 2026-05-26
-last_updated: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [memory, cross-session, persistence]
+value_proposition: "Cross-session durable store: decisions, designs, plans, and references survive in a typed, searchable memory tree."
+subsystems: [memorization, wrap-up, memory-map]
 ---
 
 # Feature: Project Memory

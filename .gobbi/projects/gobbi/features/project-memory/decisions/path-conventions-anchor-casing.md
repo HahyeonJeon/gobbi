@@ -1,46 +1,41 @@
 ---
-slug: path-conventions-anchor-casing
-title: "Memorization Path conventions → H3 promotion for stable cross-link anchor"
-domain: docs-sync
-type: design_flaw
-disposition: addressed
-mistake-candidate: false
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: planning
-created: 2026-05-23
-status: active
-supersedes: null
-date: 2026-05-23
+name: path-conventions-anchor-casing
+description: "Promote the Path conventions bold paragraph in memorization/SKILL.md to H3 for a stable cross-link anchor"
+type: decisions
 scope: feature
 feature: project-memory
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [docs, memorization, anchor, cross-link]
+title: "Memorization Path conventions → H3 promotion for stable cross-link anchor"
+domain: docs-sync
+supersedes: null
 superseded_by: null
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/decisions/concern-2-path-conventions-anchor-casing.md
-promoted-at: 2026-05-23T14:00:00Z
+decision_status: accepted
 ---
 
 # Path conventions anchor casing — promote to H3
 
 ## Question
 
-`memorization/SKILL.md:224` heading is `**Path conventions**` (lowercase 'c', bold paragraph). Cross-Link 7 requires a stable anchor target.
+`memorization/SKILL.md:224` heading is `**Path conventions**` (lowercase 'c', bold paragraph). The memorization skill required a stable anchor at this heading for cross-document linking.
 
 ## Resolution
 
-**Option (b) — promote `**Path conventions**` to `### Path conventions` H3 at memorization/SKILL.md:224.** Small cosmetic change; no semantic impact; gives a stable GitHub-style anchor `#path-conventions` for Cross-Link 7.
+**Option (b) — promote `**Path conventions**` to `### Path conventions` H3 at memorization/SKILL.md:224.** Small cosmetic change; no semantic impact; gives a stable GitHub-style anchor `#path-conventions` for cross-links.
 
 Two other sites use the same `**Path conventions**` bold-paragraph convention:
 - `mistake/SKILL.md:126` — `**Path conventions**`
 - `planning/SKILL.md:459` — `**Path conventions**`
 
-These are NOT promoted in this session (Concern 2 only targets the memorization site that Cross-Link 7 needs). A follow-up backlog entry was staged at `backlogs/project/normalize-path-conventions-h3.md` by Task 05 to track the cross-skill normalization for a future session.
+Only the memorization site was promoted in this session (scoped to the site needing the stable anchor). A follow-up backlog entry at `backlogs/project/normalize-path-conventions-h3.md` tracks the cross-skill normalization for a future session.
 
 ## Evidence
 
 - `memorization/SKILL.md:224` — current `**Path conventions**` bold paragraph.
 - `grep -n "Path conventions" .agents/skills/*/SKILL.md` finds 3 sites: memorization/planning/mistake.
-- Preparation recommendation (`preparation.md:133-139`) adopted as-is.
 
 ## Action
 
-Adopted in Planning draft-iter1.md Task 05. No User Challenge.
+Adopted in planning session. No User Challenge.
