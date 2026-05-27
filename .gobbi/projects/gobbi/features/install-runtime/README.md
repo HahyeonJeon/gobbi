@@ -4,9 +4,11 @@ description: One-command install and per-session runtime contract for the gobbi 
 type: features
 scope: feature
 feature: install-runtime
+project: gobbi
 status: active
 created: 2026-05-26
-session: a10c82d6-03f7-4dce-a040-c7443653a459
+last_updated: 2026-05-26
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
 tags: [install, runtime, hooks, env-vars, session-config]
 value_proposition: "One-command install (stable/dev channel) + project bootstrap interview + the per-session runtime contract (env-vars, hooks, session config)."
 subsystems: [interview, gobbi-hook-authoring, channel-split-install, mirror-sync, session-runtime-contract]

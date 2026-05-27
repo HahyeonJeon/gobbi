@@ -9,6 +9,8 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [flock, locking, sidecar, session-json, hardening]
 disposition: open
+supersedes: null
+superseded_by: null
 ---
 
 # Sidecar lock file refinement — flock on session.json.lock vs session.json directly
@@ -23,7 +25,7 @@ Deferred. The `flock -x` on `session.json` addresses the primary lost-update rac
 
 ## Rationale
 
-The current design uses an `exec {fd}>>"$session_json"; flock -x "$fd"` pattern that keeps the same fd open through the write cycle, so the inode concern (atomic rename creates a new inode, staling the lock) does not apply to the current implementation.
+The primary race condition — two concurrent PostToolUse hooks clobbering each other's `agents[]` append — is fully addressed by D-3-5. The sidecar concern is that if the hook uses `mv` (atomic rename), a new inode gets a new file descriptor and the old lock file descriptor becomes stale. The current design uses an `exec {fd}>>"$session_json"; flock -x "$fd"` pattern that keeps the same fd open through the write cycle, so the inode concern does not apply to the current implementation.
 
 ## Alternatives considered
 
@@ -39,4 +41,7 @@ When the flock design is revisited for any reason (e.g., new edge case in concur
 
 ## Related
 
-- `features/install-runtime/design/flock-serialization-on-session-json.md`
+- `evaluation/iter2/claude/risk.md` R4
+- `evaluation/iter3/codex/structure.md` CLAUDE-STRUCT-S1
+- `evaluation/iter3/codex/risk.md` CLAUDE-R4
+- `rawdata/draft-iter3.md` D-3-5 (line 401-406)

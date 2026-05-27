@@ -4,6 +4,7 @@ description: Bootstrap .gobbi/project.json to activate the preferred session-dir
 type: backlogs
 scope: feature
 feature: install-runtime
+project: gobbi
 status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
@@ -45,3 +46,9 @@ Trivial — a single-file write (~5 lines of JSON). Estimated < 5 minutes of foc
 ## Originating session
 
 `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
+
+## Source
+
+- T3 Design Decision D-3-3-resolver step (i) — dormant precondition note (iter3 Fix C)
+- Verified empirically: `ls -la /playinganalytics/git/gobbi/.gobbi/project.json` returns "No such file or directory" on 2026-05-23
+- iter3 fix-decision F-Fix-C in `rawdata/draft-iter3.md` Decisions Log

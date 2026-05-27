@@ -9,6 +9,7 @@ created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hook, flock, error-logging, failure-budget, planning]
 disposition: open
+supersedes: null
 ---
 
 # Hook self-failure budget — flock timeout and error logging left unstated
@@ -31,5 +32,6 @@ If after Execution the hook fails silently during a test, add explicit flock tim
 
 ## Related
 
-- `features/install-runtime/design/dual-hook-registration-resolver.md`
-- `features/install-runtime/design/flock-serialization-on-session-json.md`
+- `draft-iter2.md:272` (Task 07 what — D-3-3-resolver step ii)
+- `iter1 F-RISK-2` (Claude)
+- Task 08 (reconstructor as recovery path)

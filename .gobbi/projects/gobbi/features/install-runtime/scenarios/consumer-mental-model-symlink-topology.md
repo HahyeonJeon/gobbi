@@ -6,6 +6,7 @@ scope: feature
 feature: install-runtime
 status: active
 created: 2026-05-24
+last_updated: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [symlink, mental-model, executor, workspace, consumer]
 ---

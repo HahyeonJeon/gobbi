@@ -4,6 +4,7 @@ description: session.template.json agents[] status field — deferred formal sch
 type: backlogs
 scope: feature
 feature: install-runtime
+project: gobbi
 status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
@@ -47,3 +48,11 @@ Small — a single template edit + version bump + 2 small doc updates. ~1 hour o
 ## Originating session
 
 `.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
+
+## Source
+
+- T3 Design Decision D-3-3 (dual-event hook scope)
+- T3 Implementation checklist item 7 (this backlog entry is the literal output of that checklist row)
+- T3-DQ-3 (failure-handling design question)
+- E-1 edge case (failed-spawn audit trail)
+- CP-D-1 Option Recommended (user-confirmed deferral)

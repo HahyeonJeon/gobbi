@@ -9,6 +9,8 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [jq, dry, hook, reconstructor, design-flaw]
 disposition: deferred
+supersedes: null
+superseded_by: null
 ---
 
 # DRY inline jq extraction logic — hook and reconstructor share snippets without a sourced helper
@@ -23,7 +25,7 @@ Deferred. The inline jq snippets in `.claude/hooks/post-tool-use-agents.sh` and 
 
 ## Rationale
 
-Factoring into `.claude/scripts/lib/extract-agent-fields.sh` is the cleaner solution but adds a third file and a `source` dependency. The decision to keep inline was made for simplicity; evaluations did not force the refactor.
+Factoring into `.claude/scripts/lib/extract-agent-fields.sh` is the cleaner solution but adds a third file and a `source` dependency. The decision to keep inline was made for simplicity in iter1; iter2 + iter3 evaluation did not force the refactor.
 
 ## Consequences
 
@@ -34,3 +36,11 @@ If jq extraction changes (e.g., new schema fields), a sourced-helper refactor is
 ## When to pick up
 
 When the next jq schema change requires touching both files, factor the shared extraction into a sourced helper at that time.
+
+## Related
+
+- `evaluation/iter1/claude/structure.md` S1
+- `evaluation/iter1/claude/risk.md` R3 (Goodhart-flag)
+- `staging/decisions/goodhart-factor-when-demanded-deferred.md`
+- `rawdata/draft-iter3.md:240` (implementation note — "keep inline for simplicity")
+- `rawdata/draft-iter3.md:353-360` (D-3-2 reconstructor algorithm)

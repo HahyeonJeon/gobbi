@@ -9,6 +9,8 @@ created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [ci, symlink, git, pseudocode, backlog]
 disposition: open
+supersedes: null
+superseded_by: null
 ---
 
 # CI symlink integrity check — wrong git command in pseudocode
@@ -21,9 +23,9 @@ The `ci-symlink-integrity-check.md` backlog file includes pseudocode for a pre-c
 
 Accepted as non-blocking. The backlog is deferred (zero current witnesses; Principle 10 applies). The pseudocode is labeled "Pseudocode — exact diff plumbing depends on the chosen pre-commit framework." Future pick-up of this backlog must fix the plumbing before implementing.
 
-## Why deferred
+## Rationale
 
-This is speculative (the backlog is deferred and no implementation exists). The acknowledgment in the backlog file is sufficient for a deferred item.
+Confidence 25 — this is speculative (the backlog is deferred and no implementation exists). The acknowledgment in the backlog file is sufficient for a deferred item. Does not affect iter3 deliverable.
 
 ## Consequences
 
@@ -31,7 +33,8 @@ When the CI backlog is picked up, the implementer must correct the pseudocode to
 
 ## Related
 
-- `features/install-runtime/backlogs/` (parent feature backlog context)
+- `preparation/staging/backlogs/project/ci-symlink-integrity-check.md`
+- `preparation/evaluation/iter3/claude/risk.md` (CL-RISK-PREP3-001)
 
 ## Source
 

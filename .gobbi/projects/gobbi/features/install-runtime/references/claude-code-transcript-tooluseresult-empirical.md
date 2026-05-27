@@ -8,6 +8,7 @@ status: active
 created: 2026-05-23
 session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hook, transcript, telemetry, subagent, empirical]
+related: [claude-code-posttooluse-hook-schema]
 title: Claude Code transcript JSONL toolUseResult shape (empirical extraction)
 source: ~/.claude/projects/-playinganalytics-git-gobbi/7ea62d36-e826-4ce6-9e90-9e948007b068.jsonl
 accessed: 2026-05-23

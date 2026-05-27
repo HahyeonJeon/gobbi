@@ -9,6 +9,8 @@ created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [mirror-canonical, docs-sync, consequences, symlink]
 disposition: open
+supersedes: null
+superseded_by: null
 ---
 
 # Mirror-canonical decision file — Consequences section contains unqualified edit-path claim
@@ -35,7 +37,10 @@ Any session that edits `mirror-propagation-policy-mirror-canonical-symlinks.md` 
 
 ## Related
 
-- `features/install-runtime/decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md`
+- `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md`
+- `preparation/evaluation/iter3/claude/consistency.md` (CL-CONS-PREP3-001)
+- `preparation/evaluation/iter3/claude/project.md` (CL-PROJ-PREP3-001)
+- `preparation/evaluation/iter3/claude/structure.md` (CL-STRUCT-PREP3-001)
 
 ## Source
 
