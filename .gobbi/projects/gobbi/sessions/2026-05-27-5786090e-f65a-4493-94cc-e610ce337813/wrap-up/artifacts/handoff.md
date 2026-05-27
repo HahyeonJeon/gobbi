@@ -1,6 +1,8 @@
 # HAND-OFF — gobbi dev-doc PROSE wave (session 5786090e, 2026-05-27)
 
-Continuation of the dev-doc-standard retrofit. Checkpointed on context budget at a clean committed boundary. **P1 + P2 fully closed (PASS); P3a executor done + placement-fixed, dual-system eval PENDING.**
+Continuation of the dev-doc-standard retrofit. Driving the wave to completion ("go to the end"). **P1, P2, P3a, P3b all PASS (fully closed). Remaining: P4 → P5a → P5b → P6 → P7a → P7b → N1, then Wrap-up.**
+
+Latest commit chain (all local, unpushed): residue `56089c1` → P1 `caad41b` → P2 `db50af6` → P3a `69a089f` (work 183dbfb+dc0e5a9+iter2 3e9c5e7) → P3b `f899480` (work de207ac+iter2 bfc46c8). git push still PENDING.
 
 ## Resume location (critical)
 - **Continue on the existing worktree + branch — do NOT start fresh.**
