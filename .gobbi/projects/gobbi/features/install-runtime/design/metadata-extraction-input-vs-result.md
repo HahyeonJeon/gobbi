@@ -11,7 +11,11 @@ tags: [hooks, metadata, extraction, agents]
 design-id: D-3-4
 ---
 
-# Hybrid metadata extraction: input side vs result side (D-3-4)
+# Hybrid metadata extraction: input side vs result side
+
+## Context
+
+To populate `session.json.agents[]`, the hook needs both the manager's delegation metadata (model, step/phase/iteration) and the subagent's output telemetry (id, type, token usage, timing). An early evaluation finding flagged an apparent inconsistency: step/phase/iteration are not present in `toolUseResult`. Resolving it required separating where each piece of metadata actually lives in the hook payload.
 
 ## Decision
 
@@ -35,23 +39,24 @@ The hook stdin payload has TWO sides:
 
 `tool_input.model` is reliable; prompt-text parse works on every existing prompt (headers visible in empirical inspection of prior session transcript). Codification ensures future prompts stay extractable. There is no inconsistency between "step/phase/iter NOT in toolUseResult" (result side) and this design ("prompt-header parsing is sufficient on the input side") — these describe different sides of the payload.
 
-## Anchored insights
+Supporting evidence anchored at decision time: transcript inspection confirming step/phase/iteration are not in `toolUseResult`; the input-side parse rationale; empirical verification of the stdin payload; and a first-iteration Codex consistency finding that prompted codifying the input-vs-result split.
 
-Transcript inspection confirming step/phase/iter not in toolUseResult; input-side parse rationale; stdin payload empirical verification; first-iteration Codex consistency finding (prompted the input-vs-result split codification).
+## Alternatives considered
 
-## Trade-offs considered
+- JSON header comment block — rejected: more invasive.
+- Parse-only without codification — rejected: the convention would stay implicit and break silently.
 
-- JSON header comment block — rejected: more invasive
-- Parse-only without codification — rejected: convention currently implicit; would break silently
+## Consequences
 
-## Validation
+- `delegation/SKILL.md` codifies that the structured headers (`Your phase:`, `Your iteration:`, `Your sub-step:`) MUST appear in the first 10 lines of every delegation prompt.
+- Migration cost: existing prompts that lack the headers produce `null` for `step/phase/iter` until the next prompt-template refresh.
+- Validation obligations: an evaluator Project-perspective review of the `delegation/SKILL.md` codification; a single-script verifier on the header parsing; and a `grep -rn '^Your phase:' .claude/skills/orchestration/workflow/` confirming the expected hits after the codification ships.
 
-Evaluator Project perspective on `delegation/SKILL.md` codification; single-script verifier on header parsing; manual `grep -rn '^Your phase:' .claude/skills/orchestration/workflow/` returns expected hits after the delegation prompt codification ships.
+## Related
 
-## Implementation checklist anchor
-
-Delegation prompt header codification in delegation/SKILL.md
+- `dual-hook-registration-resolver.md` — the hook that consumes both sides of the payload.
+- `tool-use-id-correlation-key.md` — how the result side is correlated back to the input side.
 
 ## Source
 
-`rawdata/draft-iter3.md:388-399` (D-3-4 narrative)
+The full design narrative is preserved in the project session journal `notes/2026-05-24-session-foundations-bundle-b.md` (the session that designed and shipped the PostToolUse hook architecture).

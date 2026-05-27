@@ -12,13 +12,13 @@ topic: Symlink-preservation edit contract — iter3 surgical addition
 outcome: "Add edit contract H2 to mirror-canonical decision file; deferred CI backlog judged necessary"
 ---
 
-# Symlink-preservation edit contract — iter3 lock
+# Symlink-preservation edit contract — where to document it
 
 ## Context
 
-The Preparation loop's second evaluation iteration had Codex reach REVISE (while Claude reached PASS) because 5 convergent Codex findings across structure/usage/consistency/risk/overall perspectives all shared one root cause: the "editing either path edits the same physical file" claim was unguarded against rewrite-by-rename edit tools (`sed -i`, `perl -i`, `awk`-redirect, formatter-backup-mode). These tools silently convert a workspace symlink into a regular file while leaving the canonical mirror unchanged — breaking the workspace→canonical symlink layer. This was empirically reproduced: `sed -i` against a `/tmp` symlink resulted in the symlink becoming a regular file, canonical unchanged.
+During the Preparation loop's second evaluation iteration, Codex reached REVISE (while Claude reached PASS) because 5 convergent Codex findings across the structure/usage/consistency/risk/overall perspectives all shared one root cause: the "editing either path edits the same physical file" claim was unguarded against rewrite-by-rename edit tools (`sed -i`, `perl -i`, `awk`-redirect, formatter-backup-mode). These tools silently convert a workspace symlink into a regular file while leaving the canonical mirror unchanged — breaking the workspace→canonical symlink layer. This was empirically reproduced: `sed -i` against a `/tmp` symlink turned the symlink into a regular file, with the canonical target unchanged.
 
-The final iteration (max=3 reached) brief specified a surgical addition: add the edit contract to address the 5 convergent findings.
+The final evaluation iteration's brief specified a surgical addition: add an edit contract to address the 5 convergent findings. The open question was where to put it and whether to also build a CI guard.
 
 ## Question
 
@@ -40,7 +40,7 @@ Edit contract content: safety table (10 rows, YES/NO/verify per edit method), 4-
 
 ## Implication
 
-- Planning briefs for T1+T3 executor tasks MUST cite the Edit tool as default edit method.
+- Planning briefs for the skill-editing executor tasks MUST cite the Edit tool as the default edit method.
 - For bulk rewrites, executors MUST use the canonical mirror path (`.gobbi/projects/gobbi/skills/...`), never `sed -i` against `.claude/skills/...`.
 - After any non-Edit-tool modification, executors MUST run `test -L .claude/skills/<path>` and restore if broken.
 - The 5 Codex REVISE findings from the second evaluation iteration are closed at root cause.
@@ -48,6 +48,6 @@ Edit contract content: safety table (10 rows, YES/NO/verify per edit method), 4-
 
 ## Related
 
-- `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md` (H2 added in-place)
-- `preparation/staging/backlogs/project/ci-symlink-integrity-check.md`
-- Preparation loop evaluation findings (the 5 Codex structure/usage/consistency/risk/overall findings that drove the edit contract)
+- `decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md` — the decision file the edit contract was added to as an in-place H2 section.
+- Backlog `ci-symlink-integrity-check` — the deferred CI guard.
+- The 5 Codex Preparation-loop evaluation findings (structure / usage / consistency / risk / overall) that drove the edit contract — preserved in the session's evaluation artifacts.

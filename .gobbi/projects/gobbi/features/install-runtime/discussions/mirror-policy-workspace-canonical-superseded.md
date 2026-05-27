@@ -13,7 +13,7 @@ outcome: "Workspace canonical only — mirror auto-syncs (SUPERSEDED on correcte
 superseded_by: mirror-policy-mirror-canonical-relock.md
 ---
 
-# Mirror-propagation policy — iter1 lock (superseded)
+# Mirror-propagation policy — first-iteration workspace-canonical lock (superseded)
 
 ## Context
 
@@ -39,5 +39,5 @@ SUPERSEDED by the second-iteration corrected lock. The first-iteration empirical
 
 ## Related
 
-- `decisions/2026-05-24-mirror-propagation-policy-workspace-canonical.md` (superseded decision)
-- `mirror-policy-mirror-canonical-relock.md` (superseding discussion)
+- `decisions/2026-05-24-mirror-propagation-policy-workspace-canonical.md` — the superseded decision this discussion locked.
+- `discussions/mirror-policy-mirror-canonical-relock.md` — the superseding discussion (corrected lock).

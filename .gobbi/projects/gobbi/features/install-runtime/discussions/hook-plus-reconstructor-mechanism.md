@@ -13,18 +13,29 @@ discussion-id: CP-4-1-alpha
 
 # PostToolUse hook + shell-script reconstructor selected for agents[] population
 
-## Question asked
+## Context
 
-Which mechanism should the agents-population task use to populate `session.json.agents[]`? Options: (a) SDK-based SubagentStop callback, (b) manager-manual append, (c) PostToolUse hook + shell-script reconstructor.
+The agents-population task needed a mechanism to keep `session.json.agents[]` populated as subagents are spawned. Three candidate mechanisms were on the table, and the choice shapes the entire downstream design (hook stack, reconstructor, serialization, correlation key).
 
-## User answer
+## Question
 
-User confirmed **(c) both — PostToolUse hook + shell-script reconstructor** (Option Recommended).
+Which mechanism should the agents-population task use to populate `session.json.agents[]`?
 
-## Impact on design
+## Options considered
 
-The agents-population task's entire design (hook authoring stack, reconstructor algorithm, dual-hook registration, hybrid metadata extraction, flock serialization, tool_use_id correlation) is built around the hook + reconstructor pattern. SDK approach and manager-manual approach are ruled out.
+- (a) SDK-based SubagentStop callback.
+- (b) Manager-manual append.
+- (c) PostToolUse hook + shell-script reconstructor (the recommended option).
 
-## Source
+## User decision
 
-`rawdata/draft-iter3.md:457-458` (Sub-step A round 2, decision #7)
+The user confirmed **(c) — PostToolUse hook + shell-script reconstructor** (the recommended option).
+
+## Implication
+
+The agents-population task's entire design (hook authoring stack, reconstructor algorithm, dual-hook registration, hybrid metadata extraction, flock serialization, `tool_use_id` correlation) is built around the hook + reconstructor pattern. The SDK approach and the manager-manual approach are ruled out.
+
+## Related
+
+- `design/hook-bash-jq-stack.md`, `design/reconstructor-verify-and-fix.md`, `design/dual-hook-registration-resolver.md`, `design/metadata-extraction-input-vs-result.md`, `design/flock-serialization-on-session-json.md`, `design/tool-use-id-correlation-key.md` — the design docs built on this mechanism choice.
+- `discussions/hook-contract-verification-gate.md` — the empirical gate that confirmed the mechanism is feasible.

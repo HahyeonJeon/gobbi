@@ -13,18 +13,28 @@ discussion-id: CP-4-1-gamma
 
 # Session template agents[] schema sufficient; no template bump needed
 
-## Question asked
+## Context
+
+Before the PostToolUse hook task could be planned, it had to be settled whether the existing `session.template.json.agents[]` schema needed changes — a template bump would have added a schema-edit task to Planning and Execution.
+
+## Question
 
 Does the existing `session.template.json.agents[]` schema have gaps that need to be filled before the PostToolUse hook task ships?
 
-## User answer
+## Options considered
 
-Confirmed (Option Recommended): template schema is sufficient; no template change this session. The `status` field is an extra-property write (not in template); a formal template bump is deferred to the `schema-extension-agents-status-field` backlog item.
+- Treat the existing template schema as sufficient and write the new `status` field as an extra-property, deferring a formal template bump (the recommended option).
+- Bump the template schema this session to add the `status` field formally, adding a schema-edit task to Planning/Execution.
 
-## Impact on design
+## User decision
 
-The PostToolUse hook task ships without modifying `session.template.json`. The hook writes `status` as an extra-property on failed spawn entries; Planning and Execution do not need to include a template edit task.
+Confirmed the recommended option: the template schema is sufficient; no template change this session. The `status` field is an extra-property write (not in the template); a formal template bump is deferred to the `schema-extension-agents-status-field` backlog item.
 
-## Source
+## Implication
 
-`rawdata/draft-iter3.md:459-460` (Sub-step A round 2, decision #9)
+The PostToolUse hook task ships without modifying `session.template.json`. The hook writes `status` as an extra-property on failed spawn entries; Planning and Execution do not need to include a template-edit task.
+
+## Related
+
+- Backlog `schema-extension-agents-status-field` — the deferred formal template bump.
+- `discussions/dual-hook-registration-confirm.md` — the companion decision that also deferred the `status` field template extension.

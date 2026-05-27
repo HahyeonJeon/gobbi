@@ -11,13 +11,17 @@ tags: [hooks, post-tool-use, session-dir, registration]
 design-id: D-3-3
 ---
 
-# Hook scope: PostToolUse + PostToolUseFailure dual registration with session-dir resolver (D-3-3)
+# Hook scope: PostToolUse + PostToolUseFailure dual registration with session-dir resolver
+
+## Context
+
+The PostToolUse hook that populates `session.json.agents[]` must capture both successful and failed subagent spawns, and it must locate the correct `session.json` from only the fields the hook receives on stdin (`session_id`, `transcript_path`, `cwd`). Two questions had to be resolved: which hook events to register, and how the hook resolves the session directory at runtime.
 
 ## Decision
 
 Register both `PostToolUse` and `PostToolUseFailure` with matcher `"Task"` in `.claude/settings.json`; single script handles both (branches on `hook_event_name` / `status`). Failed-spawn entries get `status: "failed"` and synthetic `id` (= `tool_use_id`) when `agentId` is null.
 
-**Session-dir resolver algorithm** (D-3-3-resolver):
+**Session-dir resolver algorithm:**
 
 The hook stdin contains `session_id`, `transcript_path`, and `cwd`. The session.json path is at `$cwd/.gobbi/projects/<project-name>/sessions/{date}-<session_id>/session.json`. Resolver derives `<project-name>` and `{date}`:
 
@@ -40,23 +44,25 @@ The hook stdin contains `session_id`, `transcript_path`, and `cwd`. The session.
 
 Failed spawns are part of the audit trail. `PostToolUseFailure` is officially supported (verbatim quote from official docs confirms this). Single script maintains DRY. Resolver using `project.json` preferred + dir-scan fallback: canonical when present; robust fallback for single-project repos.
 
-## Anchored insights
+Supporting evidence anchored at decision time: empirical verification of the PostToolUseFailure lifecycle; the official-docs verbatim quote (above); the project-resolver precedence rationale; and the PostToolUse hook schema reference under `references/`.
 
-Empirical verification of PostToolUseFailure lifecycle; official docs verbatim quote; project-resolver DQ rationale; `references/` PostToolUse hook schema reference.
+## Alternatives considered
 
-## Trade-offs considered
+- PostToolUse only — rejected: loses the failed-spawn audit trail.
+- Two scripts — rejected: DRY violation.
 
-- PostToolUse only — rejected: loses failed-spawn audit trail
-- Two scripts — rejected: DRY violation
+## Consequences
 
-## Validation
+- `.claude/settings.json` registers both `PostToolUse` and `PostToolUseFailure` with matcher `"Task"`, both pointing at the single script.
+- The session-dir resolver carries a dormant `project.json` precondition: `$cwd/.gobbi/project.json` does not exist today, so the resolver always falls through to the single-directory enumeration path. Bootstrapping that file is tracked in backlog `dot-gobbi-project-json-bootstrap`.
+- Validation obligations: a smoke test on an artificial spawn failure; an evaluator Risk-perspective review; and a verbatim-quote presence check in the staged reference file.
 
-Smoke test on artificial spawn failure; evaluator Risk perspective; verbatim-quote presence in staged reference file.
+## Related
 
-## Implementation checklist anchor
-
-Hook settings.json registration (dual event registration); dormant precondition acknowledgment for project.json bootstrap
+- `hook-bash-jq-stack.md` — the authoring stack this hook is built on.
+- `tool-use-id-correlation-key.md` — the synthetic-id correlation key used for failed spawns.
+- `references/claude-code-hooks-stdin-contract.md` — the hook stdin schema reference.
 
 ## Source
 
-`rawdata/draft-iter3.md:362-386` (D-3-3 + D-3-3-resolver narrative)
+The full design narrative is preserved in the project session journal `notes/2026-05-24-session-foundations-bundle-b.md` (the session that designed and shipped the PostToolUse hook architecture).

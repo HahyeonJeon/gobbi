@@ -11,67 +11,60 @@ tags: [planning, task-decomposition, decisions-log]
 verdict: pass
 ---
 
-# Planning Decisions Log
+# Planning Decisions — Env-Var Audit + SessionStart Hook task decomposition
 
-## Iter1
+## Context
 
-Verdict: REVISE.
+The Planning loop decomposed the env-var-audit + SessionStart-hook feature into an Execution-ready task plan. The plan went through three dual-system evaluation rounds plus a final user-authorized manager polish before it was Execution-ready. This record captures the final decision, the fixes that shaped it, and the deferred scope.
 
-Claude eval: PASS-with-5-Medium (worktree creation underdocumented as discrete task).
-Codex eval: REVISE — 5 High findings centered on the final verification task executor crossing the manager/executor boundary by doing `git push` + `gh pr create` (violation of `git/SKILL.md` Memory Access Matrix + Forbidden Operations + Procedures P4/P5).
+## Decision
 
-User triage → 6 fixes accepted (FIX I–VI) for iter2.
+**The Planning loop closed at PASS-equivalent — the plan is Execution-ready.** The decomposition splits the work into executor tasks plus manager-direct steps (worktree creation, PR-merge, post-merge stamping) that respect the manager/executor boundary in `git/SKILL.md`. The plan reached its final shape after three evaluation rounds and a user-authorized closing polish.
 
-## Iter2
+## Rationale
 
-Six fixes applied:
-- **FIX I** — Added manager-direct pre-execution step for worktree creation per git Procedure P2.
-- **FIX II** — Split final verification task into executor-only verification (no push/PR/merge); created manager-direct PR-merge step per git Procedures P4 + P5 + P7 for push, PR-open, CI watch, squash-merge, post-merge sync, worktree cleanup.
-- **FIX III** — Manager session.json stamp step moved to AFTER squash-merge. Stamps on main-tree develop, not in worktree.
-- **FIX IV** — All commit-message blocks added with canonical `AI-Provenance-Record:` trailer per `git/conventions.md` § Commit Trailers. No `Co-Authored-By:`.
-- **FIX V** — Final verification block fully inlined; `<worktree-path>` placeholders replaced with `${WORKTREE_PATH}` env var; concrete runnable commands including P7 reword check + FIX C shell-safety fixture + `orchestration/SKILL.md` transcriptPath grep.
-- **FIX VI** — PR-merge preconditions include `gh auth status` re-verify per Preparation finding δ disposition.
+The plan was refined across three evaluation rounds:
 
-Verdict: REVISE (both Claude and Codex iter2 caught remaining grammar/template issues — commit subject lengths >72, M2 PR title >72, unresolved `<main-tree root>` placeholders, M2 PR body placeholder, missing M2 P5 pre-remove gate).
+**First round — REVISE.** Claude returned PASS-with-5-Medium (worktree creation underdocumented as a discrete task); Codex returned REVISE on 5 High findings, all centered on the final verification task crossing the manager/executor boundary by doing `git push` + `gh pr create` (a violation of `git/SKILL.md` Memory Access Matrix + Forbidden Operations + Procedures P4/P5). User triage accepted 6 fixes (FIX I–VI):
 
-User triage → 5 fixes accepted (FIX α–ε) for iter3 final.
+- **FIX I** — Added a manager-direct pre-execution step for worktree creation (git Procedure P2).
+- **FIX II** — Split the final verification task into executor-only verification (no push/PR/merge) and created a manager-direct PR-merge step (git Procedures P4 + P5 + P7: push, PR-open, CI watch, squash-merge, post-merge sync, worktree cleanup).
+- **FIX III** — Moved the manager session.json stamp step to AFTER squash-merge; it stamps on main-tree develop, not in the worktree.
+- **FIX IV** — Added the canonical `AI-Provenance-Record:` trailer to all commit-message blocks (`git/conventions.md` § Commit Trailers); no `Co-Authored-By:`.
+- **FIX V** — Fully inlined the final verification block; replaced `<worktree-path>` placeholders with a `${WORKTREE_PATH}` env var; added concrete runnable commands (the transcript-path reword check, the FIX C shell-safety fixture, and the `orchestration/SKILL.md` transcriptPath grep).
+- **FIX VI** — Added a `gh auth status` re-verify to the PR-merge preconditions (per the Preparation `gh auth` dispute disposition).
 
-## Iter3 (final, max=3)
+**Second round — REVISE.** Both Claude and Codex caught remaining grammar/template issues: commit subject lengths >72, the merge PR title >72, unresolved `<main-tree root>` placeholders, a PR-body placeholder, and a missing pre-remove gate. User triage accepted 5 fixes (FIX α–ε):
 
-Five surgical fixes applied:
-- **FIX α** — T4 (86→65 chars), T5 (78→66 chars), T6 (98→68 chars) commit subjects shortened to fit ≤72.
-- **FIX β** — M2 PR title 99→64 chars.
-- **FIX γ** — 5 `<main-tree root>` placeholders in M2/M1 replaced with concrete `/playinganalytics/git/gobbi`.
-- **FIX δ** — M2 PR body rewritten per conventions.md PR template (4 sections + AI-Provenance-Record note).
-- **FIX ε** — M2 cleanup adds explicit P5 pre-remove gate (`git status --short` empty + `git branch --contains HEAD develop`) per `git/SKILL.md` Procedure P5 step 3. No `--force`.
+- **FIX α** — Three commit subjects shortened to fit ≤72 chars.
+- **FIX β** — Merge PR title shortened (99→64 chars).
+- **FIX γ** — 5 `<main-tree root>` placeholders replaced with the concrete path `/playinganalytics/git/gobbi`.
+- **FIX δ** — Merge PR body rewritten per the `conventions.md` PR template (4 sections + AI-Provenance-Record note).
+- **FIX ε** — Added an explicit pre-remove gate to the cleanup step (`git status --short` empty + `git branch --contains HEAD develop`, per `git/SKILL.md` Procedure P5 step 3); no `--force`.
 
-Third-iteration EVAL: Claude PASS-with-Low (PR body section order deviation); Codex REVISE (M2 PR body `--body "<placeholder>"` in bash command line).
+**Third round (final).** Claude returned PASS-with-Low (a PR-body section-order deviation); Codex returned REVISE (a `--body "<placeholder>"` left in a bash command line).
 
-## Post-iter3 manager polish (user-authorized; 2026-05-22)
+**Closing manager polish (user-authorized).** Given the dual-system divergence at the final round, the user authorized a manager-direct surgical fix to close the loop: the PR body was inlined via a HEREDOC (making the bash command literally executable), and the PR-body sections were reordered to the canonical `conventions.md` order (Summary → Changes → Test plan → Linked issues). The effective Planning verdict is PASS-equivalent.
 
-Dual-system divergence + final-iter status → user authorized a manager-direct surgical fix to close Planning Loop cleanly. Two edits applied:
-- Inlined M2 PR body via `$(cat <<'PRBODY' ... PRBODY)` HEREDOC in the verification command block (replacing the `<conventions-compliant body per How step 2>` placeholder). The bash command is now literally executable.
-- Reordered PR body sections to canonical `conventions.md` order: **Summary → Changes → Test plan → Linked issues** (correcting F-CONS-04). Updated prose How step 2 description to match, citing the "Stamp the template; do not improvise structure" rule.
+## Alternatives considered
 
-Effective Planning Loop verdict: **PASS-equivalent**.
+The following were explicitly deferred out of the plan's scope (per the Plan's Deferred Items):
 
-## Out-of-scope items (deferred per Plan § Deferred Items)
+- Plugin mirror sync — excluded by the user's setup answer.
+- Runtime CLI code under `packages/cli/src/` — excluded by the user's setup answer.
+- TS+bun port of the hook — deferred to a future session per the user's setup answer.
+- The jq @sh env-passthrough quoting example — staged in the Ideation backlog.
+- The subagent CCSI-semantics finding — staged in the Ideation backlog.
+- CLI automation of `session.json` transcriptPath stamping — deferred per the stamping-mechanism disambiguation (FIX A in `env-file-load-semantics-decisions.md`).
 
-- Plugin mirror sync (excluded by user setup answer).
-- Runtime CLI code under `packages/cli/src/` (excluded by user setup answer).
-- TS+bun port of the hook (deferred to a future session per user setup answer).
-- F-STRUCT-01 (jq @sh env-passthrough quoting example) — staged in Ideation backlog.
-- F-RISK-01 (subagent CCSI semantics) — staged in Ideation backlog.
-- CLI automation of session.json transcriptPath stamping (deferred per FIX A disambiguation).
+## Consequences
 
-## Decision-class summary
+- The plan is Execution-ready with no open Planning questions; the manager dispatches the worktree-creation step first on advance to Execution.
+- All user-facing Planning decisions classified (per `discussion/SKILL.md` Decision Classification) as: 3 × `ask: design` (plan-level structure, merge PR body template, worktree-creation framing); 4 × `ask: scope` (the REVISE-vs-accept call on each round plus the closing manager-polish authorization); 0 × `user-challenge`; 0 × `auto-decide`.
+- The manager/executor boundary is baked into the plan: executors verify only; the manager performs push, PR-open, merge, stamping, and cleanup.
 
-All user-facing decisions classified per `discussion/SKILL.md` Decision Classification:
-- 3 × `ask: design` (Plan-level structure, M2 PR body template, M0 worktree-creation framing)
-- 4 × `ask: scope` (REVISE-vs-accept on each iter, iter3 manager-polish authorization)
-- 0 × `user-challenge`
-- 0 × `auto-decide`
+## Related
 
-## Open questions
-
-None remaining for Planning. The Plan is Execution-ready. Manager dispatched M0 first (worktree creation) on advance to Execution Loop.
+- `decisions/env-file-load-semantics-decisions.md` — the Ideation design decisions this plan implements.
+- `decisions/pre-planning-readiness-decisions.md` — the Preparation readiness gate (the `gh auth` disposition FIX VI carries forward).
+- `notes/2026-05-22-env-var-audit-sessionstart-hook.md` — the project session journal for this work.

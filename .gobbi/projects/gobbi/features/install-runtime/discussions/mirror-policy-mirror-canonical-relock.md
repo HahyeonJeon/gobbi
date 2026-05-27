@@ -12,7 +12,7 @@ topic: Mirror-propagation policy — re-lock on corrected empirical evidence
 outcome: "Mirror canonical, workspace = symlink runtime layer; no sync needed — 53 file-level symlinks confirmed"
 ---
 
-# Mirror-propagation policy — iter2 re-lock (corrected)
+# Mirror-propagation policy — re-lock on corrected empirical evidence
 
 ## Context
 
@@ -30,7 +30,7 @@ Given the corrected empirical evidence (53 file-level symlinks), which path is c
 
 ## User decision
 
-**Mirror canonical, workspace = symlink runtime layer; no sync needed.** Both paths resolve to the same physical file via 53 file-level symlinks. No new sync mechanism needed (the symlink layer IS the sync mechanism). The iter1 lock is superseded.
+**Mirror canonical, workspace = symlink runtime layer; no sync needed.** Both paths resolve to the same physical file via 53 file-level symlinks. No new sync mechanism needed (the symlink layer IS the sync mechanism). The earlier workspace-canonical lock is superseded.
 
 Evidence: `find .claude/skills/ -type l -name "*.md" | wc -l` → 53; sample: `.claude/skills/orchestration/SKILL.md -> ../../../.gobbi/projects/gobbi/skills/orchestration/SKILL.md`.
 
@@ -44,7 +44,7 @@ Evidence: `find .claude/skills/ -type l -name "*.md" | wc -l` → 53; sample: `.
 
 ## Related
 
-- `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md`
-- `preparation/staging/decisions/mirror-propagation-policy-workspace-canonical.md` (superseded)
-- `mirror-policy-workspace-canonical-superseded.md` (superseded)
-- `discussions/edit-contract-addition.md` (follow-on discussion about the symlink-preservation edit contract)
+- `decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md` — the corrected decision this discussion locked.
+- `decisions/2026-05-24-mirror-propagation-policy-workspace-canonical.md` — the superseded workspace-canonical decision.
+- `discussions/mirror-policy-workspace-canonical-superseded.md` — the superseded first-iteration discussion.
+- `discussions/edit-contract-addition.md` — follow-on discussion about the symlink-preservation edit contract.

@@ -11,7 +11,11 @@ tags: [reconstructor, agents, session-json, idempotent]
 design-id: D-3-2
 ---
 
-# Reconstructor algorithm: verify-and-fix, idempotent upsert by id, orphan-report only (D-3-2)
+# Reconstructor algorithm: verify-and-fix, idempotent upsert by id, orphan-report only
+
+## Context
+
+The PostToolUse hook populates `session.json.agents[]` incrementally, but a session can start with an empty or partially-populated `agents[]` (e.g., after a resume, or if a hook fired before the field was seeded). A reconstructor script is needed to rebuild `agents[]` from the authoritative transcript without destroying manager-seeded entries or user hand-edits, and it must be safe to run repeatedly.
 
 ## Decision
 
@@ -30,23 +34,25 @@ design-id: D-3-2
 
 Verify-and-fix is robust to empty-and-rebuild + partial-population; idempotent. Orphan-report-only preserves manager seed + user hand-edits. The flock serialization design ensures the reconstructor's read-modify-write does not race against an in-flight PostToolUse hook.
 
-## Anchored insights
+Supporting evidence anchored at decision time: the verify-and-fix robustness rationale; transcript inspection confirming the `toolUseResult` fields are available; and the companion flock serialization design (`flock-serialization-on-session-json.md`).
 
-Verify-and-fix robustness rationale; transcript inspection confirming toolUseResult fields available; `flock-serialization-on-session-json.md`.
+## Alternatives considered
 
-## Trade-offs considered
+- Scan-and-replace — rejected: deletes the manager seed.
+- Append-only — rejected: cannot fix partial-field entries.
 
-- Scan-and-replace — rejected: deletes manager seed
-- Append-only — rejected: cannot fix partial-field entries
+## Consequences
 
-## Validation
+- The reconstructor (`reconstruct-agents.sh`) takes a session-dir path, acquires the flock before reading, upserts by id, reports (never deletes) orphans, and writes back atomically.
+- Because it is idempotent and orphan-report-only, it can be run at any time — including repeatedly — without corrupting manager-seeded or user-edited entries.
+- Validation obligations: a single-script verifier on a two-state fixture (empty `agents[]` + partial `agents[]`); an idempotency double-run; and a reconstructor-during-hook-fire smoke test (shared with the flock serialization design).
 
-Single-script verifier on 2-state fixture (empty agents[] + partial agents[]); idempotency double-run; reconstructor-during-hook-fire smoke test (D-3-5).
+## Related
 
-## Implementation checklist anchor
-
-Reconstructor script authoring (reconstruct-agents.sh)
+- `flock-serialization-on-session-json.md` — the serialization the reconstructor acquires before reading.
+- `tool-use-id-correlation-key.md` — the correlation key the transcript walk uses.
+- `dual-hook-registration-resolver.md` — the hook the reconstructor backstops.
 
 ## Source
 
-`rawdata/draft-iter3.md:353-360` (D-3-2 narrative)
+The full design narrative is preserved in the project session journal `notes/2026-05-24-session-foundations-bundle-b.md` (the session that designed and shipped the PostToolUse hook architecture).

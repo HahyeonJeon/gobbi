@@ -16,9 +16,9 @@ superseded_by: null
 
 ## Context
 
-In Preparation iter1, the user locked a mirror-propagation policy on the premise that two parallel skill trees existed — `.claude/skills/` (workspace) and `.gobbi/projects/gobbi/skills/` (project mirror) — and that "no auto-sync mechanism" was in place between them. The iter1 lock chose workspace as canonical, mirror as derived, and staged a conditional backlog for a future sync mechanism.
+In the first Preparation iteration, the user locked a mirror-propagation policy on the premise that two parallel skill trees existed — `.claude/skills/` (workspace) and `.gobbi/projects/gobbi/skills/` (project mirror) — and that "no auto-sync mechanism" was in place between them. That first-iteration lock chose workspace as canonical, mirror as derived, and staged a conditional backlog for a future sync mechanism.
 
-Both iter1 evaluators (Claude + Codex) flagged the empirical premise as incomplete. Independent re-verification confirmed the iter1 scan stopped at directory-level inspection and missed the **file-level symlink layer**.
+Both first-iteration evaluators (Claude + Codex) flagged the empirical premise as incomplete. Independent re-verification confirmed the first-iteration scan stopped at directory-level inspection and missed the **file-level symlink layer**.
 
 **Empirical evidence (leader independently verified):**
 
@@ -59,9 +59,9 @@ Planning briefs may cite **either** path because both paths resolve to the same 
 ## Consequences
 
 - **Planning task briefs editing skill files can cite either `.claude/skills/...` or `.gobbi/projects/gobbi/skills/...`** — both paths resolve to the same physical file. Recommended convention: cite the workspace path for runtime-loadability discoverability.
-- **No mirror-edit requirement.** A single `Edit` against either path updates the canonical file; no second write is needed. Iter1's "manual mirror-edit recommended for Bundle B" interim discipline is **rescinded** as unnecessary.
+- **No mirror-edit requirement.** A single `Edit` against either path updates the canonical file; no second write is needed. The first-iteration lock's "manual mirror-edit recommended for Bundle B" interim discipline is **rescinded** as unnecessary.
 - **The `workspace-to-mirror-sync-mechanism.md` backlog is closed as moot** (no separate sync mechanism is needed; the symlink layer is the sync mechanism). See that file's supersession reason.
-- **Verification gates that grep for T1-edited content can target either path with identical results.** Tests should pick one (recommended: workspace path) for consistency, but matching against the other tree gives the same hits because the underlying file is the same.
+- **Verification gates that grep for skill-file content edited in Bundle B can target either path with identical results.** Tests should pick one (recommended: workspace path) for consistency, but matching against the other tree gives the same hits because the underlying file is the same.
 - **Memory Access Matrix in skills documentation needs an eventual clarification** — multiple skills' Memory Access Matrix sections treat both `.claude/skills/` and `.gobbi/projects/gobbi/skills/` as project memory. Under the corrected understanding, the workspace tree is "loader-discovery symlinks pointing into the canonical project-mirror storage." A future cleanup pass should make this explicit. Not in Bundle B scope; carry as informal follow-up (see "Out of scope gaps" in the Preparation rawdata draft).
 - **Design file references** to "executors must manually mirror-edit OR flag mirror drift" are stale under this corrected lock; they remain in place as historical record but are functionally moot. The relevant design file has been updated to reference this corrected lock.
 
@@ -117,8 +117,8 @@ $ git ls-files -s .gobbi/projects/gobbi/skills/orchestration/SKILL.md
 
 - Symlink count: `find /playinganalytics/git/gobbi/.claude/skills/ -type l -name "*.md" | wc -l` → **53** (run 2026-05-24, this leader).
 - Sample symlink target: `ls -la /playinganalytics/git/gobbi/.claude/skills/orchestration/SKILL.md` → `lrwxrwxrwx ... orchestration/SKILL.md -> ../../../.gobbi/projects/gobbi/skills/orchestration/SKILL.md` (relative path; resolves to the canonical file in the project mirror).
-- Workflow dir contents: `ls /playinganalytics/git/gobbi/.claude/skills/orchestration/workflow/` → `evaluation.md  execution.md  ideation.md  memorization.md  planning.md  preparation.md  wrap-up.md` (7 files, confirms D-4 5-vs-7 ambiguity — addressed by Fix 5).
-- Independent Claude evaluator finding cited the same symlink topology in iter1 EVALUATION.
+- Workflow dir contents: `ls /playinganalytics/git/gobbi/.claude/skills/orchestration/workflow/` → `evaluation.md  execution.md  ideation.md  memorization.md  planning.md  preparation.md  wrap-up.md` (7 files, confirming the workflow-phase doc set is 7, not 5).
+- An independent Claude evaluator finding cited the same symlink topology in the first-iteration evaluation.
 
 ## Related
 

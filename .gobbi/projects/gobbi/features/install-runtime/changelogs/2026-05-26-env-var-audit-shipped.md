@@ -13,6 +13,8 @@ plan: null
 
 # env-var-audit re-homed into install-runtime
 
+**Task:** re-home the `env-var-audit` work-sprint's durable artifacts into the `install-runtime` capability feature during the memory-system redesign.
+
 ## Summary
 The `env-var-audit` work-sprint's durable artifacts were re-homed into the
 `install-runtime` capability feature during the memory-system redesign (Wave 3).

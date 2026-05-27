@@ -14,13 +14,35 @@ outcome: 7 primary design decisions (P1-P7) + mode/git/eval settings locked; 11 
 
 # Ideation Discussion Log — Env-Var Audit + SessionStart Hook
 
-Captures every AskUserQuestion exchange across the Ideation loop: initial DISCUSSION (~7 design questions) plus finding-triage questions at iter1 (8 findings) and iter2 (3 findings). Ordered chronologically.
+## Context
 
-No discussion-log.md rawdata file was written in this session (the file was absent from `rawdata/`). This log is reconstructed from the Idea artifact's `§ Pre-resolved decisions`, `§ Decisions Log (P1-P7)`, `§ Iter2 Changelog`, and `§ Iter3 Changelog` sections.
+This is the consolidated discussion log for the env-var-audit + SessionStart-hook Ideation loop. It captures every AskUserQuestion exchange in that loop: the initial design discussion (seven questions) plus the finding-triage questions raised across the evaluation iterations. The log is reconstructed from the Ideation artifact's pre-resolved-decisions, decisions-log, and per-iteration changelog sections (no separate discussion-log rawdata file was written that session). Each question below records the topic, the user's answer, the decision class, and the locked outcome.
+
+## Question
+
+Across the loop, the user was asked to settle: the session configuration (mode / evaluation policy / git mode); whether the `$CLAUDE_SESSION_ID` rename drops the old name entirely; the hook language (bash+jq vs TS+bun); whether the plugin mirror and the runtime CLI are in scope; which fields `session.json` gains; and the reword scope for `$CLAUDE_TRANSCRIPT_PATH` references — followed by the triage questions on each evaluation round's findings.
+
+## Options considered
+
+The full per-question options and rationale are enumerated in the seven design questions and the evaluation-triage sections below.
+
+## User decision
+
+Seven primary design decisions (P1–P7) plus the session-config settings were locked; eleven finding remediations were accepted across the evaluation triage rounds (see below and the decisions log for the full dispositions).
+
+## Implication
+
+These decisions framed the entire env-var-audit + SessionStart-hook feature: the rename, the bash+jq hook, the `transcriptPath` field addition, and the scope exclusions (plugin mirror, runtime CLI, agent docs). They flow into the design decisions captured in `decisions/env-file-load-semantics-decisions.md`.
+
+## Related
+
+- `decisions/env-file-load-semantics-decisions.md` — the locked design decisions (P1–P7 + the finding remediations) this discussion produced.
+- `changelogs/2026-05-26-env-var-audit-shipped.md` — the changelog for re-homing this work into `install-runtime`.
+- `notes/2026-05-22-env-var-audit-sessionstart-hook.md` — the project session journal for this work.
 
 ---
 
-## DISCUSSION Phase (~7 questions)
+## Design questions (seven)
 
 ### Q1 — Session mode + evaluation policy + git mode
 
@@ -73,18 +95,18 @@ No discussion-log.md rawdata file was written in this session (the file was abse
 
 ---
 
-## Iter1 Finding Triage (~8 questions, 2026-05-22)
+## First evaluation iteration — finding triage (~8 questions, 2026-05-22)
 
-See `decisions/env-file-load-semantics-decisions.md` entries FIX 1-FIX 8 for the full triage dispositions.
-
----
-
-## Iter2 Finding Triage (~3 questions, 2026-05-22)
-
-See `decisions/env-file-load-semantics-decisions.md` entries FIX A-FIX C for the full triage dispositions.
+See `decisions/env-file-load-semantics-decisions.md` entries FIX 1–FIX 8 for the full triage dispositions.
 
 ---
 
-## Iter3 Finding Triage (inline)
+## Second evaluation iteration — finding triage (~3 questions, 2026-05-22)
 
-The third evaluation iteration returned PASS (dual-system). Two findings deferred to backlog (jq @sh env-passthrough quoting example + subagent CCSI semantics). No user AskUserQuestion required for that triage.
+See `decisions/env-file-load-semantics-decisions.md` entries FIX A–FIX C for the full triage dispositions.
+
+---
+
+## Third evaluation iteration — finding triage (inline)
+
+The third evaluation iteration returned PASS (dual-system). Two findings were deferred to backlog (the jq @sh env-passthrough quoting example + subagent CCSI semantics). No user AskUserQuestion was required for that triage.
