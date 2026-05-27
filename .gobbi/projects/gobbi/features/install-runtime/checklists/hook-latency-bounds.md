@@ -10,20 +10,24 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [performance, latency, hook, reconstructor, checklist]
 ---
 
-# Hook and reconstructor latency bounds — Execution measurement checklist
+# Hook and reconstructor latency bounds — Execution measurement
 
-## Context
+## What
 
-The hook's per-fire cost is O(transcript_lines) for the transcript scan, bounded by N Task spawns × session transcript size. No hard latency budget was locked in Ideation. Inline bounds documented at design time:
-- Hook fires: N Task spawns, typically 20-50 per session
-- Transcript scan: O(transcript_lines), typically < 5000 lines per session
-- No external network call
+At Execution, measure the PostToolUse hook's wall-clock cost against representative fixture transcripts (500, 1000, and 5000 lines) and verify it stays under 500ms p99 per fire. If any fixture exceeds 500ms p99, escalate to Planning for a latency-budget decision before shipping the hook.
 
-## Checklist item
+## Why
 
-- [ ] Execution-time fixture measurement: run the hook against a representative fixture transcript (500 lines, 1000 lines, 5000 lines); record wall-clock time; verify < 500ms p99 per fire.
-- [ ] If wall-clock exceeds 500ms p99: escalate to Planning with a latency budget decision before shipping.
+The hook's per-fire cost is O(transcript_lines) for the transcript scan, bounded by N Task spawns × session transcript size (typically 20-50 fires and under 5000 lines per session, with no external network call). No hard latency budget was locked at design time, so the per-fire cost is bounded only by analysis, not by a measured ceiling. A fixture measurement at Execution turns the assumed bound into a verified one before the hook fires on every real Task spawn.
+
+## Verification
+
+Run the hook against the three fixture sizes, record wall-clock time, and confirm < 500ms p99 per fire. Failing that threshold gates the ship.
+
+## Status notes
+
+Pending — the measurement runs at Execution time, once the hook script exists. No budget has been locked yet; the 500ms p99 figure above is the proposed gate, subject to the Planning escalation if a fixture exceeds it.
 
 ## Source
 
-Surfaced as a performance finding during install-runtime design evaluation (session 1b26cf20). Codex evaluator flagged the absence of a hard latency budget in Ideation.
+Surfaced as a performance finding during install-runtime design evaluation (session 1b26cf20); the Codex evaluator flagged the absence of a hard latency budget at design time.

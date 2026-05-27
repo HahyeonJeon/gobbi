@@ -12,18 +12,18 @@ tags: [hook, exit-behavior, checklist, docs-sync, consistency]
 
 # Hook skill must enumerate all fatal exit paths, split by hook event class
 
-## Check
+## What
 
-When a project skill documents hook exit behavior, ALL fatal exit conditions must be listed — not just the most common one. Additionally, testing-section failure-path expectations must be split by hook event class (e.g., SessionStart is fatal on malformed JSON; PostToolUse uses `bail()` and always exits 0).
+When a project skill documents hook exit behavior, it must list ALL fatal exit conditions — not just the most common one — and its testing-section failure-path expectations must be split by hook event class wherever behavior differs. For gobbi's hooks: SessionStart is fatal (non-zero exit) on malformed JSON; PostToolUse uses `bail()` and always exits 0.
 
-## Evidence
+## Why
 
-`gobbi-hook-authoring/SKILL.md` originally stated `session-start.sh` exits 1 "only if `$CLAUDE_ENV_FILE` is unset or unwritable" — omitting empty-stdin and strict-mode export failures. A follow-up evaluation round fixed the core principle statement but left the testing section (P7) with a generic malformed-JSON expectation that contradicted the corrected principle. A second remediation split P7 by hook class: SessionStart malformed JSON → non-zero exit; PostToolUse malformed JSON → exit 0 via `bail()`.
+`gobbi-hook-authoring/SKILL.md` originally stated that `session-start.sh` exits 1 "only if `$CLAUDE_ENV_FILE` is unset or unwritable," omitting the empty-stdin and strict-mode export failures that are also fatal. A later fix corrected the core principle statement but left the testing section with a generic malformed-JSON expectation that contradicted the corrected principle — so the doc described two different exit behaviors in two places. The lesson: enumerate every fatal path (not "only" the env guard), and keep the testing section's failure expectations consistent with the principle, split by hook class because SessionStart and PostToolUse exit differently on the same bad input.
 
-## Scenario gap
+## Verification
 
-For any future hook-documentation skill: (1) enumerate ALL fatal paths (not "only" the env guard); (2) ensure the testing section's failure-path expectations match the corrected documentation, split by hook event class where behavior differs.
+Live smoke tests confirm the documented behavior: malformed JSON exits non-zero on SessionStart and exits 0 on PostToolUse (via `bail()`). A future hook-documentation skill verifies by running each hook class against malformed input and checking the exit code matches the documented per-class expectation.
 
-## Addressed
+## Status notes
 
-Commits `5d2a7c6` + `a7ac0d7` completed the fix. Live smoke tests verified: malformed JSON exits non-zero on SessionStart, exit 0 on PostToolUse (via bail).
+Addressed — commits `5d2a7c6` and `a7ac0d7` completed the fix (corrected the principle statement and split the testing-section expectations by hook class). Live smoke tests verified both exit behaviors.

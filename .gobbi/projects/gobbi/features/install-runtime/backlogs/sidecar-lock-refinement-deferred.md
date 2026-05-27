@@ -17,31 +17,24 @@ superseded_by: null
 
 ## Context
 
-The hook acquires `flock -x` on `session.json` itself, rather than on a separate `session.json.lock` sidecar file. Using the file being mutated as the lock file works (POSIX `flock(1)` locks on the file descriptor), but using a dedicated sidecar would be a cleaner separation of concerns — the lock file would have a known lifecycle independent of the data file's atomic-rename cycle.
+The PostToolUse hook acquires `flock -x` on `session.json` itself rather than on a separate `session.json.lock` sidecar file. Locking the file being mutated works (POSIX `flock(1)` locks on the file descriptor), and it addresses the primary lost-update race: two concurrent PostToolUse hooks clobbering each other's `agents[]` append. A dedicated sidecar would be a cleaner separation of concerns — the lock file would have a known lifecycle independent of the data file's atomic-rename cycle — but it is a refinement, not a correctness fix.
 
-## Decision
+## Why deferred
 
-Deferred. The `flock -x` on `session.json` addresses the primary lost-update race (two concurrent PostToolUse hooks clobbering each other's `agents[]` append). The sidecar refinement is hardening, not correctness.
-
-## Rationale
-
-The primary race condition — two concurrent PostToolUse hooks clobbering each other's `agents[]` append — is fully addressed by D-3-5. The sidecar concern is that if the hook uses `mv` (atomic rename), a new inode gets a new file descriptor and the old lock file descriptor becomes stale. The current design uses an `exec {fd}>>"$session_json"; flock -x "$fd"` pattern that keeps the same fd open through the write cycle, so the inode concern does not apply to the current implementation.
-
-## Alternatives considered
-
-- Use `session.json.lock` sidecar: acceptable; deferred as non-blocking hardening.
-
-## Consequences
-
-If the executor's atomic-write implementation deviates from the fd-based pattern, revisit this design to use a sidecar lock.
+The primary race is fully addressed by the current locking design, so the sidecar is hardening rather than correctness. The one concern a sidecar would address — if the hook used `mv` (atomic rename), a new inode would get a new file descriptor and the old lock fd would go stale — does not apply to the current implementation, which uses an `exec {fd}>>"$session_json"; flock -x "$fd"` pattern that holds the same fd open through the write cycle. With the inode concern moot, the sidecar adds no correctness value today.
 
 ## When to pick up
 
-When the flock design is revisited for any reason (e.g., new edge case in concurrent access or a change to the atomic-write pattern).
+When the flock design is revisited for any reason — for example a new concurrent-access edge case, or a change to the atomic-write pattern. In particular, if the executor's atomic-write implementation ever deviates from the fd-based pattern (e.g. switches to rewrite-by-rename), the stale-fd concern returns and the sidecar becomes worth adding.
 
-## Related
+## Suggested approach
 
-- `evaluation/iter2/claude/risk.md` R4
-- `evaluation/iter3/codex/structure.md` CLAUDE-STRUCT-S1
-- `evaluation/iter3/codex/risk.md` CLAUDE-R4
-- `rawdata/draft-iter3.md` D-3-5 (line 401-406)
+Switch the lock target from `session.json` to a dedicated `session.json.lock` sidecar: acquire `flock -x` on the sidecar fd, perform the read-modify-write on `session.json` under that lock, and never tie the lock's lifecycle to the data file's inode. This survives a rewrite-by-rename write pattern.
+
+## Originating session
+
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
+
+## Source
+
+Surfaced as a structure/risk finding during install-runtime design evaluation (session 1b26cf20); deferred as non-blocking hardening since the fd-based locking pattern already addresses the primary race.

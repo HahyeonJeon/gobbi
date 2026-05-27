@@ -36,14 +36,12 @@ User-confirmed deferral at design-decision lock time. Reasons:
 
 ## Suggested approach
 
+Small in effort — a single template edit plus a version bump plus a couple of small doc updates:
+
 1. Bump `session.template.json` schemaVersion.
 2. Add `status: <string, enum [success, failed]>` to the `agents[]` element schema.
 3. Update the hook + reconstructor scripts to write `status` formally (no logic change — they already write the field).
 4. Migration: existing sessions without the field are accepted as legacy; new sessions stamp `status: "success"` by default.
-
-## Effort estimate
-
-Small — a single template edit + version bump + 2 small doc updates. ~1 hour of focused work.
 
 ## Originating session
 
@@ -51,8 +49,4 @@ Small — a single template edit + version bump + 2 small doc updates. ~1 hour o
 
 ## Source
 
-- T3 Design Decision D-3-3 (dual-event hook scope)
-- T3 Implementation checklist item 7 (this backlog entry is the literal output of that checklist row)
-- T3-DQ-3 (failure-handling design question)
-- E-1 edge case (failed-spawn audit trail)
-- CP-D-1 Option Recommended (user-confirmed deferral)
+Surfaced from the dual-event hook scope design decision (the hook is registered for both `PostToolUse` and `PostToolUseFailure`, so failed spawns produce a `status: "failed"` audit-trail entry). The formal schema extension was a user-confirmed deferral at design-decision lock time.

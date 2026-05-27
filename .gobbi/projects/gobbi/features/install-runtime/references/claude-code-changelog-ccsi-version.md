@@ -16,11 +16,13 @@ ref_type: docs
 
 # Claude Code changelog — `CLAUDE_CODE_SESSION_ID` introduction version
 
-Split from the env-var-audit Ideation references bundle. The official changelog was the authoritative source for the exact version number, surfaced by the Codex evaluator during the env-var-audit Ideation loop.
-
 ## Insight
 
-`$CLAUDE_CODE_SESSION_ID` was introduced in Claude Code **v2.1.132** (not v2.1.128+ as an earlier Idea artifact had incorrectly stated). The official changelog was the authoritative source for the exact version number. The correction updated all 7 version references in the artifact from "v2.1.128" to "v2.1.132".
+`$CLAUDE_CODE_SESSION_ID` was introduced in Claude Code **v2.1.132** (not v2.1.128+, as an earlier draft had incorrectly stated). The official Claude Code changelog is the authoritative source for the exact version number, and the correction propagated to every version reference in the env-var work.
+
+## Related
+
+- [`claude-code-hooks-stdin-contract.md`](claude-code-hooks-stdin-contract.md) — the companion reference establishing that `$CLAUDE_CODE_SESSION_ID` is runtime-auto-set (not hook-only), which is the env var whose introduction version this reference pins.
 
 ## Why it applies
 
@@ -29,7 +31,11 @@ Any skill doc that says "as of Claude Code v2.1.132" is making a version claim t
 ## Source
 
 - Primary: https://docs.anthropic.com/en/docs/claude-code/changelog (Claude Code release changelog)
-- Accessed: 2026-05-22 via Codex evaluator during the env-var-audit Ideation loop
+- Accessed: 2026-05-22 via the Codex evaluator during the env-var-audit Ideation loop
+
+## Excerpt
+
+The changelog entry pins the introduction to v2.1.132; the exact release-note wording is recoverable from the linked changelog. No verbatim quote is reproduced here — the version number is the load-bearing fact.
 
 ## Usage history
 

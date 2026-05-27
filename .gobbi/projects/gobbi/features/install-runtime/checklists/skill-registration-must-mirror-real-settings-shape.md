@@ -12,20 +12,18 @@ tags: [hook, settings-json, registration, checklist, docs-sync, usage]
 
 # Skill registration examples must mirror real settings.json command object shape
 
-## Check
+## What
 
-When a project skill teaches hook registration (e.g., `gobbi-hook-authoring`), every settings.json command object example MUST include all required fields from the real settings. As of this session:
-- `"type": "command"` is required — skills must not omit it
-- Commands must be bare paths (no `bash ` prefix) — skills must reflect the real convention
+When a project skill teaches hook registration (e.g. `gobbi-hook-authoring`), every `settings.json` command-object example must include all required fields from the real settings. Specifically: `"type": "command"` is required (skills must not omit it), and commands must be bare paths with no `bash ` prefix (the real convention).
 
-## Evidence
+## Why
 
-`gobbi-hook-authoring/SKILL.md` originally used `"command": "bash .claude/hooks/..."` without `"type": "command"`. The real `.claude/settings.json:35-36`, `:43-44`, `:51-52` use `{ "type": "command", "command": ".claude/hooks/..." }`. Corrected by aligning the examples and adding the SessionStart block that was omitted.
+`gobbi-hook-authoring/SKILL.md` originally used `"command": "bash .claude/hooks/..."` without `"type": "command"`. The real `.claude/settings.json` hook objects use `{ "type": "command", "command": ".claude/hooks/..." }`. A registration example that drops a required field or adds a spurious `bash ` prefix teaches a shape Claude Code will not accept, so the example must mirror the real settings object exactly rather than approximate it.
 
-## Scenario gap
+## Verification
 
-For any future skill that teaches hook registration: include a verification check — "does the registration JSON block include every field from the real settings.json hook objects?" — before shipping.
+For any skill that teaches hook registration, ask before shipping: "does the registration JSON block include every field from the real `settings.json` hook objects, with no extra prefix?" After the fix here, the regression grep confirms the bad prefix is gone: `grep '"command": "bash '` → NONE.
 
-## Addressed
+## Status notes
 
-Commit `5d2a7c6` corrected all examples. Regression grep: `grep '"command": "bash '` → NONE.
+Addressed — commit `5d2a7c6` aligned all examples with the real command-object shape and added the SessionStart registration block that had been omitted. The regression grep returns no matches.

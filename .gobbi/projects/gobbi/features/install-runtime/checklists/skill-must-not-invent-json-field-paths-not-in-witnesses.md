@@ -12,18 +12,18 @@ tags: [hook, json-fields, witness, checklist, docs-sync, consistency]
 
 # Skills must not invent JSON field paths that don't exist in the witness payload
 
-## Check
+## What
 
-When a project skill documents hook payload fields, every field path reference must be verified against the real hook script. No nested paths may be documented unless the witness actually uses them.
+When a project skill documents hook payload fields, every field-path reference must be verified against the real hook script. No nested path may be documented unless the witness payload actually uses it.
 
-## Evidence
+## Why
 
-`gobbi-hook-authoring/SKILL.md` originally described the SessionStart matcher as matched against `hook_event_name.source` — a nested path that does not exist. The real witnesses have top-level `hook_event_name` and top-level `source` as separate fields (exported separately at `session-start.sh:54-55`). Corrected by replacing with the real top-level `source` field and clarifying the distinction.
+`gobbi-hook-authoring/SKILL.md` originally described the SessionStart matcher as matched against `hook_event_name.source` — a nested path that does not exist. The real witnesses carry top-level `hook_event_name` and top-level `source` as separate fields (exported separately in `session-start.sh`). An invented nested path teaches readers a payload shape the runtime never produces, so a skill that documents fields must ground every path in the witness script rather than in an assumed schema.
 
-## Scenario gap
+## Verification
 
-For any future hook-documentation skill: add a check — "does every documented payload field path correspond to a real top-level (or nested, if so) field in the witness script?" — before shipping.
+For any hook-documentation skill, before shipping ask: "does every documented payload field path correspond to a real field (top-level or genuinely nested) in the witness script?" After the fix here, a regression grep for the invented path confirms it is gone: `grep 'hook_event_name\.source'` → NONE.
 
-## Addressed
+## Status notes
 
-Commit `5d2a7c6` corrected the field path. Regression grep: `grep 'hook_event_name\.source'` → NONE.
+Addressed — commit `5d2a7c6` replaced the invented nested path with the real top-level `source` field and clarified the distinction from `hook_event_name`. The regression grep returns no matches.

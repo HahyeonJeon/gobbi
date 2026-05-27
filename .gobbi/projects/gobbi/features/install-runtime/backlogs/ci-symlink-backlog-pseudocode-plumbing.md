@@ -17,24 +17,27 @@ superseded_by: null
 
 ## Context
 
-The `ci-symlink-integrity-check.md` backlog file includes pseudocode for a pre-commit hook. The pseudocode uses `git ls-files -s` for both old_mode and staged_mode checks. However, `git ls-files -s` returns the staged (index) mode, not the HEAD/last-commit mode — so comparing staged to itself would never detect the `120000 → 100644` transition. Correct implementation should use `git diff --cached --raw` or `git ls-tree HEAD <path>` (for old mode) vs `git ls-files --stage` (for staged mode).
+The project-level `ci-symlink-integrity-check.md` backlog file includes pseudocode for a pre-commit hook that guards the `.claude/`↔project symlink layer against accidental dereferencing. That pseudocode uses `git ls-files -s` for both the old-mode and staged-mode checks. However, `git ls-files -s` returns the staged (index) mode, not the HEAD/last-commit mode — so comparing staged to itself would never detect the `120000 → 100644` transition (a symlink silently replaced by a regular file). The integrity check, as written, cannot fire on the very failure mode it exists to catch.
 
-## Decision
+## Why deferred
 
-Accepted as non-blocking. The backlog is deferred (zero current witnesses; Principle 10 applies). The pseudocode is labeled "Pseudocode — exact diff plumbing depends on the chosen pre-commit framework." Future pick-up of this backlog must fix the plumbing before implementing.
+Accepted as non-blocking: the integrity-check backlog itself is deferred (it has zero current witnesses — no CI symlink breakage has been observed — so Principle 10 keeps it un-built). The pseudocode is already labeled "Pseudocode — exact diff plumbing depends on the chosen pre-commit framework," so the wrong-command error is contained inside a not-yet-implemented sketch. Fixing the plumbing only matters once someone implements the check, so the fix is carried as a note on the deferred parent rather than acted on now.
 
-## Rationale
+## When to pick up
 
-Confidence 25 — this is speculative (the backlog is deferred and no implementation exists). The acknowledgment in the backlog file is sufficient for a deferred item. Does not affect iter3 deliverable.
+When the `ci-symlink-integrity-check` backlog is itself picked up and implemented. The plumbing must be corrected before the check ships — otherwise the guard is inert.
 
-## Consequences
+## Suggested approach
 
-When the CI backlog is picked up, the implementer must correct the pseudocode to use `git diff --cached --raw` (or equivalent) for old-mode detection rather than `git ls-files -s` twice.
+Correct the old-mode detection to read the committed mode rather than the staged mode: use `git diff --cached --raw` (which reports both the old and new mode per path) or `git ls-tree HEAD <path>` for the committed mode versus `git ls-files --stage <path>` for the staged mode. Compare the two so a `120000 → 100644` transition is detected.
+
+## Originating session
+
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
 
 ## Related
 
-- `preparation/staging/backlogs/project/ci-symlink-integrity-check.md`
-- `preparation/evaluation/iter3/claude/risk.md` (CL-RISK-PREP3-001)
+- [`../../../backlogs/ci-symlink-integrity-check.md`](../../../backlogs/ci-symlink-integrity-check.md) — the project-level backlog whose pseudocode this entry corrects
 
 ## Source
 

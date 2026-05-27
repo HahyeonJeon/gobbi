@@ -17,30 +17,24 @@ superseded_by: null
 
 ## Context
 
-The hook (`post-tool-use-agents.sh`) and reconstructor (`reconstruct-agents.sh`) both contain inline copies of the same field-extraction `jq` snippets. The implementation note states: "keep them inline for simplicity, factor to a sourced helper only if evaluation demands." Subsequent evaluations passed without demanding the refactor. The inline duplication remains.
+The PostToolUse hook (`.claude/hooks/post-tool-use-agents.sh`) and the reconstructor (`.claude/scripts/reconstruct-agents.sh`) both contain inline copies of the same field-extraction `jq` snippets. The two copies are independent: a `jq` change applied to one but not the other would silently introduce a schema-drift bug, since both scripts populate the same `agents[]` shape from the same transcript payload. The implementation note chose to keep the snippets inline "for simplicity, factor to a sourced helper only if evaluation demands."
 
-## Decision
+## Why deferred
 
-Deferred. The inline jq snippets in `.claude/hooks/post-tool-use-agents.sh` and `.claude/scripts/reconstruct-agents.sh` are independent copies; divergent edits to one but not the other would silently introduce a schema-drift bug. The deferred discipline was Goodhart-flagged at the time to avoid "only factor if demanded" becoming a self-fulfilling pass condition.
-
-## Rationale
-
-Factoring into `.claude/scripts/lib/extract-agent-fields.sh` is the cleaner solution but adds a third file and a `source` dependency. The decision to keep inline was made for simplicity in iter1; iter2 + iter3 evaluation did not force the refactor.
-
-## Consequences
-
-If the executor implements the hook and reconstructor, they MUST apply the same field-extraction `jq` snippets to both files. Any jq change to one must be mirrored to the other. Add a comment to both scripts: `# SYNC: jq extraction logic must match reconstruct-agents.sh / post-tool-use-agents.sh`.
-
-If jq extraction changes (e.g., new schema fields), a sourced-helper refactor is the recommended next step.
+Factoring the shared extraction into a sourced helper (e.g. `.claude/scripts/lib/extract-agent-fields.sh`) is the cleaner solution but adds a third file and a `source` dependency, so the inline-for-simplicity choice was made initially and later evaluation rounds did not force the refactor. The "only factor if demanded" framing was flagged as a Goodhart risk at the time — it can become a self-fulfilling pass condition — so the duplication is carried explicitly as a known debt rather than treated as settled.
 
 ## When to pick up
 
-When the next jq schema change requires touching both files, factor the shared extraction into a sourced helper at that time.
+When the next `jq` schema change (e.g. new `agents[]` fields) requires touching both scripts. At that point, factor the shared extraction into a sourced helper rather than editing two copies.
 
-## Related
+## Suggested approach
 
-- `evaluation/iter1/claude/structure.md` S1
-- `evaluation/iter1/claude/risk.md` R3 (Goodhart-flag)
-- `staging/decisions/goodhart-factor-when-demanded-deferred.md`
-- `rawdata/draft-iter3.md:240` (implementation note — "keep inline for simplicity")
-- `rawdata/draft-iter3.md:353-360` (D-3-2 reconstructor algorithm)
+Until the refactor lands, treat the two copies as a synchronized pair: any `jq` change to one MUST be mirrored to the other, and both scripts should carry a sync comment, e.g. `# SYNC: jq extraction logic must match reconstruct-agents.sh / post-tool-use-agents.sh`. When picked up, extract the snippets into `.claude/scripts/lib/extract-agent-fields.sh` and `source` it from both scripts so there is a single definition.
+
+## Originating session
+
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
+
+## Source
+
+Surfaced as a structure/risk finding during install-runtime design evaluation (session 1b26cf20); the deferral was Goodhart-flagged at the time.

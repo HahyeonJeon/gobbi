@@ -22,16 +22,20 @@ The plan does not specify: (1) what flock timeout to use, (2) whether hook error
 
 ## Why deferred
 
-The hook's failure-recovery design is an Execution concern: the executor will author the script and can make appropriate choices for flock timeout and error logging based on the bash script's structure. The `reconstruct-agents.sh` script is the recovery mechanism for missed entries — it exists precisely to handle hook gaps.
+The hook's failure-recovery design is an Execution concern: the executor authoring the script can make appropriate choices for flock timeout and error logging based on the script's final structure, so locking those values in advance would over-specify. The risk is also bounded — the `reconstruct-agents.sh` script is the recovery mechanism for missed entries (it exists precisely to handle hook gaps, and is documented as "orphan-report-only (never deletes)" and the "hook crash/gap recovery mechanism"), so a silently-failed hook fire is recoverable rather than data-losing.
 
-The risk is acceptable given the reconstructor provides the "fix" path. The plan already documents: "orphan-report-only (never deletes)" and "hook crash/gap recovery mechanism."
+## When to pick up
 
-## Trigger condition for revisiting
+If the hook fails silently during a test after Execution. At that point, specify the three things the plan currently leaves open: (1) the flock timeout, (2) whether hook errors are logged, and (3) what happens to `agents[]` after N consecutive silent failures.
 
-If after Execution the hook fails silently during a test, add explicit flock timeout (`flock -x -w N`) and stderr-based error logging to the script. Record the failure mode as a mistake.
+## Suggested approach
 
-## Related
+Add an explicit flock timeout (`flock -x -w N`) and stderr-based error logging to the script so a hook self-failure is observable rather than silent. Record any observed failure mode as a mistake so the budget is grounded in a real witness rather than guessed.
 
-- `draft-iter2.md:272` (Task 07 what — D-3-3-resolver step ii)
-- `iter1 F-RISK-2` (Claude)
-- Task 08 (reconstructor as recovery path)
+## Originating session
+
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
+
+## Source
+
+Surfaced as a risk finding during install-runtime design evaluation (session 1b26cf20); the reconstructor was identified as the recovery path that makes the deferral acceptable.

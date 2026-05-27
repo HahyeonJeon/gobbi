@@ -72,6 +72,12 @@ Method: read `$CLAUDE_TRANSCRIPT_PATH` JSONL, find the line where `toolUseResult
 | `startedAt` | timestamp of the preceding tool_use line (line 164) |
 | `finishedAt` | timestamp of the tool_result line (line 165) |
 
+## Related
+
+- [`../design/metadata-extraction-input-vs-result.md`](../design/metadata-extraction-input-vs-result.md) — design topic for which `agents[]` fields come from the prompt (input) side versus this transcript (result) side
+- [`../design/reconstructor-verify-and-fix.md`](../design/reconstructor-verify-and-fix.md) — the reconstructor that reads this same `toolUseResult` payload at session-end to backfill missed `agents[]` entries
+- [`../../guardrails/references/claude-code-posttooluse-hook-schema.md`](../../guardrails/references/claude-code-posttooluse-hook-schema.md) — the PostToolUse hook schema reference this payload shape complements (also named in frontmatter `related`)
+
 ## Why it applies
 The PostToolUse hook and shell-script reconstructor both consume from the same authoritative source (transcript JSONL `toolUseResult`). The hook reads the transcript at fire time (using `$CLAUDE_TRANSCRIPT_PATH` from its stdin), the reconstructor reads at session-end time. The schema gaps surfaced above (`step`, `phase`, `iter`, `model`) inform the design of the delegation prompt structure (these fields must be parseable from the prompt body — e.g., the leader prompt's first three lines already include "Your phase: ideation", "Your iteration: 1", "Your sub-step: C"). This reference demonstrates empirically that per-spawn metadata IS observable from the transcript.
 
@@ -91,8 +97,3 @@ The PostToolUse hook and shell-script reconstructor both consume from the same a
 | Date | Session | Used for |
 |---|---|---|
 | 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | Empirical verification of the transcript's full payload — grounded hook and reconstructor design decisions |
-
-## Related
-
-- `features/install-runtime/design/metadata-extraction-input-vs-result.md`
-- `features/install-runtime/design/reconstructor-verify-and-fix.md`

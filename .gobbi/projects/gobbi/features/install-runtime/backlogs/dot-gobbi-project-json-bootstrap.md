@@ -24,24 +24,20 @@ Today the resolver falls through to step (ii) and works correctly because exactl
 
 ## Why deferred
 
-The hook is functional without step (i); step (ii) is sufficient for the current single-project repo. Bumping the resolver from "step (i) preferred" to "step (i) required" would either require creating `.gobbi/project.json` as a one-line write or tolerating step (ii) indefinitely. The originating session's scope contract covers docs + scripts + settings.json but does not explicitly include creating `.gobbi/project.json`. Surfacing this as a backlog item keeps the resolver design honest without expanding scope mid-session.
+The hook is functional without step (i); step (ii) is sufficient for the current single-project repo. Bumping the resolver from "step (i) preferred" to "step (i) required" would either require creating `.gobbi/project.json` as a one-line write or tolerating step (ii) indefinitely. The originating session's scope contract covered docs + scripts + `settings.json` but did not explicitly include creating `.gobbi/project.json`. Surfacing this as a backlog item keeps the resolver design honest without expanding scope mid-session. The effort is trivial — a single ~5-line JSON file write that can be folded into any hook commit — so the only reason it is deferred is scope discipline, not difficulty.
+
+## When to pick up
+
+- At Planning (task decomposition for the next hook-authoring session): the planner may absorb the file creation into the `settings.json` registration step, since both are bootstrap-type writes.
+- At Execution start: the executor may add it as a one-line setup step before authoring the hook script.
+- At a future session when the project gains a second project under `.gobbi/projects/` — that would break step (ii)'s "exactly one directory" guard and force step (i) to be created.
 
 ## Suggested approach
 
 Two paths, picked at Execution start or later:
 
 1. **In-Execution (recommended if the executor's plan agrees)**: add a single-file write step to the Execution plan — create `.gobbi/project.json` with content `{"name": "gobbi"}`. Cost: 1 file, ~5 lines. This activates step (i) for every future session.
-2. **Defer to a follow-up session**: file is left absent; resolver continues to use step (ii); this backlog item carries forward as the witness that the dormant precondition is intentional.
-
-## When to pick up
-
-- At Planning (task decomposition for the next hook-authoring session): the planner may absorb the file creation into the settings.json registration step since both are bootstrap-type writes.
-- At Execution start: the executor may add it as a one-line setup step before authoring the hook script.
-- At a future session when the project gains a second project under `.gobbi/projects/` (which would break step (ii)'s "exactly one directory" guard and force step (i) to be created).
-
-## Effort estimate
-
-Trivial — a single-file write (~5 lines of JSON). Estimated < 5 minutes of focused work; can be folded into any hook commit.
+2. **Defer to a follow-up session**: leave the file absent; the resolver continues to use step (ii); this backlog item carries forward as the witness that the dormant precondition is intentional.
 
 ## Originating session
 
@@ -49,6 +45,5 @@ Trivial — a single-file write (~5 lines of JSON). Estimated < 5 minutes of foc
 
 ## Source
 
-- T3 Design Decision D-3-3-resolver step (i) — dormant precondition note (iter3 Fix C)
-- Verified empirically: `ls -la /playinganalytics/git/gobbi/.gobbi/project.json` returns "No such file or directory" on 2026-05-23
-- iter3 fix-decision F-Fix-C in `rawdata/draft-iter3.md` Decisions Log
+- The resolver's step-(i)-preferred design decision and its dormant-precondition note, recorded in the originating session's design work.
+- Verified empirically on 2026-05-23: `ls -la /playinganalytics/git/gobbi/.gobbi/project.json` returns "No such file or directory".

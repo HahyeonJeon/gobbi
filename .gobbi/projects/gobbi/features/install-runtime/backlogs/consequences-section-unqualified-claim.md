@@ -17,30 +17,27 @@ superseded_by: null
 
 ## Context
 
-The `mirror-propagation-policy-mirror-canonical-symlinks.md` decision file's "## Consequences" section was not updated when the symlink-preservation edit contract was added. It still contains the broad statement "A single `Edit` against either path updates the canonical file; no second write is needed." while the "## Symlink-preservation edit contract" section immediately below qualifies this claim — specifying it is true only for inode-preserving edit methods.
+The mirror-canonical decision file's `## Consequences` section was not updated when the symlink-preservation edit contract was added to the same file. Consequences still carries the broad, unqualified statement "A single `Edit` against either path updates the canonical file; no second write is needed." The `## Symlink-preservation edit contract` section immediately below qualifies that claim — it holds only for inode-preserving edit methods (rewrite-by-rename methods such as `sed -i` break the symlink). So the file states an absolute in one section and the correct qualified version in the next, and a reader who stops at Consequences walks away with the wrong rule.
 
-## Decision
+## Why deferred
 
-Accepted as a non-blocking Low-severity residual. The operational discovery path for Planning briefs is: Planning brief → the Symlink-preservation edit contract section (not Consequences). The contract section immediately follows Consequences in the same file. A follow-up cleanup of Consequences section is warranted but deferred to a later session.
-
-## Rationale
-
-The surgical scope of the originating session was to add the edit contract, not rewrite Consequences. A careful reader reconciles within one document. Confidence 75 (not 100) because a careful reader reconciles within one document.
-
-## Consequences
-
-A reader who stops at the "## Consequences" section without continuing to "## Symlink-preservation edit contract" gets the unqualified claim. Planning briefs should directly point executors to the edit contract section, not to Consequences.
+Accepted as a non-blocking Low-severity residual. The originating session's surgical scope was to *add* the edit contract, not to rewrite Consequences, and a careful reader reconciles the two sections within one document (the contract section directly follows Consequences). Planning briefs are already pointed at the edit-contract section rather than at Consequences, so the operational discovery path does not depend on the stale wording. The cleanup is real but small, so it rides along with the next edit to that file rather than justifying a standalone session.
 
 ## When to pick up
 
-Any session that edits `mirror-propagation-policy-mirror-canonical-symlinks.md` for any reason should fold in the Consequences section cleanup.
+Any session that edits the mirror-canonical decision file for any reason should fold in the Consequences-section cleanup at the same time.
+
+## Suggested approach
+
+Replace the unqualified Consequences sentence with the qualified form (a single `Edit` updates the canonical file *only via inode-preserving edit methods*; rewrite-by-rename methods sever the symlink), or have Consequences point forward to the `## Symlink-preservation edit contract` section so the two cannot drift again.
+
+## Originating session
+
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/`
 
 ## Related
 
-- `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md`
-- `preparation/evaluation/iter3/claude/consistency.md` (CL-CONS-PREP3-001)
-- `preparation/evaluation/iter3/claude/project.md` (CL-PROJ-PREP3-001)
-- `preparation/evaluation/iter3/claude/structure.md` (CL-STRUCT-PREP3-001)
+- [`../decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md`](../decisions/2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md) — the decision file whose Consequences section this entry flags for cleanup
 
 ## Source
 
