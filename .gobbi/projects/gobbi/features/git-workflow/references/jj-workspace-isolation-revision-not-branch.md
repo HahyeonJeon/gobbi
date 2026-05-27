@@ -20,6 +20,11 @@ related: [claude-code-worktree-isolation-pattern]
 ## Insight
 Jujutsu workspaces are filesystem-independent working copies that share the same `.jj` repo but each have their own working copy — like git worktrees, but anchored to a revision rather than a branch. Critically, the community frames `jj workspace` as "an ideal unit of isolation for sub-agent driven development: spin up one workspace per parallel task, let each agent iterate in its own directory, and merge back through jj's usual revision graph instead of branch-and-merge ceremony." This is a stronger architectural claim than git worktrees alone: the workspace is treated as the *primary* isolation unit, not an optional add-on. Plugin ecosystems already exist (`jj-worktree`, `claude-jj-worktree`) that intercept `git worktree` calls and convert them to `jj workspace` operations.
 
+## Related
+
+- `claude-code-worktree-isolation-pattern.md` — the git-worktree primitive this jj-workspace prior art generalizes.
+- `claude-jj-worktree-shim-pattern.md` — the shim plugins that route git-worktree calls to these jj workspaces.
+
 ## Why it applies
 The gobbi worktree-first design declares one worktree per session (uniform for every session). The closest prior art outside the git ecosystem is jj workspaces — and the framing "one workspace per parallel task" is the exact framing the worktree-first design generalizes. Two practical consequences: (a) the design direction is community-validated as the right primitive for sub-agent isolation, not a project-local idiosyncrasy; (b) future evolution to jj is forward-compatible if the spec keeps the abstraction at "isolated working surface per session" rather than "git worktree specifically." The jj framing also suggests an answer to the session-memory-survival design question: the underlying repo (`.jj` / `.git`) is the durable layer — if session memory commits to a branch, it lives in the repo, not the working copy, so it survives worktree removal automatically.
 

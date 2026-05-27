@@ -20,6 +20,10 @@ related: [rbac-matrix-single-source-of-truth]
 ## Insight
 commitlint enforces conventional-commit structure via a `commit-msg` git hook plus a configuration file (`commitlint.config.js`) that declares required fields (`type`, `scope?`, `subject`, `body?`, `footer?`) and per-field rules (`type-enum`, `scope-enum`, `subject-max-length`, `body-max-line-length`, `*-empty: never`). Husky (or alternative pre-commit framework integrations such as `espressif/conventional-precommit-linter`) wires the hook to the git lifecycle. The enforcement layer is the `commit-msg` hook — invoked *before* the commit lands, surfaces a non-zero exit code with a structured error if a required field is missing. The pattern: declared schema + declarative rules + structural validator + lifecycle-anchored enforcement.
 
+## Related
+
+- `../../agents/references/rbac-matrix-single-source-of-truth.md` — the schema-as-single-source-of-truth pattern this validator pattern complements (the Load Directives skill matrix is the validator's config analog).
+
 ## Why it applies
 The Load Directives validator design problem (ensuring delegation prompts carry the required skill-load directives before dispatch) is directly analogous: a structured doc has required fields, and the manager-side pre-dispatch step is the lifecycle anchor for validation. commitlint demonstrates this exact pattern works at scale and gives a deterministic answer to the "where does the enforcement layer sit" design question: pre-dispatch (analog of `commit-msg`), not CI (post-fact) and not editor lint (too distant). The structural validator should consume the skill matrix as its configuration (analogous to `commitlint.config.js`).
 

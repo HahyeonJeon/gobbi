@@ -23,13 +23,13 @@ domain: process
 
 ### 1. Branch regex check
 
-**Why this check matters**: The worktree-create design adds a first success criterion that after the row 5.5 change lands, new session branches follow the `chore/session-{date}-{ssid-short}` pattern. This smoke test verifies the runtime materializes that branch correctly.
+**Why this check matters**: The worktree-create design adds a success criterion that after the worktree-creation step lands, new session branches follow the `chore/session-{date}-{ssid-short}` pattern. This smoke test verifies the runtime materializes that branch correctly.
 
 **Verification approach**: `jq '.git.branch' session.json | grep -E '^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$'` on the first session after the worktree-create PR merge.
 
 ### 2. worktreePath non-null
 
-**Why this check matters**: The worktree-first design's first success criterion is that `session.json.git.worktreePath` is non-null immediately after Configuration. A null value means row 5.5 was skipped or failed.
+**Why this check matters**: The worktree-first design's success criterion is that `session.json.git.worktreePath` is non-null immediately after Configuration. A null value means the worktree-creation step was skipped or failed.
 
 ### 3. generate-now PR diff
 
@@ -37,5 +37,5 @@ domain: process
 
 ## Related
 
-- Design: `features/git-workflow/design/worktree-create-before-session-stamp.md` (the design decision row 5.5 implements)
-- Witness commit: `1829fa3` (the motivating failure)
+- Design: `../design/worktree-create-before-session-stamp.md` (the design decision the worktree-creation step implements).
+- Witness commit: `1829fa3` (the motivating failure).

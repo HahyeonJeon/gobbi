@@ -12,7 +12,10 @@ category: failure-mode
 domain: process
 ---
 
-# Scenario: Branch Name Collision — `chore/session-{date}-{ssid-short}` Already Exists
+# Branch name collision — `chore/session-{date}-{ssid-short}` already exists
+
+**Category:** failure-mode
+**Coverage:** uncovered
 
 ## Situation
 
@@ -34,5 +37,5 @@ Read `git/SKILL.md` P2 (line 153+) to confirm whether P2 handles the branch-alre
 
 ## Related
 
-- `git/SKILL.md` P2 — the invocation target whose collision handling is unconfirmed
-- Session risk evaluation finding from the worktree-create session: risk finding R-002
+- `git/SKILL.md` P2 (Create worktree) — the invocation target whose branch-collision handling is unconfirmed.
+- Surfaced by a risk-evaluation finding during the worktree-first session-architecture work (session `1b26cf20`, 2026-05-24).

@@ -20,6 +20,11 @@ related: [jj-workspace-isolation-revision-not-branch, claude-code-worktree-isola
 ## Insight
 Open-source plugins (`jasagiri/claude-jj-worktree`, `kawaz/jj-worktree`) implement a shim layer that intercepts Claude Code's `git worktree` calls and routes them to `jj workspace` equivalents. This is a transparent-layer-substitution pattern: the calling surface (`git worktree add`) stays unchanged while the underlying isolation primitive swaps. The plugin's frontmatter pattern is: declaring `--worktree` (or `isolation: worktree`) on the entry point and the shim handles primitive selection.
 
+## Related
+
+- `jj-workspace-isolation-revision-not-branch.md` — the jj-workspace isolation primitive these shims route to.
+- `claude-code-worktree-isolation-pattern.md` — the Claude Code worktree calling surface these shims intercept.
+
 ## Why it applies
 The gobbi worktree-first proposal needs to be specified at the right abstraction level. If specified as "git worktree at this path," it locks the implementation. If specified as "isolated working surface per session with branch reference," it leaves room for jj substitution and other future primitives. The shim ecosystem is direct evidence that users do swap underlying primitives without changing the calling discipline — the discipline travels at the Claude Code agent boundary, not at the git boundary.
 

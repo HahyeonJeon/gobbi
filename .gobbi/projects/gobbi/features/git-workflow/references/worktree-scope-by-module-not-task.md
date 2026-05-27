@@ -20,6 +20,10 @@ related: [claude-code-worktree-isolation-pattern]
 ## Insight
 Community-validated practice for parallel Claude Code worktrees codifies three rules: (1) scope worktrees by module rather than task — tasks in the same module share a worktree sequentially, tasks across modules go to parallel worktrees; (2) rebase, not merge, between worktrees so `git log` stays readable for the agent; (3) commit at session boundaries — uncommitted changes are the only state that does not survive a session reset, so keep that state tiny. Two-to-three parallel sessions is the sustainable ceiling.
 
+## Related
+
+- `claude-code-worktree-isolation-pattern.md` — the Claude Code worktree primitive this scoping discipline applies to.
+
 ## Why it applies
 The gobbi worktree-first design locks scope at session granularity (one worktree per session, not per module). This reference is the counter-position to that choice — it documents the trade-offs the user is implicitly accepting (more worktrees per feature, higher cognitive load if parallelism grows). Rule (3) "uncommitted changes are the only state that does not survive a session reset" is directly relevant to the session-memory-survival design question: the project's analogue is "session memory directory contents are the only state that does not survive worktree removal" → if session memory lives in the worktree, it must be committed (or mirrored) before worktree removal.
 

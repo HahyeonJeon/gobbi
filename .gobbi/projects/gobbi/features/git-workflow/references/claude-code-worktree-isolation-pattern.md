@@ -20,6 +20,11 @@ related: []
 ## Insight
 Claude Code natively supports per-session worktree isolation: the `-w` flag spins each session in its own working directory + branch, and subagents can carry `isolation: worktree` in their frontmatter so they are placed in a worktree by default. Edits in one session never touch files in another — worktrees are the official isolation primitive the runtime offers, not a project-side hack.
 
+## Related
+
+- `jj-workspace-isolation-revision-not-branch.md` — the cross-VCS (Jujutsu) counterpart of this isolation primitive.
+- `worktree-scope-by-module-not-task.md` — community worktree-scoping discipline that builds on this Claude Code primitive.
+
 ## Why it applies
 The gobbi worktree-first design aligns with the runtime-recommended isolation model. If gobbi declares every session must bootstrap a worktree at Configuration Step 1, it is harmonizing with the runtime's own pattern rather than inventing a project-local discipline. Importantly, the docs also call out a tightly-relevant constraint for the session-memory-survival design question: "Git worktrees isolate your files, but they don't isolate your database, environment variables, or running services" — i.e., the runtime treats worktree isolation as filesystem-only; cross-session state (e.g., session memory) must be addressed separately.
 

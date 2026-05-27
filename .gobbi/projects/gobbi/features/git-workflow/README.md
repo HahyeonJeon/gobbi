@@ -13,15 +13,15 @@ value_proposition: "Worktree-isolated sessions and a branch/PR/issue lifecycle t
 
 # Feature: Git Workflow
 
-Worktree-isolated sessions and a branch/PR/issue lifecycle that keep the main tree clean. This is value-feature #6 of the 7 capability features (design §1.2, RATIFY-1 / L1).
+Worktree-isolated sessions and a branch/PR/issue lifecycle that keep the main tree clean. This is the 6th of gobbi's 7 capability value-features (memory-system redesign design §1.2).
 
 ## Overview
 
-`git-workflow` is gobbi's source-control discipline: worktree-first session isolation plus a branch/PR/issue lifecycle and per-iter commit cadence, so every session's changes stay branch-isolated and the main tree stays clean.
+`git-workflow` is gobbi's source-control discipline: worktree-first session isolation plus a branch/PR/issue lifecycle and per-iteration commit cadence, so every session's changes stay branch-isolated and the main tree stays clean. The feature owns the `git` skill — the worktree-first architecture, the branch/PR/issue lifecycle, the Memory Access Matrix git rules, and the per-iteration commit cadence.
 
-## Subsystems
+## Status
 
-- `git` (worktree-first architecture, branch/PR/issue lifecycle, the Memory Access Matrix git rules, per-iter commit cadence)
+Active and live. The worktree-first Configuration step, branch-naming convention, and per-iteration session-memory commit cadence are shipped. The feature directory was created during the memory-system redesign by re-homing the durable git-workflow artifacts from the `gobbi-orchestration-workflow-improvements` (Bundle A) and `session-foundations-bundle-b` sprints into this capability feature. Several edge-case and recovery scenarios remain uncovered (see Open items).
 
 ## Subdirectories
 
@@ -30,15 +30,24 @@ Worktree-isolated sessions and a branch/PR/issue lifecycle that keep the main tr
 - `discussions/` — substantive AskUserQuestion topics scoped to git-workflow
 - `references/` — external prior art touching git workflow
 - `plans/` — plan artifacts produced by the Planning loop
+- `scenarios/` — situations the feature must handle (golden paths, edge cases, failure modes)
+- `checklists/` — implementation checklists anchored to scenarios and references
+- `backlogs/` — deferred git-workflow tasks
 - `changelogs/` — what shipped per task
-- `archive/` — superseded git-workflow artifacts (move-on-terminal)
 
 ## Recent activity
 
 | Date | Session | What |
 |---|---|---|
-| 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
+| 2026-05-26 | a10c82d6 | Feature dir created during the memory-system redesign; Bundle A + Bundle B git-workflow artifacts re-homed in |
+
+## Open items
+
+- Branch-name collision recovery when `chore/session-{date}-{ssid-short}` already exists — see `scenarios/branch-name-collision-recovery.md`.
+- `$CLAUDE_CODE_SESSION_ID`-absent branch-name fallback — see `scenarios/ssid-env-var-absent-fallback.md` and `backlogs/abort-mid-commit-partial-session.md`.
+- Em-dash anchor-slug format audit (4-hyphen vs 2-hyphen) — see `backlogs/anchor-slug-4-hyphen-vs-2-hyphen.md`.
+- `chore` label line-citation correction in `git/conventions.md` — see `backlogs/chore-label-line-citation-stale.md`.
 
 ## Related
 
-- Memory-system redesign design doc §1.2 (7-feature table), §1.3 (sprint → value-feature routing)
+- Memory-system redesign design doc §1.2 (7-feature table), §1.3 (sprint → value-feature routing).

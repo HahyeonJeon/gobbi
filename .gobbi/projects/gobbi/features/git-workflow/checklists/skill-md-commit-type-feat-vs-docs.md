@@ -11,25 +11,26 @@ tags: [commit-type, feat, docs, skill-md, git-conventions]
 domain: docs-sync
 ---
 
-# Checklist: SKILL.md Commits — `feat:` vs `docs:` Type
+# Decide `feat:` vs `docs:` commit type for behavior-introducing SKILL.md edits
 
-## When to apply
+## What
 
-When committing a change to a `SKILL.md` file (or any `.md` workflow specification file) that introduces net-new workflow behavior rather than correcting existing prose.
+When committing a change to a `SKILL.md` file (or any `.md` workflow-specification file) that introduces net-new workflow behavior rather than correcting existing prose, decide the commit type by these steps:
 
-## Checklist items
-
-- [ ] Does the SKILL.md change introduce net-new workflow behavior (a new procedure step, a new decision branch, a new state machine element)?
-  - If yes: `feat:` is defensible (workflow-as-spec; the spec IS the behavior change)
-  - If no (prose correction, clarification, rewording): use `docs:`
+- [ ] Does the change introduce net-new workflow behavior (a new procedure step, a new decision branch, a new state-machine element)?
+  - If yes: `feat:` is defensible (workflow-as-spec — the spec IS the behavior change).
+  - If no (prose correction, clarification, rewording): use `docs:`.
 - [ ] Has the project ratified a rule for this disambiguation? Check `.gobbi/projects/gobbi/rules/` for a commit-type rule for SKILL.md edits.
-- [ ] If no rule exists: surface to user before committing so the decision can be captured as a project rule.
+- [ ] If no rule exists: surface the question to the user before committing, so the decision can be captured as a project rule.
 
-## Context
+## Why
 
-The commit that shipped the worktree-create row 5.5 (`feat(orchestration): add Configuration Step 1 row 5.5 worktree creation`) was a `.md`-only diff that introduced workflow behavior (worktree creation procedure). `git/conventions.md` says `feat:` is for source features and `docs:` for documentation-only changes, but there is no tie-breaker for SKILL.md edits. The commit was not changed retroactively — the question needs ratification as a standing rule.
+The commit that shipped the worktree-create row (`feat(orchestration): add Configuration Step 1 worktree creation`) was a `.md`-only diff that nonetheless introduced workflow behavior (the worktree-creation procedure). `git/conventions.md` says `feat:` is for source features and `docs:` for documentation-only changes, but it gives no tie-breaker for SKILL.md edits that are documentation in form yet behavior in effect. Without a ratified rule, each such commit re-litigates the type choice.
 
-## Related
+## Verification
 
-- `git/conventions.md` § Commit Type registry
-- A Claude consistency evaluation finding from the worktree-create session surfaced this gap (finding C-001)
+The chosen commit type matches the decision tree above, and — once a project rule is ratified — a corresponding commit-type rule exists under `.gobbi/projects/gobbi/rules/`.
+
+## Status notes
+
+Pending user ratification as a standing project rule. The originating commit was not changed retroactively. Reference: `git/conventions.md` § Commit Type registry. Surfaced by a Claude consistency-evaluation finding during the worktree-create session-architecture work (session `1b26cf20`).

@@ -28,30 +28,30 @@ task_count: 10
 |---|---|---|---|---|
 | 01 | Insert orchestration/SKILL.md row 5.5 (worktree create + branch naming) | — | grep `chore/session-\{date\}-\{ssid-short\}` in SKILL.md ≥1 match | executor |
 | 02 | Qualify git/SKILL.md Memory Access Matrix row 31 + P2 invocation note | #01 | grep `worktreePath` ≥2 matches | executor |
-| 03 | Extend preparation/SKILL.md narrow-exception + rollback semantics (LOCK #4) | #01, #02 | grep `git -C.*rm` ≥1 + grep `AskUserQuestion` co-located | executor |
+| 03 | Extend preparation/SKILL.md narrow-exception + rollback semantics (the locked rollback-semantics decision) | #01, #02 | grep `git -C.*rm` ≥1 + grep `AskUserQuestion` co-located | executor |
 | 04 | gobbi/SKILL.md cross-ref + delegation/SKILL.md main-tree audit | #01, #02 | grep `row 5.5\|Configuration Step 1` in gobbi/SKILL.md | executor |
 | 05 | Per-iter commit cadence in 5 workflow phase docs | #01, #03 | grep `-l 'chore(session): record'` returns 5 paths; 0 in eval/memorization | executor |
-| 06 | Direct-mode opt-out footnote + smoke-test gate (LOCK #5) | #01 | grep `direct.*mode\|workflow.git.mode` in orchestration/SKILL.md | executor |
-| 07 | Create .claude/hooks/post-tool-use-agents.sh (T3 wave gate) | #05, #06 | bash -n exit 0; graceful empty-payload test | executor |
+| 06 | Direct-mode opt-out footnote + smoke-test gate (the locked direct-mode opt-out decision) | #01 | grep `direct.*mode\|workflow.git.mode` in orchestration/SKILL.md | executor |
+| 07 | Create .claude/hooks/post-tool-use-agents.sh (gates the hook + reconstructor wave) | #05, #06 | bash -n exit 0; graceful empty-payload test | executor |
 | 08 | Create .claude/scripts/reconstruct-agents.sh (shared context with #07) | #07 | bash -n exit 0; idempotency test | executor |
 | 09 | Edit .claude/settings.json PostToolUse + PostToolUseFailure blocks | #07 | jq -e PostToolUse/PostToolUseFailure matcher blocks; jq . exits 0 | executor |
 | 10 | orchestration/SKILL.md row 6 narrative + delegation structured headers + flock doc | #01, #04, #06, #07, #08 | grep `PostToolUse\|reconstructor` in orchestration/SKILL.md | executor |
 
 ## Dependency graph
 
-T1 wave (01→06) strictly before T3 wave (07→10). File-overlap conflicts:
-- orchestration/SKILL.md: 01→06→10 (enforced)
-- delegation/SKILL.md: 04→10 (enforced)
-- Tasks 07+08: shared executor (LOCK #2)
+The worktree-first architecture wave (tasks 01-06) runs strictly before the PostToolUse hook + reconstructor wave (tasks 07-10). File-overlap conflicts:
+- `orchestration/SKILL.md`: 01 → 06 → 10 (enforced ordering, all three touch the same file).
+- `delegation/SKILL.md`: 04 → 10 (enforced ordering).
+- Tasks 07 + 08 are assigned to a single shared executor (a locked decision) so the hook script and its reconstructor are authored with shared context.
 
 ## Verification strategy summary
 
-All 10 tasks' `verifies:` blocks pass. No broken workspace symlinks. `bash -n` exits 0 on Tasks 07 and 08 scripts. `jq . .claude/settings.json` exits 0. Self-review spec-coverage 18/18 preserved.
+All 10 tasks' verification gates pass. No broken workspace symlinks. `bash -n` exits 0 on the task-07 and task-08 scripts. `jq . .claude/settings.json` exits 0. The self-review spec-coverage count (18/18) is preserved.
 
 ## Open issues
 
-- Task 07+08 context-budget risk (LOCK #2 shared-executor; see assumption_risk staging)
-- Hook PostToolUseFailure self-failure budget unstated (see assumption_risk staging)
-- D-ref codes need inline expansion in execution briefs (see checklist_gap staging)
-- `effort:` field is non-canonical (Low; see checklist_gap staging)
-- Task 01 traces-to T1.c overclaim (Low; see checklist_gap staging)
+- Context-budget risk for the shared task-07 + task-08 executor (the two tasks share one executor; the combined context may be tight).
+- The PostToolUseFailure hook's self-failure budget is unstated (how the hook behaves if it itself fails).
+- Design-reference codes in the execution briefs need inline expansion so executors do not have to resolve them from the ideation artifact.
+- The `effort:` field used in the draft is non-canonical (Low priority).
+- Task 01's "traces-to" claim slightly overclaims its design coverage (Low priority).

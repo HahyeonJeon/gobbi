@@ -20,11 +20,11 @@ domain: evaluation-frame
 | 3 | Confirm evaluation.md + memorization.md are excluded from per-iter commit cadence targets with rationale | implemented | "Excluded files + rationale" section in design doc |
 | 4 | Planning brief for the per-iter commit cadence task includes dual grep verification gate (5 matches in loop docs, 0 in sub-phase docs) | pending (Planning action) | Grep gate documented in design file; Planning must include it in the task brief |
 
-## Context
+## Item details
 
-The orchestration workflow/ directory holds 7 files: 5 loop-phase docs (ideation, preparation, planning, execution, wrap-up) plus 2 sub-phase docs (evaluation, memorization). The per-iter commit cadence change must be applied to the 5 loop-phase docs only — not to evaluation.md or memorization.md. A Codex evaluator surfaced this 5-vs-7 ambiguity as a verification gap.
+The orchestration `workflow/` directory holds 7 files: 5 loop-phase docs (ideation, preparation, planning, execution, wrap-up) plus 2 sub-phase docs (evaluation, memorization). The per-iteration commit-cadence change must be applied to the 5 loop-phase docs only — not to `evaluation.md` or `memorization.md`. This checklist exists because the 5-vs-7 distinction was surfaced as a verification gap: an executor could miscount and either skip a loop doc or wrongly edit a sub-phase doc. Items 1-3 confirm the count and the target set; item 4 ensures the Planning brief carries a dual grep gate (5 matches in loop docs, 0 in sub-phase docs).
 
 ## Related
 
-- Design: `features/git-workflow/design/workflow-phase-doc-set-for-per-iter-cadence.md` (documents the 5 target files and the exclusion rationale)
-- Evaluation finding: iter1 Codex Overall finding COD-OVERALL-PREP1-004
+- Design: `../design/workflow-phase-doc-set-for-per-iter-cadence.md` (documents the 5 target files and the exclusion rationale).
+- Surfaced by a Codex Overall-perspective evaluation finding during the worktree-first preparation work (session `1b26cf20`).
