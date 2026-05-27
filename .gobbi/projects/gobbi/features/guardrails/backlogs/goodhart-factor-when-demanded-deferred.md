@@ -38,7 +38,7 @@ When the project decides to enforce `agents[]` field quality rather than mere pr
 
 ## Originating session
 
-`.gobbi/projects/gobbi/sessions/` — originated in session 1b26cf20 guardrails Ideation.
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/` — originated in the guardrails Ideation of that session.
 
 ## Related
 

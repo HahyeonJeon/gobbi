@@ -31,13 +31,11 @@ Active. The behavioral floor (13 Iron Laws in the `principles` skill) and the mi
 
 ## Subdirectories
 
-- `decisions/` — guardrails design decisions
-- `design/` — guardrails-scope design topics
+- `backlogs/` — deferred guardrails tasks awaiting a future session to pick them up
+- `changelogs/` — what shipped per task
+- `checklists/` — implementation checklists the design must address per scenario
 - `discussions/` — substantive AskUserQuestion topics scoped to guardrails
 - `references/` — external prior art touching principles / mistakes
-- `plans/` — plan artifacts produced by the Planning loop
-- `changelogs/` — what shipped per task
-- `archive/` — superseded guardrails artifacts (move-on-terminal)
 
 ## Recent activity
 

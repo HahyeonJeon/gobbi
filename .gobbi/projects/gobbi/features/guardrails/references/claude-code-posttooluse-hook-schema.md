@@ -30,6 +30,7 @@ The hook **also receives `transcript_path`** in every fire — meaning a hook ca
 
 ## Related
 
+- [`../../install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../install-runtime/references/claude-code-transcript-tooluseresult-empirical.md) (the empirical transcript-shape companion — the verbatim `toolUseResult` JSONL payload captured during the guardrails Ideation, which grounds the "verified empirically" claim in the Why-it-applies section)
 - `claude-code-hooks-12-lifecycle-events.md` (the companion reference covering the broader hook lifecycle-event landscape)
 - `checklists/hook-event-count-31-vs-29-docs-sync.md` and `backlogs/hook-event-count-31-vs-29-docs-sync.md` (the tracked docs-sync item: the "31 events" claim below should be corrected to the verified count of 29)
 - `backlogs/posttooluse-failure-webfetch-verification-gap.md` (the deferred empirical re-verification of the verbatim quotes captured here)
@@ -90,7 +91,7 @@ All 31 documented hook events on this page (full enumeration for context):
 The subagent-telemetry hook design explicitly required verifying the hook contract before committing to the mechanism. This insight is the verification answer:
 - The hook fires after every Agent tool call (matcher `"Task"`).
 - The hook receives `tool_name`, `tool_input` (subagent_type, prompt, model, description), `tool_result` (basic), and `transcript_path` (the route to the rich payload).
-- If hook input alone is insufficient, the hook can `jq` the transcript file to extract the full `toolUseResult` block (verified empirically during the guardrails Ideation: the transcript JSONL carries the rich subagent metadata enumerated in the Insight section above).
+- If hook input alone is insufficient, the hook can `jq` the transcript file to extract the full `toolUseResult` block (verified empirically during the guardrails Ideation — the captured verbatim payload lives in [`../../install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../install-runtime/references/claude-code-transcript-tooluseresult-empirical.md): the transcript JSONL carries the rich subagent metadata enumerated in the Insight section above).
 - **PostToolUseFailure** is officially supported for shell-command hooks (verbatim quote above), so the dual registration (PostToolUse + PostToolUseFailure) is grounded in the official documentation, not in community attestation.
 
 This gives the design a clear path: even if `tool_result` in the hook payload is impoverished, the hook is rich enough because `transcript_path` is always provided. The design's mechanism — a hook for real-time append plus a shell-script reconstructor for repair — is fully supported, and the dual-event (success + failure) registration is officially documented.

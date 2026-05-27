@@ -38,10 +38,10 @@ When authoring or editing `.claude/settings.json` hook registration for PostTool
 
 ## Originating session
 
-`.gobbi/projects/gobbi/sessions/` — originated in session 1b26cf20 guardrails Ideation evaluation (Codex overall finding COD-OVERALL-ITER3-001).
+`.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/` — surfaced by the Codex Overall-perspective evaluator on the third evaluation iteration of that session's guardrails Ideation, which flagged the "31 hook events" count as unsupported by the captured enumeration.
 
 ## Related
 
 - `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the reference carrying the "31" claim)
-- Codex evaluator overall finding COD-OVERALL-ITER3-001 (provenance)
+- Provenance: the Codex Overall-perspective evaluator finding on iteration 3 of that session's guardrails Ideation evaluation
 - See also `features/guardrails/checklists/hook-event-count-31-vs-29-docs-sync.md` (checklist form of same item)
