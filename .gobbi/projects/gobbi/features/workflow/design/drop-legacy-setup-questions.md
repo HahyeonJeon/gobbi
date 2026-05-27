@@ -13,15 +13,33 @@ topic: drop-legacy-setup-questions
 
 # Drop legacy setup questions — gobbi/SKILL.md session bootstrap rewrite
 
-**Chosen direction**: Rewrite `gobbi/SKILL.md § Step 4` (lines 97-114) from "Ask the user 2 setup questions" to "Ask 1 setup question + optional customize gate":
-- Question 1 — mode (chat/auto), **default auto** per `orchestration/templates/settings.default.json:3`
-- Optional "customize defaults?" gate — if yes, defer to `orchestration/SKILL.md § Step 1` row 2 walk-through
-- Remove: explicit eval-mode + git-workflow-mode questions (these defaults live in settings.json)
+## Context
 
-**Rationale**: `orchestration/SKILL.md § Step 1` already encodes a "use defaults vs customize" gate (rows 1-2). The existing `gobbi/SKILL.md § 4` duplicates and partially overlaps that mechanism. Consolidated path: one mode question (default auto) + customize gate resolves docs-sync drift. Settings verified empirically: `jq '.mode, .workflow.ideation.evaluate.mode, .git.pr' orchestration/templates/settings.default.json` returns `"auto"`, `"always"`, `{"open": false, "draft": false}`.
+The session-bootstrap step in `gobbi/SKILL.md § Step 4` asked the user two setup questions (eval-mode and git-workflow-mode). Those same defaults are already encoded in `settings.default.json` and walked through by `orchestration/SKILL.md § Step 1`'s "use defaults vs customize" gate (rows 1-2), so the two-question block duplicated and partially overlapped that mechanism — a docs-sync drift between the bootstrap prompt and the settings source of truth.
 
-**Critical note**: There is NO `.claude/skills/orchestration/workflow/configuration.md` file in the current repo — `find .claude/skills/orchestration/workflow -name "configuration*"` returns empty. The original brief referenced this non-existent file. Substitute everywhere with `orchestration/SKILL.md § Step 1`. This was auto-resolved in iter1 as "Concern 1".
+## Decision
 
-**Anchored insights**: I10, verified settings defaults.
+Rewrite `gobbi/SKILL.md § Step 4` from "ask the user 2 setup questions" to "ask 1 setup question + an optional customize gate":
 
-**Validation**: `awk '/^### 4\./,/^### 5\./' gobbi/SKILL.md` shows ≤ 2 AskUserQuestion mentions (mode + customize gate); zero mentions of "Always evaluate" / "Skip evaluation" / "Direct commit" / "Git workflow" as bootstrap-question options.
+- Question 1 — mode (chat/auto), **default auto** per `orchestration/templates/settings.default.json`.
+- Optional "customize defaults?" gate — if yes, defer to the `orchestration/SKILL.md § Step 1` row-2 walk-through.
+- Remove the explicit eval-mode and git-workflow-mode questions; those defaults live in `settings.json`.
+
+## Rationale
+
+`orchestration/SKILL.md § Step 1` already owns the defaults-vs-customize gate, so collapsing the bootstrap to one mode question plus a customize gate resolves the duplication without losing any capability. The settings defaults were verified empirically: `jq '.mode, .workflow.ideation.evaluate.mode, .git.pr' orchestration/templates/settings.default.json` returns `"auto"`, `"always"`, `{"open": false, "draft": false}` — confirming the defaults the bootstrap no longer needs to ask about.
+
+One referenced file does not exist: there is no `.claude/skills/orchestration/workflow/configuration.md` (`find .claude/skills/orchestration/workflow -name "configuration*"` returns empty). Wherever an earlier brief pointed at that path, substitute `orchestration/SKILL.md § Step 1`, which is the authoritative configuration walk-through.
+
+## Alternatives considered
+
+- **Keep the two setup questions in `gobbi/SKILL.md`.** Rejected: they duplicate the `settings.json` defaults and the `orchestration/SKILL.md § Step 1` customize gate, creating two places that can drift out of sync.
+- **Remove the setup block entirely (no mode question).** Rejected: the chat/auto mode choice is the one bootstrap decision that genuinely belongs at session start; only the eval-mode and git-workflow-mode questions are redundant.
+
+## Consequences
+
+A fresh manager's bootstrap asks at most one mode question plus an optional customize gate; the eval-mode and git-workflow-mode questions are gone. Validation: `awk '/^### 4\./,/^### 5\./' gobbi/SKILL.md` shows ≤ 2 AskUserQuestion mentions (mode + customize gate) and zero mentions of "Always evaluate" / "Skip evaluation" / "Direct commit" / "Git workflow" as bootstrap-question options.
+
+## Related
+
+- `design/glossary-placement.md` — the sibling `gobbi/SKILL.md` bootstrap-structure change shipped in the same Bundle A pass.

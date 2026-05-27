@@ -12,23 +12,23 @@ domain: docs-sync
 last_updated: 2026-05-24
 ---
 
-# Conformance task traces-to overclaim — edit assigned to wrong task
+# Conformance task traces-to overclaim — implementation checklist
 
-## Situation
-
-Task 01's `traces-to` field at `draft-iter2.md:132` includes `T1-I-T1.c` (git/SKILL.md P2 invocation note). However, the actual P2 invocation note edit is assigned to Task 02 (`02-git-skill-worktree-path-qualifier`), as stated in Task 02's `traces-to` at `draft-iter2.md:154` and confirmed in the Self-review spec-coverage table at `draft-iter2.md:572`.
-
-The Task 01 heading also still reads "T1.a + T1.d (partial)" but traces-to shows T1.a and T1.c.
-
-## Checklist Item
+Task 01's `traces-to` field claims the git/SKILL.md P2 invocation-note anchor, but the actual P2 invocation-note edit is assigned to Task 02 (`02-git-skill-worktree-path-qualifier`) — as stated in Task 02's own `traces-to` and confirmed in the plan's self-review spec-coverage table. The Task 01 heading also still reads "T1.a + T1.d (partial)" while its `traces-to` lists a different anchor set, so the heading and the trace have drifted apart.
 
 | # | Item | Anchor | Status | Verification |
 |---|---|---|---|---|
-| 1 | Task 01 `traces-to` must only include anchors whose actual implementation work happens in Task 01 | novel | pending | Review traces-to fields vs file-map assignments before finalizing any future plan revision |
-| 2 | Task heading must match the primary traces-to anchors (not drift to stale anchor names) | novel | pending | Cross-check heading vs traces-to on every plan task before PASS |
+| 1 | Task 01 `traces-to` must only include anchors whose actual implementation work happens in Task 01 | novel | pending | Review `traces-to` fields vs file-map assignments before finalizing any future plan revision |
+| 2 | Task heading must match the primary `traces-to` anchors (not drift to stale anchor names) | novel | pending | Cross-check heading vs `traces-to` on every plan task before PASS |
 
-## Notes
+## Item details
 
-Low severity — the executor reads `traces-to:` fields and the task `what`, not the heading. The heading mismatch is cosmetic. However, accurate traces-to fields matter for post-execution audit (linking what was implemented to what was planned).
+### 1. Align `traces-to` with the actual file-map assignment
 
-Not addressed in iter2 (out of surgical scope). Carry to iter3 or fix in Execution brief prep.
+**Anchor reasoning**: novel — no reference governs trace accuracy; the rule is that a task only traces anchors whose edits it actually performs, so the trace stays an accurate audit link.
+
+### 2. Keep the heading consistent with `traces-to`
+
+**Anchor reasoning**: novel — the heading must name the same anchors the trace does, or post-execution audit reads a stale label.
+
+Low severity — the executor reads `traces-to:` fields and the task `what`, not the heading, so the heading mismatch is cosmetic. Accurate `traces-to` fields still matter for post-execution audit (linking what was implemented to what was planned). This was out of the surgical fix scope when surfaced; carry it to a future plan revision or fix it in Execution brief prep.

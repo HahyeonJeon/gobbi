@@ -15,15 +15,15 @@ artifact_ref: /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/2026-05
 
 # Execution Plan — gobbi-orchestration-workflow-improvements
 
-## Feature
+## Idea anchor
 
-`gobbi-orchestration-workflow-improvements`
+Repair four discipline gaps in gobbi orchestration/workflow — the codex-invocation anchor, the memorization moment-of-capture, the wrap-up compliance check, and naming-convention enforcement — plus two gobbi entry-skill polish items. The design topics this plan implements are now homed in `design/drop-legacy-setup-questions.md`, `design/glossary-placement.md`, and `design/wrap-up-step-2-5-compliance-check.md`.
 
-## Goal
+## Scope Contract reference
 
-Repair four discipline gaps in gobbi orchestration/workflow (codex invocation anchor, memorization moment-of-capture, wrap-up compliance check, naming convention enforcement) plus two gobbi entry skill polish items.
+The locked Scope Contract is the seven Bundle A items selected at Ideation; see `discussions/scope-bundle-selection.md`.
 
-## Task summary (7 tasks, ordered)
+## Sub-tasks
 
 | ID | What | Agent | Branch |
 |---|---|---|---|
@@ -35,22 +35,19 @@ Repair four discipline gaps in gobbi orchestration/workflow (codex invocation an
 | 06-codex-skill-content | Fill 8 H2 sections of codex/SKILL.md + gobbi Skill Map row | executor | feat/codex-skill-content |
 | 07-cross-link-sweep | Verify all 10 Cross-Link Manifest entries post-ship | assistant | chore/bundle-a-cross-link-sweep |
 
-## Effective execution order
+## Dependency graph
 
-`01 → 02 → 03 → 04 → 05 → 06 → 07`
+Effective execution order: `01 → 02 → 03 → 04 → 05 → 06 → 07`. Key edges:
 
-## Key dependencies
+- Task 06 depends on Task 01 (both touch gobbi/SKILL.md).
+- Task 03 depends on Task 02 (delegation references the memorization link target).
+- Task 05 depends on Task 02 (both touch memorization/SKILL.md — sequential required).
+- Task 07 depends on all 6 prior tasks.
 
-- Task 06 depends on Task 01 (both touch gobbi/SKILL.md)
-- Task 03 depends on Task 02 (delegation references memorization link target)
-- Task 05 depends on Task 02 (both touch memorization/SKILL.md — sequential required)
-- Task 07 depends on all 6 prior tasks
+## Verification strategy summary
 
-## Canonical artifact
+Each task ships its own grep/jq verification; the plan-level gate is Task 07's cross-link sweep, which verifies all 10 Cross-Link Manifest entries post-ship. The full plan is preserved at `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/artifacts/plan.md`.
 
-Full Plan: `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/artifacts/plan.md`
+## Open issues
 
-## Evaluation history
-
-- Iter 1: REVISE (Claude PASS + Codex REVISE — 8 High on Concern 3 / relative paths / Task 04 brief / `_claude` refs)
-- Iter 2: PASS (Claude PASS + Codex PASS — 0 Critical/High; all iter1 threshold findings addressed)
+The Planning evaluation closed with PASS. The first evaluation iteration returned REVISE (8 High findings on the coverage-ownership matrix-row wording, relative-path references, the Task 04 brief, and stale `_claude` references); the fix iteration addressed all threshold findings and both evaluation systems returned PASS with 0 Critical/High.

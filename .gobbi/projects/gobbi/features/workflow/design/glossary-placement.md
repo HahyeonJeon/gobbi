@@ -13,10 +13,27 @@ topic: glossary-placement
 
 # Move glossary below session bootstrap order in `gobbi/SKILL.md`
 
-**Chosen direction**: Move the `## Glossary` block (currently at `gobbi/SKILL.md:15-29`) to a new position immediately before `## Workflow Overview` (currently line 128) and after `## Session Bootstrap Order` ends (~line 124). Execution: a single Edit (cut Glossary block, paste at new location).
+## Context
 
-**Rationale**: A fresh manager's first need is to run the bootstrap (env vars + settings + project-memory check + workflow entry). Once bootstrapped, the manager benefits from the Glossary as a quick vocabulary anchor before entering the substantive workflow. Currently the Glossary interrupts the flow between the Introduction and the bootstrap steps, forcing the reader to skip past vocabulary definitions before finding the actionable bootstrap.
+In `gobbi/SKILL.md`, the `## Glossary` block sits between the Introduction and the `## Session Bootstrap Order` steps. A fresh manager opening the skill must scroll past vocabulary definitions before reaching the actionable bootstrap — env vars, settings, project-memory check, workflow entry — which is the manager's actual first need.
 
-**Anchored insight**: I9 — `gobbi/SKILL.md:15-29` (Glossary table) confirmed to appear before `gobbi/SKILL.md:32-124` (Session Bootstrap Order) via direct `cat` verification this session.
+## Decision
 
-**Validation**: `awk '/^## Glossary/{a=NR}/^## Workflow Overview/{b=NR}/^## Session Bootstrap Order/{s=NR}END{print s, a, b}' gobbi/SKILL.md` shows Session Bootstrap Order line < Glossary line < Workflow Overview line.
+Move the `## Glossary` block to a new position immediately before `## Workflow Overview` and after `## Session Bootstrap Order` ends. Execution is a single Edit: cut the Glossary block, paste it at the new location.
+
+## Rationale
+
+A fresh manager's first need is to run the bootstrap; the Glossary is a vocabulary anchor that is most useful *after* bootstrap, just before entering the substantive workflow. Placing the bootstrap first puts the actionable content at the top of the reader's path and relocates the reference material to where it is consulted.
+
+## Alternatives considered
+
+- **Leave the Glossary before the bootstrap.** Rejected: it interrupts the flow from Introduction to the actionable bootstrap, forcing the reader to skip vocabulary before doing anything.
+- **Delete the Glossary.** Rejected: the vocabulary anchor is still valuable once bootstrapped; the issue is placement, not the content.
+
+## Consequences
+
+The bootstrap steps lead the document; the Glossary follows them and precedes the Workflow Overview. Validation: `awk '/^## Glossary/{a=NR}/^## Workflow Overview/{b=NR}/^## Session Bootstrap Order/{s=NR}END{print s, a, b}' gobbi/SKILL.md` shows the Session Bootstrap Order line < Glossary line < Workflow Overview line.
+
+## Related
+
+- `design/drop-legacy-setup-questions.md` — the sibling `gobbi/SKILL.md` bootstrap-content change shipped in the same Bundle A pass.

@@ -17,13 +17,13 @@ related:
 
 # 10-task decomposition — session-foundations-bundle-b
 
-## Problem
+## Context
 
-The T1 (worktree-first session architecture) + T3 (PostToolUse/PostToolUseFailure hook + reconstructor) bundle from `session-foundations-bundle-b` requires coordinated edits across 13 files (5 skill docs, 3 skill subdocs, 2 new scripts, 1 JSON config) with non-trivial ordering constraints and a strict wave gate between T1 and T3 work.
+The session-foundations-bundle-b work joins two areas — the worktree-first session architecture (the T1 doc edits) and the PostToolUse/PostToolUseFailure hook plus its reconstructor (the T3 script authoring). Together they require coordinated edits across 13 files (5 skill docs, 3 skill subdocs, 2 new scripts, 1 JSON config) with non-trivial ordering constraints and a strict wave gate between the T1 and T3 work. The decomposition must keep each task narrow enough for one executor while honoring those ordering constraints. In scope: 10 tasks covering 18 Ideation implementation-checklist anchors. Out of scope: the skill-loading matrix topic (deferred), Codex CI, and two verification-only checklist anchors already staged at Ideation.
 
-## Scope
+## Decision
 
-In-scope: 10 tasks covering 18 Ideation implementation checklist anchors (T1.a-T1.j + T3.a-T3.h). Out-of-scope: T2 (deferred), Codex CI, T3.f and T3.h (verification-only — already staged at Ideation).
+Decompose the bundle into 10 medium-granularity tasks organized into two strict waves — a T1 doc-edit wave (Tasks 01-06) and a T3 script-authoring wave (Tasks 07-10) — with the T3 wave gated behind completion of the whole T1 wave.
 
 ## Approach
 
@@ -33,19 +33,21 @@ In-scope: 10 tasks covering 18 Ideation implementation checklist anchors (T1.a-T
 
 **T3 wave (Tasks 07-10):** 4 tasks building the hook+reconstructor system. Strict gate: Tasks 07-10 cannot start until both 05 AND 06 complete (LOCK #1). Task 07 (hook script) and Task 08 (reconstructor) share a single executor delegation (LOCK #2). Task 09 (settings.json) depends only on 07. Task 10 (cross-cutting narrative) depends on 01/04/06/07/08.
 
-## Validation
+## Rationale
 
-Each task carries a `verifies:` block with runnable grep/jq/bash-n commands the executor uses as completion gates. The plan-level gate is: all 10 `verifies:` blocks pass + no broken symlinks + `bash -n` exits 0 on both new scripts.
+Each task carries a `verifies:` block with runnable grep/jq/bash-n commands the executor uses as completion gates; the plan-level gate is all 10 `verifies:` blocks passing, no broken symlinks, and `bash -n` exiting 0 on both new scripts. Choosing 10 narrow tasks over fewer larger ones keeps each task's scope bounded and reduces reviewer confusion on shared-file edits, at the cost of more delegation handoffs. Sequential T1→T3 waves add wall-clock time versus interleaving, but buy coherent commit history and remove interleaving ambiguity on `orchestration/SKILL.md` (touched by both waves).
 
-## Trade-offs
+## Alternatives considered
 
-- **10 tasks vs. fewer larger tasks**: 10 preserves bounded scope per task and reduces reviewer confusion on shared-file edits. The trade-off is more delegation handoffs.
-- **LOCK #2 shared executor**: preserves jq snippet context across Task 07 and Task 08 at the cost of a large combined delegation. See assumption_risk staging for the context-budget risk.
-- **Sequential T1→T3 waves**: adds wall-clock time vs. interleaving, but provides coherent commit history and avoids interleaving ambiguity on `orchestration/SKILL.md` (touched by both waves).
+- **Fewer, larger tasks.** Rejected: larger tasks blur scope per executor and make reviewer attention on shared-file edits harder; the 10-task split keeps each delegation auditable.
+- **Interleaved T1/T3 waves.** Rejected: interleaving the doc-edit and script-authoring waves creates ordering ambiguity on the files both touch and produces a less coherent commit history.
+- **Splitting the hook (Task 07) and reconstructor (Task 08) across two executors.** Rejected here: Task 08 consumes the jq snippets and stdin contract Task 07 establishes, so a shared-executor delegation (LOCK #2) avoids re-deriving that context — accepting the context-budget risk tracked below.
 
-## Open issues
+## Consequences
 
-- `effort:` field is non-canonical (checklist_gap staged separately)
-- Task 01 `traces-to` T1.c overclaim (checklist_gap staged separately)
-- D-ref codes lack inline expansion for executors (checklist_gap staged separately)
-- LOCK #2 context-budget risk (assumption_risk staged separately)
+The execution plan is 10 tasks in two gated waves. Four follow-up items surfaced during decomposition and were carried as separate records rather than blocking the plan:
+
+- `checklists/effort-field-non-canonical-schema.md` — the `effort:` task-YAML field is not in the canonical schema.
+- `checklists/task01-t1c-trace-overclaim.md` — Task 01's `traces-to` overclaims an anchor whose edit belongs to Task 02.
+- `checklists/dq-anchor-readability.md` / `checklists/dq-anchor-traceability.md` — design-question anchors lack inline expansion for executors.
+- `backlogs/lock2-shared-executor-mega-task-risk.md` — the LOCK #2 shared-executor context-budget risk.

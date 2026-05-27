@@ -33,9 +33,9 @@ Strict sequential confirmed. LOCK #1 applies as strict ordering, not advisory.
 
 ## Implication
 
-The dependency graph uses edges `05 → 07` AND `06 → 07` (both terminal T1 leaves gate Task 07). Neither 05 nor 06 alone gates 07 — both do. This was strengthened in iter2 Fix 2 from the iter1 form of `requires: [05]` only.
+The dependency graph uses edges `05 → 07` AND `06 → 07` (both terminal T1 leaves gate Task 07). Neither 05 nor 06 alone gates 07 — both do. The graph was strengthened to this form from an earlier draft that gated Task 07 on `requires: [05]` only.
 
 ## Related
 
-- planning/staging/decisions/lock1-wave-ordering-not-graph-enforced.md
-- draft-iter2.md:388 (dep table), :399 (wave-ordering paragraph)
+- `decisions/2026-05-24-lock1-wave-ordering-not-graph-enforced.md` — the decision record that added the gating edges.
+- `design/dependency-graph-strict-wave-ordering.md` — the design capturing the full wave-ordering graph.

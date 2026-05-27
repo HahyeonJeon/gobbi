@@ -11,24 +11,24 @@ tags: [dq-anchors, planning, checklist, readability]
 domain: process
 ---
 
-# DQ-anchor readability — DQ-n anchors defined in sub-step rawdata, not in canonical draft
+# DQ-anchor readability — design questions defined in rawdata, not in the canonical draft
 
-## Context
+## What
 
-Codex Aesthetics finding: the design questions (T1-DQ-1, T1-DQ-2, T1-DQ-3, T3-DQ-1 through T3-DQ-4) are defined in `rawdata/sub-step-d-design-iter1.md` but only referenced by anchor name in the canonical draft. A reader of `draft-iter3.md` alone cannot resolve the DQ anchor back to the question text without consulting the sub-step rawdata file.
+The design questions for the T1 and T3 task waves are defined in the Ideation sub-step-D rawdata file but only referenced by anchor name in the canonical draft. A reader of the canonical draft alone cannot resolve a design-question anchor back to its question text without opening the sub-step rawdata file. The checklist item for Planning: before decomposing the T1/T3 tasks, read the sub-step-D rawdata to resolve the anchor meanings rather than re-deriving the questions from anchor names; optionally, if Planning builds a DQ index (see the sibling `dq-anchor-traceability.md`), copy the question text from rawdata into that index for cross-session discoverability.
 
-## Checklist item for Planning
+## Why
 
-- [ ] Planning: before decomposing T1/T3 tasks, read `rawdata/sub-step-d-design-iter1.md` to resolve DQ anchor meanings — do NOT attempt to re-derive the DQ questions from the anchor names alone.
-- [ ] Optional: if Planning creates a DQ index (`dq-anchor-traceability.md` from sibling checklist), copy the question text from sub-step rawdata into that index for cross-session discoverability.
+A Codex Aesthetics evaluation flagged that anchor-name-only references make the canonical draft unreadable in isolation — the reader has to chase the question text into a separate rawdata file. Resolving the anchors at Planning time prevents the decomposition from acting on misremembered question text.
 
-## Deferred
+## Verification
 
-Adding DQ question text directly to the canonical draft was deferred from iter2 and iter3 (the authorized iter3 scope was Fix A/B/C only; DQ readability improvements were out of scope).
+Planning has read the sub-step-D rawdata and decomposed the T1/T3 tasks against the resolved question text (not anchor names alone); if a DQ index was created, it carries the question text inline.
 
-## Related
+## Status notes
 
-- `evaluation/iter2/codex/aesthetics.md` COD-AESTH-002
-- `evaluation/iter3/codex/aesthetics.md` COD-AESTH-002
-- `rawdata/sub-step-d-design-iter1.md` (DQ source of truth)
-- `rawdata/draft-iter3.md` (anchor-name references only)
+Adding the design-question text directly to the canonical draft was deferred because the authorized fix scope at the time was limited to a specific set of fixes; DQ readability improvements were out of that scope. Status: open — for Planning to act on at decomposition.
+
+## Source
+
+Ideation evaluation (Codex Aesthetics) and the design-question source of truth are preserved in the originating session: `sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/ideation/rawdata/sub-step-d-design-iter1.md`.

@@ -13,18 +13,29 @@ topic: scope-bundle-selection
 
 # Bundle A scope selection — all 7 items chosen
 
-## What was asked
+## Context
 
-Q: "Which bundle of improvements should we ship this session — codex-only, memorization-only, or Bundle A (all 7 items together)?"
+At the start of the Ideation loop, several candidate improvement bundles were on the table. The leader needed the user to lock the session scope before decomposing into tasks: ship a narrow codex-only bundle, a narrow memorization-only bundle, or the broader Bundle A that combines codex, memorization, and polish items.
 
-## User answer
+## Question
 
-Bundle A selected (codex + memorization + polish items). Rationale given: four items share the same witness session (`2026-05-22-bac669ad`) and a shared root cause (orchestration/workflow discipline gaps). Splitting would force four separate ideation→planning→execution cycles for a coherent ≤ 1-day docs-edit bundle.
+Which bundle of improvements should we ship this session — codex-only, memorization-only, or Bundle A (all 7 items together)?
 
-## Decision and consequence
+## Options considered
 
-Decisions Locked row 1: "Bundle A (codex + memorization + polish) selected over codex-only or memorization-only." This session's scope is 7 items A-G. Items outside Bundle A (1-2, 1-3, 2-1, 2-2, 4-1) are explicitly deferred.
+1. **Bundle A (all 7 items)** — codex + memorization + polish; four of the items share one witness session and a single root cause (orchestration/workflow discipline gaps).
+2. **Codex-only** — ship just the codex-invocation items.
+3. **Memorization-only** — ship just the memorization-capture items.
 
-## Source
+## User decision
 
-discussion-log § Round 1 + Scope lock
+Bundle A selected. Rationale: four items share the same witness session and a shared root cause, so splitting them would force four separate Ideation→Planning→Execution cycles for what is a coherent, roughly one-day docs-edit bundle.
+
+## Implication
+
+This session's scope is the seven Bundle A items. The improvement candidates outside Bundle A — the skill-loading-discipline topic, the matrix-location topic, and the other unselected items — are explicitly deferred to their backlog entries.
+
+## Related
+
+- `../../../backlogs/skill-loading-discipline.md` — one of the deferred non-Bundle-A items.
+- `plans/2026-05-23-orch-workflow-improvements.md` — the Execution plan for the seven Bundle A items.

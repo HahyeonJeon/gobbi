@@ -22,6 +22,10 @@ The Ideation → Planning → Execution → Memorization → Handoff pipeline: a
 
 `workflow` is gobbi's core engine: the 6-step state machine (Configuration plus the five productive steps) that drives every non-trivial task from idea to handoff, with a human-in-the-loop gate at each transition.
 
+## Status
+
+Active. The 6-step state machine and its five loop bodies are live. The feature directory accumulates the design decisions, discussions, and checklists produced while the workflow surfaces (`orchestration/`, the loop skills, `wrap-up/`) are refined.
+
 ## Subsystems
 
 - `orchestration` (+ `workflow/*.md`, the 6-step state machine / reducer / event store)
@@ -31,12 +35,13 @@ The Ideation → Planning → Execution → Memorization → Handoff pipeline: a
 
 ## Subdirectories
 
+- `backlogs/` — deferred workflow tasks
+- `changelogs/` — what shipped per task
+- `checklists/` — implementation checklist items for the Planning loop to resolve
 - `decisions/` — locked workflow design decisions
 - `design/` — workflow-scope design topics
 - `discussions/` — substantive AskUserQuestion topics scoped to workflow
-- `references/` — external prior art touching workflow
 - `plans/` — plan artifacts produced by the Planning loop
-- `changelogs/` — what shipped per task
 - `archive/` — superseded workflow artifacts (move-on-terminal)
 
 ## Recent activity
@@ -44,6 +49,10 @@ The Ideation → Planning → Execution → Memorization → Handoff pipeline: a
 | Date | Session | What |
 |---|---|---|
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
+
+## Open items
+
+- `backlogs/lock2-shared-executor-mega-task-risk.md` — the shared-executor context-budget risk deferred for a future Execution loop.
 
 ## Related
 

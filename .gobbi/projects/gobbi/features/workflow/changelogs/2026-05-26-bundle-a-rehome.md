@@ -13,6 +13,8 @@ plan: null
 
 # Bundle A re-homed — workflow's share
 
+**Task:** memory-redesign W3-T2 — re-home the `gobbi-orchestration-workflow-improvements` sprint's durable artifacts into the 7 capability value-features.
+
 ## Summary
 The `gobbi-orchestration-workflow-improvements` work-sprint (Bundle A) was
 re-homed into the 7 capability features during memory-system redesign W3-T2.
@@ -24,8 +26,8 @@ Re-homed (via `git mv`, history preserved) 10 artifacts into `workflow/`:
 - 3 decisions: step-2-5-example-non-canonical-domain-value, wrap-up-step-2-5-anchor-placement, wrap-up-step-2-5-escalation-default
 - 3 designs: drop-legacy-setup-questions, glossary-placement, wrap-up-step-2-5-compliance-check
 - 2 discussions: scope-bundle-selection, wrap-up-step-2-5-escalation-shape
-- 1 plan: 2026-05-23-main (the whole Bundle A execution plan — spans all tasks)
-- 1 archived decision bundle: 2026-05-23-iter1-user-redirects (superseded; spans codex + wrap-up)
+- 1 plan: `plans/2026-05-23-orch-workflow-improvements.md` (the whole Bundle A execution plan — spans all tasks)
+- 1 archived decision bundle: `archive/decisions/2026-05-23-iter1-user-redirects.md` (superseded; spans codex + wrap-up)
 - `feature:` frontmatter key updated to `workflow`; bodies untouched.
 
 ## Verification

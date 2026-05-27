@@ -13,18 +13,28 @@ discussion-id: CP-1-2-alpha
 
 # Root-cause hypothesis for skill-loading discipline confirmed
 
-## Question asked
+## Context
 
-CP-1.2-α: Is the root cause for Item 1-2 (skill-loading discipline) a (D+L) composite — docs gap + lazy-load behavior?
+While framing the skill-loading-discipline improvement (the T2 topic), the leader proposed a composite root cause: agents fail to load instructed skills both because of a documentation gap (D) and because of lazy-load behavior (L). The leader asked the user to confirm this (D+L) composite before any design built on it.
 
-## User answer
+## Question
 
-Confirmed (D+L) composite (Option Recommended): 3 of 7 promoted mistakes fit the pattern of agents failing to load skills they were instructed to load.
+Is the root cause for the skill-loading-discipline topic a (D+L) composite — a documentation gap plus lazy-load behavior?
 
-## Impact on design
+## Options considered
 
-The (D+L) composite analysis is preserved in the backlog item `staging/backlogs/project/item-1-2-skill-loading-discipline.md` for when T2 is picked up in a future session. It does not affect T1 or T3 design.
+1. **(D+L) composite (Recommended)** — both a docs gap and lazy-load behavior drive the failures.
+2. **Single-cause** — either docs-only or behavior-only.
 
-## Source
+## User decision
 
-`rawdata/draft-iter3.md:452` (Sub-step A round 1, decision #4)
+Confirmed the (D+L) composite: 3 of 7 promoted mistakes fit the pattern of agents failing to load skills they were instructed to load.
+
+## Implication
+
+The (D+L) composite analysis is preserved in the skill-loading-discipline backlog for when the T2 topic is picked up in a future session. It does not affect the T1 or T3 design in the current session's scope.
+
+## Related
+
+- `../../../backlogs/skill-loading-discipline.md` — the deferred T2 backlog item carrying this root-cause analysis.
+- `discussions/matrix-location-ambiguity-defers-t2.md` — the discussion that deferred the T2 topic to which this root cause applies.

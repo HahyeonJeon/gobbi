@@ -18,24 +18,26 @@ decision_status: accepted
 
 ## Context
 
-Finding from Codex Consistency evaluation. Low severity. Did not require REVISE — below threshold. Preserved for Planning/Execution to address in the Bundle A docs pass.
+A Codex Consistency evaluation flagged that the illustrative example in the Step 2.5 specification uses `Domain=\`testing\`` as an example of a `general`-Type finding, while the canonical Domain value defined in `evaluation/SKILL.md` is `test` (without the `-ing` suffix). The mismatch is in an illustrative example only, not in normative routing rules or the classification table — the active routing logic delegates to the canonical Domain table in `evaluation/SKILL.md`, so the incorrect example does not break runtime behavior. The finding was Low severity, below the REVISE threshold.
 
 ## Decision
 
-The illustrative example in Design D / Step 2.5 specification uses `Domain=\`testing\`` as an example of a `general`-Type finding. The canonical Domain value defined in `evaluation/SKILL.md:403` is `test` (without the `-ing` suffix).
+Defer the fix to the Execution loop as a one-word micro-edit (`testing` → `test`) rather than re-opening the Ideation draft for a REVISE round.
 
-The mismatch is in an illustrative example, not in normative routing rules or the classification table. The active routing logic delegates to the canonical Domain table at `evaluation/SKILL.md § Complete Domain → staging destination routing (general Type)` (line 356), so the incorrect example does not break runtime behavior.
+## Rationale
 
-## Rationale for deferral
+The mismatch is illustrative-only and Low severity, and the fix is a single-word edit in one location — disproportionate to a full REVISE round. Deferring it to a Planning/Execution micro-fix keeps the Ideation draft stable while still correcting the example before it ships.
 
-The example was introduced in iter2's vocabulary-repair paragraph and survived iter3's mechanical repair pass. Changing it requires a one-word edit (`testing` → `test`) in one location. This is appropriate as a Planning/Execution micro-fix rather than an Ideation REVISE round. The Low severity and illustrative-only nature of the mismatch are the basis for deferral.
+## Alternatives considered
 
-## Resolution
+- **Re-open the Ideation draft for a REVISE round to fix the example.** Rejected: a one-word illustrative-only correction does not justify a REVISE iteration.
+- **Leave the example as `testing`.** Rejected: even though it does not break routing, an example that disagrees with the canonical Domain vocabulary misleads a future reader.
 
-Addressed in Execution Task 05 (T05 — COD-CONS-003 micro-fix): `Domain=\`testing\`` → `Domain=\`test\`` in the evaluation/SKILL.md example text.
+## Consequences
+
+The example was corrected in the Execution loop: `Domain=\`testing\`` → `Domain=\`test\`` in the `evaluation/SKILL.md` example text. The canonical Domain table remains the single source of truth for routing.
 
 ## Related
 
-- COD-CONS-003 in `evaluation/iter3/codex/consistency.md`
-- `evaluation/SKILL.md:403` — canonical `test` Domain definition
-- Design D specification, iter3 line 482
+- `evaluation/SKILL.md` — the canonical `test` Domain definition the example must match.
+- `design/wrap-up-step-2-5-compliance-check.md` — the Step 2.5 specification that carried the example.

@@ -11,24 +11,24 @@ tags: [dq-anchors, planning, checklist, traceability]
 domain: process
 ---
 
-# DQ-anchor traceability — no DQ index; F1/Fix-decision sections provide local trace only
+# DQ-anchor traceability — no stand-alone DQ index, only local trace
 
-## Context
+## What
 
-Codex Overall + Consistency finding: the design decisions in `draft-iter3.md` cite T-DQ-N anchors inline but there is no stand-alone DQ index document cross-referencing each design question to its resolution. For Planning, the F1/Fix-decision section provides sufficient local trace; the gap is in cross-session discoverability.
+The design decisions in the canonical draft cite design-question anchors inline, but there is no stand-alone DQ index document cross-referencing each design question to its resolution. The checklist item for Planning: if a DQ index is needed for decomposition, add a cross-referencing index (design-question anchor → design-decision slug) — optional if Planning can navigate inline from the draft. Planning must NOT re-open any design question already answered in the draft's Decisions Log; the anchors are read-only from Planning onwards.
 
-## Checklist item for Planning
+## Why
 
-- [ ] Planning: if a DQ index is needed for Planning decomposition, add a `staging/design/dq-index.md` file cross-referencing DQ-n anchors → design decision slugs. This is optional if Planning can navigate inline from the draft.
-- [ ] Planning should NOT re-open any DQ that is already answered (per draft-iter3.md Decisions Log); the DQ-anchors are read-only from Planning onwards.
+A Codex Overall + Consistency evaluation flagged that the inline-only references give sufficient local trace for Planning but leave a cross-session discoverability gap: a future reader cannot find a single map from question to resolution. A DQ index would close that gap if the decomposition needs it.
 
-## Deferred
+## Verification
 
-A formal DQ traceability document was scoped out of iter3 (authorized scope: Fix A/B/C only). This checklist item surfaces the gap for Planning to decide if a DQ index is worth creating before decomposition.
+Either Planning navigated the design questions inline from the draft (no index needed), or a DQ index exists cross-referencing each design-question anchor to its design-decision slug; no answered design question was re-opened.
 
-## Related
+## Status notes
 
-- `evaluation/iter2/codex/overall.md` COD-OVERALL-004
-- `evaluation/iter3/codex/overall.md` COD-OVERALL-004
-- `evaluation/iter3/codex/consistency.md` COD-CONS-002
-- `rawdata/draft-iter3.md` Decisions Log (Sub-step A through D)
+A formal DQ traceability document was scoped out at the time (the authorized scope was a specific fix set only). Status: open — this item surfaces the gap for Planning to decide whether a DQ index is worth creating before decomposition.
+
+## Source
+
+The Codex Overall and Consistency findings and the draft's Decisions Log are preserved in the originating session: `sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/ideation/rawdata/draft-iter3.md`.
