@@ -1,8 +1,8 @@
 # HAND-OFF — gobbi dev-doc PROSE wave (session 5786090e, 2026-05-27)
 
-Continuation of the dev-doc-standard retrofit. Driving the wave to completion ("go to the end"). **P1, P2, P3a, P3b all PASS (fully closed). Remaining: P4 → P5a → P5b → P6 → P7a → P7b → N1, then Wrap-up.**
+Continuation of the dev-doc-standard retrofit. Driving the wave to completion ("go to the end"). **P1, P2, P3a, P3b, P4, P5a, P5b all PASS (fully closed) — all 5 feature dirs (agents, evaluation, git-workflow, guardrails, install-runtime) now prose-conformant. Remaining: P6 (features/project-memory + features/workflow) → P7a → P7b → N1, then Wrap-up.**
 
-Latest commit chain (all local, unpushed): residue `56089c1` → P1 `caad41b` → P2 `db50af6` → P3a `69a089f` (work 183dbfb+dc0e5a9+iter2 3e9c5e7) → P3b `f899480` (work de207ac+iter2 bfc46c8). git push still PENDING.
+Task-record commits (all local, unpushed): residue `56089c1` → P1 `caad41b` → P2 `db50af6` → P3a `69a089f` → P3b `f899480` → P4 `31d099a` → P5a `7cce3bf` → P5b `0f1ffc3`. git push still PENDING. **5 staged mistake-candidates + 1 deferred backlog await Wrap-up promotion** (prose-brief-light-pass; subagent-stray-recurred; prose-reclassification-target-project-notes; dual-system-codex-caught-template-form-gaps; evaluator-revise-may-contradict-the-standard; backlog frontmatter-completeness-followup).
 
 ## Resume location (critical)
 - **Continue on the existing worktree + branch — do NOT start fresh.**
