@@ -8,7 +8,6 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [git-workflow, preparation, gap-resolution, artifacts]
-loop: preparation
 topic: Gap-resolutions batch confirmation
 outcome: "9 gaps resolved: 4 skipped, 3 deferred to backlog, 2 generate-now"
 ---

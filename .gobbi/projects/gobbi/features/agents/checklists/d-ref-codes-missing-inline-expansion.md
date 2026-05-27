@@ -8,9 +8,7 @@ status: active
 created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [executor-brief, inline-expansion, docs-sync]
-scenario: executor-brief-self-sufficiency
 domain: docs-sync
-loop: planning
 ---
 
 # Opaque decision reference codes lack inline expansion in executor briefs (D-3-3/D-4/D-5/D-9)

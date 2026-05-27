@@ -8,7 +8,6 @@ status: active
 created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [git-workflow, direct-mode, orchestration-skill, doc-placement]
-loop: planning
 topic: direct-mode opt-out doc home — orchestration/SKILL.md or git/SKILL.md?
 outcome: orchestration/SKILL.md worktree-creation footnote confirmed
 ---

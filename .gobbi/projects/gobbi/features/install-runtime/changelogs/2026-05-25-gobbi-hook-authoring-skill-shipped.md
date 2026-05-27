@@ -8,7 +8,6 @@ status: shipped
 created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [gobbi-hook-authoring, skill, shipped]
-task: T04 / CL-2
 plan: session-foundations-bundle-c
 ---
 

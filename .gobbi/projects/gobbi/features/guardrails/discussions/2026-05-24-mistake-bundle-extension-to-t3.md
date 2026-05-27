@@ -8,7 +8,6 @@ status: active
 created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [mistake-bundle, task-briefs, iron-law-7, planning-lock]
-loop: planning
 outcome: Iron Law 7 procedural mistake only for hook + reconstructor tasks (LOCK #3); the other 2 mistakes from the setup-task bundle are inapplicable
 ---
 

@@ -8,7 +8,6 @@ status: active
 created: 2026-05-22
 session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 tags: [env-var-audit, session-start-hook, ideation]
-loop: ideation
 topic: env-var audit scope and design decisions
 outcome: 7 primary design decisions (P1-P7) + mode/git/eval settings locked; 11 finding remediations accepted across evaluation triage
 ---

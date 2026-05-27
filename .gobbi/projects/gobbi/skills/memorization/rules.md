@@ -213,6 +213,19 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 | promotion provenance (time) | `promoted-at` | `promoted_at` |
 | finding-disposition provenance | `addressed-by` | `addressed_by` |
 
+**Session-routing residue** — session-internal coordinates that identify a file's position within a session (which task, loop iteration, or evaluation round produced it). These coordinates have no meaning to a future reader; provenance is already carried by `session` + `created` in base frontmatter and by `git log`. Both spellings must be caught:
+
+| Concept | Hyphen spelling | Underscore spelling |
+|---|---|---|
+| task code / task id | `task` | `task` (same) |
+| workflow loop phase | `loop` | `loop` (same) |
+| scenario identifier | `scenario` | `scenario` (same) |
+| iteration counter | `iter` | `iter` (same) |
+| slug duplicate | `slug` | `slug` (same) |
+| finding source label | `finding-source` | `finding_source` |
+
+**KEEP — never strip:** The following keys are cross-reference/provenance/content-tag keys that carry durable meaning and MUST always be preserved: `related`, `supersedes`, `superseded_by`, `source`, `design-id`, `domain`, `priority`, `ref_type`. These are legitimate type extensions (§2.2) or cross-linking fields — they are NOT members of S.
+
 **Conditional member — `disposition`.** `disposition` is in S (a leak, must be stripped) **ONLY when the file is NOT under a `backlogs/` directory.** On `backlogs/`, `disposition: open\|deferred` is a **legitimate type extension** (§2.2 line 110) and MUST be preserved — stripping it there violates the safety invariant.
 
 **File-selection predicate P (where the conformance rule operates):**
@@ -221,7 +234,7 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 > - strip every key in `S \ {disposition}` (both spellings) unconditionally;
 > - strip `disposition` from F only if F is NOT under a `backlogs/` directory.
 
-**Safety invariant (locked):** never strip a key that is legitimate for that doc's type/dir. Base keys (`name` / `description` / `type` / `scope` / `feature` / `status` / `created` / `session` / `tags`) and the per-type extensions in §2.2 (`disposition` on `backlogs/`, `verdict` / `review_kind` / `subject` on `reviews/`, `priority` / `domain` on `mistakes/`, etc.) are always preserved.
+**Safety invariant (locked):** never strip a key that is legitimate for that doc's type/dir. Base keys (`name` / `description` / `type` / `scope` / `feature` / `status` / `created` / `session` / `tags`) and the per-type extensions in §2.2 (`disposition` on `backlogs/`, `verdict` / `review_kind` / `subject` on `reviews/`, `priority` / `domain` on `mistakes/`, etc.) are always preserved. The cross-ref/provenance/content-tag keys listed in KEEP above are equally protected.
 
 ### 4.5 The archive-safe, underscore-aware grep-gate
 
@@ -230,6 +243,7 @@ The mechanical conformance gate scans `P_live` for any illegitimate-key leak and
 ```bash
 # Lists every live memory file carrying an illegitimate staging-routing key.
 # Archive-safe (skips frozen archive/) and underscore-aware (both spellings).
+# Includes session-routing residue keys (task/loop/scenario/iter/slug/finding-source).
 find .gobbi/projects/gobbi -name '*.md' \
   -not -path '*/archive/*' \
   -not -path '*/sessions/*' \
@@ -237,7 +251,7 @@ find .gobbi/projects/gobbi -name '*.md' \
   -not -path '*/agents/*' \
   -not -path '*/tmp/*' \
   -print0 \
-| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by):' \
+| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|task|loop|scenario|iter|slug|finding[-_]source):' \
   2>/dev/null
 ```
 

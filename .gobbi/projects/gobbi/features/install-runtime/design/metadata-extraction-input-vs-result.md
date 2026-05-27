@@ -9,8 +9,6 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hooks, metadata, extraction, agents]
 design-id: D-3-4
-slug: metadata-extraction-input-vs-result
-iter: 2
 ---
 
 # Hybrid metadata extraction: input side vs result side (D-3-4)

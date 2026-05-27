@@ -8,7 +8,6 @@ status: active
 created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [symlinks, edit-contract, mirror-policy]
-loop: preparation
 topic: Symlink-preservation edit contract — iter3 surgical addition
 outcome: "Add edit contract H2 to mirror-canonical decision file; deferred CI backlog judged necessary"
 ---

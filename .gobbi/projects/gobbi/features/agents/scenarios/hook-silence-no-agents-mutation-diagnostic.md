@@ -8,7 +8,6 @@ status: active
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hook, diagnostics, silent-failure, agents-metadata]
-scenario: Hook ran but session.json agents[] shows no mutation — operator-facing diagnostic missing
 category: failure-mode
 domain: usability
 ---

@@ -9,8 +9,6 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hooks, bash, jq, authoring-stack]
 design-id: D-3-1
-slug: hook-bash-jq-stack
-iter: 2
 ---
 
 # Hook authoring stack: bash + jq, two-tier extraction (D-3-1)

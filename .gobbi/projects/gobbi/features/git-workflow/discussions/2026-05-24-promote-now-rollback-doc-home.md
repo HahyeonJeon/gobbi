@@ -8,7 +8,6 @@ status: active
 created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [git-workflow, promote-now, rollback, preparation-skill]
-loop: planning
 topic: promote-now rollback semantics doc home — preparation/SKILL.md or git/SKILL.md?
 outcome: preparation/SKILL.md, co-located with narrow-exception text
 ---

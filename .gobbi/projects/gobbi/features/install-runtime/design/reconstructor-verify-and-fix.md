@@ -9,8 +9,6 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [reconstructor, agents, session-json, idempotent]
 design-id: D-3-2
-slug: reconstructor-verify-and-fix
-iter: 2
 ---
 
 # Reconstructor algorithm: verify-and-fix, idempotent upsert by id, orphan-report only (D-3-2)

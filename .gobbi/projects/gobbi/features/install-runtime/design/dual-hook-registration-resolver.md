@@ -9,8 +9,6 @@ created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hooks, post-tool-use, session-dir, registration]
 design-id: D-3-3
-slug: dual-hook-registration-resolver
-iter: 3
 ---
 
 # Hook scope: PostToolUse + PostToolUseFailure dual registration with session-dir resolver (D-3-3)

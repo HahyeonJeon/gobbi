@@ -8,7 +8,6 @@ status: active
 created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [delegation, executor, task-bundling, jq, hook]
-loop: planning
 outcome: Single executor delegation confirmed; back-to-back within one context window
 ---
 

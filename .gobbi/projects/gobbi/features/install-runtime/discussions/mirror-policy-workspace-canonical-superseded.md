@@ -8,7 +8,6 @@ status: superseded
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [mirror-policy, symlinks, preparation, superseded]
-loop: preparation
 topic: Mirror-propagation policy — first-iteration lock (workspace canonical, superseded)
 outcome: "Workspace canonical only — mirror auto-syncs (SUPERSEDED on corrected empirical evidence)"
 superseded_by: mirror-policy-mirror-canonical-relock.md
