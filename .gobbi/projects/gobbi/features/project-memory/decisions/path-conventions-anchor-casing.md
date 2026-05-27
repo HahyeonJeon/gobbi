@@ -13,6 +13,7 @@ domain: docs-sync
 supersedes: null
 superseded_by: null
 decision_status: accepted
+project: gobbi
 ---
 
 # Path conventions anchor casing — promote to H3
