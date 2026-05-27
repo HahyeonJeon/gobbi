@@ -91,7 +91,7 @@ Every agent MUST load `.agents/skills/mistake/SKILL.md` before starting work. Wh
 | `.agents/skills/gobbi/SKILL.md` | Entry point, session setup questions, skill map |
 | `.codex-plugin/plugin.json` | Local Gobbi plugin manifest |
 | `.gobbi/projects/gobbi/skills/` | Plugin-facing Gobbi skills directory |
-| `.agents/skills/principles/SKILL.md` | 12 behavioral principles every agent must follow |
+| `.agents/skills/principles/SKILL.md` | 13 behavioral principles every agent must follow |
 | `.agents/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
 | `.agents/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |
 | `.codex/agents/manager.toml` | Root session manager custom-agent wrapper |
