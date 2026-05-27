@@ -257,7 +257,7 @@ The mechanical conformance gate scans `P_live` for any illegitimate-key leak and
 ```bash
 # Lists every live memory file carrying an illegitimate staging-routing key.
 # Archive-safe (skips frozen archive/) and underscore-aware (both spellings).
-# Includes session-routing residue keys (task/loop/scenario/iter/slug/finding-source).
+# Includes session-routing residue keys (task/loop/scenario/iter/slug/finding-source/phase/loop-iter/sub-step/session-id).
 find .gobbi/projects/gobbi -name '*.md' \
   -not -path '*/archive/*' \
   -not -path '*/sessions/*' \
