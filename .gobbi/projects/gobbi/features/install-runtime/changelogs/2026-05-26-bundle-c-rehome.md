@@ -13,14 +13,14 @@ shipped_in: memory-redesign W3-T4
 
 # Bundle C re-home into `install-runtime`
 
-**Task:** memory-redesign W3-T4 — re-home `features/session-foundations-bundle-c/` cluster md into the 7 capability value-features.
+**Task:** memory-redesign wave 3 — re-home `features/session-foundations-bundle-c/` cluster md into the 7 capability value-features.
 
 ## Summary
-Bundle C was a work-sprint, not a value-feature. Its durable in-dir artifacts were the 5 files documenting the `gobbi-hook-authoring` skill (T04): one shipped-changelog and four T04-evaluation checklists (quality gates for the skill). Per design §1.3 row 4 + §8 LOW-16 routing heuristic rule 1 (destination = the capability the CONTENT is about), all five route to `install-runtime` — the value-feature that owns the `gobbi-hook-authoring` skill (design §10 RATIFY-1). Files moved via `git mv` (history-preserving); the changelog's `feature:` frontmatter restamped to `install-runtime`. Bodies unchanged.
+Bundle C was a work-sprint, not a value-feature. Its durable in-dir artifacts were the 5 files documenting the `gobbi-hook-authoring` skill: one shipped-changelog and four evaluation checklists (quality gates for the skill). Per design §1.3 row 4 + §8 LOW-16 routing heuristic rule 1 (destination = the capability the CONTENT is about), all five route to `install-runtime` — the value-feature that owns the `gobbi-hook-authoring` skill (design §10 RATIFY-1). Files moved via `git mv` (history-preserving); the changelog's `feature:` frontmatter restamped to `install-runtime`. Bodies unchanged.
 
 ## What changed
 - `changelogs/2026-05-25-gobbi-hook-authoring-skill-shipped.md` → `features/install-runtime/changelogs/` (`feature:` restamped to `install-runtime`).
-- Four T04 checklists → `features/install-runtime/checklists/`:
+- Four gobbi-hook-authoring checklists → `features/install-runtime/checklists/`:
   - `hook-skill-exit-behavior-must-enumerate-all-fatal-paths.md`
   - `skill-must-not-invent-json-field-paths-not-in-witnesses.md`
   - `skill-registration-must-mirror-real-settings-shape.md`
@@ -39,5 +39,5 @@ Bundle C was a work-sprint, not a value-feature. Its durable in-dir artifacts we
 - Bundle C `README.md` retirement to `archive/features/` handled by W3-T5 (not this task).
 
 ## Related
-- Design: `sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/ideation/artifacts/memory-system-redesign-design.md` §1.3, §2.4, §8.
+- Design: memory-system redesign design doc §1.3, §2.4, §8 (routing heuristics and promote-up rule).
 - Sibling re-homes: env-var-audit→install-runtime (W3-T1), Bundle A→workflow (W3-T2), Bundle B→install-runtime+ (W3-T3).

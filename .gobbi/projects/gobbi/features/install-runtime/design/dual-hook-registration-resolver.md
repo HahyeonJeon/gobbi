@@ -1,11 +1,15 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: dual-hook-registration-resolver
+description: PostToolUse and PostToolUseFailure dual registration with single script; session-dir resolver algorithm derives project name and session dir from hook stdin fields.
+type: design
 scope: feature
 feature: install-runtime
+status: locked
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hooks, post-tool-use, session-dir, registration]
 design-id: D-3-3
 slug: dual-hook-registration-resolver
-status: locked
 iter: 3
 ---
 
@@ -21,14 +25,14 @@ The hook stdin contains `session_id`, `transcript_path`, and `cwd`. The session.
 
 1. **Project name lookup precedence**:
    - **(i — preferred)**: Read `$cwd/.gobbi/project.json` and extract `name` field if file exists.
-     - **DORMANT PRECONDITION (iter3 Fix C)**: this file does not exist today (verified 2026-05-23). The resolver always falls through to step (ii). Backlog: `staging/backlogs/feature/dot-gobbi-project-json-bootstrap.md`.
+     - **DORMANT PRECONDITION**: this file does not exist today (verified 2026-05-23). The resolver always falls through to step (ii). Tracked in backlog: `dot-gobbi-project-json-bootstrap`.
    - **(ii — fallback, currently only working path)**: Enumerate `$cwd/.gobbi/projects/`; select single directory if exactly one exists. If zero or multiple: `exit 1` with stderr `"session-dir resolver: cannot disambiguate project name (n=<count>)"`.
 
 2. **Date prefix lookup**: Scan `$cwd/.gobbi/projects/<name>/sessions/` for a directory ending in `-<session_id>`; take its full name. If zero or multiple: `exit 1` with stderr `"session-dir resolver: cannot disambiguate session dir (n=<count>)"`.
 
 3. Resolved path: `$cwd/.gobbi/projects/<name>/sessions/<full-dir-name>/session.json`. If file absent: `exit 1`.
 
-## Official documentation (iter3 Fix B — verbatim)
+## Official documentation (verbatim)
 
 `PostToolUseFailure` is officially documented at `https://code.claude.com/docs/en/hooks` (WebFetched 2026-05-23):
 - Lifecycle table: `| PostToolUseFailure | After a tool call fails |`
@@ -36,11 +40,11 @@ The hook stdin contains `session_id`, `transcript_path`, and `cwd`. The session.
 
 ## Rationale
 
-Failed spawns are part of the audit trail. `PostToolUseFailure` is officially supported (verbatim quote closes iter1 P2/O1 + iter2 Claude-evaluator gap). Single script maintains DRY. Resolver using `project.json` preferred + dir-scan fallback: canonical when present; robust fallback for single-project repos.
+Failed spawns are part of the audit trail. `PostToolUseFailure` is officially supported (verbatim quote from official docs confirms this). Single script maintains DRY. Resolver using `project.json` preferred + dir-scan fallback: canonical when present; robust fallback for single-project repos.
 
 ## Anchored insights
 
-T3-E-4, T3-E-5 (iter3 verbatim), T3-DQ-3, E-1, `staging/references/claude-code-posttooluse-hook-schema.md`.
+Empirical verification of PostToolUseFailure lifecycle; official docs verbatim quote; project-resolver DQ rationale; `references/` PostToolUse hook schema reference.
 
 ## Trade-offs considered
 
@@ -53,7 +57,7 @@ Smoke test on artificial spawn failure; evaluator Risk perspective; verbatim-quo
 
 ## Implementation checklist anchor
 
-T3-I-T3.c, T3-I-T3.h (dormant precondition acknowledgment)
+Hook settings.json registration (dual event registration); dormant precondition acknowledgment for project.json bootstrap
 
 ## Source
 

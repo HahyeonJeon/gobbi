@@ -1,8 +1,13 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: hook-plus-reconstructor-mechanism
+description: User confirmed PostToolUse hook + shell-script reconstructor as the mechanism to populate session.json.agents[]; SDK and manager-manual approaches ruled out.
+type: discussions
 scope: feature
 feature: install-runtime
+status: active
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hooks, post-tool-use, agents, session-json]
 discussion-id: CP-4-1-alpha
 slug: hook-plus-reconstructor-mechanism
 phase: ideation
@@ -10,11 +15,11 @@ sub-step: A-round-2
 loop-iter: 1
 ---
 
-# T3 mechanism — option (c): PostToolUse hook + shell-script reconstructor
+# T3 mechanism — PostToolUse hook + shell-script reconstructor selected
 
 ## Question asked
 
-CP-4.1-α: Which mechanism should T3 use to populate `session.json.agents[]`? Options: (a) SDK-based SubagentStop callback, (b) manager-manual append, (c) PostToolUse hook + shell-script reconstructor.
+Which mechanism should the agents-population task use to populate `session.json.agents[]`? Options: (a) SDK-based SubagentStop callback, (b) manager-manual append, (c) PostToolUse hook + shell-script reconstructor.
 
 ## User answer
 
@@ -22,7 +27,7 @@ User confirmed **(c) both — PostToolUse hook + shell-script reconstructor** (O
 
 ## Impact on design
 
-T3's entire design (D-3-1 through D-3-6) is built around the hook + reconstructor pattern. SDK approach and manager-manual approach are ruled out.
+The agents-population task's entire design (hook authoring stack, reconstructor algorithm, dual-hook registration, hybrid metadata extraction, flock serialization, tool_use_id correlation) is built around the hook + reconstructor pattern. SDK approach and manager-manual approach are ruled out.
 
 ## Source
 

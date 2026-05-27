@@ -1,11 +1,15 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: flock-serialization-on-session-json
+description: POSIX flock -x on session.json serializes concurrent PostToolUse hook and reconstructor read-modify-write cycles; lock released automatically on process exit.
+type: design
 scope: feature
 feature: install-runtime
+status: locked
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [flock, serialization, session-json, concurrency]
 design-id: D-3-5
 slug: flock-serialization-on-session-json
-status: locked
 iter: 2
 ---
 
@@ -24,15 +28,15 @@ flock -x "$fd"
 
 `flock -x` on `session.json` itself (not a sidecar). Lock is released automatically when the script's process exits (POSIX `flock(2)` semantics — releases on process death, including SIGKILL).
 
-**Sidecar refinement** (iter2 Claude R4): using `session.json.lock` as a dedicated sidecar would be cleaner separation, but is deferred as non-blocking hardening (see `staging/decisions/sidecar-lock-refinement-deferred.md`).
+**Sidecar refinement**: using `session.json.lock` as a dedicated sidecar would be cleaner separation, but is deferred as non-blocking hardening (see backlog: `sidecar-lock-refinement-deferred`).
 
 ## Rationale
 
-iter1 R1 + COD-STRUCT-002: concurrent PostToolUse hooks (e.g., dual-system evaluator spawns) cause lost-update race when both read `session.json` before either writes. Three options: (a) `flock -x`, (b) per-spawn file pattern, (c) accept lost-update. Picked **(a)** because: smallest change (one `exec {fd}>>"$session_json"` line per script); serializes both hook AND reconstructor; no consolidation step.
+Concurrent PostToolUse hooks (e.g., dual-system evaluator spawns) cause lost-update race when both read `session.json` before either writes. Three options considered: (a) `flock -x`, (b) per-spawn file pattern, (c) accept lost-update. Picked **(a)** because: smallest change (one `exec {fd}>>"$session_json"` line per script); serializes both hook AND reconstructor; no consolidation step.
 
 ## Anchored insights
 
-iter1 R1, iter1 COD-STRUCT-002, `delegation/SKILL.md:51` + `:220` (parallel evaluator topology), `session-start.sh` (bash-precedent host capabilities).
+First-iteration evaluation finding (concurrent hook race); parallel evaluator topology documentation in `delegation/SKILL.md` (the dual-system pattern that triggers concurrent hooks); `session-start.sh` (bash precedent + host capabilities confirmation).
 
 ## Trade-offs considered
 
@@ -45,7 +49,7 @@ Smoke test: spawn two Task tools in parallel (dual-system evaluator pattern); af
 
 ## Implementation checklist anchor
 
-T3-I-T3.a, T3-I-T3.b, T3-I-T3.g (documentation)
+Hook script authoring; reconstructor script authoring; documentation update (both scripts)
 
 ## Source
 

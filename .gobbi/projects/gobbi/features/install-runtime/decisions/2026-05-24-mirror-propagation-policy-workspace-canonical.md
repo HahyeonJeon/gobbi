@@ -1,11 +1,15 @@
 ---
-date: 2026-05-23
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: superseded
+name: mirror-propagation-policy-workspace-canonical
+description: First-iteration mirror-propagation policy lock — workspace canonical, mirror auto-syncs — superseded by corrected empirical evidence confirming file-level symlinks.
+type: decisions
 scope: feature
 feature: install-runtime
+status: superseded
+created: 2026-05-23
+session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [mirror-policy, symlinks, superseded]
 supersedes: null
-superseded_by: mirror-propagation-policy-mirror-canonical-symlinks.md
+superseded_by: 2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md
 ---
 
 # Workspace `.claude/skills/` is canonical; project mirror auto-syncs
@@ -46,27 +50,26 @@ Executors editing skill files target the workspace path only. The mirror is down
 
 ## Related
 
-- AskUserQuestion exchange: Preparation iter1 Sub-step D round 2 (mirror propagation policy card). User picked "Workspace canonical only — mirror auto-syncs."
-- Conditional backlog (sync mechanism implementation): `sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/preparation/staging/backlogs/project/workspace-to-mirror-sync-mechanism.md`
-- Sub-step A → D findings § Notes for Planning intake "Mirror awareness": `rawdata/sub-steps-a-d-iter1.md`
+- AskUserQuestion exchange: Preparation loop first-iteration mirror propagation policy card. User picked "Workspace canonical only — mirror auto-syncs."
+- Conditional backlog (sync mechanism implementation): workspace-to-mirror sync mechanism backlog (subsequently superseded as moot)
 - Prior mirror-related context in user-memory: `project_pr257_adversarial_review_complete.md` (PR #260 + #261 v0.5 plugin/runtime mirror sync), `project_v050_pr_fin_2a_ii_shipped.md` (corrections about `gobbi.db` mirror).
 
 ---
 
 ## Supersession reason
 
-**Superseded 2026-05-24 by `mirror-propagation-policy-mirror-canonical-symlinks.md` (iter2 corrected lock).**
+**Superseded 2026-05-24 by `2026-05-24-mirror-propagation-policy-mirror-canonical-symlinks.md` (corrected lock).**
 
-The empirical evidence cited above was **incomplete**. The original iter1 scan claimed `.gobbi/projects/gobbi/skills/` was "17 real directories, NOT symlinks." That observation was true at the directory level — but missed the **file-level symlink layer**.
+The empirical evidence cited above was **incomplete**. The original scan claimed `.gobbi/projects/gobbi/skills/` was "17 real directories, NOT symlinks." That observation was true at the directory level — but missed the **file-level symlink layer**.
 
-Iter2 re-verification (Claude evaluator independent finding + leader empirical confirmation via `find .claude/skills/ -type l -name "*.md" | wc -l`):
+Corrected re-verification (Claude evaluator independent finding + leader empirical confirmation via `find .claude/skills/ -type l -name "*.md" | wc -l`):
 
 - **53 file-level `.md` symlinks** exist under `.claude/skills/`, each pointing INTO `.gobbi/projects/gobbi/skills/`.
 - Example: `.claude/skills/orchestration/SKILL.md` is a symlink whose target is `../../../.gobbi/projects/gobbi/skills/orchestration/SKILL.md` (resolves to the same physical file).
 - The **mirror IS the canonical store** (real files live at `.gobbi/projects/gobbi/skills/`).
 - The **workspace `.claude/skills/` is the symlink runtime layer** — Claude Code's loader expects skills at this path, and the symlinks let it find them while the real files live in the project mirror.
-- **No sync problem exists.** Editing either path edits the same physical file. The "drift" the iter1 lock was solving for is impossible by construction.
+- **No sync problem exists.** Editing either path edits the same physical file. The "drift" this first-iteration lock was solving for is impossible by construction.
 
-The user re-locked the policy on this corrected evidence via round-2 AskUserQuestion: **"mirror canonical, workspace = symlink runtime layer; no sync needed."** See the superseding decision file for the corrected lock content.
+The user re-locked the policy on this corrected evidence via AskUserQuestion: **"mirror canonical, workspace = symlink runtime layer; no sync needed."** See the superseding decision file for the corrected lock content.
 
 The original decision body is preserved verbatim above for audit (per `mistake/SKILL.md` supersede-never-delete discipline).

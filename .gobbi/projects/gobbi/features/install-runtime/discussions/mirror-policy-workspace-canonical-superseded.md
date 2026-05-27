@@ -1,12 +1,16 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: preparation
+name: mirror-policy-workspace-canonical-superseded
+description: First-iteration mirror-propagation policy lock (workspace canonical) — superseded by corrected empirical evidence confirming file-level symlinks make mirror canonical.
+type: discussions
 scope: feature
 feature: install-runtime
-topic: Mirror-propagation policy — iter1 lock (workspace canonical)
-outcome: "Workspace canonical only — mirror auto-syncs (SUPERSEDED iter2 on corrected empirical evidence)"
 status: superseded
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [mirror-policy, symlinks, preparation, superseded]
+loop: preparation
+topic: Mirror-propagation policy — first-iteration lock (workspace canonical, superseded)
+outcome: "Workspace canonical only — mirror auto-syncs (SUPERSEDED on corrected empirical evidence)"
 superseded_by: mirror-policy-mirror-canonical-relock.md
 ---
 
@@ -14,7 +18,7 @@ superseded_by: mirror-policy-mirror-canonical-relock.md
 
 ## Context
 
-During Preparation iter1 Sub-step D round 2 (post-base-9), the leader had identified a potential mirror-propagation concern: both `.claude/skills/` (workspace) and `.gobbi/projects/gobbi/skills/` (mirror) contain skill files, and it was unclear which was canonical and how changes propagated between them. An incomplete empirical scan (directory-level only) was presented.
+During the first Preparation loop iteration, the leader identified a potential mirror-propagation concern: both `.claude/skills/` (workspace) and `.gobbi/projects/gobbi/skills/` (mirror) contain skill files, and it was unclear which was canonical and how changes propagated between them. An incomplete empirical scan (directory-level only) was presented.
 
 ## Question
 
@@ -28,13 +32,13 @@ Which path is canonical for skill files: the workspace `.claude/skills/` or the 
 
 ## User decision
 
-Workspace canonical only — mirror auto-syncs. Decision staged at `staging/decisions/mirror-propagation-policy-workspace-canonical.md`.
+Workspace canonical only — mirror auto-syncs. Decision now captured in `decisions/2026-05-24-mirror-propagation-policy-workspace-canonical.md` (status: superseded).
 
 ## Implication
 
-SUPERSEDED in iter2. The iter1 empirical scan missed 53 file-level symlinks under `.claude/skills/` that resolve to the canonical mirror files. The "workspace canonical" lock was based on a false premise (directory-level scan only). See `mirror-policy-mirror-canonical-relock.md` for the corrected decision.
+SUPERSEDED by the second-iteration corrected lock. The first-iteration empirical scan missed 53 file-level symlinks under `.claude/skills/` that resolve to the canonical mirror files. The "workspace canonical" lock was based on a false premise (directory-level scan only). See `mirror-policy-mirror-canonical-relock.md` for the corrected decision.
 
 ## Related
 
-- `preparation/staging/decisions/mirror-propagation-policy-workspace-canonical.md` (superseded)
-- `mirror-policy-mirror-canonical-relock.md` (superseding)
+- `decisions/2026-05-24-mirror-propagation-policy-workspace-canonical.md` (superseded decision)
+- `mirror-policy-mirror-canonical-relock.md` (superseding discussion)

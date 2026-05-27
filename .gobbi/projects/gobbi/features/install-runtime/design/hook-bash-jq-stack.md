@@ -1,11 +1,15 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: hook-bash-jq-stack
+description: Hook authoring stack is bash + jq with two-tier extraction strategy — prefer rich transcript toolUseResult payload, fall back to stdin tool_result.
+type: design
 scope: feature
 feature: install-runtime
+status: locked
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hooks, bash, jq, authoring-stack]
 design-id: D-3-1
 slug: hook-bash-jq-stack
-status: locked
 iter: 2
 ---
 
@@ -27,11 +31,11 @@ D-3-5 flock serialization is a mandatory step before any read in both hook and r
 
 ## Rationale
 
-T3-I-4: `session-start.sh` is the established precedent; jq is already a hard dependency. Two-tier mitigates T3-E-3 forward-compat (schema drift) without leaving the bash+jq layer. No new runtime dependency; flock(1) is available on every Linux/macOS host.
+`session-start.sh` is the established bash+jq precedent; jq is already a hard dependency. Two-tier extraction mitigates forward-compat risk (schema drift) without leaving the bash+jq layer. No new runtime dependency; flock(1) is available on every Linux/macOS host.
 
 ## Anchored insights
 
-T3-I-4, T3-E-3, T3-DQ-1, D-3-5.
+`session-start.sh` precedent (bash+jq established); schema drift forward-compat rationale; two-tier DQ rationale; flock serialization design (`flock-serialization-on-session-json.md`).
 
 ## Trade-offs considered
 
@@ -43,7 +47,7 @@ Evaluator Consistency check (matching shebang + `set -euo pipefail`); single-scr
 
 ## Implementation checklist anchor
 
-T3-I-T3.a
+Hook script authoring (post-tool-use-agents.sh)
 
 ## Source
 

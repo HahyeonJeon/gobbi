@@ -1,16 +1,17 @@
 ---
+name: task-decomposition-decisions
+description: Locked decisions across Planning Loop iterations plus post-final-iteration manager polish for the env-var-audit + SessionStart hook feature — 3 iterations, 11 surgical fixes, PASS-equivalent outcome.
+type: decisions
 scope: feature
 feature: install-runtime
-name: planning-decisions
-description: Locked decisions across Planning Loop iter1/iter2/iter3 + post-iter3 manager polish for the env-var-audit + SessionStart hook feature
-type: decisions-log
+status: active
+created: 2026-05-22
+session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
+tags: [planning, task-decomposition, decisions-log]
 loop: planning
 phase: memorization
 session-id: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 verdict: pass
-created: 2026-05-22
-promoted_from: sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/planning/staging/decisions/planning-decisions.md
-promoted_at: 2026-05-22
 ---
 
 # Planning Decisions Log
@@ -20,19 +21,19 @@ promoted_at: 2026-05-22
 Verdict: REVISE.
 
 Claude eval: PASS-with-5-Medium (worktree creation underdocumented as discrete task).
-Codex eval: REVISE — 5 High findings centered on T7 executor crossing the manager/executor boundary by doing `git push` + `gh pr create` (violation of `git/SKILL.md` Memory Access Matrix + Forbidden Operations + Procedures P4/P5).
+Codex eval: REVISE — 5 High findings centered on the final verification task executor crossing the manager/executor boundary by doing `git push` + `gh pr create` (violation of `git/SKILL.md` Memory Access Matrix + Forbidden Operations + Procedures P4/P5).
 
 User triage → 6 fixes accepted (FIX I–VI) for iter2.
 
 ## Iter2
 
 Six fixes applied:
-- **FIX I** — Added M0 (manager-direct, pre-T1) for worktree creation per git Procedure P2.
-- **FIX II** — Split T7 into executor-only verification (no push/PR/merge); created M2 (manager-direct) per git Procedures P4 + P5 + P7 for push, PR-open, CI watch, squash-merge, post-merge sync, worktree cleanup.
-- **FIX III** — M1 (manager session.json stamp) moved to AFTER M2 squash-merge. Stamps on main-tree develop, not in worktree.
-- **FIX IV** — 8 commit-message blocks (T1-T7 + M1) added with canonical `AI-Provenance-Record:` trailer per `git/conventions.md` § Commit Trailers. No `Co-Authored-By:`.
-- **FIX V** — T7 verification block fully inlined; `<worktree-path>` placeholders replaced with `${WORKTREE_PATH}` env var; concrete runnable commands including P7 reword check + FIX C shell-safety fixture + orchestration/SKILL.md transcriptPath grep.
-- **FIX VI** — M2 pre-conditions include `gh auth status` re-verify per Prep δ disposition.
+- **FIX I** — Added manager-direct pre-execution step for worktree creation per git Procedure P2.
+- **FIX II** — Split final verification task into executor-only verification (no push/PR/merge); created manager-direct PR-merge step per git Procedures P4 + P5 + P7 for push, PR-open, CI watch, squash-merge, post-merge sync, worktree cleanup.
+- **FIX III** — Manager session.json stamp step moved to AFTER squash-merge. Stamps on main-tree develop, not in worktree.
+- **FIX IV** — All commit-message blocks added with canonical `AI-Provenance-Record:` trailer per `git/conventions.md` § Commit Trailers. No `Co-Authored-By:`.
+- **FIX V** — Final verification block fully inlined; `<worktree-path>` placeholders replaced with `${WORKTREE_PATH}` env var; concrete runnable commands including P7 reword check + FIX C shell-safety fixture + `orchestration/SKILL.md` transcriptPath grep.
+- **FIX VI** — PR-merge preconditions include `gh auth status` re-verify per Preparation finding δ disposition.
 
 Verdict: REVISE (both Claude and Codex iter2 caught remaining grammar/template issues — commit subject lengths >72, M2 PR title >72, unresolved `<main-tree root>` placeholders, M2 PR body placeholder, missing M2 P5 pre-remove gate).
 
@@ -47,7 +48,7 @@ Five surgical fixes applied:
 - **FIX δ** — M2 PR body rewritten per conventions.md PR template (4 sections + AI-Provenance-Record note).
 - **FIX ε** — M2 cleanup adds explicit P5 pre-remove gate (`git status --short` empty + `git branch --contains HEAD develop`) per `git/SKILL.md` Procedure P5 step 3. No `--force`.
 
-iter3 EVAL: Claude PASS-with-Low (F-CONS-04 — PR body section order deviation); Codex REVISE (M2 PR body `--body "<placeholder>"` in bash command line).
+Third-iteration EVAL: Claude PASS-with-Low (PR body section order deviation); Codex REVISE (M2 PR body `--body "<placeholder>"` in bash command line).
 
 ## Post-iter3 manager polish (user-authorized; 2026-05-22)
 

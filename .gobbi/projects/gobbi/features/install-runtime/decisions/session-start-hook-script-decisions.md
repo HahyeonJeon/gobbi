@@ -1,16 +1,17 @@
 ---
+name: session-start-hook-script-decisions
+description: Decisions and verification outcomes for the SessionStart hook script authoring task — commits, dual-system evaluation pass, and below-threshold findings.
+type: decisions
 scope: feature
 feature: install-runtime
-name: t1-decisions
-description: Locked decisions + commits for Execution Loop task T1 (.claude/hooks/session-start.sh authoring) + T1 hardening follow-up.
-type: decisions-log
+status: active
+created: 2026-05-22
+session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
+tags: [session-start-hook, execution, decisions-log]
 loop: execution
 task: T1
 session-id: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 verdict: pass
-created: 2026-05-22
-promoted_from: sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/execution/T1/staging/decisions/t1-decisions.md
-promoted_at: 2026-05-22
 ---
 
 # T1 Decisions Log
@@ -25,12 +26,12 @@ promoted_at: 2026-05-22
 - Codex: PASS. 7/7 criteria + 5 stress fixtures (optional fields absent / invalid JSON / missing $CLAUDE_ENV_FILE / passthroughs unset / malicious stdin injection) all pass. No findings.
 - Claude: PASS. 8/8 criteria + 6 stress fixtures pass. 1 Medium/100 finding (F-OVERALL-01 empty-stdin silent success) below REVISE threshold + 2 Low.
 
-Aggregated: PASS. Hardening (F-OVERALL-01) accepted via user-authorized inline follow-up commit 51199d6 — preserves T1 PASS while addressing the Medium.
+Aggregated: PASS. Empty-stdin hardening accepted via user-authorized inline follow-up commit 51199d6 — preserves PASS while addressing the Medium finding.
 
 ## Below-threshold findings (filed for awareness, no further action)
 
-- **F-AEST-01** (Low/below threshold, docs) — Hook header comment doesn't mention the dual quoting strategy (@sh for JSON-derived fields; printf %q for env-passthrough fields). Future maintainer concern only.
-- **F-USAGE-01** (Low/below threshold, edge) — `null` in a required JSON field would emit literal string "null" via jq rather than empty; out-of-spec per Idea § Hook contract (required fields are always non-null at the source).
+- **Docs finding** (Low/below threshold) — Hook header comment doesn't mention the dual quoting strategy (@sh for JSON-derived fields; printf %q for env-passthrough fields). Future maintainer concern only.
+- **Edge finding** (Low/below threshold) — `null` in a required JSON field would emit literal string "null" via jq rather than empty; out-of-spec per hook contract (required fields are always non-null at the source).
 
 ## Outcome
 

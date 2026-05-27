@@ -1,20 +1,22 @@
 ---
-date: 2026-05-25
-session: 45388fa9-74a5-42ff-acdf-1308ca35523f
+name: gobbi-hook-authoring-skill-shipped
+description: gobbi-hook-authoring project skill shipped — authored from 2 in-tree hook witnesses, byte-identical twin promotion, 3 evaluation iterations to PASS.
+type: changelogs
 scope: feature
 feature: install-runtime
-task: T04 / CL-2
 status: shipped
-plan: planning/staging/plans/session-foundations-bundle-c.md
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-04/staging/changelogs/2026-05-25-gobbi-hook-authoring-skill-shipped.md
-promoted-at: 2026-05-25
+created: 2026-05-25
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
+tags: [gobbi-hook-authoring, skill, shipped]
+task: T04 / CL-2
+plan: session-foundations-bundle-c
 ---
 
 # T04 — gobbi-hook-authoring project skill shipped
 
 ## Summary
 
-T04 (CL-2) authored the `gobbi-hook-authoring` project skill from N=2 in-tree hook witnesses (`session-start.sh` + `post-tool-use-agents.sh`), promotes it byte-identically to `.gobbi/projects/gobbi/skills/gobbi-hook-authoring/SKILL.md`, and closes the originating backlog. The skill codifies the bash+jq+flock+strict-mode+env-file pattern for future hook authors. Required 3 iterations to reach final PASS due to a dual-system divergence (Codex REVISE on High USAGE-001 registration correctness).
+The `gobbi-hook-authoring` project skill was authored from 2 in-tree hook witnesses (`session-start.sh` + `post-tool-use-agents.sh`), promoted byte-identically to `.gobbi/projects/gobbi/skills/gobbi-hook-authoring/SKILL.md`, and closed the originating backlog. The skill codifies the bash+jq+flock+strict-mode+env-file pattern for future hook authors. Required 3 evaluation iterations to reach final PASS due to a dual-system divergence (Codex REVISE on High registration-correctness finding).
 
 ## What changed
 
@@ -24,8 +26,8 @@ T04 (CL-2) authored the `gobbi-hook-authoring` project skill from N=2 in-tree ho
 
 ## Verification
 
-- Dual-system evaluation: 3 iters (iter1 REVISE, iter2 PASS/PASS, iter3 manager-verified PASS)
-- All 8 iter1 findings addressed across iters 2–3
+- Dual-system evaluation: 3 iterations (first REVISE, second PASS/PASS, third manager-verified PASS)
+- All 8 first-iteration findings addressed across iterations 2–3
 - Twins byte-identical confirmed (md5 match post-iter3)
 - Live smoke tests passed: SessionStart exit 0 (valid payload + CLAUDE_ENV_FILE), non-zero on malformed JSON; PostToolUse exit 0 via bail()
 - Commits: `9dbb5da` (authored), `5d2a7c6` (remediated), `a7ac0d7` (iter3 cleanup)
@@ -36,6 +38,5 @@ T04 (CL-2) authored the `gobbi-hook-authoring` project skill from N=2 in-tree ho
 
 ## Related
 
-- `execution/task-04/artifacts/change-summary.md`
-- `execution/task-04/artifacts/verification-report.md`
+- gobbi-hook-authoring execution task change summary and verification report (session artifacts)
 - `.gobbi/projects/gobbi/skills/gobbi-hook-authoring/SKILL.md`

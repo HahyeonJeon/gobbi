@@ -1,9 +1,14 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: preparation
+name: edit-contract-addition
+description: User decided to add symlink-preservation edit contract as H2 in the mirror-canonical decision file; CI guard deferred to backlog.
+type: discussions
 scope: feature
 feature: install-runtime
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [symlinks, edit-contract, mirror-policy]
+loop: preparation
 topic: Symlink-preservation edit contract — iter3 surgical addition
 outcome: "Add edit contract H2 to mirror-canonical decision file; deferred CI backlog judged necessary"
 ---
@@ -12,9 +17,9 @@ outcome: "Add edit contract H2 to mirror-canonical decision file; deferred CI ba
 
 ## Context
 
-iter2 Codex reached REVISE (while Claude reached PASS) because 5 convergent Codex findings (COD-STRUCT/USAGE/CONS/RISK/OVERALL-PREP2-001) all shared one root cause: the iter2 "editing either path edits the same physical file" claim was unguarded against rewrite-by-rename edit tools (`sed -i`, `perl -i`, `awk`-redirect, formatter-backup-mode). These tools silently convert a workspace symlink into a regular file while leaving the canonical mirror unchanged — breaking the workspace→canonical symlink layer. This was empirically reproduced: `sed -i` against a `/tmp` symlink resulted in the symlink becoming a regular file, canonical unchanged.
+The Preparation loop's second evaluation iteration had Codex reach REVISE (while Claude reached PASS) because 5 convergent Codex findings across structure/usage/consistency/risk/overall perspectives all shared one root cause: the "editing either path edits the same physical file" claim was unguarded against rewrite-by-rename edit tools (`sed -i`, `perl -i`, `awk`-redirect, formatter-backup-mode). These tools silently convert a workspace symlink into a regular file while leaving the canonical mirror unchanged — breaking the workspace→canonical symlink layer. This was empirically reproduced: `sed -i` against a `/tmp` symlink resulted in the symlink becoming a regular file, canonical unchanged.
 
-iter3 was the final iteration (maxIterations=3). The iter3 brief specified a surgical addition: add the edit contract to address the 5 convergent findings.
+The final iteration (max=3 reached) brief specified a surgical addition: add the edit contract to address the 5 convergent findings.
 
 ## Question
 
@@ -39,11 +44,11 @@ Edit contract content: safety table (10 rows, YES/NO/verify per edit method), 4-
 - Planning briefs for T1+T3 executor tasks MUST cite the Edit tool as default edit method.
 - For bulk rewrites, executors MUST use the canonical mirror path (`.gobbi/projects/gobbi/skills/...`), never `sed -i` against `.claude/skills/...`.
 - After any non-Edit-tool modification, executors MUST run `test -L .claude/skills/<path>` and restore if broken.
-- The 5 iter2 Codex REVISE findings are closed at root cause.
-- Both Claude and Codex converged at PASS for iter3.
+- The 5 Codex REVISE findings from the second evaluation iteration are closed at root cause.
+- Both Claude and Codex converged at PASS on the final iteration.
 
 ## Related
 
 - `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md` (H2 added in-place)
 - `preparation/staging/backlogs/project/ci-symlink-integrity-check.md`
-- `preparation/evaluation/iter2/codex/{structure,usage,consistency,risk,overall}.md` (the 5 addressed findings)
+- Preparation loop evaluation findings (the 5 Codex structure/usage/consistency/risk/overall findings that drove the edit contract)

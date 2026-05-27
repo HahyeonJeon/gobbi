@@ -1,13 +1,16 @@
 ---
-date: 2026-05-22
-session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
-loop: ideation
+name: env-var-audit-scope-discussion
+description: Ideation loop discussion log capturing all AskUserQuestion exchanges for the env-var audit and SessionStart hook feature — 7 primary design decisions plus finding triage across all evaluation iterations.
+type: discussions
 scope: feature
 feature: install-runtime
+status: active
+created: 2026-05-22
+session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
+tags: [env-var-audit, session-start-hook, ideation]
+loop: ideation
 topic: env-var audit scope and design decisions
-outcome: 7 primary design decisions (P1-P7) + mode/git/eval settings locked; 11 finding remediations accepted across iter1+iter2+iter3 triage
-promoted_from: sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/ideation/staging/discussions/ideation-discussion.md
-promoted_at: 2026-05-22
+outcome: 7 primary design decisions (P1-P7) + mode/git/eval settings locked; 11 finding remediations accepted across evaluation triage
 ---
 
 # Ideation Discussion Log — Env-Var Audit + SessionStart Hook
@@ -85,4 +88,4 @@ See `decisions/env-file-load-semantics-decisions.md` entries FIX A-FIX C for the
 
 ## Iter3 Finding Triage (inline)
 
-Iter3 evaluation returned PASS (dual-system). Two findings deferred to backlog (F-STRUCT-01 + F-RISK-01). No user AskUserQuestion required for iter3 triage.
+The third evaluation iteration returned PASS (dual-system). Two findings deferred to backlog (jq @sh env-passthrough quoting example + subagent CCSI semantics). No user AskUserQuestion required for that triage.

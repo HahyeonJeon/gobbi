@@ -1,10 +1,14 @@
 ---
-date: 2026-05-24
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-status: accepted
+name: mirror-propagation-policy-mirror-canonical-symlinks
+description: Mirror at .gobbi/projects/gobbi/skills/ is canonical; workspace .claude/skills/ is the symlink runtime layer — 53 file-level symlinks confirmed; no sync mechanism needed.
+type: decisions
 scope: feature
 feature: install-runtime
-supersedes: mirror-propagation-policy-workspace-canonical.md
+status: accepted
+created: 2026-05-24
+session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [mirror-policy, symlinks, skills]
+supersedes: 2026-05-24-mirror-propagation-policy-workspace-canonical.md
 superseded_by: null
 ---
 
@@ -16,7 +20,7 @@ In Preparation iter1, the user locked a mirror-propagation policy on the premise
 
 Both iter1 evaluators (Claude + Codex) flagged the empirical premise as incomplete. Independent re-verification confirmed the iter1 scan stopped at directory-level inspection and missed the **file-level symlink layer**.
 
-**Empirical evidence (iter2 re-verification, this leader independently):**
+**Empirical evidence (leader independently verified):**
 
 ```
 $ find .claude/skills/ -type l -name "*.md" | wc -l
@@ -48,7 +52,7 @@ Planning briefs may cite **either** path because both paths resolve to the same 
 
 ## Alternatives considered
 
-- **Workspace canonical, mirror derives via auto-sync (iter1 lock).** Rejected on corrected evidence: the iter1 scan missed the file-level symlinks. There is no two-tree storage to sync; the symlinks already make the two paths the same file. See `mirror-propagation-policy-workspace-canonical.md` (now `status: superseded`).
+- **Workspace canonical, mirror derives via auto-sync (first-iteration lock).** Rejected on corrected evidence: the first-iteration scan missed the file-level symlinks. There is no two-tree storage to sync; the symlinks already make the two paths the same file. See `2026-05-24-mirror-propagation-policy-workspace-canonical.md` (now `status: superseded`).
 - **Mass migration — replace symlinks with real-file workspace mirror.** Rejected by the user out-of-scope for this Bundle. Symlinks work; changing storage shape for no functional gain violates Principle 10 (witness-bound work).
 - **Both trees equally authoritative, every edit touches both.** Rejected: not even applicable — both paths ARE the same file; "touching both" is a no-op.
 
@@ -59,7 +63,7 @@ Planning briefs may cite **either** path because both paths resolve to the same 
 - **The `workspace-to-mirror-sync-mechanism.md` backlog is closed as moot** (no separate sync mechanism is needed; the symlink layer is the sync mechanism). See that file's supersession reason.
 - **Verification gates that grep for T1-edited content can target either path with identical results.** Tests should pick one (recommended: workspace path) for consistency, but matching against the other tree gives the same hits because the underlying file is the same.
 - **Memory Access Matrix in skills documentation needs an eventual clarification** — multiple skills' Memory Access Matrix sections treat both `.claude/skills/` and `.gobbi/projects/gobbi/skills/` as project memory. Under the corrected understanding, the workspace tree is "loader-discovery symlinks pointing into the canonical project-mirror storage." A future cleanup pass should make this explicit. Not in Bundle B scope; carry as informal follow-up (see "Out of scope gaps" in the Preparation rawdata draft).
-- **D-4 design file references** to "executors must manually mirror-edit OR flag mirror drift" are stale under this corrected lock; they remain in place as historical iter1 record but are functionally moot. The D-4 design file has been updated in iter2 to reference this new lock (see Fix 5 in iter2 draft).
+- **Design file references** to "executors must manually mirror-edit OR flag mirror drift" are stale under this corrected lock; they remain in place as historical record but are functionally moot. The relevant design file has been updated to reference this corrected lock.
 
 ## Symlink-preservation edit contract
 
@@ -118,10 +122,8 @@ $ git ls-files -s .gobbi/projects/gobbi/skills/orchestration/SKILL.md
 
 ## Related
 
-- AskUserQuestion exchange: Preparation iter2 round-2 mirror policy re-lock card. User picked: **"mirror canonical, workspace = symlink runtime layer; no sync needed."**
-- Superseded decision (iter1): `staging/decisions/mirror-propagation-policy-workspace-canonical.md` (status: superseded).
-- Closed-as-moot backlog: `staging/backlogs/project/workspace-to-mirror-sync-mechanism.md` (status: superseded — moot).
-- D-4 design file: `staging/design/workflow-phase-doc-set-for-per-iter-cadence.md` (updated in iter2 to reference this lock).
-- Iter2 draft: `rawdata/draft-iter2.md` (Mirror propagation policy section + Decisions log rows 16–18).
-- iter1 evaluator findings: `evaluation/iter1/claude/*.md`, `evaluation/iter1/codex/*.md` — both flagged the symlink topology that iter1 missed.
-- Mistake invoked: `leader-iter2-verification-claim-without-evidence.md` (the iter1 leader's empirical claim "no sync mechanism exists" was directionally true at the file-storage level but missed the symlink layer; this iter2 file uses `find -type l` empirically to anchor the corrected lock).
+- AskUserQuestion exchange: Preparation loop second-iteration mirror policy re-lock. User picked: **"mirror canonical, workspace = symlink runtime layer; no sync needed."**
+- Superseded decision: `decisions/2026-05-24-mirror-propagation-policy-workspace-canonical.md` (status: superseded).
+- Closed-as-moot backlog: workspace-to-mirror sync mechanism (status: superseded — moot; the symlink layer IS the sync mechanism).
+- Preparation loop evaluation findings (first iteration Claude + Codex both flagged the symlink topology that the first-iteration lock missed).
+- Mistake invoked: `leader-iter2-verification-claim-without-evidence.md` (the first-iteration leader's empirical claim "no sync mechanism exists" was directionally true at the file-storage level but missed the symlink layer; this corrected decision uses `find -type l` empirically to anchor the lock).

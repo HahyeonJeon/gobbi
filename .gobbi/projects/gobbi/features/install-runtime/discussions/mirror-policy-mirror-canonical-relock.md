@@ -1,10 +1,15 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
-loop: preparation
+name: mirror-policy-mirror-canonical-relock
+description: User re-locked mirror-propagation policy on corrected empirical evidence — mirror canonical, workspace is symlink runtime layer, 53 file-level symlinks confirmed; supersedes workspace-canonical lock.
+type: discussions
 scope: feature
 feature: install-runtime
-topic: Mirror-propagation policy — iter2 re-lock on corrected empirical evidence
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [mirror-policy, symlinks, preparation]
+loop: preparation
+topic: Mirror-propagation policy — re-lock on corrected empirical evidence
 outcome: "Mirror canonical, workspace = symlink runtime layer; no sync needed — 53 file-level symlinks confirmed"
 ---
 
@@ -12,7 +17,7 @@ outcome: "Mirror canonical, workspace = symlink runtime layer; no sync needed �
 
 ## Context
 
-iter1's "workspace canonical only" lock was challenged by iter1 evaluation (both Claude and Codex raised it as Critical/FAIL). The iter2 leader performed a full file-level empirical scan and found 53 `.md` symlinks under `.claude/skills/` that resolve to canonical files in `.gobbi/projects/gobbi/skills/`. The iter1 lock was based on an incomplete directory-level-only scan.
+The first Preparation evaluation iteration (both Claude and Codex) challenged the "workspace canonical only" lock as Critical/FAIL. The leader performed a full file-level empirical scan and found 53 `.md` symlinks under `.claude/skills/` that resolve to canonical files in `.gobbi/projects/gobbi/skills/`. The first-iteration lock was based on an incomplete directory-level-only scan.
 
 ## Question
 
@@ -32,10 +37,10 @@ Evidence: `find .claude/skills/ -type l -name "*.md" | wc -l` → 53; sample: `.
 
 ## Implication
 
-- New decision file: `staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md` (status: accepted, supersedes iter1 file).
-- iter1 file `mirror-propagation-policy-workspace-canonical.md` marked superseded + body appended with "## Supersession reason".
-- iter1 conditional `workspace-to-mirror-sync-mechanism.md` backlog marked superseded as moot (symlink layer IS the sync).
-- iter1 "manual mirror-edit recommended" interim discipline rescinded.
+- New decision file: `mirror-propagation-policy-mirror-canonical-symlinks.md` (status: accepted, supersedes the workspace-canonical file).
+- Workspace-canonical file `mirror-propagation-policy-workspace-canonical.md` marked superseded + body appended with supersession reason.
+- Conditional backlog for workspace-to-mirror sync mechanism marked superseded as moot (symlink layer IS the sync).
+- "Manual mirror-edit recommended" interim discipline rescinded.
 - Both `.claude/skills/` and `.gobbi/projects/gobbi/skills/` paths can be cited in Planning briefs — both resolve to the same file for inode-preserving edit methods.
 
 ## Related
@@ -43,4 +48,4 @@ Evidence: `find .claude/skills/ -type l -name "*.md" | wc -l` → 53; sample: `.
 - `preparation/staging/decisions/mirror-propagation-policy-mirror-canonical-symlinks.md`
 - `preparation/staging/decisions/mirror-propagation-policy-workspace-canonical.md` (superseded)
 - `mirror-policy-workspace-canonical-superseded.md` (superseded)
-- `preparation/staging/discussions/edit-contract-addition.md` (iter3 follow-on)
+- `discussions/edit-contract-addition.md` (follow-on discussion about the symlink-preservation edit contract)

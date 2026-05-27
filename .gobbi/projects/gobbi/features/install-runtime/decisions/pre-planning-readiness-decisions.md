@@ -1,15 +1,16 @@
 ---
+name: preparation-decisions-log
+description: Decisions log for the Preparation Loop evaluation cycle — env-var-audit + SessionStart hook; three evaluation findings resolved across two iterations.
+type: decisions
 scope: feature
 feature: install-runtime
-name: preparation-decisions-log
-description: Decisions log for the Preparation Loop evaluation cycle — env-var-audit + SessionStart hook.
-type: decisions-log
+status: active
+created: 2026-05-22
+session: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
+tags: [preparation, env-var-audit, session-start-hook, decisions-log]
 loop: preparation
 session-id: 2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d
 verdict: pass
-created: 2026-05-22
-promoted_from: sessions/2026-05-22-bac669ad-4fec-40b5-8387-51ac57bc0d3d/preparation/staging/decisions/preparation-decisions.md
-promoted_at: 2026-05-22
 ---
 
 # Preparation Loop — Decisions Log

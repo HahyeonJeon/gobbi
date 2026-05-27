@@ -1,11 +1,15 @@
 ---
-date: 2026-05-23
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: metadata-extraction-input-vs-result
+description: Hook extracts agent metadata from two sides — input side (tool_input.model + prompt headers for step/phase/iter) and result side (toolUseResult for id/type/usage telemetry).
+type: design
 scope: feature
 feature: install-runtime
+status: locked
+created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hooks, metadata, extraction, agents]
 design-id: D-3-4
 slug: metadata-extraction-input-vs-result
-status: locked
 iter: 2
 ---
 
@@ -31,11 +35,11 @@ The hook stdin payload has TWO sides:
 
 ## Rationale
 
-T3-I-3 + T3-DQ-4: `tool_input.model` is reliable; prompt-text parse works on every existing prompt (headers visible in empirical inspection of prior session transcript). Codification ensures future prompts stay extractable. There is no inconsistency between T3-I-3 ("step/phase/iter NOT in toolUseResult") and D-3-4 ("prompt-header parsing is sufficient") — T3-I-3 describes the RESULT side; D-3-4 extracts from the INPUT side.
+`tool_input.model` is reliable; prompt-text parse works on every existing prompt (headers visible in empirical inspection of prior session transcript). Codification ensures future prompts stay extractable. There is no inconsistency between "step/phase/iter NOT in toolUseResult" (result side) and this design ("prompt-header parsing is sufficient on the input side") — these describe different sides of the payload.
 
 ## Anchored insights
 
-T3-I-3, T3-DQ-4, T3-E-2, iter1 COD-CONS.
+Transcript inspection confirming step/phase/iter not in toolUseResult; input-side parse rationale; stdin payload empirical verification; first-iteration Codex consistency finding (prompted the input-vs-result split codification).
 
 ## Trade-offs considered
 
@@ -44,11 +48,11 @@ T3-I-3, T3-DQ-4, T3-E-2, iter1 COD-CONS.
 
 ## Validation
 
-Evaluator Project perspective on `delegation/SKILL.md` codification; single-script verifier on header parsing; manual `grep -rn '^Your phase:' .claude/skills/orchestration/workflow/` returns expected hits after T3-I-T3.e ships.
+Evaluator Project perspective on `delegation/SKILL.md` codification; single-script verifier on header parsing; manual `grep -rn '^Your phase:' .claude/skills/orchestration/workflow/` returns expected hits after the delegation prompt codification ships.
 
 ## Implementation checklist anchor
 
-T3-I-T3.e
+Delegation prompt header codification in delegation/SKILL.md
 
 ## Source
 
