@@ -26,5 +26,7 @@ Gobbi project memory root — see git tag pre-reset-2026-05-21 for pre-reset sta
 - `reviews/` — project-scope review/audit activity records
 - `rules/` — project-scope behavioral / structural invariants every agent must follow
 - `archive/` — terminal-state artifacts (move-on-terminal; not deleted)
-
-Non-memory surfaces under this root (governed by their own conventions, not the memory standard): `skills/`, `agents/`, `sessions/`, `tmp/`.
+- `skills/` — _(non-memory surface — workspace skills, governed by their own conventions)_
+- `agents/` — _(non-memory surface — workspace agent role definitions, governed by their own conventions)_
+- `sessions/` — _(non-memory surface — per-session ephemeral state, governed by the orchestration skill)_
+- `tmp/` — _(non-memory surface — scratch space, excluded from §4 standard per §4.6)_
