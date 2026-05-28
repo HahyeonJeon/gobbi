@@ -15,7 +15,7 @@ superseded_by: null
 
 # Evaluator Scope-Narrowed to Changed Section; Missed Whole-File Stale Cross-References
 
-## What went wrong
+## What happened
 
 During Execution Task 01 (`01-gobbi-polish-fg`) iter1, the Claude evaluator verified only the Step 4 section that was rewritten by the executor. It confirmed the new content was correct against the Plan-spec gates and issued a PASS with 0 Critical/High/Medium findings.
 
@@ -23,13 +23,13 @@ The Codex evaluator ran `rg` across the whole file and found 5–6 stale cross-r
 
 The aggregated verdict was REVISE (pessimistic union of Claude PASS + Codex REVISE).
 
-## Why it went wrong
+## Why it happens
 
 The Claude evaluator narrowed its verification scope to the section the executor explicitly changed (Step 4) and the Plan's stated acceptance gates. This is a valid approach for code changes, but docs edits that rename or reframe a model (e.g., "2 setup questions" → "1 question + customize gate") require whole-file verification because the old vocabulary can appear anywhere in the file — headings, examples, explanatory prose, and cross-references outside the changed section.
 
 The Claude evaluator did not run a whole-file grep for the OLD vocabulary that was being retired. It only verified the NEW vocabulary was correctly placed.
 
-## How to recognize this situation
+## How to detect
 
 Trigger: a docs-edit task that retires or renames a concept (a term, a question count, a workflow step name, a model name). The executor's acceptance criteria check the new section only. The evaluator follows the same scope.
 
@@ -37,7 +37,7 @@ Signal: the task is a docs edit; the acceptance criterion is a positive assertio
 
 This pattern most commonly appears in docs-only tasks where the "changed file" is large (e.g., 200+ lines) and the edit is localized. The evaluator trusts the executor's scope and does not independently search the rest of the file.
 
-## Corrected approach
+## Correct approach
 
 For any docs-edit task that retires or renames a concept, the evaluator brief MUST include an explicit gate:
 

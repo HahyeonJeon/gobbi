@@ -16,21 +16,21 @@ superseded_by: null
 
 # Evaluator false-PASS by asserting preservation without diffing the commit
 
-## What went wrong
+## What happened
 
 During T7 (conform install-runtime discussions/design/decisions/changelogs), the Claude evaluator assessed the conformance changes as PASS, asserting that deleted narrative had been "relocated to ## Source" and that no content loss occurred. Git log showed the opposite: the narrative section was deleted outright and no `## Source` heading was present in the resulting file. The same evaluation also missed a dropped `related:` key that the standard requires preserving. The Codex evaluator caught the content loss and returned REVISE. Manager git-verified: the Claude evaluator's relocation claim was factually wrong.
 
-## Why it went wrong
+## Why it happens
 
 The evaluator asserted preservation/relocation from memory (reasoning about what the conformance task *should* have done) rather than actually diffing the commit to see what *did* change. An evaluator who trusts the executor's summary without reading the diff can confidently assert content is preserved when it has been deleted. This is a false-PASS — the metric (content integrity) passes while the underlying property (no content loss) fails.
 
-## How to recognize this situation
+## How to detect
 
 - An evaluator's finding claims "content preserved / relocated / no loss" but cites no diff evidence — only narrative reasoning.
 - Two evaluators (dual-system) diverge on a factual content-loss claim: one says PASS (no loss), the other says REVISE (loss detected).
 - The evaluator's language: "the narrative was moved to...", "the key appears in...", "no loss occurred" — without a file read or diff to ground it.
 
-## Corrected approach
+## Correct approach
 
 Evaluators MUST diff the commit (or read the resulting file) to verify any claim that content was preserved, relocated, or not lost:
 

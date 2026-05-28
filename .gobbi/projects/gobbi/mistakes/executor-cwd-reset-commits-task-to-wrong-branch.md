@@ -16,24 +16,24 @@ superseded_by: null
 
 # Executor cwd-reset commits task to wrong branch (develop instead of chore)
 
-## What went wrong
+## What happened
 
 During T9c (conform project-tier remainder), an executor's `git add` and `git commit` ran in the MAIN tree because the shell cwd had reset between Bash calls. The entire task's changes were committed onto the main tree's `develop` branch instead of the worktree's `chore/session-2026-05-25-a10c82d6` branch. The worktree branch was missing T9c's changes; `develop` was unexpectedly one commit ahead of `origin/develop`.
 
 Detection: the Claude evaluator flagged "commit not in the expected branch lineage" (FAIL finding). The Codex evaluator independently confirmed wrong-branch commit. Manager git-verified: `git -C <worktree> log` showed T9c commit absent; `git -C <main-tree> log develop` showed it present. Remediation: `git -C <main-tree> reset --hard origin/develop` (safe — not yet pushed) + re-ran T9c entirely in the worktree via `git -C <worktree>`.
 
-## Why it went wrong
+## Why it happens
 
 The executor's Bash invocations for `git add` and `git commit` did not use `git -C <worktree-absolute-path>`. After a cwd reset between calls, the `git` commands ran against whatever the shell's cwd resolved to — the main tree. The executor's prior edit operations may have landed in the worktree (via absolute Write paths), but the git ops targeted the main tree, creating a split: edits in worktree, commit on develop.
 
-## How to recognize this situation
+## How to detect
 
 - The worktree branch is missing the task's expected changes after the executor reports success.
 - The main-tree `develop` is unexpectedly ahead of `origin/develop` by one or more commits.
 - An evaluator flags "commit not an ancestor of HEAD / wrong lineage" or "branch at unexpected sha."
 - `git -C <worktree> log --oneline -3` does not include the task's commit message; `git -C <main-tree> log develop --oneline -3` does.
 
-## Corrected approach
+## Correct approach
 
 Executors run ALL git operations via `git -C <worktree-abs-path>` — never bare `git`:
 

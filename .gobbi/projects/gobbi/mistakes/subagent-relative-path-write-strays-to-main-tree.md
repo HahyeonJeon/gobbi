@@ -16,21 +16,21 @@ superseded_by: null
 
 # Subagent relative-path writes stray to main tree after cwd reset
 
-## What went wrong
+## What happened
 
 During this session, subagents delegated to write session files (rawdata/, evaluation/) used paths that were relative to their working directory. Between Bash tool calls, the shell cwd resets to the main tree root (not the worktree). Relative paths resolved against the main-tree cwd, so files intended for `<worktree>/.gobbi/projects/gobbi/sessions/<sid>/...` landed instead at `<main-tree>/.gobbi/projects/gobbi/sessions/<sid>/...`. The worktree session directory was missing the expected files; the main-tree session directory had them. The manager had to locate and consolidate the strays into the worktree.
 
-## Why it went wrong
+## Why it happens
 
 Subagents assume their write-path context persists from the delegation prompt's description of the worktree. It does not. Every Bash call starts at the session's default cwd (main tree root). A subagent that constructs session write paths without an explicit `cd <worktree>` or absolute path prefix will write to the main tree whenever the path is relative — even if the delegation prompt correctly described the worktree location.
 
-## How to recognize this situation
+## How to detect
 
 - Session files appear under the main-tree `.gobbi/.../sessions/` tree rather than the worktree's equivalent path.
 - The worktree session dir is missing expected rawdata or eval files after a subagent returns.
 - `find <main-tree> -path "*/sessions/<sid>/*" -newer <timestamp>` turns up files that should be in the worktree.
 
-## Corrected approach
+## Correct approach
 
 Subagents use ABSOLUTE worktree paths for ALL session writes — no relative paths anywhere in session write operations:
 

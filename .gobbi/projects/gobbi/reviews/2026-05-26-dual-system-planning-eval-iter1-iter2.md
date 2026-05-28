@@ -1,12 +1,20 @@
 ---
-date: 2026-05-26
+name: 2026-05-26-dual-system-planning-eval-iter1-iter2
+description: Dual-system adversarial review of the Planning loop draft for the dev-doc-standard-retrofit campaign — Claude all-perspectives + Codex overall; iter1 REVISE → iter2 PASS.
+type: reviews
+scope: project
+feature: null
+status: acted-on
+created: 2026-05-26
 session: b0a0eaf9-03f7-4dce-a040-c7443653a459
+tags: [evaluation, dual-system, planning, dev-doc-standard]
 review_kind: adversarial-review
+subject: planning loop draft (iter2 = PASS; iter1 = REVISE)
 reviewed_artifact: planning/rawdata/draft-iter2.md (iter2 = PASS; iter1 = REVISE)
 reviewer: Claude (8 perspectives) + Codex (overall)
 perspectives: [project, structure, performance, aesthetics, usage, consistency, risk, overall]
+verdict: pass
 overall_verdict: pass
-status: acted-on
 related_reports: []
 related_decisions:
   - archive-glob-scope-leak

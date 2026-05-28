@@ -20,15 +20,15 @@ superseded_by: null
 
 During Ideation iter3 evaluation, the manager dispatched a `codex:codex-rescue` plugin agent to perform the Codex evaluation of `draft-iter3.md`. The agent returned quickly with a placeholder message indicating the task was still running. No evaluation files were written to the session staging directory. The evaluation directory `evaluation/iter3/codex/` remained empty. The manager had to authorize recovery via direct `codex exec` from a Bash tool call, which succeeded synchronously and produced all 8 evaluation files.
 
-## What went wrong
+## What happened
 
 The `codex:codex-rescue` plugin agent fires the codex companion task asynchronously and returns immediately, without awaiting completion or capturing real output. Its response is a placeholder like "task is still running" or "the background job has been submitted". The underlying `codex-companion.mjs` tracks jobs in `broker.json` (e.g., `.gobbi/projects/gobbi/worktrees/.../state.json`) with a `status` field. The plugin agent does not poll for `status="completed"` before returning — it delegates to the runtime and exits.
 
-## Why it went wrong (mistaken assumption)
+## Why it happens
 
 The manager assumed `codex:codex-rescue` behaves synchronously: spawn, wait for completion, read output. In reality the plugin agent's "job is to forward the request to the Codex companion script" (per `agents/codex-rescue.md:12`) and return. The forwarding is asynchronous. The manager did not check whether the codex:codex-rescue agent contract guarantees synchronous completion. Result: zero files written, evaluation directory empty, session blocked.
 
-## How to recognize
+## How to detect
 
 Trigger signals:
 - `codex:codex-rescue` Agent returns within a few seconds with a message containing "task is still running", "background job", or "submitted".
@@ -36,7 +36,7 @@ Trigger signals:
 - Checking the broker/state file shows `"status": "running"` with a stale or absent `pid`.
 - No `.md` files appear under `sessions/{session-id}/{loop}/evaluation/iter{n}/codex/` after the spawn.
 
-## Corrected approach
+## Correct approach
 
 1. **Use `codex exec` via Bash directly (synchronous, universal pattern)**. Replace `Agent(subagent_type="codex:codex-rescue", ...)` with a direct Bash invocation:
    ```

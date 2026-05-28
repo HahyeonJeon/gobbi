@@ -15,7 +15,7 @@ superseded_by: null
 
 # Codex:codex-rescue evaluator writes session memory to worktree-nested path
 
-## What went wrong
+## What happened
 
 During the env-var audit session (2026-05-22-bac669ad), the `codex:codex-rescue` evaluator (spawned as a Codex subagent to evaluate Planning loop outputs) wrote session-memory staging files to `.gobbi/projects/gobbi/worktrees/feat/env-var-audit-sessionstart-hook/.gobbi/projects/gobbi/sessions/...` — a path nested inside the Execution worktree — instead of the canonical main-tree absolute path `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/...`.
 
@@ -23,19 +23,19 @@ The session-write-path discipline (`git/SKILL.md` Memory Access Matrix + Output 
 
 The manager discovered the misplaced files, manually moved them to the correct main-tree path, and recorded the incident in the Preparation decisions log (finding γ — Main-tree absolute session-write path note). A subsequent `rm -rf` incident to clean up the residue led to a tracked-files violation (see companion mistake `manager-rm-rf-without-investigating-tracked-files`).
 
-## Why it went wrong
+## Why it happens
 
 The Codex evaluator's delegation prompt did not include an explicit, concrete reminder that session writes must use the **main-tree absolute path** (`/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/...`), not a path relative to the current working directory or the worktree root. The evaluator's CWD was inside the worktree, so a relative or `pwd`-derived path construction produced the worktree-nested path.
 
 Root cause: the session-write-path discipline is documented in `git/SKILL.md` but was not emphasized as a concrete absolute-path mandate in the evaluator's load directives.
 
-## How to recognize
+## How to detect
 
 - A Codex-spawned evaluator (via `codex:codex-rescue`) writes staging or artifact files but the files do not appear under `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/`.
 - Files appear under any path containing `worktrees/` in their prefix (e.g., `.gobbi/projects/gobbi/worktrees/{branch}/.gobbi/...`).
 - `find /playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees -name '*.md' -path '*/sessions/*'` returns results.
 
-## Corrected approach
+## Correct approach
 
 1. **Delegation prompt must include a concrete absolute path.** Every evaluator delegation prompt that involves session writes must carry an explicit line: "All session writes MUST use the absolute main-tree path `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/...`. Do NOT use relative paths or `pwd`-derived paths. The worktree CWD is NOT the session-write root."
 

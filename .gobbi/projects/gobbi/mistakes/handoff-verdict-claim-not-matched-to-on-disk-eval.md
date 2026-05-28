@@ -15,15 +15,15 @@ superseded_by: null
 
 # Handoff Verdict Claim Not Matched to On-Disk Eval
 
-## What went wrong
+## What happened
 
 The HANDOFF (wrap-up artifacts) recorded "both PASS" for T07 iter2, stating that both the Claude and Codex evaluation systems passed in iteration 2. The on-disk Codex evaluation artifact at `execution/task-07/evaluation/iter2/codex/overall.md` carries `VERDICT: REVISE` (OVERALL-001, High/90 — stale `gobbi/SKILL.md` refs). The Codex REVISE was a real finding that was dispositioned DEFERRED as out-of-contract during the session. The handoff flattened the "PASS on contracted scope with deferred out-of-contract REVISE" decision into a simple "both PASS" — a false summary of the on-disk eval state.
 
-## Why it went wrong (mistaken assumption)
+## Why it happens
 
 The verdict carried from working memory: the manager/author held a "T07 accepted PASS on contracted scope" decision in context and wrote "both PASS" to the handoff without re-reading the on-disk evaluation files to verify the exact verdicts. The per-task PASS-on-contracted-scope decision compressed correctly in the manager's understanding, but the compression was applied to the handoff claim without verifying that the on-disk artifact matched. The on-disk Codex verdict was REVISE, not PASS. This is the same Principle 7 violation pattern as `leader-iter2-verification-claim-without-evidence` — appearing at the manager/handoff level rather than the leader/remediation level.
 
-## How to recognize the situation before making the same mistake
+## How to detect
 
 Trigger signal: a handoff, summary, or state file records a verdict (PASS, REVISE, FAIL) for a task iteration, but the claim was not preceded by a `Read` or `grep` of the on-disk `evaluation/iterN/{system}/overall.md` VERDICT line. Any verdict written from working memory is suspect.
 
@@ -31,7 +31,7 @@ Second signal: the session's execution state carries a nuanced disposition ("PAS
 
 Third signal: Wrap-up evaluation (or any reviewer) finds that the handoff claims "PASS" while the on-disk evaluation file is greppable as `VERDICT: REVISE`. The discrepancy is mechanically detectable.
 
-## Corrected approach
+## Correct approach
 
 1. Before writing any verdict into a handoff, journal, or state claim for a task iteration, `grep` the on-disk `evaluation/iterN/{system}/overall.md` VERDICT line and quote it verbatim.
 2. If the on-disk verdict is REVISE but the task was accepted as PASS on contracted scope, state it precisely: "Codex iter2 VERDICT: REVISE (OVERALL-001, High/90, out-of-contract) — dispositioned DEFERRED to follow-up backlog; task accepted PASS on contracted scope."

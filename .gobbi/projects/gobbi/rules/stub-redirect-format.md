@@ -15,7 +15,15 @@ supersedes: null
 
 # Stub-redirect format for superseded docs
 
+> **When a doc is superseded and the user chooses stub redirect over delete, the replacement stub follows ONE of two declared template variants — never an ad-hoc invention.**
+
 When a documentation file is superseded by another and the user chooses **stub redirect** (preserve URL, retain inbound links) over **delete**, follow this format. Establishes a consistent pattern across the project so readers arriving from old links know where to go and authors don't reinvent the format per pass.
+
+---
+
+## Why
+
+Without a declared format, every supersession spawns a one-off stub: different banners, inconsistent linking conventions (some use `§` notation, some bare paths, some HTML anchors), variable length, and ambiguous reader cues. Inbound links break silently when an author chooses an idiosyncratic anchor scheme. A single declared format with two variants closes both gaps: readers always meet the same orientation cues, and anchor verification becomes mechanical.
 
 ---
 
@@ -25,7 +33,11 @@ When a documentation file is superseded by another and the user chooses **stub r
 - Inbound links to the original file should keep resolving (especially if the file has > 5 incoming links from elsewhere in the codebase).
 - The user has explicitly chosen "stub redirect" over deletion.
 
-When to delete instead: the file has zero incoming links (verify with `rg -n "<filename>" --type md`), the original was a placeholder, OR retention has no historical-context value.
+---
+
+## When NOT to apply
+
+When to delete instead: the file has zero incoming links (verify with `rg -n "<filename>" --type md`), the original was a placeholder, OR retention has no historical-context value. Stub redirects exist to keep inbound links alive — a file with no inbound links has no redirect job.
 
 ---
 

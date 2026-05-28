@@ -16,20 +16,22 @@ superseded_by: null
 
 # A naming standard must teach what GOOD looks like, not only forbid patterns
 
-## What went wrong
+## What happened
 The memory-redesign shipped a slug naming standard (`memorization/rules.md` §1) expressed as a **forbidden-pattern blocklist** (phase prefixes, positional indices). When the blocklist proved over-broad (it failed on legitimate content words like `-decisions`), it was **softened to a non-enforced preference** — but nothing positive replaced it. Result: the standard told agents what NOT to do (and then stopped even doing that), but never taught what a GOOD name IS. Cryptic, position-encoding names (`task-01`, `d-1-worktree-row-5-5`, `row-5-5`, `2026-05-23-main`, `reframing-1-3`) kept being created and survived the migration. The user had to point out the names were still "garbage information" to a reader.
 
-## Why it went wrong (the mistaken assumption)
+## Why it happens
 A blocklist of bad patterns was assumed to be sufficient guidance. It is not: a prohibition list does not teach the positive skill (naming the subject so a zero-context reader understands the file). And a regex blocklist is the wrong tool anyway — it false-positives on legitimate content words and gets softened away, leaving a vacuum.
 
-## How to recognize before repeating
+## How to detect
 - A standard/principle whose naming/quality guidance is ALL "do not" / "forbidden" with no "here is what good looks like" + concrete good examples.
 - A reviewer or user asking "what does this filename mean?" / "anyone can understand this?" — the name encodes a position in some list the author had open (task-N, d-N, iterN, row-N, checkpoint-N) rather than the subject.
 
-## Corrected approach
+## Correct approach
 - Lead the standard with a POSITIVE core rule: a name must let a zero-context reader understand the file's SUBJECT; name the concept in development-vibe kebab-case.
 - Pair anti-patterns (positional/sequence index; cryptic internal ref; uninformative generic) WITH a good-vs-bad examples table using real before/after.
 - Anchor the discipline in a principle (here: Principle 13's Create-operation facet) that POINTS to the standard's examples — don't rely on a mechanical regex gate.
 - The redesign's own output must be exemplary: rename existing offenders so the tree matches the guidance (done — 29 files renamed to subject names).
 
-Related: [[design-literal-retire-instruction-without-replacement]] (same shape: removing a thing without a replacement leaves a vacuum).
+## Related
+
+- [[design-literal-retire-instruction-without-replacement]] — same shape: removing a thing without a replacement leaves a vacuum.

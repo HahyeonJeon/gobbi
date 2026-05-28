@@ -16,7 +16,7 @@ superseded_by: null
 
 # Manager built revision brief from memory instead of re-reading the locked spec verbatim
 
-## What went wrong
+## What happened
 
 The iter2 Preparation leader brief listed 8 H2 sections that contradicted the locked Idea Design A at `ideation/staging/design/item-a-codex-skill-structure.md` lines 15-23. Specifically:
 
@@ -26,13 +26,13 @@ The iter2 Preparation leader brief listed 8 H2 sections that contradicted the lo
 
 The leader followed the brief faithfully. The resulting iter2 stub diverged from the locked Idea contract at exactly 2 structural points (section 7 substitution + frontmatter shape), causing REVISE verdicts from both Claude and Codex evaluators.
 
-## Why
+## Why it happens
 
 The manager constructed the iter2 revision brief from memory — recalling "the locked 8 sections" imperfectly — rather than `Read`-ing `item-a-codex-skill-structure.md` lines 15-23 into context before authoring. The mistake originates from the iter1 Codex evaluation itself, which also miscalled `when-to-load` as the correct frontmatter. The manager inherited that incorrect finding and propagated it as a "fix-mandate" in the iter2 brief without cross-verifying against the Ideation contract.
 
 This is an Iron Law 7 (Principle 7) violation: "NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE." The verification gate was applied to the leader's output (evaluators checked the stub against the spec) but not to the manager's own brief-construction step. The manager assumed memory was sufficient for encoding a "paste-inline-verbatim" specification.
 
-## How to recognize
+## How to detect
 
 Before the manager authors any delegation brief that contains "exact" or "verbatim" instructions (e.g., "use exactly these 8 H2 sections in this order"), check whether the locked spec was `Read` into context within the last 10 manager turns of the current session. If the spec has not been freshly read, that is the warning sign.
 
@@ -42,7 +42,7 @@ Specific triggers:
 - The brief cites a prior evaluator's description of the spec rather than the spec itself
 - The brief references line numbers but those lines have not been scrolled through in-session
 
-## Corrected approach
+## Correct approach
 
 The manager MUST `Read` the locked spec into context immediately before constructing any "paste-inline-verbatim" section of a delegation brief. The `Read` call serves as the verification gate — without it, the brief is a memory claim, not a verified specification.
 

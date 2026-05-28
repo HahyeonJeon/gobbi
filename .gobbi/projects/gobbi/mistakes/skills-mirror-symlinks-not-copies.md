@@ -16,7 +16,7 @@ superseded_by: null
 
 # The .claude/skills mirror is SYMLINKS, not physical copies — one edit, not two
 
-## What went wrong
+## What happened
 
 The Ideation leader designed the memory-system propagation plan and Principle #13 on the premise that `.claude/skills/...` and `.gobbi/projects/gobbi/skills/...` are **two physical copies**, so "every skill/template edit doubles" (design draft §7 intro + §6 P13 procedure). The Codex evaluator flagged it; manager verification confirmed it is FALSE.
 
@@ -28,7 +28,7 @@ The Ideation leader designed the memory-system propagation plan and Principle #1
 - Asymmetry: `gobbi-hook-authoring` exists ONLY in `.gobbi/.../skills/` (canonical) with NO `.claude/skills/` symlink. Unmirrored.
 - Phantom skills referenced in early designs: `gobbi-install` (a CLI tool on a deprecated branch, not a skill dir) and `_claude`/`claude` (CLAUDE.md links it but no dir exists — FLAG-2 follow-up).
 
-## Why it happened
+## Why it happens
 
 The leader conflated two separate facts from mistake `executor-mirror-path-vs-worktree-physical-copy.md`:
 
@@ -37,13 +37,13 @@ The leader conflated two separate facts from mistake `executor-mirror-path-vs-wo
 
 The existing mistake's wording ("physical copies on the branch, not symlinks back to the main tree") is about worktree-isolation of the *canonical real files*; it is easily misread as "the mirror doubles edits." A clarification / cross-link to this mistake is a deferred follow-up.
 
-## How to recognize next time
+## How to detect
 
 - Any plan that says "this skill edit must be applied to BOTH .claude and .gobbi copies / edits double / ×2 mirror."
 - A propagation count that doubles for the mirror.
 - A P13 CRUD plan listing `.claude/skills/X/SKILL.md` as a separate Update line from `.gobbi/.../skills/X/SKILL.md`.
 
-## Corrected approach
+## Correct approach
 
 - Edit the **canonical** file at `<worktree>/.gobbi/projects/gobbi/skills/{skill}/...` (worktree-absolute). The `.claude/skills/{skill}/...` symlink reflects it automatically — do NOT make a second edit.
 - For `gobbi-hook-authoring` (and any other canonical-only skill), there is NO `.claude` symlink to update; if a `.claude` view is desired, create the symlink (separate concern).

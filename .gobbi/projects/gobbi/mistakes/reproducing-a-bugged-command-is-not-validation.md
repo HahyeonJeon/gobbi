@@ -16,17 +16,17 @@ superseded_by: null
 
 # Reproducing a bugged command is not validation of the result
 
-## What went wrong
+## What happened
 
 The Ideation counts (208 files / 191 content docs / 59 leak files) passed TWO consecutive dual-system evaluation rounds without correction. The `find` predicate used to produce those counts included `-not -path "*/agents/*"`, which wrongly excluded the entire in-scope `features/agents/` capability feature (14 docs, 4 leak files). The true baseline was 222 / 204 / 63. Both evaluators "reproduced" the numbers by re-running or reasoning from the same predicate — they matched each other but not reality.
 
 Planning caught the error only by reasoning about scope-vs-filter: `features/agents/` is a named in-scope feature but the predicate excluded it. The count correction was NOT a scope change.
 
-## Why it went wrong
+## Why it happens
 
 Evaluators treated command-reproduction as validation. Re-running a command verifies that the command is deterministic — NOT that the command's predicate matches its declared intent. When multiple evaluators agree on a number derived from one shared command, they have verified only that the command is stable, not that it is correct. The predicate (globs, exclusions, filters) is itself an auditable artifact that requires independent scrutiny.
 
-## How to recognize this situation
+## How to detect
 
 Any metric or count defined by a command whose exclusion set or filter predicate has not been independently audited against the declared scope. Specific signals:
 
@@ -34,7 +34,7 @@ Any metric or count defined by a command whose exclusion set or filter predicate
 - The command contains `-not -path`, `-exclude`, `--include`, or `| grep -v` clauses whose scope boundary has not been cross-checked against the declared in-scope set.
 - The metric's denominator is a file-set claim ("222 docs in scope") where the count command's exclusion list was not audited for inadvertent exclusion of in-scope items.
 
-## Corrected approach
+## Correct approach
 
 When validating a count or metric:
 

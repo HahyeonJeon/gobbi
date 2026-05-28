@@ -20,15 +20,15 @@ superseded_by: null
 
 This is Design decision α from Bundle A (Item C: Memorization delegation hard gate). The root cause of the T1-T7 staging gap observed in session `2026-05-22-bac669ad` was confirmed this session: the MEMORIZATION assistant was dispatched without `memorization/SKILL.md` in the delegation prompt's Load Directives Skills tier. Because subagents do not inherit the parent session's loaded skills, the assistant ran without the staging procedure and produced only the minimal outputs (transcript + session.json upsert) — none of the typed-finding stagings, design stagings, or discussion stagings.
 
-## What went wrong
+## What happened
 
 A prior session's MEMORIZATION dispatch produced sparse output: only transcript preservation + session.json entry. No `staging/scenarios/`, `staging/decisions/`, `staging/design/`, or `staging/discussions/` files were written across T1-T7 execution loops. The assistant completed and returned `DONE` without error. The manager did not catch the thin output because there was no hard gate on the delegation prompt.
 
-## Why it went wrong (mistaken assumption)
+## Why it happens
 
 The manager assumed the assistant would load the memorization skill because it was present in the project's skills directory. Subagents do not inherit the parent agent's loaded skills — every subagent starts fresh. If the delegation prompt does not list a skill in Load Directives, the subagent does not load it. The `memorization/SKILL.md` staging procedure (Steps 5-7 of the PASS-path) was never loaded; the assistant therefore did not know to write to `staging/` at all.
 
-## How to recognize
+## How to detect
 
 Trigger signals:
 - MEMORIZATION assistant returns `DONE` but `sessions/{session-id}/{loop}/staging/` is empty or absent.
@@ -36,7 +36,7 @@ Trigger signals:
 - The assistant's output contains no mentions of typing findings, routing types to staging subdirectories, or stamping templates.
 - `find sessions/{session-id}/{loop}/staging -type f` returns empty or no output after MEMORIZATION completes.
 
-## Corrected approach (Item C — delegation hard gate)
+## Correct approach
 
 Every MEMORIZATION delegation prompt MUST include `memorization/SKILL.md` in tier-3 (Skills) of the Load Directives block. This is a non-negotiable gate.
 
