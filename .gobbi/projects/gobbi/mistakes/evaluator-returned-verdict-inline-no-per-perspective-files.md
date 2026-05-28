@@ -1,45 +1,33 @@
 ---
-slug: evaluator-returned-verdict-inline-no-per-perspective-files
-title: "Claude evaluator returns verdict inline; doesn't write per-perspective files via Bash heredoc when Write tool is absent"
-domain: process
-type: design_flaw
-disposition: open
-mistake-candidate: true
-project: gobbi
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
-loop: execution
-task: 05-coverage-ownership-naming-row
-created: 2026-05-23
+name: evaluator-returned-verdict-inline-no-per-perspective-files
+description: "Claude evaluator returned verdict inline; did not write the contracted per-perspective files when the Write tool was absent."
+type: mistakes
+scope: project
+feature: null
 status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [process, evaluation, orchestration]
+domain: process
 supersedes: null
 superseded_by: null
-date: 2026-05-23
-feature: gobbi-orchestration-workflow-improvements
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/execution/T5/staging/decisions/evaluator-returned-verdict-inline-no-per-perspective-files.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
 # Evaluator returns verdict inline; no per-perspective files written
 
-## What went wrong
+## What happened
 
 T05 Claude evaluator (iter1) returned a PASS verdict with full per-perspective findings inline in its response. It did NOT write the contracted 8 per-perspective .md files (project / structure / performance / aesthetics / usage / consistency / risk / overall) to the evaluation output dir despite the brief explicitly requiring those output paths.
 
 Manager wrote a proxy overall.md to preserve the verdict and 2 Low findings to disk for audit-trail continuity, but project / structure / performance / aesthetics / usage / consistency / risk per-perspective files are missing from `sessions/.../execution/T5/evaluation/iter1/claude/`.
 
-## Why it went wrong
+## Why it happens
 
 The `evaluator` agent type's `tools` list per `.claude/agents/evaluator.md` is `Read, Grep, Glob, Bash` — **no `Write` tool**. The evaluator interpreted this absence (plus possibly some directive in the agent system prompt to "not write report .md files") as forbidding file writes, and chose to return findings inline.
 
 This is BOTH a tools issue (no Write means writes must go via Bash heredoc) AND a behavioral issue (the evaluator chose inline rather than `cat > file.md << EOF` via Bash). Prior evaluators in this session DID write files (via Bash heredoc); this one chose differently.
 
-## How to recognize
-
-- Evaluator's response begins with verdict + findings TABLE in the chat
-- `ls sessions/.../evaluation/iter{N}/{system}/` shows fewer than 8 files (or only `overall.md`)
-- Evaluator self-narrates a directive conflict like "I should NOT write report .md files, but the brief requires per-perspective files... I'll return inline."
-
-## Corrected approach
+## Correct approach
 
 Either:
 
@@ -51,7 +39,13 @@ Either:
 
 Recommended: combine (2) into the evaluator brief template at `.claude/skills/delegation/templates/evaluator.md` AND (3) as a manager-side check.
 
-## Witness
+## How to detect
+
+- Evaluator's response begins with verdict + findings TABLE in the chat
+- `ls sessions/.../evaluation/iter{N}/{system}/` shows fewer than 8 files (or only `overall.md`)
+- Evaluator self-narrates a directive conflict like "I should NOT write report .md files, but the brief requires per-perspective files... I'll return inline."
+
+## Source
 
 - T05 iter1 Claude eval: agent ID `a0bf7024f118377d1` returned verdict + inline findings; `ls execution/T5/evaluation/iter1/claude/` after dispatch showed 0 files (manager later wrote proxy overall.md).
 - Comparison: prior evaluators in this session (Ideation iter1-3, Preparation iter1-3, Planning iter1-2, Execution T1-T4) all wrote 8 per-perspective files via Bash heredoc.

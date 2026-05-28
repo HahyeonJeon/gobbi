@@ -1,12 +1,16 @@
 ---
-title: "Chat-mode tiki-taka redesign"
-status: deferred
-project: gobbi
+name: chat-mode-tiki-taka-redesign
+description: Redesign conversational chat-mode UX for fluid short-turn exchanges without losing AskUserQuestion-as-decision-gate rigor; deferred — needs many discussions.
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [chat-mode, ux, redesign, discussion, deferred]
+title: "Chat-mode tiki-taka redesign"
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 disposition: open
 ---
 

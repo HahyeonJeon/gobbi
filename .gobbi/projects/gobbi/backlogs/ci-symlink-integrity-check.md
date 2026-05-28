@@ -1,11 +1,17 @@
 ---
-title: CI / pre-commit guard against workspace-symlink → regular-file conversion
-status: deferred
-project: gobbi
+name: ci-symlink-integrity-check
+description: CI / pre-commit guard that fails if any tracked .claude/ workspace symlink is converted to a regular file; deferred until first real defect or N≥2 bundles.
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [ci, symlinks, pre-commit, workspace, deferred]
+title: CI / pre-commit guard against workspace-symlink → regular-file conversion
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+disposition: open
 ---
 
 # CI / pre-commit symlink-integrity check

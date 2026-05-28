@@ -1,10 +1,17 @@
 ---
-title: Evaluator subagents (Claude + Codex) write session EVAL artifacts to main tree instead of worktree
-priority: medium
-discovered: 2026-05-24
-session: 2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f
+name: codex-subprocess-writes-to-main-tree
+description: Both Claude and Codex evaluator subagents wrote session EVAL artifacts to the main tree instead of the worktree path.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-24
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [dual-system, worktree, evaluation, session-lifecycle, subagent-dispatch]
-related: [session-dir-placed-outside-worktree]
+priority: medium
+domain: process
+supersedes: null
+superseded_by: null
 ---
 
 # Evaluator subagents (Claude + Codex) write session EVAL artifacts to main tree instead of worktree
@@ -57,5 +64,5 @@ After evaluator returns: check that `ls <worktree-path>/.gobbi/projects/gobbi/se
 ## Related
 
 - `session-dir-placed-outside-worktree.md` — the parent mistake; both originate from subagents defaulting to main-tree CWD when worktree-pr mode is active.
-- `d-2-qualified-git-rule.md` in `features/session-foundations-bundle-b/design/` — the qualified absolute-root rule that both mistakes violate.
+- `qualified-git-write-path-rule.md` in `features/git-workflow/design/` — the qualified absolute-root rule that both mistakes violate.
 - T02 EVAL empirical recurrence (2026-05-24): both Claude and Codex eval legs wrote to main tree; confirmed root cause is broader than Codex-only.

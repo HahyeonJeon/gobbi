@@ -1,6 +1,29 @@
+---
+name: stub-redirect-format
+description: Format and variant rules for creating stub-redirect docs when a superseded file's URL must be preserved and inbound links kept live.
+type: rules
+scope: project
+feature: null
+status: active
+created: 2026-05-21
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [docs-authoring, stub-redirect, documentation]
+priority: medium
+established: 2026-05-21
+supersedes: null
+---
+
 # Stub-redirect format for superseded docs
 
+> **When a doc is superseded and the user chooses stub redirect over delete, the replacement stub follows ONE of two declared template variants — never an ad-hoc invention.**
+
 When a documentation file is superseded by another and the user chooses **stub redirect** (preserve URL, retain inbound links) over **delete**, follow this format. Establishes a consistent pattern across the project so readers arriving from old links know where to go and authors don't reinvent the format per pass.
+
+---
+
+## Why
+
+Without a declared format, every supersession spawns a one-off stub: different banners, inconsistent linking conventions (some use `§` notation, some bare paths, some HTML anchors), variable length, and ambiguous reader cues. Inbound links break silently when an author chooses an idiosyncratic anchor scheme. A single declared format with two variants closes both gaps: readers always meet the same orientation cues, and anchor verification becomes mechanical.
 
 ---
 
@@ -10,7 +33,11 @@ When a documentation file is superseded by another and the user chooses **stub r
 - Inbound links to the original file should keep resolving (especially if the file has > 5 incoming links from elsewhere in the codebase).
 - The user has explicitly chosen "stub redirect" over deletion.
 
-When to delete instead: the file has zero incoming links (verify with `rg -n "<filename>" --type md`), the original was a placeholder, OR retention has no historical-context value.
+---
+
+## When NOT to apply
+
+When to delete instead: the file has zero incoming links (verify with `rg -n "<filename>" --type md`), the original was a placeholder, OR retention has no historical-context value. Stub redirects exist to keep inbound links alive — a file with no inbound links has no redirect job.
 
 ---
 
@@ -51,8 +78,8 @@ Length cap: 10 lines.
 - **Anchor verification before commit**: every link target with `#anchor` must resolve to an existing `## ` heading in the target file. Verify by running `grep -nE '^## ' <target-file>` and matching exact heading text against GitHub's slug rules (lowercase, spaces → `-`, periods/punctuation stripped, em-dash and en-dash dropped).
 - **Date the supersession**: include the date and the retiring wave/PR identifier so future readers know when the redirect was set up.
 - **Forward-only**: stubs point AT the new doc; never point in both directions or duplicate content.
-- **No frontmatter**: the project uses plain markdown. Hugo/MkDocs/Docusaurus frontmatter syntax is forbidden.
-- **No HTML anchor injection**: `<a id="..."></a>` tags violate `_claude/SKILL.md` anti-pattern guidance and proliferate inconsistently across renderers.
+- **No frontmatter in TARGET docs**: stub-redirect TARGET docs are published `.claude/` redirect stubs — Hugo/MkDocs/Docusaurus frontmatter syntax is forbidden in those published stubs. Project-memory files (under `.gobbi/projects/{name}/`) DO carry base frontmatter per `skills/memorization/rules.md`.
+- **No HTML anchor injection**: `<a id="..."></a>` tags violate the retired `_claude` skill's anti-pattern guidance (now historical — the `_claude` skill was retired and not replaced) and proliferate inconsistently across renderers.
 
 ---
 
@@ -72,4 +99,4 @@ Wave A.2 (PR #151) established this format when reducing `deterministic-orchestr
 
 ## Related
 
-See `_claude/SKILL.md` for the broader docs writing standard. For the judgment call on single vs split-agent docs cleanups, see the `delegation` skill's "When to split vs combine" guidance.
+The broader docs writing standard formerly lived in the retired `_claude` skill (since removed without direct replacement). For the judgment call on single vs split-agent docs cleanups, see the `delegation` skill's "When to split vs combine" guidance.

@@ -1,11 +1,15 @@
 ---
-title: "Design docs memorializing a model must cross-check the AUTHORITATIVE source, not a sibling skill or stale memorial"
-discovered: 2026-05-25
+name: design-doc-cross-checking-authoritative-source-not-sibling-skill
+description: Design docs memorializing a model must cross-check the authoritative source, not a sibling skill or stale memorial.
+type: learnings
+scope: project
+feature: null
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [docs-authoring, evaluation, consistency, docs-sync]
-related: [leader-iter2-verification-claim-without-evidence]
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-05/staging/learnings/design-doc-cross-checking-authoritative-source-not-sibling-skill.md
-promoted-at: 2026-05-25
+supersedes: null
+superseded_by: null
 ---
 
 # Design docs memorializing a model must cross-check the AUTHORITATIVE source, not a sibling skill or stale memorial
@@ -19,17 +23,16 @@ directly against the authoritative source — not against a sibling skill file (
 
 ## Context
 
-T05 (session `2026-05-24-45388fa9`) authored
-`.gobbi/projects/gobbi/design/session-lifecycle-worktree-boundaries.md` to memorialize the
-worktree-first session lifecycle. The executor grounded the row-label claims in `git/SKILL.md:155`
-and the D-1 memorial — both of which said "Configuration row 5.5" for worktree creation.
-However, T02 (commit `2b537ae`) had reordered the `orchestration/SKILL.md` Step 1 table,
-moving worktree creation from row 5.5 to **row 5**, without updating `git/SKILL.md` or D-1.
+An executor authored `.gobbi/projects/gobbi/design/session-lifecycle-worktree-boundaries.md` to
+memorialize the worktree-first session lifecycle. The executor grounded the row-label claims in
+`git/SKILL.md` and a locked design memorial — both of which said worktree creation happens at
+"Configuration row 5.5." However, an earlier task in the same session had reordered the
+`orchestration/SKILL.md` Step 1 table, moving worktree creation from row 5.5 to **row 5**, without
+updating `git/SKILL.md` or the memorial. The design doc inherited the stale row label.
 
-The dual-system EVAL caught this (both systems REVISE, High confidence 100): Claude found
-F-CONS-1/F-USAGE-1/F-RISK-1; Codex found CONS-001. Both traced the same root defect: a
-pre-existing cross-skill contradiction was inherited and propagated into an `accepted`
-canonical artifact rather than resolved at authoring time.
+Both evaluators independently caught this and returned REVISE at high confidence. Both traced the
+same root defect: a pre-existing cross-skill contradiction was inherited and propagated into an
+`accepted` canonical artifact rather than resolved at authoring time.
 
 ## Why it matters
 
@@ -47,7 +50,7 @@ Before committing a design doc that states Step-N, row-M, or phase-sequence clai
 1. Identify the **single authoritative source** for the claim — typically the live skill that
    owns the model (e.g., `orchestration/SKILL.md` for Step 1 rows).
 2. Open that file directly; grep for the row or phase label; confirm the claim matches.
-3. If a sibling skill (e.g., `git/SKILL.md`) or a memorial (e.g., D-1) disagrees, do NOT
+3. If a sibling skill (e.g., `git/SKILL.md`) or a locked design memorial disagrees, do NOT
    assume the sibling is correct. The live orchestration skill is the authority.
 4. Stage the sibling/memorial drift as a separate backlog — do not fix it in the same commit
    as the design doc (scope discipline), but do not ignore it.
@@ -61,6 +64,9 @@ stale content.
 
 ## Related
 
-- Project mistake: `.gobbi/projects/gobbi/mistakes/leader-iter2-verification-claim-without-evidence.md`
-- T05 iter1 EVAL: `sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-05/evaluation/iter1/claude/consistency.md` (F-CONS-1) and `...codex/consistency.md` (CONS-001)
-- Follow-up backlog: `sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-05/staging/backlogs/project/git-skill-stale-row-5-5-worktree-reference.md`
+- `.gobbi/projects/gobbi/mistakes/leader-iter2-verification-claim-without-evidence.md` — the project mistake describing the same class of error (a claim grounded in an un-cross-checked witness).
+- `.gobbi/projects/gobbi/design/session-lifecycle-worktree-boundaries.md` — the design doc whose stale row label produced this learning.
+
+## Source
+
+Originating session: `.gobbi/projects/gobbi/sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/` — the dual-system evaluation that caught the inherited cross-skill contradiction.

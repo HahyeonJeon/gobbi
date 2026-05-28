@@ -1,0 +1,58 @@
+Pre-Wrap-up Project Memory Snapshot
+Session: 2026-05-26-b0a0eaf9-03f7-4dce-a040-c7443653a459
+Captured at: 2026-05-27 (Wrap-up WORK Step 1)
+Branch: chore/session-2026-05-25-a10c82d6
+Branch tip: e9c4ea7
+
+=== mistakes/ (26 active files) ===
+claude-evaluator-step4-only-vs-codex-whole-file-grep.md
+codex-eval-session-write-path-nested-in-worktree.md
+codex-exec-at-file-hangs-on-stdin-in-background.md
+codex-rescue-agent-fire-and-forget-without-result-capture.md
+codex-subprocess-writes-to-main-tree.md
+codex-wrapper-relative-path-wrong-session-write.md
+design-literal-retire-instruction-without-replacement.md
+edit-tool-refuses-symlink-paths.md
+evaluator-returned-verdict-inline-no-per-perspective-files.md
+executor-main-tree-edit-near-miss.md
+executor-mirror-path-vs-worktree-physical-copy.md
+handoff-verdict-claim-not-matched-to-on-disk-eval.md
+leader-iter2-verification-claim-without-evidence.md
+manager-context-overflow-with-large-bundle.md
+manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck.md
+manager-rm-rf-without-investigating-tracked-files.md
+manager-skipped-dual-system-eval.md
+memorization-delegation-prompts-must-load-memorization-skill.md
+naming-standard-needs-positive-guidance-not-just-blocklist.md
+proposed-deleting-model-instead-of-fixing-stale-mechanism.md
+README.md
+sendmessage-continued-cwd-resets-to-main-tree.md
+session-dir-placed-outside-worktree.md
+skills-mirror-symlinks-not-copies.md
+symlink-restore-depth-wrong.md
+worktree-physical-file-missing-when-checked-out.md
+
+=== notes/ (most recent 5) ===
+2026-05-24-session-foundations-bundle-b.md
+2026-05-25-memory-system-redesign.md
+2026-05-25-session-foundations-bundle-c-complete.md
+2026-05-26-memory-redesign-waves-complete.md
+README.md
+
+=== features/ (top-level) ===
+agents/
+evaluation/
+git-workflow/
+guardrails/
+install-runtime/
+project-memory/
+workflow/
+README.md
+
+=== features/project-memory/ ===
+changelogs/
+decisions/
+design/
+README.md
+
+(No plans/, mistakes/, backlogs/, references/, discussions/, scenarios/, checklists/ subdirs yet for project-memory feature — to be bootstrapped lazily by this Wrap-up.)

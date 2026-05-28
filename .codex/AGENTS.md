@@ -60,7 +60,7 @@ Evaluation runs inside Ideation, Planning, and Execution. The orchestrator selec
 
 > **MUST load `.agents/skills/principles/SKILL.md` at session start, resume, /clear, and /compact.**
 
-The 12 principles below are the enforceable behavioral discipline for every agent. The Iron Law table is the always-visible summary; load the skill for the full Why, Anti-rationalizations, and Mechanism behind each principle.
+The 13 principles below are the enforceable behavioral discipline for every agent. The Iron Law table is the always-visible summary; load the skill for the full Why, Anti-rationalizations, and Mechanism behind each principle.
 
 | # | Iron Law |
 |---|---|
@@ -76,6 +76,7 @@ The 12 principles below are the enforceable behavioral discipline for every agen
 | 10 | NO CHANGE WITHOUT A REAL MOTIVATOR. |
 | 11 | NO IMPROVEMENT THAT GAMES THE TOOL. |
 | 12 | NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
+| 13 | NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN. |
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
@@ -90,7 +91,7 @@ Every agent MUST load `.agents/skills/mistake/SKILL.md` before starting work. Wh
 | `.agents/skills/gobbi/SKILL.md` | Entry point, session setup questions, skill map |
 | `.codex-plugin/plugin.json` | Local Gobbi plugin manifest |
 | `.gobbi/projects/gobbi/skills/` | Plugin-facing Gobbi skills directory |
-| `.agents/skills/principles/SKILL.md` | 12 behavioral principles every agent must follow |
+| `.agents/skills/principles/SKILL.md` | 13 behavioral principles every agent must follow |
 | `.agents/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
 | `.agents/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |
 | `.codex/agents/manager.toml` | Root session manager custom-agent wrapper |

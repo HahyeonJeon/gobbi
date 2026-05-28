@@ -27,17 +27,27 @@ Choose feature-level when the design is bounded to one feature (typical). Choose
 
 ## File naming
 
-`{slug}.md` — short, hyphenated, descriptive. No date prefix (designs are durable; use `decisions/` for time-stamped records).
+`{slug}.md` — bare-slug, short, hyphenated, descriptive. No date prefix (designs are durable/evergreen; the date lives in frontmatter; use `decisions/` for time-stamped records). See [`rules.md` § 1](../rules.md).
 
 Example: `cache-invalidation.md`, `auth-middleware.md`, `prompt-cascade.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the design-type extensions (`supersedes`, `superseded_by`, `related`).
+
 ```markdown
 ---
-title: {Short title}
-status: draft | proposed | accepted | superseded
-feature: {feature-name} or null
+name: {slug — short design title}
+description: {one-line what this design covers}
+type: design
+scope: project | feature
+feature: {feature-name} | null
+status: active | superseded
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
+supersedes: {prior-design-slug} | null
+superseded_by: {new-design-slug} | null
 related: [decisions/{slug}, plans/{slug}, changelogs/{slug}]
 ---
 

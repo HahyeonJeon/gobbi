@@ -1,11 +1,17 @@
 ---
-title: Hooks-domain mistakes watchlist — capture mid-Execution as they emerge
-status: in-progress
-project: gobbi
+name: hooks-domain-mistakes-watchlist
+description: Flags zero hooks-domain mistakes currently; deferred until N≥2 hook-authoring mistakes accumulate or a 3rd hook author arrives.
+type: backlogs
+scope: project
 feature: null
-task: null
-anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+status: active
 created: 2026-05-23
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [hooks, mistakes, watchlist, deferred]
+title: Hooks-domain mistakes watchlist — capture mid-Execution as they emerge
+project: gobbi
+anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
+disposition: open
 ---
 
 # Hooks-domain mistakes watchlist

@@ -41,15 +41,22 @@ When multiple sessions occur on the same date, the slug differentiates them. The
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the notes-type extension (`features_touched` — the value-feature slugs this session promoted into, the L2 session→feature link). `notes/` is project-only and immutable, so base `status` stays `active`.
+
 ```markdown
 ---
-date: YYYY-MM-DD
+name: {slug — session dominant theme}
+description: {one-line what this session did}
+type: notes
+scope: project
+feature: null
+status: active
+created: YYYY-MM-DD
 session: {session-id}
-feature: {feature-name} or null
+tags: [{tag1}, {tag2}]
+features_touched: [{value-feature slugs this session promoted into}]
 loops_completed: [{ideation, preparation, planning, execution, wrap-up}]
 shipped: [{slugs of artifacts that landed in project memory this session}]
-status: open | continuing | completed
-tags: [{tag1}, {tag2}]
 ---
 
 # {Session dominant theme}
@@ -65,6 +72,9 @@ tags: [{tag1}, {tag2}]
 
 ## What shifted
 {Direction changes during the session — decisions that were reconsidered, plans that were rescoped, assumptions that broke. The journal captures *motion*, not just outcomes.}
+
+## Decisions to respect
+{The standing decisions a future session must not silently re-litigate — locks the user ratified, constraints accepted, directions chosen. Distinct from `decisions/` (the durable ADR records): this is the handoff shortlist that says "these are settled; build on them, do not reopen them without cause." Cite the `decisions/` slug where one exists.}
 
 ## Next session
 {Pointer to what the next session should pick up. Could be "continue {feature}", "evaluate {plan}", "react to {finding}". Keep terse — detail belongs in backlogs / handoff summary.}

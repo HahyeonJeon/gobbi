@@ -1,8 +1,14 @@
 ---
-date: 2026-05-23
-session: 2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068
+name: 2026-05-23-orch-workflow-improvements
+description: Session journal — orchestration workflow improvements Bundle A (2026-05-23); 6 discipline gaps repaired, 8 commits, PR #266; 6 new project mistakes promoted.
+type: notes
+scope: project
 feature: gobbi-orchestration-workflow-improvements
-type: journal
+status: active
+created: 2026-05-23
+session: 7ea62d36-e826-4ce6-9e90-9e948007b068
+tags: [bundle-a, orchestration, workflow, journal, pr-266]
+date: 2026-05-23
 ---
 
 # Session Journal — 2026-05-23 — Orchestration Workflow Improvements (Bundle A)

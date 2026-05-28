@@ -54,15 +54,23 @@ Date is the **generation date**, not the date of events reported on. A weekly-st
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reports-type extensions (`report_type`, `related_reports`). Reports are project-only and append-only (base `status` stays `active`).
+
 ```markdown
 ---
-date: YYYY-MM-DD
+name: {slug — report subject}
+description: {one-line subject of the report}
+type: reports
+scope: project
+feature: null
+status: active
+created: YYYY-MM-DD
 session: {session-id}
+tags: [{tag1}, {tag2}]
 report_type: status | post-mortem | analytics
+related_reports: [{report slugs that this builds on or supersedes}]
 generated_by: {tool name / agent identity / human author}
 subject: {one-line subject of the report}
-status: open | acted-on | superseded | archived
-related_reports: [{report slugs that this builds on or supersedes}]
 related_reviews: [{review slugs derived from or feeding into this report}]
 related_decisions: [{decision slugs this report drove}]
 ---

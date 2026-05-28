@@ -2,6 +2,8 @@
 
 Reference of every memory path the workflow touches. Two tiers: **Session memory** (volatile, per-session) and **Project memory** (persistent, per-project). Use this doc as the single source of truth when deciding where a staging file goes, which template stamps a destination, or whether a path is the assistant's or Wrap-up's to write.
 
+For the naming convention, frontmatter standard, and structure rules every memory file obeys, see [`rules.md`](rules.md).
+
 The assistant in MEMORIZATION writes **only** to session memory. Wrap-up is the sole writer to project memory. Both tiers are plain markdown trees — there is no per-session SQLite (`gobbi.db` was dropped) and no per-project summary JSON (`project.json` was dropped). `session.json` is the only JSON in the session tree, and it is per-session telemetry — not cross-session memory.
 
 Column legend:
@@ -26,6 +28,7 @@ Volatile per-session storage. Wrap-up promotes the `staging/` subtree to project
 |---|---|---|---|---|
 | `session.json` | Per-session telemetry — `workflow.{loop}.iterations[]`, `finishedAt`, `verdict`, project / feature / task scope. Single file generated at Memorization STEP_EXIT | manager (init) + assistant (UPSERT) | session start; every iter MEMORIZATION | [`../orchestration/templates/session.template.json`](../orchestration/templates/session.template.json) |
 | `settings.json` | Session-level config (evaluate mode, git workflow). Resolved by cascade from workspace → project → session | manager (session start) | session start (`/gobbi`) | [`../orchestration/templates/settings.default.json`](../orchestration/templates/settings.default.json) |
+| `session.json.lock` | Advisory write-lock guarding concurrent `session.json` writes. Created and released by the manager around each `session.json` write; safe to ignore on read. Not memory content — a transient coordination artifact at the session root | manager | around every `session.json` write | — |
 
 ### Per-loop subtree — `{loop}/` (loop ∈ ideation / preparation / planning / execution / wrap-up)
 
@@ -67,6 +70,28 @@ Root: `.gobbi/projects/{project-name}/`
 
 Persistent, per-project, git-tracked. Cross-session memory. **Wrap-up is the sole writer**; loop MEMORIZATION never writes here. The directory shape below matches the canonical project-memory layout — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the staging → destination routing table.
 
+### Per-type canonical homes (the 13 project-memory types)
+
+Each project-memory type has a single canonical home directory and a per-type spec (purpose / hard boundary / scope / naming / frontmatter / CRUD) in [`rules.md`](rules.md) and the design-of-record. The table below is the path index; for the full per-type semantics see [`rules.md`](rules.md):
+
+| Type | Canonical home | Also feature-scoped? |
+|---|---|---|
+| `features` | `features/{feature-name}/` (the dir is its own tier; README is the identity doc) | n/a — `features/` IS the feature tier |
+| `notes` | `notes/` | Project-only |
+| `decisions` | `decisions/` | Both (default feature-level; promote-up to project) |
+| `design` | `design/` | Both (default feature-level; promote-up to project) |
+| `mistakes` | `mistakes/` | Both (default project-level; feature-scope when trap is feature-specific) |
+| `rules` | `rules/` | Project-only |
+| `learnings` | `learnings/` | Project-only |
+| `backlogs` | `backlogs/` | Both (feature tasks vs project-scope deferrals) |
+| `references` | `references/` | Both (default feature-level; promote-up rare) |
+| `plans` | `features/{feature-name}/plans/` (loop path); project `plans/` is maintainer-authored only, NOT loop-written | Feature-only for the loop path |
+| `reviews` | `reviews/` | Project-only |
+| `reports` | `reports/` | Project-only |
+| `archive` (destination, not a type) | `archive/{type}/` (typed subdirs; original `type` preserved) | Project-only |
+
+The four feature-subdir-only template types (`changelogs`, `discussions`, `scenarios`, `checklists`) are not independent project-memory types — they exist only as `features/{feature-name}/` subdirs (see [`rules.md` § 3](rules.md) and the per-row entries below).
+
 ### Project root
 
 | Path | Description | Writer | When | Template |
@@ -105,13 +130,15 @@ These directories hold knowledge that crosses features or is intentionally proje
 | `backlogs/{slug}.md` | Project-wide deferred work (deferred features, project-scope tasks) | Wrap-up | per project-scope deferral | [`templates/backlogs.md`](templates/backlogs.md) |
 | `references/{slug}.md` | Project-wide external references (cross-feature prior art) | Wrap-up | rare — user-confirmed cross-feature relevance | [`templates/references.md`](templates/references.md) |
 | `decisions/{slug}.md` | Project-wide decisions (architectural choices, repo-level policies) | Wrap-up + maintainer | per project-scope decision | [`templates/decisions.md`](templates/decisions.md) |
-| `plans/{slug}.md` | Project-wide plans (cross-feature roadmaps, release plans) | Wrap-up + maintainer | per project-scope plan | [`templates/plans.md`](templates/plans.md) |
+| `plans/{YYYY-MM-DD}-{slug}.md` | **Maintainer-authored cross-feature roadmaps / release plans ONLY** — this tier is authored directly by the maintainer and is **NOT loop-written**. No Planning-loop MEMORIZATION or Wrap-up promotion ever targets project `plans/`; the loop path writes plans only to `features/{feature-name}/plans/`. If this maintainer surface is judged unnecessary it may be dropped entirely — the loop contract does not depend on it | maintainer (direct) | per maintainer-authored roadmap | [`templates/plans.md`](templates/plans.md) |
 | `reviews/{YYYY-MM-DD}-{slug}.md` | Review / evaluation / audit activity result documents (adversarial-review, ultrareview, code review, retrospective, audit reports) | Wrap-up + maintainer | per review / audit activity completed | [`templates/reviews.md`](templates/reviews.md) |
 | `reports/{YYYY-MM-DD}-{slug}.md` | Long-form report documents — `status` (periodic summaries), `post-mortem` (incident investigations), `analytics` (measurement outputs). Three types via `report_type` frontmatter | Wrap-up + maintainer | per status period close / post-mortem trigger / analytics run | [`templates/reports.md`](templates/reports.md) |
 | `learnings/{slug}.md` | Project-level learnings — insights that emerge across features or sessions | Wrap-up + maintainer | per substantive learning | [`templates/learnings.md`](templates/learnings.md) |
-| `archive/{slug}.md` | Retired / superseded content preserved for history | Wrap-up + maintainer | per supersession (preserves the old file via `archive/` rather than deleting) | [`templates/archive.md`](templates/archive.md) |
+| `archive/{type}/{YYYY-MM-DD}-{slug}.md` | Retired / superseded content moved here in full when it reaches a terminal state. Organized by **typed subdirs** — `archive/{type}/` mirrors the originating content type (`archive/decisions/`, `archive/backlogs/`, `archive/notes/`, …); the archived file keeps its ORIGINAL `type` in frontmatter (`archive` is not a `type` value) and gains `archived_at` / `archive_reason`. The directory — not the `type` field — marks it archived | Wrap-up + maintainer | per supersession / terminal-state move (`git mv`; preserves the file rather than deleting) | [`templates/archive.md`](templates/archive.md) |
 
 Project-specific skill / agent overrides live under `$CLAUDE_PROJECT_DIR/.claude/skills/{skill-name}/` and `$CLAUDE_PROJECT_DIR/.claude/agents/{agent-name}.toml` — those are `.claude/` static-knowledge paths, **not project memory** in this skill's sense. The memory-map only covers paths under `.gobbi/projects/{project-name}/`; `.claude/` overrides are authored manually by the maintainer and are out of MEMORIZATION's scope.
+
+> **[FLAG-1] `skills/` placement contradiction — deferred follow-up (out of this redesign's scope).** This memory-map intentionally excludes `.gobbi/projects/{project-name}/skills/` from the project-memory type tables above (the project skills/ + agents/ trees are non-memory authoring surfaces), yet [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) lists `skills/` among Wrap-up's project-memory write targets (the Preparation `generate-now` exception). The canonical-location question — is project `skills/` project memory or a separate authoring surface — is NOT resolved here; the `skills/` + `agents/` relocation is deferred per the locked-decision L8 out-of-scope boundary. File a follow-up; do not resolve in this pass.
 
 ---
 

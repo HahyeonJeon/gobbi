@@ -30,22 +30,30 @@ A task always lives under a feature; a feature itself can also be deferred.
 
 ## File naming
 
-`{slug}.md` — short, hyphenated, descriptive. No date prefix (backlogs are timeless until picked up).
+`{slug}.md` — bare-slug, short, hyphenated, descriptive, ≤6 words. No date prefix (backlogs are evergreen-until-closed; the date lives in frontmatter); no `item-N-M-` positional prefix. See [`rules.md` § 1](../rules.md).
 
 Example (task-level): `login-database-schema.md`, `password-reset-flow.md`.
 Example (feature-level): `search-system.md`, `admin-dashboard.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the backlogs-type extensions (`priority`, `disposition`, `project-scope`, `shipped_in`). `scope` distinguishes a deferred **task** (`scope: feature`) from a deferred **feature** (`scope: project`); `disposition` is the documented per-type refinement of base `status` ([`rules.md` § 2.2](../rules.md)).
+
 ```markdown
 ---
-title: {Task or feature title}
-status: deferred
-project: {project-name}
-feature: {feature-name} or null (null when this is a feature backlog itself)
-task: {task name} or null (null when this is a feature backlog)
-anchor_session: {session_id where this was decomposed}
+name: {slug — task or feature title}
+description: {one-line what is deferred}
+type: backlogs
+scope: project | feature
+feature: {feature-name} | null   # null when this is a deferred feature itself
+status: active | closed
 created: YYYY-MM-DD
+session: {session-id where this was decomposed}
+tags: [{tag1}, {tag2}]
+priority: critical | high | medium | low
+disposition: open | deferred
+project-scope: true | false
+shipped_in: {changelog / PR / commit on close} | null
 ---
 
 # {Title}

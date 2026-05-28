@@ -1,21 +1,25 @@
 ---
 name: archive-move-on-terminal-model
 description: "Replaces the no-delete+no-move in-place archive model with no-delete + move-on-terminal: finished artifacts are moved (never deleted) into archive/{type}/ so active dirs show only live work."
-metadata:
-  type: design
-status: accepted
+type: design
+scope: project
+feature: null
+status: active
 created: 2026-05-25
-source: user-decision-2026-05-25 (4 AskUserQuestion locks)
-supersedes: the in-place archive model formerly documented in memorization/templates/archive.md
+session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
+tags: [archive, memory-system, project-memory]
+supersedes: null
+superseded_by: null
+related: []
 ---
 
 # Archive model: no-delete + move-on-terminal
 
-## Problem
+## Context
 
 The prior invariant was **no-delete + no-move**: finished artifacts stayed at their original active path forever (status flipped in place), and `archive/` held only small **index pointer** files. Consequence: active directories (`backlogs/`, `design/`, etc.) accumulate every finished item, so the active list never shows only live work. The user flagged this when 7 shipped backlogs remained in `backlogs/` after PR #270.
 
-## Decision (locked 2026-05-25)
+## Decision
 
 Replace the invariant with **no-delete + move-on-terminal**:
 
@@ -53,11 +57,18 @@ When an artifact reaches a terminal state:
 
 Explicit, user-confirmed: `git mv` the file from `archive/{type}/` back to its active directory, flip `status:` back to active/accepted/open, remove `archived_at`/`archive_reason`, repoint references back. No deletion involved.
 
-## Why no-delete stays
+## Rationale
 
-Deleting would lose in-tree institutional memory — a recorded mistake's value is that the trap reminder persists in the repo, findable without git archaeology. Move (not delete) keeps every artifact in-tree, just relocated out of the active queue once terminal.
+**Why no-delete stays.** Deleting would lose in-tree institutional memory — a recorded mistake's value is that the trap reminder persists in the repo, findable without git archaeology. Move (not delete) keeps every artifact in-tree, just relocated out of the active queue once terminal.
 
-## Blast radius (what this refactor must touch)
+**Why move (not in-place flip).** Flipping `status:` in place leaves the finished item in the active directory, so the active list never shrinks — the directory listing stops being a useful "what is live now" view. Moving the full file out on terminal state restores that view while preserving the file verbatim.
+
+## Alternatives considered
+
+- **no-delete + no-move + index pointers (the prior model).** Finished artifacts stayed at their active path with status flipped; `archive/` held only small index-pointer files. Rejected: active directories accumulate every finished item forever, so the active list never shows only live work — the failure the user flagged.
+- **Delete on terminal state.** Rejected outright: deletion destroys in-tree institutional memory and violates the no-delete invariant that this model deliberately keeps.
+
+## Consequences (blast radius — what this refactor must touch)
 
 - `memorization/templates/archive.md` — full rewrite to this model (was the in-place/index model).
 - `wrap-up/SKILL.md` — Delete-semantics (line ~35), the in-place-archive paragraph (~77), the archive-output line (~168), Constraints (~420), and the routing/lifecycle: Wrap-up performs the move on terminal state.
@@ -65,7 +76,7 @@ Deleting would lose in-tree institutional memory — a recorded mistake's value 
 - `memorization/templates/rules.md` + `memorization/templates/decisions.md` — supersession language → move-on-terminal.
 - Reconcile the 7 backlog index stubs (commit 95a220e) into moves; migrate currently-terminal artifacts (the 7 shipped backlogs + any `superseded` files) into `archive/`.
 
-## Validation
+### Validation
 
 - After the refactor: `archive/` contains full moved files (not index stubs); active dirs contain only non-terminal artifacts.
 - `grep -rn 'no-move\|in-place archive\|index entry' skills/` returns nothing stale (model fully swept).
@@ -73,6 +84,12 @@ Deleting would lose in-tree institutional memory — a recorded mistake's value 
 - The 7 shipped backlogs are no longer in `backlogs/`; they live in `archive/backlogs/` as full files.
 - No broken `required-mistakes:` paths (active mistakes unmoved).
 
-## Lessons
+## Related
 
-Intentionally sparse as of 2026-05-25 — authored at decision time. Deepen after the refactor ships and the move-on-terminal model is exercised across a few sessions.
+- `.gobbi/projects/gobbi/skills/memorization/templates/archive.md` — the archive type template that encodes this move-on-terminal model.
+- `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` — Wrap-up is the sole writer that performs the move when an artifact reaches a terminal state.
+- `.gobbi/projects/gobbi/mistakes/design-literal-retire-instruction-without-replacement.md` — why "never delete" stays a hard invariant (deleting without a replacement leaves a vacuum).
+
+## Source
+
+Originating session: `.gobbi/projects/gobbi/sessions/2026-05-25-a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7/` — the session that locked the no-delete + move-on-terminal model.

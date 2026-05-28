@@ -1,1 +1,17 @@
+---
+name: decisions-index
+description: Index of architecture decision records for the gobbi project; placeholder populated post-reset at git tag pre-reset-2026-05-21.
+type: decisions
+scope: project
+feature: null
+status: active
+created: 2026-05-22
+session: null
+tags: [index, placeholder]
+---
+
 Placeholder — populated post-reset by the gobbi bottom-up rebuild. Reset at git tag pre-reset-2026-05-21.
+
+## Subdirectories
+
+_None — this is a leaf directory; project-scope architecture decision records live as sibling `.md` files._

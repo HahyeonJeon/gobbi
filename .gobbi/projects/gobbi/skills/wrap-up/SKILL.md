@@ -273,6 +273,19 @@ The canonical promotion routing. The assistant applies this table mechanically. 
 
 All destination paths are relative to `.gobbi/projects/{project-name}/`.
 
+### Frontmatter allowlist on promotion (strip staging-only fields)
+
+When Wrap-up promotes a staged file, it writes the destination with **ONLY** the base frontmatter + that type's extension fields (the per-type allowlist in [`memorization/rules.md` § 2`](../memorization/rules.md)). Staging-only fields that existed purely to route or annotate the file during the session are **stripped** — they never persist into project memory:
+
+| Staging-only field | Disposition on promotion |
+|---|---|
+| `mistake-candidate: true` | **Stripped.** Its presence routed the file to `mistakes/` (see routing table); once routed, its job is done. The promoted mistake file does NOT carry it. (Currently retained on legacy mistake files — a migration target, not a promotion target.) |
+| `finding-id` | **Stripped** when used purely as eval-routing / collision-keying. The base `session` field + `git log` carry provenance. |
+| `disposition` | **Stripped** when used purely as eval routing (e.g. `disposition: deferred` that routed the file to `backlogs/`). The destination type's own lifecycle field (e.g. backlogs `disposition: open|deferred`) is set fresh per the type spec. |
+| `promoted-from`, `promoted-at` | **Dropped.** `git log` + the base `session` + `created` fields already carry provenance; these ad-hoc keys are redundant drift and are never written to project memory. |
+
+Mechanism: the promotion step reads the staging frontmatter, applies the routing modifier (e.g. `mistake-candidate` → `mistakes/`), then writes the destination file through the per-type allowlist — base + extensions only. Any field not on the allowlist for the destination type is dropped. See [`memorization/rules.md` § 2.3](../memorization/rules.md) for the standard and [`memorization/SKILL.md` § Staging-field stripping on promotion](../memorization/SKILL.md#staging-field-stripping-on-promotion) for the reciprocal staging-side documentation.
+
 **Collision policy** when destination file already exists:
 
 | Scenario | Action |
@@ -281,6 +294,20 @@ All destination paths are relative to `.gobbi/projects/{project-name}/`.
 | Different `finding-id`, same slug | Disambiguate with numeric suffix (`-2`, `-3`); record in `promotion-manifest.md` |
 | Existing destination's content is contradicted by the new content | Stamp new file with `supersedes: <existing-path>` frontmatter; flip the existing file's `status: superseded` + `superseded_by: <new-path>` (body preserved); then move it (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model (never delete); record decision in `promotion-manifest.md` |
 | Cross-loop slug collision (e.g., Planning + Execution both stage a finding with same slug but different `finding-id`) | Suffix with the source loop name (`{slug}-planning.md` vs `{slug}-execution.md`) |
+
+### Archive typed-subdir routing on terminal-state moves
+
+When a promotion finds the destination file already terminal (incoming `status: shipped|superseded|retired|dropped`, or a supersession collision), Wrap-up stamps archival frontmatter and moves the full file (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` — the **typed** subdir, where `{type}` is the file's ORIGINAL type (`archive/decisions/`, `archive/backlogs/`, …). The moved file **keeps its original `type`** (`archive` is never a `type` value); the directory marks it archived. See [`memorization/templates/archive.md`](../memorization/templates/archive.md) and [`memorization/rules.md` § 2.1](../memorization/rules.md).
+
+### Non-standard session-subdir cleanup (going-forward)
+
+Wrap-up enforces the canonical session tree shape going forward (see [`orchestration/SKILL.md`](../orchestration/SKILL.md) for the canonical tree). When Wrap-up touches the active session's loop directories, these non-canonical subdirs are normalized:
+
+- **No `followups/` dir.** A `{loop}/evaluation/followups/` directory is non-canonical — follow-ups are findings. Route each to `staging/decisions/` (deferred) or `staging/backlogs/`; do not keep an ad-hoc `followups/` dir.
+- **Fold `restore/` into `rawdata/`.** A `{loop}/rawdata/restore/` sub-scratch tier is not sanctioned; any resume / restore scratch lives directly in `{loop}/rawdata/`.
+- **Remove `tmp/`.** No `tmp/` scratch tier exists in the canonical tree — `{loop}/rawdata/` is the only scratch surface. A session `tmp/` dir is removed (after confirming it holds only scratch, never durable memory).
+
+This cleanup is **going-forward + opportunistic only** — Wrap-up normalizes the shape of the session it is closing and fixes a closed session opportunistically if it is reopened. It does NOT mount a retro-sweep across all closed sessions (legacy `state.json` / root `HANDOFF.md` in closed session dirs are left untouched).
 
 ---
 

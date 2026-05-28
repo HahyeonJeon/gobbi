@@ -1,11 +1,16 @@
 ---
-date: 2026-05-24
-session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+name: 2026-05-24-session-foundations-bundle-b
+description: Session journal — session-foundations-bundle-b (2026-05-24); 10 tasks shipped, 6 mistakes + 12 backlogs + 1 review promoted, worktree-first + PostToolUse hook implementation.
+type: notes
+scope: project
 feature: session-foundations-bundle-b
+status: active
+created: 2026-05-24
+session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
+tags: [worktree, hooks, session-architecture, bundle, manager-context-budget]
+date: 2026-05-24
 loops_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [session-foundations-bundle-b/plans/2026-05-24-session-foundations-bundle-b, session-foundations-bundle-b/README.md, 6 mistakes, 12 project-backlogs, 1 project-review, 100 feature-memory files]
-status: completed
-tags: [worktree, hooks, session-architecture, bundle, manager-context-budget]
 ---
 
 # Session Foundations Bundle B — resume + complete in one session
@@ -55,5 +60,5 @@ Concrete artifacts that landed in project memory this session:
 - Process the 12 new project backlogs — recommend cherry-picking `gobbi-hook-authoring-skill` and `ci-symlink-integrity-check` first (both block expansion of the new hook architecture).
 - Apply per-iter session-memory commit cadence retroactively for any sessions still alive that haven't done so.
 - Re-evaluate the Auto Mode mistake-scope determinations: if any of the 6 promoted mistakes feel narrowly bundle-b-only, move to `features/session-foundations-bundle-b/mistakes/` via supersession-style follow-up.
-- Pick up `item-1-2-skill-loading-discipline` from project backlogs if T2 is rescoped.
+- Pick up `skill-loading-discipline` from project backlogs if T2 is rescoped.
 - Process T07+T08 + T10 medium-finding follow-ups from this session's evaluations (CONS-1 system field drop, CONS-2 hook_event coverage, RISK-4 subshell exit, template headers pre-fill, PostToolUseFailure tokens, per-agent record drift, 3-point sync coupling).

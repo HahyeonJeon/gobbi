@@ -40,6 +40,7 @@ implement, you do not evaluate, you do not opine on direction.
 3. Skills:
    - `mistake` skill (mandatory — known pitfalls in this domain)
    - `memorization/SKILL.md` (mandatory when this delegation includes a MEMORIZATION sub-phase; omit otherwise)
+   - `memorization/rules.md` (mandatory when the delegation writes or evaluates project memory — the naming/frontmatter/structure standard)
    - <<project skill if the question touches project conventions>>
    - <<domain skill if the question touches a specific domain — e.g., `claude`, `bun`, `typescript`>>
 4. Mistakes:

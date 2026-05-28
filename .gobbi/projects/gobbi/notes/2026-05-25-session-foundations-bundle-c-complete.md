@@ -1,11 +1,16 @@
 ---
-date: 2026-05-25
-session: 2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f
+name: 2026-05-25-session-foundations-bundle-c-complete
+description: Session journal — session-foundations-bundle-c complete (T01-T07 PASS); 12 commits, 5 mistakes + 2 backlogs + 5 learnings promoted; supersedes partial journal from prior run.
+type: notes
+scope: project
 feature: session-foundations-bundle-c
+status: active
+created: 2026-05-25
+session: 45388fa9-74a5-42ff-acdf-1308ca35523f
+tags: [bundle-c, session-foundations, worktree, orchestration, hook-authoring, gobbi-mistake-promote, complete]
+date: 2026-05-25
 loops_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [T01, T02, T03, T04, T05, T06, T07]
-status: complete
-tags: [bundle-c, session-foundations, worktree, orchestration, hook-authoring, gobbi-mistake-promote, complete]
 supersedes: archive/notes/2026-05-25-session-foundations-bundle-c-partial.md
 ---
 
@@ -67,7 +72,7 @@ Full workflow across two sub-sessions (2026-05-24 initial, 2026-05-25 resume aft
 
 - `learnings/dual-system-divergence-catches-severity-underrating.md`
 - `learnings/design-doc-cross-checking-authoritative-source-not-sibling-skill.md`
-- `learnings/f-aes-01-locked-wording-supersedes-readability-nit.md`
+- `learnings/locked-wording-supersedes-readability-nit.md`
 - `learnings/dual-system-cross-mirror-drift-detection.md`
 - `learnings/sole-exception-phrasing-normalization.md`
 

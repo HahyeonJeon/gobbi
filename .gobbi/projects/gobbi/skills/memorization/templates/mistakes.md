@@ -22,26 +22,36 @@ A correction not recorded is a correction repeated across sessions. Mistakes are
 
 ## Location
 
-- Project-level: `.gobbi/projects/{project-name}/mistakes/`
+- **Project-level (default):** `.gobbi/projects/{project-name}/mistakes/` — for traps that transcend any single feature (the common case; `scope: project`, `feature: null`).
+- **Feature-level:** `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` — when the trap is specific to one value-feature (`scope: feature`, `feature: {feature-name}`).
 
-Project-wide because mistakes usually transcend any single feature. Feature-scoped mistakes can be filed here with a `feature:` frontmatter tag for filtering.
+Mistakes are a **Both**-scope type (design §2.5, [`rules.md` § 3](../rules.md)). A feature-specific trap lives in that feature's own `mistakes/` subdir — NOT in the project `mistakes/` with a `feature:` tag. Wrap-up routes a `mistake-candidate: true` staging file to `features/{feature-name}/mistakes/` (feature-scope) or `mistakes/` (project-scope) per the user-confirmed scope (see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing)).
 
 ## File naming
 
-`{slug}.md` — short, descriptive. No date prefix.
+`{slug}.md` — bare-slug, short, descriptive, names the trap in ≤6 words. No date prefix (evergreen); no finding-ID prefix. See [`rules.md` § 1](../rules.md).
 
 Example: `parallel-docs-cleanup-drift.md`, `bun-write-no-append.md`, `sessionstart-hook-matcher.md`.
 
 ## Item template
 
+The **promoted** mistake carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the mistakes-type extensions (`priority`, `domain`, `supersedes`, `superseded_by`). The staging-only `mistake-candidate: true` flag (which routed the file to `mistakes/`) is **stripped on promotion** ([`rules.md` § 2.3](../rules.md)) — it never appears on a promoted mistake file.
+
 ```markdown
 ---
-title: {Short title — the trap, named}
-priority: critical | high | medium | low
-discovered: YYYY-MM-DD
-session: {session_id}
+name: {slug — the trap, named}
+description: {one-line what reliably breaks}
+type: mistakes
+scope: project | feature
+feature: {feature-name} | null
+status: active | superseded
+created: YYYY-MM-DD
+session: {session-id}
 tags: [{tag1}, {tag2}]
-related: [{related mistake slugs}]
+priority: critical | high | medium | low
+domain: {e.g. process, hooks, docs-sync}
+supersedes: {prior mistake slug} | null
+superseded_by: {newer mistake slug} | null
 ---
 
 # {Title}

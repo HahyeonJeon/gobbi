@@ -24,7 +24,7 @@ The job of MEMORIZATION: **make every iteration's evidence durable, and on PASS 
 
 Orchestration concerns — spawn, brief, collect, ITER/EXIT advancement — are defined separately in [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md).
 
-For the complete inventory of memory paths (every session-memory and project-memory location, description, writer, when written, and matching template), see [`memory-map.md`](memory-map.md). This SKILL.md defines the assistant's procedure; `memory-map.md` is the path / template reference.
+For the complete inventory of memory paths (every session-memory and project-memory location, description, writer, when written, and matching template), see [`memory-map.md`](memory-map.md). This SKILL.md defines the assistant's procedure; `memory-map.md` is the path / template reference. For the naming convention, the frontmatter base+extension standard, and the structure rules that govern every staged file, see [`rules.md`](rules.md) — the consolidated memory-rules reference. Staging files stamp the same base frontmatter those rules define; the staging-only fields they additionally carry (e.g. `mistake-candidate`) are stripped by Wrap-up on promotion (see § Staging-field stripping on promotion below).
 
 ---
 
@@ -134,6 +134,26 @@ Field semantics:
 - **Same-filename collision across iters** is forbidden — every iter's variant of a topic gets its own filename, never overwriting a different iter's file content. This is the contract that makes the audit history navigable both forward (`supersedes` → old) and backward (`superseded_by` → new).
 
 **Promotion**: artifacts in `sessions/.../{loop}/artifacts/` stay session-scoped. Wrap-up does NOT promote them to project memory wholesale — instead, Wrap-up reads the artifacts to understand what shipped and may stage derivative project-memory entries (notes, decisions, learnings) through the standard staging→promotion route. The artifacts themselves remain in the session for audit.
+
+---
+
+## Staging-field stripping on promotion
+
+Staged files carry the base frontmatter ([`rules.md` § 2.1](rules.md)) plus, when relevant, **staging-only fields** that exist purely to route or annotate the file during the session. These staging-only fields are **stripped by Wrap-up when it promotes the file to project memory** — they never persist into durable memory. The assistant stamps them at stage time; the promotion allowlist (one per type) drops them. The mechanism lives in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md):
+
+- **`mistake-candidate: true`** — the flag that routes a `staging/decisions/{slug}.md` file to `mistakes/`. Its job is done at promotion; Wrap-up strips it from the promoted mistake file.
+- **`finding-id`, `disposition`** (when used purely as eval routing), **`promoted-from`, `promoted-at`** — session-provenance. `git log` + the base `session` field already carry provenance, so the extra keys are dropped on promotion; any durable provenance folds into base `session` + `created`.
+
+The promoted file carries ONLY base + that type's extension fields ([`rules.md` § 2.2](rules.md)). See [`rules.md` § 2.3](rules.md) for the standard and [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the per-type promotion allowlist.
+
+---
+
+## Per-perspective evaluation file naming + the Execution per-task quartet
+
+The canonical session-tree shapes the assistant reads at MEMORIZATION:
+
+- **Per-perspective evaluation filenames.** Evaluation outputs live at `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/{perspective}.md`, where `{system} ∈ {claude, codex}` and `{perspective}` is the **bare** perspective name from the fixed 7-vocabulary — `project`, `structure`, `performance`, `aesthetics`, `usage`, `consistency`, `risk` — plus `overall.md`. Bare names only: no `pN-` positional prefix, and the same 7-perspective vocabulary on both systems so cross-system reconciliation can pair files 1:1. The 7-perspective vocabulary is owned by [`evaluation/SKILL.md`](../evaluation/SKILL.md).
+- **Execution per-task quartet.** In the Execution loop, each task lives under `execution/task-{NN}/` and carries the full `{rawdata, staging, evaluation, artifacts}` quartet — `execution/task-{NN}/{rawdata/draft-iter{n}.md, staging/{...}/, evaluation/iter{n}/{claude,codex}/{perspective}.md, artifacts/{free-filename}.md}`. Loop-level (cross-task) staging lives at `execution/staging/`. A task with only `evaluation/` (missing rawdata/staging/artifacts) is an incomplete task layout; the quartet is required unless a task is documented eval-only.
 
 ---
 

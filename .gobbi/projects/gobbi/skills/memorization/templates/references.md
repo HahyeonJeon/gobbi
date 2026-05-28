@@ -22,31 +22,45 @@ The bar is **applicability**, not novelty: a reference belongs here if it inform
 
 ## Location
 
-- Project-level: `.gobbi/projects/{project-name}/references/`
+- **Feature-level (default):** `.gobbi/projects/{project-name}/features/{feature-name}/references/` — research happens inside a feature's Ideation, so a reference defaults to that feature (`scope: feature`, `feature: {feature-name}`). Wrap-up routes staging references here (see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing)).
+- **Project-level (promote-up, rare):** `.gobbi/projects/{project-name}/references/` — for cross-feature prior art (`scope: project`, `feature: null`); user-confirmed at Wrap-up.
+
+References are a **Both**-scope type (design §2.9, [`rules.md` § 3](../rules.md)), defaulting feature-level and promoting up only for cross-feature relevance.
 
 ## File naming
 
-`{slug}.md` — short, descriptive. Slug describes the topic, not the source.
+`{slug}.md` — bare-slug, short, descriptive. Slug describes the topic, not the source. No date prefix (evergreen). See [`rules.md` § 1](../rules.md).
 
 Example: `redis-ttl-eviction.md` (not `redis-docs-chapter-7.md`), `karpathy-software-3.md`, `superpowers-brainstorming.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the references-type extensions (`title`, `source`, `accessed`, `ref_type`). Note: base `type: references` is the memory type; the source genre (docs / blog / paper / …) is the `ref_type` extension, NOT the base `type`.
+
 ```markdown
 ---
+name: {slug — short topic title}
+description: {one-line what insight this source contributes}
+type: references
+scope: project | feature
+feature: {feature-name} | null
+status: active | superseded
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
 title: {Short topic title}
 source: {URL or path}
-type: docs | blog | paper | rfc | code | book | other
 accessed: YYYY-MM-DD
-session: {session_id}
-tags: [{tag1}, {tag2}]
-related: [{related learning / mistake slugs}]
+ref_type: docs | blog | paper | rfc | code | book | other
 ---
 
 # {Title}
 
 ## Insight
 {One or two sentences: the specific lesson this source contributes. NOT a summary of the source — the takeaway.}
+
+## Related
+{Related learning / mistake / decision slugs this reference connects to. Body content, not frontmatter — the base+`title`/`source`/`accessed`/`ref_type` allowlist is the only frontmatter references carry.}
 
 ## Why it applies
 {In one or two sentences, why this insight matters for this project. The condition under which the insight should be invoked.}

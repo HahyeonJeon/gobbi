@@ -1,11 +1,15 @@
 ---
-title: Dual-system eval divergence surfaces correctness defects single-system misses
-discovered: 2026-05-25
+name: dual-system-divergence-catches-severity-underrating
+description: Dual-system eval divergence surfaces correctness defects a single system misses by rationalizing them away; the divergence IS the finding.
+type: learnings
+scope: project
+feature: null
+status: active
+created: 2026-05-25
 session: 45388fa9-74a5-42ff-acdf-1308ca35523f
 tags: [evaluation, dual-system, docs-quality, process]
-related: []
-promoted-from: sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/execution/task-04/staging/learnings/dual-system-divergence-catches-severity-underrating.md
-promoted-at: 2026-05-25
+supersedes: null
+superseded_by: null
 ---
 
 # Dual-system eval divergence surfaces correctness defects single-system misses
@@ -16,7 +20,7 @@ When Claude and Codex diverge on verdict or severity, the divergence is high-sig
 
 ## Context
 
-T04 (gobbi-hook-authoring skill authoring) produced a textbook witness. Claude rated USAGE-001 as Medium and returned PASS; Codex rated the same finding as High and returned REVISE. Both identified the same root defect: the skill's registration examples omitted `"type":"command"` and used a `bash` prefix not present in the real `.claude/settings.json`. Claude's reasoning was that the `bash` form "still runs" — functionally equivalent. Codex's reasoning was that a skill whose purpose is to teach canonical registration shape must mirror the real settings, and that `"type":"command"` is a required field.
+Authoring the `gobbi-hook-authoring` skill produced a textbook witness. The Claude evaluator rated a usage finding as Medium and returned PASS; the Codex evaluator rated the same finding as High and returned REVISE. Both identified the same root defect: the skill's registration examples omitted `"type":"command"` and used a `bash` prefix not present in the real `.claude/settings.json`. Claude's reasoning was that the `bash` form "still runs" — functionally equivalent. Codex's reasoning was that a skill whose purpose is to teach the canonical registration shape must mirror the real settings, and that `"type":"command"` is a required field.
 
 Codex was right. The defect was a High teaching-correctness error. When Claude returned PASS on that basis, the dual-system check caught it — and the REVISE round was warranted.
 
@@ -37,5 +41,8 @@ A single-system-only evaluation would have shipped the skill with an incorrect r
 
 ## Related
 
-- T04 iter1: `execution/task-04/evaluation/iter1/claude/usage.md` (CLA-USAGE-001 Medium) vs `execution/task-04/evaluation/iter1/codex/usage.md` (USAGE-001 High)
-- Mistake: `codex-exec-at-file-hangs-on-stdin-in-background.md` (the other T04 Codex operational finding — separate from this quality signal)
+- `.gobbi/projects/gobbi/mistakes/codex-exec-at-file-hangs-on-stdin-in-background.md` — the other Codex operational finding from the same skill-authoring task, separate from this quality signal.
+
+## Source
+
+Originating session: `.gobbi/projects/gobbi/sessions/2026-05-24-45388fa9-74a5-42ff-acdf-1308ca35523f/` — the `gobbi-hook-authoring` skill-authoring task whose dual-system divergence produced this learning.

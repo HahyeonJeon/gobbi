@@ -28,20 +28,28 @@ Project-level for decisions that span features or affect project conventions. Fe
 
 ## File naming
 
-`{YYYY-MM-DD}-{slug}.md` — date prefix; slug describes the decision in 3-6 words.
+`{YYYY-MM-DD}-{slug}.md` — date-prefixed (decisions are time-indexed); slug describes the decision in ≤6 words, one decision per file (atomicity — no bundle files). See [`rules.md` § 1](../rules.md).
 
 Example: `2026-05-11-use-redis-not-memcached.md`, `2026-05-11-defer-password-reset.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the decisions-type extensions (`supersedes`, `superseded_by`, `decision_status`). Base `status` is the coarse lifecycle field; `decision_status` is the documented per-type refinement that mirrors it ([`rules.md` § 2.2](../rules.md)).
+
 ```markdown
 ---
-date: YYYY-MM-DD
-session: {session_id}
-status: accepted | superseded | deferred
-feature: {feature-name} or null
-supersedes: {prior-decision-slug} or null
-superseded_by: {new-decision-slug} or null
+name: {slug — the decision, imperative}
+description: {one-line what was decided}
+type: decisions
+scope: project | feature
+feature: {feature-name} | null
+status: active | superseded
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
+supersedes: {prior-decision-slug} | null
+superseded_by: {new-decision-slug} | null
+decision_status: proposed | accepted | superseded
 ---
 
 # {Decision title — imperative form, e.g., "Use Redis, not Memcached, for the cache layer"}

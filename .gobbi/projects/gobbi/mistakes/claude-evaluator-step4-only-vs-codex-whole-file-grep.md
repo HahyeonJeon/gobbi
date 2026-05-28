@@ -1,20 +1,21 @@
 ---
-date: 2026-05-23
+name: claude-evaluator-step4-only-vs-codex-whole-file-grep
+description: Claude evaluator scoped only to the changed section; missed whole-file stale cross-references that Codex caught with rg.
+type: mistakes
+scope: project
+feature: null
+status: active
+created: 2026-05-23
 session: 7ea62d36-e826-4ce6-9e90-9e948007b068
-status: accepted
-feature: gobbi-orchestration-workflow-improvements
+tags: [evaluation, docs-sync, process]
+domain: process
 supersedes: null
 superseded_by: null
-mistake-candidate: true
-domain: process
-severity: medium
-promoted-from: sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/execution/T1/staging/decisions/claude-evaluator-step4-only-vs-codex-whole-file-grep.md
-promoted-at: 2026-05-23T14:00:00Z
 ---
 
 # Evaluator Scope-Narrowed to Changed Section; Missed Whole-File Stale Cross-References
 
-## What went wrong
+## What happened
 
 During Execution Task 01 (`01-gobbi-polish-fg`) iter1, the Claude evaluator verified only the Step 4 section that was rewritten by the executor. It confirmed the new content was correct against the Plan-spec gates and issued a PASS with 0 Critical/High/Medium findings.
 
@@ -22,21 +23,13 @@ The Codex evaluator ran `rg` across the whole file and found 5–6 stale cross-r
 
 The aggregated verdict was REVISE (pessimistic union of Claude PASS + Codex REVISE).
 
-## Why it went wrong
+## Why it happens
 
 The Claude evaluator narrowed its verification scope to the section the executor explicitly changed (Step 4) and the Plan's stated acceptance gates. This is a valid approach for code changes, but docs edits that rename or reframe a model (e.g., "2 setup questions" → "1 question + customize gate") require whole-file verification because the old vocabulary can appear anywhere in the file — headings, examples, explanatory prose, and cross-references outside the changed section.
 
 The Claude evaluator did not run a whole-file grep for the OLD vocabulary that was being retired. It only verified the NEW vocabulary was correctly placed.
 
-## How to recognize this situation
-
-Trigger: a docs-edit task that retires or renames a concept (a term, a question count, a workflow step name, a model name). The executor's acceptance criteria check the new section only. The evaluator follows the same scope.
-
-Signal: the task is a docs edit; the acceptance criterion is a positive assertion about the new content (e.g., "Step 4 now says X"); the old vocabulary was not explicitly listed as something to search for and remove.
-
-This pattern most commonly appears in docs-only tasks where the "changed file" is large (e.g., 200+ lines) and the edit is localized. The evaluator trusts the executor's scope and does not independently search the rest of the file.
-
-## Corrected approach
+## Correct approach
 
 For any docs-edit task that retires or renames a concept, the evaluator brief MUST include an explicit gate:
 
@@ -50,6 +43,14 @@ Gate N: grep -cE "<old_term_1>|<old_term_2>|<old_term_3>" <changed_file>  →  e
 ```
 
 This gate should be explicitly listed in the executor delegation prompt's verification commands so both executor and evaluator apply it.
+
+## How to detect
+
+Trigger: a docs-edit task that retires or renames a concept (a term, a question count, a workflow step name, a model name). The executor's acceptance criteria check the new section only. The evaluator follows the same scope.
+
+Signal: the task is a docs edit; the acceptance criterion is a positive assertion about the new content (e.g., "Step 4 now says X"); the old vocabulary was not explicitly listed as something to search for and remove.
+
+This pattern most commonly appears in docs-only tasks where the "changed file" is large (e.g., 200+ lines) and the edit is localized. The evaluator trusts the executor's scope and does not independently search the rest of the file.
 
 ## Related
 

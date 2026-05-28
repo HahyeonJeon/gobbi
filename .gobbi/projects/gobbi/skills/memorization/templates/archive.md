@@ -70,7 +70,7 @@ When an artifact reaches a terminal state, Wrap-up performs these steps:
 
 ## Archival frontmatter additions
 
-The moved file keeps its original body and its original frontmatter fields. Wrap-up stamps the following additional frontmatter fields onto the file before moving it:
+The moved file keeps its original body and its original frontmatter fields — crucially, it **retains its ORIGINAL `type`** (`type: decisions`, `type: backlogs`, `type: design`, …). `archive` is **NOT a `type` value** ([`rules.md` § 2.1](../rules.md)): there is never a `type: archive` line. The directory — the typed subdir `archive/{type}/` — is what marks the file archived, not the `type` field. Wrap-up stamps only the following additional frontmatter fields onto the file before moving it:
 
 ```yaml
 archived_at: YYYY-MM-DD
@@ -81,6 +81,8 @@ status: shipped | superseded | retired | dropped | archived
 superseded_by: {path in archive/ to the superseding artifact} | null
 shipped_in: {changelog path} | null
 ```
+
+The `type:` field is **not** in the block above on purpose — it is never rewritten on a move; it keeps the value it had in the active directory.
 
 `original_path` is not required as a persisted field — `git log --follow` recovers the full move history. Wrap-up MAY add an `original_path:` comment for human readability, but it is not mandatory.
 

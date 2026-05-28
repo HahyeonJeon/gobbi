@@ -20,27 +20,36 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 
 ## Location
 
-- Project-level: `.gobbi/projects/{project-name}/plans/`
-- Feature-level: `.gobbi/projects/{project-name}/features/{feature}/plans/`
+- **Feature-level (loop path): `.gobbi/projects/{project-name}/features/{feature}/plans/`** — the loop path writes plans ONLY here.
+- Project-level `.gobbi/projects/{project-name}/plans/` — **maintainer-authored cross-feature roadmaps / release plans ONLY**, never loop-written.
 
-Feature-level for plans bounded to one feature (typical). Project-level only for cross-feature plans (rare).
+The Planning-loop path is feature-only (per [`rules.md` § 3](../rules.md)). A project-level `plans/` may hold maintainer roadmaps, but no Planning-loop MEMORIZATION or Wrap-up promotion ever targets it.
 
 ## File naming
 
-`{YYYY-MM-DD}-{slug}.md` — date prefix; slug describes the plan in 3-6 words.
+`{YYYY-MM-DD}-{slug}.md` — date-prefixed (a plan is tied to the session that produced it); slug describes the plan in ≤6 words. See [`rules.md` § 1](../rules.md).
 
-Example: `2026-05-11-login-ui-shipping.md`, `2026-05-11-auth-middleware-v1.md`.
+Example: `2026-05-11-login-ui-shipping.md`, `2026-05-11-auth-middleware.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the plans-type extensions (`supersedes`, `superseded_by`, `task_count`).
+
 ```markdown
 ---
-date: YYYY-MM-DD
-session: {session_id}
+name: {slug — short plan title}
+description: {one-line what this plan decomposes}
+type: plans
+scope: feature
 feature: {feature-name}
+status: active | superseded
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
 task: {task name from Scope Contract}
-status: draft | in-progress | shipped | abandoned
-supersedes: {prior-plan-slug} or null
+supersedes: {prior-plan-slug} | null
+superseded_by: {new-plan-slug} | null
+task_count: {number of sub-tasks in this plan}
 ---
 
 # {Plan title}
@@ -71,7 +80,7 @@ supersedes: {prior-plan-slug} or null
 
 ## Updates
 
-When execution surfaces a need to change the plan (a sub-task was harder than expected, an ordering needed to flip), the assistant writes a new plan document `{date}-{slug}-v2.md` with `supersedes: {old-slug}` rather than editing in place. The superseded plan is never deleted — at Wrap-up, it is moved (`git mv`) to `archive/plans/{date}-{slug}.md` per the move-on-terminal model. The active `plans/` directory then shows only live plans.
+When execution surfaces a need to change the plan (a sub-task was harder than expected, an ordering needed to flip), the assistant writes a new plan document at `{new-date}-{slug}.md` with `supersedes: {old-slug}` rather than editing in place — the version lives in frontmatter, never in the slug (no `-v2` suffix; [`rules.md` § 1.3](../rules.md) anti-pattern #6). The superseded plan is never deleted — at Wrap-up, it is moved (`git mv`) to `archive/plans/{date}-{slug}.md` per the move-on-terminal model. The active `plans/` directory then shows only live plans.
 
 ## Sub-task granularity
 

@@ -28,23 +28,31 @@ Scenarios are always bounded to a feature. Cross-feature scenarios belong in pro
 
 ## File naming
 
-`{scenario-slug}.md` — one file per scenario. Slug is short, action-oriented.
+`{scenario-slug}.md` — bare-slug (evergreen — the scenario set is durable; the date lives in frontmatter), one file per scenario, short and action-oriented. See [`rules.md` § 1](../rules.md). `scenarios/` is a **feature-subdir-only** type ([`rules.md` § 3](../rules.md)).
 
 Example: `cold-start-cache-miss.md`, `password-reset-with-expired-token.md`, `concurrent-login-attempts.md`.
 
 ## Item template
 
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) ONLY; `scope: feature` always (feature-subdir-only). Scenarios carry **base frontmatter only** (design §2.14, [`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model) — no scenarios extension row). The scenario `category` and `coverage` state live in the **body** (below), not frontmatter, so Wrap-up's allowlist strip cannot drop them; base `status` stays `active`.
+
 ```markdown
 ---
-scenario: {one-line scenario description}
-category: golden-path | edge-case | failure-mode | adversarial
+name: {scenario-slug}
+description: {one-line scenario description}
+type: scenarios
+scope: feature
 feature: {feature-name}
-added: YYYY-MM-DD
-added_by_session: {session_id}
-status: covered | partial | uncovered
+status: active
+created: YYYY-MM-DD
+session: {session-id}
+tags: [{tag1}, {tag2}]
 ---
 
 # {Scenario title}
+
+**Category:** golden-path | edge-case | failure-mode | adversarial
+**Coverage:** covered | partial | uncovered
 
 ## Situation
 {The concrete situation: who, what, when. Use a narrative one-paragraph form so a reader can picture the scenario without re-reading the design.}
@@ -62,13 +70,15 @@ status: covered | partial | uncovered
 {Pointer to the design doc and any checklist items that implement this scenario.}
 ```
 
-## Status field
+## Coverage field
+
+The `Coverage` body field (distinct from the base `status` lifecycle field) tracks how well the scenario is handled:
 
 - **`covered`** — the current design and implementation handle this scenario; verified by a test or check
 - **`partial`** — the design intends to handle this but verification is incomplete
 - **`uncovered`** — surfaced as a scenario gap but no design addresses it yet (the next Ideation iteration must address)
 
-The Execution Loop's MEMORIZATION updates the status from `partial` to `covered` when the corresponding verification ships.
+The Execution Loop's MEMORIZATION updates the body `Coverage` from `partial` to `covered` when the corresponding verification ships. Base `status` stays `active` until the scenario is superseded.
 
 ## Append-only
 

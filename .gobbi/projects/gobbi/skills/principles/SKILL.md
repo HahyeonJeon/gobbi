@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 # Gobbi Principles
 
-Canonical behavioral discipline for every gobbi agent. Loaded as a skill via the Skill tool. Required at every session start (per the CLAUDE.md mandate) and any time an agent faces a judgment call where the Iron Law alone is not enough — load this skill for the full reasoning and named anti-rationalizations behind each principle. Twelve principles plus their named anti-rationalizations.
+Canonical behavioral discipline for every gobbi agent. Loaded as a skill via the Skill tool. Required at every session start (per the CLAUDE.md mandate) and any time an agent faces a judgment call where the Iron Law alone is not enough — load this skill for the full reasoning and named anti-rationalizations behind each principle. Thirteen principles plus their named anti-rationalizations.
 
 **Load when:** session start, resume after `/clear` or compaction (mandatory), or when an agent faces a judgment call where the Iron Law alone is not enough — load for the full rationale and anti-rationalizations. Subagent delegation prompts must include an explicit load directive — fresh subagents do not inherit the parent's loaded skills.
 
@@ -30,6 +30,7 @@ Quick-reference table — one row per principle. Expand a principle's full secti
 | 10 | NO CHANGE WITHOUT A REAL MOTIVATOR. |
 | 11 | NO IMPROVEMENT THAT GAMES THE TOOL. |
 | 12 | NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
+| 13 | NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN. |
 
 ---
 
@@ -324,6 +325,81 @@ P5 governs design decisions before implementation begins; P9 governs evaluation 
 - "This sub-task is implied by the parent." (implied is not explicit; re-derive What / Why / How for the sub-task)
 
 **Mechanism:** every task spec — delegation prompt, plan item, sub-step in a workflow loop — explicitly includes What / Why / How fields. Subagent prompts that omit any of the three are rejected at the delegation boundary. Plan items missing any of the three are caught at Planning Loop's EVALUATION sub-phase (Project + Consistency perspectives).
+
+---
+
+## Principle 13 — Spec + CRUD-Think for Documentation Work
+
+**Iron Law:** NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN.
+
+**Why:** Documentation changes fail in a characteristic way: an agent opens a file, edits the
+passage in front of it, and never asks what the doc is *for*, which memory *type* it is, what it
+should and should not contain, or which *other* files the same change must touch. The result is
+type-confused content (a decision written as a note), half-applied co-updates (a new principle
+added to principles/SKILL.md but not to the CLAUDE.md Iron Law table), and silent drift (the spec
+in one file contradicts another). A documentation task is a *change with a blast radius*, not a
+single edit. Before touching any file, the agent fixes two things in writing: the SPEC (what the
+doc work must achieve and the type of each affected file) and the CRUD plan (every Create / Read /
+Update / Delete operation at file / directory / **line** granularity). This is the change-scoping
+lens — not a per-document lifecycle attribute.
+
+**Procedure — before any documentation change:**
+
+1. **Write the SPEC.** State, in 2-5 lines: (a) what the doc task must achieve; (b) for each
+   affected file, which memory *type* it is and what it should / should-not contain; (c) the
+   adjacent types this content must NOT bleed into (apply the type boundaries in
+   `memorization/memory-map.md` and the conventions in `memorization/rules.md`).
+2. **Enumerate the CRUD plan.** List every operation the task entails at file / dir / **line**
+   granularity:
+   - **Create** — new files/dirs (with path + type + naming-rule compliance).
+   - **Read** — files consulted for context or consistency (so the change stays coherent with them).
+   - **Update** — existing files + the specific lines/sections changed.
+   - **Delete** — never a physical delete of project memory (supersede + move-on-terminal); for
+     `.claude/` docs, the explicit lines/files removed.
+3. **Check the blast radius — find every file the SAME change must co-touch.** A doc change is
+   rarely one file. The CRUD plan MUST enumerate genuine multi-file co-updates, for example:
+   - A new principle → `principles/SKILL.md` body + the `principles/SKILL.md` Iron Law Index table
+     + the CLAUDE.md Iron Law table (three places, one change).
+   - A new memory convention → `memorization/rules.md` + the affected `memorization/templates/*`
+     + `memorization/memory-map.md` cross-reference.
+   - A canonical skill that is mirror-symlinked: edit the worktree-absolute CANONICAL file under
+     `.gobbi/projects/{name}/skills/X/`; the `.claude/skills/X/` symlink reflects it automatically
+     — there is NO second copy to edit. (Exception: a canonical-only skill such as
+     `gobbi-hook-authoring` has no `.claude/skills/` symlink at all, so confirm whether a symlink
+     needs creating when adding a workspace-visible doc.)
+   A blast-radius step that misses a genuine co-update file is an incomplete CRUD plan.
+4. **Then edit** — and verify each CRUD line landed (P7).
+
+**Naming is part of the Create operation — name the subject, not its position.** Every file or
+directory a CRUD plan creates must carry a name that lets a reader *with zero session context*
+understand its **subject** — the concept the file is about. Name the concept in clear,
+development-vibe kebab-case (the name a careful developer would choose). A name must NOT encode the
+record's **position in a list, its sequence index, or a cryptic internal reference** — `task-01`,
+`d-1`, `tasks-07-08`, `row-5-5`, `1-3`, `t1g`, `main` are addresses inside a session that no longer
+exists; they are noise to the next reader. This is *positive descriptiveness*, not a regex gate:
+content words that describe the subject (`-decisions`, `-rollback`, date prefixes on chronological
+types) are encouraged. The anti-patterns table, the smell categories, and concrete good/bad
+examples live in `memorization/rules.md` §1.3 — consult it when naming any memory file.
+
+**Delineation from Principle 8.** P8 (Documentation Is a Deliverable) governs *coupling*: every
+implementation change ships its matching doc change in the same diff. P13 governs *scoping*: how to
+structure and bound a documentation change itself — its spec, its CRUD operations, its blast
+radius. P8 says "docs must ship with code"; P13 says "before you write the doc, know exactly what
+it must contain, which type it is, and every file the change touches." P8 is the *when/whether*;
+P13 is the *what/how-scoped*. A change can satisfy P8 (docs shipped alongside code) yet violate P13
+(the doc was type-confused or a co-update file was missed) — and vice versa.
+
+**Anti-rationalizations:**
+- "It's a one-line doc fix." (one-line fixes are exactly where a co-update file gets missed)
+- "I know what this doc is for." (then writing the 2-line spec costs nothing)
+- "I'll find the other files as I go." (no — enumerate the CRUD plan first; discovery-as-you-go
+  is how multi-file changes go half-applied)
+- "CRUD is overkill for prose." (CRUD is the change-scoping lens; prose changes have blast radius too)
+
+**Mechanism:** every documentation task — delegation prompt, plan item, or self-initiated edit —
+carries an explicit SPEC block + CRUD enumeration before the first edit. Plan items for doc work
+that omit either are caught at Planning EVALUATION (Project + Consistency perspectives). Doc edits
+whose CRUD plan misses a genuine co-update file are rejected at review.
 
 ---
 

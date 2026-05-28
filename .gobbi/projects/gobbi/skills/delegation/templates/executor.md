@@ -33,6 +33,7 @@ deliverable, acceptance criteria.>>
 3. Skills:
    - `mistake` skill (mandatory)
    - `memorization/SKILL.md` (mandatory when this delegation includes a MEMORIZATION sub-phase; omit otherwise)
+   - `memorization/rules.md` (mandatory when the delegation writes or evaluates project memory — the naming/frontmatter/structure standard)
    - `orchestration/workflow/execution.md` (mandatory phase doc)
    - Domain skills: <<list with full paths — e.g., `claude`, `bun`, `typescript`>>
    - <<project skill if relevant>>

@@ -20,7 +20,7 @@ Run these steps in order at session start, session resume, `/clear`, and compact
 
 Load these immediately, before anything else. Do not ask questions, do not check session state, do not proceed until they are loaded:
 
-1. **`principles`** — the 12 Iron Laws (Behavioral discipline floor). Mandatory.
+1. **`principles`** — the 13 Iron Laws (Behavioral discipline floor). Mandatory.
 2. **`orchestration`** — the workflow state machine, mode definitions, manager-facing step orchestration.
 3. **`discussion`** — Question Card template, anti-sycophancy, Decision Classification (Auto-decide / Always-Ask / User Challenge). Loaded on every user-facing exchange.
 4. **`delegation`** — per-role templates, Load Directives block, status contract. Loaded on every `Agent` tool call.
@@ -182,9 +182,9 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 
 | Skill | Purpose |
 |---|---|
-| [`principles`](../principles/SKILL.md) | 12 Iron Laws — behavioral discipline floor every agent observes. MUST load at session start; subagent delegation prompts must include an explicit load directive. |
+| [`principles`](../principles/SKILL.md) | 13 Iron Laws — behavioral discipline floor every agent observes. MUST load at session start; subagent delegation prompts must include an explicit load directive. |
 | [`git`](../git/SKILL.md) | Git / GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
-| `_claude` (workspace-level) | `.claude/` documentation standard. Writing principles, hierarchy, anti-patterns. Loaded from the workspace `.claude/skills/_claude/` path, not from this project skills tree. |
+| `claude` doc-authoring standard (**[FLAG-2] currently absent**) | The `.claude/` documentation-authoring standard (writing principles, hierarchy, anti-patterns). CLAUDE.md links `skills/claude/SKILL.md` but no such skill dir exists yet (verified — neither `claude` nor `_claude`). This is a dangling reference: the standard's intended home is the `project-memory` value-feature (the doc-authoring standard Principle 13 leans on). Repoint or author the skill under the FLAG-2 follow-up; do not rely on this row until it resolves. |
 
 The `mistake` skill lives at `skills/mistake/SKILL.md`. Every agent MUST load it before starting work. Mistake recordings flow through a two-layer promotion model:
 
@@ -192,6 +192,22 @@ The `mistake` skill lives at `skills/mistake/SKILL.md`. Every agent MUST load it
 - **Layer 2 (cross-session):** During the Wrap-up phase, the Wrap-up assistant also promotes generalizable project-mistakes from `.gobbi/projects/{project-name}/mistakes/` to workspace-level skill storage so they persist across all projects and future sessions. No CLI command — the Wrap-up assistant performs both layers. Promotion does not cause context reload.
 
 The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during MEMORIZATION), and P4 (Wrap-up-phase promotion).
+
+### Product value-features
+
+gobbi's durable capabilities — the things a README "Features" section would list — are modeled as **7 value-features** (developer-subsystem slugs, kebab-case, 1-3 words). A `features/{slug}/` directory names a value-feature, not a work-sprint and not a bare internal mechanism. The internal subsystems (delegation, the loop bodies, session runtime, hooks, the state machine) fold UNDER the value-feature they serve.
+
+| Value-feature | What it is | Owns (canonical skill dirs / subsystems) |
+|---|---|---|
+| `workflow` | The Ideation → Planning → Execution → Memorization → Handoff pipeline (6-step state machine) | orchestration + the 5 loop bodies + research + discussion |
+| `project-memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | memorization + memory-map + rules.md + wrap-up's promotion half + the 13 types |
+| `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + delegation/templates + the `agents/*.md` roster |
+| `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives | evaluation + the per-loop `evaluation.md` child docs + codex |
+| `guardrails` | The 13 Iron Laws + the mistake-capture-and-learn loop | principles + mistake + the `mistakes/` tier |
+| `git-workflow` | Worktree-isolated sessions + branch / PR / issue lifecycle | git |
+| `install-runtime` | One-command install + bootstrap interview + the per-session runtime contract | interview + gobbi-hook-authoring (+ install/runtime knowledge documented here and in the install dir) |
+
+**Install / runtime is documented, not a skill.** `install-runtime` owns no `gobbi-install` *skill* dir — channel-split install, the `.claude/`↔project mirror-sync, and the session-runtime contract (env-var persistence, the SessionStart hook, `session.json` / `settings.json` lifecycle, subagent-metadata capture) are documented in this `gobbi/SKILL.md` + the install dir, not in a created skill. The only skill dirs `install-runtime` owns are `interview` and the canonical-only `gobbi-hook-authoring`.
 
 ---
 
