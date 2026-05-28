@@ -28,14 +28,16 @@ Active. The memory-system redesign shipped the typed directory structure and nam
 
 ## Subdirectories
 
-- `decisions/` — memory-system design decisions (14 files)
-- `design/` — memory-system design topics (2 files)
-- `discussions/` — substantive AskUserQuestion topics scoped to project-memory (3 files)
-- `references/` — external prior art touching the memory system (5 files)
-- `plans/` — plan artifacts produced by the Planning loop (1 file)
-- `changelogs/` — what shipped per task (1 file)
-- `checklists/` — checklist findings from evaluation (4 files)
-- `scenarios/` — scenario findings from evaluation (1 file)
+- `backlogs/` — deferred project-memory tasks (subdirectory exists; currently holds no feature-scoped entries)
+- `changelogs/` — what shipped per task
+- `checklists/` — checklist findings from evaluation
+- `decisions/` — memory-system design decisions
+- `design/` — memory-system design topics
+- `discussions/` — substantive AskUserQuestion topics scoped to project-memory
+- `mistakes/` — feature-scoped mistakes (subdirectory exists; currently holds no feature-scoped entries — project-scope mistakes live under the project-tier `mistakes/` dir)
+- `plans/` — plan artifacts produced by the Planning loop
+- `references/` — external prior art touching the memory system
+- `scenarios/` — scenario findings from evaluation
 
 ## Recent activity
 

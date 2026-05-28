@@ -11,3 +11,7 @@ tags: [plans, index]
 ---
 
 Placeholder — populated post-reset by the gobbi bottom-up rebuild. Reset at git tag pre-reset-2026-05-21.
+
+## Subdirectories
+
+_None — this is a leaf directory; project-scope (maintainer-authored, cross-feature) plans live as sibling `.md` files. Loop-written plans live under `features/{feature}/plans/`._

@@ -22,6 +22,10 @@ The multi-agent roster — PI, planner, executors, evaluators, scribe — with r
 
 `agents` is gobbi's delegation system and agent roster: the per-role templates, Load Directives, status contract, model selection, and spawn topology that let a manager dispatch scoped work to fresh single-purpose subagents.
 
+## Status
+
+Active. The 5-role agent roster (`agents/*.md`) and the `delegation` skill (per-role templates, Load Directives, status contract, model selection, spawn topology) are live. Durable agents-scope artifacts re-homed into this feature dir during the memory-system redesign.
+
 ## Subsystems
 
 - `delegation` (per-role templates, Load Directives, status contract, model selection, spawn topology) + `delegation/templates/*`
@@ -29,13 +33,17 @@ The multi-agent roster — PI, planner, executors, evaluators, scribe — with r
 
 ## Subdirectories
 
-- `decisions/` — delegation / roster design decisions
+- `backlogs/` — deferred agents/delegation tasks
+- `changelogs/` — what shipped per task
+- `checklists/` — implementation checklists anchored to scenarios and references
 - `design/` — agents-scope design topics
 - `discussions/` — substantive AskUserQuestion topics scoped to agents
 - `references/` — external prior art touching delegation
-- `plans/` — plan artifacts produced by the Planning loop
-- `changelogs/` — what shipped per task
-- `archive/` — superseded agents artifacts (move-on-terminal)
+- `scenarios/` — situations the agents/delegation contract must handle
+
+## Open items
+
+See the `backlogs/` subdirectory for currently-deferred agents/delegation items.
 
 ## Recent activity
 

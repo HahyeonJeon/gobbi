@@ -30,13 +30,11 @@ Active. The dual-system evaluation procedure, the 7-perspective set, the 5-Type 
 
 ## Subdirectories
 
+- `changelogs/` — what shipped per task
 - `decisions/` — evaluation design decisions
 - `design/` — evaluation-scope design topics
 - `discussions/` — substantive AskUserQuestion topics scoped to evaluation
 - `references/` — external prior art touching evaluation
-- `plans/` — plan artifacts produced by the Planning loop
-- `changelogs/` — what shipped per task
-- `archive/` — superseded evaluation artifacts (move-on-terminal)
 
 ## Recent activity
 
