@@ -1,46 +1,76 @@
-# HAND-OFF — gobbi dev-doc PROSE wave (session 5786090e, 2026-05-27)
+---
+artifact_type: handoff
+loop: wrap-up
+iter: 1
+created_at: 2026-05-28
+status: final
+session: 5786090e-f65a-4493-94cc-e610ce337813
+project: gobbi
+---
 
-Continuation of the dev-doc-standard retrofit. Driving the wave to completion ("go to the end"). **P1, P2, P3a, P3b, P4, P5a, P5b all PASS (fully closed) — all 5 feature dirs (agents, evaluation, git-workflow, guardrails, install-runtime) now prose-conformant. Remaining: P6 (features/project-memory + features/workflow) → P7a → P7b → N1, then Wrap-up.**
+# Handoff — PROSE Wave Complete
 
-Task-record commits (all local, unpushed): residue `56089c1` → P1 `caad41b` → P2 `db50af6` → P3a `69a089f` → P3b `f899480` → P4 `31d099a` → P5a `7cce3bf` → P5b `0f1ffc3`. git push still PENDING. **5 staged mistake-candidates + 1 deferred backlog await Wrap-up promotion** (prose-brief-light-pass; subagent-stray-recurred; prose-reclassification-target-project-notes; dual-system-codex-caught-template-form-gaps; evaluator-revise-may-contradict-the-standard; backlog frontmatter-completeness-followup).
+## Summary
 
-## Resume location (critical)
-- **Continue on the existing worktree + branch — do NOT start fresh.**
-  - Worktree: `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees/chore/session-2026-05-25-a10c82d6`
-  - Branch: `chore/session-2026-05-25-a10c82d6` → PR #272 (open). **`git push` PENDING** — origin is behind local.
-  - `develop` clean at `82a5137` — leave it alone.
-- `/gobbi` bootstrap will flag this worktree "orphaned" → recreate=no, adopt it (idempotency state 2).
-- This session's dir: `sessions/2026-05-27-5786090e-f65a-4493-94cc-e610ce337813/`.
-- **Commit chain this session (all local, unpushed):** `56089c1` (residue) → `999a403`+`7a6ecb4`+`caad41b` (P1) → `5c36142`+`db50af6` (P2) → `183dbfb`+`dc0e5a9` (P3a work + notes-placement fix) + 2 checkpoint commits.
+Session 5786090e executed all 12 prose-wave tasks (P1-P7b+N1) from the dev-doc-standard conformance plan, each with dual-system evaluation. All tasks evaluated PASS. The branch (`chore/session-2026-05-25-a10c82d6`) is approximately 140 commits ahead of develop and merge-ready. 7 mistakes promoted, 2 backlogs filed, 1 closed backlog archived. A systemic subagent write-path issue (4 strays to main tree) was detected, corrected, and recorded as the `subagent-relative-write-paths-stray-cd-doesnt-persist` mistake.
 
-## What's DONE this session (do not redo)
-1. **Stranded prior-session residue committed** (`56089c1`).
-2. **P1 (features/agents prose) — PASS.** `999a403`+iter2 `7a6ecb4`, record `caad41b`. Dual-system eval (both REVISE→5 findings) → manager reconciliation (corrected 2 evaluator severity errors) → iter2 → verified.
-3. **P2 (features/evaluation prose) — PASS.** `5c36142`, record `db50af6`. Dual-system eval both PASS first iter (the P1 "complete-section-list" lesson, baked into the brief, produced a first-pass PASS).
-4. **P3a (features/git-workflow A: discussions+design+decisions, 20 docs) — executor DONE + placement-fixed, dual-system eval PENDING.** Work `183dbfb` (20 docs reshaped + 1 reclassified note) + `dc0e5a9` (relocated that note to project-level `notes/` — see guardrail 3). NEXT SESSION MUST EVALUATE P3a BEFORE TREATING IT DONE.
+## Shipped
 
-## What's NEXT
-- **P3a dual-system eval first** (work committed at `183dbfb`+`dc0e5a9`, unevaluated). Same pattern as P1/P2: Codex via `codex exec --cd <worktree>` (commits live in the worktree, not develop) + a Claude evaluator subagent, both MUST diff the commits and ground-truth content preservation. On PASS → memorize + commit. If REVISE → surgical iter2.
-- Then in dependency order: **P3b → P4 → P5a → P5b → P6 → P7a → P7b → N1** (locked plan `features/project-memory/plans/2026-05-26-dev-doc-standard-retrofit.md`). P3b depends on P3a; P5a→P5b, P7a→P7b chained; N1 requires all 10 prose tasks.
+All 12 prose-wave tasks completed; each dual-system evaluated PASS:
 
-## Guardrails (hard-won — respect these)
-1. **Every prose brief MUST require checking each doc's body against its type template's COMPLETE required-section list** — "looks shaped" ≠ "has all sections." Known traps: `references`→body `## Related` (between Insight and Why-it-applies); `scenarios`→body `**Category:**`/`**Coverage:**`/`## Related`; `decisions`/`design`→all 5 ADR sections (+Related); `discussions`→body `## Related`. (P2 & P3a briefs baked this in → clean executor passes.)
-2. **Evaluators MUST diff the commit and ground-truth content preservation** (`mistakes/evaluator-false-pass-without-diffing.md`). The MANAGER ground-truths divergent findings before verdict — caught 2 evaluator severity errors on P1.
-3. **Reclassification target is PROJECT-level `notes/`, never feature-level** — `notes` is project-only (memory-map: `notes`→Project-only; no `features/{f}/notes/` tier). Set `scope: project`, `feature: null`, `features_touched: [{feature}]`. P3a hit this (brief said feature-level); fixed in `dc0e5a9`. Staged mistake-candidate: `prose-reclassification-target-is-project-level-notes`. **Verify with `find features -type d -name notes` (must be empty).**
-4. **Subagent writes stray to the MAIN tree even with an absolute-path instruction** — make every write-subagent `cd <worktree>` FIRST and verify `git rev-parse --show-toplevel` before writing; manager `ls` the expected worktree paths post-hoc (don't trust DONE). P2's memorization assistant strayed; manager relocated. Staged: `subagent-stray-recurred-despite-absolute-path-instruction`.
-5. **Executors:** `cd` worktree + `git -C <worktree-abs>` + verify branch before committing.
-6. **Dual-system eval per task is mandatory (Decision 3).** Codex 0.133.0 available. `session.json.lock` is gitignored.
+| Task | Scope | Key commits |
+|---|---|---|
+| P1 agents prose | `features/agents/` — ADR-reshape 2 design docs, body-section gaps in refs/scenarios/discussions | `999a403`, `7a6ecb4` |
+| P2 evaluation prose | `features/evaluation/` — §4.2 contracts, frontmatter-completeness deferred to backlog | `5c36142` |
+| P3a git-workflow prose (A) | `features/git-workflow/` part A — narrative reclassification, §4.3 session-coord strip | `183dbfb`, `3e9c5e7`, `dc0e5a9` |
+| P3b git-workflow prose (B) | `features/git-workflow/` part B | `de207ac`, `bfc46c8` |
+| P4 guardrails prose | `features/guardrails/` — 4 Codex findings remediated (cross-feature ref, checklist form, README subdir diff, session path format) | `d24c61c`, `aa901e4` |
+| P5a install-runtime prose (A) | `features/install-runtime/` part A | `520cdb2`, `0369b7d`, `5628346` |
+| P5b install-runtime prose (B) | `features/install-runtime/` part B — Claude/Codex split verdict; manager disputed 2 Codex findings against §4.3:186 | `e94e94b` |
+| P6a project-memory prose | `features/project-memory/` — 16 type-fixes, ADR-reshape 2 stale-8-section design docs | `f367095`, `ada3dd7` |
+| P6b project-memory prose (B) | `features/project-memory/` remainder | `fddc040`, `baa0f8e` |
+| P7a project-tier mistakes/backlogs | project-tier `mistakes/` + `backlogs/` prose pass | `a04e509`, `9bc4db8` |
+| P7b project-tier mistake normalization | 31 mistake records — heading SET + WORDING + ARROW-ORDER normalized to §4.2:178 | `a7d8253`, `456534b` |
+| N1 notes prose | `notes/` project-level journals — §4.1/§4.3 pass | `3792cae`, `66bf1be` |
 
-## Staged mistake-candidates / backlogs (promote at eventual Wrap-up — NOT yet in project memory)
-- P1: `prose-brief-light-pass-undersold-template-section-checks` (process)
-- P2: `subagent-stray-recurred-despite-absolute-path-instruction` (process) + backlog `frontmatter-completeness-followup` (deferred: README `subsystems:` key, changelog `status:` value — frontmatter sweep across features)
-- P3a: `prose-reclassification-target-is-project-level-notes` (process)
+## Deferred / Open
+
+| Item | Backlog path | Reason |
+|---|---|---|
+| Frontmatter completeness sweep | `.gobbi/projects/gobbi/backlogs/frontmatter-completeness-followup.md` | Out of prose-wave scope; post-merge sweep for `subsystems:` key + `status: shipped` in changelogs |
+| Design template reconciliation | `.gobbi/projects/gobbi/backlogs/design-template-stale-vs-adr-standard.md` | `templates/design.md` 8-section shape conflicts with §4.2 ADR contract; reconcile template |
+| PR #272 push + review/merge | — | Branch is merge-ready; push to origin + open/update PR |
 
 ## Decisions to respect
-Build-on-#272 / defer-merge; gobbi keeps its 13 doc types (no Diátaxis re-taxonomy); enforcement = §4.5 grep gate (no hook/CI); `archive/` excluded. Mode: Auto. Cadence: run-until-context-pressure then checkpoint at a committed boundary (user-ratified). Observed rate: ~1-2 prose tasks fully closed per session under mandatory dual-system rigor.
 
-## Key pointers
-- Locked plan: `features/project-memory/plans/2026-05-26-dev-doc-standard-retrofit.md`
-- §4 standard (canonical): `skills/memorization/rules.md` §4 (never edit the `.claude/` symlink)
-- Per-task records: `sessions/2026-05-27-5786090e-.../execution/{P1-agents-prose,P2-evaluation-prose,P3a-git-workflow-a-prose}/`
-- P3a is the eval-pending boundary; its executor report (per-doc verdict table) is in the P3a transcript (agentId a24db9b449b8949a7).
+1. **§4.2:177 ADR shape wins over `templates/design.md`** — any new design doc uses ADR shape (Context → Decision/Approach → Rationale → Alternatives → Consequences). The 8-section template is stale.
+2. **Arrow order in §4.2 is an ordered contract** — the `→` notation declares physical section sequence. "Normalize heading set" without enforcing position is under-specification. Verify order with `grep -n "^## Correct approach\|^## How to detect" <file>` (Correct approach line must be smaller).
+3. **notes/ = project-only** — reclassify narrative to `.gobbi/projects/gobbi/notes/{slug}.md`; `features/{f}/notes/` is a type-placement violation.
+4. **Subagent Writes must use full-absolute worktree paths** — cd-first + relative path is NOT sufficient (cd does not persist across Claude Code tool boundaries). Every Write must start with the full absolute worktree prefix.
+5. **Evaluator REVISE can contradict the standard** — manager must ground-truth divergent findings against the locked spec before remediating. A finding that demands the opposite of what the standard permits is dispositioned `disputed`, not remediated.
+6. **Dual-system eval per task** — both Claude and Codex evaluators run for every prose-wave task; neither alone is sufficient.
+
+## Pointers
+
+- Branch: `chore/session-2026-05-25-a10c82d6` in worktree at `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees/chore/session-2026-05-25-a10c82d6`
+- Session dir: `.gobbi/projects/gobbi/sessions/2026-05-27-5786090e-f65a-4493-94cc-e610ce337813/`
+- Journal note: `.gobbi/projects/gobbi/notes/2026-05-28-prose-wave-complete.md`
+- Plan (chartered): `features/project-memory/plans/2026-05-26-dev-doc-standard-retrofit.md`
+- Dev-doc standard (rules): `.gobbi/projects/gobbi/skills/memorization/rules.md`
+
+## Promotion Summary
+
+| # | Type | Source (staging) | Destination (project memory) | §2.3 strip |
+|---|---|---|---|---|
+| 1 | mistake | `execution/P1-agents-prose/staging/decisions/prose-brief-light-pass-undersold-template-section-checks.md` | `mistakes/prose-brief-light-pass-undersold-template-section-checks.md` | `mistake-candidate` removed |
+| 2 | mistake | `execution/P2-evaluation-prose/staging/decisions/subagent-stray-recurred-despite-absolute-path-instruction.md` | `mistakes/subagent-stray-recurred-despite-absolute-path-instruction.md` | `mistake-candidate` removed |
+| 3 | mistake | `execution/P3a-git-workflow-a-prose/staging/decisions/prose-reclassification-target-is-project-level-notes.md` | `mistakes/prose-reclassification-target-is-project-level-notes.md` | `mistake-candidate` removed |
+| 4 | mistake | `execution/P4-guardrails-prose/staging/decisions/dual-system-codex-caught-template-form-gaps-claude-missed.md` | `mistakes/dual-system-codex-caught-template-form-gaps-claude-missed.md` | `mistake-candidate` removed |
+| 5 | mistake | `execution/P5b-install-runtime-b-prose/staging/decisions/evaluator-revise-may-contradict-the-standard-manager-disputes-with-evidence.md` | `mistakes/evaluator-revise-may-contradict-the-standard-manager-disputes-with-evidence.md` | `mistake-candidate` removed |
+| 6 | mistake | `execution/P7b-project-tier-remainder-prose/staging/decisions/section-order-is-part-of-the-contract-not-just-the-set.md` | `mistakes/section-order-is-part-of-the-contract-not-just-the-set.md` | `mistake-candidate` removed |
+| 7 | mistake | `wrap-up/staging/decisions/subagent-relative-write-paths-stray-cd-doesnt-persist.md` | `mistakes/subagent-relative-write-paths-stray-cd-doesnt-persist.md` | `mistake-candidate` removed |
+| 8 | backlog | `execution/P2-evaluation-prose/staging/backlogs/project/frontmatter-completeness-followup.md` | `backlogs/frontmatter-completeness-followup.md` | `type: backlogs` auto-backfilled |
+| 9 | backlog | `execution/P6a-project-memory-prose/staging/backlogs/project/design-template-stale-vs-adr-standard.md` | `backlogs/design-template-stale-vs-adr-standard.md` | no strip needed |
+
+Archive (git mv):
+- `backlogs/memory-redesign-remaining-waves.md` → `archive/backlogs/2026-05-28-memory-redesign-remaining-waves.md` (status: closed, disposition: resolved)
