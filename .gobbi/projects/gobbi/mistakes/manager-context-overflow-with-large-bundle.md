@@ -17,7 +17,7 @@ superseded_by: null
 
 ## What happened
 
-A prior session emergency-stopped mid-Execution at Task 02 iter2 due to manager context overflow. This session resumed Bundle B (10 tasks + iter2 cycles + dual-system evals) and observed the same pressure curve: large per-task subagent reports + ITER cycles + dual-system evals + multiple file reads accumulate quickly. We finished only by aggressive batching (T07+T08 shared executor; pruning Codex evals on small fixes) and trimming reads.
+A prior session (`2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068`) emergency-stopped mid-Execution at Task 02 iter2 due to manager context overflow. This session resumed Bundle B (10 tasks + iter2 cycles + dual-system evals) and observed the same pressure curve: large per-task subagent reports + ITER cycles + dual-system evals + multiple file reads accumulate quickly. We finished only by aggressive batching (T07+T08 shared executor; pruning Codex evals on small fixes) and trimming reads.
 
 The corrective stance: bundles of ≥8 plan tasks should be scoped against the manager's context budget at Planning time. Two levers — split the bundle across sessions when total parallel-spawn weight (estimated tokens × tasks × iter cap × dual-system) exceeds budget, and adopt single-system evals on small iter2 surgical fixes (matcher rename, 1-char typo, footnote insertion) reserving dual-system for substantive iter1 reviews.
 
@@ -47,5 +47,5 @@ At Planning EVALUATION (or at Ideation Lock Scope, when task count is known): if
 - Mid-Execution manager context > 80% used before half the tasks are done.
 
 ## Related
-- Prior session HANDOFF (emergency-stop) at `sessions/2026-05-22-7ea62d36-.../HANDOFF.md` (or equivalent path)
+- Prior emergency-stop session: `.gobbi/projects/gobbi/sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/`
 - This session's HANDOFF.md (resume + completion)

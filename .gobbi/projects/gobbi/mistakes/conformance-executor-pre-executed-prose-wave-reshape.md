@@ -26,12 +26,6 @@ The T5 evaluators caught the scope overstep and returned REVISE. The executor ha
 
 The conformance prompt said "conform to the dev-doc standard §4" without explicitly carving out the body-section contract (§4.2) as out-of-scope for the conformance pass. The executor, seeing a standard with multiple sub-sections, applied what it could — including the body-section contract. "De-crypt + conform" naturally creeps into prose-restructuring when the prompt does not bound the scope to frontmatter + inline coords.
 
-## How to detect
-
-- A conformance-wave commit changes body SECTION structure: `##` headings are renamed or reordered, not just frontmatter keys removed/preserved.
-- The commit diff shows new or differently named `##` sections inside files where the prior structure was different — beyond just title-line edits.
-- Evaluators flag "scope overstep" or "prose-wave work done in conformance pass."
-
 ## Correct approach
 
 Conformance prompts must explicitly state in the scope boundary:
@@ -39,3 +33,9 @@ Conformance prompts must explicitly state in the scope boundary:
 > "DO NOT reshape body sections. The conformance pass touches: (1) frontmatter S-set stripping, (2) concept-first title normalization, (3) type-aware KEEP key preservation. The §4.2 per-type section contract (body section structure/headings) is prose-wave scope — do not rename, reorder, or add `##` headings during conformance."
 
 The prose wave (P1–P7b tasks) is the sole executor of §4.2 body-section restructuring. Any conformance commit that touches `##` heading names or order inside file bodies is out-of-scope and must be reverted.
+
+## How to detect
+
+- A conformance-wave commit changes body SECTION structure: `##` headings are renamed or reordered, not just frontmatter keys removed/preserved.
+- The commit diff shows new or differently named `##` sections inside files where the prior structure was different — beyond just title-line edits.
+- Evaluators flag "scope overstep" or "prose-wave work done in conformance pass."

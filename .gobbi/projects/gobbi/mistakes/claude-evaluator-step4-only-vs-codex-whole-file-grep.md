@@ -29,14 +29,6 @@ The Claude evaluator narrowed its verification scope to the section the executor
 
 The Claude evaluator did not run a whole-file grep for the OLD vocabulary that was being retired. It only verified the NEW vocabulary was correctly placed.
 
-## How to detect
-
-Trigger: a docs-edit task that retires or renames a concept (a term, a question count, a workflow step name, a model name). The executor's acceptance criteria check the new section only. The evaluator follows the same scope.
-
-Signal: the task is a docs edit; the acceptance criterion is a positive assertion about the new content (e.g., "Step 4 now says X"); the old vocabulary was not explicitly listed as something to search for and remove.
-
-This pattern most commonly appears in docs-only tasks where the "changed file" is large (e.g., 200+ lines) and the edit is localized. The evaluator trusts the executor's scope and does not independently search the rest of the file.
-
 ## Correct approach
 
 For any docs-edit task that retires or renames a concept, the evaluator brief MUST include an explicit gate:
@@ -51,6 +43,14 @@ Gate N: grep -cE "<old_term_1>|<old_term_2>|<old_term_3>" <changed_file>  →  e
 ```
 
 This gate should be explicitly listed in the executor delegation prompt's verification commands so both executor and evaluator apply it.
+
+## How to detect
+
+Trigger: a docs-edit task that retires or renames a concept (a term, a question count, a workflow step name, a model name). The executor's acceptance criteria check the new section only. The evaluator follows the same scope.
+
+Signal: the task is a docs edit; the acceptance criterion is a positive assertion about the new content (e.g., "Step 4 now says X"); the old vocabulary was not explicitly listed as something to search for and remove.
+
+This pattern most commonly appears in docs-only tasks where the "changed file" is large (e.g., 200+ lines) and the edit is localized. The evaluator trusts the executor's scope and does not independently search the rest of the file.
 
 ## Related
 

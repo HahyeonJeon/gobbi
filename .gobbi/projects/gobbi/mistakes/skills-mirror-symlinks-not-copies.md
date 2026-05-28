@@ -20,7 +20,7 @@ superseded_by: null
 
 The Ideation leader designed the memory-system propagation plan and Principle #13 on the premise that `.claude/skills/...` and `.gobbi/projects/gobbi/skills/...` are **two physical copies**, so "every skill/template edit doubles" (design draft §7 intro + §6 P13 procedure). The Codex evaluator flagged it; manager verification confirmed it is FALSE.
 
-## Ground truth (verified 2026-05-25, main tree)
+### Ground truth (verified 2026-05-25, main tree)
 
 - `.gobbi/projects/gobbi/skills/` = **canonical**: 57 real files, 0 symlinks.
 - `.claude/skills/` = **56 symlinks, 0 real files**, each pointing `../../../.gobbi/projects/gobbi/skills/{skill}/...`.
@@ -37,17 +37,17 @@ The leader conflated two separate facts from mistake `executor-mirror-path-vs-wo
 
 The existing mistake's wording ("physical copies on the branch, not symlinks back to the main tree") is about worktree-isolation of the *canonical real files*; it is easily misread as "the mirror doubles edits." A clarification / cross-link to this mistake is a deferred follow-up.
 
-## How to detect
-
-- Any plan that says "this skill edit must be applied to BOTH .claude and .gobbi copies / edits double / ×2 mirror."
-- A propagation count that doubles for the mirror.
-- A P13 CRUD plan listing `.claude/skills/X/SKILL.md` as a separate Update line from `.gobbi/.../skills/X/SKILL.md`.
-
 ## Correct approach
 
 - Edit the **canonical** file at `<worktree>/.gobbi/projects/gobbi/skills/{skill}/...` (worktree-absolute). The `.claude/skills/{skill}/...` symlink reflects it automatically — do NOT make a second edit.
 - For `gobbi-hook-authoring` (and any other canonical-only skill), there is NO `.claude` symlink to update; if a `.claude` view is desired, create the symlink (separate concern).
 - Verify with `readlink .claude/skills/{skill}/SKILL.md` and `find .claude/skills -type l | wc -l`.
+
+## How to detect
+
+- Any plan that says "this skill edit must be applied to BOTH .claude and .gobbi copies / edits double / ×2 mirror."
+- A propagation count that doubles for the mirror.
+- A P13 CRUD plan listing `.claude/skills/X/SKILL.md` as a separate Update line from `.gobbi/.../skills/X/SKILL.md`.
 
 ## Related
 

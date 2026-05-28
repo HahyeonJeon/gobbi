@@ -54,5 +54,5 @@ Add a "Canonical-mirror paths (worktree-absolute)" subsection to executor briefs
 ## Related
 
 - `mistakes/skills-mirror-symlinks-not-copies.md` — the `.claude/skills/` mirror is symlinks, not physical copies; editing the canonical file reflects automatically. That is a SEPARATE concern from worktree branch-isolation described here.
-- `sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/execution/task-01/staging/decisions/edit-tool-refuses-symlink-canonical-fallback.md`
+- [[edit-tool-refuses-symlink-paths]] — sibling mistake covering the Edit-tool symlink-refusal fallback that motivates the canonical-mirror path guidance.
 - T1 implementation (PR #269)

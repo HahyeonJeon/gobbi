@@ -26,14 +26,6 @@ Planning caught the error only by reasoning about scope-vs-filter: `features/age
 
 Evaluators treated command-reproduction as validation. Re-running a command verifies that the command is deterministic — NOT that the command's predicate matches its declared intent. When multiple evaluators agree on a number derived from one shared command, they have verified only that the command is stable, not that it is correct. The predicate (globs, exclusions, filters) is itself an auditable artifact that requires independent scrutiny.
 
-## How to detect
-
-Any metric or count defined by a command whose exclusion set or filter predicate has not been independently audited against the declared scope. Specific signals:
-
-- Multiple evaluators agree on a metric but the only verification was "I re-ran the command."
-- The command contains `-not -path`, `-exclude`, `--include`, or `| grep -v` clauses whose scope boundary has not been cross-checked against the declared in-scope set.
-- The metric's denominator is a file-set claim ("222 docs in scope") where the count command's exclusion list was not audited for inadvertent exclusion of in-scope items.
-
 ## Correct approach
 
 When validating a count or metric:
@@ -43,3 +35,11 @@ When validating a count or metric:
 3. **Enumerate the exclusion set**: for any `find` or `grep` command with `-not -path`, enumerate the dirs that the exclusion actually matches and verify they are all out-of-scope.
 
 Do not accept "I reproduced the same number" as evidence that the number is correct when both reproductions use the same predicate.
+
+## How to detect
+
+Any metric or count defined by a command whose exclusion set or filter predicate has not been independently audited against the declared scope. Specific signals:
+
+- Multiple evaluators agree on a metric but the only verification was "I re-ran the command."
+- The command contains `-not -path`, `-exclude`, `--include`, or `| grep -v` clauses whose scope boundary has not been cross-checked against the declared in-scope set.
+- The metric's denominator is a file-set claim ("222 docs in scope") where the count command's exclusion list was not audited for inadvertent exclusion of in-scope items.

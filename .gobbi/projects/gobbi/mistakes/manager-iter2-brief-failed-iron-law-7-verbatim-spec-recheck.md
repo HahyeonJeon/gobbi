@@ -32,16 +32,6 @@ The manager constructed the iter2 revision brief from memory — recalling "the 
 
 This is an Iron Law 7 (Principle 7) violation: "NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE." The verification gate was applied to the leader's output (evaluators checked the stub against the spec) but not to the manager's own brief-construction step. The manager assumed memory was sufficient for encoding a "paste-inline-verbatim" specification.
 
-## How to detect
-
-Before the manager authors any delegation brief that contains "exact" or "verbatim" instructions (e.g., "use exactly these 8 H2 sections in this order"), check whether the locked spec was `Read` into context within the last 10 manager turns of the current session. If the spec has not been freshly read, that is the warning sign.
-
-Specific triggers:
-- Brief contains phrases like "the locked sequence is..." or "use exactly these sections..."
-- The section names or field names in the brief differ by even one word from the locked spec
-- The brief cites a prior evaluator's description of the spec rather than the spec itself
-- The brief references line numbers but those lines have not been scrolled through in-session
-
 ## Correct approach
 
 The manager MUST `Read` the locked spec into context immediately before constructing any "paste-inline-verbatim" section of a delegation brief. The `Read` call serves as the verification gate — without it, the brief is a memory claim, not a verified specification.
@@ -52,3 +42,13 @@ Concrete fix for this mistake class:
 1. Before authoring the revision brief, `Read` the locked spec file at the cited line range.
 2. Copy the exact text from the `Read` output into the brief — never retype from memory.
 3. Include the file path + line range as an inline citation in the brief so evaluators can re-verify independently.
+
+## How to detect
+
+Before the manager authors any delegation brief that contains "exact" or "verbatim" instructions (e.g., "use exactly these 8 H2 sections in this order"), check whether the locked spec was `Read` into context within the last 10 manager turns of the current session. If the spec has not been freshly read, that is the warning sign.
+
+Specific triggers:
+- Brief contains phrases like "the locked sequence is..." or "use exactly these sections..."
+- The section names or field names in the brief differ by even one word from the locked spec
+- The brief cites a prior evaluator's description of the spec rather than the spec itself
+- The brief references line numbers but those lines have not been scrolled through in-session

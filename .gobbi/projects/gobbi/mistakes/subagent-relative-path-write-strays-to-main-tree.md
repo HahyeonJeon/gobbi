@@ -24,12 +24,6 @@ During this session, subagents delegated to write session files (rawdata/, evalu
 
 Subagents assume their write-path context persists from the delegation prompt's description of the worktree. It does not. Every Bash call starts at the session's default cwd (main tree root). A subagent that constructs session write paths without an explicit `cd <worktree>` or absolute path prefix will write to the main tree whenever the path is relative — even if the delegation prompt correctly described the worktree location.
 
-## How to detect
-
-- Session files appear under the main-tree `.gobbi/.../sessions/` tree rather than the worktree's equivalent path.
-- The worktree session dir is missing expected rawdata or eval files after a subagent returns.
-- `find <main-tree> -path "*/sessions/<sid>/*" -newer <timestamp>` turns up files that should be in the worktree.
-
 ## Correct approach
 
 Subagents use ABSOLUTE worktree paths for ALL session writes — no relative paths anywhere in session write operations:
@@ -40,6 +34,12 @@ Subagents use ABSOLUTE worktree paths for ALL session writes — no relative pat
 4. Manager runs post-WORK verification: `ls <worktree>/sessions/<sid>/<loop>/rawdata/` to confirm files landed in the right tree.
 
 Recovery when strays occur: `mv` or `cp` stray files from main tree to worktree; do NOT commit them from the main tree. See also [[sendmessage-continued-cwd-resets-to-main-tree]] and [[executor-cwd-reset-commits-task-to-wrong-branch]] — the same cwd-reset root cause at different severity levels.
+
+## How to detect
+
+- Session files appear under the main-tree `.gobbi/.../sessions/` tree rather than the worktree's equivalent path.
+- The worktree session dir is missing expected rawdata or eval files after a subagent returns.
+- `find <main-tree> -path "*/sessions/<sid>/*" -newer <timestamp>` turns up files that should be in the worktree.
 
 ## Related
 

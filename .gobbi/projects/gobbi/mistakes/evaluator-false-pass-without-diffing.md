@@ -24,12 +24,6 @@ During T7 (conform install-runtime discussions/design/decisions/changelogs), the
 
 The evaluator asserted preservation/relocation from memory (reasoning about what the conformance task *should* have done) rather than actually diffing the commit to see what *did* change. An evaluator who trusts the executor's summary without reading the diff can confidently assert content is preserved when it has been deleted. This is a false-PASS — the metric (content integrity) passes while the underlying property (no content loss) fails.
 
-## How to detect
-
-- An evaluator's finding claims "content preserved / relocated / no loss" but cites no diff evidence — only narrative reasoning.
-- Two evaluators (dual-system) diverge on a factual content-loss claim: one says PASS (no loss), the other says REVISE (loss detected).
-- The evaluator's language: "the narrative was moved to...", "the key appears in...", "no loss occurred" — without a file read or diff to ground it.
-
 ## Correct approach
 
 Evaluators MUST diff the commit (or read the resulting file) to verify any claim that content was preserved, relocated, or not lost:
@@ -39,3 +33,9 @@ Evaluators MUST diff the commit (or read the resulting file) to verify any claim
 3. When two evaluators diverge on a factual content-loss claim, the manager must ground-truth-verify (git diff / file read) before accepting either verdict — the dual-system divergence is the signal that at least one evaluator is operating from reasoning, not evidence.
 
 The dual-system evaluation + manager-verify protocol exists precisely to catch this: Codex caught what Claude missed, and the manager's git check confirmed the truth.
+
+## How to detect
+
+- An evaluator's finding claims "content preserved / relocated / no loss" but cites no diff evidence — only narrative reasoning.
+- Two evaluators (dual-system) diverge on a factual content-loss claim: one says PASS (no loss), the other says REVISE (loss detected).
+- The evaluator's language: "the narrative was moved to...", "the key appears in...", "no loss occurred" — without a file read or diff to ground it.

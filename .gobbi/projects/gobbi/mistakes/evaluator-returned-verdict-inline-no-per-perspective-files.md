@@ -27,12 +27,6 @@ The `evaluator` agent type's `tools` list per `.claude/agents/evaluator.md` is `
 
 This is BOTH a tools issue (no Write means writes must go via Bash heredoc) AND a behavioral issue (the evaluator chose inline rather than `cat > file.md << EOF` via Bash). Prior evaluators in this session DID write files (via Bash heredoc); this one chose differently.
 
-## How to detect
-
-- Evaluator's response begins with verdict + findings TABLE in the chat
-- `ls sessions/.../evaluation/iter{N}/{system}/` shows fewer than 8 files (or only `overall.md`)
-- Evaluator self-narrates a directive conflict like "I should NOT write report .md files, but the brief requires per-perspective files... I'll return inline."
-
 ## Correct approach
 
 Either:
@@ -45,7 +39,13 @@ Either:
 
 Recommended: combine (2) into the evaluator brief template at `.claude/skills/delegation/templates/evaluator.md` AND (3) as a manager-side check.
 
-## Witness
+## How to detect
+
+- Evaluator's response begins with verdict + findings TABLE in the chat
+- `ls sessions/.../evaluation/iter{N}/{system}/` shows fewer than 8 files (or only `overall.md`)
+- Evaluator self-narrates a directive conflict like "I should NOT write report .md files, but the brief requires per-perspective files... I'll return inline."
+
+## Source
 
 - T05 iter1 Claude eval: agent ID `a0bf7024f118377d1` returned verdict + inline findings; `ls execution/T5/evaluation/iter1/claude/` after dispatch showed 0 files (manager later wrote proxy overall.md).
 - Comparison: prior evaluators in this session (Ideation iter1-3, Preparation iter1-3, Planning iter1-2, Execution T1-T4) all wrote 8 per-perspective files via Bash heredoc.

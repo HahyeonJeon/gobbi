@@ -25,18 +25,18 @@ The Preparation iter3 edit contract states "Edit tool default = safe via either 
 
 The edit contract assumed the Edit tool would follow symlinks transparently. It does not — it refuses to write through symlink paths. The canonical path (the actual target of the symlink) is the correct path for Edit operations.
 
+## Correct approach
+
+Always use the canonical mirror path (`.gobbi/projects/{project-name}/skills/{skill-path}`) for Edit tool operations on skill files, not the symlink path (`.claude/skills/{skill-path}`). The symlink remains valid for reads; only Edit/Write require the canonical path.
+
+Specific correction for the edit contract doc: amend point 1 of the safety table to read: "Edit tool may refuse symlink paths; canonical path (`.gobbi/projects/{project-name}/skills/...`) is the always-safe fallback."
+
 ## How to detect
 
 Trigger signals:
 - Edit tool returns "Refusing to write through symlink" when targeting a path under `.claude/skills/`
 - The task involves editing a skill file via its `.claude/` mirror path rather than the canonical `.gobbi/projects/.../skills/` path
 - The edit contract is being followed and names `.claude/` path as the safe default
-
-## Correct approach
-
-Always use the canonical mirror path (`.gobbi/projects/{project-name}/skills/{skill-path}`) for Edit tool operations on skill files, not the symlink path (`.claude/skills/{skill-path}`). The symlink remains valid for reads; only Edit/Write require the canonical path.
-
-Specific correction for the edit contract doc: amend point 1 of the safety table to read: "Edit tool may refuse symlink paths; canonical path (`.gobbi/projects/{project-name}/skills/...`) is the always-safe fallback."
 
 ## Related
 

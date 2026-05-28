@@ -22,14 +22,14 @@ During Wrap-up, the assistant promoted ~30 session staging files (eval-finding `
 
 The promotion routing was applied correctly (right destinations, full coverage), so it *looked* done — but `rules.md` §2.3 ("strip staging-only keys on promotion") and §4.4 (the type-aware allowlist) are a **separate, mandatory transform that promotion must apply**, not an automatic consequence of moving the file. The assistant treated "promote" as "copy to the routed path + stamp template" and skipped the strip. The first Wrap-up evaluator (Claude) also PASSed without running the §4.5 gate over the promoted files; only the second system (Codex) ran the gate and caught the regression — see [[evaluator-false-pass-without-diffing]].
 
-## How to detect
-
-- Right after Wrap-up promotion, the §4.5 gate run over the *newly-promoted* paths (`features/{f}/`, `backlogs/`) returns > 0 — even though it was 0 before promotion.
-- Promoted `decisions/`/`checklists/` files still carry `finding-id`/`confidence`/`severity`/`disposition` (staging frontmatter that belongs only in session staging, per §2.3).
-- A Wrap-up handoff claims "gate = 0" but the claim was measured before promotion, not after.
-
 ## Correct approach
 
 - Wrap-up promotion is **promote = route + stamp template + apply §4.4/§2.3 strip + ensure base-9 schema**. Strip the S-set staging keys (preserve the §4.4 KEEP list + `disposition`-on-backlogs only) and complete the base schema (incl `date:`→`created:`) as part of the promotion write, not as a later pass.
 - The Wrap-up evaluation MUST run the §4.5 gate over the post-promotion project-memory tree (not just check routing/coverage). A promotion eval that doesn't run the objective gate over the promoted files is incomplete.
 - The Wrap-up handoff's "gate = 0" claim must be measured AFTER all promotions, and re-verified at session close.
+
+## How to detect
+
+- Right after Wrap-up promotion, the §4.5 gate run over the *newly-promoted* paths (`features/{f}/`, `backlogs/`) returns > 0 — even though it was 0 before promotion.
+- Promoted `decisions/`/`checklists/` files still carry `finding-id`/`confidence`/`severity`/`disposition` (staging frontmatter that belongs only in session staging, per §2.3).
+- A Wrap-up handoff claims "gate = 0" but the claim was measured before promotion, not after.

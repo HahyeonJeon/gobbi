@@ -26,13 +26,6 @@ Detection: the Claude evaluator flagged "commit not in the expected branch linea
 
 The executor's Bash invocations for `git add` and `git commit` did not use `git -C <worktree-absolute-path>`. After a cwd reset between calls, the `git` commands ran against whatever the shell's cwd resolved to — the main tree. The executor's prior edit operations may have landed in the worktree (via absolute Write paths), but the git ops targeted the main tree, creating a split: edits in worktree, commit on develop.
 
-## How to detect
-
-- The worktree branch is missing the task's expected changes after the executor reports success.
-- The main-tree `develop` is unexpectedly ahead of `origin/develop` by one or more commits.
-- An evaluator flags "commit not an ancestor of HEAD / wrong lineage" or "branch at unexpected sha."
-- `git -C <worktree> log --oneline -3` does not include the task's commit message; `git -C <main-tree> log develop --oneline -3` does.
-
 ## Correct approach
 
 Executors run ALL git operations via `git -C <worktree-abs-path>` — never bare `git`:
@@ -43,6 +36,13 @@ Executors run ALL git operations via `git -C <worktree-abs-path>` — never bare
 4. Post-task, manager independently verifies: `git -C <worktree> log --oneline -3` must include the task's commit; `git -C <main-tree> log develop --oneline -1` must NOT include it.
 
 Recovery: if the commit lands on develop and has NOT been pushed, `git -C <main-tree> reset --hard origin/develop` removes it safely; then re-run the task in the worktree. If already pushed: do NOT revert on develop; cherry-pick to the worktree branch and coordinate with the user before touching develop history.
+
+## How to detect
+
+- The worktree branch is missing the task's expected changes after the executor reports success.
+- The main-tree `develop` is unexpectedly ahead of `origin/develop` by one or more commits.
+- An evaluator flags "commit not an ancestor of HEAD / wrong lineage" or "branch at unexpected sha."
+- `git -C <worktree> log --oneline -3` does not include the task's commit message; `git -C <main-tree> log develop --oneline -3` does.
 
 ## Related
 

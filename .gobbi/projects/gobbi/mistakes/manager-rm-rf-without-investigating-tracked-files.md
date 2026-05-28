@@ -32,12 +32,6 @@ The manager's mental model was: "this `.gobbi/` tree inside the worktree is an a
 
 The missing step was a `git status` + `git ls-files` check before the deletion.
 
-## How to detect
-
-- You are about to run `rm -rf <path>` on any path inside a git worktree.
-- The `<path>` includes directories that could plausibly hold git-tracked files (any directory tracked by the repo — e.g., `.gobbi/`, `.claude/`, `packages/`, `src/`).
-- The motivation is "this is an artifact that shouldn't be here" — but you have not verified it via git.
-
 ## Correct approach
 
 Before any `rm -rf` on a path inside a git repository (main tree or worktree):
@@ -47,3 +41,9 @@ Before any `rm -rf` on a path inside a git repository (main tree or worktree):
 3. **Only proceed with `rm -rf` if the path contains ZERO tracked files** (i.e., all entries are untracked `??` in `git status`).
 4. If tracked files are present and the intent is to remove only untracked artifacts: use `git clean -fd <path>` to remove untracked files while leaving tracked files intact. Add `-n` (dry run) first to verify the set of files that would be removed.
 5. If the intent is to remove tracked files as well, stage the deletion via `git rm -r <path>` rather than `rm -rf` — this produces a clean deletion record in the index.
+
+## How to detect
+
+- You are about to run `rm -rf <path>` on any path inside a git worktree.
+- The `<path>` includes directories that could plausibly hold git-tracked files (any directory tracked by the repo — e.g., `.gobbi/`, `.claude/`, `packages/`, `src/`).
+- The motivation is "this is an artifact that shouldn't be here" — but you have not verified it via git.

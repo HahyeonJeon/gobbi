@@ -24,12 +24,6 @@ In Ideation iter2, the leader was tasked with fixing COD-STRUCT-001 (incorrect f
 
 The leader assumed that substituting one set of non-canonical vocabulary with another set constituted a "fix". The verification pattern — citing a line range from `evaluation/SKILL.md` — was performed to satisfy the appearance of empirical grounding (Principle 7 compliance) without actually matching the output against the source. The plausibility of the new vocabulary (`improvement`, `bug`) made it feel correct without direct comparison, triggering the "Looks good to me" evaluator trap described in the Claude iter2 overall eval.
 
-## How to detect
-
-Trigger signal: the leader's remediation changelog cites a source file with a line range for a vocabulary or enumeration fix, but the new vocabulary terms cannot be found verbatim in the cited source lines. The fix pattern is: "I replaced X with Y, citing source Z:L1-L2" — this is only trustworthy if Y can be found at exactly Z:L1-L2. Any time a Type, Domain, or enumeration is being corrected, the verification step is: `grep -n` the exact new value against the cited source path and confirm it appears there.
-
-Second signal: evaluators running on iter `n` find the *same root-cause finding* as iter `n-1` but with a different surface form (new wrong vocabulary vs old wrong vocabulary). This is the regression pattern and should produce automatic FAIL.
-
 ## Correct approach
 
 1. When fixing an enumeration or vocabulary finding, read the canonical source directly (do NOT rely on memory or summary).
@@ -38,6 +32,12 @@ Second signal: evaluators running on iter `n` find the *same root-cause finding*
 4. Only then write the verification claim in the changelog.
 
 This is the memorization γ design (moment-of-capture) witness: the failure occurred at iter2 because verification was claimed without fresh evidence (Principle 7 violation). The γ mechanism — capturing the mistake at the moment the FAIL is surfaced, before the loop re-enters — prevents the pattern from being lost across sessions.
+
+## How to detect
+
+Trigger signal: the leader's remediation changelog cites a source file with a line range for a vocabulary or enumeration fix, but the new vocabulary terms cannot be found verbatim in the cited source lines. The fix pattern is: "I replaced X with Y, citing source Z:L1-L2" — this is only trustworthy if Y can be found at exactly Z:L1-L2. Any time a Type, Domain, or enumeration is being corrected, the verification step is: `grep -n` the exact new value against the cited source path and confirm it appears there.
+
+Second signal: evaluators running on iter `n` find the *same root-cause finding* as iter `n-1` but with a different surface form (new wrong vocabulary vs old wrong vocabulary). This is the regression pattern and should produce automatic FAIL.
 
 ## Related
 

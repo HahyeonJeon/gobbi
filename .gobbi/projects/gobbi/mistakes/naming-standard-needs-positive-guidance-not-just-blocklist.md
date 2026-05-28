@@ -22,15 +22,15 @@ The memory-redesign shipped a slug naming standard (`memorization/rules.md` §1)
 ## Why it happens
 A blocklist of bad patterns was assumed to be sufficient guidance. It is not: a prohibition list does not teach the positive skill (naming the subject so a zero-context reader understands the file). And a regex blocklist is the wrong tool anyway — it false-positives on legitimate content words and gets softened away, leaving a vacuum.
 
-## How to detect
-- A standard/principle whose naming/quality guidance is ALL "do not" / "forbidden" with no "here is what good looks like" + concrete good examples.
-- A reviewer or user asking "what does this filename mean?" / "anyone can understand this?" — the name encodes a position in some list the author had open (task-N, d-N, iterN, row-N, checkpoint-N) rather than the subject.
-
 ## Correct approach
 - Lead the standard with a POSITIVE core rule: a name must let a zero-context reader understand the file's SUBJECT; name the concept in development-vibe kebab-case.
 - Pair anti-patterns (positional/sequence index; cryptic internal ref; uninformative generic) WITH a good-vs-bad examples table using real before/after.
 - Anchor the discipline in a principle (here: Principle 13's Create-operation facet) that POINTS to the standard's examples — don't rely on a mechanical regex gate.
 - The redesign's own output must be exemplary: rename existing offenders so the tree matches the guidance (done — 29 files renamed to subject names).
+
+## How to detect
+- A standard/principle whose naming/quality guidance is ALL "do not" / "forbidden" with no "here is what good looks like" + concrete good examples.
+- A reviewer or user asking "what does this filename mean?" / "anyone can understand this?" — the name encodes a position in some list the author had open (task-N, d-N, iterN, row-N, checkpoint-N) rather than the subject.
 
 ## Related
 

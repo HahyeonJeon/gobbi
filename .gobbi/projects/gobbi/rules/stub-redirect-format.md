@@ -79,7 +79,7 @@ Length cap: 10 lines.
 - **Date the supersession**: include the date and the retiring wave/PR identifier so future readers know when the redirect was set up.
 - **Forward-only**: stubs point AT the new doc; never point in both directions or duplicate content.
 - **No frontmatter in TARGET docs**: stub-redirect TARGET docs are published `.claude/` redirect stubs — Hugo/MkDocs/Docusaurus frontmatter syntax is forbidden in those published stubs. Project-memory files (under `.gobbi/projects/{name}/`) DO carry base frontmatter per `skills/memorization/rules.md`.
-- **No HTML anchor injection**: `<a id="..."></a>` tags violate `_claude/SKILL.md` anti-pattern guidance and proliferate inconsistently across renderers.
+- **No HTML anchor injection**: `<a id="..."></a>` tags violate the retired `_claude` skill's anti-pattern guidance (now historical — the `_claude` skill was retired and not replaced) and proliferate inconsistently across renderers.
 
 ---
 
@@ -99,4 +99,4 @@ Wave A.2 (PR #151) established this format when reducing `deterministic-orchestr
 
 ## Related
 
-See `_claude/SKILL.md` for the broader docs writing standard. For the judgment call on single vs split-agent docs cleanups, see the `delegation` skill's "When to split vs combine" guidance.
+The broader docs writing standard formerly lived in the retired `_claude` skill (since removed without direct replacement). For the judgment call on single vs split-agent docs cleanups, see the `delegation` skill's "When to split vs combine" guidance.

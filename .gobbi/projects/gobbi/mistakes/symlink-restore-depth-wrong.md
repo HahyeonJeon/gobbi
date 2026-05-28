@@ -23,13 +23,6 @@ Planning iter1 § Execution intake notes prescribed `ln -sfn ../../.gobbi/...` (
 
 The recipe was derived by memory/paraphrase from the Preparation edit-contract decision rather than empirically verified. The author assumed 2 levels of indirection (`.claude/skills/<topic>/`) = 2-dot prefix; but relative symlink paths count the hops from the symlink's own location to the target, requiring 3 dots for this specific directory depth.
 
-## How to detect
-
-- Any symlink restore recipe that prescribes a fixed `../` count without citing an empirical `ls -la` verification is suspect.
-- The correct workflow: run `ls -la .claude/skills/<any-existing-skill>/SKILL.md` first; observe the actual `->` target; match the prefix count.
-- For `SKILL.md` directly under `.claude/skills/<topic>/`: 3 dots (`../../../`)
-- For files under `.claude/skills/<topic>/<sub>/`: 4 dots (`../../../../`)
-
 ## Correct approach
 
 Symlink restore recipe (empirically verified 2026-05-24):
@@ -40,6 +33,13 @@ rm -f .claude/skills/<path> && ln -sfn ../../../.gobbi/projects/gobbi/skills/<pa
 Depth disclaimer: "The exact `../../../` prefix depends on the file's depth — verify against an adjacent untouched symlink with `ls -la`."
 
 Every planning brief that includes symlink restore instructions MUST embed the empirical witness (`ls -la` result) alongside the recipe.
+
+## How to detect
+
+- Any symlink restore recipe that prescribes a fixed `../` count without citing an empirical `ls -la` verification is suspect.
+- The correct workflow: run `ls -la .claude/skills/<any-existing-skill>/SKILL.md` first; observe the actual `->` target; match the prefix count.
+- For `SKILL.md` directly under `.claude/skills/<topic>/`: 3 dots (`../../../`)
+- For files under `.claude/skills/<topic>/<sub>/`: 4 dots (`../../../../`)
 
 ## Related
 

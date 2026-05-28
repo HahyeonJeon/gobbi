@@ -29,12 +29,6 @@ The Codex evaluator's delegation prompt did not include an explicit, concrete re
 
 Root cause: the session-write-path discipline is documented in `git/SKILL.md` but was not emphasized as a concrete absolute-path mandate in the evaluator's load directives.
 
-## How to detect
-
-- A Codex-spawned evaluator (via `codex:codex-rescue`) writes staging or artifact files but the files do not appear under `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/`.
-- Files appear under any path containing `worktrees/` in their prefix (e.g., `.gobbi/projects/gobbi/worktrees/{branch}/.gobbi/...`).
-- `find /playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees -name '*.md' -path '*/sessions/*'` returns results.
-
 ## Correct approach
 
 1. **Delegation prompt must include a concrete absolute path.** Every evaluator delegation prompt that involves session writes must carry an explicit line: "All session writes MUST use the absolute main-tree path `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/...`. Do NOT use relative paths or `pwd`-derived paths. The worktree CWD is NOT the session-write root."
@@ -42,3 +36,9 @@ Root cause: the session-write-path discipline is documented in `git/SKILL.md` bu
 2. **Manager-proxy when sandbox blocks.** If the Codex sandbox prevents writing to the main-tree path, the manager must write the files directly (manager-proxy write) rather than accepting worktree-nested outputs.
 
 3. **Post-eval sanity check.** After any Codex evaluator completes, verify the staging files landed at the correct main-tree path before advancing to the next loop. Use `find /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/...` to confirm presence.
+
+## How to detect
+
+- A Codex-spawned evaluator (via `codex:codex-rescue`) writes staging or artifact files but the files do not appear under `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/{session-id}/`.
+- Files appear under any path containing `worktrees/` in their prefix (e.g., `.gobbi/projects/gobbi/worktrees/{branch}/.gobbi/...`).
+- `find /playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees -name '*.md' -path '*/sessions/*'` returns results.

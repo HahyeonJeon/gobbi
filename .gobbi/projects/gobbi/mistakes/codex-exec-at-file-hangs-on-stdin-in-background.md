@@ -23,12 +23,12 @@ The T04 iter2 Codex evaluation leg was launched as `timeout 600 codex exec --san
 
 Assumed `"@promptfile"` is a reliable way to feed the prompt to `codex exec` in every context. In a non-interactive background invocation, codex's `@file` / prompt-arg handling fell through to reading additional input from stdin; with no stdin attached, it got EOF and produced nothing. The `> log 2>&1` redirect hid that it was waiting (no visible prompt), and `exit 0` made it look successful to the files-as-truth check only because we DID verify file existence (0 files) rather than trusting the exit code — which is the one thing that caught it.
 
-## How to detect
-
-Symptoms: `codex exec` exits 0 but the contracted output directory is empty, and the stdout log's last line is `Reading additional input from stdin...`. Any time a `codex exec` produces no files despite exit 0, suspect the prompt never reached the model. The codex skill's "files-as-truth completion signal" rule is what surfaces this — never trust exit code alone.
-
 ## Correct approach
 
 Inline the prompt as a literal argument and close stdin explicitly:
 `timeout 600 codex exec --sandbox workspace-write --cd <worktree> "$(cat <promptfile>)" < /dev/null > log 2>&1`
 The `"$(cat file)"` guarantees codex receives the prompt as its argument (no `@`-resolution / stdin fallback), and `< /dev/null` guarantees it cannot block waiting for stdin. Always run the files-as-truth check (file existence + content grep) after; on 0 files, re-run with this robust form rather than proceeding. Consider folding this into the [[codex]] skill's invocation-patterns section as the preferred non-interactive form.
+
+## How to detect
+
+Symptoms: `codex exec` exits 0 but the contracted output directory is empty, and the stdout log's last line is `Reading additional input from stdin...`. Any time a `codex exec` produces no files despite exit 0, suspect the prompt never reached the model. The codex skill's "files-as-truth completion signal" rule is what surfaces this — never trust exit code alone.
