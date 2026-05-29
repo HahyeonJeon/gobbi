@@ -61,19 +61,17 @@ The manager MUST NOT perform Ideation, Planning, Execution, or Evaluation direct
 
 ## Orchestration Mode
 
-The manager runs every session in one of two modes. Both modes follow the same underlying workflow; what differs is who drives it. The mode is picked at session start and surfaced to the user — never inferred from context.
+The manager runs every session in one of two modes. Both modes follow the same underlying workflow; what differs is who drives it and which state-machine shape runs between Configuration and Wrap-up. The mode is picked at session start and surfaced to the user — never inferred from context.
+
+> **CORRECTION — 2026-05-28.** The original lock at line 241 ("Mode controls user gates; it does not relax the workflow.") has been superseded by the mode-dispatched state-machine design ratified in session `2026-05-28-8eed14fb`. Mode now controls **which state machine runs**, not just gate density. Auto dispatches the linear 6-step sequence. Chat dispatches a per-task slice loop (Step 2 → Step 4 → Step 5 → task-record) per user-typed task, with Step 3 resolving to `Skipped` at loop entry (R1), repeating until the user signals end-of-session, then triggering Step 6. Both shapes preserve `evaluate.mode: always` and per-loop MEMORIZATION (Chat's narrowed PASS path is declared locally in `chat-mode.md § Chat MEMORIZATION`). The first sentence at line 241 ("the manager NEVER skips `EVALUATION` … or `MEMORIZATION`") is retained unchanged. See: [`chat-mode.md`](chat-mode.md), [`auto-mode.md`](auto-mode.md), and `sessions/2026-05-28-8eed14fb-c4b5-455f-aa5e-497c33ed8bbf/ideation/artifacts/idea.md §6.1 + §6.6`.
 
 ### Chat Mode
 
-The user drives the workflow step by step. The manager advances one step at a time, reports back, and waits for the user's next direction. Continuous user discussion is expected throughout.
-
-Use Chat Mode when the user wants tight per-step control or when each step is small enough that a quick exchange is faster than a full autonomous cycle.
+The user drives the workflow one task at a time. The manager runs a per-task slice (Ideation → mini-Planning → mini-Execution) and returns control to the user after each slice. Session ends on explicit user signal. Full spec: [`chat-mode.md`](chat-mode.md).
 
 ### Auto Mode
 
-The manager drives the workflow end to end with minimal user intervention. The manager initiates and runs each step without waiting for explicit approval; the user is consulted only when a decision genuinely requires their authority — scope changes, ambiguous requirements, evaluation findings to triage, or any choice the manager cannot make on the user's behalf.
-
-Use Auto Mode when the goal and constraints are clear at session start and the user wants to minimize synchronous engagement.
+The manager runs the linear 6-step state machine end-to-end with minimal user intervention, pausing only for Always-Ask decisions (design, scope, destructive). Full spec: [`auto-mode.md`](auto-mode.md).
 
 ---
 
@@ -82,6 +80,13 @@ Use Auto Mode when the goal and constraints are clear at session start and the u
 The workflow runs six steps. Step 1 is a single pass that frames the session. Steps 2-6 are bounded loops; their phase mechanics, iteration rule, and gates are specified in the [Workflow State Machine](#workflow-state-machine) section below.
 
 This section is the SOP for the manager — for each step: definition, inputs, output, and the procedure to execute.
+
+**Mode dispatch.** At the conclusion of Step 1 (Configuration), the manager reads `settings.mode` and dispatches one of two runtime shapes:
+
+- **Auto** → linear state machine: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (the 6-step sequence described in this section). Full Auto-Mode procedure: [`auto-mode.md`](auto-mode.md).
+- **Chat** → per-task slice loop: Configuration once, then repeating per-task slices (Step 2 → Step 4 → Step 5 → task-record → per-task user review gate) until the user signals end-of-session, then Step 6. Step 3 (Preparation) resolves to `state: Skipped` at loop entry when `maxIterations == 0` — the loop-entry guard reads `0` as `Skipped` without running any DISCUSSION / WORK / EVALUATION / MEMORIZATION rows; no FAIL or Aborted verdict is emitted (R1 lock). Full Chat-Mode procedure: [`chat-mode.md`](chat-mode.md).
+
+The SOP rows below describe each step's mechanics. Auto-Mode consumers read them linearly. Chat-Mode consumers read them per-slice — each per-task slice executes the relevant step rows in its slice shape.
 
 ### Step 1 — Workflow Configuration
 
@@ -233,12 +238,13 @@ Also verify `jq -r '.git.worktreePath'` returns a non-null value for `worktree-p
 
 ### Inter-loop transition
 
-| Mode | Behavior at the `ITER / EXIT` exit of step `N` |
-|---|---|
-| Chat | AskUserQuestion to confirm advance to step `N+1`; user may revise scope, abort, or branch |
-| Auto | Auto-advance to step `N+1`. Halt only if a `maxIterations` abort makes downstream infeasible or a user-authority decision is required |
+| Mode | Context | Behavior at the `ITER / EXIT` exit of step `N` |
+|---|---|---|
+| Chat | Within a per-task slice (Step 2 → Step 4 → Step 5) | AskUserQuestion to confirm advance to the next slice-step; user may revise scope, abort, or branch. Step 3 transitions silently to `Skipped` — no user gate at that boundary. |
+| Chat | At task boundary (after task-record written) | AskUserQuestion: per-task user review gate — Next task / Revise / Wrap up. Only on "Wrap up" does the manager advance to Step 6. |
+| Auto | — | Auto-advance to step `N+1`. Halt only if a `maxIterations` abort makes downstream infeasible or a user-authority decision is required. |
 
-In both modes, the manager NEVER skips `EVALUATION` (unless `evaluate.mode == 'skip'`) or `MEMORIZATION`. Mode controls user gates; it does not relax the workflow.
+In both modes, the manager NEVER skips `EVALUATION` (unless `evaluate.mode == 'skip'`) or `MEMORIZATION`. ~~Mode controls user gates; it does not relax the workflow.~~ **CORRECTION (2026-05-28):** This second sentence is superseded. Mode now dispatches which state machine runs, not only gate density — see the CORRECTION block at `§ Orchestration Mode` and the full rationale in [`chat-mode.md`](chat-mode.md) and [`auto-mode.md`](auto-mode.md). The first sentence (EVALUATION + MEMORIZATION never skipped) is retained unchanged.
 
 ---
 
@@ -289,6 +295,8 @@ In both modes, the manager renders a workflow status snapshot so the user can se
 
 The display is for the user — it is not state storage. The state machine itself is governed by the [Workflow State Machine](#workflow-state-machine) section; the display is a read-only projection.
 
+**Chat-mode rendering.** In Chat Mode the display uses a two-tier structure (session-level + per-task tier) backed by `state.json.workflow.chat.tasks[currentIndex]` (R3 lock, §6.7). The full Chat rendering spec — header form, body form, and a worked example showing a completed prior task plus the active task — lives in [`chat-mode.md § Status Display`](chat-mode.md). Auto-mode rendering is the existing 6-row table above; it is unchanged.
+
 ---
 
 ## Canonical session tree
@@ -337,6 +345,8 @@ Evaluation outputs are named `evaluation/iter{n}/{system}/{perspective}.md` wher
 
 ## Workflow State Machine
 
+In Auto Mode the state machine runs linearly across the six steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md § Per-task slice workflow shape`](chat-mode.md) for the Chat-specific state-transition table. The rest of this section describes the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → MEMORIZATION → ITER/EXIT) shared by both modes. Note: `maxIterations: 0` resolves to `state: Skipped` at loop entry — never `Aborted` after running with cap 0 (R1 lock).
+
 This section specifies the phase mechanics shared by steps 2-6. The manager moves between states only when each state's postcondition is met.
 
 ### State persistence
@@ -351,7 +361,8 @@ The manager maintains state in a per-session `state.json` file.
 | Update points | every state transition (`DISCUSSION` → `WORK`, `WORK` → `EVALUATION`, `EVALUATION` → `MEMORIZATION`, `MEMORIZATION` → `ITER / EXIT`, and the inter-step transitions at loop exits) |
 | Reader | manager — used to recover position after `/clear`, `/compact`, or session resume; also projected into the [Workflow Status Display](#workflow-status-display) |
 | Status semantics | `state` is one of `Pending` / `Active` / `Revising` / `Done` / `Skipped` / `Aborted`; when `Active`, the `phase` field names the current state (`DISCUSSION`, `WORK`'s loop verb, `EVALUATION`, `MEMORIZATION`, `ITER/EXIT`) |
-| Schema shape | `workflow` is keyed by step name — `configuration`, `ideation`, `preparation`, `planning`, `execution`, `wrap-up` — matching the `workflow.{step}` keys in `settings.json`. Each entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`. The current active step is derived (the entry whose `state` is `Active` or `Revising`); there is no separate `active` key. The display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention; the manager renders the [Workflow Status Display](#workflow-status-display) in that order regardless of object iteration. |
+| Schema shape | `workflow` is keyed by step name — `configuration`, `ideation`, `preparation`, `planning`, `execution`, `wrap-up` — matching the `workflow.{step}` keys in `settings.json`. Each entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`. The current active step is derived (the entry whose `state` is `Active` or `Revising`); there is no separate `active` key. The display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention; the manager renders the [Workflow Status Display](#workflow-status-display) in that order regardless of object iteration. **Chat sessions additionally carry `workflow.chat.tasks[]`** — see the schema below. |
+| `workflow.chat.tasks[]` schema (additive — Chat sessions only) | Present in both `state.json` and `session.json` when `settings.mode == "chat"`. Auto sessions leave this array empty. Each entry: `taskNo` (zero-padded ordinal), `slug` (subject-descriptive kebab-case), `startedAt`, `finishedAt`, and per-loop sub-records `ideation` / `preparation` / `planning` / `execution` (same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as the top-level `workflow.{loop}` entries — same parser, different path), plus `taskRecord: { path, writtenAt }`. The `preparation` sub-record carries `state: "Skipped"` by default (R1). **Templates**: `templates/state.template.json` and `templates/session.template.json` both gain `workflow.chat: { tasks: [] }` — auto sessions ship the same templates and leave the array empty. The `state.json` variant is the live state-machine projection (R3); the `session.json` variant archives final iter + verdict per slice (R2). |
 
 ### Loop states
 
@@ -386,15 +397,18 @@ After `EVALUATION` (or its skip path), the loop always proceeds to `MEMORIZATION
 
 ### Mode-specific gates within a loop
 
-**Chat Mode** pauses at three points:
+**Chat Mode** pauses at four points:
 
 | Gate | Manager action |
 |---|---|
 | After `DISCUSSION` | AskUserQuestion to confirm the delegation prompt or revise scope |
 | After `EVALUATION` | AskUserQuestion to discuss findings and choose remediation (proceed, revise scope, descope, abort) |
 | At `ITER / EXIT` (when deciding to exit) | AskUserQuestion to confirm exiting the loop and starting the next step |
+| **At task boundary** (per-task user review gate — Chat only) | After the task-record is written, AskUserQuestion: **Next task / Revise / Wrap up**. "Next task" starts a new per-task slice. "Revise" re-enters the current slice at DISCUSSION. "Wrap up" advances to Step 6 (Wrap-up Loop). |
 
 `WORK` and `MEMORIZATION` auto-advance — the user has already approved the delegation prompt, and `MEMORIZATION` is mechanical capture.
+
+**Chat Mode and `discuss.mode` settings.** In Chat Mode, the per-step `discuss.mode` setting is **shadowed** by the mode-level discuss-first contract: regardless of a step's `discuss.mode` value, every loop entry forces user-driven DISCUSSION (the manager presents the delegation prompt and awaits explicit user confirmation before spawning the specialist). This means a step configured with `discuss.mode: "agent"` still pauses at DISCUSSION in Chat Mode. The full per-loop discipline is specified in [`chat-mode.md § Per-loop discipline`](chat-mode.md).
 
 **Auto Mode** advances every state without pausing. The user is interrupted only when:
 
@@ -454,6 +468,7 @@ Per-step runtime data + per-agent records — appended throughout execution. The
 |---|---|
 | `workflow` shape | Keyed by step name (same keys as `state.json` and `settings.json`). The Configuration entry carries only `startedAt` / `finishedAt` (single pass, no iteration or verdict). Steps 2-6 entries also carry `iter` (final loop iteration count, archived from state.json `iter` on step exit) and `verdict` (final outcome — `pass` \| `fail` \| `skipped`). |
 | `workflow` update points | each step transition (set `workflow.{step}.startedAt` / `finishedAt`); each loop iteration close (increment `workflow.{step}.iter` for steps 2-6); each step exit (stamp `workflow.{step}.verdict` for steps 2-6 — `pass` \| `fail` \| `skipped`) |
+| `workflow.chat.tasks[]` (additive — Chat sessions only) | Present when `settings.mode == "chat"`; Auto sessions leave this array empty. Each entry: `taskNo` (zero-padded ordinal within session), `slug` (subject-descriptive kebab-case), `startedAt`, `finishedAt`, per-loop sub-records `ideation` / `preparation` / `planning` / `execution` (same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as the top-level `workflow.{step}` entries — same parser, different path), plus `taskRecord: { path, writtenAt }`. The `preparation` sub-record carries `state: "Skipped"` by default (R1). Update points: on slice start (stamp `taskNo`, `slug`, `startedAt`); on each loop transition within the slice; on task-record write (stamp `taskRecord`); on slice exit (stamp `finishedAt`). |
 | `agents` shape | Flat top-level array — one entry per spawn, manager included. The template ships with the manager entry pre-populated (`type: "manager"`, all other fields `null`) as the seed shape. Each entry self-identifies its step and phase. |
 | Per-agent record | Fields: `id` (subagent session id), `name` (display name from spawn), `type` (`manager` \| `leader` \| `executor` \| `evaluator` \| `assistant`), `step` (which step the spawn belongs to: `configuration` \| `ideation` \| `preparation` \| `planning` \| `execution` \| `wrap-up`), `phase` (which phase spawned the agent — `DISCUSSION` is manager-only and has no specialist agents; `WORK` carries the loop's verb `IDEATION` / `PLAN_DRAFT` / `EXECUTION` / `WRAPUP`; `EVALUATION`; `MEMORIZATION`; `null` for the manager entry), `iter` (which loop iteration the spawn belongs to; `null` for Step 1 Configuration and the manager entry), `model`, `system` (`claude-code` \| `codex`), `transcriptPath`, `tokensUsed` (`{input, output, cacheRead, cacheCreation}`), `startedAt`, `finishedAt` |
 | `agents` update points | session start (manager fills the manager template entry — set `id` / `name` / `model` / `system` / `transcriptPath` / `startedAt`, plus `step: "configuration"` and `phase: null`); each subagent spawn (PostToolUse hook `post-tool-use-agents.sh` upserts an entry by `tool_use_id`, reading `step` / `phase` / `iter` / `sub-step` from delegation structured headers — see [Step 1 row 6](#step-1--workflow-configuration)); each subagent completion (the same hook, firing on PostToolUseFailure as well, updates `finishedAt` / `tokensUsed` / `status`). The verify-and-fix reconstructor [`.claude/scripts/reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh) reconciles the array against transcript ground truth if any hook event was missed. |

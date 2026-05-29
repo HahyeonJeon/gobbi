@@ -4,14 +4,17 @@ description: Codify Always-Ask categories that must trigger AskUserQuestion rega
 type: backlogs
 scope: project
 feature: null
-status: active
+status: closed
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [process, auto-mode, askuserquestion, categories, deferred]
 title: "Auto-mode silence vs Always-Ask categories — codify mandatory AskUserQuestion triggers"
 project: gobbi
 anchor_session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-disposition: open
+disposition: addressed
+archived_at: 2026-05-28
+archive_reason: addressed
+shipped_in: chore/session-2026-05-28-8eed14fb
 ---
 
 # Auto-mode silence vs Always-Ask categories — codify mandatory AskUserQuestion triggers
