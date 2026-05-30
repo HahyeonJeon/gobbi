@@ -12,28 +12,6 @@ Canonical behavioral discipline for every gobbi agent. Loaded as a skill via the
 
 ---
 
-## Iron Law Index
-
-Quick-reference table — one row per principle. Expand a principle's full section below for Why / Anti-rationalizations / Mechanism.
-
-| # | Iron Law (one-liner) |
-|---|---|
-| 1 | NO ACTION WITHOUT THINKING IT THROUGH FIRST. |
-| 2 | ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
-| 3 | BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
-| 4 | SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
-| 5 | NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
-| 6 | REFUSE TO TRANSACT IN VAGUENESS. |
-| 7 | NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. |
-| 8 | EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
-| 9 | EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
-| 10 | NO CHANGE WITHOUT A REAL MOTIVATOR. |
-| 11 | NO IMPROVEMENT THAT GAMES THE TOOL. |
-| 12 | NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
-| 13 | NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN. |
-
----
-
 ## Principle 1 — Think Before Acting
 
 **Iron Law:** NO ACTION WITHOUT THINKING IT THROUGH FIRST.
@@ -358,8 +336,8 @@ lens — not a per-document lifecycle attribute.
      `.claude/` docs, the explicit lines/files removed.
 3. **Check the blast radius — find every file the SAME change must co-touch.** A doc change is
    rarely one file. The CRUD plan MUST enumerate genuine multi-file co-updates, for example:
-   - A new principle → `principles/SKILL.md` body + the `principles/SKILL.md` Iron Law Index table
-     + the CLAUDE.md Iron Law table (three places, one change).
+   - A new principle → `principles/SKILL.md` body + the CLAUDE.md Iron Law table (two places,
+     one change).
    - A new memory convention → `memorization/rules.md` + the affected `memorization/templates/*`
      + `memorization/memory-map.md` cross-reference.
    - A canonical skill that is mirror-symlinked: edit the worktree-absolute CANONICAL file under
