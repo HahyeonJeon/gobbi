@@ -56,7 +56,12 @@ machine runs between Configuration and Wrap-up.
 
 ---
 
-## §3 — Per-task slice workflow shape
+## §3 — Workflow
+
+Chat Mode dispatches a **per-task slice** loop between Configuration (Step 1) and
+Wrap-up (Step 6). Each slice runs Steps 2-5 inline, exits at the slice boundary
+(task-record + user review gate), and the manager either enters the next slice or
+exits to Step 6 on the user's explicit end-of-session signal.
 
 ```
 Step 1 — Configuration (once per session)
@@ -119,14 +124,114 @@ Step 6 — Wrap-up Loop  (maxIter=1)
    - write the session handoff
 ```
 
-Notes on the shape:
+Per-slice procedure follows the SKILL.md pattern: each step has Definition / Inputs /
+Output / Loop iteration / procedure table. Steps 2-5 are bounded loops scoped to one
+slice's worth of work.
 
-- **Configuration once, Wrap-up once.** Steps 1 and 6 retain their session-level identity.
-- **Per-task slice = Steps 2 → 3 → 4 → 5** (with Step 3 resolving to `Skipped` at loop entry per
-  R1). This is the new structural unit Chat dispatches.
-- **EVALUATION runs every loop.** No mode-driven skip. Iron Law 7 holds.
-- **MEMORIZATION runs every loop**, with a Chat-narrowed PASS path declared locally in this doc.
-  See §4 for the single canonical statement.
+### Step 1 — Configuration (session-level)
+
+**Definition.** Same as Auto Mode's Step 1. See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the canonical procedure. Chat Mode performs configuration once per session before any slice runs.
+
+### Step 2 — Slice Full Ideation Loop
+
+**Definition.** Explore the user-typed task's problem space; produce a slice-scoped Idea.
+
+**Inputs.** The user-typed task (plain text).
+
+**Output.** A slice-local Idea covering Scope Contract + Design recommendation.
+
+**Loop iteration.** 5-row loop; cap from `settings.workflow.ideation.maxIterations` (Chat default = 2).
+
+| # | Phase | Action | Refs | Agent |
+|---|---|---|---|---|
+| 1 | `DISCUSSION` | Forced user-driven per the discuss-first contract (§10) — overrides any per-step `discuss.mode` setting. Manager + user converge on the slice intent. | [discussion](../discussion/SKILL.md) | manager |
+| 2 | `WORK` | Spawn the `leader` subagent. Leader runs the full 4-substep procedure (Frame → Lock Scope → Research → Design Recommendation) scoped to this one slice. | [ideation.md](workflow/ideation.md) | leader |
+| 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). Aggregate verdicts per [Workflow State Machine § Verdict aggregation](SKILL.md#verdict-aggregation). | [evaluation.md](workflow/evaluation.md) | evaluator |
+| 4 | `MEMORIZATION` | Narrowed PASS path per §4: preserve transcript + session.json upsert + PASS-iter `artifacts/`; skip typed-finding staging. Mistake stage moment-of-capture always live. | [memorization.md](workflow/memorization.md) | assistant |
+| 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → escalate to user via AskUserQuestion. | — | manager |
+
+### Step 3 — Slice Preparation Loop (Skipped at loop entry)
+
+**Definition.** Slice-level readiness verification — does the slice need project-memory or workspace-skill gap fixes before Planning?
+
+**Inputs.** Locked slice Idea.
+
+**Output.** Confirmed readiness — by default, `state: Skipped` (no work performed).
+
+**Loop iteration.** None. `settings.workflow.preparation.maxIterations: 0` resolves to `state: Skipped` at loop entry per the R1 lock — no DISCUSSION / WORK / EVALUATION / MEMORIZATION rows execute; no FAIL or Aborted verdict is emitted.
+
+**Opt-in.** A complex slice can opt back in by raising `workflow.preparation.maxIterations` via the customize gate (Step 1 row 2). The standard loop contract then runs.
+
+### Step 4 — Slice Mini Planning Loop
+
+**Definition.** Lightweight decomposition of the slice into ordered sub-steps with verification anchors.
+
+**Inputs.** Locked slice Idea (from Step 2).
+
+**Output.** A slice-local Plan — typically 1-4 sub-steps with success criteria each.
+
+**Loop iteration.** 5-row loop; cap from `settings.workflow.planning.maxIterations` (Chat default = 2).
+
+| # | Phase | Action | Refs | Agent |
+|---|---|---|---|---|
+| 1 | `DISCUSSION` | Forced user-driven per §10. Manager + user agree on decomposition shape. | [discussion](../discussion/SKILL.md) | manager |
+| 2 | `WORK` | Spawn the `leader` subagent for light decomposition. Output = ordered sub-step list with success criteria. | [planning.md](workflow/planning.md) | leader |
+| 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
+| 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [memorization.md](workflow/memorization.md) | assistant |
+| 5 | `ITER / EXIT` | Same exit semantics as Step 2. | — | manager |
+
+### Step 5 — Slice Mini Execution Loop (per sub-step)
+
+**Definition.** Implement each Plan sub-step in sequence. Runs once per sub-step in the slice Plan.
+
+**Inputs.** A single sub-step from the slice Plan (or eval findings on re-entry).
+
+**Output.** Code or doc changes plus verification evidence — the sub-step's `Result`. The slice's full `Results` is the integrated set.
+
+**Loop iteration.** 5-row loop per sub-step; cap from `settings.workflow.execution.maxIterations` (Chat default = 2).
+
+| # | Phase | Action | Refs | Agent |
+|---|---|---|---|---|
+| 1 | `DISCUSSION` | Manager constructs the executor delegation prompt; in Chat, forced user-driven per §10 (override discuss.mode). | [discussion](../discussion/SKILL.md) | manager |
+| 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline (no cross-task subagent memory). Collect work artifact + verification evidence. | [execution.md](workflow/execution.md) | executor |
+| 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
+| 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [memorization.md](workflow/memorization.md) | assistant |
+| 5 | `ITER / EXIT` | Same exit semantics. Sub-step complete → next sub-step (or slice boundary if last). | — | manager |
+
+### Slice Boundary — task-record + user review gate
+
+**Definition.** Capture the slice outcome and prompt the user to choose the next move.
+
+**Inputs.** Outputs of Steps 2-5 (slice Idea + slice Plan + slice Results).
+
+**Output.** A per-task `task-record.md` written (per §6 spec) AND a user decision via AskUserQuestion: next task / revise / wrap up.
+
+**Procedure.** Sequential — not a loop.
+
+| # | Action | Refs | Agent |
+|---|---|---|---|
+| 1 | Write the per-task `task-record.md` to `sessions/{date}-{ssid}/chat/tasks/{NN}-{slug}/task-record.md` per §6. | [§6 task-record spec](#6--task-record-artifact-spec) | assistant |
+| 2 | Render the [Workflow Status Display](#8--workflow-status-display-chat-rendering) showing the just-completed task. | [§8](#8--workflow-status-display-chat-rendering) | manager |
+| 3 | AskUserQuestion: Next task / Revise this task / Wrap up the session. | [discussion](../discussion/SKILL.md) | manager |
+| 4 | On `Next task`: enter the next slice (Step 2 of new slice). On `Revise`: re-enter Step 2 of current slice with the user-stated revision focus. On `Wrap up`: advance to Step 6. | — | manager |
+
+### Step 6 — Session Wrap-up Loop
+
+**Definition.** Consolidate the session's artifacts; archive closed backlogs; promote staged mistakes to project memory; write the handoff; open PR.
+
+**Inputs.** All per-slice `task-record.md` files + session transcript + Configuration-time settings + cumulative session-staging (mistakes only, under the Chat narrowed contract).
+
+**Output.** Session handoff doc; project-memory updates (mistakes promoted); archived backlogs (move-on-terminal); opened PR.
+
+**Loop iteration.** 5-row loop; cap from `settings.workflow.wrap-up.maxIterations` (Chat default = 1).
+
+| # | Phase | Action | Refs | Agent |
+|---|---|---|---|---|
+| 1 | `DISCUSSION` | Forced user-driven per §10. Manager + user confirm consolidation scope. | [discussion](../discussion/SKILL.md) | manager |
+| 2 | `WORK` | Spawn `assistant` subagent. Consolidate: archive backlogs, mine task-records + transcript, promote staged mistakes, write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
+| 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
+| 4 | `MEMORIZATION` | Full PASS path — `Wrap-up MEMORIZATION runs the unmodified base procedure` per the §4 base-unmodified clause. This is where typed-finding staging from prior slices is promoted (none under the Chat narrowed contract since per-slice staging was skipped — Wrap-up mines transcripts + task-records instead). | [memorization.md](workflow/memorization.md) | assistant |
+| 5 | `ITER / EXIT` | `PASS` → close session. `REVISE`/`FAIL` → iter cap hit immediately (max=1); escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
 
 ---
 
