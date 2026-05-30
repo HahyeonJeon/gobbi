@@ -379,6 +379,8 @@ carries an explicit SPEC block + CRUD enumeration before the first edit. Plan it
 that omit either are caught at Planning EVALUATION (Project + Consistency perspectives). Doc edits
 whose CRUD plan misses a genuine co-update file are rejected at review.
 
+---
+
 ## Principle 14 — Write Plainly and Literally
 
 **Iron Law:** USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.

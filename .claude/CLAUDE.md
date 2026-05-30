@@ -59,4 +59,4 @@ Every agent MUST load the `mistake` skill before starting work. When the user co
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [principles](skills/principles/SKILL.md) | 13 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and anti-rationalizations |
+| [principles](skills/principles/SKILL.md) | 14 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and anti-rationalizations |

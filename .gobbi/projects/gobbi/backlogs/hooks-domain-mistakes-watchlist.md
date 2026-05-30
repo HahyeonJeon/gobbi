@@ -26,13 +26,13 @@ This backlog item exists to flag that hooks-domain coverage is currently zero an
 
 ## Why deferred
 
-Mistakes are trigger-bound (per Principle 10 — "Change Only With a Real Trigger"). There are no hook-authoring triggers yet. Speculatively pre-emptively staging a "watch-list of potential pitfalls" would be Principle 10 violation — speculation without a real motivator. Defer until real corrections fire.
+Mistakes are trigger-bound (per Principle 10 — "Change Only With a Real Trigger"). There are no hook-authoring triggers yet. Speculatively pre-emptively staging a "watch-list of potential pitfalls" would be Principle 10 violation — speculation without a real trigger. Defer until real corrections fire.
 
 ## When to pick up
 
 Two triggers — pick up at whichever fires first:
 
-- **N≥2 hooks-domain mistakes accumulate** in `.gobbi/projects/gobbi/mistakes/` from moment-of-capture writes during Execution sessions. At that point, the witness-pattern is strong enough to consider a project-skill extraction (paired with `backlogs/project/gobbi-hook-authoring-skill.md`).
+- **N≥2 hooks-domain mistakes accumulate** in `.gobbi/projects/gobbi/mistakes/` from moment-of-capture writes during Execution sessions. At that point, the trigger-pattern is strong enough to consider a project-skill extraction (paired with `backlogs/project/gobbi-hook-authoring-skill.md`).
 - **3rd hook author proposes a new hook** (after `session-start.sh` and T3's `post-tool-use-agents.sh`). At that point, future hook authors will benefit from a captured watchlist even if formal mistakes haven't accumulated — the third instance is when pattern under-engineering becomes likely.
 
 ## Suggested approach
@@ -41,7 +41,7 @@ This backlog is a **perpetual capture reminder**: it remains `in-progress` until
 
 Ad-hoc per execution session — no large pre-meditated work. When an executor or evaluator corrects a hook-authoring approach mid-Execution, the existing `mistake` skill P2 / P3 flow handles staging; no separate workflow needed.
 
-**N≥2 extraction trigger**: when ≥2 hooks-domain mistakes accumulate in `.gobbi/projects/gobbi/mistakes/`, extract a `gobbi-hook-authoring` project skill. At that point, the pattern is witness-backed and a domain-tagged P1 read becomes load-bearing.
+**N≥2 extraction trigger**: when ≥2 hooks-domain mistakes accumulate in `.gobbi/projects/gobbi/mistakes/`, extract a `gobbi-hook-authoring` project skill. At that point, the pattern is trigger-backed and a domain-tagged P1 read becomes load-bearing.
 
 If/when N≥2 hooks-domain mistakes exist, consider whether to:
 - Stage a `gobbi-hook-authoring` project skill (see `backlogs/project/gobbi-hook-authoring-skill.md` — separate backlog item already deferred for this trigger).
