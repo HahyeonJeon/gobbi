@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "mode": "auto",
+  "workflow": {
+    "configuration": { "state": "Done",    "verdict": null, "iter": null, "maxIterations": null, "phase": null },
+    "ideation":      { "state": "Done", "verdict": "PASS", "iter": 2,    "maxIterations": 3,    "phase": null },
+    "preparation":   { "state": "Active", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": "DISCUSSION" },
+    "planning":      { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": null },
+    "execution":     { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": null },
+    "wrap-up":        { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 1,    "phase": null },
+    "chat":           { "tasks": [] }
+  },
+  "activeNote": "Ideation PASS (iter-2, dual-system both PASS after iter-1 REVISE). Canonical artifact at ideation/artifacts/gobbi-plugin-ideation.md. Entering Preparation. 5 open Medium findings carried to Planning (drift-sync trigger, package-root path, DD-7 default, F-C1 ref corrected, permissions auto-grant)."
+}
