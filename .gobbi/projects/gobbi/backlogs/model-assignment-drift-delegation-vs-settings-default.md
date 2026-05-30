@@ -1,6 +1,6 @@
 ---
 name: model-assignment-drift-delegation-vs-settings-default
-description: "delegation/SKILL.md § Model Selection table conflicts with settings.default.json on executor/evaluator model assignments; deferred from chat+auto mode redesign session."
+description: "delegation/SKILL.md § Model Selection table conflicts with settings.chat.json + settings.auto.json (formerly settings.default.json) on executor/evaluator model assignments; deferred from chat+auto mode redesign session."
 type: backlogs
 scope: project
 feature: null
@@ -8,26 +8,26 @@ status: active
 created: 2026-05-28
 session: 8eed14fb-c4b5-455f-aa5e-497c33ed8bbf
 tags: [drift, docs-sync, delegation, settings, deferred]
-title: "Model-assignment drift between delegation/SKILL.md and settings.default.json"
+title: "Model-assignment drift between delegation/SKILL.md and settings.chat.json + settings.auto.json"
 project: gobbi
 anchor_session: 2026-05-28-8eed14fb-c4b5-455f-aa5e-497c33ed8bbf
 disposition: open
 ---
 
-# Model-assignment drift between delegation/SKILL.md and settings.default.json
+# Model-assignment drift between delegation/SKILL.md and settings.chat.json + settings.auto.json
 
 ## Context
 
 Two sources of truth conflict on which model handles which role:
 
 - `delegation/SKILL.md § Model Selection` table — claims **executor = sonnet**, **evaluator = opus**
-- `settings.default.json` — `chat.models.claude.executor` and `auto.models.claude.executor` are set to **opus**; the evaluator slot is set to **sonnet**
+- `settings.chat.json` and `settings.auto.json` — `models.claude.executor` is set to **opus** in both files; the evaluator slot is set to **sonnet** in both
 
-The inversion is complete: every assignment in the doc is the opposite of what the config ships.
+The inversion is complete: every assignment in the doc is the opposite of what the per-mode default templates ship. (Originally one bundled `settings.default.json`; split into `settings.chat.json` + `settings.auto.json` later in the same PR — the drift is now mirrored in both files.)
 
 ## Why it matters
 
-Any reader consulting only one source will dispatch subagents with the wrong model. A manager briefing an executor from `delegation/SKILL.md` will use sonnet; the same manager reading `settings.default.json` will use opus. The discrepancy is silent — no runtime validation catches it — so wrong-model dispatches can persist across sessions undetected.
+Any reader consulting only one source will dispatch subagents with the wrong model. A manager briefing an executor from `delegation/SKILL.md` will use sonnet; the same manager reading the per-mode `settings.{mode}.json` default will use opus. The discrepancy is silent — no runtime validation catches it — so wrong-model dispatches can persist across sessions undetected.
 
 ## Why deferred
 
@@ -37,9 +37,9 @@ The chat+auto mode redesign session (`2026-05-28-8eed14fb`) chose not to embed e
 
 No decision is made here. Three options to evaluate:
 
-**(a) Align `delegation/SKILL.md` to match `settings.default.json`** — update the Model Selection table so executor = opus, evaluator = sonnet. The config becomes the single source of truth; the doc follows it.
+**(a) Align `delegation/SKILL.md` to match the per-mode default templates** — update the Model Selection table so executor = opus, evaluator = sonnet. The configs become the single source of truth; the doc follows them.
 
-**(b) Align `settings.default.json` to match `delegation/SKILL.md`** — swap `executor` and `evaluator` model values in both `chat.models.claude` and `auto.models.claude`. The doc rationale (opus for evaluation breadth, sonnet for fast execution) becomes normative.
+**(b) Align `settings.chat.json` + `settings.auto.json` to match `delegation/SKILL.md`** — swap `executor` and `evaluator` model values in `models.claude` in BOTH files (the same swap is required in each, since the model assignments are intentionally identical across modes). The doc rationale (opus for evaluation breadth, sonnet for fast execution) becomes normative.
 
 **(c) Ratify a different assignment entirely** — run a dedicated Ideation loop to pick the correct assignment from first principles (cost, latency, quality trade-offs per role), then update both sources consistently.
 

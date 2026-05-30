@@ -310,7 +310,7 @@ Project-memory directory templates (consumed by Wrap-up, not by loop MEMORIZATIO
 | `.gobbi/projects/{project-name}/mistakes/` and `features/{feature-name}/mistakes/` | [`templates/mistakes.md`](templates/mistakes.md) |
 | `.gobbi/projects/{project-name}/rules/` | [`templates/rules.md`](templates/rules.md) |
 
-Session-level templates: see [`orchestration/templates/`](../orchestration/templates/) for `settings.default.json` and `session.template.json`.
+Session-level templates: see [`orchestration/templates/`](../orchestration/templates/) for `settings.chat.json` / `settings.auto.json` (per-mode defaults; bootstrap loads the one matching the user-selected mode) and `session.template.json`.
 
 ---
 
