@@ -5,10 +5,10 @@
     "configuration": { "state": "Done",    "verdict": null, "iter": null, "maxIterations": null, "phase": null },
     "ideation":      { "state": "Done", "verdict": "PASS", "iter": 2,    "maxIterations": 3,    "phase": null },
     "preparation":   { "state": "Done", "verdict": "PASS", "iter": 2,    "maxIterations": 3,    "phase": null },
-    "planning":      { "state": "Active", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": "DISCUSSION" },
-    "execution":     { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": null },
+    "planning":      { "state": "Done", "verdict": "PASS", "iter": 2,    "maxIterations": 3,    "phase": null },
+    "execution":     { "state": "Active", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": "task-01" },
     "wrap-up":        { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 1,    "phase": null },
     "chat":           { "tasks": [] }
   },
-  "activeNote": "Preparation PASS (iter-2; iter-1 REVISE on readiness-accounting consistency, remediated). READY for Planning. Canonical readiness at preparation/artifacts/preparation-readiness.md. Ratified: hook=dev-vs-installed split (C), permissions project-local+verify, package all 18 skills, plugins/gobbi/ layout, marketplace at .claude-plugin/. Entering Planning — decompose into Execution tasks (manifest, marketplace.json, materialize skills/agents/hooks, sync script, fire-once validation, claude-plugin skill)."
+  "activeNote": "Planning PASS (iter-2; iter-1 REVISE on cache-allow-set gate + T5/T6 operator-assisted + T7 19-skill, remediated). Canonical plan at planning/artifacts/plan.md. 8 tasks bottom-up: T1 sync-script+materialize, T2 manifest, T3 hooks.json, T4 marketplace.json, T5 fire-once (operator-assisted), T6 invocability+conditional-permissions (operator-assisted), T7 claude-plugin skill+mirror+resync→19, T8 docs. Entering Execution. NOTE: T5/T6 live install-run is operator-assisted (executor authors scripts; install+clean-session run by manager/user)."
 }

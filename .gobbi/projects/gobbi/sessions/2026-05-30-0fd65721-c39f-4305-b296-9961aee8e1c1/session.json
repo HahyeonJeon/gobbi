@@ -49,15 +49,31 @@
       "iter": 2,
       "verdict": "pass",
       "iterations": [
-        { "iter": 1, "verdict": "revise", "finishedAt": "2026-05-30T16:25:00Z", "evaluation_dir": "evaluation/iter1/", "divergence": "claude=PASS, codex=REVISE (COD-OVERALL-001 readiness-accounting inconsistencies); reconciled REVISE. Substance agreed sound by both." },
-        { "iter": 2, "verdict": "pass", "finishedAt": "2026-05-30T16:40:00Z", "evaluation_dir": "evaluation/iter2/", "divergence": "consistency remediation (8 fixes) + manager count fix; codex micro-confirmation VERDICT: PASS; claude iter-1 already PASS. Reconciled PASS." }
+        {
+          "iter": 1,
+          "verdict": "revise",
+          "finishedAt": "2026-05-30T16:25:00Z",
+          "evaluation_dir": "evaluation/iter1/",
+          "divergence": "claude=PASS, codex=REVISE (COD-OVERALL-001 readiness-accounting inconsistencies); reconciled REVISE. Substance agreed sound by both."
+        },
+        {
+          "iter": 2,
+          "verdict": "pass",
+          "finishedAt": "2026-05-30T16:40:00Z",
+          "evaluation_dir": "evaluation/iter2/",
+          "divergence": "consistency remediation (8 fixes) + manager count fix; codex micro-confirmation VERDICT: PASS; claude iter-1 already PASS. Reconciled PASS."
+        }
       ]
     },
     "planning": {
-      "startedAt": null,
-      "finishedAt": null,
-      "iter": 0,
-      "verdict": null
+      "startedAt": "2026-05-30T16:45:00Z",
+      "finishedAt": "2026-05-30T17:25:00Z",
+      "iter": 2,
+      "verdict": "pass",
+      "iterations": [
+        { "iter": 1, "verdict": "revise", "finishedAt": "2026-05-30T17:05:00Z", "evaluation_dir": "evaluation/iter1/", "divergence": "claude=PASS, codex=REVISE; reconciled REVISE. Both converged: cache allow-set gate (R1 guard) absent from executable verifiers; T5/T6 operator-in-the-loop (not autonomous); T7 19th-skill consistency." },
+        { "iter": 2, "verdict": "pass", "finishedAt": "2026-05-30T17:25:00Z", "evaluation_dir": "evaluation/iter2/", "divergence": "focused remediation (5 fixes: T1+T5 allow-set, T5/T6 operator-assisted split, T5 harness pinned, T7 resync→19 skills, propagation); codex re-check VERDICT: PASS (all 5 checks RESOLVED, no new issues); claude iter-1 already PASS. Reconciled PASS." }
+      ]
     },
     "execution": {
       "startedAt": null,
@@ -278,6 +294,75 @@
       "totalDurationMs": null,
       "finishedAt": "2026-05-30T16:37:31Z",
       "startedAt": "2026-05-30T16:37:31Z"
+    },
+    {
+      "id": "toolu_01DH8firTzqpYjsVHDjQmids",
+      "tool_use_id": "toolu_01DH8firTzqpYjsVHDjQmids",
+      "name": "leader",
+      "type": "leader",
+      "step": "4",
+      "phase": "planning",
+      "iter": "1",
+      "sub_step": null,
+      "model": "opus",
+      "status": "ok",
+      "hook_event": "PostToolUse",
+      "transcriptPath": null,
+      "tokensUsed": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      },
+      "totalDurationMs": null,
+      "finishedAt": "2026-05-30T16:54:17Z",
+      "startedAt": "2026-05-30T16:54:17Z"
+    },
+    {
+      "id": "toolu_01K98459iXvJz1615X71uu24",
+      "tool_use_id": "toolu_01K98459iXvJz1615X71uu24",
+      "name": "evaluator",
+      "type": "evaluator",
+      "step": "4",
+      "phase": "planning-eval",
+      "iter": "1",
+      "sub_step": null,
+      "model": "opus",
+      "status": "ok",
+      "hook_event": "PostToolUse",
+      "transcriptPath": null,
+      "tokensUsed": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      },
+      "totalDurationMs": null,
+      "finishedAt": "2026-05-30T16:55:20Z",
+      "startedAt": "2026-05-30T16:55:20Z"
+    },
+    {
+      "id": "toolu_01FnH94DFdTF9qafBwS9y4vw",
+      "tool_use_id": "toolu_01FnH94DFdTF9qafBwS9y4vw",
+      "name": "leader",
+      "type": "leader",
+      "step": "4",
+      "phase": "planning",
+      "iter": "2",
+      "sub_step": null,
+      "model": "opus",
+      "status": "ok",
+      "hook_event": "PostToolUse",
+      "transcriptPath": null,
+      "tokensUsed": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      },
+      "totalDurationMs": null,
+      "finishedAt": "2026-05-30T17:10:20Z",
+      "startedAt": "2026-05-30T17:10:20Z"
     }
   ]
 }
