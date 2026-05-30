@@ -27,7 +27,7 @@ Volatile per-session storage. Wrap-up promotes the `staging/` subtree to project
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|
 | `session.json` | Per-session telemetry — `workflow.{loop}.iterations[]`, `finishedAt`, `verdict`, project / feature / task scope. Single file generated at Memorization STEP_EXIT | manager (init) + assistant (UPSERT) | session start; every iter MEMORIZATION | [`../orchestration/templates/session.template.json`](../orchestration/templates/session.template.json) |
-| `settings.json` | Session-level config (evaluate mode, git workflow). Resolved by cascade from workspace → project → session | manager (session start) | session start (`/gobbi`) | [`../orchestration/templates/settings.default.json`](../orchestration/templates/settings.default.json) |
+| `settings.json` | Session-level config (evaluate mode, git workflow). Resolved by cascade from workspace → project → session. Bootstrap loads the per-mode default file matching the user-selected mode | manager (session start) | session start (`/gobbi`) | [`../orchestration/templates/settings.chat.json`](../orchestration/templates/settings.chat.json) / [`../orchestration/templates/settings.auto.json`](../orchestration/templates/settings.auto.json) |
 | `session.json.lock` | Advisory write-lock guarding concurrent `session.json` writes. Created and released by the manager around each `session.json` write; safe to ignore on read. Not memory content — a transient coordination artifact at the session root | manager | around every `session.json` write | — |
 
 ### Per-loop subtree — `{loop}/` (loop ∈ ideation / preparation / planning / execution / wrap-up)
@@ -97,7 +97,7 @@ The four feature-subdir-only template types (`changelogs`, `discussions`, `scena
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|
 | `README.md` | Top-level project README — what this project is, where to look | maintainer (rare) + Wrap-up (status updates) | manual edits; Wrap-up may update activity summary | — |
-| `settings.json` | Project-level config | maintainer | manual seed; persists across sessions | [`../orchestration/templates/settings.default.json`](../orchestration/templates/settings.default.json) |
+| `settings.json` | Project-level config | maintainer | manual seed; persists across sessions | [`../orchestration/templates/settings.chat.json`](../orchestration/templates/settings.chat.json) / [`../orchestration/templates/settings.auto.json`](../orchestration/templates/settings.auto.json) (per-mode defaults; bootstrap loads the file matching the mode) |
 
 ### Feature-scoped — `features/{feature-name}/`
 
