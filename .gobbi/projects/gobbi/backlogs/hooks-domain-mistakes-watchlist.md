@@ -26,7 +26,7 @@ This backlog item exists to flag that hooks-domain coverage is currently zero an
 
 ## Why deferred
 
-Mistakes are witness-bound (per Principle 10 — "Witness-bound Work"). There are no hook-authoring witnesses yet. Speculatively pre-emptively staging a "watch-list of potential pitfalls" would be Principle 10 violation — speculation without a real motivator. Defer until real corrections fire.
+Mistakes are trigger-bound (per Principle 10 — "Change Only With a Real Trigger"). There are no hook-authoring triggers yet. Speculatively pre-emptively staging a "watch-list of potential pitfalls" would be Principle 10 violation — speculation without a real motivator. Defer until real corrections fire.
 
 ## When to pick up
 

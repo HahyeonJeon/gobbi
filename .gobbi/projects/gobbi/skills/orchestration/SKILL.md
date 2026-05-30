@@ -41,7 +41,7 @@ The manager MUST NOT perform Ideation, Planning, Execution, or Evaluation direct
 
 **Coordinating user ↔ subagent.** As manager, the manager aligns user intent with subagent output. The quality of the result depends on the quality of the instructions passed to the specialist. Focus on:
 
-- Eliciting the user's actual intent (Principle 6 — Specificity Is the Only Currency).
+- Eliciting the user's actual intent (Principle 6 — Refine Vague Requirements Before Acting).
 - Translating that intent into a delegation prompt the specialist can act on without guesswork (Principle 4 — every subagent prompt must include specific requirements, constraints, and context).
 - Mediating when user and specialist disagree — surface to the user; never auto-resolve.
 - Raising quality by sharpening the delegation prompt or spawning evaluators (Principle 2), never by editing the specialist's output yourself.

@@ -28,7 +28,7 @@ Evaluation runs inside Ideation, Planning, and Execution — mandatory after Exe
 
 > **MUST load [principles](skills/principles/SKILL.md) at session start, resume, /clear, and /compact.**
 
-The 13 principles below are the enforceable behavioral discipline for every agent. The Iron Law table is the always-visible summary; load the skill for the full Why, Anti-rationalizations, and Mechanism behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills.
+The 14 principles below are the enforceable behavioral discipline for every agent. The Iron Law table is the always-visible summary; load the skill for the full Why, Anti-rationalizations, and Mechanism behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills.
 
 | # | Iron Law |
 |---|---|
@@ -37,14 +37,15 @@ The 13 principles below are the enforceable behavioral discipline for every agen
 | 3 | BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
 | 4 | SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
 | 5 | NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
-| 6 | REFUSE TO TRANSACT IN VAGUENESS. |
+| 6 | DO NOT ACT ON A VAGUE REQUIREMENT; MAKE IT CONCRETE FIRST. |
 | 7 | NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. |
 | 8 | EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
 | 9 | EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
-| 10 | NO CHANGE WITHOUT A REAL MOTIVATOR. |
+| 10 | NO CHANGE WITHOUT A REAL TRIGGER. |
 | 11 | NO IMPROVEMENT THAT GAMES THE TOOL. |
 | 12 | NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
 | 13 | NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN. |
+| 14 | USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR. |
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
