@@ -268,28 +268,6 @@ recoverable abort.
 
 ---
 
-## §7 — Settings defaults (Auto mode)
-
-The full Chat-vs-Auto settings comparison lives in the Idea doc for session
-`2026-05-28-8eed14fb`. The Auto-specific defaults:
-
-| Field | Auto default |
-|---|---|
-| `mode` | `"auto"` |
-| `workflow.ideation.maxIterations` | `3` |
-| `workflow.preparation.maxIterations` | `3` |
-| `workflow.planning.maxIterations` | `3` |
-| `workflow.execution.maxIterations` | `3` |
-| `workflow.wrap-up.maxIterations` | `1` |
-| `workflow.ideation.discuss.mode` | `"user"` |
-| `workflow.preparation.discuss.mode` | `"user"` |
-| `workflow.planning.discuss.mode` | `"agent"` |
-| `workflow.execution.discuss.mode` | `"agent"` |
-| `workflow.wrap-up.discuss.mode` | `"agent"` |
-| `evaluate.mode` (all loops) | `"always"` |
-
----
-
 ## Cross-references
 
 - [`orchestration/SKILL.md`](SKILL.md) — workflow governor; `§ Auto Mode` brief description;

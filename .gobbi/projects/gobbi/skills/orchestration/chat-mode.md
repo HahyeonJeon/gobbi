@@ -144,7 +144,7 @@ slice's worth of work.
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | Forced user-driven per the discuss-first contract (§10) — overrides any per-step `discuss.mode` setting. Manager + user converge on the slice intent. | [discussion](../discussion/SKILL.md) | manager |
+| 1 | `DISCUSSION` | Forced user-driven per the discuss-first contract (§9) — overrides any per-step `discuss.mode` setting. Manager + user converge on the slice intent. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Leader runs the full 4-substep procedure (Frame → Lock Scope → Research → Design Recommendation) scoped to this one slice. | [ideation.md](workflow/ideation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). Aggregate verdicts per [Workflow State Machine § Verdict aggregation](SKILL.md#verdict-aggregation). | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Narrowed PASS path per §4: preserve transcript + session.json upsert + PASS-iter `artifacts/`; skip typed-finding staging. Mistake stage moment-of-capture always live. | [memorization.md](workflow/memorization.md) | assistant |
@@ -174,7 +174,7 @@ slice's worth of work.
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | Forced user-driven per §10. Manager + user agree on decomposition shape. | [discussion](../discussion/SKILL.md) | manager |
+| 1 | `DISCUSSION` | Forced user-driven per §9. Manager + user agree on decomposition shape. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent for light decomposition. Output = ordered sub-step list with success criteria. | [planning.md](workflow/planning.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [memorization.md](workflow/memorization.md) | assistant |
@@ -192,7 +192,7 @@ slice's worth of work.
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | Manager constructs the executor delegation prompt; in Chat, forced user-driven per §10 (override discuss.mode). | [discussion](../discussion/SKILL.md) | manager |
+| 1 | `DISCUSSION` | Manager constructs the executor delegation prompt; in Chat, forced user-driven per §9 (override discuss.mode). | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline (no cross-task subagent memory). Collect work artifact + verification evidence. | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [memorization.md](workflow/memorization.md) | assistant |
@@ -227,7 +227,7 @@ slice's worth of work.
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | Forced user-driven per §10. Manager + user confirm consolidation scope. | [discussion](../discussion/SKILL.md) | manager |
+| 1 | `DISCUSSION` | Forced user-driven per §9. Manager + user confirm consolidation scope. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn `assistant` subagent. Consolidate: archive backlogs, mine task-records + transcript, promote staged mistakes, write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Full PASS path — `Wrap-up MEMORIZATION runs the unmodified base procedure` per the §4 base-unmodified clause. This is where typed-finding staging from prior slices is promoted (none under the Chat narrowed contract since per-slice staging was skipped — Wrap-up mines transcripts + task-records instead). | [memorization.md](workflow/memorization.md) | assistant |
@@ -546,33 +546,7 @@ Notes on the example:
 
 ---
 
-## §9 — Settings defaults (Chat mode)
-
-The full Chat-vs-Auto settings comparison lives in the Idea doc for this redesign. The Chat-specific
-defaults are:
-
-| Field | Chat default | Notes |
-|-------|-------------|-------|
-| `mode` | `"chat"` | dispatch key |
-| `workflow.ideation.maxIterations` | `2` | per-task scope; cap-exhaustion = reframe signal |
-| `workflow.preparation.maxIterations` | `0` | R1 lock: 0 → `state: Skipped` at loop entry |
-| `workflow.planning.maxIterations` | `2` | mini Planning |
-| `workflow.planning.discuss.mode` | `"user"` | Chat forces user-driven DISCUSSION at mode level |
-| `workflow.execution.maxIterations` | `2` | mini Execution per sub-step |
-| `workflow.execution.discuss.mode` | `"user"` | Chat forces user-driven DISCUSSION at mode level |
-| `workflow.wrap-up.discuss.mode` | `"user"` | Chat forces user-driven DISCUSSION |
-| `workflow.wrap-up.maxIterations` | `1` | session-level, once |
-| `evaluate.mode` (all loops) | `"always"` | no mode-driven evaluation skip |
-
-**R1 semantic note.** `preparation.maxIterations: 0` does not produce a FAIL or Aborted verdict.
-The loop-entry guard reads the value, stamps `state.json.workflow.chat.tasks[i].preparation =
-{state: "Skipped", iterations: []}`, and proceeds to mini Planning. No DISCUSSION row runs, no
-WORK row runs. This is encoded at the state-machine layer (see §8.2 per-task state-transition
-table above).
-
----
-
-## §10 — Discuss-first contract
+## §9 — Discuss-first contract
 
 In Chat Mode, **every loop entry forces user-driven DISCUSSION**, regardless of the resolved
 `discuss.mode` setting. The leader proposes (with research-backed evidence); the user decides via
@@ -581,7 +555,7 @@ In Chat Mode, **every loop entry forces user-driven DISCUSSION**, regardless of 
 This contract is binding at the mode level: even if a future settings change flips a per-step
 `discuss.mode` to `"agent"`, the mode-level contract documented here still forces user-driven
 DISCUSSION at every Chat loop entry. Documenting at both settings-level (`"user"` everywhere in
-Chat defaults per §9) and mode-level (this section) prevents silent regression.
+[`templates/settings.chat.json`](templates/settings.chat.json)) and mode-level (this section) prevents silent regression.
 
 ---
 
