@@ -53,7 +53,7 @@ Planning briefs may cite **either** path because both paths resolve to the same 
 ## Alternatives considered
 
 - **Workspace canonical, mirror derives via auto-sync (first-iteration lock).** Rejected on corrected evidence: the first-iteration scan missed the file-level symlinks. There is no two-tree storage to sync; the symlinks already make the two paths the same file. See `2026-05-24-mirror-propagation-policy-workspace-canonical.md` (now `status: superseded`).
-- **Mass migration — replace symlinks with real-file workspace mirror.** Rejected by the user out-of-scope for this Bundle. Symlinks work; changing storage shape for no functional gain violates Principle 10 (witness-bound work).
+- **Mass migration — replace symlinks with real-file workspace mirror.** Rejected by the user out-of-scope for this Bundle. Symlinks work; changing storage shape for no functional gain violates Principle 10 (Change Only With a Real Trigger).
 - **Both trees equally authoritative, every edit touches both.** Rejected: not even applicable — both paths ARE the same file; "touching both" is a no-op.
 
 ## Consequences

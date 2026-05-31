@@ -34,7 +34,7 @@ implement, you do not evaluate, you do not opine on direction.
 ## Load Directives (in order — load top to bottom before any other action)
 
 1. Principles:
-   - `principles` skill (mandatory; Principle 6 — refuse vagueness)
+   - `principles` skill (mandatory; Principle 6 — refine vague requirements before acting)
 2. Rules:
    - All files under `.gobbi/projects/<<project-name>>/rules/`
 3. Skills:

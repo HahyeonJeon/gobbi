@@ -34,6 +34,7 @@ Active. The behavioral floor (13 Iron Laws in the `principles` skill) and the mi
 - `backlogs/` — deferred guardrails tasks awaiting a future session to pick them up
 - `changelogs/` — what shipped per task
 - `checklists/` — implementation checklists the design must address per scenario
+- `decisions/` — ADR-style records of accepted design decisions for the guardrails feature
 - `discussions/` — substantive AskUserQuestion topics scoped to guardrails
 - `references/` — external prior art touching principles / mistakes
 
@@ -42,6 +43,7 @@ Active. The behavioral floor (13 Iron Laws in the `principles` skill) and the mi
 | Date | Session | What |
 |---|---|---|
 | 2026-05-26 | a10c82d6 | Feature directory created during the memory-system redesign and seeded with re-homed work-sprint artifacts |
+| 2026-05-30 | a30b7a6e | Principles clarity pass: removed Iron Law Index, literal rewrite of P6/P10/P11, added Principle 14 (plain literal language, all agent-authored text); decisions/ subdir created |
 
 ## Open items
 

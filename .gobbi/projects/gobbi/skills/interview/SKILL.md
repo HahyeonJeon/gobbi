@@ -77,7 +77,7 @@ The Interview skill always runs **Full mode** — all 5 waves. The user can halt
 
 ## Core Principles
 
-> **Specificity is the only currency.**
+> **Make every answer concrete before moving on.**
 
 "Enterprises in healthcare" is not a target user; "Sarah at Acme Corp who reports to the CTO and gets fired if patient data leaks" is. The first answer the user gives is usually polished; real answers come after the second or third question on the same point. Push twice.
 

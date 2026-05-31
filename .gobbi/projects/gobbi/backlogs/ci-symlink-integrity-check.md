@@ -26,13 +26,13 @@ This backlog item flags the **durable defense**: a repository-level guard that f
 
 ## Why deferred
 
-Pick-up of this guard is **not in Bundle B scope** (Bundle B is T1 worktree-first session architecture + T3 PostToolUse hook reconstructor; CI infrastructure changes are orthogonal). The Bundle B Preparation already locks the runtime discipline that protects T1 + T3 executors directly. Witness count for the bad-edit failure is currently **zero** in this repo — the iter2 Codex evaluator surfaced the *risk* empirically (via `/tmp` reproduction), but no actual bad commit has occurred yet against this repository's tracked symlinks. Per Principle 10 (witness-bound work), a CI guard for a zero-witness pattern is defensible only as a **deferred** item.
+Pick-up of this guard is **not in Bundle B scope** (Bundle B is T1 worktree-first session architecture + T3 PostToolUse hook reconstructor; CI infrastructure changes are orthogonal). The Bundle B Preparation already locks the runtime discipline that protects T1 + T3 executors directly. No real trigger has fired for the bad-edit failure in this repo — the iter2 Codex evaluator surfaced the *risk* empirically (via `/tmp` reproduction), but no actual bad commit has occurred yet against this repository's tracked symlinks. Per Principle 10 (trigger-bound work), a CI guard for a zero-trigger pattern is defensible only as a **deferred** item.
 
 ## When to pick up
 
 Pick up at whichever fires first:
 
-- **First real defect**: any commit lands in which a tracked `.claude/skills/...` path flips from `120000` to `100644` (the symlink was replaced by a regular file). At that point, the witness count is N=1 and the durable defense becomes justified.
+- **First real defect**: any commit lands in which a tracked `.claude/skills/...` path flips from `120000` to `100644` (the symlink was replaced by a regular file). At that point, the first real trigger has fired and the durable defense becomes justified.
 - **N≥2 future bundles** edit skill files via the workspace path (Bundle B is N=1). With a second bundle's worth of skill-editing executors running the same risk, accumulated exposure justifies the upfront CI work even without an actual defect.
 - **Tooling change**: any new agent type or harness is introduced that does NOT have `Edit`-tool inode-preserving semantics by default (e.g., a CI bot that runs `sed -i` on skill files for batch refactors). The new tooling shifts the failure probability from "unlikely human slip" to "default behavior of automation".
 
