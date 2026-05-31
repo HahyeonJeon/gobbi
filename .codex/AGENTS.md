@@ -62,22 +62,22 @@ Evaluation runs inside Ideation, Planning, and Execution. The orchestrator selec
 
 The 14 principles below are the enforceable behavioral discipline for every agent. The Iron Law table is the always-visible summary; load the skill for the full Why, Anti-rationalizations, and Mechanism behind each principle.
 
-| # | Iron Law |
+| # | Principle |
 |---|---|
-| 1 | NO ACTION WITHOUT THINKING IT THROUGH FIRST. |
-| 2 | ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
-| 3 | BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
-| 4 | SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
-| 5 | NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
-| 6 | DO NOT ACT ON A VAGUE REQUIREMENT; MAKE IT CONCRETE FIRST. |
-| 7 | NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. |
-| 8 | EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
-| 9 | EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
-| 10 | NO CHANGE WITHOUT A REAL TRIGGER. |
-| 11 | NO IMPROVEMENT THAT GAMES THE TOOL. |
-| 12 | NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
-| 13 | NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN. |
-| 14 | USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR. |
+| 1 | Think Before Acting: NO ACTION WITHOUT THINKING IT THROUGH FIRST. |
+| 2 | Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
+| 3 | Bottom-Up Construction with the User in the Loop: BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
+| 4 | Scope Is a Contract; the User Is the Client: SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
+| 5 | Reference-First Design (visual and code-shape): NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
+| 6 | Refine Vague Requirements Before Acting: DO NOT ACT ON A VAGUE REQUIREMENT; MAKE IT CONCRETE FIRST. |
+| 7 | Verification Is a Hard Gate: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. |
+| 8 | Documentation Is a Deliverable, Not a Side Effect: EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
+| 9 | Design and Implement from the User's Point of View: EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
+| 10 | Change Only With a Real Trigger: NO CHANGE WITHOUT A REAL TRIGGER. |
+| 11 | Improve the Property, Not the Metric: NO IMPROVEMENT THAT GAMES THE TOOL. |
+| 12 | Every Task Has Clear What / Why / How: NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
+| 13 | Spec + CRUD-Think for Documentation Work: NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN. |
+| 14 | Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR. |
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
