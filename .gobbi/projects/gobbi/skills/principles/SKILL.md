@@ -375,4 +375,4 @@ whose CRUD plan misses a genuine co-update file are rejected at review.
 
 ---
 
-This skill is the single source of behavioral discipline. Loading it explicitly gives an agent the rationale and anti-rationalizations behind any principle when context demands more than the Iron Law summary in CLAUDE.md. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.
+This skill is the single source of behavioral discipline. Loading it explicitly gives an agent the rationale and anti-rationalizations behind any principle when context demands more than the principle summary in CLAUDE.md. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.
