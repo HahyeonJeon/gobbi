@@ -1,0 +1,13 @@
+{
+  "name": "gobbi",
+  "owner": {
+    "name": "HahyeonJeon",
+    "email": "jeonhh0061@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "gobbi",
+      "source": "./plugins/gobbi"
+    }
+  ]
+}

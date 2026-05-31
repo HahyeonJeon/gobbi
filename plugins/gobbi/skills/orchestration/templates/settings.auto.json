@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "mode": "auto",
+  "workflow": {
+    "ideation": {
+      "discuss":  { "mode": "user" },
+      "evaluate": { "mode": "always" },
+      "maxIterations": 3
+    },
+    "preparation": {
+      "discuss":  { "mode": "user" },
+      "evaluate": { "mode": "always" },
+      "maxIterations": 3
+    },
+    "planning": {
+      "discuss":  { "mode": "agent" },
+      "evaluate": { "mode": "always" },
+      "maxIterations": 3
+    },
+    "execution": {
+      "discuss":  { "mode": "agent" },
+      "evaluate": { "mode": "always" },
+      "maxIterations": 3
+    },
+    "wrap-up": {
+      "discuss":  { "mode": "agent" },
+      "evaluate": { "mode": "always" },
+      "maxIterations": 1
+    }
+  },
+  "models": {
+    "claude": {
+      "manager":   "opus",
+      "leader":    "opus",
+      "executor":  "opus",
+      "evaluator": "sonnet",
+      "assistant": "sonnet"
+    },
+    "codex": {
+      "manager":   "gpt-5.5",
+      "leader":    "gpt-5.5",
+      "executor":  "gpt-5.5",
+      "evaluator": "gpt-5",
+      "assistant": "gpt-5"
+    }
+  },
+  "git": {
+    "repo":       null,
+    "baseBranch": null,
+    "pr":       { "open": false, "draft": false },
+    "issue":    { "create": false },
+    "worktree": { "autoRemove": true },
+    "branch":   { "autoRemove": true }
+  }
+}

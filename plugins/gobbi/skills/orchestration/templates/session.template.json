@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sessionId": null,
+  "previousSessionId": null,
+  "project": null,
+  "feature": null,
+  "task": null,
+  "system": null,
+  "startedAt": null,
+  "finishedAt": null,
+  "transcriptPath": null,
+  "git": {
+    "repo": null,
+    "baseBranch": null,
+    "branch": null,
+    "worktreePath": null,
+    "issue": null,
+    "pr": null
+  },
+  "workflow": {
+    "configuration": { "startedAt": null, "finishedAt": null },
+    "ideation":      { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null },
+    "preparation":   { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null },
+    "planning":      { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null },
+    "execution":     { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null },
+    "wrap-up":        { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null },
+    "chat":           { "tasks": [] }
+  },
+  "agents": [
+    {
+      "id": null,
+      "name": null,
+      "type": "manager",
+      "step": null,
+      "phase": null,
+      "iter": null,
+      "model": null,
+      "system": null,
+      "transcriptPath": null,
+      "tokensUsed": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheCreation": 0
+      },
+      "startedAt": null,
+      "finishedAt": null
+    }
+  ]
+}
