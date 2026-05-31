@@ -7,8 +7,8 @@
     "preparation":   { "state": "Done", "verdict": "PASS", "iter": 2,    "maxIterations": 3,    "phase": null },
     "planning":      { "state": "Done", "verdict": "PASS", "iter": 2,    "maxIterations": 3,    "phase": null },
     "execution":     { "state": "Done", "verdict": "PASS", "iter": 2,    "maxIterations": 3,    "phase": null },
-    "wrap-up":        { "state": "Active", "verdict": null, "iter": 0,    "maxIterations": 1,    "phase": "DISCUSSION" },
+    "wrap-up":        { "state": "Done", "verdict": "PASS", "iter": 1,    "maxIterations": 1,    "phase": null },
     "chat":           { "tasks": [] }
   },
-  "activeNote": "Planning PASS (iter-2; iter-1 REVISE on cache-allow-set gate + T5/T6 operator-assisted + T7 19-skill, remediated). Canonical plan at planning/artifacts/plan.md. 8 tasks bottom-up: T1 sync-script+materialize, T2 manifest, T3 hooks.json, T4 marketplace.json, T5 fire-once (operator-assisted), T6 invocability+conditional-permissions (operator-assisted), T7 claude-plugin skill+mirror+resync→19, T8 docs. Entering Execution. NOTE: T5/T6 live install-run is operator-assisted (executor authors scripts; install+clean-session run by manager/user)."
+  "activeNote": "SESSION COMPLETE — all 6 steps PASS. gobbi Claude Code plugin built (plugins/gobbi/, validates --strict) + claude-plugin skill (19th). Wrap-up: 24 promoted / 1 dropped-dup / 25 accounted; handoff at wrap-up/artifacts/handoff.md. Wrap-up eval reconciled PASS (P1+U1 fixed, C1 disputed-concurred). OUTSTANDING: operator-assisted live verification (T5 fire-once + T6 invocability) deferred post-merge — scripts ready in scripts/. PR opening next."
 }
