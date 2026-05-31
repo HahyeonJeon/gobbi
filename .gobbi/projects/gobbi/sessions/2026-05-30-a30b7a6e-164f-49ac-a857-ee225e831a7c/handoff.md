@@ -59,4 +59,4 @@ All 14 Iron Laws in CLAUDE.md, AGENTS.md, and agent templates now have matching 
 3. **Consider deferred "Red Flags table per principle".** The principles file's closing paragraph mentions this as a future enhancement. If the user wants to pursue it, file a backlog item under `features/guardrails/backlogs/`.
 4. **Load the reinforced mistake before any future principle/concept rename task.** `mistakes/claude-evaluator-step4-only-vs-codex-whole-file-grep.md` now carries the sharpened corrected approach. The three-surface-form blast-radius check (title + Iron Law phrase + concept shorthand) is the required procedure.
 
-> PR opened: #287 → https://github.com/HahyeonJeon/gobbi/pull/287 (targets develop; close manually if it merges off the default branch).
+> PR opened: #275 → https://github.com/HahyeonJeon/gobbi/pull/275 (targets develop; close manually if it merges off the default branch).

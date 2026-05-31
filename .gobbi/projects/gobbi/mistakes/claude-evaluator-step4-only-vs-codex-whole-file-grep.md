@@ -57,3 +57,35 @@ This pattern most commonly appears in docs-only tasks where the "changed file" i
 - Evaluation files: `sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/execution/T1/evaluation/iter1/codex/overall.md` (COD-CONS-001, COD-USAGE-001)
 - Evaluation files: `sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/execution/T1/evaluation/iter1/claude/overall.md` (PASS with narrowed scope)
 - Iter2 fix: commit `2d61a57559dec7509fd1c232e941a5970cc4a9be`
+
+---
+
+## Recurrence — 2026-05-30, session a30b7a6e
+
+**What recurred.** During the principles clarity pass (Task 02, two-iter dual-system eval), the Ideation leader's blast-radius grep for retired principle wording searched only for principle TITLES (e.g., "Specificity Is the Only Currency", "Witness-bound Work"). It did NOT grep for the corresponding Iron Law phrases ("transact in vagueness", "REFUSE TO TRANSACT") nor the concept shorthands being retired ("witness", "motivator", "witness-\*"). That omission left stranded references in `features/install-runtime/decisions/` and in backlog files. These surfaced across BOTH evaluation iterations:
+
+- iter1 findings F3 and F4 (Claude evaluator): stale "motivator" wording in two backlog files
+- iter1 Codex evaluation: same stale wording widened to a REVISE verdict
+- iter2 finding RISK-01 (Codex): the `features/install-runtime/decisions/` record still carried "real motivator" after iter1 remediation — caught only because the evaluator ran a wider grep
+
+Each catch required an evaluator who independently widened the grep beyond the executor's stated scope. Without that widening, the retired wording would have shipped.
+
+**Sharpened corrected approach.** For any docs-rename / principle-rewrite task that retires concept wording, the blast-radius search MUST grep for ALL three surface forms of the retired concept:
+
+1. **Title / heading text** (e.g., "Witness-bound Work")
+2. **Iron Law phrase** (e.g., "REFUSE TO TRANSACT", "transact in vagueness", "real motivator")
+3. **Concept shorthands** (e.g., "witness", "motivator", "witness-\*")
+
+The search MUST run across the WHOLE REPO — not a hand-listed subset of trees — excluding only `sessions/` and `archive/`. The `features/` tree is a common miss because it contains decision records that embed principle wording as rationale text. It must always be included.
+
+Executor gate (add to executor brief for any principle/concept rename):
+
+```bash
+# Run for each retired surface form (title, iron law, shorthand):
+rg --type md -l "<retired_term>" . \
+  --glob '!sessions/' \
+  --glob '!archive/'
+# Expected: 0 matches outside intentional counter-examples
+```
+
+This gate must list the specific retired forms explicitly in the brief — not leave them to the executor's judgment. The executor will grep for what they think was retired; only an explicit list guarantees all three surface-form classes are covered.
