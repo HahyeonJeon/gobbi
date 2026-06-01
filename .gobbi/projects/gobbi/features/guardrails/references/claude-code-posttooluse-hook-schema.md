@@ -10,7 +10,7 @@ session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hook, posttooluse, posttooluse-failure, agent-tool, schema, telemetry]
 title: Claude Code PostToolUse + PostToolUseFailure hook — official input schema + empirical Task tool payload
 source: https://code.claude.com/docs/en/hooks
-accessed: 2026-05-23
+accessed: 2026-06-01
 ref_type: docs
 ---
 
@@ -32,12 +32,12 @@ The hook **also receives `transcript_path`** in every fire — meaning a hook ca
 
 - [`../../install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../install-runtime/references/claude-code-transcript-tooluseresult-empirical.md) (the empirical transcript-shape companion — the verbatim `toolUseResult` JSONL payload captured during the guardrails Ideation, which grounds the "verified empirically" claim in the Why-it-applies section)
 - `claude-code-hooks-12-lifecycle-events.md` (the companion reference covering the broader hook lifecycle-event landscape)
-- `checklists/hook-event-count-31-vs-29-docs-sync.md` and `backlogs/hook-event-count-31-vs-29-docs-sync.md` (the tracked docs-sync item: the "31 events" claim below should be corrected to the verified count of 29)
+- `checklists/hook-event-count-31-vs-29-docs-sync.md` and `backlogs/hook-event-count-31-vs-29-docs-sync.md` (the tracked docs-sync item: the "31 events" claim below is corrected to the verified count of **30**, re-verified 2026-06-01; the tracked docs-sync and verification-gap items are being resolved this session)
 - `backlogs/posttooluse-failure-webfetch-verification-gap.md` (the deferred empirical re-verification of the verbatim quotes captured here)
 
 ## PostToolUseFailure — verbatim verification
 
-WebFetched `https://code.claude.com/docs/en/hooks` on 2026-05-23. The official docs page lists `PostToolUseFailure` as one of 31 documented hook events and includes it in two tables:
+WebFetched `https://code.claude.com/docs/en/hooks` on 2026-05-23. The official docs page lists `PostToolUseFailure` as one of **30** documented hook events and includes it in two tables (re-verified 2026-06-01; both quotes below still match the live page verbatim):
 
 **Lifecycle table (verbatim):**
 
@@ -53,7 +53,7 @@ WebFetched `https://code.claude.com/docs/en/hooks` on 2026-05-23. The official d
 
 Shell-command hook support is explicitly confirmed: PostToolUseFailure supports the same `type: "command"` registration shape as PostToolUse (alongside HTTP, MCP-tool, prompt, and agent hooks). It is non-blocking — exit code 2 does not prevent the underlying tool failure but does surface the hook's stderr to Claude.
 
-All 31 documented hook events on this page (full enumeration for context):
+All **30** documented hook events on this page (full enumeration, re-verified 2026-06-01):
 
 1. `SessionStart`
 2. `Setup`
@@ -66,26 +66,27 @@ All 31 documented hook events on this page (full enumeration for context):
 9. `PostToolUseFailure`
 10. `PostToolBatch`
 11. `Notification`
-12. `SubagentStart`
-13. `SubagentStop`
-14. `TaskCreated`
-15. `TaskCompleted`
-16. `Stop`
-17. `StopFailure`
-18. `TeammateIdle`
-19. `InstructionsLoaded`
-20. `ConfigChange`
-21. `CwdChanged`
-22. `FileChanged`
-23. `WorktreeCreate`
-24. `WorktreeRemove`
-25. `PreCompact`
-26. `PostCompact`
-27. `Elicitation`
-28. `ElicitationResult`
-29. `SessionEnd`
+12. `MessageDisplay`
+13. `SubagentStart`
+14. `SubagentStop`
+15. `TaskCreated`
+16. `TaskCompleted`
+17. `Stop`
+18. `StopFailure`
+19. `TeammateIdle`
+20. `InstructionsLoaded`
+21. `ConfigChange`
+22. `CwdChanged`
+23. `FileChanged`
+24. `WorktreeCreate`
+25. `WorktreeRemove`
+26. `PreCompact`
+27. `PostCompact`
+28. `Elicitation`
+29. `ElicitationResult`
+30. `SessionEnd`
 
-(The page's table lists 31; the enumerated names above cover the explicitly captured events from the same WebFetch.)
+(The live lifecycle table lists 30 events, re-verified 2026-06-01; the enumeration above is complete. The only net change since the 2026-05-23 capture is the addition of `MessageDisplay` at position 12.)
 
 ## Why it applies
 The subagent-telemetry hook design explicitly required verifying the hook contract before committing to the mechanism. This insight is the verification answer:
@@ -115,3 +116,4 @@ This gives the design a clear path: even if `tool_result` in the hook payload is
 |---|---|---|
 | 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | Closed the hook-contract verification gate for the PostToolUse-based subagent telemetry design |
 | 2026-05-23 | 1b26cf20-677b-498c-8c1b-7d7e971597ac | Added the verbatim PostToolUseFailure quote to ground the dual-event hook registration in the official docs |
+| 2026-06-01 | 34563fb4-361d-4348-aa75-8bc9f1fbff05 | Re-verified the hook contract: both PostToolUseFailure quotes still match verbatim; corrected the event count 31→30 and added MessageDisplay |
