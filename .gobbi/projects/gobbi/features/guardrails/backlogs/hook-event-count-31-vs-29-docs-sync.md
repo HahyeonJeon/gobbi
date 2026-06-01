@@ -4,14 +4,14 @@ description: Deferred docs-sync — correct the "31 hook events" claim to "29" i
 type: backlogs
 scope: feature
 feature: guardrails
-status: active
+status: addressed
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hooks, docs-sync, event-count, deferred]
 priority: low
-disposition: open
+disposition: addressed
 project-scope: false
-shipped_in: null
+shipped_in: "session 34563fb4 (commits 84521bc + iter2 remediation)"
 ---
 
 # Hook event count claim (31) contradicts captured evidence (29)
@@ -45,3 +45,11 @@ When authoring or editing `.claude/settings.json` hook registration for PostTool
 - `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the reference carrying the "31" claim)
 - Provenance: the Codex Overall-perspective evaluator finding on iteration 3 of that session's guardrails Ideation evaluation
 - See also `features/guardrails/checklists/hook-event-count-31-vs-29-docs-sync.md` (checklist form of same item)
+
+## Resolution (2026-06-01)
+
+The live count was independently re-verified on 2026-06-01 via Claude WebFetch, Codex, and a raw-HTML parse (curl + Python row-count of the lifecycle table) as **30**, not 29. The "29" this item assumed was itself stale: the page gained `MessageDisplay` at position 12 (between Notification and SubagentStart) since the 2026-05-23 capture that produced the "29" figure. All 29 previously-captured names remain present; `MessageDisplay` is the single net addition.
+
+The reference file `features/guardrails/references/claude-code-posttooluse-hook-schema.md` was corrected to 30 (commit 84521bc, session 34563fb4) — the event count, full enumeration, and all prose referring to "31" updated to "30". The README `## Open items` bullet was removed and a `## Recent activity` row added.
+
+Note on the closure gate: `grep -rn '"31 hook' features/guardrails/` will reach 0 matches only after this resolved item (and the companion checklist `checklists/hook-event-count-31-vs-29-docs-sync.md`) are archived out of `features/guardrails/` into `archive/backlogs/` at Wrap-up. The files are left in place here per the archive-template sole-writer rule; physical archive `git mv` is a Wrap-up-only operation.

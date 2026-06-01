@@ -98,9 +98,8 @@ The subagent-telemetry hook design explicitly required verifying the hook contra
 This gives the design a clear path: even if `tool_result` in the hook payload is impoverished, the hook is rich enough because `transcript_path` is always provided. The design's mechanism — a hook for real-time append plus a shell-script reconstructor for repair — is fully supported, and the dual-event (success + failure) registration is officially documented.
 
 ## Source
-- https://code.claude.com/docs/en/hooks
-- https://code.claude.com/docs/en/agent-sdk/hooks
-- Both accessed 2026-05-23
+- https://code.claude.com/docs/en/hooks — accessed 2026-05-23, re-verified 2026-06-01
+- https://code.claude.com/docs/en/agent-sdk/hooks — accessed 2026-05-23
 
 ## Excerpt
 > "PostToolUse | After a tool call succeeds"

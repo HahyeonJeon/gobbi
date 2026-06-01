@@ -44,11 +44,10 @@ Active. The behavioral floor (13 Iron Laws in the `principles` skill) and the mi
 |---|---|---|
 | 2026-05-26 | a10c82d6 | Feature directory created during the memory-system redesign and seeded with re-homed work-sprint artifacts |
 | 2026-05-30 | a30b7a6e | Principles clarity pass: removed Iron Law Index, literal rewrite of P6/P10/P11, added Principle 14 (plain literal language, all agent-authored text); decisions/ subdir created |
+| 2026-06-01 | 34563fb4 | Re-verified the hooks contract (both PostToolUseFailure quotes verbatim); corrected the event count 31→30 (+MessageDisplay); resolved the hook-event-count and WebFetch-verification-gap backlogs |
 
 ## Open items
 
-- Correct the "31 hook events" claim to the verified count of 29 in surviving references — see `backlogs/hook-event-count-31-vs-29-docs-sync.md`.
-- Empirically re-verify the `PostToolUseFailure` hook contract when authoring its `.claude/settings.json` registration — see `backlogs/posttooluse-failure-webfetch-verification-gap.md`.
 - Add a quality gate on `agents[]` field population if presence is ever treated as a metric — see `backlogs/goodhart-factor-when-demanded-deferred.md`.
 
 ## Related

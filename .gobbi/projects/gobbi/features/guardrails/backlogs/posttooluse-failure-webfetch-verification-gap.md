@@ -4,14 +4,14 @@ description: Deferred verification gap — PostToolUseFailure verbatim quote was
 type: backlogs
 scope: feature
 feature: guardrails
-status: active
+status: addressed
 created: 2026-05-23
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [posttooluse-failure, webfetch, verification-gap, deferred]
 priority: medium
-disposition: open
+disposition: addressed
 project-scope: false
-shipped_in: null
+shipped_in: "session 34563fb4 (commits 84521bc + iter2 remediation)"
 ---
 
 # Assume PostToolUseFailure verbatim quote was correctly retrieved via WebFetch
@@ -47,3 +47,12 @@ When authoring `.claude/settings.json` hook registration for PostToolUseFailure.
 
 - `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the verbatim hook-contract quotes are preserved here)
 - The same gap was independently flagged by both the Project-perspective and Risk-perspective evaluators at Ideation (provenance in that session's evaluation artifacts).
+
+## Resolution (2026-06-01)
+
+On 2026-06-01 the two preserved `PostToolUseFailure` verbatim quotes were independently re-verified — confirmed byte-identical to the live page by Claude WebFetch, Codex, and a raw-HTML parse (curl extraction of the lifecycle and exit-code-behavior tables):
+
+- Lifecycle table: `| PostToolUseFailure | After a tool call fails |` — verbatim match confirmed.
+- Exit-code-behavior table: `| PostToolUseFailure | No | Shows stderr to Claude (tool already failed) |` — verbatim match confirmed across all three cells (event / Can block? = "No" / "Shows stderr to Claude (tool already failed)").
+
+`PostToolUseFailure` remains a documented hook event with `type: "command"` support. The verification gap opened at Ideation (Confidence-50 downgrade) is closed. The reference file `features/guardrails/references/claude-code-posttooluse-hook-schema.md` carries the re-verification note (line 40, session 34563fb4). Archive deferred to Wrap-up per the archive-template sole-writer rule.
