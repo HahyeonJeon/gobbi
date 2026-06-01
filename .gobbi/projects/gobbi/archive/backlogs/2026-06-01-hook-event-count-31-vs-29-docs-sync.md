@@ -46,7 +46,7 @@ When authoring or editing `.claude/settings.json` hook registration for PostTool
 
 - `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the reference carrying the "31" claim)
 - Provenance: the Codex Overall-perspective evaluator finding on iteration 3 of that session's guardrails Ideation evaluation
-- See also `features/guardrails/checklists/hook-event-count-31-vs-29-docs-sync.md` (checklist form of same item)
+- See also `../checklists/2026-06-01-hook-event-count-31-vs-29-docs-sync.md` (checklist form of same item; archived 2026-06-01)
 
 ## Resolution (2026-06-01)
 
@@ -54,4 +54,4 @@ The live count was independently re-verified on 2026-06-01 via Claude WebFetch, 
 
 The reference file `features/guardrails/references/claude-code-posttooluse-hook-schema.md` was corrected to 30 (commit 84521bc, session 34563fb4) — the event count, full enumeration, and all prose referring to "31" updated to "30". The README `## Open items` bullet was removed and a `## Recent activity` row added.
 
-Note on the closure gate: `grep -rn '"31 hook' features/guardrails/` will reach 0 matches only after this resolved item (and the companion checklist `checklists/hook-event-count-31-vs-29-docs-sync.md`) are archived out of `features/guardrails/` into `archive/backlogs/` at Wrap-up. The files are left in place here per the archive-template sole-writer rule; physical archive `git mv` is a Wrap-up-only operation.
+Note on the closure gate: `grep -rn '"31 hook' features/guardrails/` reaches 0 matches now that this resolved item and the companion checklist (`../checklists/2026-06-01-hook-event-count-31-vs-29-docs-sync.md`) have been archived out of `features/guardrails/` at Wrap-up (per the archive-template sole-writer rule; physical archive `git mv` is a Wrap-up-only operation).

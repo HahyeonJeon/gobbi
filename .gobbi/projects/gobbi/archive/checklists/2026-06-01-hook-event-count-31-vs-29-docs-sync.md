@@ -40,7 +40,7 @@ Pending — this is a tracked docs-sync item, not yet swept. The count correctio
 
 - `features/guardrails/references/claude-code-posttooluse-hook-schema.md` (the reference carrying the claim)
 - Surfaced as an Overall-perspective evaluator finding during the guardrails Ideation evaluation (provenance in that session's evaluation artifacts).
-- See also `features/guardrails/backlogs/hook-event-count-31-vs-29-docs-sync.md` (backlog form of same item)
+- See also `../backlogs/2026-06-01-hook-event-count-31-vs-29-docs-sync.md` (backlog form of same item; archived 2026-06-01)
 
 ## Resolution (2026-06-01)
 

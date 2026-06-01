@@ -21,7 +21,7 @@ Chat-mode docs-sync session. Two guardrails backlogs resolved (hook-event count 
 
 **Execution commits (already on branch `chore/session-2026-06-01-34563fb4`):**
 - `84521bc` — `features/guardrails/references/claude-code-posttooluse-hook-schema.md`: event count 31→30, full enumeration updated (+MessageDisplay at pos 12), frontmatter `accessed:` refreshed to 2026-06-01
-- `5427e9d` — iter2 remediation: body `## Source` date updated, `features/guardrails/features/README.md` open-item bullet removed + recent-activity row added, `backlogs/hook-event-count-31-vs-29-docs-sync.md` and `checklists/hook-event-count-31-vs-29-docs-sync.md` got Resolution sections + `status: addressed` / `disposition: addressed`
+- `5427e9d` — iter2 remediation: body `## Source` date updated, `features/guardrails/README.md` open-item bullet removed + recent-activity row added, `backlogs/hook-event-count-31-vs-29-docs-sync.md` and `checklists/hook-event-count-31-vs-29-docs-sync.md` got Resolution sections + `status: addressed` / `disposition: addressed`
 
 **Wrap-up commit (this session's wrap-up):**
 - `mistakes/codex-webfetch-undercounts-recently-added-table-row.md` — new project mistake (path: `.gobbi/projects/gobbi/mistakes/`)
@@ -37,7 +37,7 @@ Chat-mode docs-sync session. Two guardrails backlogs resolved (hook-event count 
 
 - **`goodhart-factor-when-demanded-deferred.md`** (`features/guardrails/backlogs/`) — active, not triggered this session. Remains open.
 - **`claude-code-hooks-12-lifecycle-events.md`** (`features/guardrails/references/`) — not reviewed this session. It references "12 lifecycle events" and may drift if the hooks page changes further. Flagged as a possible future drift check.
-- **plugins-snapshot-resync backlog** — out of this session's scope; deferred due to concurrent PR #282. Remains open.
+- **plugins-snapshot-resync backlog** (`.gobbi/projects/gobbi/backlogs/plugins-snapshot-resync-after-principles-changes.md`) — out of this session's scope; deferred due to concurrent PR #282. Remains open.
 
 ## Decisions to respect
 

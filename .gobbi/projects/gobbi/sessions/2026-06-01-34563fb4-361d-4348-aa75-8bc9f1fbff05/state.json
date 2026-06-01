@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "mode": "chat",
+  "workflow": {
+    "configuration": { "state": "Done",    "verdict": null, "iter": null, "maxIterations": null, "phase": null },
+    "ideation":      { "state": "Done",    "verdict": "pass", "iter": 1, "maxIterations": 3, "phase": null },
+    "preparation":   { "state": "Skipped", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": null },
+    "planning":      { "state": "Skipped", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": null },
+    "execution":     { "state": "Done",    "verdict": "pass", "iter": 2, "maxIterations": 3, "phase": null },
+    "wrap-up":        { "state": "Done",    "verdict": "pass", "iter": 1, "maxIterations": 1, "phase": null },
+    "chat": {
+      "tasks": [
+        {
+          "taskNo": "01",
+          "slug": "hook-event-count-and-webfetch-gap",
+          "startedAt": "2026-06-01T10:56:17Z",
+          "finishedAt": "2026-06-01T13:30:00Z",
+          "ideation":    { "state": "Done", "verdict": "pass", "iter": 1, "maxIterations": 3, "phase": null, "iterations": [] },
+          "preparation": { "state": "Skipped", "verdict": null, "iter": 0, "maxIterations": 3, "phase": null, "iterations": [] },
+          "planning":    { "state": "Skipped", "verdict": null, "iter": 0, "maxIterations": 3, "phase": null, "iterations": [] },
+          "execution":   { "state": "Done", "verdict": "pass", "iter": 2, "maxIterations": 3, "phase": null, "iterations": [] },
+          "taskRecord": { "path": "execution/task-01/artifacts/task-record.md", "writtenAt": "2026-06-01T13:30:00Z" }
+        }
+      ]
+    }
+  },
+  "activeNote": "Session COMPLETE. Slice 1 (hook-count + webfetch-gap) PASS; residue closure + Slice-1 tracking items archived at Wrap-up. Wrap-up PASS (Codex REVISE 3 findings remediated). workflow.finish emitted 2026-06-01T14:22:47Z. Pending: final self-contained commit + push + PR."
+}
