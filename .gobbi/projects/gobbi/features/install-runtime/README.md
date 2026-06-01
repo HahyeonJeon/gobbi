@@ -35,13 +35,13 @@ Active. The design work (decisions, scenarios, checklists, references) is captur
 
 ## Plugin package
 
-The gobbi plugin package lives at `plugins/gobbi/`. It ships exactly 19 skills, 5 agents, and 2 hook scripts plus `hooks.json`. The repo-root `marketplace.json` indexes the package at `"source": "./plugins/gobbi"`.
+The gobbi plugin package lives at `.claude-plugin/gobbi/`. It ships exactly 19 skills, 5 agents, and 2 hook scripts plus `hooks.json`. The repo-root `marketplace.json` indexes the package at `"source": "./.claude-plugin/gobbi"`.
 
-**Symlink layout (no materialization).** The package uses within-marketplace symlinks instead of materialized real copies. `plugins/gobbi/skills/` and `plugins/gobbi/agents/` are symlinks to the canonical sources (`.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`). The hook scripts (`session-start.sh`, `post-tool-use-agents.sh`) are symlinks to `.claude/hooks/`. `hooks/hooks.json` is a real file. Because `marketplace.json` is at the repo root, the marketplace boundary is the entire repo — Claude Code dereferences all within-marketplace symlinks on install and copies the real content. The installed plugin receives the full 1.4 MB cache (19 skills, 5 agents, 3 hooks). Verified on CLI v2.1.159: GitHub-hosted install → Status: enabled, no session-memory leak.
+**Symlink layout (no materialization).** The package uses within-marketplace symlinks instead of materialized real copies. `.claude-plugin/gobbi/skills/` and `.claude-plugin/gobbi/agents/` are symlinks to the canonical sources (`.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`). The hook scripts (`session-start.sh`, `post-tool-use-agents.sh`) are symlinks to `.claude/hooks/`. `hooks/hooks.json` is a real file. Because `marketplace.json` is at the repo root, the marketplace boundary is the entire repo — Claude Code dereferences all within-marketplace symlinks on install and copies the real content. The installed plugin receives the full 1.4 MB cache (19 skills, 5 agents, 3 hooks). Verified on CLI v2.1.159: GitHub-hosted install → Status: enabled, no session-memory leak.
 
 **No sync script and no drift surface.** The former `scripts/sync-plugin-package.sh` materialization script has been removed. Symlinks always reflect the current canonical content; no resync step is required.
 
-**DD-8 dev-vs-installed hook split (Option C).** The gobbi hooks have two separate registrations: `.claude/settings.json` (dev; fires from `.claude/hooks/*.sh`) and `plugins/gobbi/hooks/hooks.json` (installed; fires from `${CLAUDE_PLUGIN_ROOT}/hooks/*.sh`). On a machine that both develops in-repo AND has the plugin installed, hooks fire twice per event (double-fire caveat). This is accepted for solo development; it does not corrupt state.
+**DD-8 dev-vs-installed hook split (Option C).** The gobbi hooks have two separate registrations: `.claude/settings.json` (dev; fires from `.claude/hooks/*.sh`) and `.claude-plugin/gobbi/hooks/hooks.json` (installed; fires from `${CLAUDE_PLUGIN_ROOT}/hooks/*.sh`). On a machine that both develops in-repo AND has the plugin installed, hooks fire twice per event (double-fire caveat). This is accepted for solo development; it does not corrupt state.
 
 ## Subdirectories
 
@@ -62,6 +62,7 @@ The gobbi plugin package lives at `plugins/gobbi/`. It ships exactly 19 skills, 
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
 | 2026-05-31 | 0fd65721 | Plugin package build: plugins/gobbi/ + .claude-plugin/marketplace.json, 19 packaged skills, DD-8 dev-vs-installed hook split, claude-plugin skill (skill 19) |
 | 2026-06-01 | chore/plugin-symlink-layout | Symlink layout migration: plugins/gobbi/skills + agents converted from materialized real copies to within-marketplace symlinks; sync-plugin-package.sh removed; manifest load-fix (#282) made plugin.json metadata-only |
+| 2026-06-01 | chore/plugin-into-claude-plugin | Plugin package moved plugins/gobbi/ → .claude-plugin/gobbi/ (single top-level .claude-plugin/ dir; marketplace source updated); verified via GitHub-hosted install (enabled, 1.4 MB, no leak) |
 
 ## Open items
 
