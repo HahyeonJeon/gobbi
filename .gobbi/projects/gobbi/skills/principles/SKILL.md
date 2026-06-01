@@ -1,6 +1,6 @@
 ---
 name: principles
-description: "The mandatory behavioral-discipline floor — 14 Iron Law principles every gobbi agent obeys. EVERY agent MUST load this skill at the start of its work, before any other action. You MUST read and understand every principle, and you MUST follow them without exception — they override convenience, speed, and your own judgment. Load the full skill for the rationale, anti-rationalizations, and mechanism behind each principle."
+description: "EVERY agent MUST load this skill at the start of its work, before any other action. You MUST read and understand every principle, and you MUST follow them without exception — they override convenience, speed, and your own judgment. Load the full skill for the rationale, anti-rationalizations, and mechanism behind each principle."
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
