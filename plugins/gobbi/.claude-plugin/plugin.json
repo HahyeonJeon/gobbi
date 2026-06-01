@@ -6,14 +6,5 @@
     "name": "HahyeonJeon"
   },
   "license": "MIT",
-  "keywords": ["gobbi", "workflow", "orchestration", "evaluation", "planning", "claude-code"],
-  "skills": "./skills/",
-  "agents": [
-    "./agents/manager.md",
-    "./agents/leader.md",
-    "./agents/executor.md",
-    "./agents/evaluator.md",
-    "./agents/assistant.md"
-  ],
-  "hooks": "./hooks/hooks.json"
+  "keywords": ["gobbi", "workflow", "orchestration", "evaluation", "planning", "claude-code"]
 }
