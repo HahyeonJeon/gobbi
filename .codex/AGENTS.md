@@ -60,7 +60,7 @@ Evaluation runs inside Ideation, Planning, and Execution. The orchestrator selec
 
 > **MUST load `.agents/skills/principles/SKILL.md` at session start, resume, /clear, and /compact.**
 
-The 14 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full Why, Anti-rationalizations, and Mechanism behind each principle.
+The 14 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle.
 
 | # | Principle |
 |---|---|

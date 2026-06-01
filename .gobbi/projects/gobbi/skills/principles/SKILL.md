@@ -1,6 +1,6 @@
 ---
 name: principles
-description: "EVERY agent MUST load this skill at the start of its work, before any other action. You MUST read and understand every principle, and you MUST follow them without exception — they override convenience, speed, and your own judgment. Load the full skill for the rationale, anti-rationalizations, and mechanism behind each principle."
+description: "EVERY agent MUST load this skill at the start of its work, before any other action. You MUST read and understand every principle, and you MUST follow them without exception — they override convenience, speed, and your own judgment. Load the full skill for the rationale and detail behind each principle."
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -371,4 +371,4 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-This skill is the single source of behavioral discipline. Loading it explicitly gives an agent the rationale and anti-rationalizations behind any principle when context demands more than the principle summary in CLAUDE.md. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.
+This skill is the single source of behavioral discipline. Loading it explicitly gives an agent the rationale and detail behind any principle when context demands more than the principle summary in CLAUDE.md. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.
