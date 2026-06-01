@@ -4,14 +4,17 @@ description: The plugins/gobbi/ snapshot has drifted from canonical skills and n
 type: backlogs
 scope: project
 feature: install-runtime
-status: active
+status: resolved
 created: 2026-06-01
 session: a30b7a6e-164f-49ac-a857-ee225e831a7c
-disposition: open
+disposition: closed
+resolved: 2026-06-01
 tags: [plugins, drift, principles, sync]
 ---
 
 # Re-sync the `plugins/gobbi/` snapshot after the principles changes
+
+> **Obsolete as of 2026-06-01.** The plugin package now uses within-marketplace symlinks to canonical sources (no materialized snapshot). `plugins/gobbi/skills/` and `plugins/gobbi/agents/` are symlinks; there is no snapshot to re-sync and no drift surface. `scripts/sync-plugin-package.sh` has been removed. Superseded by the symlink layout (branch `chore/plugin-symlink-layout`).
 
 ## Problem
 

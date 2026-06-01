@@ -1,12 +1,12 @@
 ---
 name: claude-plugin
-description: "Load when authoring, updating, or packaging a Claude Code plugin. Covers the plugin.json manifest schema (metadata-only; components auto-load from conventional directories), convention-based component auto-loading (verified on CLI v2.1.159), hooks.json structure, marketplace.json format, the install-copies-and-skips-symlinks security constraint, version cadence, and the CLI validate/install/update flow. Includes a gobbi-specific layer covering the bounded package layout, materialization via sync-plugin-package.sh, and the DD-8 dev-vs-installed hook split."
+description: "Load when authoring, updating, or packaging a Claude Code plugin. Covers the plugin.json manifest schema (metadata-only; components auto-load from conventional directories), convention-based component auto-loading (verified on CLI v2.1.159), hooks.json structure, marketplace.json format, symlink behavior on install (three cases: within-plugin-dir preserved, within-marketplace dereferenced, outside-marketplace skipped), version cadence, and the CLI validate/install/update flow. Includes a gobbi-specific layer covering the bounded package layout using within-marketplace symlinks (marketplace.json at repo root so symlinks dereference on install), and the DD-8 dev-vs-installed hook split."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Claude Plugin
 
-Skill for every agent authoring, reviewing, or packaging a Claude Code plugin. Load this skill when a task touches `plugins/`, `.claude-plugin/`, plugin manifests, hook registration for an installed plugin, or the `sync-plugin-package.sh` resync workflow.
+Skill for every agent authoring, reviewing, or packaging a Claude Code plugin. Load this skill when a task touches `plugins/`, `.claude-plugin/`, plugin manifests, hook registration for an installed plugin, or the plugin symlink layout.
 
 ---
 
@@ -118,16 +118,21 @@ The marketplace file lives at the **repo root** (not inside the plugin directory
 
 The `source` field is a **relative path** from the marketplace.json's location to the plugin root — a bare `"./..."` string (no trailing slash). This is the Claude marketplace schema. It differs from other plugin ecosystem marketplace schemas (such as Codex's) — do not conflate them.
 
-### Install behavior — copies real files, skips symlinks (security constraint)
+### Install behavior — symlink rules (three cases)
 
-When a user runs `claude plugin install`, Claude Code:
+When a user runs `claude plugin install`, Claude Code processes symlinks in the plugin directory according to three cases based on where the symlink target resolves:
 
-1. Copies all files from the plugin directory into the user's local plugin store.
-2. **Skips any symlink that escapes the plugin root** (i.e., a symlink whose target resolves outside the plugin directory). This is a security constraint: plugins cannot use symlinks to read arbitrary host files.
+| Case | Condition | Install behavior |
+|---|---|---|
+| **Within-plugin-dir** | Target resolves inside the plugin root directory | Preserved as a symlink in the installed plugin |
+| **Within-marketplace** | Target resolves outside the plugin root but within the marketplace root (the directory containing `marketplace.json`) | **Dereferenced** — the pointed-to file is copied to the installed location |
+| **Outside-marketplace** | Target resolves outside the marketplace root | **Skipped** — the symlink is not installed (security constraint: plugins cannot read arbitrary host files) |
 
-**Critical consequence:** the plugin package directory must contain **real files**, not symlinks pointing outside the plugin root. If your canonical skill files live at `.gobbi/projects/{name}/skills/` and your plugin directory only contains symlinks into that canonical tree, the installer will skip those symlinks and the installed plugin will have empty skill directories.
+The **marketplace boundary** is the directory containing `marketplace.json`. For a GitHub-hosted plugin, the marketplace boundary is the repo root (because `marketplace.json` is at the repo root). For a local marketplace (`claude plugin marketplace add ./marketplace.json`), the boundary is the directory of that local file.
 
-Use a materialization step (a script that copies real files into the plugin directory before publishing) to ensure the package ships only real files.
+**Practical consequence for within-marketplace symlinks:** if your plugin directory contains symlinks that escape the plugin root but stay within the marketplace root, the installer dereferences them — it copies the real content, not the symlink pointer. This means you can ship symlinks instead of materialized real copies, and the installed plugin receives the full content. Symlinks that escape the marketplace root are skipped unconditionally.
+
+**Caveat — local-path vs. GitHub-hosted install.** The official Claude Code documentation states that `--plugin-dir` and local-path installs only preserve symlinks resolving within the plugin's own directory (all others skipped). However, CLI v2.1.159 dereferenced within-marketplace escaping symlinks on both local-path AND GitHub-hosted installs in empirical testing. The GitHub-hosted install path is documented to dereference within-marketplace symlinks unconditionally and is the verified distribution path. A future CLI version could enforce the stricter local-path behavior — if you rely on within-marketplace symlinks in a local-path install, re-verify empirically on any CLI upgrade.
 
 ### Version cadence
 
@@ -162,51 +167,43 @@ claude plugin remove plugin-name
 
 ### Package layout
 
-The gobbi plugin is a bounded package under `plugins/gobbi/`. The package contains exactly these top-level entries:
+The gobbi plugin is a bounded package under `plugins/gobbi/`. The package uses within-marketplace symlinks — the marketplace boundary is the repo root (where `marketplace.json` lives), so symlinks that escape the plugin directory but stay within the repo are dereferenced on install. The package contains exactly these top-level entries:
 
 ```
 plugins/gobbi/
   .claude-plugin/
     plugin.json          ← manifest (metadata-only: name, version, author, license, keywords)
-  skills/                ← 19 materialized skill dirs (real files, no symlinks)
-  agents/                ← 5 materialized agent .md files
+  skills/                → symlink to ../../.gobbi/projects/gobbi/skills
+  agents/                → symlink to ../../.gobbi/projects/gobbi/agents
   hooks/
-    hooks.json           ← hook registration (3 events, ${CLAUDE_PLUGIN_ROOT} references)
-    session-start.sh     ← SessionStart hook script (copied from .claude/hooks/)
-    post-tool-use-agents.sh  ← PostToolUse/PostToolUseFailure hook script
+    hooks.json           ← hook registration (real file; 3 events, ${CLAUDE_PLUGIN_ROOT} references)
+    session-start.sh     → symlink to ../../../.claude/hooks/session-start.sh
+    post-tool-use-agents.sh  → symlink to ../../../.claude/hooks/post-tool-use-agents.sh
 ```
 
-The repo-root `.claude-plugin/marketplace.json` is NOT inside the plugin directory — it is the marketplace index pointing at `"source": "./plugins/gobbi"`.
+The repo-root `marketplace.json` is NOT inside the plugin directory — it is the marketplace index pointing at `"source": "./plugins/gobbi"`.
 
-### Materialization via sync-plugin-package.sh
+### Symlink layout (no materialization)
 
-The package is **materialized** — canonical source files are copied into `plugins/gobbi/` by `scripts/sync-plugin-package.sh`. Never edit files inside `plugins/gobbi/` directly; edit the canonical sources and re-sync.
+The component directories (`skills/`, `agents/`) are symlinks to the canonical sources. The hook scripts are also symlinks to the canonical `.claude/hooks/` scripts. `hooks/hooks.json` is a real file (it has no canonical source outside the plugin dir — it is plugin-specific configuration).
 
-Canonical sources:
+Because `marketplace.json` is at the repo root, the marketplace boundary is the entire repo. All symlinks inside `plugins/gobbi/` that point into the repo are within-marketplace symlinks, so Claude Code dereferences them on install — it copies the real content of each pointed-to file/directory into the installed plugin cache. The installed plugin receives the full content of every skill, agent, and hook script.
 
-| Component | Canonical source | Package target |
+**There is no sync script and no drift surface.** Symlinks always reflect the current canonical content. Any edit to `.gobbi/projects/gobbi/skills/`, `.gobbi/projects/gobbi/agents/`, or `.claude/hooks/*.sh` is immediately reflected in the plugin package without any additional step.
+
+**Never edit files inside `plugins/gobbi/` directly.** Edit the canonical sources; the symlinks reflect them automatically.
+
+Canonical sources and their symlink targets:
+
+| Component | Canonical source | Symlink in `plugins/gobbi/` |
 |---|---|---|
-| Skills | `.gobbi/projects/gobbi/skills/*/` | `plugins/gobbi/skills/*/` |
-| Agents | `.gobbi/projects/gobbi/agents/*.md` | `plugins/gobbi/agents/*.md` |
-| Hooks | `.claude/hooks/{session-start,post-tool-use-agents}.sh` | `plugins/gobbi/hooks/` |
+| Skills | `.gobbi/projects/gobbi/skills/` | `skills/` → `../../.gobbi/projects/gobbi/skills` |
+| Agents | `.gobbi/projects/gobbi/agents/` | `agents/` → `../../.gobbi/projects/gobbi/agents` |
+| Hook scripts | `.claude/hooks/{session-start,post-tool-use-agents}.sh` | `hooks/{session-start,post-tool-use-agents}.sh` |
 
-**Re-sync trigger:** any commit touching canonical `skills/`, `agents/*.md`, or `.claude/hooks/*.sh` must re-materialize the package in the same commit by running:
+**Verified on CLI v2.1.159: GitHub-hosted install → Status: enabled, plugin cache 1.4 MB, 19 skills / 5 agents / 3 hooks, no session-memory leak.**
 
-```bash
-bash scripts/sync-plugin-package.sh
-```
-
-Then stage and commit the updated `plugins/gobbi/` contents together with the canonical change.
-
-**Allow-set gate:** after re-syncing, run:
-
-```bash
-bash scripts/sync-plugin-package.sh --check
-```
-
-This verifies that `plugins/gobbi/` contains only the four allowed top-level entries (`.claude-plugin`, `skills`, `agents`, `hooks`), that all canonical sources match the package byte-for-byte, and that zero symlinks exist in the package. The `--check` must exit 0 before committing a re-sync.
-
-The sync script uses `rsync --delete` so removed canonical skill dirs are also removed from the package (idempotent, safe to re-run).
+**Caveat — local-path install.** The official docs state that local-path installs only preserve symlinks that resolve within the plugin's own directory. CLI v2.1.159 dereferenced within-marketplace symlinks on both local-path and GitHub-hosted installs empirically. The GitHub-hosted path is the documented and verified distribution path. Re-verify on any CLI upgrade if you use local-path install workflows.
 
 ### DD-8 — dev-vs-installed hook split (Option C)
 
@@ -237,10 +234,10 @@ The package ships all 19 canonical skills:
 
 `codex`, `delegation`, `discussion`, `evaluation`, `execution`, `git`, `gobbi`, `gobbi-hook-authoring`, `ideation`, `interview`, `memorization`, `mistake`, `orchestration`, `planning`, `preparation`, `principles`, `research`, `wrap-up`, `claude-plugin`
 
-The `claude-plugin` skill (this file) is skill 19. The canonical source lives at `.gobbi/projects/gobbi/skills/claude-plugin/SKILL.md`; the workspace-visible mirror is `.claude/skills/claude-plugin/SKILL.md` (a symlink). The package copy at `plugins/gobbi/skills/claude-plugin/SKILL.md` is a materialized real file produced by `sync-plugin-package.sh`.
+The `claude-plugin` skill (this file) is skill 19. The canonical source lives at `.gobbi/projects/gobbi/skills/claude-plugin/SKILL.md`; the workspace-visible mirror is `.claude/skills/claude-plugin/SKILL.md` (a symlink). The package `skills/` entry is a symlink to `.gobbi/projects/gobbi/skills/`, so the `claude-plugin` skill is reached via that symlink at `plugins/gobbi/skills/claude-plugin/SKILL.md`. On install, the installer dereferences the symlink and copies the real file content.
 
 ### Pointer to the claude-plugin skill
 
 Skill: `.gobbi/projects/gobbi/skills/claude-plugin/SKILL.md` (canonical)
 Mirror: `.claude/skills/claude-plugin/SKILL.md` (symlink, workspace-visible)
-Package: `plugins/gobbi/skills/claude-plugin/SKILL.md` (materialized real file)
+Package: `plugins/gobbi/skills/` → symlink to canonical; reached at `plugins/gobbi/skills/claude-plugin/SKILL.md` (dereferenced to real file on install)

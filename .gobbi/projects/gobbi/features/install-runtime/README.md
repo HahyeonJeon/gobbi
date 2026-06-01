@@ -7,7 +7,7 @@ feature: install-runtime
 project: gobbi
 status: active
 created: 2026-05-26
-last_updated: 2026-05-31
+last_updated: 2026-06-01
 session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
 tags: [install, runtime, hooks, env-vars, session-config]
 value_proposition: "One-command install (stable/dev channel) + project bootstrap interview + the per-session runtime contract (env-vars, hooks, session config)."
@@ -35,13 +35,11 @@ Active. The design work (decisions, scenarios, checklists, references) is captur
 
 ## Plugin package
 
-The gobbi plugin package lives at `plugins/gobbi/`. It ships exactly 19 skills, 5 agents, and 2 hooks scripts plus `hooks.json`. The repo-root `.claude-plugin/marketplace.json` indexes the package at `"source": "./plugins/gobbi"`.
+The gobbi plugin package lives at `plugins/gobbi/`. It ships exactly 19 skills, 5 agents, and 2 hook scripts plus `hooks.json`. The repo-root `marketplace.json` indexes the package at `"source": "./plugins/gobbi"`.
 
-**Materialization.** The package is a bounded materialized copy — real files only, no symlinks escaping the plugin root (a Claude Code install-time security constraint). The canonical sources are `.gobbi/projects/gobbi/skills/`, `.gobbi/projects/gobbi/agents/*.md`, and `.claude/hooks/*.sh`. Run `bash scripts/sync-plugin-package.sh` to materialize or resync the package.
+**Symlink layout (no materialization).** The package uses within-marketplace symlinks instead of materialized real copies. `plugins/gobbi/skills/` and `plugins/gobbi/agents/` are symlinks to the canonical sources (`.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`). The hook scripts (`session-start.sh`, `post-tool-use-agents.sh`) are symlinks to `.claude/hooks/`. `hooks/hooks.json` is a real file. Because `marketplace.json` is at the repo root, the marketplace boundary is the entire repo — Claude Code dereferences all within-marketplace symlinks on install and copies the real content. The installed plugin receives the full 1.4 MB cache (19 skills, 5 agents, 3 hooks). Verified on CLI v2.1.159: GitHub-hosted install → Status: enabled, no session-memory leak.
 
-**Re-sync trigger.** Any commit touching canonical `skills/`, `agents/*.md`, or `.claude/hooks/*.sh` must re-run `bash scripts/sync-plugin-package.sh` and stage the updated `plugins/gobbi/` contents in the same commit.
-
-**Allow-set gate.** After every resync, run `bash scripts/sync-plugin-package.sh --check` (must exit 0) to verify: the package top level contains only the four allowed entries (`.claude-plugin`, `skills`, `agents`, `hooks`); all canonical sources match the package byte-for-byte; and the package has zero symlinks. The T7 resync (shipping the `claude-plugin` skill as skill 19) was verified with exit=0.
+**No sync script and no drift surface.** The former `scripts/sync-plugin-package.sh` materialization script has been removed. Symlinks always reflect the current canonical content; no resync step is required.
 
 **DD-8 dev-vs-installed hook split (Option C).** The gobbi hooks have two separate registrations: `.claude/settings.json` (dev; fires from `.claude/hooks/*.sh`) and `plugins/gobbi/hooks/hooks.json` (installed; fires from `${CLAUDE_PLUGIN_ROOT}/hooks/*.sh`). On a machine that both develops in-repo AND has the plugin installed, hooks fire twice per event (double-fire caveat). This is accepted for solo development; it does not corrupt state.
 
@@ -63,6 +61,7 @@ The gobbi plugin package lives at `plugins/gobbi/`. It ships exactly 19 skills, 
 |---|---|---|
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
 | 2026-05-31 | 0fd65721 | Plugin package build: plugins/gobbi/ + .claude-plugin/marketplace.json, 19 packaged skills, DD-8 dev-vs-installed hook split, claude-plugin skill (skill 19) |
+| 2026-06-01 | chore/plugin-symlink-layout | Symlink layout migration: plugins/gobbi/skills + agents converted from materialized real copies to within-marketplace symlinks; sync-plugin-package.sh removed; manifest load-fix (#282) made plugin.json metadata-only |
 
 ## Open items
 
