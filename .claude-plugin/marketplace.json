@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "gobbi",
-      "source": "./plugins/gobbi"
+      "source": "./.claude-plugin/gobbi"
     }
   ]
 }
