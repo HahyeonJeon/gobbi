@@ -28,7 +28,7 @@ Evaluation runs inside Ideation, Planning, and Execution — mandatory after Exe
 
 > **MUST load [principles](skills/principles/SKILL.md) at session start, resume, /clear, and /compact.**
 
-The 14 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full Why, Anti-rationalizations, and Mechanism behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills.
+The 14 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills.
 
 | # | Principle |
 |---|---|
@@ -59,4 +59,4 @@ Every agent MUST load the `mistake` skill before starting work. When the user co
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [principles](skills/principles/SKILL.md) | 14 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and anti-rationalizations |
+| [principles](skills/principles/SKILL.md) | 14 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and detail |

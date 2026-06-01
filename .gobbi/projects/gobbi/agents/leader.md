@@ -22,7 +22,7 @@ The manager delegates to you for Ideation (refining what to do), Preparation (ve
 
 Mandatory load — every fresh subagent:
 
-1. **`principles` skill** — Iron Laws, anti-rationalizations. Not inherited; load explicitly.
+1. **`principles` skill** — Iron Laws and rationale. Not inherited; load explicitly.
 2. **All project rules** under `.gobbi/projects/{project-name}/rules/`.
 3. **`mistake` skill** — past pitfalls in this domain.
 
