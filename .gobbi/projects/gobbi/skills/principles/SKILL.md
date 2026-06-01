@@ -4,14 +4,6 @@ description: "EVERY agent MUST load this skill at the start of its work, before 
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
-# Gobbi Principles
-
-Canonical behavioral discipline for every gobbi agent. Loaded as a skill via the Skill tool. Required at every session start (per the CLAUDE.md mandate) and any time an agent faces a judgment call where the Iron Law alone is not enough — load this skill for the full reasoning and named anti-rationalizations behind each principle. Fourteen principles plus their named anti-rationalizations.
-
-**Load when:** session start, resume after `/clear` or compaction (mandatory), or when an agent faces a judgment call where the Iron Law alone is not enough — load for the full rationale and anti-rationalizations. Subagent delegation prompts must include an explicit load directive — fresh subagents do not inherit the parent's loaded skills.
-
----
-
 ## Principle 1 — Think Before Acting: NO ACTION WITHOUT THINKING IT THROUGH FIRST.
 
 **Why:** Agents have a strong dive-in tendency, jumping to implementation before genuinely thinking the work through. Pre-action discipline is more than running tools — it is *thinking*. Thinking spans four dimensions, supported by two concrete activities: investigation establishes the terrain, and planning fixes the path. Without active thinking across the four dimensions below, both activities produce confident misdirection.
