@@ -32,8 +32,8 @@ The hook **also receives `transcript_path`** in every fire — meaning a hook ca
 
 - [`../../install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../install-runtime/references/claude-code-transcript-tooluseresult-empirical.md) (the empirical transcript-shape companion — the verbatim `toolUseResult` JSONL payload captured during the guardrails Ideation, which grounds the "verified empirically" claim in the Why-it-applies section)
 - `claude-code-hooks-12-lifecycle-events.md` (the companion reference covering the broader hook lifecycle-event landscape)
-- `checklists/hook-event-count-31-vs-29-docs-sync.md` and `backlogs/hook-event-count-31-vs-29-docs-sync.md` (the tracked docs-sync item: the "31 events" claim below is corrected to the verified count of **30**, re-verified 2026-06-01; the tracked docs-sync and verification-gap items are being resolved this session)
-- `backlogs/posttooluse-failure-webfetch-verification-gap.md` (the deferred empirical re-verification of the verbatim quotes captured here)
+- `../../../archive/checklists/2026-06-01-hook-event-count-31-vs-29-docs-sync.md` and `../../../archive/backlogs/2026-06-01-hook-event-count-31-vs-29-docs-sync.md` (the tracked docs-sync item — resolved 2026-06-01; count corrected to **30** via commit 84521bc + iter2 remediation; archived at Wrap-up)
+- `../../../archive/backlogs/2026-06-01-posttooluse-failure-webfetch-verification-gap.md` (the deferred empirical re-verification of the verbatim quotes — resolved 2026-06-01; both quotes confirmed verbatim; archived at Wrap-up)
 
 ## PostToolUseFailure — verbatim verification
 

@@ -1,0 +1,77 @@
+Pre-Wrap-up snapshot — session 34563fb4-361d-4348-aa75-8bc9f1fbff05
+Captured: 2026-06-01
+
+=== .gobbi/projects/gobbi/mistakes/ ===
+claude-evaluator-step4-only-vs-codex-whole-file-grep.md
+codex-eval-session-write-path-nested-in-worktree.md
+codex-exec-at-file-hangs-on-stdin-in-background.md
+codex-rescue-agent-fire-and-forget-without-result-capture.md
+codex-subprocess-writes-to-main-tree.md
+codex-wrapper-relative-path-wrong-session-write.md
+conformance-executor-pre-executed-prose-wave-reshape.md
+design-literal-retire-instruction-without-replacement.md
+dual-system-codex-caught-template-form-gaps-claude-missed.md
+edit-tool-refuses-symlink-paths.md
+evaluator-false-pass-without-diffing.md
+evaluator-returned-verdict-inline-no-per-perspective-files.md
+evaluator-revise-may-contradict-the-standard-manager-disputes-with-evidence.md
+executor-cwd-reset-commits-task-to-wrong-branch.md
+executor-main-tree-edit-near-miss.md
+executor-mirror-path-vs-worktree-physical-copy.md
+handoff-verdict-claim-not-matched-to-on-disk-eval.md
+leader-iter2-verification-claim-without-evidence.md
+manager-asserted-unverified-state-into-outward-artifacts.md
+manager-context-overflow-with-large-bundle.md
+manager-dispatched-subagent-on-unanswered-decision.md
+manager-iter2-brief-failed-iron-law-7-verbatim-spec-recheck.md
+manager-rm-rf-without-investigating-tracked-files.md
+manager-skipped-dual-system-eval.md
+memorization-delegation-prompts-must-load-memorization-skill.md
+naming-standard-needs-positive-guidance-not-just-blocklist.md
+proposed-deleting-model-instead-of-fixing-stale-mechanism.md
+prose-brief-light-pass-undersold-template-section-checks.md
+prose-reclassification-target-is-project-level-notes.md
+README.md
+reproducing-a-bugged-command-is-not-validation.md
+reused-session-dir-collides-task-artifacts-across-tasks.md
+section-order-is-part-of-the-contract-not-just-the-set.md
+sendmessage-continued-cwd-resets-to-main-tree.md
+session-dir-placed-outside-worktree.md
+skills-mirror-symlinks-not-copies.md
+subagent-relative-path-write-strays-to-main-tree.md
+subagent-relative-write-paths-stray-cd-doesnt-persist.md
+subagent-stray-recurred-despite-absolute-path-instruction.md
+symlink-restore-depth-wrong.md
+worktree-physical-file-missing-when-checked-out.md
+wrap-up-promotion-must-strip-staging-frontmatter.md
+
+(No codex-webfetch-undercounts-recently-added-table-row.md yet)
+(No docs-sync-count-fix-blast-radius-includes-colocated-dates-and-tracking-pointers.md yet)
+
+=== .gobbi/projects/gobbi/archive/backlogs/ ===
+2026-05-25-f-risk-01-subagent-ccsi-semantics.md
+2026-05-25-f-struct-01-jq-sh-env-passthrough.md
+2026-05-25-git-skill-stale-row-5-5-worktree-reference.md
+2026-05-25-gobbi-hook-authoring-skill.md
+2026-05-25-gobbi-mistake-promote-command-does-not-exist.md
+2026-05-25-session-lifecycle-worktree-boundaries-design-doc.md
+2026-05-25-stale-packages-cli-architecture-refs.md
+2026-05-25-workspace-to-mirror-sync-mechanism.md
+2026-05-28-auto-mode-silence-vs-always-ask.md
+2026-05-28-chat-mode-tiki-taka-redesign.md
+2026-05-28-memory-redesign-remaining-waves.md
+
+(No 2026-06-01 entries yet)
+
+=== .gobbi/projects/gobbi/archive/checklists/ ===
+(directory does not exist yet)
+
+=== .gobbi/projects/gobbi/features/guardrails/backlogs/ ===
+goodhart-factor-when-demanded-deferred.md   (active — NOT to be archived)
+hook-event-count-31-vs-29-docs-sync.md      (status: addressed — TO BE ARCHIVED)
+posttooluse-failure-webfetch-verification-gap.md  (status: addressed — TO BE ARCHIVED)
+principles-anti-rationalizations-label-residue.md  (status: active — TO BE FLIPPED then ARCHIVED)
+
+=== .gobbi/projects/gobbi/features/guardrails/checklists/ ===
+cross-layer-drift-gate.md                   (active — NOT to be archived)
+hook-event-count-31-vs-29-docs-sync.md      (status: addressed — TO BE ARCHIVED)

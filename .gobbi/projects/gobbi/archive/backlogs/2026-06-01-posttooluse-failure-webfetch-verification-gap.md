@@ -12,6 +12,8 @@ priority: medium
 disposition: addressed
 project-scope: false
 shipped_in: "session 34563fb4 (commits 84521bc + iter2 remediation)"
+archived_at: 2026-06-01
+archive_reason: addressed
 ---
 
 # Assume PostToolUseFailure verbatim quote was correctly retrieved via WebFetch

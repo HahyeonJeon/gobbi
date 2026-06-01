@@ -4,13 +4,15 @@ description: "The frontmatter description field and closing paragraph of princip
 type: backlogs
 scope: feature
 feature: guardrails
-status: active
+status: addressed
 created: 2026-06-01
 session: a30b7a6e-164f-49ac-a857-ee225e831a7c
 tags: [principles, cosmetic, label-consistency]
 priority: null
-disposition: open
-shipped_in: null
+disposition: addressed
+shipped_in: "#285"
+archived_at: 2026-06-01
+archive_reason: addressed
 ---
 
 # Anti-rationalizations label residue in principles/SKILL.md
@@ -27,3 +29,7 @@ These are cosmetic inconsistencies. The normative content (the field bodies them
 - `grep -i "anti-rationalizations" .claude/skills/principles/SKILL.md` returns no results.
 - Frontmatter description and closing paragraph use "Anti-pattern" (or omit the label reference).
 - No normative content changed.
+
+## Resolution (2026-06-01)
+
+Cleared by PR #285 (commit `9bae55f`). Verified this session: `grep -i 'anti-rationalizations' .claude/skills/principles/SKILL.md` returns 0 matches. The frontmatter `description:` field residue ("Anti-rationalizations/Mechanism field-name residue") was removed in that PR. No normative content was changed.

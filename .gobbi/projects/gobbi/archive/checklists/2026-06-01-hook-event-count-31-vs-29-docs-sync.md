@@ -10,6 +10,8 @@ session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [hooks, docs-sync, event-count, checklist]
 disposition: addressed
 shipped_in: "session 34563fb4 (commits 84521bc + iter2 remediation)"
+archived_at: 2026-06-01
+archive_reason: addressed
 ---
 
 # Hook event count claim (31) contradicts captured evidence (29)
