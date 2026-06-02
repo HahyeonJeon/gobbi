@@ -17,14 +17,12 @@ allowed-tools: Read, Grep, Glob, Bash
 - *Consider the user:* how will the user encounter this work? What will feel intuitive, and what will surprise them? (Principle 9 deepens this dimension.)
 
 **Anti-pattern:**
-- "This is simple — I'll just do it."
-- "I see the problem, let me fix it."
-- "Just try this first, then investigate."
-- "I'll build it from scratch." (without studying what already exists)
-- "I need more context first." (used to defer action when the right move is to actually investigate)
-- "I have enough understanding to start." (used to skip studying after a quick glance)
-- "I'll figure out the user perspective as I go." (no — think it through first)
-- "I'll discover best practices during implementation." (no — find them before, not after)
+- Start solving before pinning down what is actually being asked — or whether it is even the right problem.
+- Build something new without studying what already exists or what has already been tried.
+- Commit to an approach without checking how the problem has already been solved elsewhere.
+- Begin work without surfacing the constraints, edge cases, and hidden dependencies first.
+- Act with no plan — no ordered steps and no verification checkpoints.
+- Decide without considering how the person who has to use the result will experience it.
 
 ---
 
