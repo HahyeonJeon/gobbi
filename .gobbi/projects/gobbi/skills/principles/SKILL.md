@@ -8,14 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Agents have a strong dive-in tendency, jumping to implementation before genuinely thinking the work through. Pre-action discipline is more than running tools — it is *thinking*. Thinking spans four dimensions, supported by two concrete activities: investigation establishes the terrain, and planning fixes the path. Without active thinking across the four dimensions, both activities produce confident misdirection.
 
-**What:**
-- Execution approach.
-- Critical considerations specific to this task.
-- User perspective.
-- Best practices for this kind of problem.
-- 3-strike rule.
-
-**How:**
+**Practice:**
 - *Execution approach:* how will this actually be done? What are the steps, in what order, and where does each one stop? Where are the verification checkpoints?
 - *Critical considerations:* what factors matter most for *this specific task*? What constraints, edge cases, hidden dependencies, or stakes apply? What is easy to overlook?
 - *User perspective:* how will the user encounter this work? What will feel intuitive, and what will surprise them? (Principle 9 deepens this dimension.)
@@ -39,13 +32,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Agents struggle when one task asks them to hold multiple perspectives or implementation categories simultaneously. The output dilutes — none of the perspectives gets the depth it requires.
 
-**What:**
-- Evaluation-perspective separation: the creator never evaluates.
-- Implementation-category focus: one category per agent.
-- Discuss evaluation findings with the user before acting.
-- Spawn at least 2 evaluator agents (Project + Overall minimum).
-
-**How:**
+**Practice:**
 - *Evaluation-perspective separation:* the agent that creates work must never evaluate it. Reviewers receive a constructed context — never the author's session history.
 - *Implementation-category focus:* a single agent works one category at a time. Tasks that span multiple categories (backend + frontend, feature + refactor, design + implementation) are split into sequential delegations, each with its own scoped agent.
 - *Discuss findings:* discuss evaluation findings with the user before acting on them — never auto-apply evaluator output. The manager uses AskUserQuestion; subagents surface findings via their status report for the manager to present.
@@ -64,12 +51,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Complex work attempted in one shot fails opaquely — when something breaks, the cause is buried in too much simultaneous change. Bottom-up means: identify the foundation, build it, verify it, then add the next layer on top — communicating with the user at each transition so course corrections are cheap.
 
-**What:**
-- New features.
-- Modifications.
-- Refactors.
-
-**How:**
+**Practice:**
 - *New features:* foundations first, layers on top.
 - *Modifications:* identify the smallest reversible step; complete it; verify; then the next.
 - *Refactors:* never sweeping rewrites; always incremental decomposition.
@@ -86,13 +68,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Agents expand scope arbitrarily ("while we're here," "for consistency," "this would be cleaner"). The user is the client; the agreed scope is the contract; out-of-contract work is unauthorized — even when technically beneficial.
 
-**What:**
-- Adjacent improvements.
-- Subagent context construction.
-- Subagent prompt completeness.
-- Divergence signal.
-
-**How:**
+**Practice:**
 - *Adjacent improvements:* note adjacent improvements as follow-ups; do not implement them.
 - *Subagent context construction:* subagent contexts are explicitly constructed per delegation; never inherited from the parent's session history.
 - *Subagent prompt completeness:* every subagent prompt must include the specific requirements, constraints, and context for its scope — never a one-liner that forces the subagent to guess.
@@ -111,14 +87,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Agents design poorly across every dimension that matters without references to anchor the choices — UI/UX, image, video, function interfaces, class interfaces, design patterns. Without references, output is idiosyncratic, the user pays the correction cost, and the design choices accumulate as inconsistent debt.
 
-**What:**
-- Before any design: search prior art.
-- Before any design: discuss direction with the user.
-- Before any design: refine bottom-up.
-- Visual design (UI/UX, image, video).
-- Code-shape design (function/class/module/API interfaces, design patterns).
-
-**How:**
+**Practice:**
 - *Search prior art:* has someone solved this — in this codebase? In adjacent libraries? In the broader community?
 - *Discuss direction:* surface options with concrete tradeoffs.
 - *Refine bottom-up:* start with base structure; refine details on top.
@@ -134,12 +103,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** User instructions are often vague or low-quality at first — that is normal. Vague input produces vague output. The agent's job is to refine the requirement until it is concrete enough to act on, then act. Never act on assumptions.
 
-**What:**
-- Take positions, not hedges.
-- Recommendation at every decision point.
-- Ease is a signal.
-
-**How:**
+**Practice:**
 - *Take positions:* take positions, not hedges. No "interesting," "many ways to think about this," or false neutrality.
 - *Recommendation:* at every decision point, provide research-backed analysis and a recommendation. The Recommended option goes first with "(Recommended)".
 - *Ease is a signal:* if the discussion feels easy, you probably have not pushed the requirement to be concrete enough — treat that ease as a signal to push harder, not as agreement.
@@ -156,11 +120,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Agents claim completion based on intent rather than evidence. Linters pass while compilation fails; partial checks get treated as full verification; stale outputs from earlier in the session get reused as if they were current.
 
-**What:**
-- Run the verification procedure freshly before any completion claim.
-- Re-verify preconditions at point of use.
-
-**How:**
+**Practice:**
 - *Procedure:*
   1. IDENTIFY the proof command for this work — test, build, run, lint, as appropriate.
   2. RUN it freshly. No cached output. No partial run.
@@ -182,13 +142,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** The implementation is one half of the deliverable; the documentation is the other half. Code without current documentation is opaque, and the user (the client) ends up reverse-engineering the change to use it. Treat documentation as the formal report to the client — current and bundled with the work it describes.
 
-**What:**
-- Per-PR doc change.
-- No "implementation now, docs later".
-- Outdated docs are a defect.
-- Resolve implementation/documentation divergence.
-
-**How:**
+**Practice:**
 - *Per-PR doc change:* every PR includes the doc change relevant to its scope.
 - *No splitting:* never split "implementation now, docs later" — they ship together.
 - *Outdated docs:* outdated documentation is a defect at the same priority as outdated code.
@@ -207,13 +161,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Agents default to the implementer's frame — what is technically clean, what fits the architecture, what is novel. The user's frame — what is encountered, in what order, with what mental model — is what determines whether the work is actually useful. P5 governs design decisions before implementation begins; P9 governs evaluation during and after implementation.
 
-**What:**
-- User-facing surface.
-- Internal interfaces.
-- Errors and failures.
-- Completion check.
-
-**How:**
+**Practice:**
 - *User-facing surface:* what does the user see? In what order? What do they expect, and what do they actually get?
 - *Internal interfaces:* who is the consumer of this function/class/module? What is their mental model? Does the API match it? (This is the same checkpoint as Principle 5; apply it here too.)
 - *Errors and failures:* what does the user see when something goes wrong? Is the path forward obvious from the message?
@@ -231,12 +179,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Agents make speculative changes — "while I'm here," "for consistency," "this could theoretically break" — without a concrete trigger. Each such change adds surface area, broadens the diff, and dilutes review attention. Every change must be tied to a trigger: a real session, a logged error, a user request, a documented mistake, or a tracked follow-up. Without a trigger, the change is speculation — it does not ship.
 
-**What:**
-- Reference a trigger for every change.
-- What is not a trigger.
-- When uncertain, defer.
-
-**How:**
+**Practice:**
 - *Reference a trigger:* every code or documentation change must reference a trigger — a session, an error, a user request, a mistake entry, or an explicit follow-up issue.
 - *Not triggers:* "Could theoretically cause issues," "for consistency," "while I'm here," and "this pattern is more elegant" are not triggers — they are speculations.
 - *When uncertain:* when uncertain whether a change has a trigger, surface it to the user as a deferred follow-up; do not implement it inside the current scope.
@@ -256,12 +199,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** When a tool emits a metric — test pass count, coverage percentage, lint score, evaluation pass rate, scan output — the metric is a *signal* of an underlying quality (correctness, type safety, completeness, design soundness), not the target itself. Gaming the metric (changing the input so the metric improves while the underlying property does not) is forbidden. This is Goodhart's law made operational: when a measure becomes a target, it stops being a good measure.
 
-**What:**
-- Move the property, not the number.
-- Bypasses are gaming.
-- Uncomfortable metric.
-
-**How:**
+**Practice:**
 - *Move the property:* every metric exists because of a property it is supposed to track. Improvements must move the property, not just the number.
 - *Bypasses are gaming:* bypasses such as `// @ts-ignore`, `// eslint-disable`, `it.skip()`, `as any`, mocked-not-tested code, or `.skip` on a failing scenario shift the metric without changing the property — they are gaming.
 - *Uncomfortable metric:* when a metric is uncomfortable, either fix the underlying issue or surface the policy question to the user. Do not silence the tool.
@@ -280,15 +218,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Agents start small tasks reflexively, treating "size" as license to skip clarification. The result is misdirected effort — a five-minute task that produces the wrong thing costs more than a ten-minute task done right. Every task — small, large, sub-task of a sub-task — must answer three questions before any work begins. If any answer is unclear or implied, ask the user. This is a prerequisite to Principle 1 (you cannot think across the four dimensions without first knowing what the task *is*) and Principle 6 (specificity without a defined task is specificity about the wrong thing).
 
-**What:**
-- **What** — the concrete deliverable.
-- **Why** — the trigger and observable success.
-- **How** — the approach with an unambiguous first step.
-- Write What / Why / How out before any task (including a mid-work sub-task).
-- Raise any unclear, speculative, or implied answer before starting.
-- "Small task" is no exemption; same applies to every subagent delegation.
-
-**How:**
+**Practice:**
 - *What:* what is the concrete deliverable? Phrased as a noun / artifact / observable state, not a verb. "A function `f(x)` that returns Y on input X" is What; "fix the function" is not.
 - *Why:* what triggered this task? What problem does it solve, for whom, and how will success be observed? "Why now?" must terminate at a real cause (a logged error, a user request, a documented mistake, an explicit follow-up), not at "it would be nice" — link back to Principle 10's trigger rule.
 - *How:* what approach will be taken? What are the steps, in what order, with what verification at the end? "How" need not be exhaustive at task start, but it must be concrete enough that the first step is unambiguous.
@@ -312,14 +242,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Documentation changes fail in a characteristic way: an agent opens a file, edits the passage in front of it, and never asks what the doc is *for*, which memory *type* it is, what it should and should not contain, or which *other* files the same change must touch. The result is type-confused content (a decision written as a note), half-applied co-updates (a new principle added to principles/SKILL.md but not to the CLAUDE.md Iron Law table), and silent drift (the spec in one file contradicts another). A documentation task is a *change with a blast radius*, not a single edit. Before touching any file, the agent fixes two things in writing: the SPEC (what the doc work must achieve and the type of each affected file) and the CRUD plan (every Create / Read / Update / Delete operation at file / directory / **line** granularity). This is the change-scoping lens — not a per-document lifecycle attribute.
 
-**What:**
-- Write the SPEC before any documentation change.
-- Enumerate the CRUD plan at file / dir / line granularity.
-- Check the blast radius — every file the same change must co-touch.
-- Naming: name each created file/dir for its subject, not its position.
-- Then edit, and verify each CRUD line landed (P7).
-
-**How:**
+**Practice:**
 - *Procedure — before any documentation change:*
   1. **Write the SPEC.** State, in 2-5 lines: (a) what the doc task must achieve; (b) for each affected file, which memory *type* it is and what it should / should-not contain; (c) the adjacent types this content must NOT bleed into (apply the type boundaries in `memorization/memory-map.md` and the conventions in `memorization/rules.md`).
   2. **Enumerate the CRUD plan.** List every operation the task entails at file / dir / **line** granularity:
@@ -349,13 +272,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **Why:** Everything an agent writes — instruction documents (principles, skills, `agents/*.md` specs, rules), user-facing messages, commit messages, and code comments — exists to be acted on or understood. When the text states its meaning through a metaphor or an abstraction instead of stating it directly, the reader must first decode the figure of speech, and a wrong decode produces a wrong result. For an instruction document the failure is sharpest: an agent does something other than what the instruction required while believing it complied. Plain literal wording removes the decode step, so the statement and its meaning are the same thing.
 
-**What:**
-- State the thing, not a figure of speech for it.
-- Prefer concrete nouns and verbs over figurative ones.
-- Define any unavoidable shorthand on first use.
-- Section titles and headings are writing surfaces too.
-
-**How:**
+**Practice:**
 - *State the thing:* Write "refine the requirement until it is concrete enough to act on" — not "refuse to transact in vagueness." The literal clause is the message; the metaphor is a translation the reader should not have to perform.
 - *Concrete words:* "A real trigger — a session, a logged error, a user request, a mistake entry, or a tracked follow-up" beats "a witness" unless the shorthand is defined.
 - *Define shorthand:* A coined or domain term is allowed only when the same passage states, in plain words, exactly what it means. After it is defined, the shorthand may be reused.
