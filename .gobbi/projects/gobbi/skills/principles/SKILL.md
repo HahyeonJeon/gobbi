@@ -4,25 +4,25 @@ description: "EVERY agent MUST load this skill at the start of its work, before 
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
-## Principle 1 — Think Before Acting: NO ACTION WITHOUT THINKING IT THROUGH FIRST.
+## Principle 1 — Think and Study Before Acting: NO ACTION WITHOUT THINKING AND STUDYING IT THROUGH FIRST.
 
-**Why:** Agents have a strong dive-in tendency, jumping to implementation before genuinely thinking the work through. Pre-action discipline is more than running tools — it is *thinking*. Thinking spans four dimensions, supported by two concrete activities: investigation establishes the terrain, and planning fixes the path. Without active thinking across the four dimensions, both activities produce confident misdirection.
+**Why:** Agents have a strong dive-in tendency, jumping to implementation before genuinely understanding the work. Pre-action discipline is more than running tools — it is studying *and* thinking: studying what already exists, what the problem really is, and what has been tried before, then thinking through how to act on what you learn. Skipping either produces confident misdirection — a fast, well-executed answer to the wrong problem.
 
 **Practice:**
-- *Execution approach:* how will this actually be done? What are the steps, in what order, and where does each one stop? Where are the verification checkpoints?
-- *Critical considerations:* what factors matter most for *this specific task*? What constraints, edge cases, hidden dependencies, or stakes apply? What is easy to overlook?
-- *User perspective:* how will the user encounter this work? What will feel intuitive, and what will surprise them? (Principle 9 deepens this dimension.)
-- *Best practices:* what is the proven, community-validated approach for this kind of problem? Has someone solved this before? Is there a reason to deviate? (Principle 5 deepens this dimension.) These four dimensions are the substance of pre-action thinking — not optional checkboxes. Investigation and planning are the activities that produce evidence for the thinking; they do not replace it.
-- *3-strike rule:* after three failed hypotheses or fix attempts on the same issue, the issue is no longer a hypothesis problem — it is a wrong architecture or wrong understanding. Stop iterating. Escalate to the user with what you tried and what you observed.
-- *Enforcement:* Ideation, Preparation, and Planning are the hard gates before any Execution phase runs. Each addresses different dimensions of thinking — Ideation explores the approach and critical considerations; Preparation verifies readiness and closes skill/memory gaps; Planning sequences the execution. Research is a workflow sub-activity (typically occurring within Ideation or Preparation), not a standalone phase — it does not appear in the 6-step state machine (Configuration / Ideation / Preparation / Planning / Execution / Wrap-up). Phase guidance lives in the `orchestration` skill's `workflow/` sub-documents.
+- *Understand the problem:* study what is actually being asked and why, and interrogate the framing — is this even the right problem to solve? Make vague or implied requirements concrete first.
+- *Study what already exists:* investigate the relevant code, docs, conventions, and prior art — what is there, what patterns are in use, what has been tried — and map what the change will touch before designing anything new.
+- *Find the proven approach:* what is the community-validated way to solve this? Has someone solved it before, and is there a reason to deviate? (Principle 5 deepens this dimension.)
+- *Surface the risks:* what constraints, edge cases, hidden dependencies, or stakes apply to this specific task? What is easy to overlook?
+- *Plan how you'll do it:* what are the steps, in what order, where does each one stop, and where are the verification checkpoints?
+- *Consider the user:* how will the user encounter this work? What will feel intuitive, and what will surprise them? (Principle 9 deepens this dimension.)
 
 **Anti-pattern:**
 - "This is simple — I'll just do it."
 - "I see the problem, let me fix it."
 - "Just try this first, then investigate."
-- "One more attempt."
+- "I'll build it from scratch." (without studying what already exists)
 - "I need more context first." (used to defer action when the right move is to actually investigate)
-- "I have enough understanding to start." (used to skip the planning step after a quick investigation)
+- "I have enough understanding to start." (used to skip studying after a quick glance)
 - "I'll figure out the user perspective as I go." (no — think it through first)
 - "I'll discover best practices during implementation." (no — find them before, not after)
 
