@@ -24,7 +24,7 @@ Every non-trivial task follows these 5 productive steps. Evaluation runs as a su
 
 > **Evaluation is a mandatory sub-phase in the gobbi workflow.**
 
-Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The orchestrator selects 2-5 evaluator perspectives based on task type, with Project and Overall always included. After evaluation, discuss findings with the user before improving — the user decides what to address, defer, or disagree with. Never auto-apply evaluation findings. The principle-level discipline (who evaluates whom, perspective separation) lives in `principles` Principle 2.
+Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The orchestrator selects 2-5 evaluator perspectives based on task type, with Project and Overall always included. After evaluation, discuss findings with the user before improving — the user decides what to address, defer, or disagree with. Never auto-apply evaluation findings. The principle-level discipline (who evaluates whom, perspective separation) lives in `principles` Principle 3.
 
 > **MUST load [principles](skills/principles/SKILL.md) at session start, resume, /clear, and /compact.**
 
@@ -33,8 +33,8 @@ The 14 principles below are the enforceable behavioral discipline for every agen
 | # | Principle |
 |---|---|
 | 1 | Think and Study Before Acting: NO ACTION WITHOUT THINKING AND STUDYING IT THROUGH FIRST. |
-| 2 | Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
-| 3 | Bottom-Up Construction with the User in the Loop: BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
+| 2 | Bottom-Up Construction: BUILD THE FOUNDATION FIRST, THEN GROW IT ONE MINIMAL STEP AT A TIME. |
+| 3 | Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
 | 4 | Scope Is a Contract; the User Is the Client: SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
 | 5 | Reference-First Design (visual and code-shape): NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
 | 6 | Refine Vague Requirements Before Acting: DO NOT ACT ON A VAGUE REQUIREMENT; MAKE IT CONCRETE FIRST. |

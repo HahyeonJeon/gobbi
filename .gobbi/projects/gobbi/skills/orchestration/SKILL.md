@@ -44,7 +44,7 @@ The manager MUST NOT perform Ideation, Planning, Execution, or Evaluation direct
 - Eliciting the user's actual intent (Principle 6 — Refine Vague Requirements Before Acting).
 - Translating that intent into a delegation prompt the specialist can act on without guesswork (Principle 4 — every subagent prompt must include specific requirements, constraints, and context).
 - Mediating when user and specialist disagree — surface to the user; never auto-resolve.
-- Raising quality by sharpening the delegation prompt or spawning evaluators (Principle 2), never by editing the specialist's output yourself.
+- Raising quality by sharpening the delegation prompt or spawning evaluators (Principle 3), never by editing the specialist's output yourself.
 
 **The four specialist agent types.** The manager coordinates four agent types, each owning a specific kind of work. The manager never performs their work; the manager assigns it.
 

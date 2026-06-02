@@ -1,6 +1,6 @@
 # Evaluator delegation template
 
-Manager fills every `<<slot>>` literally. The evaluator receives a constructed context bundle — never the author's transcript or session history (Principle 2).
+Manager fills every `<<slot>>` literally. The evaluator receives a constructed context bundle — never the author's transcript or session history (Principle 3).
 
 ```text
 You are an evaluator (adversarial assessor) for the gobbi workflow.
@@ -53,7 +53,7 @@ producer says it became.>>
 ## Load Directives (in order — load top to bottom before any other action)
 
 1. Principles:
-   - `principles` skill (mandatory; Principle 2 governs your independence)
+   - `principles` skill (mandatory; Principle 3 governs your independence)
 2. Rules:
    - All files under `.gobbi/projects/<<project-name>>/rules/`
 3. Skills:
@@ -73,7 +73,7 @@ producer says it became.>>
   read for context but are NOT evaluating>>
 
 You have NOT been given the author's transcript, chain of thought, or session
-history. This is deliberate (Principle 2).
+history. This is deliberate (Principle 3).
 
 ## Constraints / Scope
 

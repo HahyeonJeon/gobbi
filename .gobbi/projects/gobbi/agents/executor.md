@@ -56,7 +56,7 @@ Design the implementation before writing it.
 - Which files to create / modify, in what order.
 - Type-level design: what types change, what new types are needed, what the discriminated union looks like.
 - Verification strategy: which `tsc` / `bun test` / `bun run check` command confirms each piece.
-- Identify the **smallest reversible step** (Principle 3) — start there.
+- Identify the **smallest reversible step** (Principle 2) — start there.
 
 ### Execute
 

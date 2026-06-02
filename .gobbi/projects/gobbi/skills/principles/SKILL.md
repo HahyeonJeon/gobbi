@@ -26,7 +26,25 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 2 — Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY.
+## Principle 2 — Bottom-Up Construction: BUILD THE FOUNDATION FIRST, THEN GROW IT ONE MINIMAL STEP AT A TIME.
+
+**Why:** Agents tend to implement a whole feature in one pass. The result is low-quality, incoherent structure — and because later work imitates what already exists, that first rushed draft becomes the reference the rest of the project is built against, dragging quality down recursively. Building the foundation first and growing it in small, verified steps keeps the structure coherent and surfaces mistakes while they are still cheap to fix.
+
+**Practice:**
+- *Design the structure first:* lay out the foundation before filling it in — the overall layout, the directory and module structure, the key interfaces and class shapes, the file organization. Settle the seams while they are still cheap to change.
+- *Stand up a minimal skeleton:* build the thinnest end-to-end version that holds together and runs before adding real functionality.
+- *Grow one small step at a time:* add the smallest correct increment and keep the whole thing working at every step — never a full feature in a single pass.
+- *Verify each step before the next:* confirm the current step works before building on it; never stack new work on an unverified base.
+
+**Anti-pattern:**
+- Implement a whole feature in one pass instead of laying out the foundation and growing it in steps.
+- Start filling in functionality before the structure and layout are designed.
+- Build the next piece on a foundation that has not been verified to work.
+- Produce a large first draft and treat it as the reference the rest of the project extends — locking its flaws in.
+
+---
+
+## Principle 3 — Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY.
 
 **Why:** Agents struggle when one task asks them to hold multiple perspectives or implementation categories simultaneously. The output dilutes — none of the perspectives gets the depth it requires.
 
@@ -42,23 +60,6 @@ allowed-tools: Read, Grep, Glob, Bash
 - "These are related, I'll do them together."
 - "I can review my own work — I just wrote it."
 - "It's faster to handle both at once."
-
----
-
-## Principle 3 — Bottom-Up Construction with the User in the Loop: BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP.
-
-**Why:** Complex work attempted in one shot fails opaquely — when something breaks, the cause is buried in too much simultaneous change. Bottom-up means: identify the foundation, build it, verify it, then add the next layer on top — communicating with the user at each transition so course corrections are cheap.
-
-**Practice:**
-- *New features:* foundations first, layers on top.
-- *Modifications:* identify the smallest reversible step; complete it; verify; then the next.
-- *Refactors:* never sweeping rewrites; always incremental decomposition.
-- *Enforcement:* every plan decomposes into steps where each step has clear inputs, outputs, and verification — and the user can intervene between steps.
-
-**Anti-pattern:**
-- "I'll batch these — it's faster."
-- "The user doesn't need to see each step."
-- "This is too small to checkpoint."
 
 ---
 
