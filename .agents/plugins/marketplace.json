@@ -8,7 +8,7 @@
       "name": "gobbi",
       "source": {
         "source": "local",
-        "path": "./"
+        "path": "./plugins/gobbi"
       },
       "policy": {
         "installation": "AVAILABLE",

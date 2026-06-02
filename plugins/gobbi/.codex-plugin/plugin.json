@@ -1,16 +1,26 @@
 {
   "name": "gobbi",
-  "version": "0.1.0",
-  "description": "Gobbi workflow skills for Codex.",
+  "version": "0.5.0",
+  "description": "Gobbi workflow skills and agents for Codex.",
   "author": {
-    "name": "Gobbi"
+    "name": "HahyeonJeon",
+    "email": "jeonhh0061@gmail.com"
   },
-  "skills": "./.gobbi/projects/gobbi/skills/",
+  "license": "MIT",
+  "keywords": [
+    "gobbi",
+    "workflow",
+    "orchestration",
+    "evaluation",
+    "planning",
+    "codex"
+  ],
+  "skills": "./skills/",
   "interface": {
     "displayName": "Gobbi",
     "shortDescription": "Use Gobbi workflow skills in Codex.",
     "longDescription": "Gobbi packages workflow skills for structured ideation, planning, execution, evaluation, memorization, and handoff work in Codex.",
-    "developerName": "Gobbi",
+    "developerName": "HahyeonJeon",
     "category": "Productivity",
     "capabilities": [
       "Read",

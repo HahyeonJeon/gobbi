@@ -4,10 +4,13 @@
     "name": "HahyeonJeon",
     "email": "jeonhh0061@gmail.com"
   },
+  "description": "Gobbi workflow plugins for Claude Code.",
   "plugins": [
     {
       "name": "gobbi",
-      "source": "./.claude-plugin/gobbi"
+      "description": "Structured orchestration, planning, execution, evaluation, memorization, and handoff for Claude Code.",
+      "version": "0.5.0",
+      "source": "./plugins/gobbi"
     }
   ]
 }

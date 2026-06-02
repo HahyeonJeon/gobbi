@@ -1,13 +1,13 @@
 ---
 name: bounded-package-root-and-marketplace-source-resolved
-description: Package root = plugins/gobbi/; marketplace at repo-root .claude-plugin/marketplace.json; source = "./plugins/gobbi" — resolves STRUCT-1
+description: Package root = plugins/gobbi/; marketplaces at .claude-plugin/marketplace.json and .agents/plugins/marketplace.json; both source ./plugins/gobbi — resolves STRUCT-1
 type: decisions
 scope: feature
 feature: install-runtime
 status: active
 created: 2026-05-30
 session: 0fd65721-c39f-4305-b296-9961aee8e1c1
-tags: [claude-plugin, plugin-package, marketplace, layout, struct-1]
+tags: [claude-plugin, codex-plugin, plugin-package, marketplace, layout, struct-1]
 supersedes: null
 superseded_by: null
 decision_status: ratified
@@ -24,10 +24,11 @@ STRUCT-1 (Codex Medium/75) left the package root path and marketplace `source` u
 ## Decision (leader recommendation; accepted as-is — discussion-log "Resolved (leader recommendations accepted)" 2026-05-30)
 
 1. **Package root:** `plugins/gobbi/` (repo-relative, top-level).
-2. **Manifest:** `plugins/gobbi/.claude-plugin/plugin.json`.
-3. **Marketplace file:** repo-root `.claude-plugin/marketplace.json` (Claude schema).
-4. **`source` value:** bare string `"./plugins/gobbi"`, resolved relative to the marketplace root (the dir containing `.claude-plugin/` = repo root).
-5. **Bounded-cache invariant attached to `plugins/gobbi/`:** allow-set = `{.claude-plugin/, skills/, agents/, hooks/}` only; the cache-contents gate asserts this set post-install.
+2. **Manifests:** `plugins/gobbi/.claude-plugin/plugin.json` and `plugins/gobbi/.codex-plugin/plugin.json`.
+3. **Marketplace files:** repo-root `.claude-plugin/marketplace.json` (Claude schema) and `.agents/plugins/marketplace.json` (Codex schema).
+4. **Claude `source` value:** bare string `"./plugins/gobbi"`, resolved relative to the marketplace root (the dir containing `.claude-plugin/` = repo root).
+5. **Codex `source.path` value:** object source `{ "source": "local", "path": "./plugins/gobbi" }`, resolved relative to the marketplace root.
+6. **Bounded-cache invariant attached to `plugins/gobbi/`:** allow-set = `{.claude-plugin/, .codex-plugin/, skills/, agents/, hooks/}` only; the source-package gate asserts this set and verifies `skills`, `agents`, and hook scripts are symlinks.
 
 ## Rationale
 
@@ -46,4 +47,4 @@ None seriously entertained: the prior-art shape (`plugins/{name}/`) was verified
 
 ## Consequences
 
-The cache-contents allow-set gate can be written against `~/.claude/plugins/cache/<id>/` with the 4-entry allow-set. The `source` resolution is auditable against the doc's relative-path rule.
+The source-package allow-set gate can be written against `plugins/gobbi/` with the 5-entry allow-set. Installed-cache checks must additionally verify whether the runtime copied symlink targets or preserved/skipped symlinks. Fresh Codex verification on 2026-06-02 showed Codex skips the symlinked component entries in the installed cache. The `source` resolution is auditable against each ecosystem's marketplace rule: Claude uses a bare relative string; Codex uses an object with `source: "local"` and `path`.
