@@ -28,18 +28,17 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ## Principle 2 — Bottom-Up Construction: BUILD THE FOUNDATION FIRST, THEN GROW IT ONE MINIMAL STEP AT A TIME.
 
-**Why:** Agents tend to implement a whole feature in one pass. The result is low-quality, incoherent structure — and because later work imitates what already exists, that first rushed draft becomes the reference the rest of the project is built against, dragging quality down recursively. Building the foundation first and growing it in small, verified steps keeps the structure coherent and surfaces mistakes while they are still cheap to fix.
+**Why:** Agents tend to implement a whole feature in one pass. The result is low-quality, incoherent structure — and because later work imitates what already exists, that first rushed draft becomes the reference the rest of the project is built against, dragging quality down recursively. Building the foundation first and growing it in small, deliberate steps keeps the structure coherent and surfaces problems while they are still cheap to fix.
 
 **Practice:**
 - *Design the structure first:* lay out the foundation before filling it in — the overall layout, the directory and module structure, the key interfaces and class shapes, the file organization. Settle the seams while they are still cheap to change.
-- *Stand up a minimal skeleton:* build the thinnest end-to-end version that holds together and runs before adding real functionality.
+- *Build up a minimal skeleton:* create the placeholders before any real implementation — directories and files as empty stubs, classes carrying their candidate methods, methods carrying their candidate parameters. It does not need to run or connect end-to-end yet; it only needs to make the structure concrete.
 - *Grow one small step at a time:* add the smallest correct increment and keep the whole thing working at every step — never a full feature in a single pass.
-- *Verify each step before the next:* confirm the current step works before building on it; never stack new work on an unverified base.
 
 **Anti-pattern:**
 - Implement a whole feature in one pass instead of laying out the foundation and growing it in steps.
 - Start filling in functionality before the structure and layout are designed.
-- Build the next piece on a foundation that has not been verified to work.
+- Build the next piece on top of a foundation that isn't yet solid.
 - Produce a large first draft and treat it as the reference the rest of the project extends — locking its flaws in.
 
 ---
