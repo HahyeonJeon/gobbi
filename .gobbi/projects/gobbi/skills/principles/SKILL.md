@@ -34,6 +34,7 @@ allowed-tools: Read, Grep, Glob, Bash
 - *Design the structure first:* lay out the foundation before filling it in — the overall layout, the directory and module structure, the key interfaces and class shapes, the file organization. Settle the seams while they are still cheap to change.
 - *Build up a minimal skeleton:* create the placeholders before any real implementation — directories and files as empty stubs, classes carrying their candidate methods, methods carrying their candidate parameters. It does not need to run or connect end-to-end yet; it only needs to make the structure concrete.
 - *Grow one small step at a time:* add the smallest correct increment and keep the whole thing working at every step — never a full feature in a single pass.
+- *Loop, refining the skeleton as you go:* repeat the cycle — grow one small step, then refine the skeleton to match what you have learned: firm up the candidate methods, settle their parameters, and stub the placeholders for what comes next. The structure keeps pace with the work instead of freezing on the first guess.
 
 **Anti-pattern:**
 - Implement a whole feature in one pass instead of laying out the foundation and growing it in steps.
