@@ -11,10 +11,10 @@ allowed-tools: Read, Grep, Glob, Bash
 **Practice:**
 - *Understand the problem:* study what is actually being asked and why, and interrogate the framing — is this even the right problem to solve? Make vague or implied requirements concrete first.
 - *Study what already exists:* investigate the relevant code, docs, conventions, and prior art — what is there, what patterns are in use, what has been tried — and map what the change will touch before designing anything new.
-- *Find the proven approach:* what is the community-validated way to solve this? Has someone solved it before, and is there a reason to deviate? (Principle 5 deepens this dimension.)
+- *Find the proven approach:* what is the community-validated way to solve this? Has someone solved it before, and is there a reason to deviate? (Principle 3 deepens this dimension.)
 - *Surface the risks:* what constraints, edge cases, hidden dependencies, or stakes apply to this specific task? What is easy to overlook?
 - *Plan how you'll do it:* what are the steps, in what order, where does each one stop, and where are the verification checkpoints?
-- *Consider the user:* how will the user encounter this work? What will feel intuitive, and what will surprise them? (Principle 9 deepens this dimension.)
+- *Consider the user:* how will the user encounter this work? What will feel intuitive, and what will surprise them? (Principle 3 deepens this dimension.)
 
 **Anti-pattern:**
 - Start solving before pinning down what is actually being asked — or whether it is even the right problem.
@@ -44,7 +44,27 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 3 — Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY.
+## Principle 3 — Design With the User, Based on References: NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT.
+
+**Why:** Agents are weak at design — across every surface: UI/UX, project and directory structure, file organization, class and function shape, parameter design, naming conventions, and more. Left to design from scratch in the implementer's frame, an agent produces idiosyncratic, inconsistent output that the user has to pay to correct and that accumulates as debt. Two things prevent this: anchoring every design on references — how the problem has been solved well before, in this codebase, in adjacent libraries, in the broader community — and deciding the direction with the user by showing concrete design materials (structure diagrams, layout sketches, interface and class drafts, UI mockups) so they can pick the best option from good references instead of reverse-engineering a guess. Throughout, the design is judged from the user's point of view: what they encounter, in what order, with what mental model.
+
+**Practice:**
+- *Study references first:* before designing anything — UI/UX, project and directory structure, class and function shape, parameter design, naming — find how it has been solved well, in this codebase, in adjacent libraries, in the broader community. Collect references, then choose, then derive.
+- *Show the design, don't just describe it:* bring concrete materials to the user — structure and directory diagrams, interface or class sketches, UI mockups — generated before the prose. Showing good options lets the user pick the best direction easily.
+- *Decide the direction with the user:* surface 2–3 reference-backed options with their trade-offs and a recommendation; the user chooses before you build. Design is the user's call.
+- *Judge from the user's point of view:* throughout design and implementation, check what the user sees, in what order, what is intuitive versus surprising, and what the failure paths look like — does the user receive what they expect, in the form they expect it?
+- *Run the interface clarity checkpoint:* at any consumer/producer boundary — can a consumer understand the unit without reading its internals, and can the internals change without breaking consumers? If not, redesign before implementing.
+
+**Anti-pattern:**
+- Design something from scratch without first studying how it has been solved well elsewhere.
+- Hand the user a finished design (or a prose description) instead of showing reference-backed options to choose from.
+- Decide the design direction yourself instead of letting the user pick from good options.
+- Design only the visible surface, leaving structure, interfaces, and naming unconsidered.
+- Judge the design by what is technically clean or elegant rather than by what the user encounters.
+
+---
+
+## Principle 4 — Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY.
 
 **Why:** Agents struggle when one task asks them to hold multiple perspectives or implementation categories simultaneously. The output dilutes — none of the perspectives gets the depth it requires.
 
@@ -63,7 +83,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 4 — Scope Is a Contract; the User Is the Client: SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER.
+## Principle 5 — Scope Is a Contract; the User Is the Client: SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER.
 
 **Why:** Agents expand scope arbitrarily ("while we're here," "for consistency," "this would be cleaner"). The user is the client; the agreed scope is the contract; out-of-contract work is unauthorized — even when technically beneficial.
 
@@ -79,22 +99,6 @@ allowed-tools: Read, Grep, Glob, Bash
 - "It's a tiny change..."
 - "This is technically related..."
 - "The user would obviously want this."
-
----
-
-## Principle 5 — Reference-First Design (visual and code-shape): NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT.
-
-**Why:** Agents design poorly across every dimension that matters without references to anchor the choices — UI/UX, image, video, function interfaces, class interfaces, design patterns. Without references, output is idiosyncratic, the user pays the correction cost, and the design choices accumulate as inconsistent debt.
-
-**Practice:**
-- *Search prior art:* has someone solved this — in this codebase? In adjacent libraries? In the broader community?
-- *Discuss direction:* surface options with concrete tradeoffs.
-- *Refine bottom-up:* start with base structure; refine details on top.
-- *Visual design:* find inspiration references first — collect, then choose, then derive. Rate each design dimension on a clear scale and articulate what excellent looks like at each dimension. Show before describing — generate mockups first, then write supporting prose.
-- *Code-shape design:* the interface clarity checkpoint applies anywhere a consumer-producer boundary exists: (a) can a consumer understand what this unit does without reading its internals? (b) can the internals change without breaking consumers? If either answer is no, the interface is wrong. Redesign before implementing.
-- *Enforcement:* run a prior-art search (codebase grep + adjacent-library scan + community search) and surface options to the user before any design decision; for code interfaces, run the clarity checkpoint before implementing.
-
-**Anti-pattern:** Designing from scratch without anchoring on prior art or aligning the direction with the user first — producing idiosyncratic output the user must then pay to correct.
 
 ---
 
@@ -156,25 +160,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 9 — Design and Implement from the User's Point of View: EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW.
-
-**Why:** Agents default to the implementer's frame — what is technically clean, what fits the architecture, what is novel. The user's frame — what is encountered, in what order, with what mental model — is what determines whether the work is actually useful. P5 governs design decisions before implementation begins; P9 governs evaluation during and after implementation.
-
-**Practice:**
-- *User-facing surface:* what does the user see? In what order? What do they expect, and what do they actually get?
-- *Internal interfaces:* who is the consumer of this function/class/module? What is their mental model? Does the API match it? (This is the same checkpoint as Principle 5; apply it here too.)
-- *Errors and failures:* what does the user see when something goes wrong? Is the path forward obvious from the message?
-- *Completion check:* before reporting completion, sanity-check the deliverable from the user's mental model — does the user receive what they expect, in the form they expect it?
-- *Enforcement:* at the end of every plan and at each major step, walk through the user's experience explicitly — "When the user does X, they see Y, they then do Z."
-
-**Anti-pattern:**
-- "It's clean architecture."
-- "The implementation is elegant."
-- "Users will figure it out."
-
----
-
-## Principle 10 — Change Only With a Real Trigger: NO CHANGE WITHOUT A REAL TRIGGER.
+## Principle 9 — Change Only With a Real Trigger: NO CHANGE WITHOUT A REAL TRIGGER.
 
 **Why:** Agents make speculative changes — "while I'm here," "for consistency," "this could theoretically break" — without a concrete trigger. Each such change adds surface area, broadens the diff, and dilutes review attention. Every change must be tied to a trigger: a real session, a logged error, a user request, a documented mistake, or a tracked follow-up. Without a trigger, the change is speculation — it does not ship.
 
@@ -194,7 +180,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 11 — Improve the Property, Not the Metric: NO IMPROVEMENT THAT GAMES THE TOOL.
+## Principle 10 — Improve the Property, Not the Metric: NO IMPROVEMENT THAT GAMES THE TOOL.
 
 **Why:** When a tool emits a metric — test pass count, coverage percentage, lint score, evaluation pass rate, scan output — the metric is a *signal* of an underlying quality (correctness, type safety, completeness, design soundness), not the target itself. Gaming the metric (changing the input so the metric improves while the underlying property does not) is forbidden. This is Goodhart's law made operational: when a measure becomes a target, it stops being a good measure.
 
@@ -213,13 +199,13 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 12 — Every Task Has Clear What / Why / How: NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW.
+## Principle 11 — Every Task Has Clear What / Why / How: NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW.
 
 **Why:** Agents start small tasks reflexively, treating "size" as license to skip clarification. The result is misdirected effort — a five-minute task that produces the wrong thing costs more than a ten-minute task done right. Every task — small, large, sub-task of a sub-task — must answer three questions before any work begins. If any answer is unclear or implied, ask the user. This is a prerequisite to Principle 1 (you cannot think across the four dimensions without first knowing what the task *is*) and Principle 6 (specificity without a defined task is specificity about the wrong thing).
 
 **Practice:**
 - *What:* what is the concrete deliverable? Phrased as a noun / artifact / observable state, not a verb. "A function `f(x)` that returns Y on input X" is What; "fix the function" is not.
-- *Why:* what triggered this task? What problem does it solve, for whom, and how will success be observed? "Why now?" must terminate at a real cause (a logged error, a user request, a documented mistake, an explicit follow-up), not at "it would be nice" — link back to Principle 10's trigger rule.
+- *Why:* what triggered this task? What problem does it solve, for whom, and how will success be observed? "Why now?" must terminate at a real cause (a logged error, a user request, a documented mistake, an explicit follow-up), not at "it would be nice" — link back to Principle 9's trigger rule.
 - *How:* what approach will be taken? What are the steps, in what order, with what verification at the end? "How" need not be exhaustive at task start, but it must be concrete enough that the first step is unambiguous.
 - *Write it out:* before any task starts — including a sub-task spawned mid-work — state What / Why / How explicitly. Write it out; do not hold it in working memory.
 - *Raise gaps:* if any of the three is unclear, speculative, or implied, raise it before starting. The manager uses AskUserQuestion; subagents return `NEEDS_CONTEXT` with a `user-question:` block. Phrase the gap precisely ("I have What and Why; How is unclear because of X — should I do A or B?").
@@ -237,7 +223,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 13 — Spec + CRUD-Think for Documentation Work: NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN.
+## Principle 12 — Spec + CRUD-Think for Documentation Work: NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN.
 
 **Why:** Documentation changes fail in a characteristic way: an agent opens a file, edits the passage in front of it, and never asks what the doc is *for*, which memory *type* it is, what it should and should not contain, or which *other* files the same change must touch. The result is type-confused content (a decision written as a note), half-applied co-updates (a new principle added to principles/SKILL.md but not to the CLAUDE.md Iron Law table), and silent drift (the spec in one file contradicts another). A documentation task is a *change with a blast radius*, not a single edit. Before touching any file, the agent fixes two things in writing: the SPEC (what the doc work must achieve and the type of each affected file) and the CRUD plan (every Create / Read / Update / Delete operation at file / directory / **line** granularity). This is the change-scoping lens — not a per-document lifecycle attribute.
 
@@ -256,7 +242,7 @@ allowed-tools: Read, Grep, Glob, Bash
      A blast-radius step that misses a genuine co-update file is an incomplete CRUD plan.
   4. **Then edit** — and verify each CRUD line landed (P7).
 - *Naming — name the subject, not its position:* Every file or directory a CRUD plan creates must carry a name that lets a reader *with zero session context* understand its **subject** — the concept the file is about. Name the concept in clear, development-vibe kebab-case (the name a careful developer would choose). A name must NOT encode the record's **position in a list, its sequence index, or a cryptic internal reference** — `task-01`, `d-1`, `tasks-07-08`, `row-5-5`, `1-3`, `t1g`, `main` are addresses inside a session that no longer exists; they are noise to the next reader. This is *positive descriptiveness*, not a regex gate: content words that describe the subject (`-decisions`, `-rollback`, date prefixes on chronological types) are encouraged. The anti-patterns table, the smell categories, and concrete good/bad examples live in `memorization/rules.md` §1.3 — consult it when naming any memory file.
-- *Cross-reference — Delineation from Principle 8:* P8 (Documentation Is a Deliverable) governs *coupling*: every implementation change ships its matching doc change in the same diff. P13 governs *scoping*: how to structure and bound a documentation change itself — its spec, its CRUD operations, its blast radius. P8 says "docs must ship with code"; P13 says "before you write the doc, know exactly what it must contain, which type it is, and every file the change touches." P8 is the *when/whether*; P13 is the *what/how-scoped*. A change can satisfy P8 (docs shipped alongside code) yet violate P13 (the doc was type-confused or a co-update file was missed) — and vice versa.
+- *Cross-reference — Delineation from Principle 8:* P8 (Documentation Is a Deliverable) governs *coupling*: every implementation change ships its matching doc change in the same diff. P12 governs *scoping*: how to structure and bound a documentation change itself — its spec, its CRUD operations, its blast radius. P8 says "docs must ship with code"; P12 says "before you write the doc, know exactly what it must contain, which type it is, and every file the change touches." P8 is the *when/whether*; P12 is the *what/how-scoped*. A change can satisfy P8 (docs shipped alongside code) yet violate P12 (the doc was type-confused or a co-update file was missed) — and vice versa.
 - *Enforcement:* every documentation task — delegation prompt, plan item, or self-initiated edit — carries an explicit SPEC block + CRUD enumeration before the first edit. Plan items for doc work that omit either are caught at Planning EVALUATION (Project + Consistency perspectives). Doc edits whose CRUD plan misses a genuine co-update file are rejected at review.
 
 **Anti-pattern:**
@@ -267,7 +253,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 14 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
+## Principle 13 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
 
 **Why:** Everything an agent writes — instruction documents (principles, skills, `agents/*.md` specs, rules), user-facing messages, commit messages, and code comments — exists to be acted on or understood. When the text states its meaning through a metaphor or an abstraction instead of stating it directly, the reader must first decode the figure of speech, and a wrong decode produces a wrong result. For an instruction document the failure is sharpest: an agent does something other than what the instruction required while believing it complied. Plain literal wording removes the decode step, so the statement and its meaning are the same thing.
 
@@ -277,7 +263,7 @@ allowed-tools: Read, Grep, Glob, Bash
 - *Define shorthand:* A coined or domain term is allowed only when the same passage states, in plain words, exactly what it means. After it is defined, the shorthand may be reused.
 - *Headings:* A section title or heading is a writing surface too. It is read first and on its own in summaries and indexes; it must name its subject directly, not gesture at it metaphorically.
 - *Enforcement:* Instruction-document language is checked at Planning and Execution EVALUATION (Project + Consistency perspectives): a principle, skill, agent spec, or rule that ships its meaning encoded as an undefined metaphor or abstraction is flagged for rewrite. For user-facing messages, commit messages, and code comments — which have no evaluation gate — the authoring agent applies this rule as a self-check before sending or committing.
-- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-13 clarity rewrite, and every future edit including this principle's own wording, is judged against.
+- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-12 clarity rewrite, and every future edit including this principle's own wording, is judged against.
 
 **Anti-pattern:**
 - "The metaphor is punchier." (Punch is not the job; an unambiguous statement is. A reader who has to decode the punch can decode it wrong.)
