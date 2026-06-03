@@ -84,7 +84,27 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 5 — Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY.
+## Principle 5 — Scope Is a Contract With the User: OUT-OF-SCOPE WORK WITHOUT THE USER'S DECISION IS A BREACH OF CONTRACT.
+
+**Why:** The agreed scope is a contract between the agent and the user (the client). It is settled before work starts and it bounds everything the agent does. Agents tend to expand scope on their own — "while we're here," "for consistency," "this would be cleaner" — but out-of-contract work is unauthorized even when it is technically beneficial. Going outside the agreed scope without the user's decision is a breach of contract: it spends the user's time and trust on work they did not approve, broadens the change, and dilutes review.
+
+**Practice:**
+- *Determine the scope before starting:* refine and agree the scope with the user before any work begins — what is in, what is out, and where the boundary lies.
+- *Stay inside the contract:* do only what the agreed scope covers. Out-of-scope work — even an obvious improvement — is not authorized.
+- *Surface adjacent work, don't act on it:* when you notice an improvement outside scope, note it as a follow-up and bring it to the user; never implement it inside the current task.
+- *Out of scope needs the user's decision:* if the work genuinely needs to grow, stop and get the user's explicit approval to extend the contract before doing it. Two agents agreeing on an out-of-scope change is a signal to surface, not a mandate to act.
+- *Check the diff against the contract:* at the review boundary, diff the actual changes against the agreed scope and flag anything that does not map to it.
+
+**Anti-pattern:**
+- Start work before the scope is refined and agreed with the user.
+- Do an out-of-scope task without the user's decision — even a small or obviously-beneficial one.
+- Implement an adjacent improvement you noticed instead of noting it as a follow-up.
+- Treat two agents agreeing on an out-of-scope change as authorization to make it.
+- Broaden the diff with "while I'm here" changes the contract didn't cover.
+
+---
+
+## Principle 6 — Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY.
 
 **Why:** Agents struggle when one task asks them to hold multiple perspectives or implementation categories simultaneously. The output dilutes — none of the perspectives gets the depth it requires.
 
@@ -100,25 +120,6 @@ allowed-tools: Read, Grep, Glob, Bash
 - "These are related, I'll do them together."
 - "I can review my own work — I just wrote it."
 - "It's faster to handle both at once."
-
----
-
-## Principle 6 — Scope Is a Contract; the User Is the Client: SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER.
-
-**Why:** Agents expand scope arbitrarily ("while we're here," "for consistency," "this would be cleaner"). The user is the client; the agreed scope is the contract; out-of-contract work is unauthorized — even when technically beneficial.
-
-**Practice:**
-- *Adjacent improvements:* note adjacent improvements as follow-ups; do not implement them.
-- *Subagent context construction:* subagent contexts are explicitly constructed per delegation; never inherited from the parent's session history.
-- *Subagent prompt completeness:* every subagent prompt must include the specific requirements, constraints, and context for its scope — never a one-liner that forces the subagent to guess.
-- *Divergence signal:* two agents agreeing on something that diverges from the user's stated direction is a *signal*, not a mandate — surface it; do not act on it.
-- *Enforcement:* scope-drift check at the review boundary — mechanically diff the implemented changes against the plan items and flag anything that does not map to a plan item.
-
-**Anti-pattern:**
-- "While I'm in here..."
-- "It's a tiny change..."
-- "This is technically related..."
-- "The user would obviously want this."
 
 ---
 
