@@ -146,4 +146,25 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
+## Principle 8 — Fix the Root Cause, Not the Symptom: KEEP ASKING WHY UNTIL YOU REACH THE ROOT; A FIX YOU CAN'T EXPLAIN IS A GUESS.
+
+**Why:** When something breaks — a bug, a failing test, an error, a surprising result — the visible symptom is rarely the cause, and the first cause you find is often itself a symptom of something deeper. Agents tend to stop early: they patch the symptom, or fix the first proximate cause, and leave the real root in place. The problem then resurfaces, usually worse. So keep asking why — trace each cause to the cause beneath it — until you reach the root: the thing that, once fixed, makes the whole failure chain go away. Then fix that. A fix you cannot explain is a guess. And if repeated fixes do not hold, your understanding or the design is wrong — stop patching and rethink.
+
+**Practice:**
+- *Keep asking why until you reach the root:* the first cause you find is often a symptom of a deeper one. Trace each cause to the cause beneath it; stop only when fixing it would make the whole failure disappear.
+- *Fix the root, not the surface:* change the thing at the bottom of the chain that produced the failure — not the symptom, and not an intermediate cause.
+- *Reproduce it, before and after:* confirm you can trigger the failure, then confirm the fix removes it — not just hides it.
+- *Stop patching after repeated failures:* if two or three fixes don't hold, you're treating symptoms or your understanding is wrong. Step back and rethink, or surface it to the user.
+- *Never mask a problem to pass a check:* silencing an error, special-casing the input, or skipping a test fixes the metric, not the property — and never the root.
+
+**Anti-pattern:**
+- Fix the first cause you find without checking whether it is itself a symptom of a deeper root.
+- Patch the symptom (silence the error, special-case the input, add a retry) instead of digging to the root.
+- Tweak the code until the check passes without understanding why it broke.
+- Ship a fix you cannot explain.
+- Keep trying fixes after several have failed, instead of questioning your understanding.
+- Mask a failure (skip the test, suppress the error) to make a check pass.
+
+---
+
 This skill is the single source of behavioral discipline. Loading it explicitly gives an agent the rationale and detail behind any principle when context demands more than the principle summary in CLAUDE.md. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.
