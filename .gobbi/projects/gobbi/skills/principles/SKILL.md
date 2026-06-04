@@ -104,26 +104,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 6 — Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY.
-
-**Why:** Agents struggle when one task asks them to hold multiple perspectives or implementation categories simultaneously. The output dilutes — none of the perspectives gets the depth it requires.
-
-**Practice:**
-- *Evaluation-perspective separation:* the agent that creates work must never evaluate it. Reviewers receive a constructed context — never the author's session history.
-- *Implementation-category focus:* a single agent works one category at a time. Tasks that span multiple categories (backend + frontend, feature + refactor, design + implementation) are split into sequential delegations, each with its own scoped agent.
-- *Discuss findings:* discuss evaluation findings with the user before acting on them — never auto-apply evaluator output. The manager uses AskUserQuestion; subagents surface findings via their status report for the manager to present.
-- *Evaluator count:* spawn at least 2 evaluator agents with different perspectives — Project and Overall are the minimum.
-- *Enforcement:* spawn a separate evaluator subagent for review; split multi-category implementation tasks into sequential delegations, one category each. Modes (investigation vs. fix, parent session vs. spawned subagent) are asked or signaled explicitly — never inferred from prompt context. Behavior that should differ across modes requires the mode as a question, not a guess.
-- *Cross-reference — Iron Law vs. spawn topology:* The Iron Law "ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY" governs two things: (1) **producer/evaluator separation** — the agent that creates work must not evaluate its own output; (2) **implementation category focus** — one agent, one category per delegation. It does NOT mean one spawned agent per perspective. The canonical evaluator topology (two agents in parallel — one per system: Claude + Codex) is fully compatible with this law: each evaluator agent processes one perspective at a time within its own single-context discipline, then sequences through the remaining perspectives. The "ONE AGENT" constraint is about producer/evaluator role separation, not spawn cardinality. See [`delegation/SKILL.md` § Anti-Patterns](../delegation/SKILL.md#anti-patterns) for the canonical spawn topology and the "Per-perspective evaluator spawning" anti-pattern.
-
-**Anti-pattern:**
-- "These are related, I'll do them together."
-- "I can review my own work — I just wrote it."
-- "It's faster to handle both at once."
-
----
-
-## Principle 7 — Work Like a Team — Documents Frame Every Task: READ THE DOCS TO START, UPDATE THEM TO FINISH, WITH A SPEC AND A CRUD PLAN.
+## Principle 6 — Work Like a Team — Documents Frame Every Task: READ THE DOCS TO START, UPDATE THEM TO FINISH, WITH A SPEC AND A CRUD PLAN.
 
 **Why:** Documents are how a team stays consistent across people, sessions, and tasks. An agent works like a team member across many sessions, and the user's prompt carries only a fraction of the context; without documents — specifications, designs, rules, skills, recorded mistakes — every session starts from zero and the work drifts. So every task *starts* by reading the relevant documents and *finishes* by updating them, so they stay current. Outdated documentation is a defect at the same priority as outdated code; current documentation is how the project improves over time and how the next session — you or another agent — picks up cleanly. Document work is itself a change with a blast radius, so it is done with a spec and a CRUD plan, and the documents are kept well-structured so a reader with no prior context can find and understand them.
 
@@ -143,7 +124,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 8 — Verification Is a Hard Gate: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.
+## Principle 7 — Verification Is a Hard Gate: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.
 
 **Why:** Agents claim completion based on intent rather than evidence. Linters pass while compilation fails; partial checks get treated as full verification; stale outputs from earlier in the session get reused as if they were current.
 
@@ -165,7 +146,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 9 — Change Only With a Real Trigger: NO CHANGE WITHOUT A REAL TRIGGER.
+## Principle 8 — Change Only With a Real Trigger: NO CHANGE WITHOUT A REAL TRIGGER.
 
 **Why:** Agents make speculative changes — "while I'm here," "for consistency," "this could theoretically break" — without a concrete trigger. Each such change adds surface area, broadens the diff, and dilutes review attention. Every change must be tied to a trigger: a real session, a logged error, a user request, a documented mistake, or a tracked follow-up. Without a trigger, the change is speculation — it does not ship.
 
@@ -185,7 +166,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 10 — Improve the Property, Not the Metric: NO IMPROVEMENT THAT GAMES THE TOOL.
+## Principle 9 — Improve the Property, Not the Metric: NO IMPROVEMENT THAT GAMES THE TOOL.
 
 **Why:** When a tool emits a metric — test pass count, coverage percentage, lint score, evaluation pass rate, scan output — the metric is a *signal* of an underlying quality (correctness, type safety, completeness, design soundness), not the target itself. Gaming the metric (changing the input so the metric improves while the underlying property does not) is forbidden. This is Goodhart's law made operational: when a measure becomes a target, it stops being a good measure.
 
@@ -204,7 +185,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 11 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
+## Principle 10 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
 
 **Why:** Everything an agent writes — instruction documents (principles, skills, `agents/*.md` specs, rules), user-facing messages, commit messages, and code comments — exists to be acted on or understood. When the text states its meaning through a metaphor or an abstraction instead of stating it directly, the reader must first decode the figure of speech, and a wrong decode produces a wrong result. For an instruction document the failure is sharpest: an agent does something other than what the instruction required while believing it complied. Plain literal wording removes the decode step, so the statement and its meaning are the same thing.
 
@@ -214,7 +195,7 @@ allowed-tools: Read, Grep, Glob, Bash
 - *Define shorthand:* A coined or domain term is allowed only when the same passage states, in plain words, exactly what it means. After it is defined, the shorthand may be reused.
 - *Headings:* A section title or heading is a writing surface too. It is read first and on its own in summaries and indexes; it must name its subject directly, not gesture at it metaphorically.
 - *Enforcement:* Instruction-document language is checked at Planning and Execution EVALUATION (Project + Consistency perspectives): a principle, skill, agent spec, or rule that ships its meaning encoded as an undefined metaphor or abstraction is flagged for rewrite. For user-facing messages, commit messages, and code comments — which have no evaluation gate — the authoring agent applies this rule as a self-check before sending or committing.
-- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-10 clarity rewrite, and every future edit including this principle's own wording, is judged against.
+- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-9 clarity rewrite, and every future edit including this principle's own wording, is judged against.
 
 **Anti-pattern:**
 - "The metaphor is punchier." (Punch is not the job; an unambiguous statement is. A reader who has to decode the punch can decode it wrong.)
