@@ -134,6 +134,13 @@ allowed-tools: Read, Grep, Glob, Bash
 - *Keep the structure intuitive:* organize documents with a clear hierarchy and consistent, descriptive naming so a reader with no prior context can find and understand them. Where no naming or structure convention exists, agree one with the user before creating the layout.
 - *Treat the docs as the team's memory:* keeping them current is what lets the next session start informed instead of from zero — that is what makes the project, and the agents working on it, improve like a good team.
 
+**Anti-pattern:**
+- Start a task without reading the existing specs, designs, rules, and recorded mistakes.
+- Ship an implementation change without the matching documentation update.
+- Edit a document without a spec and a CRUD plan, missing a co-update file the same change needed.
+- Create files or directories with an unclear structure or cryptic names instead of an intuitive, conventional hierarchy.
+- Invent a naming or structure convention yourself when none exists, instead of agreeing one with the user.
+
 ---
 
 ## Principle 8 — Verification Is a Hard Gate: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.
