@@ -124,68 +124,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 7 — Verification Is a Hard Gate: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.
-
-**Why:** Agents claim completion based on intent rather than evidence. Linters pass while compilation fails; partial checks get treated as full verification; stale outputs from earlier in the session get reused as if they were current.
-
-**Practice:**
-- *Procedure:*
-  1. IDENTIFY the proof command for this work — test, build, run, lint, as appropriate.
-  2. RUN it freshly. No cached output. No partial run.
-  3. READ the full output and exit code.
-  4. VERIFY that the output matches the success criteria.
-  5. ONLY THEN claim completion.
-- *Preconditions:* re-verify preconditions at point of use, not only at session start — state can drift between checks.
-
-**Anti-pattern:**
-- "Should work."
-- "Probably fine."
-- "Linter passed." (Linter does not equal compile does not equal test.)
-- "I checked earlier."
-- "It worked last time."
-
----
-
-## Principle 8 — Change Only With a Real Trigger: NO CHANGE WITHOUT A REAL TRIGGER.
-
-**Why:** Agents make speculative changes — "while I'm here," "for consistency," "this could theoretically break" — without a concrete trigger. Each such change adds surface area, broadens the diff, and dilutes review attention. Every change must be tied to a trigger: a real session, a logged error, a user request, a documented mistake, or a tracked follow-up. Without a trigger, the change is speculation — it does not ship.
-
-**Practice:**
-- *Reference a trigger:* every code or documentation change must reference a trigger — a session, an error, a user request, a mistake entry, or an explicit follow-up issue.
-- *Not triggers:* "Could theoretically cause issues," "for consistency," "while I'm here," and "this pattern is more elegant" are not triggers — they are speculations.
-- *When uncertain:* when uncertain whether a change has a trigger, surface it to the user as a deferred follow-up; do not implement it inside the current scope.
-- *Enforcement:* every commit body or PR description references the trigger explicitly (e.g., issue ID, error message, user request, prior mistake entry); commits without a trigger are rejected at review.
-
-**Anti-pattern:**
-- "Could theoretically cause issues."
-- "For consistency." (without a consistency policy that has been violated)
-- "While I'm here..."
-- "Let me just refactor while I'm in here."
-- "This pattern is more elegant."
-- "It's a small change, why not."
-
----
-
-## Principle 9 — Improve the Property, Not the Metric: NO IMPROVEMENT THAT GAMES THE TOOL.
-
-**Why:** When a tool emits a metric — test pass count, coverage percentage, lint score, evaluation pass rate, scan output — the metric is a *signal* of an underlying quality (correctness, type safety, completeness, design soundness), not the target itself. Gaming the metric (changing the input so the metric improves while the underlying property does not) is forbidden. This is Goodhart's law made operational: when a measure becomes a target, it stops being a good measure.
-
-**Practice:**
-- *Move the property:* every metric exists because of a property it is supposed to track. Improvements must move the property, not just the number.
-- *Bypasses are gaming:* bypasses such as `// @ts-ignore`, `// eslint-disable`, `it.skip()`, `as any`, mocked-not-tested code, or `.skip` on a failing scenario shift the metric without changing the property — they are gaming.
-- *Uncomfortable metric:* when a metric is uncomfortable, either fix the underlying issue or surface the policy question to the user. Do not silence the tool.
-- *Enforcement:* every bypass annotation (`// @ts-ignore`, `eslint-disable`, `.skip()`, `as any`) names the underlying issue in a comment and links to a tracking item; bypasses without a tracking item are rejected at review.
-
-**Anti-pattern:**
-- "I'll just disable the lint rule for now."
-- "Skip the failing test temporarily."
-- "`// @ts-ignore` — we'll fix it later."
-- "Mock the function to bump coverage."
-- "This rule is too strict for our use case." (without surfacing the policy question to the user)
-
----
-
-## Principle 10 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
+## Principle 7 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
 
 **Why:** Everything an agent writes — instruction documents (principles, skills, `agents/*.md` specs, rules), user-facing messages, commit messages, and code comments — exists to be acted on or understood. When the text states its meaning through a metaphor or an abstraction instead of stating it directly, the reader must first decode the figure of speech, and a wrong decode produces a wrong result. For an instruction document the failure is sharpest: an agent does something other than what the instruction required while believing it complied. Plain literal wording removes the decode step, so the statement and its meaning are the same thing.
 
@@ -195,7 +134,7 @@ allowed-tools: Read, Grep, Glob, Bash
 - *Define shorthand:* A coined or domain term is allowed only when the same passage states, in plain words, exactly what it means. After it is defined, the shorthand may be reused.
 - *Headings:* A section title or heading is a writing surface too. It is read first and on its own in summaries and indexes; it must name its subject directly, not gesture at it metaphorically.
 - *Enforcement:* Instruction-document language is checked at Planning and Execution EVALUATION (Project + Consistency perspectives): a principle, skill, agent spec, or rule that ships its meaning encoded as an undefined metaphor or abstraction is flagged for rewrite. For user-facing messages, commit messages, and code comments — which have no evaluation gate — the authoring agent applies this rule as a self-check before sending or committing.
-- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-9 clarity rewrite, and every future edit including this principle's own wording, is judged against.
+- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-6 clarity rewrite, and every future edit including this principle's own wording, is judged against.
 
 **Anti-pattern:**
 - "The metaphor is punchier." (Punch is not the job; an unambiguous statement is. A reader who has to decode the punch can decode it wrong.)
