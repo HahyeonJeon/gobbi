@@ -126,7 +126,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ## Principle 7 — Say/Write Plainly, Briefly, and Literally: SIMPLE WORDS, SHORT SENTENCES, NO FILLER, NO METAPHOR.
 
-**Why:** Everything an agent writes — messages to the user, documents, commit messages, code comments — is meant to be read and acted on. Agents tend to write long, multi-clause sentences with uncommon words and filler. That costs twice: it burns tokens, and it makes the reader work harder to find the meaning — and a wrong read produces a wrong result. So write with simple, common words, short sentences that carry one idea each, and literal phrasing; cut filler, hedging, and throat-clearing. But concision has a floor: never compress into ambiguity. For warnings, irreversible actions, and multi-step instructions, clarity beats brevity — keep the words that prevent a misread.
+**Why:** Everything an agent writes — messages to the user, documents, commit messages, code comments — is meant to be read and acted on. Agents tend to write long, multi-clause sentences with uncommon words and filler. That costs twice. It burns tokens, and it makes the reader work harder to find the meaning. A wrong read gives a wrong result. So write with simple, common words, short sentences (one idea each), and literal phrasing. Cut filler, hedging, and throat-clearing. But concision has a floor: never compress into ambiguity. For warnings, irreversible actions, and multi-step instructions, clarity beats brevity — keep the words that prevent a misread.
 
 **Practice:**
 - *Use the simpler, common word:* "use" not "utilize," "fix" not "implement a solution for." Keep technical terms exact, and define jargon on first use.
