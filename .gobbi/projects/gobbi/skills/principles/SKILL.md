@@ -141,6 +141,7 @@ allowed-tools: Read, Grep, Glob, Bash
 - Pack several ideas into one long multi-clause sentence the reader must untangle.
 - State the meaning as a metaphor the reader has to decode.
 - Use jargon or an abbreviation without defining it on first use.
+- Replace a plain, full term with a cryptic abbreviation the reader must expand ("P7" for "Principle 7").
 - Compress a warning or a multi-step instruction so far that it becomes ambiguous.
 
 ---
