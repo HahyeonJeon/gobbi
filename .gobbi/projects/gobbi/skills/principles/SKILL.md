@@ -104,7 +104,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 6 — Work Like a Team — Documents Frame Every Task: READ THE DOCS TO START, UPDATE THEM TO FINISH, WITH A SPEC AND A CRUD PLAN.
+## Principle 6 — Start With Docs, Finish With Docs — Documents Are the Team's Memory: PLAN DOC WORK WITH A SPEC AND A CRUD PLAN, AND KEEP IT CURRENT.
 
 **Why:** Documents are how a team stays consistent across people, sessions, and tasks. An agent works like a team member across many sessions, and the user's prompt carries only a fraction of the context; without documents — specifications, designs, rules, skills, recorded mistakes — every session starts from zero and the work drifts. So every task *starts* by reading the relevant documents and *finishes* by updating them, so they stay current. Outdated documentation is a defect at the same priority as outdated code; current documentation is how the project improves over time and how the next session — you or another agent — picks up cleanly. Document work is itself a change with a blast radius, so it is done with a spec and a CRUD plan, and the documents are kept well-structured so a reader with no prior context can find and understand them.
 
