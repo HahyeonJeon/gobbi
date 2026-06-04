@@ -124,23 +124,24 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 7 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
+## Principle 7 — Say/Write Plainly, Briefly, and Literally: SIMPLE WORDS, SHORT SENTENCES, NO FILLER, NO METAPHOR.
 
-**Why:** Everything an agent writes — instruction documents (principles, skills, `agents/*.md` specs, rules), user-facing messages, commit messages, and code comments — exists to be acted on or understood. When the text states its meaning through a metaphor or an abstraction instead of stating it directly, the reader must first decode the figure of speech, and a wrong decode produces a wrong result. For an instruction document the failure is sharpest: an agent does something other than what the instruction required while believing it complied. Plain literal wording removes the decode step, so the statement and its meaning are the same thing.
+**Why:** Everything an agent writes — messages to the user, documents, commit messages, code comments — is meant to be read and acted on. Agents tend to write long, multi-clause sentences with uncommon words and filler. That costs twice: it burns tokens, and it makes the reader work harder to find the meaning — and a wrong read produces a wrong result. So write with simple, common words, short sentences that carry one idea each, and literal phrasing; cut filler, hedging, and throat-clearing. But concision has a floor: never compress into ambiguity. For warnings, irreversible actions, and multi-step instructions, clarity beats brevity — keep the words that prevent a misread.
 
 **Practice:**
-- *State the thing:* Write "refine the requirement until it is concrete enough to act on" — not "refuse to transact in vagueness." The literal clause is the message; the metaphor is a translation the reader should not have to perform.
-- *Concrete words:* "A real trigger — a session, a logged error, a user request, a mistake entry, or a tracked follow-up" beats "a witness" unless the shorthand is defined.
-- *Define shorthand:* A coined or domain term is allowed only when the same passage states, in plain words, exactly what it means. After it is defined, the shorthand may be reused.
-- *Headings:* A section title or heading is a writing surface too. It is read first and on its own in summaries and indexes; it must name its subject directly, not gesture at it metaphorically.
-- *Enforcement:* Instruction-document language is checked at Planning and Execution EVALUATION (Project + Consistency perspectives): a principle, skill, agent spec, or rule that ships its meaning encoded as an undefined metaphor or abstraction is flagged for rewrite. For user-facing messages, commit messages, and code comments — which have no evaluation gate — the authoring agent applies this rule as a self-check before sending or committing.
-- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-6 clarity rewrite, and every future edit including this principle's own wording, is judged against.
+- *Use the simpler, common word:* "use" not "utilize," "fix" not "implement a solution for." Keep technical terms exact, and define jargon on first use.
+- *Keep sentences short — one idea each:* aim for ~15–20 words per sentence; split a long multi-clause sentence into two.
+- *Cut filler and hedging:* drop empty words and throat-clearing ("just," "really," "basically," "in order to," "it's worth noting that"). Say the thing.
+- *State it literally, not as a metaphor:* write the meaning directly; don't make the reader decode a figure of speech.
+- *Stop before ambiguity:* brevity has a floor — never cut a word the reader needs. For warnings, irreversible actions, and step-by-step instructions, keep the clarifying words even if longer.
 
 **Anti-pattern:**
-- "The metaphor is punchier." (Punch is not the job; an unambiguous statement is. A reader who has to decode the punch can decode it wrong.)
-- "Everyone knows what this means." (If it were truly unambiguous, the literal phrasing would cost nothing; the wish to keep the figure is the warning sign.)
-- "It's just a title — the body explains it." (The title is read first and on its own; an opaque title misdirects before the body is reached.)
-- "Removing the metaphor makes it dry." (Clear is not dry; a concrete verb is more vivid than an abstraction, not less.)
+- Pad the text with filler, intensifiers, and throat-clearing instead of saying the thing.
+- Reach for a fancy or uncommon word where a common one carries the meaning.
+- Pack several ideas into one long multi-clause sentence the reader must untangle.
+- State the meaning as a metaphor the reader has to decode.
+- Use jargon or an abbreviation without defining it on first use.
+- Compress a warning or a multi-step instruction so far that it becomes ambiguous.
 
 ---
 
