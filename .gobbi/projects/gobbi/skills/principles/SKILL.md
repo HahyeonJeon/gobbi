@@ -123,7 +123,20 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 7 — Verification Is a Hard Gate: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.
+## Principle 7 — Work Like a Team — Documents Frame Every Task: READ THE DOCS TO START, UPDATE THEM TO FINISH, WITH A SPEC AND A CRUD PLAN.
+
+**Why:** Documents are how a team stays consistent across people, sessions, and tasks. An agent works like a team member across many sessions, and the user's prompt carries only a fraction of the context; without documents — specifications, designs, rules, skills, recorded mistakes — every session starts from zero and the work drifts. So every task *starts* by reading the relevant documents and *finishes* by updating them, so they stay current. Outdated documentation is a defect at the same priority as outdated code; current documentation is how the project improves over time and how the next session — you or another agent — picks up cleanly. Document work is itself a change with a blast radius, so it is done with a spec and a CRUD plan, and the documents are kept well-structured so a reader with no prior context can find and understand them.
+
+**Practice:**
+- *Start by reading the docs:* before any task, read the relevant specifications, designs, rules, skills, and recorded mistakes. They carry the cross-session context the prompt does not.
+- *Finish by updating the docs:* every change ships its matching documentation update in the same step — never "implementation now, docs later." Leaving a doc stale is a defect, not a follow-up.
+- *Plan doc work with CRUD-think:* before editing, write the spec (what each affected document is for, and its type), then enumerate the operations — what to **Create**, what to **Read** for consistency, what to **Update** (down to the line), what to **Delete** — including every file the same change must co-touch.
+- *Keep the structure intuitive:* organize documents with a clear hierarchy and consistent, descriptive naming so a reader with no prior context can find and understand them. Where no naming or structure convention exists, agree one with the user before creating the layout.
+- *Treat the docs as the team's memory:* keeping them current is what lets the next session start informed instead of from zero — that is what makes the project, and the agents working on it, improve like a good team.
+
+---
+
+## Principle 8 — Verification Is a Hard Gate: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE.
 
 **Why:** Agents claim completion based on intent rather than evidence. Linters pass while compilation fails; partial checks get treated as full verification; stale outputs from earlier in the session get reused as if they were current.
 
@@ -142,25 +155,6 @@ allowed-tools: Read, Grep, Glob, Bash
 - "Linter passed." (Linter does not equal compile does not equal test.)
 - "I checked earlier."
 - "It worked last time."
-
----
-
-## Principle 8 — Documentation Is a Deliverable, Not a Side Effect: EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION.
-
-**Why:** The implementation is one half of the deliverable; the documentation is the other half. Code without current documentation is opaque, and the user (the client) ends up reverse-engineering the change to use it. Treat documentation as the formal report to the client — current and bundled with the work it describes.
-
-**Practice:**
-- *Per-PR doc change:* every PR includes the doc change relevant to its scope.
-- *No splitting:* never split "implementation now, docs later" — they ship together.
-- *Outdated docs:* outdated documentation is a defect at the same priority as outdated code.
-- *Resolve divergence:* when implementation diverges from documentation, choose: update the documentation to match, or change the implementation back to match the documentation. Never leave them inconsistent.
-- *Enforcement:* each commit or PR includes the corresponding doc change in the same diff; implementation diffs that lack the matching doc update are rejected at review.
-
-**Anti-pattern:**
-- "I'll update docs in a follow-up PR."
-- "The code is self-documenting."
-- "Docs are easy, I'll batch them later."
-- "This change is too small to document."
 
 ---
 
@@ -203,37 +197,7 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
-## Principle 11 — Spec + CRUD-Think for Documentation Work: NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN.
-
-**Why:** Documentation changes fail in a characteristic way: an agent opens a file, edits the passage in front of it, and never asks what the doc is *for*, which memory *type* it is, what it should and should not contain, or which *other* files the same change must touch. The result is type-confused content (a decision written as a note), half-applied co-updates (a new principle added to principles/SKILL.md but not to the CLAUDE.md Iron Law table), and silent drift (the spec in one file contradicts another). A documentation task is a *change with a blast radius*, not a single edit. Before touching any file, the agent fixes two things in writing: the SPEC (what the doc work must achieve and the type of each affected file) and the CRUD plan (every Create / Read / Update / Delete operation at file / directory / **line** granularity). This is the change-scoping lens — not a per-document lifecycle attribute.
-
-**Practice:**
-- *Procedure — before any documentation change:*
-  1. **Write the SPEC.** State, in 2-5 lines: (a) what the doc task must achieve; (b) for each affected file, which memory *type* it is and what it should / should-not contain; (c) the adjacent types this content must NOT bleed into (apply the type boundaries in `memorization/memory-map.md` and the conventions in `memorization/rules.md`).
-  2. **Enumerate the CRUD plan.** List every operation the task entails at file / dir / **line** granularity:
-     - **Create** — new files/dirs (with path + type + naming-rule compliance).
-     - **Read** — files consulted for context or consistency (so the change stays coherent with them).
-     - **Update** — existing files + the specific lines/sections changed.
-     - **Delete** — never a physical delete of project memory (supersede + move-on-terminal); for `.claude/` docs, the explicit lines/files removed.
-  3. **Check the blast radius — find every file the SAME change must co-touch.** A doc change is rarely one file. The CRUD plan MUST enumerate genuine multi-file co-updates, for example:
-     - A new principle → `principles/SKILL.md` body + the CLAUDE.md Iron Law table (two places, one change).
-     - A new memory convention → `memorization/rules.md` + the affected `memorization/templates/*` + `memorization/memory-map.md` cross-reference.
-     - A canonical skill that is mirror-symlinked: edit the worktree-absolute CANONICAL file under `.gobbi/projects/{name}/skills/X/`; the `.claude/skills/X/` symlink reflects it automatically — there is NO second copy to edit. (Exception: a canonical-only skill such as `gobbi-hook-authoring` has no `.claude/skills/` symlink at all, so confirm whether a symlink needs creating when adding a workspace-visible doc.)
-     A blast-radius step that misses a genuine co-update file is an incomplete CRUD plan.
-  4. **Then edit** — and verify each CRUD line landed (P7).
-- *Naming — name the subject, not its position:* Every file or directory a CRUD plan creates must carry a name that lets a reader *with zero session context* understand its **subject** — the concept the file is about. Name the concept in clear, development-vibe kebab-case (the name a careful developer would choose). A name must NOT encode the record's **position in a list, its sequence index, or a cryptic internal reference** — `task-01`, `d-1`, `tasks-07-08`, `row-5-5`, `1-3`, `t1g`, `main` are addresses inside a session that no longer exists; they are noise to the next reader. This is *positive descriptiveness*, not a regex gate: content words that describe the subject (`-decisions`, `-rollback`, date prefixes on chronological types) are encouraged. The anti-patterns table, the smell categories, and concrete good/bad examples live in `memorization/rules.md` §1.3 — consult it when naming any memory file.
-- *Cross-reference — Delineation from Principle 8:* P8 (Documentation Is a Deliverable) governs *coupling*: every implementation change ships its matching doc change in the same diff. P11 governs *scoping*: how to structure and bound a documentation change itself — its spec, its CRUD operations, its blast radius. P8 says "docs must ship with code"; P11 says "before you write the doc, know exactly what it must contain, which type it is, and every file the change touches." P8 is the *when/whether*; P11 is the *what/how-scoped*. A change can satisfy P8 (docs shipped alongside code) yet violate P11 (the doc was type-confused or a co-update file was missed) — and vice versa.
-- *Enforcement:* every documentation task — delegation prompt, plan item, or self-initiated edit — carries an explicit SPEC block + CRUD enumeration before the first edit. Plan items for doc work that omit either are caught at Planning EVALUATION (Project + Consistency perspectives). Doc edits whose CRUD plan misses a genuine co-update file are rejected at review.
-
-**Anti-pattern:**
-- "It's a one-line doc fix." (one-line fixes are exactly where a co-update file gets missed)
-- "I know what this doc is for." (then writing the 2-line spec costs nothing)
-- "I'll find the other files as I go." (no — enumerate the CRUD plan first; discovery-as-you-go is how multi-file changes go half-applied)
-- "CRUD is overkill for prose." (CRUD is the change-scoping lens; prose changes have blast radius too)
-
----
-
-## Principle 12 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
+## Principle 11 — Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR.
 
 **Why:** Everything an agent writes — instruction documents (principles, skills, `agents/*.md` specs, rules), user-facing messages, commit messages, and code comments — exists to be acted on or understood. When the text states its meaning through a metaphor or an abstraction instead of stating it directly, the reader must first decode the figure of speech, and a wrong decode produces a wrong result. For an instruction document the failure is sharpest: an agent does something other than what the instruction required while believing it complied. Plain literal wording removes the decode step, so the statement and its meaning are the same thing.
 
@@ -243,7 +207,7 @@ allowed-tools: Read, Grep, Glob, Bash
 - *Define shorthand:* A coined or domain term is allowed only when the same passage states, in plain words, exactly what it means. After it is defined, the shorthand may be reused.
 - *Headings:* A section title or heading is a writing surface too. It is read first and on its own in summaries and indexes; it must name its subject directly, not gesture at it metaphorically.
 - *Enforcement:* Instruction-document language is checked at Planning and Execution EVALUATION (Project + Consistency perspectives): a principle, skill, agent spec, or rule that ships its meaning encoded as an undefined metaphor or abstraction is flagged for rewrite. For user-facing messages, commit messages, and code comments — which have no evaluation gate — the authoring agent applies this rule as a self-check before sending or committing.
-- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-11 clarity rewrite, and every future edit including this principle's own wording, is judged against.
+- *Cross-reference:* The `discussion` skill's anti-sycophancy rules cover a different defect in user-facing text — empty or hedging phrasing — and are complementary to this principle. This principle is the rubric the Principle 1-10 clarity rewrite, and every future edit including this principle's own wording, is judged against.
 
 **Anti-pattern:**
 - "The metaphor is punchier." (Punch is not the job; an unambiguous statement is. A reader who has to decode the punch can decode it wrong.)
