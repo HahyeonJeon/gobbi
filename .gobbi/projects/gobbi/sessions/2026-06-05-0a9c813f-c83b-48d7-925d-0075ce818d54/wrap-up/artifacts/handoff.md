@@ -11,7 +11,7 @@ related:
   - features/workflow/design/orchestration-settings-skip-and-models.md
   - features/workflow/changelogs/2026-06-05-skip-key-maxiterations-evaluator-models.md
   - notes/2026-06-05-orchestration-settings-skip-models.md
-  - backlogs/model-assignment-drift-delegation-vs-settings-default.md
+  - archive/backlogs/2026-06-05-model-assignment-drift-delegation-vs-settings-default.md
 ---
 
 # Handoff — session 2026-06-05-0a9c813f
@@ -58,16 +58,27 @@ Branch: `chore/session-2026-06-05-0a9c813f`. 7 files, +83/-60.
 | `skills/orchestration/workflow/memorization.md` | `default 3 → default 5` (line 289). |
 | `skills/orchestration/workflow/evaluation.md` | Codex evaluator default `gpt-5 → gpt-5.5` (line 53); cap defaults `3/1 → 5` (line 256). |
 
+### Commit `98c91b8` — executor-model drift closure (Task 02)
+
+Branch: `chore/session-2026-06-05-0a9c813f`. Executor-half drift fix.
+
+| File | Change |
+|------|--------|
+| `skills/delegation/SKILL.md` | Model Selection table executor row: sonnet → opus |
+| `skills/gobbi/SKILL.md` | Executor model reference: sonnet → opus |
+| `skills/planning/SKILL.md` | Executor model reference: sonnet → opus |
+| `agents/executor.md` | Agent spec executor model: sonnet → opus |
+
+Settings templates already carried `executor: "opus"` — docs now match. Drift fully resolved.
+
 ---
 
 ## Deferred / Open
 
-**Executor-model drift (OPEN).** `backlogs/model-assignment-drift-delegation-vs-settings-default.md`
-remains open. The evaluator half is now resolved (templates match `delegation/SKILL.md`). The
-executor half is not: both templates carry `models.claude.executor: "opus"` while
-`delegation/SKILL.md` says executor = sonnet. User decision (OQ-2): out of scope for this session.
-A future session must decide option (a) / (b) / (c) from the backlog's resolution-options list
-and update both templates + delegation docs consistently.
+**Executor-model drift (RESOLVED).** `backlogs/model-assignment-drift-delegation-vs-settings-default.md`
+is now **closed**. Both halves were resolved in this session: evaluator half in Task 01 (commits
+`9f77f0e` + `5b5a30e`); executor half in Task 02 (commit `98c91b8`). The backlog has been moved
+to `archive/backlogs/2026-06-05-model-assignment-drift-delegation-vs-settings-default.md`.
 
 **Drift detector (#258).** The `#258` backlog (detecting settings vs delegation mismatches
 automatically) is still open. This session resolved the manual drift; #258 would automate future
@@ -89,6 +100,9 @@ detection.
    runs WORK→MEMORIZATION, no verdict); it is NOT the step-level `skip` boolean. Do not conflate.
 6. **Immutable `notes/` files:** historical mentions of `settings.default.json` in `notes/` were
    deliberately left untouched. `notes/` files are immutable session journals.
+7. **Executor model = opus (confirmed Task 02):** the executor model is `opus` in both templates
+   and all documentation. The executor-half drift fix in Task 02 aligned docs to templates.
+   Do not re-litigate this as a drift item — it is fully resolved.
 
 ---
 
@@ -102,7 +116,7 @@ detection.
 | iter2 PASS verdict (Claude) | `sessions/2026-06-05-0a9c813f.../execution/task-01/evaluation/iter2/claude/overall.md` |
 | Design record (promoted) | `features/workflow/design/orchestration-settings-skip-and-models.md` |
 | Changelog entry (promoted) | `features/workflow/changelogs/2026-06-05-skip-key-maxiterations-evaluator-models.md` |
-| Annotated backlog | `backlogs/model-assignment-drift-delegation-vs-settings-default.md` |
+| Archived backlog (closed) | `archive/backlogs/2026-06-05-model-assignment-drift-delegation-vs-settings-default.md` |
 | Session journal | `notes/2026-06-05-orchestration-settings-skip-models.md` |
 
 ---
@@ -113,10 +127,24 @@ detection.
 |------|--------|-------------|--------|
 | Design record | `ideation/artifacts/orchestration-settings-skip-and-models-design.md` | `features/workflow/design/orchestration-settings-skip-and-models.md` | PROMOTED (new file) |
 | Changelog | (authored at Wrap-up) | `features/workflow/changelogs/2026-06-05-skip-key-maxiterations-evaluator-models.md` | CREATED (changelogs dir bootstrapped) |
-| Backlog annotation | `backlogs/model-assignment-drift-delegation-vs-settings-default.md` | same file | ANNOTATED in-place (status remains OPEN) |
+| Backlog closure + archive | `backlogs/model-assignment-drift-delegation-vs-settings-default.md` | `archive/backlogs/2026-06-05-model-assignment-drift-delegation-vs-settings-default.md` | CLOSED + MOVED via git mv (status: closed; both halves resolved) |
 | Session journal | (authored at Wrap-up) | `notes/2026-06-05-orchestration-settings-skip-models.md` | CREATED |
 | Handoff | (this file) | `wrap-up/artifacts/handoff.md` | CREATED |
 | Mistake candidates | none | — | NONE — user decision: lesson already covered by existing mistake |
+
+**Task 02 additional promotions (Wrap-up iter2):**
+
+| Item | Source | Destination | Action |
+|------|--------|-------------|--------|
+| ADR update | `features/workflow/design/orchestration-settings-skip-and-models.md` | same file | UPDATED in-place (Alternatives + Consequences sections reflect Task 02 closure) |
+| Changelog append | `features/workflow/changelogs/2026-06-05-skip-key-maxiterations-evaluator-models.md` | same file | APPENDED Task 02 entry |
+| Journal append | `notes/2026-06-05-orchestration-settings-skip-models.md` | same file | APPENDED Task 02 section |
+| Backlog closure | `backlogs/model-assignment-drift-delegation-vs-settings-default.md` | `archive/backlogs/2026-06-05-model-assignment-drift-delegation-vs-settings-default.md` | CLOSED + MOVED (git mv; status: closed) |
+| Handoff update | `sessions/.../wrap-up/artifacts/handoff.md` | same file | UPDATED (Task 02 in Shipped; executor drift → Resolved; Decisions #7 added) |
+
+Prior-session history files left untouched (user decision — point-in-time historical accuracy):
+- `features/install-runtime/plans/2026-05-30-gobbi-claude-code-plugin-build.md`
+- `features/install-runtime/decisions/plugin-plan-decomposition-and-ordering.md`
 
 All per-loop staging trees were empty (expected — manager-direct session; no NEEDS_CONTEXT
 escalation required per delegation prompt).

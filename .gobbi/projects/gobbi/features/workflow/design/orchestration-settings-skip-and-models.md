@@ -94,7 +94,9 @@ blast-radius co-update).
 - **Defer executor-model drift fix (EXECUTOR half of the backlog) to this session:** rejected —
   out of scope. `claude.executor: opus` while `delegation/SKILL.md` says executor=sonnet is a
   separate drift item; left in backlog for a future session (see `backlogs/model-assignment-drift-
-  delegation-vs-settings-default.md`).
+  delegation-vs-settings-default.md`). **Update (Task 02, same session):** the user subsequently
+  chose to close the executor half; `delegation/SKILL.md`, `gobbi/SKILL.md`, `planning/SKILL.md`,
+  and `agents/executor.md` now set executor=opus (commit `98c91b8`).
 
 ---
 
@@ -104,7 +106,9 @@ blast-radius co-update).
   correct evaluator model assignments.
 - Chat preparation continues to resolve as `Skipped` via both `skip: true` AND `maxIterations: 0`.
   Opting back in requires clearing BOTH signals.
-- The executor model drift (executor=opus in templates vs executor=sonnet in delegation docs)
-  remains OPEN — not addressed in this change.
+- The executor model drift was OPEN as of Task 01 (templates had `executor=opus`; delegation docs
+  said `executor=sonnet`). This was CLOSED in Task 02 of this same session: `delegation/SKILL.md`,
+  `gobbi/SKILL.md`, `planning/SKILL.md`, and `agents/executor.md` now document executor=opus,
+  matching the templates (commit `98c91b8`). The drift is fully resolved.
 - The `.claude/` templates directory now has no broken symlinks; `settings.auto.json` and
   `settings.chat.json` are mirror-accessible.

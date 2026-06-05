@@ -106,7 +106,36 @@ The user decided it is already captured by the existing mistake
 
 ## Next session
 
-No blocking follow-ups from this session. The remaining open item is the executor-model drift
-backlog (`backlogs/model-assignment-drift-delegation-vs-settings-default.md`) — EXECUTOR half
-still needs a decision session. The `#258` drift-detector backlog (detecting settings vs
-delegation mismatches) is also still open.
+No blocking follow-ups from this session. The `#258` drift-detector backlog (detecting settings
+vs delegation mismatches automatically) remains open.
+
+---
+
+## Task 02 — Executor-model drift closure (same session)
+
+The user added a second task within the same session to close the executor half of the
+model-assignment drift.
+
+**What shipped (commit `98c91b8`):** four documentation files updated so that executor=opus is
+documented consistently:
+
+- `skills/delegation/SKILL.md` — Model Selection table executor row: sonnet → opus
+- `skills/gobbi/SKILL.md` — executor model reference updated to opus
+- `skills/planning/SKILL.md` — executor model reference updated to opus
+- `agents/executor.md` — agent spec updated to opus
+
+The settings templates (`settings.auto.json`, `settings.chat.json`) already carried
+`models.claude.executor: "opus"` and were not changed. The fix aligned documentation to match
+the templates.
+
+**Evaluation:** Dual-system eval iter1 returned Claude PASS / Codex REVISE. Codex finding:
+stale `executor=sonnet` and "drift OPEN" references in active feature memory
+(`features/workflow/design/orchestration-settings-skip-and-models.md`,
+`features/workflow/changelogs/2026-06-05-skip-key-maxiterations-evaluator-models.md`,
+`notes/2026-06-05-orchestration-settings-skip-models.md`,
+`backlogs/model-assignment-drift-delegation-vs-settings-default.md`). User decision: fix
+current-state docs only; leave prior-session history intact (two install-runtime files with
+historical `executor=sonnet` references were left untouched).
+
+**Memory finalization (Task 02, Wrap-up iter2):** ADR Alternatives + Consequences updated;
+backlog closed and moved to `archive/backlogs/`; changelog and notes appended; handoff updated.

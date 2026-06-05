@@ -4,7 +4,7 @@ description: "delegation/SKILL.md § Model Selection table conflicts with settin
 type: backlogs
 scope: project
 feature: null
-status: active
+status: closed
 created: 2026-05-28
 session: 8eed14fb-c4b5-455f-aa5e-497c33ed8bbf
 tags: [drift, docs-sync, delegation, settings, deferred]
@@ -12,6 +12,9 @@ title: "Model-assignment drift between delegation/SKILL.md and settings.chat.jso
 project: gobbi
 anchor_session: 2026-05-28-8eed14fb-c4b5-455f-aa5e-497c33ed8bbf
 disposition: open
+shipped_in: features/workflow/changelogs/2026-06-05-skip-key-maxiterations-evaluator-models.md
+archived_at: 2026-06-05
+archive_reason: closed
 ---
 
 # Model-assignment drift between delegation/SKILL.md and settings.chat.json + settings.auto.json
@@ -67,3 +70,23 @@ locked scope (user decision: OQ-2 = LEAVE OPEN). A future session resolving the 
 should update both templates and this backlog.
 
 **Backlog status: OPEN** (executor half unresolved).
+
+---
+
+## 2026-06-05 — EXECUTOR half closed by Task 02 of session 0a9c813f
+
+The **EXECUTOR half** is now also resolved. Task 02 of the same session (`0a9c813f`, 2026-06-05)
+updated four documentation files so that executor=opus is documented consistently:
+
+- `skills/delegation/SKILL.md` — Model Selection table: executor row updated to opus
+- `skills/gobbi/SKILL.md` — executor model reference updated to opus
+- `skills/planning/SKILL.md` — executor model reference updated to opus
+- `agents/executor.md` — agent spec updated to opus
+
+Commit: `98c91b8` on branch `chore/session-2026-06-05-0a9c813f`.
+
+Both templates (`settings.auto.json`, `settings.chat.json`) already carried
+`models.claude.executor: "opus"` (unchanged); the fix aligned the doc sources to match. The
+drift is now fully resolved — settings templates and all documentation agree: executor=opus.
+
+**Backlog status: CLOSED** (both evaluator and executor halves resolved).

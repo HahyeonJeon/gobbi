@@ -83,3 +83,80 @@ Zero staging files to account for from standard per-loop staging trees.
 ## Mistake candidates
 
 NONE — user decision: the lesson already covered by an existing mistake file. No new mistake file created.
+
+---
+
+# Wrap-up iter2 — Task 02 finalization (2026-06-05)
+
+Trigger: dual-system eval iter1 returned Claude PASS / Codex REVISE. Codex finding: stale
+`executor=sonnet` / "drift OPEN" references in active current-state docs. User decision:
+fix current-state docs only; leave prior-session history intact.
+
+---
+
+## Item 6 — ADR update (design record)
+
+| Field | Value |
+|-------|-------|
+| Source | `features/workflow/design/orchestration-settings-skip-and-models.md` |
+| Destination | same file (in-place edit) |
+| Action | UPDATE — Alternatives §: appended Task 02 reversal note to "Defer executor-model drift" bullet. Consequences §: replaced "remains OPEN" sentence with closure statement referencing commit 98c91b8. |
+| Routing basis | Active feature-scoped design doc; current-state correction authorized by user. |
+| Status | DONE |
+
+---
+
+## Item 7 — Changelog append
+
+| Field | Value |
+|-------|-------|
+| Source | `features/workflow/changelogs/2026-06-05-skip-key-maxiterations-evaluator-models.md` |
+| Destination | same file (in-place append) |
+| Action | APPEND — added "Task 02 — Executor-model drift closure" section before the Files changed block. |
+| Routing basis | Active feature-scoped changelog; Task 02 ships new file changes in same session. |
+| Status | DONE |
+
+---
+
+## Item 8 — Journal append
+
+| Field | Value |
+|-------|-------|
+| Source | `notes/2026-06-05-orchestration-settings-skip-models.md` |
+| Destination | same file (in-place append) |
+| Action | APPEND — updated "Next session" to remove the stale executor-drift item; appended "Task 02" section documenting what shipped, eval outcome, and user decision on scope of doc fixes. |
+| Routing basis | Active project-level notes journal; same-session continuation is append-only. |
+| Status | DONE |
+
+---
+
+## Item 9 — Backlog closure + archive move
+
+| Field | Value |
+|-------|-------|
+| Source | `backlogs/model-assignment-drift-delegation-vs-settings-default.md` |
+| Destination | `archive/backlogs/2026-06-05-model-assignment-drift-delegation-vs-settings-default.md` |
+| Action | CLOSED — frontmatter flipped to `status: closed`; `shipped_in`, `archived_at`, `archive_reason` stamped. Closure note appended to body. Moved via `git mv` (archive/backlogs/ created). |
+| Routing basis | Terminal-state backlog → move-on-terminal model (`memorization/templates/archive.md`). |
+| Status | DONE |
+
+---
+
+## Item 10 — Handoff update
+
+| Field | Value |
+|-------|-------|
+| Source | `sessions/2026-06-05-0a9c813f.../wrap-up/artifacts/handoff.md` |
+| Destination | same file (in-place update) |
+| Action | UPDATE — added commit 98c91b8 table in Shipped; changed Deferred/Open executor-drift entry to RESOLVED; updated Decisions #7 (executor=opus confirmed); updated Pointers row (archived path); updated Promotion summary (Task 01 backlog row → archive move; Task 02 additional promotions table added). |
+| Status | DONE |
+
+---
+
+## Prior-session history files — NOT TOUCHED
+
+Per user decision, the following files with historical `executor=sonnet` references were left
+unchanged. They accurately describe the 2026-05-30 plan state when executor was sonnet.
+
+- `features/install-runtime/plans/2026-05-30-gobbi-claude-code-plugin-build.md`
+- `features/install-runtime/decisions/plugin-plan-decomposition-and-ordering.md`

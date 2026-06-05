@@ -77,6 +77,32 @@ Iter2: Both Claude + Codex PASS. All 4 findings verified resolved. Invariants he
   left OPEN — EVALUATOR half resolved; EXECUTOR half remains.
 - Immutable `notes/` historical mentions of `settings.default.json` left untouched.
 
+## Task 02 — Executor-model drift closure (same session, commit `98c91b8`)
+
+A follow-on task within the same session closed the executor half of the model-assignment drift
+backlog (`backlogs/model-assignment-drift-delegation-vs-settings-default.md`).
+
+**Problem:** Task 01 aligned the evaluator model in the settings templates to match
+`delegation/SKILL.md`. The executor model was left as a separate item: templates carried
+`models.claude.executor: "opus"`, while `delegation/SKILL.md` and other docs stated
+executor=sonnet — the inversion was in the docs, not the templates.
+
+**Fix (commit `98c91b8`):** updated four documentation files to document executor=opus,
+matching the templates:
+
+- `skills/delegation/SKILL.md` — Model Selection table executor row: sonnet → opus
+- `skills/gobbi/SKILL.md` — executor model reference: sonnet → opus
+- `skills/planning/SKILL.md` — executor model reference: sonnet → opus
+- `agents/executor.md` — agent spec executor model: sonnet → opus
+
+Settings templates not changed (they were already correct). Drift is fully resolved.
+
+**Scope guards honored:** prior-session history files (`features/install-runtime/plans/` and
+`features/install-runtime/decisions/`) were left untouched — their `executor=sonnet` references
+accurately describe the 2026-05-30 plan state when executor was sonnet.
+
+---
+
 ## Files changed: 17 total
 
 ### iter1 (commit 9f77f0e) — 7 files
