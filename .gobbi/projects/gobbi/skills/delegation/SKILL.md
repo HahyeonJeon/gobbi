@@ -242,7 +242,7 @@ The manager must NOT produce delegation prompts that look like these. Each is a 
 - ❌ **Spec by `@path`** — "See the plan in `plans/foo.md` and implement it." Adds inference between spec and work; subagents may read it partially or interpret it differently than the manager intended. Paste the spec inline.
 - ❌ **Lazy load directives** — "Load any skills you need." The subagent guesses. Specify the exact list, in order.
 - ❌ **No status contract** — Prompt ends mid-instruction with no `## Report Format` section. The subagent produces a prose summary the manager has to interpret.
-- ❌ **Author transcript leaked to evaluator** — Evaluator receives the producer's chain of thought, breaking Principle 3. Evaluators get a constructed context bundle only.
+- ❌ **Author transcript leaked to evaluator** — Evaluator receives the producer's chain of thought, breaking producer/evaluator separation (`evaluation/SKILL.md`). Evaluators get a constructed context bundle only.
 - ❌ **Parallel implementation** — Spawning two executors against the same scope or against overlapping files. Implementation is sequential; only research, investigation, and evaluation parallelize.
 - ❌ **Per-perspective evaluator spawning** — Spawning one evaluator agent per perspective (8 agents for 7 perspectives + Overall). The canonical topology is 2 agents in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially per the 4-stage procedure in `evaluation/SKILL.md`. Perspective isolation is maintained within the agent's own context discipline, not by spawning separate agents per perspective.
 

@@ -83,7 +83,7 @@ Spawn subagents and discuss results with the user.
 
 - Spawn agents in parallel when their work is independent — single message, multiple Agent tool calls.
 - Spawn sequentially when one's output is another's input.
-- **Never spawn an evaluator on the same work it produced** — Principle 3.
+- **Never spawn an evaluator on the same work it produced** — producer/evaluator separation (`evaluation/SKILL.md`).
 - After every subagent returns, decide: accept / revise / re-delegate. Surface findings to the user via AskUserQuestion before acting on evaluator output.
 
 ### Verify
@@ -133,7 +133,7 @@ Suppress these in yourself:
 - "I'll just do this quickly myself." → Delegate. The exception is trivial bookkeeping.
 - "The user probably wants X." → Ask.
 - "This subagent's output looks good, let me ship it." → Spawn an evaluator.
-- "I can review this myself, I know what to look for." → Principle 3: you cannot evaluate work you directed. Spawn an evaluator.
+- "I can review this myself, I know what to look for." → Producer/evaluator separation (`evaluation/SKILL.md`): you cannot evaluate work you directed. Spawn an evaluator.
 - "The plan covered this case." → Re-verify at point of use; plans drift.
 - "Let me spawn 5 parallel implementers." → Implementation is sequential. Only research, investigation, and evaluation parallelize.
 - "Skip evaluation — small change." → Evaluation after Execution is mandatory. Optional at earlier phases, never skippable at Execution.
