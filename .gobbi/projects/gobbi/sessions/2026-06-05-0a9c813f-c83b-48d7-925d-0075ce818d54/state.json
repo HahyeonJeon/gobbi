@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "mode": "chat",
+  "workflow": {
+    "configuration": { "state": "Done",    "verdict": null,     "iter": null, "maxIterations": null, "phase": null },
+    "ideation":      { "state": "Done",    "verdict": "pass",   "iter": 1,    "maxIterations": 2,    "phase": null },
+    "preparation":   { "state": "Skipped", "verdict": null,     "iter": 0,    "maxIterations": 0,    "phase": null },
+    "planning":      { "state": "Done",    "verdict": "folded", "iter": 0,    "maxIterations": 2,    "phase": null },
+    "execution":     { "state": "Done",    "verdict": "pass",   "iter": 2,    "maxIterations": 2,    "phase": null },
+    "wrap-up":       { "state": "Pending", "verdict": null,     "iter": 0,    "maxIterations": 1,    "phase": null },
+    "chat":          { "tasks": [
+      {
+        "taskNo": "01",
+        "slug": "orchestration-settings-skip-models-iterations",
+        "startedAt": "2026-06-05T05:22:00Z",
+        "finishedAt": "2026-06-05T06:33:07Z",
+        "ideation":   { "state": "Done", "verdict": "pass", "iter": 1, "maxIterations": 2, "phase": null, "iterations": [] },
+        "preparation":{ "state": "Skipped", "verdict": null, "iter": 0, "maxIterations": 0, "phase": null, "iterations": [] },
+        "planning":   { "state": "Done", "verdict": "folded", "iter": 0, "maxIterations": 2, "phase": null, "iterations": [] },
+        "execution":  { "state": "Done", "verdict": "pass", "iter": 2, "maxIterations": 2, "phase": null, "iterations": [
+          { "iter": 1, "verdict": "revise", "system": "dual", "note": "Claude PASS / Codex REVISE (4 findings: skip customize-gate gap + stale cap defaults in workflow subdocs)" },
+          { "iter": 2, "verdict": "pass", "system": "dual", "note": "Claude PASS / Codex PASS" }
+        ] },
+        "taskRecord": { "path": ".gobbi/projects/gobbi/sessions/2026-06-05-0a9c813f-c83b-48d7-925d-0075ce818d54/execution/task-01/artifacts/task-record.md", "writtenAt": "2026-06-05T06:33:07Z" }
+      }
+    ] }
+  },
+  "activeNote": "Task-01 (orchestration settings) complete: Execution PASS at iter2 (dual-system Claude PASS / Codex PASS). 2 commits on branch (9f77f0e + 5b5a30e); develop untouched. Task-record written. Awaiting user per-task gate: Next task / Revise / Wrap up."
+}

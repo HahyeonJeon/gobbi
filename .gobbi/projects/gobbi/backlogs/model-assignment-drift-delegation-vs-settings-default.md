@@ -48,3 +48,22 @@ All three options require touching at least two files; option (c) requires prior
 ## Origin
 
 Idea iter1 Finding F-C1 (Codex adversarial perspective) surfaced the inversion during the chat+auto mode redesign session. Iter2 evaluation partially addressed the finding as "deferred via §5 footnote" — the redesign doc acknowledges the conflict but does not resolve it. This backlog captures the open item for a future session to close.
+
+---
+
+## 2026-06-05 — Partial resolution: EVALUATOR half closed by session 0a9c813f
+
+Session `0a9c813f` (2026-06-05) resolved the **EVALUATOR half** of this drift. Both
+`settings.auto.json` and `settings.chat.json` now carry:
+- `models.claude.evaluator: "opus"` (was `"sonnet"`)
+- `models.codex.evaluator: "gpt-5.5"` (was `"gpt-5"`)
+
+This aligns both templates with `delegation/SKILL.md`'s Model Selection table (evaluator = opus
+/ gpt-5.5). Commits: `9f77f0e` + `5b5a30e` on branch `chore/session-2026-06-05-0a9c813f`.
+
+**The EXECUTOR half remains OPEN.** Both templates still carry `models.claude.executor: "opus"`,
+while `delegation/SKILL.md` documents executor = sonnet. This inversion is outside this session's
+locked scope (user decision: OQ-2 = LEAVE OPEN). A future session resolving the executor half
+should update both templates and this backlog.
+
+**Backlog status: OPEN** (executor half unresolved).
