@@ -20,7 +20,7 @@ Run these steps in order at session start, session resume, `/clear`, and compact
 
 Load these immediately, before anything else. Do not ask questions, do not check session state, do not proceed until they are loaded:
 
-1. **`principles`** — the 13 Iron Laws (Behavioral discipline floor). Mandatory.
+1. **`principles`** — the 8 Iron Laws (Behavioral discipline floor). Mandatory.
 2. **`orchestration`** — the workflow state machine, mode definitions, manager-facing step orchestration.
 3. **`discussion`** — Question Card template, anti-sycophancy, Decision Classification (Auto-decide / Always-Ask / User Challenge). Loaded on every user-facing exchange.
 4. **`delegation`** — per-role templates, Load Directives block, status contract. Loaded on every `Agent` tool call.
@@ -182,7 +182,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 
 | Skill | Purpose |
 |---|---|
-| [`principles`](../principles/SKILL.md) | 13 Iron Laws — behavioral discipline floor every agent observes. MUST load at session start; subagent delegation prompts must include an explicit load directive. |
+| [`principles`](../principles/SKILL.md) | 8 Iron Laws — behavioral discipline floor every agent observes. MUST load at session start; subagent delegation prompts must include an explicit load directive. |
 | [`git`](../git/SKILL.md) | Git / GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
 | `claude` doc-authoring standard (**[FLAG-2] currently absent**) | The `.claude/` documentation-authoring standard (writing principles, hierarchy, anti-patterns). CLAUDE.md links `skills/claude/SKILL.md` but no such skill dir exists yet (verified — neither `claude` nor `_claude`). This is a dangling reference: the standard's intended home is the `project-memory` value-feature (the doc-authoring standard Principle 6 leans on). Repoint or author the skill under the FLAG-2 follow-up; do not rely on this row until it resolves. |
 
@@ -203,7 +203,7 @@ gobbi's durable capabilities — the things a README "Features" section would li
 | `project-memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | memorization + memory-map + rules.md + wrap-up's promotion half + the 13 types |
 | `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + delegation/templates + the `agents/*.md` roster |
 | `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives | evaluation + the per-loop `evaluation.md` child docs + codex |
-| `guardrails` | The 13 Iron Laws + the mistake-capture-and-learn loop | principles + mistake + the `mistakes/` tier |
+| `guardrails` | The 8 Iron Laws + the mistake-capture-and-learn loop | principles + mistake + the `mistakes/` tier |
 | `git-workflow` | Worktree-isolated sessions + branch / PR / issue lifecycle | git |
 | `install-runtime` | One-command install + bootstrap interview + the per-session runtime contract | interview + gobbi-hook-authoring (+ install/runtime knowledge documented here and in the install dir) |
 
