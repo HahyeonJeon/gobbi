@@ -1,33 +1,12 @@
 ---
 name: orchestration
-description: How the manager operates — the session chief role, Chat / Auto orchestration modes, and the six-step workflow (Configuration, Ideation, Preparation, Planning, Execution, Wrap-up) that every session executes.
+description: The workflow governor for a gobbi session — defines the manager role, the Chat / Auto orchestration modes, and the six-step state machine (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) that drives every session.
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 ---
 
 # Orchestration
 
 How the manager operates. This skill defines the manager role, the two orchestration modes, and the six-step workflow that every session executes.
-
----
-
-## Entry Point
-
-`orchestration/SKILL.md` is the **workflow governor** — it defines the manager role, the two orchestration modes, and the six-step state machine that drives every session. It is the complement to `gobbi/SKILL.md`, which is the **session-bootstrap front door**. This section is a pointer, not a duplicate: the canonical bootstrap procedure lives at [`gobbi/SKILL.md § Session Bootstrap Order`](../gobbi/SKILL.md#session-bootstrap-order) and is not reproduced here.
-
-| Skill | Role | Responsibility |
-|---|---|---|
-| [`gobbi/SKILL.md § Session Bootstrap Order`](../gobbi/SKILL.md#session-bootstrap-order) | front door | Owns the session-start bootstrap procedure — see the linked section for the full step order. |
-| `orchestration/SKILL.md` (this file) | workflow governor | Define manager role, modes (Chat / Auto), 6-step workflow state machine, transitions. |
-
-### When to start here
-
-A fresh manager reads this section first in three situations:
-
-- The user types `/gobbi` (SessionStart hook fires; `gobbi/SKILL.md` bootstraps and hands off here).
-- Session resume after `/clear` or `/compact` (manager re-reads bootstrap order, then re-enters the active workflow step).
-- Automated session auto-start (same hook path as `/gobbi`).
-
-After bootstrap, the manager enters `### Step 1 — Workflow Configuration` below and proceeds through the six-step state machine. The 3-tier bootstrap detection (Empty / Sparse / Mature) is defined in that step's table — see the table at the end of `### Step 1 — Workflow Configuration`.
 
 ---
 
@@ -61,17 +40,10 @@ The manager MUST NOT perform Ideation, Planning, Execution, or Evaluation direct
 
 ## Orchestration Mode
 
-The manager runs every session in one of two modes. Both modes follow the same underlying workflow; what differs is who drives it and which state-machine shape runs between Configuration and Wrap-up. The mode is picked at session start and surfaced to the user — never inferred from context.
+The manager runs every session in one of two modes. Both follow the same underlying workflow; what differs is who drives it and which state-machine shape runs between Configuration and Wrap-up. The mode is picked at session start and surfaced to the user — never inferred from context.
 
-> **CORRECTION — 2026-05-28.** The original Workflow-control lock ("Mode controls user gates; it does not relax the workflow.") — previously the second sentence of the pre-redesign `### Inter-loop transition` paragraph, struck through in PR #273 commit `6c72793` — has been superseded by the mode-dispatched state-machine design ratified in session `2026-05-28-8eed14fb`. Mode now controls **which state machine runs**, not just gate density. Auto dispatches the linear 6-step sequence. Chat dispatches a per-task slice loop (Step 2 → Step 4 → Step 5 → task-record) per user-typed task, with Step 3 resolving to `Skipped` at loop entry (R1), repeating until the user signals end-of-session, then triggering Step 6. Both shapes preserve `evaluate.mode: always`. Per-loop MEMORIZATION is retained as a hard invariant: Auto runs the full base procedure; Chat's narrowed PASS path is declared locally in [`chat-mode.md §4 — Chat MEMORIZATION`](chat-mode.md). The Workflow-section per-step procedure for Steps 2-6 (formerly in this file) was relocated to the mode docs in PR #273 follow-up: see [`auto-mode.md §2 — Workflow`](auto-mode.md) and [`chat-mode.md §3 — Workflow`](chat-mode.md). See also: `sessions/2026-05-28-8eed14fb-c4b5-455f-aa5e-497c33ed8bbf/ideation/artifacts/idea.md §6.1 + §6.6`.
-
-### Chat Mode
-
-The user drives the workflow one task at a time. The manager runs a per-task slice (Ideation → mini-Planning → mini-Execution) and returns control to the user after each slice. Session ends on explicit user signal. Full spec: [`chat-mode.md`](chat-mode.md).
-
-### Auto Mode
-
-The manager runs the linear 6-step state machine end-to-end with minimal user intervention, pausing only for Always-Ask decisions (design, scope, destructive). Full spec: [`auto-mode.md`](auto-mode.md).
+- **Chat** — the user drives the workflow one task at a time; the manager runs a per-task slice (Ideation → mini-Planning → mini-Execution) and returns control after each. Full spec: [`chat-mode.md`](chat-mode.md).
+- **Auto** — the manager runs the linear 6-step state machine end-to-end, pausing only for Always-Ask decisions (design, scope, destructive). Full spec: [`auto-mode.md`](auto-mode.md).
 
 ---
 
