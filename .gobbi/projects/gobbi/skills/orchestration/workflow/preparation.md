@@ -130,7 +130,7 @@ After `MEMORIZATION`, the manager decides based on the reconciled verdict:
 | `RE-IDEATE` | Special verdict — at least one gap is unworkable without re-Ideation. Manager re-enters the Ideation Loop, then re-runs Preparation. |
 | `SKIPPED` | Exit the loop (Preparation was skipped per settings — only valid when project memory is mature and the manager is confident no gaps exist) |
 
-Iteration cap: `workflow.preparation.maxIterations` (default 3). When the cap is reached without `PASS`, the manager forces user escalation.
+Iteration cap: `workflow.preparation.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.
 
 ---
 

@@ -138,7 +138,7 @@ After `MEMORIZATION` (which always runs), the manager decides based on the recon
 | `FAIL` | Escalate via AskUserQuestion; user decides revise / abort / reframe |
 | `SKIPPED` | Exit the loop (Ideation was skipped per settings) |
 
-Iteration cap: `workflow.ideation.maxIterations` (default 3). When the cap is reached without `PASS`, the manager forces user escalation.
+Iteration cap: `workflow.ideation.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.
 
 ---
 

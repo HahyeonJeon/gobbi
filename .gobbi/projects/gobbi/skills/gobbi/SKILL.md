@@ -86,7 +86,7 @@ Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#
 - **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
 - **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
 
-After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
+After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
 
 See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 5 (worktree creation), which runs before `state.json` initialization (row 5.5) and before `session.json` stamping (row 6, where `git.worktreePath` is recorded).
 

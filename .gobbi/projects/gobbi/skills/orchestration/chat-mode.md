@@ -73,7 +73,7 @@ Step 1 — Configuration (once per session)
 │  user types a task                                                 │
 │   │                                                                │
 │   ▼                                                                │
-│  Step 2 — Full Ideation Loop  (maxIter=2)                          │
+│  Step 2 — Full Ideation Loop  (maxIter=5)                          │
 │      DISCUSSION (forced user-driven, regardless of discuss.mode)   │
 │           ↓                                                        │
 │      WORK     (leader; full 4 sub-steps A–D)                       │
@@ -96,13 +96,13 @@ Step 1 — Configuration (once per session)
 │      prep override; opt-in runs the standard contract.             │
 │   │                                                                │
 │   ▼                                                                │
-│  Step 4 — mini Planning Loop  (maxIter=2)                          │
+│  Step 4 — mini Planning Loop  (maxIter=5)                          │
 │      Same 5-row loop, scope = this one task's worth of plan        │
 │      (one or a few sub-steps, ordered).                            │
 │      MEMORIZATION = Chat narrowed PASS path (§4).                  │
 │   │                                                                │
 │   ▼                                                                │
-│  Step 5 — mini Execution Loop per Plan sub-step  (maxIter=2)       │
+│  Step 5 — mini Execution Loop per Plan sub-step  (maxIter=5)       │
 │      Same 5-row loop per sub-step (fresh executor each time);      │
 │      sub-steps sequence as the mini-Plan ordered them.             │
 │      MEMORIZATION = Chat narrowed PASS path (§4).                  │
@@ -118,7 +118,7 @@ Step 1 — Configuration (once per session)
 └────────────────────────────────────────────────────────────────────┘
    │ (user signals "wrap up")
    ▼
-Step 6 — Wrap-up Loop  (maxIter=1)
+Step 6 — Wrap-up Loop  (maxIter=5)
    FULL MEMORIZATION consolidation:
    - mine the session transcript
    - read every per-task task-record.md
