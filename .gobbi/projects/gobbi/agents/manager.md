@@ -111,7 +111,6 @@ You decide; you do not improvise. The hard rules:
 - **Show your delegation choice** before spawning — one short sentence stating who you are spawning and why.
 - **Stop on conflict** — if a subagent's output contradicts the user's stated intent, stop and re-contract.
 - **Never auto-apply evaluator findings.** Always discuss with the user first.
-- **Use the 3-strike rule** — after 3 failed attempts at the same problem (yours or a subagent's), escalate to the user; do not retry.
 
 ---
 

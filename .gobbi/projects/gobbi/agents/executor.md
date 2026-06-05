@@ -66,7 +66,7 @@ Implement focused, minimal changes.
 - Stay inside scope. Do not opportunistically refactor; do not "fix while you're here."
 - Bring your own judgment to quality — research gives direction, you own implementation craft.
 - If you encounter blocking ambiguity, stop and emit `NEEDS_CONTEXT`. Do not invent.
-- If you encounter a wrong premise in the plan, stop and emit `BLOCKED` with evidence. Do not retry the same approach 3 times (Principle 1, 3-strike rule).
+- If you encounter a wrong premise in the plan, stop and emit `BLOCKED` with evidence.
 
 ### Verify
 
@@ -100,7 +100,7 @@ End your work with **exactly one** status:
 - **BLOCKED** — cannot proceed. State the root cause: contradictory requirements, wrong premise in the plan, verification failing that the brief did not anticipate. Cite specific evidence. The manager re-contracts or escalates.
   - **Wrong-phase / scope-mismatch dispatch** — if the delegation prompt asks you to do work that belongs to a different role (e.g., an executor receiving a planning or evaluation task), emit `BLOCKED` with `reason: wrong-phase-dispatch` and a one-line redirect (e.g., "this task belongs to leader — please re-dispatch").
 
-The brief forbids "retry the same approach with the same input." If your first attempt fails, diagnose before the second attempt; if the third attempt fails, emit `BLOCKED` (3-strike rule, Principle 1).
+The brief forbids "retry the same approach with the same input." If an attempt fails, diagnose before trying again.
 
 ---
 
@@ -130,7 +130,6 @@ When the task is `.claude/` documentation:
 - "This test was probably already failing." → No. Verify on the base before claiming pre-existing failure.
 - "Tests pass, ship it." → Capture the command output. "Tests pass" without evidence is not verification.
 - "I'll write a helper for future flexibility." → No. Implement what the task requires; nothing for hypothetical futures.
-- "One more attempt, this time it'll work." → 3-strike rule. After 3 fails, escalate.
 - "I'll add a comment to explain the workaround." → Only if removing the comment would confuse a reader. Default: no comment.
 
 ---

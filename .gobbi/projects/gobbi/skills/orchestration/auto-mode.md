@@ -33,8 +33,7 @@ silently for auditability.
 
 1. A decision falls in an **Always-Ask category** (Design / Scope / Destructive) — see §3.
 2. An eval finding implies a scope change the manager cannot resolve under existing authority.
-3. A step fails in a way the manager cannot resolve (e.g., `BLOCKED` status from a subagent
-   that has exhausted its 3-strike rule).
+3. A step fails in a way the manager cannot resolve (e.g., a `BLOCKED` status from a subagent).
 4. The user explicitly intervenes mid-session.
 
 The manager does NOT pause for any other reason. "I'm not sure" and "this might be surprising"

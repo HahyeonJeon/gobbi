@@ -64,10 +64,6 @@ Every `DONE` status requires fresh evidence — run the verification command(s) 
 
 The task's `files:` scope is binding. Adjacent fixes, opportunistic refactors, and "while I'm here" improvements are forbidden. Note them in the executor's final response under "Out of scope observations"; do not implement them. Scope creep is the most common Execution failure mode.
 
-> **3-strike rule on retries.**
-
-After three failed attempts at the same approach to the same problem, the executor stops and emits `BLOCKED`. The issue is no longer a hypothesis — it is wrong architecture, wrong assumption, or wrong plan. Escalate to the manager (Principle 1, 3-strike rule).
-
 > **Tell the manager what you discovered.**
 
 If implementation surfaces a mistake worth recording, a backlog candidate, an architectural insight, or a known-pitfall avoided, stage it under `execution/{task-id}/staging/` per the routing table. Wrap-up promotes; the executor does not write to project memory directly.
@@ -142,7 +138,7 @@ After the five-phase lifecycle, the executor produces a final response — captu
 - **DONE** — change-set matches the contracted deliverable; fresh verification evidence attached; scope boundary respected.
 - **DONE_WITH_CONCERNS** — change-set done; flag specific concerns (incomplete edge-case coverage, pre-existing test failure, scope ambiguity resolved one way the user might prefer the other).
 - **NEEDS_CONTEXT** — paused. State precisely what is missing (file, decision, user clarification) and from whom.
-- **BLOCKED** — cannot proceed. State the root cause: contradictory requirements, wrong premise in the plan, 3-strike rule triggered, verification failing the brief did not anticipate.
+- **BLOCKED** — cannot proceed. State the root cause: contradictory requirements, wrong premise in the plan, or verification failing the brief did not anticipate.
 
 **Exit checklist**
 - [ ] All five phases (Study / Plan / Execute / Verify / Commit) completed (Commit only when git is active)
@@ -278,7 +274,6 @@ The session subdirectory tree at `sessions/{date}-{session-id}/execution/{task-i
 - **MUST follow existing codebase patterns** — the code is the style guide; do not introduce new patterns when existing ones work.
 - **MUST produce fresh verification evidence** for every `DONE` status — run the commands, capture the output. "Tests pass" without captured evidence is not verification.
 - **MUST report with the 4-state status enum** — `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED` — supported by evidence; never silently produce work the executor is unsure about.
-- **MUST emit `BLOCKED` after 3 failed attempts** at the same approach (Principle 1, 3-strike rule) — escalate rather than retry indefinitely.
 - **MUST commit but never push** — when git is active, commit to the worktree per `git/SKILL.md`; the manager owns pushing and PR creation.
 - **MUST never write outside the task's `files:` scope** — out-of-scope code edits are a constraint violation; revert and re-emit status.
 - **MUST never write to project memory or feature memory during the Execution Loop** — mid-task discoveries stage at `execution/{task-id}/staging/...`. Wrap-up promotes.
