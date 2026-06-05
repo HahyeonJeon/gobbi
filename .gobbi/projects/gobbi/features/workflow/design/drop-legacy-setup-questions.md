@@ -15,19 +15,19 @@ topic: drop-legacy-setup-questions
 
 ## Context
 
-The session-bootstrap step in `gobbi/SKILL.md § Step 4` asked the user two setup questions (eval-mode and git-workflow-mode). Those same defaults are already encoded in `settings.default.json` and walked through by `orchestration/SKILL.md § Step 1`'s "use defaults vs customize" gate (rows 1-2), so the two-question block duplicated and partially overlapped that mechanism — a docs-sync drift between the bootstrap prompt and the settings source of truth.
+The session-bootstrap step in `gobbi/SKILL.md § Step 4` asked the user two setup questions (eval-mode and git-workflow-mode). Those same defaults are already encoded in `settings.auto.json` and walked through by `orchestration/SKILL.md § Step 1`'s "use defaults vs customize" gate (rows 1-2), so the two-question block duplicated and partially overlapped that mechanism — a docs-sync drift between the bootstrap prompt and the settings source of truth.
 
 ## Decision
 
 Rewrite `gobbi/SKILL.md § Step 4` from "ask the user 2 setup questions" to "ask 1 setup question + an optional customize gate":
 
-- Question 1 — mode (chat/auto), **default auto** per `orchestration/templates/settings.default.json`.
+- Question 1 — mode (chat/auto), **default auto** per `orchestration/templates/settings.auto.json`.
 - Optional "customize defaults?" gate — if yes, defer to the `orchestration/SKILL.md § Step 1` row-2 walk-through.
 - Remove the explicit eval-mode and git-workflow-mode questions; those defaults live in `settings.json`.
 
 ## Rationale
 
-`orchestration/SKILL.md § Step 1` already owns the defaults-vs-customize gate, so collapsing the bootstrap to one mode question plus a customize gate resolves the duplication without losing any capability. The settings defaults were verified empirically: `jq '.mode, .workflow.ideation.evaluate.mode, .git.pr' orchestration/templates/settings.default.json` returns `"auto"`, `"always"`, `{"open": false, "draft": false}` — confirming the defaults the bootstrap no longer needs to ask about.
+`orchestration/SKILL.md § Step 1` already owns the defaults-vs-customize gate, so collapsing the bootstrap to one mode question plus a customize gate resolves the duplication without losing any capability. The settings defaults were verified empirically: `jq '.mode, .workflow.ideation.evaluate.mode, .git.pr' orchestration/templates/settings.auto.json` returns `"auto"`, `"always"`, `{"open": false, "draft": false}` — confirming the defaults the bootstrap no longer needs to ask about.
 
 One referenced file does not exist: there is no `.claude/skills/orchestration/workflow/configuration.md` (`find .claude/skills/orchestration/workflow -name "configuration*"` returns empty). Wherever an earlier brief pointed at that path, substitute `orchestration/SKILL.md § Step 1`, which is the authoritative configuration walk-through.
 
