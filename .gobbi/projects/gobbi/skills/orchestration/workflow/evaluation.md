@@ -50,7 +50,7 @@ Each evaluator is **one agent** that handles **all four stages (Target Understan
 
 Model selection follows `settings.json` `models.{system}.evaluator`:
 - Claude Code evaluator: `models.claude.evaluator` (default `opus`)
-- Codex evaluator: `models.codex.evaluator` (default `gpt-5`)
+- Codex evaluator: `models.codex.evaluator` (default `gpt-5.5`)
 
 ---
 
@@ -253,7 +253,7 @@ This prevents wasted iter-3 cycles on issues the agent cannot resolve and surfac
 ## Iteration Caps
 
 The manager tracks the loop's revision count. Settings define:
-- `workflow.{loop}.maxIterations` (default 3 for Ideation/Planning/Execution, 1 for Wrap-up)
+- `workflow.{loop}.maxIterations` (default 5 for Ideation/Planning/Execution, 5 for Wrap-up)
 
 When the cap is reached without `PASS`, the manager **escalates to the user** rather than continuing to revise. The escalation is a stop-the-line AskUserQuestion with three options: revise one more time, accept the artifact as-is despite findings, or abort the loop and reframe.
 

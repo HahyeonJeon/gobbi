@@ -70,7 +70,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
 **Output.** An `Idea` document containing the problem statement, surfaced assumptions, options considered, and the recommendation with rationale.
 
-**Loop iteration.** Rows 1-5 form one iteration. Row 5 decides whether to iterate (back to row 1) or exit the loop. Repeats up to `workflow.ideation.maxIterations` (Auto default = 3) until `PASS`, `Skipped`, or cap exhausted.
+**Loop iteration.** Rows 1-5 form one iteration. Row 5 decides whether to iterate (back to row 1) or exit the loop. Repeats up to `workflow.ideation.maxIterations` (Auto default = 5) until `PASS`, `Skipped`, or cap exhausted.
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -88,7 +88,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
 **Output.** A `preparation.md` documenting the readiness assessment, the user's per-gap decisions, and the artifacts generated this loop.
 
-**Loop iteration.** 5-row loop; cap from `workflow.preparation.maxIterations` (Auto default = 3). A `RE-IDEATE` verdict in row 5 re-enters Ideation.
+**Loop iteration.** 5-row loop; cap from `workflow.preparation.maxIterations` (Auto default = 5). A `RE-IDEATE` verdict in row 5 re-enters Ideation.
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -106,7 +106,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
 **Output.** A `Plan` document: ordered task list, scope per task, success criteria per task, deferred items.
 
-**Loop iteration.** 5-row loop; cap from `workflow.planning.maxIterations` (Auto default = 3).
+**Loop iteration.** 5-row loop; cap from `workflow.planning.maxIterations` (Auto default = 5).
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -124,7 +124,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
 **Output.** Code or doc changes plus verification evidence — the task's `Result`. The Plan's full `Results` is the integrated set.
 
-**Loop iteration.** 5-row loop per task; cap from `workflow.execution.maxIterations` (Auto default = 3).
+**Loop iteration.** 5-row loop per task; cap from `workflow.execution.maxIterations` (Auto default = 5).
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -142,7 +142,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
 **Output.** Doc updates (per Principle 8), session report, project memory updates, handoff summary, opened PR.
 
-**Loop iteration.** 5-row loop; cap from `workflow.wrap-up.maxIterations` (Auto default = 1).
+**Loop iteration.** 5-row loop; cap from `workflow.wrap-up.maxIterations` (Auto default = 5).
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -150,7 +150,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 | 2 | `WRAPUP` | Spawn `assistant` subagent. Consolidate artifacts; archive backlogs; promote mistakes; write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Full PASS path — write session and project memory for this iteration. | [memorization.md](workflow/memorization.md) | assistant |
-| 5 | `ITER / EXIT` | `PASS` → session closed. `REVISE`/`FAIL` → iter cap hit immediately (max=1); escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
+| 5 | `ITER / EXIT` | `PASS` → session closed. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
 
 ---
 
@@ -201,21 +201,22 @@ The following defaults are locked for Auto Mode. They apply to every session tha
 
 | Setting | Auto default | Notes |
 |---|---|---|
-| `workflow.ideation.maxIterations` | `3` | Full exploration budget. |
-| `workflow.preparation.maxIterations` | `3` | Preparation runs — not skipped (contrast Chat's `0 → Skipped`). |
-| `workflow.planning.maxIterations` | `3` | Full planning budget. |
-| `workflow.execution.maxIterations` | `3` | Full execution budget. |
-| `workflow.wrap-up.maxIterations` | `1` | Wrap-up runs once per session. |
-| `evaluate.mode` (all loops) | `"always"` | Evaluation runs every loop, no mode-driven skip. `"skip"` is a power-user per-session override; the redesign does not change this, but documenting it preempts future drift. |
+| `workflow.ideation.maxIterations` | `5` | Full exploration budget. |
+| `workflow.preparation.maxIterations` | `5` | Preparation runs — `skip: false`, `maxIterations: 5` (contrast Chat's `skip: true` / `maxIterations: 0` → Skipped). |
+| `workflow.planning.maxIterations` | `5` | Full planning budget. |
+| `workflow.execution.maxIterations` | `5` | Full execution budget. |
+| `workflow.wrap-up.maxIterations` | `5` | Wrap-up runs once per session; up to 5 remediation iterations on `REVISE` before abort. |
+| `evaluate.mode` (all loops) | `"always"` | Evaluation runs every loop, no mode-driven skip. `"skip"` is a power-user per-session override; the redesign does not change this, but documenting it preempts future drift. **Note:** `evaluate.mode: skip` skips only the EVALUATION phase; the step-level `skip: true` boolean (new) skips the WHOLE step. Distinct signals. |
 | `workflow.ideation.discuss.mode` | `"user"` | Ideation DISCUSSION is user-driven — user confirms approach before leader works. |
 | `workflow.preparation.discuss.mode` | `"user"` | Preparation DISCUSSION is user-driven — user confirms readiness gaps before prep work. |
 | `workflow.planning.discuss.mode` | `"agent"` | Planning DISCUSSION is agent-driven — manager proceeds without a gate per loop entry. Always-Ask categories still fire (§3). |
 | `workflow.execution.discuss.mode` | `"agent"` | Execution DISCUSSION is agent-driven. Always-Ask categories still fire (§3). |
 | `workflow.wrap-up.discuss.mode` | `"agent"` | Wrap-up DISCUSSION is agent-driven. Always-Ask categories still fire (§3). |
 
-**Preparation runs.** Auto Mode does not skip Preparation. The `maxIterations: 3` value means the
-standard loop contract runs (DISCUSSION → WORK → EVALUATION → MEMORIZATION → ITER/EXIT). This is
-the structural contrast with Chat Mode's R1 lock (`maxIterations: 0 → state: Skipped`).
+**Preparation runs.** Auto Mode does not skip Preparation. The `skip: false` + `maxIterations: 5`
+values mean the standard loop contract runs (DISCUSSION → WORK → EVALUATION → MEMORIZATION →
+ITER/EXIT). This is the structural contrast with Chat Mode, where preparation carries
+`skip: true` + `maxIterations: 0` → `state: Skipped` (either signal alone suffices).
 
 **Full per-loop MEMORIZATION.** Auto Mode uses the **unmodified** `memorization/SKILL.md` PASS
 path, including Steps 6–7 (typed-finding staging). There is no "narrowed" PASS path in Auto Mode.
@@ -274,9 +275,9 @@ recoverable abort.
   `§ Mode-specific gates within a loop` for the three per-loop user gates; `§ Workflow Status
   Display` for the Auto rendering (6-row table); line 405 for the maxIterations exhaustion
   silence contract.
-- [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock
-  (`preparation.maxIterations: 0 → state: Skipped`) and the narrowed MEMORIZATION PASS path are
-  Chat-only; they do not apply in Auto Mode.
+- [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock +
+  `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) and the narrowed
+  MEMORIZATION PASS path are Chat-only; they do not apply in Auto Mode.
 - [`discussion/SKILL.md § Decision Classification`](../discussion/SKILL.md) — authoritative
   Always-Ask matrix (Design / Scope / Destructive categories, full table with examples and
   why-always-ask rationale). §3 of this doc references and restates it; `discussion/SKILL.md`

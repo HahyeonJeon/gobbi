@@ -98,7 +98,7 @@ Per task:
 | `REVISE` | Re-enter `DISCUSSION` for THIS task with eval findings |
 | `FAIL` | Escalate; user decides revise / abort / skip |
 
-Iteration cap is `workflow.execution.maxIterations` per task (default 3).
+Iteration cap is `workflow.execution.maxIterations` per task (default 5).
 
 When all tasks `PASS`, the loop exits and the Wrap-up Loop begins.
 

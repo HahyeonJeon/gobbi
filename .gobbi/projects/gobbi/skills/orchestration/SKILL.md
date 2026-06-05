@@ -106,7 +106,7 @@ the per-mode docs reference it.
 | # | Action | Refs | Agent |
 |---|---|---|---|
 | 1 | Read the per-mode default settings template `settings.{mode}.json` matching the mode the user selected during session bootstrap (Chat → [`settings.chat.json`](templates/settings.chat.json); Auto → [`settings.auto.json`](templates/settings.auto.json)). In Chat Mode, present it to the user and AskUserQuestion: use defaults as-is, or customize? In Auto Mode, default to "use defaults" without asking. | [settings.chat.json](templates/settings.chat.json) / [settings.auto.json](templates/settings.auto.json) | manager |
-| 2 | If "customize" was chosen, walk through each section via AskUserQuestion to collect overrides — per-step evaluation policy, per-step discussion policy, per-step `maxIterations`, per-agent-type `models`, git workflow. (The `mode` key itself is already fixed by the file the bootstrap loaded.) | [settings.chat.json](templates/settings.chat.json) / [settings.auto.json](templates/settings.auto.json) | manager |
+| 2 | If "customize" was chosen, walk through each section via AskUserQuestion to collect overrides — per-step evaluation policy, per-step discussion policy, per-step `skip`, per-step `maxIterations`, per-agent-type `models`, git workflow. (The `mode` key itself is already fixed by the file the bootstrap loaded.) | [settings.chat.json](templates/settings.chat.json) / [settings.auto.json](templates/settings.auto.json) | manager |
 | 3 | Write the resulting `settings.json` (defaults overlaid with any overrides) to `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json`. | — | manager |
 | 4 | Read the cascaded resolution back to confirm the write took effect. | — | manager |
 | 5 | **Create worktree (P2 wrapper) — produces the worktree path held in-turn for use by rows 5.5 and 6; row 6 stamps it as `git.worktreePath` in `session.json`.** Read resolved `settings.git.workflow.mode` from settings. If `direct`: skip — no worktree is created, `git.branch` will be stamped from the current HEAD in row 6 (preserves direct-mode escape hatch; see Task 06 / LOCK #5 footnote, which lands in this same Step 1 section). If `worktree-pr`: invoke [`git/SKILL.md` § P2](../git/SKILL.md#p2----create-worktree) to create the worktree at branch `chore/session-{date}-{ssid-short}`, where `{date}` is the session-start date in `YYYY-MM-DD` format and `{ssid-short}` is the first 8 characters of `$CLAUDE_CODE_SESSION_ID`. Branch name must satisfy the [`git/conventions.md` line 22 shape regex](../git/conventions.md#branch-naming) and the [line 64 description-slug length constraint (3–50 chars)](../git/conventions.md#branch-naming) — the slug `session-YYYY-MM-DD-{8chars}` (27 chars) satisfies this. **Idempotency guard — 3-state machine (SessionStart fires on `startup\|resume\|clear\|compact`):** (1) `worktreePath` is `null` — fresh session; proceed to create the worktree via P2 above. (2) `worktreePath` is set AND the path exists on disk — healthy resume/clear/compact; `cd` into the existing worktree and skip P2 entirely. (3) `worktreePath` is set AND the path is missing — orphaned worktree (directory deleted but `session.json` still references it); log a warning and surface AskUserQuestion: "Worktree at `<path>` is missing — recreate it (re-run P2) or abort to investigate?". Recreate follows the same P2 invocation as state 1; abort exits Step 1 without advancing. Recovery guidance: [`git/SKILL.md` § P6](../git/SKILL.md#p6----recover-orphaned-worktree). **Path rule (rows 5.5 and 6)**: P2's output is an in-turn worktree path the manager holds in memory — rows 5.5 and 6 use this in-turn value as the absolute write root (`worktree-pr` mode); fall back to the main-tree root when `direct` mode. `session.json.git.worktreePath` is the durable field that row 6 stamps from this in-turn value; from row 6 onward `session.json.git.worktreePath` is the canonical reference — per `git/SKILL.md` § [Memory Access Matrix](../git/SKILL.md#memory-access-matrix) (Critical rule — write paths) and `qualified-git-write-path-rule.md`. | [`git/SKILL.md` § P2](../git/SKILL.md#p2----create-worktree), [`git/SKILL.md` § P6](../git/SKILL.md#p6----recover-orphaned-worktree), [`git/conventions.md` :22 (shape regex)](../git/conventions.md#branch-naming), [`git/conventions.md` :64 (length)](../git/conventions.md#branch-naming) | manager |
@@ -164,7 +164,7 @@ In both modes, the manager renders a workflow status snapshot so the user can se
 | # | Step | State | Iter | Verdict |
 |---|---|---|---|---|
 | 1 | Configuration | `✓ Done` | — | — |
-| 2 | Ideation Loop | `▸ DISCUSSION` | `1 / 3` | — |
+| 2 | Ideation Loop | `▸ DISCUSSION` | `1 / 5` | — |
 | 3 | Preparation Loop | `… Pending` | — | — |
 | 4 | Planning Loop | `… Pending` | — | — |
 | 5 | Execution Loop | `… Pending` | — | — |
@@ -180,7 +180,7 @@ In both modes, the manager renders a workflow status snapshot so the user can se
 | `▸ DISCUSSION` / `▸ WORK` / `▸ EVALUATION` / `▸ MEMORIZATION` / `▸ ITER/EXIT` | Step active; current phase named (`WORK` is replaced by the loop's verb — `IDEATION`, `PLAN_DRAFT`, `EXECUTION`, `WRAPUP`) |
 | `↪ Revising` | `EVALUATION` returned `REVISE` and the loop is re-entering `DISCUSSION` (`iter` increments) |
 | `✓ Done` | Step completed via the `PASS` verdict path |
-| `⊘ Skipped` | Step bypassed without running `EVALUATION` — either the whole step was skipped (e.g., the user supplied a pre-built artifact for a later step) or `evaluate.mode == 'skip'` for this step (loop ran `WORK` → `MEMORIZATION`, no verdict). The `Verdict` column stays `—`. |
+| `⊘ Skipped` | Step bypassed without running `EVALUATION`. Triggered at loop entry by `skip: true` OR `maxIterations: 0` (two independent signals — see [§ Workflow State Machine](#workflow-state-machine) loop-entry resolution), OR mid-loop when `evaluate.mode == 'skip'` (loop ran `WORK` → `MEMORIZATION`, no verdict). The `Verdict` column stays `—`. |
 | `✗ Aborted` | `maxIterations` exhausted without `PASS` |
 
 **Field rules.**
@@ -250,7 +250,17 @@ Evaluation outputs are named `evaluation/iter{n}/{system}/{perspective}.md` wher
 
 ## Workflow State Machine
 
-In Auto Mode the state machine runs linearly across the six steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](chat-mode.md) for the Chat-specific per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](chat-mode.md) for the state-transition table. The rest of this section describes the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → MEMORIZATION → ITER/EXIT) shared by both modes. Note: `maxIterations: 0` resolves to `state: Skipped` at loop entry — never `Aborted` after running with cap 0 (R1 lock).
+In Auto Mode the state machine runs linearly across the six steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](chat-mode.md) for the Chat-specific per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](chat-mode.md) for the state-transition table. The rest of this section describes the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → MEMORIZATION → ITER/EXIT) shared by both modes.
+
+> **Loop-entry Skipped resolution (two independent signals).** A workflow step resolves to
+> `state: Skipped` at loop entry when **either** `skip: true` **OR** `maxIterations: 0` is set
+> for that step — the two are independent signals, and either one alone is sufficient. A Skipped
+> step runs no DISCUSSION / WORK / EVALUATION / MEMORIZATION rows, emits no `FAIL` or `Aborted`
+> verdict, and stamps `{state: "Skipped", iterations: []}`. The `maxIterations: 0` path (the
+> original "R1 lock") is retained and coexists with the explicit `skip` boolean; `skip: true` is
+> the preferred explicit signal, `maxIterations: 0` remains valid for back-compatibility. This
+> is distinct from `evaluate.mode: "skip"`, which skips only the EVALUATION phase (the loop still
+> runs WORK → MEMORIZATION), not the whole step.
 
 This section specifies the phase mechanics shared by steps 2-6. The manager moves between states only when each state's postcondition is met.
 
@@ -266,7 +276,7 @@ The manager maintains state in a per-session `state.json` file.
 | Update points | every state transition (`DISCUSSION` → `WORK`, `WORK` → `EVALUATION`, `EVALUATION` → `MEMORIZATION`, `MEMORIZATION` → `ITER / EXIT`, and the inter-step transitions at loop exits) |
 | Reader | manager — used to recover position after `/clear`, `/compact`, or session resume; also projected into the [Workflow Status Display](#workflow-status-display) |
 | Status semantics | `state` is one of `Pending` / `Active` / `Revising` / `Done` / `Skipped` / `Aborted`; when `Active`, the `phase` field names the current state (`DISCUSSION`, `WORK`'s loop verb, `EVALUATION`, `MEMORIZATION`, `ITER/EXIT`) |
-| Schema shape | `workflow` is keyed by step name — `configuration`, `ideation`, `preparation`, `planning`, `execution`, `wrap-up` — matching the `workflow.{step}` keys in `settings.json`. Each entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`. The current active step is derived (the entry whose `state` is `Active` or `Revising`); there is no separate `active` key. The display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention; the manager renders the [Workflow Status Display](#workflow-status-display) in that order regardless of object iteration. **Chat sessions additionally carry `workflow.chat.tasks[]`** — see the schema below. |
+| Schema shape | `workflow` is keyed by step name — `configuration`, `ideation`, `preparation`, `planning`, `execution`, `wrap-up` — matching the `workflow.{step}` keys in `settings.json`. Each `state.json` entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`. (The `settings.json` per-step object additionally carries a `skip` boolean alongside `discuss` / `evaluate` / `maxIterations`; the state-machine entry derives `Skipped` from it at loop entry per the loop-entry resolution above. The `state.json` schema itself does NOT gain a `skip` key — only settings does.) The current active step is derived (the entry whose `state` is `Active` or `Revising`); there is no separate `active` key. The display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention; the manager renders the [Workflow Status Display](#workflow-status-display) in that order regardless of object iteration. **Chat sessions additionally carry `workflow.chat.tasks[]`** — see the schema below. |
 | `workflow.chat.tasks[]` schema (additive — Chat sessions only) | Present in both `state.json` and `session.json` when `settings.mode == "chat"`. Auto sessions leave this array empty. Each entry: `taskNo` (zero-padded ordinal), `slug` (subject-descriptive kebab-case), `startedAt`, `finishedAt`, and per-loop sub-records `ideation` / `preparation` / `planning` / `execution` (same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as the top-level `workflow.{loop}` entries — same parser, different path), plus `taskRecord: { path, writtenAt }`. The `preparation` sub-record carries `state: "Skipped"` by default (R1). **Templates**: `templates/state.template.json` and `templates/session.template.json` both gain `workflow.chat: { tasks: [] }` — auto sessions ship the same templates and leave the array empty. The `state.json` variant is the live state-machine projection (R3); the `session.json` variant archives final iter + verdict per slice (R2). |
 
 ### Loop states
@@ -279,7 +289,7 @@ The manager maintains state in a per-session `state.json` file.
 | `MEMORIZATION` | `EVALUATION` complete OR `EVALUATION` skipped per policy | `assistant` subagent | Write session staging for this iteration; project-memory promotion only in Wrap-up | Memory writes complete |
 | `ITER / EXIT` | `MEMORIZATION` complete | manager | Decide based on verdict and budget — continue (transition to `DISCUSSION` with `iter += 1`) or exit (loop closed; surface output to next step) | Loop continues OR loop closed |
 
-`iter` starts at `0` on loop entry. `maxIterations` is read from `workflow.{step}.maxIterations` (default `3`).
+`iter` starts at `0` on loop entry. `maxIterations` is read from `workflow.{step}.maxIterations` (default `5`).
 
 If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and proceeds `WORK` → `MEMORIZATION` → `ITER / EXIT` on the first pass; the absent verdict is treated as `Skipped` at `ITER / EXIT`.
 

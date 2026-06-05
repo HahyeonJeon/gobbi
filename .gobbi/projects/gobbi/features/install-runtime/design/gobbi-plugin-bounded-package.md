@@ -1,13 +1,13 @@
 ---
 name: gobbi-plugin-bounded-package
-description: Design for a self-contained gobbi Claude Code plugin package (skills + agents + hooks only, materialized real copies)
+description: Design for a self-contained shared gobbi Claude Code and Codex plugin package with symlinked skills, agents, and hook scripts
 type: design
 scope: feature
 feature: install-runtime
 status: active
 created: 2026-05-30
 session: 0fd65721-c39f-4305-b296-9961aee8e1c1
-tags: [claude-plugin, plugin-package, bounded-package, materialization, drift-sync]
+tags: [claude-plugin, codex-plugin, plugin-package, bounded-package, symlinks]
 supersedes: null
 superseded_by: null
 related:
@@ -16,7 +16,7 @@ related:
   - features/install-runtime/decisions/2026-05-30-drift-sync-resync-trigger-unnamed.md
 ---
 
-# gobbi Claude Code Plugin — Bounded Package Design
+# gobbi Plugin — Bounded Package Design
 
 ## Problem
 
@@ -26,9 +26,9 @@ The iter-1 design proposed pointing the plugin at the repo root and the canonica
 
 ## Scope
 
-**In:** A dedicated, self-contained package directory containing `.claude-plugin/plugin.json` + `skills/` + `agents/` + `hooks/` — nothing else. A Claude-schema `marketplace.json`. A `claude-plugin` skill with general guide + layered gobbi section.
+**In:** A dedicated, self-contained package directory containing `.claude-plugin/plugin.json` + `.codex-plugin/plugin.json` + `skills/` + `agents/` + `hooks/` — nothing else. A Claude-schema `marketplace.json`. A Codex-schema `.agents/plugins/marketplace.json`. A `claude-plugin` skill with general guide + layered gobbi section.
 
-**Out:** Session memory, `.gobbi/` project tree, repo content, README, settings.json, public marketplace hosting, Codex manifest reconciliation.
+**Out:** Session memory, `.gobbi/` project tree, repo content outside plugin entrypoint docs, README, settings.json, public marketplace hosting.
 
 ## Approach
 
@@ -39,31 +39,32 @@ Package root = `plugins/gobbi/` (resolved in Preparation — see `decisions/boun
 ```
 plugins/gobbi/
   .claude-plugin/
-    plugin.json          # manifest (name: gobbi, metadata, skills, agents, hooks)
-  skills/                # REAL copies of canonical skills (DD-2a)
+    plugin.json          # Claude manifest (metadata-only for conventional dirs)
+  .codex-plugin/
+    plugin.json          # Codex manifest (skills: "./skills/")
+  skills/                # symlink to ../../.gobbi/projects/gobbi/skills
     gobbi/SKILL.md
     ... (all current skills — 19 after T7)
-  agents/                # REAL copies of the 5 Claude .md role agents (DD-2a)
-    manager.md
-    leader.md
-    executor.md
-    evaluator.md
-    assistant.md
-  hooks/
-    hooks.json           # 3 event registrations (SessionStart, PostToolUse, PostToolUseFailure)
-    session-start.sh     # REAL copy; body unchanged
-    post-tool-use-agents.sh  # REAL copy; body unchanged
+  agents/                # symlink to ../../.gobbi/projects/gobbi/agents
+  hooks/                 # symlink to ../../.gobbi/projects/gobbi/hooks
 
 .claude-plugin/           # at REPO ROOT (not inside plugins/gobbi/)
   marketplace.json        # Claude-schema marketplace; source: "./plugins/gobbi"
+.agents/plugins/          # at REPO ROOT (not inside plugins/gobbi/)
+  marketplace.json        # Codex-schema marketplace; source.path: "./plugins/gobbi"
 ```
 
-### Manifest shape (plugin.json)
+### Claude manifest shape (`plugins/gobbi/.claude-plugin/plugin.json`)
 
 - `name: gobbi` (only required field)
-- `skills`: directory pointer (string) — ADDS-to the default `skills/` dir
-- `agents`: array of the 5 `.md` file paths — REPLACES default agents dir; excludes `.toml` Codex wrappers
-- `hooks`: `"./hooks/hooks.json"` — hooks.json file, not a directory
+- Metadata fields: version, description, author, license, keywords
+- Do not list `skills`, `agents`, or `hooks` for conventional paths. Claude Code auto-loads `skills/`, `agents/`, and `hooks/hooks.json`.
+
+### Codex manifest shape (`plugins/gobbi/.codex-plugin/plugin.json`)
+
+- `name: gobbi`
+- `skills: "./skills/"`
+- Metadata fields and `interface` block for Codex presentation
 
 ### Hooks: 2 scripts / 3 event registrations
 
@@ -74,11 +75,11 @@ The `hooks/hooks.json` reproduces all three event registrations from the current
 
 The #256 lesson applies: do NOT over-narrow matchers. The `PostToolUseFailure` block must NOT be dropped.
 
-### Materialized real copies (DD-2a)
+### Symlinked source-of-truth entries
 
-The package's `skills/`, `agents/`, and `hooks/` hold REAL file copies, not symlinks. This is the proven approach from prior art `c79d28e` (#251): escaping symlinks were dropped by the marketplace fetch → empty published installs. Real files survive the install-time copy.
+The package's `skills/`, `agents/`, and `hooks/` entries are symlinks to Gobbi's canonical sources. This keeps one source of truth and avoids a package-copy drift surface.
 
-**Trade-off named (from #251):** "Editing on main now requires editing in two places." This creates a canonical-tree↔package-copy drift surface. The `claude-plugin` skill MUST document: (a) the keep-in-sync obligation; (b) the named re-sync trigger condition; (c) the mechanical enforcement path (`scripts/sync-plugin-package.sh --check`).
+`hooks/hooks.json` is a real file inside `.gobbi/projects/gobbi/hooks/` because it is plugin-specific installed-hook registration. `scripts/sync-plugin-package.sh --check` verifies the symlink topology, and `scripts/sync-plugin-package.sh` restores it if a package entry is replaced by a real file.
 
 ### Install path
 
@@ -93,14 +94,19 @@ Dev-vs-installed split (Option C): `.claude/settings.json` keeps dev registratio
 | Criterion | Verification method |
 |---|---|
 | Manifest validity | `claude plugin validate --strict ./plugins/gobbi` |
-| Cache-contents gate | Enumerate `~/.claude/plugins/cache/<id>/`; assert allow-set = `{.claude-plugin/, skills/, agents/, hooks/}` only |
-| Worktree-faithful install | Sentinel assertion: worktree-only file present in cache |
+| Package symlink gate | `scripts/sync-plugin-package.sh --check` |
+| Claude manifest validity | `claude plugin validate --strict ./plugins/gobbi` |
+| Claude marketplace validity | `claude plugin validate --strict .` |
+| Codex manifest validity | `python3 /home/jeonhh0061/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py plugins/gobbi` |
+| Codex install smoke | `CODEX_HOME=<tmp> codex plugin marketplace add <repo>` then `codex plugin add gobbi@gobbi-workspace` |
+| Cache-contents gate | Enumerate installed cache; for Codex, expect symlinked component content to be skipped under current CLI behavior |
+| Worktree-faithful install | Claude marketplace install only: sentinel assertion that a worktree-only symlink target is copied into cache; not expected for Codex under current symlink handling |
 | Hook fire-once | Instrument/observe each of 3 registrations fires exactly once post-install |
 | Skill exists + symlink resolves | `readlink` on `.claude/skills/claude-plugin/SKILL.md`; section-presence check |
 | Agents invocable | Invoke a `gobbi:<skill>` and one agent post-install |
 
 ## Trade-offs
 
-**Optimizes for:** correctness (real files survive install-time copy; bounded payload; proven shape); maintainability (skill documents the drift surface); independence (standalone plugin, not pointing at volatile session memory).
+**Optimizes for:** single source of truth, bounded payload, and package layout consistency across Claude Code and Codex.
 
-**Sacrifices:** single source of truth (canonical tree and package are two copies, not one). Mitigated by naming a re-sync trigger and the `scripts/sync-plugin-package.sh --check` mechanical gate.
+**Sacrifices:** Codex installed-cache completeness under current CLI behavior. Fresh verification on 2026-06-02 showed Codex installs the plugin as enabled but skips symlinked `skills`, `agents`, and hook scripts from the cache.

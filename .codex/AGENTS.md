@@ -4,13 +4,15 @@ Gobbi is an open-source ClaudeX (Claude Experience) tool. In this repository, Go
 
 - Skills: `.agents/skills/<skill-name>/SKILL.md`
 - Custom agents: `.codex/agents/<role>.toml`
-- Plugin manifest: `.codex-plugin/plugin.json`
-- Plugin skills: `.gobbi/projects/gobbi/skills/<skill-name>/SKILL.md`
+- Shared plugin package: `plugins/gobbi/`
+- Codex plugin manifest: `plugins/gobbi/.codex-plugin/plugin.json`
+- Claude Code plugin manifest: `plugins/gobbi/.claude-plugin/plugin.json`
+- Canonical plugin skill sources: `.gobbi/projects/gobbi/skills/<skill-name>/SKILL.md`
 - Canonical Gobbi sources: `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`
 
 MUST read this at session start, resume, `/clear`, and compaction. MUST follow the core principles below. MUST load Gobbi skills from `.agents/skills`, not user-level skill locations.
 
-The repo also exposes Gobbi as a local Codex plugin. The plugin root is the repository root, and `.agents/plugins/marketplace.json` points to `./`. The plugin manifest's `skills` field points directly at `./.gobbi/projects/gobbi/skills/`, the same source-of-truth skill tree used by `.agents/skills`.
+The repo also exposes Gobbi as a local Claude Code and Codex plugin through one bounded package at `plugins/gobbi/`. The package carries both manifests: `plugins/gobbi/.claude-plugin/plugin.json` for Claude Code and `plugins/gobbi/.codex-plugin/plugin.json` for Codex. `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json` both point at `./plugins/gobbi`, using their ecosystem-specific marketplace schemas.
 
 ---
 
@@ -18,9 +20,13 @@ The repo also exposes Gobbi as a local Codex plugin. The plugin root is the repo
 
 `.agents/skills` contains symlinked skill folders pointing to `.gobbi/projects/gobbi/skills/`.
 
-`.gobbi/projects/gobbi/skills` is also the plugin-facing skills directory because `.codex-plugin/plugin.json` points its `skills` field there.
+`plugins/gobbi/skills` is the plugin-facing skills directory. It is a symlink to `.gobbi/projects/gobbi/skills/`; `plugins/gobbi/agents` is a symlink to `.gobbi/projects/gobbi/agents/`; `plugins/gobbi/hooks` is a symlink to `.gobbi/projects/gobbi/hooks/`. The development hook scripts under `.claude/hooks/` are also symlinks to the same canonical hook directory. Run `scripts/sync-plugin-package.sh --check` to verify this topology.
 
-`.codex-plugin/plugin.json` is the Gobbi plugin manifest for local plugin installation from this workspace.
+Claude marketplace install dereferences these repo-internal symlinks into a complete installed cache. Codex install currently registers `gobbi@gobbi-workspace` as installed and enabled, but its cache skips the symlinked component directories and keeps only the manifests; treat Codex plugin support as source-package valid but installed-cache incomplete until Codex symlink handling changes.
+
+`plugins/gobbi/.codex-plugin/plugin.json` is the Gobbi Codex plugin manifest for local plugin installation from this workspace.
+
+`plugins/gobbi/.claude-plugin/plugin.json` is the Gobbi Claude Code plugin manifest for local plugin installation from this workspace.
 
 `.codex/agents` contains symlinked TOML custom-agent wrappers pointing to `.gobbi/projects/gobbi/agents/*.toml`. Each wrapper instructs the spawned Codex agent to read the corresponding canonical Markdown role prompt in the same directory.
 
@@ -90,8 +96,10 @@ Every agent MUST load `.agents/skills/mistake/SKILL.md` before starting work. Wh
 | Document | Covers |
 |----------|--------|
 | `.agents/skills/gobbi/SKILL.md` | Entry point, session setup questions, skill map |
-| `.codex-plugin/plugin.json` | Local Gobbi plugin manifest |
-| `.gobbi/projects/gobbi/skills/` | Plugin-facing Gobbi skills directory |
+| `plugins/gobbi/.codex-plugin/plugin.json` | Local Gobbi Codex plugin manifest |
+| `plugins/gobbi/.claude-plugin/plugin.json` | Local Gobbi Claude Code plugin manifest |
+| `plugins/gobbi/` | Shared bounded plugin package |
+| `.gobbi/projects/gobbi/skills/` | Canonical Gobbi skills directory |
 | `.agents/skills/principles/SKILL.md` | 14 behavioral principles every agent must follow |
 | `.agents/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
 | `.agents/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |

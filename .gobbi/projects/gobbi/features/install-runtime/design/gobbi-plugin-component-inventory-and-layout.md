@@ -1,13 +1,13 @@
 ---
 name: gobbi-plugin-component-inventory-and-layout
-description: Concrete component inventory (19 skills, 5 agent .md, 2 hook scripts / 3 registrations) and resolved package layout (plugins/gobbi/) for the gobbi Claude Code plugin
+description: Concrete component inventory (19 skills, 5 agent .md, 2 hook scripts / 3 registrations) and resolved shared symlink package layout (plugins/gobbi/) for the gobbi Claude Code and Codex plugins
 type: design
 scope: feature
 feature: install-runtime
 status: active
 created: 2026-05-30
 session: 0fd65721-c39f-4305-b296-9961aee8e1c1
-tags: [claude-plugin, plugin-package, inventory, layout, materialization]
+tags: [claude-plugin, codex-plugin, plugin-package, inventory, layout, symlinks]
 supersedes: null
 superseded_by: null
 related:
@@ -15,7 +15,7 @@ related:
   - features/install-runtime/decisions/bounded-package-root-and-marketplace-source-resolved.md
 ---
 
-# gobbi Claude Code Plugin — resolved layout + component inventory
+# gobbi Plugin — resolved layout + component inventory
 
 Concretizes the Ideation bounded-package design (`design/gobbi-plugin-bounded-package.md`) with the live-verified component inventory and the resolved root path. All counts verified against the worktree on 2026-05-30.
 
@@ -25,15 +25,16 @@ Concretizes the Ideation bounded-package design (`design/gobbi-plugin-bounded-pa
 <repo-root>/
   .claude-plugin/
     marketplace.json          # Claude schema; plugins[].source = "./plugins/gobbi"
-  plugins/gobbi/              # bounded package; allow-set = these 4 subtrees only
+  .agents/plugins/
+    marketplace.json          # Codex schema; plugins[].source.path = "./plugins/gobbi"
+  plugins/gobbi/              # bounded package; allow-set = these 5 subtrees only
     .claude-plugin/
-      plugin.json             # name: gobbi, skills "./skills/", agents [5 .md], hooks "./hooks/hooks.json"
-    skills/                   # 19 real-copy skill dirs (DD-2a; 18 at T1 + claude-plugin added at T7)
-    agents/                   # 5 real-copy .md role agents (NO .toml)
-    hooks/
-      hooks.json              # 3 event registrations via ${CLAUDE_PLUGIN_ROOT}
-      session-start.sh        # real copy, body unchanged, +x
-      post-tool-use-agents.sh # real copy, body unchanged, +x
+      plugin.json             # Claude manifest; metadata-only for conventional dirs
+    .codex-plugin/
+      plugin.json             # Codex manifest; skills "./skills/"
+    skills/                   # symlink to ../../.gobbi/projects/gobbi/skills
+    agents/                   # symlink to ../../.gobbi/projects/gobbi/agents
+    hooks/                    # symlink to ../../.gobbi/projects/gobbi/hooks
 ```
 
 ## Skills (19 — after T7 resync)
@@ -41,18 +42,18 @@ Concretizes the Ideation bounded-package design (`design/gobbi-plugin-bounded-pa
 `claude-plugin, codex, delegation, discussion, evaluation, execution, git, gobbi, gobbi-hook-authoring, ideation, interview, memorization, mistake, orchestration, planning, preparation, principles, research, wrap-up`
 
 - Source of truth: `.gobbi/projects/gobbi/skills/` (19 dirs after session T7).
-- `gobbi-hook-authoring` is canonical-only (NOT in the `.claude/skills/` symlink mirror). It IS packaged — it is a load-bearing skill (the stack the 2 packaged hook scripts are built on).
+- `gobbi-hook-authoring` is canonical-only (NOT in the `.claude/skills/` symlink mirror). It IS packaged through `plugins/gobbi/skills` — it is a load-bearing skill (the stack the 2 packaged hook scripts are built on).
 - There is NO `claude` skill in the canonical tree (the `skills/claude/SKILL.md` link in `CLAUDE.md` is a known dangling reference, FLAG-2); the inventory correctly excludes it.
-- Materialize every file under each skill dir (SKILL.md + any child docs/templates) as REAL copies.
-- **T1 materializes 18 skills at materialization time; T7 re-runs `scripts/sync-plugin-package.sh` to add the new 19th `claude-plugin` skill.**
+- Keep `plugins/gobbi/skills` as a symlink to the canonical skill tree; do not replace it with real copied files.
+- `scripts/sync-plugin-package.sh --check` verifies the symlink topology.
 
 ## Agents (5 .md only)
 
-`manager.md, leader.md, executor.md, evaluator.md, assistant.md` — the `agents` manifest key is a FILE-PATH ARRAY that REPLACES the default; the 5 `.toml` Codex wrappers (also present in canonical `agents/`) are EXCLUDED.
+`manager.md, leader.md, executor.md, evaluator.md, assistant.md` are available through the `plugins/gobbi/agents` symlink. The 5 `.toml` Codex wrappers (also present in canonical `agents/`) are not separate package entries.
 
 ## Hooks (2 scripts / 3 registrations)
 
-- Scripts: `session-start.sh`, `post-tool-use-agents.sh` (real files in `.claude/hooks/`, verified, +x).
+- Scripts: `session-start.sh`, `post-tool-use-agents.sh` (source files in `.gobbi/projects/gobbi/hooks/`; `.claude/hooks/` and `plugins/gobbi/hooks/` entries are symlinks).
 - `hooks.json` reproduces the LIVE `.claude/settings.json` shape:
   - `SessionStart` matcher `startup|resume|clear|compact` → `"${CLAUDE_PLUGIN_ROOT}"/hooks/session-start.sh`
   - `PostToolUse` matcher `Task|Agent` → `"${CLAUDE_PLUGIN_ROOT}"/hooks/post-tool-use-agents.sh`
@@ -60,14 +61,24 @@ Concretizes the Ideation bounded-package design (`design/gobbi-plugin-bounded-pa
 - Bodies UNCHANGED; portability confirmed (scripts resolve targets from runtime `$cwd`/`$CLAUDE_ENV_FILE`, not own path).
 - Per RATIFIED DD-8 Option C, this `hooks.json` (installed users) coexists with the in-repo `.claude/settings.json` block (dev) — the two MUST be kept coherent.
 
-## Manifest fields (plugin.json)
+## Claude manifest fields (`plugins/gobbi/.claude-plugin/plugin.json`)
 
-`name: gobbi` (required) · version/description/author/license/keywords (e083fad^ template) · `skills: "./skills/"` (ADDS-to) · `agents: ["./agents/manager.md", "./agents/leader.md", "./agents/executor.md", "./agents/evaluator.md", "./agents/assistant.md"]` (REPLACES) · `hooks: "./hooks/hooks.json"`.
+Metadata-only: `name: gobbi` (required) · version/description/author/license/keywords. Conventional `skills/`, `agents/`, and `hooks/hooks.json` auto-load; do not add `skills`, `agents`, or `hooks` keys for those conventional paths.
+
+## Codex manifest fields (`plugins/gobbi/.codex-plugin/plugin.json`)
+
+`name: gobbi` (required) · version/description/author/license/keywords · `skills: "./skills/"` · `interface` metadata.
 
 ## Marketplace fields (.claude-plugin/marketplace.json)
 
 `name` (kebab) · `owner` {name, email — e083fad^ owner block} · `plugins: [{ name: "gobbi", source: "./plugins/gobbi", description, version }]`.
 
+## Marketplace fields (`.agents/plugins/marketplace.json`)
+
+Codex object-source schema: `plugins: [{ name: "gobbi", source: { source: "local", path: "./plugins/gobbi" }, policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" }, category: "Productivity" }]`.
+
 ## Validation hooks (carried from Ideation)
 
-`claude plugin validate --strict ./plugins/gobbi`; cache-contents allow-set gate; worktree-sentinel assertion; fire-exactly-once (keyed on hook_event_name, with deterministic per-event triggers including a non-zero-exit agent for PostToolUseFailure); `readlink` on the claude-plugin mirror; auto-grant invocability check targeting the omitted `codex` + `gobbi-hook-authoring` skills + one agent.
+`scripts/sync-plugin-package.sh --check`; `claude plugin validate --strict ./plugins/gobbi`; `claude plugin validate --strict .`; Codex scaffold validator against `./plugins/gobbi`; Codex marketplace add/list/add smoke test; cache-contents gate; worktree-sentinel assertion; fire-exactly-once (keyed on hook_event_name, with deterministic per-event triggers including a non-zero-exit agent for PostToolUseFailure).
+
+Codex caveat verified on 2026-06-02: the symlinked source package installs as `installed, enabled`, but the Codex cache skips symlinked `skills`, `agents`, and `hooks`, leaving only the two manifests. This is the accepted consequence of the single-source symlink topology unless Codex symlink handling changes.

@@ -286,7 +286,7 @@ Re-running MEMORIZATION on the same iter (after a crash, partial write, or expli
 
 ## Iteration Caps
 
-MEMORIZATION itself has no separate iteration cap — it runs once per EVALUATION verdict, and the loop's iteration cap (`workflow.{loop}.maxIterations`, default 3) is enforced by EVALUATION's ITER / EXIT decision.
+MEMORIZATION itself has no separate iteration cap — it runs once per EVALUATION verdict, and the loop's iteration cap (`workflow.{loop}.maxIterations`, default 5) is enforced by EVALUATION's ITER / EXIT decision.
 
 The MEMORIZATION-level cap that matters is **retry**: one retry per iter on validation failure. After retry exhaustion the manager stops-the-line — there is no "iter 3 of memorization" concept.
 
