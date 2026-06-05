@@ -131,9 +131,24 @@ The display is for the user — it is not state storage. The state machine itsel
 
 ---
 
-## Canonical session tree
+## Workflow Session Memory
 
-The on-disk layout every session materializes under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. The manager bootstraps each loop's `{rawdata, staging, evaluation, artifacts}` subdirs at loop entry; the assistant and evaluator write into them per their skills. This is the canonical shape; deviations are normalized going-forward by Wrap-up (see [`wrap-up/SKILL.md` § Non-standard session-subdir cleanup](../wrap-up/SKILL.md)).
+Every session writes its working memory under one root: `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`, inside the per-session worktree (the durable write-root is `session.json.git.worktreePath` — see [`git/SKILL.md` § Memory Access Matrix](../git/SKILL.md#memory-access-matrix)). All of it is **session-scoped**: nothing here is project memory until Wrap-up promotes the `staging/` trees. This section is the timeline — *when* across the workflow lifecycle each piece is written, and *who* writes it — followed by the on-disk inventory the timeline refers to.
+
+**Lifecycle — when each piece is written, and by whom.** Read top-to-bottom as the session runs.
+
+| When (workflow moment) | What is written | Who writes it | Where + how |
+|---|---|---|---|
+| **Configuration (Step 1)** | `state.json` (row 3) and `session.json` (row 4) at the session root | manager | Rooted at the row-1 worktree path; row 4 stamps `git.worktreePath`, the durable write-root for everything after. See [§ Step 1 — Workflow Configuration](#step-1--workflow-configuration). `settings.json` (resolved config) lands here in row 2. |
+| **Loop entry (each of Steps 2-6)** | The loop's `{rawdata, staging, evaluation, artifacts}` subdirs (Execution: per-task `task-{NN}/` quartets) | manager | Bootstrapped empty at entry so WORK / EVALUATION / MEMORIZATION can assume the tree exists. |
+| **WORK (per iteration)** | `rawdata/draft-iter{n}.md`, transcripts, `discussion-log.md`, `research/{slug}.md`; the owning specialist's `staging/` typed findings | owning specialist (`leader` / `executor` / `assistant`) | `{loop}/rawdata/` is the only scratch surface (no `tmp/` tier — see below). Staging is the Wrap-up promotion source. |
+| **EVALUATION (per iteration)** | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `overall.md` | evaluator subagents (one per system) | Bare 7-vocabulary names, same set on both systems — see [§ Per-perspective evaluation file naming](#per-perspective-evaluation-file-naming) below. |
+| **MEMORIZATION (per iteration)** | `session.json` UPSERT (iter / verdict); transcript snapshot; cumulative `staging/` findings | `assistant` subagent | Session-scoped only; project-memory promotion is NOT done here. See [`workflow/memorization.md`](workflow/memorization.md). |
+| **On PASS (loop exit)** | `artifacts/{free-filename}.md` — the loop's canonical output | `assistant` (MEMORIZATION) | PASS-only; absent on REVISE / FAIL iterations. |
+| **Every state transition** | `state.json` updated in place | manager | The live state-machine file used to recover position after `/clear` / `/compact` / resume — see [§ State persistence](#state-persistence). |
+| **Wrap-up (Step 6)** | `staging/` trees promoted to project memory; non-canonical session subdirs normalized going-forward | `assistant` (Wrap-up) | The only step that writes project memory. Deviations from the canonical shape below are normalized here — see [`wrap-up/SKILL.md` § Non-standard session-subdir cleanup](../wrap-up/SKILL.md#non-standard-session-subdir-cleanup-going-forward). |
+
+**On-disk inventory.** The canonical shape the lifecycle above writes into:
 
 ```
 sessions/{date}-{session-id}/
