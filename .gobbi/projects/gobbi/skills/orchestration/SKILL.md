@@ -78,8 +78,6 @@ the per-mode docs reference it.
 
 **No-`gh` resilience.** The worktree and branch are always created with local git. Only PR creation needs `gh` (CLI + auth + remote). If `gh`, auth, or the remote is unavailable, the session still creates the worktree and commits on the branch; the manager defers the PR and surfaces a "PR deferred — push/open when `gh` is available" notice. The session never falls back to working in the main tree. See `git/SKILL.md` § Prerequisites.
 
-**Project-memory / interview gate.** The project-memory baseline check and the interview auto-recommendation are owned by `gobbi/SKILL.md` (session bootstrap) — see its project-memory baseline check. Configuration does not re-run that gate.
-
 ---
 
 ## Workflow Status Display
