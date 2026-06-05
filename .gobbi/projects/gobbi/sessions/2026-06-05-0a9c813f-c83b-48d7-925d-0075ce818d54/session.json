@@ -4,10 +4,10 @@
   "previousSessionId": null,
   "project": "gobbi",
   "feature": "workflow",
-  "task": "orchestration settings: evaluator models, maxIterations, skip key + doc reconcile + symlink fix",
+  "task": "improve orchestration skill — (1) settings templates: skip key, maxIterations=5, evaluator opus/gpt-5.5; (2) close executor-half model drift: executor=opus in delegation/gobbi/planning docs + agent spec",
   "system": "claude-code",
   "startedAt": "2026-06-05T05:01:38Z",
-  "finishedAt": "2026-06-05T13:22:05Z",
+  "finishedAt": "2026-06-05T14:13:42Z",
   "transcriptPath": "~/.claude/projects/-playinganalytics-git-gobbi/0a9c813f-c83b-48d7-925d-0075ce818d54.jsonl",
   "git": {
     "repo": "HahyeonJeon/gobbi",
