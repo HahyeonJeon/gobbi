@@ -184,7 +184,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 |---|---|
 | [`principles`](../principles/SKILL.md) | 13 Iron Laws — behavioral discipline floor every agent observes. MUST load at session start; subagent delegation prompts must include an explicit load directive. |
 | [`git`](../git/SKILL.md) | Git / GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
-| `claude` doc-authoring standard (**[FLAG-2] currently absent**) | The `.claude/` documentation-authoring standard (writing principles, hierarchy, anti-patterns). CLAUDE.md links `skills/claude/SKILL.md` but no such skill dir exists yet (verified — neither `claude` nor `_claude`). This is a dangling reference: the standard's intended home is the `project-memory` value-feature (the doc-authoring standard Principle 13 leans on). Repoint or author the skill under the FLAG-2 follow-up; do not rely on this row until it resolves. |
+| `claude` doc-authoring standard (**[FLAG-2] currently absent**) | The `.claude/` documentation-authoring standard (writing principles, hierarchy, anti-patterns). CLAUDE.md links `skills/claude/SKILL.md` but no such skill dir exists yet (verified — neither `claude` nor `_claude`). This is a dangling reference: the standard's intended home is the `project-memory` value-feature (the doc-authoring standard Principle 6 leans on). Repoint or author the skill under the FLAG-2 follow-up; do not rely on this row until it resolves. |
 
 The `mistake` skill lives at `skills/mistake/SKILL.md`. Every agent MUST load it before starting work. Mistake recordings flow through a two-layer promotion model:
 

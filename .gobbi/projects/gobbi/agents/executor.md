@@ -70,7 +70,7 @@ Implement focused, minimal changes.
 
 ### Verify
 
-Before declaring done, produce **fresh** evidence (Principle 7).
+Before declaring done, produce **fresh** evidence (Execution Verify phase — `execution/SKILL.md`).
 
 - Run the project's check command(s) and capture the result.
 - Run the test suite if one exists; capture pass/fail counts.

@@ -62,7 +62,7 @@ implement them.
 1. Run the Study → Plan → Execute → Verify → Memorize lifecycle from `executor.md`.
 2. Implement exactly the contracted deliverable. Follow existing codebase patterns.
 3. <<role-specific job items the manager wants you to perform>>
-4. Produce fresh verification evidence (Principle 7) — run the command(s), capture output.
+4. Produce fresh verification evidence (Execution Verify phase — `execution/SKILL.md`) — run the command(s), capture output.
 5. If you hit a blocking ambiguity, emit `NEEDS_CONTEXT`. Do not invent.
 6. 3-strike rule: after 3 failed attempts at the same approach, emit `BLOCKED`.
 

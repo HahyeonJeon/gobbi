@@ -58,7 +58,7 @@ The plan tells the executor *what* to do; the codebase tells the executor *how* 
 
 > **Fresh verification evidence, every time.**
 
-Every `DONE` status requires fresh evidence — run the verification command(s) the plan specifies and capture the output. "Tests pass" without a captured command + result is not verification (Principle 7). Pre-existing failures must be verified on the base branch before being claimed as pre-existing.
+Every `DONE` status requires fresh evidence — run the verification command(s) the plan specifies and capture the output. "Tests pass" without a captured command + result is not verification (the Verify phase below is the gate). Pre-existing failures must be verified on the base branch before being claimed as pre-existing.
 
 > **Stay in scope.**
 
@@ -127,7 +127,7 @@ The manager spawns a **fresh** executor agent per task — never reuse an execut
 | **Study** | Load the Load-Directives content in order: `principles` skill, project rules, `mistake` skill, phase doc, domain skills, project skill. Read the task's primary spec (inline in the prompt). Read research artifacts referenced in the prompt. Read every file listed in `files:` and its surrounding code — patterns, types, conventions. Map dependencies the task touches. |
 | **Plan** | Outline the implementation before writing: which files to modify in what order, type-level design (what types change, what new types are needed), the smallest reversible step (Principle 2) to start with, the verification strategy that will confirm each piece. Non-trivial tasks fail when this phase is skipped. |
 | **Execute** | Implement per the plan. Follow existing patterns — the codebase is the style guide. Keep changes minimal and focused. Do not introduce new patterns when existing ones work. Do not add error handling, abstractions, comments, or features beyond what the task specifies. Adjacent fixes go in "Out of scope observations" — never silently implemented. |
-| **Verify** | Run the verification commands the prompt specifies; capture output verbatim. Re-read the diff against scope: any file outside `files:` touched? Revert it. Re-check against `mistake`: any known pitfall triggered? Re-verify preconditions (correct branch, no unexpected state). For `.claude/` edits: cross-references still resolve, terminology consistent. **Fresh evidence is mandatory for `DONE`** (Principle 7). |
+| **Verify** | Run the verification commands the prompt specifies; capture output verbatim. Re-read the diff against scope: any file outside `files:` touched? Revert it. Re-check against `mistake`: any known pitfall triggered? Re-verify preconditions (correct branch, no unexpected state). For `.claude/` edits: cross-references still resolve, terminology consistent. **Fresh evidence is mandatory for `DONE`** (the Verify gate). |
 | **Commit** *(when git is active)* | Commit only after Verify passes — never unverified work. One focused commit per subtask. Conventional Commits format (`feat:`, `fix:`, `refactor:`, etc.). The executor commits but **never pushes**; the manager owns pushing and PR creation. See [`git/SKILL.md`](../git/SKILL.md). |
 
 After the five-phase lifecycle, the executor produces a final response — captured as the work artifact — with the 4-status enum and supporting evidence (per the executor delegation template's Report Format section).
