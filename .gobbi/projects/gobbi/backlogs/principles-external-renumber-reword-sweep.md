@@ -3,12 +3,13 @@ name: principles-external-renumber-reword-sweep
 description: Reconcile Iron Law tables, live cross-references, and principle counts across all instruction docs to the final 8-principle set shipped in session 2026-06-02-9fe7bd7c. The branch docs/principles-skill-improvements MUST NOT merge until this lands.
 type: backlogs
 scope: project
-status: active
+status: resolved
 created: 2026-06-05
 session: 9fe7bd7c-1507-4ef2-88ed-e6111e7e6d10
 tags: [principles, docs-sync, renumber, iron-law, high-urgency]
 priority: high
-disposition: open
+disposition: closed
+resolved: 2026-06-05
 ---
 
 # Deferred: Reconcile External Surface to the Final 8-Principle Set
@@ -106,3 +107,20 @@ This backlog item BLOCKS the merge of `docs/principles-skill-improvements` into 
 2. Hold the PR as draft until a follow-up PR lands this sweep first.
 
 Do NOT merge the branch as-is — develop would then have a guardrail where the Iron Law tables reference 14 principles but `principles/SKILL.md` defines 8.
+
+---
+
+## Resolution (2026-06-05, session ca2231b3)
+
+The reconcile landed across 6 commits (`884bbe0`→`124751b`) on `docs/principles-skill-improvements`:
+
+- Iron Law tables rebuilt to 8 rows in both mirrors (`.claude/CLAUDE.md` and `.codex/AGENTS.md`).
+- All prose counts reconciled to 8, including the "N Iron Laws" phrasing the original verification grep missed (4 stale occurrences in `manager.md` and `gobbi/SKILL.md` — caught by Codex's broad independent grep; see mistake `count-reconcile-grep-must-cover-all-phrasings`).
+- All live cross-references re-pointed by discipline (lineage-based mapping corrected for two cases where the merged principle no longer owned the sub-discipline — see mistake `renumber-verify-target-still-owns-the-subdiscipline`).
+- Removed-principle references reworded to owning skills (not renumbered).
+- 3-strike rule removed from all live docs per user decision (see `features/guardrails/decisions/2026-06-05-3strike-rule-removed-from-skills.md`).
+- Dual-system evaluation iter1 REVISE → iter2 remediation → manager-verified PASS.
+
+PR #291 (draft) opened on `docs/principles-skill-improvements` against develop.
+
+**This backlog's own merge-block clause is now SATISFIED.** However, merge is still held by the NEW backlog `principles-develop-integration-and-resweep`: develop advanced to `f35f939` via PR #290 after this branch was pushed, creating a 7-file conflict set. That backlog governs the remaining merge prerequisite.
