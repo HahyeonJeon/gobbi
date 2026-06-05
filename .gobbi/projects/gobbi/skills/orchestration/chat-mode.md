@@ -440,7 +440,7 @@ The discipline is symmetric to the Always-Ask Destructive category in
 (terminal hang-up), the partial session-memory survives: every loop's MEMORIZATION ran (per §4),
 transcript + session.json + per-loop artifacts are all written, and the per-task task-records are
 written. A future session can resume per the existing 3-state worktree idempotency guard in
-`orchestration/SKILL.md § Step 1` row 5.
+`orchestration/SKILL.md § Step 1` row 1.
 
 ---
 
