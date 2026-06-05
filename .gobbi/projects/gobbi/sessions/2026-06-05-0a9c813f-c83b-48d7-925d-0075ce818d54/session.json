@@ -7,7 +7,7 @@
   "task": "orchestration settings: evaluator models, maxIterations, skip key + doc reconcile + symlink fix",
   "system": "claude-code",
   "startedAt": "2026-06-05T05:01:38Z",
-  "finishedAt": null,
+  "finishedAt": "2026-06-05T13:22:05Z",
   "transcriptPath": "~/.claude/projects/-playinganalytics-git-gobbi/0a9c813f-c83b-48d7-925d-0075ce818d54.jsonl",
   "git": {
     "repo": "HahyeonJeon/gobbi",
@@ -15,7 +15,7 @@
     "branch": "chore/session-2026-06-05-0a9c813f",
     "worktreePath": "/playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees/chore/session-2026-06-05-0a9c813f",
     "issue": null,
-    "pr": null
+    "pr": 290
   },
   "workflow": {
     "configuration": {

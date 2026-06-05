@@ -7,7 +7,7 @@
     "preparation":   { "state": "Skipped", "verdict": null,     "iter": 0,    "maxIterations": 0,    "phase": null },
     "planning":      { "state": "Done",    "verdict": "folded", "iter": 0,    "maxIterations": 2,    "phase": null },
     "execution":     { "state": "Done",    "verdict": "pass",   "iter": 2,    "maxIterations": 2,    "phase": null },
-    "wrap-up":       { "state": "Pending", "verdict": null,     "iter": 0,    "maxIterations": 1,    "phase": null },
+    "wrap-up":       { "state": "Done",    "verdict": "pass",   "iter": 1,    "maxIterations": 1,    "phase": null },
     "chat":          { "tasks": [
       {
         "taskNo": "01",
@@ -18,12 +18,12 @@
         "preparation":{ "state": "Skipped", "verdict": null, "iter": 0, "maxIterations": 0, "phase": null, "iterations": [] },
         "planning":   { "state": "Done", "verdict": "folded", "iter": 0, "maxIterations": 2, "phase": null, "iterations": [] },
         "execution":  { "state": "Done", "verdict": "pass", "iter": 2, "maxIterations": 2, "phase": null, "iterations": [
-          { "iter": 1, "verdict": "revise", "system": "dual", "note": "Claude PASS / Codex REVISE (4 findings: skip customize-gate gap + stale cap defaults in workflow subdocs)" },
+          { "iter": 1, "verdict": "revise", "system": "dual", "note": "Claude PASS / Codex REVISE (4 findings)" },
           { "iter": 2, "verdict": "pass", "system": "dual", "note": "Claude PASS / Codex PASS" }
         ] },
         "taskRecord": { "path": ".gobbi/projects/gobbi/sessions/2026-06-05-0a9c813f-c83b-48d7-925d-0075ce818d54/execution/task-01/artifacts/task-record.md", "writtenAt": "2026-06-05T06:33:07Z" }
       }
     ] }
   },
-  "activeNote": "Task-01 (orchestration settings) complete: Execution PASS at iter2 (dual-system Claude PASS / Codex PASS). 2 commits on branch (9f77f0e + 5b5a30e); develop untouched. Task-record written. Awaiting user per-task gate: Next task / Revise / Wrap up."
+  "activeNote": "Session COMPLETE. workflow.finish emitted. Task-01 (orchestration settings) shipped via PR #290 (3 commits on chore/session-2026-06-05-0a9c813f → develop). All loops PASS; wrap-up promotions verified."
 }
