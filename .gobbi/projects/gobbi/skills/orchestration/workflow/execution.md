@@ -82,9 +82,7 @@ EOF
 )"
 ```
 
-Substitute `{session-id}`, `{task-id}`, and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 5 worktree-first lock) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding. This session-memory commit is distinct from the executor's own task-implementation commit (the "Commit" lifecycle phase above) — the implementation commit ships code per the task's contract; the session-memory commit ships the iteration's audit trail.
-
-**Direct mode opt-out:** when `settings.git.workflow.mode == "direct"`, there is no worktree branch and `git.worktreePath` is `null`; the per-iter session-memory commit is skipped. The iteration's session-memory still lives under `sessions/{date}-{session-id}/execution/{task-id}/`, but the commit cadence is a worktree-pr-mode contract. See `orchestration/SKILL.md § Configuration Step 1` row 5 footnote for the full direct-mode rationale.
+Substitute `{session-id}`, `{task-id}`, and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding. This session-memory commit is distinct from the executor's own task-implementation commit (the "Commit" lifecycle phase above) — the implementation commit ships code per the task's contract; the session-memory commit ships the iteration's audit trail.
 
 ---
 

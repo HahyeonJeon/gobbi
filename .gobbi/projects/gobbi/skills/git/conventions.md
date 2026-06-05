@@ -14,7 +14,7 @@ Formats align with:
 
 ### Validator (two-step)
 
-Branch name validation is a two-step procedure:
+Branch name validation for **non-session feature branches** is a two-step procedure (session-worktree branches use the dedicated rule in § Session-Worktree Branches below):
 
 **Step 1 — Shape check (regex):**
 
@@ -55,6 +55,8 @@ Both steps must pass. A branch name that passes the regex but fails the length c
 
 ### Rules
 
+These rules govern **non-session feature branches**; session-worktree branches use the dedicated rule in § Session-Worktree Branches below.
+
 | Rule | Pattern | Example pass | Example fail |
 |---|---|---|---|
 | Type prefix from registry above | `^(feat\|fix\|...)/...` | `feat/oauth` | `feature/oauth` |
@@ -63,6 +65,25 @@ Both steps must pass. A branch name that passes the regex but fails the length c
 | Hyphens as separator | no underscores, no spaces | `feat/42-oauth-login` | `feat/42_oauth_login` |
 | Description length 3–50 chars (post-`/`) | leaf portion length | `feat/42-oauth-login` | `feat/42-x` (too short); `feat/42-{60+ chars}` (too long) |
 | No trailing slash, no `..` segments | path-safety | `feat/42-oauth-login` | `feat/42-x/` or `feat/../x` |
+
+### Session-Worktree Branches
+
+Per-session worktree branches created at Configuration Step 1 (orchestration/SKILL.md row 1) do **not** use the type-prefix grammar or the 3–50-char slug rule above — those govern non-session feature branches. Session-worktree branches use a fixed, machine-generated shape keyed to the running system and the session UUID:
+
+```regex
+^(claude|codex)-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+```
+
+- `claude` for the `claude-code` system; `codex` for the `codex` system.
+- `\d{4}-\d{2}-\d{2}` — session-start date `YYYY-MM-DD`.
+- The trailing group is the full lowercase `$CLAUDE_CODE_SESSION_ID` UUID (8-4-4-4-12 hex).
+
+Examples:
+- `claude-2026-06-05-06668274-cee3-4bc0-9125-91a327467cd2` — PASS
+- `codex-2026-06-05-06668274-cee3-4bc0-9125-91a327467cd2` — PASS
+- `chore/session-2026-06-05-06668274` — old convention, no longer generated (existing branches are not renamed)
+
+The shape-check regex and the 3–50-char slug rule in **§ Branch Naming → Validator** apply to **non-session** branches only. The session-worktree validator above is the sole shape check for Step-1 worktree branches.
 
 ---
 

@@ -60,7 +60,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
 **Output.** A populated `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json` covering all session policies.
 
-**Procedure.** See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the full procedure table (rows 1-7 + Direct-mode opt-out + 3-tier bootstrap detection). The procedure is identical in Auto and Chat modes; SKILL.md holds the canonical table.
+**Procedure.** See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the full procedure table (rows 1-4: Create Worktree → Resolve Settings → Init state.json → Init session.json). The procedure is identical in Auto and Chat modes; SKILL.md holds the canonical table.
 
 ### Step 2 — Ideation Loop
 
