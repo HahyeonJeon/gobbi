@@ -5,7 +5,7 @@
 #   Sum an agent's per-turn token usage across its OWN transcript and print the
 #   {input, output, cacheRead, cacheCreation, total} object that becomes an
 #   `agents[].tokensUsed` entry in session.json. This is the source-of-truth
-#   fetch (orchestration/SKILL.md § Recording workflow metadata, fetch (b)/(c)).
+#   fetch (orchestration/SKILL.md § Recording workflow metadata).
 #
 # Args:
 #   $1  <agent-transcript-path>  Path to the transcript .jsonl to sum.

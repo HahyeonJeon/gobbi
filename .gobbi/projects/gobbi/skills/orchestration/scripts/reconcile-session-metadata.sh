@@ -51,7 +51,7 @@ unit="$script_dir/agent-token-usage.sh"
 
 now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
-# 1) Enumerate spawns from the main transcript (fetch (a), bulk variant).
+# 1) Enumerate spawns from the main transcript.
 #    De-dup by id (last line wins per id is fine; we only need identity/role here).
 spawns="$(jq -rc '
     select((.toolUseResult | type == "object") and .toolUseResult.agentId != null)
@@ -77,7 +77,7 @@ while IFS= read -r spawn; do
         <<<"$updates")" || die "build updates failed" 3
 done <<<"$spawns"
 
-# 3) Manager (agents[0]) tokensUsed from the main transcript (fetch (c)).
+# 3) Manager (agents[0]) tokensUsed from the main transcript (--main).
 mgr_tok="$("$unit" --main "$main_transcript" 2>/dev/null)" || die "manager sum failed" 3
 
 # 4) flock-serialized read-modify-write with atomic mv (mirrors post-tool-use-agents.sh).
@@ -106,7 +106,7 @@ tmp_file="$session_json.tmp.$$"
                   end
             )
         )
-        # Refresh agents[0] (manager) tokensUsed from fetch (c).
+        # Refresh agents[0] (manager) tokensUsed from the main transcript.
         | (if (.agents | length) > 0
            then .agents[0].tokensUsed = $mgr
            else . end)
