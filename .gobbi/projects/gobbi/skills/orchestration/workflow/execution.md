@@ -34,7 +34,7 @@ Manager-side responsibilities:
 
 ### Executor lifecycle
 
-The executor follows a five-phase lifecycle inside its WORK phase. Each phase depth scales with task complexity. `principles` provides the underlying discipline (Think Before Acting, Bottom-Up Construction, Scope = Contract, Fresh Verification, etc.) — the lifecycle is the executor-specific sequence.
+The executor follows a five-phase lifecycle inside its WORK phase. Each phase depth scales with task complexity. `principles` provides the underlying discipline (Think and Study Before Acting, Bottom-Up Construction, Scope = Contract, Fresh Verification, etc.) — the lifecycle is the executor-specific sequence.
 
 | Phase | What happens |
 |---|---|

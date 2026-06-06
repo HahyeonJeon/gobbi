@@ -226,7 +226,7 @@ Internal monologue the manager uses to skip asking. Each rationalization has a r
 | "I can recover later if I get this wrong" | Destructive operations are not recoverable; design choices propagate through downstream code. Ask before, not after. |
 | "This is too small to matter" | Small decisions compound. The 1% rule: if you would consider asking, ask. |
 | "I'll surface this in evaluation" | Evaluation finds gaps; it cannot retroactively authorize a decision the user did not make. |
-| "The plan already specified this" | Plans drift; re-verify at point of use (Principle 7). If the plan resolves it, cite the plan and auto-decide; if it does not, ask. |
+| "The plan already specified this" | Plans drift; re-verify at point of use (Execution Verify phase — `execution/SKILL.md`). If the plan resolves it, cite the plan and auto-decide; if it does not, ask. |
 | "The previous session decided this" | Memory is read-only context, not authorization for new decisions. New session, new ask if the decision is Always-Ask category. |
 | "Pushing back is rude" | Anti-sycophancy is the job. The user hired a specialist, not a yes-machine. |
 | "If it works for them, it works for me" | Engineering-merit-only decisions. "It works for them" is not evidence for this project. |

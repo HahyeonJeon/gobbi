@@ -4,13 +4,13 @@ description: "Decision to restructure all 14 principle sections in principles/SK
 type: decisions
 scope: feature
 feature: guardrails
-status: active
+status: superseded
 created: 2026-06-01
 session: a30b7a6e-164f-49ac-a857-ee225e831a7c
 tags: [principles, template, restructure, dual-system-eval]
-decision_status: accepted
+decision_status: superseded
 supersedes: null
-superseded_by: null
+superseded_by: features/guardrails/decisions/2026-06-05-principles-redesign-14-to-8.md
 ---
 
 # Principles 4-field template decision
