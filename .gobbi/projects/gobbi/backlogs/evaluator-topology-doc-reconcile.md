@@ -3,13 +3,16 @@ name: evaluator-topology-doc-reconcile
 description: Reconcile the stale per-perspective evaluator topology in agents/evaluator.md + gobbi/SKILL.md + CLAUDE.md + AGENTS.md to the canonical dual-system topology (2 evaluators, one per system, each covering all 7 perspectives).
 type: backlogs
 scope: project
-status: active
+status: resolved
 created: 2026-06-05
+resolved: 2026-06-06
 session: ca2231b3-9567-4cf9-b0d6-f9bd3e2e78ee
 tags: [evaluation, agents, docs-sync, topology, contradiction]
 priority: high
-disposition: open
+disposition: closed
 ---
+
+> **Resolved 2026-06-06 (session ca2231b3, branch `docs/evaluator-topology-reconcile`).** Reconciled all 4 docs to canonical Topology A (one evaluator per system, each covers all 7 perspectives + Overall) — agents/evaluator.md (8 edits + a 9th from eval: dropped the stale "perspective overlap with a parallel evaluator" DONE_WITH_CONCERNS clause), gobbi/SKILL.md:149, CLAUDE.md:27 + AGENTS.md:65 mirror pair. Folded the 2 minor #290 leftovers: state.template.json maxIterations → 5/5/5/5/5; auto-mode.md "line 405" → `§ Mode-specific gates within a loop` anchor. Dual-system eval: iter1 REVISE (both systems agreed on the one :101 coherence miss) → iter2 fix → clean. Shipped via its own PR.
 
 # Reconcile evaluator topology docs to the canonical dual-system model
 
