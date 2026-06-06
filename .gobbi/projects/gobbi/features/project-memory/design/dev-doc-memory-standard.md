@@ -95,7 +95,7 @@ contracts):
 ## Alternatives considered
 
 - **Big-bang rewrite** — rejected: a one-shot rewrite of all 208 docs is faster on paper but
-  fails opaquely under context pressure (Principle 3) and forfeits per-wave verification. The
+  fails opaquely under context pressure (Principle 2) and forfeits per-wave verification. The
   wave-based approach is slower than big-bang but de-risked, and it honors the steel-man's
   explicit anti-big-bang warning.
 - **Blanket grep strip of frontmatter keys** — rejected in favor of the type-aware FIX-1

@@ -33,8 +33,7 @@ silently for auditability.
 
 1. A decision falls in an **Always-Ask category** (Design / Scope / Destructive) — see §3.
 2. An eval finding implies a scope change the manager cannot resolve under existing authority.
-3. A step fails in a way the manager cannot resolve (e.g., `BLOCKED` status from a subagent
-   that has exhausted its 3-strike rule).
+3. A step fails in a way the manager cannot resolve (e.g., a `BLOCKED` status from a subagent).
 4. The user explicitly intervenes mid-session.
 
 The manager does NOT pause for any other reason. "I'm not sure" and "this might be surprising"
@@ -129,7 +128,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs executor delegation prompt. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
-| 2 | `EXECUTION` | Spawn a fresh `executor` subagent. Collect work artifact + verification evidence per Principle 7. | [execution.md](workflow/execution.md) | executor |
+| 2 | `EXECUTION` | Spawn a fresh `executor` subagent. Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Full PASS path. | [memorization.md](workflow/memorization.md) | assistant |
 | 5 | `ITER / EXIT` | Task complete → next task; all tasks complete → advance to Step 6. | — | manager |
@@ -140,7 +139,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
 **Inputs.** `Idea`, `Plan`, `Results` from prior loops + cumulative session-staging.
 
-**Output.** Doc updates (per Principle 8), session report, project memory updates, handoff summary, opened PR.
+**Output.** Doc updates (per Principle 6), session report, project memory updates, handoff summary, opened PR.
 
 **Loop iteration.** 5-row loop; cap from `workflow.wrap-up.maxIterations` (Auto default = 5).
 
@@ -257,7 +256,7 @@ interrupt the user mid-session. The manager notes the abort, continues to the ne
 continuing is safe), and the failure surfaces explicitly in the Wrap-up Loop's MEMORIZATION and
 the session handoff.
 
-This is by design — per `orchestration/SKILL.md` line 405 contract. The silence is not a bug;
+This is by design — per `orchestration/SKILL.md` § Mode-specific gates within a loop contract. The silence is not a bug;
 it is Auto Mode's autonomy contract: the user reviews outcomes at session end (Wrap-up), not
 mid-step. This note exists so a future reader does not mistake the mid-session silence for a
 missing interrupt.
@@ -273,8 +272,8 @@ recoverable abort.
 
 - [`orchestration/SKILL.md`](SKILL.md) — workflow governor; `§ Auto Mode` brief description;
   `§ Workflow State Machine` for the shared loop mechanics (it points back to this doc's §3/§6
-  for the Auto gate behavior); `§ Workflow Status Display` for the Auto rendering (6-row table);
-  line 405 for the maxIterations exhaustion silence contract.
+  for the Auto gate behavior); `§ Workflow Status Display` for the Auto rendering (6-row table).
+  The maxIterations-exhaustion silence contract lives in this doc's §6.
 - [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock +
   `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) and the narrowed
   MEMORIZATION PASS path are Chat-only; they do not apply in Auto Mode.

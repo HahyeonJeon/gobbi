@@ -24,28 +24,22 @@ Every non-trivial task follows these 5 productive steps. Evaluation runs as a su
 
 > **Evaluation is a mandatory sub-phase in the gobbi workflow.**
 
-Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The orchestrator selects 2-5 evaluator perspectives based on task type, with Project and Overall always included. After evaluation, discuss findings with the user before improving — the user decides what to address, defer, or disagree with. Never auto-apply evaluation findings. The principle-level discipline (who evaluates whom, perspective separation) lives in `principles` Principle 2.
+Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The orchestrator spawns exactly two evaluators in parallel — one per system (Claude + Codex) — and each covers all seven perspectives + Overall; cross-system divergence is the anti-groupthink signal. After evaluation, discuss findings with the user before improving — the user decides what to address, defer, or disagree with. Never auto-apply evaluation findings. The producer/evaluator separation discipline (who evaluates whom, perspective separation) lives in `evaluation/SKILL.md`.
 
 > **MUST load [principles](skills/principles/SKILL.md) at session start, resume, /clear, and /compact.**
 
-The 14 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills.
+The 8 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills.
 
 | # | Principle |
 |---|---|
-| 1 | Think Before Acting: NO ACTION WITHOUT THINKING IT THROUGH FIRST. |
-| 2 | Single Perspective per Agent: ONE AGENT, ONE PERSPECTIVE, ONE CATEGORY. |
-| 3 | Bottom-Up Construction with the User in the Loop: BUILD FROM THE BASE UP, ONE STEP AT A TIME, WITH THE USER IN THE LOOP. |
-| 4 | Scope Is a Contract; the User Is the Client: SCOPE IS BOUNDED BY THE CONTRACT WITH THE USER. |
-| 5 | Reference-First Design (visual and code-shape): NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
-| 6 | Refine Vague Requirements Before Acting: DO NOT ACT ON A VAGUE REQUIREMENT; MAKE IT CONCRETE FIRST. |
-| 7 | Verification Is a Hard Gate: NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE. |
-| 8 | Documentation Is a Deliverable, Not a Side Effect: EVERY IMPLEMENTATION CHANGE MUST BE REFLECTED IN DOCUMENTATION. |
-| 9 | Design and Implement from the User's Point of View: EVERY DESIGN AND IMPLEMENTATION DECISION IS JUDGED FROM THE USER'S POINT OF VIEW. |
-| 10 | Change Only With a Real Trigger: NO CHANGE WITHOUT A REAL TRIGGER. |
-| 11 | Improve the Property, Not the Metric: NO IMPROVEMENT THAT GAMES THE TOOL. |
-| 12 | Every Task Has Clear What / Why / How: NO TASK STARTS WITHOUT CLEAR WHAT / WHY / HOW. |
-| 13 | Spec + CRUD-Think for Documentation Work: NO DOCUMENT WORK WITHOUT A SPEC AND A CRUD PLAN. |
-| 14 | Write Plainly and Literally: USE PLAIN, LITERAL LANGUAGE; DO NOT REPLACE A LITERAL STATEMENT WITH A METAPHOR. |
+| 1 | Think and Study Before Acting: NO ACTION WITHOUT THINKING AND STUDYING IT THROUGH FIRST. |
+| 2 | Bottom-Up Construction: BUILD THE FOUNDATION FIRST, THEN GROW IT ONE MINIMAL STEP AT A TIME. |
+| 3 | Design With the User, Based on References: NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
+| 4 | Refine the Task With the User: A PROMPT IS A TRIGGER, NOT A SPEC — ASK FOR WHAT / WHY / HOW UNTIL THE TASK IS CONCRETE. |
+| 5 | Scope Is a Contract With the User: OUT-OF-SCOPE WORK WITHOUT THE USER'S DECISION IS A BREACH OF CONTRACT. |
+| 6 | Start With Docs, Finish With Docs — Documents Are the Team's Memory: PLAN DOC WORK WITH A SPEC AND A CRUD PLAN, AND KEEP IT CURRENT. |
+| 7 | Say/Write Plainly, Briefly, and Literally: SIMPLE WORDS, SHORT SENTENCES, NO FILLER, NO METAPHOR. |
+| 8 | Fix the Root Cause, Not the Symptom: KEEP ASKING WHY UNTIL YOU REACH THE ROOT; A FIX YOU CAN'T EXPLAIN IS A GUESS. |
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
@@ -59,4 +53,4 @@ Every agent MUST load the `mistake` skill before starting work. When the user co
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [principles](skills/principles/SKILL.md) | 14 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and detail |
+| [principles](skills/principles/SKILL.md) | 8 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and detail |

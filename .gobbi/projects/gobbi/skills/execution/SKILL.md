@@ -58,15 +58,11 @@ The plan tells the executor *what* to do; the codebase tells the executor *how* 
 
 > **Fresh verification evidence, every time.**
 
-Every `DONE` status requires fresh evidence — run the verification command(s) the plan specifies and capture the output. "Tests pass" without a captured command + result is not verification (Principle 7). Pre-existing failures must be verified on the base branch before being claimed as pre-existing.
+Every `DONE` status requires fresh evidence — run the verification command(s) the plan specifies and capture the output. "Tests pass" without a captured command + result is not verification (the Verify phase below is the gate). Pre-existing failures must be verified on the base branch before being claimed as pre-existing.
 
 > **Stay in scope.**
 
 The task's `files:` scope is binding. Adjacent fixes, opportunistic refactors, and "while I'm here" improvements are forbidden. Note them in the executor's final response under "Out of scope observations"; do not implement them. Scope creep is the most common Execution failure mode.
-
-> **3-strike rule on retries.**
-
-After three failed attempts at the same approach to the same problem, the executor stops and emits `BLOCKED`. The issue is no longer a hypothesis — it is wrong architecture, wrong assumption, or wrong plan. Escalate to the manager (Principle 1, 3-strike rule).
 
 > **Tell the manager what you discovered.**
 
@@ -125,9 +121,9 @@ The manager spawns a **fresh** executor agent per task — never reuse an execut
 | Phase | Action |
 |---|---|
 | **Study** | Load the Load-Directives content in order: `principles` skill, project rules, `mistake` skill, phase doc, domain skills, project skill. Read the task's primary spec (inline in the prompt). Read research artifacts referenced in the prompt. Read every file listed in `files:` and its surrounding code — patterns, types, conventions. Map dependencies the task touches. |
-| **Plan** | Outline the implementation before writing: which files to modify in what order, type-level design (what types change, what new types are needed), the smallest reversible step (Principle 3) to start with, the verification strategy that will confirm each piece. Non-trivial tasks fail when this phase is skipped. |
+| **Plan** | Outline the implementation before writing: which files to modify in what order, type-level design (what types change, what new types are needed), the smallest reversible step (Principle 2) to start with, the verification strategy that will confirm each piece. Non-trivial tasks fail when this phase is skipped. |
 | **Execute** | Implement per the plan. Follow existing patterns — the codebase is the style guide. Keep changes minimal and focused. Do not introduce new patterns when existing ones work. Do not add error handling, abstractions, comments, or features beyond what the task specifies. Adjacent fixes go in "Out of scope observations" — never silently implemented. |
-| **Verify** | Run the verification commands the prompt specifies; capture output verbatim. Re-read the diff against scope: any file outside `files:` touched? Revert it. Re-check against `mistake`: any known pitfall triggered? Re-verify preconditions (correct branch, no unexpected state). For `.claude/` edits: cross-references still resolve, terminology consistent. **Fresh evidence is mandatory for `DONE`** (Principle 7). |
+| **Verify** | Run the verification commands the prompt specifies; capture output verbatim. Re-read the diff against scope: any file outside `files:` touched? Revert it. Re-check against `mistake`: any known pitfall triggered? Re-verify preconditions (correct branch, no unexpected state). For `.claude/` edits: cross-references still resolve, terminology consistent. **Fresh evidence is mandatory for `DONE`** (the Verify gate). |
 | **Commit** *(when git is active)* | Commit only after Verify passes — never unverified work. One focused commit per subtask. Conventional Commits format (`feat:`, `fix:`, `refactor:`, etc.). The executor commits but **never pushes**; the manager owns pushing and PR creation. See [`git/SKILL.md`](../git/SKILL.md). |
 
 After the five-phase lifecycle, the executor produces a final response — captured as the work artifact — with the 4-status enum and supporting evidence (per the executor delegation template's Report Format section).
@@ -142,7 +138,7 @@ After the five-phase lifecycle, the executor produces a final response — captu
 - **DONE** — change-set matches the contracted deliverable; fresh verification evidence attached; scope boundary respected.
 - **DONE_WITH_CONCERNS** — change-set done; flag specific concerns (incomplete edge-case coverage, pre-existing test failure, scope ambiguity resolved one way the user might prefer the other).
 - **NEEDS_CONTEXT** — paused. State precisely what is missing (file, decision, user clarification) and from whom.
-- **BLOCKED** — cannot proceed. State the root cause: contradictory requirements, wrong premise in the plan, 3-strike rule triggered, verification failing the brief did not anticipate.
+- **BLOCKED** — cannot proceed. State the root cause: contradictory requirements, wrong premise in the plan, or verification failing the brief did not anticipate.
 
 **Exit checklist**
 - [ ] All five phases (Study / Plan / Execute / Verify / Commit) completed (Commit only when git is active)
@@ -278,7 +274,6 @@ The session subdirectory tree at `sessions/{date}-{session-id}/execution/{task-i
 - **MUST follow existing codebase patterns** — the code is the style guide; do not introduce new patterns when existing ones work.
 - **MUST produce fresh verification evidence** for every `DONE` status — run the commands, capture the output. "Tests pass" without captured evidence is not verification.
 - **MUST report with the 4-state status enum** — `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED` — supported by evidence; never silently produce work the executor is unsure about.
-- **MUST emit `BLOCKED` after 3 failed attempts** at the same approach (Principle 1, 3-strike rule) — escalate rather than retry indefinitely.
 - **MUST commit but never push** — when git is active, commit to the worktree per `git/SKILL.md`; the manager owns pushing and PR creation.
 - **MUST never write outside the task's `files:` scope** — out-of-scope code edits are a constraint violation; revert and re-emit status.
 - **MUST never write to project memory or feature memory during the Execution Loop** — mid-task discoveries stage at `execution/{task-id}/staging/...`. Wrap-up promotes.

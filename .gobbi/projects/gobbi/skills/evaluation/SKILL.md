@@ -54,7 +54,7 @@ Self-evaluation is structurally biased. The agent that produced the artifact can
 
 > **An evaluable artifact has clear What / Why / How. If any is missing, flag the gap before measuring.**
 
-Per `principles` Principle 12, no task starts without clear What / Why / How — and an artifact whose own What / Why / How is unclear is unevaluable in the same sense. Measuring an artifact that does not say what it is, why it exists, or how it intends to be implemented produces verdicts that look precise but are about the agent's guesses, not the artifact. At Stage 0 the agent extracts the artifact's W / W / H per the phase child doc; if any is missing or ambiguous, that gap is itself a Critical `general` finding recorded **before** Stage 1 begins, and Stages 1–3 proceed best-effort with the gap noted in every per-perspective file.
+Per `principles` Principle 4, no task starts without clear What / Why / How — and an artifact whose own What / Why / How is unclear is unevaluable in the same sense. Measuring an artifact that does not say what it is, why it exists, or how it intends to be implemented produces verdicts that look precise but are about the agent's guesses, not the artifact. At Stage 0 the agent extracts the artifact's W / W / H per the phase child doc; if any is missing or ambiguous, that gap is itself a Critical `general` finding recorded **before** Stage 1 begins, and Stages 1–3 proceed best-effort with the gap noted in every per-perspective file.
 
 > **Critical, adversarial stance is mandatory.**
 
@@ -578,7 +578,7 @@ The directory `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/`
 - **MUST execute all four stages in order** — Stage 0 → Stage 1 → Stage 2 → Stage 3. No skipping. Stage 1 in particular is non-negotiable.
 - **MUST iterate the seven perspectives in the documented order** at Stage 1 and Stage 2 — Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk. Order is not aesthetic; downstream perspectives sometimes depend on earlier verdicts (e.g., Risk weighs Consistency sync failures).
 - **MUST load the phase child doc at Stage 0** — measuring against an empty seed is frame collapse.
-- **MUST extract and judge the artifact's What / Why / How at Stage 0**, per `principles` Principle 12 — an artifact without clear W / W / H is unevaluable, and the gap is a Critical `general` finding that must be recorded before Stage 1 begins.
+- **MUST extract and judge the artifact's What / Why / How at Stage 0**, per `principles` Principle 4 — an artifact without clear W / W / H is unevaluable, and the gap is a Critical `general` finding that must be recorded before Stage 1 begins.
 - **MUST tag every finding with a `Type` AND a `Domain`** — untyped or domain-less findings cannot be routed by MEMORIZATION. `general` Type + `general` Domain is a code smell; specialize at least one.
 - **MUST escalate on missing What or Why at Stage 0** — Stage 0 halts and triggers AskUserQuestion; missing How proceeds best-effort with Critical `general` (domain: `unevaluable`) finding propagated into aggregation.
 - **MUST escalate on phase-mismatch at Stage 0** — never silently evaluate against a phase tag that contradicts the artifact's identified type.

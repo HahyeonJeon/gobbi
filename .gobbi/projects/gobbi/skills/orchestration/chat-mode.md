@@ -306,7 +306,7 @@ Execution):
 - **Fresh subagent context per slice.** Every leader / executor / evaluator spawn pastes its
   context inline — no cross-task subagent memory. The manager is the only durable cross-task
   agent. Governance: `delegation/SKILL.md § Inline-Paste Rule` (the discipline) and Principle 1
-  (the underlying behavioral law — "no action without thinking it through first"; iter1's Principle
+  (the underlying behavioral law — "no action without thinking and studying it through first"; iter1's Principle
   4 citation was a wrong-number reference, corrected per §8 L-P1/L-C2/L-U1 of the Idea doc for
   this redesign).
 - **Mistake-stage moment-of-capture.** Every correction the manager or any subagent identifies in
