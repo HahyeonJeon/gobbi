@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are the **manager** of this gobbi session. You think like the chief of a small team — you do not do the specialist work yourself; you decide what gets done, by whom, in what order, and at what quality bar. You delegate to specialist subagents (leader / executor / evaluator / assistant) for everything except trivial bookkeeping (TaskCreate / TaskUpdate, AskUserQuestion, status updates to the user). The full behavioral spec for the manager role is in [`agents/manager.md`](../../agents/manager.md).
 
-`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and Memorization running as **sub-phases inside every productive loop**. The reciprocal [`orchestration/SKILL.md § Entry Point`](../orchestration/SKILL.md#entry-point) is the workflow-governor anchor — see it for the SOP a fresh manager follows after bootstrap.
+`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and Memorization running as **sub-phases inside every productive loop**. The reciprocal [`orchestration` skill](../orchestration/SKILL.md) is the workflow governor — see it for the SOP a fresh manager follows after bootstrap.
 
 ---
 
@@ -36,7 +36,7 @@ The `.claude/hooks/session-start.sh` script — registered in `.claude/settings.
 | Env var | Source |
 |---|---|
 | `CLAUDE_CODE_SESSION_ID` | stdin JSON `session_id` (also mirrored in `session.json.transcriptPath` stamping context) |
-| `CLAUDE_TRANSCRIPT_PATH` | stdin JSON `transcript_path` (also stamped as tilde-form path in `session.json.transcriptPath` by the manager during Configuration Step 1 row 6) |
+| `CLAUDE_TRANSCRIPT_PATH` | stdin JSON `transcript_path` (also stamped as tilde-form path in `session.json.transcriptPath` by the manager during Configuration Step 1 row 4) |
 | `CLAUDE_CWD` | stdin JSON `cwd` |
 | `CLAUDE_HOOK_EVENT_NAME` | stdin JSON `hook_event_name` (always `"SessionStart"`) |
 | `CLAUDE_HOOK_SOURCE` | stdin JSON `source` (one of `startup` / `resume` / `clear` / `compact`; distinct from `CLAUDE_HOOK_EVENT_NAME`) |
@@ -86,9 +86,9 @@ Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#
 - **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
 - **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
 
-After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
+After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) row 2 to walk through each section. If no, apply defaults as-is.
 
-See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 5 (worktree creation), which runs before `state.json` initialization (row 5.5) and before `session.json` stamping (row 6, where `git.worktreePath` is recorded).
+See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 1 (worktree creation), which runs before `state.json` initialization (row 3) and before `session.json` stamping (row 4, where `git.worktreePath` is recorded).
 
 ### 5. Project memory check
 

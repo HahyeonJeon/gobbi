@@ -23,7 +23,7 @@ The Interview skill is **not** part of the standard 6-step workflow (Configurati
 
 The agent in the manager role conducting the interview MUST observe these tier boundaries. The access mode depends on whether the project is in **bootstrap mode** (project memory empty) or **mature mode** (project memory already exists).
 
-**Bootstrap detection** (3-tier — mirrors `orchestration/SKILL.md` § Step 1 row 7):
+**Bootstrap detection** (3-tier — mirrors the project-memory baseline check in `gobbi/SKILL.md` § session bootstrap):
 
 | Tier | Condition | Interview mode |
 |---|---|---|
@@ -69,7 +69,7 @@ The staging path for mature-mode interview outputs is `sessions/{date}-{session-
 The Interview skill activates two ways:
 
 1. **Explicit invocation** — the user runs `/gobbi interview` (or asks "let's do a project interview"). Always honored.
-2. **Auto-recommendation from Configuration** — during the workflow's Configuration step, the manager applies the 3-tier detection from `orchestration/SKILL.md` § Step 1 row 7. **Empty tier** (no `README.md`, no `design/`, no `features/` with content): AskUserQuestion "Project memory is empty — run a project interview before starting work?" **Sparse tier** (has `README.md` or skeleton `design/` but no `features/` with content): AskUserQuestion "Your project memory looks sparse. Run `/gobbi interview` to flesh out the basics, or continue to Ideation?" **Mature tier**: no auto-recommendation. The user decides; if accepted, the interview runs to completion before Configuration resumes.
+2. **Auto-recommendation from Configuration** — during the workflow's Configuration step, the manager applies the 3-tier detection from the project-memory baseline check in `gobbi/SKILL.md` § session bootstrap. **Empty tier** (no `README.md`, no `design/`, no `features/` with content): AskUserQuestion "Project memory is empty — run a project interview before starting work?" **Sparse tier** (has `README.md` or skeleton `design/` but no `features/` with content): AskUserQuestion "Your project memory looks sparse. Run `/gobbi interview` to flesh out the basics, or continue to Ideation?" **Mature tier**: no auto-recommendation. The user decides; if accepted, the interview runs to completion before Configuration resumes.
 
 The Interview skill always runs **Full mode** — all 5 waves. The user can halt mid-flight, but there are no short modes. If a wave's content is already captured (re-running on a mature project), the manager confirms with the user and skips wave-specific Output writes for already-covered items while still validating coverage.
 

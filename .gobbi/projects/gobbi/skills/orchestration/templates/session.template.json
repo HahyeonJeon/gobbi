@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "sessionId": null,
   "previousSessionId": null,
   "project": null,
@@ -34,17 +34,24 @@
       "step": null,
       "phase": null,
       "iter": null,
+      "sub_step": null,
       "model": null,
       "system": null,
       "transcriptPath": null,
+      "status": null,
       "tokensUsed": {
         "input": 0,
         "output": 0,
         "cacheRead": 0,
-        "cacheCreation": 0
+        "cacheCreation": 0,
+        "total": 0
       },
       "startedAt": null,
       "finishedAt": null
     }
-  ]
+  ],
+  "usage": {
+    "sessionTotal": 0,
+    "computedAt": null
+  }
 }

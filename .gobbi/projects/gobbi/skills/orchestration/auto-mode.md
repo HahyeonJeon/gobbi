@@ -59,7 +59,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
 **Output.** A populated `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json` covering all session policies.
 
-**Procedure.** See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the full procedure table (rows 1-7 + Direct-mode opt-out + 3-tier bootstrap detection). The procedure is identical in Auto and Chat modes; SKILL.md holds the canonical table.
+**Procedure.** See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the full procedure table (rows 1-4: Create Worktree → Resolve Settings → Init state.json → Init session.json). The procedure is identical in Auto and Chat modes; SKILL.md holds the canonical table.
 
 ### Step 2 — Ideation Loop
 
@@ -271,8 +271,9 @@ recoverable abort.
 ## Cross-references
 
 - [`orchestration/SKILL.md`](SKILL.md) — workflow governor; `§ Auto Mode` brief description;
-  `§ Mode-specific gates within a loop` for the three per-loop user gates and the maxIterations
-  exhaustion silence contract; `§ Workflow Status Display` for the Auto rendering (6-row table).
+  `§ Workflow State Machine` for the shared loop mechanics (it points back to this doc's §3/§6
+  for the Auto gate behavior); `§ Workflow Status Display` for the Auto rendering (6-row table).
+  The maxIterations-exhaustion silence contract lives in this doc's §6.
 - [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock +
   `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) and the narrowed
   MEMORIZATION PASS path are Chat-only; they do not apply in Auto Mode.

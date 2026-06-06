@@ -29,7 +29,8 @@ The hook stdin payload has TWO sides:
 **Result side** (`tool_result.*` and transcript `toolUseResult.*`): subagent response + telemetry.
 - `toolUseResult.agentId` → `agents[].id`
 - `toolUseResult.agentType` → `agents[].type`
-- `toolUseResult.usage.*` → `agents[].tokensUsed`
+- `toolUseResult.agentId` / `agentType` / `tool_use_id` → enumerate the spawn ONLY (identity + join key)
+- `agents[].tokensUsed.{input,output,cacheRead,cacheCreation,total}` ← **cumulative** sum of `message.usage` per turn over the agent's OWN transcript (`${transcript%.jsonl}/subagents/agent-<agentId>.jsonl`; manager: main transcript with `isSidechain==false`) — NOT `toolUseResult.usage` (final turn only), NOT `toolUseResult.totalTokens` (different headline metric)
 - `toolUseResult.totalDurationMs` → derived timing
 - Consulted ONLY for output telemetry; never for input-side metadata.
 

@@ -28,9 +28,9 @@ The agent in any role (manager or subagent) MUST observe these tier boundaries.
 | **GitHub issues** | manager | manager (create / label / close); subagent **never touches** |
 | **GitHub PRs** | manager | manager (create / merge); subagent **never touches** |
 | **Git config (`~/.gitconfig`, `.git/config`)** | both | **never modified by either** — user config only |
-| **Session notes / mistakes** | both | both — use `session.json.git.worktreePath` as the absolute root when set; fall back to main tree when `worktreePath` is null (direct mode). Worktree-relative path construction via `git -C "$worktreePath" rev-parse --show-toplevel` for symlink + commit operations. Transcript path (`session.json.transcriptPath`) lives in user home (`~/.claude/projects/`) — not under either tree. |
+| **Session notes / mistakes** | both | both — use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. Worktree-relative path construction via `git -C "$worktreePath" rev-parse --show-toplevel` for symlink + commit operations. Transcript path (`session.json.transcriptPath`) lives in user home (`~/.claude/projects/`) — not under either tree. |
 
-**Critical rule — write paths**: session writes (notes, mistakes, project memory drafts) MUST use `session.json.git.worktreePath` as the absolute root when that field is set (worktree-first mode). When `worktreePath` is null (direct mode), fall back to the main tree's absolute path. Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/...` and are outside both trees — never attempt to redirect them. The manager passes the worktree path in every delegation prompt when git is active. A subagent constructing a path relative to its current working directory rather than reading `session.json.git.worktreePath` risks writing to the wrong tree.
+**Critical rule — write paths**: session writes (notes, mistakes, project memory drafts) MUST use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/...` and are outside both trees — never attempt to redirect them. The manager passes the worktree path in every delegation prompt when git is active. A subagent constructing a path relative to its current working directory rather than reading `session.json.git.worktreePath` risks writing to the wrong tree.
 
 **Delete semantics**: this skill never deletes git history (no `branch -D` on un-merged branches without user confirmation; no `git reset --hard` outside Forbidden Operations exceptions). Worktrees are removed during cleanup (Procedure P5), but the local commits on the squash-merged branch are preserved in the reflog.
 
@@ -72,7 +72,7 @@ Before the git workflow can function, certain conditions must hold. These divide
 | `gh` CLI authenticated to the remote | API access required for issue / PR / CI |
 | Repository has a configured `origin` remote | Pushing and PR creation require a remote target |
 
-If any of these are missing, the workflow cannot proceed. **Fallback**: if the user cannot install `gh`, cannot authenticate, or no remote is available, fall back to Direct commit mode rather than blocking the session entirely.
+These prerequisites gate the **PR lifecycle only**. The worktree and its branch are always created with local git — no `gh` is required for them. **No-`gh` resilience**: if the user cannot install `gh`, cannot authenticate, or no remote is available, the session still creates the worktree and commits on the branch; the manager DEFERS the PR and surfaces a "PR deferred — push/open when `gh` is available" notice. The session never falls back to working in the main tree.
 
 **Warning — inform the user, continue:**
 
@@ -148,13 +148,13 @@ At session start when the user selects "Git workflow (worktree + PR)":
 4. Run `git ls-remote --heads origin <base-branch>` to confirm the base branch exists on the remote.
 5. Run `git check-ignore -q .gobbi/projects/<name>/worktrees/` to confirm the worktree directory is gitignored.
 
-If any **Critical** prerequisite fails, fall back to Direct commit mode. If any **Warning** prerequisite fails, inform the user and continue (or remediate per their choice).
+If any **Critical** prerequisite fails, worktree creation still proceeds (local git); the manager defers the PR and surfaces the "PR deferred" notice rather than aborting the session. If any **Warning** prerequisite fails, inform the user and continue (or remediate per their choice).
 
 ### P2 — Create worktree
 
-P2 is invoked from Configuration row 5 for worktree-first sessions (orchestration/SKILL.md Step 1), not from Execution start. The Execution-start invocation path is retired; executors are passed the existing `session.json.git.worktreePath`.
+P2 is invoked from Configuration row 1 (orchestration/SKILL.md Step 1), not from Execution start. The Execution-start invocation path is retired; executors are passed the existing `session.json.git.worktreePath`.
 
-Steps (run once at Configuration row 5 for worktree-first sessions; not re-invoked per task entering Execution):
+Steps (run once at Configuration row 1; not re-invoked per task entering Execution):
 
 1. **Sync the base branch** — `git checkout <base-branch> && git pull --ff-only` to ensure the worktree branches from the up-to-date base.
 2. **Re-verify base branch on remote** — `git ls-remote --heads origin <base-branch>` (the base may have been deleted between session start and now).
@@ -243,7 +243,7 @@ Common failures and their recovery paths.
 
 ## Output paths
 
-Git operations don't write to session memory directly (writes happen via session note / mistake files, which root at `session.json.git.worktreePath` when set, or fall back to the main tree absolute path in direct mode). The main "outputs" of the git skill are git objects: commits, branches, PRs, issues.
+Git operations don't write to session memory directly (writes happen via session note / mistake files, which root at `session.json.git.worktreePath` — always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal). The main "outputs" of the git skill are git objects: commits, branches, PRs, issues.
 
 **Path conventions**
 
@@ -258,7 +258,7 @@ Git operations don't write to session memory directly (writes happen via session
 | Remote branch | manager (P4 push, P5 merge+delete) | `origin/<branch-name>` |
 | GitHub issue | manager (P1/orchestration) | GitHub repository issues |
 | GitHub PR | manager (P4 create, P5 merge) | GitHub repository PRs |
-| Session notes / mistakes | manager + subagent | `.gobbi/projects/<name>/sessions/.../`, `.gobbi/projects/<name>/mistakes/` — rooted at `session.json.git.worktreePath` when set (worktree-first mode); falls back to the main tree absolute path when `worktreePath` is null (direct mode). Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees. |
+| Session notes / mistakes | manager + subagent | `.gobbi/projects/<name>/sessions/.../`, `.gobbi/projects/<name>/mistakes/` — rooted at `session.json.git.worktreePath` (always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal). Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees. |
 
 ---
 
@@ -275,9 +275,9 @@ Git operations don't write to session memory directly (writes happen via session
 - **MUST attach `AI-Provenance-Record:`** to every agent-authored commit — never `Co-Authored-By:`.
 - **MUST run the pre-merge gate checklist** before invoking `gh pr merge` (Procedure P5).
 - **MUST close linked issues manually** when the PR targets a non-default branch (closing keywords don't auto-fire — Procedure P5 step 6).
-- **MUST root session notes and mistakes at `session.json.git.worktreePath`** when that field is set (worktree-first mode); fall back to the main tree absolute path when `worktreePath` is null (direct mode). Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees and never redirected.
+- **MUST root session notes and mistakes at `session.json.git.worktreePath`** — always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees and never redirected.
 - **MUST never modify `~/.gitconfig` or `.git/config`** — user config only.
 - **MUST never `git branch -D` an unmerged branch** without user confirmation.
 - **MUST never `git reset --hard` outside Forbidden Operations exceptions** without user confirmation.
 - **Base branch is project-specific** — never hardcoded; ask the user at session setup and store as session-level configuration.
-- **Requires GitHub and the `gh` CLI** — repos not hosted on GitHub fall back to Direct commit mode.
+- **GitHub + the `gh` CLI are required only for the PR lifecycle** — worktree creation and commits work without them; when `gh`, auth, or the remote is unavailable the PR is deferred (push/open when `gh` is available) and the session never falls back to the main tree.

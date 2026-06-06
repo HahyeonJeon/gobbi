@@ -36,6 +36,7 @@ Active. The 5-role agent roster (`agents/*.md`) and the `delegation` skill (per-
 - `backlogs/` — deferred agents/delegation tasks
 - `changelogs/` — what shipped per task
 - `checklists/` — implementation checklists anchored to scenarios and references
+- `decisions/` — locked agents/delegation design decisions
 - `design/` — agents-scope design topics
 - `discussions/` — substantive AskUserQuestion topics scoped to agents
 - `references/` — external prior art touching delegation
@@ -43,12 +44,14 @@ Active. The 5-role agent roster (`agents/*.md`) and the `delegation` skill (per-
 
 ## Open items
 
-See the `backlogs/` subdirectory for currently-deferred agents/delegation items.
+- `backlogs/step1-row4-stale-hook-auto-append-claim.md` — Step 1 row 4 still claims the PostToolUse hook auto-appends specialist entries; reword to match always-worktree + reconcile-script reality.
+- `backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md` — hook path-resolution bug blocking auto-population of session.json agents[].
 
 ## Recent activity
 
 | Date | Session | What |
 |---|---|---|
+| 2026-06-06 | 06668274 | 2 decisions promoted (session metadata recording + scripts packaging); 1 backlog promoted (step1-row4 stale claim) |
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
 
 ## Related

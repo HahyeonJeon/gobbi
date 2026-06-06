@@ -57,9 +57,7 @@ EOF
 )"
 ```
 
-Substitute `{session-id}` and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 5 worktree-first lock) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding. Wrap-up usually runs a single iteration (`workflow.wrap-up.maxIterations` default 5), so this cadence typically produces one final commit that lands before the manager emits `workflow.finish` and closes the session.
-
-**Direct mode opt-out:** when `settings.git.workflow.mode == "direct"`, there is no worktree branch and `git.worktreePath` is `null`; the per-iter commit is skipped. The iteration's session-memory still lives under `sessions/{date}-{session-id}/wrap-up/`, but the commit cadence is a worktree-pr-mode contract. See `orchestration/SKILL.md § Configuration Step 1` row 5 footnote for the full direct-mode rationale.
+Substitute `{session-id}` and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding. Wrap-up usually runs a single iteration (`workflow.wrap-up.maxIterations` default 5), so this cadence typically produces one final commit that lands before the manager emits `workflow.finish` and closes the session.
 
 ---
 

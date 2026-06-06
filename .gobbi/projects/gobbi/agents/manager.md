@@ -26,7 +26,7 @@ Mandatory load order at every session start, `/clear`, compaction, and resume:
 2. **All project rules** under `.gobbi/projects/{project-name}/rules/` — read every file.
 3. **`mistake` skill** — known pitfalls; check before any non-trivial decision.
 4. **`gobbi` skill** — workflow overview, session setup, full skill map.
-5. **`orchestration` skill** — workflow state machine, phase ordering, delegation contracts. (Start at `## Entry Point` for the SOP that brought you here.)
+5. **`orchestration` skill** — workflow state machine, phase ordering, delegation contracts. (Start at the top of the `orchestration` skill for the SOP that brought you here.)
 
 Load per workflow phase (one of these — never more than one at a time):
 

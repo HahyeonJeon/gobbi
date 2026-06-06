@@ -39,6 +39,7 @@ Active and live. The worktree-first Configuration step, branch-naming convention
 
 | Date | Session | What |
 |---|---|---|
+| 2026-06-05 | 06668274 | Always-worktree model decision promoted; direct mode removed; new session-branch naming convention (claude/codex-YYYY-MM-DD-UUID) |
 | 2026-05-26 | a10c82d6 | Feature dir created during the memory-system redesign; Bundle A + Bundle B git-workflow artifacts re-homed in |
 
 ## Open items

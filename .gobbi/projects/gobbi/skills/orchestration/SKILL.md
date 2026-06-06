@@ -1,39 +1,12 @@
 ---
 name: orchestration
-description: How the manager operates — the session chief role, Chat / Auto orchestration modes, and the six-step workflow (Configuration, Ideation, Preparation, Planning, Execution, Wrap-up) that every session executes.
+description: How a manager orchestrates subagents and tasks across a Claude or Codex session.
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 ---
 
 # Orchestration
 
-How the manager operates. This skill defines the manager role, the two orchestration modes, and the six-step workflow that every session executes.
-
----
-
-## Entry Point
-
-`orchestration/SKILL.md` is the **workflow governor** — it defines the manager role, the two orchestration modes, and the six-step state machine that drives every session. It is the complement to `gobbi/SKILL.md`, which is the **session-bootstrap front door**. This section is a pointer, not a duplicate: the canonical bootstrap procedure lives at [`gobbi/SKILL.md § Session Bootstrap Order`](../gobbi/SKILL.md#session-bootstrap-order) and is not reproduced here.
-
-| Skill | Role | Responsibility |
-|---|---|---|
-| [`gobbi/SKILL.md § Session Bootstrap Order`](../gobbi/SKILL.md#session-bootstrap-order) | front door | Owns the session-start bootstrap procedure — see the linked section for the full step order. |
-| `orchestration/SKILL.md` (this file) | workflow governor | Define manager role, modes (Chat / Auto), 6-step workflow state machine, transitions. |
-
-### When to start here
-
-A fresh manager reads this section first in three situations:
-
-- The user types `/gobbi` (SessionStart hook fires; `gobbi/SKILL.md` bootstraps and hands off here).
-- Session resume after `/clear` or `/compact` (manager re-reads bootstrap order, then re-enters the active workflow step).
-- Automated session auto-start (same hook path as `/gobbi`).
-
-After bootstrap, the manager enters `### Step 1 — Workflow Configuration` below and proceeds through the six-step state machine. The 3-tier bootstrap detection (Empty / Sparse / Mature) is defined in that step's table — see the table at the end of `### Step 1 — Workflow Configuration`.
-
----
-
-## You Are the Manager
-
-You are a manager who orchestrates subagents and tasks. Your job is to direct work — not to do it.
+You are the manager of this session. You orchestrate subagents and tasks — directing the work, never doing it yourself.
 
 The manager handles two things directly, and only two: **direct discussion with the user** (every clarification, decision point, and approval flows through AskUserQuestion), and **subagent task assignment and management** (picking the specialist, constructing the delegation prompt, sequencing the work, integrating outputs, and verifying the result).
 
@@ -61,17 +34,10 @@ The manager MUST NOT perform Ideation, Planning, Execution, or Evaluation direct
 
 ## Orchestration Mode
 
-The manager runs every session in one of two modes. Both modes follow the same underlying workflow; what differs is who drives it and which state-machine shape runs between Configuration and Wrap-up. The mode is picked at session start and surfaced to the user — never inferred from context.
+The manager runs every session in one of two modes. Both follow the same underlying workflow; what differs is who drives it and which state-machine shape runs between Configuration and Wrap-up. The mode is picked at session start and surfaced to the user — never inferred from context.
 
-> **CORRECTION — 2026-05-28.** The original Workflow-control lock ("Mode controls user gates; it does not relax the workflow.") — previously the second sentence of the pre-redesign `### Inter-loop transition` paragraph, struck through in PR #273 commit `6c72793` — has been superseded by the mode-dispatched state-machine design ratified in session `2026-05-28-8eed14fb`. Mode now controls **which state machine runs**, not just gate density. Auto dispatches the linear 6-step sequence. Chat dispatches a per-task slice loop (Step 2 → Step 4 → Step 5 → task-record) per user-typed task, with Step 3 resolving to `Skipped` at loop entry (R1), repeating until the user signals end-of-session, then triggering Step 6. Both shapes preserve `evaluate.mode: always`. Per-loop MEMORIZATION is retained as a hard invariant: Auto runs the full base procedure; Chat's narrowed PASS path is declared locally in [`chat-mode.md §4 — Chat MEMORIZATION`](chat-mode.md). The Workflow-section per-step procedure for Steps 2-6 (formerly in this file) was relocated to the mode docs in PR #273 follow-up: see [`auto-mode.md §2 — Workflow`](auto-mode.md) and [`chat-mode.md §3 — Workflow`](chat-mode.md). See also: `sessions/2026-05-28-8eed14fb-c4b5-455f-aa5e-497c33ed8bbf/ideation/artifacts/idea.md §6.1 + §6.6`.
-
-### Chat Mode
-
-The user drives the workflow one task at a time. The manager runs a per-task slice (Ideation → mini-Planning → mini-Execution) and returns control to the user after each slice. Session ends on explicit user signal. Full spec: [`chat-mode.md`](chat-mode.md).
-
-### Auto Mode
-
-The manager runs the linear 6-step state machine end-to-end with minimal user intervention, pausing only for Always-Ask decisions (design, scope, destructive). Full spec: [`auto-mode.md`](auto-mode.md).
+- **Chat** — the user drives the workflow one task at a time; the manager runs a per-task slice (Ideation → mini-Planning → mini-Execution) and returns control after each. Full spec: [`chat-mode.md`](chat-mode.md).
+- **Auto** — the manager runs the linear 6-step state machine end-to-end, pausing only for Always-Ask decisions (design, scope, destructive). Full spec: [`auto-mode.md`](auto-mode.md).
 
 ---
 
@@ -99,57 +65,18 @@ the per-mode docs reference it.
 
 **Inputs.** The user's intent; the cascaded workspace and project settings.
 
-**Output.** A populated `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json` covering all session policies.
+**Output.** A populated `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json`, an initialized `state.json` and `session.json`, and a per-session worktree that every subsequent write roots into.
 
-**Procedure.**
+**Procedure.** Every session creates a worktree first, then resolves settings, then initializes `state.json` and `session.json` inside that worktree.
 
-| # | Action | Refs | Agent |
-|---|---|---|---|
-| 1 | Read the per-mode default settings template `settings.{mode}.json` matching the mode the user selected during session bootstrap (Chat → [`settings.chat.json`](templates/settings.chat.json); Auto → [`settings.auto.json`](templates/settings.auto.json)). In Chat Mode, present it to the user and AskUserQuestion: use defaults as-is, or customize? In Auto Mode, default to "use defaults" without asking. | [settings.chat.json](templates/settings.chat.json) / [settings.auto.json](templates/settings.auto.json) | manager |
-| 2 | If "customize" was chosen, walk through each section via AskUserQuestion to collect overrides — per-step evaluation policy, per-step discussion policy, per-step `skip`, per-step `maxIterations`, per-agent-type `models`, git workflow. (The `mode` key itself is already fixed by the file the bootstrap loaded.) | [settings.chat.json](templates/settings.chat.json) / [settings.auto.json](templates/settings.auto.json) | manager |
-| 3 | Write the resulting `settings.json` (defaults overlaid with any overrides) to `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json`. | — | manager |
-| 4 | Read the cascaded resolution back to confirm the write took effect. | — | manager |
-| 5 | **Create worktree (P2 wrapper) — produces the worktree path held in-turn for use by rows 5.5 and 6; row 6 stamps it as `git.worktreePath` in `session.json`.** Read resolved `settings.git.workflow.mode` from settings. If `direct`: skip — no worktree is created, `git.branch` will be stamped from the current HEAD in row 6 (preserves direct-mode escape hatch; see Task 06 / LOCK #5 footnote, which lands in this same Step 1 section). If `worktree-pr`: invoke [`git/SKILL.md` § P2](../git/SKILL.md#p2----create-worktree) to create the worktree at branch `chore/session-{date}-{ssid-short}`, where `{date}` is the session-start date in `YYYY-MM-DD` format and `{ssid-short}` is the first 8 characters of `$CLAUDE_CODE_SESSION_ID`. Branch name must satisfy the [`git/conventions.md` line 22 shape regex](../git/conventions.md#branch-naming) and the [line 64 description-slug length constraint (3–50 chars)](../git/conventions.md#branch-naming) — the slug `session-YYYY-MM-DD-{8chars}` (27 chars) satisfies this. **Idempotency guard — 3-state machine (SessionStart fires on `startup\|resume\|clear\|compact`):** (1) `worktreePath` is `null` — fresh session; proceed to create the worktree via P2 above. (2) `worktreePath` is set AND the path exists on disk — healthy resume/clear/compact; `cd` into the existing worktree and skip P2 entirely. (3) `worktreePath` is set AND the path is missing — orphaned worktree (directory deleted but `session.json` still references it); log a warning and surface AskUserQuestion: "Worktree at `<path>` is missing — recreate it (re-run P2) or abort to investigate?". Recreate follows the same P2 invocation as state 1; abort exits Step 1 without advancing. Recovery guidance: [`git/SKILL.md` § P6](../git/SKILL.md#p6----recover-orphaned-worktree). **Path rule (rows 5.5 and 6)**: P2's output is an in-turn worktree path the manager holds in memory — rows 5.5 and 6 use this in-turn value as the absolute write root (`worktree-pr` mode); fall back to the main-tree root when `direct` mode. `session.json.git.worktreePath` is the durable field that row 6 stamps from this in-turn value; from row 6 onward `session.json.git.worktreePath` is the canonical reference — per `git/SKILL.md` § [Memory Access Matrix](../git/SKILL.md#memory-access-matrix) (Critical rule — write paths) and `qualified-git-write-path-rule.md`. | [`git/SKILL.md` § P2](../git/SKILL.md#p2----create-worktree), [`git/SKILL.md` § P6](../git/SKILL.md#p6----recover-orphaned-worktree), [`git/conventions.md` :22 (shape regex)](../git/conventions.md#branch-naming), [`git/conventions.md` :64 (length)](../git/conventions.md#branch-naming) | manager |
-| 5.5 | Initialize `state.json` for the session by copying the state template into `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/state.json`. **Write root**: use the worktree path produced by P2 in row 5 (in-turn value — `session.json` has not been written yet) as the absolute root in `worktree-pr` mode; fall back to the main-tree root in `direct` mode — per `git/SKILL.md` § [Memory Access Matrix](../git/SKILL.md#memory-access-matrix) (Critical rule — write paths) and `qualified-git-write-path-rule.md`. Set `mode` from the resolved settings, then mark `workflow.configuration.state = "Done"` and `workflow.ideation.state = "Active"` since Step 1 has just completed. | [state.template.json](templates/state.template.json) | manager |
-| 6 | Initialize `session.json` for the session by copying the session template into `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/session.json`. **Write root**: use the worktree path produced by P2 in row 5 (in-turn value) as the absolute root in `worktree-pr` mode; fall back to the main-tree root in `direct` mode — per `git/SKILL.md` § [Memory Access Matrix](../git/SKILL.md#memory-access-matrix) (Critical rule — write paths) and `qualified-git-write-path-rule.md`. This row stamps `git.worktreePath` into `session.json`, making it the durable reference; from this row onward, `session.json.git.worktreePath` is the canonical write-root for all subsequent session-memory writes. Stamp top-level fields in serialization order: `sessionId`; `previousSessionId` (prior session's `sessionId` if this session is a continuation — resume / post-`/clear` / post-`/compact`; otherwise `null`); `project`; `feature` (the broader feature this session targets — leave `null` if not yet clear and stamp later, typically during Ideation); `task`; `system` (`claude-code` or `codex`); `startedAt`; leave `finishedAt` as `null`; stamp `transcriptPath` from `$CLAUDE_TRANSCRIPT_PATH` (env var set by the hook) — substitute `$HOME` prefix with `~/` (tilde form) before storing so the value is portable across machines; leave `null` if the env var is absent. Resolve `git` from settings + environment: stamp `git.repo` and `git.baseBranch` from the cascaded settings; if `git.repo` is `null` in settings (uninitialized project), derive it from `gh repo view --json nameWithOwner -q .nameWithOwner` and write back to project-level settings before stamping the session; if the resolved git workflow mode is `direct`, stamp `git.branch` (current HEAD) and leave `git.worktreePath`/`pr` as `null`; if it is `worktree-pr`, stamp `git.branch` and `git.worktreePath` from the worktree just created in row 5. Stamp `git.issue` if known at session start. Fill the manager entry already present in `agents[]` (`type: "manager"`) with the manager's `id`, `name`, `model`, `system`, `transcriptPath`, and `startedAt`; set `step: "configuration"` and `phase: null`. **Specialist entries are appended automatically by the PostToolUse hook**: every Agent/Task tool call fires [`.claude/hooks/post-tool-use-agents.sh`](../../../../.claude/hooks/post-tool-use-agents.sh) (registered for matcher `Task|Agent` on both `PostToolUse` and `PostToolUseFailure`; see Task 09), which upserts an `agents[]` entry by `tool_use_id` — the manager seeds only its own entry at this row and never hand-appends specialist entries thereafter. Idempotency and recovery from missed hook events are provided by [`.claude/scripts/reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh), a verify-and-fix reconstructor that scans the transcript for Agent/Task tool_use + tool_result pairs and reconciles `agents[]` against ground truth. The hook reads structured headers (`Your phase:` / `Your iteration:` / `Your sub-step:` / `Your step:`) from the delegation `tool_input.prompt` to populate per-entry metadata — see [`delegation/SKILL.md` § Hook Integration](../delegation/SKILL.md#hook-integration). **Stamping mechanism (FIX A):** the manager agent reads the updated session docs and stamps the top-level `transcriptPath` field this session; CLI automation of this stamping is deferred to a future session. | [session.template.json](templates/session.template.json) | manager |
-| 7 | **Interview check (bootstrap gate)**: inspect `.gobbi/projects/{project-name}/`. Apply the 3-tier detection below, then act accordingly. The user can always explicitly invoke Interview via `/gobbi interview` regardless of project tier. | [interview/SKILL.md](../interview/SKILL.md) | manager |
+| # | Action | Description | Refs | Agent |
+|---|---|---|---|---|
+| 1 | Create Worktree | <ul><li>Every session creates its own worktree — local git, no `gh` required.</li><li>Invoke `git/SKILL.md` § P2 to create the worktree at branch `{system}-{date}-{ssid-full}`, where `{system}` is `claude` (claude-code runtime) or `codex`, `{date}` is the session-start date `YYYY-MM-DD`, and `{ssid-full}` is the full `$CLAUDE_CODE_SESSION_ID` UUID.</li><li>The branch name follows the session-worktree rule in `git/conventions.md` § Branch Naming (exempt from the type-prefix and 3–50-char slug rules).</li><li>**Idempotency — 3-state guard** (SessionStart fires on `startup\|resume\|clear\|compact`): (1) `worktreePath` is `null` → fresh session; create via P2. (2) `worktreePath` set AND path exists → healthy resume/clear/compact; `cd` in and skip P2. (3) `worktreePath` set AND path missing → orphaned; warn and AskUserQuestion "Worktree at `<path>` is missing — recreate (re-run P2) or abort to investigate?" (recovery: `git/SKILL.md` § P6).</li><li>**Write-root rule:** P2's output is an in-turn worktree path the manager holds in memory; rows 3 and 4 use it as the absolute write root. Row 4 stamps it into `session.json.git.worktreePath`, the durable canonical write-root from that point on (per `git/SKILL.md` § Memory Access Matrix).</li></ul> | [`git/SKILL.md` § P2](../git/SKILL.md#p2----create-worktree), [`git/SKILL.md` § P6](../git/SKILL.md#p6----recover-orphaned-worktree), [`git/conventions.md` § Branch Naming](../git/conventions.md#branch-naming) | manager |
+| 2 | Resolve Settings | <ul><li>Read the per-mode default template `settings.{mode}.json` matching the bootstrap-selected mode (Chat → `settings.chat.json`; Auto → `settings.auto.json`).</li><li>Chat: present the defaults and AskUserQuestion — use as-is or customize. Auto: use defaults without asking.</li><li>If customizing, walk each section via AskUserQuestion — per-step evaluation policy, discussion policy, `skip`, `maxIterations`, and per-agent-type `models`. (`mode` is already fixed by the loaded file.)</li><li>Write the resolved `settings.json` (defaults overlaid with overrides) to the session dir, then read the cascade back to confirm the write took effect.</li></ul> | [settings.chat.json](templates/settings.chat.json) / [settings.auto.json](templates/settings.auto.json) | manager |
+| 3 | Init state.json | <ul><li>Copy `templates/state.template.json` into `…/sessions/{date}-{session-id}/state.json`, rooted at the row-1 worktree path (in-turn value — `session.json` is not written yet).</li><li>Set `mode` from the resolved settings.</li><li>Mark `workflow.configuration.state = "Done"` and `workflow.ideation.state = "Active"` (Step 1 has just completed).</li></ul> | [state.template.json](templates/state.template.json) | manager |
+| 4 | Init session.json | <ul><li>Copy `templates/session.template.json` into the session dir, rooted at the row-1 worktree path. This row stamps `git.worktreePath`, making it the durable canonical write-root for all later session-memory writes.</li><li>Stamp top-level fields in serialization order: `sessionId`; `previousSessionId` (prior `sessionId` on resume / post-`/clear` / post-`/compact`, else `null`); `project`; `feature` (`null` if not yet clear — stamp later during Ideation); `task`; `system` (`claude-code` or `codex`); `startedAt`; leave `finishedAt` `null`; `transcriptPath` from `$CLAUDE_TRANSCRIPT_PATH` with `$HOME`→`~/` (leave `null` if absent).</li><li>Resolve `git`: stamp `git.repo` + `git.baseBranch` from settings (derive `git.repo` via `gh repo view --json nameWithOwner -q .nameWithOwner` and write back to project settings if `null`); stamp `git.branch` and `git.worktreePath` from the row-1 worktree; stamp `git.issue` if known.</li><li>Fill the `agents[]` manager entry (`type: "manager"`) with `id`, `name`, `model`, `system`, `transcriptPath`, `startedAt`; set `step: "configuration"`, `phase: null`. Specialist entries are appended automatically by the PostToolUse hook ([`post-tool-use-agents.sh`](../../../../.claude/hooks/post-tool-use-agents.sh), matcher `Task\|Agent`); the reconstructor ([`reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh)) reconciles on missed events. The manager seeds only its own entry and never hand-appends specialist entries.</li></ul> | [session.template.json](templates/session.template.json) | manager |
 
-**Row 5 — Direct-mode opt-out (LOCK #5)**
-
-When `settings.git.workflow.mode == "direct"`, row 5 is skipped entirely — no worktree is created, no P2 is invoked, and `session.json.git.worktreePath` stays `null`. `git.branch` is stamped from the current HEAD in row 6. This is the documented escape hatch; it is not a fallback-on-error path.
-
-Direct mode is the correct choice in two situations:
-
-- **Emergency hotfix** — the manager needs to push a single targeted fix to a branch immediately, without the overhead of worktree setup or a PR lifecycle. Example: a production-breaking bug where the round-trip latency of worktree creation + CI wait is unacceptable.
-- **Pure-read session** — the session's entire purpose is investigation, mistake-promotion, doc lookup, or other read-only work that produces no shippable artifact. A worktree and a PR would add ceremony with no benefit.
-
-Outside these two situations the default is `worktree-pr`. The opt-out is a user-level setting (`settings.git.workflow.mode`) resolved at Configuration Step 1, not a per-step override.
-
-The two modes differ along three behavioral axes:
-
-- **Worktree creation.** `worktree-pr` invokes [`git/SKILL.md` § P2](../git/SKILL.md#p2----create-worktree) at row 5 to create a per-session worktree under `.gobbi/projects/<name>/worktrees/`. `direct` skips P2 entirely — the session works in the main tree at its current checkout.
-- **Branch stamping.** `worktree-pr` stamps `session.json.git.branch` to the freshly created `chore/session-<date>-<ssid-short>` branch and `session.json.git.worktreePath` to the new worktree's absolute path. `direct` stamps `git.branch` from the current HEAD (no new branch) and leaves `git.worktreePath` as `null`.
-- **PR cadence.** `worktree-pr` is the default integration path: the manager pushes the session branch and opens a PR at Wrap-up. `direct` commits straight to the current branch with no PR lifecycle — appropriate only for emergency hotfix or pure-read sessions as described above.
-
-**Smoke-test gate (T1.h — verification for post-merge sessions)**
-
-After this feature merges to `develop`, every new session running `worktree-pr` must produce a `session.json.git.branch` value that matches the regex below. Run this check at the first post-merge session's Memorization phase:
-
-```
-jq -r '.git.branch' .gobbi/projects/gobbi/sessions/<latest>/session.json
-```
-
-Expected match: `^chore/session-[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-f0-9]{8}$`
-
-Also verify `jq -r '.git.worktreePath'` returns a non-null value for `worktree-pr` sessions. A `null` `worktreePath` on a `worktree-pr` session indicates row 5 was skipped or P2 failed without surfacing an error.
-
-**3-tier bootstrap detection**
-
-| Tier | Condition | Manager action |
-|---|---|---|
-| **Empty** | No `README.md`, no `design/`, no `features/` directory with content | Surface AskUserQuestion: "Project memory is empty — run a project interview before starting work? Interview runs 5 waves to populate project context." If accepted, load `interview/SKILL.md` and run to completion before Ideation. If declined, proceed to Step 2 directly. |
-| **Sparse** | Has `README.md` OR a skeleton `design/` directory, but no `features/` directory with content | Surface AskUserQuestion: "Your project memory looks sparse. Run `/gobbi interview` to flesh out the basics, or continue to Ideation?" User decides; skip Interview if declined. |
-| **Mature** | Has `features/` directory with content | Skip Interview auto-recommendation. Proceed to Step 2 directly. Interview is only invoked when the user explicitly requests it via `/gobbi interview`. |
+**No-`gh` resilience.** The worktree and branch are always created with local git. Only PR creation needs `gh` (CLI + auth + remote). If `gh`, auth, or the remote is unavailable, the session still creates the worktree and commits on the branch; the manager defers the PR and surfaces a "PR deferred — push/open when `gh` is available" notice. The session never falls back to working in the main tree. See `git/SKILL.md` § Prerequisites.
 
 ---
 
@@ -204,15 +131,30 @@ The display is for the user — it is not state storage. The state machine itsel
 
 ---
 
-## Canonical session tree
+## Workflow Session Memory
 
-The on-disk layout every session materializes under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. The manager bootstraps each loop's `{rawdata, staging, evaluation, artifacts}` subdirs at loop entry; the assistant and evaluator write into them per their skills. This is the canonical shape; deviations are normalized going-forward by Wrap-up (see [`wrap-up/SKILL.md` § Non-standard session-subdir cleanup](../wrap-up/SKILL.md)).
+Every session writes its working memory under one root: `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`, inside the per-session worktree (the durable write-root is `session.json.git.worktreePath` — see [`git/SKILL.md` § Memory Access Matrix](../git/SKILL.md#memory-access-matrix)). All of it is **session-scoped**: nothing here is project memory until Wrap-up promotes the `staging/` trees. This section is the timeline — *when* across the workflow lifecycle each piece is written, and *who* writes it — followed by the on-disk inventory the timeline refers to.
+
+**Lifecycle — when each piece is written, and by whom.** Read top-to-bottom as the session runs.
+
+| When (workflow moment) | What is written | Who writes it | Where + how |
+|---|---|---|---|
+| **Configuration (Step 1)** | `state.json` (row 3) and `session.json` (row 4) at the session root | manager | Rooted at the row-1 worktree path; row 4 stamps `git.worktreePath`, the durable write-root for everything after. See [§ Step 1 — Workflow Configuration](#step-1--workflow-configuration). `settings.json` (resolved config) lands here in row 2. |
+| **Loop entry (each of Steps 2-6)** | The loop's `{rawdata, staging, evaluation, artifacts}` subdirs (Execution: per-task `task-{NN}/` quartets) | manager | Bootstrapped empty at entry so WORK / EVALUATION / MEMORIZATION can assume the tree exists. |
+| **WORK (per iteration)** | `rawdata/draft-iter{n}.md`, transcripts, `discussion-log.md`, `research/{slug}.md`; the owning specialist's `staging/` typed findings | owning specialist (`leader` / `executor` / `assistant`) | `{loop}/rawdata/` is the only scratch surface (no `tmp/` tier — see below). Staging is the Wrap-up promotion source. |
+| **EVALUATION (per iteration)** | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `overall.md` | evaluator subagents (one per system) | Bare 7-vocabulary names, same set on both systems — see [§ Per-perspective evaluation file naming](#per-perspective-evaluation-file-naming) below. |
+| **MEMORIZATION (per iteration)** | `session.json` UPSERT (iter / verdict); transcript snapshot; cumulative `staging/` findings | `assistant` subagent | Session-scoped only; project-memory promotion is NOT done here. See [`workflow/memorization.md`](workflow/memorization.md). |
+| **On PASS (loop exit)** | `artifacts/{free-filename}.md` — the loop's canonical output | `assistant` (MEMORIZATION) | PASS-only; absent on REVISE / FAIL iterations. |
+| **Every state transition** | `state.json` updated in place | manager | The live state-machine file used to recover position after `/clear` / `/compact` / resume — see [§ State persistence](#state-persistence). |
+| **Wrap-up (Step 6)** | `staging/` trees promoted to project memory; non-canonical session subdirs normalized going-forward | `assistant` (Wrap-up) | The only step that writes project memory. Deviations from the canonical shape below are normalized here — see [`wrap-up/SKILL.md` § Non-standard session-subdir cleanup](../wrap-up/SKILL.md#non-standard-session-subdir-cleanup-going-forward). |
+
+**On-disk inventory.** The canonical shape the lifecycle above writes into:
 
 ```
 sessions/{date}-{session-id}/
-├── session.json              ← per-session telemetry (manager init row 6 + assistant UPSERT)
+├── session.json              ← per-session telemetry (manager init row 4 + assistant UPSERT)
 ├── settings.json             ← resolved session config (cascade)
-├── state.json                ← per-session workflow state-machine file (manager init row 5.5; see § State persistence)
+├── state.json                ← per-session workflow state-machine file (manager init row 3; see § State persistence)
 ├── session.json.lock         ← advisory write-lock guarding concurrent session.json writes (manager; safe to ignore on read)
 └── {loop}/                   ← loop ∈ ideation | preparation | planning | execution | wrap-up
     ├── rawdata/              ← draft-iter{n}.md, transcript-iter{n}.jsonl, discussion-log.md, research/{slug}.md
@@ -250,48 +192,35 @@ Evaluation outputs are named `evaluation/iter{n}/{system}/{perspective}.md` wher
 
 ## Workflow State Machine
 
-In Auto Mode the state machine runs linearly across the six steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](chat-mode.md) for the Chat-specific per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](chat-mode.md) for the state-transition table. The rest of this section describes the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → MEMORIZATION → ITER/EXIT) shared by both modes.
+In Auto Mode the state machine runs linearly across the six steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](chat-mode.md) for the Chat per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](chat-mode.md) for the per-task state-transition table. This section specifies the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → MEMORIZATION → ITER/EXIT) shared by both modes for steps 2-6. The manager moves between states only when each state's postcondition is met.
 
-> **Loop-entry Skipped resolution (two independent signals).** A workflow step resolves to
-> `state: Skipped` at loop entry when **either** `skip: true` **OR** `maxIterations: 0` is set
-> for that step — the two are independent signals, and either one alone is sufficient. A Skipped
-> step runs no DISCUSSION / WORK / EVALUATION / MEMORIZATION rows, emits no `FAIL` or `Aborted`
-> verdict, and stamps `{state: "Skipped", iterations: []}`. The `maxIterations: 0` path (the
-> original "R1 lock") is retained and coexists with the explicit `skip` boolean; `skip: true` is
-> the preferred explicit signal, `maxIterations: 0` remains valid for back-compatibility. This
-> is distinct from `evaluate.mode: "skip"`, which skips only the EVALUATION phase (the loop still
-> runs WORK → MEMORIZATION), not the whole step.
-
-This section specifies the phase mechanics shared by steps 2-6. The manager moves between states only when each state's postcondition is met.
+> **Loop-entry Skipped resolution.** A step resolves to `state: Skipped` at loop entry when **either** `skip: true` **OR** `maxIterations: 0` is set — two independent signals, either alone sufficient. A Skipped step runs no phase rows, emits no `FAIL` / `Aborted` verdict, and stamps `{state: "Skipped", iterations: []}`. `skip: true` is the preferred explicit signal; `maxIterations: 0` (the original "R1 lock") stays valid for back-compatibility. This is distinct from `evaluate.mode: "skip"`, which skips only the EVALUATION phase — the loop still runs WORK → MEMORIZATION.
 
 ### State persistence
 
 The manager maintains state in a per-session `state.json` file.
 
-| Field | Value |
+| Item | Value |
 |---|---|
 | Location | `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/state.json` |
 | Initial template | [`templates/state.template.json`](templates/state.template.json) |
-| Writer | manager (the manager agent) |
-| Update points | every state transition (`DISCUSSION` → `WORK`, `WORK` → `EVALUATION`, `EVALUATION` → `MEMORIZATION`, `MEMORIZATION` → `ITER / EXIT`, and the inter-step transitions at loop exits) |
-| Reader | manager — used to recover position after `/clear`, `/compact`, or session resume; also projected into the [Workflow Status Display](#workflow-status-display) |
-| Status semantics | `state` is one of `Pending` / `Active` / `Revising` / `Done` / `Skipped` / `Aborted`; when `Active`, the `phase` field names the current state (`DISCUSSION`, `WORK`'s loop verb, `EVALUATION`, `MEMORIZATION`, `ITER/EXIT`) |
-| Schema shape | `workflow` is keyed by step name — `configuration`, `ideation`, `preparation`, `planning`, `execution`, `wrap-up` — matching the `workflow.{step}` keys in `settings.json`. Each `state.json` entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`. (The `settings.json` per-step object additionally carries a `skip` boolean alongside `discuss` / `evaluate` / `maxIterations`; the state-machine entry derives `Skipped` from it at loop entry per the loop-entry resolution above. The `state.json` schema itself does NOT gain a `skip` key — only settings does.) The current active step is derived (the entry whose `state` is `Active` or `Revising`); there is no separate `active` key. The display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention; the manager renders the [Workflow Status Display](#workflow-status-display) in that order regardless of object iteration. **Chat sessions additionally carry `workflow.chat.tasks[]`** — see the schema below. |
-| `workflow.chat.tasks[]` schema (additive — Chat sessions only) | Present in both `state.json` and `session.json` when `settings.mode == "chat"`. Auto sessions leave this array empty. Each entry: `taskNo` (zero-padded ordinal), `slug` (subject-descriptive kebab-case), `startedAt`, `finishedAt`, and per-loop sub-records `ideation` / `preparation` / `planning` / `execution` (same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as the top-level `workflow.{loop}` entries — same parser, different path), plus `taskRecord: { path, writtenAt }`. The `preparation` sub-record carries `state: "Skipped"` by default (R1). **Templates**: `templates/state.template.json` and `templates/session.template.json` both gain `workflow.chat: { tasks: [] }` — auto sessions ship the same templates and leave the array empty. The `state.json` variant is the live state-machine projection (R3); the `session.json` variant archives final iter + verdict per slice (R2). |
+| Writer / Reader | manager — writer on every transition; reader to recover position after `/clear` / `/compact` / resume, and as the projection source for the [Workflow Status Display](#workflow-status-display) |
+| Update points | every state transition: `DISCUSSION`→`WORK`, `WORK`→`EVALUATION`, `EVALUATION`→`MEMORIZATION`, `MEMORIZATION`→`ITER/EXIT`, plus inter-step transitions at loop exits |
+| Status semantics | <ul><li>`state` ∈ `Pending` / `Active` / `Revising` / `Done` / `Skipped` / `Aborted`.</li><li>When `Active`, `phase` names the current state (`DISCUSSION`, `WORK`'s loop verb, `EVALUATION`, `MEMORIZATION`, `ITER/EXIT`).</li></ul> |
+| Schema shape | <ul><li>`workflow` is keyed by step name — `configuration` / `ideation` / `preparation` / `planning` / `execution` / `wrap-up` — matching the `workflow.{step}` keys in `settings.json`; each entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`.</li><li>The active step is **derived** (the entry whose `state` is `Active` or `Revising`) — there is no `active` key.</li><li>Display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention regardless of object iteration.</li><li>`skip` is a `settings.json`-only key; the state-machine entry derives `Skipped` from it at loop entry per the resolution above — `state.json` itself gains **no** `skip` key.</li><li>Chat sessions additionally carry `workflow.chat.tasks[]` — see below.</li></ul> |
+| `workflow.chat.tasks[]` | Chat-only additive array (empty for Auto), present in both `state.json` and `session.json`. Owned by [`chat-mode.md`](chat-mode.md); full field reference in [§ Workflow Metadata → Field reference](#workflow-metadata). The `state.json` variant is the live state-machine projection (R3). |
 
 ### Loop states
 
 | State | Precondition | Owner | Action | Postcondition (artifact) |
 |---|---|---|---|---|
-| `DISCUSSION` | Loop entered with input from the prior step, OR re-entered from `ITER / EXIT` after `REVISE` / `FAIL` | manager | Construct the delegation prompt for the owning specialist; in Chat Mode, confirm with the user; spawn the specialist via the Agent tool (the full delegation prompt is captured in the parent transcript's tool_use entry — no separate file is written) | Specialist agent spawned; delegation prompt persisted in the parent's transcript |
-| `WORK` | Specialist spawned in `DISCUSSION` | owning specialist (`leader` / `executor` / `assistant`) | Execute the loop's work per the delegation prompt received via the Agent tool | Loop's work artifact |
+| `DISCUSSION` | Loop entered with input from the prior step, OR re-entered from `ITER/EXIT` after `REVISE` / `FAIL` | manager | Construct the delegation prompt for the owning specialist; in Chat Mode, confirm with the user; spawn the specialist via the Agent tool (the prompt is captured in the parent transcript's tool_use entry — no separate file) | Specialist spawned; prompt persisted in the parent transcript |
+| `WORK` | Specialist spawned in `DISCUSSION` | owning specialist (`leader` / `executor` / `assistant`) | Execute the loop's work per the delegation prompt | Loop's work artifact |
 | `EVALUATION` | Work artifact exists; `workflow.{step}.evaluate.mode != 'skip'` | evaluator subagents (independent of the work owner) | Multi-perspective review per the evaluation policy | Aggregated verdict: `PASS` / `REVISE` / `FAIL` |
-| `MEMORIZATION` | `EVALUATION` complete OR `EVALUATION` skipped per policy | `assistant` subagent | Write session staging for this iteration; project-memory promotion only in Wrap-up | Memory writes complete |
-| `ITER / EXIT` | `MEMORIZATION` complete | manager | Decide based on verdict and budget — continue (transition to `DISCUSSION` with `iter += 1`) or exit (loop closed; surface output to next step) | Loop continues OR loop closed |
+| `MEMORIZATION` | `EVALUATION` complete OR skipped per policy | `assistant` subagent | Write session staging for this iteration; project-memory promotion only in Wrap-up | Memory writes complete |
+| `ITER / EXIT` | `MEMORIZATION` complete | manager | Decide on verdict + budget: continue (transition to `DISCUSSION`, `iter += 1`) or exit (loop closed; surface output to next step) | Loop continues OR loop closed |
 
-`iter` starts at `0` on loop entry. `maxIterations` is read from `workflow.{step}.maxIterations` (default `5`).
-
-If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and proceeds `WORK` → `MEMORIZATION` → `ITER / EXIT` on the first pass; the absent verdict is treated as `Skipped` at `ITER / EXIT`.
+`iter` starts at `0` on loop entry. `maxIterations` is read from `workflow.{step}.maxIterations` (default `5`). If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and runs `WORK` → `MEMORIZATION` → `ITER/EXIT` on the first pass; the absent verdict is treated as `Skipped` at `ITER/EXIT`.
 
 ### Verdict aggregation
 
@@ -303,35 +232,19 @@ If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and proceeds `WORK`
 
 ### Iteration rule
 
-After `EVALUATION` (or its skip path), the loop always proceeds to `MEMORIZATION`. The iteration decision happens at `ITER / EXIT`:
+After `EVALUATION` (or its skip path), the loop always proceeds to `MEMORIZATION`. The iteration decision happens at `ITER/EXIT`:
 
-- **`PASS`** → exit the loop. Surface the work artifact as input to the next step.
-- **`Skipped`** (no verdict because `evaluate.mode == 'skip'`) → exit the loop. Surface the work artifact.
-- **`REVISE` or `FAIL` and `iter < maxIterations`** → increment `iter`, attach the eval findings to the next delegation prompt, and re-enter `DISCUSSION`. Re-entry is always at `DISCUSSION` — the loop never restarts at `WORK` directly.
-- **`REVISE` or `FAIL` and `iter == maxIterations`** → exit the loop with abort. The failure is already captured in this iteration's `MEMORIZATION`; the next loop's input notes the abort.
+- **`PASS`** → exit the loop; surface the work artifact as input to the next step.
+- **`Skipped`** (no verdict — `evaluate.mode == 'skip'`) → exit the loop; surface the work artifact.
+- **`REVISE` / `FAIL` and `iter < maxIterations`** → increment `iter`, attach the eval findings to the next delegation prompt, re-enter `DISCUSSION`. Re-entry is always at `DISCUSSION` — never directly at `WORK`.
+- **`REVISE` / `FAIL` and `iter == maxIterations`** → exit with abort. The failure is captured in this iteration's `MEMORIZATION`; the next loop's input notes the abort.
 
 ### Mode-specific gates within a loop
 
-**Chat Mode** pauses at four points:
+The per-loop user-interaction gates are mode-specific and owned by the mode docs:
 
-| Gate | Manager action |
-|---|---|
-| After `DISCUSSION` | AskUserQuestion to confirm the delegation prompt or revise scope |
-| After `EVALUATION` | AskUserQuestion to discuss findings and choose remediation (proceed, revise scope, descope, abort) |
-| At `ITER / EXIT` (when deciding to exit) | AskUserQuestion to confirm exiting the loop and starting the next step |
-| **At task boundary** (per-task user review gate — Chat only) | After the task-record is written, AskUserQuestion: **Next task / Revise / Wrap up**. "Next task" starts a new per-task slice. "Revise" re-enters the current slice at DISCUSSION. "Wrap up" advances to Step 6 (Wrap-up Loop). |
-
-`WORK` and `MEMORIZATION` auto-advance — the user has already approved the delegation prompt, and `MEMORIZATION` is mechanical capture.
-
-**Chat Mode and `discuss.mode` settings.** In Chat Mode, the per-step `discuss.mode` setting is **shadowed** by the mode-level discuss-first contract: regardless of a step's `discuss.mode` value, every loop entry forces user-driven DISCUSSION (the manager presents the delegation prompt and awaits explicit user confirmation before spawning the specialist). This means a step configured with `discuss.mode: "agent"` still pauses at DISCUSSION in Chat Mode. The full per-loop discipline is specified in [`chat-mode.md § Per-loop discipline`](chat-mode.md).
-
-**Auto Mode** advances every state without pausing. The user is interrupted only when:
-
-- Eval findings imply scope changes beyond the original delegation prompt (manager judgment).
-- A phase fails in a way the manager cannot resolve under existing authority.
-- The user explicitly intervenes (the user can interrupt at any time).
-
-`maxIterations` exhaustion in Auto Mode does NOT interrupt the user. The loop aborts; the failure is captured in `MEMORIZATION` and surfaces in the Wrap-up Loop's session report.
+- **Chat Mode** — the three in-loop gates (after DISCUSSION, after EVALUATION, at ITER/EXIT) plus the fourth task-boundary review gate, and the `discuss.mode` shadowing rule: [`chat-mode.md §5 — Per-loop discipline`](chat-mode.md) (gates + shadowing), [`chat-mode.md` Slice Boundary + §8](chat-mode.md) (task-boundary gate).
+- **Auto Mode** — silent auto-advance, the Always-Ask interrupts, and the no-interrupt-on-`maxIterations` rule: [`auto-mode.md §3 — Always-Ask codification`](auto-mode.md) and [`auto-mode.md §6 — maxIterations exhaustion`](auto-mode.md).
 
 ### Loop ↔ agent type mapping
 
@@ -348,42 +261,55 @@ After `EVALUATION` (or its skip path), the loop always proceeds to `MEMORIZATION
 
 The manager owns no loop directly except Configuration; the manager coordinates.
 
-*Memorization detail (what files, scope of project memory updates) lives in [`workflow/memorization.md`](workflow/memorization.md).*
+*Memorization detail (what files, scope of project-memory updates) lives in [`workflow/memorization.md`](workflow/memorization.md).*
 
 ---
 
 ## Workflow Metadata
 
-The manager maintains session-level metadata in a per-session `session.json` file.
+The manager records session-level operation metadata in a per-session `session.json`: the session frame
+(identity, targeting, environment, git context) plus the runtime record of every step and every spawned
+agent. The per-agent record answers one question — **how many tokens did each agent use** (keyed by its
+subagent-id and role) — for monitoring and after-the-fact token-budget analysis. It MUST be recorded as the
+session runs.
 
-The file divides into two conceptual sections: **Session metadata** (identity / targeting / environment / time / git context — set at session start, mostly immutable) and **Workflow runtime** (per-step runtime data + agent records — appended during execution). Each is documented separately below.
-
-| Field | Value |
+| Item | Value |
 |---|---|
 | Location | `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/session.json` |
 | Initial template | [`templates/session.template.json`](templates/session.template.json) |
-| Writer | manager (the manager agent) |
-| Reader | manager — used to recall session metadata (model usage, token totals, step timings, git context) on resume |
 
-### Session metadata
+### Recording workflow metadata
 
-Identity / targeting / environment / time / git — the frame of the session. Set at session start (or at git milestones) and rarely mutated thereafter.
+The manager sums each agent's cumulative token usage by running `jq` over that agent's own transcript, which
+carries its full per-turn history:
 
-| Field | Value |
+- **Subagents:** `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl` — `<agentId>` is the
+  short `toolUseResult.agentId` (e.g. `a7363717821bc156d`), which is also the file stem (`isSidechain: true`).
+- **Manager (main agent):** the main transcript `$CLAUDE_TRANSCRIPT_PATH`, filtering `isSidechain == false`.
+
+**Field reference.**
+
+| Key | Shape |
 |---|---|
-| Top-level fields (in serialization order) | `schemaVersion`, `sessionId`, `previousSessionId` (prior session's `sessionId` for continuation chains; `null` for fresh sessions), `project` / `feature` / `task` (targeting hierarchy: project = repo/workspace, feature = larger objective the session contributes to, task = this session's specific goal), `system` (`claude-code` \| `codex`), `startedAt`, `finishedAt`, `transcriptPath` (tilde-form path to the session transcript file — stamped from `$CLAUDE_TRANSCRIPT_PATH` env var with `$HOME` substituted as `~/`; `null` if absent), `git`. Order rule: identity → targeting → environment → time bounds → transcript → git context. |
-| Git block (in serialization order) | `git.repo` (`owner/name` shorthand from `gh repo view`), `git.baseBranch` (base branch the work descends from), `git.branch` (working branch — current HEAD in `direct`, feature branch in `worktree-pr`), `git.worktreePath` (absolute path to worktree in `worktree-pr` mode; `null` in `direct`), `git.issue` (GitHub issue number anchoring the work; `null` if none), `git.pr` (PR number once opened; `null` until then). The git workflow mode itself lives in `settings.json` and is not duplicated here. |
-| Update points | session start (stamp identity + targeting + environment + `startedAt` + `git` resolved from settings); worktree creation (stamp `git.branch` + `git.worktreePath` in `worktree-pr` mode); PR opened (stamp `git.pr`); session end (stamp top-level `finishedAt`) |
+| `workflow.{step}` | Per step (same keys as `state.json` / `settings.json`). Configuration carries `startedAt` / `finishedAt` only; steps 2-6 add `iter` (final loop count) + `verdict` (`pass` \| `fail` \| `skipped`). |
+| `workflow.chat.tasks[]` | <ul><li>Chat sessions only (`settings.mode == "chat"`; empty for Auto).</li><li>One entry per task slice: `taskNo`, `slug`, `startedAt`, `finishedAt`.</li><li>Per-loop sub-records `ideation` / `preparation` / `planning` / `execution` — same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as `workflow.{step}`.</li><li>`taskRecord: { path, writtenAt }`.</li><li>`preparation` defaults to `state: "Skipped"`.</li><li>Present in both `state.json` (the live state-machine projection, R3) and `session.json` (archives the final iter + verdict per slice, R2).</li><li>Both `templates/state.template.json` and `templates/session.template.json` seed `workflow.chat: { tasks: [] }`; Auto sessions ship the same templates and leave the array empty.</li></ul> |
+| `agents[]` | <ul><li>Flat array, one entry per spawn, **manager as `agents[0]`** (template ships the manager seed, `tokensUsed` zeroed).</li><li>Identity: `id` (short `agentId`; manager = own session id), `name`, `type` (`manager` \| `leader` \| `executor` \| `evaluator` \| `assistant`), `model`, `system`, `transcriptPath` (THIS agent's transcript).</li><li>Routing: `step`, `phase` (`null` for the manager entry), `iter` (`null` for Configuration + manager), `sub_step` (`null` if single).</li><li>Lifecycle: `status` (`ok` \| `failed`), `startedAt`, `finishedAt`.</li></ul> |
+| `agents[].tokensUsed` | `{input, output, cacheRead, cacheCreation, total}` — **cumulative** across ALL of this agent's turns, from THIS agent's own transcript. `total = input + output + cacheRead + cacheCreation`. |
+| `usage` | `usage.sessionTotal` = sum of every `agents[].tokensUsed.total`; `usage.computedAt` = ISO timestamp of the last rollup. |
 
-### Workflow runtime
+**Procedure — when / who / how.** The manager owns all writes.
 
-Per-step runtime data + per-agent records — appended throughout execution. The two top-level keys for this section are `workflow` (per-step) and `agents` (per-spawn).
-
-| Field | Value |
+| When | What is written |
 |---|---|
-| `workflow` shape | Keyed by step name (same keys as `state.json` and `settings.json`). The Configuration entry carries only `startedAt` / `finishedAt` (single pass, no iteration or verdict). Steps 2-6 entries also carry `iter` (final loop iteration count, archived from state.json `iter` on step exit) and `verdict` (final outcome — `pass` \| `fail` \| `skipped`). |
-| `workflow` update points | each step transition (set `workflow.{step}.startedAt` / `finishedAt`); each loop iteration close (increment `workflow.{step}.iter` for steps 2-6); each step exit (stamp `workflow.{step}.verdict` for steps 2-6 — `pass` \| `fail` \| `skipped`) |
-| `workflow.chat.tasks[]` (additive — Chat sessions only) | Present when `settings.mode == "chat"`; Auto sessions leave this array empty. Each entry: `taskNo` (zero-padded ordinal within session), `slug` (subject-descriptive kebab-case), `startedAt`, `finishedAt`, per-loop sub-records `ideation` / `preparation` / `planning` / `execution` (same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as the top-level `workflow.{step}` entries — same parser, different path), plus `taskRecord: { path, writtenAt }`. The `preparation` sub-record carries `state: "Skipped"` by default (R1). Update points: on slice start (stamp `taskNo`, `slug`, `startedAt`); on each loop transition within the slice; on task-record write (stamp `taskRecord`); on slice exit (stamp `finishedAt`). |
-| `agents` shape | Flat top-level array — one entry per spawn, manager included. The template ships with the manager entry pre-populated (`type: "manager"`, all other fields `null`) as the seed shape. Each entry self-identifies its step and phase. |
-| Per-agent record | Fields: `id` (subagent session id), `name` (display name from spawn), `type` (`manager` \| `leader` \| `executor` \| `evaluator` \| `assistant`), `step` (which step the spawn belongs to: `configuration` \| `ideation` \| `preparation` \| `planning` \| `execution` \| `wrap-up`), `phase` (which phase spawned the agent — `DISCUSSION` is manager-only and has no specialist agents; `WORK` carries the loop's verb `IDEATION` / `PLAN_DRAFT` / `EXECUTION` / `WRAPUP`; `EVALUATION`; `MEMORIZATION`; `null` for the manager entry), `iter` (which loop iteration the spawn belongs to; `null` for Step 1 Configuration and the manager entry), `model`, `system` (`claude-code` \| `codex`), `transcriptPath`, `tokensUsed` (`{input, output, cacheRead, cacheCreation}`), `startedAt`, `finishedAt` |
-| `agents` update points | session start (manager fills the manager template entry — set `id` / `name` / `model` / `system` / `transcriptPath` / `startedAt`, plus `step: "configuration"` and `phase: null`); each subagent spawn (PostToolUse hook `post-tool-use-agents.sh` upserts an entry by `tool_use_id`, reading `step` / `phase` / `iter` / `sub-step` from delegation structured headers — see [Step 1 row 6](#step-1--workflow-configuration)); each subagent completion (the same hook, firing on PostToolUseFailure as well, updates `finishedAt` / `tokensUsed` / `status`). The verify-and-fix reconstructor [`.claude/scripts/reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh) reconciles the array against transcript ground truth if any hook event was missed. |
+| Session start (Configuration) | Frame: identity + targeting + environment + `startedAt` + `git` (from settings). Manager seed: fill `agents[0]` (`type: "manager"`) — `id` / `name` / `model` / `system` / `transcriptPath` / `startedAt`, `step: "configuration"`, `phase: null`; `tokensUsed` stays zeroed until a rollup. |
+| Worktree creation | `git.branch` + `git.worktreePath`. |
+| PR opened | `git.pr` (stays `null` until then — including while a PR is deferred for missing `gh`). |
+| Each step transition / loop close / step exit | `workflow.{step}.startedAt` / `finishedAt`; `iter` (steps 2-6); `verdict` (steps 2-6). For Chat: the matching `workflow.chat.tasks[]` sub-records. |
+| Each subagent return (immediate) | Enumerate the just-returned spawn from the parent transcript by `tool_use_id`; sum its `tokensUsed` from its own transcript; upsert the matching `agents[]` entry by `id`. |
+| MEMORIZATION (per iter) + Wrap-up (bulk reconcile, idempotent safety net) | Re-enumerate all spawns; re-sum each agent's own transcript; refresh `agents[0]` (manager) from the main transcript; upsert every entry by `id` (last write wins); recompute `usage.sessionTotal` + stamp `usage.computedAt`. |
+| Session end | `finishedAt` (top-level). |
+
+Packaged as composable scripts in [`scripts/`](scripts/):
+
+- [`agent-token-usage.sh`](scripts/agent-token-usage.sh): cumulative `tokensUsed` for one transcript.
+- [`reconcile-session-metadata.sh`](scripts/reconcile-session-metadata.sh): bulk reconcile — enumerate → per-agent sum → manager sum → upsert `agents[]` → recompute `usage` (atomic, under `flock`); idempotent. Run at MEMORIZATION + Wrap-up.
