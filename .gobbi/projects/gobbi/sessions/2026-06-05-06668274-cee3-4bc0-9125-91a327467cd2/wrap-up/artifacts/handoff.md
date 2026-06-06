@@ -104,5 +104,5 @@ User should confirm Layer-2 promotion for each before the next session that touc
 | Mode-gate decision | `features/workflow/decisions/2026-06-06-per-loop-mode-gates-owned-by-mode-docs.md` |
 | Metadata-recording decision | `features/agents/decisions/2026-06-06-session-operation-metadata-recording-from-agent-transcripts.md` |
 | Scripts decision | `features/agents/decisions/2026-06-06-workflow-metadata-fetch-packaged-as-orchestration-scripts.md` |
-| Reconciler (canonical) | `.claude/skills/orchestration/scripts/reconcile-session-metadata.sh` |
-| Session template (schema v2) | `plugins/gobbi/.claude-plugin/skills/orchestration/templates/session.template.json` |
+| Reconciler (canonical) | `.gobbi/projects/gobbi/skills/orchestration/scripts/reconcile-session-metadata.sh` (the `.claude/skills/orchestration/` mirror is per-file and has no `scripts/` subdir — see the project backlog) |
+| Session template (schema v2) | `.gobbi/projects/gobbi/skills/orchestration/templates/session.template.json` (mirrored at `.claude/skills/orchestration/templates/session.template.json`) |
