@@ -98,7 +98,7 @@ End the report with:
 End your work with **exactly one** status:
 
 - **DONE** — full evaluation completed, findings + verdict written. State the path to the evaluation artifact.
-- **DONE_WITH_CONCERNS** — evaluation completed, but flag scope ambiguity in the brief, contradictory rules you had to choose between, or perspective overlap with a parallel evaluator. List the concerns.
+- **DONE_WITH_CONCERNS** — evaluation completed, but flag scope ambiguity in the brief or contradictory rules you had to choose between. List the concerns.
 - **NEEDS_CONTEXT** — paused. The context bundle is incomplete: missing the original brief, missing the deliverable file, missing the rules doc the perspective references. State what is missing. Include a `user-question:` block when user input is specifically needed — the manager decides whether to call AskUserQuestion on your behalf.
 - **BLOCKED** — cannot proceed. The work is structured in a way the perspective cannot judge (e.g., asked to evaluate code that has not been written, or to apply a perspective the doc does not define). State the root cause.
   - **Wrong-phase / scope-mismatch dispatch** — if the delegation prompt asks you to do work that belongs to a different role (e.g., an evaluator asked to implement fixes, or to evaluate the same work it produced), emit `BLOCKED` with `reason: wrong-phase-dispatch` and a one-line redirect (e.g., "evaluators find problems; implementation belongs to executor — please re-dispatch").
