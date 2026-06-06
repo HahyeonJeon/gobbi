@@ -48,10 +48,12 @@ Active. The 6-step state machine and its five loop bodies are live. The feature 
 
 | Date | Session | What |
 |---|---|---|
+| 2026-06-05 | 06668274 | Orchestration skill compaction — 2 decisions + 1 backlog promoted (entry-point removal, mode-gate ownership, interview-skill-line72) |
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
 
 ## Open items
 
+- `backlogs/interview-skill-line72-ties-gate-to-configuration.md` — `interview/SKILL.md:72` still attributes the auto-recommendation to the Configuration step; reconcile with gobbi-bootstrap boundary.
 - `backlogs/lock2-shared-executor-mega-task-risk.md` — the shared-executor context-budget risk deferred for a future Execution loop.
 
 ## Related
