@@ -296,64 +296,69 @@ The manager owns no loop directly except Configuration; the manager coordinates.
 
 ## Workflow Metadata
 
-The manager maintains session-level operation metadata in a per-session `session.json` file — identity and git context (the session's frame) plus the runtime record of every step and every spawned agent. The per-agent record answers one question: **how many tokens did each agent use** (keyed by its subagent-id and role). This metadata exists for monitoring and after-the-fact analysis of how a session spent its token budget, so it MUST actually be recorded as the session runs. This section documents the fields, then the recording procedure: for each metadata kind, *when* it is written, *who* writes it, and *how*.
+The manager records session-level operation metadata in a per-session `session.json`: the session frame
+(identity, targeting, environment, git context) plus the runtime record of every step and every spawned
+agent. The per-agent record answers one question — **how many tokens did each agent use** (keyed by its
+subagent-id and role) — for monitoring and after-the-fact token-budget analysis. It MUST be recorded as the
+session runs.
 
-| Field | Value |
+| Item | Value |
 |---|---|
 | Location | `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/session.json` |
 | Initial template | [`templates/session.template.json`](templates/session.template.json) |
-| Writer | manager (the manager agent) — see [§ Recording operation metadata](#recording-operation-metadata) for the per-kind division of labor |
-| Reader | manager — recalls session metadata (per-agent token totals, step timings, git context) on resume and for end-of-session analysis |
 
-The file divides into two conceptual sections: **Session metadata** (identity / targeting / environment / time / git context — set at session start, mostly immutable) and **Workflow runtime** (per-step runtime data + per-agent token usage + a session-level total — appended during execution). Each is documented separately below; the recording procedure follows.
+The file has two parts. **Session frame** — `schemaVersion`, `sessionId`, `previousSessionId`, targeting
+(`project` / `feature` / `task`), `system`, `startedAt` / `finishedAt`, `transcriptPath` (tilde-form of
+`$CLAUDE_TRANSCRIPT_PATH`, `$HOME`→`~/`; `null` if absent), and the `git` block (`repo`, `baseBranch`,
+`branch`, `worktreePath`, `issue`, `pr`). The template self-documents these fields; their stamp **timing**
+is in the procedure below. **Runtime** — `workflow` (per-step), `agents` (per-spawn, manager included), and
+`usage` (session total), appended as the session runs.
 
-### Session metadata
+### Recording workflow metadata
 
-Identity / targeting / environment / time / git — the frame of the session. Set at session start (or at git milestones) and rarely mutated thereafter.
+The **source of truth for tokens is the manager running `jq` over each agent's own transcript** — NOT the
+PostToolUse hook, and NOT the parent `toolUseResult`. Each agent has its own transcript carrying its full
+per-turn history:
 
-| Field | Value |
+- **Subagents:** `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl` — `<agentId>` is the
+  short `toolUseResult.agentId` (e.g. `a7363717821bc156d`), which is also the file stem (`isSidechain: true`).
+- **Manager (main agent):** the main transcript `$CLAUDE_TRANSCRIPT_PATH`, filtering `isSidechain == false`.
+
+The parent transcript is used ONLY to **enumerate** spawns (their `agentId`, `agentType`/role, `tool_use_id`);
+the token numbers come from each agent's own transcript. (`toolUseResult.totalTokens` is a different, smaller
+metric — do not use; `toolUseResult.usage` is final-turn only — do not use.) Empirical shape reference:
+[`features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md).
+
+**Field reference.**
+
+| Key | Shape |
 |---|---|
-| Top-level fields (in serialization order) | `schemaVersion`, `sessionId`, `previousSessionId` (prior session's `sessionId` for continuation chains; `null` for fresh sessions), `project` / `feature` / `task` (targeting hierarchy: project = repo/workspace, feature = larger objective the session contributes to, task = this session's specific goal), `system` (`claude-code` \| `codex`), `startedAt`, `finishedAt`, `transcriptPath` (tilde-form path to the session transcript file — stamped from `$CLAUDE_TRANSCRIPT_PATH` env var with `$HOME` substituted as `~/`; `null` if absent), `git`. Order rule: identity → targeting → environment → time bounds → transcript → git context. |
-| Git block (in serialization order) | `git.repo` (`owner/name` shorthand from `gh repo view`), `git.baseBranch` (base branch the work descends from), `git.branch` (the session-worktree branch), `git.worktreePath` (absolute path to the session worktree — always set in normal operation, never `null`), `git.issue` (GitHub issue number anchoring the work; `null` if none), `git.pr` (PR number once opened; `null` until then — including while a PR is deferred for missing `gh`). |
-| Update points | session start (stamp identity + targeting + environment + `startedAt` + `git` resolved from settings); worktree creation (stamp `git.branch` + `git.worktreePath`); PR opened (stamp `git.pr`); session end (stamp top-level `finishedAt`) |
+| `workflow.{step}` | Per step (same keys as `state.json` / `settings.json`). Configuration carries `startedAt` / `finishedAt` only; steps 2-6 add `iter` (final loop count) + `verdict` (`pass` \| `fail` \| `skipped`). |
+| `workflow.chat.tasks[]` | Chat sessions only (`settings.mode == "chat"`; empty for Auto). One entry per task slice: `taskNo`, `slug`, `startedAt`, `finishedAt`, per-loop sub-records `ideation` / `preparation` / `planning` / `execution` (same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as `workflow.{step}`), and `taskRecord: { path, writtenAt }`. `preparation` defaults to `state: "Skipped"`. |
+| `agents[]` | Flat array, one entry per spawn, **manager as `agents[0]`** (template ships the manager seed, `tokensUsed` zeroed). Identity/routing: `id` (short `agentId`; manager = own session id), `name`, `type` (`manager` \| `leader` \| `executor` \| `evaluator` \| `assistant`), `step`, `phase` (`null` for the manager entry), `iter` (`null` for Configuration + manager), `sub_step` (`null` if single), `model`, `system`, `transcriptPath` (THIS agent's transcript), `status` (`ok` \| `failed`), `startedAt`, `finishedAt`. |
+| `agents[].tokensUsed` | `{input, output, cacheRead, cacheCreation, total}` — **cumulative** across ALL of this agent's turns, from THIS agent's own transcript. `total = input + output + cacheRead + cacheCreation`. |
+| `usage` | `usage.sessionTotal` = sum of every `agents[].tokensUsed.total`; `usage.computedAt` = ISO timestamp of the last rollup. |
 
-### Workflow runtime
+**Procedure — when / who / how.** The manager owns all writes.
 
-Per-step runtime data + per-agent token usage + a session-level total — appended throughout execution. The three top-level keys for this section are `workflow` (per-step), `agents` (per-spawn, manager included), and `usage` (session-level total).
-
-| Field | Value |
+| When | What is written |
 |---|---|
-| `workflow` shape | Keyed by step name (same keys as `state.json` and `settings.json`). The Configuration entry carries only `startedAt` / `finishedAt` (single pass, no iteration or verdict). Steps 2-6 entries also carry `iter` (final loop iteration count, archived from state.json `iter` on step exit) and `verdict` (final outcome — `pass` \| `fail` \| `skipped`). |
-| `workflow` update points | each step transition (set `workflow.{step}.startedAt` / `finishedAt`); each loop iteration close (increment `workflow.{step}.iter` for steps 2-6); each step exit (stamp `workflow.{step}.verdict` for steps 2-6 — `pass` \| `fail` \| `skipped`) |
-| `workflow.chat.tasks[]` (additive — Chat sessions only) | Present when `settings.mode == "chat"`; Auto sessions leave this array empty. Each entry: `taskNo` (zero-padded ordinal within session), `slug` (subject-descriptive kebab-case), `startedAt`, `finishedAt`, per-loop sub-records `ideation` / `preparation` / `planning` / `execution` (same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as the top-level `workflow.{step}` entries — same parser, different path), plus `taskRecord: { path, writtenAt }`. The `preparation` sub-record carries `state: "Skipped"` by default. Update points: on slice start (stamp `taskNo`, `slug`, `startedAt`); on each loop transition within the slice; on task-record write (stamp `taskRecord`); on slice exit (stamp `finishedAt`). |
-| `agents` shape | Flat top-level array — one entry per spawn, **manager included as `agents[0]`**. The template ships with the manager entry pre-populated (`type: "manager"`, `tokensUsed` zeroed) as the seed shape. Each entry self-identifies its step and phase, and carries that agent's CUMULATIVE token usage. The manager is not special: it has its own transcript (the main session transcript), so its `tokensUsed` is recorded in this entry like any other agent. |
-| Per-agent record — identity + routing fields | `id` (subagent session id — the short `agentId` from `toolUseResult`, e.g. `a7363717821bc156d`; for the manager, its own session id), `name` (display name from spawn), `type` / role (`manager` \| `leader` \| `executor` \| `evaluator` \| `assistant`), `step` (`configuration` \| `ideation` \| `preparation` \| `planning` \| `execution` \| `wrap-up`), `phase` (which phase spawned the agent — `DISCUSSION` is manager-only; `WORK` carries the loop verb; `EVALUATION`; `MEMORIZATION`; `null` for the manager entry), `iter` (loop iteration; `null` for Configuration and the manager entry), `sub_step` (disambiguates parallel spawns sharing `(step, phase, iter)`; `null` if single), `model`, `system` (`claude-code` \| `codex`), `transcriptPath` (path to THIS agent's transcript — the file the token sum is computed from), `status` (`ok` \| `failed`), `startedAt`, `finishedAt`. (Wall-clock duration is derivable from `startedAt`/`finishedAt`; it is not stored.) |
-| Per-agent record — token usage | `tokensUsed` (`{input, output, cacheRead, cacheCreation, total}`) — the **cumulative** token usage summed across ALL of this agent's turns, computed from THIS agent's own transcript. `total` = `input + output + cacheRead + cacheCreation`. This is the true cumulative figure, NOT the parent `toolUseResult.totalTokens` (a different, smaller headline metric) and NOT the final-turn `toolUseResult.usage` (one turn only). See [§ Recording operation metadata](#recording-operation-metadata) for the exact fetch. |
-| `agents` update points | session start (manager fills the `agents[0]` manager seed — `id` / `name` / `model` / `system` / `transcriptPath` / `startedAt`, `step: "configuration"`, `phase: null`; `tokensUsed` stays zeroed until a rollup); each subagent return (manager stamps that agent's entry — identity/routing now, `tokensUsed` summed from the agent's own transcript — see [§ Recording operation metadata](#recording-operation-metadata)); MEMORIZATION / Wrap-up (manager bulk-reconciles the whole array — including its own `agents[0]` `tokensUsed` from the main transcript — as an idempotent safety net). The PostToolUse hook `post-tool-use-agents.sh` may seed routing fields (`step` / `phase` / `iter` / `sub_step`) but is NOT the source of truth for tokens — see the procedure below. |
-| `usage` shape (session-level total) | `usage.sessionTotal` — the sum of every `agents[].tokensUsed.total` (manager + all subagents). `usage.computedAt` — ISO timestamp of the last rollup. |
-| `usage` update points | MEMORIZATION (per iteration) and Wrap-up: recomputed from the `agents[]` array each time — idempotent. |
+| Session start (Configuration) | Frame: identity + targeting + environment + `startedAt` + `git` (from settings). Manager seed: fill `agents[0]` (`type: "manager"`) — `id` / `name` / `model` / `system` / `transcriptPath` / `startedAt`, `step: "configuration"`, `phase: null`; `tokensUsed` stays zeroed until a rollup. |
+| Worktree creation | `git.branch` + `git.worktreePath`. |
+| PR opened | `git.pr` (stays `null` until then — including while a PR is deferred for missing `gh`). |
+| Each step transition / loop close / step exit | `workflow.{step}.startedAt` / `finishedAt`; `iter` (steps 2-6); `verdict` (steps 2-6). For Chat: the matching `workflow.chat.tasks[]` sub-records. |
+| Each subagent return (immediate) | Enumerate the just-returned spawn from the parent transcript by `tool_use_id` (fetch **(a)**); sum its `tokensUsed` from its own transcript (fetch **(b)**); upsert the matching `agents[]` entry by `id`. |
+| MEMORIZATION (per iter) + Wrap-up (bulk reconcile, idempotent safety net) | Re-enumerate all spawns (fetch **(a)**, no `tool_use_id` filter); re-sum each agent's own transcript (fetch **(b)**); refresh `agents[0]` (manager) from the main transcript (fetch **(c)**); upsert every entry by `id` (last write wins); recompute `usage.sessionTotal` + stamp `usage.computedAt`. |
+| Session end | `finishedAt` (top-level). |
 
-### Recording operation metadata
+These fetches are packaged as composable scripts in
+[`scripts/`](scripts/): [`agent-token-usage.sh`](scripts/agent-token-usage.sh) computes one transcript's
+cumulative `tokensUsed`; [`reconcile-session-metadata.sh`](scripts/reconcile-session-metadata.sh) is the
+bulk-reconcile orchestrator (enumerate → per-agent sum → manager sum → upsert `agents[]` → recompute `usage`,
+written atomically under `flock`). Run the reconciler at MEMORIZATION and Wrap-up; it is idempotent.
 
-The token usage MUST be recorded as the session runs; in practice it has been missed (a worktree-path bug in the PostToolUse hook left `agents[]` at the manager-seed entry only — see the backlog [`features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`](../../features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md)). The recording mechanism that is the **source of truth** is the manager running `jq` over **each agent's own transcript** — NOT the hook, and NOT the parent `toolUseResult`.
-
-**Where the numbers live.** Every agent has its OWN transcript file, which carries that agent's full per-turn history:
-
-- **Subagents:** `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl` — i.e. `<projects>/<parent-session-id>/subagents/agent-<agentId>.jsonl`. The `<agentId>` is the short `toolUseResult.agentId` (e.g. `a7363717821bc156d`), which is also the file stem. These files carry the subagent's full per-turn history (`isSidechain: true`).
-- **Manager (main agent):** the main session transcript `$CLAUDE_TRANSCRIPT_PATH` itself, filtering its own `isSidechain == false` assistant entries.
-
-The parent transcript is used ONLY to **enumerate** the spawns (their `agentId`, `agentType`/role, and `tool_use_id`). The TOKEN numbers come from each agent's own transcript. (`toolUseResult.totalTokens` is a different, much smaller metric — do not use it; `toolUseResult.usage` is final-turn only — do not use it.) See the empirical shape reference [`features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md).
-
-**When + who + how — the recording procedure.**
-
-| Metadata kind | When written | Who | How (concrete fetch) |
-|---|---|---|---|
-| Manager seed entry | Configuration Step 1 (row 4) | manager | Fill `agents[0]` (`type: "manager"`) with `id` / `name` / `model` / `system` / `transcriptPath` / `startedAt`, `step: "configuration"`, `phase: null`. `tokensUsed` stays zeroed until the first rollup. |
-| Per-subagent entry | On each subagent return (immediate) | manager | (1) Enumerate the just-returned spawn from the parent transcript by its `tool_use_id` to get `agentId` + `agentType` (fetch **(a)**). (2) Sum that agent's cumulative `tokensUsed` from its OWN transcript `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl` (fetch **(b)**). Upsert the matching `agents[]` entry. |
-| Bulk reconcile (safety net) | MEMORIZATION (per iteration) + Wrap-up | manager | Re-enumerate all spawns (fetch **(a)** without the `tool_use_id` filter), re-sum each agent's own transcript (fetch **(b)** per file), and idempotently refresh every `agents[]` entry by `id`. Also refresh `agents[0]` (manager) `tokensUsed` from the main transcript (fetch **(c)**). Last write wins on retries. |
-| Session `usage.sessionTotal` | MEMORIZATION (per iteration) + Wrap-up | manager | Sum every `agents[].tokensUsed.total` (manager + subagents); stamp `usage.computedAt`. Idempotent. |
-
-Fetch **(a) — enumerate spawns** from the parent transcript (drop the `--arg tuid` / `select` line for the bulk variant). The `type=="object"` guard is required because one transcript line carries `toolUseResult` as a string:
+Fetch **(a) — enumerate spawns** from the parent transcript (drop the `--arg tuid` / `select` line for the
+bulk variant). The `type=="object"` guard is required because one transcript line carries `toolUseResult` as a string:
 
 ```bash
 jq -rc --arg tuid "$TOOL_USE_ID" '
@@ -364,7 +369,8 @@ jq -rc --arg tuid "$TOOL_USE_ID" '
 ' "$CLAUDE_TRANSCRIPT_PATH"
 ```
 
-Fetch **(b) — a subagent's cumulative `tokensUsed`** from its OWN transcript (point `$AGENT_TRANSCRIPT` at `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl`):
+Fetch **(b) — a subagent's cumulative `tokensUsed`** from its OWN transcript (point `$AGENT_TRANSCRIPT` at
+`${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl`):
 
 ```bash
 jq -s '[ .[] | select(.type == "assistant") | .message.usage ]
@@ -376,7 +382,8 @@ jq -s '[ .[] | select(.type == "assistant") | .message.usage ]
 ' "$AGENT_TRANSCRIPT"
 ```
 
-Fetch **(c) — the manager's cumulative `tokensUsed`** — the same sum over the MAIN transcript, adding `and .isSidechain == false` (the main transcript also holds the subagents' sidechain turns, so the manager's own turns must be filtered):
+Fetch **(c) — the manager's cumulative `tokensUsed`** — the same sum over the MAIN transcript, adding
+`and .isSidechain == false` (the main transcript also holds subagents' sidechain turns):
 
 ```bash
 jq -s '[ .[] | select(.type == "assistant" and .isSidechain == false) | .message.usage ]
@@ -388,4 +395,12 @@ jq -s '[ .[] | select(.type == "assistant" and .isSidechain == false) | .message
 ' "$CLAUDE_TRANSCRIPT_PATH"
 ```
 
-**The hook's accurate (limited) role.** `post-tool-use-agents.sh` (registered for matcher `Task|Agent` on `PostToolUse` + `PostToolUseFailure`) reads the delegation prompt's structured headers (`Your phase:` / `Your iteration:` / `Your sub-step:` / `Your step:` — owned by [`delegation/SKILL.md` § Hook Integration](../delegation/SKILL.md#hook-integration)) and may upsert an entry's routing fields cheaply. It is harmless and stays registered, but it is doubly wrong for tokens: (1) under the always-worktree model its session-dir resolver scans the main-tree `cwd`, where the worktree's `session.json` does not exist, so the upsert is often skipped entirely; (2) even when it fires it reads the parent `usage` (final turn) from the WRONG file — not the agent's own transcript summed across turns. The manager-`jq` procedure above (each agent's own transcript) is the source of truth; the verify-and-fix reconstructor [`.claude/scripts/reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh) shares both limits and is likewise a convenience, not the authority. Both are tracked for repair in the backlog above.
+**The hook's limited role.** `post-tool-use-agents.sh` (matcher `Task|Agent` on `PostToolUse` +
+`PostToolUseFailure`) reads the delegation prompt's structured headers (`Your phase:` / `Your iteration:` /
+`Your sub-step:` / `Your step:`, owned by [`delegation/SKILL.md` § Hook Integration](../delegation/SKILL.md#hook-integration))
+and may seed an entry's routing fields. It is NOT the token source of truth: under the always-worktree model
+its resolver scans the main-tree `cwd` where the worktree `session.json` does not exist (so the upsert is often
+skipped), and even when it fires it reads the parent `usage` (final turn) from the wrong file. The convenience
+reconstructor [`.claude/scripts/reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh)
+shares both limits. Both are tracked for repair in
+[`features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`](../../features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md).
