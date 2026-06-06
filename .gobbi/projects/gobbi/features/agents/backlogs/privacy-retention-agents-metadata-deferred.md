@@ -19,7 +19,7 @@ superseded_by: null
 
 ## Context
 
-The `agents[]` array persisted in `session.json` by the PostToolUse hook records, per spawned subagent: `id` (UUID), `name` (agent role), `type`, `step`, `phase`, `iter`, `model`, `system`, `transcriptPath` (a local filesystem path), `tokensUsed`, `startedAt`, and `finishedAt`. A Codex risk evaluation of this hook flagged that no formal privacy or retention policy is documented for this persisted data. This backlog entry tracks writing that policy.
+The `agents[]` array persisted in `session.json` records, per spawned subagent (and the manager as `agents[0]`): `id` (subagent session id), `name` (agent role), `type`, `step`, `phase`, `iter`, `sub_step`, `model`, `system`, `transcriptPath` (a local filesystem path), `status`, `tokensUsed` (`{input, output, cacheRead, cacheCreation, total}` — cumulative), `startedAt`, and `finishedAt`; plus the session-level `usage.sessionTotal`. A Codex risk evaluation flagged that no formal privacy or retention policy is documented for this persisted data. This backlog entry tracks writing that policy.
 
 ## Why deferred
 

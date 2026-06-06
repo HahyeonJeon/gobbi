@@ -65,12 +65,15 @@ Method: read `$CLAUDE_TRANSCRIPT_PATH` JSONL, find the line where `toolUseResult
 | `model` | NOT in toolUseResult — must be supplied from the `tool_use.input.model` field (line 164 in the transcript) |
 | `system` | always `claude-code` for native Agent calls; `codex` for codex tool calls |
 | `transcriptPath` | the parent session's transcriptPath (subagent transcripts live as sidechain entries in the same JSONL — flagged via `isSidechain: true`) |
-| `tokensUsed.input` | `usage.input_tokens` |
-| `tokensUsed.output` | `usage.output_tokens` |
-| `tokensUsed.cacheRead` | `usage.cache_read_input_tokens` |
-| `tokensUsed.cacheCreation` | `usage.cache_creation_input_tokens` |
+| `tokensUsed.input` (cumulative) | Σ `message.usage.input_tokens` over the agent's OWN transcript `${transcript%.jsonl}/subagents/agent-<agentId>.jsonl` (manager: main transcript, `isSidechain==false`) |
+| `tokensUsed.output` (cumulative) | Σ `message.usage.output_tokens` over the same file |
+| `tokensUsed.cacheRead` (cumulative) | Σ `message.usage.cache_read_input_tokens` over the same file |
+| `tokensUsed.cacheCreation` (cumulative) | Σ `message.usage.cache_creation_input_tokens` over the same file |
+| `tokensUsed.total` (cumulative) | `input + output + cacheRead + cacheCreation` |
 | `startedAt` | timestamp of the preceding tool_use line (line 164) |
 | `finishedAt` | timestamp of the tool_result line (line 165) |
+
+The parent `toolUseResult` is used ONLY to enumerate spawns (`agentId` / `agentType` / `tool_use_id`); its `usage` is the FINAL turn only and its `totalTokens` is a different, smaller headline metric — neither is the cumulative figure. The cumulative `tokensUsed` is summed from each agent's OWN transcript. Earlier drafts mapped `tokensUsed ← toolUseResult.usage.*`, which captured only the last turn — corrected to the own-transcript sum above (session 06668274).
 
 ## Related
 
