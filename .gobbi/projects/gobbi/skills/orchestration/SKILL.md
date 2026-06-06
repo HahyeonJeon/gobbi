@@ -309,18 +309,12 @@ session runs.
 
 ### Recording workflow metadata
 
-The **source of truth for tokens is the manager running `jq` over each agent's own transcript** — NOT the
-PostToolUse hook, and NOT the parent `toolUseResult`. Each agent has its own transcript carrying its full
-per-turn history:
+The manager sums each agent's cumulative token usage by running `jq` over that agent's own transcript, which
+carries its full per-turn history:
 
 - **Subagents:** `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl` — `<agentId>` is the
   short `toolUseResult.agentId` (e.g. `a7363717821bc156d`), which is also the file stem (`isSidechain: true`).
 - **Manager (main agent):** the main transcript `$CLAUDE_TRANSCRIPT_PATH`, filtering `isSidechain == false`.
-
-The parent transcript is used ONLY to **enumerate** spawns (their `agentId`, `agentType`/role, `tool_use_id`);
-the token numbers come from each agent's own transcript. (`toolUseResult.totalTokens` is a different, smaller
-metric — do not use; `toolUseResult.usage` is final-turn only — do not use.) Empirical shape reference:
-[`features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md).
 
 **Field reference.**
 
@@ -348,9 +342,3 @@ Packaged as composable scripts in [`scripts/`](scripts/):
 
 - [`agent-token-usage.sh`](scripts/agent-token-usage.sh): cumulative `tokensUsed` for one transcript.
 - [`reconcile-session-metadata.sh`](scripts/reconcile-session-metadata.sh): bulk reconcile — enumerate → per-agent sum → manager sum → upsert `agents[]` → recompute `usage` (atomic, under `flock`); idempotent. Run at MEMORIZATION + Wrap-up.
-
-**The hook's limited role.**
-
-- `post-tool-use-agents.sh` (matcher `Task|Agent`, `PostToolUse` + `PostToolUseFailure`): seeds routing fields (`step` / `phase` / `iter` / `sub_step`) from the delegation prompt's structured headers ([`delegation/SKILL.md` § Hook Integration](../delegation/SKILL.md#hook-integration)). NOT the token source of truth — its resolver scans the main-tree `cwd` (the worktree `session.json` isn't there, so the upsert is usually skipped), and it reads the parent `usage` (final turn) from the wrong file.
-- [`reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh): shares both limits.
-- Tracked for repair: [`post-tool-use-hook-cannot-resolve-worktree-session-json.md`](../../features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md).
