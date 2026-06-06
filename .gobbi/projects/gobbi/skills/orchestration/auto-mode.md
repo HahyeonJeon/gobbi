@@ -256,7 +256,7 @@ interrupt the user mid-session. The manager notes the abort, continues to the ne
 continuing is safe), and the failure surfaces explicitly in the Wrap-up Loop's MEMORIZATION and
 the session handoff.
 
-This is by design — per `orchestration/SKILL.md` line 405 contract. The silence is not a bug;
+This is by design — per `orchestration/SKILL.md` § Mode-specific gates within a loop contract. The silence is not a bug;
 it is Auto Mode's autonomy contract: the user reviews outcomes at session end (Wrap-up), not
 mid-step. This note exists so a future reader does not mistake the mid-session silence for a
 missing interrupt.
@@ -271,9 +271,8 @@ recoverable abort.
 ## Cross-references
 
 - [`orchestration/SKILL.md`](SKILL.md) — workflow governor; `§ Auto Mode` brief description;
-  `§ Mode-specific gates within a loop` for the three per-loop user gates; `§ Workflow Status
-  Display` for the Auto rendering (6-row table); line 405 for the maxIterations exhaustion
-  silence contract.
+  `§ Mode-specific gates within a loop` for the three per-loop user gates and the maxIterations
+  exhaustion silence contract; `§ Workflow Status Display` for the Auto rendering (6-row table).
 - [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock +
   `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) and the narrowed
   MEMORIZATION PASS path are Chat-only; they do not apply in Auto Mode.
