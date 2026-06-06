@@ -277,21 +277,21 @@ Boilerplate lives in [`templates/evaluator.md`](templates/evaluator.md). The blo
 
 ## Model Selection
 
-> **Decision-heavy work gets opus. Contract-bounded work gets sonnet. All agents run at max effort.**
+> **Reasoning- and implementation-heavy work gets opus. Only the read-only assistant gets sonnet. All agents run at max effort.**
 
-Opus is reserved for roles where the quality bar depends on judgment, ambiguity-handling, and adversarial reasoning — manager (user-facing decisions), leader (open-ended investigation and decomposition), evaluator (catching non-obvious gaps an author missed). Sonnet handles roles where the work is structured against an explicit contract — executor (implements the plan within scope) and assistant (returns the asked answer with cited evidence). The manager sets `model:` on the `Agent` tool call at dispatch time — it overrides the agent definition's default.
+Opus covers every role whose quality bar depends on reasoning — manager (user-facing decisions), leader (open-ended investigation and decomposition), evaluator (catching non-obvious gaps an author missed), and executor (implementing within scope still needs reasoning depth for correctness and edge cases). Sonnet is reserved for the narrow read-only assistant — lookups, references, and factual answers that do not require judgment. The manager sets `model:` on the `Agent` tool call at dispatch time — it overrides the agent definition's default.
 
 | Agent | Stance | Model | Rationale |
 |---|---|---|---|
 | `manager` | — | opus | Session main agent; orchestration + user discussion require deep reasoning |
 | `leader` | — | opus | Deep reasoning across investigation, research, and decomposition |
-| `executor` | — | sonnet | Implementation follows the contract; structured execution against an explicit spec |
+| `executor` | — | opus | Implementation within scope still needs reasoning depth for correctness and edge cases |
 | `evaluator` | — | opus | Adversarial assessment of artifacts + process docs needs deep reasoning to catch non-obvious gaps |
 | `assistant` | — | sonnet | Narrow, fast support work — lookups, references, factual answers |
 
 > **Dispatch-time overrides are explicit, not inferred.**
 
-If a specific task calls for a model different from the role's default — a particularly narrow executor task that warrants opus, or a routine evaluator check that fits sonnet — the manager sets `model:` on the `Agent` call explicitly and documents the reason in the delegation prompt's `## Context` block. The role's default is the right choice unless the manager can articulate why this task is exceptional.
+If a specific task calls for a model different from the role's default — an exceptionally mechanical sub-task that fits sonnet, or a complex assistant lookup that warrants opus — the manager sets `model:` on the `Agent` call explicitly and documents the reason in the delegation prompt's `## Context` block. The role's default is the right choice unless the manager can articulate why this task is exceptional.
 
 > **Model tiers and capabilities evolve — these are current guidelines, not permanent assignments.**
 
@@ -323,7 +323,7 @@ The manager delegates to these agent types. Each has a distinct role — underst
 |---|---|---|---|
 | `manager` | Session chief — orchestration, user discussion, decision-making | The root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. | Opus |
 | `leader` | PI/PM — research, ideation direction, planning decomposition | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. Writes artifacts; never implements code. | Opus |
-| `executor` | Implementation — code, edits, docs within scope | Execution phase. Reads brief + research, implements within scope boundary, returns one of 4 statuses with verification evidence. | Sonnet |
+| `executor` | Implementation — code, edits, docs within scope | Execution phase. Reads brief + research, implements within scope boundary, returns one of 4 statuses with verification evidence. | Opus |
 | `evaluator` | Adversarial assessor — artifacts + process docs | Evaluation sub-phase (mandatory after Execution; optional after Ideation / Planning). Spawn exactly 2 in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially; cross-system divergence is the anti-groupthink signal. | Opus |
 | `assistant` | Lightweight support — references, lookups, codebase exploration | Narrow factual / read-only support; can parallelize. Read-only tool surface. | Sonnet |
 

@@ -43,11 +43,13 @@ non-canonical — use "per-task slice" consistently in all downstream prose.
 This re-frames the 6-step state machine:
 
 - **Configuration** (Step 1) runs once per session — unchanged.
-- **Wrap-up** (Step 6) runs once per session, triggered only on explicit user signal — see §7.
+- **Wrap-up** (Step 6) runs once per session, triggered only on explicit user signal — see §7;
+  up to 5 remediation iterations on `REVISE` before abort (`wrap-up.maxIterations: 5`).
 - Between them, the manager runs **per-task slices**, not a linear Ideation → Preparation →
   Planning → Execution → Wrap-up sequence.
 - Each per-task slice contains its own Ideation loop, its own Preparation loop (which resolves to
-  `state: Skipped` at loop entry per R1), its own mini Planning loop, its own mini Execution loop,
+  `state: Skipped` at loop entry — chat preparation carries `skip: true` AND `maxIterations: 0`;
+  either signal alone suffices), its own mini Planning loop, its own mini Execution loop,
   and its own task-record boundary.
 
 This is the structural change that supersedes the original SKILL.md 241–242 lock. Mode no longer
@@ -71,7 +73,7 @@ Step 1 — Configuration (once per session)
 │  user types a task                                                 │
 │   │                                                                │
 │   ▼                                                                │
-│  Step 2 — Full Ideation Loop  (maxIter=2)                          │
+│  Step 2 — Full Ideation Loop  (maxIter=5)                          │
 │      DISCUSSION (forced user-driven, regardless of discuss.mode)   │
 │           ↓                                                        │
 │      WORK     (leader; full 4 sub-steps A–D)                       │
@@ -84,22 +86,23 @@ Step 1 — Configuration (once per session)
 │   │                                                                │
 │   ▼                                                                │
 │  Step 3 — Preparation Loop  ⊘  state: Skipped at loop entry        │
-│      (R1: settings.workflow.preparation.maxIterations: 0           │
-│       → manager skips DISCUSSION+WORK+EVAL+MEMO rows entirely;     │
-│       stamps state: Skipped; no FAIL or Aborted verdict;           │
+│      (R1 + skip: settings.workflow.preparation =                   │
+│       {skip: true, maxIterations: 0} — either signal alone         │
+│       suffices → manager skips DISCUSSION+WORK+EVAL+MEMO rows      │
+│       entirely; stamps state: Skipped; no FAIL or Aborted verdict; │
 │       persists workflow.chat.tasks[i].preparation =                │
 │       {state: "Skipped", iterations: []}.)                         │
 │      The user MAY opt in for a complex task by typing an explicit  │
 │      prep override; opt-in runs the standard contract.             │
 │   │                                                                │
 │   ▼                                                                │
-│  Step 4 — mini Planning Loop  (maxIter=2)                          │
+│  Step 4 — mini Planning Loop  (maxIter=5)                          │
 │      Same 5-row loop, scope = this one task's worth of plan        │
 │      (one or a few sub-steps, ordered).                            │
 │      MEMORIZATION = Chat narrowed PASS path (§4).                  │
 │   │                                                                │
 │   ▼                                                                │
-│  Step 5 — mini Execution Loop per Plan sub-step  (maxIter=2)       │
+│  Step 5 — mini Execution Loop per Plan sub-step  (maxIter=5)       │
 │      Same 5-row loop per sub-step (fresh executor each time);      │
 │      sub-steps sequence as the mini-Plan ordered them.             │
 │      MEMORIZATION = Chat narrowed PASS path (§4).                  │
@@ -115,7 +118,7 @@ Step 1 — Configuration (once per session)
 └────────────────────────────────────────────────────────────────────┘
    │ (user signals "wrap up")
    ▼
-Step 6 — Wrap-up Loop  (maxIter=1)
+Step 6 — Wrap-up Loop  (maxIter=5)
    FULL MEMORIZATION consolidation:
    - mine the session transcript
    - read every per-task task-record.md
@@ -140,7 +143,7 @@ slice's worth of work.
 
 **Output.** A slice-local Idea covering Scope Contract + Design recommendation.
 
-**Loop iteration.** 5-row loop; cap from `settings.workflow.ideation.maxIterations` (Chat default = 2).
+**Loop iteration.** 5-row loop; cap from `settings.workflow.ideation.maxIterations` (Chat default = 5).
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -158,9 +161,9 @@ slice's worth of work.
 
 **Output.** Confirmed readiness — by default, `state: Skipped` (no work performed).
 
-**Loop iteration.** None. `settings.workflow.preparation.maxIterations: 0` resolves to `state: Skipped` at loop entry per the R1 lock — no DISCUSSION / WORK / EVALUATION / MEMORIZATION rows execute; no FAIL or Aborted verdict is emitted.
+**Loop iteration.** None. Chat preparation is `{skip: true, maxIterations: 0}`; either signal resolves to `state: Skipped` at loop entry (loop-entry Skipped resolution, two independent signals) — no DISCUSSION / WORK / EVALUATION / MEMORIZATION rows execute; no FAIL or Aborted verdict is emitted.
 
-**Opt-in.** A complex slice can opt back in by raising `workflow.preparation.maxIterations` via the customize gate (Step 1 row 2). The standard loop contract then runs.
+**Opt-in.** A complex slice can opt back in by setting `skip: false` AND raising `workflow.preparation.maxIterations` above 0 via the customize gate (Step 1 row 2) — both signals must be cleared. The standard loop contract then runs.
 
 ### Step 4 — Slice Mini Planning Loop
 
@@ -170,7 +173,7 @@ slice's worth of work.
 
 **Output.** A slice-local Plan — typically 1-4 sub-steps with success criteria each.
 
-**Loop iteration.** 5-row loop; cap from `settings.workflow.planning.maxIterations` (Chat default = 2).
+**Loop iteration.** 5-row loop; cap from `settings.workflow.planning.maxIterations` (Chat default = 5).
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -188,7 +191,7 @@ slice's worth of work.
 
 **Output.** Code or doc changes plus verification evidence — the sub-step's `Result`. The slice's full `Results` is the integrated set.
 
-**Loop iteration.** 5-row loop per sub-step; cap from `settings.workflow.execution.maxIterations` (Chat default = 2).
+**Loop iteration.** 5-row loop per sub-step; cap from `settings.workflow.execution.maxIterations` (Chat default = 5).
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -223,7 +226,7 @@ slice's worth of work.
 
 **Output.** Session handoff doc; project-memory updates (mistakes promoted); archived backlogs (move-on-terminal); opened PR.
 
-**Loop iteration.** 5-row loop; cap from `settings.workflow.wrap-up.maxIterations` (Chat default = 1).
+**Loop iteration.** 5-row loop; cap from `settings.workflow.wrap-up.maxIterations` (Chat default = 5).
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -231,7 +234,7 @@ slice's worth of work.
 | 2 | `WORK` | Spawn `assistant` subagent. Consolidate: archive backlogs, mine task-records + transcript, promote staged mistakes, write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Full PASS path — `Wrap-up MEMORIZATION runs the unmodified base procedure` per the §4 base-unmodified clause. This is where typed-finding staging from prior slices is promoted (none under the Chat narrowed contract since per-slice staging was skipped — Wrap-up mines transcripts + task-records instead). | [memorization.md](workflow/memorization.md) | assistant |
-| 5 | `ITER / EXIT` | `PASS` → close session. `REVISE`/`FAIL` → iter cap hit immediately (max=1); escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
+| 5 | `ITER / EXIT` | `PASS` → close session. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
 
 ---
 
@@ -293,9 +296,9 @@ Execution):
 - **Three mode-specific gates within a loop** still apply (per `orchestration/SKILL.md §
   Mode-specific gates within a loop`): after DISCUSSION → confirm delegation prompt; after
   EVALUATION → discuss findings and remediation; at ITER/EXIT → confirm exit.
-- **Iteration cap is 2** for Ideation / Planning / Execution (Auto's default is 3). The narrower
-  budget reflects Chat's per-task scope: a user-typed task that needs three iterations is a signal
-  to reframe or split, not iterate further.
+- **Iteration cap is 5** for Ideation / Planning / Execution (Auto's default is also 5). A
+  user-typed task that exhausts the budget without `PASS` is a signal to reframe or split, not
+  iterate further.
 - **Evaluation always runs.** `evaluate.mode: always` across all loops in Chat.
 - **MEMORIZATION runs every loop with the §4 narrowed PASS path.**
 - **Fresh subagent context per slice.** Every leader / executor / evaluator spawn pastes its
@@ -351,8 +354,8 @@ sessions/{date}-{ssid}/chat/tasks/{NN}-{slug}/
         {rawdata,staging,artifacts,evaluation}/
 ```
 
-Preparation is not present in the directory tree for tasks where `state: Skipped` (the default
-per R1). If a user opts into Preparation for a specific task, a `preparation/` subdirectory
+Preparation is not present in the directory tree for tasks where `state: Skipped` (the default —
+chat preparation is `{skip: true, maxIterations: 0}`). If a user opts into Preparation for a specific task, a `preparation/` subdirectory
 appears with the same quartet.
 
 ### 6.2 Frontmatter type — deferred to Planning
@@ -492,18 +495,18 @@ state-transition contract for Chat Mode.
 | `(none)` | user types a task | `ideation.state: InProgress` | manager enters per-task slice; Configuration already `Done` |
 | `ideation.state: InProgress` | EVALUATION → PASS | `ideation.state: Done` | §4 narrowed PASS path runs; move to Step 3 |
 | `ideation.state: InProgress` | EVALUATION → REVISE | `ideation.state: InProgress` | re-enter DISCUSSION with evaluator findings; iter++ |
-| `ideation.state: InProgress` | iter == maxIter (2) + REVISE | `ideation.state: Aborted` | manager escalates to user via AskUserQuestion |
-| `ideation.state: Done` | loop-entry guard reads `maxIterations: 0` | `preparation.state: Skipped` | R1 lock; no DISCUSSION/WORK/EVAL/MEMO rows run; stamps `{state: "Skipped", iterations: []}` |
+| `ideation.state: InProgress` | iter == maxIter (5) + REVISE | `ideation.state: Aborted` | manager escalates to user via AskUserQuestion |
+| `ideation.state: Done` | loop-entry guard reads `skip: true` OR `maxIterations: 0` | `preparation.state: Skipped` | R1 lock + skip signal (two independent signals); no DISCUSSION/WORK/EVAL/MEMO rows run; stamps `{state: "Skipped", iterations: []}` |
 | `preparation.state: Skipped` | (auto-advance) | `planning.state: InProgress` | no user gate for the Skipped transition |
-| `preparation.state: Skipped` | user opts in for complex task | `preparation.state: InProgress` | user raises `maxIterations` explicitly; standard loop contract runs |
+| `preparation.state: Skipped` | user opts in for complex task | `preparation.state: InProgress` | user sets `skip: false` AND raises `maxIterations` explicitly (both signals cleared); standard loop contract runs |
 | `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 narrowed PASS path runs; move to Step 5 |
 | `planning.state: InProgress` | EVALUATION → REVISE | `planning.state: InProgress` | re-enter DISCUSSION; iter++ |
-| `planning.state: InProgress` | iter == maxIter (2) + REVISE | `planning.state: Aborted` | manager escalates to user |
+| `planning.state: InProgress` | iter == maxIter (5) + REVISE | `planning.state: Aborted` | manager escalates to user |
 | `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step |
 | `execution.state: InProgress` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 narrowed PASS path runs; write task-record |
 | `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor |
 | `execution.state: InProgress` | EVALUATION → REVISE | `execution.state: InProgress` | re-enter DISCUSSION for same sub-step; iter++ |
-| `execution.state: InProgress` | iter == maxIter (2) + REVISE | `execution.state: Aborted` | manager escalates to user |
+| `execution.state: InProgress` | iter == maxIter (5) + REVISE | `execution.state: Aborted` | manager escalates to user |
 | `execution.state: Done` | task-record written | `taskRecord: written` | manager presents user review gate |
 | `taskRecord: written` | user selects "Next task" | `(new per-task slice begins)` | manager re-enters per-task slice loop for task {NN+1} |
 | `taskRecord: written` | user selects "Revise this task" | `ideation.state: InProgress` (same task, new per-task slice) | manager re-enters per-task slice at Step 2 |

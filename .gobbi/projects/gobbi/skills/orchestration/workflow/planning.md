@@ -127,7 +127,7 @@ After `MEMORIZATION`, the manager decides based on the reconciled verdict:
 | `FAIL` | Escalate via AskUserQuestion; user decides revise / abort / re-enter Ideation |
 | `SKIPPED` | Exit the loop (Planning was skipped per settings — only valid for trivial tasks where the "plan" is a single task) |
 
-Iteration cap: `workflow.planning.maxIterations` (default 3). When the cap is reached without `PASS`, the manager forces user escalation.
+Iteration cap: `workflow.planning.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.
 
 ---
 

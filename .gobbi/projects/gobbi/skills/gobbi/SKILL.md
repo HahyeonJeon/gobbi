@@ -86,7 +86,7 @@ Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#
 - **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
 - **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
 
-After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
+After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models, git workflow)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) rows 1-2 to walk through each section. If no, apply defaults as-is.
 
 See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 5 (worktree creation), which runs before `state.json` initialization (row 5.5) and before `session.json` stamping (row 6, where `git.worktreePath` is recorded).
 
@@ -145,7 +145,7 @@ Five roles. Each has a fixed behavioral spec at `.claude/agents/{role}.md` (syml
 |---|---|---|---|
 | **manager** | opus | Session chief — orchestrates the team, drives user discussion, makes decisions at every gate. Owns the user relationship exclusively. | Root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. |
 | **leader** | opus | PI / PM — research, ideation direction, preparation readiness, planning decomposition. Never implements code. | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. |
-| **executor** | sonnet | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task; tasks sequence (never parallelize implementation). |
+| **executor** | opus | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task; tasks sequence (never parallelize implementation). |
 | **evaluator** | opus | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawned ≥ 2 in parallel with distinct perspectives. |
 | **assistant** | sonnet | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; MEMORIZATION sub-phase. Can parallelize. |
 
@@ -235,8 +235,8 @@ Ideation / Preparation / Planning / Execution loops write only to session memory
 
 **Model selection** (full table in [`delegation/SKILL.md` § Model Selection](../delegation/SKILL.md#model-selection)):
 
-- Decision-heavy roles (manager / leader / evaluator) use **opus** — judgment, ambiguity-handling, and adversarial reasoning need deep reasoning.
-- Contract-bounded roles (executor / assistant) use **sonnet** — structured execution against an explicit spec.
+- Reasoning- and implementation-heavy roles (manager / leader / evaluator / executor) use **opus** — judgment, ambiguity-handling, adversarial reasoning, and implementation correctness all need reasoning depth.
+- Only the read-only assistant uses **sonnet** — narrow lookups, references, and factual answers that do not require judgment.
 - All agents run at max effort — never reduce effort level.
 
 **AskUserQuestion** is mandatory for every decision point (not prose). The Recommended option is the first option, labeled `(Recommended)`. The full Question Card template lives in [`discussion/SKILL.md`](../discussion/SKILL.md#question-card-structure).

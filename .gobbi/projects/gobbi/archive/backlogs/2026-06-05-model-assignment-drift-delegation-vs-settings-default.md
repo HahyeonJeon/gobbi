@@ -4,7 +4,7 @@ description: "delegation/SKILL.md § Model Selection table conflicts with settin
 type: backlogs
 scope: project
 feature: null
-status: active
+status: closed
 created: 2026-05-28
 session: 8eed14fb-c4b5-455f-aa5e-497c33ed8bbf
 tags: [drift, docs-sync, delegation, settings, deferred]
@@ -12,6 +12,9 @@ title: "Model-assignment drift between delegation/SKILL.md and settings.chat.jso
 project: gobbi
 anchor_session: 2026-05-28-8eed14fb-c4b5-455f-aa5e-497c33ed8bbf
 disposition: open
+shipped_in: features/workflow/changelogs/2026-06-05-skip-key-maxiterations-evaluator-models.md
+archived_at: 2026-06-05
+archive_reason: closed
 ---
 
 # Model-assignment drift between delegation/SKILL.md and settings.chat.json + settings.auto.json
@@ -48,3 +51,42 @@ All three options require touching at least two files; option (c) requires prior
 ## Origin
 
 Idea iter1 Finding F-C1 (Codex adversarial perspective) surfaced the inversion during the chat+auto mode redesign session. Iter2 evaluation partially addressed the finding as "deferred via §5 footnote" — the redesign doc acknowledges the conflict but does not resolve it. This backlog captures the open item for a future session to close.
+
+---
+
+## 2026-06-05 — Partial resolution: EVALUATOR half closed by session 0a9c813f
+
+Session `0a9c813f` (2026-06-05) resolved the **EVALUATOR half** of this drift. Both
+`settings.auto.json` and `settings.chat.json` now carry:
+- `models.claude.evaluator: "opus"` (was `"sonnet"`)
+- `models.codex.evaluator: "gpt-5.5"` (was `"gpt-5"`)
+
+This aligns both templates with `delegation/SKILL.md`'s Model Selection table (evaluator = opus
+/ gpt-5.5). Commits: `9f77f0e` + `5b5a30e` on branch `chore/session-2026-06-05-0a9c813f`.
+
+**The EXECUTOR half remains OPEN.** Both templates still carry `models.claude.executor: "opus"`,
+while `delegation/SKILL.md` documents executor = sonnet. This inversion is outside this session's
+locked scope (user decision: OQ-2 = LEAVE OPEN). A future session resolving the executor half
+should update both templates and this backlog.
+
+**Backlog status: OPEN** (executor half unresolved).
+
+---
+
+## 2026-06-05 — EXECUTOR half closed by Task 02 of session 0a9c813f
+
+The **EXECUTOR half** is now also resolved. Task 02 of the same session (`0a9c813f`, 2026-06-05)
+updated four documentation files so that executor=opus is documented consistently:
+
+- `skills/delegation/SKILL.md` — Model Selection table: executor row updated to opus
+- `skills/gobbi/SKILL.md` — executor model reference updated to opus
+- `skills/planning/SKILL.md` — executor model reference updated to opus
+- `agents/executor.md` — agent spec updated to opus
+
+Commit: `98c91b8` on branch `chore/session-2026-06-05-0a9c813f`.
+
+Both templates (`settings.auto.json`, `settings.chat.json`) already carried
+`models.claude.executor: "opus"` (unchanged); the fix aligned the doc sources to match. The
+drift is now fully resolved — settings templates and all documentation agree: executor=opus.
+
+**Backlog status: CLOSED** (both evaluator and executor halves resolved).
