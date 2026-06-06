@@ -314,8 +314,8 @@ Identity / targeting / environment / time / git — the frame of the session. Se
 | Field | Value |
 |---|---|
 | Top-level fields (in serialization order) | `schemaVersion`, `sessionId`, `previousSessionId` (prior session's `sessionId` for continuation chains; `null` for fresh sessions), `project` / `feature` / `task` (targeting hierarchy: project = repo/workspace, feature = larger objective the session contributes to, task = this session's specific goal), `system` (`claude-code` \| `codex`), `startedAt`, `finishedAt`, `transcriptPath` (tilde-form path to the session transcript file — stamped from `$CLAUDE_TRANSCRIPT_PATH` env var with `$HOME` substituted as `~/`; `null` if absent), `git`. Order rule: identity → targeting → environment → time bounds → transcript → git context. |
-| Git block (in serialization order) | `git.repo` (`owner/name` shorthand from `gh repo view`), `git.baseBranch` (base branch the work descends from), `git.branch` (working branch — current HEAD in `direct`, feature branch in `worktree-pr`), `git.worktreePath` (absolute path to worktree in `worktree-pr` mode; `null` in `direct`), `git.issue` (GitHub issue number anchoring the work; `null` if none), `git.pr` (PR number once opened; `null` until then). The git workflow mode itself lives in `settings.json` and is not duplicated here. |
-| Update points | session start (stamp identity + targeting + environment + `startedAt` + `git` resolved from settings); worktree creation (stamp `git.branch` + `git.worktreePath` in `worktree-pr` mode); PR opened (stamp `git.pr`); session end (stamp top-level `finishedAt`) |
+| Git block (in serialization order) | `git.repo` (`owner/name` shorthand from `gh repo view`), `git.baseBranch` (base branch the work descends from), `git.branch` (the session-worktree branch), `git.worktreePath` (absolute path to the session worktree — always set in normal operation, never `null`), `git.issue` (GitHub issue number anchoring the work; `null` if none), `git.pr` (PR number once opened; `null` until then — including while a PR is deferred for missing `gh`). |
+| Update points | session start (stamp identity + targeting + environment + `startedAt` + `git` resolved from settings); worktree creation (stamp `git.branch` + `git.worktreePath`); PR opened (stamp `git.pr`); session end (stamp top-level `finishedAt`) |
 
 ### Workflow runtime
 
@@ -335,14 +335,14 @@ Per-step runtime data + per-agent token usage + a session-level total — append
 
 ### Recording operation metadata
 
-The token usage MUST be recorded as the session runs; in practice it has been missed (a worktree-path bug in the PostToolUse hook left `agents[]` at the manager-seed entry only — see the backlog [`features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`](../../../features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md)). The recording mechanism that is the **source of truth** is the manager running `jq` over **each agent's own transcript** — NOT the hook, and NOT the parent `toolUseResult`.
+The token usage MUST be recorded as the session runs; in practice it has been missed (a worktree-path bug in the PostToolUse hook left `agents[]` at the manager-seed entry only — see the backlog [`features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`](../../features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md)). The recording mechanism that is the **source of truth** is the manager running `jq` over **each agent's own transcript** — NOT the hook, and NOT the parent `toolUseResult`.
 
 **Where the numbers live.** Every agent has its OWN transcript file, which carries that agent's full per-turn history:
 
 - **Subagents:** `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl` — i.e. `<projects>/<parent-session-id>/subagents/agent-<agentId>.jsonl`. The `<agentId>` is the short `toolUseResult.agentId` (e.g. `a7363717821bc156d`), which is also the file stem. These files carry the subagent's full per-turn history (`isSidechain: true`).
 - **Manager (main agent):** the main session transcript `$CLAUDE_TRANSCRIPT_PATH` itself, filtering its own `isSidechain == false` assistant entries.
 
-The parent transcript is used ONLY to **enumerate** the spawns (their `agentId`, `agentType`/role, and `tool_use_id`). The TOKEN numbers come from each agent's own transcript. (`toolUseResult.totalTokens` is a different, much smaller metric — do not use it; `toolUseResult.usage` is final-turn only — do not use it.) See the empirical shape reference [`features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../../features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md).
+The parent transcript is used ONLY to **enumerate** the spawns (their `agentId`, `agentType`/role, and `tool_use_id`). The TOKEN numbers come from each agent's own transcript. (`toolUseResult.totalTokens` is a different, much smaller metric — do not use it; `toolUseResult.usage` is final-turn only — do not use it.) See the empirical shape reference [`features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md`](../../features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md).
 
 **When + who + how — the recording procedure.**
 
