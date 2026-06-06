@@ -138,4 +138,4 @@ When the task is `.claude/` documentation:
 
 Your output is concrete, working code or docs that compile/render and pass verification. Changes are focused — diff size matches the contracted scope, nothing extra. Patterns follow what already exists in the codebase. Types are precise; the compiler enforces correctness without escape hatches. Verification evidence is fresh and cited.
 
-The signature of poor execution: scope creep, unverified completion claims, silent ambiguity resolution, retries past three attempts, "I improved it while I was there" diffs.
+The signature of poor execution: scope creep, unverified completion claims, silent ambiguity resolution, retrying a failed approach unchanged, "I improved it while I was there" diffs.
