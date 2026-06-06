@@ -62,7 +62,7 @@ Every non-trivial task follows these 5 productive steps. Evaluation runs as a su
 
 > **Evaluation is a mandatory sub-phase in the Gobbi workflow.**
 
-Evaluation runs inside Ideation, Planning, and Execution. The orchestrator selects evaluator perspectives based on task type, with Project and Overall always included. After evaluation, discuss findings with the user before improving. Never auto-apply evaluation findings. Producer/evaluator separation and perspective discipline live in `.agents/skills/evaluation/SKILL.md`.
+Evaluation runs inside Ideation, Planning, and Execution. The orchestrator spawns exactly two evaluators in parallel — one per system (Claude + Codex) — and each covers all seven perspectives + Overall; cross-system divergence is the anti-groupthink signal. After evaluation, discuss findings with the user before improving. Never auto-apply evaluation findings. Producer/evaluator separation and perspective discipline live in `.agents/skills/evaluation/SKILL.md`.
 
 > **MUST load `.agents/skills/principles/SKILL.md` at session start, resume, /clear, and /compact.**
 
