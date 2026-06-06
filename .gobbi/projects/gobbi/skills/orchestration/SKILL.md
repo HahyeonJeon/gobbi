@@ -192,48 +192,35 @@ Evaluation outputs are named `evaluation/iter{n}/{system}/{perspective}.md` wher
 
 ## Workflow State Machine
 
-In Auto Mode the state machine runs linearly across the six steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](chat-mode.md) for the Chat-specific per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](chat-mode.md) for the state-transition table. The rest of this section describes the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → MEMORIZATION → ITER/EXIT) shared by both modes.
+In Auto Mode the state machine runs linearly across the six steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](chat-mode.md) for the Chat per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](chat-mode.md) for the per-task state-transition table. This section specifies the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → MEMORIZATION → ITER/EXIT) shared by both modes for steps 2-6. The manager moves between states only when each state's postcondition is met.
 
-> **Loop-entry Skipped resolution (two independent signals).** A workflow step resolves to
-> `state: Skipped` at loop entry when **either** `skip: true` **OR** `maxIterations: 0` is set
-> for that step — the two are independent signals, and either one alone is sufficient. A Skipped
-> step runs no DISCUSSION / WORK / EVALUATION / MEMORIZATION rows, emits no `FAIL` or `Aborted`
-> verdict, and stamps `{state: "Skipped", iterations: []}`. The `maxIterations: 0` path (the
-> original "R1 lock") is retained and coexists with the explicit `skip` boolean; `skip: true` is
-> the preferred explicit signal, `maxIterations: 0` remains valid for back-compatibility. This
-> is distinct from `evaluate.mode: "skip"`, which skips only the EVALUATION phase (the loop still
-> runs WORK → MEMORIZATION), not the whole step.
-
-This section specifies the phase mechanics shared by steps 2-6. The manager moves between states only when each state's postcondition is met.
+> **Loop-entry Skipped resolution.** A step resolves to `state: Skipped` at loop entry when **either** `skip: true` **OR** `maxIterations: 0` is set — two independent signals, either alone sufficient. A Skipped step runs no phase rows, emits no `FAIL` / `Aborted` verdict, and stamps `{state: "Skipped", iterations: []}`. `skip: true` is the preferred explicit signal; `maxIterations: 0` (the original "R1 lock") stays valid for back-compatibility. This is distinct from `evaluate.mode: "skip"`, which skips only the EVALUATION phase — the loop still runs WORK → MEMORIZATION.
 
 ### State persistence
 
 The manager maintains state in a per-session `state.json` file.
 
-| Field | Value |
+| Item | Value |
 |---|---|
 | Location | `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/state.json` |
 | Initial template | [`templates/state.template.json`](templates/state.template.json) |
-| Writer | manager (the manager agent) |
-| Update points | every state transition (`DISCUSSION` → `WORK`, `WORK` → `EVALUATION`, `EVALUATION` → `MEMORIZATION`, `MEMORIZATION` → `ITER / EXIT`, and the inter-step transitions at loop exits) |
-| Reader | manager — used to recover position after `/clear`, `/compact`, or session resume; also projected into the [Workflow Status Display](#workflow-status-display) |
-| Status semantics | `state` is one of `Pending` / `Active` / `Revising` / `Done` / `Skipped` / `Aborted`; when `Active`, the `phase` field names the current state (`DISCUSSION`, `WORK`'s loop verb, `EVALUATION`, `MEMORIZATION`, `ITER/EXIT`) |
-| Schema shape | `workflow` is keyed by step name — `configuration`, `ideation`, `preparation`, `planning`, `execution`, `wrap-up` — matching the `workflow.{step}` keys in `settings.json`. Each `state.json` entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`. (The `settings.json` per-step object additionally carries a `skip` boolean alongside `discuss` / `evaluate` / `maxIterations`; the state-machine entry derives `Skipped` from it at loop entry per the loop-entry resolution above. The `state.json` schema itself does NOT gain a `skip` key — only settings does.) The current active step is derived (the entry whose `state` is `Active` or `Revising`); there is no separate `active` key. The display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention; the manager renders the [Workflow Status Display](#workflow-status-display) in that order regardless of object iteration. **Chat sessions additionally carry `workflow.chat.tasks[]`** — see the schema below. |
-| `workflow.chat.tasks[]` schema (additive — Chat sessions only) | Present in both `state.json` and `session.json` when `settings.mode == "chat"`. Auto sessions leave this array empty. Each entry: `taskNo` (zero-padded ordinal), `slug` (subject-descriptive kebab-case), `startedAt`, `finishedAt`, and per-loop sub-records `ideation` / `preparation` / `planning` / `execution` (same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as the top-level `workflow.{loop}` entries — same parser, different path), plus `taskRecord: { path, writtenAt }`. The `preparation` sub-record carries `state: "Skipped"` by default (R1). **Templates**: `templates/state.template.json` and `templates/session.template.json` both gain `workflow.chat: { tasks: [] }` — auto sessions ship the same templates and leave the array empty. The `state.json` variant is the live state-machine projection (R3); the `session.json` variant archives final iter + verdict per slice (R2). |
+| Writer / Reader | manager — writer on every transition; reader to recover position after `/clear` / `/compact` / resume, and as the projection source for the [Workflow Status Display](#workflow-status-display) |
+| Update points | every state transition: `DISCUSSION`→`WORK`, `WORK`→`EVALUATION`, `EVALUATION`→`MEMORIZATION`, `MEMORIZATION`→`ITER/EXIT`, plus inter-step transitions at loop exits |
+| Status semantics | <ul><li>`state` ∈ `Pending` / `Active` / `Revising` / `Done` / `Skipped` / `Aborted`.</li><li>When `Active`, `phase` names the current state (`DISCUSSION`, `WORK`'s loop verb, `EVALUATION`, `MEMORIZATION`, `ITER/EXIT`).</li></ul> |
+| Schema shape | <ul><li>`workflow` is keyed by step name — `configuration` / `ideation` / `preparation` / `planning` / `execution` / `wrap-up` — matching the `workflow.{step}` keys in `settings.json`; each entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`.</li><li>The active step is **derived** (the entry whose `state` is `Active` or `Revising`) — there is no `active` key.</li><li>Display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention regardless of object iteration.</li><li>`skip` is a `settings.json`-only key; the state-machine entry derives `Skipped` from it at loop entry per the resolution above — `state.json` itself gains **no** `skip` key.</li><li>Chat sessions additionally carry `workflow.chat.tasks[]` — see below.</li></ul> |
+| `workflow.chat.tasks[]` | Chat-only additive array (empty for Auto), present in both `state.json` and `session.json`. Owned by [`chat-mode.md`](chat-mode.md); full field reference in [§ Workflow Metadata → Field reference](#workflow-metadata). The `state.json` variant is the live state-machine projection (R3). |
 
 ### Loop states
 
 | State | Precondition | Owner | Action | Postcondition (artifact) |
 |---|---|---|---|---|
-| `DISCUSSION` | Loop entered with input from the prior step, OR re-entered from `ITER / EXIT` after `REVISE` / `FAIL` | manager | Construct the delegation prompt for the owning specialist; in Chat Mode, confirm with the user; spawn the specialist via the Agent tool (the full delegation prompt is captured in the parent transcript's tool_use entry — no separate file is written) | Specialist agent spawned; delegation prompt persisted in the parent's transcript |
-| `WORK` | Specialist spawned in `DISCUSSION` | owning specialist (`leader` / `executor` / `assistant`) | Execute the loop's work per the delegation prompt received via the Agent tool | Loop's work artifact |
+| `DISCUSSION` | Loop entered with input from the prior step, OR re-entered from `ITER/EXIT` after `REVISE` / `FAIL` | manager | Construct the delegation prompt for the owning specialist; in Chat Mode, confirm with the user; spawn the specialist via the Agent tool (the prompt is captured in the parent transcript's tool_use entry — no separate file) | Specialist spawned; prompt persisted in the parent transcript |
+| `WORK` | Specialist spawned in `DISCUSSION` | owning specialist (`leader` / `executor` / `assistant`) | Execute the loop's work per the delegation prompt | Loop's work artifact |
 | `EVALUATION` | Work artifact exists; `workflow.{step}.evaluate.mode != 'skip'` | evaluator subagents (independent of the work owner) | Multi-perspective review per the evaluation policy | Aggregated verdict: `PASS` / `REVISE` / `FAIL` |
-| `MEMORIZATION` | `EVALUATION` complete OR `EVALUATION` skipped per policy | `assistant` subagent | Write session staging for this iteration; project-memory promotion only in Wrap-up | Memory writes complete |
-| `ITER / EXIT` | `MEMORIZATION` complete | manager | Decide based on verdict and budget — continue (transition to `DISCUSSION` with `iter += 1`) or exit (loop closed; surface output to next step) | Loop continues OR loop closed |
+| `MEMORIZATION` | `EVALUATION` complete OR skipped per policy | `assistant` subagent | Write session staging for this iteration; project-memory promotion only in Wrap-up | Memory writes complete |
+| `ITER / EXIT` | `MEMORIZATION` complete | manager | Decide on verdict + budget: continue (transition to `DISCUSSION`, `iter += 1`) or exit (loop closed; surface output to next step) | Loop continues OR loop closed |
 
-`iter` starts at `0` on loop entry. `maxIterations` is read from `workflow.{step}.maxIterations` (default `5`).
-
-If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and proceeds `WORK` → `MEMORIZATION` → `ITER / EXIT` on the first pass; the absent verdict is treated as `Skipped` at `ITER / EXIT`.
+`iter` starts at `0` on loop entry. `maxIterations` is read from `workflow.{step}.maxIterations` (default `5`). If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and runs `WORK` → `MEMORIZATION` → `ITER/EXIT` on the first pass; the absent verdict is treated as `Skipped` at `ITER/EXIT`.
 
 ### Verdict aggregation
 
@@ -245,35 +232,19 @@ If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and proceeds `WORK`
 
 ### Iteration rule
 
-After `EVALUATION` (or its skip path), the loop always proceeds to `MEMORIZATION`. The iteration decision happens at `ITER / EXIT`:
+After `EVALUATION` (or its skip path), the loop always proceeds to `MEMORIZATION`. The iteration decision happens at `ITER/EXIT`:
 
-- **`PASS`** → exit the loop. Surface the work artifact as input to the next step.
-- **`Skipped`** (no verdict because `evaluate.mode == 'skip'`) → exit the loop. Surface the work artifact.
-- **`REVISE` or `FAIL` and `iter < maxIterations`** → increment `iter`, attach the eval findings to the next delegation prompt, and re-enter `DISCUSSION`. Re-entry is always at `DISCUSSION` — the loop never restarts at `WORK` directly.
-- **`REVISE` or `FAIL` and `iter == maxIterations`** → exit the loop with abort. The failure is already captured in this iteration's `MEMORIZATION`; the next loop's input notes the abort.
+- **`PASS`** → exit the loop; surface the work artifact as input to the next step.
+- **`Skipped`** (no verdict — `evaluate.mode == 'skip'`) → exit the loop; surface the work artifact.
+- **`REVISE` / `FAIL` and `iter < maxIterations`** → increment `iter`, attach the eval findings to the next delegation prompt, re-enter `DISCUSSION`. Re-entry is always at `DISCUSSION` — never directly at `WORK`.
+- **`REVISE` / `FAIL` and `iter == maxIterations`** → exit with abort. The failure is captured in this iteration's `MEMORIZATION`; the next loop's input notes the abort.
 
 ### Mode-specific gates within a loop
 
-**Chat Mode** pauses at four points:
+The per-loop user-interaction gates are mode-specific and owned by the mode docs:
 
-| Gate | Manager action |
-|---|---|
-| After `DISCUSSION` | AskUserQuestion to confirm the delegation prompt or revise scope |
-| After `EVALUATION` | AskUserQuestion to discuss findings and choose remediation (proceed, revise scope, descope, abort) |
-| At `ITER / EXIT` (when deciding to exit) | AskUserQuestion to confirm exiting the loop and starting the next step |
-| **At task boundary** (per-task user review gate — Chat only) | After the task-record is written, AskUserQuestion: **Next task / Revise / Wrap up**. "Next task" starts a new per-task slice. "Revise" re-enters the current slice at DISCUSSION. "Wrap up" advances to Step 6 (Wrap-up Loop). |
-
-`WORK` and `MEMORIZATION` auto-advance — the user has already approved the delegation prompt, and `MEMORIZATION` is mechanical capture.
-
-**Chat Mode and `discuss.mode` settings.** In Chat Mode, the per-step `discuss.mode` setting is **shadowed** by the mode-level discuss-first contract: regardless of a step's `discuss.mode` value, every loop entry forces user-driven DISCUSSION (the manager presents the delegation prompt and awaits explicit user confirmation before spawning the specialist). This means a step configured with `discuss.mode: "agent"` still pauses at DISCUSSION in Chat Mode. The full per-loop discipline is specified in [`chat-mode.md § Per-loop discipline`](chat-mode.md).
-
-**Auto Mode** advances every state without pausing. The user is interrupted only when:
-
-- Eval findings imply scope changes beyond the original delegation prompt (manager judgment).
-- A phase fails in a way the manager cannot resolve under existing authority.
-- The user explicitly intervenes (the user can interrupt at any time).
-
-`maxIterations` exhaustion in Auto Mode does NOT interrupt the user. The loop aborts; the failure is captured in `MEMORIZATION` and surfaces in the Wrap-up Loop's session report.
+- **Chat Mode** — the three in-loop gates (after DISCUSSION, after EVALUATION, at ITER/EXIT) plus the fourth task-boundary review gate, and the `discuss.mode` shadowing rule: [`chat-mode.md §5 — Per-loop discipline`](chat-mode.md) (gates + shadowing), [`chat-mode.md` Slice Boundary + §8](chat-mode.md) (task-boundary gate).
+- **Auto Mode** — silent auto-advance, the Always-Ask interrupts, and the no-interrupt-on-`maxIterations` rule: [`auto-mode.md §3 — Always-Ask codification`](auto-mode.md) and [`auto-mode.md §6 — maxIterations exhaustion`](auto-mode.md).
 
 ### Loop ↔ agent type mapping
 
@@ -290,7 +261,7 @@ After `EVALUATION` (or its skip path), the loop always proceeds to `MEMORIZATION
 
 The manager owns no loop directly except Configuration; the manager coordinates.
 
-*Memorization detail (what files, scope of project memory updates) lives in [`workflow/memorization.md`](workflow/memorization.md).*
+*Memorization detail (what files, scope of project-memory updates) lives in [`workflow/memorization.md`](workflow/memorization.md).*
 
 ---
 

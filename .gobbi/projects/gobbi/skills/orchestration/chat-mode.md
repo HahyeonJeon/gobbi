@@ -293,9 +293,11 @@ Execution):
   Chat-Mode property; it does not override `discuss.mode` in settings (settings still resolve to
   `"user"` everywhere in the Chat defaults), but it is documented here so a future settings change
   cannot accidentally regress it.
-- **Three mode-specific gates within a loop** still apply (per `orchestration/SKILL.md §
-  Mode-specific gates within a loop`): after DISCUSSION → confirm delegation prompt; after
-  EVALUATION → discuss findings and remediation; at ITER/EXIT → confirm exit.
+- **Three mode-specific gates within a loop** still apply (the shared mechanics in
+  `orchestration/SKILL.md § Workflow State Machine` point here): after DISCUSSION → confirm
+  delegation prompt; after EVALUATION → discuss findings and remediation; at ITER/EXIT → confirm
+  exit. WORK and MEMORIZATION auto-advance — the delegation prompt is already user-approved and
+  MEMORIZATION is mechanical capture.
 - **Iteration cap is 5** for Ideation / Planning / Execution (Auto's default is also 5). A
   user-typed task that exhausts the budget without `PASS` is a signal to reframe or split, not
   iterate further.
@@ -565,8 +567,8 @@ DISCUSSION at every Chat loop entry. Documenting at both settings-level (`"user"
 ## Cross-references
 
 - [`orchestration/SKILL.md`](SKILL.md) — workflow governor; CORRECTION annotation at `§
-  Orchestration Mode` supersedes the original 241–242 lock; `§ Mode-specific gates within a loop`
-  for the three per-loop user gates + fourth per-task user review gate; `§ Workflow Metadata` for
+  Orchestration Mode` supersedes the original 241–242 lock; `§ Workflow State Machine` for the
+  shared loop mechanics (it points here for the Chat gates); `§ Workflow Metadata` for
   the `workflow.chat.tasks[]` array-of-slices schema (R2/R3 lock).
 - [`orchestration/auto-mode.md`](auto-mode.md) — the symmetric Auto-Mode specification.
 - [`memorization/SKILL.md`](../memorization/SKILL.md) — the unmodified base MEMORIZATION

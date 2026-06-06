@@ -272,9 +272,9 @@ recoverable abort.
 ## Cross-references
 
 - [`orchestration/SKILL.md`](SKILL.md) — workflow governor; `§ Auto Mode` brief description;
-  `§ Mode-specific gates within a loop` for the three per-loop user gates; `§ Workflow Status
-  Display` for the Auto rendering (6-row table); line 405 for the maxIterations exhaustion
-  silence contract.
+  `§ Workflow State Machine` for the shared loop mechanics (it points back to this doc's §3/§6
+  for the Auto gate behavior); `§ Workflow Status Display` for the Auto rendering (6-row table);
+  line 405 for the maxIterations exhaustion silence contract.
 - [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock +
   `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) and the narrowed
   MEMORIZATION PASS path are Chat-only; they do not apply in Auto Mode.
