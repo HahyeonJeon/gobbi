@@ -66,7 +66,7 @@ Evaluation runs inside Ideation, Planning, and Execution. The orchestrator spawn
 
 > **MUST load `.agents/skills/principles/SKILL.md` at session start, resume, /clear, and /compact.**
 
-The 8 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle.
+The 10 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle.
 
 | # | Principle |
 |---|---|
@@ -78,6 +78,8 @@ The 8 principles below are the enforceable behavioral discipline for every agent
 | 6 | Start With Docs, Finish With Docs — Documents Are the Team's Memory: PLAN DOC WORK WITH A SPEC AND A CRUD PLAN, AND KEEP IT CURRENT. |
 | 7 | Say/Write Plainly, Briefly, and Literally: SIMPLE WORDS, SHORT SENTENCES, NO FILLER, NO METAPHOR. |
 | 8 | Fix the Root Cause, Not the Symptom: KEEP ASKING WHY UNTIL YOU REACH THE ROOT; A FIX YOU CAN'T EXPLAIN IS A GUESS. |
+| 9 | Think CRUD-and-5W1H Before Editing: NO EDIT WITHOUT CHECKING ITS CRUD AND 5W1H ACROSS TARGET AND AFFECTED FILES. |
+| 10 | Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; NEVER SILENTLY DEFER IN-SCOPE WORK. |
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
@@ -94,7 +96,7 @@ Every agent MUST load `.agents/skills/mistake/SKILL.md` before starting work. Wh
 | `plugins/gobbi/.claude-plugin/plugin.json` | Local Gobbi Claude Code plugin manifest |
 | `plugins/gobbi/` | Shared bounded plugin package |
 | `.gobbi/projects/gobbi/skills/` | Canonical Gobbi skills directory |
-| `.agents/skills/principles/SKILL.md` | 8 behavioral principles every agent must follow |
+| `.agents/skills/principles/SKILL.md` | 10 behavioral principles every agent must follow |
 | `.agents/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
 | `.agents/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |
 | `.codex/agents/manager.toml` | Root session manager custom-agent wrapper |
