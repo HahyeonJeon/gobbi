@@ -109,7 +109,7 @@ Construct the executor delegation prompt for the current task. The leader is **n
 **Purpose**
 Implement the contracted task within scope, verify the change-set with fresh evidence, commit (when git is active), and report back with a 4-state status enum.
 
-The manager spawns a **fresh** executor agent per task — never reuse an executor across tasks. Fresh context is what makes scope discipline reliable.
+The **default** is a **fresh** executor agent per task — fresh context is what makes scope discipline reliable. **Continuation is the one bounded exception**: the manager may continue the same executor teammate from task NN to NN+1 iff the next task shares the current task's subsystem (the task's `files:`/feature scope overlaps) AND the chain is under the saturation cap (at most 3 consecutive continued tasks). Otherwise the default stays fresh. The decision rule, the F1 predicate, the saturation cap, the delta-brief shape, and the continuation write-discipline live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh) and the Execution-specific choreography in [`orchestration/workflow/execution.md` § Executor continuation](../orchestration/workflow/execution.md#executor-continuation-shared-subsystem-under-cap) — this section does not re-derive them.
 
 **Inputs**
 - Executor delegation prompt (from DISCUSSION)
