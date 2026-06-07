@@ -28,7 +28,7 @@ Evaluation runs inside Ideation, Planning, and Execution — mandatory after Exe
 
 > **MUST load [principles](skills/principles/SKILL.md) at session start, resume, /clear, and /compact.**
 
-The 8 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills. (A *continued* teammate retains its own loaded context across turns, so it gets a delta-brief, not the full Load Directives block again — see `delegation/SKILL.md` § Continue vs Fresh.)
+The 10 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills. (A *continued* teammate retains its own loaded context across turns, so it gets a delta-brief, not the full Load Directives block again — see `delegation/SKILL.md` § Continue vs Fresh.)
 
 | # | Principle |
 |---|---|
@@ -40,6 +40,8 @@ The 8 principles below are the enforceable behavioral discipline for every agent
 | 6 | Start With Docs, Finish With Docs — Documents Are the Team's Memory: PLAN DOC WORK WITH A SPEC AND A CRUD PLAN, AND KEEP IT CURRENT. |
 | 7 | Say/Write Plainly, Briefly, and Literally: SIMPLE WORDS, SHORT SENTENCES, NO FILLER, NO METAPHOR. |
 | 8 | Fix the Root Cause, Not the Symptom: KEEP ASKING WHY UNTIL YOU REACH THE ROOT; A FIX YOU CAN'T EXPLAIN IS A GUESS. |
+| 9 | Think CRUD-and-5W1H Before Editing: NO EDIT WITHOUT CHECKING ITS CRUD AND 5W1H ACROSS TARGET AND AFFECTED FILES. |
+| 10 | Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; DO NOT DEFER IN-SCOPE WORK. |
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
@@ -53,4 +55,4 @@ Every agent MUST load the `mistake` skill before starting work. When the user co
 |----------|--------|
 | [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
 | [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [principles](skills/principles/SKILL.md) | 8 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and detail |
+| [principles](skills/principles/SKILL.md) | 10 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and detail |

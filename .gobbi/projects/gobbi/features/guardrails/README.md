@@ -44,6 +44,7 @@ Active. The behavioral floor (13 Iron Laws in the `principles` skill) and the mi
 |---|---|---|
 | 2026-05-26 | a10c82d6 | Feature directory created during the memory-system redesign and seeded with re-homed work-sprint artifacts |
 | 2026-05-30 | a30b7a6e | Principles clarity pass: removed Iron Law Index, literal rewrite of P6/P10/P11, added Principle 14 (plain literal language, all agent-authored text); decisions/ subdir created |
+| 2026-06-07 | b02c3111 | Added Principles 9 and 10 (Think CRUD-and-5W1H Before Editing; Finish In-Scope Work — Do Not Defer It); propagated 8→10 count across 5 live files; plans/ subdir created; 2 project backlogs staged (D7 reciprocal cross-refs, D8 README count drift) |
 
 ## Open items
 
