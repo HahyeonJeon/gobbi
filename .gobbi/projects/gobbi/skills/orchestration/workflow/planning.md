@@ -32,7 +32,7 @@ manager → spawns leader for next sub-step (dependency graph, agent assignment,
 ...
 ```
 
-Multiple leader spawns are normal. The full set of leader transcripts is preserved by MEMORIZATION as the audit trail for "what research informed each planning decision".
+Multiple leader spawns are normal. MEMORIZATION preserves the leader's record as the audit trail for "what research informed each planning decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **leader continuation** (one teammate carried across sub-steps — see [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh)), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage.
 
 ### Sub-step orchestration
 

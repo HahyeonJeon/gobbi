@@ -47,7 +47,7 @@ The manager uses one template per role. Templates live in [`templates/`](templat
 | Role | Template | Use when |
 |---|---|---|
 | `leader` | [`templates/leader.md`](templates/leader.md) | Ideation, Preparation, Research, Planning sub-phases. Single leader per dispatch. |
-| `executor` | [`templates/executor.md`](templates/executor.md) | Execution phase. One executor per task; tasks sequence (never parallelize implementation). |
+| `executor` | [`templates/executor.md`](templates/executor.md) | Execution phase. One executor per task by default (a continued executor may span ≤3 shared-subsystem tasks — see [§ Continue vs Fresh](#continue-vs-fresh)); tasks sequence (never parallelize implementation — continuation is sequential, not parallel). |
 | `evaluator` | [`templates/evaluator.md`](templates/evaluator.md) | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex). Each evaluator handles all 7 perspectives + Overall sequentially; per-system isolation provides the anti-groupthink signal. |
 | `assistant` | [`templates/assistant.md`](templates/assistant.md) | Narrow read-only support (lookups, references, codebase exploration). Can parallelize. |
 

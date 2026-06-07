@@ -145,7 +145,7 @@ Five roles. Each has a fixed behavioral spec at `.claude/agents/{role}.md` (syml
 |---|---|---|---|
 | **manager** | opus | Session chief — orchestrates the team, drives user discussion, makes decisions at every gate. Owns the user relationship exclusively. | Root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. |
 | **leader** | opus | PI / PM — research, ideation direction, preparation readiness, planning decomposition. Never implements code. | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. |
-| **executor** | opus | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task; tasks sequence (never parallelize implementation). |
+| **executor** | opus | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task by default (a continued executor may span ≤3 shared-subsystem tasks — `delegation/SKILL.md § Continue vs Fresh`); tasks sequence (never parallelize implementation — continuation is sequential, not parallel). |
 | **evaluator** | opus | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
 | **assistant** | sonnet | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; MEMORIZATION sub-phase. Can parallelize. |
 

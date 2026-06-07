@@ -103,7 +103,7 @@ Step 1 — Configuration (once per session)
 │   │                                                                │
 │   ▼                                                                │
 │  Step 5 — mini Execution Loop per Plan sub-step  (maxIter=5)       │
-│      Same 5-row loop per sub-step (fresh executor each time);      │
+│      Same 5-row loop per sub-step (fresh executor by default);     │
 │      sub-steps sequence as the mini-Plan ordered them.             │
 │      MEMORIZATION = Chat narrowed PASS path (§4).                  │
 │   │                                                                │
@@ -196,7 +196,7 @@ slice's worth of work.
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | Manager constructs the executor delegation prompt; in Chat, forced user-driven per §9 (override discuss.mode). | [discussion](../discussion/SKILL.md) | manager |
-| 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline (no cross-task subagent memory). Collect work artifact + verification evidence. | [execution.md](workflow/execution.md) | executor |
+| 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline (no cross-task subagent memory unless the executor is continued per `delegation/SKILL.md § Continue vs Fresh` — shared subsystem, under the saturation cap). Collect work artifact + verification evidence. | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [memorization.md](workflow/memorization.md) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics. Sub-step complete → next sub-step (or slice boundary if last). | — | manager |
@@ -304,8 +304,9 @@ Execution):
 - **Evaluation always runs.** `evaluate.mode: always` across all loops in Chat.
 - **MEMORIZATION runs every loop with the §4 narrowed PASS path.**
 - **Fresh subagent context per slice.** Every leader / executor / evaluator spawn pastes its
-  context inline — no cross-task subagent memory. The manager is the only durable cross-task
-  agent. Governance: `delegation/SKILL.md § Inline-Paste Rule` (the discipline) and Principle 1
+  context inline — no cross-task subagent memory unless the executor is continued per
+  `delegation/SKILL.md § Continue vs Fresh` (shared subsystem, under the saturation cap). The
+  manager is the only durable cross-task agent. Governance: `delegation/SKILL.md § Inline-Paste Rule` (the discipline) and Principle 1
   (the underlying behavioral law — "no action without thinking and studying it through first"; iter1's Principle
   4 citation was a wrong-number reference, corrected per §8 L-P1/L-C2/L-U1 of the Idea doc for
   this redesign).
@@ -504,9 +505,9 @@ state-transition contract for Chat Mode.
 | `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 narrowed PASS path runs; move to Step 5 |
 | `planning.state: InProgress` | EVALUATION → REVISE | `planning.state: InProgress` | re-enter DISCUSSION; iter++ |
 | `planning.state: InProgress` | iter == maxIter (5) + REVISE | `planning.state: Aborted` | manager escalates to user |
-| `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step |
+| `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step (default); may continue per `delegation/SKILL.md § Continue vs Fresh` |
 | `execution.state: InProgress` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 narrowed PASS path runs; write task-record |
-| `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor |
+| `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor by default, or continue per `delegation/SKILL.md § Continue vs Fresh` |
 | `execution.state: InProgress` | EVALUATION → REVISE | `execution.state: InProgress` | re-enter DISCUSSION for same sub-step; iter++ |
 | `execution.state: InProgress` | iter == maxIter (5) + REVISE | `execution.state: Aborted` | manager escalates to user |
 | `execution.state: Done` | task-record written | `taskRecord: written` | manager presents user review gate |

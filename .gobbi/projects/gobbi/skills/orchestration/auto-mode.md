@@ -128,7 +128,7 @@ Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs executor delegation prompt. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
-| 2 | `EXECUTION` | Spawn a fresh `executor` subagent. Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | [execution.md](workflow/execution.md) | executor |
+| 2 | `EXECUTION` | Spawn a fresh `executor` subagent (default); may continue the same executor teammate per the bounded rule — shared subsystem, under the saturation cap (`delegation/SKILL.md § Continue vs Fresh`). Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Full PASS path. | [memorization.md](workflow/memorization.md) | assistant |
 | 5 | `ITER / EXIT` | Task complete → next task; all tasks complete → advance to Step 6. | — | manager |
