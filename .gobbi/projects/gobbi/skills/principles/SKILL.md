@@ -167,4 +167,42 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ---
 
+## Principle 9 — Think CRUD-and-5W1H Before Editing: NO EDIT WITHOUT CHECKING ITS CRUD AND 5W1H ACROSS TARGET AND AFFECTED FILES.
+
+**Why:** Agents tend to edit the target file in isolation — they change what is in front of them and ignore the files that depend on it or must stay consistent with it. The edit looks done but the project is now inconsistent: a renamed symbol with stale callers, an updated doc whose mirror still says the old thing, a new field no reader handles. The fix is to think the whole edit before making it. Before touching a file, run two checklists over the target AND every file the change reaches: CRUD (Create / Read / Update / Delete) — what gets created, what to read for consistency, what to update, what to delete; and 5W1H (Who / What / When / Where / Why / How) — who depends on this, what exactly changes, when it takes effect, where else it must change, why it changes, how it propagates. This is edit-level blast-radius thinking. Principle 1 maps what the work will touch before you design; Principle 9 checks what this specific edit touches before you make it.
+
+**Practice:**
+- *List the affected files first:* before editing the target, find every file that depends on it or must stay consistent with it — callers, mirrors, tables, tests, docs. The affected set, not just the target, is the unit of the edit.
+- *Run CRUD over the whole set:* for the target and each affected file, name what to Create, what to Read for consistency, what to Update (down to the line), and what to Delete. A change that updates one file usually has to co-touch others.
+- *Run 5W1H over the edit:* Who depends on this, What exactly changes, When it takes effect, Where else it must change, Why it changes, How the change propagates. Answer all six before saving.
+- *Check consistency, not just the diff:* confirm the edit leaves no file contradicting another — no stale caller, no out-of-date mirror, no count or name that drifted.
+
+**Anti-pattern:**
+- Editing the target file without listing the files that depend on it or must stay consistent with it.
+- Updating one file and leaving its mirror, caller, or table stale because the change was never traced past the target.
+- Treating the diff as the whole change instead of checking the project is still consistent after it.
+- Skipping the CRUD or 5W1H pass because the edit "looks small," then shipping a drift the next reader hits.
+- Reasoning only about the file in front of you when the change has project-wide reach.
+
+---
+
+## Principle 10 — Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; DO NOT DEFER IN-SCOPE WORK.
+
+**Why:** Agents tend to leave part of a task's agreed scope as "future work" instead of finishing it. Deferring in-scope work leaves the project incomplete and stacks unfinished work that the next session inherits. So finish the whole agreed scope before calling a task done — every in-scope deliverable, not most of them. This is the lower bound of the scope contract, and it pairs with Principle 5: Principle 5 says do not go beyond the agreed scope; Principle 10 says do not fall short of it. Together they bracket the contract from both sides. If an in-scope item genuinely cannot be finished, stop and surface it to the user as a decision.
+
+**Practice:**
+- *Know the scope's lower bound:* the agreed scope is a floor as well as a ceiling — every in-scope item must be delivered, not just the easy ones.
+- *Finish before you call it done:* complete every deliverable the contract covers before reporting the task complete. A partial result reported as done is a false signal.
+- *Surface an in-scope blocker, don't bury it:* if an in-scope item genuinely cannot be finished, stop and raise it to the user as a decision — do not record it as "future work" and move on.
+- *Distinguish the two boundaries:* exceeding scope is a Principle 5 breach; falling short of it is a Principle 10 breach. Check the result against both.
+
+**Anti-pattern:**
+- Reporting a task done while part of its agreed scope is left as "future work."
+- Dropping a hard in-scope item and finishing only the easy ones.
+- Filing a backlog entry for in-scope work to avoid doing it.
+- Treating "I deferred it" as equivalent to "I finished it" when the deferred item was inside the contract.
+- Leaving an in-scope gap that the next session inherits.
+
+---
+
 This skill is the single source of behavioral discipline. Loading it explicitly gives an agent the rationale and detail behind any principle when context demands more than the principle summary in CLAUDE.md. Future work: a Red Flags table per principle, listing the named rationalizations from each principle in scannable tabular form.
