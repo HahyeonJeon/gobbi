@@ -18,9 +18,9 @@ Sub-document of the `orchestration` skill. Loaded whenever the manager is about 
 
 Detailed "how" instructions suppress a specialist agent's ability. Define the goal, the constraints, and what to avoid — then trust the specialist to find the best approach. Guardrails about "not to do" protect quality; prescriptive "how to do" limits it.
 
-> **Construct exactly what the subagent needs. Nothing is inherited.**
+> **Construct exactly what a FRESH subagent needs. A fresh spawn inherits nothing.**
 
-A fresh subagent has no exposure to the manager's session — no transcript, no chain of thought, no skills the manager loaded earlier. The manager builds the context bundle inline. The subagent never reads the manager's mind.
+A fresh subagent has no exposure to the manager's session — no transcript, no chain of thought, no skills the manager loaded earlier. The manager builds the context bundle inline. The subagent never reads the manager's mind. **Exception — continuation:** a *continued* teammate (re-addressed via `SendMessage`) already holds its own accumulated context from prior turns, so the manager sends a **delta-brief** instead of a full re-paste. See [§ Continue vs Fresh](#continue-vs-fresh) for when continuation is allowed and how the delta-brief is shaped.
 
 > **Inline paste, never `@path` for the primary spec.**
 
@@ -102,13 +102,53 @@ Mandatory in every delegation prompt, ordered top-to-bottom:
 
 **Why this order.** Principles set the discipline floor (what every agent must never do). Rules narrow that to the project's conventions. Skills give the role-and-domain procedure. Mistakes inject the specific past pitfalls the subagent must avoid in this domain. Loading in this order ensures the most-general discipline is established before the most-specific guidance, so the subagent cannot rationalize a domain skill into violating a principle.
 
-**No inheritance.** Even if the manager already loaded `principles` minutes earlier, every fresh subagent must load it again. There is no session inheritance.
+**No inheritance — on a FRESH spawn.** Even if the manager already loaded `principles` minutes earlier, every fresh subagent must load it again. There is no session inheritance. This holds for every first spawn. A **continuation** is the one exception: a continued teammate already loaded the full stack on its first turn and carries it forward, so a continuation turn sends a delta-brief, not the full Load Directives block again — see [§ Continue vs Fresh](#continue-vs-fresh).
 
 **MEMORIZATION hard gate.** When the delegated phase is MEMORIZATION (or includes a MEMORIZATION sub-phase), `memorization/SKILL.md` MUST appear in tier 3 (Skills). The memorization skill defines the memory-tier access matrix, staging rules, idempotency contract, and exit checklist that the sub-phase agent must follow. Omitting it produces an agent that cannot operate the sub-phase correctly. Per-role templates for `assistant`, `leader`, and `executor` include a placeholder for this entry; see the templates in [`templates/`](templates/).
 
 **Project-memory standard gate.** Any delegation that **writes or evaluates project memory** MUST load `memorization/rules.md` in tier 3 (Skills) alongside `memorization/SKILL.md`. `memorization/rules.md` is the naming / frontmatter / structure standard — the rules a memory file's name, frontmatter, and scope must obey; without it the standard is advisory-only and structural drift recurs. The `leader`, `executor`, and `assistant` templates carry the `memorization/rules.md` line right after their `memorization/SKILL.md` line; the `evaluator` template carries it in tier 3 for delegations that judge project-memory artifacts against the standard (the evaluator has no `memorization/SKILL.md` line).
 
 **Session-write path discipline.** When a subagent's task involves session writes (notes, staging files, project memory drafts), the delegation prompt must remind the subagent to follow the qualified write-path rule: use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. See [`git/SKILL.md` § Memory Access Matrix](../git/SKILL.md#memory-access-matrix) for the full qualified rule.
+
+---
+
+## Continue vs Fresh
+
+A subagent does not have to be fresh every time. The manager may **continue** the same agent across steps instead of re-spawning it — re-sending a small delta-brief to an agent that already holds the problem context. This cuts the redundant re-loading and re-reading a fresh spawn pays on every dispatch.
+
+**Mechanism — Claude Code Agent Teams.** A continued agent is a *teammate*: a persistent, independent Claude Code session re-addressed by name via `SendMessage`, with its own context preserved across messages. Agent Teams is experimental and off by default — the manager confirms `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (Claude Code v2.1.32+) before continuing. Continuation is **preferred-where-safe, with a fresh-spawn fallback**: if the flag is unset, or the teammate has died, the manager fresh-spawns with a full brief. Teammates cost more in general — token cost scales linearly with teammate count — so the token win holds **only** in the sequential single-persistent-teammate pattern, not in parallel fan-out. Teammates do NOT survive `/compact`, `/clear`, or resume: at any of those, the in-process teammate is gone and the manager must fresh-spawn and re-prime from durable session memory.
+
+> The deep spawn choreography and the teammate-aware session metadata live in [`orchestration/workflow/execution.md`](../orchestration/workflow/execution.md), [`orchestration/workflow/ideation.md`](../orchestration/workflow/ideation.md), and [`orchestration/SKILL.md`](../orchestration/SKILL.md). This section defines only the decision rule and the delta-brief.
+
+### Decision rule (role × transition)
+
+| Role × transition | Decision | Why |
+|---|---|---|
+| **leader** — Ideation Sub-step A→B→C→D→WORK (within one loop, team + session live) | **CONTINUE** (preferred; strongest, reliable benefit) | The same PI carries the framed problem, scope, and insights forward; re-deriving root-cause and re-reading `features/`/`mistakes/` each sub-step is pure waste. Reliable because it stays within one live loop. |
+| **leader** — Ideation→Preparation→Planning (across loops) | **CONTINUE (best-effort, under cap) while team + session stay live; DEGRADES to FRESH re-prime at the first `/compact`/`/clear`/resume** | The same problem understanding flows downstream, but a teammate does not survive compaction/resume, so cross-loop continuation cannot be promised as a single persistent leader. |
+| **executor** — task NN→NN+1, **shared subsystem**, under the saturation cap | **CONTINUE** | Avoids re-learning the subsystem each task. (F1 predicate below.) |
+| **executor** — task NN→NN+1, **disjoint subsystem OR cap reached** | **FRESH** (default) | Bounds context-rot; the fresh fallback is cheap because state is carried via files. |
+| **assistant** — MEMORIZATION and read-only support | **FRESH** | Mechanical template-stamping; continuation buys nothing. The assistant is a plain report-back subagent, never a teammate. |
+| **evaluator** — any reuse / share / teammate | **FORBIDDEN to continue, share, or be made a teammate** | Producer/evaluator separation + dual-system anti-groupthink independence is non-negotiable. A continued evaluator carries its own prior verdict → confirmation bias; a teammate-evaluator is reachable in the team mailbox → contamination. Evaluators stay fresh subagents kept OUT of the team. |
+
+### F1 — the executor continue predicate
+
+The executor row above turns on two operational tests. Both must hold to CONTINUE:
+
+- **Shared subsystem** — the next task's `files:`/feature scope OVERLAPS the current task's touched files, OR the two tasks are in the same feature directory. If neither holds, the subsystem is disjoint → FRESH.
+- **Saturation cap** — continue at most **3 consecutive tasks**, then force a fresh spawn even when the subsystem still matches, to bound context-rot. Break early — fresh-spawn before the cap — if the context budget is strained.
+
+### The delta-brief
+
+The **first** spawn of an agent loads the full Load Directives stack (principles → rules → skills → mistakes) plus the full brief. Each **continuation** turn carries a **delta-brief** instead — never a re-paste of the Load Directives block. A delta-brief contains only:
+
+1. **The next-step goal** — what this turn does.
+2. **New inputs** — the new prior-loop outputs or files this turn needs.
+3. **A re-anchor on anything that changed** — if a rule, a mistake, or the scope contract changed mid-session (e.g., a promotion, or a REVISE that moved the scope), name the changed file explicitly.
+4. **The re-stated scope boundary** — what is in and out of scope for this turn.
+5. **The re-stated status enum** — placed last (recency).
+
+Agent Teams validates this model: a teammate loads CLAUDE.md + skills fresh on its first turn and does NOT inherit the lead's conversation, so the accumulated context it already holds is exactly what a delta-brief builds on.
 
 ---
 
@@ -243,6 +283,7 @@ The manager must NOT produce delegation prompts that look like these. Each is a 
 - ❌ **Lazy load directives** — "Load any skills you need." The subagent guesses. Specify the exact list, in order.
 - ❌ **No status contract** — Prompt ends mid-instruction with no `## Report Format` section. The subagent produces a prose summary the manager has to interpret.
 - ❌ **Author transcript leaked to evaluator** — Evaluator receives the producer's chain of thought, breaking producer/evaluator separation (`evaluation/SKILL.md`). Evaluators get a constructed context bundle only.
+- ❌ **Continued / shared / teammate evaluator** — Reusing an evaluator across iterations, sharing one evaluator between systems, or adding an evaluator to the Agent Team. A continued evaluator carries its own prior verdict (confirmation bias); a teammate-evaluator is reachable in the team mailbox (contamination). Evaluators are always fresh subagents, kept OUT of the team — see [§ Continue vs Fresh](#continue-vs-fresh).
 - ❌ **Parallel implementation** — Spawning two executors against the same scope or against overlapping files. Implementation is sequential; only research, investigation, and evaluation parallelize.
 - ❌ **Per-perspective evaluator spawning** — Spawning one evaluator agent per perspective (8 agents for 7 perspectives + Overall). The canonical topology is 2 agents in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially per the 4-stage procedure in `evaluation/SKILL.md`. Perspective isolation is maintained within the agent's own context discipline, not by spawning separate agents per perspective.
 
