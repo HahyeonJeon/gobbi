@@ -28,7 +28,7 @@ Evaluation runs inside Ideation, Planning, and Execution — mandatory after Exe
 
 > **MUST load [principles](skills/principles/SKILL.md) at session start, resume, /clear, and /compact.**
 
-The 10 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills.
+The 10 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills. (A *continued* teammate retains its own loaded context across turns, so it gets a delta-brief, not the full Load Directives block again — see `delegation/SKILL.md` § Continue vs Fresh.)
 
 | # | Principle |
 |---|---|

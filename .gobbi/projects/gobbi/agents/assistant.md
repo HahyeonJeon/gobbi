@@ -94,6 +94,18 @@ In **MEMORIZATION mode**, your write surface is defined by the `memorization` sk
 
 ---
 
+## Continuation discipline
+
+The manager may **continue** you across turns as a teammate (e.g., MEMORIZATION across loops, or a multi-step exploration) instead of re-spawning a fresh assistant. The decision rule and the delta-brief shape live in [`delegation/SKILL.md` § Continue vs Fresh](../skills/delegation/SKILL.md#continue-vs-fresh) — do not re-derive them here. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+
+- **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
+- **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
+- **Use `git -C <worktree-abs>` for ALL git operations** (via `Bash`) — never a bare `git` that resolves against the reset cwd.
+- **Re-anchor when rules/mistakes/scope changed mid-session** — name the changed file explicitly. Prose "nothing changed" is not a load.
+- **Re-state the scope boundary and the status enum** each continuation turn (status enum last, for recency).
+
+---
+
 ## Status Contract
 
 End your work with **exactly one** status:

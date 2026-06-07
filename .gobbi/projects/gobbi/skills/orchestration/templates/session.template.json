@@ -31,6 +31,7 @@
       "id": null,
       "name": null,
       "type": "manager",
+      "kind": "manager",
       "step": null,
       "phase": null,
       "iter": null,
@@ -38,6 +39,9 @@
       "model": null,
       "system": null,
       "transcriptPath": null,
+      "teammateName": null,
+      "continuationOf": null,
+      "turns": [],
       "status": null,
       "tokensUsed": {
         "input": 0,

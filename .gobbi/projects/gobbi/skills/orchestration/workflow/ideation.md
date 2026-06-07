@@ -32,7 +32,17 @@ manager → spawns leader again for Sub-step B (Lock Scope), then Sub-step C (Re
 ...
 ```
 
-Multiple leader spawns are normal. The full set of leader transcripts is preserved by MEMORIZATION as the audit trail for "what research informed each decision".
+Multiple leader spawns are normal. MEMORIZATION preserves the leader's record as the audit trail for "what research informed each decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **leader continuation** (one teammate carried across sub-steps — see below), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage.
+
+### Leader continuation across sub-steps (Agent Teams)
+
+The leader spawn pattern above describes the **fresh-spawn fallback** — the manager re-spawns the leader for each sub-step. Where Agent Teams is enabled, the manager instead **continues** the same leader teammate across Sub-steps A→B→C→D→WORK, which is the strongest in-loop token saver: the teammate keeps the framed problem, scope, and insights in-context, so it does not re-derive root-cause or re-read `features/`/`mistakes/` each sub-step.
+
+The decision rule, the delta-brief shape, and the evaluator-FORBIDDEN wall live in [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh); this section states only the Ideation-specific choreography.
+
+- **In-loop (A→B→C→D→WORK), team + session live → CONTINUE.** The first sub-step spawns the leader with the full Load Directives stack; each later sub-step sends a delta-brief (next sub-step's goal + new inputs + re-stated scope + status), not a full re-paste.
+- **Cross-loop (Ideation→Preparation→Planning) → CONTINUE best-effort, live-only.** A single leader teammate may carry the same problem understanding downstream **only while the team + session stay live**. It DEGRADES to a fresh, re-primed teammate at the first `/compact`, `/clear`, or resume — an in-process teammate does not survive any of those. Cross-loop continuation is therefore best-effort, never a promised single persistent leader spanning all loops.
+- **Fresh-spawn fallback.** If Agent Teams is off (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` unset) or the teammate has died, the manager fresh-spawns with a full brief and re-primes from durable session memory (`rawdata/`, `staging/`, `state.json`). Continuation is preferred-where-safe, never a hard dependency.
 
 ### Sub-step orchestration
 

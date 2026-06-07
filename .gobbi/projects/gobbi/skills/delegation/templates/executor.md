@@ -57,6 +57,23 @@ items inline; cite paths for longer reference material:
 here" improvements are forbidden. Note them in your final response; do not
 implement them.
 
+## Continuation note (continued teammate only — omit on a fresh spawn)
+
+<<Fill this block ONLY when this is a delta-brief to a CONTINUED executor
+teammate; delete the whole section on a fresh spawn. The decision rule, F1
+predicate, saturation cap, and delta-brief shape live in `delegation/SKILL.md`
+§ Continue vs Fresh — do not re-derive here. This block restates the
+write-safety discipline (see `executor.md` § Continuation discipline) for THIS
+turn, because the teammate's shell cwd resets across turns and a re-`cd` does
+NOT persist across tool boundaries:>>
+
+- Worktree (absolute): `<<worktree-abs-path>>`
+- Re-`cd` to `<<worktree-abs-path>>` as your FIRST action this turn (a "cwd is still X" note is not an action).
+- Use the ABSOLUTE worktree path on EVERY `Write`/`Edit` — never a relative path (a re-`cd` ALONE is insufficient; it strays to the main tree).
+- Use `git -C <<worktree-abs-path>>` for ALL git ops; verify the branch before committing.
+- Re-anchor on anything changed mid-session — name the changed file: <<changed rule/mistake/scope file, or "none">>.
+- Re-state the scope boundary + the status enum each turn (status enum last).
+
 ## Your Job
 
 1. Run the Study → Plan → Execute → Verify → Memorize lifecycle from `executor.md`.

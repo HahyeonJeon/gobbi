@@ -24,13 +24,28 @@ For each task in the loop's `artifacts/`, the manager:
 
 ## WORK Phase (delegated to `executor`)
 
-**Manager's job**: spawn a **fresh** `executor` agent per task — never reuse an executor across tasks.
+**Manager's job**: spawn a `executor` agent for the task. The **default is a fresh executor per task** — fresh context is what makes scope discipline reliable. **Continuation is the one bounded exception** (see [Executor continuation](#executor-continuation-shared-subsystem-under-cap) below): when the next task shares the current task's subsystem and the chain is under the saturation cap, the manager may continue the same executor teammate instead of re-spawning. Default stays fresh; continuation is opt-in where it is safe and saves re-reading.
 
 Manager-side responsibilities:
 - Ensure the executor commits to the worktree (per `git` skill), not pushes
 - Collect the work artifact (code/doc diff + verification evidence)
 - Stage transcripts and any executor notes in `execution/rawdata/`
 - On re-entry, pass prior evaluator findings as additional delegation prompt input
+
+### Executor continuation (shared subsystem, under cap)
+
+The decision rule, the F1 predicate, the delta-brief shape, and the evaluator-FORBIDDEN wall live in [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh); this section states only the Execution-specific choreography. Continuation needs Agent Teams enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, v2.1.32+); it is preferred-where-safe with a fresh-spawn fallback, never a hard dependency.
+
+The manager **continues the same executor teammate from task NN to NN+1 iff BOTH hold**:
+
+- **Shared subsystem** — task NN+1's `files:`/feature scope OVERLAPS the files task NN touched, OR the two tasks are in the same feature directory. If neither holds, the subsystem is disjoint → fresh-spawn.
+- **Under the saturation cap** — the chain has continued fewer than **3 consecutive tasks**. At 3 consecutive continued tasks the manager forces a fresh spawn even when the subsystem still matches, to bound context-rot. Break early — fresh-spawn before the cap — if the context budget is strained.
+
+When either test fails, the manager **fresh-spawns** the next executor with a full brief (the default path). When both hold, the manager sends a delta-brief (next task's goal + new inputs + changed-rule/mistake/scope re-anchor + re-stated scope + status) instead of a full re-paste.
+
+**Continuation write-discipline.** Each continuation turn that writes MUST use the absolute worktree path on every Write/Edit and `git -C <worktree-abs>` for all git ops — a re-`cd` does not persist across tool boundaries. After each continuation turn that writes, the manager runs a post-turn tree-check to confirm the write landed on the worktree branch, not the main tree. Full discipline: [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh) and the executor agent spec.
+
+**Compaction kills the teammate.** After `/compact`, `/clear`, or resume, the in-process teammate is gone. The manager MUST spawn a FRESH executor and re-prime it from durable session memory (the task's `artifacts/`, prior `rawdata/`, `state.json`) — never message a dead teammate.
 
 ### Executor lifecycle
 
