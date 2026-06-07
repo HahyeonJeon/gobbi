@@ -265,6 +265,34 @@ The manager owns no loop directly except Configuration; the manager coordinates.
 
 ---
 
+## Team roster + mailbox + lifecycle (Agent Teams)
+
+Where Agent Teams is enabled, the manager may **continue** the same leader or executor as a persistent teammate instead of always spawning fresh. The decision rule and the delta-brief live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh); the teammate-aware session-metadata model lives in [§ Teammate-aware metadata](#teammate-aware-metadata-agent-teams). This section states the **roster, coordination, and lifecycle policy** that governs the team.
+
+**Roster split.** The five agent types divide into two classes:
+
+| Class | Members | Property |
+|---|---|---|
+| **Teammates** (in the Agent Team, continuation-capable) | `leader`, `executor` | A persistent teammate the manager may continue via `SendMessage`. |
+| **Subagents** (plain `Task`/`Agent`, report-back, fresh) | `evaluator`, `assistant` | Always a fresh, report-back subagent. The `evaluator` is **FORBIDDEN** as a teammate (producer/evaluator separation + dual-system independence). The `assistant` is mechanical — continuation buys it nothing. |
+
+The **manager is the team lead**. Only the manager spawns; teammates cannot spawn teammates.
+
+**Mailbox / coordination policy.** Non-evaluator teammates (leader, executor) do **NOT** message each other directly. ALL coordination flows through the manager — this preserves gobbi's manager-centralized judgment (the manager owns judgment, scope, and verification; see § Manager ownership). A shared task list MAY exist, but it is **manager-owned**; teammate cross-talk is disabled by policy. The evaluator is kept OUT of the team mailbox entirely — a teammate-reachable evaluator would be contaminable, breaking anti-groupthink.
+
+**Lifecycle.** One team at a time. The manager **cleans up the team before starting a new one**. No nested teams — a teammate cannot spawn a teammate.
+
+### Two sanctioned use-modes
+
+| Mode | Shape | Cost | When |
+|---|---|---|---|
+| **1 — Sequential single long-lived teammate** | One persistent teammate per role-chain, continued turn by turn | The token-saving default | The default for the leader chain (Ideation sub-steps) and the executor chain (shared subsystem, under cap). The token win holds ONLY here. |
+| **2 — Bounded parallel teammate fan-out (3–5)** | Several teammates exploring in parallel | Explicitly higher — cost scales linearly with teammate count | Only where parallel adversarial value is real (e.g., research breadth). Not the default; the higher cost is accepted knowingly. |
+
+In-process teammates do NOT survive `/compact`, `/clear`, or resume. At any of those the manager fresh-spawns and re-primes from durable session memory — never messages a dead teammate.
+
+---
+
 ## Workflow Metadata
 
 The manager records session-level operation metadata in a per-session `session.json`: the session frame
