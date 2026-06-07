@@ -64,8 +64,10 @@ All paths relative to the worktree root. Edit the canonical real file; the `.cla
 
 ```
 | 9 | Think CRUD-and-5W1H Before Editing: NO EDIT WITHOUT CHECKING ITS CRUD AND 5W1H ACROSS TARGET AND AFFECTED FILES. |
-| 10 | Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; NEVER SILENTLY DEFER IN-SCOPE WORK. |
+| 10 | Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; DO NOT DEFER IN-SCOPE WORK. |
 ```
+
+(Update 2026-06-07: the P10 one-liner above was revised post-lock per user revision — `NEVER SILENTLY DEFER IN-SCOPE WORK.` → `DO NOT DEFER IN-SCOPE WORK.` This block now shows the shipped wording.)
 
 **P9 / P10 section bodies:** copy verbatim from the design artifact §2 (P9 full markdown block, lines 38-55) and §3 (P10 full markdown block, lines 75-92). Do not paraphrase, re-word, or re-title.
 

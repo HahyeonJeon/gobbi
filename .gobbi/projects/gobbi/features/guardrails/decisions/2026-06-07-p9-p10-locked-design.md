@@ -17,7 +17,7 @@ decision_status: accepted
 
 ## Context
 
-The principles skill currently defines 8 principles. The user identified two missing behavioral disciplines: (1) agents edit target files without checking dependency and consistency with affected files (the blast-radius problem); (2) agents silently defer in-scope work, calling tasks done while leaving agreed deliverables unfinished. Adding Principles 9 and 10 addresses these failure modes.
+The principles skill currently defines 8 principles. The user identified two missing behavioral disciplines: (1) agents edit target files without checking dependency and consistency with affected files (the blast-radius problem); (2) agents defer in-scope work, calling tasks done while leaving agreed deliverables unfinished. Adding Principles 9 and 10 addresses these failure modes.
 
 Eight decisions were made during Ideation. Six are locked (D1–D6). Two are deferred to backlog (D7, D8).
 
@@ -37,7 +37,7 @@ Eight decisions were made during Ideation. Six are locked (D1–D6). Two are def
 
 ### D3 — P9 sits beside P6 with a one-line forward cross-reference; P6 is not rewritten this session
 
-**Decided:** P9 sits beside P6. P9 carries a forward cross-reference to P6 ("For documentation work, Principle 6 adds the spec and the start-with-docs / finish-with-docs discipline on top of this"). P6 is not modified this session. Reciprocal back-pointer from P6 to P9 is deferred (D7).
+**Decided:** P9 sits beside P6. P9 carries a forward cross-reference to P6 ("For documentation work, Principle 6 adds the spec and the start-with-docs / finish-with-docs discipline on top of this"). P6 is not modified this session. Reciprocal back-pointer from P6 to P9 is deferred (D7). (Update 2026-06-07: the user later revised P9 to remove the forward cross-ref to P6 entirely — P9 as shipped carries no P6 reference. This decision records the original lock; the cross-ref was removed per user revision.)
 
 **Rationale:** P6 is doc-specific CRUD-think; P9 generalizes the thinking pattern to all edits (code included). The 14→8 consolidation deliberately absorbed old P13 into P6 (`2026-06-05-principles-redesign-14-to-8.md:57`). Absorbing P6 into P9 would undo that merge and rewrite P6 — out of scope. Mistake `design-literal-retire-instruction-without-replacement.md` confirms: do not retire a live facet without a verified replacement.
 
@@ -51,7 +51,7 @@ Eight decisions were made during Ideation. Six are locked (D1–D6). Two are def
 
 **Decided:** P10 is framed as the floor of the scope contract. P5 = do not go BEYOND scope (ceiling). P10 = do not fall SHORT of it (floor). P10 explicitly states this pairing. Legitimately out-of-scope work still routes to backlog per P5 — not a P10 violation.
 
-**Rationale:** The project uses backlogs legitimately and extensively (e.g., `principles-external-renumber-reword-sweep.md`). P10 must not contradict P5's sanctioned follow-up practice. The seam is the word "in-scope": P10 forbids silent deferral of items inside the agreed contract, not the filing of backlogs for genuinely out-of-scope work.
+**Rationale:** The project uses backlogs legitimately and extensively (e.g., `principles-external-renumber-reword-sweep.md`). P10 must not contradict P5's sanctioned follow-up practice. The seam is the word "in-scope": P10 forbids deferral of items inside the agreed contract, not the filing of backlogs for genuinely out-of-scope work.
 
 ### D6 — P10 title: "Finish In-Scope Work — Do Not Defer It" (matched recommended)
 
