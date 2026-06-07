@@ -39,6 +39,7 @@ Active. The 5-role agent roster (`agents/*.md`) and the `delegation` skill (per-
 - `decisions/` — locked agents/delegation design decisions
 - `design/` — agents-scope design topics
 - `discussions/` — substantive AskUserQuestion topics scoped to agents
+- `plans/` — session execution plans (one file per session, date-prefixed)
 - `references/` — external prior art touching delegation
 - `scenarios/` — situations the agents/delegation contract must handle
 
@@ -51,6 +52,7 @@ Active. The 5-role agent roster (`agents/*.md`) and the `delegation` skill (per-
 
 | Date | Session | What |
 |---|---|---|
+| 2026-06-07 | a4e3b54d | Subagent-continuation redesign (T1–T4 + sweep). 6 commits, 14 files. Dual-system PASS. Added: design, plan, 2 decisions, 4 discussions, 3 scenarios, checklist, 6 references, 2 backlogs. |
 | 2026-06-06 | 06668274 | 2 decisions promoted (session metadata recording + scripts packaging); 1 backlog promoted (step1-row4 stale claim) |
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
 
