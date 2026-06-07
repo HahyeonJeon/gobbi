@@ -293,7 +293,7 @@ carries its full per-turn history:
 |---|---|
 | `workflow.{step}` | Per step (same keys as `state.json` / `settings.json`). Configuration carries `startedAt` / `finishedAt` only; steps 2-6 add `iter` (final loop count) + `verdict` (`pass` \| `fail` \| `skipped`). |
 | `workflow.chat.tasks[]` | <ul><li>Chat sessions only (`settings.mode == "chat"`; empty for Auto).</li><li>One entry per task slice: `taskNo`, `slug`, `startedAt`, `finishedAt`.</li><li>Per-loop sub-records `ideation` / `preparation` / `planning` / `execution` — same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as `workflow.{step}`.</li><li>`taskRecord: { path, writtenAt }`.</li><li>`preparation` defaults to `state: "Skipped"`.</li><li>Present in both `state.json` (the live state-machine projection, R3) and `session.json` (archives the final iter + verdict per slice, R2).</li><li>Both `templates/state.template.json` and `templates/session.template.json` seed `workflow.chat: { tasks: [] }`; Auto sessions ship the same templates and leave the array empty.</li></ul> |
-| `agents[]` | <ul><li>Flat array, one entry per spawn, **manager as `agents[0]`** (template ships the manager seed, `tokensUsed` zeroed).</li><li>Identity: `id` (short `agentId`; manager = own session id), `name`, `type` (`manager` \| `leader` \| `executor` \| `evaluator` \| `assistant`), `model`, `system`, `transcriptPath` (THIS agent's transcript).</li><li>Routing: `step`, `phase` (`null` for the manager entry), `iter` (`null` for Configuration + manager), `sub_step` (`null` if single).</li><li>Lifecycle: `status` (`ok` \| `failed`), `startedAt`, `finishedAt`.</li></ul> |
+| `agents[]` | <ul><li>Flat array, one entry per spawn, **manager as `agents[0]`** (template ships the manager seed, `tokensUsed` zeroed).</li><li>Identity: `id` (short `agentId`; manager = own session id), `name`, `type` (`manager` \| `leader` \| `executor` \| `evaluator` \| `assistant`) = the ROLE, `kind` (`manager` \| `subagent` \| `teammate`) = the SPAWN MECHANISM, `model`, `system`, `transcriptPath` (THIS agent's transcript), `teammateName` (the Agent-Teams `members[].name`; `null` for a plain subagent).</li><li>Routing: `step`, `phase` (`null` for the manager entry), `iter` (`null` for Configuration + manager), `sub_step` (`null` if single). For a CONTINUED agent (multiple turns under one `id`), these top-level routing fields hold the LATEST turn; the full per-turn history lives in `turns[]`.</li><li>Continuation: `continuationOf` (`id` of the predecessor entry this re-primed agent continues, e.g. after `/compact` killed the in-process teammate; `null` if not a continuation), `turns[]` (one object per continuation turn: `{ step, phase, iter, sub_step, tokensUsed, startedAt, finishedAt }`) so a continued agent's per-turn routing is preserved instead of clobbered by the upsert-by-`id`.</li><li>Lifecycle: `status` (`ok` \| `failed`), `startedAt`, `finishedAt`.</li><li>Back-compat: `kind` / `teammateName` / `continuationOf` / `turns` are additive and optional — an entry written before this schema (or by the unmodified hook) omits them; readers treat absent `kind` as `subagent`, absent `turns` as `[]`, absent `continuationOf` as `null`.</li></ul> |
 | `agents[].tokensUsed` | `{input, output, cacheRead, cacheCreation, total}` — **cumulative** across ALL of this agent's turns, from THIS agent's own transcript. `total = input + output + cacheRead + cacheCreation`. |
 | `usage` | `usage.sessionTotal` = sum of every `agents[].tokensUsed.total`; `usage.computedAt` = ISO timestamp of the last rollup. |
 
@@ -305,11 +305,61 @@ carries its full per-turn history:
 | Worktree creation | `git.branch` + `git.worktreePath`. |
 | PR opened | `git.pr` (stays `null` until then — including while a PR is deferred for missing `gh`). |
 | Each step transition / loop close / step exit | `workflow.{step}.startedAt` / `finishedAt`; `iter` (steps 2-6); `verdict` (steps 2-6). For Chat: the matching `workflow.chat.tasks[]` sub-records. |
-| Each subagent return (immediate) | Enumerate the just-returned spawn from the parent transcript by `tool_use_id`; sum its `tokensUsed` from its own transcript; upsert the matching `agents[]` entry by `id`. |
-| MEMORIZATION (per iter) + Wrap-up (bulk reconcile, idempotent safety net) | Re-enumerate all spawns; re-sum each agent's own transcript; refresh `agents[0]` (manager) from the main transcript; upsert every entry by `id` (last write wins); recompute `usage.sessionTotal` + stamp `usage.computedAt`. |
+| Each subagent return (immediate) | Enumerate the just-returned spawn from the parent transcript by `tool_use_id`; sum its `tokensUsed` from its own transcript; upsert the matching `agents[]` entry by `id`. This is the `Task`/`Agent`-hook path — it does NOT fire for a teammate turn (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)). |
+| Each continuation turn (manager-recorded) | A continued agent (same `id`, re-primed) does NOT get its prior routing overwritten: append a `turns[]` record (`step`/`phase`/`iter`/`sub_step` + that turn's `tokensUsed`/timestamps), set the top-level routing to the latest turn, and set `continuationOf` on a re-primed entry. The plain upsert-by-`id` alone would clobber per-turn routing — see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams). |
+| MEMORIZATION (per iter) + Wrap-up (bulk reconcile, idempotent safety net) | Re-enumerate all spawns; re-sum each agent's own transcript; refresh `agents[0]` (manager) from the main transcript; upsert every entry by `id` (last write wins); recompute `usage.sessionTotal` + stamp `usage.computedAt`. The parent-transcript enumeration covers only `Task`/`Agent` subagents — a teammate session is reconciled separately from its OWN transcript (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)). |
 | Session end | `finishedAt` (top-level). |
 
 Packaged as composable scripts in [`scripts/`](scripts/):
 
 - [`agent-token-usage.sh`](scripts/agent-token-usage.sh): cumulative `tokensUsed` for one transcript.
-- [`reconcile-session-metadata.sh`](scripts/reconcile-session-metadata.sh): bulk reconcile — enumerate → per-agent sum → manager sum → upsert `agents[]` → recompute `usage` (atomic, under `flock`); idempotent. Run at MEMORIZATION + Wrap-up.
+- [`reconcile-session-metadata.sh`](scripts/reconcile-session-metadata.sh): bulk reconcile — enumerate → per-agent sum → manager sum → upsert `agents[]` → recompute `usage` (atomic, under `flock`); idempotent. Run at MEMORIZATION + Wrap-up. This script reads ONLY the parent transcript's `subagents/` directory — it does NOT see teammate sessions (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)).
+
+### Teammate-aware metadata (Agent Teams)
+
+The continuation design (`delegation/SKILL.md` § Continue vs Fresh) lets the manager continue the same
+leader / executor as an **Agent-Teams teammate** instead of always spawning fresh. A teammate is NOT a plain
+`Task`/`Agent` subagent: it is a **separate, persistent Claude Code session** addressed by name via
+`SendMessage`. That difference breaks three assumptions the rollup above is built on, so the metadata model
+MUST be teammate-aware. Without it, a continued teammate chain's turns and tokens are invisible — the audit
+trail is incomplete and the **F4** cost gate measures the wrong baseline.
+
+**Discovery — find teammates via the team config, not the spawn list.** The parent transcript's `Task`/`Agent`
+spawn list does NOT enumerate teammate turns. The manager finds the teammates that participated by reading
+the team config `members` array at `~/.claude/teams/{team-name}/config.json` — each member carries
+`name` / `agentId` / `agentType`. That `agentId` is the key for the teammate's `agents[]` entry; `name` is
+stored as `teammateName`.
+
+**Transcript ownership / location — read from the teammate's OWN session.** Each teammate has its own session
+transcript. It is NOT a file under the parent's `${main_transcript%.jsonl}/subagents/` directory (that
+directory holds only `Task`/`Agent` sidechain transcripts, `agent-<agentId>.jsonl`). A teammate's turns and
+`tokensUsed` are read from the teammate's own session transcript, resolved from its `agentId` via the team
+config / the teammate session's `transcriptPath`. Store that path in the entry's `transcriptPath`.
+
+**Token accounting — the rollup MUST include teammate sessions.** `usage.sessionTotal` and the F4 measurement
+sum `agents[].tokensUsed.total` across ALL entries, including teammate entries reconciled from their own
+sessions. A rollup that counts only the parent `session.json.agents[]` `Task`/`Agent` sums is INVALID — a
+continued teammate chain's tokens would be missing, and continuation could show a false cost win.
+
+**Relation to the `Task`/`Agent` hook.** `.claude/hooks/post-tool-use-agents.sh` fires on `Task|Agent` tool
+results and upserts `agents[]` by `id` (upsert block ~lines 222–235, last-write-wins). A teammate continuation
+is NOT a `Task`/`Agent` tool result in the parent transcript, so the hook does NOT capture it. Two consequences:
+
+- **Teammate turns are captured by the manager, not the hook.** For each teammate turn the manager appends a
+  `turns[]` record on that teammate's `agents[]` entry (keyed by `agentId`) and the Wrap-up reconcile re-sums
+  `tokensUsed` from the teammate's own session transcript discovered via the `members` array.
+- **The upsert-by-`id` would clobber per-turn routing.** Even for a `Task`/`Agent` continuation that reuses one
+  `id`, the hook's last-write-wins upsert overwrites the prior turn's `step`/`phase`/`iter`/`sub_step`. The
+  `turns[]` sub-array + `continuationOf` pointer preserve per-turn routing instead of collapsing N turns into
+  one lossy entry. `continuationOf` links a re-primed entry to its predecessor when a new `id` is issued.
+
+**Resume / rewind non-survival.** In-process teammates are NOT restored by `/resume` or `/rewind`. A continued
+teammate chain therefore cannot promise resume-survival: after `/compact`, `/clear`, or resume, the manager
+spawns a FRESH agent re-primed from durable session memory and records it as a new entry with `continuationOf`
+pointing at the dead predecessor — never as a silent re-use of the gone teammate.
+
+**F4 cost-measurement criterion (teammate-aware).** A continued-agent run MUST show lower cumulative
+re-read / token cost than the equivalent fresh-spawn baseline, measured via a `tokensUsed` rollup that
+**includes teammate-session token usage**. Because a teammate is a separate session whose tokens are NOT in
+the parent `subagents/` rollup, an F4 comparison that omits teammate sessions measures the wrong thing and can
+hand a false win to a chain that actually costs more.
