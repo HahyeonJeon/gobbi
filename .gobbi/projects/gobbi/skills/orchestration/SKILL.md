@@ -34,7 +34,7 @@ The manager MUST NOT perform Ideation, Planning, Execution, or Evaluation direct
 
 ## Agent Teams
 
-Where Agent Teams is enabled, the manager may **continue** the same leader, executor, or assistant as a persistent teammate instead of always spawning fresh. The decision rule and the delta-brief live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh); the teammate-aware session-metadata model lives in [§ Teammate-aware metadata](#teammate-aware-metadata-agent-teams). This section states the **roster, coordination, and lifecycle policy** that governs the team.
+Where Agent Teams is enabled, the manager may **continue** the same leader, executor, or assistant as a persistent teammate instead of always spawning fresh. This section is a tight summary; full setup, delegation, and management live in [agent-teams.md](agent-teams.md). The decision rule and the delta-brief live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh); the teammate-aware session-metadata model lives in [§ Teammate-aware metadata](#teammate-aware-metadata-agent-teams).
 
 **Roster split.** The five agent types divide into two classes:
 
@@ -45,18 +45,9 @@ Where Agent Teams is enabled, the manager may **continue** the same leader, exec
 
 The **manager is the team lead**. Only the manager spawns; teammates cannot spawn teammates.
 
-**Mailbox / coordination policy.** Teammates (leader, executor, assistant) do **NOT** message each other directly. ALL coordination flows through the manager — this preserves gobbi's manager-centralized judgment (the manager owns judgment, scope, and verification; see § Manager ownership). A shared task list MAY exist, but it is **manager-owned**; teammate cross-talk is disabled by policy. The evaluator is kept OUT of the team mailbox entirely — a teammate-reachable evaluator would be contaminable, breaking anti-groupthink.
+**Coordination + lifecycle (one line).** ALL coordination flows through the manager via a manager-owned shared task list (no teammate cross-talk); one team at a time, cleaned up before starting a new one; teammates do NOT survive `/compact`/`/clear`/`/resume`/`/rewind` → fresh-spawn and re-prime.
 
-**Lifecycle.** One team at a time. The manager **cleans up the team before starting a new one**. No nested teams — a teammate cannot spawn a teammate.
-
-### Two sanctioned use-modes
-
-| Mode | Shape | Cost | When |
-|---|---|---|---|
-| **1 — Sequential single long-lived teammate** | One persistent teammate per role-chain, continued turn by turn | The token-saving default | The default for the leader chain (Ideation sub-steps), the executor chain (shared subsystem, under cap), and the assistant chain (e.g., MEMORIZATION across loops). The token win holds ONLY here. |
-| **2 — Bounded parallel teammate fan-out (3–5)** | Several teammates exploring in parallel | Explicitly higher — cost scales linearly with teammate count | Only where parallel adversarial value is real (e.g., research breadth). Not the default; the higher cost is accepted knowingly. |
-
-In-process teammates do NOT survive `/compact`, `/clear`, or resume. At any of those the manager fresh-spawns and re-primes from durable session memory — never messages a dead teammate.
+Full setup, delegation, and management — including the two sanctioned use-modes (sequential single teammate vs bounded parallel fan-out) — are in [agent-teams.md](agent-teams.md).
 
 ---
 
