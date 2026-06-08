@@ -33,6 +33,7 @@ die()  { log "$*"; exit "${2:-2}"; }
 usage() {
     cat >&2 <<'EOF'
 usage: reconcile-session-metadata.sh [--codex-stdout <f>] [--codex-rollout <f>] \
+                                     [--codex-total <N>] \
                                      <session.json> <main-transcript>
   Reconciles agents[].tokensUsed + usage from the live transcripts. Idempotent.
   Re-keys any toolu_-prefixed agents[] entry to its real agentId (manual backfill).
@@ -40,7 +41,11 @@ usage: reconcile-session-metadata.sh [--codex-stdout <f>] [--codex-rollout <f>] 
                         line (commas stripped) into usage.codex.total.
   --codex-rollout <f> : a codex rollout-*.jsonl; fallback source — uses the LAST
                         token_count event's payload.info.total_token_usage.total_tokens.
-  When both are given, --codex-stdout wins; rollout is the fallback.
+  --codex-total <N>   : a precomputed codex total (e.g. SessionEnd summed several
+                        rollouts); used directly as usage.codex.total.
+  When several are given, precedence is: --codex-stdout > --codex-total > --codex-rollout.
+  CRITICAL: when NO codex source is supplied, usage.codex.* is PRESERVED unchanged
+  (never overwritten with 0); grandTotal recomputes from the preserved value.
 EOF
 }
 
@@ -48,11 +53,13 @@ EOF
 
 codex_stdout=""
 codex_rollout=""
+codex_total_arg=""
 positional=()
 while [ "$#" -gt 0 ]; do
     case "$1" in
         --codex-stdout)  codex_stdout="${2:-}"; shift 2 || die "missing value for --codex-stdout" ;;
         --codex-rollout) codex_rollout="${2:-}"; shift 2 || die "missing value for --codex-rollout" ;;
+        --codex-total)   codex_total_arg="${2:-}"; shift 2 || die "missing value for --codex-total" ;;
         --) shift; while [ "$#" -gt 0 ]; do positional+=("$1"); shift; done ;;
         -*) usage; die "unknown option: $1" ;;
         *)  positional+=("$1"); shift ;;
@@ -151,11 +158,20 @@ rekey_map="$(jq -rc -s '
 # 3) Manager (agents[0]) tokensUsed from the main transcript (--main).
 mgr_tok="$("$unit" --main "$main_transcript" 2>/dev/null)" || die "manager sum failed" 3
 
-# 3b) Codex token capture. Primary: a `codex exec` stdout capture containing a
-#     `tokens used\n<N>` line (N may carry thousands separators). Fallback: the
-#     LAST token_count event in a codex rollout-*.jsonl
-#     (.payload.info.total_token_usage.total_tokens).
+# 3b) Codex token capture. Precedence: --codex-stdout > --codex-total > --codex-rollout.
+#     - --codex-stdout: a `codex exec` stdout capture with a `tokens used\n<N>` line
+#       (N may carry thousands separators).
+#     - --codex-total: a precomputed total (e.g. SessionEnd summed several rollouts).
+#     - --codex-rollout: the LAST token_count event in a codex rollout-*.jsonl
+#       (.payload.info.total_token_usage.total_tokens).
+#
+#   `codex_supplied` records whether ANY codex source was provided. When it stays
+#   false, the jq step PRESERVES the existing usage.codex.* instead of zeroing it
+#   (the erasure bug: SessionEnd calls this with no codex args, so an unconditional
+#   overwrite wiped a previously-captured codex.total). Only a supplied source
+#   overwrites usage.codex.total.
 codex_total=0
+codex_supplied=0
 if [ -n "$codex_stdout" ] && [ -f "$codex_stdout" ]; then
     # Match the line after a line that is exactly "tokens used"; strip commas.
     _n="$(grep -A1 -iE '^[[:space:]]*tokens used[[:space:]]*$' "$codex_stdout" 2>/dev/null \
@@ -165,19 +181,22 @@ if [ -n "$codex_stdout" ] && [ -f "$codex_stdout" ]; then
         _n="$(grep -m1 -iE 'tokens used[: ]+[0-9,]+' "$codex_stdout" 2>/dev/null \
                 | grep -oE '[0-9,]+' | tail -n1 | tr -d ', ' || true)"
     fi
-    [ -n "$_n" ] && codex_total="$_n"
+    if [ -n "$_n" ]; then codex_total="$_n"; codex_supplied=1; fi
 fi
-if [ "$codex_total" = "0" ] && [ -n "$codex_rollout" ] && [ -f "$codex_rollout" ]; then
+if [ "$codex_supplied" = "0" ] && [ -n "$codex_total_arg" ]; then
+    codex_total="$codex_total_arg"; codex_supplied=1
+fi
+if [ "$codex_supplied" = "0" ] && [ -n "$codex_rollout" ] && [ -f "$codex_rollout" ]; then
     _r="$(jq -r '
         select((.payload.type? == "token_count")
                and (.payload.info.total_token_usage.total_tokens != null))
         | .payload.info.total_token_usage.total_tokens
     ' "$codex_rollout" 2>/dev/null | tail -n1 || true)"
-    [ -n "$_r" ] && [ "$_r" != "null" ] && codex_total="$_r"
+    if [ -n "$_r" ] && [ "$_r" != "null" ]; then codex_total="$_r"; codex_supplied=1; fi
 fi
-# Guard: must be an integer; otherwise treat as 0.
+# Guard: must be an integer; otherwise treat as not-supplied (preserve existing).
 case "$codex_total" in
-    ''|*[!0-9]*) codex_total=0 ;;
+    ''|*[!0-9]*) codex_total=0; codex_supplied=0 ;;
 esac
 
 # 4) flock-serialized read-modify-write with atomic mv (mirrors post-tool-use-agents.sh).
@@ -191,6 +210,7 @@ tmp_file="$session_json.tmp.$$"
         --argjson mgr "$mgr_tok" \
         --argjson rekey "$rekey_map" \
         --argjson codexTotal "$codex_total" \
+        --argjson codexSupplied "$codex_supplied" \
         --arg now "$now" '
         # 0) Converge on agentId: re-key any toolu_-prefixed entry to its agentId
         #    via the rekey map. If an agentId entry already exists, fold the stale
@@ -234,9 +254,13 @@ tmp_file="$session_json.tmp.$$"
         | .usage.sessionTotal = ([ .agents[].tokensUsed.total // 0 ] | add)
         # Codex tokens (external system). Only total is known from stdout/rollout;
         # the breakdown stays 0 unless already populated. grandTotal spans systems.
+        # PRESERVE-OR-OVERWRITE: only overwrite usage.codex.total when a codex source
+        # was supplied ($codexSupplied==1). When none was supplied (e.g. SessionEnd
+        # called with no codex args), keep the existing usage.codex.* as-is so a
+        # previously-captured total is never erased to 0.
         | .usage.codex = ({ input:0, output:0, cacheRead:0, cacheCreation:0, total:0 }
                           + (.usage.codex // {})
-                          + { total: $codexTotal })
+                          + (if $codexSupplied == 1 then { total: $codexTotal } else {} end))
         | .usage.grandTotal = ((.usage.sessionTotal // 0) + (.usage.codex.total // 0))
         | .usage.computedAt   = $now
         ' "$session_json" > "$tmp_file"; then

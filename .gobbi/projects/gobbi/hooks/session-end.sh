@@ -145,10 +145,100 @@ done
 [[ -n "$reconcile" ]] || bail "reconcile-session-metadata.sh not found (proj_dir=$proj_dir)"
 
 # ---------------------------------------------------------------------------
+# Live Codex token capture (D6 / Preparation Spike 2).
+#
+# Codex `exec` writes a rollout per run under ~/.codex/sessions/YYYY/MM/DD/
+# rollout-*.jsonl. Each rollout's LAST `event_msg` of type "token_count" carries
+# payload.info.total_token_usage.total_tokens — the cumulative tokens for THAT
+# Codex run. This session may have spawned several Codex runs (e.g. dual-system
+# evaluators), so we SUM the last token_count of every rollout that belongs to
+# THIS session.
+#
+# Correlation heuristic (defensible, conservative):
+#   - mtime within the session window: startedAt (from session.json) .. now; AND
+#   - cwd match: the rollout's session_meta.payload.cwd equals the session
+#     worktree OR the main tree (both are valid Codex launch dirs for a session).
+# A rollout must satisfy BOTH to count. If correlation finds nothing, we pass NO
+# --codex-total, and the reconciler PRESERVES any existing usage.codex.* (1a) —
+# never zeroes it. Any error here is swallowed: capture is best-effort, the hook
+# stays non-blocking (exit 0).
+#
+# Limitation / backlog: cwd+mtime correlation can miss a Codex run launched from
+# an unrelated dir, or over-count if two sessions overlap in the same worktree at
+# the same time. A robust correlation would stamp the gobbi session_id into the
+# Codex run (e.g. via env or originator). Tracked as a follow-up; see the task-03
+# revise artifact. The preserve-on-empty fallback keeps this safe meanwhile.
+# ---------------------------------------------------------------------------
+codex_total_arg=()
+capture_codex_total() {
+    local _sj="$1" _cwd="$2"
+    local codex_root="${HOME}/.codex/sessions"
+    [[ -d "$codex_root" ]] || { log "codex capture: no $codex_root (skipped)"; return 0; }
+    command -v jq >/dev/null 2>&1 || return 0
+
+    # Session window: startedAt (epoch) .. now. Missing startedAt -> 0 (no lower bound).
+    local started_iso started_epoch now_epoch
+    started_iso=$(jq -r '.startedAt // empty' "$_sj" 2>/dev/null || true)
+    started_epoch=0
+    if [[ -n "$started_iso" ]]; then
+        started_epoch=$(date -u -d "$started_iso" +%s 2>/dev/null || echo 0)
+    fi
+    now_epoch=$(date -u +%s 2>/dev/null || echo 0)
+
+    # Acceptable launch dirs: the session worktree and the main tree.
+    local worktree main_tree
+    worktree=$(jq -r '.git.worktreePath // empty' "$_sj" 2>/dev/null || true)
+    main_tree=$(git -C "$_cwd" rev-parse --show-toplevel 2>/dev/null || true)
+
+    local sum=0 matched=0 f
+    while IFS= read -r f; do
+        [[ -n "$f" ]] || continue
+        # mtime window gate.
+        local mt
+        mt=$(stat -c %Y "$f" 2>/dev/null || echo 0)
+        [[ "$mt" -ge "$started_epoch" ]] || continue
+        [[ "$now_epoch" -eq 0 || "$mt" -le "$now_epoch" ]] || continue
+        # cwd gate: the rollout's session_meta cwd MUST equal the worktree or the
+        # main tree. An empty/unknown cwd is rejected when we have either path to
+        # compare against (mtime alone is too weak to claim ownership).
+        local rcwd
+        rcwd=$(jq -r 'select(.type=="session_meta") | .payload.cwd // empty' "$f" 2>/dev/null | head -n1 || true)
+        if [[ -n "$worktree" || -n "$main_tree" ]]; then
+            if [[ -n "$worktree" && "$rcwd" == "$worktree" ]] \
+               || [[ -n "$main_tree" && "$rcwd" == "$main_tree" ]]; then
+                : # passes cwd gate
+            else
+                continue
+            fi
+        fi
+        # Sum this rollout's LAST token_count total.
+        local last
+        last=$(jq -r '
+            select((.payload.type? == "token_count")
+                   and (.payload.info.total_token_usage.total_tokens != null))
+            | .payload.info.total_token_usage.total_tokens
+        ' "$f" 2>/dev/null | tail -n1 || true)
+        case "$last" in
+            ''|*[!0-9]*) : ;;
+            *) sum=$((sum + last)); matched=$((matched + 1)) ;;
+        esac
+    done < <(find "$codex_root" -type f -name 'rollout-*.jsonl' 2>/dev/null)
+
+    if [[ "$matched" -gt 0 && "$sum" -gt 0 ]]; then
+        log "codex capture: $matched rollout(s) matched, total_tokens=$sum"
+        codex_total_arg=(--codex-total "$sum")
+    else
+        log "codex capture: no matching rollout (preserving existing usage.codex.*)"
+    fi
+    return 0
+}
+capture_codex_total "$session_json" "$cwd" || true
+
+# ---------------------------------------------------------------------------
 # Invoke the reconciler. It is non-fatal: a non-zero exit logs but never aborts
 # session shutdown. The reconciler holds its own flock on session.json.
 # ---------------------------------------------------------------------------
-if bash "$reconcile" "$session_json" "$transcript_path"; then
+if bash "$reconcile" ${codex_total_arg[@]+"${codex_total_arg[@]}"} "$session_json" "$transcript_path"; then
     log "reconciled session.json at $session_json"
 else
     rc=$?
