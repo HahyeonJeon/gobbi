@@ -10,7 +10,7 @@ The Execution Loop runs once **per planned task** — the loop body is the four-
 
 **Manager's job**: construct the executor delegation prompt for the current task.
 
-For each task in the loop's `artifacts/`, the manager:
+For each task in the loop's task list (`3-planning/outputs/`), the manager:
 1. Identifies the task's scope boundary (which files to touch, which to avoid).
 2. Locates the relevant Step 3 reference (or `novel` marker) from the Ideation insights.
 3. Confirms with the user (AskUserQuestion) any contribution points the task requires.
@@ -29,7 +29,7 @@ For each task in the loop's `artifacts/`, the manager:
 Manager-side responsibilities:
 - Ensure the executor commits to the worktree (per `git` skill), not pushes
 - Collect the work artifact (code/doc diff + verification evidence)
-- Stage transcripts and any executor notes in `execution/rawdata/`
+- Stage executor notes in the task's `4-execution/task-{NN}-{slug}/working/`; transcripts are copied to the session-root `transcripts/` (one `{role}-{agentId}.jsonl` per agent, all loops)
 - On re-entry, pass prior evaluator findings as additional delegation prompt input
 
 ### Executor continuation (shared subsystem, under cap)
@@ -45,7 +45,7 @@ When either test fails, the manager **fresh-spawns** the next executor with a fu
 
 **Continuation write-discipline.** Each continuation turn that writes MUST use the absolute worktree path on every Write/Edit and `git -C <worktree-abs>` for all git ops — a re-`cd` does not persist across tool boundaries. After each continuation turn that writes, the manager runs a post-turn tree-check to confirm the write landed on the worktree branch, not the main tree. Full discipline: [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh) and the executor agent spec.
 
-**Compaction kills the teammate.** After `/compact`, `/clear`, or resume, the in-process teammate is gone. The manager MUST spawn a FRESH executor and re-prime it from durable session memory (the task's `artifacts/`, prior `rawdata/`, `state.json`) — never message a dead teammate.
+**Compaction kills the teammate.** After `/compact`, `/clear`, or resume, the in-process teammate is gone. The manager MUST spawn a FRESH executor and re-prime it from durable session memory (the task's `outputs/`, prior `working/`, `state.json`) — never message a dead teammate.
 
 ### Executor lifecycle
 
@@ -68,7 +68,7 @@ The final response the executor returns is captured as the work artifact: what w
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Execution-specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract)
-- **Output path**: per-iter scoped at `sessions/{date}-{session-id}/execution/evaluation/iter{n}/{system}/{perspective}.md`
+- **Output path**: per-task, per-iter scoped at `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/{perspective}.md`
 - Phase-specific focus is built from [`execution/evaluation.md`](../../execution/evaluation.md) — implementation match, build/test status (verified via tools), security, mistake compliance, scope discipline, supply-chain, observability, privacy
 - **Tool verification is critical at Execution** — evaluators run tests, type checks, and `grep`/`rg` to anchor confidence ≥ 75 (subject to the verification preflight in [`evaluation/SKILL.md`](../../evaluation/SKILL.md))
 
@@ -76,28 +76,15 @@ The final response the executor returns is captured as the work artifact: what w
 
 ## MEMORIZATION Phase (delegated to `assistant`)
 
-**Manager's job**: spawn the `assistant` agent. For Execution, the assistant integrates the executor's work artifact, both systems' evaluator findings, and the discussion log into the task's `execution/artifacts/` files. The Execution Loop iterates per-task — each task produces its own `artifacts/` directory under its task subdirectory.
+**Manager's job**: spawn the `assistant` agent. For Execution, the assistant integrates the executor's work artifact, both systems' evaluator findings, and the discussion log into the task's `4-execution/task-{NN}-{slug}/outputs/` files. The Execution Loop iterates per-task — each task produces its own `outputs/` directory under its task subdirectory.
 
-### Per-iteration session-memory commit cadence
+### Per-iteration session memory is NOT committed (gitignored)
 
-After every iteration's MEMORIZATION completes (`PASS`, `REVISE`, or `FAIL`) for the current task, the manager creates a session-memory commit on the worktree branch capturing the iteration's outputs (the task's `rawdata/`, `evaluation/iter{n}/`, `artifacts/`, and the `session.json` upsert). Because Execution iterates per task, the subject embeds the task id so each task's iters are independently identifiable. The commit subject is:
+There is **no** per-iteration session-memory commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the task's `working/`, `evaluation/iter{n}/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after MEMORIZATION.
 
-```
-chore(session): record execution-{task-id} iter{n} memory
-```
+Per-task iteration boundaries are recorded in `session.json.workflow.execution.iterations[]` (keyed by `{task-id, iter}`), not in git. Durable cross-session memory exists **only** via Wrap-up promotion of `staging/` content into tracked `features/`, `mistakes/`, etc.
 
-with the canonical `AI-Provenance-Record:` trailer in the commit body per `git/conventions.md:116-119`. Use the heredoc form so the trailer actually lands:
-
-```
-git -C "$worktreePath" commit -m "$(cat <<'EOF'
-chore(session): record execution-{task-id} iter{n} memory
-
-AI-Provenance-Record: gobbi://session/{session-id}/loop/execution/task/{task-id}/iter{n}
-EOF
-)"
-```
-
-Substitute `{session-id}`, `{task-id}`, and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding. This session-memory commit is distinct from the executor's own task-implementation commit (the "Commit" lifecycle phase above) — the implementation commit ships code per the task's contract; the session-memory commit ships the iteration's audit trail.
+This is separate from the executor's own task-implementation commit (the "Commit" lifecycle phase above). That commit **is real**: it ships the code/doc change per the task's contract into **tracked** workspace files (not under gitignored `sessions/`), and it is absorbed into the PR at merge. Only the session-memory audit-trail commit is the no-op; the implementation commit always stands.
 
 ---
 
@@ -119,14 +106,21 @@ When all tasks `PASS`, the loop exits and the Wrap-up Loop begins.
 
 ## Output
 
+The canonical tree is [`orchestration/templates/session-tree.md`](../templates/session-tree.md); Execution's loop dir is `4-execution/`, with per-task subdirs `task-{NN}-{slug}/` (recursive 4-slot interior). Every agent's transcript lives in the single session-root `transcripts/` — there is no per-task `transcripts/`.
+
 ```
-.gobbi/projects/{project}/sessions/{date}-{session-id}/execution/
-└── {task-id}/
-    ├── artifacts/           ← per-task PASS-iter output files
-    ├── rawdata/
-    └── evaluation/
-        ├── claude/{perspective}.md
-        └── codex/{perspective}.md
+.gobbi/projects/{project}/sessions/{date}-{session-id}/
+├── transcripts/                ← single session-root surface; {role}-{agentId}.jsonl per agent, all loops
+└── 4-execution/
+    ├── staging/                ← loop-level (cross-task) staging
+    └── task-{NN}-{slug}/        ← e.g. task-01-add-cache-layer
+        ├── outputs/            ← per-task PASS-iter output files
+        ├── working/
+        ├── staging/
+        └── evaluation/
+            └── iter{n}/
+                ├── claude/{perspective}.md
+                └── codex/{perspective}.md
 ```
 
 ---

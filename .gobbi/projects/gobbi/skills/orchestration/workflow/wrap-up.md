@@ -29,7 +29,7 @@ The manager:
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Wrap-up specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract). Wrap-up evaluation is non-skippable per [`wrap-up/evaluation.md`](../../wrap-up/evaluation.md)
-- **Output path**: per-iter scoped at `sessions/{date}-{session-id}/wrap-up/evaluation/iter{n}/{system}/{perspective}.md`
+- **Output path**: per-iter scoped at `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/{perspective}.md`
 - Phase-specific focus: synthesis coverage, explicit open items, mistake extraction, promotion-routing audit (per [`wrap-up/evaluation.md`](../../wrap-up/evaluation.md))
 
 ---
@@ -38,26 +38,11 @@ The manager:
 
 **Manager's job**: spawn the `assistant` agent for synthesis per [`workflow/memorization.md`](memorization.md). For Wrap-up, the canonical artifact is the handoff summary itself plus any final updates to project memory.
 
-### Per-iteration session-memory commit cadence
+### What Wrap-up commits — promotion writes, not session memory
 
-After every iteration's MEMORIZATION completes (`PASS`, `REVISE`, or `FAIL`), the manager creates a session-memory commit on the worktree branch capturing the iteration's outputs (`rawdata/`, `evaluation/iter{n}/`, `artifacts/` — including the handoff summary — and the `session.json` upsert; plus any project-memory writes performed by this Wrap-up iter). The commit subject is:
+The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). So the iteration's `working/`, `evaluation/iter{n}/`, and `outputs/` (including the handoff summary) capture **nothing** in git: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. There is **no** `chore(session): record ...` commit. Iteration boundaries are recorded in `session.json.workflow.wrap-up.iterations[]`, not in git.
 
-```
-chore(session): record wrap-up iter{n} memory
-```
-
-with the canonical `AI-Provenance-Record:` trailer in the commit body per `git/conventions.md:116-119`. Use the heredoc form so the trailer actually lands:
-
-```
-git -C "$worktreePath" commit -m "$(cat <<'EOF'
-chore(session): record wrap-up iter{n} memory
-
-AI-Provenance-Record: gobbi://session/{session-id}/loop/wrap-up/iter{n}
-EOF
-)"
-```
-
-Substitute `{session-id}` and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding. Wrap-up usually runs a single iteration (`workflow.wrap-up.maxIterations` default 5), so this cadence typically produces one final commit that lands before the manager emits `workflow.finish` and closes the session.
+What Wrap-up **does** commit is its **promotion writes**: copying promotable `staging/` content into **tracked** project memory — `features/`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc. Those targets are NOT under gitignored `sessions/`, so the commit is real. This is the only durable output of the session; it lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Use the canonical `AI-Provenance-Record:` trailer per `git/conventions.md:116-119`. Wrap-up usually runs a single iteration (`workflow.wrap-up.maxIterations` default 5), so it typically produces one promotion commit before the manager emits `workflow.finish` and closes the session.
 
 ---
 
@@ -69,13 +54,19 @@ Iteration cap is `workflow.wrap-up.maxIterations` (default 5) — wrap-up rarely
 
 ## Output
 
+The canonical tree is [`orchestration/templates/session-tree.md`](../templates/session-tree.md); Wrap-up's loop dir is `5-wrap-up/`.
+
 ```
-.gobbi/projects/{project}/sessions/{date}-{session-id}/wrap-up/
-├── artifacts/              ← PASS-iter output files (e.g., handoff, shipped-summary)
-├── rawdata/
-└── evaluation/
-    ├── claude/{perspective}.md
-    └── codex/{perspective}.md
+.gobbi/projects/{project}/sessions/{date}-{session-id}/
+├── transcripts/                ← single session-root surface; {role}-{agentId}.jsonl per agent, all loops
+└── 5-wrap-up/
+    ├── outputs/              ← PASS-iter output files (e.g., handoff, shipped-summary)
+    ├── working/
+    ├── staging/
+    └── evaluation/
+        └── iter{n}/
+            ├── claude/{perspective}.md
+            └── codex/{perspective}.md
 ```
 
 Plus any new mistake entries and project-memory updates under `.gobbi/projects/{project-name}/`.
