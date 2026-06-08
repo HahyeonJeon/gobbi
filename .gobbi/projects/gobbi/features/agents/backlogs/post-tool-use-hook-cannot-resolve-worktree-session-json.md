@@ -4,7 +4,7 @@ description: The PostToolUse agents hook (and the reconstructor) resolve session
 type: backlogs
 scope: feature
 feature: agents
-status: active
+status: closed
 created: 2026-06-05
 session: 06668274-cee3-4bc0-9125-91a327467cd2
 tags: [hook, worktree, session-json, agents-metadata, telemetry, bug]
@@ -32,6 +32,10 @@ Session 06668274 (Chat, task 06) spawned many subagents (executor / evaluator / 
 ## Interim mitigation (already in place)
 
 Per the reframed `orchestration/SKILL.md § Recording operation metadata`, the **manager** records each agent's cumulative token usage via `jq` over that agent's own transcript (per-subagent on return + bulk reconcile at MEMORIZATION/Wrap-up). The hook/reconstructor are convenience seeders of routing fields, not the source of truth for tokens — so the missing/incorrect-token defect no longer blocks accurate session telemetry. This backlog tracks repairing the automated path so the manual `jq` step has a working fallback.
+
+## Resolution
+
+Task 02 of session c7673705 (commit `6cedca99`) fixed the worktree-path mismatch: `post-tool-use-agents.sh` now resolves the worktree `session.json` deterministically and reads subagent tokens from each agent's own transcript — the wrong-token-source defect is resolved in the same commit. The SessionEnd hook (task 04, commit `35bd3e2e`) handles manager rollup. Backlog closed 2026-06-08.
 
 ## Related
 
