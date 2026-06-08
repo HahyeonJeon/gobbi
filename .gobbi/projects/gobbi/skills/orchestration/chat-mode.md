@@ -150,7 +150,7 @@ slice's worth of work.
 | 1 | `DISCUSSION` | Forced user-driven per the discuss-first contract (§9) — overrides any per-step `discuss.mode` setting. Manager + user converge on the slice intent. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Leader runs the full 4-substep procedure (Frame → Lock Scope → Research → Design Recommendation) scoped to this one slice. | [ideation.md](workflow/ideation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). Aggregate verdicts per [Workflow State Machine § Verdict aggregation](SKILL.md#verdict-aggregation). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Narrowed PASS path per §4: preserve transcript + session.json upsert + PASS-iter `artifacts/`; skip typed-finding staging. Mistake stage moment-of-capture always live. | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Narrowed PASS path per §4: preserve transcript + session.json upsert + PASS-iter `outputs/`; skip typed-finding staging. Mistake stage moment-of-capture always live. | [memorization.md](workflow/memorization.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → escalate to user via AskUserQuestion. | — | manager |
 
 ### Step 3 — Slice Preparation Loop (Skipped at loop entry)
@@ -247,9 +247,9 @@ all cross-references in §3, §5, and `orchestration/SKILL.md` point here):**
 > REVISE / FAIL) — it is never skipped.** Locally in this `chat-mode.md`, the PASS path is
 > **narrowed** relative to the base `memorization/SKILL.md` procedure:
 >
-> - **Steps preserved:** Step 5 (CREATE `artifacts/{free-filename}.md`) and Step 8 (UPDATE
+> - **Steps preserved:** Step 5 (CREATE `outputs/{free-filename}.md`) and Step 8 (UPDATE
 >   `session.json.workflow.{loop}.finishedAt` + `verdict: PASS`). Plus every-iter Step 2 (CREATE
->   `rawdata/transcript-iter{n}.jsonl`) and Step 3 (UPSERT
+>   the session-root `transcripts/{role}-{agentId}.jsonl` copy) and Step 3 (UPSERT
 >   `session.json.workflow.{loop}.iterations[]`) — every-iter steps are not Chat-specific.
 > - **Steps skipped:** Step 6 (CREATE typed-finding stagings under
 >   `staging/{scenarios,checklists,decisions,references,…}/`) and Step 7 (CREATE
@@ -259,7 +259,7 @@ all cross-references in §3, §5, and `orchestration/SKILL.md` point here):**
 > - **Moment-of-capture preserved.** The `mistake/SKILL.md § P2` discipline — stage a
 >   mistake-candidate at the moment a correction is detected, not at end-of-loop — is **NOT** part
 >   of Steps 6–7's deferred typed-finding staging. Mistake-candidates are written immediately to
->   `sessions/.../{loop}/staging/decisions/{slug}.md` with `mistake-candidate: true` per
+>   `sessions/.../{N}-{loop}/staging/decisions/{slug}.md` with `mistake-candidate: true` per
 >   `mistake/SKILL.md § P2` regardless of Chat's narrowed PASS path. This exception holds because
 >   the moment-of-capture discipline is governed by the `mistake` skill, not by
 >   `memorization/SKILL.md`.
@@ -271,7 +271,7 @@ all cross-references in §3, §5, and `orchestration/SKILL.md` point here):**
 **Wrap-up's input under Chat narrowed staging.** Because Steps 6–7 don't run per-loop in Chat,
 Wrap-up MEMORIZATION must: (a) mine the session transcript, (b) walk every
 `chat/tasks/{NN}-{slug}/task-record.md`, and (c) reconstruct typed findings from the per-loop
-evaluation files (`{loop}/evaluation/iter{n}/{system}/{perspective}.md` — which DO get written
+evaluation files (`{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md` — which DO get written
 every iter regardless of Chat's narrowing). Wrap-up's procedure extension is
 `wrap-up/SKILL.md`-side and is separately tracked. The `task-record.md` body shape (§6) is
 designed to make this reconstruction tractable — it surfaces decisions taken, open threads, and
@@ -312,7 +312,7 @@ Execution):
   this redesign).
 - **Mistake-stage moment-of-capture.** Every correction the manager or any subagent identifies in
   a Chat per-task slice is staged immediately at
-  `sessions/.../{loop}/staging/decisions/{slug}.md` with `mistake-candidate: true`, per
+  `sessions/.../{N}-{loop}/staging/decisions/{slug}.md` with `mistake-candidate: true`, per
   `mistake/SKILL.md § P2`. This is the explicit exception to §4's "Steps 6–7 skipped" narrowing
   — the moment-of-capture is governed by the `mistake` skill, not by `memorization/SKILL.md`.
 
@@ -369,13 +369,13 @@ notes` but that collides with the project-level chronological journal convention
 `mistakes/prose-reclassification-target-is-project-level-notes.md`). Planning will resolve this
 by choosing one of:
 
-(a) `artifact_type: task-record` aligned to the `artifacts/` schema in `memorization/SKILL.md §
-Artifact frontmatter schema`, or
+(a) `artifact_type: task-record` aligned to the `outputs/` Artifact frontmatter schema in
+`memorization/SKILL.md § Artifact frontmatter schema`, or
 
 (b) a new dedicated `task-record` template under `memorization/templates/task-record.md`.
 
 Either way the per-task record is **session-scope only** (D-A). Until Planning makes this choice,
-agents authoring a task-record should use the `artifacts/` frontmatter schema as a default
+agents authoring a task-record should use the `outputs/` Artifact frontmatter schema as a default
 (carrying `loop`, `iter`, `artifact_type: task-record`, `created_at`, `status`).
 
 ### 6.3 Body structure
@@ -396,7 +396,7 @@ agents authoring a task-record should use the `artifacts/` frontmatter schema as
 (1–2 lines — anything deferred or flagged)
 
 ## Pointers
-(1–2 lines — paths to the per-task slice's artifacts/ files)
+(1–2 lines — paths to the per-task slice's outputs/ files)
 ```
 
 ### 6.4 Writer

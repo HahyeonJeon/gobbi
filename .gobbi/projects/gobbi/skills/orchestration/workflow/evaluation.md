@@ -4,7 +4,7 @@ How the **manager** orchestrates the EVALUATION sub-phase that runs inside every
 
 **The manager MUST NOT evaluate. It spawns exactly two evaluator subagents (one per system), collects their per-perspective outputs, reconciles the two systems, and emits a verdict** — it never does the evaluation itself (reinforced at § Spawning the Evaluators: "spawns exactly two evaluator agents in parallel"). Writing findings or stamping a verdict without two evaluator outputs is a workflow breach (see `mistakes/manager-skipped-dual-system-eval.md`). The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `MEMORIZATION` runs; `MEMORIZATION` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § MEMORIZATION Phase](ideation.md#memorization-phase-delegated-to-assistant-runs-every-iter)).
 
-All evaluator output is **session-scoped** under `sessions/{date}-{session-id}/{loop}/evaluation/`. Evaluators never write to project memory.
+All evaluator output is **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/evaluation/`. Evaluators never write to project memory.
 
 ---
 
@@ -41,7 +41,7 @@ The phase child doc loaded at evaluator Stage 0 (`ideation/evaluation.md` / `pre
 
 The manager spawns **exactly two evaluator agents in parallel** — one per system. Both receive identical input:
 
-- The artifact under evaluation (the prior phase's `WORK` output, e.g., `sessions/{date}-{session-id}/{loop}/rawdata/draft-iter{n}.md`)
+- The artifact under evaluation (the prior phase's `WORK` output, e.g., `sessions/{date}-{session-id}/{N}-{loop}/working/draft-iter{n}.md`)
 - Any artifact-embedded evaluation criteria the creator provided (context for Stage 1 frame-build, not a separate measurement pass)
 - The perspective set (always all seven + Overall; no pruning)
 - The workflow phase (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) — selects which evaluation child doc the evaluator loads at Stage 0
@@ -59,7 +59,7 @@ Model selection follows `settings.json` `models.{system}.evaluator`:
 After both evaluators complete, the manager finds:
 
 ```
-sessions/{date}-{session-id}/{loop}/evaluation/
+sessions/{date}-{session-id}/{N}-{loop}/evaluation/
 ├── iter1/
 │   ├── claude/
 │   │   ├── project.md       ← per-perspective output from Claude Code (iter 1)
@@ -152,10 +152,10 @@ The manager passes all evaluator findings to the `assistant` agent in the next `
 
 | Finding type | Session staging destination (`PASS` only) |
 |---|---|
-| `scenario_gap` | `sessions/{date}-{session-id}/{loop}/staging/scenarios/{slug}.md` |
-| `checklist_gap` | `sessions/{date}-{session-id}/{loop}/staging/checklists/{slug}.md` |
-| `design_flaw`, `assumption_risk` | `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` |
-| `general` with citable external pattern | `sessions/{date}-{session-id}/{loop}/staging/references/{slug}.md` |
+| `scenario_gap` | `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md` |
+| `checklist_gap` | `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md` |
+| `design_flaw`, `assumption_risk` | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` |
+| `general` with citable external pattern | `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` |
 
 On `REVISE`, MEMORIZATION preserves the transcript + iter entry in `session.json` but does **not** stage findings — those wait for the eventual `PASS` iteration's MEMORIZATION run. On `FAIL`, the loop halts before staging.
 
@@ -226,7 +226,7 @@ Iter 1 findings default to `disposition: open`. Iter ≥ 2 must judge a disposit
 
 ### Stage 1 inheritance procedure (iter ≥ 2)
 
-Iter n Stage 1 reads prior iter findings **directly** from `sessions/.../{loop}/evaluation/iter{n-1}/{system}/{perspective}.md`:
+Iter n Stage 1 reads prior iter findings **directly** from `sessions/.../{N}-{loop}/evaluation/iter{n-1}/{system}/{perspective}.md`:
 
 | # | Read source | Action |
 |---|---|---|
@@ -271,11 +271,11 @@ All evaluator writes are **session-scoped**. Evaluators never touch project memo
 
 | Path | Written by | Written |
 |---|---|---|
-| `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/{perspective}.md` | evaluator | One per perspective per system; contains Artifact Summary + W/W/H (Stage 0), locked Frame (Stage 1), per-scenario per-check yes/no results, typed findings (Stage 2), low-confidence appendix |
-| `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/overall.md` | evaluator | One per system; contains Stage 3 cross-cutting findings, Karpathy-4 mode checks, Preserve list |
+| `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md` | evaluator | One per perspective per system; contains Artifact Summary + W/W/H (Stage 0), locked Frame (Stage 1), per-scenario per-check yes/no results, typed findings (Stage 2), low-confidence appendix |
+| `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/overall.md` | evaluator | One per system; contains Stage 3 cross-cutting findings, Karpathy-4 mode checks, Preserve list |
 
 ```
-sessions/{date}-{session-id}/{loop}/evaluation/
+sessions/{date}-{session-id}/{N}-{loop}/evaluation/
 └── iter{n}/                  ← one directory per iteration; iter 1 always; iter ≥ 2 only on REVISE
     ├── claude/
     │   ├── project.md
@@ -296,11 +296,11 @@ sessions/{date}-{session-id}/{loop}/evaluation/
 
 - `{date}` — session start date in `YYYY-MM-DD`
 - `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
-- `{loop}` — the workflow loop being evaluated (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
+- `{N}-{loop}` — the number-prefixed on-disk loop dir being evaluated (`1-ideation` / `2-preparation` / `3-planning` / `4-execution` / `5-wrap-up`). The `workflow.{loop}` JSON keys stay **bare** (no `{N}-` prefix) — see [`orchestration/templates/session-tree.md` § SEAM-3](../templates/session-tree.md)
 - `{system}` — `claude` or `codex` (the system running this evaluator instance)
 - `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`); the holistic Stage 3 output uses the fixed filename `overall.md`
 
-The directory `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/` is bootstrapped by the manager before spawning evaluators. Cross-system divergence is **derived at MEMORIZATION** by comparing per-system files; no separate divergence file is written.
+The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` is bootstrapped by the manager before spawning evaluators. Cross-system divergence is **derived at MEMORIZATION** by comparing per-system files; no separate divergence file is written.
 
 ---
 

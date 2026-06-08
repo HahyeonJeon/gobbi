@@ -4,7 +4,7 @@ How the **manager** orchestrates the MEMORIZATION sub-phase that runs at the end
 
 The manager's job at MEMORIZATION is to **spawn the assistant, deliver the right inputs, validate the assistant's output mechanically, and advance the loop** — not to do the synthesis itself. MEMORIZATION runs **after every EVALUATION verdict** (`PASS`, `REVISE`, or `FAIL`) and **before** the `ITER / EXIT` decision: every iteration's evidence must be preserved before the loop either re-enters DISCUSSION or exits.
 
-All assistant writes are **session-scoped** under `sessions/{date}-{session-id}/{loop}/...` plus own-loop fields in `session.json`. The assistant **never** writes to project memory; Wrap-up is the sole writer there. The manager validates this invariant via post-write snapshot diff.
+All assistant writes are **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/...` plus own-loop fields in `session.json`. The assistant **never** writes to project memory; Wrap-up is the sole writer there. The manager validates this invariant via post-write snapshot diff. For the canonical session-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md), the single source of truth.
 
 ---
 
@@ -33,20 +33,20 @@ Every MEMORIZATION delegation prompt MUST declare the following — a one-liner 
 | **Loop identity** | `ideation` / `preparation` / `planning` / `execution` / `wrap-up` |
 | **Iter number `n`** | From `session.json.workflow.{loop}.iterations.length + 1` for a fresh run, or the existing iter for a re-run |
 | **Verdict** | `PASS` / `REVISE` / `FAIL` from EVALUATION (the MEMORIZATION procedure branches on this) |
-| **Artifacts directory target path** | e.g., `sessions/{date}-{session-id}/ideation/artifacts/` — only written on `PASS`. Assistant decomposes the loop's output into one or more frontmatter-tagged files inside this directory; filenames and counts are free (see [`memorization/SKILL.md` § Artifact frontmatter schema](../../memorization/SKILL.md#artifact-frontmatter-schema)) |
+| **Outputs directory target path** | e.g., `sessions/{date}-{session-id}/1-ideation/outputs/` — only written on `PASS`. Assistant decomposes the loop's output into one or more frontmatter-tagged files inside this directory; filenames and counts are free (see [`memorization/SKILL.md` § Artifact frontmatter schema](../../memorization/SKILL.md#artifact-frontmatter-schema)) |
 | **Type + Domain → staging-subdir routing** | Link to [`evaluation/SKILL.md` § Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) — disposition values, routing table, slug + collision policy are sourced from here, not duplicated |
 | **Memory access matrix** | Link to [`memorization/memory-map.md`](../../memorization/memory-map.md) — every path the assistant may READ + WRITE, plus FORBIDDEN paths |
-| **READ-ONLY paths to consult** | Prior loops' canonical artifacts (for cross-loop synthesis); the discussion log; **all** prior-iter per-perspective evaluation files for `m ∈ 1..n` (cumulative staging requirement) |
+| **READ-ONLY paths to consult** | Prior loops' canonical outputs (for cross-loop synthesis); the discussion log; **all** prior-iter per-perspective evaluation files for `m ∈ 1..n` (cumulative staging requirement) |
 | **FORBIDDEN write surfaces** | `.gobbi/projects/{project-name}/features/**`, `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,decisions,plans,references,reviews,reports,learnings,archive}/**`, other loops' session directories, other systems' evaluation directories. Wrap-up owns project memory; loop MEMORIZATION never touches it |
-| **Discussion-log handling** | Read-only — assistant reads `rawdata/discussion-log.md` at Step 1 (input load) and Step 7 (discussions staging). The **manager** owns appends during DISCUSSION; the assistant never writes to it |
+| **Discussion-log handling** | Read-only — assistant reads `working/discussion-log.md` at Step 1 (input load) and Step 7 (discussions staging). The **manager** owns appends during DISCUSSION; the assistant never writes to it |
 
 ### Pre-spawn checks
 
 Before spawning, the manager verifies:
 
-- `sessions/{date}-{session-id}/{loop}/{rawdata,staging,evaluation}/` subtree exists (bootstrapped during the loop's DISCUSSION). Missing subdir → surface to user; do not spawn
+- `sessions/{date}-{session-id}/{N}-{loop}/{working,staging,evaluation}/` subtree exists (scaffolded at the loop's entry). Missing subdir → surface to user; do not spawn
 - `session.json` has `project`, `feature`, `task` set (Lock Scope completed during Ideation). Missing scope → surface to user; do not spawn
-- The current iter's WORK output exists at `rawdata/draft-iter{n}.md`. Missing draft → escalate; cannot synthesize without a draft
+- The current iter's WORK output exists at `working/draft-iter{n}.md`. Missing draft → escalate; cannot synthesize without a draft
 - The current iter's evaluator output exists at `evaluation/iter{n}/{system}/{perspective}.md` for every system × perspective. Missing eval files → cannot route findings; escalate
 
 ---
@@ -58,17 +58,17 @@ After the assistant completes, the manager finds — at minimum — this tree:
 ### Every iter (PASS or REVISE or FAIL)
 
 ```
-sessions/{date}-{session-id}/{loop}/
-├── rawdata/
-│   └── transcript-iter{n}.jsonl  ← preserved transcript window
-└── session.json (updated)         ← workflow.{loop}.iterations[] upserted entry
+sessions/{date}-{session-id}/
+├── transcripts/{role}-{agentId}.jsonl  ← each agent's transcript copied into the single
+│                                          session-root transcripts/ (accumulating across loops)
+└── session.json (updated)              ← workflow.{loop}.iterations[] upserted entry
 ```
 
 ### Additionally on PASS
 
 ```
-sessions/{date}-{session-id}/{loop}/
-├── artifacts/                      ← PASS-iter output files (free filenames + mandatory frontmatter)
+sessions/{date}-{session-id}/{N}-{loop}/
+├── outputs/                        ← PASS-iter output files (free filenames + mandatory frontmatter)
 │   ├── {free-filename-1}.md       ← e.g., framed-problem.md, scope-contract.md
 │   ├── {free-filename-2}.md
 │   └── memory-reads.md             ← mandatory: artifact_type: memory-reads
@@ -90,16 +90,16 @@ sessions/{date}-{session-id}/{loop}/
     └── notes/{slug}.md            ← per loop-scope journal entry (loop-conditional; the per-session note is written at Wrap-up)
 ```
 
-Planning loop additionally produces `planning/staging/plans/{slug}.md` (the plan artifact Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`); `plans/` is **Planning-only** and does not appear in other loops' staging trees. Wrap-up loop's MEMORIZATION is structurally different — see [`workflow/wrap-up.md`](wrap-up.md).
+Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the plan artifact Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`); `plans/` is **Planning-only** and does not appear in other loops' staging trees. Wrap-up loop's MEMORIZATION is structurally different — see [`workflow/wrap-up.md`](wrap-up.md).
 
 ### Per-loop summary table
 
-| Loop | Session artifacts path (PASS only) | rawdata path | staging path |
+| Loop | Session outputs path (PASS only) | working path | staging path |
 |---|---|---|---|
-| Ideation | `ideation/artifacts/` (typical files: framed-problem, scope-contract, design-options, memory-reads, resolution-log) | `ideation/rawdata/` | `ideation/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
-| Planning | `planning/artifacts/` (typical files: task-list, dependency-graph, agent-assignments, memory-reads) | `planning/rawdata/` | `planning/staging/{plans,scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
-| Execution | `execution/artifacts/` (typical files: change-summary, verification-report, memory-reads) | `execution/rawdata/` | `execution/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
-| Wrap-up | `wrap-up/artifacts/` (typical files: handoff, shipped-summary, next-session-pointers, memory-reads) | `wrap-up/rawdata/` | Wrap-up does not stage — it writes directly to project memory per [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) |
+| Ideation | `1-ideation/outputs/` (typical files: framed-problem, scope-contract, design-options, memory-reads, resolution-log) | `1-ideation/working/` | `1-ideation/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
+| Planning | `3-planning/outputs/` (typical files: task-list, dependency-graph, agent-assignments, memory-reads) | `3-planning/working/` | `3-planning/staging/{plans,scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
+| Execution | `4-execution/outputs/` (typical files: change-summary, verification-report, memory-reads) | `4-execution/working/` | `4-execution/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
+| Wrap-up | `5-wrap-up/outputs/` (typical files: handoff, shipped-summary, next-session-pointers, memory-reads) | `5-wrap-up/working/` | Wrap-up does not stage — it writes directly to project memory per [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) |
 
 ---
 
@@ -111,16 +111,16 @@ Validation is **mechanical** and **comprehensive** — every assistant output pa
 
 Every iter:
 
-- [ ] `rawdata/transcript-iter{n}.jsonl` exists and is > 0 bytes
+- [ ] `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` exists for each agent that ran this iter and is > 0 bytes
 - [ ] `session.json` exists and parses as valid JSON
 - [ ] No new feature directory was created at `.gobbi/projects/{project-name}/features/{feature-name}/` (Wrap-up's territory)
 
 `PASS` additionally:
 
-- [ ] `artifacts/` directory exists, contains ≥ 1 file, and every file is > 0 bytes
-- [ ] At least one file in `artifacts/` has `artifact_type: memory-reads` in its frontmatter (the cumulative-staging audit surface — see gate 4)
+- [ ] `outputs/` directory exists, contains ≥ 1 file, and every file is > 0 bytes
+- [ ] At least one file in `outputs/` has `artifact_type: memory-reads` in its frontmatter (the cumulative-staging audit surface — see gate 4)
 - [ ] At least one of the staging subdirectories is non-empty (every `PASS` iteration produces at least one staged artifact — even a clean PASS with no constructive findings stages the Design / Discussions derivatives)
-- [ ] Planning loop only: `planning/staging/plans/{slug}.md` exists (the loop's principal output)
+- [ ] Planning loop only: `3-planning/staging/plans/{slug}.md` exists (the loop's principal output)
 
 ### 2. `session.json` integrity
 
@@ -144,7 +144,7 @@ Validation is split by **staging class**, determined by frontmatter — not by d
 
 - A staging file with `finding-id` in its frontmatter is **finding-routed** → gate 3a applies
 - A staging file without `finding-id` is **derivative** → gate 3b applies
-- Files under `artifacts/` are validated by gate 3c
+- Files under `outputs/` are validated by gate 3c
 
 **3a. Finding-routed staging** (any file with `finding-id` frontmatter, in any staging subdirectory). For each such file produced on `PASS`:
 
@@ -163,7 +163,7 @@ Validation is split by **staging class**, determined by frontmatter — not by d
 - [ ] Slug is kebab-case ≤ 60 characters; collisions follow `-2` / `-3` suffix rule
 - [ ] If the template declares a `status` enum (e.g., `status: open | acted-on | superseded`), the staged file's `status` is one of those values
 
-**3c. Artifacts directory** — files under `artifacts/`. For each file:
+**3c. Outputs directory** — files under `outputs/`. For each file:
 
 - [ ] Frontmatter parses as YAML and contains all required fields from the [Artifact frontmatter schema](../../memorization/SKILL.md#artifact-frontmatter-schema): `loop` / `iter` / `artifact_type` / `created_at` / `status`
 - [ ] `status` is one of `draft` / `final` / `superseded` (the artifact-frontmatter enum — distinct from template-specific `status` enums in 3b)
@@ -176,10 +176,10 @@ A file with `finding-id` lacking Type+Domain+Disposition is a gate 3a failure. A
 
 ### 4. Cumulative staging completeness
 
-`PASS` only — manager verifies the assistant read every prior iter's evaluation files via the **`memory-reads` artifact** the assistant writes into `artifacts/` at Step 5 (per [`memorization/SKILL.md`](../../memorization/SKILL.md) procedure):
+`PASS` only — manager verifies the assistant read every prior iter's evaluation files via the **`memory-reads` artifact** the assistant writes into `outputs/` at Step 5 (per [`memorization/SKILL.md`](../../memorization/SKILL.md) procedure):
 
-- [ ] `artifacts/` contains at least one file whose frontmatter declares `artifact_type: memory-reads`
-- [ ] For every `m ∈ 1..n`, every **system that actually ran evaluation in iter `m`** (one or both of `claude` / `codex`), every perspective: the memory-reads artifact cites `sessions/.../{loop}/evaluation/iter{m}/{system}/{perspective}.md`. Expected path count = `Σ (systems_run_in_iter_m) × 8 (7 perspectives + overall)` for `m ∈ 1..n` (degraded-mode-aware; do not assume a fixed `16n` when single-system evaluation was used for some iters)
+- [ ] `outputs/` contains at least one file whose frontmatter declares `artifact_type: memory-reads`
+- [ ] For every `m ∈ 1..n`, every **system that actually ran evaluation in iter `m`** (one or both of `claude` / `codex`), every perspective: the memory-reads artifact cites `sessions/.../{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md`. Expected path count = `Σ (systems_run_in_iter_m) × 8 (7 perspectives + overall)` for `m ∈ 1..n` (degraded-mode-aware; do not assume a fixed `16n` when single-system evaluation was used for some iters)
 - [ ] Every cited path resolves to an existing file (manager runs `test -f` per cited path)
 - [ ] Every prior-iter `disposition: open` finding is reflected somewhere — either staged (Type-routed), or staged with `disposition: addressed`, or staged with `disposition: superseded`, or referenced in an `artifact_type: resolution-log` file. A prior-iter `open` finding that vanishes silently is a Stage-1-inheritance failure (also caught at EVALUATION; this is the second gate)
 - [ ] No constructive finding (`scenario_gap` / `checklist_gap`) from any prior iter is missing from the cumulative staging union
@@ -203,7 +203,7 @@ Every staging file's frontmatter is compared against its template at [`memorizat
 
 ### 7. Discussion-log integrity (read-only invariant)
 
-- [ ] `rawdata/discussion-log.md`'s mtime is unchanged after MEMORIZATION (assistant must not write to it; only the manager appends during DISCUSSION)
+- [ ] `working/discussion-log.md`'s mtime is unchanged after MEMORIZATION (assistant must not write to it; only the manager appends during DISCUSSION)
 
 ---
 
@@ -237,7 +237,7 @@ The assistant's procedure branches on verdict, and the manager validates the rig
 
 | Verdict | Every-iter outputs | PASS-only outputs |
 |---|---|---|
-| **PASS** | Transcript + session.json upsert | `artifacts/` files + cumulative staging across iters 1..n + `finishedAt` + `verdict: PASS` |
+| **PASS** | Transcript + session.json upsert | `outputs/` files + cumulative staging across iters 1..n + `finishedAt` + `verdict: PASS` |
 | **REVISE** | Transcript + session.json upsert (`verdict: REVISE`) | — (loop re-enters DISCUSSION; no canonical artifact, no staging) |
 | **FAIL** | Transcript + session.json upsert (`verdict: FAIL`) | — (loop escalates to user; AskUserQuestion decides revise / abort / re-frame) |
 
@@ -276,9 +276,9 @@ Re-running MEMORIZATION on the same iter (after a crash, partial write, or expli
 
 | Operation | Idempotent because |
 |---|---|
-| CREATE `transcript-iter{n}.jsonl` | Write-or-overwrite. Deterministic source + filter |
+| CREATE `transcripts/{role}-{agentId}.jsonl` | Write-or-overwrite per agent file in the session-root `transcripts/`. Deterministic source; accumulates across loops by distinct `agentId`, never duplicated |
 | UPSERT `session.json.iterations[]` | Keyed by `iter` — re-runs replace, never duplicate |
-| CREATE `artifacts/{free-filename}.md` (PASS) | Write-or-overwrite per filename. Deterministic synthesis — same iter + same decomposition produces same files. Re-iter rewrites flip prior files' frontmatter `status` to `superseded` rather than deleting |
+| CREATE `outputs/{free-filename}.md` (PASS) | Write-or-overwrite per filename. Deterministic synthesis — same iter + same decomposition produces same files. Re-iter rewrites flip prior files' frontmatter `status` to `superseded` rather than deleting |
 | CREATE `staging/{type}/{slug}.md` (PASS) | Slug derived from finding's primary symptom + `finding-id` idempotency key. Same finding-id → overwrite. Different finding-id, same slug → `-2`/`-3` suffix per collision policy |
 | UPDATE `session.json` `finishedAt` + `verdict` (PASS) | Set, not append |
 
@@ -298,11 +298,11 @@ All MEMORIZATION writes are **session-scoped** plus own-loop fields in `session.
 
 | Path | Written by | When |
 |---|---|---|
-| `sessions/{date}-{session-id}/{loop}/rawdata/transcript-iter{n}.jsonl` | assistant | every iteration |
+| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant | every iteration — copied into the single session-root `transcripts/`, accumulating across loops |
 | `sessions/{date}-{session-id}/session.json` | assistant (UPSERT) | every iteration; PASS additionally sets `finishedAt` + `verdict: PASS` |
-| `sessions/{date}-{session-id}/{loop}/artifacts/{free-filename}.md` | assistant | PASS only — one or more artifact files |
-| `sessions/{date}-{session-id}/{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/{slug}.md` | assistant | PASS only |
-| `sessions/{date}-{session-id}/planning/staging/plans/{slug}.md` | assistant | Planning loop, PASS only |
+| `sessions/{date}-{session-id}/{N}-{loop}/outputs/{free-filename}.md` | assistant | PASS only — one or more output files |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/{slug}.md` | assistant | PASS only |
+| `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` | assistant | Planning loop, PASS only |
 
 Path conventions, full path inventory across both tiers, and template-to-directory mappings → [`memorization/memory-map.md`](../../memorization/memory-map.md). The manager treats `memory-map.md` as the canonical reference for what's allowed where.
 

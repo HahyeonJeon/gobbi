@@ -158,53 +158,55 @@ Every session writes its working memory under one root: `.gobbi/projects/{projec
 
 | When (workflow moment) | What is written | Who writes it | Where + how |
 |---|---|---|---|
-| **Configuration (Step 1)** | `state.json` (row 3) and `session.json` (row 4) at the session root | manager | Rooted at the row-1 worktree path; row 4 stamps `git.worktreePath`, the durable write-root for everything after. See [§ Step 1 — Workflow Configuration](#step-1--workflow-configuration). `settings.json` (resolved config) lands here in row 2. |
-| **Loop entry (each of Steps 2-6)** | The loop's `{rawdata, staging, evaluation, artifacts}` subdirs (Execution: per-task `task-{NN}/` quartets) | manager | Bootstrapped empty at entry so WORK / EVALUATION / MEMORIZATION can assume the tree exists. |
-| **WORK (per iteration)** | `rawdata/draft-iter{n}.md`, transcripts, `discussion-log.md`, `research/{slug}.md`; the owning specialist's `staging/` typed findings | owning specialist (`leader` / `executor` / `assistant`) | `{loop}/rawdata/` is the only scratch surface (no `tmp/` tier — see below). Staging is the Wrap-up promotion source. |
+| **Configuration (Step 1)** | `state.json` (row 3), `session.json` (row 4), and the session-root `transcripts/` dir at the session root | manager | Rooted at the row-1 worktree path; row 4 stamps `git.worktreePath`, the durable write-root for everything after. See [§ Step 1 — Workflow Configuration](#step-1--workflow-configuration). `settings.json` (resolved config) lands here in row 2. The manager also creates the single session-root `transcripts/` dir alongside the root JSON files — the scaffold script never creates it (see [§ Loop-entry scaffold](#loop-entry-scaffold)). |
+| **Loop entry (each of Steps 2-6)** | The loop's `{working, staging, evaluation}` subdirs (Execution: per-task `task-{NN}-{slug}/` quartets) | manager | Invokes [`scaffold-session-dir.sh`](scripts/scaffold-session-dir.sh) `<session-root> <step-dir>` at loop entry to materialize the 4-slot interior, so WORK / EVALUATION / MEMORIZATION can assume the tree exists. See [§ Loop-entry scaffold](#loop-entry-scaffold). |
+| **WORK (per iteration)** | `working/draft-iter{n}.md`, `discussion-log.md`, `research/{slug}.md`; the owning specialist's `staging/` typed findings | owning specialist (`leader` / `executor` / `assistant`) | `{N}-{loop}/working/` is the only scratch surface (no `tmp/` tier). Staging is the Wrap-up promotion source. |
 | **EVALUATION (per iteration)** | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `overall.md` | evaluator subagents (one per system) | Bare 7-vocabulary names, same set on both systems — see [§ Per-perspective evaluation file naming](#per-perspective-evaluation-file-naming) below. |
-| **MEMORIZATION (per iteration)** | `session.json` UPSERT (iter / verdict); transcript snapshot; cumulative `staging/` findings | `assistant` subagent | Session-scoped only; project-memory promotion is NOT done here. See [`workflow/memorization.md`](workflow/memorization.md). |
-| **On PASS (loop exit)** | `artifacts/{free-filename}.md` — the loop's canonical output | `assistant` (MEMORIZATION) | PASS-only; absent on REVISE / FAIL iterations. |
+| **MEMORIZATION (per iteration)** | `session.json` UPSERT (iter / verdict); transcript copy into session-root `transcripts/`; cumulative `staging/` findings | `assistant` subagent | Session-scoped only; project-memory promotion is NOT done here. See [`workflow/memorization.md`](workflow/memorization.md). |
+| **On PASS (loop exit)** | `outputs/{free-filename}.md` — the loop's canonical output | `assistant` (MEMORIZATION) | PASS-only; absent on REVISE / FAIL iterations. The scaffold's `--pass` flag creates `outputs/`. |
 | **Every state transition** | `state.json` updated in place | manager | The live state-machine file used to recover position after `/clear` / `/compact` / resume — see [§ State persistence](#state-persistence). |
 | **Wrap-up (Step 6)** | `staging/` trees promoted to project memory; non-canonical session subdirs normalized going-forward | `assistant` (Wrap-up) | The only step that writes project memory. Deviations from the canonical shape below are normalized here — see [`wrap-up/SKILL.md` § Non-standard session-subdir cleanup](../wrap-up/SKILL.md#non-standard-session-subdir-cleanup-going-forward). |
 
-**On-disk inventory.** The canonical shape the lifecycle above writes into:
+**On-disk inventory.** The canonical shape the lifecycle above writes into is defined once, in [`orchestration/templates/session-tree.md`](templates/session-tree.md) — the single source of truth for the per-session working tree. That doc carries the complete ASCII tree (session root + `{N}-{loop}/` ordinal map + the 4-slot loop interior `working/ evaluation/ staging/ outputs/` + the `4-execution/task-{NN}-{slug}/` nesting), the SEAM-3 rule (on-disk dirs carry the `{N}-` prefix; `workflow.{loop}` JSON keys stay bare), the transcript rules, and the path-validation contract. The prose in this skill points there rather than re-declaring the shape — a second copy is exactly the drift the spec doc exists to remove.
+
+**Session-root files.** `session.json` (telemetry), `settings.json` (resolved config), `state.json` (the workflow state-machine file — see [§ State persistence](#state-persistence)), and `session.json.lock` (advisory write-lock the manager creates / releases around each `session.json` write; not memory content — safe to ignore on read). The single session-root `transcripts/` dir is created by the manager in Configuration (see § Loop-entry scaffold).
+
+**No `tmp/` scratch tier.** `{N}-{loop}/working/` is the only scratch surface in the canonical tree. A `tmp/` dir or a `working/restore/` sub-tier is non-canonical — resume / restore scratch lives directly in `working/`. Wrap-up removes `tmp/` going-forward (see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)).
+
+### Loop-entry scaffold
+
+At each loop entry (Steps 2-6), the manager materializes the loop's interior by invoking the scaffold script rather than creating dirs ad hoc:
 
 ```
-sessions/{date}-{session-id}/
-├── session.json              ← per-session telemetry (manager init row 4 + assistant UPSERT)
-├── settings.json             ← resolved session config (cascade)
-├── state.json                ← per-session workflow state-machine file (manager init row 3; see § State persistence)
-├── session.json.lock         ← advisory write-lock guarding concurrent session.json writes (manager; safe to ignore on read)
-├── transcripts/              ← ephemeral raw-.jsonl copies (manager main + each subagent) for in-session debug ONLY;
-│                                written by MEMORIZATION (not any hook); gitignored, never committed, never promoted to
-│                                notes/; removed with the worktree at session end (incl. abort). See memorization/SKILL.md.
-└── {loop}/                   ← loop ∈ ideation | preparation | planning | execution | wrap-up
-    ├── rawdata/              ← draft-iter{n}.md, transcript-iter{n}.jsonl, discussion-log.md, research/{slug}.md
-    │                            (the ONLY scratch surface — no separate tmp/ tier; resume/restore scratch lives here, not in restore/)
-    ├── staging/{...}/        ← typed-finding stagings (Wrap-up promotion source)
-    ├── evaluation/iter{n}/{claude,codex}/{perspective}.md + overall.md
-    └── artifacts/{free-filename}.md   ← PASS-only
+scaffold-session-dir.sh <session-root> <step-dir> [--pass]
 ```
 
-**Session-root files.** `session.json` (telemetry), `settings.json` (resolved config), `state.json` (the workflow state-machine file — see [§ State persistence](#state-persistence)), and `session.json.lock` (advisory write-lock the manager creates / releases around each `session.json` write; not memory content — safe to ignore on read).
+- `<session-root>` — the absolute `sessions/{date}-{session-id}/` path (`session.json.git.worktreePath`-rooted).
+- `<step-dir>` — one of `1-ideation` `2-preparation` `3-planning` `4-execution` `5-wrap-up`, or a single execution task dir `4-execution/task-{NN}-{slug}` (`{NN}` is `[0-9]{2}`, `{slug}` matches `[a-z0-9-]{1,40}`).
+- `--pass` — passed at MEMORIZATION on a PASS iteration to also create the `outputs/` dir.
 
-**No `tmp/` scratch tier.** `{loop}/rawdata/` is the only scratch surface in the canonical tree. A `tmp/` dir or a `rawdata/restore/` sub-tier is non-canonical — resume / restore scratch lives directly in `rawdata/`. Wrap-up removes `tmp/` going-forward (see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)).
+The script creates the 4-slot interior (`working/`, `working/research/`, `evaluation/`, `staging/` with the loop's typed staging subdirs) idempotently, and is fail-closed: a non-absolute `<session-root>`, a `<step-dir>` with `..` / a leading `/` / stray slashes, or any `<step-dir>` outside the fixed set (including `interview`) exits non-zero and creates nothing.
+
+**The session-root `transcripts/` dir is the manager's, not the script's.** The manager creates the single session-root `transcripts/` in Configuration alongside the root JSON files; the scaffold script **never** creates a `transcripts/` dir (there is no per-loop or per-task `transcripts/`).
+
+**Drift gate.** [`verify-session-tree.sh --check`](scripts/verify-session-tree.sh) is the manual gate that scaffolds throwaway step-dirs and diffs the script's output against `session-tree.md`, plus runs the path-validation negative cases. Run it after editing either the scaffold script or the spec doc; it fails on any drift between the two. The diff is narrowed (COD-STRUCTURE-2) to the script-created `<step-dir>` subtree only — never the manager-created session-root invariants (`transcripts/`, the JSON files).
 
 ### Per-task Execution layout (the quartet)
 
-The Execution loop is per-task. Each task lives under `execution/task-{NN}/` and carries the **full quartet** — `{rawdata, staging, evaluation, artifacts}`:
+The Execution loop is per-task. Each task lives under `4-execution/task-{NN}-{slug}/` and carries the **full quartet** — `{working, staging, evaluation, outputs}`:
 
 ```
-execution/
+4-execution/
 ├── staging/{...}/            ← loop-level (cross-task) staging
-└── task-{NN}/
-    ├── rawdata/draft-iter{n}.md, transcript-iter{n}.jsonl
+└── task-{NN}-{slug}/
+    ├── working/draft-iter{n}.md, working/research/{slug}.md
     ├── staging/{...}/
     ├── evaluation/iter{n}/{claude,codex}/{perspective}.md + overall.md
-    └── artifacts/{free-filename}.md
+    └── outputs/{free-filename}.md
+    # No per-task transcripts/ — every agent's transcript lives in session-root transcripts/.
 ```
 
-Every `task-{NN}/` gets the full quartet. A task with only `evaluation/` (missing rawdata / staging / artifacts) is an incomplete task layout — the quartet is required unless a task is documented eval-only.
+Every `task-{NN}-{slug}/` gets the full quartet. A task with only `evaluation/` (missing working / staging / outputs) is an incomplete task layout — the quartet is required unless a task is documented eval-only.
 
 ### Per-perspective evaluation file naming
 
