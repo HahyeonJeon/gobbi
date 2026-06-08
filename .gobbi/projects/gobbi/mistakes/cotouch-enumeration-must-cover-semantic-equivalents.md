@@ -32,6 +32,31 @@ When enumerating co-touch sites for a rule change, build a *phrase set* covering
 
 Red flag: the design's "co-touch list" or "checklist" is built from a single grep term. If the enumeration step greps for ONE phrase, it is almost certainly incomplete. The Execution EVALUATION's repo-wide contradiction-survivor hunt is the safety net — but the enumeration should not rely on it to find the obvious equivalents.
 
+## Second failure vector — stop at the high-level doc, miss the canonical record's cluster (2026-06-08, session c7673705)
+
+A second, distinct way the same co-touch enumeration fails: **stopping at the high-level doc
+that *references* a feature, instead of following its pointers to the feature's canonical
+record and that record's sibling cluster.** In the session-memory redesign, decision D1
+retired the locked `git-workflow` D-4 per-iteration session-commit cadence. D1's initial
+file-change inventory named the cross-cutting overview
+(`design/session-lifecycle-worktree-boundaries.md`) + a few `orchestration/` files — but
+**omitted the canonical design-of-record** (`features/git-workflow/design/per-iteration-session-commit-cadence.md`,
+`status: locked`, `design-id: D-4`) and its 8+ sibling files (README, the phase-doc-set doc,
+two discussions, the storage-bounds decision, the abort backlog). Both Claude
+(F-P1/F-C1/F-R1) and Codex (PROJ-001/CONS-001) independently rated it High → REVISE; the draft
+was revised (R1) to enumerate the full `git-workflow` cluster and add that feature to the
+Scope Contract touch-surfaces.
+
+The lesson generalizes the rule above: cross-feature retirement has **two enumeration stops** —
+(1) the high-level doc that references the feature, and (2) the canonical record *inside* the
+feature. The trap is stopping at (1) and assuming (2) is covered implicitly. A retired locked
+record that survives in the feature dir will assert the retired behavior as "active and live."
+
+**Detect:** before closing a "retire a locked decision" item, read the canonical record's own
+frontmatter + `related:` fields, follow every internal pointer, and give each file in the
+sibling cluster a per-file CRUD action. Add the owning feature to the Scope Contract
+touch-surfaces. Only then is the co-touch set complete.
+
 ## Related
 
 - `mistakes/false-missing-file-grep-scoped-to-wrong-dir.md` — both are grep-scope failures (wrong directory there, wrong phrase-coverage here)

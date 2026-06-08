@@ -8,6 +8,7 @@ status: active
 created: 2026-05-24
 session: 1b26cf20-677b-498c-8c1b-7d7e971597ac
 tags: [process, worktree, execution]
+priority: high
 domain: process
 supersedes: null
 superseded_by: null
@@ -51,8 +52,35 @@ Add a "Canonical-mirror paths (worktree-absolute)" subsection to executor briefs
 - Executor's verification command reads from main-tree rather than `git -C <worktree> show HEAD:<path>`.
 - An executor reports "edited `.gobbi/projects/...`" without an absolute worktree prefix.
 
+## Recurrence — 2026-06-08 session-memory redesign (session c7673705)
+
+This trap bit **four executors in a single session**, making it the highest-frequency
+write-safety failure on record. In the session-memory redesign, the canonical hook/script
+files live at `.gobbi/projects/gobbi/hooks/...` and `.../skills/orchestration/scripts/...`,
+each with a `.claude/` symlink mirror AND a branch-isolated worktree copy. On first attempt,
+four separate executors edited the **main-tree** canonical copy instead of the worktree copy —
+even when handed an absolute path — because two compounding cues mislead:
+
+1. The `.claude/` symlink makes the canonical file *look* like one shared file.
+2. The worktree has its OWN canonical `.gobbi/.../` copy on its branch, so a bare or
+   main-tree-rooted `.gobbi/projects/gobbi/...` absolute path resolves to the main tree while
+   *appearing* canonical.
+
+Each was caught only when `git -C <worktree> status` showed the file NOT staged in the
+worktree while the main tree had dirtied. The durable correction is the same as below, plus
+one verification gate: **after every write batch, run `git -C <worktree-abs> status` and
+confirm the touched files appear in the worktree — and that the main tree stays clean — BEFORE
+committing.** A re-`cd` alone is insufficient: `cd` does not persist across tool boundaries, so
+the write surface must carry the full worktree-absolute prefix on every Edit/Write.
+
+This recurrence is a Layer-2 promotion candidate (workspace-level skill storage) — see the
+session handoff's Layer-2 recommendation.
+
 ## Related
 
 - `mistakes/skills-mirror-symlinks-not-copies.md` — the `.claude/skills/` mirror is symlinks, not physical copies; editing the canonical file reflects automatically. That is a SEPARATE concern from worktree branch-isolation described here.
 - [[edit-tool-refuses-symlink-paths]] — sibling mistake covering the Edit-tool symlink-refusal fallback that motivates the canonical-mirror path guidance.
+- [[executor-main-tree-edit-near-miss]] — same class: absolute path without the worktree-root prefix lands in the main tree.
+- [[subagent-write-cwd-defaults-to-main-tree-not-worktree]] — the cwd-default + false-completion vector of the same family.
+- [[subagent-relative-write-paths-stray-cd-doesnt-persist]] — `cd` does not persist across tool boundaries.
 - T1 implementation (PR #269)
