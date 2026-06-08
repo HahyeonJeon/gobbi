@@ -1,0 +1,15 @@
+# Pre-Wrap-up Snapshot — 2026-06-08
+# Session: 422308da-f2c4-41a4-8ee3-adc89acde977
+# Generated at Step 1 of Wrap-up WORK
+# Lists every .md file under .gobbi/projects/gobbi/ excluding sessions/ and worktrees/
+
+455 markdown files across: agents/, archive/, backlogs/, decisions/, design/, features/{agents,evaluation,git-workflow,guardrails,install-runtime,project-memory,workflow}/, mistakes/, notes/, plans/, references/, reviews/, rules/, skills/
+
+Key subdirectories relevant to this session's promotions:
+  features/workflow/decisions/   — 6 existing decision files
+  features/workflow/checklists/  — 9 existing checklist files
+  features/workflow/backlogs/    — (does not exist pre-wrap-up)
+  mistakes/                      — 55 existing mistake files
+  skills/mistake/                — SKILL.md + 2 layer2 files
+
+No features/workflow/backlogs/ directory exists pre-wrap-up.
