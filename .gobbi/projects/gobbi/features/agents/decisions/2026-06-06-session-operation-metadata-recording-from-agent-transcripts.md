@@ -64,3 +64,19 @@ The PostToolUse hook cannot resolve the worktree's `session.json` path under the
 - `features/install-runtime/references/claude-code-transcript-tooluseresult-empirical.md` — corrected empirical reference for `toolUseResult` fields
 - `plugins/gobbi/.claude-plugin/skills/orchestration/templates/session.template.json` — schemaVersion 2 template
 - `[[workflow-metadata-fetch-packaged-as-orchestration-scripts]]` — follow-on decision packaging the recording logic as runnable scripts
+
+## Amendment — session c7673705 (2026-06-08)
+
+Session c7673705 shipped the automated implementation of the recording approach this decision endorsed. This AMENDS (refines) — it does NOT reverse — the decision. The original rejection of `toolUseResult.usage` / `toolUseResult.totalTokens` / final-turn reads still holds.
+
+**What changed:**
+
+- **Task 02 (commit `6cedca99`)** — `PostToolUse` hook (`post-tool-use-agents.sh`) now reads SUBAGENT tokens from each subagent's OWN complete transcript (`${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl`) — the canonical source endorsed by this decision. The hook also resolves the worktree `session.json` deterministically (the path-mismatch bug tracked in `features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md` is fixed here). The hook does NOT use `toolUseResult.usage` or final-turn reads.
+
+- **Task 03 (commit `4e80e1b6`)** — reconcile script converges on `agentId` and captures Codex agent tokens.
+
+- **Task 04 (commit `35bd3e2e`)** — `SessionEnd` hook is the AUTHORITATIVE WRITER for the manager rollup: it computes `usage.sessionTotal` (sum of all agents' `tokensUsed.total`) and `usage.grandTotal` (`sessionTotal + codex.total`), and runs last — after all per-agent PostToolUse entries are written.
+
+- **Task 06b (commit `be2afdea`)** — single-pass reconcile to meet the 500ms hook-latency gate.
+
+**Net result:** the PostToolUse hook + SessionEnd hook together automate the recording cadence described in the original `## Consequences` section. The worktree-resolution backlog (`features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`) is closed by task 02.

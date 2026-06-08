@@ -1,8 +1,0 @@
-wrapper-agent: assistant
-session: 2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac
-task: task-01
-iter: 1
-system: codex
-written-at: 2026-05-24T00:00:00Z
-purpose: Session Identity Guard — codex must verify this file exists and write .codex-marker as FIRST action
-absolute-output-dir: /playinganalytics/git/gobbi/.gobbi/projects/gobbi/sessions/2026-05-23-1b26cf20-677b-498c-8c1b-7d7e971597ac/execution/task-01/evaluation/iter1/codex/

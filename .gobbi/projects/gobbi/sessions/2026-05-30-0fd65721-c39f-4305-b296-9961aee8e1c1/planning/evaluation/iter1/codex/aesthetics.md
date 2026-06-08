@@ -1,3 +1,0 @@
-# Aesthetics
-
-No findings.

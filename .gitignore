@@ -18,6 +18,7 @@ node_modules/
 !.gobbi/gobbi.db
 !.gobbi/projects/
 .gobbi/projects/*/rawdata/
+.gobbi/projects/*/sessions/
 .gobbi/projects/*/settings.json
 .gobbi/projects/*/worktrees/
 .gobbi/projects/*/tmp/
@@ -31,4 +32,3 @@ packages/*/node_modules/
 # `.gobbi/projects/gobbi/{skills,agents,rules}/`; this copy only exists
 # so `npm pack` can ship it inside the tarball.
 packages/cli/.gobbi/
-.gobbi/projects/gobbi/sessions/**/session.json.lock

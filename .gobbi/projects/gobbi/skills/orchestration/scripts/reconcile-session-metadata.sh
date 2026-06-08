@@ -32,14 +32,42 @@ die()  { log "$*"; exit "${2:-2}"; }
 
 usage() {
     cat >&2 <<'EOF'
-usage: reconcile-session-metadata.sh <session.json> <main-transcript>
+usage: reconcile-session-metadata.sh [--codex-stdout <f>] [--codex-rollout <f>] \
+                                     [--codex-total <N>] \
+                                     <session.json> <main-transcript>
   Reconciles agents[].tokensUsed + usage from the live transcripts. Idempotent.
+  Re-keys any toolu_-prefixed agents[] entry to its real agentId (manual backfill).
+  --codex-stdout <f>  : a `codex exec` stdout capture; parses the `tokens used\n<N>`
+                        line (commas stripped) into usage.codex.total.
+  --codex-rollout <f> : a codex rollout-*.jsonl; fallback source — uses the LAST
+                        token_count event's payload.info.total_token_usage.total_tokens.
+  --codex-total <N>   : a precomputed codex total (e.g. SessionEnd summed several
+                        rollouts); used directly as usage.codex.total.
+  When several are given, precedence is: --codex-stdout > --codex-total > --codex-rollout.
+  CRITICAL: when NO codex source is supplied, usage.codex.* is PRESERVED unchanged
+  (never overwritten with 0); grandTotal recomputes from the preserved value.
 EOF
 }
 
 [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] && { usage; exit 0; }
-session_json="${1:-}"
-main_transcript="${2:-}"
+
+codex_stdout=""
+codex_rollout=""
+codex_total_arg=""
+positional=()
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --codex-stdout)  codex_stdout="${2:-}"; shift 2 || die "missing value for --codex-stdout" ;;
+        --codex-rollout) codex_rollout="${2:-}"; shift 2 || die "missing value for --codex-rollout" ;;
+        --codex-total)   codex_total_arg="${2:-}"; shift 2 || die "missing value for --codex-total" ;;
+        --) shift; while [ "$#" -gt 0 ]; do positional+=("$1"); shift; done ;;
+        -*) usage; die "unknown option: $1" ;;
+        *)  positional+=("$1"); shift ;;
+    esac
+done
+
+session_json="${positional[0]:-}"
+main_transcript="${positional[1]:-}"
 [ -n "$session_json" ] && [ -n "$main_transcript" ] || { usage; die "missing args"; }
 [ -f "$session_json" ]    || die "session.json not found: $session_json"
 [ -f "$main_transcript" ] || die "main transcript not found: $main_transcript"
@@ -60,25 +88,116 @@ spawns="$(jq -rc '
 ' "$main_transcript" 2>/dev/null | jq -rc -s 'unique_by(.id) | .[]')" || die "enumerate failed" 3
 
 # 2) Build an updates array: one object per agent with id/type/transcriptPath/tokensUsed.
-updates="[]"
+#    Single-pass design (perf, task 06b): instead of forking agent-token-usage.sh
+#    plus a fresh jq PER spawn (O(spawns) subprocesses), do it in two fixed jq
+#    passes regardless of spawn count:
+#      a) shell loop builds a meta map { transcriptPath: {id,type} } for spawns
+#         whose subagent transcript file EXISTS, and the existing-file arg list;
+#      b) ONE jq slurps ALL existing subagent transcripts at once, groups each
+#         turn's usage by its source file (jq `input_filename`), sums per file,
+#         and joins to the meta map to emit the full updates[] array.
+#    The per-file sum matches agent-token-usage.sh (no --main) exactly.
+meta_map="{}"
+trans_files=()
 while IFS= read -r spawn; do
     [ -n "$spawn" ] || continue
     aid="$(printf '%s' "$spawn" | jq -r '.id')"
     atype="$(printf '%s' "$spawn" | jq -r '.type // empty')"
     atrans="$subagents_dir/agent-${aid}.jsonl"
     if [ -f "$atrans" ]; then
-        tok="$("$unit" "$atrans" 2>/dev/null)" || { log "unit failed for $aid (skipped)"; continue; }
+        meta_map="$(jq -c --arg id "$aid" --arg type "$atype" --arg tp "$atrans" \
+            '. + { ($tp): { id:$id, type:$type } }' <<<"$meta_map")" \
+            || die "build meta map failed" 3
+        trans_files+=("$atrans")
     else
         log "subagent transcript absent for $aid (skipped): $atrans"
-        continue
     fi
-    updates="$(jq -c --arg id "$aid" --arg type "$atype" --arg tp "$atrans" \
-        --argjson tok "$tok" '. + [{ id:$id, type:$type, transcriptPath:$tp, tokensUsed:$tok }]' \
-        <<<"$updates")" || die "build updates failed" 3
 done <<<"$spawns"
+
+# One jq over ALL existing subagent transcripts. `input_filename` keys each input
+# line to its source file; group + sum per file, then join to the meta map. This
+# is the per-spawn token sum, computed in a single subprocess instead of N.
+if [ "${#trans_files[@]}" -gt 0 ]; then
+    updates="$(jq -c -n --argjson meta "$meta_map" '
+        # Per-file usage sums, keyed by source transcript path.
+        ( reduce ( inputs
+                   | select(.type == "assistant")
+                   | { f: input_filename, u: (.message.usage // {}) } ) as $r
+            ({};
+             .[$r.f] as $acc
+             | .[$r.f] = { input:         ( ($acc.input         // 0) + ($r.u.input_tokens                // 0) ),
+                           output:        ( ($acc.output        // 0) + ($r.u.output_tokens               // 0) ),
+                           cacheRead:     ( ($acc.cacheRead     // 0) + ($r.u.cache_read_input_tokens     // 0) ),
+                           cacheCreation: ( ($acc.cacheCreation // 0) + ($r.u.cache_creation_input_tokens // 0) ) }
+            )
+        ) as $sums
+        # Emit one entry per KNOWN transcript (from the meta map), so a file with
+        # no assistant/usage turns still yields an all-zero tokensUsed entry —
+        # matching the old per-spawn loop exactly.
+        | [ $meta | to_entries[]
+            | .key as $tp
+            | .value as $m
+            | ( $sums[$tp] // { input:0, output:0, cacheRead:0, cacheCreation:0 } ) as $s
+            | ( $s + { total: ($s.input + $s.output + $s.cacheRead + $s.cacheCreation) } ) as $tok
+            | { id: $m.id, type: ($m.type // ""), transcriptPath: $tp, tokensUsed: $tok }
+          ]
+    ' "${trans_files[@]}" 2>/dev/null)" || die "build updates failed" 3
+    [ -n "$updates" ] || updates="[]"
+else
+    updates="[]"
+fi
+
+# 2b) Build the tool_use_id -> agentId re-key map from the spawns. Used to
+#     converge any stale toolu_-prefixed agents[] entry (seeded by an older hook)
+#     onto its real agentId, so the upsert produces NO duplicate agentId rows.
+rekey_map="$(jq -rc -s '
+    map(select(.tool_use_id != null and .id != null) | { (.tool_use_id): .id })
+    | add // {}
+' <<<"$spawns")" || die "build rekey map failed" 3
 
 # 3) Manager (agents[0]) tokensUsed from the main transcript (--main).
 mgr_tok="$("$unit" --main "$main_transcript" 2>/dev/null)" || die "manager sum failed" 3
+
+# 3b) Codex token capture. Precedence: --codex-stdout > --codex-total > --codex-rollout.
+#     - --codex-stdout: a `codex exec` stdout capture with a `tokens used\n<N>` line
+#       (N may carry thousands separators).
+#     - --codex-total: a precomputed total (e.g. SessionEnd summed several rollouts).
+#     - --codex-rollout: the LAST token_count event in a codex rollout-*.jsonl
+#       (.payload.info.total_token_usage.total_tokens).
+#
+#   `codex_supplied` records whether ANY codex source was provided. When it stays
+#   false, the jq step PRESERVES the existing usage.codex.* instead of zeroing it
+#   (the erasure bug: SessionEnd calls this with no codex args, so an unconditional
+#   overwrite wiped a previously-captured codex.total). Only a supplied source
+#   overwrites usage.codex.total.
+codex_total=0
+codex_supplied=0
+if [ -n "$codex_stdout" ] && [ -f "$codex_stdout" ]; then
+    # Match the line after a line that is exactly "tokens used"; strip commas.
+    _n="$(grep -A1 -iE '^[[:space:]]*tokens used[[:space:]]*$' "$codex_stdout" 2>/dev/null \
+            | grep -m1 -E '[0-9]' | tr -d ', ' | grep -oE '[0-9]+' | head -n1 || true)"
+    # Also accept an inline "tokens used: <N>" form as a secondary shape.
+    if [ -z "$_n" ]; then
+        _n="$(grep -m1 -iE 'tokens used[: ]+[0-9,]+' "$codex_stdout" 2>/dev/null \
+                | grep -oE '[0-9,]+' | tail -n1 | tr -d ', ' || true)"
+    fi
+    if [ -n "$_n" ]; then codex_total="$_n"; codex_supplied=1; fi
+fi
+if [ "$codex_supplied" = "0" ] && [ -n "$codex_total_arg" ]; then
+    codex_total="$codex_total_arg"; codex_supplied=1
+fi
+if [ "$codex_supplied" = "0" ] && [ -n "$codex_rollout" ] && [ -f "$codex_rollout" ]; then
+    _r="$(jq -r '
+        select((.payload.type? == "token_count")
+               and (.payload.info.total_token_usage.total_tokens != null))
+        | .payload.info.total_token_usage.total_tokens
+    ' "$codex_rollout" 2>/dev/null | tail -n1 || true)"
+    if [ -n "$_r" ] && [ "$_r" != "null" ]; then codex_total="$_r"; codex_supplied=1; fi
+fi
+# Guard: must be an integer; otherwise treat as not-supplied (preserve existing).
+case "$codex_total" in
+    ''|*[!0-9]*) codex_total=0; codex_supplied=0 ;;
+esac
 
 # 4) flock-serialized read-modify-write with atomic mv (mirrors post-tool-use-agents.sh).
 lock_file="$session_json.lock"
@@ -89,9 +208,30 @@ tmp_file="$session_json.tmp.$$"
     if ! jq \
         --argjson updates "$updates" \
         --argjson mgr "$mgr_tok" \
+        --argjson rekey "$rekey_map" \
+        --argjson codexTotal "$codex_total" \
+        --argjson codexSupplied "$codex_supplied" \
         --arg now "$now" '
+        # 0) Converge on agentId: re-key any toolu_-prefixed entry to its agentId
+        #    via the rekey map. If an agentId entry already exists, fold the stale
+        #    toolu_ entry into it (real fields win); else just rename the id.
+        .agents = (
+            (.agents // [])
+            | map(.id = ( if (.id|type=="string") and (.id|startswith("toolu_")) and ($rekey[.id] != null)
+                          then $rekey[.id] else .id end ))
+        )
+        # Collapse any duplicate ids the re-key produced. For each id, fold its
+        # entries left-to-right keeping non-null fields (real entry wins over a
+        # null-filled stale one); emit ids in first-seen order so positions hold.
+        | .agents = (
+            .agents as $rows
+            | ( [ $rows[].id ] | reduce .[] as $i ([]; if any(.[]; . == $i) then . else . + [$i] end) ) as $order
+            | [ $order[] as $id
+                | ( reduce ($rows[] | select(.id == $id)) as $r ({};
+                      . + ($r | with_entries(select(.value != null))) ) ) ]
+          )
         # Upsert each update by id into agents[]; create if absent, else merge tokensUsed+transcriptPath.
-        reduce $updates[] as $u (.;
+        | reduce $updates[] as $u (.;
             .agents = (
                 (.agents // [])
                 | (map(.id) | index($u.id)) as $idx
@@ -112,6 +252,16 @@ tmp_file="$session_json.tmp.$$"
            else . end)
         # Recompute usage.
         | .usage.sessionTotal = ([ .agents[].tokensUsed.total // 0 ] | add)
+        # Codex tokens (external system). Only total is known from stdout/rollout;
+        # the breakdown stays 0 unless already populated. grandTotal spans systems.
+        # PRESERVE-OR-OVERWRITE: only overwrite usage.codex.total when a codex source
+        # was supplied ($codexSupplied==1). When none was supplied (e.g. SessionEnd
+        # called with no codex args), keep the existing usage.codex.* as-is so a
+        # previously-captured total is never erased to 0.
+        | .usage.codex = ({ input:0, output:0, cacheRead:0, cacheCreation:0, total:0 }
+                          + (.usage.codex // {})
+                          + (if $codexSupplied == 1 then { total: $codexTotal } else {} end))
+        | .usage.grandTotal = ((.usage.sessionTotal // 0) + (.usage.codex.total // 0))
         | .usage.computedAt   = $now
         ' "$session_json" > "$tmp_file"; then
         log "jq reconcile failed"; rm -f "$tmp_file"; exit 3

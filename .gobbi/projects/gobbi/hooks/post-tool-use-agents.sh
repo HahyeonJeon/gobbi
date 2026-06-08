@@ -61,59 +61,75 @@ esac
 [[ -n "$cwd" ]]              || bail "missing cwd"
 
 # ---------------------------------------------------------------------------
-# D-3-3-resolver — derive session.json path from (session_id, cwd).
-# Step (i) DORMANT: read `.gobbi/project.json` if it exists (currently absent).
-# Step (ii) ACTIVE: scan `.gobbi/projects/` for a single project directory.
+# Resolve the WORKTREE session.json deterministically from session_id.
+#
+# Under the always-worktree model the live session.json lives inside the
+# session's worktree (e.g. .../worktrees/<branch>/.gobbi/.../sessions/*-<sid>/),
+# NOT in the main tree. The old cwd-only scan silently bailed whenever the hook
+# fired with the main-tree cwd — which left every subagent seeded with a toolu_
+# id and zero tokens. Resolve by GLOBBING for the unique session.json whose path
+# ends in *-<sid>/session.json across the candidate roots, then prefer the one
+# whose own `.git.worktreePath` matches its physical worktree location.
+#
+# Search roots, in order:
+#   1) $cwd (covers a worktree cwd)
+#   2) $CLAUDE_PROJECT_DIR (repo root; worktrees live under it)
+#   3) `git rev-parse --show-toplevel` from $cwd (fallback when env is unset)
 # ---------------------------------------------------------------------------
-resolve_project_name() {
-    local _cwd="$1"
-    # Step (i) — DORMANT. Honored when the file materializes.
-    local pjson="$_cwd/.gobbi/project.json"
-    if [[ -f "$pjson" ]]; then
-        local _name
-        _name=$(jq -r '.name // empty' "$pjson" 2>/dev/null || true)
-        if [[ -n "$_name" ]]; then
-            printf '%s' "$_name"
-            return 0
+resolve_session_json() {
+    local _cwd="$1" _sid="$2"
+    local roots=() r
+    [[ -n "$_cwd" ]]                  && roots+=("$_cwd")
+    [[ -n "${CLAUDE_PROJECT_DIR:-}" ]] && roots+=("$CLAUDE_PROJECT_DIR")
+    local _top
+    _top=$(git -C "$_cwd" rev-parse --show-toplevel 2>/dev/null || true)
+    [[ -n "$_top" ]]                  && roots+=("$_top")
+
+    # Collect unique candidate session.json paths ending in *-<sid>/session.json.
+    local cands=() seen=" "
+    for r in "${roots[@]}"; do
+        [[ -d "$r" ]] || continue
+        # Bounded-depth find avoids walking node_modules etc.; -L not needed.
+        local f
+        while IFS= read -r f; do
+            [[ -n "$f" ]] || continue
+            case "$seen" in *" $f "*) continue ;; esac
+            seen="$seen$f "
+            cands+=("$f")
+        done < <(find "$r" -maxdepth 8 -type f -path "*/sessions/*-${_sid}/session.json" 2>/dev/null)
+    done
+
+    local n=${#cands[@]}
+    if [[ $n -eq 0 ]]; then
+        log "session-json resolver: no candidate for sid=$_sid under roots=${roots[*]}"
+        return 1
+    fi
+    if [[ $n -eq 1 ]]; then
+        printf '%s' "${cands[0]}"
+        return 0
+    fi
+
+    # Multiple candidates (e.g. main-tree stale copy + live worktree copy).
+    # Prefer the one whose own session.json declares a worktreePath that the
+    # candidate physically lives under — that is the live worktree writer.
+    local c best="" hits=0
+    for c in "${cands[@]}"; do
+        local wt
+        wt=$(jq -r '.git.worktreePath // empty' "$c" 2>/dev/null || true)
+        if [[ -n "$wt" && "$c" == "$wt"/* ]]; then
+            best="$c"; hits=$((hits + 1))
         fi
-    fi
-    # Step (ii) — directory scan; require exactly one project.
-    local projects_dir="$_cwd/.gobbi/projects"
-    [[ -d "$projects_dir" ]] || { log "resolver: $projects_dir absent"; return 1; }
-    local dirs=()
-    local d
-    for d in "$projects_dir"/*/; do
-        [[ -d "$d" ]] && dirs+=("$d")
     done
-    local n=${#dirs[@]}
-    if [[ $n -ne 1 ]]; then
-        log "session-dir resolver: cannot disambiguate project name (n=$n)"
-        return 1
+    if [[ $hits -eq 1 ]]; then
+        printf '%s' "$best"
+        return 0
     fi
-    basename "${dirs[0]}"
+    log "session-json resolver: cannot disambiguate sid=$_sid (n=$n, wt-matches=$hits)"
+    return 1
 }
 
-resolve_session_dir() {
-    local _cwd="$1" _project="$2" _sid="$3"
-    local sessions_dir="$_cwd/.gobbi/projects/$_project/sessions"
-    [[ -d "$sessions_dir" ]] || { log "resolver: $sessions_dir absent"; return 1; }
-    local matches=()
-    local d
-    for d in "$sessions_dir"/*-"$_sid"; do
-        [[ -d "$d" ]] && matches+=("$d")
-    done
-    local n=${#matches[@]}
-    if [[ $n -ne 1 ]]; then
-        log "session-dir resolver: cannot disambiguate session dir (n=$n)"
-        return 1
-    fi
-    printf '%s' "${matches[0]}"
-}
-
-project_name=$(resolve_project_name "$cwd")       || bail "resolver failed (project)"
-session_dir=$(resolve_session_dir "$cwd" "$project_name" "$session_id") \
-    || bail "resolver failed (session dir)"
-session_json="$session_dir/session.json"
+session_json=$(resolve_session_json "$cwd" "$session_id") \
+    || bail "resolver failed (session json)"
 [[ -f "$session_json" ]] || bail "session.json not found at $session_json"
 
 # ---------------------------------------------------------------------------
@@ -142,23 +158,61 @@ iter=$(extract_header "iteration")
 sub_step=$(extract_header "sub-step")
 
 # ---------------------------------------------------------------------------
-# Two-tier extraction of result-side telemetry (D-3-1, D-3-6).
-# Tier 1 (preferred): rich `toolUseResult` from the transcript JSONL,
-#                     correlated by tool_use_id.
-# Tier 2 (fallback): the documented `tool_result` already on stdin.
-# Failure event has no useful result payload — synthesize a "failed" record.
+# Resolve the REAL agentId from the main transcript (D-3-6).
+#
+# The main transcript carries a `toolUseResult` line for each spawn whose
+# `tool_use_id` correlates to this Agent call; `.toolUseResult.agentId` is the
+# short id (e.g. acfaed3f977c0b4de) that names the subagent's own transcript at
+# ${transcript_path%.jsonl}/subagents/agent-<agentId>.jsonl.
+#
+# CRITICAL: this hook MUST NEVER seed an entry keyed by the toolu_ tool_use_id.
+# If the real agentId cannot be resolved yet (e.g. the toolUseResult line is not
+# flushed at fire time), bail gracefully — SessionEnd is the authoritative
+# reconciler and will backfill the entry from the completed transcripts.
+# (Supersede-note: features/agents/decisions/2026-06-06-session-operation-
+#  metadata-recording-from-agent-transcripts.md rejected this hook for token
+#  recording; this fix makes the hook a best-effort SEED. Task 08 amends that
+#  decision doc formally.)
 # ---------------------------------------------------------------------------
-tier1=""
+agent_id=""
+agent_type=""
 if [[ -n "$transcript_path" && -f "$transcript_path" ]]; then
     # Last matching line wins (retries supersede earlier attempts).
-    tier1=$(jq -c --arg tuid "$tool_use_id" '
-        select(.toolUseResult != null)
-        | select(
-            (.message.content[]?.tool_use_id // empty) == $tuid
-            or (.toolUseResult.agentId // empty) != null
-              and ((.message.content[]?.tool_use_id // empty) == $tuid)
-          )
+    tur=$(jq -c --arg tuid "$tool_use_id" '
+        select((.toolUseResult | type == "object") and (.toolUseResult.agentId != null))
+        | select((.message.content[]?.tool_use_id // empty) == $tuid)
+        | { agentId: .toolUseResult.agentId, agentType: .toolUseResult.agentType }
     ' "$transcript_path" 2>/dev/null | tail -n1 || true)
+    if [[ -n "$tur" ]]; then
+        agent_id=$(jq -r '.agentId // ""'   <<<"$tur" 2>/dev/null || true)
+        agent_type=$(jq -r '.agentType // ""' <<<"$tur" 2>/dev/null || true)
+    fi
+fi
+
+# NEVER seed a toolu_ id. Bail if the real agentId is not resolvable yet.
+[[ -n "$agent_id" ]] || bail "agentId unresolved for tool_use_id=$tool_use_id (SessionEnd reconciles)"
+case "$agent_id" in
+    toolu_*) bail "refusing to seed toolu_ id ($agent_id) for tool_use_id=$tool_use_id" ;;
+esac
+
+# agentType from the transcript, else the delegation prompt's subagent_type.
+[[ -n "$agent_type" ]] || agent_type="$subagent_type"
+
+# ---------------------------------------------------------------------------
+# Cumulative tokens summed from the agent's OWN transcript (NOT final-turn
+# toolUseResult.usage). Reuse the orchestration unit script so the figure
+# matches the MEMORIZATION/Wrap-up reconciler exactly.
+# ---------------------------------------------------------------------------
+agent_transcript="${transcript_path%.jsonl}/subagents/agent-${agent_id}.jsonl"
+unit_script="$cwd/.gobbi/projects/gobbi/skills/orchestration/scripts/agent-token-usage.sh"
+[[ -f "$unit_script" ]] || unit_script="${CLAUDE_PROJECT_DIR:-}/.gobbi/projects/gobbi/skills/orchestration/scripts/agent-token-usage.sh"
+
+tokens_json="null"
+if [[ -f "$agent_transcript" && -f "$unit_script" ]]; then
+    _tok=$(bash "$unit_script" "$agent_transcript" 2>/dev/null || true)
+    if [[ -n "$_tok" ]] && jq -e . <<<"$_tok" >/dev/null 2>&1; then
+        tokens_json="$_tok"
+    fi
 fi
 
 # Compose the upsert input JSON for the jq pipeline.
@@ -166,31 +220,25 @@ status="ok"
 [[ "$hook_event" == "PostToolUseFailure" ]] && status="failed"
 
 upsert_input=$(jq -n \
+    --arg aid      "$agent_id" \
     --arg tuid     "$tool_use_id" \
     --arg model    "$model" \
     --arg step     "$step" \
     --arg phase    "$phase" \
     --arg iter     "$iter" \
     --arg sub_step "$sub_step" \
-    --arg sub_type "$subagent_type" \
+    --arg atype    "$agent_type" \
     --arg status   "$status" \
     --arg event    "$hook_event" \
-    --argjson tier1 "${tier1:-null}" \
-    --argjson tier2 "$(jq -c '.tool_result // null' <<<"$payload")" \
+    --arg atrans   "$agent_transcript" \
+    --argjson tok  "$tokens_json" \
     '
-    # Pick agentId/agentType/usage from tier1 (toolUseResult) when present;
-    # fall back to tier2 (tool_result) shape; finally synthesize from tuid.
-    ($tier1.toolUseResult // {})                       as $r1
-    | ($tier2 // {})                                   as $r2
-    | (($r1.agentId   // $r2.agentId   // null))       as $aid
-    | (($r1.agentType // $r2.agentType // $sub_type))  as $atype
-    | (($r1.usage     // $r2.usage     // {}))         as $usage
-    | (($r1.totalDurationMs // null))                  as $dur
+    ($tok // {}) as $u
     | {
-        id:        ($aid // $tuid),
+        id:        $aid,
         tool_use_id: $tuid,
-        name:      ($atype // null),
-        type:      ($atype // null),
+        name:      (if $atype == "" then null else $atype end),
+        type:      (if $atype == "" then null else $atype end),
         step:      (if $step     == "" then null else $step     end),
         phase:     (if $phase    == "" then null else $phase    end),
         iter:      (if $iter     == "" then null else $iter     end),
@@ -198,14 +246,16 @@ upsert_input=$(jq -n \
         model:     (if $model    == "" then null else $model    end),
         status:    $status,
         hook_event: $event,
-        transcriptPath: null,
+        transcriptPath: $atrans,
+        # Cumulative-from-own-transcript. SessionEnd is the authoritative
+        # reconciler of agents[].tokensUsed totals and usage.* — this is a seed.
         tokensUsed: {
-          input:         ($usage.input_tokens                // 0),
-          output:        ($usage.output_tokens               // 0),
-          cacheRead:     ($usage.cache_read_input_tokens     // 0),
-          cacheCreation: ($usage.cache_creation_input_tokens // 0)
+          input:         ($u.input         // 0),
+          output:        ($u.output        // 0),
+          cacheRead:     ($u.cacheRead     // 0),
+          cacheCreation: ($u.cacheCreation // 0),
+          total:         ($u.total         // 0)
         },
-        totalDurationMs: $dur,
         finishedAt: (now | todate)
       }
     ')
