@@ -1,5 +1,0 @@
-## Findings
-
-None.
-
-VERDICT: PASS

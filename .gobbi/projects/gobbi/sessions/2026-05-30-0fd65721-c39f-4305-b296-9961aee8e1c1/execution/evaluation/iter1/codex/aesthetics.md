@@ -1,3 +1,0 @@
-# Aesthetics Perspective
-
-No findings.
