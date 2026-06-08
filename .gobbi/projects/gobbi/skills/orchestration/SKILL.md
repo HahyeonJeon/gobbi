@@ -175,6 +175,9 @@ sessions/{date}-{session-id}/
 ├── settings.json             ← resolved session config (cascade)
 ├── state.json                ← per-session workflow state-machine file (manager init row 3; see § State persistence)
 ├── session.json.lock         ← advisory write-lock guarding concurrent session.json writes (manager; safe to ignore on read)
+├── transcripts/              ← ephemeral raw-.jsonl copies (manager main + each subagent) for in-session debug ONLY;
+│                                written by MEMORIZATION (not any hook); gitignored, never committed, never promoted to
+│                                notes/; removed with the worktree at session end (incl. abort). See memorization/SKILL.md.
 └── {loop}/                   ← loop ∈ ideation | preparation | planning | execution | wrap-up
     ├── rawdata/              ← draft-iter{n}.md, transcript-iter{n}.jsonl, discussion-log.md, research/{slug}.md
     │                            (the ONLY scratch surface — no separate tmp/ tier; resume/restore scratch lives here, not in restore/)
