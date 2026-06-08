@@ -75,7 +75,7 @@ Session c7673705 shipped the automated implementation of the recording approach 
 
 - **Task 03 (commit `4e80e1b6`)** — reconcile script converges on `agentId` and captures Codex agent tokens.
 
-- **Task 04 (commit `35bd3e2e`)** — `SessionEnd` hook is the AUTHORITATIVE WRITER for the manager rollup: it computes `usage.sessionTotal` (sum of all agents' `tokensUsed.total`) and `usage.grandTotal` (sum across input/output/cacheRead/cacheCreation), and runs last — after all per-agent PostToolUse entries are written.
+- **Task 04 (commit `35bd3e2e`)** — `SessionEnd` hook is the AUTHORITATIVE WRITER for the manager rollup: it computes `usage.sessionTotal` (sum of all agents' `tokensUsed.total`) and `usage.grandTotal` (`sessionTotal + codex.total`), and runs last — after all per-agent PostToolUse entries are written.
 
 - **Task 06b (commit `be2afdea`)** — single-pass reconcile to meet the 500ms hook-latency gate.
 
