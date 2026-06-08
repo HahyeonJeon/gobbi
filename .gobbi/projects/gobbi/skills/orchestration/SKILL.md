@@ -302,12 +302,28 @@ session runs.
 
 ### Recording workflow metadata
 
-The manager sums each agent's cumulative token usage by running `jq` over that agent's own transcript, which
-carries its full per-turn history:
+Token recording is **hook-driven**, not manager-driven. Two hooks write `agents[].tokensUsed` + `usage.*`,
+each reading from a complete transcript:
 
-- **Subagents:** `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl` — `<agentId>` is the
-  short `toolUseResult.agentId` (e.g. `a7363717821bc156d`), which is also the file stem (`isSidechain: true`).
-- **Manager (main agent):** the main transcript `$CLAUDE_TRANSCRIPT_PATH`, filtering `isSidechain == false`.
+- **PostToolUse hook** ([`post-tool-use-agents.sh`](../../../../.claude/hooks/post-tool-use-agents.sh), matcher
+  `Task\|Agent`) — fires after each subagent returns. It seeds that subagent's `agents[]` entry **best-effort**
+  from that agent's OWN complete transcript at `${CLAUDE_TRANSCRIPT_PATH%.jsonl}/subagents/agent-<agentId>.jsonl`
+  (`<agentId>` is the short `toolUseResult.agentId`, e.g. `a7363717821bc156d`, also the file stem;
+  `isSidechain: true`). "Best-effort" = cumulative from that agent's own transcript at the moment it returned —
+  correct for a single-turn agent, but not guaranteed final for a continued one.
+- **SessionEnd hook** ([`session-end.sh`](../../../../.claude/hooks/session-end.sh)) — fires once at session
+  termination, runs LAST after every transcript is complete, and is the **single authoritative writer** of
+  cumulative `agents[].tokensUsed` totals and `usage.*`. It invokes
+  [`reconcile-session-metadata.sh`](scripts/reconcile-session-metadata.sh), which reconciles every entry from its
+  own complete subagent transcript, computes the **manager rollup** (`agents[0].tokensUsed` summed from the main
+  transcript `$CLAUDE_TRANSCRIPT_PATH`, `isSidechain == false`), captures codex tokens, and recomputes
+  `usage.sessionTotal` + `usage.codex` + `usage.grandTotal` + `usage.computedAt`.
+
+**Authority rule.** SessionEnd is the single authoritative writer of `agents[].tokensUsed` cumulative totals and
+`usage.*`; PostToolUse seeds each subagent entry best-effort from that agent's own complete transcript; SessionEnd
+runs last and reconciles from the complete transcripts (the correctness guarantee). Not-fired degraded path: if
+SessionEnd does not fire, values are the PostToolUse best-effort (still cumulative-from-own-transcript, not
+final-turn).
 
 **Field reference.**
 
@@ -317,25 +333,29 @@ carries its full per-turn history:
 | `workflow.chat.tasks[]` | <ul><li>Chat sessions only (`settings.mode == "chat"`; empty for Auto).</li><li>One entry per task slice: `taskNo`, `slug`, `startedAt`, `finishedAt`.</li><li>Per-loop sub-records `ideation` / `preparation` / `planning` / `execution` — same `{state, verdict, iter, maxIterations, phase, iterations[]}` shape as `workflow.{step}`.</li><li>`taskRecord: { path, writtenAt }`.</li><li>`preparation` defaults to `state: "Skipped"`.</li><li>Present in both `state.json` (the live state-machine projection, R3) and `session.json` (archives the final iter + verdict per slice, R2).</li><li>Both `templates/state.template.json` and `templates/session.template.json` seed `workflow.chat: { tasks: [] }`; Auto sessions ship the same templates and leave the array empty.</li></ul> |
 | `agents[]` | <ul><li>Flat array, one entry per spawn, **manager as `agents[0]`** (template ships the manager seed, `tokensUsed` zeroed).</li><li>Identity: `id` (short `agentId`; manager = own session id), `name`, `type` (`manager` \| `leader` \| `executor` \| `evaluator` \| `assistant`) = the ROLE, `kind` (`manager` \| `subagent` \| `teammate`) = the SPAWN MECHANISM, `model`, `system`, `transcriptPath` (THIS agent's transcript), `teammateName` (the Agent-Teams `members[].name`; `null` for a plain subagent).</li><li>Routing: `step`, `phase` (`null` for the manager entry), `iter` (`null` for Configuration + manager), `sub_step` (`null` if single). For a CONTINUED agent (multiple turns under one `id`), these top-level routing fields hold the LATEST turn; the full per-turn history lives in `turns[]`.</li><li>Continuation: `continuationOf` (`id` of the predecessor entry this re-primed agent continues, e.g. after `/compact` killed the in-process teammate; `null` if not a continuation), `turns[]` (one object per continuation turn: `{ step, phase, iter, sub_step, tokensUsed, startedAt, finishedAt }`) so a continued agent's per-turn routing is preserved instead of clobbered by the upsert-by-`id`.</li><li>Lifecycle: `status` (`ok` \| `failed`), `startedAt`, `finishedAt`.</li><li>Back-compat: `kind` / `teammateName` / `continuationOf` / `turns` are additive and optional — an entry written before this schema (or by the unmodified hook) omits them; readers treat absent `kind` as `subagent`, absent `turns` as `[]`, absent `continuationOf` as `null`.</li></ul> |
 | `agents[].tokensUsed` | `{input, output, cacheRead, cacheCreation, total}` — **cumulative** across ALL of this agent's turns, from THIS agent's own transcript. `total = input + output + cacheRead + cacheCreation`. |
-| `usage` | `usage.sessionTotal` = sum of every `agents[].tokensUsed.total`; `usage.computedAt` = ISO timestamp of the last rollup. |
+| `usage` | <ul><li>`usage.sessionTotal` = sum of every `agents[].tokensUsed.total` (Claude-system agents).</li><li>`usage.codex` = `{input, output, cacheRead, cacheCreation, total}` for the external Codex system; only `total` is known from the Codex stdout / rollout, the breakdown stays `0` unless already populated (D6).</li><li>`usage.grandTotal` = `usage.sessionTotal + usage.codex.total` — the cross-system total (D6).</li><li>`usage.computedAt` = ISO timestamp of the last rollup.</li></ul> |
 
-**Procedure — when / who / how.** The manager owns all writes.
+**Procedure — when / who / how.** The manager writes the session *frame* (identity, git, `workflow.{step}`
+routing); the *token* fields (`agents[].tokensUsed`, `usage.*`) are written by the two hooks per the Authority
+rule above. The one token-write the manager still owns is a continued **teammate** turn — a teammate is not a
+`Task`/`Agent` result, so no PostToolUse fires for it (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)).
 
-| When | What is written |
-|---|---|
-| Session start (Configuration) | Frame: identity + targeting + environment + `startedAt` + `git` (from settings). Manager seed: fill `agents[0]` (`type: "manager"`) — `id` / `name` / `model` / `system` / `transcriptPath` / `startedAt`, `step: "configuration"`, `phase: null`; `tokensUsed` stays zeroed until a rollup. |
-| Worktree creation | `git.branch` + `git.worktreePath`. |
-| PR opened | `git.pr` (stays `null` until then — including while a PR is deferred for missing `gh`). |
-| Each step transition / loop close / step exit | `workflow.{step}.startedAt` / `finishedAt`; `iter` (steps 2-6); `verdict` (steps 2-6). For Chat: the matching `workflow.chat.tasks[]` sub-records. |
-| Each subagent return (immediate) | Enumerate the just-returned spawn from the parent transcript by `tool_use_id`; sum its `tokensUsed` from its own transcript; upsert the matching `agents[]` entry by `id`. This is the `Task`/`Agent`-hook path — it does NOT fire for a teammate turn (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)). |
-| Each continuation turn (manager-recorded) | A continued agent (same `id`, re-primed) does NOT get its prior routing overwritten: append a `turns[]` record (`step`/`phase`/`iter`/`sub_step` + that turn's `tokensUsed`/timestamps), set the top-level routing to the latest turn, and set `continuationOf` on a re-primed entry. The plain upsert-by-`id` alone would clobber per-turn routing — see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams). |
-| MEMORIZATION (per iter) + Wrap-up (bulk reconcile, idempotent safety net) | Re-enumerate all spawns; re-sum each agent's own transcript; refresh `agents[0]` (manager) from the main transcript; upsert every entry by `id` (last write wins); recompute `usage.sessionTotal` + stamp `usage.computedAt`. The parent-transcript enumeration covers only `Task`/`Agent` subagents — a teammate session is reconciled separately from its OWN transcript (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)). |
-| Session end | `finishedAt` (top-level). |
+| When | Who | What is written |
+|---|---|---|
+| Session start (Configuration) | manager | Frame: identity + targeting + environment + `startedAt` + `git` (from settings). Manager seed: fill `agents[0]` (`type: "manager"`) — `id` / `name` / `model` / `system` / `transcriptPath` / `startedAt`, `step: "configuration"`, `phase: null`; `tokensUsed` stays zeroed until a hook rollup. |
+| Worktree creation | manager | `git.branch` + `git.worktreePath`. |
+| PR opened | manager | `git.pr` (stays `null` until then — including while a PR is deferred for missing `gh`). |
+| Each step transition / loop close / step exit | manager | `workflow.{step}.startedAt` / `finishedAt`; `iter` (steps 2-6); `verdict` (steps 2-6). For Chat: the matching `workflow.chat.tasks[]` sub-records. |
+| Each subagent return (immediate) | PostToolUse hook | Seeds the just-returned subagent's `agents[]` entry **best-effort** by `id`, summing `tokensUsed` from that agent's OWN complete transcript. This is the `Task`/`Agent`-hook path; it does NOT fire for a teammate turn (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)). The seed is reconciled at SessionEnd — it is not the final value. |
+| Each teammate continuation turn | manager | A continued teammate is not a `Task`/`Agent` result, so the PostToolUse hook does not capture it: the manager appends a `turns[]` record (`step`/`phase`/`iter`/`sub_step` + that turn's `tokensUsed`/timestamps), sets the top-level routing to the latest turn, and sets `continuationOf` on a re-primed entry. The plain upsert-by-`id` alone would clobber per-turn routing — see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams). |
+| Session end (authoritative reconcile) | SessionEnd hook | Runs LAST, after every transcript is complete. The **single authoritative writer** of cumulative `agents[].tokensUsed` + `usage.*`: re-reconciles every `agents[]` entry from its own complete transcript, refreshes `agents[0]` (manager rollup) from the main transcript, captures codex tokens, and recomputes `usage.sessionTotal` + `usage.codex` + `usage.grandTotal` + `usage.computedAt`. It is the correctness guarantee the PostToolUse seed is reconciled against. |
+| MEMORIZATION / Wrap-up (optional safety net) | manager (invokes script) | The same reconcile may be run mid-session as an idempotent safety net — it does NOT replace SessionEnd, which always runs last. The parent-transcript enumeration covers only `Task`/`Agent` subagents — a teammate session is reconciled separately from its OWN transcript (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)). |
+| Session end | manager | `finishedAt` (top-level). |
 
 Packaged as composable scripts in [`scripts/`](scripts/):
 
-- [`agent-token-usage.sh`](scripts/agent-token-usage.sh): cumulative `tokensUsed` for one transcript.
-- [`reconcile-session-metadata.sh`](scripts/reconcile-session-metadata.sh): bulk reconcile — enumerate → per-agent sum → manager sum → upsert `agents[]` → recompute `usage` (atomic, under `flock`); idempotent. Run at MEMORIZATION + Wrap-up. This script reads ONLY the parent transcript's `subagents/` directory — it does NOT see teammate sessions (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)).
+- [`agent-token-usage.sh`](scripts/agent-token-usage.sh): cumulative `tokensUsed` for one transcript (`--main` for the manager rollup from the main transcript).
+- [`reconcile-session-metadata.sh`](scripts/reconcile-session-metadata.sh): bulk reconcile — enumerate → per-agent sum → manager rollup → upsert `agents[]` → recompute `usage.sessionTotal` / `usage.codex` / `usage.grandTotal` (atomic, under `flock`); idempotent. Invoked by the **SessionEnd hook** as the authoritative pass; may also be run at MEMORIZATION / Wrap-up as a safety net. This script reads ONLY the parent transcript's `subagents/` directory — it does NOT see teammate sessions (see [Teammate-aware metadata](#teammate-aware-metadata-agent-teams)).
 
 ### Teammate-aware metadata (Agent Teams)
 
