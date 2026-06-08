@@ -6,7 +6,7 @@
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{loop}/staging/reports/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
+1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
 2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
 
 For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
@@ -29,7 +29,7 @@ A single report belongs to **exactly one** `report_type`. If an artifact spans m
 
 ## When to write
 
-- **During any loop's MEMORIZATION**: when the loop produced an in-session deep-dive worth preserving (`post-mortem`) — stage at `sessions/{date}-{session-id}/{loop}/staging/reports/{slug}.md`; Wrap-up promotes.
+- **During any loop's MEMORIZATION**: when the loop produced an in-session deep-dive worth preserving (`post-mortem`) — stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md`; Wrap-up promotes.
 - **During Wrap-up MEMORIZATION**: when the session's close coincides with a periodic boundary (week, sprint, milestone, release) — Wrap-up produces the `status` report and writes it directly to project memory.
 - **Out-of-band, by CLI**: when an analytics / measurement command runs outside a session — the resulting `analytics` report drops into a session's `staging/reports/` for the next Wrap-up, OR (for fully session-independent runs) is staged via a synthetic "ops" session — exact mechanism TBD.
 
@@ -112,7 +112,7 @@ When a single observation could be either a note or a report, default to a **not
 
 ## Promotion source
 
-- **Loop MEMORIZATION → staging**: assistant stages at `sessions/{date}-{session-id}/{loop}/staging/reports/{slug}.md` per the [`reports.md`](reports.md) template. Type is encoded in frontmatter `report_type`. Wrap-up promotes to `.gobbi/projects/{project-name}/reports/{YYYY-MM-DD}-{slug}.md` (rewriting filename to date-prefixed form during promotion).
+- **Loop MEMORIZATION → staging**: assistant stages at `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md` per the [`reports.md`](reports.md) template. Type is encoded in frontmatter `report_type`. Wrap-up promotes to `.gobbi/projects/{project-name}/reports/{YYYY-MM-DD}-{slug}.md` (rewriting filename to date-prefixed form during promotion).
 - **Wrap-up MEMORIZATION → direct write**: Wrap-up may produce its own reports (typically `status` at session close) and write directly to the project-memory destination without going through staging — Wrap-up is the project-memory sole writer and is not constrained by the staging boundary.
 
 ## Linking back

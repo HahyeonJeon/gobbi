@@ -8,15 +8,15 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 
 Skill for any agent performing synthesis during a loop's MEMORIZATION sub-phase. Whoever loads this skill takes on the **assistant role** for the duration of the synthesis — the role, not a fixed agent type. The agent preserves loop artifacts in **session memory only**: the canonical synthesized artifact, the raw inputs that fed it, and typed-finding stagings that Wrap-up will later promote to project memory.
 
-The model is **staging → Wrap-up promotion**. Loop MEMORIZATION writes **only** to session memory under `sessions/{date}-{session-id}/{loop}/`. Project memory writes happen exclusively during Wrap-up, which reads accumulated session staging across loops and promotes deterministically to `features/{feature-name}/...` + project-tier directories per the routing table in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
+The model is **staging → Wrap-up promotion**. Loop MEMORIZATION writes **only** to session memory under `sessions/{date}-{session-id}/{N}-{loop}/`. Project memory writes happen exclusively during Wrap-up, which reads accumulated session staging across loops and promotes deterministically to `features/{feature-name}/...` + project-tier directories per the routing table in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md). For the canonical session-tree shape the assistant writes into — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md), the single source of truth.
 
 Inputs to a MEMORIZATION run:
 - The loop identity (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
 - The iter number `n` (supplied by the manager from `session.json.workflow.{loop}.iterations.length`)
 - The EVALUATION verdict (`PASS`, `REVISE`, or `FAIL`)
-- Leader / executor drafts at `sessions/.../{loop}/rawdata/draft-iter{n}.md`
-- Evaluator per-perspective files at `sessions/.../{loop}/evaluation/iter{m}/{system}/{perspective}.md` for `m ∈ 1..n`
-- The discussion log at `sessions/.../{loop}/rawdata/discussion-log.md`
+- Leader / executor drafts at `sessions/.../{N}-{loop}/working/draft-iter{n}.md`
+- Evaluator per-perspective files at `sessions/.../{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md` for `m ∈ 1..n`
+- The discussion log at `sessions/.../{N}-{loop}/working/discussion-log.md`
 - The agent transcript (`session.json.transcriptPath`, tilde-expand `$HOME` on read; or `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env; or harness equivalent)
 - Prior-iter staging (if `n ≥ 2` AND verdict is `PASS`) — findings carried forward per cumulative-staging rule
 
@@ -34,11 +34,12 @@ The agent in the assistant role MUST observe these tier boundaries. The only wri
 
 | Memory tier | Path root | Access from assistant role |
 |---|---|---|
-| **Session memory — own loop rawdata** | `sessions/{date}-{session-id}/{loop}/rawdata/` | **READ + WRITE** — transcript preservation; leader / executor drafts already exist and are preserved untouched |
-| **Session memory — own loop artifacts** | `sessions/{date}-{session-id}/{loop}/artifacts/` | **WRITE (PASS only)** — directory holding the loop's PASS-iter output artifacts. Filenames and counts are free; every file MUST carry the artifact frontmatter (see § Artifact frontmatter schema) |
-| **Session memory — staging** | `sessions/{date}-{session-id}/{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` | **READ + WRITE (PASS only)** — typed-finding stagings + design + discussions + backlogs + reviews + reports + (Planning-only) plans |
-| **Session memory — own loop evaluation per-iter** | `sessions/{date}-{session-id}/{loop}/evaluation/iter{m}/{system}/{perspective}.md` (m ≤ n) | **READ-ONLY** — input for canonical synthesis (Step 5) and cumulative staging (Step 6); walks iter `1..n` |
-| **Session memory — prior loops** | `sessions/{date}-{session-id}/{prior-loop}/artifacts/` | **READ-ONLY** — cross-loop context for canonical synthesis (e.g., Planning MEMORIZATION reads the full `ideation/artifacts/` directory) |
+| **Session memory — own loop working** | `sessions/{date}-{session-id}/{N}-{loop}/working/` | **READ + WRITE** — mutable scratch (drafts, discussion-log, research); leader / executor drafts already exist and are preserved untouched |
+| **Session memory — session-root transcripts** | `sessions/{date}-{session-id}/transcripts/` | **WRITE** — single transcript surface; one immutable `{role}-{agentId}.jsonl` per agent run, copied at Step 2, accumulating across all loops. Gitignored, never promoted |
+| **Session memory — own loop outputs** | `sessions/{date}-{session-id}/{N}-{loop}/outputs/` | **WRITE (PASS only)** — directory holding the loop's PASS-iter output artifacts. Filenames and counts are free; every file MUST carry the artifact frontmatter (see § Artifact frontmatter schema) |
+| **Session memory — staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` | **READ + WRITE (PASS only)** — typed-finding stagings + design + discussions + backlogs + reviews + reports + (Planning-only) plans |
+| **Session memory — own loop evaluation per-iter** | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md` (m ≤ n) | **READ-ONLY** — input for canonical synthesis (Step 5) and cumulative staging (Step 6); walks iter `1..n` |
+| **Session memory — prior loops** | `sessions/{date}-{session-id}/{N}-{prior-loop}/outputs/` | **READ-ONLY** — cross-loop context for canonical synthesis (e.g., Planning MEMORIZATION reads the full `1-ideation/outputs/` directory) |
 | **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **UPSERT** — own loop's `workflow.{loop}.iterations[]` entries + `workflow.{loop}.finishedAt` + `workflow.{loop}.verdict`. All other fields preserved verbatim |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **FORBIDDEN for Ideation / Planning / Execution loops** — never written by these loops; Wrap-up owns feature-memory writes. **PERMITTED for Wrap-up loop's own MEMORIZATION** — see "Wrap-up loop exception" row below |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/` | **FORBIDDEN for Ideation / Planning / Execution loops** — never written by these loops; Wrap-up owns project-memory writes. **PERMITTED for Wrap-up loop's own MEMORIZATION** — see "Wrap-up loop exception" row below |
@@ -61,7 +62,7 @@ Loop MEMORIZATION never writes to project memory (`features/{feature-name}/...`,
 
 > **Run after every EVALUATION verdict — PASS, REVISE, or FAIL.**
 
-Every iteration preserves a transcript + iter entry in `session.json` regardless of outcome, so each iteration leaves a durable audit trail before the loop either restarts, escalates, or completes. Only `PASS` additionally writes the artifacts/ files and stages typed-finding artifacts. `REVISE` and `FAIL` stop after the transcript + session.json upsert; the FAIL path is the same as REVISE for persistence purposes — the manager escalates after MEMORIZATION runs.
+Every iteration preserves a transcript + iter entry in `session.json` regardless of outcome, so each iteration leaves a durable audit trail before the loop either restarts, escalates, or completes. Only `PASS` additionally writes the `outputs/` files and stages typed-finding artifacts. `REVISE` and `FAIL` stop after the transcript + session.json upsert; the FAIL path is the same as REVISE for persistence purposes — the manager escalates after MEMORIZATION runs.
 
 > **Cumulative staging on PASS.**
 
@@ -77,7 +78,7 @@ All `CREATE` operations write-or-overwrite the target path; all `session.json` u
 
 > **Store what survives, not what's transient.**
 
-`rawdata/` holds the unfiltered audit trail (drafts, transcripts, discussion-log). The `artifacts/` directory holds the distilled outputs the next loop reads. Staging is what Wrap-up will promote — be selective about what becomes a `staging/decisions/{slug}.md` vs noise.
+`working/` holds the unfiltered audit trail (drafts, discussion-log, research). Raw transcripts live in the single session-root `transcripts/`. The `outputs/` directory holds the distilled outputs the next loop reads. Staging is what Wrap-up will promote — be selective about what becomes a `staging/decisions/{slug}.md` vs noise.
 
 > **Moment-of-capture, not end-of-loop.**
 
@@ -85,13 +86,13 @@ Corrections, decisions, and mistake-candidates are staged at the moment they occ
 
 > **Templates over freeform — for staging. Frontmatter over freeform — for artifacts.**
 
-Every staging subdirectory has a template at [`templates/{directory-name}.md`](templates/) — stamping the template ensures the artifact is structured enough for Wrap-up to promote without parsing prose. The `artifacts/` directory uses a lighter contract: filenames and content are free; only the frontmatter schema is mandatory (see § Artifact frontmatter schema below).
+Every staging subdirectory has a template at [`templates/{directory-name}.md`](templates/) — stamping the template ensures the artifact is structured enough for Wrap-up to promote without parsing prose. The `outputs/` directory uses a lighter contract: filenames and content are free; only the frontmatter schema is mandatory (see § Artifact frontmatter schema below).
 
 ---
 
 ## Artifact frontmatter schema
 
-Every file under `sessions/{date}-{session-id}/{loop}/artifacts/` MUST carry this YAML frontmatter. Filenames, file counts, and body content are free — the assistant picks whatever decomposition fits the loop's output best (`idea.md`, `framed-problem.md`, `scope-contract.md`, `design-options.md`, `task-list.md`, `handoff.md`, `memory-reads.md`, etc.). The frontmatter is the only structural constraint.
+Every file under `sessions/{date}-{session-id}/{N}-{loop}/outputs/` MUST carry this YAML frontmatter. Filenames, file counts, and body content are free — the assistant picks whatever decomposition fits the loop's output best (`idea.md`, `framed-problem.md`, `scope-contract.md`, `design-options.md`, `task-list.md`, `handoff.md`, `memory-reads.md`, etc.). The frontmatter is the only structural constraint.
 
 ```yaml
 ---
@@ -115,7 +116,7 @@ Field semantics:
 | `created_at` | Yes | ISO 8601 date (YYYY-MM-DD) for chronological ordering |
 | `status` | Yes | `draft` (in-progress), `final` (PASS-iter output), `superseded` (later-iter file replaced this) |
 | `supersedes` | No | Path list of prior-iter artifacts this file replaces. The superseded files are NOT deleted — their own frontmatter `status` flips to `superseded` |
-| `related` | No | Cross-references inside `artifacts/` or to other session paths (staging entries, evaluation files) |
+| `related` | No | Cross-references inside `outputs/` or to other session paths (staging entries, evaluation files) |
 
 **Reserved artifact_type values** (assistant uses these when applicable; otherwise picks free labels):
 
@@ -126,14 +127,14 @@ Field semantics:
 | `resolution-log` | Optional, PASS | Per-finding closure audit listing each evaluator finding across all iters with its final `disposition:` value |
 | `cross-system-divergence` | PASS only when ≥ 2 systems ran evaluation | Records per-perspective disagreements between Claude / Codex evaluators (derived by comparing `evaluation/iter{n}/{system}/{perspective}.md` files). Filterable by downstream consumers via `artifact_type: cross-system-divergence` |
 
-**Filename + collision policy for `artifacts/`**:
+**Filename + collision policy for `outputs/`**:
 
 - Filenames are free-form kebab-case (e.g., `framed-problem.md`, `design-options.md`). Assistant picks based on content decomposition.
 - **Same-iter re-run** (idempotent): assistant rewrites the same filename. `status` may stay `final`; content is deterministic from same sources. Overwriting is safe.
 - **Re-iter rewrite (new iter on a topic the prior iter already covered)**: the new iter's MEMORIZATION writes a **new artifact file with a distinct filename** (e.g., `framed-problem-iter2.md` or `framed-problem-v2.md`) carrying `iter: n` and `supersedes: <path-to-prior-iter-file>`. The prior iter's file is updated in place: only its frontmatter changes (`status: superseded` + `superseded_by: <new-path>`); the body is preserved. **The prior-iter file is the only cross-iter mutation the assistant is authorized to make**, and it is mechanically a frontmatter-only update (no body rewrite).
 - **Same-filename collision across iters** is forbidden — every iter's variant of a topic gets its own filename, never overwriting a different iter's file content. This is the contract that makes the audit history navigable both forward (`supersedes` → old) and backward (`superseded_by` → new).
 
-**Promotion**: artifacts in `sessions/.../{loop}/artifacts/` stay session-scoped. Wrap-up does NOT promote them to project memory wholesale — instead, Wrap-up reads the artifacts to understand what shipped and may stage derivative project-memory entries (notes, decisions, learnings) through the standard staging→promotion route. The artifacts themselves remain in the session for audit.
+**Promotion**: artifacts in `sessions/.../{N}-{loop}/outputs/` stay session-scoped. Wrap-up does NOT promote them to project memory wholesale — instead, Wrap-up reads the artifacts to understand what shipped and may stage derivative project-memory entries (notes, decisions, learnings) through the standard staging→promotion route. The artifacts themselves remain in the session for audit.
 
 ---
 
@@ -152,46 +153,46 @@ The promoted file carries ONLY base + that type's extension fields ([`rules.md` 
 
 The canonical session-tree shapes the assistant reads at MEMORIZATION:
 
-- **Per-perspective evaluation filenames.** Evaluation outputs live at `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/{perspective}.md`, where `{system} ∈ {claude, codex}` and `{perspective}` is the **bare** perspective name from the fixed 7-vocabulary — `project`, `structure`, `performance`, `aesthetics`, `usage`, `consistency`, `risk` — plus `overall.md`. Bare names only: no `pN-` positional prefix, and the same 7-perspective vocabulary on both systems so cross-system reconciliation can pair files 1:1. The 7-perspective vocabulary is owned by [`evaluation/SKILL.md`](../evaluation/SKILL.md).
-- **Execution per-task quartet.** In the Execution loop, each task lives under `execution/task-{NN}/` and carries the full `{rawdata, staging, evaluation, artifacts}` quartet — `execution/task-{NN}/{rawdata/draft-iter{n}.md, staging/{...}/, evaluation/iter{n}/{claude,codex}/{perspective}.md, artifacts/{free-filename}.md}`. Loop-level (cross-task) staging lives at `execution/staging/`. A task with only `evaluation/` (missing rawdata/staging/artifacts) is an incomplete task layout; the quartet is required unless a task is documented eval-only.
+- **Per-perspective evaluation filenames.** Evaluation outputs live at `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md`, where `{system} ∈ {claude, codex}` and `{perspective}` is the **bare** perspective name from the fixed 7-vocabulary — `project`, `structure`, `performance`, `aesthetics`, `usage`, `consistency`, `risk` — plus `overall.md`. Bare names only: no `pN-` positional prefix, and the same 7-perspective vocabulary on both systems so cross-system reconciliation can pair files 1:1. The 7-perspective vocabulary is owned by [`evaluation/SKILL.md`](../evaluation/SKILL.md).
+- **Execution per-task quartet.** In the Execution loop, each task lives under `4-execution/task-{NN}-{slug}/` and carries the full `{working, evaluation, staging, outputs}` quartet — `4-execution/task-{NN}-{slug}/{working/draft-iter{n}.md, staging/{...}/, evaluation/iter{n}/{claude,codex}/{perspective}.md, outputs/{free-filename}.md}`. There is no per-task `transcripts/` dir — every agent's transcript lives in the single session-root `transcripts/`. Loop-level (cross-task) staging lives at `4-execution/staging/`. A task with only `evaluation/` (missing working/staging/outputs) is an incomplete task layout; the quartet is required unless a task is documented eval-only.
 
 ---
 
 ## MEMORIZATION Phase
 
 **Purpose**
-Persist every iteration's evidence into session memory, and — on the final `PASS` iteration — also emit the loop's `artifacts/` files + cumulative typed-finding stagings. MEMORIZATION runs after **every** EVALUATION (whether `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail before the loop either restarts or completes. Project memory is **not** written here.
+Persist every iteration's evidence into session memory, and — on the final `PASS` iteration — also emit the loop's `outputs/` files + cumulative typed-finding stagings. MEMORIZATION runs after **every** EVALUATION (whether `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail before the loop either restarts or completes. Project memory is **not** written here.
 
 **Inputs**
 - Loop identity (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) and iter number `n` (from manager)
 - EVALUATION verdict (`PASS`, `REVISE`, or `FAIL`)
-- `sessions/{date}-{session-id}/{loop}/rawdata/draft-iter{n}.md` — current iteration's WORK output
-- `sessions/{date}-{session-id}/{loop}/evaluation/iter{m}/{system}/{perspective}.md` for `m ∈ 1..n` (cross-system divergence is derived by comparing per-system files; no separate divergence file is read)
+- `sessions/{date}-{session-id}/{N}-{loop}/working/draft-iter{n}.md` — current iteration's WORK output
+- `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md` for `m ∈ 1..n` (cross-system divergence is derived by comparing per-system files; no separate divergence file is read)
 - `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env (or harness equivalent under Codex). Claude Code transcript jsonl for the iteration window
-- `sessions/{date}-{session-id}/{loop}/rawdata/discussion-log.md` — manager-captured AskUserQuestion exchanges
+- `sessions/{date}-{session-id}/{N}-{loop}/working/discussion-log.md` — manager-captured AskUserQuestion exchanges
 - Prior-iter staging (if `n ≥ 2` AND verdict is `PASS`) — findings carried forward per the cumulative-staging rule
 
 **Procedure**
 
 | # | When | Agent | Operation | Source | Target | Action |
 |---|---|---|---|---|---|---|
-| 1 | every iter | Assistant | **VERIFY** | Inputs above | — | Confirm `session.json` has `project`, `feature`, `task` set (Lock Scope completed during Ideation). Confirm `sessions/.../{loop}/{rawdata,staging,evaluation}/` exists; if a required subdir is missing, surface to manager and halt. Read all inputs (drafts, evaluator findings across all iters and systems, discussion log, transcript) |
-| 2 | every iter | Assistant | **CREATE** | `session.json.transcriptPath` (tilde-expand `$HOME` on read; `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env) | `sessions/{date}-{session-id}/{loop}/rawdata/transcript-iter{n}.jsonl` | Preserve raw transcript turns from this iteration's window (DISCUSSION start through verdict). Filter to this loop's turns; drop unrelated lines if the transcript spans multiple loops. Write-or-overwrite (idempotent on re-run). If `session.json.transcriptPath` (or `$CLAUDE_TRANSCRIPT_PATH`) is absent, record a Critical `general` finding (domain: `unevaluable`) at this step and continue |
+| 1 | every iter | Assistant | **VERIFY** | Inputs above | — | Confirm `session.json` has `project`, `feature`, `task` set (Lock Scope completed during Ideation). Confirm `sessions/.../{N}-{loop}/{working,staging,evaluation}/` exists; if a required subdir is missing, surface to manager and halt. Read all inputs (drafts, evaluator findings across all iters and systems, discussion log, transcript) |
+| 2 | every iter | Assistant | **CREATE** | `session.json.transcriptPath` (tilde-expand `$HOME` on read; `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env) + each subagent transcript at `${transcript%.jsonl}/subagents/agent-<agentId>.jsonl` | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` (manager = `transcripts/manager-{sessionId}.jsonl`) | Copy each agent's raw transcript into the **single session-root** `transcripts/` dir — one immutable file per agent run, named `{role}-{agentId}.jsonl`. Each agent's file **accumulates across all loops** by its distinct `agentId`; it is never overwritten with a filtered window, and there is **no** per-loop or per-iter transcript snapshot. Write-or-overwrite per file (idempotent on re-run). If `session.json.transcriptPath` (or `$CLAUDE_TRANSCRIPT_PATH`) is absent, record a Critical `general` finding (domain: `unevaluable`) at this step and continue |
 | 3 | every iter | Assistant | **UPSERT** | This iter's verdict + iter number | `sessions/{date}-{session-id}/session.json` | Upsert `workflow.{loop}.iterations[]` entry keyed by `iter` with full schema `{iter, verdict, finishedAt, evaluation_dir: "evaluation/iter{n}/"}`. Idempotent on re-run: re-running for the same iter overwrites the entry, never appends a duplicate. Preserve all other session.json fields. Do **not** set `workflow.{loop}.finishedAt` (loop-level) yet — that is PASS-only, Step 8 |
 | 4 | every iter | Assistant | **GUARD** | This iter's verdict | — | If verdict is `REVISE`: stop here. The loop re-enters DISCUSSION with this iter's evaluator findings as input. Steps 5–8 are skipped because there is no PASS-iter output yet. If verdict is `FAIL`: stop here. The manager will escalate to the user via AskUserQuestion (revise / abort / re-frame) after MEMORIZATION returns. Steps 5–8 are skipped. If verdict is `PASS`: continue to Step 5 |
-| 5 | PASS only | Assistant | **CREATE** | Rawdata draft + all iters' evaluator findings + discussion log + cross-system divergence (derived by comparing per-system files) | `sessions/{date}-{session-id}/{loop}/artifacts/{free-filename}.md` (one or more files) | Decompose the loop's PASS-iter output into one or more artifact files inside `artifacts/`. Filenames are free; every file MUST stamp the [Artifact frontmatter schema](#artifact-frontmatter-schema). Typical content split: framed-problem, scope-contract, design-options for Ideation; task-list, dependencies, agent-assignments for Planning; change-summary, verification-report for Execution; handoff, shipped-summary for Wrap-up. Two artifacts are MANDATORY: (a) one `artifact_type: memory-reads` file enumerating every prior-iter evaluation file path consumed at Step 6 (manager validates at gate 4), and (b) for loops with adversarial evaluator findings, one `artifact_type: resolution-log` file listing each finding's final `disposition:` value. Cross-system divergence summary lives in whichever artifact most relevant (e.g., design-options or handoff). The artifacts collectively are the next loop's briefing source |
-| 6 | PASS only | Assistant | **CREATE** | All typed findings, cumulative across iters `1..n` | `sessions/{date}-{session-id}/{loop}/staging/{type}/{slug}.md` per the deterministic Type + Domain routing in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) | **Pre-step**: for every iter `m ∈ 1..n`, every system (claude + codex), every perspective (7 + overall), READ `sessions/.../{loop}/evaluation/iter{m}/{system}/{perspective}.md`. Enumerate every finding's `(Type, Domain, Disposition, slug, finding-id)`. For any `disposition: superseded` whose citation points to iter `m < n-1`, also READ that earlier iter's file. Then: stage `open` + `addressed` + `disputed` + `superseded` findings per the routing table; `deferred` findings stage at `staging/decisions/` with frontmatter `disposition: deferred` so Wrap-up can route to backlogs. **No shortcut routing** — every Type + Domain uses the canonical table; `general/general` is a contract violation |
-| 7 | PASS only | Assistant | **CREATE** | Canonical draft's Design section + discussion-log substantive topics + in-loop review activities + in-loop substantive reports | `sessions/{date}-{session-id}/{loop}/staging/{design,discussions,reviews,reports}/{slug}.md` | One staging file per substantive design topic (`staging/design/`) + per substantive AskUserQuestion topic (`staging/discussions/`) + per review/evaluation/audit activity the loop performed (`staging/reviews/` per [`templates/reviews.md`](templates/reviews.md)) + per substantive `status` / `post-mortem` / `analytics` report the loop produced (`staging/reports/` per [`templates/reports.md`](templates/reports.md)). The reviews/reports stagings are loop-conditional — most loops produce none, but when present they MUST be staged for Wrap-up promotion |
+| 5 | PASS only | Assistant | **CREATE** | Rawdata draft + all iters' evaluator findings + discussion log + cross-system divergence (derived by comparing per-system files) | `sessions/{date}-{session-id}/{N}-{loop}/outputs/{free-filename}.md` (one or more files) | Decompose the loop's PASS-iter output into one or more artifact files inside `outputs/`. Filenames are free; every file MUST stamp the [Artifact frontmatter schema](#artifact-frontmatter-schema). Typical content split: framed-problem, scope-contract, design-options for Ideation; task-list, dependencies, agent-assignments for Planning; change-summary, verification-report for Execution; handoff, shipped-summary for Wrap-up. Two artifacts are MANDATORY: (a) one `artifact_type: memory-reads` file enumerating every prior-iter evaluation file path consumed at Step 6 (manager validates at gate 4), and (b) for loops with adversarial evaluator findings, one `artifact_type: resolution-log` file listing each finding's final `disposition:` value. Cross-system divergence summary lives in whichever artifact most relevant (e.g., design-options or handoff). The artifacts collectively are the next loop's briefing source |
+| 6 | PASS only | Assistant | **CREATE** | All typed findings, cumulative across iters `1..n` | `sessions/{date}-{session-id}/{N}-{loop}/staging/{type}/{slug}.md` per the deterministic Type + Domain routing in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) | **Pre-step**: for every iter `m ∈ 1..n`, every system (claude + codex), every perspective (7 + overall), READ `sessions/.../{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md`. Enumerate every finding's `(Type, Domain, Disposition, slug, finding-id)`. For any `disposition: superseded` whose citation points to iter `m < n-1`, also READ that earlier iter's file. Then: stage `open` + `addressed` + `disputed` + `superseded` findings per the routing table; `deferred` findings stage at `staging/decisions/` with frontmatter `disposition: deferred` so Wrap-up can route to backlogs. **No shortcut routing** — every Type + Domain uses the canonical table; `general/general` is a contract violation |
+| 7 | PASS only | Assistant | **CREATE** | Canonical draft's Design section + discussion-log substantive topics + in-loop review activities + in-loop substantive reports | `sessions/{date}-{session-id}/{N}-{loop}/staging/{design,discussions,reviews,reports}/{slug}.md` | One staging file per substantive design topic (`staging/design/`) + per substantive AskUserQuestion topic (`staging/discussions/`) + per review/evaluation/audit activity the loop performed (`staging/reviews/` per [`templates/reviews.md`](templates/reviews.md)) + per substantive `status` / `post-mortem` / `analytics` report the loop produced (`staging/reports/` per [`templates/reports.md`](templates/reports.md)). The reviews/reports stagings are loop-conditional — most loops produce none, but when present they MUST be staged for Wrap-up promotion |
 | 8 | PASS only | Assistant | **UPDATE** | Loop completion | `sessions/{date}-{session-id}/session.json` | Set `workflow.{loop}.finishedAt`; set `workflow.{loop}.verdict: PASS`; preserve `iterations[]` history |
-| 9 | every iter | Assistant | **VERIFY** | All outputs above | — | Transcript preserved at `rawdata/transcript-iter{n}.jsonl`; `session.json` iter entry upserted; no writes to project memory (manager validates). PASS additionally: canonical artifact exists; staging directories populated per finding-type routing; loop completion flagged in session.json. Failure of any check is reported to the manager |
+| 9 | every iter | Assistant | **VERIFY** | All outputs above | — | Each agent transcript copied to the session-root `transcripts/{role}-{agentId}.jsonl`; `session.json` iter entry upserted; no writes to project memory (manager validates). PASS additionally: canonical artifact exists; staging directories populated per finding-type routing; loop completion flagged in session.json. Failure of any check is reported to the manager |
 
 **Finding routing** — see [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) for the complete Type + Domain → staging-subdir routing table. MEMORIZATION applies the routing table without improvisation; all destinations are session staging (Wrap-up moves them to project memory).
 
-**Research rawdata promotion** — if the calling loop loaded the `research` skill, the leader will have written external insights to `rawdata/research/{slug}.md` during WORK. At Step 6 (PASS only), MEMORIZATION reads `rawdata/research/` and promotes each file to `staging/references/{slug}.md` per the [references template](templates/references.md). This is separate from the typed-finding routing above — these are WORK-time external references, not evaluation findings.
+**Research working-dir promotion** — if the calling loop loaded the `research` skill, the leader will have written external insights to `working/research/{slug}.md` during WORK. At Step 6 (PASS only), MEMORIZATION reads `working/research/` and promotes each file to `staging/references/{slug}.md` per the [references template](templates/references.md). This is separate from the typed-finding routing above — these are WORK-time external references, not evaluation findings.
 
-**Ephemeral transcript capture (debug only)** — MEMORIZATION (not any hook) copies the session's raw `.jsonl` transcripts into the ephemeral `sessions/{date}-{session-id}/transcripts/` directory for in-session debugging. The copy is done in this step, NOT in the PostToolUse or SessionEnd hooks — the hooks stay lean to meet the hook-latency gate; bulk transcript copying belongs to MEMORIZATION. What is copied: the manager's main transcript (`session.json.transcriptPath`) plus each subagent transcript at `${transcript%.jsonl}/subagents/agent-<agentId>.jsonl`.
+**Transcript capture — the single session-root `transcripts/`** — Step 2 above is the only transcript surface. MEMORIZATION (not any hook) copies each agent's raw `.jsonl` transcript into the single `sessions/{date}-{session-id}/transcripts/` directory as `{role}-{agentId}.jsonl` (manager = `manager-{sessionId}.jsonl`), one immutable file per agent run, accumulating across all loops by distinct `agentId`. The copy is done in Step 2, NOT in the PostToolUse or SessionEnd hooks — the hooks stay lean to meet the hook-latency gate; bulk transcript copying belongs to MEMORIZATION. What is copied: the manager's main transcript (`session.json.transcriptPath`) plus each subagent transcript at `${transcript%.jsonl}/subagents/agent-<agentId>.jsonl`. There is no per-loop or per-iter transcript snapshot — the single session-root `transcripts/` replaces it. See [`orchestration/templates/session-tree.md` § Transcript rules](../orchestration/templates/session-tree.md) for the authoritative shape.
 
-- **Purpose:** in-session debugging ONLY. The durable audit signal already survives in `session.json` (per-agent `tokensUsed`, routing, `turns[]`) and in the per-iter `rawdata/transcript-iter{n}.jsonl` windows; `transcripts/` is a convenience copy of the full raw transcripts for a human or agent debugging the live session.
+- **Purpose:** the session's raw-transcript record + in-session debugging. The durable audit signal survives in `session.json` (per-agent `tokensUsed`, routing, `turns[]`); `transcripts/` holds the full raw transcripts for a human or agent debugging the live session.
 - **Sensitivity class — session-local debug data (highest care).** These are full raw transcripts. They are **gitignored and NEVER committed**, and they are **removed with the worktree at session end** — including on abort. Treat them as the most sensitive on-disk artifact: they hold unfiltered turn content.
 - **Never copied into durable `notes/`.** The `transcripts/` directory is session-ephemeral and dies with the worktree. It is NEVER promoted to project memory and NEVER copied into the durable `notes/` record (or any other project-memory tier). The durable signal survives via `session.json` — not via raw transcripts. Copying raw transcripts into `notes/` is a constraint violation.
 
@@ -199,19 +200,19 @@ Persist every iteration's evidence into session memory, and — on the final `PA
 
 **Slug + collision policy**: per [`evaluation/SKILL.md` § Slug + collision policy](../evaluation/SKILL.md#slug--collision-policy). Slug derived from finding's primary symptom; finding-id is the idempotency key for re-runs and collisions.
 
-**Discussion-log lifecycle**: `sessions/.../{loop}/rawdata/discussion-log.md` is created by the **manager** during DISCUSSION and appended after each AskUserQuestion exchange — one section per exchange with format `## YYYY-MM-DD HH:MM — Q: ... | A: ... | Decision: ...`. REVISE iterations preserve the prior discussion-log; new iter exchanges are appended in chronological order in the same file. MEMORIZATION reads this file at Step 1 (input load) and Step 7 (discussions staging); MEMORIZATION never writes to discussion-log.
+**Discussion-log lifecycle**: `sessions/.../{N}-{loop}/working/discussion-log.md` is created by the **manager** during DISCUSSION and appended after each AskUserQuestion exchange — one section per exchange with format `## YYYY-MM-DD HH:MM — Q: ... | A: ... | Decision: ...`. REVISE iterations preserve the prior discussion-log; new iter exchanges are appended in chronological order in the same file. MEMORIZATION reads this file at Step 1 (input load) and Step 7 (discussions staging); MEMORIZATION never writes to discussion-log.
 
 **Outputs**
 
 Every iteration produces:
-- `sessions/{date}-{session-id}/{loop}/rawdata/transcript-iter{n}.jsonl` — preserved transcript window
+- `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` — each agent's transcript copied into the single session-root `transcripts/` dir (accumulating across loops)
 - `sessions/{date}-{session-id}/session.json` — upserted `workflow.{loop}.iterations[]` entry keyed by `iter`
 
 Only the `PASS` iteration also produces:
-- `sessions/{date}-{session-id}/{loop}/artifacts/{free-filename}.md` — one or more artifact files (the loop's PASS-iter output; collectively serve as the next loop's briefing source). Mandatory: at least one `artifact_type: memory-reads` file. Loop-conditional: `artifact_type: resolution-log` when there were findings to close out
-- `sessions/{date}-{session-id}/{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,changelogs,learnings,notes}/{slug}.md` — typed-finding artifacts + design / discussions / reviews / reports / changelogs / learnings / notes stagings for Wrap-up to promote
-- `sessions/{date}-{session-id}/{loop}/staging/backlogs/{feature,project}/{slug}.md` — backlog entries with feature-scope vs project-scope subdirs
-- `sessions/{date}-{session-id}/planning/staging/plans/{slug}.md` — Planning-loop only (plan artifact for Wrap-up to promote to `features/{feature-name}/plans/`)
+- `sessions/{date}-{session-id}/{N}-{loop}/outputs/{free-filename}.md` — one or more artifact files (the loop's PASS-iter output; collectively serve as the next loop's briefing source). Mandatory: at least one `artifact_type: memory-reads` file. Loop-conditional: `artifact_type: resolution-log` when there were findings to close out
+- `sessions/{date}-{session-id}/{N}-{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,changelogs,learnings,notes}/{slug}.md` — typed-finding artifacts + design / discussions / reviews / reports / changelogs / learnings / notes stagings for Wrap-up to promote
+- `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md` — backlog entries with feature-scope vs project-scope subdirs
+- `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` — Planning-loop only (plan artifact for Wrap-up to promote to `features/{feature-name}/plans/`)
 - `sessions/{date}-{session-id}/session.json` — `workflow.{loop}.finishedAt` and `workflow.{loop}.verdict: PASS` set
 
 **No writes to project memory.** All `features/{feature-name}/...`, `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/` writes are Wrap-up's responsibility per [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
@@ -219,12 +220,12 @@ Only the `PASS` iteration also produces:
 **Exit checklist**
 
 Every iteration:
-- [ ] Transcript jsonl preserved at `rawdata/transcript-iter{n}.jsonl`
+- [ ] Each agent transcript copied to the session-root `transcripts/{role}-{agentId}.jsonl`
 - [ ] `session.json.workflow.{loop}.iterations[]` includes this iter's `{iter, verdict, finishedAt, evaluation_dir: "evaluation/iter{n}/"}` (full schema; do not omit `evaluation_dir`)
 - [ ] No writes to feature memory or project memory
 
 `PASS` iteration additionally:
-- [ ] `artifacts/` directory contains one or more files, each carrying valid frontmatter per [Artifact frontmatter schema](#artifact-frontmatter-schema)
+- [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per [Artifact frontmatter schema](#artifact-frontmatter-schema)
 - [ ] At least one artifact has `artifact_type: memory-reads` (the cumulative-staging audit surface)
 - [ ] Every evaluator finding across iters `1..n` staged to the correct `staging/` destination per Type + Domain routing
 - [ ] Design / discussions derivables staged under `staging/`
@@ -239,9 +240,9 @@ Re-running MEMORIZATION on the same iter (after a crash, partial write, or expli
 
 | Operation | Idempotent because |
 |---|---|
-| CREATE `transcript-iter{n}.jsonl` | Write-or-overwrite. Deterministic source + filter |
+| CREATE `transcripts/{role}-{agentId}.jsonl` | Write-or-overwrite per agent file. Deterministic source (the agent's full transcript) |
 | UPSERT `session.json.iterations[]` | Keyed by `iter` — re-runs replace, never duplicate |
-| CREATE `artifacts/{free-filename}.md` (PASS) | Write-or-overwrite per filename. Deterministic synthesis from same sources — same iter, same decomposition. Filenames stay stable across re-runs of the same iter; only `iter` + `status` frontmatter increment across re-iters |
+| CREATE `outputs/{free-filename}.md` (PASS) | Write-or-overwrite per filename. Deterministic synthesis from same sources — same iter, same decomposition. Filenames stay stable across re-runs of the same iter; only `iter` + `status` frontmatter increment across re-iters |
 | CREATE `staging/{type}/{slug}.md` (PASS) | Slug derived from finding's primary symptom + finding-id idempotency key. Collision policy adds `-2`/`-3` suffix for distinct finding-ids, overwrites for matching finding-ids |
 | UPDATE `session.json` `finishedAt` + `verdict` (PASS) | Set, not append |
 
@@ -257,33 +258,35 @@ See also: `evaluation/SKILL.md § Coverage Ownership Matrix § Memorization stag
 
 - `{date}` — session start date in `YYYY-MM-DD`
 - `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
-- `{loop}` — the workflow loop being persisted (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
+- `{loop}` — the workflow loop being persisted (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md))
+- `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=preparation, `3`=planning, `4`=execution, `5`=wrap-up); the on-disk loop-dir prefix
+- `{role}` / `{agentId}` — agent role label and distinct agent run id, used for the session-root `transcripts/{role}-{agentId}.jsonl` files
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time
 - `{n}` — iter number, supplied by the manager from `session.json.workflow.{loop}.iterations.length`
 
 | Path | Written by | Written |
 |---|---|---|
-| `sessions/{date}-{session-id}/{loop}/rawdata/transcript-iter{n}.jsonl` | assistant (MEMORIZATION) | every iteration — preserved transcript window |
+| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (MEMORIZATION) | every iteration — each agent's transcript copied into the single session-root `transcripts/`, accumulating across loops (manager = `manager-{sessionId}.jsonl`) |
 | `sessions/{date}-{session-id}/session.json` | assistant (MEMORIZATION) | every iteration — upserted iter entry; PASS additionally sets `finishedAt` + `verdict` |
-| `sessions/{date}-{session-id}/{loop}/artifacts/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files. Each MUST carry the Artifact frontmatter schema. Mandatory: ≥ 1 file with `artifact_type: memory-reads` |
-| `sessions/{date}-{session-id}/{loop}/staging/scenarios/{slug}.md` | assistant (MEMORIZATION) | PASS only — per `scenario_gap` finding |
-| `sessions/{date}-{session-id}/{loop}/staging/checklists/{slug}.md` | assistant (MEMORIZATION) | PASS only — per `checklist_gap` finding |
-| `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` | assistant (MEMORIZATION) | PASS only — per `design_flaw` / `assumption_risk` / `disputed` / `deferred` finding + Domain-routed `general` findings |
-| `sessions/{date}-{session-id}/{loop}/rawdata/research/{slug}.md` | leader (WORK — research) | Written by leader during WORK when the research skill is loaded; one per confirmed external insight. READ by MEMORIZATION at Step 6 for promotion. |
-| `sessions/{date}-{session-id}/{loop}/staging/references/{slug}.md` | assistant (MEMORIZATION) | PASS only — promoted from `rawdata/research/{slug}.md` (research externals) + per `general` finding with Domain = `dependency` |
-| `sessions/{date}-{session-id}/{loop}/staging/design/{slug}.md` | assistant (MEMORIZATION) | PASS only — per substantive design topic |
-| `sessions/{date}-{session-id}/{loop}/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | PASS only — per substantive AskUserQuestion topic |
-| `sessions/{date}-{session-id}/{loop}/staging/backlogs/feature/{slug}.md` | assistant (MEMORIZATION) | PASS only — feature-scope backlog candidates |
-| `sessions/{date}-{session-id}/{loop}/staging/backlogs/project/{slug}.md` | assistant (MEMORIZATION) | PASS only — project-scope backlog candidates |
-| `sessions/{date}-{session-id}/{loop}/staging/reviews/{slug}.md` | assistant (MEMORIZATION) | PASS only — review/evaluation/audit activity result documents (loop-conditional) |
-| `sessions/{date}-{session-id}/{loop}/staging/reports/{slug}.md` | assistant (MEMORIZATION) | PASS only — `status` / `post-mortem` / `analytics` reports (loop-conditional) |
-| `sessions/{date}-{session-id}/{loop}/staging/changelogs/{slug}.md` | assistant (MEMORIZATION) | PASS only — shipped-work changelog entries (Execution loop typical) |
-| `sessions/{date}-{session-id}/{loop}/staging/learnings/{slug}.md` | assistant (MEMORIZATION) | PASS only — durable cross-cutting insights (loop-conditional) |
-| `sessions/{date}-{session-id}/{loop}/staging/notes/{slug}.md` | assistant (MEMORIZATION) | PASS only — loop-scope journal entry (rare; per-session journal is written at Wrap-up) |
-| `sessions/{date}-{session-id}/planning/staging/plans/{slug}.md` | assistant (MEMORIZATION) | Planning loop only, PASS only — plan artifact for Wrap-up to promote to `features/{feature-name}/plans/`. **Not in other loops' staging trees** |
+| `sessions/{date}-{session-id}/{N}-{loop}/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files. Each MUST carry the Artifact frontmatter schema. Mandatory: ≥ 1 file with `artifact_type: memory-reads` |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md` | assistant (MEMORIZATION) | PASS only — per `scenario_gap` finding |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md` | assistant (MEMORIZATION) | PASS only — per `checklist_gap` finding |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` | assistant (MEMORIZATION) | PASS only — per `design_flaw` / `assumption_risk` / `disputed` / `deferred` finding + Domain-routed `general` findings |
+| `sessions/{date}-{session-id}/{N}-{loop}/working/research/{slug}.md` | leader (WORK — research) | Written by leader during WORK when the research skill is loaded; one per confirmed external insight. READ by MEMORIZATION at Step 6 for promotion. |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` | assistant (MEMORIZATION) | PASS only — promoted from `working/research/{slug}.md` (research externals) + per `general` finding with Domain = `dependency` |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/design/{slug}.md` | assistant (MEMORIZATION) | PASS only — per substantive design topic |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | PASS only — per substantive AskUserQuestion topic |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/feature/{slug}.md` | assistant (MEMORIZATION) | PASS only — feature-scope backlog candidates |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/project/{slug}.md` | assistant (MEMORIZATION) | PASS only — project-scope backlog candidates |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/reviews/{slug}.md` | assistant (MEMORIZATION) | PASS only — review/evaluation/audit activity result documents (loop-conditional) |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md` | assistant (MEMORIZATION) | PASS only — `status` / `post-mortem` / `analytics` reports (loop-conditional) |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/changelogs/{slug}.md` | assistant (MEMORIZATION) | PASS only — shipped-work changelog entries (Execution loop typical) |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/learnings/{slug}.md` | assistant (MEMORIZATION) | PASS only — durable cross-cutting insights (loop-conditional) |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/notes/{slug}.md` | assistant (MEMORIZATION) | PASS only — loop-scope journal entry (rare; per-session journal is written at Wrap-up) |
+| `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` | assistant (MEMORIZATION) | Planning loop only, PASS only — plan artifact for Wrap-up to promote to `features/{feature-name}/plans/`. **Not in other loops' staging trees** |
 
-The session directory tree at `sessions/{date}-{session-id}/{loop}/{rawdata,staging,evaluation}/` is bootstrapped by the manager during the loop's DISCUSSION (Lock Scope for Ideation; equivalent setup point for downstream loops). MEMORIZATION assumes the tree exists on entry and surfaces an error to the manager if it does not.
+The session directory tree at `sessions/{date}-{session-id}/{N}-{loop}/{working,staging,evaluation}/` is bootstrapped by the manager during the loop's DISCUSSION (Lock Scope for Ideation; equivalent setup point for downstream loops). MEMORIZATION assumes the tree exists on entry and surfaces an error to the manager if it does not.
 
 ---
 
@@ -326,7 +329,7 @@ Session-level templates: see [`orchestration/templates/`](../orchestration/templ
 - **MUST be idempotent** — per the contract above; re-running on the same iter produces identical results.
 - **MUST stage findings cumulatively on PASS** — union across iters `1..n`; no earlier-iter constructive finding silently dropped.
 - **MUST stamp templates** — never write freeform to a staging subdirectory; see [`templates/`](templates/).
-- **MUST preserve all iterations' rawdata** — earlier iter drafts and transcripts remain alongside the current iter's.
+- **MUST preserve all iterations' working data** — earlier iter drafts in `working/` remain alongside the current iter's, and each agent's accumulating `transcripts/{role}-{agentId}.jsonl` is never overwritten with a filtered window.
 - **MUST be read-only against the artifact AND all memory tiers except own write surfaces** — never modify leader / executor drafts; never write to feature memory, project memory, prior loops' session dirs, or other systems' evaluation dirs. The ONLY allowed write surfaces are listed in § Memory Access Matrix.
 - **MUST NEVER write to project memory when `loop ∈ {preparation, ideation, planning, execution}`** — no `features/{feature-name}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, `references/`, `decisions/`, `plans/`, `reviews/`, `reports/`, `learnings/`, `archive/` writes from those loops' MEMORIZATION. Wrap-up's MEMORIZATION owns those writes (see Memory Access Matrix § Wrap-up loop exception).
 - **MUST NEVER create feature directories when `loop ∈ {preparation, ideation, planning, execution}`** — `features/{feature-name}/` is bootstrapped by Wrap-up at promotion time, not earlier.

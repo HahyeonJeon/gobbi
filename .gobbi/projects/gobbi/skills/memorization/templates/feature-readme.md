@@ -13,7 +13,7 @@ Wrap-up is the sole writer; loop MEMORIZATION (Ideation / Planning / Execution) 
 ## When to write
 
 - **At first promotion to a new feature** (Wrap-up MEMORIZATION): Wrap-up stamps a fresh README from this template when creating a new `features/{feature-name}/` directory as part of promoting session staging.
-- **During Wrap-up MEMORIZATION on subsequent sessions**: Wrap-up updates the README's "Status" and "Recent activity" sections to reflect the latest design, plan, or changelog promoted from session staging. Loop MEMORIZATION (Ideation / Planning / Execution) NEVER writes to this README — it stages content in `sessions/.../{loop}/staging/...` and Wrap-up promotes + updates the README in one step.
+- **During Wrap-up MEMORIZATION on subsequent sessions**: Wrap-up updates the README's "Status" and "Recent activity" sections to reflect the latest design, plan, or changelog promoted from session staging. Loop MEMORIZATION (Ideation / Planning / Execution) NEVER writes to this README — it stages content in `sessions/.../{N}-{loop}/staging/...` and Wrap-up promotes + updates the README in one step.
 
 The README is **lightweight** — it points to the artifacts but does not duplicate them. A reader scanning `features/` directory listings reads the READMEs to understand each feature without opening every subdirectory.
 
