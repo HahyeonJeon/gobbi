@@ -51,6 +51,8 @@ specified in [`orchestration/SKILL.md § Workflow State Machine`](SKILL.md#workf
 This section is the canonical home of the Auto-Mode SOP — for each step: Definition,
 Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
 
+The EVALUATION phase (row 3) in every step follows [§7 — Evaluation discipline (Auto Mode)](#7--evaluation-discipline-auto-mode).
+
 ### Step 1 — Configuration
 
 **Definition.** Frame the session before any work runs. Configuration is the only step the manager performs without delegating.
@@ -205,7 +207,7 @@ The following defaults are locked for Auto Mode. They apply to every session tha
 | `workflow.planning.maxIterations` | `5` | Full planning budget. |
 | `workflow.execution.maxIterations` | `5` | Full execution budget. |
 | `workflow.wrap-up.maxIterations` | `5` | Wrap-up runs once per session; up to 5 remediation iterations on `REVISE` before abort. |
-| `evaluate.mode` (all loops) | `"always"` | Evaluation runs every loop, no mode-driven skip. `"skip"` is a power-user per-session override; the redesign does not change this, but documenting it preempts future drift. **Note:** `evaluate.mode: skip` skips only the EVALUATION phase; the step-level `skip: true` boolean (new) skips the WHOLE step. Distinct signals. |
+| `evaluate.mode` (all loops) | `"always"` | Evaluation runs every loop, no mode-driven skip. The manager never asks whether/how to evaluate — see §7. `"skip"` is a power-user per-session override; the redesign does not change this, but documenting it preempts future drift. **Note:** `evaluate.mode: skip` skips only the EVALUATION phase; the step-level `skip: true` boolean (new) skips the WHOLE step. Distinct signals. |
 | `workflow.ideation.discuss.mode` | `"user"` | Ideation DISCUSSION is user-driven — user confirms approach before leader works. |
 | `workflow.preparation.discuss.mode` | `"user"` | Preparation DISCUSSION is user-driven — user confirms readiness gaps before prep work. |
 | `workflow.planning.discuss.mode` | `"agent"` | Planning DISCUSSION is agent-driven — manager proceeds without a gate per loop entry. Always-Ask categories still fire (§3). |
@@ -266,6 +268,76 @@ aborted with no deliverable plan), the manager MUST surface this via `AskUserQue
 proceeding to the next step — proceeding on a broken foundation is a step failure, not a
 recoverable abort.
 
+This section's no-mid-loop-interrupt contract feeds §7.3 — see [§7 — Evaluation discipline (Auto Mode)](#7--evaluation-discipline-auto-mode).
+
+---
+
+## §7 — Evaluation discipline (Auto Mode)
+
+The Auto manager's single home for how EVALUATION runs in Auto Mode. Evaluation rules are otherwise
+scattered across the §2 per-loop tables (row 3) and the §4 defaults `evaluate.mode` row; this section
+states the contract so the manager cannot rationalize past it.
+
+### §7.1 — Evaluation is mandatory and never a question.
+
+The manager runs dual-system EVALUATION on every loop. `evaluate.mode = "always"` is locked (§4
+defaults). **The manager MUST NOT ask the user whether to evaluate, which systems to use, or whether
+to skip.** There is no "dual-system / claude-only / skip" choice in Auto Mode. "claude-only" is NOT a
+pre-evaluation option; it exists only as the documented post-failure degraded-mode fallback in
+[`workflow/evaluation.md § Degraded-mode policy`](workflow/evaluation.md#degraded-mode-policy-single-system-fallback),
+reached only after a system fails and its one retry fails, and only via that section's own
+stop-the-line AskUserQuestion.
+
+### §7.2 — The manager MUST NOT evaluate; it spawns exactly two evaluators.
+
+The manager is the producer/orchestrator, never the evaluator — producer/evaluator separation per
+[`evaluation/SKILL.md`](../evaluation/SKILL.md) and the "Evaluation is a mandatory sub-phase" block
+in `.claude/CLAUDE.md`. For every EVALUATION phase the manager **spawns exactly two evaluator
+subagents — one per system (Claude + Codex)** — per [`workflow/evaluation.md`](workflow/evaluation.md).
+The manager **MUST NOT** write evaluation findings itself, stamp a verdict without two evaluator
+outputs, or substitute "manager-verification" for the evaluators. The manager aggregates the two
+systems' verdicts; it does not produce them. See `mistakes/manager-skipped-dual-system-eval.md`.
+
+### §7.3 — On REVISE, auto-iterate; do not run routine triage mid-loop; keep the safety gates.
+
+When EVALUATION returns `REVISE`, the manager re-enters `DISCUSSION` with the findings appended and
+re-delegates the fix, up to `maxIterations` (default 5) — automatically, without pausing the user.
+**The manager MUST NOT run any routine-triage escalation mid-loop and MUST NOT idle after
+EVALUATION.** Routine-triage escalations are the mode-agnostic "ask the user" paths in
+[`workflow/evaluation.md`](workflow/evaluation.md) — **maxIterations exhaustion
+([§ Iteration Caps](workflow/evaluation.md#iteration-caps)), a stuck finding
+([§ Stuck detection](workflow/evaluation.md#stuck-detection-manager-side-post-reconciliation)), and a
+regression ([§ Regression marking](workflow/evaluation.md#regression-marking-manager-side-post-reconciliation))**.
+In Auto mode the manager handles each by auto-iterating within budget, recording the tag/finding, and
+surfacing it in the Wrap-up finding set — never interrupting. The user reviews the **full finding set
+at Wrap-up** (§6), not mid-loop.
+
+**Safety-gate carve-out (these still interrupt in Auto — do NOT silence them).** The manager DOES
+interrupt for the genuine dual-system safety gates, which are not routine triage: a **major
+dual-system divergence** (`PASS`↔`FAIL` / `REVISE`↔`FAIL`,
+[`evaluation.md § Severity-gated divergence handling`](workflow/evaluation.md#severity-gated-divergence-handling)),
+the **degraded-mode / single-system fallback** and **both systems failing**
+([`evaluation.md § Degraded-mode policy`](workflow/evaluation.md#degraded-mode-policy-single-system-fallback)).
+These fall under [§1](#1--mode-posture)'s "a step fails in a way the manager cannot resolve."
+Always-Ask findings (Design / Scope / Destructive per [§3](#3--always-ask-codification)) and findings
+implying an unresolvable scope change ([§1](#1--mode-posture) interrupt #2) also still interrupt. A
+minor divergence (`PASS`↔`REVISE`) auto-proceeds, as today.
+
+This is the Auto-mode counterpart to the Chat-scoped finding-discussion rule in `.claude/CLAUDE.md`
+and to the Chat branches of `evaluation.md`'s routine-triage sections.
+
+### §7.4 — "manager never" quick-guard (scannable).
+
+Scan this at any EVALUATION boundary:
+
+| The manager NEVER… | Instead… |
+|---|---|
+| asks whether/how to evaluate, or offers skip/claude-only | runs dual-system EVALUATION every loop (`evaluate.mode: always`) |
+| performs the evaluation itself | spawns exactly 2 evaluator subagents (one per system) |
+| runs routine triage mid-loop — defer/accept, **Iteration Caps**, **Stuck detection**, **Regression marking** | auto-iterates within budget; records the tag/finding; surfaces it at Wrap-up |
+| idles after EVALUATION | proceeds: PASS → next step; REVISE → re-enter DISCUSSION |
+| **silences a dual-system safety gate** (major divergence, degraded-mode/single-system fallback, both-systems-fail) | **interrupts** — these are §1 "cannot resolve" gates, not routine triage |
+
 ---
 
 ## Cross-references
@@ -287,6 +359,16 @@ recoverable abort.
   procedure. Auto Mode runs this base procedure in full (no local override).
 - [`mistake/SKILL.md § P2`](../mistake/SKILL.md) — moment-of-capture discipline for
   mistake-candidates; runs in Auto Mode regardless of loop or discuss.mode setting.
+- [`.claude/CLAUDE.md` § Evaluation is a mandatory sub-phase](../../../../../.claude/CLAUDE.md) —
+  the mode-split Evaluation block: Chat discusses findings with the user; Auto auto-iterates on
+  REVISE and reviews the full finding set at Wrap-up. §7 is the Auto-mode counterpart.
+- [`workflow/evaluation.md § Degraded-mode policy`](workflow/evaluation.md#degraded-mode-policy-single-system-fallback) —
+  the only home of the "claude-only" single-system fallback (a safety gate; interrupts in Auto too).
+  Cited by §7.1 and §7.3.
+- [`workflow/evaluation.md § Iteration Caps`](workflow/evaluation.md#iteration-caps),
+  [`§ Stuck detection`](workflow/evaluation.md#stuck-detection-manager-side-post-reconciliation),
+  [`§ Regression marking`](workflow/evaluation.md#regression-marking-manager-side-post-reconciliation) —
+  the three routine-triage sections, mode-split so Auto records and surfaces at Wrap-up. Cited by §7.3/§7.4.
 - `mistakes/skills-mirror-symlinks-not-copies.md` — editing the canonical file at
   `.gobbi/projects/gobbi/skills/orchestration/auto-mode.md` reflects automatically via the
   `.claude/skills/orchestration/auto-mode.md` mirror symlink; do not double-edit.

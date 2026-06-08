@@ -2,7 +2,7 @@
 
 How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead.
 
-The manager's job at EVALUATION is to **spawn the dual-system evaluators, collect their per-perspective outputs, reconcile the two systems, and emit a verdict** — not to do the evaluation itself. The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `MEMORIZATION` runs; `MEMORIZATION` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § MEMORIZATION Phase](ideation.md#memorization-phase-delegated-to-assistant-runs-every-iter)).
+**The manager MUST NOT evaluate. It spawns exactly two evaluator subagents (one per system), collects their per-perspective outputs, reconciles the two systems, and emits a verdict** — it never does the evaluation itself (reinforced at § Spawning the Evaluators: "spawns exactly two evaluator agents in parallel"). Writing findings or stamping a verdict without two evaluator outputs is a workflow breach (see `mistakes/manager-skipped-dual-system-eval.md`). The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `MEMORIZATION` runs; `MEMORIZATION` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § MEMORIZATION Phase](ideation.md#memorization-phase-delegated-to-assistant-runs-every-iter)).
 
 All evaluator output is **session-scoped** under `sessions/{date}-{session-id}/{loop}/evaluation/`. Evaluators never write to project memory.
 
@@ -90,6 +90,8 @@ Each per-perspective file contains: Artifact Summary + W/W/H (Stage 0) → locke
 
 The manager reconciles the two systems' outputs **side-by-side**, never averaging.
 
+> **Escalations in this document fall into two classes; the boundary is binding.** **Routine-triage** escalations are mode-split: Chat escalates to the user; Auto auto-iterates within budget, records the tag/finding, and surfaces it at Wrap-up (per [`auto-mode.md §6/§7.3`](../auto-mode.md)) — Auto never interrupts mid-loop for these. There are **three routine-triage sites**: § Iteration Caps, § Stuck detection, § Regression marking. **Safety-gate** escalations interrupt in BOTH modes (NOT mode-split) — they are the dual-system guarantee, not routine triage. There are **six safety-gate sites**: § Severity-gated divergence handling (Major divergence) and the same-symptom-different-root-cause divergence in § Same symptom, different root cause; § Verdict Aggregation Across Perspectives (any `FAIL`); and in § Degraded-mode policy the one-system-fails, both-systems-fail, and cost-budget-approaching-cap gates. Do not over-apply the no-interrupt rule and silence a safety gate, and do not leave a routine-triage path mode-agnostic.
+
 ### Aggregation rule — pessimistic union
 
 Per perspective:
@@ -106,7 +108,7 @@ When both systems flag the **same symptom** but propose **different root causes*
 | Pattern | Manager action |
 |---|---|
 | Both systems: same symptom + same root cause + same remediation | Collapse into one record (standard pessimistic union) |
-| Both systems: same symptom + **different root causes** | Treat as a reconciliation divergence. Preserve both cause hypotheses, both evidence chains, both proposed remediations. Flag for user resolution via AskUserQuestion before DISCUSSION re-entry. The user's decision (or "explore both") is recorded in the manager's discussion-log and reflected in the next iter's per-perspective files via the `disposition:` field |
+| Both systems: same symptom + **different root causes** | Treat as a reconciliation divergence. Preserve both cause hypotheses, both evidence chains, both proposed remediations. Flag for user resolution via AskUserQuestion before DISCUSSION re-entry. This is a **safety gate — it interrupts in BOTH modes (NOT mode-split)**. The user's decision (or "explore both") is recorded in the manager's discussion-log and reflected in the next iter's per-perspective files via the `disposition:` field |
 | Same symptom + one system has cause, other has none | Use the cause hypothesis; tag the surfacing system; record explicitly that the other system flagged the symptom only |
 
 ### Severity-gated divergence handling
@@ -118,7 +120,7 @@ Not all divergences are equal:
 | **Minor** | `PASS` ↔ `REVISE` | Auto-proceed with pessimistic union; the divergence summary is captured at MEMORIZATION in the canonical artifact's Evaluation summary section |
 | **Major** | `PASS` ↔ `FAIL`, `REVISE` ↔ `FAIL` | **Stop-the-line**: surface divergence to user via AskUserQuestion before any further loop progress; user decides which verdict to honor. The user's decision is captured in the manager's AskUserQuestion transcript and in the canonical Evaluation summary at MEMORIZATION |
 
-Major divergences mean the two systems disagree on whether the artifact is acceptable at all. That is exactly the signal the dual-system mandate exists to surface.
+Major divergences mean the two systems disagree on whether the artifact is acceptable at all. That is exactly the signal the dual-system mandate exists to surface. Major divergence is a **safety gate — it interrupts in BOTH modes (NOT mode-split)**; contrast the routine-triage sites (§ Iteration Caps / § Stuck detection / § Regression marking). The Minor (`PASS` ↔ `REVISE`) row keeps auto-proceeding.
 
 ### Where divergence is recorded
 
@@ -135,6 +137,8 @@ After per-perspective reconciliation across the seven perspectives **and Stage 3
 | All `PASS` | `PASS` | Exit the loop; advance to the next step |
 | Otherwise (any `REVISE`, no `FAIL`) | `REVISE` | Re-enter `DISCUSSION` with findings as new input; iter increments |
 | Any `FAIL` | `FAIL` | Escalate to user via AskUserQuestion |
+
+The any-`FAIL` escalation is a **safety gate — it interrupts in BOTH modes (NOT mode-split)**.
 
 Overall (Stage 3) is given equal weight in aggregation — a `REVISE` from Overall is a `REVISE` for the loop, even if all seven per-perspective verdicts pass. Cross-cutting issues that only emerge holistically are exactly what Stage 3 is designed to surface.
 
@@ -187,14 +191,16 @@ Failure → retry once, then trigger degraded-mode policy below.
 
 ### Degraded-mode policy (single-system fallback)
 
+Degraded mode (single-system / "claude-only") is reachable ONLY here — after a system fails and its one retry fails. It is never a pre-evaluation option and is never offered in Auto Mode as an evaluate-mode choice. The AskUserQuestion gates in this section are dual-system **safety gates — they interrupt in BOTH modes (NOT mode-split)**.
+
 If after retry one system still fails or produces unusable output:
 
 | Scenario | Manager action |
 |---|---|
-| One system succeeds, one fails | **Stop-the-line**: AskUserQuestion: "System X failed (reason). Single-system fallback would weaken the dual-system guarantee. Proceed with system Y only, or halt the loop?" |
+| One system succeeds, one fails | **Stop-the-line** (safety gate — interrupts in both modes): AskUserQuestion: "System X failed (reason). Single-system fallback would weaken the dual-system guarantee. Proceed with system Y only, or halt the loop?" |
 | Single-system fallback approved | Use the surviving system's outputs. Loop verdict **floor is `REVISE`** regardless of the surviving system's verdict (the dual-system guarantee was weakened; cannot exit on PASS without both systems). Record a `process` finding (domain: `process`, severity: `High`) noting the fallback |
-| Both systems fail | **Halt the loop.** AskUserQuestion the user with diagnostic outputs; user decides retry / different model / abort |
-| Cost budget approaching cap | Surface to user proactively before exhaustion: "system X used 80% of budget — continue / abort / raise cap?" |
+| Both systems fail | **Halt the loop** (safety gate — interrupts in both modes). AskUserQuestion the user with diagnostic outputs; user decides retry / different model / abort |
+| Cost budget approaching cap | Surface to user proactively before exhaustion (safety gate — interrupts in both modes): "system X used 80% of budget — continue / abort / raise cap?" |
 
 The dual-system mandate exists to surface divergence. A silent single-system fallback would undermine it; explicit degraded mode preserves auditability.
 
@@ -236,15 +242,15 @@ A prior-iter `open` or `gap` finding that does NOT show up in iter n's per-persp
 After iter n reconciliation, the manager compares iter n findings vs iter (n-1) reconciled findings:
 
 - Findings present in iter n but absent in iter (n-1) → tag `domain: regression` (a REVISE introduced a new finding the prior iter didn't have)
-- A regression at any iter triggers user awareness via AskUserQuestion: "iter n REVISE introduced regressions; the previous fix may have been wrong."
+- A regression's response is mode-specific (routine triage). **In Chat mode** it triggers user awareness via AskUserQuestion: "iter n REVISE introduced regressions; the previous fix may have been wrong." **In Auto mode** the manager does NOT interrupt: it keeps the regression tag and surfaces it in the Wrap-up finding set — per [`auto-mode.md §6/§7.3`](../auto-mode.md). (Chat behavior here is evaluation.md's own existing behavior; chat-mode.md is silent on regression.)
 
 ### Stuck detection (manager-side, post-reconciliation)
 
 If the same finding (same Type / Domain / symptom signature) appears in 2 consecutive iters with `disposition: open` in both:
 
 - Tag both records as `stuck` (a finding-level annotation, added by the manager during reconciliation)
-- **Escalate to user BEFORE reaching the iteration cap** via AskUserQuestion: "iter n finding F is unchanged from iter (n-1). The current approach is not converging on this finding. Options: revise differently / accept-with-deferral / abort / change scope."
-- User resolution is captured in the manager's discussion log and reflected as the finding's `disposition:` in iter (n+1)'s file (`addressed` / `deferred` / `disputed` / aborted = loop halt)
+- The stuck response is mode-specific (routine triage). **In Chat mode** the manager **escalates to the user BEFORE reaching the iteration cap** via AskUserQuestion: "iter n finding F is unchanged from iter (n-1). The current approach is not converging on this finding. Options: revise differently / accept-with-deferral / abort / change scope." **In Auto mode** the manager does NOT interrupt mid-loop: it keeps the `stuck` tag, continues to iterate within the `maxIterations` budget (and aborts at the cap per § Iteration Caps), and surfaces the stuck finding in the Wrap-up finding set — per [`auto-mode.md §6/§7.3`](../auto-mode.md). (Chat behavior here is evaluation.md's own existing behavior; chat-mode.md is silent on stuck detection.)
+- User resolution (Chat) is captured in the manager's discussion log and reflected as the finding's `disposition:` in iter (n+1)'s file (`addressed` / `deferred` / `disputed` / aborted = loop halt)
 
 This prevents wasted iter-3 cycles on issues the agent cannot resolve and surfaces architecture-level problems that look like fix-loops.
 
@@ -255,7 +261,7 @@ This prevents wasted iter-3 cycles on issues the agent cannot resolve and surfac
 The manager tracks the loop's revision count. Settings define:
 - `workflow.{loop}.maxIterations` (default 5 for Ideation/Planning/Execution, 5 for Wrap-up)
 
-When the cap is reached without `PASS`, the manager **escalates to the user** rather than continuing to revise. The escalation is a stop-the-line AskUserQuestion with three options: revise one more time, accept the artifact as-is despite findings, or abort the loop and reframe.
+When the cap is reached without `PASS`, the manager's response is mode-specific (routine triage). **In Chat mode** the manager **escalates to the user** rather than continuing to revise — a stop-the-line AskUserQuestion with three options: revise one more time, accept the artifact as-is despite findings, or abort the loop and reframe (consistent with chat-mode.md's "Budget exhausted → escalate to user"). **In Auto mode** the manager does NOT interrupt the user mid-session: it records the abort, continues to the next step if continuing is safe, and surfaces the failure at Wrap-up — per [`auto-mode.md §6`](../auto-mode.md). The one exception is `auto-mode.md §6`'s "unsound to proceed" case (e.g., Planning aborted with no deliverable plan), where the Auto manager MUST surface via AskUserQuestion before proceeding.
 
 ---
 
@@ -305,3 +311,4 @@ The directory `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/`
 - Memorization synthesis → [`workflow/memorization.md`](memorization.md), [`memorization/SKILL.md`](../../memorization/SKILL.md)
 - Wrap-up's project-memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Verdict aggregation rules in the state machine → [orchestration `SKILL.md` § Verdict aggregation](../SKILL.md#verdict-aggregation)
+- Auto-Mode evaluation discipline (manager-never-asks / manager-never-evaluates / auto-iterate-no-routine-triage / safety-gate carve-out) → [`auto-mode.md` § Evaluation discipline (§7)](../auto-mode.md)

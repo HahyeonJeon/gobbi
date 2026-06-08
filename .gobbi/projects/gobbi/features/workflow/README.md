@@ -10,7 +10,7 @@ session: a10c82d6-f4c4-4ee5-a3dc-9fb7ce3815e7
 tags: [workflow, orchestration, state-machine, pipeline]
 value_proposition: "The Ideation → Planning → Execution → Memorization → Handoff pipeline: a gated 6-step state machine that drives every unit of work."
 subsystems: [orchestration, ideation, preparation, planning, execution, wrap-up, research, discussion]
-last_updated: 2026-05-26
+last_updated: 2026-06-08
 project: gobbi
 ---
 
@@ -48,6 +48,7 @@ Active. The 6-step state machine and its five loop bodies are live. The feature 
 
 | Date | Session | What |
 |---|---|---|
+| 2026-06-08 | 422308da | Auto-mode evaluation discipline hardened — 3 commits (evaluation.md mode-split, auto-mode.md §7, CLAUDE.md blockquote); 2 decisions + 2 mistakes + 3 backlogs + 1 layer2 promoted |
 | 2026-06-05 | 06668274 | Orchestration skill compaction — 2 decisions + 1 backlog promoted (entry-point removal, mode-gate ownership, interview-skill-line72) |
 | 2026-05-26 | a10c82d6 | Feature dir created during memory-redesign W3-T0 |
 
@@ -55,6 +56,9 @@ Active. The 6-step state machine and its five loop bodies are live. The feature 
 
 - `backlogs/interview-skill-line72-ties-gate-to-configuration.md` — `interview/SKILL.md:72` still attributes the auto-recommendation to the Configuration step; reconcile with gobbi-bootstrap boundary.
 - `backlogs/lock2-shared-executor-mega-task-risk.md` — the shared-executor context-budget risk deferred for a future Execution loop.
+- `backlogs/safety-gate-count-asymmetry.md` — evaluation.md names 6 safety-gate sites; auto-mode §7 enumerates 3 headline gates; add count cross-reference.
+- `backlogs/auto-mode-intro-agent-psychology-wording.md` — "so the manager cannot rationalize past it" in §7 intro; replace with direct imperative.
+- `backlogs/evaluation-md-section-name-paraphrase.md` — evaluation.md framing cites a paraphrase of the section header; use full name.
 
 ## Related
 
