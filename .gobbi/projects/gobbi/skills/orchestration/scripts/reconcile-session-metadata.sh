@@ -81,22 +81,64 @@ spawns="$(jq -rc '
 ' "$main_transcript" 2>/dev/null | jq -rc -s 'unique_by(.id) | .[]')" || die "enumerate failed" 3
 
 # 2) Build an updates array: one object per agent with id/type/transcriptPath/tokensUsed.
-updates="[]"
+#    Single-pass design (perf, task 06b): instead of forking agent-token-usage.sh
+#    plus a fresh jq PER spawn (O(spawns) subprocesses), do it in two fixed jq
+#    passes regardless of spawn count:
+#      a) shell loop builds a meta map { transcriptPath: {id,type} } for spawns
+#         whose subagent transcript file EXISTS, and the existing-file arg list;
+#      b) ONE jq slurps ALL existing subagent transcripts at once, groups each
+#         turn's usage by its source file (jq `input_filename`), sums per file,
+#         and joins to the meta map to emit the full updates[] array.
+#    The per-file sum matches agent-token-usage.sh (no --main) exactly.
+meta_map="{}"
+trans_files=()
 while IFS= read -r spawn; do
     [ -n "$spawn" ] || continue
     aid="$(printf '%s' "$spawn" | jq -r '.id')"
     atype="$(printf '%s' "$spawn" | jq -r '.type // empty')"
     atrans="$subagents_dir/agent-${aid}.jsonl"
     if [ -f "$atrans" ]; then
-        tok="$("$unit" "$atrans" 2>/dev/null)" || { log "unit failed for $aid (skipped)"; continue; }
+        meta_map="$(jq -c --arg id "$aid" --arg type "$atype" --arg tp "$atrans" \
+            '. + { ($tp): { id:$id, type:$type } }' <<<"$meta_map")" \
+            || die "build meta map failed" 3
+        trans_files+=("$atrans")
     else
         log "subagent transcript absent for $aid (skipped): $atrans"
-        continue
     fi
-    updates="$(jq -c --arg id "$aid" --arg type "$atype" --arg tp "$atrans" \
-        --argjson tok "$tok" '. + [{ id:$id, type:$type, transcriptPath:$tp, tokensUsed:$tok }]' \
-        <<<"$updates")" || die "build updates failed" 3
 done <<<"$spawns"
+
+# One jq over ALL existing subagent transcripts. `input_filename` keys each input
+# line to its source file; group + sum per file, then join to the meta map. This
+# is the per-spawn token sum, computed in a single subprocess instead of N.
+if [ "${#trans_files[@]}" -gt 0 ]; then
+    updates="$(jq -c -n --argjson meta "$meta_map" '
+        # Per-file usage sums, keyed by source transcript path.
+        ( reduce ( inputs
+                   | select(.type == "assistant")
+                   | { f: input_filename, u: (.message.usage // {}) } ) as $r
+            ({};
+             .[$r.f] as $acc
+             | .[$r.f] = { input:         ( ($acc.input         // 0) + ($r.u.input_tokens                // 0) ),
+                           output:        ( ($acc.output        // 0) + ($r.u.output_tokens               // 0) ),
+                           cacheRead:     ( ($acc.cacheRead     // 0) + ($r.u.cache_read_input_tokens     // 0) ),
+                           cacheCreation: ( ($acc.cacheCreation // 0) + ($r.u.cache_creation_input_tokens // 0) ) }
+            )
+        ) as $sums
+        # Emit one entry per KNOWN transcript (from the meta map), so a file with
+        # no assistant/usage turns still yields an all-zero tokensUsed entry —
+        # matching the old per-spawn loop exactly.
+        | [ $meta | to_entries[]
+            | .key as $tp
+            | .value as $m
+            | ( $sums[$tp] // { input:0, output:0, cacheRead:0, cacheCreation:0 } ) as $s
+            | ( $s + { total: ($s.input + $s.output + $s.cacheRead + $s.cacheCreation) } ) as $tok
+            | { id: $m.id, type: ($m.type // ""), transcriptPath: $tp, tokensUsed: $tok }
+          ]
+    ' "${trans_files[@]}" 2>/dev/null)" || die "build updates failed" 3
+    [ -n "$updates" ] || updates="[]"
+else
+    updates="[]"
+fi
 
 # 2b) Build the tool_use_id -> agentId re-key map from the spawns. Used to
 #     converge any stale toolu_-prefixed agents[] entry (seeded by an older hook)
