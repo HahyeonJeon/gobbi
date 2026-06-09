@@ -2,7 +2,7 @@
 
 Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `wrap-up`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for a Wrap-up Loop's session handoff.
 
-The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id}/wrap-up/artifacts/` files (the handoff summary, shipped-summary, next-session-pointers, and any other artifact the Wrap-up assistant produced) **plus** the full set of project-memory promotions Wrap-up made. Wrap-up promotion targets span the entire project-memory surface (not only features/ + mistakes/):
+The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id}/5-wrap-up/outputs/` files (the handoff summary, shipped-summary, next-session-pointers, and any other artifact the Wrap-up assistant produced) **plus** the full set of project-memory promotions Wrap-up made. Wrap-up promotion targets span the entire project-memory surface (not only features/ + mistakes/):
 
 - `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans}/` — feature-scoped promotions
 - `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` — feature-scoped mistakes
@@ -54,7 +54,7 @@ Wrap-up evaluation is **non-skippable**. A wrap-up that consolidates incorrectly
 | Tool | Use for |
 |---|---|
 | `git log` of the session's branch | Compare against "what was shipped" claims |
-| `ls -la` on `sessions/{date}-{session-id}/{loop}/staging/` for every loop | Confirm staging artifacts were either promoted or backlogged |
+| `ls -la` on `sessions/{date}-{session-id}/{N}-{loop}/staging/` for every loop | Confirm staging artifacts were either promoted or backlogged |
 | `git diff` for new files under `features/{feature-name}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/` | Verify promotion actually happened across all project-tier destinations |
 | `find .gobbi/projects/{project-name}/` (pre-Wrap-up vs post-Wrap-up) | Identify exactly what was promoted at each destination |
 
@@ -104,7 +104,7 @@ Wrap-up evaluation is **non-skippable**. A wrap-up that consolidates incorrectly
 
 ### Staging → project-memory routing (deterministic; Wrap-up MUST follow)
 
-See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging--project-memory-routing) for the authoritative routing table. The evaluator's job here is to verify that every staging file's actual destination matches the table — not to maintain a separate copy. For each entry in `rawdata/promotion-manifest.md`, cross-reference the destination against the SKILL.md routing table and flag any deviation.
+See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging--project-memory-routing) for the authoritative routing table. The evaluator's job here is to verify that every staging file's actual destination matches the table — not to maintain a separate copy. For each entry in `working/promotion-manifest.md`, cross-reference the destination against the SKILL.md routing table and flag any deviation.
 
 ### Recommended verifications
 
@@ -167,8 +167,8 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 
 ### Seed scenarios with attached checklists
 
-**A reader opening only wrap-up/artifacts/ understands what the session did**
-- `wrap-up/artifacts/` opens with a one-paragraph summary
+**A reader opening only 5-wrap-up/outputs/ understands what the session did**
+- `5-wrap-up/outputs/` opens with a one-paragraph summary
 - Section structure is consistent with the project's handoff template
 
 **Section structure matches the project's handoff template**
@@ -191,7 +191,7 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 
 | Tool | Use for |
 |---|---|
-| Read `wrap-up/artifacts/` cold | Test the "next session opens this first" experience |
+| Read `5-wrap-up/outputs/` cold | Test the "next session opens this first" experience |
 
 ### Perspective-specific anti-patterns
 
@@ -208,7 +208,7 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 ### Seed scenarios with attached checklists
 
 **A fresh agent at next session start resumes without asking "what were you working on?"**
-- `wrap-up/artifacts/` + the promoted memory together contain enough context to resume
+- `5-wrap-up/outputs/` + the promoted memory together contain enough context to resume
 - No silent assumption that the next agent will recall the prior session
 
 **Open items have `next-action:` fields concrete enough to start work**
@@ -262,7 +262,7 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 - Where the new file contradicts an existing one without supersession, the conflict is flagged
 
 **Cross-references inside the wrap-up resolve**
-- Internal cross-references in `wrap-up/artifacts/` (e.g., "see Section 3", "per the Ideation rawdata") resolve
+- Internal cross-references in `5-wrap-up/outputs/` (e.g., "see Section 3", "per the Ideation working draft") resolve
 - Forward references match later-section content
 
 **Mistakes extracted match user corrections in the session transcript**
@@ -294,7 +294,7 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 |---|---|
 | Diff `staging/` directory contents vs promoted memory files | Detect staging artifacts that were silently dropped |
 | `grep` "supersedes" / "updates" in newly promoted files | Confirm conflicts with prior memory are declared, not silent |
-| Cross-reference scan: every link / path in `wrap-up/artifacts/` | Detect link rot at handoff time |
+| Cross-reference scan: every link / path in `5-wrap-up/outputs/` | Detect link rot at handoff time |
 | Diff session transcript's correction passages vs new `mistakes/` entries | Detect missed mistakes |
 
 ### Perspective-specific anti-patterns
@@ -322,7 +322,7 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 - No file that creates ambiguity about which version is authoritative
 
 **Session-scratch state is preserved for audit**
-- Wrap-up does not delete `sessions/.../{loop}/` directories
+- Wrap-up does not delete `sessions/.../{N}-{loop}/` directories
 - Scratch is the audit trail; it stays
 
 **Mistakes from this session are recorded**
@@ -339,7 +339,7 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 
 **Privacy / sensitive-data exposure during session** (Coverage Matrix: Risk + Consistency)
 - If any session activity touched real PII or sensitive data (e.g., grepping production data), that's recorded
-- No transient sensitive data left in committable scratch (logs / sessions/.../rawdata/)
+- No transient sensitive data left in committable scratch (logs / sessions/.../{N}-{loop}/working/)
 
 **Process mistakes** (Coverage Matrix: Risk + Consistency)
 - User corrections that surfaced workflow / process gaps (e.g., evaluator missed a category, manager skipped escalation) become mistake candidates
@@ -378,6 +378,6 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 
 ## Output reminder
 
-Same as the parent SKILL.md — seven per-perspective files + one overall file under `sessions/{date}-{session-id}/wrap-up/evaluation/iter{n}/{system}/`. Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.
+Same as the parent SKILL.md — seven per-perspective files + one overall file under `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/`. Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.
 
 The Wrap-up loop is special: a `FAIL` here is **terminal escalation** — the manager invokes AskUserQuestion to present the failure findings to the user and decide next action (typically: accept the partial wrap-up with acknowledged gaps, re-run WORK with corrective direction, or abort session closure and defer to a follow-up session). `FAIL` does NOT automatically trigger a REVISE re-entry; that would mask a promotion failure the user should be aware of. `REVISE` (not FAIL) is the normal iteration path for fixable promotion gaps. See `wrap-up/SKILL.md` § EVALUATION Phase for the authoritative verdict routing.

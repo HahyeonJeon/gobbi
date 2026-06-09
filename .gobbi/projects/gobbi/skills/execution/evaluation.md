@@ -2,7 +2,7 @@
 
 Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `execution`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for an Execution Loop's code changes.
 
-The artifact under evaluation is **the actual change-set** (committed code, modified files, plus the executor's notes). It is **judged against the plan task it implements**. The Planning rawdata + the task spec are required input. Scenarios include adversarial cases (regressions, hidden coupling, security surface drift) so Stage 2 walks each Frame once without a separate adversarial pass.
+The artifact under evaluation is **the actual change-set** (committed code, modified files, plus the executor's notes). It is **judged against the plan task it implements**. The Planning working draft + the task spec are required input. Scenarios include adversarial cases (regressions, hidden coupling, security surface drift) so Stage 2 walks each Frame once without a separate adversarial pass.
 
 Domain-specific code quality details (language idioms, type-system patterns, framework-specific anti-patterns) live in the **`coding` skill's `evaluation.md` child** when that skill is created. This child doc covers the workflow-level evaluation: did the executor implement what the plan asked, completely, without scope creep, and verifiably?
 
@@ -422,4 +422,4 @@ Domain-specific code quality details (language idioms, type-system patterns, fra
 
 ## Output reminder
 
-Same as the parent SKILL.md — seven per-perspective files + one overall file under `sessions/{date}-{session-id}/execution/{task-id}/evaluation/iter{n}/{system}/`. Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.
+Same as the parent SKILL.md — seven per-perspective files + one overall file under `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/`. Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.
