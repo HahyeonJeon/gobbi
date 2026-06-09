@@ -249,7 +249,7 @@ Ideation / Preparation / Planning / Execution loops write only to session memory
 
 All session work is scoped under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. Project memory lives at `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` and is written only by Wrap-up's MEMORIZATION (and by Interview during bootstrap).
 
-For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{rawdata,staging,evaluation,artifacts}/` subdirectories every loop produces), see [`memorization/SKILL.md` § Output paths](../memorization/SKILL.md#output-paths).
+For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{working,evaluation,staging,outputs}/` subdirectories every loop produces), see [`memorization/SKILL.md` § Output paths](../memorization/SKILL.md#output-paths).
 
 ---
 

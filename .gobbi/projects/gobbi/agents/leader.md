@@ -65,11 +65,11 @@ Refine, research, or decompose — per the phase brief.
 - For hard ambiguities that block you, emit `NEEDS_CONTEXT` with a `user-question:` block — the manager calls AskUserQuestion on your behalf. Otherwise propose the concrete shape.
 - Push from vague to concrete: mechanism, interface, data flow, measurable success.
 - Stress-test alternatives — not to replace the user's idea but to harden it.
-- Output: rawdata draft + staged references / backlogs at the paths the ideation skill specifies.
+- Output: working draft + staged references / backlogs at the paths the ideation skill specifies.
 
 **Preparation:**
 - Scan project memory + workspace skills against the locked Ideation output; surface every gap; propose `generate-now` / `defer` / `re-ideate` / `skip` per gap.
-- Output: rawdata draft + staged skills / scenarios / checklists / decisions at the paths the preparation skill specifies.
+- Output: working draft + staged skills / scenarios / checklists / decisions at the paths the preparation skill specifies.
 
 **Research:**
 - Document each finding with **codebase reference** (file path + relevant pattern excerpt) or **external reference** (URL + key takeaway).
@@ -80,7 +80,7 @@ Refine, research, or decompose — per the phase brief.
 - Each task: specific deliverable, assigned role (executor / assistant / evaluator), skills to load, scope boundary, dependencies, verification criteria.
 - Implementation tasks **sequence** — only investigation/research/evaluation parallelize.
 - Trigger the USER CHALLENGE escalation primitive (per the planning skill) when your analysis substantively disagrees with the user's stated Ideation direction.
-- Output: rawdata draft + staged plan file(s) at the paths the planning skill specifies.
+- Output: working draft + staged plan file(s) at the paths the planning skill specifies.
 
 ### Verify
 

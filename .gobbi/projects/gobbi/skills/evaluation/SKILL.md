@@ -11,7 +11,7 @@ Skill for any agent performing review during a loop's EVALUATION sub-phase. Whoe
 In Stage 1 scenarios and checklists are **not separate lists** — each scenario carries an **attached checklist** of concrete yes/no conditions that, if all satisfied, prove the scenario is handled. Adversarial coverage (edge cases / failure modes / attack vectors) is baked into the scenarios at frame-build time, not deferred to a separate adversarial sub-stage. Stage 2 walks each perspective's locked Frame once.
 
 Inputs to a review pass:
-- The artifact under evaluation (e.g., the Ideation Loop's rawdata draft)
+- The artifact under evaluation (e.g., the Ideation Loop's working draft)
 - Any artifact-embedded evaluation criteria the creator provided (context for Stage 1 frame-build, not a separate measurement pass)
 - The workflow phase (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) — selects which child doc to load at Stage 0
 - The perspective set (always all seven + Overall; no pruning)
@@ -541,7 +541,7 @@ The procedure is the same across workflow loops; the **focus** shifts by phase v
 
 | Phase | Child doc | What the child doc provides |
 |---|---|---|
-| Ideation | [`ideation/evaluation.md`](../ideation/evaluation.md) | Per-perspective seed scenarios + seed checklist for an Ideation Loop's rawdata draft (idea, scope contract, framed problem, research insights, design direction, evaluation criteria) |
+| Ideation | [`ideation/evaluation.md`](../ideation/evaluation.md) | Per-perspective seed scenarios + seed checklist for an Ideation Loop's working draft (idea, scope contract, framed problem, research insights, design direction, evaluation criteria) |
 | Preparation | [`preparation/evaluation.md`](../preparation/evaluation.md) | Per-perspective seed scenarios + seed checklist for a Preparation Loop's readiness artifacts (gap closure, skill stamps, feature directory bootstrap, Ideation-surfaced backlog coverage) |
 | Planning | [`planning/evaluation.md`](../planning/evaluation.md) | Per-perspective seed scenarios + seed checklist for a Planning Loop's task decomposition |
 | Execution | [`execution/evaluation.md`](../execution/evaluation.md) | Per-perspective seed scenarios + seed checklist for an Execution Loop's code changes. Detailed coding-domain quality checks live in the `coding` skill's evaluation child when that skill exists |
