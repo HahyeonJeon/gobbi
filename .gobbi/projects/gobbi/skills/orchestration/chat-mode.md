@@ -349,17 +349,21 @@ where:
 ```
 sessions/{date}-{ssid}/chat/tasks/{NN}-{slug}/
     task-record.md
-    ideation/
-        {rawdata,staging,artifacts,evaluation}/
-    planning/
-        {rawdata,staging,artifacts,evaluation}/
-    execution/
-        {rawdata,staging,artifacts,evaluation}/
+    1-ideation/
+        {working,evaluation,staging,outputs}/
+    3-planning/
+        {working,evaluation,staging,outputs}/
+    4-execution/
+        {working,evaluation,staging,outputs}/
 ```
 
-Preparation is not present in the directory tree for tasks where `state: Skipped` (the default —
-chat preparation is `{skip: true, maxIterations: 0}`). If a user opts into Preparation for a specific task, a `preparation/` subdirectory
-appears with the same quartet.
+The per-task sub-loop dirs carry the same `{N}-{loop}` number prefix and the same
+4-slot interior (`working/ evaluation/ staging/ outputs/`) as the main session
+tree — see [`templates/session-tree.md`](templates/session-tree.md) for the
+canonical shape. Preparation is not present in the directory tree for tasks where
+`state: Skipped` (the default — chat preparation is `{skip: true, maxIterations: 0}`).
+If a user opts into Preparation for a specific task, a `2-preparation/` subdirectory
+appears with the same 4-slot interior.
 
 ### 6.2 Frontmatter type — deferred to Planning
 

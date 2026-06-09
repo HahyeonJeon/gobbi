@@ -77,7 +77,7 @@ Construct the executor delegation prompt for the current task. The leader is **n
 
 **Inputs**
 - `sessions/{date}-{session-id}/3-planning/outputs/` — the locked task list (current task)
-- `sessions/{date}-{session-id}/planning/staging/plans/{slug}.md` — the staged plan file(s) for context
+- `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` — the staged plan file(s) for context
 - `sessions/{date}-{session-id}/1-ideation/outputs/` — the design the plan implements
 - Prior-task outputs at `sessions/{date}-{session-id}/4-execution/task-{MM}-{slug}/outputs/` — when current task depends on them
 - On `REVISE` iterations: prior iter's evaluator findings for THIS task

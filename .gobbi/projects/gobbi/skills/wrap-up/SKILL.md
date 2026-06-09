@@ -416,7 +416,7 @@ Every iteration:
 
 ## Output paths
 
-All session-memory writes during the Wrap-up Loop are scoped to `sessions/{date}-{session-id}/wrap-up/`. Project-memory writes (the substantive output of WORK) follow the [Staging → Project-memory routing](#staging--project-memory-routing) table above.
+All session-memory writes during the Wrap-up Loop are scoped to `sessions/{date}-{session-id}/5-wrap-up/`. Project-memory writes (the substantive output of WORK) follow the [Staging → Project-memory routing](#staging--project-memory-routing) table above.
 
 **Path conventions**
 

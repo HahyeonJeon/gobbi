@@ -24,7 +24,7 @@ The agent in the leader role MUST observe these tier boundaries. The only write 
 |---|---|---|
 | **Session memory — own loop working** | `sessions/{date}-{session-id}/2-preparation/working/` | **READ + WRITE** — leader drafts, scan outputs, transcripts |
 | **Session memory — own loop staging** | `sessions/{date}-{session-id}/2-preparation/staging/{scenarios,checklists,decisions,references,design,discussions,skills,backlogs/{feature,project}}/` | **READ + WRITE (WORK only)** — approved gap fixes stage here per the routing table; Wrap-up promotes to project memory |
-| **Session memory — prior loop (Ideation)** | `sessions/{date}-{session-id}/ideation/{artifacts,staging}/` | **READ-ONLY** — required input for readiness scanning; the artifacts are the locked design and Scope Contract |
+| **Session memory — prior loop (Ideation)** | `sessions/{date}-{session-id}/1-ideation/{outputs,staging}/` | **READ-ONLY** — required input for readiness scanning; the artifacts are the locked design and Scope Contract |
 | **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the leader never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for readiness scanning (existing scenarios / checklists / design / mistakes). Never written; Wrap-up owns feature-memory writes |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for readiness scanning (project skills, mistakes, rules). Never written; Wrap-up owns project-memory writes |
@@ -94,7 +94,7 @@ Verify readiness of project memory and workspace skills against the locked Ideat
 
 **Inputs**
 - `sessions/{date}-{session-id}/1-ideation/outputs/` (canonical, just produced by Ideation MEMORIZATION)
-- `sessions/{date}-{session-id}/ideation/staging/` (everything Ideation staged for Wrap-up to promote, but not yet promoted)
+- `sessions/{date}-{session-id}/1-ideation/staging/` (everything Ideation staged for Wrap-up to promote, but not yet promoted)
 - Project memory: `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,design,mistakes,plans,references}/`
 - Project memory: `.gobbi/projects/{project-name}/{mistakes,rules,design,skills,notes}/`
 - Workspace skills under `.claude/skills/` (when discoverable)
@@ -125,7 +125,7 @@ Read the locked Ideation output end-to-end, extract a readiness signal list of w
 
 **Inputs**
 - `sessions/{date}-{session-id}/1-ideation/outputs/` — every file
-- `sessions/{date}-{session-id}/ideation/staging/` — references, backlogs, scenarios, checklists, decisions, design, discussions
+- `sessions/{date}-{session-id}/1-ideation/staging/` — references, backlogs, scenarios, checklists, decisions, design, discussions
 - Existing feature directory at `.gobbi/projects/{project-name}/features/{feature-name}/` (the feature named in the Scope Contract)
 
 **Procedure**
@@ -153,7 +153,7 @@ Verify that every artifact the downstream loops will read is staged or already i
 
 **Inputs**
 - Readiness signal list (Sub-step A output)
-- `sessions/{date}-{session-id}/ideation/staging/` — everything Ideation staged
+- `sessions/{date}-{session-id}/1-ideation/staging/` — everything Ideation staged
 - Feature memory at `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,design,mistakes}/`
 - Project memory at `.gobbi/projects/{project-name}/{mistakes,rules,design}/`
 
@@ -161,10 +161,10 @@ Verify that every artifact the downstream loops will read is staged or already i
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
-| 1 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/ideation/staging/design/` contains a design file per substantive design topic from the Ideation Sub-step D output | Design-staging gap list |
-| 2 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/ideation/staging/scenarios/` has every `scenario_gap` finding's scenario from Ideation EVALUATION | Scenario-staging gap list |
-| 3 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/ideation/staging/checklists/` has every implementation checklist item, anchored to its scenario | Checklist-staging gap list |
-| 4 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/ideation/staging/decisions/` has records for every substantive choice in the discussion log + every `design_flaw` / `assumption_risk` finding | Decisions-staging gap list |
+| 1 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/1-ideation/staging/design/` contains a design file per substantive design topic from the Ideation Sub-step D output | Design-staging gap list |
+| 2 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/1-ideation/staging/scenarios/` has every `scenario_gap` finding's scenario from Ideation EVALUATION | Scenario-staging gap list |
+| 3 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/1-ideation/staging/checklists/` has every implementation checklist item, anchored to its scenario | Checklist-staging gap list |
+| 4 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/1-ideation/staging/decisions/` has records for every substantive choice in the discussion log + every `design_flaw` / `assumption_risk` finding | Decisions-staging gap list |
 | 5 | Leader | Readiness signal list | Verify accessible feature mistakes at `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` and project mistakes at `.gobbi/projects/{project-name}/mistakes/` cover the domains the design will touch | Mistakes-readiness gap list |
 | 6 | Leader | Aggregated gap lists from steps 1–5 | For each gap: record name + severity (would this gap block Planning / Execution / EVALUATION?) + proposed resolution (`generate-now` if MEMORIZATION skipped a write; `re-ideate` if a design choice is missing; `skip` if not in scope) | Design + memory gap list |
 | 7a | Leader | Gap list | Surface to the manager | Findings package |

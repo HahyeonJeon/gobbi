@@ -98,7 +98,7 @@ Take the locked Ideation output + Preparation readiness and decompose it into a 
 **Inputs**
 - `sessions/{date}-{session-id}/1-ideation/outputs/` (canonical, locked design)
 - `sessions/{date}-{session-id}/2-preparation/outputs/` (readiness assessment + any generated project-specific skills now staged)
-- `sessions/{date}-{session-id}/preparation/staging/` (skills / scenarios / decisions staged by Preparation)
+- `sessions/{date}-{session-id}/2-preparation/staging/` (skills / scenarios / decisions staged by Preparation)
 - `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,design,mistakes}/` (accumulated feature memory)
 - `.gobbi/projects/{project-name}/{mistakes,rules}/` (project-wide context)
 - On `REVISE` iterations: prior iter's evaluator findings + the restore-point copy of prior draft
@@ -147,7 +147,7 @@ Read the locked Scope Contract, design, scenarios, checklist, and Preparation re
 **Inputs**
 - `sessions/{date}-{session-id}/1-ideation/outputs/` — every file
 - `sessions/{date}-{session-id}/2-preparation/outputs/` — every file
-- `sessions/{date}-{session-id}/preparation/staging/` — staged readiness fixes (generated skills, missed-promotion scenarios/checklists/decisions)
+- `sessions/{date}-{session-id}/2-preparation/staging/` — staged readiness fixes (generated skills, missed-promotion scenarios/checklists/decisions)
 - Existing feature directory at `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,design}/`
 
 **Procedure**
