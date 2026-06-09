@@ -37,7 +37,7 @@ Canonical form:
 timeout 600 codex exec \
   --sandbox workspace-write \
   --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id> \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id} \
   "<inline prompt or @prompt-file>"
 ```
 
@@ -179,7 +179,7 @@ When the task requires both workspace writes (worktree) and session writes (main
 timeout 600 codex exec \
   --sandbox workspace-write \
   --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/staging \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
   "<prompt>"
 ```
 
@@ -188,7 +188,7 @@ timeout 600 codex exec \
 After any Codex evaluator completes, verify output files landed at the correct main-tree absolute path before advancing:
 
 ```bash
-find <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/<loop>/staging -type f -newer <marker-file>
+find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/staging -type f -newer <marker-file>
 ```
 
 If no files appear under the main-tree path, check for worktree-nested residue and apply manager-proxy write fallback.
@@ -248,9 +248,9 @@ Never treat stdout parsing or broker.json polling as the completion signal. Afte
 3. Report BLOCKED if either check fails — do not silently report DONE on missing or malformed output.
 
 ```bash
-# After codex exec exits:
-test -f <main-tree>/.gobbi/projects/<project-name>/sessions/<id>/evaluation/iter1/overall.md || echo "MISSING: overall.md"
-grep -q "VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/<id>/evaluation/iter1/overall.md || echo "MISSING: verdict line"
+# After codex exec exits (per-loop, codex system dir):
+test -f <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/codex/overall.md || echo "MISSING: overall.md"
+grep -q "VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/codex/overall.md || echo "MISSING: verdict line"
 ```
 
 ---
@@ -265,8 +265,8 @@ The recommended pattern for running Claude + Codex evaluations in parallel. Prod
 
 ```
 manager
-  ├── Agent(assistant, background) ─ prompt: "Claude perspective: run evaluation via Read/Grep/Bash, write to <session-path>/evaluation/iter1/claude-perspective.md, report DONE after file verified"
-  └── Agent(assistant, background) ─ prompt: "Codex perspective: run codex exec foreground, write to <session-path>/evaluation/iter1/codex-perspective.md, verify file + content, report DONE"
+  ├── Agent(assistant, background) ─ prompt: "Claude perspective: run evaluation via Read/Grep/Bash, write to <session-path>/{N}-{loop}/evaluation/iter{n}/claude/{perspective}.md, report DONE after file verified"
+  └── Agent(assistant, background) ─ prompt: "Codex perspective: run codex exec foreground, write to <session-path>/{N}-{loop}/evaluation/iter{n}/codex/{perspective}.md, verify file + content, report DONE"
        ↑ manager waits for both completion notifications, then aggregates
 ```
 
@@ -283,20 +283,20 @@ Step 1. Run codex exec FOREGROUND via your Bash tool:
   timeout 600 codex exec \
     --sandbox workspace-write \
     --cd <main-tree> \
-    --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/staging \
-    "@<main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/staging/codex-eval-prompt.md"
+    --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
+    "@<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/codex-eval-prompt.md"
 
 Step 2. Verify output files landed at the absolute main-tree path:
 
   # Must be 8 per-perspective output files (one per evaluation perspective):
-  ls <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/ | wc -l  # must be 8
+  ls <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/ | wc -l  # must be 8
 
   # 5-Type vocabulary must appear in output (scenario_gap, checklist_gap, design_flaw, assumption_risk, general):
   grep -E "scenario_gap|checklist_gap|design_flaw|assumption_risk|general" \
-    <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/*.md | wc -l  # >= 1 hit per file (5 vocab present)
+    <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/*.md | wc -l  # >= 1 hit per file (5 vocab present)
 
   # Verdict line must be present in overall.md:
-  grep "^VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/evaluation/iter<m>/codex/overall.md  # verdict line present
+  grep "^VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/overall.md  # verdict line present
 
   # If any check fails: STATUS: BLOCKED, do not silent DONE.
 
@@ -311,7 +311,7 @@ The worktree CWD is NOT the session-write root.
 After both assistants return DONE, run the post-eval sanity check:
 
 ```bash
-find <main-tree>/.gobbi/projects/<project-name>/sessions/<session-id>/execution/<task-id>/staging -type f | sort
+find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging -type f | sort
 ```
 
 Aggregate findings by reading the per-perspective output files directly. Do not rely on assistant-reported summaries alone.
