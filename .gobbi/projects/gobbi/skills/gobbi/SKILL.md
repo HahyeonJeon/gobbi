@@ -86,7 +86,7 @@ Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#
 - **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
 - **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
 
-After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) row 2 to walk through each section. If no, apply defaults as-is.
+After the mode is set, ask via AskUserQuestion: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, agents (model + effort))?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) row 2 to walk through each section. If no, apply defaults as-is.
 
 See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 1 (worktree creation), which runs before `state.json` initialization (row 3) and before `session.json` stamping (row 4, where `git.worktreePath` is recorded).
 
@@ -141,13 +141,13 @@ The 6-step state machine and who owns each step:
 
 Five roles. Each has a fixed behavioral spec at `.claude/agents/{role}.md` (symlinked to `.gobbi/projects/gobbi/agents/{role}.md`).
 
-| Role | Model | Owns | When spawned |
+| Role | Model · Effort | Owns | When spawned |
 |---|---|---|---|
-| **manager** | opus | Session chief — orchestrates the team, drives user discussion, makes decisions at every gate. Owns the user relationship exclusively. | Root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. |
-| **leader** | opus | PI / PM — research, ideation direction, preparation readiness, planning decomposition. Never implements code. | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. |
-| **executor** | opus | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task by default (a continued executor may span ≤3 shared-subsystem tasks — `delegation/SKILL.md § Continue vs Fresh`); tasks sequence (never parallelize implementation — continuation is sequential, not parallel). |
-| **evaluator** | opus | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
-| **assistant** | sonnet | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; MEMORIZATION sub-phase. Can parallelize. |
+| **manager** | fable · xhigh | Session chief — orchestrates the team, drives user discussion, makes decisions at every gate. Owns the user relationship exclusively. | Root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. |
+| **leader** | fable · xhigh | PI / PM — research, ideation direction, preparation readiness, planning decomposition. Never implements code. | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. |
+| **executor** | fable · xhigh | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task by default (a continued executor may span ≤3 shared-subsystem tasks — `delegation/SKILL.md § Continue vs Fresh`); tasks sequence (never parallelize implementation — continuation is sequential, not parallel). |
+| **evaluator** | fable · xhigh | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
+| **assistant** | sonnet · high | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; MEMORIZATION sub-phase. Can parallelize. |
 
 Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager parses the status line first and dispatches its next action deterministically. See [`delegation/SKILL.md` § Status Contract](../delegation/SKILL.md#the-status-contract) for the full mapping.
 
@@ -235,9 +235,9 @@ Ideation / Preparation / Planning / Execution loops write only to session memory
 
 **Model selection** (full table in [`delegation/SKILL.md` § Model Selection](../delegation/SKILL.md#model-selection)):
 
-- Reasoning- and implementation-heavy roles (manager / leader / evaluator / executor) use **opus** — judgment, ambiguity-handling, adversarial reasoning, and implementation correctness all need reasoning depth.
+- Reasoning- and implementation-heavy roles (manager / leader / evaluator / executor) use **fable** — judgment, ambiguity-handling, adversarial reasoning, and implementation correctness all need reasoning depth.
 - Only the read-only assistant uses **sonnet** — narrow lookups, references, and factual answers that do not require judgment.
-- All agents run at max effort — never reduce effort level.
+- Fable roles run at `xhigh` effort and the sonnet assistant at `high`, pinned via each agent's `effort:` frontmatter — never reduce below these defaults.
 
 **AskUserQuestion** is mandatory for every decision point (not prose). The Recommended option is the first option, labeled `(Recommended)`. The full Question Card template lives in [`discussion/SKILL.md`](../discussion/SKILL.md#question-card-structure).
 

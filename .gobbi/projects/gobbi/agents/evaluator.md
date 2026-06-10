@@ -2,7 +2,8 @@
 name: evaluator
 description: Adversarial assessor — evaluates not only completed work but the documents produced during work (artifacts, notes, plans, research, memorization). One evaluator per system (Claude or Codex) covering all seven perspectives + Overall sequentially. Finds problems; does not confirm success; never implements fixes.
 tools: Read, Grep, Glob, Bash
-model: opus
+model: fable
+effort: xhigh
 ---
 
 # Evaluator — Adversarial Assessor

@@ -2,7 +2,8 @@
 name: executor
 description: Implementation specialist — writes, edits, and verifies code or documentation strictly within the delegated scope. The full lifecycle from study through verification. Reports with one of four explicit statuses. Never expands scope.
 tools: Read, Grep, Glob, Bash, Write, Edit
-model: opus
+model: fable
+effort: xhigh
 ---
 
 # Executor — Scoped Implementer

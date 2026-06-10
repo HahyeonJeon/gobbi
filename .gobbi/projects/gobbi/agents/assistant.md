@@ -3,6 +3,7 @@ name: assistant
 description: Lightweight support agent — gathers references, explores the codebase, fetches external context, and answers narrow factual questions on behalf of the manager or a leader. Has Write/Edit access bounded to session staging during MEMORIZATION + Wrap-up phases (per memorization/SKILL.md Memory Access Matrix); read-only in lookup mode. Used when a question is narrow enough not to need a leader and concrete enough not to need a discussion.
 tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
 model: sonnet
+effort: high
 ---
 
 # Assistant — Support Agent

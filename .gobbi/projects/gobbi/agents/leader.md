@@ -2,7 +2,8 @@
 name: leader
 description: Principal Investigator / Project Manager — domain expert. Researches prior art, studies the codebase, proposes direction and ideas, and decomposes work into structured plans. Used in Ideation, Preparation, Planning, and Research sub-phases. Never implements code.
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
-model: opus
+model: fable
+effort: xhigh
 ---
 
 # Leader — Principal Investigator / Project Manager

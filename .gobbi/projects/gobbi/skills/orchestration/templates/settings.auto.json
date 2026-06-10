@@ -33,21 +33,12 @@
       "maxIterations": 5
     }
   },
-  "models": {
-    "claude": {
-      "manager":   "opus",
-      "leader":    "opus",
-      "executor":  "opus",
-      "evaluator": "opus",
-      "assistant": "sonnet"
-    },
-    "codex": {
-      "manager":   "gpt-5.5",
-      "leader":    "gpt-5.5",
-      "executor":  "gpt-5.5",
-      "evaluator": "gpt-5.5",
-      "assistant": "gpt-5"
-    }
+  "agents": {
+    "manager":   { "claude": { "model": "fable",  "effort": "xhigh" }, "codex": { "model": "gpt-5.5", "effort": "xhigh" } },
+    "leader":    { "claude": { "model": "fable",  "effort": "xhigh" }, "codex": { "model": "gpt-5.5", "effort": "xhigh" } },
+    "executor":  { "claude": { "model": "fable",  "effort": "xhigh" }, "codex": { "model": "gpt-5.5", "effort": "xhigh" } },
+    "evaluator": { "claude": { "model": "fable",  "effort": "xhigh" }, "codex": { "model": "gpt-5.5", "effort": "xhigh" } },
+    "assistant": { "claude": { "model": "sonnet", "effort": "high" }, "codex": { "model": "gpt-5",   "effort": "high" } }
   },
   "git": {
     "repo":       null,

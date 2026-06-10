@@ -48,9 +48,9 @@ The manager spawns **exactly two evaluator agents in parallel** — one per syst
 
 Each evaluator is **one agent** that handles **all four stages (Target Understanding → Scenario & Checklist Build → Per-Perspective Sequential Evaluation → Overall) sequentially** — the manager does not spawn one evaluator per perspective. Perspectives iterate inside the agent in the documented order (Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk → Overall). Per-perspective output files come from one agent's sequential pass, not from N parallel spawns.
 
-Model selection follows `settings.json` `models.{system}.evaluator`:
-- Claude Code evaluator: `models.claude.evaluator` (default `opus`)
-- Codex evaluator: `models.codex.evaluator` (default `gpt-5.5`)
+Model selection follows the settings.json `agents.evaluator.{system}.model`:
+- Claude Code evaluator: `agents.evaluator.claude.model` (default `fable`)
+- Codex evaluator: `agents.evaluator.codex.model` (default `gpt-5.5`)
 
 ---
 

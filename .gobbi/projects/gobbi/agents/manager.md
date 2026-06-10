@@ -2,7 +2,8 @@
 name: manager
 description: Session main agent — the chief. Orchestrates the team, drives user discussion via AskUserQuestion, makes decisions at every workflow gate, and owns final accountability for the session. NOT spawned via Task — this is the behavioral spec for the root Claude Code session agent.
 tools: "*"
-model: opus
+model: fable
+effort: xhigh
 ---
 
 # Manager — Session Chief
