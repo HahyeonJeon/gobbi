@@ -105,7 +105,7 @@ The manager passes the worktree's absolute path in every delegation prompt. The 
 
 ## Forbidden Operations
 
-These commands are forbidden without **explicit user request** via AskUserQuestion (Always-Ask category per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification) — they are destructive / irreversible operations).
+These commands are forbidden without **explicit user request** through the active runtime's user-decision primitive (Always-Ask category per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification) — they are destructive / irreversible operations).
 
 | Forbidden command | Why | Safe alternative |
 |---|---|---|
@@ -118,7 +118,7 @@ These commands are forbidden without **explicit user request** via AskUserQuesti
 | `git stash` inside a worktree | Stash is per-worktree but easy to forget / lose if worktree is force-removed — never use stash to defer work across delegation boundaries | Create a temporary linked worktree (`git worktree add -b emergency-fix <path> <base>`), do the work, commit, then remove the temp worktree. Per `git-scm.com/docs/git-worktree`. |
 | `gh pr close` without merge | Discards reviewed work | Either merge or convert to draft |
 | `gh issue delete` | GitHub does not support undelete | `gh issue close` + comment explaining |
-| `git worktree remove --force <path>` / `git worktree remove -f <path>` | Discards any uncommitted changes inside the worktree without review; work staged in the worktree (notes, edits, partial commits) is permanently lost | Run `git status` inside the worktree first to confirm a clean tree AND that the branch is merged into base; then use standard `git worktree remove <path>` (no `--force`). If unclean: commit, discard, or escalate to user via AskUserQuestion before removal. |
+| `git worktree remove --force <path>` / `git worktree remove -f <path>` | Discards any uncommitted changes inside the worktree without review; work staged in the worktree (notes, edits, partial commits) is permanently lost | Run `git status` inside the worktree first to confirm a clean tree AND that the branch is merged into base; then use standard `git worktree remove <path>` (no `--force`). If unclean: commit, discard, or escalate to user through the active runtime's user-decision primitive before removal. |
 | Subagent: `git push` / `gh pr *` / `gh issue *` | Bypasses manager's integration authority | Subagent reports `DONE`; manager handles |
 
 **Cross-layer drift is not yet detected automatically.** Until issue #258 lands, every PR that touches multiple layers (e.g., agent docs + runtime specs + plugin agents) must be hand-reviewed for drift via adversarial review per `evaluation/SKILL.md`. See issue #258 for the planned validator.
@@ -197,7 +197,7 @@ If any precondition fails, do not merge — surface the failing item to the user
 
 1. `gh pr merge <num> --squash --delete-branch` — atomic squash merge + remote branch deletion.
 2. `git checkout <base-branch> && git pull --ff-only` — sync the local base branch with the merge.
-3. Before removing the worktree: run `git status` inside it to confirm a clean working tree AND that the branch is merged into base. Then `git worktree remove .gobbi/projects/<name>/worktrees/<branch-name>`. **Never use `--force` / `-f` without explicit user approval via AskUserQuestion** — force-remove silently discards any uncommitted work inside the worktree (Forbidden Operations). If the status is unclean, commit or discard explicitly before removal.
+3. Before removing the worktree: run `git status` inside it to confirm a clean working tree AND that the branch is merged into base. Then `git worktree remove .gobbi/projects/<name>/worktrees/<branch-name>`. **Never use `--force` / `-f` without explicit user approval through the active runtime's user-decision primitive** — force-remove silently discards any uncommitted work inside the worktree (Forbidden Operations). If the status is unclean, commit or discard explicitly before removal.
 4. `git worktree prune` — clean stale references.
 5. **Clean up empty parent directories** — nested branch names like `feat/42-x` create `worktrees/feat/` parent dirs; `git worktree remove` only removes the leaf. Run `find .gobbi/projects/<name>/worktrees/ -type d -empty -delete`.
 6. **If non-default-branch PR**: close linked issues — `gh issue close <num> -c "Closed by PR #<pr-num>"` for each.
@@ -207,7 +207,7 @@ If any precondition fails, do not merge — surface the failing item to the user
 When `gh pr list` or `git worktree list` surfaces an orphaned worktree (left from a crashed or abandoned session):
 
 1. **Inspect** — `cd <orphaned-worktree> && git log -3` to see what's there.
-2. **Surface to manager** via `NEEDS_CONTEXT` with a `user-question:` block: "Found orphaned worktree at `<path>` with N commits — recover the work, resume from here, or clean up?" — the manager presents this to the user via AskUserQuestion.
+2. **Surface to manager** via `NEEDS_CONTEXT` with a `user-question:` block: "Found orphaned worktree at `<path>` with N commits — recover the work, resume from here, or clean up?" — the manager presents this to the user through the active runtime's user-decision primitive.
 3. **If recover** — continue from the existing commits (skip P2; jump to P3 if work needs to continue, or P4 if work is complete).
 4. **If clean up** — `git worktree remove <path>` + `git worktree prune` + cleanup empty parent dirs.
 
@@ -235,7 +235,7 @@ Common failures and their recovery paths.
 | `gh` CLI not authenticated | Covered by Procedure P1 — verified at session setup. |
 | Orphaned worktrees from crashed session | Procedure P6 (Recover orphaned worktree). |
 | CI failure on the PR | Procedure P7 (Handle CI failure). |
-| Cleanup failure when removing a worktree | Normal removal fails when the worktree has uncommitted files or locked refs. Run `git status` inside the worktree first — if unclean, commit or discard explicitly before retrying removal. `--force` / `-f` is Forbidden without explicit user approval via AskUserQuestion (it silently discards uncommitted work). After successful removal, prune (`git worktree prune`) and clean empty parent dirs. |
+| Cleanup failure when removing a worktree | Normal removal fails when the worktree has uncommitted files or locked refs. Run `git status` inside the worktree first — if unclean, commit or discard explicitly before retrying removal. `--force` / `-f` is Forbidden without explicit user approval through the active runtime's user-decision primitive (it silently discards uncommitted work). After successful removal, prune (`git worktree prune`) and clean empty parent dirs. |
 | Stash content lost during worktree removal | Stash is per-worktree and lost with the worktree. **Do not use stash inside worktrees** (Forbidden Operations table). For context switches, create a temporary linked worktree per the safe-alternative rule. |
 | Base branch deleted on remote between session start and worktree creation | Procedure P2 step 2 (re-verification) catches this. Surface to user; switch base or recreate. |
 
@@ -268,7 +268,7 @@ Git operations don't write to session memory directly (writes happen via session
 - **MUST verify prerequisites** at session start (Procedure P1) and re-verify at point of use (Procedure P2 step 2 for base branch).
 - **MUST never push from a subagent** — subagents commit; the manager pushes.
 - **MUST never create or merge a PR from a subagent** — subagents return `DONE`; the manager handles PR creation and merge.
-- **MUST never run a Forbidden Operations command** without explicit user request via AskUserQuestion (Always-Ask category).
+- **MUST never run a Forbidden Operations command** without explicit user request through the active runtime's user-decision primitive (Always-Ask category).
 - **MUST never use `git stash` inside a worktree** — use a temporary linked worktree instead (per `git-scm.com/docs/git-worktree`).
 - **MUST install dependencies per worktree** — each worktree has its own working directory; package managers and caches are not shared.
 - **MUST validate branch names + commit messages** against the regexes in [`conventions.md`](conventions.md) before pushing.

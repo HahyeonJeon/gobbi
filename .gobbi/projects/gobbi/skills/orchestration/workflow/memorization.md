@@ -79,7 +79,7 @@ sessions/{date}-{session-id}/{loop}/
     │                                  deferred + Domain-routed general findings
     ├── references/{slug}.md       ← per dependency-domain general finding
     ├── design/{slug}.md           ← per substantive Design-section topic
-    ├── discussions/{slug}.md      ← per substantive AskUserQuestion topic
+    ├── discussions/{slug}.md      ← per substantive user-decision topic
     ├── reviews/{slug}.md          ← per review/evaluation/audit activity (loop-conditional)
     ├── reports/{slug}.md          ← per status/post-mortem/analytics report (loop-conditional)
     ├── backlogs/
@@ -193,7 +193,7 @@ When `loop ∈ {preparation, ideation, planning, execution}` — the manager che
 
 The dual-check (write-log + git-diff) eliminates the false-positive class where unrelated filesystem activity (IDE auto-save, git worktree operations) coincides with MEMORIZATION runtime. Only the assistant's actual write log is the authoritative signal; the git diff is corroboration.
 
-A non-empty assistant write log into forbidden paths is an **immediate stop-the-line** — the assistant violated the staging→Wrap-up boundary; the loop halts and the manager escalates to user via AskUserQuestion before any further progress.
+A non-empty assistant write log into forbidden paths is an **immediate stop-the-line** — the assistant violated the staging→Wrap-up boundary; the loop halts and the manager escalates to user through the active runtime's user-decision primitive before any further progress.
 
 **Wrap-up loop exemption**: when `loop = wrap-up`, this gate is **inverted**. The assistant IS expected to write to project memory (Wrap-up is the sole writer there). The manager validates Wrap-up's writes against [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing) instead — each write must trace back to a staged source per the routing table.
 
@@ -224,8 +224,8 @@ If after retry the assistant still fails:
 
 | Scenario | Manager action |
 |---|---|
-| Validation fails at gates 1–4 or 6–7 (mechanical or routing) | **Stop-the-line — fail-closed**: AskUserQuestion — "MEMORIZATION assistant failed validation gate X (details). Options: (a) manual repair + re-validate (assistant or user writes the minimal transcript + session.json iter entry by hand, then gate re-runs), (b) halt the loop and re-enter DISCUSSION. There is no skip-MEMORIZATION option — every iter must persist an audit trail per § Why every-iter MEMORIZATION is mandatory." User decides between (a) and (b) |
-| Project-memory boundary violation (gate 5) | **Immediate stop-the-line**: AskUserQuestion — "MEMORIZATION wrote to project memory (details). This violates the staging→Wrap-up invariant. Diff shown. Options: (a) revert the unauthorized write + retry MEMORIZATION, (b) halt the loop for investigation." No fallback "accept the write" option — Wrap-up's sole-writer guarantee is non-negotiable |
+| Validation fails at gates 1–4 or 6–7 (mechanical or routing) | **Stop-the-line — fail-closed**: active runtime user decision — "MEMORIZATION assistant failed validation gate X (details). Options: (a) manual repair + re-validate (assistant or user writes the minimal transcript + session.json iter entry by hand, then gate re-runs), (b) halt the loop and re-enter DISCUSSION. There is no skip-MEMORIZATION option — every iter must persist an audit trail per § Why every-iter MEMORIZATION is mandatory." User decides between (a) and (b) |
+| Project-memory boundary violation (gate 5) | **Immediate stop-the-line**: active runtime user decision — "MEMORIZATION wrote to project memory (details). This violates the staging→Wrap-up invariant. Diff shown. Options: (a) revert the unauthorized write + retry MEMORIZATION, (b) halt the loop for investigation." No fallback "accept the write" option — Wrap-up's sole-writer guarantee is non-negotiable |
 
 The staging→Wrap-up boundary is the system-wide invariant; a silent acceptance of any violation would corrupt project memory ownership. Explicit stop-the-line preserves auditability.
 
@@ -239,7 +239,7 @@ The assistant's procedure branches on verdict, and the manager validates the rig
 |---|---|---|
 | **PASS** | Transcript + session.json upsert | `artifacts/` files + cumulative staging across iters 1..n + `finishedAt` + `verdict: PASS` |
 | **REVISE** | Transcript + session.json upsert (`verdict: REVISE`) | — (loop re-enters DISCUSSION; no canonical artifact, no staging) |
-| **FAIL** | Transcript + session.json upsert (`verdict: FAIL`) | — (loop escalates to user; AskUserQuestion decides revise / abort / re-frame) |
+| **FAIL** | Transcript + session.json upsert (`verdict: FAIL`) | — (loop escalates to user; the active runtime's user-decision primitive decides revise / abort / re-frame) |
 
 ### Cumulative staging on PASS — the contract
 

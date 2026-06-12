@@ -1,6 +1,6 @@
 ---
 name: evaluation
-description: MUST load when performing review during a loop's EVALUATION sub-phase. Defines the 4-stage procedure (Target Understanding → Scenario & Checklist Build → Per-Perspective Sequential Evaluation → Overall), 7 perspectives, finding types, scoring, anti-patterns, and per-workflow-phase child docs.
+description: MUST load for EVALUATION. Defines the 4-stage review, seven perspectives, finding schema, scoring, and phase child docs.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -145,13 +145,13 @@ Read the artifact end-to-end before judging anything. Identify what it is, what 
 
 | Axis missing or ambiguous | Action |
 |---|---|
-| **What** (no clear deliverable) | **Halt Stage 0.** Record Critical `general` finding (domain: `unevaluable`). Manager must escalate to user via AskUserQuestion before Stage 1 begins. The loop verdict floor is `FAIL` until What is clarified |
+| **What** (no clear deliverable) | **Halt Stage 0.** Record Critical `general` finding (domain: `unevaluable`). Manager must escalate to user through the active runtime's user-decision primitive before Stage 1 begins. The loop verdict floor is `FAIL` until What is clarified |
 | **Why** (no clear trigger / success criterion) | **Halt Stage 0.** Same handling as What missing — without Why the evaluator cannot judge whether the artifact addresses the right problem |
 | **How** (no clear approach / first step) | **Continue best-effort.** Record Critical `general` finding (domain: `unevaluable`). Stages 1–3 proceed; per-perspective verdicts inherit at least `REVISE` until How is clarified |
 
 Stage 0 findings are **scored** (Confidence + Severity) and entered into both per-perspective files (header section, propagated) and the Overall stage findings list. They cannot be silently absorbed.
 
-**Phase-mismatch gate** — distinct from W/W/H: if the artifact's identified type does not match the manager-supplied phase tag (e.g., phase tag says `planning` but the artifact reads as an Execution change-set), **halt Stage 0** and escalate via AskUserQuestion. The user picks one of: (a) re-evaluate with the detected-type child doc and record a Critical `general` finding (domain: `phase-mismatch`), (b) halt the loop and re-route. Do not silently use the manager-supplied phase tag against a divergent artifact.
+**Phase-mismatch gate** — distinct from W/W/H: if the artifact's identified type does not match the manager-supplied phase tag (e.g., phase tag says `planning` but the artifact reads as an Execution change-set), **halt Stage 0** and escalate through the active runtime's user-decision primitive. The user picks one of: (a) re-evaluate with the detected-type child doc and record a Critical `general` finding (domain: `phase-mismatch`), (b) halt the loop and re-route. Do not silently use the manager-supplied phase tag against a divergent artifact.
 
 **Outputs**
 - Extracted W / W / H + clarity verdict + W/W/H gate decision — propagates into every later stage; gate findings are first-class scored findings
@@ -563,7 +563,7 @@ All evaluator writes are **session-scoped**. Evaluators never touch project memo
 **Path conventions**
 
 - `{date}` — session start date in `YYYY-MM-DD`
-- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
+- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
 - `{loop}` — the workflow loop being evaluated (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
 - `{system}` — `claude` or `codex` (the system running this evaluator instance)
 - `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`)
@@ -580,7 +580,7 @@ The directory `sessions/{date}-{session-id}/{loop}/evaluation/iter{n}/{system}/`
 - **MUST load the phase child doc at Stage 0** — measuring against an empty seed is frame collapse.
 - **MUST extract and judge the artifact's What / Why / How at Stage 0**, per `principles` Principle 4 — an artifact without clear W / W / H is unevaluable, and the gap is a Critical `general` finding that must be recorded before Stage 1 begins.
 - **MUST tag every finding with a `Type` AND a `Domain`** — untyped or domain-less findings cannot be routed by MEMORIZATION. `general` Type + `general` Domain is a code smell; specialize at least one.
-- **MUST escalate on missing What or Why at Stage 0** — Stage 0 halts and triggers AskUserQuestion; missing How proceeds best-effort with Critical `general` (domain: `unevaluable`) finding propagated into aggregation.
+- **MUST escalate on missing What or Why at Stage 0** — Stage 0 halts and triggers the active runtime's user-decision primitive; missing How proceeds best-effort with Critical `general` (domain: `unevaluable`) finding propagated into aggregation.
 - **MUST escalate on phase-mismatch at Stage 0** — never silently evaluate against a phase tag that contradicts the artifact's identified type.
 - **MUST validate Stage 1 Frames at exit** — every perspective Frame must satisfy the adversarial scenario requirement and the Coverage Ownership Matrix; bounce and re-build any Frame that doesn't.
 - **MUST apply verification preflight before side-effectful tool runs** — DB writes, live network calls, paid APIs, external notifications require explicit user approval; otherwise lower confidence to ≤ 25.

@@ -4,7 +4,7 @@
       {
         "matcher": "startup|resume|clear|compact",
         "hooks": [
-          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\"" }
+          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT}}/hooks/session-start.sh\"" }
         ]
       }
     ],
@@ -12,7 +12,7 @@
       {
         "matcher": "Task|Agent",
         "hooks": [
-          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use-agents.sh\"" }
+          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT}}/hooks/post-tool-use-agents.sh\"" }
         ]
       }
     ],
@@ -20,7 +20,7 @@
       {
         "matcher": "Task|Agent",
         "hooks": [
-          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use-agents.sh\"" }
+          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT}}/hooks/post-tool-use-agents.sh\"" }
         ]
       }
     ],
@@ -28,7 +28,7 @@
       {
         "matcher": "*",
         "hooks": [
-          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-end.sh\"" }
+          { "type": "command", "command": "bash \"${CLAUDE_PLUGIN_ROOT:-${PLUGIN_ROOT}}/hooks/session-end.sh\"" }
         ]
       }
     ]

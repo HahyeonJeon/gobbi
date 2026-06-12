@@ -30,6 +30,9 @@ set -euo pipefail
 # Guard: $CLAUDE_ENV_FILE must be set and writable.
 # ---------------------------------------------------------------------------
 if [[ -z "${CLAUDE_ENV_FILE:-}" ]]; then
+    if [[ -n "${CODEX_THREAD_ID:-}${CODEX_CI:-}" ]]; then
+        exit 0
+    fi
     printf '%s\n' "session-start.sh: \$CLAUDE_ENV_FILE is unset — cannot persist env vars" >&2
     exit 1
 fi

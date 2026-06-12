@@ -1,6 +1,6 @@
 ---
 name: interview
-description: MUST load when the manager runs a structured Socratic interview with the user to concretize project understanding, populate project memory, and generate project-specific skills. Activates via `/gobbi interview` or via Configuration auto-recommendation when project memory is sparse.
+description: MUST load for `/gobbi interview` or sparse project memory. Runs bootstrap interview and creates project memory and skills.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 
@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 Skill for the **manager** conducting a structured Socratic interview with the user (the project's client) to concretize project understanding, populate project memory, and generate project-specific skills.
 
-The Interview skill is **manager-direct** — the manager owns user-facing AskUserQuestion exchanges. The `leader` is spawned occasionally during waves for codebase / git / reference research, but the dialogue itself is between manager and user.
+The Interview skill is **manager-direct** — the manager owns user-facing exchanges through the active runtime's user-decision primitive. The `leader` is spawned occasionally during waves for codebase / git / reference research, but the dialogue itself is between manager and user.
 
 **Goals**:
 1. Concretize what the project and its features actually are (not what the user claims they are)
@@ -40,7 +40,7 @@ The agent in the manager role conducting the interview MUST observe these tier b
 | **Project memory — skills** | `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | **WRITE** — skills generated at wave close when user approves | **FORBIDDEN** — skill updates stage at `sessions/{date}-{session-id}/interview/staging/skills/{slug}/SKILL.md`; Wrap-up promotes |
 | **Workspace codebase** | The repository under analysis | **READ-ONLY** | **READ-ONLY** |
 
-**Why bootstrap mode can write project memory directly**: the standard workflow's staging → Wrap-up promotion model exists because Ideation / Planning / Execution loops write speculatively and may be reverted by REVISE. Bootstrap interview is different — it captures user-confirmed facts via AskUserQuestion exchanges. Each output is gated by user confirmation at the wave's intermediate summary. There is no REVISE loop to invalidate the writes. Mature mode does not share this property — existing project memory may already be referenced by ongoing workflows, so speculative writes would create divergence.
+**Why bootstrap mode can write project memory directly**: the standard workflow's staging → Wrap-up promotion model exists because Ideation / Planning / Execution loops write speculatively and may be reverted by REVISE. Bootstrap interview is different — it captures user-confirmed facts through active-runtime user-decision exchanges. Each output is gated by user confirmation at the wave's intermediate summary. There is no REVISE loop to invalidate the writes. Mature mode does not share this property — existing project memory may already be referenced by ongoing workflows, so speculative writes would create divergence.
 
 **Delete semantics**: the interview NEVER deletes any file. Supersession (when re-running surfaces newer information) is recorded via `supersedes:` frontmatter on the new file; the old file has its `status:` flipped to `superseded` + `superseded_by:` added. Once a project-memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
@@ -69,7 +69,7 @@ The staging path for mature-mode interview outputs is `sessions/{date}-{session-
 The Interview skill activates two ways:
 
 1. **Explicit invocation** — the user runs `/gobbi interview` (or asks "let's do a project interview"). Always honored.
-2. **Auto-recommendation from Configuration** — during the workflow's Configuration step, the manager applies the 3-tier detection from the project-memory baseline check in `gobbi/SKILL.md` § session bootstrap. **Empty tier** (no `README.md`, no `design/`, no `features/` with content): AskUserQuestion "Project memory is empty — run a project interview before starting work?" **Sparse tier** (has `README.md` or skeleton `design/` but no `features/` with content): AskUserQuestion "Your project memory looks sparse. Run `/gobbi interview` to flesh out the basics, or continue to Ideation?" **Mature tier**: no auto-recommendation. The user decides; if accepted, the interview runs to completion before Configuration resumes.
+2. **Auto-recommendation from Configuration** — during the workflow's Configuration step, the manager applies the 3-tier detection from the project-memory baseline check in `gobbi/SKILL.md` § session bootstrap. **Empty tier** (no `README.md`, no `design/`, no `features/` with content): ask through the active runtime's user-decision primitive, "Project memory is empty — run a project interview before starting work?" **Sparse tier** (has `README.md` or skeleton `design/` but no `features/` with content): ask through the active runtime's user-decision primitive, "Your project memory looks sparse. Run `/gobbi interview` to flesh out the basics, or continue to Ideation?" **Mature tier**: no auto-recommendation. The user decides; if accepted, the interview runs to completion before Configuration resumes.
 
 The Interview skill always runs **Full mode** — all 5 waves. The user can halt mid-flight, but there are no short modes. If a wave's content is already captured (re-running on a mature project), the manager confirms with the user and skips wave-specific Output writes for already-covered items while still validating coverage.
 
@@ -87,7 +87,7 @@ Stated preferences, waitlists, and "users love it" claims are not evidence. Beha
 
 > **One question per turn.**
 
-The manager asks one focused question via AskUserQuestion. Stacked questions ("what's the tech stack, scale targets, and security model?") fragment user attention and dilute answers.
+The manager asks one focused question through the active runtime's user-decision primitive. Stacked questions ("what's the tech stack, scale targets, and security model?") fragment user attention and dilute answers.
 
 > **Take positions; state what evidence would change your mind.**
 
@@ -120,7 +120,7 @@ The manager rotates lenses naturally — strictly cycling all four every wave is
 
 ## 5-Wave Procedure
 
-The manager runs the user through five waves in order. Each wave has a focus, target output domains, typical lens emphasis, and an optional skill-codification offer at its close. All AskUserQuestion calls follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure).
+The manager runs the user through five waves in order. Each wave has a focus, target output domains, typical lens emphasis, and an optional skill-codification offer at its close. All user-decision primitive calls follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure).
 
 ### Wave 1 — Project Identity (What / Why)
 
@@ -167,7 +167,7 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
   - `{project-name}-build-system`
   - `{project-name}-directory-layout`
 
-  The manager runs AskUserQuestion for each candidate: "Codify this as a skill?" If yes, the manager stamps the skill from [`templates/project-skill.md`](templates/project-skill.md) using the interview content.
+  The manager uses the active runtime's user-decision primitive for each candidate: "Codify this as a skill?" If yes, the manager stamps the skill from [`templates/project-skill.md`](templates/project-skill.md) using the interview content.
 
 ### Wave 3 — Constraints + Quality Bar
 
@@ -261,7 +261,7 @@ After each wave, the manager produces an **intermediate summary** with three sec
 - {bulleted, gaps the user could not answer or that need deeper probing in a later wave}
 ```
 
-The intermediate summary is presented to the user via AskUserQuestion (per the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure)): "Does this summary match your understanding? If not, what's wrong?" The user confirms or corrects before the next wave begins.
+The intermediate summary is presented to the user through the active runtime's user-decision primitive (per the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure)): "Does this summary match your understanding? If not, what's wrong?" The user confirms or corrects before the next wave begins.
 
 ---
 
@@ -288,7 +288,7 @@ When all 5 waves complete, the manager writes a **session summary** to `.gobbi/p
 {aggregated from all wave intermediate summaries — what the user could not answer}
 
 ### Decisions log
-{key choices the user made via AskUserQuestion during the interview — e.g., scope of negative roadmap, security policy approval, agreed conventions}
+{key choices the user made through the active runtime's user-decision primitive during the interview — e.g., scope of negative roadmap, security policy approval, agreed conventions}
 ```
 
 The summary is descriptive, not prescriptive. No "next action" is proposed — the user decides what to do next; the interview's job is discovery, not direction.
@@ -321,7 +321,7 @@ The interview writes both session-scoped audit files and project-scoped baseline
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
+- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
 - `{project-name}` — project slug from `session.json.project`
 - `{feature-name}` — feature slug surfaced during Wave 4
 - `{slug}` — kebab-case slug for the specific artifact
@@ -350,8 +350,8 @@ The interview writes both session-scoped audit files and project-scoped baseline
 - **MUST never skip waves**. If a wave's content is already partially captured, the manager validates coverage but still runs the wave.
 - **MUST vary analytical lenses** across questions within a wave — strictly using one lens for all questions in a wave dilutes coverage.
 - **MUST stamp the full skill template** when the user approves a skill codification — never leave skeleton files with TODOs.
-- **MUST present intermediate summaries** to the user via AskUserQuestion at each wave close, using the Question Card template.
+- **MUST present intermediate summaries** to the user through the active runtime's user-decision primitive at each wave close, using the Question Card template.
 - **MUST record "don't know" as an open question** in `decisions/{date}-unknowns.md` rather than fabricating an answer.
 - **MUST halt the interview if the user requests it** — the user can drop out mid-flight; the manager records the wave reached and the open items.
-- **MUST follow the `discussion` skill's anti-sycophancy and Question Card discipline** on every AskUserQuestion call.
+- **MUST follow the `discussion` skill's anti-sycophancy and Question Card discipline** on every user-decision primitive call.
 - **MUST never delete project-memory files** — supersession via frontmatter only; terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.

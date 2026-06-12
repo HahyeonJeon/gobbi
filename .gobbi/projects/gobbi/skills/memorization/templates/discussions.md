@@ -1,6 +1,6 @@
 # `discussions/`
 
-Summaries of substantive **DISCUSSION-phase exchanges with the user** that future sessions need to recall. Not every AskUserQuestion goes here — only exchanges that resolved an ambiguity, established a constraint, or shifted direction.
+Summaries of substantive **DISCUSSION-phase exchanges with the user** that future sessions need to recall. Not every user-decision exchange goes here — only exchanges that resolved an ambiguity, established a constraint, or shifted direction.
 
 ## Lifecycle (staging → promotion)
 
@@ -22,7 +22,7 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 
 - Feature-level only: `.gobbi/projects/{project-name}/features/{feature-name}/discussions/`
 
-Discussions are always bounded to a feature. Cross-cutting AskUserQuestion exchanges that span features belong in `decisions/` (when the discussion produced a decision) or `notes/` (when it was an observation without a binding outcome).
+Discussions are always bounded to a feature. Cross-cutting user-decision exchanges that span features belong in `decisions/` (when the discussion produced a decision) or `notes/` (when it was an observation without a binding outcome).
 
 ## File naming
 
@@ -55,7 +55,7 @@ outcome: {one-line summary of what was decided}
 {Why this discussion happened — the framing problem or proposal that prompted it.}
 
 ## Question
-{The specific question presented to the user (paraphrased from AskUserQuestion).}
+{The specific question presented to the user through the active runtime's user-decision primitive.}
 
 ## Options considered
 {The options offered, with the rationale for each.}
@@ -72,4 +72,4 @@ outcome: {one-line summary of what was decided}
 
 ## Granularity
 
-Combine related questions into one discussion document when they were asked in the same AskUserQuestion call or settled the same topic. Split when distinct topics were discussed even if in the same session — readability beats single-file convenience.
+Combine related questions into one discussion document when they were asked in the same user-decision primitive call or settled the same topic. Split when distinct topics were discussed even if in the same session — readability beats single-file convenience.

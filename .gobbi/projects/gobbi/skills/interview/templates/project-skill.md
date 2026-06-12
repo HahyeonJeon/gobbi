@@ -4,7 +4,7 @@ Template the manager stamps when the Interview skill approves a project-specific
 
 ## When to stamp
 
-At each wave close in the Interview procedure, the manager runs AskUserQuestion to offer skill codification candidates (e.g., `{project-name}-typescript-conventions`, `{project-name}-testing`, `{project-name}-mistakes`). When the user approves, the manager stamps this template — never leaves a skeleton with TODOs.
+At each wave close in the Interview procedure, the manager uses the active runtime's user-decision primitive to offer skill codification candidates (e.g., `{project-name}-typescript-conventions`, `{project-name}-testing`, `{project-name}-mistakes`). When the user approves, the manager stamps this template — never leaves a skeleton with TODOs.
 
 ## Location
 

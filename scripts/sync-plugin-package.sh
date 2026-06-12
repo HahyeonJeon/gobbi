@@ -12,53 +12,92 @@ elif [[ $# -gt 0 ]]; then
   exit 2
 fi
 
-expected_skills='../../.gobbi/projects/gobbi/skills'
-expected_agents='../../.gobbi/projects/gobbi/agents'
-expected_hooks='../../.gobbi/projects/gobbi/hooks'
+expected_plugin_skills='../../.gobbi/projects/gobbi/skills'
+expected_plugin_agents='../../.gobbi/projects/gobbi/agents'
+expected_plugin_hooks='../../.gobbi/projects/gobbi/hooks'
+
 expected_dev_session_start='../../.gobbi/projects/gobbi/hooks/session-start.sh'
 expected_dev_post_tool_use='../../.gobbi/projects/gobbi/hooks/post-tool-use-agents.sh'
+expected_dev_session_end='../../.gobbi/projects/gobbi/hooks/session-end.sh'
 
 check_link() {
-  local path="$1"
-  local target="$2"
+  local link_path="$1"
+  local expected_target="$2"
 
-  if [[ ! -L "$path" ]]; then
-    printf '%s is not a symlink\n' "$path" >&2
+  if [[ ! -L "$link_path" ]]; then
+    printf '%s is not a symlink\n' "$link_path" >&2
     return 1
   fi
 
-  local actual
-  actual="$(readlink "$path")"
-  if [[ "$actual" != "$target" ]]; then
-    printf '%s points to %s; expected %s\n' "$path" "$actual" "$target" >&2
+  local actual_target
+  actual_target="$(readlink "$link_path")"
+  if [[ "$actual_target" != "$expected_target" ]]; then
+    printf '%s points to %s; expected %s\n' "$link_path" "$actual_target" "$expected_target" >&2
     return 1
   fi
 
-  if [[ ! -e "$path" ]]; then
-    printf '%s points to a missing target\n' "$path" >&2
+  if [[ ! -e "$link_path" ]]; then
+    printf '%s points to a missing target\n' "$link_path" >&2
     return 1
   fi
 }
 
+ensure_link() {
+  local link_path="$1"
+  local expected_target="$2"
+
+  if [[ -e "$link_path" && ! -L "$link_path" ]]; then
+    printf '%s exists and is not a symlink; move it aside before syncing\n' "$link_path" >&2
+    return 1
+  fi
+
+  if [[ -L "$link_path" ]]; then
+    local actual_target
+    actual_target="$(readlink "$link_path")"
+    if [[ "$actual_target" == "$expected_target" && -e "$link_path" ]]; then
+      return 0
+    fi
+    rm -f "$link_path"
+  fi
+
+  mkdir -p "$(dirname "$link_path")"
+  ln -s "$expected_target" "$link_path"
+}
+
+for_each_canonical_skill() {
+  local skill_dir
+  for skill_dir in "$repo_root"/.gobbi/projects/gobbi/skills/*; do
+    [[ -d "$skill_dir" ]] || continue
+    printf '%s\n' "${skill_dir##*/}"
+  done | sort
+}
+
 if $check_mode; then
-  check_link "$package_root/skills" "$expected_skills"
-  check_link "$package_root/agents" "$expected_agents"
-  check_link "$package_root/hooks" "$expected_hooks"
+  while IFS= read -r skill_name; do
+    check_link "$repo_root/.agents/skills/$skill_name" "../../.gobbi/projects/gobbi/skills/$skill_name"
+  done < <(for_each_canonical_skill)
+
+  check_link "$package_root/skills" "$expected_plugin_skills"
+  check_link "$package_root/agents" "$expected_plugin_agents"
+  check_link "$package_root/hooks" "$expected_plugin_hooks"
   check_link "$repo_root/.claude/hooks/session-start.sh" "$expected_dev_session_start"
   check_link "$repo_root/.claude/hooks/post-tool-use-agents.sh" "$expected_dev_post_tool_use"
-  test -f "$repo_root/.gobbi/projects/gobbi/hooks/hooks.json"
-  printf 'plugins/gobbi package symlinks are in sync\n'
+  check_link "$repo_root/.claude/hooks/session-end.sh" "$expected_dev_session_end"
+  test -f "$package_root/.codex-plugin/plugin.json"
+  test -f "$package_root/.claude-plugin/plugin.json"
+  printf 'Codex skill, plugins/gobbi, and .claude hook symlinks are intact\n'
   exit 0
 fi
 
-mkdir -p "$repo_root/.claude/hooks"
-rm -rf "$package_root/skills" "$package_root/agents" "$package_root/hooks"
-rm -f "$repo_root/.claude/hooks/session-start.sh" "$repo_root/.claude/hooks/post-tool-use-agents.sh"
+while IFS= read -r skill_name; do
+  ensure_link "$repo_root/.agents/skills/$skill_name" "../../.gobbi/projects/gobbi/skills/$skill_name"
+done < <(for_each_canonical_skill)
 
-ln -s "$expected_skills" "$package_root/skills"
-ln -s "$expected_agents" "$package_root/agents"
-ln -s "$expected_hooks" "$package_root/hooks"
-ln -s "$expected_dev_session_start" "$repo_root/.claude/hooks/session-start.sh"
-ln -s "$expected_dev_post_tool_use" "$repo_root/.claude/hooks/post-tool-use-agents.sh"
+ensure_link "$package_root/skills" "$expected_plugin_skills"
+ensure_link "$package_root/agents" "$expected_plugin_agents"
+ensure_link "$package_root/hooks" "$expected_plugin_hooks"
+ensure_link "$repo_root/.claude/hooks/session-start.sh" "$expected_dev_session_start"
+ensure_link "$repo_root/.claude/hooks/post-tool-use-agents.sh" "$expected_dev_post_tool_use"
+ensure_link "$repo_root/.claude/hooks/session-end.sh" "$expected_dev_session_end"
 
-printf 'restored plugins/gobbi package symlinks\n'
+printf 'synchronized Codex skill, plugins/gobbi, and .claude hook symlinks\n'

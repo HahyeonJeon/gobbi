@@ -1,7 +1,7 @@
 {
   "name": "gobbi",
   "version": "0.5.0",
-  "description": "Gobbi workflow skills and agents for Codex.",
+  "description": "Gobbi workflow skills and hooks for Codex.",
   "author": {
     "name": "HahyeonJeon",
     "email": "jeonhh0061@gmail.com"
@@ -16,6 +16,7 @@
     "codex"
   ],
   "skills": "./skills/",
+  "hooks": "./hooks/codex-hooks.json",
   "interface": {
     "displayName": "Gobbi",
     "shortDescription": "Use Gobbi workflow skills in Codex.",

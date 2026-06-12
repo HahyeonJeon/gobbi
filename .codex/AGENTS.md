@@ -20,13 +20,15 @@ The repo also exposes Gobbi as a local Claude Code and Codex plugin through one 
 
 `.agents/skills` contains symlinked skill folders pointing to `.gobbi/projects/gobbi/skills/`.
 
-`plugins/gobbi/skills` is the plugin-facing skills directory. It is a symlink to `.gobbi/projects/gobbi/skills/`; `plugins/gobbi/agents` is a symlink to `.gobbi/projects/gobbi/agents/`; `plugins/gobbi/hooks` is a symlink to `.gobbi/projects/gobbi/hooks/`. The development hook scripts under `.claude/hooks/` are also symlinks to the same canonical hook directory. Run `scripts/sync-plugin-package.sh --check` to verify this topology.
+`plugins/gobbi/skills`, `plugins/gobbi/agents`, and `plugins/gobbi/hooks` are symlinks to the canonical Gobbi directories at `.gobbi/projects/gobbi/{skills,agents,hooks}`. The development hook scripts under `.claude/hooks/` are also symlinks to the canonical hook directory. Run `scripts/sync-plugin-package.sh` to restore the symlink topology, and `scripts/sync-plugin-package.sh --check` to verify it.
 
-Claude marketplace install dereferences these repo-internal symlinks into a complete installed cache. Codex install currently registers `gobbi@gobbi-workspace` as installed and enabled, but its cache skips the symlinked component directories and keeps only the manifests; treat Codex plugin support as source-package valid but installed-cache incomplete until Codex symlink handling changes.
+Codex source-package support and Codex installed-cache support are separate. This repository keeps the source package symlinked. Use `scripts/check-codex-plugin-smoke.sh` to register the repo root in an isolated Codex home, add `gobbi@gobbi-workspace`, and report whether the installed cache includes symlinked skills and hooks. If the installed cache omits symlinked component directories, treat that as a Codex plugin-install limitation; do not materialize the repo package to work around it.
 
-`plugins/gobbi/.codex-plugin/plugin.json` is the Gobbi Codex plugin manifest for local plugin installation from this workspace.
+`plugins/gobbi/.codex-plugin/plugin.json` is the Gobbi Codex plugin manifest for local plugin installation from this workspace. It declares plugin-distributed skills and Codex-safe hooks. Native Codex custom agents remain repo-local under `.codex/agents/*.toml`; they are not installed as Codex plugin components.
 
 `plugins/gobbi/.claude-plugin/plugin.json` is the Gobbi Claude Code plugin manifest for local plugin installation from this workspace.
+
+For a real local Codex plugin install, run `codex plugin marketplace add <repo-root>`, then `codex plugin add gobbi@gobbi-workspace`, then start a new Codex thread. The project must be trusted before project config, hooks, and rules are loaded.
 
 `.codex/agents` contains symlinked TOML custom-agent wrappers pointing to `.gobbi/projects/gobbi/agents/*.toml`. Each wrapper instructs the spawned Codex agent to read the corresponding canonical Markdown role prompt in the same directory.
 
@@ -48,7 +50,7 @@ When Codex subagents are explicitly authorized by the user, use these custom age
 
 > **The logic of good work: Ideation -> Planning -> Execution -> Memorization -> Handoff.**
 
-Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution; it is mandatory after Execution and optional at the earlier steps. The 6-step state machine (Configuration plus the 5 productive steps) is governed by the `orchestration` skill and its per-step `workflow/` sub-documents — markdown-driven, no CLI. Per-session telemetry lives in `<sessionDir>/session.json`. Cross-session memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.).
+Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside every productive loop; it is mandatory after Execution and Wrap-up, and optional at earlier loops when settings allow it. The 6-step state machine (Configuration plus the 5 productive steps) is governed by the `orchestration` skill and its per-step `workflow/` sub-documents — markdown-driven, no CLI. Per-session telemetry lives in `<sessionDir>/session.json`. Cross-session memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.).
 
 **Ideation** - Explore what to do. PI agents investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
 

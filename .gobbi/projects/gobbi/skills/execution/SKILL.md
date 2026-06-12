@@ -1,6 +1,6 @@
 ---
 name: execution
-description: MUST load when entering or revising the Execution Loop. Covers per-task implementation of the locked Plan — executor lifecycle (Study → Plan → Execute → Verify → Commit), fresh-verification discipline, 4-status reporting, and per-task artifact persistence.
+description: MUST load for Execution. Covers Study, Plan, Execute, Verify, Commit, fresh evidence, status, and artifacts.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
@@ -34,7 +34,7 @@ The agent in the executor role MUST observe these tier boundaries. The only writ
 | **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the executor never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for mistake / scenario / decision lookup. Never written; Wrap-up owns feature-memory writes |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for mistake / rule lookup. Never written; Wrap-up owns project-memory writes |
-| **`.claude/` documentation** | `.claude/` (CLAUDE.md, skills, agents, rules, hooks) | **READ + WRITE only when the task explicitly scopes them** — `.claude/` edits are workspace codebase edits; same in-scope / out-of-scope rule applies. Reading is always permitted |
+| **Runtime documentation** | `.claude/`, `.agents/`, `.codex/`, `plugins/gobbi/` | **READ + WRITE only when the task explicitly scopes them** — runtime-doc edits are workspace codebase edits; same in-scope / out-of-scope rule applies. Reading is always permitted |
 
 **Delete semantics**: the executor NEVER deletes any file in any tier except when the task **explicitly** lists a file for deletion in its `files:` scope. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); unexplained physical deletion is forbidden. Once an artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
@@ -88,7 +88,7 @@ Construct the executor delegation prompt for the current task. The leader is **n
 |---|---|---|---|---|
 | 1 | Manager | Current task from `planning/artifacts/` | Read the task spec fields: `id`, `what`, `traces-to`, `requires`, `files`, `inputs`, `outputs`, `verifies`; also read the Sub-step D agent assignment for the task's `required skills` and `required mistakes` (these are assignment metadata, not task YAML fields) | Loaded task context |
 | 2 | Manager | Task spec + Ideation design | Identify any contribution points the task requires — choices the user has explicit authority on that the plan did not fully resolve | Contribution-point list |
-| 3 | Manager | Contribution-point list | Run AskUserQuestion for each contribution point | User decisions |
+| 3 | Manager | Contribution-point list | Run the active runtime's user-decision primitive for each contribution point | User decisions |
 | 4 | Manager | Task spec + user decisions + verification commands | Construct the executor delegation prompt per [`delegation/templates/executor.md`](../delegation/templates/executor.md): paste task spec inline, fill scene-setting context, list Load Directives (principles + rules + skills + mistakes), specify files in-scope / out-of-scope, embed verification commands the executor must run, include the 4-status Report Format | Executor delegation prompt |
 | 5 | Manager | Prompt | Verify the prompt has zero `<<slot>>` placeholders; every slot is filled with concrete content | Verified prompt |
 
@@ -97,7 +97,7 @@ Construct the executor delegation prompt for the current task. The leader is **n
 
 **Exit checklist**
 - [ ] Task spec read; scope boundary clear
-- [ ] All contribution points resolved by AskUserQuestion
+- [ ] All contribution points resolved by the active runtime's user-decision primitive
 - [ ] Delegation prompt constructed; zero unfilled slots
 - [ ] Verification commands specified explicitly (no "run the tests" — name the actual commands)
 - [ ] Status enum included in prompt's Report Format section
@@ -109,7 +109,7 @@ Construct the executor delegation prompt for the current task. The leader is **n
 **Purpose**
 Implement the contracted task within scope, verify the change-set with fresh evidence, commit (when git is active), and report back with a 4-state status enum.
 
-The **default** is a **fresh** executor agent per task — fresh context is what makes scope discipline reliable. **Continuation is the one bounded exception**: the manager may continue the same executor teammate from task NN to NN+1 iff the next task shares the current task's subsystem (the task's `files:`/feature scope overlaps) AND the chain is under the saturation cap (at most 3 consecutive continued tasks). Otherwise the default stays fresh. The decision rule, the F1 predicate, the saturation cap, the delta-brief shape, and the continuation write-discipline live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh) and the Execution-specific choreography in [`orchestration/workflow/execution.md` § Executor continuation](../orchestration/workflow/execution.md#executor-continuation-shared-subsystem-under-cap) — this section does not re-derive them.
+The **default** is a **fresh** executor agent per task — fresh context is what makes scope discipline reliable. **Continuation is a Claude Code Agent Teams exception only**: in Claude Code, the manager may continue the same executor teammate from task NN to NN+1 iff the next task shares the current task's subsystem (the task's `files:`/feature scope overlaps) AND the chain is under the saturation cap (at most 3 consecutive continued tasks). Native Codex uses fresh executor spawns with full Load Directives. The decision rule, the F1 predicate, the saturation cap, the delta-brief shape, and the continuation write-discipline live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh) and the Execution-specific choreography in [`orchestration/workflow/execution.md` § Executor continuation](../orchestration/workflow/execution.md#executor-continuation-shared-subsystem-under-cap) — this section does not re-derive them.
 
 **Inputs**
 - Executor delegation prompt (from DISCUSSION)
@@ -123,7 +123,7 @@ The **default** is a **fresh** executor agent per task — fresh context is what
 | **Study** | Load the Load-Directives content in order: `principles` skill, project rules, `mistake` skill, phase doc, domain skills, project skill. Read the task's primary spec (inline in the prompt). Read research artifacts referenced in the prompt. Read every file listed in `files:` and its surrounding code — patterns, types, conventions. Map dependencies the task touches. |
 | **Plan** | Outline the implementation before writing: which files to modify in what order, type-level design (what types change, what new types are needed), the smallest reversible step (Principle 2) to start with, the verification strategy that will confirm each piece. Non-trivial tasks fail when this phase is skipped. |
 | **Execute** | Implement per the plan. Follow existing patterns — the codebase is the style guide. Keep changes minimal and focused. Do not introduce new patterns when existing ones work. Do not add error handling, abstractions, comments, or features beyond what the task specifies. Adjacent fixes go in "Out of scope observations" — never silently implemented. |
-| **Verify** | Run the verification commands the prompt specifies; capture output verbatim. Re-read the diff against scope: any file outside `files:` touched? Revert it. Re-check against `mistake`: any known pitfall triggered? Re-verify preconditions (correct branch, no unexpected state). For `.claude/` edits: cross-references still resolve, terminology consistent. **Fresh evidence is mandatory for `DONE`** (the Verify gate). |
+| **Verify** | Run the verification commands the prompt specifies; capture output verbatim. Re-read the diff against scope: any file outside `files:` touched? Revert it. Re-check against `mistake`: any known pitfall triggered? Re-verify preconditions (correct branch, no unexpected state). For runtime-doc edits: cross-references still resolve, terminology consistent. **Fresh evidence is mandatory for `DONE`** (the Verify gate). |
 | **Commit** *(when git is active)* | Commit only after Verify passes — never unverified work. One focused commit per subtask. Conventional Commits format (`feat:`, `fix:`, `refactor:`, etc.). The executor commits but **never pushes**; the manager owns pushing and PR creation. See [`git/SKILL.md`](../git/SKILL.md). |
 
 After the five-phase lifecycle, the executor produces a final response — captured as the work artifact — with the 4-status enum and supporting evidence (per the executor delegation template's Report Format section).
@@ -161,7 +161,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 - The change-set (committed code or staged diff) for this task iteration
 - `sessions/{date}-{session-id}/execution/{task-id}/rawdata/draft-iter{n}.md` — the executor's notes + verification evidence
 - The task spec from `planning/artifacts/` (the contract being evaluated)
-- The discussion log (manager-captured AskUserQuestion exchanges, including any contribution-point decisions)
+- The discussion log (manager-captured user-decision exchanges, including any contribution-point decisions)
 
 **Procedure**
 
@@ -170,9 +170,9 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 1 | Manager | WORK outputs; task spec; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
 | 2 | Evaluator | All step-1 inputs | Run the four-stage procedure per `evaluation/SKILL.md` with `execution/evaluation.md` loaded at Stage 0 | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` |
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
-| 3b | Manager | Major divergence (if any) | Run AskUserQuestion | (skipped if no major divergence) |
+| 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
-| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict for THIS task / iter: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first**. After MEMORIZATION, `PASS` exits this task's loop and advances to the next planned task; `REVISE` re-enters THIS task's DISCUSSION (iter increments); `FAIL` escalates via AskUserQuestion | Per-task verdict |
+| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict for THIS task / iter: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first**. After MEMORIZATION, `PASS` exits this task's loop and advances to the next planned task; `REVISE` re-enters THIS task's DISCUSSION (iter increments); `FAIL` escalates through the active runtime's user-decision primitive | Per-task verdict |
 
 **Outputs**
 - `sessions/{date}-{session-id}/execution/{task-id}/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
@@ -202,7 +202,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 - `sessions/{date}-{session-id}/execution/{task-id}/rawdata/draft-iter{n}.md` — executor's notes for this iter
 - `sessions/{date}-{session-id}/execution/{task-id}/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
 - `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
-- `sessions/{date}-{session-id}/execution/{task-id}/rawdata/discussion-log.md` — manager-captured AskUserQuestion exchanges (contribution points, divergence decisions)
+- `sessions/{date}-{session-id}/execution/{task-id}/rawdata/discussion-log.md` — manager-captured user-decision exchanges (contribution points, divergence decisions)
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 - WORK-staged artifacts under `sessions/{date}-{session-id}/execution/{task-id}/staging/` (already in place — MEMORIZATION supplements, never replaces)
 
@@ -248,7 +248,7 @@ All writes during the Execution Loop are **session-scoped** under per-task subdi
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
+- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
 - `{task-id}` — the Task ID assigned by Planning (e.g., `01-add-cache-layer`)
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time

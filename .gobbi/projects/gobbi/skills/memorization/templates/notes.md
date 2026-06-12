@@ -84,7 +84,7 @@ shipped: [{slugs of artifacts that landed in project memory this session}]
 
 - **`notes/` vs `decisions/`**: a decision is the *conclusion* — "we chose X". A note is the *narrative* — "during this session we considered X / Y / Z and ended up choosing X". The decision lives durably as a load-bearing artifact; the note is the surrounding story.
 - **`notes/` vs `learnings/`**: a learning is the *takeaway* extracted from one or many sessions ("do this in future"). A note is the *raw experience* of one session. Many notes might produce one learning.
-- **`notes/` vs `discussions/`**: a discussion is one AskUserQuestion topic with the user's answer. A note is the session-level narrative that may *reference* multiple discussions.
+- **`notes/` vs `discussions/`**: a discussion is one user-decision topic with the user's answer. A note is the session-level narrative that may *reference* multiple discussions.
 - **`notes/` vs `design/`**: design is the architecture / intent. Notes is what actually happened while building toward / away from that intent.
 - **`notes/` vs handoff summary in `wrap-up/artifacts/`**: the handoff is forward-looking ("what the next session needs to know to continue"). The note is backward-looking ("what this session did"). Both can exist for the same session; they serve different consumers.
 

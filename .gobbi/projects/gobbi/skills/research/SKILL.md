@@ -1,6 +1,6 @@
 ---
 name: research
-description: MUST load when researching internal codebase or external prior art to inform downstream design choices. Defines what targets to investigate, what procedure to follow for each surface (internal / external), and what artifacts the research produces.
+description: MUST load for internal or external research. Defines targets, procedure, and artifacts for downstream design.
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
 ---
 
@@ -142,7 +142,7 @@ Research does not own its own session subdirectory — it writes into the callin
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
+- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
 - `{loop}` — the calling loop's name (`ideation` / `preparation` / `planning`)
 - `{slug}` — slug for a specific reference artifact, set by the writer at stage time
 

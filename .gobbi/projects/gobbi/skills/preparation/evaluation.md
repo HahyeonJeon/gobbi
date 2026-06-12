@@ -232,7 +232,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 - Every file listed in "Generated this loop" actually exists in `preparation/staging/`
 - No file in `preparation/staging/` was produced but omitted from "Generated this loop"
 
-**The Decisions log reflects every AskUserQuestion outcome from DISCUSSION**
+**The Decisions log reflects every user-decision outcome from DISCUSSION**
 - Each gap in the consolidated gap table has a corresponding entry in the Decisions log
 - No gap has a resolution in the staging artifacts that does not match the Decisions log entry
 

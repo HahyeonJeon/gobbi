@@ -25,24 +25,24 @@ Same pattern as Ideation and Planning. The leader is spawned for scans and propo
 manager → opens DISCUSSION with user (state: "advancing from Ideation to Preparation")
 manager → spawns leader: "read ideation/artifacts/ and produce a readiness signal list"
 leader → reads ideation + memory + skills → returns scan results
-manager → presents leader's gap analysis → AskUserQuestion per gap → user picks resolutions
+manager → presents leader's gap analysis → active runtime's user-decision primitive per gap → user picks resolutions
 manager → re-engages leader to apply approved fixes during WORK
 ```
 
 ### Sub-step orchestration
 
-The manager runs the user through five sub-steps in order. Each is gated by AskUserQuestion before advancing.
+The manager runs the user through five sub-steps in order. Each is gated by the active runtime's user-decision primitive before advancing.
 
 | # | Sub-step | Manager's role | Leader's contribution |
 |---|---|---|---|
 | A | Read Ideation Output | Confirm Ideation output is complete; user signals readiness to advance | Read `ideation/artifacts/` + accumulated feature memory; output a readiness signal list (files / domains / perspectives the downstream work will need) |
 | B | Design + Memory Readiness Check | Present found gaps; user decides per gap | Scan `features/{feature-name}/design/`, `scenarios/`, `checklists/`, `decisions/`, `mistakes/` against the readiness signal list; propose resolution per missing item |
-| C | Execution Skills Readiness Check | Approve skill generation per gap via AskUserQuestion | Identify missing project-specific skills (e.g., `{project}-typescript-conventions`); propose generate / defer / re-Ideate |
-| D | Gap Resolution Plan | Run AskUserQuestion per gap to lock the resolution table | Present the consolidated gap table (category / severity / proposal); record user decisions |
+| C | Execution Skills Readiness Check | Approve skill generation per gap through the active runtime's user-decision primitive | Identify missing project-specific skills (e.g., `{project}-typescript-conventions`); propose generate / defer / re-Ideate |
+| D | Gap Resolution Plan | Run the active runtime's user-decision primitive per gap to lock the resolution table | Present the consolidated gap table (category / severity / proposal); record user decisions |
 
 ### When to escalate to user
 
-The leader brings draft proposals; the user makes final calls. Every decision below requires AskUserQuestion:
+The leader brings draft proposals; the user makes final calls. Every decision below requires the active runtime's user-decision primitive:
 
 - Confirmation that Ideation output is sound enough to proceed (Sub-step A)
 - Per-gap resolution: generate now / defer / re-Ideate / skip (Sub-steps B / C / D)
@@ -124,7 +124,7 @@ After `MEMORIZATION`, the manager decides based on the reconciled verdict:
 |---|---|
 | `PASS` | Exit the loop; advance to Planning Loop |
 | `REVISE` | Re-enter `DISCUSSION` with evaluator findings as new input |
-| `FAIL` | Escalate via AskUserQuestion; user decides revise / re-enter Ideation / abort |
+| `FAIL` | Escalate through the active runtime's user-decision primitive; user decides revise / re-enter Ideation / abort |
 | `RE-IDEATE` | Special verdict — at least one gap is unworkable without re-Ideation. Manager re-enters the Ideation Loop, then re-runs Preparation. |
 | `SKIPPED` | Exit the loop (Preparation was skipped per settings — only valid when project memory is mature and the manager is confident no gaps exist) |
 

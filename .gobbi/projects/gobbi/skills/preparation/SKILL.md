@@ -1,6 +1,6 @@
 ---
 name: preparation
-description: MUST load when entering or revising the Preparation Loop. Covers readiness verification of project memory and workspace skills against the locked Ideation output, gap-resolution proposals, and staging of approved gap fixes.
+description: MUST load for Preparation. Checks project memory and workspace skills against locked Ideation and stages approved gap fixes.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 
@@ -45,7 +45,7 @@ Preparation exists to prevent downstream loops from running on incomplete inputs
 
 > **The leader proposes; the user decides.**
 
-For each gap, the leader **proposes** a resolution (`generate-now` / `defer` / `re-ideate` / `skip`). The manager presents proposals via AskUserQuestion and the user chooses. The leader does not autonomously create skills or memory entries — only the user approves what gets generated, and even then writes go to session staging, not project memory.
+For each gap, the leader **proposes** a resolution (`generate-now` / `defer` / `re-ideate` / `skip`). The manager presents proposals through the active runtime's user-decision primitive and the user chooses. The leader does not autonomously create skills or memory entries — only the user approves what gets generated, and even then writes go to session staging, not project memory.
 
 > **Disagree when you disagree.**
 
@@ -79,11 +79,11 @@ All gap fixes that execute during WORK write to session staging at `sessions/{da
 
 This commit lands on the worktree branch and is absorbed into the PR at merge.
 
-**Rollback (commit failure):** if `git commit` fails after the file copy, the manager MUST run `git -C "$worktreePath" rm <copied-paths>` to remove the copied file from the worktree (not `git checkout` — the file did not exist before the copy, so removal is the correct inverse), then surface the failure to the user via AskUserQuestion (re-attempt or abort) before retrying.
+**Rollback (commit failure):** if `git commit` fails after the file copy, the manager MUST run `git -C "$worktreePath" rm <copied-paths>` to remove the copied file from the worktree (not `git checkout` — the file did not exist before the copy, so removal is the correct inverse), then surface the failure to the user through the active runtime's user-decision primitive (re-attempt or abort) before retrying.
 
 > **NEEDS_CONTEXT escalation.**
 
-This loop's DISCUSSION phase is manager-direct (the manager calls AskUserQuestion when user input is needed); subagents do not run DISCUSSION here. NEEDS_CONTEXT escalation primitive applies to subagents during the WORK phase only — the leader returns NEEDS_CONTEXT in its final report; the manager handles the user-question block per `discussion/SKILL.md`. See `agents/leader.md` § Status Contract for the leader's NEEDS_CONTEXT pattern.
+This loop's DISCUSSION phase is manager-direct (the manager uses the active runtime's user-decision primitive when user input is needed); subagents do not run DISCUSSION here. NEEDS_CONTEXT escalation primitive applies to subagents during the WORK phase only — the leader returns NEEDS_CONTEXT in its final report; the manager handles the user-question block per `discussion/SKILL.md`. See `agents/leader.md` § Status Contract for the leader's NEEDS_CONTEXT pattern.
 
 ---
 
@@ -97,7 +97,7 @@ Verify readiness of project memory and workspace skills against the locked Ideat
 - `sessions/{date}-{session-id}/ideation/staging/` (everything Ideation staged for Wrap-up to promote, but not yet promoted)
 - Project memory: `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,design,mistakes,plans,references}/`
 - Project memory: `.gobbi/projects/{project-name}/{mistakes,rules,design,skills,notes}/`
-- Workspace skills under `.claude/skills/` (when discoverable)
+- Workspace skills under the active runtime's skill root (`.claude/skills/` in Claude Code, `.agents/skills/` in Codex), when discoverable
 - On `REVISE` iterations: prior iteration's evaluator findings — the leader reads cited issues before re-engaging the user
 
 **Procedure**
@@ -108,13 +108,13 @@ Run sub-steps A → B → C → D in order. Each sub-step's procedure block is b
 - Design + memory gap list — each item with name, severity, proposed resolution
 - Execution skills gap list — each missing project-specific skill with proposed resolution
 - Locked gap-resolution plan (user-approved): per gap, one of `generate-now` / `defer` / `re-ideate` / `skip`
-- Discussion log (manager-captured AskUserQuestion exchanges)
+- Discussion log (manager-captured user-decision exchanges)
 
 **Exit checklist**
 - [ ] All four sub-steps (A–D) completed
 - [ ] Every identified gap has a user-locked resolution
 - [ ] No `re-ideate` decisions remain unrouted (a `re-ideate` halts Preparation and re-enters Ideation; the manager owns the routing)
-- [ ] Discussion log captures every gap-resolution AskUserQuestion outcome
+- [ ] Discussion log captures every gap-resolution user-decision outcome
 
 ---
 
@@ -137,7 +137,7 @@ Read the locked Ideation output end-to-end, extract a readiness signal list of w
 | 3 | Leader | Loaded context | Extract the **readiness signal list**: (a) files / subsystems the design will touch → execution skills needed; (b) scenarios / checklist items expected at feature memory → memory completeness; (c) decisions / conventions referenced but not yet recorded → memory completeness | Readiness signal list |
 | 4 | Leader | Readiness signal list + Ideation context | Identify any Ideation-output contradictions that block Preparation (e.g., the design references an undefined component, the Scope Contract names a feature directory that cannot be created) | Contradiction findings (zero or more) |
 | 5a | Leader | Steps 3–4 | Surface to the manager: readiness signal list + any contradictions | Findings package |
-| 5b | Manager | 5a | Confirm Ideation output is sound enough to proceed via AskUserQuestion | User confirmation |
+| 5b | Manager | 5a | Confirm Ideation output is sound enough to proceed through the active runtime's user-decision primitive | User confirmation |
 | 5c | User | Confirmation prompt | Approve advance, OR direct re-Ideate | Decision |
 
 **Outputs**
@@ -183,14 +183,14 @@ Identify the project-specific skills an executor would need for the planned work
 **Inputs**
 - Readiness signal list (Sub-step A output) — files / domains the design will touch
 - `.gobbi/projects/{project-name}/skills/` — project-specific skills inventory
-- `.claude/skills/` — workspace-level skills inventory (when accessible)
+- Active runtime skill root — `.claude/skills/` in Claude Code, `.agents/skills/` in Codex (when accessible)
 
 **Procedure**
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Leader | Readiness signal list | For each file / domain, enumerate the skills an executor would need to load — workspace-level (language / runtime) + project-specific (`{project-name}-typescript-conventions`, `{project-name}-testing`, etc.) | Required skills list |
-| 2 | Leader | Required skills list | Scan `.gobbi/projects/{project-name}/skills/` for project-specific entries; check `.claude/skills/` for workspace-level entries where accessible | Skills coverage report |
+| 2 | Leader | Required skills list | Scan `.gobbi/projects/{project-name}/skills/` for project-specific entries; check the active runtime's workspace skill root for workspace-level entries where accessible | Skills coverage report |
 | 3 | Leader | Coverage report | For each missing project-specific skill: propose `generate-now` (trigger the [interview skill](../interview/SKILL.md)'s wave codification flow) / `defer` (Planning notes the gap; Execution consults code patterns directly) / `re-ideate` (the gap reveals the design itself is unworkable without the skill) | Execution skills gap list |
 | 4a | Leader | Gap list | Surface to the manager | Findings package |
 | 4b | Manager | 4a | Defer per-gap decision to Sub-step D | (no decision yet) |
@@ -216,7 +216,7 @@ Consolidate every gap from Sub-steps B and C into a single user-approved table, 
 |---|---|---|---|---|
 | 1 | Leader | All gap lists | Consolidate into a single table — name, category (design / memory / skill), severity, proposed resolution | Consolidated gap table |
 | 2a | Leader | Table | Surface to the manager | Findings package |
-| 2b | Manager | Table | Run AskUserQuestion per row | User decisions |
+| 2b | Manager | Table | Run the active runtime's user-decision primitive per row | User decisions |
 | 2c | User | Per-row question | Pick one of `generate-now` / `defer` / `re-ideate` / `skip` per gap | Locked decisions |
 | 3 | Leader | Locked decisions | Record the resolution map as a binding constraint for WORK | Gap-resolution plan |
 | 4 | Manager | Resolution plan | If any decision is `re-ideate`: halt Preparation, record the trigger in the discussion log, re-enter the Ideation Loop per the orchestration doc's RE-IDEATE routing | (Preparation halt if applicable) |
@@ -246,7 +246,7 @@ Persist the DISCUSSION outputs into a session draft and execute every `generate-
 | 3 | Leader | `generate-now` decisions where the gap is a missed memory promotion (scenario / checklist / decision / etc.) | For each: stamp the matching template from [`memorization/templates/`](../memorization/templates/) at `sessions/{date}-{session-id}/preparation/staging/{type}/{slug}.md` | One staged file per missed promotion |
 | 4 | Leader | `defer` decisions | Record in the draft's "Out of scope gaps" section with severity + pointer; no staging write | Deferred list captured |
 | 5 | Leader | `skip` decisions | Record in the draft's "Decisions log" section with the user's stated reason; no staging write | Skipped list captured |
-| 6 | Leader | All DISCUSSION AskUserQuestion outcomes from transcript | Stamp the Decisions Log section — summarize per-gap resolutions, contradictions discussed, advance confirmation | Populated Decisions Log |
+| 6 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section — summarize per-gap resolutions, contradictions discussed, advance confirmation | Populated Decisions Log |
 | 7 | Leader | Rawdata draft + staged artifacts | Verify the WORK exit checklist | Completion signal, or gap surfaced to manager |
 
 **Outputs**
@@ -277,7 +277,7 @@ Required-sections template for the rawdata draft:
 {Each gap deferred: name, severity, pointer to where it lives — backlog, known issues, follow-up note.}
 
 ## Decisions log
-{Summary of user choices made via AskUserQuestion during DISCUSSION, plus the gap-resolution map and any RE-IDEATE escalation.}
+{Summary of user choices made through the active runtime's user-decision primitive during DISCUSSION, plus the gap-resolution map and any RE-IDEATE escalation.}
 ```
 
 **Exit checklist**
@@ -285,7 +285,7 @@ Required-sections template for the rawdata draft:
 - [ ] Every `generate-now` decision has a corresponding staging artifact (or a skip reason logged with explicit rationale)
 - [ ] Every `defer` decision is recorded in "Out of scope gaps"
 - [ ] Every `skip` decision is recorded in "Decisions log" with the user's stated reason
-- [ ] Decisions Log cites every AskUserQuestion outcome
+- [ ] Decisions Log cites every user-decision outcome
 - [ ] No writes to project memory (`features/{feature-name}/...` or top-level project dirs)
 - [ ] No content beyond what was approved in DISCUSSION
 
@@ -309,7 +309,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 - `sessions/{date}-{session-id}/preparation/staging/skills/{slug}/SKILL.md` — every staged skill from WORK
 - `sessions/{date}-{session-id}/preparation/staging/{scenarios,checklists,decisions,design,references}/{slug}.md` — every staged memory-promotion fix
 - The locked gap-resolution plan from DISCUSSION (for scope-creep checks)
-- The discussion log (manager-captured AskUserQuestion exchanges, for decisions traceability)
+- The discussion log (manager-captured user-decision exchanges, for decisions traceability)
 
 **Procedure**
 
@@ -318,9 +318,9 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 1 | Manager | WORK outputs; gap-resolution plan; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
 | 2 | Evaluator | All step-1 inputs | Run the four-stage procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) per `evaluation/SKILL.md` | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` |
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
-| 3b | Manager | Major divergence (if any) | Run AskUserQuestion | (skipped if no major divergence) |
+| 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
-| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first** so each iteration preserves a transcript + iter entry in `session.json` regardless of outcome. After MEMORIZATION, `PASS` exits the loop; `REVISE` re-enters DISCUSSION (iter increments; evaluator findings feed next DISCUSSION); `FAIL` escalates via AskUserQuestion | Workflow-state verdict |
+| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first** so each iteration preserves a transcript + iter entry in `session.json` regardless of outcome. After MEMORIZATION, `PASS` exits the loop; `REVISE` re-enters DISCUSSION (iter increments; evaluator findings feed next DISCUSSION); `FAIL` escalates through the active runtime's user-decision primitive | Workflow-state verdict |
 
 **Outputs**
 - `sessions/{date}-{session-id}/preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
@@ -392,7 +392,7 @@ All writes during the Preparation Loop are **session-scoped**. Wrap-up promotes 
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
+- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time
 - `{n}` — iter number, supplied by the manager
@@ -406,7 +406,7 @@ All writes during the Preparation Loop are **session-scoped**. Wrap-up promotes 
 | `sessions/{date}-{session-id}/preparation/staging/decisions/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | leader: per `generate-now` missed-promotion / assistant: per `design_flaw` / `assumption_risk` / `disputed` / `deferred` finding |
 | `sessions/{date}-{session-id}/preparation/staging/design/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | per substantive design topic carried into Preparation |
 | `sessions/{date}-{session-id}/preparation/staging/references/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | per external reference (e.g., dependency citation from a finding) |
-| `sessions/{date}-{session-id}/preparation/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | per substantive AskUserQuestion topic |
+| `sessions/{date}-{session-id}/preparation/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | per substantive user-decision topic |
 | `sessions/{date}-{session-id}/preparation/staging/backlogs/feature/{slug}.md` | assistant (MEMORIZATION) | per `deferred` decision that lands in the feature backlog |
 | `sessions/{date}-{session-id}/preparation/staging/backlogs/project/{slug}.md` | assistant (MEMORIZATION) | per `deferred` decision that lands in the project backlog |
 | `sessions/{date}-{session-id}/preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
@@ -420,7 +420,7 @@ The session directory tree at `sessions/{date}-{session-id}/preparation/{rawdata
 
 ## Constraints
 
-- **MUST never close a gap without explicit user approval** — the leader proposes, the user decides via AskUserQuestion.
+- **MUST never close a gap without explicit user approval** — the leader proposes, the user decides through the active runtime's user-decision primitive.
 - **MUST stamp full templates** when generating a project-specific skill — never leave skeleton files. Use [`interview/templates/project-skill.md`](../interview/templates/project-skill.md).
 - **MUST never silently ignore a missing item** — every gap goes to the Sub-step D consolidated table for user review.
 - **MUST never expand scope** to address project-wide gaps unrelated to this task — note them as out-of-scope in the rawdata draft.
@@ -430,4 +430,4 @@ The session directory tree at `sessions/{date}-{session-id}/preparation/{rawdata
 - **MUST never delete** — supersession via frontmatter (`status: superseded`, `superseded_by:`); physical deletion of any file in any tier is forbidden. Terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json` from the leader role** — the manager owns it.
 - **MUST disagree when you disagree** — surface technical conflicts with evidence; recommend `re-ideate` when the Ideation output is unworkable.
-- **MUST cite the discussion** — every staged gap fix references the AskUserQuestion exchange that authorized it.
+- **MUST cite the discussion** — every staged gap fix references the user-decision exchange that authorized it.

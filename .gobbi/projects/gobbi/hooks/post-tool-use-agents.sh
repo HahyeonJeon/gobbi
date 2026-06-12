@@ -41,6 +41,10 @@ if ! printf '%s' "$payload" | jq -e . >/dev/null 2>&1; then
     bail "stdin is not valid JSON"
 fi
 
+if [[ -n "${CODEX_THREAD_ID:-}${CODEX_CI:-}" && -z "${CLAUDE_CODE_SESSION_ID:-}${CLAUDECODE:-}" ]]; then
+    bail "native Codex hook event — Claude metadata hook skipped"
+fi
+
 tool_name=$(jq -r '.tool_name // ""'        <<<"$payload")
 tool_use_id=$(jq -r '.tool_use_id // ""'    <<<"$payload")
 hook_event=$(jq -r '.hook_event_name // ""' <<<"$payload")

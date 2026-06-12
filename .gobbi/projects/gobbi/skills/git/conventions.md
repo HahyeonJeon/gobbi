@@ -76,7 +76,7 @@ Per-session worktree branches created at Configuration Step 1 (orchestration/SKI
 
 - `claude` for the `claude-code` system; `codex` for the `codex` system.
 - `\d{4}-\d{2}-\d{2}` — session-start date `YYYY-MM-DD`.
-- The trailing group is the full lowercase `$CLAUDE_CODE_SESSION_ID` UUID (8-4-4-4-12 hex).
+- The trailing group is the full lowercase runtime session id resolved by Gobbi bootstrap: `CLAUDE_CODE_SESSION_ID` for Claude Code, `CODEX_THREAD_ID` for native Codex.
 
 Examples:
 - `claude-2026-06-05-06668274-cee3-4bc0-9125-91a327467cd2` — PASS

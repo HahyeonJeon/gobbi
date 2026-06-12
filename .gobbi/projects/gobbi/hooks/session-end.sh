@@ -46,6 +46,10 @@ if ! printf '%s' "$payload" | jq -e . >/dev/null 2>&1; then
     bail "stdin is not valid JSON"
 fi
 
+if [[ -n "${CODEX_THREAD_ID:-}${CODEX_CI:-}" && -z "${CLAUDE_CODE_SESSION_ID:-}${CLAUDECODE:-}" ]]; then
+    bail "native Codex hook event — Claude metadata reconcile skipped"
+fi
+
 # All fields read defensively: any missing field -> empty (schema variance safe).
 session_id=$(jq -r      '.session_id      // empty' <<<"$payload")
 cwd=$(jq -r             '.cwd             // empty' <<<"$payload")

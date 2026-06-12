@@ -53,7 +53,7 @@ This re-frames the 6-step state machine:
   and its own task-record boundary.
 
 This is the structural change that supersedes the original SKILL.md 241–242 lock. Mode no longer
-just controls whether the manager pauses for `AskUserQuestion`; mode now controls which state
+just controls whether the manager pauses for the active runtime's user-decision primitive; mode now controls which state
 machine runs between Configuration and Wrap-up.
 
 ---
@@ -111,7 +111,7 @@ Step 1 — Configuration (once per session)
 │  Task boundary: per-task task-record.md (5–10 lines)               │
 │   │                                                                │
 │   ▼                                                                │
-│  USER REVIEW GATE (AskUserQuestion):                               │
+│  USER REVIEW GATE (active runtime user-decision primitive):         │
 │      ▸ Next task                                                   │
 │      ▸ Revise this task                                            │
 │      ▸ Wrap up the session                                         │
@@ -151,7 +151,7 @@ slice's worth of work.
 | 2 | `WORK` | Spawn the `leader` subagent. Leader runs the full 4-substep procedure (Frame → Lock Scope → Research → Design Recommendation) scoped to this one slice. | [ideation.md](workflow/ideation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). Aggregate verdicts per [Workflow State Machine § Verdict aggregation](SKILL.md#verdict-aggregation). | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Narrowed PASS path per §4: preserve transcript + session.json upsert + PASS-iter `artifacts/`; skip typed-finding staging. Mistake stage moment-of-capture always live. | [memorization.md](workflow/memorization.md) | assistant |
-| 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → escalate to user via AskUserQuestion. | — | manager |
+| 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → escalate to user through the active runtime's user-decision primitive. | — | manager |
 
 ### Step 3 — Slice Preparation Loop (Skipped at loop entry)
 
@@ -196,7 +196,7 @@ slice's worth of work.
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | Manager constructs the executor delegation prompt; in Chat, forced user-driven per §9 (override discuss.mode). | [discussion](../discussion/SKILL.md) | manager |
-| 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline (no cross-task subagent memory unless the executor is continued per `delegation/SKILL.md § Continue vs Fresh` — shared subsystem, under the saturation cap). Collect work artifact + verification evidence. | [execution.md](workflow/execution.md) | executor |
+| 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline. In Claude Code only, the executor may be continued per `delegation/SKILL.md § Continue vs Fresh` — shared subsystem, under the saturation cap. Native Codex uses fresh executor spawns. Collect work artifact + verification evidence. | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [memorization.md](workflow/memorization.md) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics. Sub-step complete → next sub-step (or slice boundary if last). | — | manager |
@@ -207,7 +207,7 @@ slice's worth of work.
 
 **Inputs.** Outputs of Steps 2-5 (slice Idea + slice Plan + slice Results).
 
-**Output.** A per-task `task-record.md` written (per §6 spec) AND a user decision via AskUserQuestion: next task / revise / wrap up.
+**Output.** A per-task `task-record.md` written (per §6 spec) AND a user decision through the active runtime's user-decision primitive: next task / revise / wrap up.
 
 **Procedure.** Sequential — not a loop.
 
@@ -215,7 +215,7 @@ slice's worth of work.
 |---|---|---|---|
 | 1 | Write the per-task `task-record.md` to `sessions/{date}-{ssid}/chat/tasks/{NN}-{slug}/task-record.md` per §6. | [§6 task-record spec](#6--task-record-artifact-spec) | assistant |
 | 2 | Render the [Workflow Status Display](#8--workflow-status-display-chat-rendering) showing the just-completed task. | [§8](#8--workflow-status-display-chat-rendering) | manager |
-| 3 | AskUserQuestion: Next task / Revise this task / Wrap up the session. | [discussion](../discussion/SKILL.md) | manager |
+| 3 | Active runtime's user-decision primitive: Next task / Revise this task / Wrap up the session. | [discussion](../discussion/SKILL.md) | manager |
 | 4 | On `Next task`: enter the next slice (Step 2 of new slice). On `Revise`: re-enter Step 2 of current slice with the user-stated revision focus. On `Wrap up`: advance to Step 6. | — | manager |
 
 ### Step 6 — Session Wrap-up Loop
@@ -289,7 +289,7 @@ Inside any Chat-Mode loop slice (Ideation / Preparation when not skipped / mini 
 Execution):
 
 - **DISCUSSION is forced user-driven**, regardless of the resolved `discuss.mode`. The leader
-  proposes (research-backed); the user decides via `AskUserQuestion`. This is the discuss-first
+  proposes (research-backed); the user decides through the active runtime's user-decision primitive. This is the discuss-first
   Chat-Mode property; it does not override `discuss.mode` in settings (settings still resolve to
   `"user"` everywhere in the Chat defaults), but it is documented here so a future settings change
   cannot accidentally regress it.
@@ -304,8 +304,8 @@ Execution):
 - **Evaluation always runs.** `evaluate.mode: always` across all loops in Chat.
 - **MEMORIZATION runs every loop with the §4 narrowed PASS path.**
 - **Fresh subagent context per slice.** Every leader / executor / evaluator spawn pastes its
-  context inline — no cross-task subagent memory unless the executor is continued per
-  `delegation/SKILL.md § Continue vs Fresh` (shared subsystem, under the saturation cap). The
+  context inline. Claude Code may continue an executor per
+  `delegation/SKILL.md § Continue vs Fresh` (shared subsystem, under the saturation cap); native Codex uses fresh executor spawns. The
   manager is the only durable cross-task agent. Governance: `delegation/SKILL.md § Inline-Paste Rule` (the discipline) and Principle 1
   (the underlying behavioral law — "no action without thinking and studying it through first"; iter1's Principle
   4 citation was a wrong-number reference, corrected per §8 L-P1/L-C2/L-U1 of the Idea doc for
@@ -407,7 +407,7 @@ The task-record is written by:
 - The mini Planning Loop's MEMORIZATION assistant on PASS, if mini Execution was skipped.
 
 Either way it is the **assistant role**. The manager verifies presence of the task-record at the
-user review gate before presenting `AskUserQuestion` options.
+user review gate before presenting active-runtime user-decision options.
 
 ### 6.5 Wrap-up role
 
@@ -424,7 +424,7 @@ project-level `notes/` per `mistakes/prose-reclassification-target-is-project-le
 In Chat Mode, Wrap-up runs **only when the user explicitly signals end-of-session**. The signal is
 one of:
 
-- The user selects "Wrap up the session" at the per-task user review gate (AskUserQuestion).
+- The user selects "Wrap up the session" at the per-task user review gate through the active runtime's user-decision primitive.
 - The user types an explicit end-of-session message (e.g., "we're done", "wrap up", "end
   session").
 - The user invokes `/gobbi wrap-up` (if such a command exists; otherwise the message form above).
@@ -483,7 +483,7 @@ Per-task tier (current task sub-table):
 | 5 | mini Execution | {state} | {n} | {verdict} |
 | — | task-record | {written\|pending} | — | — |
 
-**Render points:** unchanged — every `AskUserQuestion` call in Chat; every loop boundary.
+**Render points:** unchanged — every user-decision primitive call in Chat; every loop boundary.
 
 **Auto Mode rendering:** unchanged — the existing 6-row table in `orchestration/SKILL.md §
 Workflow Status Display` is the canonical Auto view.
@@ -498,16 +498,16 @@ state-transition contract for Chat Mode.
 | `(none)` | user types a task | `ideation.state: InProgress` | manager enters per-task slice; Configuration already `Done` |
 | `ideation.state: InProgress` | EVALUATION → PASS | `ideation.state: Done` | §4 narrowed PASS path runs; move to Step 3 |
 | `ideation.state: InProgress` | EVALUATION → REVISE | `ideation.state: InProgress` | re-enter DISCUSSION with evaluator findings; iter++ |
-| `ideation.state: InProgress` | iter == maxIter (5) + REVISE | `ideation.state: Aborted` | manager escalates to user via AskUserQuestion |
+| `ideation.state: InProgress` | iter == maxIter (5) + REVISE | `ideation.state: Aborted` | manager escalates to user through the active runtime's user-decision primitive |
 | `ideation.state: Done` | loop-entry guard reads `skip: true` OR `maxIterations: 0` | `preparation.state: Skipped` | R1 lock + skip signal (two independent signals); no DISCUSSION/WORK/EVAL/MEMO rows run; stamps `{state: "Skipped", iterations: []}` |
 | `preparation.state: Skipped` | (auto-advance) | `planning.state: InProgress` | no user gate for the Skipped transition |
 | `preparation.state: Skipped` | user opts in for complex task | `preparation.state: InProgress` | user sets `skip: false` AND raises `maxIterations` explicitly (both signals cleared); standard loop contract runs |
 | `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 narrowed PASS path runs; move to Step 5 |
 | `planning.state: InProgress` | EVALUATION → REVISE | `planning.state: InProgress` | re-enter DISCUSSION; iter++ |
 | `planning.state: InProgress` | iter == maxIter (5) + REVISE | `planning.state: Aborted` | manager escalates to user |
-| `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step (default); may continue per `delegation/SKILL.md § Continue vs Fresh` |
+| `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step (default); Claude Code may continue per `delegation/SKILL.md § Continue vs Fresh` |
 | `execution.state: InProgress` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 narrowed PASS path runs; write task-record |
-| `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor by default, or continue per `delegation/SKILL.md § Continue vs Fresh` |
+| `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor by default, or Claude Code continuation per `delegation/SKILL.md § Continue vs Fresh` |
 | `execution.state: InProgress` | EVALUATION → REVISE | `execution.state: InProgress` | re-enter DISCUSSION for same sub-step; iter++ |
 | `execution.state: InProgress` | iter == maxIter (5) + REVISE | `execution.state: Aborted` | manager escalates to user |
 | `execution.state: Done` | task-record written | `taskRecord: written` | manager presents user review gate |
@@ -555,8 +555,8 @@ Notes on the example:
 ## §9 — Discuss-first contract
 
 In Chat Mode, **every loop entry forces user-driven DISCUSSION**, regardless of the resolved
-`discuss.mode` setting. The leader proposes (with research-backed evidence); the user decides via
-`AskUserQuestion`. This is the Chat-Mode-level discuss-first contract.
+`discuss.mode` setting. The leader proposes (with research-backed evidence); the user decides through
+the active runtime's user-decision primitive. This is the Chat-Mode-level discuss-first contract.
 
 This contract is binding at the mode level: even if a future settings change flips a per-step
 `discuss.mode` to `"agent"`, the mode-level contract documented here still forces user-driven
