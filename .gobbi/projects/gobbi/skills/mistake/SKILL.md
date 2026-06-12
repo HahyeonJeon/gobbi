@@ -1,6 +1,6 @@
 ---
 name: mistake
-description: "MUST load before starting any work in any agent. Defines the cross-session mistake recording model: check existing mistakes before acting, stage new mistake-candidates immediately after corrections, and promote during the Wrap-up phase — working-loop agents never write directly to project memory; the Wrap-up assistant is the sole documented exception."
+description: "MUST load before agent work. Checks known mistakes, stages mistake-candidates after corrections, and defers promotion to Wrap-up."
 allowed-tools: Read, Grep, Glob, Bash, Write
 ---
 
@@ -128,7 +128,7 @@ Wrap-up reads these staging files and promotes to the destination based on user-
 **Path conventions**
 
 - `{date}` — session start date in `YYYY-MM-DD`
-- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
+- `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.
 - `{loop}` — the loop during which the mistake was staged (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md))
 - `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=preparation, `3`=planning, `4`=execution, `5`=wrap-up); the on-disk loop-dir prefix
 - `{slug}` — kebab-case derived from the mistake's primary symptom (≤ 60 characters)

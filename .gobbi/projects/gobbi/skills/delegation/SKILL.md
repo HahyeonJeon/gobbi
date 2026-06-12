@@ -8,7 +8,16 @@ allowed-tools: Read, Grep, Glob, Bash
 
 How the manager passes work to spawned subagents. The goal is **deterministic delegation** — the manager fills the same template the same way every time, the subagent loads the same things in the same order every time, nothing is left to inference.
 
-Sub-document of the `orchestration` skill. Loaded whenever the manager is about to call the `Agent` tool.
+Sub-document of the `orchestration` skill. Loaded whenever the manager is about to use the active runtime's subagent primitive.
+
+Runtime mapping:
+
+| Runtime | Subagent primitive | Agent definitions |
+|---|---|---|
+| Claude Code | `Task` / `Agent` | `.claude/agents/{role}.md` symlinked to canonical prompts |
+| Codex | project custom agents | `.codex/agents/{role}.toml`, each pointing at the canonical prompt |
+
+The delegation contract is the same across runtimes: fresh subagents inherit no loaded skills, so every prompt carries explicit Load Directives.
 
 ---
 
@@ -118,17 +127,19 @@ A subagent does not have to be fresh every time. The manager may **continue** th
 
 **Mechanism — Claude Code Agent Teams.** A continued agent is a *teammate*: a persistent, independent Claude Code session re-addressed by name via `SendMessage`, with its own context preserved across messages. Agent Teams is experimental and off by default — the manager confirms `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (Claude Code v2.1.32+) before continuing. Continuation is **preferred-where-safe, with a fresh-spawn fallback**: if the flag is unset, or the teammate has died, the manager fresh-spawns with a full brief. Teammates cost more in general — token cost scales linearly with teammate count — so the token win holds **only** in the sequential single-persistent-teammate pattern, not in parallel fan-out. Teammates do NOT survive `/compact`, `/clear`, or resume: at any of those, the in-process teammate is gone and the manager must fresh-spawn and re-prime from durable session memory.
 
+**Native Codex default.** Codex does not currently expose this Claude Code Agent Teams `SendMessage` continuation surface in Gobbi's native contract. In native Codex, leader / executor / assistant dispatches are fresh specialist spawns unless the user explicitly authorizes a future Codex continuation mechanism. Fresh Codex specialists always receive the full Load Directives stack.
+
 > The deep spawn choreography and the teammate-aware session metadata live in [`orchestration/workflow/execution.md`](../orchestration/workflow/execution.md), [`orchestration/workflow/ideation.md`](../orchestration/workflow/ideation.md), and [`orchestration/SKILL.md`](../orchestration/SKILL.md). This section defines only the decision rule and the delta-brief.
 
 ### Decision rule (role × transition)
 
 | Role × transition | Decision | Why |
 |---|---|---|
-| **leader** — Ideation Sub-step A→B→C→D→WORK (within one loop, team + session live) | **CONTINUE** (preferred; strongest, reliable benefit) | The same PI carries the framed problem, scope, and insights forward; re-deriving root-cause and re-reading `features/`/`mistakes/` each sub-step is pure waste. Reliable because it stays within one live loop. |
-| **leader** — Ideation→Preparation→Planning (across loops) | **CONTINUE (best-effort, under cap) while team + session stay live; DEGRADES to FRESH re-prime at the first `/compact`/`/clear`/resume** | The same problem understanding flows downstream, but a teammate does not survive compaction/resume, so cross-loop continuation cannot be promised as a single persistent leader. |
-| **executor** — task NN→NN+1, **shared subsystem**, under the saturation cap | **CONTINUE** | Avoids re-learning the subsystem each task. (F1 predicate below.) |
+| **leader** — Ideation Sub-step A→B→C→D→WORK (within one loop, team + session live) | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | The same PI can carry the framed problem in Claude Code; native Codex re-primes from durable artifacts instead. |
+| **leader** — Ideation→Preparation→Planning (across loops) | **Claude Code: CONTINUE best-effort** while team + session stay live; degrades to FRESH after `/compact`/`/clear`/resume. **Codex: FRESH** | Cross-loop continuation is live-session-only and not a Codex readiness assumption. |
+| **executor** — task NN→NN+1, **shared subsystem**, under the saturation cap | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | Avoids re-learning in Claude Code; native Codex uses full re-prime. (F1 predicate below applies only to Claude Code continuation.) |
 | **executor** — task NN→NN+1, **disjoint subsystem OR cap reached** | **FRESH** (default) | Bounds context-rot; the fresh fallback is cheap because state is carried via files. |
-| **assistant** — MEMORIZATION across loops, or multi-step exploration | **CONTINUE** (teammate; under the same bounded discipline) | The assistant is a teammate, not a subagent. Continuing it carries the session-synthesis context (or the exploration thread) forward across loops instead of re-loading it each turn. Same bounded discipline as the other teammates: manager-owned coordination, no cross-talk, fresh re-prime after `/compact`/`/clear`/resume. |
+| **assistant** — MEMORIZATION across loops, or multi-step exploration | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | Claude Code can carry session-synthesis context as a teammate; native Codex uses fresh assistant support with full context. |
 | **evaluator** — any reuse / share / teammate | **FORBIDDEN to continue, share, or be made a teammate** | Producer/evaluator separation + dual-system anti-groupthink independence is non-negotiable. A continued evaluator carries its own prior verdict → confirmation bias; a teammate-evaluator is reachable in the team mailbox → contamination. The evaluator is the SOLE fresh, never-teammate, report-back subagent — kept OUT of the team. |
 
 ### F1 — the executor continue predicate
@@ -205,7 +216,7 @@ user-question:
 
 ### NEEDS_CONTEXT user-question schema
 
-When a subagent emits `STATUS: NEEDS_CONTEXT` and the missing context requires user input, the response body MUST include a `user-question:` block. The manager reads this block and constructs an AskUserQuestion call on behalf of the subagent.
+When a subagent emits `STATUS: NEEDS_CONTEXT` and the missing context requires user input, the response body MUST include a `user-question:` block. The manager reads this block and constructs an user-decision primitive call on behalf of the subagent.
 
 ```yaml
 user-question:
@@ -239,8 +250,8 @@ The `## Report Format` section appears at the **end** of every delegation prompt
 | Subagent STATUS | Manager action |
 |---|---|
 | `DONE` | Parse ARTIFACT path; advance to next planned step (or surface to user). |
-| `DONE_WITH_CONCERNS` | Surface concerns to user via AskUserQuestion before advancing. |
-| `NEEDS_CONTEXT` | If `user-question:` block present: construct AskUserQuestion and ask user. Otherwise: fetch missing context (file read / assistant delegation) and re-delegate. Do NOT retry with the same prompt unchanged. |
+| `DONE_WITH_CONCERNS` | Surface concerns to user through the active runtime's user-decision primitive before advancing. |
+| `NEEDS_CONTEXT` | If `user-question:` block present: ask through the active runtime's user-decision primitive. Otherwise: fetch missing context (file read / assistant delegation) and re-delegate. Do NOT retry with the same prompt unchanged. |
 | `BLOCKED` | Stop. Re-contract with the user. Do NOT silently retry. |
 | `BLOCKED` with `reason: wrong-phase-dispatch` | **Re-dispatch**, not abort. The subagent identified a role mismatch — re-delegate to the correct role without re-contracting with the user (unless the correct role is ambiguous). |
 
@@ -318,21 +329,21 @@ Boilerplate lives in [`templates/evaluator.md`](templates/evaluator.md). The blo
 
 ## Model Selection
 
-> **Reasoning- and implementation-heavy work gets opus. Only the read-only assistant gets sonnet. All agents run at max effort.**
+> **Claude Code defaults reasoning-heavy work to opus and narrow assistant lookups to sonnet. Codex inherits the parent session model and effort unless the user explicitly overrides them.**
 
-Opus covers every role whose quality bar depends on reasoning — manager (user-facing decisions), leader (open-ended investigation and decomposition), evaluator (catching non-obvious gaps an author missed), and executor (implementing within scope still needs reasoning depth for correctness and edge cases). Sonnet is reserved for the narrow read-only assistant — lookups, references, and factual answers that do not require judgment. The manager sets `model:` on the `Agent` tool call at dispatch time — it overrides the agent definition's default.
+In Claude Code, opus covers every role whose quality bar depends on reasoning — manager (user-facing decisions), leader (open-ended investigation and decomposition), evaluator (catching non-obvious gaps an author missed), and executor (implementing within scope still needs reasoning depth for correctness and edge cases). Sonnet is reserved for the narrow read-only assistant — lookups, references, and factual answers that do not require judgment. The manager sets `model:` on the Claude Code `Agent` tool call at dispatch time, which overrides the agent definition's default. In native Codex, do not hard-code model or reasoning effort in Gobbi TOML unless the user explicitly asks; let Codex inherit the parent session settings.
 
-| Agent | Stance | Model | Rationale |
-|---|---|---|---|
-| `manager` | — | opus | Session main agent; orchestration + user discussion require deep reasoning |
-| `leader` | — | opus | Deep reasoning across investigation, research, and decomposition |
-| `executor` | — | opus | Implementation within scope still needs reasoning depth for correctness and edge cases |
-| `evaluator` | — | opus | Adversarial assessment of artifacts + process docs needs deep reasoning to catch non-obvious gaps |
-| `assistant` | — | sonnet | Narrow, fast support work — lookups, references, factual answers |
+| Agent | Stance | Claude Code default | Codex default | Rationale |
+|---|---|---|---|---|
+| `manager` | — | opus | inherit parent | Session main agent; orchestration + user discussion require deep reasoning |
+| `leader` | — | opus | inherit parent | Deep reasoning across investigation, research, and decomposition |
+| `executor` | — | opus | inherit parent | Implementation within scope still needs reasoning depth for correctness and edge cases |
+| `evaluator` | — | opus | inherit parent | Adversarial assessment of artifacts + process docs needs deep reasoning to catch non-obvious gaps |
+| `assistant` | — | sonnet | inherit parent | Narrow, fast support work — lookups, references, factual answers |
 
 > **Dispatch-time overrides are explicit, not inferred.**
 
-If a specific task calls for a model different from the role's default — an exceptionally mechanical sub-task that fits sonnet, or a complex assistant lookup that warrants opus — the manager sets `model:` on the `Agent` call explicitly and documents the reason in the delegation prompt's `## Context` block. The role's default is the right choice unless the manager can articulate why this task is exceptional.
+If a specific Claude Code task calls for a model different from the role's default — an exceptionally mechanical sub-task that fits sonnet, or a complex assistant lookup that warrants opus — the manager sets `model:` on the `Agent` call explicitly and documents the reason in the delegation prompt's `## Context` block. For Codex, model changes are a user-level runtime choice, not a Gobbi TOML default. The role's default is the right choice unless the manager can articulate why this task is exceptional.
 
 > **Model tiers and capabilities evolve — these are current guidelines, not permanent assignments.**
 
@@ -348,7 +359,7 @@ If a specific task calls for a model different from the role's default — an ex
 
 **When to include exploration findings** — If the plan was preceded by multi-perspective exploration, paste the synthesized findings in the `## Context` block. Findings are context, not constraints — the subagent uses them to make better-informed decisions but is not bound by the explorers' conclusions.
 
-**When to include pre-resolved decisions** — When the user has locked specific implementation choices during ideation (via contribution points or AskUserQuestion), encode those as explicit constraints in the `## Constraints / Scope` block under "Pre-resolved decisions." Scope says what not to touch; pre-resolved decisions say which choices are settled. A subagent that re-opens a settled decision wastes context.
+**When to include pre-resolved decisions** — When the user has locked specific implementation choices during ideation (via contribution points or the active runtime's user-decision primitive), encode those as explicit constraints in the `## Constraints / Scope` block under "Pre-resolved decisions." Scope says what not to touch; pre-resolved decisions say which choices are settled. A subagent that re-opens a settled decision wastes context.
 
 **When to specify verification commands** — Always for executors. Manager specifies the exact `bun test` / `bun run check` / etc. commands in the `## Verification Commands` block. The executor runs them and pastes the output; manager parses for `DONE` vs `DONE_WITH_CONCERNS`.
 
@@ -356,9 +367,9 @@ If a specific task calls for a model different from the role's default — an ex
 
 ## Agent Roster
 
-Canonical phase list: `.claude/CLAUDE.md`. All agent + skill docs align to Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (Evaluation and Memorization are sub-phases that run inside each loop). Drift from this list is a bug.
+Canonical phase list: `AGENTS.md` plus `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`. All agent + skill docs align to Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (Evaluation and Memorization are sub-phases that run inside each loop). Drift from this list is a bug.
 
-The manager delegates to these agent types. Each has a distinct role — understanding boundaries prevents misrouting. Definitions live at `.claude/agents/{role}.md` (symlinked to `.gobbi/projects/gobbi/agents/{role}.md`).
+The manager delegates to these agent types. Each has a distinct role — understanding boundaries prevents misrouting. Definitions live at `.gobbi/projects/gobbi/agents/{role}.md`. Runtime wrappers point back to those canonical prompts: `.claude/agents/{role}.md` for Claude Code, `.codex/agents/{role}.toml` for Codex.
 
 | Agent | Role | When to use | Model |
 |---|---|---|---|

@@ -8,7 +8,7 @@ The Ideation Loop runs the four-phase iteration shape — `DISCUSSION` → `WORK
 
 | Phase | Content semantics for Ideation |
 |---|---|
-| `DISCUSSION` | Manager + user + leader (research-backed opinion) work through four sub-steps (A Frame What/Why / B Lock Scope / C Research / D Design). Every decision is settled via AskUserQuestion before WORK begins. |
+| `DISCUSSION` | Manager + user + leader (research-backed opinion) work through four sub-steps (A Frame What/Why / B Lock Scope / C Research / D Design). Every decision is settled through the active runtime's user-decision primitive before WORK begins. |
 | `WORK` | Leader documents the DISCUSSION outcome into the canonical working draft and stages reference + backlog artifacts under `sessions/{date}-{session-id}/1-ideation/staging/`. Documentation + session-memory staging — no new content. |
 | `EVALUATION` | Dual-system evaluators (Claude Code + Codex) run the four-stage procedure across all seven perspectives + Overall. Manager reconciles into a `PASS` / `REVISE` verdict. |
 | `MEMORIZATION` | Assistant runs **after every EVALUATION** (PASS or REVISE) to preserve the iteration's transcript and update `session.json`. On `PASS` it additionally emits the loop's `outputs/` files and stages typed-finding artifacts under `staging/`. **No writes to project memory** — Wrap-up handles session → project promotion. |
@@ -27,31 +27,31 @@ The leader does **not** observe the entire user dialogue. The manager spawns the
 manager → opens DISCUSSION with user (states framed problem at high level)
 manager → spawns leader for Sub-step A: "research root cause / impact / prior attempts; build steel-man counterfactual; apply re-framing check"
 leader → researches + returns to manager
-manager → presents leader's findings as draft proposals → AskUserQuestion → user decides
+manager → presents leader's findings as draft proposals → active runtime's user-decision primitive → user decides
 manager → spawns leader again for Sub-step B (Lock Scope), then Sub-step C (Research, loads research skill), etc.
 ...
 ```
 
-Multiple leader spawns are normal. MEMORIZATION preserves the leader's record as the audit trail for "what research informed each decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **leader continuation** (one teammate carried across sub-steps — see below), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage.
+Multiple leader spawns are normal. MEMORIZATION preserves the leader's record as the audit trail for "what research informed each decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **Claude Code leader continuation** (one teammate carried across sub-steps — see below), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage. Native Codex uses fresh leader spawns with full Load Directives.
 
-### Leader continuation across sub-steps (Agent Teams)
+### Leader continuation across sub-steps (Claude Code Agent Teams)
 
-The leader spawn pattern above describes the **fresh-spawn fallback** — the manager re-spawns the leader for each sub-step. Where Agent Teams is enabled, the manager instead **continues** the same leader teammate across Sub-steps A→B→C→D→WORK, which is the strongest in-loop token saver: the teammate keeps the framed problem, scope, and insights in-context, so it does not re-derive root-cause or re-read `features/`/`mistakes/` each sub-step.
+The leader spawn pattern above describes the **fresh-spawn fallback** — the manager re-spawns the leader for each sub-step. Where Claude Code Agent Teams is enabled, the manager instead **continues** the same leader teammate across Sub-steps A→B→C→D→WORK, which is the strongest in-loop token saver: the teammate keeps the framed problem, scope, and insights in-context, so it does not re-derive root-cause or re-read `features/`/`mistakes/` each sub-step. Native Codex does not use this continuation path.
 
 The decision rule, the delta-brief shape, and the evaluator-FORBIDDEN wall live in [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh); this section states only the Ideation-specific choreography.
 
-- **In-loop (A→B→C→D→WORK), team + session live → CONTINUE.** The first sub-step spawns the leader with the full Load Directives stack; each later sub-step sends a delta-brief (next sub-step's goal + new inputs + re-stated scope + status), not a full re-paste.
-- **Cross-loop (Ideation→Preparation→Planning) → CONTINUE best-effort, live-only.** A single leader teammate may carry the same problem understanding downstream **only while the team + session stay live**. It DEGRADES to a fresh, re-primed teammate at the first `/compact`, `/clear`, or resume — an in-process teammate does not survive any of those. Cross-loop continuation is therefore best-effort, never a promised single persistent leader spanning all loops.
-- **Fresh-spawn fallback.** If Agent Teams is off (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` unset) or the teammate has died, the manager fresh-spawns with a full brief and re-primes from durable session memory (`working/`, `staging/`, `state.json`). Continuation is preferred-where-safe, never a hard dependency.
+- **In-loop (A→B→C→D→WORK), Claude Code team + session live → CONTINUE.** The first sub-step spawns the leader with the full Load Directives stack; each later sub-step sends a delta-brief (next sub-step's goal + new inputs + re-stated scope + status), not a full re-paste.
+- **Cross-loop (Ideation→Preparation→Planning), Claude Code only → CONTINUE best-effort, live-only.** A single leader teammate may carry the same problem understanding downstream **only while the team + session stay live**. It DEGRADES to a fresh, re-primed teammate at the first `/compact`, `/clear`, or resume — an in-process teammate does not survive any of those. Cross-loop continuation is therefore best-effort, never a promised single persistent leader spanning all loops.
+- **Fresh-spawn fallback.** If Agent Teams is off (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` unset), the runtime is native Codex, or the teammate has died, the manager fresh-spawns with a full brief and re-primes from durable session memory (`working/`, `staging/`, `state.json`). Continuation is preferred-where-safe, never a hard dependency.
 
 ### Sub-step orchestration
 
-The manager runs the user through four sub-steps in order. Each is gated by AskUserQuestion before advancing.
+The manager runs the user through four sub-steps in order. Each is gated by the active runtime's user-decision primitive before advancing.
 
 | # | Sub-step | Manager's role | Leader's contribution |
 |---|---|---|---|
-| A | Frame What and Why | Run the **six forcing questions** via AskUserQuestion: root cause / impact / success criteria / prior attempts / counterfactual (steel-man) / re-framing check | Research root cause / impact / prior attempts; build steel-man counterfactual; apply re-framing check; draft answers for user to refine |
-| B | Lock Scope (Project-Feature-Task contract) | Run decomposition discussion; AskUserQuestion to pick the workflow's task and lock the Scope Contract | Enumerate candidate tasks; propose pick based on dependency analysis; provide field values for the Scope Contract template |
+| A | Frame What and Why | Run the **six forcing questions** through the active runtime's user-decision primitive: root cause / impact / success criteria / prior attempts / counterfactual (steel-man) / re-framing check | Research root cause / impact / prior attempts; build steel-man counterfactual; apply re-framing check; draft answers for user to refine |
+| B | Lock Scope (Project-Feature-Task contract) | Run decomposition discussion; use the active runtime's user-decision primitive to pick the workflow's task and lock the Scope Contract | Enumerate candidate tasks; propose pick based on dependency analysis; provide field values for the Scope Contract template |
 | C | Research | Present leader's internal + external insights to user **separately**; let user push back / refine | Load [`research/SKILL.md`](../../research/SKILL.md); run Internal Research and External Research deeply; extract insights using the Insight format. Internal and external insights are managed independently |
 | D | Design | Present leader's scenarios + checklist + directional design decisions + validation strategy to user; iterate until satisfied | Propose scenarios (golden / edge / failure / adversarial); anchored implementation checklist; **directional design decisions** (library / framework / design pattern / API shape / etc.) with rationale anchored to insights. Detailed mechanism deferred to Execution |
 
@@ -59,7 +59,7 @@ After Sub-step B, the manager stamps `project`, `feature`, `task` into `session.
 
 ### When to escalate to user
 
-The leader brings draft proposals; the user makes final calls. Every decision below requires AskUserQuestion:
+The leader brings draft proposals; the user makes final calls. Every decision below requires the active runtime's user-decision primitive:
 
 - Confirmation of the framed problem — all six forcing questions (Sub-step A)
 - Re-framing go/no-go (Sub-step A, question 6)
@@ -128,7 +128,7 @@ After `MEMORIZATION` (which always runs), the manager decides based on the recon
 |---|---|
 | `PASS` | Exit the loop; advance to Planning Loop. `outputs/` files + `staging/` artifacts are ready for Wrap-up's project-memory promotion |
 | `REVISE` | Re-enter `DISCUSSION` with evaluator findings as additional input. The current iter's draft + evaluation files are preserved under `working/` and `evaluation/`; the transcript is preserved in the session-root `transcripts/` |
-| `FAIL` | Escalate via AskUserQuestion; user decides revise / abort / reframe |
+| `FAIL` | Escalate through the active runtime's user-decision primitive; user decides revise / abort / reframe |
 | `SKIPPED` | Exit the loop (Ideation was skipped per settings) |
 
 Iteration cap: `workflow.ideation.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.
@@ -146,7 +146,7 @@ The canonical tree is [`orchestration/templates/session-tree.md`](../templates/s
     ├── outputs/             ← PASS-iter output files (free filenames + mandatory frontmatter; assistant, MEMORIZATION, PASS only)
     ├── working/
     │   ├── draft-iter{n}.md           ← leader's working draft per iteration (WORK)
-    │   ├── discussion-log.md          ← manager-captured AskUserQuestion exchanges
+    │   ├── discussion-log.md          ← manager-captured user-decision exchanges
     │   └── research/{slug}.md         ← pre-staging external refs (leader)
     ├── evaluation/
     │   └── iter{n}/

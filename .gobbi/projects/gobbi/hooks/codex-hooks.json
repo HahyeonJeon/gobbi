@@ -1,0 +1,20 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact|.*",
+        "hooks": [
+          { "type": "command", "command": "bash \"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/session-start.sh\"" }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          { "type": "command", "command": "bash \"${PLUGIN_ROOT:-${CLAUDE_PLUGIN_ROOT}}/hooks/post-tool-use-agents.sh\"" }
+        ]
+      }
+    ]
+  }
+}

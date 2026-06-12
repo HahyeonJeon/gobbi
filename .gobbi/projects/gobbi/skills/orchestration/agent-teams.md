@@ -1,7 +1,7 @@
 # Agent Teams
 
-Sub-document of the `orchestration` skill. The **operator guide** for Agent Teams in gobbi:
-setup, delegating to teammates, and managing the team's lifecycle. Agent Teams is the mechanism
+Sub-document of the `orchestration` skill. The **operator guide** for Claude Code Agent Teams in gobbi:
+setup, delegating to teammates, and managing the team's lifecycle. Native Codex does not use this surface; it fresh-spawns specialists per `delegation/SKILL.md`. Agent Teams is the mechanism
 behind subagent CONTINUATION — a teammate is a persistent Claude Code session re-addressed by name
 via `SendMessage`, with its own context preserved across turns. Continuing a teammate is what lets
 the manager send a small delta-brief instead of re-pasting the full brief on every dispatch.

@@ -68,7 +68,7 @@ If the Ideation design has gaps that make planning impossible — missing scenar
 
 > **USER CHALLENGE — structured escalation when leader disagrees with user.**
 
-When the leader's analysis (research + codebase reality + project mistakes) concludes the user's stated direction at Ideation should change for planning to be sound, the manager runs AskUserQuestion using the structured USER CHALLENGE format:
+When the leader's analysis (research + codebase reality + project mistakes) concludes the user's stated direction at Ideation should change for planning to be sound, the manager uses the active runtime's user-decision primitive using the structured USER CHALLENGE format:
 
 | Field | Content |
 |---|---|
@@ -86,7 +86,7 @@ Verification is anchored, not authored, by Planning. Every task's acceptance cri
 
 > **NEEDS_CONTEXT escalation.**
 
-This loop's DISCUSSION phase is manager-direct (the manager calls AskUserQuestion when user input is needed); subagents do not run DISCUSSION here. NEEDS_CONTEXT escalation primitive applies to subagents during the WORK phase only — the leader returns NEEDS_CONTEXT in its final report; the manager handles the user-question block per `discussion/SKILL.md`. See `agents/leader.md` § Status Contract for the leader's NEEDS_CONTEXT pattern.
+This loop's DISCUSSION phase is manager-direct (the manager uses the active runtime's user-decision primitive when user input is needed); subagents do not run DISCUSSION here. NEEDS_CONTEXT escalation primitive applies to subagents during the WORK phase only — the leader returns NEEDS_CONTEXT in its final report; the manager handles the user-question block per `discussion/SKILL.md`. See `agents/leader.md` § Status Contract for the leader's NEEDS_CONTEXT pattern.
 
 ---
 
@@ -112,7 +112,7 @@ Run sub-steps A → B → C → D → E in order. Each sub-step's procedure bloc
 - Dependency table + parallel-lane table (Sub-step C)
 - Per-task agent assignment + required skills + required mistakes (Sub-step D)
 - Self-review report (Sub-step E) — type/name consistency + spec coverage + placeholder scan
-- Discussion log (manager-captured AskUserQuestion exchanges, including any USER CHALLENGE outcomes)
+- Discussion log (manager-captured user-decision exchanges, including any USER CHALLENGE outcomes)
 
 **Exit checklist**
 - [ ] All five sub-steps (A–E) completed
@@ -160,7 +160,7 @@ Read the locked Scope Contract, design, scenarios, checklist, and Preparation re
 | 4 | Leader | Scenarios | Identify scenarios with no anchored checklist item; surface as gap findings rather than silently inventing tasks | Gap findings (zero or more) |
 | 5 | Leader | Preparation artifacts | Read readiness assessment; confirm every "generate-now" decision has produced a staged skill / scenario / decision; if any gap remains, surface it as a planning blocker | Readiness confirmation or blocker |
 | 6a | Leader | Gaps + readiness blockers | Surface to manager via findings package | Findings package |
-| 6b | Manager | Findings package | Either advance (if no blocker) or run AskUserQuestion to decide remediation (re-Ideate / re-Prepare / accept gap) | Advance decision |
+| 6b | Manager | Findings package | Either advance (if no blocker) or use the active runtime's user-decision primitive to decide remediation (re-Ideate / re-Prepare / accept gap) | Advance decision |
 
 **Outputs**
 - Task seed set (consumed by Sub-step B)
@@ -187,7 +187,7 @@ Map every file the design will create or modify, then slice the file map into me
 | 3 | Leader | Grouped file map + task seed set | Slice into tasks. Each task is a **medium-granularity unit**: one executor spawn, one meaningful commit, typically 2-5 files touched, ~15-60 minutes of focused work | Sliced task list |
 | 4 | Leader | Sliced task list | Per task, record using the canonical YAML task schema: `id` (short slug, e.g., `01-add-cache-layer`), `what` (one sentence imperative description), `traces-to` (the Ideation checklist item(s) this task implements — exact text match, not paraphrase), `requires` (task IDs this task depends on; empty list if none), `files` (exact paths, Create / Modify), `inputs` (artifacts / outputs from prior tasks that this task consumes by name), `outputs` (artifacts this task produces by name — must match downstream tasks' `inputs`), `verifies` (runnable command or file-existence check whose pass proves the task complete) | Per-task records |
 | 5a | Leader | Per-task records | Surface to manager | Package |
-| 5b | Manager | Package | Run AskUserQuestion on task slicing decisions where multiple defensible slicings exist | User decisions |
+| 5b | Manager | Package | Run the active runtime's user-decision primitive on task slicing decisions where multiple defensible slicings exist | User decisions |
 | 5c | User | Slicing options | Pick one | Locked task list |
 
 **Anti-patterns** (record under Sub-step E if found; correct before WORK):
@@ -218,7 +218,7 @@ Capture task ordering as two complementary tables — a dependency table and a p
 | 2 | Leader | Dependency table | Build the parallel-lane table: per lane, list its tasks + execution order. Tasks with no shared files and no dependency go in separate lanes; tasks sharing files go in the same lane | Parallel-lane table |
 | 3 | Leader | Both tables | Flag conflicts: any two tasks in different lanes that touch the same file → record as `⚠ Tasks {a} and {b} both touch {path} — sequential, not parallel-safe` | Conflict flags |
 | 4a | Leader | Tables + flags | Surface to manager | Package |
-| 4b | Manager | Package | Run AskUserQuestion if any dependency edge is ambiguous (e.g., a soft dependency the leader is unsure about) | User decisions |
+| 4b | Manager | Package | Run the active runtime's user-decision primitive if any dependency edge is ambiguous (e.g., a soft dependency the leader is unsure about) | User decisions |
 
 **Note on parallelization**: lane metadata is recorded for future possibility, but the Execution Loop runs tasks **sequentially** (one task at a time). Lanes are documentation, not a runtime contract.
 
@@ -238,7 +238,7 @@ Assign each task an agent type, model override (if any), required skills, and re
 - Locked task list (Sub-step B output)
 - Dependency + lane tables (Sub-step C output)
 - Project memory: `.gobbi/projects/{project-name}/mistakes/`, `features/{feature-name}/mistakes/`
-- Project skills: `.gobbi/projects/{project-name}/skills/`, workspace skills under `.claude/skills/`
+- Project skills: `.gobbi/projects/{project-name}/skills/`, workspace skills under the active runtime's skill root (`.claude/skills/` in Claude Code, `.agents/skills/` in Codex)
 
 **Procedure**
 
@@ -249,7 +249,7 @@ Assign each task an agent type, model override (if any), required skills, and re
 | 3 | Leader | Task + agent type + files | Enumerate **required skills**: `principles` (always), workflow skills for the task's phase (e.g., `execution` for implementation tasks), domain skills from the current skill tree (e.g., `git` for branch work), project-specific skills (e.g., `{project-name}-typescript-conventions` if they exist in `.gobbi/projects/{project-name}/skills/`), and the phase doc relevant to the task | Required skills list per task |
 | 4 | Leader | Task + files | Enumerate **required mistakes**: project mistakes at `.gobbi/projects/{project-name}/mistakes/` filtered by domain, feature-specific mistakes at `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` if present | Required mistakes list per task |
 | 5a | Leader | Per-task assignments | Surface to manager | Package |
-| 5b | Manager | Package | Run AskUserQuestion when: (a) a task's agent type is ambiguous, (b) a task's required skills are not obvious from the files touched, (c) a model override is proposed | User decisions |
+| 5b | Manager | Package | Run the active runtime's user-decision primitive when: (a) a task's agent type is ambiguous, (b) a task's required skills are not obvious from the files touched, (c) a model override is proposed | User decisions |
 
 The skill / mistake set is **declarative** — the planning artifacts list what the Execution Loop's manager must inject into each delegation prompt's Load Directives block (see [delegation/SKILL.md § The Load Directives Block](../delegation/SKILL.md#the-load-directives-block)).
 
@@ -276,7 +276,7 @@ Catch the most common cross-task drift bugs before WORK begins — type/name con
 | 3 | Leader | Task list | **Type / name consistency check** — for every identifier (function name, class name, file path, type name) used in a later task, confirm the identifier matches what an earlier task defines or modifies. `clearLayers()` in Task 3 and `clearFullLayers()` in Task 7 is a bug | Consistency report |
 | 4 | Leader | Three reports | Compile into a single self-review report; if any report has findings, return to the relevant sub-step and fix before WORK | Self-review report |
 | 5a | Leader | Self-review report | Surface to manager | Package |
-| 5b | Manager | Package | Confirm zero outstanding findings (or AskUserQuestion if the leader proposes accepting a finding without fix) | Self-review clearance |
+| 5b | Manager | Package | Confirm zero outstanding findings (or use the active runtime's user-decision primitive if the leader proposes accepting a finding without fix) | Self-review clearance |
 
 **Outputs**
 - Self-review report (zero-finding clearance, or the explicit acceptances the user approved)
@@ -298,7 +298,7 @@ Persist every DISCUSSION decision into a durable session draft. WORK is a **docu
 |---|---|---|---|---|
 | 1 | Leader | DISCUSSION outputs; required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` |
 | 2 | Leader | Locked task list + per-task assignments | Stamp `staging/plans/{slug}.md` per the [plans template](../memorization/templates/plans.md) — one file per substantive plan topic; on simple workflows a single `plans/main.md` is acceptable | One or more staged plan files |
-| 3 | Leader | All DISCUSSION AskUserQuestion outcomes from transcript | Stamp the Decisions Log section — task slicing decisions, agent type ambiguity resolutions, model overrides, USER CHALLENGE outcomes, self-review acceptances | Populated Decisions Log |
+| 3 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section — task slicing decisions, agent type ambiguity resolutions, model overrides, USER CHALLENGE outcomes, self-review acceptances | Populated Decisions Log |
 | 4 | Leader | Working draft + staged plans | Verify the WORK exit checklist | Completion signal, or gap surfaced to manager |
 
 **Outputs**
@@ -345,13 +345,13 @@ verifies: {runnable command or file-existence check}
 {Explicit deferrals. Items the plan does NOT cover and why — typically because Ideation deferred them to backlog or a future workflow.}
 
 ## Decisions log
-{Summary of user choices made via AskUserQuestion during DISCUSSION — task slicing, agent type, model overrides, USER CHALLENGE outcomes, self-review acceptances.}
+{Summary of user choices made through the active runtime's user-decision primitive during DISCUSSION — task slicing, agent type, model overrides, USER CHALLENGE outcomes, self-review acceptances.}
 ```
 
 **Exit checklist**
 - [ ] Working draft has all 9 required sections populated, no `TODO` / `TBD` / `<...>` placeholders
 - [ ] `staging/plans/{slug}.md` stamped for every substantive plan topic
-- [ ] Decisions Log cites every AskUserQuestion outcome (including USER CHALLENGEs)
+- [ ] Decisions Log cites every user-decision outcome (including USER CHALLENGEs)
 - [ ] No writes to project memory (`features/{feature-name}/...` or top-level project dirs)
 - [ ] No content beyond what was approved in DISCUSSION
 
@@ -375,7 +375,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 - `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md`
 - `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` — every staged plan file
 - The locked Scope Contract (from Ideation artifacts)
-- The discussion log (manager-captured AskUserQuestion exchanges)
+- The discussion log (manager-captured user-decision exchanges)
 
 **Procedure**
 
@@ -384,9 +384,9 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 1 | Manager | WORK outputs; Scope Contract; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
 | 2 | Evaluator | All step-1 inputs | Run the four-stage procedure per `evaluation/SKILL.md` | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` |
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
-| 3b | Manager | Major divergence (if any) | Run AskUserQuestion | (skipped if no major divergence) |
+| 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
-| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first**. After MEMORIZATION, `PASS` exits the loop; `REVISE` re-enters DISCUSSION (iter increments; evaluator findings feed next DISCUSSION); `FAIL` escalates via AskUserQuestion | Workflow-state verdict |
+| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first**. After MEMORIZATION, `PASS` exits the loop; `REVISE` re-enters DISCUSSION (iter increments; evaluator findings feed next DISCUSSION); `FAIL` escalates through the active runtime's user-decision primitive | Workflow-state verdict |
 
 **Outputs**
 - `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
@@ -459,7 +459,7 @@ All writes during the Planning Loop are **session-scoped**. Wrap-up promotes the
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — Claude Code session ID supplied by the delegation prompt's `session-id:` header field (the parent session's id). Do NOT read `$CLAUDE_CODE_SESSION_ID` for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's.
+- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time
 - `{n}` — iter number, supplied by the manager
@@ -472,7 +472,7 @@ All writes during the Planning Loop are **session-scoped**. Wrap-up promotes the
 | `sessions/{date}-{session-id}/3-planning/staging/scenarios/{slug}.md` | assistant (MEMORIZATION) | per `scenario_gap` finding |
 | `sessions/{date}-{session-id}/3-planning/staging/checklists/{slug}.md` | assistant (MEMORIZATION) | per `checklist_gap` finding |
 | `sessions/{date}-{session-id}/3-planning/staging/decisions/{slug}.md` | assistant (MEMORIZATION) | per `design_flaw` / `assumption_risk` / `disputed` / `deferred` finding + Domain-routed `general` findings |
-| `sessions/{date}-{session-id}/3-planning/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | per substantive AskUserQuestion topic |
+| `sessions/{date}-{session-id}/3-planning/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | per substantive user-decision topic |
 | `sessions/{date}-{session-id}/3-planning/staging/backlogs/feature/{slug}.md` | assistant (MEMORIZATION) | per `deferred` finding landing in the feature backlog |
 | `sessions/{date}-{session-id}/3-planning/staging/backlogs/project/{slug}.md` | assistant (MEMORIZATION) | per `deferred` finding landing in the project backlog |
 | `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |

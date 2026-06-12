@@ -1,6 +1,6 @@
 ---
 name: gobbi-hook-authoring
-description: "Load when authoring or reviewing a Claude Code hook in this project. Teaches the bash + jq + flock + strict-mode + env-file discipline extracted from the two in-tree witnesses: session-start.sh (SessionStart env-file passthrough) and post-tool-use-agents.sh (PostToolUse/PostToolUseFailure agents[] upsert)."
+description: "Load when authoring or reviewing Gobbi hooks. Covers bash, jq, flock, strict mode, env files, and agents[] upserts."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 

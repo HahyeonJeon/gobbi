@@ -84,4 +84,4 @@ A value-feature is a durable capability, so its base `status` is coarse — `act
 - **`active`** — the feature is a live gobbi capability (the default for every promoted feature)
 - **`retired`** — the feature is removed or superseded; at Wrap-up the entire feature directory is moved (`git mv`) to `archive/features/{feature-name}/` per the move-on-terminal model (never deleted; the active `features/` shows only live features)
 
-The manager updates `status` via AskUserQuestion when retiring a feature. Per-task / per-session progress is recorded in `changelogs/` and the Recent-activity table, not by flipping the README `status`.
+The manager updates `status` through the active runtime's user-decision primitive when retiring a feature. Per-task / per-session progress is recorded in `changelogs/` and the Recent-activity table, not by flipping the README `status`.

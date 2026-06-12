@@ -27,27 +27,27 @@ Same pattern as Ideation. The leader does not observe the entire user dialogue. 
 manager → opens DISCUSSION with user (state: "advancing from Ideation to Planning")
 manager → spawns leader: "read 1-ideation/outputs/ and produce a draft file map + task list"
 leader → reads ideation outputs + project memory + codebase → returns proposal
-manager → presents leader's proposal → AskUserQuestion → user refines or approves
+manager → presents leader's proposal → active runtime's user-decision primitive → user refines or approves
 manager → spawns leader for next sub-step (dependency graph, agent assignment, etc.)
 ...
 ```
 
-Multiple leader spawns are normal. MEMORIZATION preserves the leader's record as the audit trail for "what research informed each planning decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **leader continuation** (one teammate carried across sub-steps — see [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh)), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage.
+Multiple leader spawns are normal. MEMORIZATION preserves the leader's record as the audit trail for "what research informed each planning decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **Claude Code leader continuation** (one teammate carried across sub-steps — see [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh)), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage. Native Codex uses fresh leader spawns with full Load Directives.
 
 ### Sub-step orchestration
 
-The manager runs the user through four sub-steps in order. Each is gated by AskUserQuestion before advancing.
+The manager runs the user through four sub-steps in order. Each is gated by the active runtime's user-decision primitive before advancing.
 
 | # | Sub-step | Manager's role | Leader's contribution |
 |---|---|---|---|
 | A | Read Ideation Output | Confirm scope is still valid; user signals readiness to advance | Read `1-ideation/outputs/` + accumulated feature scenarios/checklists; enumerate the in-scope checklist items as task seeds |
 | B | File Decomposition + Task Definition | Present proposed file map and task slicing to user; iterate until satisfied | Propose file map (one responsibility per file); slice into medium-granularity tasks; anchor every task to a scenario/checklist item |
 | C | Dependency Graph (When) | Present dependency table + parallel lane grouping to user; user confirms ordering | Build two tables (Task / Lane); flag file-overlap conflicts between parallel lanes |
-| D | Agent Assignment (Who) + Required Skills | Approve agent type and skill list per task via AskUserQuestion | Propose agent type per task (executor default; leader for sub-planning; assistant for trivial); list mandatory skills (`principles` always, plus domain skills per files touched) and project mistakes paths the executor must check |
+| D | Agent Assignment (Who) + Required Skills | Approve agent type and skill list per task through the active runtime's user-decision primitive | Propose agent type per task (executor default; leader for sub-planning; assistant for trivial); list mandatory skills (`principles` always, plus domain skills per files touched) and project mistakes paths the executor must check |
 
 ### When to escalate to user
 
-The leader brings draft proposals; the user makes final calls. Every decision below requires AskUserQuestion:
+The leader brings draft proposals; the user makes final calls. Every decision below requires the active runtime's user-decision primitive:
 
 - Confirmation that ideation's scope is still the right working scope (Sub-step A)
 - File map approval (Sub-step B)
@@ -107,7 +107,7 @@ After `MEMORIZATION`, the manager decides based on the reconciled verdict:
 |---|---|
 | `PASS` | Exit the loop; advance to Execution Loop |
 | `REVISE` | Re-enter `DISCUSSION` with evaluator findings as new input |
-| `FAIL` | Escalate via AskUserQuestion; user decides revise / abort / re-enter Ideation |
+| `FAIL` | Escalate through the active runtime's user-decision primitive; user decides revise / abort / re-enter Ideation |
 | `SKIPPED` | Exit the loop (Planning was skipped per settings — only valid for trivial tasks where the "plan" is a single task) |
 
 Iteration cap: `workflow.planning.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.

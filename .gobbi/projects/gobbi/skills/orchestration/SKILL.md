@@ -8,7 +8,18 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 
 You are the manager of this session. You orchestrate subagents and tasks — directing the work, never doing it yourself.
 
-The manager handles two things directly, and only two: **direct discussion with the user** (every clarification, decision point, and approval flows through AskUserQuestion), and **subagent task assignment and management** (picking the specialist, constructing the delegation prompt, sequencing the work, integrating outputs, and verifying the result).
+The manager handles two things directly, and only two: **direct discussion with the user** (every clarification, decision point, and approval flows through the active runtime's user-decision primitive), and **subagent task assignment and management** (picking the specialist, constructing the delegation prompt, sequencing the work, integrating outputs, and verifying the result).
+
+**Runtime primitive map.**
+
+| Primitive | Claude Code | Codex |
+|---|---|---|
+| User decision | `AskUserQuestion` | parent-thread question, or `request_user_input` when available |
+| Fresh specialist | `Task` / `Agent` | project custom agent from `.codex/agents/{role}.toml` |
+| Persistent teammate | Agent Teams `SendMessage` when enabled | not part of Gobbi's native Codex contract yet; fresh specialist is the default |
+| Role prompt | `.claude/agents/{role}.md` symlink to canonical prompt | `.codex/agents/{role}.toml` wrapper, which points at canonical prompt |
+
+The rest of this skill names `AskUserQuestion`, `Task`, and `Agent` where those are the concrete Claude Code tools. In native Codex, apply the same manager-owned discipline through the Codex column above. Do not fail a native Codex workflow only because a Claude Code tool name is not present.
 
 The manager MUST NOT perform Ideation, Planning, Execution, or Evaluation directly. Each phase has a specialist agent type. The manager assigns and coordinates; the manager never does the phase work itself. When the temptation arises to "just do it quickly," that signals the delegation prompt is unclear — sharpen the delegation prompt, do not bypass the specialist.
 
@@ -34,7 +45,7 @@ The manager MUST NOT perform Ideation, Planning, Execution, or Evaluation direct
 
 ## Agent Teams
 
-Where Agent Teams is enabled, the manager may **continue** the same leader, executor, or assistant as a persistent teammate instead of always spawning fresh. This section is a tight summary; full setup, delegation, and management live in [agent-teams.md](agent-teams.md). The decision rule and the delta-brief live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh); the teammate-aware session-metadata model lives in [§ Teammate-aware metadata](#teammate-aware-metadata-agent-teams).
+Where Claude Code Agent Teams is enabled, the manager may **continue** the same leader, executor, or assistant as a persistent teammate instead of always spawning fresh. Native Codex does not use this continuation surface in Gobbi; it fresh-spawns specialists with full Load Directives. This section is a tight summary; full setup, delegation, and management live in [agent-teams.md](agent-teams.md). The decision rule and the delta-brief live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh); the teammate-aware session-metadata model lives in [§ Teammate-aware metadata](#teammate-aware-metadata-agent-teams).
 
 **Roster split.** The five agent types divide into two classes:
 
@@ -90,10 +101,10 @@ the per-mode docs reference it.
 
 | # | Action | Description | Refs | Agent |
 |---|---|---|---|---|
-| 1 | Create Worktree | <ul><li>Every session creates its own worktree — local git, no `gh` required.</li><li>Invoke `git/SKILL.md` § P2 to create the worktree at branch `{system}-{date}-{ssid-full}`, where `{system}` is `claude` (claude-code runtime) or `codex`, `{date}` is the session-start date `YYYY-MM-DD`, and `{ssid-full}` is the full `$CLAUDE_CODE_SESSION_ID` UUID.</li><li>The branch name follows the session-worktree rule in `git/conventions.md` § Branch Naming (exempt from the type-prefix and 3–50-char slug rules).</li><li>**Idempotency — 3-state guard** (SessionStart fires on `startup\|resume\|clear\|compact`): (1) `worktreePath` is `null` → fresh session; create via P2. (2) `worktreePath` set AND path exists → healthy resume/clear/compact; `cd` in and skip P2. (3) `worktreePath` set AND path missing → orphaned; warn and AskUserQuestion "Worktree at `<path>` is missing — recreate (re-run P2) or abort to investigate?" (recovery: `git/SKILL.md` § P6).</li><li>**Write-root rule:** P2's output is an in-turn worktree path the manager holds in memory; rows 3 and 4 use it as the absolute write root. Row 4 stamps it into `session.json.git.worktreePath`, the durable canonical write-root from that point on (per `git/SKILL.md` § Memory Access Matrix).</li></ul> | [`git/SKILL.md` § P2](../git/SKILL.md#p2----create-worktree), [`git/SKILL.md` § P6](../git/SKILL.md#p6----recover-orphaned-worktree), [`git/conventions.md` § Branch Naming](../git/conventions.md#branch-naming) | manager |
-| 2 | Resolve Settings | <ul><li>Read the per-mode default template `settings.{mode}.json` matching the bootstrap-selected mode (Chat → `settings.chat.json`; Auto → `settings.auto.json`).</li><li>Chat: present the defaults and AskUserQuestion — use as-is or customize. Auto: use defaults without asking.</li><li>If customizing, walk each section via AskUserQuestion — per-step evaluation policy, discussion policy, `skip`, `maxIterations`, and per-agent-type `models`. (`mode` is already fixed by the loaded file.)</li><li>Write the resolved `settings.json` (defaults overlaid with overrides) to the session dir, then read the cascade back to confirm the write took effect.</li></ul> | [settings.chat.json](templates/settings.chat.json) / [settings.auto.json](templates/settings.auto.json) | manager |
+| 1 | Create Worktree | <ul><li>Every session creates its own worktree — local git, no `gh` required.</li><li>Invoke `git/SKILL.md` § P2 to create the worktree at branch `{system}-{date}-{ssid-full}`, where `{system}` is `claude` (Claude Code runtime) or `codex`, `{date}` is the session-start date `YYYY-MM-DD`, and `{ssid-full}` is the full runtime session id resolved by `gobbi/SKILL.md` (`CLAUDE_CODE_SESSION_ID` for Claude Code, `CODEX_THREAD_ID` for Codex).</li><li>The branch name follows the session-worktree rule in `git/conventions.md` § Branch Naming (exempt from the type-prefix and 3–50-char slug rules).</li><li>**Idempotency — 3-state guard** (SessionStart fires on `startup\|resume\|clear\|compact` in Claude Code; Codex resumes through its thread id): (1) `worktreePath` is `null` → fresh session; create via P2. (2) `worktreePath` set AND path exists → healthy resume/clear/compact; `cd` in and skip P2. (3) `worktreePath` set AND path missing → orphaned; warn and ask the user through the active runtime's user-decision primitive: "Worktree at `<path>` is missing — recreate (re-run P2) or abort to investigate?" (recovery: `git/SKILL.md` § P6).</li><li>**Write-root rule:** P2's output is an in-turn worktree path the manager holds in memory; rows 3 and 4 use it as the absolute write root. Row 4 stamps it into `session.json.git.worktreePath`, the durable canonical write-root from that point on (per `git/SKILL.md` § Memory Access Matrix).</li></ul> | [`git/SKILL.md` § P2](../git/SKILL.md#p2----create-worktree), [`git/SKILL.md` § P6](../git/SKILL.md#p6----recover-orphaned-worktree), [`git/conventions.md` § Branch Naming](../git/conventions.md#branch-naming) | manager |
+| 2 | Resolve Settings | <ul><li>Read the per-mode default template `settings.{mode}.json` matching the bootstrap-selected mode (Chat → `settings.chat.json`; Auto → `settings.auto.json`).</li><li>Chat: present the defaults through the active runtime's user-decision primitive — use as-is or customize. Auto: use defaults without asking.</li><li>If customizing, walk each section through the active runtime's user-decision primitive — per-step evaluation policy, discussion policy, `skip`, `maxIterations`, and per-agent-type `models`. (`mode` is already fixed by the loaded file.)</li><li>Write the resolved `settings.json` (defaults overlaid with overrides) to the session dir, then read the cascade back to confirm the write took effect.</li></ul> | [settings.chat.json](templates/settings.chat.json) / [settings.auto.json](templates/settings.auto.json) | manager |
 | 3 | Init state.json | <ul><li>Copy `templates/state.template.json` into `…/sessions/{date}-{session-id}/state.json`, rooted at the row-1 worktree path (in-turn value — `session.json` is not written yet).</li><li>Set `mode` from the resolved settings.</li><li>Mark `workflow.configuration.state = "Done"` and `workflow.ideation.state = "Active"` (Step 1 has just completed).</li></ul> | [state.template.json](templates/state.template.json) | manager |
-| 4 | Init session.json | <ul><li>Copy `templates/session.template.json` into the session dir, rooted at the row-1 worktree path. This row stamps `git.worktreePath`, making it the durable canonical write-root for all later session-memory writes.</li><li>Stamp top-level fields in serialization order: `sessionId`; `previousSessionId` (prior `sessionId` on resume / post-`/clear` / post-`/compact`, else `null`); `project`; `feature` (`null` if not yet clear — stamp later during Ideation); `task`; `system` (`claude-code` or `codex`); `startedAt`; leave `finishedAt` `null`; `transcriptPath` from `$CLAUDE_TRANSCRIPT_PATH` with `$HOME`→`~/` (leave `null` if absent).</li><li>Resolve `git`: stamp `git.repo` + `git.baseBranch` from settings (derive `git.repo` via `gh repo view --json nameWithOwner -q .nameWithOwner` and write back to project settings if `null`); stamp `git.branch` and `git.worktreePath` from the row-1 worktree; stamp `git.issue` if known.</li><li>Fill the `agents[]` manager entry (`type: "manager"`) with `id`, `name`, `model`, `system`, `transcriptPath`, `startedAt`; set `step: "configuration"`, `phase: null`. Specialist entries are appended automatically by the PostToolUse hook ([`post-tool-use-agents.sh`](../../../../.claude/hooks/post-tool-use-agents.sh), matcher `Task\|Agent`); the reconstructor ([`reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh)) reconciles on missed events. The manager seeds only its own entry and never hand-appends specialist entries.</li></ul> | [session.template.json](templates/session.template.json) | manager |
+| 4 | Init session.json | <ul><li>Copy `templates/session.template.json` into the session dir, rooted at the row-1 worktree path. This row stamps `git.worktreePath`, making it the durable canonical write-root for all later session-memory writes.</li><li>Stamp top-level fields in serialization order: `sessionId`; `previousSessionId` (prior `sessionId` on resume / post-`/clear` / post-`/compact`, else `null`); `project`; `feature` (`null` if not yet clear — stamp later during Ideation); `task`; `system` (`claude-code` or `codex`); `startedAt`; leave `finishedAt` `null`; `transcriptPath` from the runtime audit path: Claude Code uses `$CLAUDE_TRANSCRIPT_PATH` with `$HOME`→`~/`; Codex uses the rollout path looked up from `~/.codex/state_5.sqlite` for `$CODEX_THREAD_ID`. Leave `null` if the active runtime has no discoverable audit path.</li><li>Resolve `git`: stamp `git.repo` + `git.baseBranch` from settings (derive `git.repo` via `gh repo view --json nameWithOwner -q .nameWithOwner` and write back to project settings if `null`); stamp `git.branch` and `git.worktreePath` from the row-1 worktree; stamp `git.issue` if known.</li><li>Fill the `agents[]` manager entry (`type: "manager"`) with `id`, `name`, `model`, `system`, `transcriptPath`, `startedAt`; set `step: "configuration"`, `phase: null`. Claude Code specialist entries are seeded by the PostToolUse hook ([`post-tool-use-agents.sh`](../../../../.claude/hooks/post-tool-use-agents.sh), matcher `Task\|Agent`) and reconciled by [`reconstruct-agents.sh`](../../../../.claude/scripts/reconstruct-agents.sh) on missed events. Native Codex sessions do not have full hook-driven metadata parity yet; the manager records the manager frame and leaves specialist token reconciliation to Codex rollout / metadata processing when available.</li></ul> | [session.template.json](templates/session.template.json) | manager |
 
 **No-`gh` resilience.** The worktree and branch are always created with local git. Only PR creation needs `gh` (CLI + auth + remote). If `gh`, auth, or the remote is unavailable, the session still creates the worktree and commits on the branch; the manager defers the PR and surfaces a "PR deferred — push/open when `gh` is available" notice. The session never falls back to working in the main tree. See `git/SKILL.md` § Prerequisites.
 
@@ -101,7 +112,7 @@ the per-mode docs reference it.
 
 ## Workflow Status Display
 
-In both modes, the manager renders a workflow status snapshot so the user can see, at a glance, where the session is. The display is a projection of the session's `state.json` (see [Workflow State Machine § State persistence](#state-persistence) for where it lives and how it is updated). The snapshot is shown before every AskUserQuestion in Chat Mode, at every loop boundary in Auto Mode, and any time the user asks for status.
+In both modes, the manager renders a workflow status snapshot so the user can see, at a glance, where the session is. The display is a projection of the session's `state.json` (see [Workflow State Machine § State persistence](#state-persistence) for where it lives and how it is updated). The snapshot is shown before every user-decision primitive call in Chat Mode, at every loop boundary in Auto Mode, and any time the user asks for status.
 
 **Format.**
 
@@ -141,7 +152,7 @@ In both modes, the manager renders a workflow status snapshot so the user can se
 
 | Mode | Render before |
 |---|---|
-| Chat | Every AskUserQuestion (after `DISCUSSION`, after `EVALUATION`, at `ITER / EXIT`, at session end) |
+| Chat | Every user-decision primitive call (after `DISCUSSION`, after `EVALUATION`, at `ITER / EXIT`, at session end) |
 | Auto | Every loop exit (transition out of `ITER / EXIT`); every user-authority interrupt; whenever the user asks for status |
 
 The display is for the user — it is not state storage. The state machine itself is governed by the [Workflow State Machine](#workflow-state-machine) section; the display is a read-only projection.
@@ -238,7 +249,7 @@ The manager maintains state in a per-session `state.json` file.
 
 | State | Precondition | Owner | Action | Postcondition (artifact) |
 |---|---|---|---|---|
-| `DISCUSSION` | Loop entered with input from the prior step, OR re-entered from `ITER/EXIT` after `REVISE` / `FAIL` | manager | Construct the delegation prompt for the owning specialist; in Chat Mode, confirm with the user; spawn the specialist via the Agent tool (the prompt is captured in the parent transcript's tool_use entry — no separate file) | Specialist spawned; prompt persisted in the parent transcript |
+| `DISCUSSION` | Loop entered with input from the prior step, OR re-entered from `ITER/EXIT` after `REVISE` / `FAIL` | manager | Construct the delegation prompt for the owning specialist; in Chat Mode, confirm with the user; spawn the specialist through the active runtime's subagent primitive (Claude Code captures the prompt in the parent transcript's tool_use entry; Codex custom agents use `.codex/agents/{role}.toml`) | Specialist spawned; prompt persisted in the available runtime audit trail |
 | `WORK` | Specialist spawned in `DISCUSSION` | owning specialist (`leader` / `executor` / `assistant`) | Execute the loop's work per the delegation prompt | Loop's work artifact |
 | `EVALUATION` | Work artifact exists; `workflow.{step}.evaluate.mode != 'skip'` | evaluator subagents (independent of the work owner) | Multi-perspective review per the evaluation policy | Aggregated verdict: `PASS` / `REVISE` / `FAIL` |
 | `MEMORIZATION` | `EVALUATION` complete OR skipped per policy | `assistant` subagent | Write session staging for this iteration; project-memory promotion only in Wrap-up | Memory writes complete |
@@ -304,7 +315,9 @@ session runs.
 
 ### Recording workflow metadata
 
-Token recording is **hook-driven**, not manager-driven. Two hooks write `agents[].tokensUsed` + `usage.*`,
+Token recording is **runtime-specific**. In Claude Code, token recording is hook-driven. In native Codex, use the Codex rollout / metadata path when available and tolerate missing per-agent detail until Gobbi adds full Codex metadata parity.
+
+Claude Code uses two hooks to write `agents[].tokensUsed` + `usage.*`,
 each reading from a complete transcript:
 
 - **PostToolUse hook** ([`post-tool-use-agents.sh`](../../../../.claude/hooks/post-tool-use-agents.sh), matcher
@@ -321,11 +334,13 @@ each reading from a complete transcript:
   transcript `$CLAUDE_TRANSCRIPT_PATH`, `isSidechain == false`), captures codex tokens, and recomputes
   `usage.sessionTotal` + `usage.codex` + `usage.grandTotal` + `usage.computedAt`.
 
-**Authority rule.** SessionEnd is the single authoritative writer of `agents[].tokensUsed` cumulative totals and
+**Authority rule.** In Claude Code, SessionEnd is the single authoritative writer of `agents[].tokensUsed` cumulative totals and
 `usage.*`; PostToolUse seeds each subagent entry best-effort from that agent's own complete transcript; SessionEnd
 runs last and reconciles from the complete transcripts (the correctness guarantee). Not-fired degraded path: if
 SessionEnd does not fire, values are the PostToolUse best-effort (still cumulative-from-own-transcript, not
 final-turn).
+
+**Native Codex degraded path.** Native Codex sessions use `CODEX_THREAD_ID` for identity and the rollout path from `~/.codex/state_5.sqlite` for audit when discoverable. Gobbi hook scripts are Codex-safe, but they do not yet seed Codex custom-agent entries with the same fidelity as Claude Code `Task` / `Agent` hooks. Do not treat missing Claude hook metadata as a native Codex bootstrap failure.
 
 **Field reference.**
 

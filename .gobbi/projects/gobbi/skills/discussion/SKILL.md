@@ -1,14 +1,14 @@
 ---
 name: discussion
-description: MUST load when the manager needs to discuss with the user — every AskUserQuestion call. Covers question-card structure, decision classification (Auto-decide / Always-Ask / User Challenge), anti-sycophancy discipline, and comfort patterns (Smart-skip / Spawned-session muting). Sub-document of the orchestration skill.
+description: MUST load for user decision points. Defines question cards, decision classes, anti-sycophancy, smart-skip, and spawned-session muting.
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 ---
 
 # Discussion
 
-Sub-document of the `orchestration` skill. Loaded by the manager wherever the user must be discussed with — every AskUserQuestion call across every loop. Discussion resolves specification gaps — it turns ambiguous prompts into concrete, delegatable briefs — and surfaces decisions the user has authority over.
+Sub-document of the `orchestration` skill. Loaded by the manager wherever the user must be discussed with — every user-decision primitive call across every loop. Discussion resolves specification gaps — it turns ambiguous prompts into concrete, delegatable briefs — and surfaces decisions the user has authority over.
 
-Subagents do not discuss with the user directly. Only the manager calls AskUserQuestion. Spawned agents that need user input emit `NEEDS_CONTEXT` and route back through the manager.
+Subagents do not discuss with the user directly. Only the manager calls the active runtime's user-decision primitive (`AskUserQuestion` in Claude Code; parent-thread question or `request_user_input` in Codex). Spawned agents that need user input emit `NEEDS_CONTEXT` and route back through the manager.
 
 ---
 
@@ -38,7 +38,7 @@ Every user prompt embeds assumptions — about the cause, the scope, the approac
 
 ## Question Card Structure
 
-Every AskUserQuestion call follows this template. The AskUserQuestion API surface stays the same (`question`, `header`, `options[]`, `description`); the content inside is constructed per the template below.
+Every active-runtime user-decision primitive call follows this template. In Claude Code, the AskUserQuestion API surface stays the same (`question`, `header`, `options[]`, `description`). In Codex, map the same card to the parent-thread question flow or `request_user_input` when available.
 
 ### Question text — two labeled sections
 
@@ -147,7 +147,7 @@ Three categories where the manager MUST ask the user regardless of how confident
 | **Scope changes** | In/out of scope of the Scope Contract, extending the contract to absorb adjacent work, narrowing to defer items mid-workflow, marking items as backlog vs in-this-workflow. | The Scope Contract is user-locked in Ideation. Silent scope drift is the most common workflow failure; making scope changes always-ask makes drift impossible. |
 | **Destructive / irreversible operations** | File deletion (outside an explicit `files:` scope), `git reset --hard`, force-push, package downgrade, schema migration that drops data, modification of shared state outside the worktree, large-scale rename or move. | Reversibility is a quality of safe defaults; destructive operations remove the user's ability to undo. They cannot be auto-decided. |
 
-When a decision touches an Always-Ask category, the manager runs AskUserQuestion with the full question card. The user's answer is binding.
+When a decision touches an Always-Ask category, the manager uses the active runtime's user-decision primitive with the full question card. The user's answer is binding.
 
 ### User Challenge (separate tier — already locked in `planning/SKILL.md`)
 
@@ -157,7 +157,7 @@ USER CHALLENGE is **never auto-decided**. It is the manager's tool for surfacing
 
 ### Class assignment is documented
 
-Every AskUserQuestion call in the session's discussion log records its class — `auto-decide` (decisions made silently for auditability), `ask: design | scope | destructive` (Always-Ask category that triggered), or `user-challenge`. This makes the manager's discipline auditable after the fact.
+Every user-decision primitive call in the session's discussion log records its class — `auto-decide` (decisions made silently for auditability), `ask: design | scope | destructive` (Always-Ask category that triggered), or `user-challenge`. This makes the manager's discipline auditable after the fact.
 
 ---
 
@@ -245,7 +245,7 @@ The smart-skip rule does NOT override Always-Ask categories. If a Design or Scop
 
 ### Spawned-session muting
 
-When a Task-spawned subagent (executor / evaluator / assistant / leader) encounters a question it would normally ask, it does NOT call AskUserQuestion. Instead:
+When a spawned subagent (executor / evaluator / assistant / leader) encounters a question it would normally ask, it does NOT call the runtime user-decision primitive. Instead:
 
 - For genuine ambiguity that blocks completion → emit `NEEDS_CONTEXT` status with the question text in the response body. The manager (root session) decides whether to ask the user.
 - For minor judgment calls where the Recommended option is clear → auto-choose Recommended; in the final response, note "auto-decided X because Y" so the manager and user can see the choice was made.
@@ -266,7 +266,7 @@ After all clarifying questions are answered, restate the now-specific task in on
 
 > **Discussion resolves specification gaps — "what do you want?" when the manager lacks information to act. Contribution points (ideation) resolve judgment gaps — "which decisions are yours to make?" when the user's domain knowledge would produce better outcomes than agent discretion. Different problems, different tools.**
 
-Discussion is reactive — the manager has identified an ambiguity and asks. Contribution points are proactive — the leader identifies a class of decision where the user's input would beat agent discretion, and surfaces it during Ideation. Both run through AskUserQuestion via the manager; they differ in trigger, not in mechanism.
+Discussion is reactive — the manager has identified an ambiguity and asks. Contribution points are proactive — the leader identifies a class of decision where the user's input would beat agent discretion, and surfaces it during Ideation. Both run through the active runtime's user-decision primitive via the manager; they differ in trigger, not in mechanism.
 
 ---
 
@@ -287,7 +287,7 @@ Discussion is reactive — the manager has identified an ambiguity and asks. Con
 
 ## Constraints
 
-- **MUST use AskUserQuestion** for every decision point — never ask decisions in plain prose text.
+- **MUST use the active runtime's user-decision primitive** for every decision point — never ask decisions in plain prose text.
 - **MUST follow the Question Card template** — `Decision:` + `Description:` in the question text; per-option description as `Reason:` + (`Evidence-to-change:` for Recommended only) + `✅ Pros:` + `❌ Cons:`, newline-separated, no blank lines between fields.
 - **MUST put the Recommended option first** with the `(Recommended)` label, including the `Reason:` in the option description.
 - **MUST never combine multiple dimensions** into one question — each question narrows one axis.

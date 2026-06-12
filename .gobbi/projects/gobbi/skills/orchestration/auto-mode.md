@@ -29,7 +29,7 @@ through the loop without pausing the user for decisions in the **Auto-decide** c
 codebase, project memory, rules, mistakes, or a clearly recommended approach; they are logged
 silently for auditability.
 
-**When the manager MUST interrupt.** The manager pauses and calls `AskUserQuestion` when:
+**When the manager MUST interrupt.** The manager pauses and uses the active runtime's user-decision primitive when:
 
 1. A decision falls in an **Always-Ask category** (Design / Scope / Destructive) — see §3.
 2. An eval finding implies a scope change the manager cannot resolve under existing authority.
@@ -130,7 +130,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs executor delegation prompt. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
-| 2 | `EXECUTION` | Spawn a fresh `executor` subagent (default); may continue the same executor teammate per the bounded rule — shared subsystem, under the saturation cap (`delegation/SKILL.md § Continue vs Fresh`). Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | [execution.md](workflow/execution.md) | executor |
+| 2 | `EXECUTION` | Spawn a fresh `executor` subagent by default. In Claude Code only, the manager may continue the same executor teammate per the bounded rule — shared subsystem, under the saturation cap (`delegation/SKILL.md § Continue vs Fresh`). Native Codex uses fresh executor spawns. Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `MEMORIZATION` | Full PASS path. | [memorization.md](workflow/memorization.md) | assistant |
 | 5 | `ITER / EXIT` | Task complete → next task; all tasks complete → advance to Step 6. | — | manager |
@@ -168,7 +168,7 @@ Auto-Mode-specific language so an Auto-mode manager cannot rationalize past the 
 
 > **In Auto Mode, the manager auto-decides everything in the Auto-decide class without pausing.
 > The manager MUST NOT auto-decide anything in the Always-Ask class (Design / Scope /
-> Destructive). For those three categories, `AskUserQuestion` fires exactly as it would in Chat
+> Destructive). For those three categories, the active runtime's user-decision primitive fires exactly as it would in Chat
 > Mode — regardless of any per-step `discuss.mode: agent` setting.**
 
 The `discuss.mode: agent` default in Planning / Execution / Wrap-up (see §4) controls whether
@@ -189,7 +189,7 @@ When the Planning leader's research-backed analysis substantively disagrees with
 Ideation direction, the manager escalates via the USER CHALLENGE primitive in
 [`planning/SKILL.md § Core Principles § USER CHALLENGE`](../planning/SKILL.md). The 5-field card
 (What the user said / What the leader recommends / Why / What we might be missing / If we're
-wrong, the cost is) fires as a `AskUserQuestion` call. USER CHALLENGE is **never auto-decided**.
+wrong, the cost is) fires through the active runtime's user-decision primitive. USER CHALLENGE is **never auto-decided**.
 The user's original direction is the default; the leader's recommendation only wins if the user
 explicitly accepts.
 
@@ -264,7 +264,7 @@ mid-step. This note exists so a future reader does not mistake the mid-session s
 missing interrupt.
 
 **Exception.** If a Planning or Execution abort makes the remaining steps unsound (e.g., Planning
-aborted with no deliverable plan), the manager MUST surface this via `AskUserQuestion` before
+aborted with no deliverable plan), the manager MUST surface this through the active runtime's user-decision primitive before
 proceeding to the next step — proceeding on a broken foundation is a step failure, not a
 recoverable abort.
 
@@ -286,7 +286,7 @@ to skip.** There is no "dual-system / claude-only / skip" choice in Auto Mode. "
 pre-evaluation option; it exists only as the documented post-failure degraded-mode fallback in
 [`workflow/evaluation.md § Degraded-mode policy`](workflow/evaluation.md#degraded-mode-policy-single-system-fallback),
 reached only after a system fails and its one retry fails, and only via that section's own
-stop-the-line AskUserQuestion.
+stop-the-line user-decision primitive.
 
 ### §7.2 — The manager MUST NOT evaluate; it spawns exactly two evaluators.
 

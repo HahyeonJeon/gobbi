@@ -13,7 +13,7 @@ The Execution Loop runs once **per planned task** — the loop body is the four-
 For each task in the loop's task list (`3-planning/outputs/`), the manager:
 1. Identifies the task's scope boundary (which files to touch, which to avoid).
 2. Locates the relevant Step 3 reference (or `novel` marker) from the Ideation insights.
-3. Confirms with the user (AskUserQuestion) any contribution points the task requires.
+3. Confirms with the user through the active runtime's user-decision primitive any contribution points the task requires.
 4. Constructs the executor delegation prompt per [delegation prompt requirements](../delegation/SKILL.md#what-every-delegation-prompt-contains) with:
    - The task description and acceptance criteria
    - Scope boundary (in-scope files, out-of-scope files)
@@ -24,7 +24,7 @@ For each task in the loop's task list (`3-planning/outputs/`), the manager:
 
 ## WORK Phase (delegated to `executor`)
 
-**Manager's job**: spawn a `executor` agent for the task. The **default is a fresh executor per task** — fresh context is what makes scope discipline reliable. **Continuation is the one bounded exception** (see [Executor continuation](#executor-continuation-shared-subsystem-under-cap) below): when the next task shares the current task's subsystem and the chain is under the saturation cap, the manager may continue the same executor teammate instead of re-spawning. Default stays fresh; continuation is opt-in where it is safe and saves re-reading.
+**Manager's job**: spawn a `executor` agent for the task. The **default is a fresh executor per task** — fresh context is what makes scope discipline reliable. **Continuation is a Claude Code Agent Teams exception** (see [Executor continuation](#executor-continuation-shared-subsystem-under-cap) below): when the next task shares the current task's subsystem and the chain is under the saturation cap, the manager may continue the same executor teammate instead of re-spawning. Native Codex uses fresh executor spawns with full Load Directives. Default stays fresh; continuation is opt-in where it is safe and saves re-reading.
 
 Manager-side responsibilities:
 - Ensure the executor commits to the worktree (per `git` skill), not pushes
@@ -34,7 +34,7 @@ Manager-side responsibilities:
 
 ### Executor continuation (shared subsystem, under cap)
 
-The decision rule, the F1 predicate, the delta-brief shape, and the evaluator-FORBIDDEN wall live in [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh); this section states only the Execution-specific choreography. Continuation needs Agent Teams enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, v2.1.32+); it is preferred-where-safe with a fresh-spawn fallback, never a hard dependency.
+The decision rule, the F1 predicate, the delta-brief shape, and the evaluator-FORBIDDEN wall live in [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh); this section states only the Execution-specific choreography. Continuation needs Claude Code Agent Teams enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, v2.1.32+); it is preferred-where-safe with a fresh-spawn fallback, never a hard dependency. Native Codex does not use this continuation path.
 
 The manager **continues the same executor teammate from task NN to NN+1 iff BOTH hold**:
 

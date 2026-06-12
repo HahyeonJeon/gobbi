@@ -42,11 +42,11 @@
       "assistant": "sonnet"
     },
     "codex": {
-      "manager":   "gpt-5.5",
-      "leader":    "gpt-5.5",
-      "executor":  "gpt-5.5",
-      "evaluator": "gpt-5.5",
-      "assistant": "gpt-5"
+      "manager":   null,
+      "leader":    null,
+      "executor":  null,
+      "evaluator": null,
+      "assistant": null
     }
   },
   "git": {
