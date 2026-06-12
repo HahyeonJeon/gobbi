@@ -22,9 +22,9 @@ The agent in the leader role MUST observe these tier boundaries. The only write 
 
 | Memory tier | Path root | Access from leader role |
 |---|---|---|
-| **Session memory — own loop rawdata** | `sessions/{date}-{session-id}/preparation/rawdata/` | **READ + WRITE** — leader drafts, scan outputs, transcripts |
-| **Session memory — own loop staging** | `sessions/{date}-{session-id}/preparation/staging/{scenarios,checklists,decisions,references,design,discussions,skills,backlogs/{feature,project}}/` | **READ + WRITE (WORK only)** — approved gap fixes stage here per the routing table; Wrap-up promotes to project memory |
-| **Session memory — prior loop (Ideation)** | `sessions/{date}-{session-id}/ideation/{artifacts,staging}/` | **READ-ONLY** — required input for readiness scanning; the artifacts are the locked design and Scope Contract |
+| **Session memory — own loop working** | `sessions/{date}-{session-id}/2-preparation/working/` | **READ + WRITE** — leader drafts, scan outputs, transcripts |
+| **Session memory — own loop staging** | `sessions/{date}-{session-id}/2-preparation/staging/{scenarios,checklists,decisions,references,design,discussions,skills,backlogs/{feature,project}}/` | **READ + WRITE (WORK only)** — approved gap fixes stage here per the routing table; Wrap-up promotes to project memory |
+| **Session memory — prior loop (Ideation)** | `sessions/{date}-{session-id}/1-ideation/{outputs,staging}/` | **READ-ONLY** — required input for readiness scanning; the artifacts are the locked design and Scope Contract |
 | **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the leader never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for readiness scanning (existing scenarios / checklists / design / mistakes). Never written; Wrap-up owns feature-memory writes |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for readiness scanning (project skills, mistakes, rules). Never written; Wrap-up owns project-memory writes |
@@ -57,9 +57,9 @@ Preparation only verifies readiness for the **current** Ideation-locked task. Pr
 
 > **Staging, not direct promotion — except for generated skills promoted before Planning.**
 
-All gap fixes that execute during WORK write to session staging at `sessions/{date}-{session-id}/preparation/staging/{type}/{slug}.md`. Wrap-up promotes staging → project memory after the workflow completes.
+All gap fixes that execute during WORK write to session staging at `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md`. Wrap-up promotes staging → project memory after the workflow completes.
 
-**Exception — generated skills:** when a `generate-now` decision produces a project-specific skill, that skill is **promoted to project memory before Planning starts**. This is a narrow, user-approved exception to the sole-writer rule: Planning and Execution must be able to load the generated skill from `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` in-session — if promotion waits until Wrap-up, in-session consumers are left without the skill. Promotion path: on EVALUATION PASS, copy `sessions/{date}-{session-id}/preparation/staging/skills/{slug}/SKILL.md` → `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` (lazy parent dir creation). The manager owns this copy step as part of the Preparation ITER/EXIT → Planning transition. All other staging types remain Wrap-up-only.
+**Exception — generated skills:** when a `generate-now` decision produces a project-specific skill, that skill is **promoted to project memory before Planning starts**. This is a narrow, user-approved exception to the sole-writer rule: Planning and Execution must be able to load the generated skill from `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` in-session — if promotion waits until Wrap-up, in-session consumers are left without the skill. Promotion path: on EVALUATION PASS, copy `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` → `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` (lazy parent dir creation). The manager owns this copy step as part of the Preparation ITER/EXIT → Planning transition. All other staging types remain Wrap-up-only.
 
 **Commit-on-branch (worktree sessions only):** after the copy step, the manager (or proxied executor) runs:
 
@@ -93,8 +93,8 @@ This loop's DISCUSSION phase is manager-direct (the manager uses the active runt
 Verify readiness of project memory and workspace skills against the locked Ideation output, identify every gap that would block Planning / Execution / EVALUATION, and lock a user-approved gap-resolution plan. Each sub-step pushes the readiness picture toward concreteness — by the end of DISCUSSION, every gap has a binding resolution decision recorded.
 
 **Inputs**
-- `sessions/{date}-{session-id}/ideation/artifacts/` (canonical, just produced by Ideation MEMORIZATION)
-- `sessions/{date}-{session-id}/ideation/staging/` (everything Ideation staged for Wrap-up to promote, but not yet promoted)
+- `sessions/{date}-{session-id}/1-ideation/outputs/` (canonical, just produced by Ideation MEMORIZATION)
+- `sessions/{date}-{session-id}/1-ideation/staging/` (everything Ideation staged for Wrap-up to promote, but not yet promoted)
 - Project memory: `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,design,mistakes,plans,references}/`
 - Project memory: `.gobbi/projects/{project-name}/{mistakes,rules,design,skills,notes}/`
 - Workspace skills under the active runtime's skill root (`.claude/skills/` in Claude Code, `.agents/skills/` in Codex), when discoverable
@@ -124,15 +124,15 @@ Run sub-steps A → B → C → D in order. Each sub-step's procedure block is b
 Read the locked Ideation output end-to-end, extract a readiness signal list of what downstream loops will need, and surface any Ideation-output contradictions before scanning memory.
 
 **Inputs**
-- `sessions/{date}-{session-id}/ideation/artifacts/` — every file
-- `sessions/{date}-{session-id}/ideation/staging/` — references, backlogs, scenarios, checklists, decisions, design, discussions
+- `sessions/{date}-{session-id}/1-ideation/outputs/` — every file
+- `sessions/{date}-{session-id}/1-ideation/staging/` — references, backlogs, scenarios, checklists, decisions, design, discussions
 - Existing feature directory at `.gobbi/projects/{project-name}/features/{feature-name}/` (the feature named in the Scope Contract)
 
 **Procedure**
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
-| 1 | Leader | Ideation artifacts | Read every file in `ideation/artifacts/` (framed problem, scope contract, design decisions, scenarios, checklist, decisions log, memory-reads register) | Loaded Ideation context |
+| 1 | Leader | Ideation artifacts | Read every file in `1-ideation/outputs/` (framed problem, scope contract, design decisions, scenarios, checklist, decisions log, memory-reads register) | Loaded Ideation context |
 | 2 | Leader | Loaded context + Scope Contract | Confirm the feature directory referenced in the Scope Contract exists (or is plausibly bootstrappable by Wrap-up) | Feature directory status |
 | 3 | Leader | Loaded context | Extract the **readiness signal list**: (a) files / subsystems the design will touch → execution skills needed; (b) scenarios / checklist items expected at feature memory → memory completeness; (c) decisions / conventions referenced but not yet recorded → memory completeness | Readiness signal list |
 | 4 | Leader | Readiness signal list + Ideation context | Identify any Ideation-output contradictions that block Preparation (e.g., the design references an undefined component, the Scope Contract names a feature directory that cannot be created) | Contradiction findings (zero or more) |
@@ -153,7 +153,7 @@ Verify that every artifact the downstream loops will read is staged or already i
 
 **Inputs**
 - Readiness signal list (Sub-step A output)
-- `sessions/{date}-{session-id}/ideation/staging/` — everything Ideation staged
+- `sessions/{date}-{session-id}/1-ideation/staging/` — everything Ideation staged
 - Feature memory at `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,design,mistakes}/`
 - Project memory at `.gobbi/projects/{project-name}/{mistakes,rules,design}/`
 
@@ -161,10 +161,10 @@ Verify that every artifact the downstream loops will read is staged or already i
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
-| 1 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/ideation/staging/design/` contains a design file per substantive design topic from the Ideation Sub-step D output | Design-staging gap list |
-| 2 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/ideation/staging/scenarios/` has every `scenario_gap` finding's scenario from Ideation EVALUATION | Scenario-staging gap list |
-| 3 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/ideation/staging/checklists/` has every implementation checklist item, anchored to its scenario | Checklist-staging gap list |
-| 4 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/ideation/staging/decisions/` has records for every substantive choice in the discussion log + every `design_flaw` / `assumption_risk` finding | Decisions-staging gap list |
+| 1 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/1-ideation/staging/design/` contains a design file per substantive design topic from the Ideation Sub-step D output | Design-staging gap list |
+| 2 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/1-ideation/staging/scenarios/` has every `scenario_gap` finding's scenario from Ideation EVALUATION | Scenario-staging gap list |
+| 3 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/1-ideation/staging/checklists/` has every implementation checklist item, anchored to its scenario | Checklist-staging gap list |
+| 4 | Leader | Readiness signal list | Verify `sessions/{date}-{session-id}/1-ideation/staging/decisions/` has records for every substantive choice in the discussion log + every `design_flaw` / `assumption_risk` finding | Decisions-staging gap list |
 | 5 | Leader | Readiness signal list | Verify accessible feature mistakes at `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` and project mistakes at `.gobbi/projects/{project-name}/mistakes/` cover the domains the design will touch | Mistakes-readiness gap list |
 | 6 | Leader | Aggregated gap lists from steps 1–5 | For each gap: record name + severity (would this gap block Planning / Execution / EVALUATION?) + proposed resolution (`generate-now` if MEMORIZATION skipped a write; `re-ideate` if a design choice is missing; `skip` if not in scope) | Design + memory gap list |
 | 7a | Leader | Gap list | Surface to the manager | Findings package |
@@ -230,36 +230,36 @@ Consolidate every gap from Sub-steps B and C into a single user-approved table, 
 ## WORK Phase
 
 **Purpose**
-Persist the DISCUSSION outputs into a session draft and execute every `generate-now` decision as a staging write. Staging writes target `sessions/{date}-{session-id}/preparation/staging/{type}/{slug}.md`; Wrap-up promotes staging → project memory after the workflow completes. WORK does NOT write directly to project memory.
+Persist the DISCUSSION outputs into a session draft and execute every `generate-now` decision as a staging write. Staging writes target `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md`; Wrap-up promotes staging → project memory after the workflow completes. WORK does NOT write directly to project memory.
 
 **Inputs**
 - DISCUSSION outputs (approved gap-resolution plan + readiness signal list, all captured in the parent transcript)
-- Existing session directory tree at `sessions/{date}-{session-id}/preparation/{rawdata,staging,evaluation}/` (bootstrapped by the manager)
+- Existing session directory tree at `sessions/{date}-{session-id}/2-preparation/{working,staging,evaluation}/` (bootstrapped by the manager)
 - Stamping templates: [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) (for `generate-now` on skills), [`memorization/templates/`](../memorization/templates/) (for scenarios / checklists / decisions / etc.)
 
 **Procedure**
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
-| 1 | Leader | DISCUSSION outputs; required-sections template | Write the rawdata draft using the required-sections template | `sessions/{date}-{session-id}/preparation/rawdata/draft-iter{n}.md` |
-| 2 | Leader | `generate-now` decisions where the gap is a missing project-specific skill | For each: stamp the full [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) at `sessions/{date}-{session-id}/preparation/staging/skills/{slug}/SKILL.md`. Wrap-up promotes to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | One staged skill directory per approved generation |
-| 3 | Leader | `generate-now` decisions where the gap is a missed memory promotion (scenario / checklist / decision / etc.) | For each: stamp the matching template from [`memorization/templates/`](../memorization/templates/) at `sessions/{date}-{session-id}/preparation/staging/{type}/{slug}.md` | One staged file per missed promotion |
+| 1 | Leader | DISCUSSION outputs; required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` |
+| 2 | Leader | `generate-now` decisions where the gap is a missing project-specific skill | For each: stamp the full [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) at `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md`. Wrap-up promotes to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | One staged skill directory per approved generation |
+| 3 | Leader | `generate-now` decisions where the gap is a missed memory promotion (scenario / checklist / decision / etc.) | For each: stamp the matching template from [`memorization/templates/`](../memorization/templates/) at `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md` | One staged file per missed promotion |
 | 4 | Leader | `defer` decisions | Record in the draft's "Out of scope gaps" section with severity + pointer; no staging write | Deferred list captured |
 | 5 | Leader | `skip` decisions | Record in the draft's "Decisions log" section with the user's stated reason; no staging write | Skipped list captured |
 | 6 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section — summarize per-gap resolutions, contradictions discussed, advance confirmation | Populated Decisions Log |
-| 7 | Leader | Rawdata draft + staged artifacts | Verify the WORK exit checklist | Completion signal, or gap surfaced to manager |
+| 7 | Leader | Working draft + staged artifacts | Verify the WORK exit checklist | Completion signal, or gap surfaced to manager |
 
 **Outputs**
 
-- `sessions/{date}-{session-id}/preparation/rawdata/draft-iter{n}.md` — canonical rawdata draft, stamped to the required-sections template below
-- `sessions/{date}-{session-id}/preparation/staging/skills/{slug}/SKILL.md` — staged; zero or more (per `generate-now` skill decisions). Wrap-up promotes to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md`
-- `sessions/{date}-{session-id}/preparation/staging/{scenarios,checklists,decisions,design,references}/{slug}.md` — staged; zero or more (per `generate-now` memory-promotion decisions). Wrap-up promotes to `features/{feature-name}/...` or project-tier directories per the routing table
+- `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` — canonical working draft, stamped to the required-sections template below
+- `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` — staged; zero or more (per `generate-now` skill decisions). Wrap-up promotes to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md`
+- `sessions/{date}-{session-id}/2-preparation/staging/{scenarios,checklists,decisions,design,references}/{slug}.md` — staged; zero or more (per `generate-now` memory-promotion decisions). Wrap-up promotes to `features/{feature-name}/...` or project-tier directories per the routing table
 
-Required-sections template for the rawdata draft:
+Required-sections template for the working draft:
 
 ```markdown
 ## Scope reference
-{Link to `ideation/artifacts/` and the locked Scope Contract section.}
+{Link to `1-ideation/outputs/` and the locked Scope Contract section.}
 
 ## Readiness summary
 {One-paragraph status: how many gaps found, how many resolved this loop, how many deferred, how many skipped.}
@@ -281,7 +281,7 @@ Required-sections template for the rawdata draft:
 ```
 
 **Exit checklist**
-- [ ] Rawdata draft has all 7 required sections populated, no `TODO` / `TBD` / `<...>` placeholders
+- [ ] Working draft has all 7 required sections populated, no `TODO` / `TBD` / `<...>` placeholders
 - [ ] Every `generate-now` decision has a corresponding staging artifact (or a skip reason logged with explicit rationale)
 - [ ] Every `defer` decision is recorded in "Out of scope gaps"
 - [ ] Every `skip` decision is recorded in "Decisions log" with the user's stated reason
@@ -305,9 +305,9 @@ Find the readiness gaps WORK missed. Two independent systems (Claude Code + Code
 See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
 
 **Inputs** (consumed from the WORK phase output)
-- `sessions/{date}-{session-id}/preparation/rawdata/draft-iter{n}.md`
-- `sessions/{date}-{session-id}/preparation/staging/skills/{slug}/SKILL.md` — every staged skill from WORK
-- `sessions/{date}-{session-id}/preparation/staging/{scenarios,checklists,decisions,design,references}/{slug}.md` — every staged memory-promotion fix
+- `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md`
+- `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` — every staged skill from WORK
+- `sessions/{date}-{session-id}/2-preparation/staging/{scenarios,checklists,decisions,design,references}/{slug}.md` — every staged memory-promotion fix
 - The locked gap-resolution plan from DISCUSSION (for scope-creep checks)
 - The discussion log (manager-captured user-decision exchanges, for decisions traceability)
 
@@ -323,7 +323,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first** so each iteration preserves a transcript + iter entry in `session.json` regardless of outcome. After MEMORIZATION, `PASS` exits the loop; `REVISE` re-enters DISCUSSION (iter increments; evaluator findings feed next DISCUSSION); `FAIL` escalates through the active runtime's user-decision primitive | Workflow-state verdict |
 
 **Outputs**
-- `sessions/{date}-{session-id}/preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
+- `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
 - Aggregated verdict recorded in workflow state (cross-system divergence is derived at MEMORIZATION by comparing the per-system files; no separate divergence file is written)
 
 **Preparation-specific evaluation emphasis** (the phase child doc directs)
@@ -340,44 +340,44 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 ## MEMORIZATION Phase
 
 **Purpose**
-Persist every iteration's evidence into session memory and — on the final `PASS` iteration — emit the loop's `artifacts/` files and stage typed-finding artifacts. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Project memory is **not** written here; Wrap-up handles session → project promotion.
+Persist every iteration's evidence into session memory and — on the final `PASS` iteration — emit the loop's `outputs/` files and stage typed-finding artifacts. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Project memory is **not** written here; Wrap-up handles session → project promotion.
 
 See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md) covers the manager's spawn / collect orchestration.
 
 **Inputs**
-- `sessions/{date}-{session-id}/preparation/rawdata/draft-iter{n}.md` — current iteration's WORK output
-- `sessions/{date}-{session-id}/preparation/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
+- `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` — current iteration's WORK output
+- `sessions/{date}-{session-id}/2-preparation/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
 - `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
-- `sessions/{date}-{session-id}/preparation/rawdata/discussion-log.md`
+- `sessions/{date}-{session-id}/2-preparation/working/discussion-log.md`
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
-- WORK-staged artifacts under `sessions/{date}-{session-id}/preparation/staging/` (already in place — MEMORIZATION supplements, never replaces)
+- WORK-staged artifacts under `sessions/{date}-{session-id}/2-preparation/staging/` (already in place — MEMORIZATION supplements, never replaces)
 
 **Procedure** — see [memorization/SKILL.md § MEMORIZATION Phase](../memorization/SKILL.md#memorization-phase) for the canonical step-by-step. Preparation-specific notes:
 
-- On PASS, the artifact in `sessions/{date}-{session-id}/preparation/artifacts/` should include at least one file with `artifact_type: handoff` summarizing readiness status (gaps closed, gaps deferred, skills generated, RE-IDEATE escalations if any).
+- On PASS, the artifact in `sessions/{date}-{session-id}/2-preparation/outputs/` should include at least one file with `artifact_type: handoff` summarizing readiness status (gaps closed, gaps deferred, skills generated, RE-IDEATE escalations if any).
 - The `memory-reads` artifact enumerates every prior-iter evaluation file consumed (Step 6 of the memorization procedure).
 - WORK-staged `skills/`, `scenarios/`, `checklists/`, `decisions/`, etc. are NOT re-staged by MEMORIZATION — they already exist from WORK. MEMORIZATION supplements with evaluator-finding-driven staging (e.g., a `scenario_gap` from Stage 1 evaluation gets a new staging file under `staging/scenarios/`).
 
 **Outputs**
 
 Every iteration produces:
-- `sessions/{date}-{session-id}/preparation/rawdata/transcript-iter{n}.jsonl` — preserved transcript
+- `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` — preserved transcript
 - `sessions/{date}-{session-id}/session.json` — upserted `workflow.preparation.iterations[]` entry
 
 Only the `PASS` iteration also produces:
-- `sessions/{date}-{session-id}/preparation/artifacts/` — canonical artifact files (handoff + memory-reads, plus loop-specific decompositions)
-- `sessions/{date}-{session-id}/preparation/staging/` — cumulative evaluator-finding stagings on top of the WORK-staged gap fixes
+- `sessions/{date}-{session-id}/2-preparation/outputs/` — canonical artifact files (handoff + memory-reads, plus loop-specific decompositions)
+- `sessions/{date}-{session-id}/2-preparation/staging/` — cumulative evaluator-finding stagings on top of the WORK-staged gap fixes
 - `sessions/{date}-{session-id}/session.json` — `workflow.preparation.finishedAt` and `verdict: PASS` set
 
 **Exit checklist**
 
 Every iteration:
-- [ ] Transcript jsonl preserved at `rawdata/transcript-iter{n}.jsonl`
+- [ ] Each agent transcript copied to session-root `transcripts/{role}-{agentId}.jsonl`
 - [ ] `session.json.workflow.preparation.iterations[]` includes this iter's `{iter, verdict, finishedAt, evaluation_dir: "evaluation/iter{n}/"}`
 - [ ] No writes to feature memory or project memory
 
 `PASS` iteration additionally:
-- [ ] `artifacts/` directory contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema)
+- [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema)
 - [ ] At least one artifact has `artifact_type: handoff`
 - [ ] At least one artifact has `artifact_type: memory-reads`
 - [ ] Every evaluator finding across iters `1..n` staged to the correct `staging/` destination per Type + Domain routing
@@ -399,22 +399,22 @@ All writes during the Preparation Loop are **session-scoped**. Wrap-up promotes 
 
 | Path | Written by | Written |
 |---|---|---|
-| `sessions/{date}-{session-id}/preparation/rawdata/draft-iter{n}.md` | leader (WORK) | every iteration |
-| `sessions/{date}-{session-id}/preparation/staging/skills/{slug}/SKILL.md` | leader (WORK) | per `generate-now` skill decision |
-| `sessions/{date}-{session-id}/preparation/staging/scenarios/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | leader: per `generate-now` missed-promotion / assistant: per `scenario_gap` finding |
-| `sessions/{date}-{session-id}/preparation/staging/checklists/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | leader: per `generate-now` missed-promotion / assistant: per `checklist_gap` finding |
-| `sessions/{date}-{session-id}/preparation/staging/decisions/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | leader: per `generate-now` missed-promotion / assistant: per `design_flaw` / `assumption_risk` / `disputed` / `deferred` finding |
-| `sessions/{date}-{session-id}/preparation/staging/design/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | per substantive design topic carried into Preparation |
-| `sessions/{date}-{session-id}/preparation/staging/references/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | per external reference (e.g., dependency citation from a finding) |
-| `sessions/{date}-{session-id}/preparation/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | per substantive user-decision topic |
-| `sessions/{date}-{session-id}/preparation/staging/backlogs/feature/{slug}.md` | assistant (MEMORIZATION) | per `deferred` decision that lands in the feature backlog |
-| `sessions/{date}-{session-id}/preparation/staging/backlogs/project/{slug}.md` | assistant (MEMORIZATION) | per `deferred` decision that lands in the project backlog |
-| `sessions/{date}-{session-id}/preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
-| `sessions/{date}-{session-id}/preparation/rawdata/transcript-iter{n}.jsonl` | assistant (MEMORIZATION) | per iter — preserved transcript window |
-| `sessions/{date}-{session-id}/preparation/artifacts/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema) |
+| `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` | leader (WORK) | every iteration |
+| `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` | leader (WORK) | per `generate-now` skill decision |
+| `sessions/{date}-{session-id}/2-preparation/staging/scenarios/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | leader: per `generate-now` missed-promotion / assistant: per `scenario_gap` finding |
+| `sessions/{date}-{session-id}/2-preparation/staging/checklists/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | leader: per `generate-now` missed-promotion / assistant: per `checklist_gap` finding |
+| `sessions/{date}-{session-id}/2-preparation/staging/decisions/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | leader: per `generate-now` missed-promotion / assistant: per `design_flaw` / `assumption_risk` / `disputed` / `deferred` finding |
+| `sessions/{date}-{session-id}/2-preparation/staging/design/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | per substantive design topic carried into Preparation |
+| `sessions/{date}-{session-id}/2-preparation/staging/references/{slug}.md` | leader (WORK) or assistant (MEMORIZATION) | per external reference (e.g., dependency citation from a finding) |
+| `sessions/{date}-{session-id}/2-preparation/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | per substantive user-decision topic |
+| `sessions/{date}-{session-id}/2-preparation/staging/backlogs/feature/{slug}.md` | assistant (MEMORIZATION) | per `deferred` decision that lands in the feature backlog |
+| `sessions/{date}-{session-id}/2-preparation/staging/backlogs/project/{slug}.md` | assistant (MEMORIZATION) | per `deferred` decision that lands in the project backlog |
+| `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
+| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (MEMORIZATION) | per iter — preserved transcript window |
+| `sessions/{date}-{session-id}/2-preparation/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema) |
 | `sessions/{date}-{session-id}/session.json` | assistant (MEMORIZATION) | loop completion timestamps, iter, verdict |
 
-The session directory tree at `sessions/{date}-{session-id}/preparation/{rawdata,staging,evaluation}/` is bootstrapped by the manager at Preparation Loop entry. WORK and MEMORIZATION assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Preparation; Wrap-up creates them as needed during project-memory promotion.
+The session directory tree at `sessions/{date}-{session-id}/2-preparation/{working,staging,evaluation}/` is bootstrapped by the manager at Preparation Loop entry. WORK and MEMORIZATION assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Preparation; Wrap-up creates them as needed during project-memory promotion.
 
 ---
 
@@ -423,10 +423,10 @@ The session directory tree at `sessions/{date}-{session-id}/preparation/{rawdata
 - **MUST never close a gap without explicit user approval** — the leader proposes, the user decides through the active runtime's user-decision primitive.
 - **MUST stamp full templates** when generating a project-specific skill — never leave skeleton files. Use [`interview/templates/project-skill.md`](../interview/templates/project-skill.md).
 - **MUST never silently ignore a missing item** — every gap goes to the Sub-step D consolidated table for user review.
-- **MUST never expand scope** to address project-wide gaps unrelated to this task — note them as out-of-scope in the rawdata draft.
+- **MUST never expand scope** to address project-wide gaps unrelated to this task — note them as out-of-scope in the working draft.
 - **MUST re-enter Ideation** if any gap reveals an unworkable design (a missing decision, not a missing artifact) — record the trigger, halt Preparation, signal the manager.
 - **MUST record the user's gap-resolution decision per gap** in the Decisions Log.
-- **MUST never write to project memory or feature memory during the Preparation Loop** — all `generate-now` fixes stage at `sessions/{date}-{session-id}/preparation/staging/{type}/{slug}.md`. Wrap-up promotes.
+- **MUST never write to project memory or feature memory during the Preparation Loop** — all `generate-now` fixes stage at `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md`. Wrap-up promotes.
 - **MUST never delete** — supersession via frontmatter (`status: superseded`, `superseded_by:`); physical deletion of any file in any tier is forbidden. Terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json` from the leader role** — the manager owns it.
 - **MUST disagree when you disagree** — surface technical conflicts with evidence; recommend `re-ideate` when the Ideation output is unworkable.

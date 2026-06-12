@@ -55,7 +55,7 @@ the primary brief is always inline above).>>
 
 1. Run the Study → Plan → Execute → Verify → Memorize lifecycle from `leader.md`.
 2. <<role-specific job items the manager wants you to perform>>
-3. Write your artifact(s) to <<artifact path(s) — e.g., `sessions/.../{loop}/rawdata/draft-iter{n}.md` + any staging paths the phase skill specifies>>.
+3. Write your artifact(s) to <<artifact path(s) — e.g., `sessions/.../{N}-{loop}/working/draft-iter{n}.md` + any staging paths the phase skill specifies>>.
 4. Cite every codebase claim with a file path. Cite every external claim with a URL.
 
 ## Reference Materials (additional reading — NOT primary spec)

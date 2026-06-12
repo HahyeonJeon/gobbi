@@ -20,7 +20,7 @@ The agent MUST observe these tier boundaries. For working-loop agents, the only 
 |---|---|---|
 | **Project mistakes — project-level** | `.gobbi/projects/{project-name}/mistakes/` | **READ-ONLY** — load at the start of any work; never written by working-loop agents (Wrap-up assistant is the sole exception) |
 | **Feature mistakes** | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` | **READ-ONLY** — load when the task is feature-scoped; never written by working-loop agents (Wrap-up assistant is the sole exception) |
-| **Session staging** | `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` with frontmatter `mistake-candidate: true` | **WRITE (PASS only, during MEMORIZATION)** — the only surface agents write to; Wrap-up promotes to project or feature `mistakes/` based on scope confirmed with user |
+| **Session staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` with frontmatter `mistake-candidate: true` | **WRITE (PASS only, during MEMORIZATION)** — the only surface agents write to; Wrap-up promotes to project or feature `mistakes/` based on scope confirmed with user |
 
 **Delete semantics**: agents NEVER delete mistake files in any tier. When a mistake is superseded, the new file carries `supersedes: <old-path>` frontmatter; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-path>` added. Physical deletion is forbidden. **Active mistakes never move** — the trap stays live in `mistakes/` where agents load it and where `required-mistakes:` paths point. Only a **superseded** mistake is moved (`git mv`) by Wrap-up to `archive/mistakes/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model in [`memorization/templates/archive.md`](../memorization/templates/archive.md).
 
@@ -83,7 +83,7 @@ When a correction occurs:
 
 During MEMORIZATION on PASS:
 
-1. For each correction noted during P2, write a staging file at `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md`.
+1. For each correction noted during P2, write a staging file at `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md`.
 2. Stamp the file with the `decisions.md` template from `memorization/templates/decisions.md`.
 3. Set frontmatter `mistake-candidate: true`.
 4. Body must contain all four elements: what went wrong / why / how to recognize / corrected approach.
@@ -116,7 +116,7 @@ Staging-phase writes during MEMORIZATION follow the routing defined in `evaluati
 
 | Path | Written by | Written |
 |---|---|---|
-| `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true`) | assistant (MEMORIZATION) | PASS only — one file per mistake-candidate, stamped with `decisions.md` template |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true`) | assistant (MEMORIZATION) | PASS only — one file per mistake-candidate, stamped with `decisions.md` template |
 
 Wrap-up reads these staging files and promotes to the destination based on user-confirmed scope:
 
@@ -128,8 +128,9 @@ Wrap-up reads these staging files and promotes to the destination based on user-
 **Path conventions**
 
 - `{date}` — session start date in `YYYY-MM-DD`
-- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
-- `{loop}` — the loop during which the mistake was staged (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
+- `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.
+- `{loop}` — the loop during which the mistake was staged (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md))
+- `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=preparation, `3`=planning, `4`=execution, `5`=wrap-up); the on-disk loop-dir prefix
 - `{slug}` — kebab-case derived from the mistake's primary symptom (≤ 60 characters)
 - `{project-name}` — project slug from `session.json.project`
 - `{feature-name}` — feature slug from `session.json.feature`

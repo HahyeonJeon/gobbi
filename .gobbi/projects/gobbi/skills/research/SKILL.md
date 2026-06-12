@@ -18,8 +18,8 @@ The agent in the leader role (or any role that loads this skill) MUST observe th
 
 | Memory tier | Path root | Access from research |
 |---|---|---|
-| **Session memory — calling loop's rawdata** | `sessions/{date}-{session-id}/{loop}/rawdata/` | **READ + WRITE** — internal insights integrated into `rawdata/draft-iter{n}.md`; per-external-reference files written to `rawdata/research/{slug}.md` |
-| **Session memory — calling loop's staging** | `sessions/{date}-{session-id}/{loop}/staging/` | **READ-ONLY during WORK** — the assistant (MEMORIZATION) promotes rawdata/research/ to `staging/references/` on PASS; the leader does not write to staging directly |
+| **Session memory — calling loop's working** | `sessions/{date}-{session-id}/{N}-{loop}/working/` | **READ + WRITE** — internal insights integrated into `working/draft-iter{n}.md`; per-external-reference files written to `working/research/{slug}.md` |
+| **Session memory — calling loop's staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/` | **READ-ONLY during WORK** — the assistant (MEMORIZATION) promotes working/research/ to `staging/references/` on PASS; the leader does not write to staging directly |
 | **Workspace codebase** | The repository under analysis | **READ-ONLY** — internal research reads files, types, tests, git history; never modifies code |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — mistakes, decisions, design, scenarios, checklists provide internal context |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for project-wide internal context. Never written; Wrap-up owns project-memory writes |
@@ -27,8 +27,8 @@ The agent in the leader role (or any role that loads this skill) MUST observe th
 | **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — research never reads or writes session.json; the manager owns it |
 
 **Write surface in practice (two-step model)**:
-1. **During WORK** — the leader integrates internal insights into `rawdata/draft-iter{n}.md` (under a `Research Insights` section) and writes each confirmed external insight as a separate file at `rawdata/research/{slug}.md` using the Insight format below. The leader does NOT write to `staging/references/` during WORK.
-2. **On PASS** — the assistant (MEMORIZATION phase) reads `rawdata/research/*.md`, extracts confirmed external insights, and stages them at `sessions/{date}-{session-id}/{loop}/staging/references/{slug}.md` per the calling loop's procedure. This keeps **research's external-reference staging** (`staging/references/`) as an assistant-owned, PASS-only surface. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — see `ideation/SKILL.md`, `preparation/SKILL.md`, `planning/SKILL.md`, `execution/SKILL.md` Memory Access Matrix sections.
+1. **During WORK** — the leader integrates internal insights into `working/draft-iter{n}.md` (under a `Research Insights` section) and writes each confirmed external insight as a separate file at `working/research/{slug}.md` using the Insight format below. The leader does NOT write to `staging/references/` during WORK.
+2. **On PASS** — the assistant (MEMORIZATION phase) reads `working/research/*.md`, extracts confirmed external insights, and stages them at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` per the calling loop's procedure. This keeps **research's external-reference staging** (`staging/references/`) as an assistant-owned, PASS-only surface. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — see `ideation/SKILL.md`, `preparation/SKILL.md`, `planning/SKILL.md`, `execution/SKILL.md` Memory Access Matrix sections.
 
 Research does not own its own session subdirectory — it lives inside the loop that invoked it.
 
@@ -142,17 +142,18 @@ Research does not own its own session subdirectory — it writes into the callin
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
-- `{loop}` — the calling loop's name (`ideation` / `preparation` / `planning`)
+- `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.
+- `{loop}` — the calling loop's name (`ideation` / `preparation` / `planning`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` / `2-preparation` / `3-planning`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md))
+- `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=preparation, `3`=planning); the on-disk loop-dir prefix
 - `{slug}` — slug for a specific reference artifact, set by the writer at stage time
 
 | Path | Written by | Written |
 |---|---|---|
-| `sessions/{date}-{session-id}/{loop}/rawdata/draft-iter{n}.md` (Research Insights section) | leader (calling loop's WORK) | Internal + external insights integrated into the loop's rawdata draft |
-| `sessions/{date}-{session-id}/{loop}/rawdata/research/{slug}.md` | leader (calling loop's WORK) | One file per confirmed external insight — raw capture in Insight format, pre-staging. Written during WORK. |
-| `sessions/{date}-{session-id}/{loop}/staging/references/{slug}.md` | assistant (MEMORIZATION, PASS only) | Promoted from `rawdata/research/{slug}.md` by MEMORIZATION on PASS; Wrap-up promotes to `features/{feature-name}/references/` |
+| `sessions/{date}-{session-id}/{N}-{loop}/working/draft-iter{n}.md` (Research Insights section) | leader (calling loop's WORK) | Internal + external insights integrated into the loop's working draft |
+| `sessions/{date}-{session-id}/{N}-{loop}/working/research/{slug}.md` | leader (calling loop's WORK) | One file per confirmed external insight — raw capture in Insight format, pre-staging. Written during WORK. |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` | assistant (MEMORIZATION, PASS only) | Promoted from `working/research/{slug}.md` by MEMORIZATION on PASS; Wrap-up promotes to `features/{feature-name}/references/` |
 
-Internal insights do not stage as separate reference files — they live inline in the rawdata draft's Decisions Log and design rationale. Only confirmed external insights with citable URLs produce rawdata/research/ files that MEMORIZATION later stages.
+Internal insights do not stage as separate reference files — they live inline in the working draft's Decisions Log and design rationale. Only confirmed external insights with citable URLs produce working/research/ files that MEMORIZATION later stages.
 
 ---
 
@@ -164,6 +165,6 @@ Internal insights do not stage as separate reference files — they live inline 
 - **MUST never stockpile out-of-scope findings** — drop them or log a backlog hint.
 - **MUST read the relevant codebase** before extracting external insights — internal context shapes which external patterns apply.
 - **MUST cite the specific source** — file path + line numbers, URL + section anchor, git ref + commit hash — not the project / repo at large.
-- **MUST write every confirmed external insight to `rawdata/research/{slug}.md`** during WORK — the leader does not stage to `staging/references/` directly. MEMORIZATION (PASS only) promotes rawdata/research/ to staging. Silent drops of citable externals are forbidden.
-- **MUST never write to `staging/references/` during WORK** — research's external-reference staging is an assistant-owned, PASS-only surface. The leader writes external insights to `rawdata/research/{slug}.md` only; MEMORIZATION promotes to `staging/references/` on PASS. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — this constraint applies only to research's reference surface, not to staging at large.
+- **MUST write every confirmed external insight to `working/research/{slug}.md`** during WORK — the leader does not stage to `staging/references/` directly. MEMORIZATION (PASS only) promotes working/research/ to staging. Silent drops of citable externals are forbidden.
+- **MUST never write to `staging/references/` during WORK** — research's external-reference staging is an assistant-owned, PASS-only surface. The leader writes external insights to `working/research/{slug}.md` only; MEMORIZATION promotes to `staging/references/` on PASS. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — this constraint applies only to research's reference surface, not to staging at large.
 - **MUST never write to project memory or feature memory** — Wrap-up owns those writes; research lives in session memory only.

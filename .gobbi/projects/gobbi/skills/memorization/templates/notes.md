@@ -6,7 +6,7 @@
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{loop}/staging/notes/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
+1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/notes/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
 2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
 
 For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
@@ -86,7 +86,7 @@ shipped: [{slugs of artifacts that landed in project memory this session}]
 - **`notes/` vs `learnings/`**: a learning is the *takeaway* extracted from one or many sessions ("do this in future"). A note is the *raw experience* of one session. Many notes might produce one learning.
 - **`notes/` vs `discussions/`**: a discussion is one user-decision topic with the user's answer. A note is the session-level narrative that may *reference* multiple discussions.
 - **`notes/` vs `design/`**: design is the architecture / intent. Notes is what actually happened while building toward / away from that intent.
-- **`notes/` vs handoff summary in `wrap-up/artifacts/`**: the handoff is forward-looking ("what the next session needs to know to continue"). The note is backward-looking ("what this session did"). Both can exist for the same session; they serve different consumers.
+- **`notes/` vs handoff summary in `5-wrap-up/outputs/`**: the handoff is forward-looking ("what the next session needs to know to continue"). The note is backward-looking ("what this session did"). Both can exist for the same session; they serve different consumers.
 
 ## Lifecycle
 
@@ -94,6 +94,6 @@ Journal entries are **append-only history**. They are never edited after the ses
 
 ## Cross-references
 
-- Session canonical artifacts: a note may cite paths in `sessions/{date}-{session-id}/{loop}/artifacts/` for readers who want full detail.
+- Session canonical artifacts: a note may cite paths in `sessions/{date}-{session-id}/{N}-{loop}/outputs/` for readers who want full detail.
 - Feature READMEs: `features/{feature-name}/README.md`'s Recent activity table includes a row per relevant note for cross-navigation.
 - Decisions / plans / mistakes / learnings produced this session are listed in the `shipped` frontmatter so the journal is a navigable index of the session's outputs.

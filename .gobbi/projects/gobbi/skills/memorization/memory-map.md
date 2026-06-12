@@ -2,13 +2,13 @@
 
 Reference of every memory path the workflow touches. Two tiers: **Session memory** (volatile, per-session) and **Project memory** (persistent, per-project). Use this doc as the single source of truth when deciding where a staging file goes, which template stamps a destination, or whether a path is the assistant's or Wrap-up's to write.
 
-For the naming convention, frontmatter standard, and structure rules every memory file obeys, see [`rules.md`](rules.md).
+For the naming convention, frontmatter standard, and structure rules every memory file obeys, see [`rules.md`](rules.md). For the canonical per-session working-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior, and the single session-root `transcripts/` — see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md), the single source of truth.
 
 The assistant in MEMORIZATION writes **only** to session memory. Wrap-up is the sole writer to project memory. Both tiers are plain markdown trees — there is no per-session SQLite (`gobbi.db` was dropped) and no per-project summary JSON (`project.json` was dropped). `session.json` is the only JSON in the session tree, and it is per-session telemetry — not cross-session memory.
 
 Column legend:
 
-- **Path** — canonical path; `{date}` / `{session-id}` / `{loop}` / `{iter-number}` / `{slug}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](SKILL.md#output-paths))
+- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](SKILL.md#output-paths)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md))
 - **Description** — what lives here and why
 - **Writer** — the role that creates / updates this path during the workflow
 - **When** — the workflow point at which the writer touches it
@@ -29,38 +29,41 @@ Volatile per-session storage. Wrap-up promotes the `staging/` subtree to project
 | `session.json` | Per-session telemetry — `workflow.{loop}.iterations[]`, `finishedAt`, `verdict`, project / feature / task scope. Single file generated at Memorization STEP_EXIT | manager (init) + assistant (UPSERT) | session start; every iter MEMORIZATION | [`../orchestration/templates/session.template.json`](../orchestration/templates/session.template.json) |
 | `settings.json` | Session-level config (evaluate mode, git workflow). Resolved by cascade from workspace → project → session. Bootstrap loads the per-mode default file matching the user-selected mode | manager (session start) | session start (`/gobbi`) | [`../orchestration/templates/settings.chat.json`](../orchestration/templates/settings.chat.json) / [`../orchestration/templates/settings.auto.json`](../orchestration/templates/settings.auto.json) |
 | `session.json.lock` | Advisory write-lock guarding concurrent `session.json` writes. Created and released by the manager around each `session.json` write; safe to ignore on read. Not memory content — a transient coordination artifact at the session root | manager | around every `session.json` write | — |
+| `transcripts/{role}-{agentId}.jsonl` | **Single** session-root transcript surface — one immutable file per agent run (manager = `manager-{sessionId}.jsonl`), accumulating across all loops by distinct `agentId`. Gitignored, session-scoped, never promoted, removed at worktree cleanup. There is no per-loop `transcripts/` | manager (creates dir at Configuration) + assistant (copies files at MEMORIZATION) | session start (dir); every iter (copy) | — |
 
-### Per-loop subtree — `{loop}/` (loop ∈ ideation / preparation / planning / execution / wrap-up)
+### Per-loop subtree — `{N}-{loop}/` (loop ∈ ideation / preparation / planning / execution / wrap-up; on-disk dirs carry the `{N}-` ordinal prefix — `1-ideation` … `5-wrap-up`)
+
+The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`, `outputs/`. There is no per-loop `transcripts/`; every agent's transcript lives in the single session-root `transcripts/` (see the Session-root table above). For the authoritative shape see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md).
 
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|
-| `{loop}/artifacts/{free-filename}.md` | Loop's PASS-iter output artifacts. Filenames and counts are free; every file carries the [Artifact frontmatter schema](SKILL.md#artifact-frontmatter-schema). Collectively the next loop's briefing source. Mandatory: ≥ 1 file with `artifact_type: memory-reads` | assistant (MEMORIZATION) | `PASS` iteration only | frontmatter schema only (no body template) |
-| `{loop}/rawdata/draft-iter{n}.md` | Leader / executor draft for iter `n` — the WORK output before MEMORIZATION synthesizes | leader (Ideation, Planning) or executor (Execution) (WORK) | every iter, during WORK | per-loop draft shape (see loop's `SKILL.md`) |
-| `{loop}/rawdata/transcript-iter{n}.jsonl` | Preserved transcript window (DISCUSSION start → verdict) filtered to this loop's turns | assistant (MEMORIZATION) | every iter | — |
-| `{loop}/rawdata/discussion-log.md` | Manager-captured user-decision exchanges, appended one section per exchange. Preserved across iters | manager (DISCUSSION live) | every user-decision exchange | — |
-| `{loop}/evaluation/iter{n}/{system}/{perspective}.md` | Per-perspective evaluation file — Artifact Summary + W/W/H + Locked Frame + Stage 2 verdicts + typed findings. `{system}` ∈ claude / codex; `{perspective}` ∈ project / structure / performance / aesthetics / usage / consistency / risk | evaluator (EVALUATION) | every iter, after WORK | — |
-| `{loop}/evaluation/iter{n}/{system}/overall.md` | Stage 3 overall verdict + cross-cutting findings + Karpathy checks + Preserve list | evaluator (EVALUATION) | every iter, after Stage 2 | — |
+| `{N}-{loop}/outputs/{free-filename}.md` | Loop's PASS-iter output artifacts. Filenames and counts are free; every file carries the [Artifact frontmatter schema](SKILL.md#artifact-frontmatter-schema). Collectively the next loop's briefing source. Mandatory: ≥ 1 file with `artifact_type: memory-reads` | assistant (MEMORIZATION) | `PASS` iteration only | frontmatter schema only (no body template) |
+| `{N}-{loop}/working/draft-iter{n}.md` | Leader / executor draft for iter `n` — the WORK output before MEMORIZATION synthesizes | leader (Ideation, Planning) or executor (Execution) (WORK) | every iter, during WORK | per-loop draft shape (see loop's `SKILL.md`) |
+| `{N}-{loop}/working/research/{slug}.md` | Pre-staging external references written during WORK when the `research` skill is loaded; promoted to `staging/references/` at MEMORIZATION | leader (WORK — research) | per confirmed external insight | [`templates/references.md`](templates/references.md) (on promotion) |
+| `{N}-{loop}/working/discussion-log.md` | Manager-captured user-decision exchanges, appended one section per exchange. Preserved across iters | manager (DISCUSSION live) | every user-decision exchange | — |
+| `{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md` | Per-perspective evaluation file — Artifact Summary + W/W/H + Locked Frame + Stage 2 verdicts + typed findings. `{system}` ∈ claude / codex; `{perspective}` ∈ project / structure / performance / aesthetics / usage / consistency / risk | evaluator (EVALUATION) | every iter, after WORK | — |
+| `{N}-{loop}/evaluation/iter{n}/{system}/overall.md` | Stage 3 overall verdict + cross-cutting findings + Karpathy checks + Preserve list | evaluator (EVALUATION) | every iter, after Stage 2 | — |
 
-### Per-loop staging — `{loop}/staging/` (PASS-only writes; Wrap-up promotion source)
+### Per-loop staging — `{N}-{loop}/staging/` (PASS-only writes; Wrap-up promotion source)
 
 Every staging file is stamped to its matching template. See [`SKILL.md` § Templates](SKILL.md#templates) for the mapping.
 
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|
-| `{loop}/staging/scenarios/{slug}.md` | `scenario_gap` finding — a scenario the artifact missed; Wrap-up promotes to feature scenarios | assistant (MEMORIZATION) | `PASS` only | [`templates/scenarios.md`](templates/scenarios.md) |
-| `{loop}/staging/checklists/{slug}.md` | `checklist_gap` finding — a check item that should be in the implementation checklist | assistant (MEMORIZATION) | `PASS` only | [`templates/checklists.md`](templates/checklists.md) |
-| `{loop}/staging/decisions/{slug}.md` | `design_flaw` / `assumption_risk` / `disputed` / `deferred` findings + Domain-routed `general` findings + `mistake-candidate: true` candidates | assistant (MEMORIZATION) | `PASS` only | [`templates/decisions.md`](templates/decisions.md) |
-| `{loop}/staging/references/{slug}.md` | External insight from Ideation Sub-step C, or `general` finding with Domain = `dependency` | assistant (MEMORIZATION) | `PASS` only | [`templates/references.md`](templates/references.md) |
-| `{loop}/staging/design/{slug}.md` | Substantive design topic distilled from the canonical artifact's Design section | assistant (MEMORIZATION) | `PASS` only | [`templates/design.md`](templates/design.md) |
-| `{loop}/staging/discussions/{slug}.md` | Substantive user-decision topic from discussion-log | assistant (MEMORIZATION) | `PASS` only | [`templates/discussions.md`](templates/discussions.md) |
-| `{loop}/staging/backlogs/feature/{slug}.md` | Feature-scope deferred work (task backlog within the active feature) | assistant (MEMORIZATION) | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
-| `{loop}/staging/backlogs/project/{slug}.md` | Project-scope deferred work (deferred features) | assistant (MEMORIZATION) | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
-| `{loop}/staging/reviews/{slug}.md` | Review / evaluation / audit activity result document staged in-session for Wrap-up promotion | assistant (MEMORIZATION) | `PASS` only when the loop included a review activity | [`templates/reviews.md`](templates/reviews.md) |
-| `{loop}/staging/reports/{slug}.md` | `status` / `post-mortem` / `analytics` report staged in-session for Wrap-up promotion | assistant (MEMORIZATION) | `PASS` only when the loop produced a substantive report | [`templates/reports.md`](templates/reports.md) |
-| `{loop}/staging/changelogs/{slug}.md` | Shipped-work changelog entry staged in-session for Wrap-up promotion (Execution loop typical; tracks what shipped per task) | assistant (MEMORIZATION) | `PASS` only when shipped-work occurred | [`templates/changelogs.md`](templates/changelogs.md) |
-| `{loop}/staging/learnings/{slug}.md` | Durable cross-cutting insight staged in-session for Wrap-up promotion | assistant (MEMORIZATION) | `PASS` only when the loop produced an actionable learning | [`templates/learnings.md`](templates/learnings.md) |
-| `{loop}/staging/notes/{slug}.md` | Loop-scope journal entry staged in-session for Wrap-up promotion. The per-session journal entry is written directly by Wrap-up; loop-scope staging here is the rare case of a substantial mid-loop work-log entry | assistant (MEMORIZATION) | `PASS` only when the loop produced a substantial work-log entry separate from the session note | [`templates/notes.md`](templates/notes.md) |
-| `planning/staging/plans/{slug}.md` | Plan artifact for Wrap-up to promote to `features/{feature-name}/plans/{date}-{slug}.md`. **Planning loop only** — `plans/` does not appear in other loops' staging trees | assistant (Planning MEMORIZATION) | `PASS` only, Planning loop only | [`templates/plans.md`](templates/plans.md) |
+| `{N}-{loop}/staging/scenarios/{slug}.md` | `scenario_gap` finding — a scenario the artifact missed; Wrap-up promotes to feature scenarios | assistant (MEMORIZATION) | `PASS` only | [`templates/scenarios.md`](templates/scenarios.md) |
+| `{N}-{loop}/staging/checklists/{slug}.md` | `checklist_gap` finding — a check item that should be in the implementation checklist | assistant (MEMORIZATION) | `PASS` only | [`templates/checklists.md`](templates/checklists.md) |
+| `{N}-{loop}/staging/decisions/{slug}.md` | `design_flaw` / `assumption_risk` / `disputed` / `deferred` findings + Domain-routed `general` findings + `mistake-candidate: true` candidates | assistant (MEMORIZATION) | `PASS` only | [`templates/decisions.md`](templates/decisions.md) |
+| `{N}-{loop}/staging/references/{slug}.md` | External insight from Ideation Sub-step C, or `general` finding with Domain = `dependency` | assistant (MEMORIZATION) | `PASS` only | [`templates/references.md`](templates/references.md) |
+| `{N}-{loop}/staging/design/{slug}.md` | Substantive design topic distilled from the canonical artifact's Design section | assistant (MEMORIZATION) | `PASS` only | [`templates/design.md`](templates/design.md) |
+| `{N}-{loop}/staging/discussions/{slug}.md` | Substantive user-decision topic from discussion-log | assistant (MEMORIZATION) | `PASS` only | [`templates/discussions.md`](templates/discussions.md) |
+| `{N}-{loop}/staging/backlogs/feature/{slug}.md` | Feature-scope deferred work (task backlog within the active feature) | assistant (MEMORIZATION) | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
+| `{N}-{loop}/staging/backlogs/project/{slug}.md` | Project-scope deferred work (deferred features) | assistant (MEMORIZATION) | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
+| `{N}-{loop}/staging/reviews/{slug}.md` | Review / evaluation / audit activity result document staged in-session for Wrap-up promotion | assistant (MEMORIZATION) | `PASS` only when the loop included a review activity | [`templates/reviews.md`](templates/reviews.md) |
+| `{N}-{loop}/staging/reports/{slug}.md` | `status` / `post-mortem` / `analytics` report staged in-session for Wrap-up promotion | assistant (MEMORIZATION) | `PASS` only when the loop produced a substantive report | [`templates/reports.md`](templates/reports.md) |
+| `{N}-{loop}/staging/changelogs/{slug}.md` | Shipped-work changelog entry staged in-session for Wrap-up promotion (Execution loop typical; tracks what shipped per task) | assistant (MEMORIZATION) | `PASS` only when shipped-work occurred | [`templates/changelogs.md`](templates/changelogs.md) |
+| `{N}-{loop}/staging/learnings/{slug}.md` | Durable cross-cutting insight staged in-session for Wrap-up promotion | assistant (MEMORIZATION) | `PASS` only when the loop produced an actionable learning | [`templates/learnings.md`](templates/learnings.md) |
+| `{N}-{loop}/staging/notes/{slug}.md` | Loop-scope journal entry staged in-session for Wrap-up promotion. The per-session journal entry is written directly by Wrap-up; loop-scope staging here is the rare case of a substantial mid-loop work-log entry | assistant (MEMORIZATION) | `PASS` only when the loop produced a substantial work-log entry separate from the session note | [`templates/notes.md`](templates/notes.md) |
+| `3-planning/staging/plans/{slug}.md` | Plan artifact for Wrap-up to promote to `features/{feature-name}/plans/{date}-{slug}.md`. **Planning loop only** — `plans/` does not appear in other loops' staging trees | assistant (Planning MEMORIZATION) | `PASS` only, Planning loop only | [`templates/plans.md`](templates/plans.md) |
 
 ---
 
@@ -148,22 +151,22 @@ All templates live under [`templates/`](templates/). The index below lets you ju
 
 | Template | Stamps these directories |
 |---|---|
-| [`scenarios.md`](templates/scenarios.md) | `{loop}/staging/scenarios/`, `features/{feature-name}/scenarios/` |
-| [`checklists.md`](templates/checklists.md) | `{loop}/staging/checklists/`, `features/{feature-name}/checklists/` |
-| [`decisions.md`](templates/decisions.md) | `{loop}/staging/decisions/`, `features/{feature-name}/decisions/`, `.gobbi/projects/{project-name}/decisions/` |
-| [`references.md`](templates/references.md) | `{loop}/staging/references/`, `features/{feature-name}/references/`, `.gobbi/projects/{project-name}/references/` |
-| [`design.md`](templates/design.md) | `{loop}/staging/design/`, `features/{feature-name}/design/`, `.gobbi/projects/{project-name}/design/` |
-| [`discussions.md`](templates/discussions.md) | `{loop}/staging/discussions/`, `features/{feature-name}/discussions/` |
-| [`backlogs.md`](templates/backlogs.md) | `{loop}/staging/backlogs/{feature,project}/`, `features/{feature-name}/backlogs/`, `.gobbi/projects/{project-name}/backlogs/` |
-| [`plans.md`](templates/plans.md) | `planning/staging/plans/`, `features/{feature-name}/plans/`, `.gobbi/projects/{project-name}/plans/` |
+| [`scenarios.md`](templates/scenarios.md) | `{N}-{loop}/staging/scenarios/`, `features/{feature-name}/scenarios/` |
+| [`checklists.md`](templates/checklists.md) | `{N}-{loop}/staging/checklists/`, `features/{feature-name}/checklists/` |
+| [`decisions.md`](templates/decisions.md) | `{N}-{loop}/staging/decisions/`, `features/{feature-name}/decisions/`, `.gobbi/projects/{project-name}/decisions/` |
+| [`references.md`](templates/references.md) | `{N}-{loop}/staging/references/`, `features/{feature-name}/references/`, `.gobbi/projects/{project-name}/references/` |
+| [`design.md`](templates/design.md) | `{N}-{loop}/staging/design/`, `features/{feature-name}/design/`, `.gobbi/projects/{project-name}/design/` |
+| [`discussions.md`](templates/discussions.md) | `{N}-{loop}/staging/discussions/`, `features/{feature-name}/discussions/` |
+| [`backlogs.md`](templates/backlogs.md) | `{N}-{loop}/staging/backlogs/{feature,project}/`, `features/{feature-name}/backlogs/`, `.gobbi/projects/{project-name}/backlogs/` |
+| [`plans.md`](templates/plans.md) | `3-planning/staging/plans/`, `features/{feature-name}/plans/`, `.gobbi/projects/{project-name}/plans/` |
 | [`feature-readme.md`](templates/feature-readme.md) | `features/{feature-name}/README.md` |
 | [`mistakes.md`](templates/mistakes.md) | `features/{feature-name}/mistakes/`, `.gobbi/projects/{project-name}/mistakes/` |
 | [`rules.md`](templates/rules.md) | `.gobbi/projects/{project-name}/rules/` |
-| [`notes.md`](templates/notes.md) | `{loop}/staging/notes/`, `.gobbi/projects/{project-name}/notes/` |
-| [`changelogs.md`](templates/changelogs.md) | `{loop}/staging/changelogs/`, `features/{feature-name}/changelogs/` |
-| [`reviews.md`](templates/reviews.md) | `{loop}/staging/reviews/`, `.gobbi/projects/{project-name}/reviews/` |
-| [`reports.md`](templates/reports.md) | `{loop}/staging/reports/`, `.gobbi/projects/{project-name}/reports/` |
-| [`learnings.md`](templates/learnings.md) | `{loop}/staging/learnings/`, `.gobbi/projects/{project-name}/learnings/` |
+| [`notes.md`](templates/notes.md) | `{N}-{loop}/staging/notes/`, `.gobbi/projects/{project-name}/notes/` |
+| [`changelogs.md`](templates/changelogs.md) | `{N}-{loop}/staging/changelogs/`, `features/{feature-name}/changelogs/` |
+| [`reviews.md`](templates/reviews.md) | `{N}-{loop}/staging/reviews/`, `.gobbi/projects/{project-name}/reviews/` |
+| [`reports.md`](templates/reports.md) | `{N}-{loop}/staging/reports/`, `.gobbi/projects/{project-name}/reports/` |
+| [`learnings.md`](templates/learnings.md) | `{N}-{loop}/staging/learnings/`, `.gobbi/projects/{project-name}/learnings/` |
 | [`archive.md`](templates/archive.md) | `.gobbi/projects/{project-name}/archive/` |
 
 ---

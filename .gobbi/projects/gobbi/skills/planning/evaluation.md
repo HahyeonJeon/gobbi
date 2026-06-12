@@ -2,9 +2,9 @@
 
 Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `planning`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for a Planning Loop's task decomposition.
 
-The artifact under evaluation is the leader's plan at `sessions/{date}-{session-id}/planning/rawdata/draft-iter{n}.md`. It contains: the locked Scope Contract (inherited from Ideation), ordered task list, per-task scope + inputs + outputs + verification criteria, dependency graph, agent-type assignment per task. Scope Contract schema canonical at `evaluation/SKILL.md` § Scope Contract Schema.
+The artifact under evaluation is the leader's plan at `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md`. It contains: the locked Scope Contract (inherited from Ideation), ordered task list, per-task scope + inputs + outputs + verification criteria, dependency graph, agent-type assignment per task. Scope Contract schema canonical at `evaluation/SKILL.md` § Scope Contract Schema.
 
-A plan is **judged against the idea it implements**. The Ideation rawdata is required input — without it, every perspective's evaluation is shallow. Scenarios include adversarial cases (mis-ordered tasks, dangling traces, hidden coupling) so Stage 2 walks each Frame once without a separate adversarial pass.
+A plan is **judged against the idea it implements**. The Ideation working draft is required input — without it, every perspective's evaluation is shallow. Scenarios include adversarial cases (mis-ordered tasks, dangling traces, hidden coupling) so Stage 2 walks each Frame once without a separate adversarial pass.
 
 ---
 
@@ -362,4 +362,4 @@ A plan is **judged against the idea it implements**. The Ideation rawdata is req
 
 ## Output reminder
 
-Same as the parent SKILL.md — seven per-perspective files + one overall file under `sessions/{date}-{session-id}/planning/evaluation/iter{n}/{system}/`. Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.
+Same as the parent SKILL.md — seven per-perspective files + one overall file under `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{system}/`. Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.

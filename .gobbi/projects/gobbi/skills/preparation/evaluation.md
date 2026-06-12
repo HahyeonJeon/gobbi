@@ -6,9 +6,9 @@ allowed-tools: Read, Grep, Glob, Bash
 
 # Preparation Loop — Evaluation Frame
 
-Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `preparation`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for a Preparation Loop's rawdata draft.
+Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `preparation`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for a Preparation Loop's working draft.
 
-The artifact under evaluation is the leader's draft at `sessions/{date}-{session-id}/preparation/rawdata/draft-iter{n}.md`. It contains: Scope reference, Readiness summary, Design + memory readiness (Sub-step B output), Execution skills readiness (Sub-step C output), Generated this loop, Out of scope gaps, Decisions log.
+The artifact under evaluation is the leader's draft at `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md`. It contains: Scope reference, Readiness summary, Design + memory readiness (Sub-step B output), Execution skills readiness (Sub-step C output), Generated this loop, Out of scope gaps, Decisions log.
 
 For each perspective below, scenarios are listed in bold and each scenario carries its **attached checklist** — the concrete yes/no conditions that, if all satisfied, prove the scenario is handled. Scenarios include adversarial cases so Stage 2 needs no separate adversarial pass. The evaluator CRUDs both scenarios and their attached checklists at Stage 1 against the artifact's own scenario+checklist content.
 
@@ -46,8 +46,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 | Tool | Use for |
 |---|---|
-| Read `ideation/artifacts/` | Confirm that every gap the artifact claims to address traces to the actual Ideation output |
-| Grep for slug names in `preparation/staging/` | Confirm every "Generated this loop" entry actually exists on disk |
+| Read `1-ideation/outputs/` | Confirm that every gap the artifact claims to address traces to the actual Ideation output |
+| Grep for slug names in `2-preparation/staging/` | Confirm every "Generated this loop" entry actually exists on disk |
 | Read "Out of scope gaps" vs Scope Contract | Confirm the classification boundary is correct — items inside the Scope Contract should not be deferred without user-approved `defer` decisions |
 
 ### Perspective-specific anti-patterns
@@ -67,21 +67,21 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 ### Seed scenarios with attached checklists
 
 **Every staged skill file uses the full project-skill template, not a skeleton**
-- Staged skill files at `preparation/staging/skills/{slug}/SKILL.md` have all required sections populated (no `TODO`, `TBD`, `<...>` placeholders)
+- Staged skill files at `2-preparation/staging/skills/{slug}/SKILL.md` have all required sections populated (no `TODO`, `TBD`, `<...>` placeholders)
 - The skill follows the project's naming convention (no underscores in the body, hyphen-separated)
 - The YAML frontmatter is present and complete (`name`, `description`, `allowed-tools`)
 
-**The rawdata draft uses all seven required sections from the WORK template**
+**The working draft uses all seven required sections from the WORK template**
 - All seven sections are present: Scope reference, Readiness summary, Design + memory readiness, Execution skills readiness, Generated this loop, Out of scope gaps, Decisions log
 - No section is a placeholder — every section has substantive content or an explicit "none" statement
 
 **Staged memory-promotion files follow the correct staging path conventions**
-- Scenarios at `preparation/staging/scenarios/`, checklists at `preparation/staging/checklists/`, decisions at `preparation/staging/decisions/` — not mixed up
+- Scenarios at `2-preparation/staging/scenarios/`, checklists at `2-preparation/staging/checklists/`, decisions at `2-preparation/staging/decisions/` — not mixed up
 - Slug names are kebab-case, ≤ 60 characters
 - Each staged file has correct frontmatter per its template (e.g., scenario files follow the [`memorization/templates/scenarios.md`](../memorization/templates/scenarios.md) shape)
 
 **The generated artifacts are structurally compatible with Wrap-up's promotion routing table (adversarial)**
-- Staged skills are at `preparation/staging/skills/{slug}/SKILL.md`, not a flat `.md` file that Wrap-up's routing would misplace
+- Staged skills are at `2-preparation/staging/skills/{slug}/SKILL.md`, not a flat `.md` file that Wrap-up's routing would misplace
 - Staged scenarios / checklists / decisions follow the directory structure Wrap-up expects — not placed in the wrong `staging/` subdirectory
 
 ### Recommended verifications
@@ -89,7 +89,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 | Tool | Use for |
 |---|---|
 | Grep for `TODO\|TBD\|<\.\.\.>` in staged skill files | Mechanical skeleton check — incomplete skills fail the template bar |
-| Check `preparation/staging/` directory structure | Confirm the directory layout matches the canonical shape in `preparation/SKILL.md § Output paths` |
+| Check `2-preparation/staging/` directory structure | Confirm the directory layout matches the canonical shape in `preparation/SKILL.md § Output paths` |
 | Read one staged skill end-to-end | Confirm it is genuinely useful to an executor, not a placeholder |
 
 ### Perspective-specific anti-patterns
@@ -134,7 +134,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 ## Aesthetics
 
-**Lens**: Is the **rawdata draft itself** readable, consistent, and free of polish gaps?
+**Lens**: Is the **working draft itself** readable, consistent, and free of polish gaps?
 
 ### Seed scenarios with attached checklists
 
@@ -158,7 +158,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 | Tool | Use for |
 |---|---|
-| Grep for placeholder strings (`TODO`, `TBD`, `<...>`, `???`) in the rawdata draft | Mechanical placeholder check |
+| Grep for placeholder strings (`TODO`, `TBD`, `<...>`, `???`) in the working draft | Mechanical placeholder check |
 | Compare section ordering to the required-sections template | Detect structural deviation from the seven-section contract |
 
 ### Perspective-specific anti-patterns
@@ -195,7 +195,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 **Accessibility / I18n awareness** (`not-applicable:` — Preparation artifacts are internal workflow docs with no user-facing strings or UI surfaces)
 
 **Observability / "diagnosable at 3am"** — if a downstream loop fails because a readiness gap was missed, can a maintainer trace it back to the Preparation decision?
-- Each gap entry in the rawdata draft cites the Ideation artifact and Sub-step that surfaced it
+- Each gap entry in the working draft cites the Ideation artifact and Sub-step that surfaced it
 - The Decisions log captures who approved each resolution so blame attribution is explicit
 
 ### Recommended verifications
@@ -221,7 +221,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 ### Seed scenarios with attached checklists
 
 **The Scope reference section points to the actual Ideation artifact, not a paraphrase**
-- Scope reference section contains a file path (or section citation) to `ideation/artifacts/`, not a prose summary of the Scope Contract
+- Scope reference section contains a file path (or section citation) to `1-ideation/outputs/`, not a prose summary of the Scope Contract
 - The Scope Contract's `project` / `feature` / `task` fields in the Ideation artifact match what Preparation's readiness scanning targeted
 
 **Design + memory readiness and Execution skills readiness sections do not overlap**
@@ -229,8 +229,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 - Each gap is categorized in exactly one sub-step section
 
 **"Generated this loop" is consistent with the staging directory**
-- Every file listed in "Generated this loop" actually exists in `preparation/staging/`
-- No file in `preparation/staging/` was produced but omitted from "Generated this loop"
+- Every file listed in "Generated this loop" actually exists in `2-preparation/staging/`
+- No file in `2-preparation/staging/` was produced but omitted from "Generated this loop"
 
 **The Decisions log reflects every user-decision outcome from DISCUSSION**
 - Each gap in the consolidated gap table has a corresponding entry in the Decisions log
@@ -243,8 +243,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 | Tool | Use for |
 |---|---|
-| Grep slug names from "Generated this loop" in `preparation/staging/` | Confirm every listed file exists |
-| Read `ideation/artifacts/` Scope Contract against "Scope reference" section | Confirm the Scope reference is an accurate pointer, not a rewrite |
+| Grep slug names from "Generated this loop" in `2-preparation/staging/` | Confirm every listed file exists |
+| Read `1-ideation/outputs/` Scope Contract against "Scope reference" section | Confirm the Scope reference is an accurate pointer, not a rewrite |
 | Cross-reference the Decisions log against the gap table | Every gap entry should have exactly one Decisions log entry |
 
 ### Perspective-specific anti-patterns
@@ -263,9 +263,9 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 ### Seed scenarios with attached checklists
 
 **No Preparation write went directly to project memory (Wrap-up sole-writer contract)**
-- All `generate-now` outputs are staged under `sessions/{date}-{session-id}/preparation/staging/`, not written directly to `.gobbi/projects/{project-name}/skills/`, `features/`, or other project-memory paths
+- All `generate-now` outputs are staged under `sessions/{date}-{session-id}/2-preparation/staging/`, not written directly to `.gobbi/projects/{project-name}/skills/`, `features/`, or other project-memory paths
 - The Decisions log does not reference a direct project-memory write
-- `preparation/staging/` exists; `features/...` was not touched during Preparation
+- `2-preparation/staging/` exists; `features/...` was not touched during Preparation
 
 **Every RE-IDEATE trigger was either caught and escalated or explicitly ruled out**
 - Each gap in the artifact was assessed for whether it reveals an unworkable design (RE-IDEATE) vs a missing artifact (generate-now)
@@ -293,8 +293,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 | Tool | Use for |
 |---|---|
 | `find .gobbi/projects/{project-name}/skills/ -name "*.md"` | Check for any direct project-memory writes that bypassed staging |
-| Check `preparation/staging/skills/` slugs against existing skills | Detect slug collisions before Wrap-up promotion |
-| Grep "RE-IDEATE" in preparation rawdata | Confirm RE-IDEATE assessment is explicitly recorded, not silently skipped |
+| Check `2-preparation/staging/skills/` slugs against existing skills | Detect slug collisions before Wrap-up promotion |
+| Grep "RE-IDEATE" in preparation working draft | Confirm RE-IDEATE assessment is explicitly recorded, not silently skipped |
 
 ### Perspective-specific anti-patterns
 
@@ -323,7 +323,7 @@ When the evaluator runs Stage 3 on a Preparation artifact, the Karpathy-4 check 
 ## Output reminder
 
 The evaluator writes:
-- Seven per-perspective files at `sessions/{date}-{session-id}/preparation/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
-- One overall file at `sessions/{date}-{session-id}/preparation/evaluation/iter{n}/{system}/overall.md`
+- Seven per-perspective files at `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
+- One overall file at `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/overall.md`
 
 Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (from Stage 0; includes paths consumed for project/feature overrides + project mistakes + project rules + prior-phase canonical) → `## Locked Frame (Stage 1)` (augmented from this child doc's seed content + prior-iter open findings + overrides) → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.

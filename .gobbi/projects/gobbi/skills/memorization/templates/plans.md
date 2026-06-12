@@ -6,7 +6,7 @@ Task decomposition records — the output of the **Planning Loop**. Each plan br
 
 This template covers a file with **two write paths**:
 
-1. **Planning MEMORIZATION only**: stage at `sessions/{date}-{session-id}/planning/staging/plans/{slug}.md`. `plans/` is **Planning-loop-only** — it does NOT appear in other loops' staging trees (ideation / preparation / execution / wrap-up do not produce plans). Loop MEMORIZATION **never** writes directly to project memory.
+1. **Planning MEMORIZATION only**: stage at `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md`. `plans/` is **Planning-loop-only** — it does NOT appear in other loops' staging trees (ideation / preparation / execution / wrap-up do not produce plans). Loop MEMORIZATION **never** writes directly to project memory.
 2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
 
 For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).

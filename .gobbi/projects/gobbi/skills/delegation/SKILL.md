@@ -180,7 +180,7 @@ Followed immediately by prose details (summary, findings, verification output, c
 **Example — executor reporting DONE:**
 ```
 STATUS: DONE
-ARTIFACT: sessions/2026-05-20-abc123/execution/rawdata/draft-iter1.md
+ARTIFACT: sessions/2026-05-20-abc123/4-execution/working/draft-iter1.md
 
 Implementation complete. Tests pass (2197/0). Scope boundary respected — 3 files modified.
 ...
@@ -190,7 +190,7 @@ Implementation complete. Tests pass (2197/0). Scope boundary respected — 3 fil
 ```
 STATUS: DONE
 VERDICT: REVISE
-ARTIFACT: sessions/2026-05-20-abc123/ideation/evaluation/iter1/claude/
+ARTIFACT: sessions/2026-05-20-abc123/1-ideation/evaluation/iter1/claude/
 
 7 perspectives + Overall complete. 3 High findings (open). See per-perspective files.
 ...
@@ -204,7 +204,7 @@ Missing: the locked Scope Contract from the Ideation Loop. The brief references 
 by path but the file does not exist at the cited location.
 user-question:
   question: "Where is the Scope Contract for this task?"
-  description: "The executor brief cites `sessions/.../ideation/artifacts/scope-contract.md`
+  description: "The executor brief cites `sessions/.../1-ideation/outputs/scope-contract.md`
     but that path does not exist. The task cannot be scoped without it."
   options:
     - label: "Re-point to the correct path (Recommended)"

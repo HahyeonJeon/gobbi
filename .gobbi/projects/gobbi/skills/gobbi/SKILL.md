@@ -117,7 +117,7 @@ Gobbi-specific terms used throughout the skill tree. Load this section to anchor
 | **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
 | **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
 | **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
-| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to project memory. |
+| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{N}-{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to project memory. |
 | **Sole-writer** | Wrap-up's MEMORIZATION is the only agent permitted to write finalized artifacts to project memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
 
 ---
@@ -190,7 +190,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 
 The `mistake` skill lives at `skills/mistake/SKILL.md`. Every agent MUST load it before starting work. Mistake recordings flow through a two-layer promotion model:
 
-- **Layer 1 (in-session):** During every loop's MEMORIZATION sub-phase, the assistant stages mistake-candidates to `sessions/{date}-{session-id}/{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true` frontmatter). At Wrap-up, the Wrap-up loop's MEMORIZATION promotes staged candidates from all loops to `.gobbi/projects/{project-name}/mistakes/` (project memory).
+- **Layer 1 (in-session):** During every loop's MEMORIZATION sub-phase, the assistant stages mistake-candidates to `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true` frontmatter). At Wrap-up, the Wrap-up loop's MEMORIZATION promotes staged candidates from all loops to `.gobbi/projects/{project-name}/mistakes/` (project memory).
 - **Layer 2 (cross-session):** During the Wrap-up phase, the Wrap-up assistant also promotes generalizable project-mistakes from `.gobbi/projects/{project-name}/mistakes/` to workspace-level skill storage so they persist across all projects and future sessions. No CLI command — the Wrap-up assistant performs both layers. Promotion does not cause context reload.
 
 The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during MEMORIZATION), and P4 (Wrap-up-phase promotion).
@@ -229,7 +229,7 @@ Subagents do not speak to the user directly. Spawned-session muting applies — 
 
 > **All writes are session-scoped until Wrap-up.**
 
-Ideation / Preparation / Planning / Execution loops write only to session memory under `sessions/{date}-{session-id}/{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. Interview is the documented exception (bootstrap discovery writes directly to project memory).
+Ideation / Preparation / Planning / Execution loops write only to session memory under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. Interview is the documented exception (bootstrap discovery writes directly to project memory).
 
 ---
 
@@ -251,7 +251,7 @@ The active runtime's user-decision primitive is mandatory for every decision poi
 
 All session work is scoped under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. Project memory lives at `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` and is written only by Wrap-up's MEMORIZATION (and by Interview during bootstrap).
 
-For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{rawdata,staging,evaluation,artifacts}/` subdirectories every loop produces), see [`memorization/SKILL.md` § Output paths](../memorization/SKILL.md#output-paths).
+For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{working,evaluation,staging,outputs}/` subdirectories every loop produces), see [`memorization/SKILL.md` § Output paths](../memorization/SKILL.md#output-paths).
 
 ---
 

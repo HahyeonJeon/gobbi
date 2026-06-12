@@ -11,7 +11,7 @@ The Planning Loop runs the four-phase iteration shape — `DISCUSSION` → `WORK
 | `DISCUSSION` | Manager + user + leader (research-backed opinion) discuss Who / When / Where. Tasks, dependencies, and agent assignments are decided here. |
 | `WORK` | Leader documents the DISCUSSION outcome into the canonical plan draft. Documentation, not new content. |
 | `EVALUATION` | Dual-system evaluators run the four-stage procedure across all seven perspectives + Overall. |
-| `MEMORIZATION` | Assistant synthesizes loop's `artifacts/` into session staging only — project-memory promotion is the sole responsibility of Wrap-up. |
+| `MEMORIZATION` | Assistant synthesizes loop's `outputs/` into session staging only — project-memory promotion is the sole responsibility of Wrap-up. |
 
 ---
 
@@ -25,7 +25,7 @@ Same pattern as Ideation. The leader does not observe the entire user dialogue. 
 
 ```
 manager → opens DISCUSSION with user (state: "advancing from Ideation to Planning")
-manager → spawns leader: "read ideation/artifacts/ and produce a draft file map + task list"
+manager → spawns leader: "read 1-ideation/outputs/ and produce a draft file map + task list"
 leader → reads ideation outputs + project memory + codebase → returns proposal
 manager → presents leader's proposal → active runtime's user-decision primitive → user refines or approves
 manager → spawns leader for next sub-step (dependency graph, agent assignment, etc.)
@@ -40,7 +40,7 @@ The manager runs the user through four sub-steps in order. Each is gated by the 
 
 | # | Sub-step | Manager's role | Leader's contribution |
 |---|---|---|---|
-| A | Read Ideation Output | Confirm scope is still valid; user signals readiness to advance | Read `ideation/artifacts/` + accumulated feature scenarios/checklists; enumerate the in-scope checklist items as task seeds |
+| A | Read Ideation Output | Confirm scope is still valid; user signals readiness to advance | Read `1-ideation/outputs/` + accumulated feature scenarios/checklists; enumerate the in-scope checklist items as task seeds |
 | B | File Decomposition + Task Definition | Present proposed file map and task slicing to user; iterate until satisfied | Propose file map (one responsibility per file); slice into medium-granularity tasks; anchor every task to a scenario/checklist item |
 | C | Dependency Graph (When) | Present dependency table + parallel lane grouping to user; user confirms ordering | Build two tables (Task / Lane); flag file-overlap conflicts between parallel lanes |
 | D | Agent Assignment (Who) + Required Skills | Approve agent type and skill list per task through the active runtime's user-decision primitive | Propose agent type per task (executor default; leader for sub-planning; assistant for trivial); list mandatory skills (`principles` always, plus domain skills per files touched) and project mistakes paths the executor must check |
@@ -63,11 +63,11 @@ The leader brings draft proposals; the user makes final calls. Every decision be
 
 ## WORK Phase (leader documents the DISCUSSION outcome)
 
-**Manager's job**: spawn the leader for documentation. The leader writes the draft at `sessions/{date}-{session-id}/planning/rawdata/draft-iter{n}.md` integrating everything decided in DISCUSSION.
+**Manager's job**: spawn the leader for documentation. The leader writes the draft at `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` integrating everything decided in DISCUSSION.
 
 Manager-side responsibilities:
 - Confirm the draft contains every required section (Scope reference / File map / Tasks / Dependency table / Parallel lanes / Agent assignments / Decisions log / NOT in scope)
-- Stage the draft in `rawdata/` along with prior leader transcripts (research turns from DISCUSSION)
+- Stage the draft in `working/`; the leader's transcripts (research turns from DISCUSSION) land in the session-root `transcripts/`
 - On re-entry from a `REVISE` ITER, pass prior evaluator findings as additional input — the leader incorporates corrections during the next DISCUSSION round, then re-documents
 
 WORK is short by design — the substantive thinking happened in DISCUSSION.
@@ -85,32 +85,17 @@ WORK is short by design — the substantive thinking happened in DISCUSSION.
 
 ## MEMORIZATION Phase (delegated to `assistant`)
 
-**Manager's job**: spawn the `assistant` agent. The assistant synthesizes loop's `artifacts/` per [`workflow/memorization.md`](memorization.md) and [`memorization/SKILL.md`](../../memorization/SKILL.md). For Planning, the assistant also:
+**Manager's job**: spawn the `assistant` agent. The assistant synthesizes loop's `outputs/` per [`workflow/memorization.md`](memorization.md) and [`memorization/SKILL.md`](../../memorization/SKILL.md). For Planning, the assistant also:
 
-- On `PASS`: stages the plan at `sessions/{date}-{session-id}/planning/staging/plans/{slug}.md` per the plans template; Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`
-- Stages `scenario_gap` / `checklist_gap` discoveries at `sessions/{date}-{session-id}/planning/staging/{scenarios,checklists}/{slug}.md`; Wrap-up promotes to `features/{feature-name}/`
+- On `PASS`: stages the plan at `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` per the plans template; Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`
+- Stages `scenario_gap` / `checklist_gap` discoveries at `sessions/{date}-{session-id}/3-planning/staging/{scenarios,checklists}/{slug}.md`; Wrap-up promotes to `features/{feature-name}/`
 - Does NOT write to project memory directly — all promotion is Wrap-up's responsibility
 
-### Per-iteration session-memory commit cadence
+### Per-iteration session memory is NOT committed (gitignored)
 
-After every iteration's MEMORIZATION completes (`PASS`, `REVISE`, or `FAIL`), the manager creates a session-memory commit on the worktree branch capturing the iteration's outputs (`rawdata/`, `evaluation/iter{n}/`, `staging/`, and the `session.json` upsert; plus `artifacts/` on `PASS`). The commit subject is:
+There is **no** per-iteration session-memory commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after MEMORIZATION.
 
-```
-chore(session): record planning iter{n} memory
-```
-
-with the canonical `AI-Provenance-Record:` trailer in the commit body per `git/conventions.md:116-119`. Use the heredoc form so the trailer actually lands:
-
-```
-git -C "$worktreePath" commit -m "$(cat <<'EOF'
-chore(session): record planning iter{n} memory
-
-AI-Provenance-Record: gobbi://session/{session-id}/loop/planning/iter{n}
-EOF
-)"
-```
-
-Substitute `{session-id}` and `{n}` from session state. The commit lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Verify the trailer landed with `git -C "$worktreePath" log -1 --format=%B` before proceeding.
+Iteration boundaries are recorded in `session.json.workflow.planning.iterations[]`, not in git. Durable cross-session memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content (the plan, scenarios, checklists) into tracked `features/`, etc. Only promoted content survives the session.
 
 ---
 
@@ -131,22 +116,26 @@ Iteration cap: `workflow.planning.maxIterations` (default 5). When the cap is re
 
 ## Output
 
+The canonical tree is [`orchestration/templates/session-tree.md`](../templates/session-tree.md); Planning's loop dir is `3-planning/`.
+
 ```
-.gobbi/projects/{project}/sessions/{date}-{session-id}/planning/
-├── artifacts/             ← PASS-iter output files (assistant, MEMORIZATION, PASS only)
-├── rawdata/                ← leader drafts (per iter), agent transcripts, discussion-log.md
-├── evaluation/
-│   └── iter{n}/
-│       ├── claude/{perspective}.md
-│       └── codex/{perspective}.md
-└── staging/                ← session-staged artifacts for Wrap-up to promote (PASS only)
-    ├── plans/{slug}.md
-    ├── scenarios/{slug}.md
-    ├── checklists/{slug}.md
-    ├── decisions/{slug}.md
-    ├── references/{slug}.md
-    ├── discussions/{slug}.md
-    └── design/{slug}.md
+.gobbi/projects/{project}/sessions/{date}-{session-id}/
+├── transcripts/                       ← single session-root surface; {role}-{agentId}.jsonl per agent, all loops
+└── 3-planning/
+    ├── outputs/             ← PASS-iter output files (assistant, MEMORIZATION, PASS only)
+    ├── working/                ← leader drafts (per iter), discussion-log.md, research refs
+    ├── evaluation/
+    │   └── iter{n}/
+    │       ├── claude/{perspective}.md
+    │       └── codex/{perspective}.md
+    └── staging/                ← session-staged artifacts for Wrap-up to promote (PASS only)
+        ├── plans/{slug}.md
+        ├── scenarios/{slug}.md
+        ├── checklists/{slug}.md
+        ├── decisions/{slug}.md
+        ├── references/{slug}.md
+        ├── discussions/{slug}.md
+        └── design/{slug}.md
 ```
 
 **No project-memory writes during Planning.** All `features/{feature-name}/...` and project-tier writes happen at Wrap-up — see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md).

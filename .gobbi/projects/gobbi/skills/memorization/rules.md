@@ -68,6 +68,12 @@ A slug is a **stable address that names the concept**. The test: *could a reader
 
 The fix is never "delete the date" or "delete a content word" — it is "replace the position / index / cryptic token with a word that names the subject."
 
+### 1.4 Ordered-step-dir carve-out (the `{N}-` prefix is exempt)
+
+The no-positional-index rule (§1.3) governs **memory file slugs**. It does **NOT** apply to the **session step-dir names** under `sessions/{date}-{session-id}/` — `1-ideation`, `2-preparation`, `3-planning`, `4-execution`, `5-wrap-up`, and the per-task `task-{NN}-{slug}` dirs. The leading `{N}-` ordinal on these dirs is a **carve-out**, the directory analog of the date-prefix exemption in §1.2: the number is the loop's fixed, meaningful position in the workflow (`1`=ideation … `5`=wrap-up), not a non-descriptive index into a vanished session. It orders the on-disk loop dirs so a reader sees the workflow sequence at a glance.
+
+This carve-out is a direct consequence of the **Scope boundary** at the top of this doc: this standard governs **memory files**, not the `sessions/` runtime tree. The session step-dirs are runtime working dirs whose shape is owned by [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md) (the single source of truth), not by §1.3. The `{N}-` prefix is mandatory on disk and must never be read as a §1.3 positional-index smell. (Note SEAM-3: the prefix lives on the **dir** only; the `workflow.{loop}` keys in `session.json` stay **bare**.)
+
 ---
 
 ## 2. Frontmatter standard

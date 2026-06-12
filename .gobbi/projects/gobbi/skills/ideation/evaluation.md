@@ -1,8 +1,8 @@
 # Ideation Loop — Evaluation Frame
 
-Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `ideation`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for an Ideation Loop's rawdata draft.
+Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `ideation`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for an Ideation Loop's working draft.
 
-The artifact under evaluation is the leader's draft at `sessions/{date}-{session-id}/ideation/rawdata/draft-iter{n}.md`. It contains: Scope Contract, Framed Problem (six forcing questions), Research Insights (internal + external, managed independently), Scenarios, Implementation Checklist, Design (directional decisions).
+The artifact under evaluation is the leader's draft at `sessions/{date}-{session-id}/1-ideation/working/draft-iter{n}.md`. It contains: Scope Contract, Framed Problem (six forcing questions), Research Insights (internal + external, managed independently), Scenarios, Implementation Checklist, Design (directional decisions).
 
 Scope Contract schema canonical at `evaluation/SKILL.md` § Scope Contract Schema.
 
@@ -381,7 +381,7 @@ When the evaluator runs Stage 3 on an Ideation artifact, the Karpathy-4 check ap
 ## Output reminder
 
 The evaluator writes:
-- Seven per-perspective files at `sessions/{date}-{session-id}/ideation/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
-- One overall file at `sessions/{date}-{session-id}/ideation/evaluation/iter{n}/{system}/overall.md`
+- Seven per-perspective files at `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
+- One overall file at `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{system}/overall.md`
 
 Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (from Stage 0; includes paths consumed for project/feature overrides + project mistakes + project rules + prior-phase canonical when applicable) → `## Locked Frame (Stage 1)` (augmented from this child doc's seed content + prior-iter open findings + overrides) → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.

@@ -1,6 +1,6 @@
 ---
 name: ideation
-description: MUST load when entering or revising the Ideation Loop. Covers research-backed discussion of What/Why/How and authoring of the loop's artifacts/ files.
+description: MUST load when entering or revising the Ideation Loop. Covers research-backed discussion of What/Why/How and authoring of the loop.s outputs/ files.
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write, Edit, AskUserQuestion
 ---
 
@@ -23,8 +23,8 @@ The agent in the leader role MUST observe these tier boundaries. The only write 
 
 | Memory tier | Path root | Access from leader role |
 |---|---|---|
-| **Session memory — own loop rawdata** | `sessions/{date}-{session-id}/ideation/rawdata/` | **READ + WRITE** — leader drafts, transcripts, discussion log |
-| **Session memory — own loop staging** | `sessions/{date}-{session-id}/ideation/staging/{scenarios,checklists,decisions,references,design,discussions,backlogs/{feature,project}}/` | **READ + WRITE (WORK only)** — DISCUSSION-approved decisions stage here; Wrap-up promotes to project memory |
+| **Session memory — own loop working** | `sessions/{date}-{session-id}/1-ideation/working/` | **READ + WRITE** — leader drafts, transcripts, discussion log |
+| **Session memory — own loop staging** | `sessions/{date}-{session-id}/1-ideation/staging/{scenarios,checklists,decisions,references,design,discussions,backlogs/{feature,project}}/` | **READ + WRITE (WORK only)** — DISCUSSION-approved decisions stage here; Wrap-up promotes to project memory |
 | **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the leader never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for overlap detection (Sub-step A) and reuse of prior decisions / scenarios / checklists. Never written; Wrap-up owns feature-memory writes |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for context (project mistakes, rules, prior designs). Never written; Wrap-up owns project-memory writes |
@@ -49,7 +49,7 @@ A contribution point is a decision where the user's domain knowledge produces a 
 
 > **The artifact is the program.**
 
-The loop's `artifacts/` produced in MEMORIZATION becomes the Planning Loop's input. Reasoning, dead ends, and alternatives explored live in the transcripts; the artifact is what survives. Spell out What / Why / How in the artifact — anything that is "obvious from the discussion" but not written down will be lost.
+The loop.s `outputs/` produced in MEMORIZATION becomes the Planning Loop's input. Reasoning, dead ends, and alternatives explored live in the transcripts; the artifact is what survives. Spell out What / Why / How in the artifact — anything that is "obvious from the discussion" but not written down will be lost.
 
 > **Stay in scope.**
 
@@ -78,8 +78,8 @@ Run sub-steps A → B → C → D in order. Each sub-step's procedure block is b
 
 **Outputs**
 - Approved drafts (captured in transcript) for: Framed Problem, Scope Contract, Internal Insights, External Insights, Scenarios, Implementation Checklist, Design Decisions
-- External reference promotion list — slugs + external insights ready for WORK to stage at `sessions/{date}-{session-id}/ideation/staging/references/`
-- Backlog decision list — slugs ready for WORK to stage at `sessions/{date}-{session-id}/ideation/staging/backlogs/feature/` and `sessions/{date}-{session-id}/ideation/staging/backlogs/project/`
+- External reference promotion list — slugs + external insights ready for WORK to stage at `sessions/{date}-{session-id}/1-ideation/staging/references/`
+- Backlog decision list — slugs ready for WORK to stage at `sessions/{date}-{session-id}/1-ideation/staging/backlogs/feature/` and `sessions/{date}-{session-id}/1-ideation/staging/backlogs/project/`
 - Discussion log (manager-captured user-decision exchanges)
 
 **Exit checklist**
@@ -185,11 +185,11 @@ Narrow the framed problem to a single workflow-sized `{Project, Feature, Task}` 
 | 1 | Leader | Sub-step A output (Framed Problem); existing `features/` | Enumerate candidate tasks as `{Project, Feature, Task}` triplets at one-workflow-sized granularity | Candidate list |
 | 2 | Leader | Candidate list | Dependency analysis — propose first candidate (fewest prereqs, most downstream unblocked) | Recommended first candidate + rationale |
 | 3a | Leader | Recommended candidate | Identify feature directory bootstrapping requirements | Required feature directory paths |
-| 3b | Manager | Required session paths | Bootstrap the session loop tree at `sessions/{date}-{session-id}/ideation/{rawdata,staging,evaluation}/` | Created session directory tree |
+| 3b | Manager | Required session paths | Bootstrap the session loop tree at `sessions/{date}-{session-id}/1-ideation/{working,staging,evaluation}/` | Created session directory tree |
 | 4a | Leader | Recommended candidate; research | Provide field values for the Scope Contract template | Scope Contract draft |
 | 4b | Manager | Scope Contract draft | Run the active runtime's user-decision primitive | User decision |
 | 4c | User | Scope Contract draft | Lock the contract | Locked Scope Contract |
-| 5 | Leader | Candidate list minus picked candidate | Record deferred candidates as backlog **decisions** (paths + slugs) — tasks → staged at `sessions/{date}-{session-id}/ideation/staging/backlogs/feature/{slug}.md`; features → staged at `sessions/{date}-{session-id}/ideation/staging/backlogs/project/{slug}.md`. Wrap-up promotes to `features/{feature-name}/backlogs/` and top-level `backlogs/` respectively | Backlog decision list |
+| 5 | Leader | Candidate list minus picked candidate | Record deferred candidates as backlog **decisions** (paths + slugs) — tasks → staged at `sessions/{date}-{session-id}/1-ideation/staging/backlogs/feature/{slug}.md`; features → staged at `sessions/{date}-{session-id}/1-ideation/staging/backlogs/project/{slug}.md`. Wrap-up promotes to `features/{feature-name}/backlogs/` and top-level `backlogs/` respectively | Backlog decision list |
 
 Decisions happen here; the **files** are written in WORK.
 
@@ -248,13 +248,13 @@ Research internal codebase and external prior art deeply enough that every downs
 | 3b | Manager | Insights package | Surface to user | User reaction |
 | 3c | User | Insights | Push back where applicable | Pushback notes |
 | 3d | Leader | Pushback notes | Revise insights | Confirmed internal + external insights |
-| 4 | Leader | Confirmed external insights | Decide reference slug per external insight for WORK to **stage** at `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md`. Internal insights inform design but do not stage as reference files; they live in the Decisions Log and design rationale | External reference promotion list |
+| 4 | Leader | Confirmed external insights | Decide reference slug per external insight for WORK to **stage** at `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md`. Internal insights inform design but do not stage as reference files; they live in the Decisions Log and design rationale | External reference promotion list |
 
 **Outputs**
 
 - Confirmed **internal insights** (per the Insight format defined in the [research skill](../research/SKILL.md))
 - Confirmed **external insights** (per the Insight format defined in the [research skill](../research/SKILL.md))
-- **External reference promotion list** — `{slug}.md` per confirmed external insight, ready for WORK to stage at `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md`. Internal insights do not stage as reference files; they live in the Decisions Log and design rationale. Wrap-up promotes staged references to `features/{feature-name}/references/` after the session completes
+- **External reference promotion list** — `{slug}.md` per confirmed external insight, ready for WORK to stage at `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md`. Internal insights do not stage as reference files; they live in the Decisions Log and design rationale. Wrap-up promotes staged references to `features/{feature-name}/references/` after the session completes
 
 ---
 
@@ -292,32 +292,32 @@ Convert confirmed research insights — together with the locked Scope Contract 
 ## WORK Phase
 
 **Purpose**
-Persist every DISCUSSION decision into durable session artifacts — the rawdata draft, **staged** reference files for every confirmed external research insight, **staged** backlog entries for everything deferred — so the loop's decisions survive into session memory. A **documentation pass plus session-memory staging**: no new design content, every decision was approved during DISCUSSION. (Internal insights do not stage as reference files; they live in the Decisions Log and design rationale.) Project memory is **not** written here; Wrap-up promotes staged artifacts to `features/{feature-name}/...` after the session completes.
+Persist every DISCUSSION decision into durable session artifacts — the working draft, **staged** reference files for every confirmed external research insight, **staged** backlog entries for everything deferred — so the loop's decisions survive into session memory. A **documentation pass plus session-memory staging**: no new design content, every decision was approved during DISCUSSION. (Internal insights do not stage as reference files; they live in the Decisions Log and design rationale.) Project memory is **not** written here; Wrap-up promotes staged artifacts to `features/{feature-name}/...` after the session completes.
 
 **Inputs**
 - DISCUSSION outputs (approved drafts captured in the parent transcript)
 - Reference promotion list from Sub-step C
 - Backlog decision list from Sub-step B
-- Existing session directory tree at `sessions/{date}-{session-id}/ideation/` (bootstrapped by the manager)
+- Existing session directory tree at `sessions/{date}-{session-id}/1-ideation/` (bootstrapped by the manager)
 
 **Procedure**
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
-| 1 | Leader | DISCUSSION outputs (in parent transcript); required-sections template | Write the rawdata draft using the required-sections template | `sessions/{date}-{session-id}/ideation/rawdata/draft-iter{n}.md` |
-| 2 | Leader | Reference promotion list (Sub-step C output) | For each external insight, stamp the [`references.md`](../memorization/templates/references.md) template at `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md` — fill `title`, `source`, `type`, `accessed`, `session`, `tags`, Insight, Why-it-applies, Source, and Excerpt (if applicable). Skip duplicates with reason in the Decisions Log | One staged reference file per insight |
-| 3 | Leader | Backlog decision list (Sub-step B output) | Stamp the [`backlogs.md`](../memorization/templates/backlogs.md) template at `sessions/{date}-{session-id}/ideation/staging/backlogs/feature/{slug}.md` (task backlog) and `sessions/{date}-{session-id}/ideation/staging/backlogs/project/{slug}.md` (feature backlog) | Staged backlog files |
-| 4 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section in the rawdata draft — summarize forcing-question answers, scope confirmation, contribution-point answers, scenarios / checklist / design approvals, reference and backlog decisions | Populated Decisions Log |
-| 5 | Leader | Rawdata draft + staged references + staged backlogs | Verify the WORK exit checklist | Completion signal, or gap surfaced to the manager |
+| 1 | Leader | DISCUSSION outputs (in parent transcript); required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/1-ideation/working/draft-iter{n}.md` |
+| 2 | Leader | Reference promotion list (Sub-step C output) | For each external insight, stamp the [`references.md`](../memorization/templates/references.md) template at `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` — fill `title`, `source`, `type`, `accessed`, `session`, `tags`, Insight, Why-it-applies, Source, and Excerpt (if applicable). Skip duplicates with reason in the Decisions Log | One staged reference file per insight |
+| 3 | Leader | Backlog decision list (Sub-step B output) | Stamp the [`backlogs.md`](../memorization/templates/backlogs.md) template at `sessions/{date}-{session-id}/1-ideation/staging/backlogs/feature/{slug}.md` (task backlog) and `sessions/{date}-{session-id}/1-ideation/staging/backlogs/project/{slug}.md` (feature backlog) | Staged backlog files |
+| 4 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section in the working draft — summarize forcing-question answers, scope confirmation, contribution-point answers, scenarios / checklist / design approvals, reference and backlog decisions | Populated Decisions Log |
+| 5 | Leader | Working draft + staged references + staged backlogs | Verify the WORK exit checklist | Completion signal, or gap surfaced to the manager |
 
 **Outputs**
 
-- `sessions/{date}-{session-id}/ideation/rawdata/draft-iter{n}.md` — canonical rawdata draft, stamped to the required-sections template below
-- `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md` — staged; one file per confirmed Sub-step C **external** insight (zero only if external research produced no insights — record the reason in Decisions Log). Wrap-up promotes these to `features/{feature-name}/references/`
-- `sessions/{date}-{session-id}/ideation/staging/backlogs/feature/{slug}.md` — staged; zero or more (task backlog within the picked feature). Wrap-up promotes to `features/{feature-name}/backlogs/`
-- `sessions/{date}-{session-id}/ideation/staging/backlogs/project/{slug}.md` — staged; zero or more (deferred features). Wrap-up promotes to project-level `backlogs/`
+- `sessions/{date}-{session-id}/1-ideation/working/draft-iter{n}.md` — canonical working draft, stamped to the required-sections template below
+- `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` — staged; one file per confirmed Sub-step C **external** insight (zero only if external research produced no insights — record the reason in Decisions Log). Wrap-up promotes these to `features/{feature-name}/references/`
+- `sessions/{date}-{session-id}/1-ideation/staging/backlogs/feature/{slug}.md` — staged; zero or more (task backlog within the picked feature). Wrap-up promotes to `features/{feature-name}/backlogs/`
+- `sessions/{date}-{session-id}/1-ideation/staging/backlogs/project/{slug}.md` — staged; zero or more (deferred features). Wrap-up promotes to project-level `backlogs/`
 
-Required-sections template for the rawdata draft:
+Required-sections template for the working draft:
 
 ```markdown
 ## Scope Contract
@@ -327,7 +327,7 @@ Required-sections template for the rawdata draft:
 {Sub-step A output per the Framed Problem template: root cause + impact + success criteria + prior attempts + counterfactual + re-framing conclusion}
 
 ## Research Insights
-{Sub-step C output: confirmed internal + external insights with Source / Insight / Why. External insights link to their staged `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md`; internal insights are inline.}
+{Sub-step C output: confirmed internal + external insights with Source / Insight / Why. External insights link to their staged `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md`; internal insights are inline.}
 
 ## Scenarios
 {Sub-step D output: golden / edge / failure / (adversarial) scenarios}
@@ -343,8 +343,8 @@ Required-sections template for the rawdata draft:
 ```
 
 **Exit checklist**
-- [ ] Rawdata draft has all 7 required sections populated, no `TODO` / `TBD` / `<...>` placeholders
-- [ ] Every Sub-step C external insight has a corresponding `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md` (or a skip reason logged in Decisions Log)
+- [ ] Working draft has all 7 required sections populated, no `TODO` / `TBD` / `<...>` placeholders
+- [ ] Every Sub-step C external insight has a corresponding `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` (or a skip reason logged in Decisions Log)
 - [ ] Every Sub-step B deferred decision has a backlog entry at the correct level
 - [ ] Decisions Log cites every user-decision outcome
 - [ ] No content beyond what was approved in DISCUSSION
@@ -353,7 +353,7 @@ Required-sections template for the rawdata draft:
 
 - **No new content.** WORK does not introduce decisions the user did not approve in DISCUSSION. If a gap surfaces during persistence, raise it to the manager — re-entering DISCUSSION is preferred over silent invention.
 - **Cite the discussion.** Each section's content must be traceable to a DISCUSSION exchange in the parent transcript. The Decisions Log makes this explicit.
-- **Stay terse.** The rawdata draft is a record of decisions, not a re-derivation. Reasoning and alternatives live in transcripts; the artifact is the conclusion.
+- **Stay terse.** The working draft is a record of decisions, not a re-derivation. Reasoning and alternatives live in transcripts; the artifact is the conclusion.
 
 ---
 
@@ -365,9 +365,9 @@ Find the problems WORK missed. Two independent systems (Claude Code + Codex) eva
 See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
 
 **Inputs** (consumed from the WORK phase output)
-- `sessions/{date}-{session-id}/ideation/rawdata/draft-iter{n}.md`
-- `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md` files just staged in WORK
-- `sessions/{date}-{session-id}/ideation/staging/backlogs/{feature,project}/{slug}.md` files just staged in WORK
+- `sessions/{date}-{session-id}/1-ideation/working/draft-iter{n}.md`
+- `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` files just staged in WORK
+- `sessions/{date}-{session-id}/1-ideation/staging/backlogs/{feature,project}/{slug}.md` files just staged in WORK
 - The locked Scope Contract (for scope-creep checks)
 - The discussion log (manager-captured user-decision exchanges, for decisions traceability)
 
@@ -375,17 +375,17 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
-| 1 | Manager | WORK outputs (rawdata draft + references + backlogs); Scope Contract; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
+| 1 | Manager | WORK outputs (working draft + references + backlogs); Scope Contract; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
 | 2 | Evaluator | All step-1 inputs | Run the four-stage procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) per `evaluation/SKILL.md` | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` |
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
 | 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
-| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first** (so each iteration preserves a transcript + iter entry in `session.json` regardless of outcome). After MEMORIZATION, `PASS` exits the loop with a loop's `artifacts/`; `REVISE` re-enters DISCUSSION (iter increments; findings — `scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` — feed into the next DISCUSSION as input); `FAIL` escalates through the active runtime's user-decision primitive — manager presents options: (a) **revise** (accept as a REVISE re-entry if budget allows), (b) **abort ideation** (exit without a deliverable; document findings in MEMORIZATION), or (c) **accept with deferral** (accept the artifact as-is with deferral of the unevaluable finding to the backlog, user assumes responsibility) | Workflow-state verdict |
+| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first** (so each iteration preserves a transcript + iter entry in `session.json` regardless of outcome). After MEMORIZATION, `PASS` exits the loop with the loop's `outputs/`; `REVISE` re-enters DISCUSSION (iter increments; findings — `scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` — feed into the next DISCUSSION as input); `FAIL` escalates through the active runtime's user-decision primitive — manager presents options: (a) **revise** (accept as a REVISE re-entry if budget allows), (b) **abort ideation** (exit without a deliverable; document findings in MEMORIZATION), or (c) **accept with deferral** (accept the artifact as-is with deferral of the unevaluable finding to the backlog, user assumes responsibility) | Workflow-state verdict |
 
 **FAIL semantics for Ideation**: a `FAIL` verdict occurs when the artifact is unevaluable per the evaluation skill's W/W/H gate (Critical/75+ finding with no clear path to resolution by iteration alone) or when the evaluator's per-perspective aggregation yields a `FAIL` from a Critical finding at ≥ 75 confidence. Unlike `REVISE`, `FAIL` signals the artifact is **not improvable** by running another DISCUSSION iteration without a structural change to the framing or scope — the manager must escalate to the user to choose a resolution path. The three options above mirror the same FAIL escalation pattern used by Planning and Execution.
 
 **Outputs**
-- `sessions/{date}-{session-id}/ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
+- `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
 - Aggregated verdict recorded in workflow state (cross-system divergence is derived by comparing the per-system files at MEMORIZATION; no separate divergence file is written)
 
 **Exit checklist**
@@ -397,58 +397,58 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 ## MEMORIZATION Phase
 
 **Purpose**
-Persist every iteration's evidence into session memory, and — on the final `PASS` iteration — also emit the loop's `artifacts/` and stage typed-finding artifacts. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `REVISE`, `PASS`, or `FAIL`) so each iteration leaves a durable audit trail before the loop either restarts, completes, or escalates. Project memory is **not** written here; Wrap-up handles session → project promotion after the workflow completes.
+Persist every iteration's evidence into session memory, and — on the final `PASS` iteration — also emit the loop.s `outputs/` and stage typed-finding artifacts. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `REVISE`, `PASS`, or `FAIL`) so each iteration leaves a durable audit trail before the loop either restarts, completes, or escalates. Project memory is **not** written here; Wrap-up handles session → project promotion after the workflow completes.
 
 See [memorization skill](../memorization/SKILL.md) for template-stamping conventions, and [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md) for the manager's spawn / collect orchestration.
 
 **Inputs**
-- `sessions/{date}-{session-id}/ideation/rawdata/draft-iter{n}.md` — current iteration's WORK output
-- `sessions/{date}-{session-id}/ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` (cross-system divergence derived by comparing these per-perspective files)
+- `sessions/{date}-{session-id}/1-ideation/working/draft-iter{n}.md` — current iteration's WORK output
+- `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` (cross-system divergence derived by comparing these per-perspective files)
 - `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
-- `sessions/{date}-{session-id}/ideation/rawdata/discussion-log.md` — manager-captured user-decision exchanges
+- `sessions/{date}-{session-id}/1-ideation/working/discussion-log.md` — manager-captured user-decision exchanges
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 
 **Procedure**
 
 | # | When | Agent | Operation | Source | Target | Action |
 |---|---|---|---|---|---|---|
-| 1 | every iter | Assistant | **CREATE** | `session.json.transcriptPath` (tilde-expand `$HOME` on read; `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env) | `sessions/{date}-{session-id}/ideation/rawdata/transcript-iter{n}.jsonl` | Preserve raw transcript turns from the iteration window (DISCUSSION start through verdict). Filter to ideation-loop turns; drop unrelated lines if multi-loop transcript |
+| 1 | every iter | Assistant | **CREATE** | `session.json.transcriptPath` (tilde-expand `$HOME` on read; `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env) | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | Copy each agent.s raw transcript into the single session-root `transcripts/` dir — one immutable `{role}-{agentId}.jsonl` per agent run, accumulating across all loops by distinct `agentId`. No per-loop or per-iter snapshot. See [`orchestration/templates/session-tree.md` § Transcript rules](../orchestration/templates/session-tree.md) |
 | 2 | every iter | Assistant | **UPSERT** | This iteration's verdict + iter number | `sessions/{date}-{session-id}/session.json` | Upsert (insert-or-replace) `workflow.ideation.iterations[]` entry keyed by `iter` with full schema `{iter, verdict, finishedAt, evaluation_dir: "evaluation/iter{n}/"}`. Idempotent on re-run: re-running MEMORIZATION on the same iter overwrites the entry, never appends a duplicate. Preserve all prior fields. Do **not** set `workflow.ideation.finishedAt` (loop-level) yet — that's PASS-only, Step 8 |
 | 3 | every iter | Assistant | **GUARD** | This iteration's verdict | — | If verdict is `REVISE`: stop here. The loop re-enters DISCUSSION with this iter's evaluator findings as input. Steps 4–10 are skipped because there is no canonical artifact yet. If verdict is `FAIL`: stop here. The manager escalates through the active runtime's user-decision primitive (revise / abort-ideation / accept-with-deferral per the EVALUATION phase procedure); Steps 4–10 are skipped. If verdict is `PASS`: continue |
-| 4 | PASS only | Assistant | **CREATE** | Rawdata draft + both systems' evaluator findings + discussion log + cross-system divergence (derived by comparing per-system files) | `sessions/{date}-{session-id}/ideation/artifacts/` | Integrate sources into canonical artifact per the required-sections template. Include cross-system divergence summary in the Evaluation summary section. This is the Planning Loop's briefing source |
-| 5 | PASS only | Assistant | **CREATE** | All typed findings (cumulative across iters 1..n) | `sessions/{date}-{session-id}/ideation/staging/{type}/{slug}.md` per the deterministic Type + Domain routing in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) | One staged file per finding, stamped to the matching template. **No shortcut routing** — every Type + Domain combination uses the canonical table; `general/general` is a contract violation |
-| 6 | PASS only | Assistant | **CREATE** | Canonical draft Design section | `sessions/{date}-{session-id}/ideation/staging/design/{slug}.md` | Per design topic, stamped to the design template |
-| 7 | PASS only | Assistant | **CREATE** | discussion-log substantive topics | `sessions/{date}-{session-id}/ideation/staging/discussions/{slug}.md` | Per substantive user-decision topic, stamped to the discussions template |
+| 4 | PASS only | Assistant | **CREATE** | Working draft + both systems' evaluator findings + discussion log + cross-system divergence (derived by comparing per-system files) | `sessions/{date}-{session-id}/1-ideation/outputs/` | Integrate sources into canonical artifact per the required-sections template. Include cross-system divergence summary in the Evaluation summary section. This is the Planning Loop's briefing source |
+| 5 | PASS only | Assistant | **CREATE** | All typed findings (cumulative across iters 1..n) | `sessions/{date}-{session-id}/1-ideation/staging/{type}/{slug}.md` per the deterministic Type + Domain routing in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) | One staged file per finding, stamped to the matching template. **No shortcut routing** — every Type + Domain combination uses the canonical table; `general/general` is a contract violation |
+| 6 | PASS only | Assistant | **CREATE** | Canonical draft Design section | `sessions/{date}-{session-id}/1-ideation/staging/design/{slug}.md` | Per design topic, stamped to the design template |
+| 7 | PASS only | Assistant | **CREATE** | discussion-log substantive topics | `sessions/{date}-{session-id}/1-ideation/staging/discussions/{slug}.md` | Per substantive user-decision topic, stamped to the discussions template |
 | 8 | PASS only | Assistant | **UPDATE** | Loop completion | `sessions/{date}-{session-id}/session.json` | Set `workflow.ideation.finishedAt`, set `workflow.ideation.verdict: PASS`, preserve `iterations[]` history |
 
 **Finding routing** — see [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) for the complete Type + Domain → staging-subdir routing table. Ideation MEMORIZATION applies the routing table without improvisation; all destinations are session staging (Wrap-up moves them to project memory).
 
-**Cumulative staging across iterations**: when iter `n` reaches `PASS`, MEMORIZATION stages the **union** of (a) all `disposition: addressed` and `disposition: open` findings from this iter, and (b) all `disposition: addressed` and `disposition: open` findings carried forward from iter 1..n-1 (sourced by reading prior iter per-perspective files at `sessions/.../ideation/evaluation/iter{m}/{system}/{perspective}.md` for m < n). `disposition: superseded` findings stage to `staging/decisions/` with a `supersedes:` field. `disposition: disputed` findings stage to `staging/decisions/` with the dispute rationale. This guarantees no `PASS`-iter staging silently drops earlier-iter constructive findings.
+**Cumulative staging across iterations**: when iter `n` reaches `PASS`, MEMORIZATION stages the **union** of (a) all `disposition: addressed` and `disposition: open` findings from this iter, and (b) all `disposition: addressed` and `disposition: open` findings carried forward from iter 1..n-1 (sourced by reading prior iter per-perspective files at `sessions/.../1-ideation/evaluation/iter{m}/{system}/{perspective}.md` for m < n). `disposition: superseded` findings stage to `staging/decisions/` with a `supersedes:` field. `disposition: disputed` findings stage to `staging/decisions/` with the dispute rationale. This guarantees no `PASS`-iter staging silently drops earlier-iter constructive findings.
 
 **Idempotency for CREATE operations**: all CREATE steps below write-or-overwrite the target file path. The path is deterministic per iter / per finding slug, so re-running MEMORIZATION on the same iter produces the same files with identical content. Slug collisions follow the rule in `evaluation/SKILL.md` § Slug + collision policy.
 
-**Discussion-log lifecycle** *(Ideation-specific documentation)*: `sessions/.../ideation/rawdata/discussion-log.md` is created by the **manager** (DISCUSSION live) and appended after each user-decision exchange — one section per exchange with format `## YYYY-MM-DD HH:MM — Q: ... | A: ... | Decision: ...`. REVISE iterations preserve the prior discussion-log; new iter exchanges are appended in chronological order in the same file. MEMORIZATION reads this file at Step 1 (input load) and Step 7 (discussions staging); MEMORIZATION never writes to discussion-log. All five workflow loops use the same discussion-log pattern; this is the canonical description. Loops that defer to "manager-captured user-decision exchanges" in their MEMORIZATION procedure follow the same mechanics without re-specifying them.
+**Discussion-log lifecycle** *(Ideation-specific documentation)*: `sessions/.../1-ideation/working/discussion-log.md` is created by the **manager** (DISCUSSION live) and appended after each user-decision exchange — one section per exchange with format `## YYYY-MM-DD HH:MM — Q: ... | A: ... | Decision: ...`. REVISE iterations preserve the prior discussion-log; new iter exchanges are appended in chronological order in the same file. MEMORIZATION reads this file at Step 1 (input load) and Step 7 (discussions staging); MEMORIZATION never writes to discussion-log. All five workflow loops use the same discussion-log pattern; this is the canonical description. Loops that defer to "manager-captured user-decision exchanges" in their MEMORIZATION procedure follow the same mechanics without re-specifying them.
 
 **Outputs**
 
 Every iteration produces:
-- `sessions/{date}-{session-id}/ideation/rawdata/transcript-iter{n}.jsonl` — preserved transcript
+- `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` — preserved transcript
 - `sessions/{date}-{session-id}/session.json` — appended `iterations[]` entry with this iter's verdict
 
 Only the `PASS` iteration also produces:
-- `sessions/{date}-{session-id}/ideation/artifacts/` — canonical artifact (Planning Loop input)
-- `sessions/{date}-{session-id}/ideation/staging/{scenarios,checklists,decisions,references,design,discussions}/{slug}.md` — staged session artifacts for Wrap-up to promote
+- `sessions/{date}-{session-id}/1-ideation/outputs/` — canonical artifact (Planning Loop input)
+- `sessions/{date}-{session-id}/1-ideation/staging/{scenarios,checklists,decisions,references,design,discussions}/{slug}.md` — staged session artifacts for Wrap-up to promote
 - `sessions/{date}-{session-id}/session.json` — `workflow.ideation.finishedAt` and final `verdict: PASS` set
 
 **Exit checklist**
 
 Every iteration:
-- [ ] Transcript jsonl preserved at `rawdata/transcript-iter{n}.jsonl`
+- [ ] Each agent transcript copied to session-root `transcripts/{role}-{agentId}.jsonl`
 - [ ] `session.json.workflow.ideation.iterations[]` includes this iter's `{iter, verdict, finishedAt, evaluation_dir: "evaluation/iter{n}/"}` (full schema; do not omit `evaluation_dir`)
 - [ ] No writes to project memory
 
 `PASS` iteration additionally:
-- [ ] Canonical `ideation/artifacts/` written and matches the required-sections shape
+- [ ] Canonical `1-ideation/outputs/` written and matches the required-sections shape
 - [ ] Every evaluator finding staged to the correct `staging/` destination per finding type
 - [ ] Design / discussions derivables staged under `staging/`
 - [ ] `session.json.workflow.ideation.finishedAt` and final `verdict: PASS` set
@@ -468,22 +468,22 @@ All writes during the Ideation Loop are **session-scoped**. Wrap-up promotes the
 
 | Path | Written by | Written |
 |---|---|---|
-| `sessions/{date}-{session-id}/ideation/rawdata/draft-iter{n}.md` | leader (WORK) | every iteration |
-| `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md` | leader (WORK) | per confirmed Sub-step C external insight |
-| `sessions/{date}-{session-id}/ideation/staging/backlogs/feature/{slug}.md` | leader (WORK) | per Sub-step B task-backlog decision |
-| `sessions/{date}-{session-id}/ideation/staging/backlogs/project/{slug}.md` | leader (WORK) | per Sub-step B feature-backlog decision |
-| `sessions/{date}-{session-id}/ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
-| `sessions/{date}-{session-id}/ideation/rawdata/transcript-iter{n}.jsonl` | assistant (MEMORIZATION) | per iter — preserved Claude Code transcript window |
-| `sessions/{date}-{session-id}/ideation/artifacts/` | assistant (MEMORIZATION) | once per loop, integrating rawdata draft + evaluator findings + cross-system divergence summary |
-| `sessions/{date}-{session-id}/ideation/staging/scenarios/{slug}.md` | assistant (MEMORIZATION) | per `scenario_gap` finding |
-| `sessions/{date}-{session-id}/ideation/staging/checklists/{slug}.md` | assistant (MEMORIZATION) | per `checklist_gap` finding |
-| `sessions/{date}-{session-id}/ideation/staging/decisions/{slug}.md` | assistant (MEMORIZATION) | per `design_flaw` / `assumption_risk` finding |
-| `sessions/{date}-{session-id}/ideation/staging/design/{slug}.md` | assistant (MEMORIZATION) | per design topic |
-| `sessions/{date}-{session-id}/ideation/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | per substantive user-decision topic |
-| `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md` (supplementary) | assistant (MEMORIZATION) | per `general` finding with citable external pattern (atop WORK-staged) |
+| `sessions/{date}-{session-id}/1-ideation/working/draft-iter{n}.md` | leader (WORK) | every iteration |
+| `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` | leader (WORK) | per confirmed Sub-step C external insight |
+| `sessions/{date}-{session-id}/1-ideation/staging/backlogs/feature/{slug}.md` | leader (WORK) | per Sub-step B task-backlog decision |
+| `sessions/{date}-{session-id}/1-ideation/staging/backlogs/project/{slug}.md` | leader (WORK) | per Sub-step B feature-backlog decision |
+| `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
+| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (MEMORIZATION) | per iter — preserved transcript window |
+| `sessions/{date}-{session-id}/1-ideation/outputs/` | assistant (MEMORIZATION) | once per loop, integrating working draft + evaluator findings + cross-system divergence summary |
+| `sessions/{date}-{session-id}/1-ideation/staging/scenarios/{slug}.md` | assistant (MEMORIZATION) | per `scenario_gap` finding |
+| `sessions/{date}-{session-id}/1-ideation/staging/checklists/{slug}.md` | assistant (MEMORIZATION) | per `checklist_gap` finding |
+| `sessions/{date}-{session-id}/1-ideation/staging/decisions/{slug}.md` | assistant (MEMORIZATION) | per `design_flaw` / `assumption_risk` finding |
+| `sessions/{date}-{session-id}/1-ideation/staging/design/{slug}.md` | assistant (MEMORIZATION) | per design topic |
+| `sessions/{date}-{session-id}/1-ideation/staging/discussions/{slug}.md` | assistant (MEMORIZATION) | per substantive user-decision topic |
+| `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` (supplementary) | assistant (MEMORIZATION) | per `general` finding with citable external pattern (atop WORK-staged) |
 | `sessions/{date}-{session-id}/session.json` | assistant (MEMORIZATION) | loop completion timestamps, iter, verdict |
 
-The session directory tree at `sessions/{date}-{session-id}/ideation/{rawdata,staging,evaluation}/` is bootstrapped by the manager at Sub-step B Lock Scope. WORK and MEMORIZATION assume the tree exists on entry and surface an error to the manager if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Ideation; Wrap-up creates them as needed during project-memory promotion.
+The session directory tree at `sessions/{date}-{session-id}/1-ideation/{working,staging,evaluation}/` is bootstrapped by the manager at Sub-step B Lock Scope. WORK and MEMORIZATION assume the tree exists on entry and surface an error to the manager if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Ideation; Wrap-up creates them as needed during project-memory promotion.
 
 ---
 
@@ -492,8 +492,8 @@ The session directory tree at `sessions/{date}-{session-id}/ideation/{rawdata,st
 - Never bring opinion to DISCUSSION without research backing it — opinions without evidence dilute the discussion.
 - Never make a What / Why / How decision unilaterally — the manager and user approve every choice through the active runtime's user-decision primitive.
 - Never expand scope during WORK — out-of-scope items go to backlog or re-enter DISCUSSION.
-- Never silently drop a Sub-step C external insight in WORK — stage it at `sessions/{date}-{session-id}/ideation/staging/references/{slug}.md` or log the skip reason in the Decisions Log.
-- Never write to project memory (`features/{feature-name}/...` or top-level `backlogs/`) during Ideation — all writes are session-scoped under `sessions/{date}-{session-id}/ideation/`. Wrap-up handles session → project promotion.
+- Never silently drop a Sub-step C external insight in WORK — stage it at `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` or log the skip reason in the Decisions Log.
+- Never write to project memory (`features/{feature-name}/...` or top-level `backlogs/`) during Ideation — all writes are session-scoped under `sessions/{date}-{session-id}/1-ideation/`. Wrap-up handles session → project promotion.
 - Always cite sources for research insights and anchor every checklist item to a confirmed internal or external insight.
 - Always specify a validation method for every design decision.
 - Always disagree when you disagree — surface technical conflicts with evidence.
