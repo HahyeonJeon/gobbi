@@ -22,7 +22,7 @@ Inputs to a RECORD run:
 
 The job of RECORD: **make every iteration's evidence durable, and on PASS make the loop's decisions promotable**. It is not a re-derivation step — every decision was already approved in DISCUSSION / surfaced in EVALUATION; RECORD persists what survived.
 
-Orchestration concerns — spawn, brief, collect, ITER/EXIT advancement — are defined separately in [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md).
+Orchestration concerns — spawn, brief, collect, ITER/EXIT advancement — are defined separately in [`orchestration/workflow/record.md`](../orchestration/workflow/record.md).
 
 For the complete inventory of memory paths (every session-record and memory location, description, writer, when written, and matching template), see [`memory-map.md`](memory-map.md). This SKILL.md defines the assistant's procedure; `memory-map.md` is the path / template reference. For the naming convention, the frontmatter base+extension standard, and the structure rules that govern every staged file, see [`rules.md`](rules.md) — the consolidated memory-rules reference. Staging files stamp the same base frontmatter those rules define; the staging-only fields they additionally carry (e.g. `mistake-candidate`) are stripped by Wrap-up on promotion (see § Staging-field stripping on promotion below).
 

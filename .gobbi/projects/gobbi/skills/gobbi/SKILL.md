@@ -175,7 +175,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | [`discussion`](../discussion/SKILL.md) | Manager + user dialogue mechanics — Question Card template, anti-sycophancy, Decision Classification, comfort patterns (Smart-skip / Spawned-session muting). Loaded on every user-decision primitive call. |
 | [`delegation`](../delegation/SKILL.md) | Manager → specialist handoff — per-role templates (leader / executor / evaluator / assistant), Load Directives (Principles → Rules → Skills → Mistakes), status contract, model selection. Loaded on every `Agent` tool call. |
 | [`evaluation`](../evaluation/SKILL.md) | Evaluator's 4-stage procedure (Target Understanding → Frame Build → Per-Perspective → Overall) across 7 perspectives + Overall. Phase-specific child docs at `{loop}/evaluation.md`. |
-| [`memorization`](../memorization/SKILL.md) | Assistant's synthesis + staging during every loop's MEMORIZATION sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
+| [`memorization`](../record/SKILL.md) | Assistant's synthesis + staging during every loop's MEMORIZATION sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
 | [`research`](../research/SKILL.md) | Investigation procedure for internal codebase + external prior art. Loaded by Ideation Sub-step C (and any other phase that needs reference-rich investigation). |
 | [`interview`](../interview/SKILL.md) | Project-bootstrap discovery. Manager-direct 5-wave Socratic interview. Writes directly to project memory (the bootstrap exception). |
 | [`codex`](../codex/SKILL.md) | Codex CLI invocation — `codex exec` patterns, sandbox + CWD discipline, hang/timeout handling, and dual-system evaluation use cases. |
@@ -251,7 +251,7 @@ The active runtime's user-decision primitive is mandatory for every decision poi
 
 All session work is scoped under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. Project memory lives at `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` and is written only by Wrap-up's MEMORIZATION (and by Interview during bootstrap).
 
-For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{working,evaluation,staging,outputs}/` subdirectories every loop produces), see [`memorization/SKILL.md` § Output paths](../memorization/SKILL.md#output-paths).
+For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{working,evaluation,staging,outputs}/` subdirectories every loop produces), see [`record/SKILL.md` § Output paths](../record/SKILL.md#output-paths).
 
 ---
 

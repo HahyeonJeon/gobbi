@@ -1,6 +1,6 @@
 # Workflow — Preparation (Orchestration)
 
-How the **manager** orchestrates the Preparation Loop. The `leader` and `assistant` specialists that participate load [`preparation/SKILL.md`](../../preparation/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`memorization/SKILL.md`](../../memorization/SKILL.md) (assistant's MEMORIZATION procedure).
+How the **manager** orchestrates the Preparation Loop. The `leader` and `assistant` specialists that participate load [`preparation/SKILL.md`](../../preparation/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's MEMORIZATION procedure).
 
 The Preparation Loop runs **between Ideation and Planning**. Its job is to verify that the **project memory** and the **workspace skills** are ready for the planning and execution that follow. If something is missing that downstream work would need, Preparation surfaces it and the user decides how to resolve.
 
@@ -86,7 +86,7 @@ WORK execution is more than documentation here, because Preparation's purpose is
 
 ## MEMORIZATION Phase (delegated to `assistant`)
 
-**Manager's job**: spawn the `assistant` agent. The assistant synthesizes canonical `preparation.md` per [`workflow/memorization.md`](memorization.md) and [`memorization/SKILL.md`](../../memorization/SKILL.md). For Preparation, the assistant also stages Wrap-up routing candidates:
+**Manager's job**: spawn the `assistant` agent. The assistant synthesizes canonical `preparation.md` per [`workflow/record.md`](record.md) and [`record/SKILL.md`](../../record/SKILL.md). For Preparation, the assistant also stages Wrap-up routing candidates:
 
 - New project-specific skills from this loop → `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md`
 - `scenario_gap` / `checklist_gap` findings → `sessions/{date}-{session-id}/2-preparation/staging/{scenarios,checklists}/{slug}.md`
@@ -148,7 +148,7 @@ Plus session-staged outputs by the leader during WORK — routed to project memo
 - Ideation output that becomes Preparation's input → [`workflow/ideation.md`](ideation.md)
 - Planning that follows Preparation → [`workflow/planning.md`](planning.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
-- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)
 - Project-specific skill template (for "Generate now" decisions) → [`interview/templates/project-skill.md`](../../interview/templates/project-skill.md)

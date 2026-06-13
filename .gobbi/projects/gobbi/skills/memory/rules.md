@@ -6,11 +6,11 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 
 > **CRITICAL disambiguation — three different "rules" things. Future agents MUST NOT conflate them.**
 >
-> - **`memorization/rules.md`** (this file) is a **SKILL doc** documenting *how memory works* — the naming convention, the frontmatter standard, and the structure rules.
-> - **`memorization/templates/rules.md`** is a **TYPE TEMPLATE** — the authoring template for files of the `rules/` memory type.
+> - **`memory/rules.md`** (this file) is a **SKILL doc** documenting *how memory works* — the naming convention, the frontmatter standard, and the structure rules.
+> - **`memory/templates/rules.md`** is a **TYPE TEMPLATE** — the authoring template for files of the `rules/` memory type.
 > - **`.gobbi/projects/{project-name}/rules/`** is the **memory `rules/` TYPE** — the directory that holds behavioral / structural invariants every agent must follow.
 >
-> Three distinct things, two of them sharing the filename `rules.md` at different paths. `memorization/rules.md` (this how-memory-works reference) ≠ `memorization/templates/rules.md` (the rules-type template) ≠ `rules/` (the behavioral-invariant memory type).
+> Three distinct things, two of them sharing the filename `rules.md` at different paths. `memory/rules.md` (this how-memory-works reference) ≠ `memory/templates/rules.md` (the rules-type template) ≠ `rules/` (the behavioral-invariant memory type).
 
 ---
 
@@ -176,7 +176,7 @@ Name the standard by what it *delivers*, not only by what it forbids. A good dev
 
 ### 4.2 Per-type section contracts
 
-A promoted doc obeys the same section contract its staging template (`memorization/templates/{type}.md`) already encodes. The templates govern *staging*; §4.2 promotes those section shapes to a *quality rule on the promoted doc* so the contract survives promotion:
+A promoted doc obeys the same section contract its staging template (`memory/templates/{type}.md`) already encodes. The templates govern *staging*; §4.2 promotes those section shapes to a *quality rule on the promoted doc* so the contract survives promotion:
 
 | Type | Body section contract |
 |---|---|
@@ -185,7 +185,7 @@ A promoted doc obeys the same section contract its staging template (`memorizati
 | `learnings` | `## Insight` → `## Context` → `## Why it matters` → `## How to apply` → `## Counter-cases` (where the insight does NOT hold). |
 | `notes` | `## What happened` → `## What shipped` → `## What got stuck` → `## What shifted` → `## Decisions to respect` → `## Next session`. The session journal + handoff — the home for narrative, the in-flight stuck, the standing decisions a future session must not re-litigate, and the next-session pointer. |
 
-Other types (`features`, `rules`, `references`, `plans`, `reviews`, `reports`, `backlogs`, and the four feature-subdir types) follow their own template's section shape in [`memorization/templates/`](templates/). The principle is uniform: **the promoted body matches its type's template contract**, so a reader of any doc of a given type meets a predictable shape.
+Other types (`features`, `rules`, `references`, `plans`, `reviews`, `reports`, `backlogs`, and the four feature-subdir types) follow their own template's section shape in [`memory/templates/`](templates/). The principle is uniform: **the promoted body matches its type's template contract**, so a reader of any doc of a given type meets a predictable shape.
 
 ### 4.3 Self-contained prose — never delete narrative, reclassify it
 

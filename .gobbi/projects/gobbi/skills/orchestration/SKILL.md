@@ -173,7 +173,7 @@ Every session writes its working memory under one root: `.gobbi/projects/{projec
 | **Loop entry (each of Steps 2-6)** | The loop's `{working, staging, evaluation}` subdirs (Execution: per-task `task-{NN}-{slug}/` quartets) | manager | Invokes [`scaffold-session-dir.sh`](scripts/scaffold-session-dir.sh) `<session-root> <step-dir>` at loop entry to materialize the 4-slot interior, so WORK / EVALUATION / MEMORIZATION can assume the tree exists. See [§ Loop-entry scaffold](#loop-entry-scaffold). |
 | **WORK (per iteration)** | `working/draft-iter{n}.md`, `discussion-log.md`, `research/{slug}.md`; the owning specialist's `staging/` typed findings | owning specialist (`leader` / `executor` / `assistant`) | `{N}-{loop}/working/` is the only scratch surface (no `tmp/` tier). Staging is the Wrap-up promotion source. |
 | **EVALUATION (per iteration)** | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `overall.md` | evaluator subagents (one per system) | Bare 7-vocabulary names, same set on both systems — see [§ Per-perspective evaluation file naming](#per-perspective-evaluation-file-naming) below. |
-| **MEMORIZATION (per iteration)** | `session.json` UPSERT (iter / verdict); transcript copy into session-root `transcripts/`; cumulative `staging/` findings | `assistant` subagent | Session-scoped only; project-memory promotion is NOT done here. See [`workflow/memorization.md`](workflow/memorization.md). |
+| **MEMORIZATION (per iteration)** | `session.json` UPSERT (iter / verdict); transcript copy into session-root `transcripts/`; cumulative `staging/` findings | `assistant` subagent | Session-scoped only; project-memory promotion is NOT done here. See [`workflow/record.md`](workflow/record.md). |
 | **On PASS (loop exit)** | `outputs/{free-filename}.md` — the loop's canonical output | `assistant` (MEMORIZATION) | PASS-only; absent on REVISE / FAIL iterations. The scaffold's `--pass` flag creates `outputs/`. |
 | **Every state transition** | `state.json` updated in place | manager | The live state-machine file used to recover position after `/clear` / `/compact` / resume — see [§ State persistence](#state-persistence). |
 | **Wrap-up (Step 6)** | `staging/` trees promoted to project memory; non-canonical session subdirs normalized going-forward | `assistant` (Wrap-up) | The only step that writes project memory. Deviations from the canonical shape below are normalized here — see [`wrap-up/SKILL.md` § Non-standard session-subdir cleanup](../wrap-up/SKILL.md#non-standard-session-subdir-cleanup-going-forward). |
@@ -296,7 +296,7 @@ The per-loop user-interaction gates are mode-specific and owned by the mode docs
 
 The manager owns no loop directly except Configuration; the manager coordinates.
 
-*Memorization detail (what files, scope of project-memory updates) lives in [`workflow/memorization.md`](workflow/memorization.md).*
+*Memorization detail (what files, scope of project-memory updates) lives in [`workflow/record.md`](workflow/record.md).*
 
 ---
 

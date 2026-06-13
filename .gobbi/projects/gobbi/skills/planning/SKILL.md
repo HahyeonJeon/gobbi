@@ -15,7 +15,7 @@ The Planning Loop runs **between Preparation and Execution**. It concentrates on
 
 Planning takes the locked Ideation artifacts (`1-ideation/outputs/`) + Preparation's readiness output (`2-preparation/outputs/`) as its inputs and produces `3-planning/outputs/` files the Execution Loop reads as its briefing source.
 
-The leader's role spans **both** DISCUSSION and WORK — same shape as Ideation and Preparation. The assistant owns MEMORIZATION (loaded via [`memorization/SKILL.md`](../memorization/SKILL.md)). The evaluator owns EVALUATION (loaded via [`evaluation/SKILL.md`](../evaluation/SKILL.md)).
+The leader's role spans **both** DISCUSSION and WORK — same shape as Ideation and Preparation. The assistant owns MEMORIZATION (loaded via [`record/SKILL.md`](../record/SKILL.md)). The evaluator owns EVALUATION (loaded via [`evaluation/SKILL.md`](../evaluation/SKILL.md)).
 
 The manager's orchestration of the Planning Loop (when to spawn the leader, EVALUATION coordination, MEMORIZATION delegation, ITER/EXIT decision) is in [`orchestration/workflow/planning.md`](../orchestration/workflow/planning.md).
 
@@ -297,7 +297,7 @@ Persist every DISCUSSION decision into a durable session draft. WORK is a **docu
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Leader | DISCUSSION outputs; required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` |
-| 2 | Leader | Locked task list + per-task assignments | Stamp `staging/plans/{slug}.md` per the [plans template](../memorization/templates/plans.md) — one file per substantive plan topic; on simple workflows a single `plans/main.md` is acceptable | One or more staged plan files |
+| 2 | Leader | Locked task list + per-task assignments | Stamp `staging/plans/{slug}.md` per the [plans template](../memory/templates/plans.md) — one file per substantive plan topic; on simple workflows a single `plans/main.md` is acceptable | One or more staged plan files |
 | 3 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section — task slicing decisions, agent type ambiguity resolutions, model overrides, USER CHALLENGE outcomes, self-review acceptances | Populated Decisions Log |
 | 4 | Leader | Working draft + staged plans | Verify the WORK exit checklist | Completion signal, or gap surfaced to manager |
 
@@ -409,7 +409,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 **Purpose**
 Persist every iteration's evidence into session memory and — on the final `PASS` iteration — emit the loop's `outputs/` files and stage cumulative typed-finding artifacts. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Project memory is **not** written here; Wrap-up handles session → project promotion.
 
-See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md) covers the manager's spawn / collect orchestration.
+See [memorization skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
 
 **Inputs**
 - `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` — current iteration's WORK output
@@ -419,7 +419,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 - WORK-staged plans under `sessions/{date}-{session-id}/3-planning/staging/plans/` (already in place — MEMORIZATION supplements, never replaces)
 
-**Procedure** — see [memorization/SKILL.md § MEMORIZATION Phase](../memorization/SKILL.md#memorization-phase) for the canonical step-by-step. Planning-specific notes:
+**Procedure** — see [record/SKILL.md § MEMORIZATION Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Planning-specific notes:
 
 - On PASS, the `outputs/` directory should include at least one file with `artifact_type: task-list` decomposing the Tasks + Agent assignments sections, one with `artifact_type: dependencies` capturing the dependency + lane tables, and the mandatory `artifact_type: memory-reads` audit file.
 - Cumulative finding staging on PASS: per the routing table in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity); planning-specific findings frequently land at `staging/decisions/` (design_flaw / assumption_risk) and `staging/scenarios/` / `staging/checklists/` (gaps the planning evaluator surfaced).
@@ -444,7 +444,7 @@ Every iteration:
 - [ ] No writes to feature memory or project memory
 
 `PASS` iteration additionally:
-- [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema)
+- [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema)
 - [ ] At least one artifact has `artifact_type: task-list`
 - [ ] At least one artifact has `artifact_type: memory-reads`
 - [ ] Every evaluator finding across iters `1..n` staged to the correct `staging/` destination per Type + Domain routing
@@ -477,7 +477,7 @@ All writes during the Planning Loop are **session-scoped**. Wrap-up promotes the
 | `sessions/{date}-{session-id}/3-planning/staging/backlogs/project/{slug}.md` | assistant (MEMORIZATION) | per `deferred` finding landing in the project backlog |
 | `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (MEMORIZATION) | per iter — preserved transcript window |
-| `sessions/{date}-{session-id}/3-planning/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: task-list`, ≥ 1 with `artifact_type: memory-reads` |
+| `sessions/{date}-{session-id}/3-planning/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: task-list`, ≥ 1 with `artifact_type: memory-reads` |
 | `sessions/{date}-{session-id}/session.json` | assistant (MEMORIZATION) | loop completion timestamps, iter, verdict |
 
 The session directory tree at `sessions/{date}-{session-id}/3-planning/{working,staging,evaluation}/` is bootstrapped by the manager at Planning Loop entry. WORK and MEMORIZATION assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Planning; Wrap-up creates them as needed during project-memory promotion.

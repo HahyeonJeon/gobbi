@@ -36,7 +36,7 @@ The manager:
 
 ## MEMORIZATION Phase (delegated to `assistant`)
 
-**Manager's job**: spawn the `assistant` agent for synthesis per [`workflow/memorization.md`](memorization.md). For Wrap-up, the canonical artifact is the handoff summary itself plus any final updates to project memory.
+**Manager's job**: spawn the `assistant` agent for synthesis per [`workflow/record.md`](record.md). For Wrap-up, the canonical artifact is the handoff summary itself plus any final updates to project memory.
 
 ### What Wrap-up commits — promotion writes, not session memory
 
@@ -77,5 +77,5 @@ Plus any new mistake entries and project-memory updates under `.gobbi/projects/{
 
 - Assistant's wrap-up procedure → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
-- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
-- Memory promotion → [`memorization/SKILL.md`](../../memorization/SKILL.md)
+- Synthesis orchestration → [`workflow/record.md`](record.md)
+- Memory promotion → [`record/SKILL.md`](../../record/SKILL.md)

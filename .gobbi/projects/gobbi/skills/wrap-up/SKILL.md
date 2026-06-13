@@ -32,7 +32,7 @@ The agent in the assistant role MUST observe these tier boundaries. Wrap-up's WO
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs,README.md}/` | **WRITE + UPSERT** — Wrap-up bootstraps the feature directory lazily and promotes staging → feature memory per the routing table |
 | **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **WRITE + UPSERT** — Wrap-up promotes project-scope staging (rules, project-wide design, project-level mistakes, learnings, reports, reviews, journal notes) |
 
-**Delete semantics**: Wrap-up NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`supersedes: <old-path>` on the new file; `status: superseded` + `superseded_by: <new-path>` on the old file). Physical deletion is forbidden. When an artifact reaches a terminal state (shipped, superseded, retired, dropped), Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model in [`memorization/templates/archive.md`](../memorization/templates/archive.md) — the file is never deleted. See [`memorization/SKILL.md` § Memory Access Matrix](../memorization/SKILL.md#memory-access-matrix) for the Wrap-up loop exception row.
+**Delete semantics**: Wrap-up NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`supersedes: <old-path>` on the new file; `status: superseded` + `superseded_by: <new-path>` on the old file). Physical deletion is forbidden. When an artifact reaches a terminal state (shipped, superseded, retired, dropped), Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md) — the file is never deleted. See [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix) for the Wrap-up loop exception row.
 
 **Idempotency**: Re-running Wrap-up on the same session produces identical project memory. Promotion targets are deterministic from staging file paths; collision policy uses stable finding-IDs (overwrite same-ID re-runs) + suffix disambiguation (distinct findings) — never silently overwriting distinct content.
 
@@ -83,7 +83,7 @@ Wrap-up inventories `staging/` **only** for promotion. The other four session-tr
 
 > **Supersession and move-on-terminal, never deletion.**
 
-Wrap-up NEVER deletes any project-memory file. When a promotion would supersede an existing file's claim, the new file carries a `supersedes: <old-file-path>` frontmatter field; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-file-path>` added (body preserved). Once the artifact reaches a terminal state (shipped, superseded, retired, dropped), Wrap-up moves the full file (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md`. Active directories show only live work; `archive/` holds the complete moved files. Physical deletion is forbidden at every step — see [`memorization/templates/archive.md`](../memorization/templates/archive.md) for the move-on-terminal model.
+Wrap-up NEVER deletes any project-memory file. When a promotion would supersede an existing file's claim, the new file carries a `supersedes: <old-file-path>` frontmatter field; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-file-path>` added (body preserved). Once the artifact reaches a terminal state (shipped, superseded, retired, dropped), Wrap-up moves the full file (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md`. Active directories show only live work; `archive/` holds the complete moved files. Physical deletion is forbidden at every step — see [`memory/templates/archive.md`](../memory/templates/archive.md) for the move-on-terminal model.
 
 > **Idempotent promotions.**
 
@@ -150,9 +150,9 @@ Read accumulated `staging/` directories across all prior loops, promote each fil
 | 2 | **Enumerate all staging across all loops** | For each loop directory in `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/` **plus `interview/`** (when an interview ran this session), recursively list `staging/` — and **only** `staging/`; never `transcripts/`, `working/`, `evaluation/`, or `outputs/` (per § Promotion-inventory rule). Build a master inventory at `sessions/{date}-{session-id}/5-wrap-up/working/staging-inventory.md` — every staging file path, sized + frontmatter-extracted. **Step 2.5 runs immediately after this step** — see `### Step 2.5` below for the prior-loop MEMORIZATION compliance scan that must complete before Step 3 |
 | 3 | **Determine feature destination** | Read `session.json.feature` for the canonical feature slug `{feature-name}` (set during Ideation Sub-step B Lock Scope). If `.gobbi/projects/{project-name}/features/{feature-name}/` does not exist, plan to bootstrap it lazily at Step 5. If it exists from prior sessions, capture pre-Wrap-up state of each sub-directory for collision detection |
 | 4 | **Apply routing table to each staging file** | For every staging file in the inventory: (a) identify staging type from path; (b) look up destination in the routing table; (c) read frontmatter for `mistake-candidate: true`, `supersedes:`, `project-scope: true`, `disposition: deferred` — these are routing modifiers; (d) resolve final destination per modifiers + collision policy; (e) if user-confirm is required (rules / project-wide design / mistake scope / unrouted file), return `NEEDS_CONTEXT` with a `user-question:` block — the manager uses the active runtime's user-decision primitive on your behalf, then re-delegates with the confirmed routing decision; (f) record routing decision in `working/promotion-manifest.md`. **Unrouted files escalate — never improvise** |
-| 5 | **Bootstrap + write to project memory** | For each routing decision: create the destination's parent directory if missing (lazy bootstrap); write the file at the destination per collision policy; for first write into `features/{feature-name}/`, also create or update `features/{feature-name}/README.md` per [`memorization/templates/feature-readme.md`](../memorization/templates/feature-readme.md); stamp the appropriate template from [`memorization/templates/`](../memorization/templates/) for each promotion. **Move-on-terminal**: when a collision resolution or incoming frontmatter (`shipped`, `superseded`, `retired`, `dropped`) indicates the existing destination file has reached a terminal state, stamp archival frontmatter on it and move it (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` before writing the new file — never delete it. Repoint any inbound references to the archive path. See [`memorization/templates/archive.md`](../memorization/templates/archive.md) for the move procedure |
-| 6 | **Write per-session journal entry** | Synthesize the session's work-log narrative — what the leader investigated, what the executor implemented, what the evaluator flagged, what the user decided. Write a single journal entry at `.gobbi/projects/{project-name}/notes/{date}-{slug}.md` per [`memorization/templates/notes.md`](../memorization/templates/notes.md). This is the per-session development journal — always one entry per session |
-| 7 | **Synthesize handoff summary** | Write the canonical handoff at `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (and any decomposed artifact files alongside) with required sections: Summary, Shipped, Deferred / Open, Decisions to respect, Pointers, Promotion summary. Each claim cites a verifiable artifact path. The artifact carries the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema) with `artifact_type: handoff` |
+| 5 | **Bootstrap + write to project memory** | For each routing decision: create the destination's parent directory if missing (lazy bootstrap); write the file at the destination per collision policy; for first write into `features/{feature-name}/`, also create or update `features/{feature-name}/README.md` per [`memory/templates/feature-readme.md`](../memory/templates/feature-readme.md); stamp the appropriate template from [`memory/templates/`](../memory/templates/) for each promotion. **Move-on-terminal**: when a collision resolution or incoming frontmatter (`shipped`, `superseded`, `retired`, `dropped`) indicates the existing destination file has reached a terminal state, stamp archival frontmatter on it and move it (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` before writing the new file — never delete it. Repoint any inbound references to the archive path. See [`memory/templates/archive.md`](../memory/templates/archive.md) for the move procedure |
+| 6 | **Write per-session journal entry** | Synthesize the session's work-log narrative — what the leader investigated, what the executor implemented, what the evaluator flagged, what the user decided. Write a single journal entry at `.gobbi/projects/{project-name}/notes/{date}-{slug}.md` per [`memory/templates/notes.md`](../memory/templates/notes.md). This is the per-session development journal — always one entry per session |
+| 7 | **Synthesize handoff summary** | Write the canonical handoff at `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (and any decomposed artifact files alongside) with required sections: Summary, Shipped, Deferred / Open, Decisions to respect, Pointers, Promotion summary. Each claim cites a verifiable artifact path. The artifact carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema) with `artifact_type: handoff` |
 
 **Outputs**
 
@@ -192,7 +192,7 @@ Project-memory writes (the substantive work):
 - **No silent drops.** Every staging file is accounted for in the promotion-manifest.
 - **No improvised destinations.** The routing table is the contract; unrouted files escalate.
 - **Cite the discussion.** Every routing decision that required the active runtime's user-decision primitive is traceable to the discussion log entry that authorized it.
-- **Stamp templates.** Every promotion uses the appropriate template from [`memorization/templates/`](../memorization/templates/) — freeform writes to project memory are forbidden.
+- **Stamp templates.** Every promotion uses the appropriate template from [`memory/templates/`](../memory/templates/) — freeform writes to project memory are forbidden.
 
 ### Step 2.5 — Prior-loop MEMORIZATION compliance check
 
@@ -284,7 +284,7 @@ All destination paths are relative to `.gobbi/projects/{project-name}/`.
 
 ### Frontmatter allowlist on promotion (strip staging-only fields)
 
-When Wrap-up promotes a staged file, it writes the destination with **ONLY** the base frontmatter + that type's extension fields (the per-type allowlist in [`memorization/rules.md` § 2`](../memorization/rules.md)). Staging-only fields that existed purely to route or annotate the file during the session are **stripped** — they never persist into project memory:
+When Wrap-up promotes a staged file, it writes the destination with **ONLY** the base frontmatter + that type's extension fields (the per-type allowlist in [`memory/rules.md` § 2`](../memory/rules.md)). Staging-only fields that existed purely to route or annotate the file during the session are **stripped** — they never persist into project memory:
 
 | Staging-only field | Disposition on promotion |
 |---|---|
@@ -293,7 +293,7 @@ When Wrap-up promotes a staged file, it writes the destination with **ONLY** the
 | `disposition` | **Stripped** when used purely as eval routing (e.g. `disposition: deferred` that routed the file to `backlogs/`). The destination type's own lifecycle field (e.g. backlogs `disposition: open|deferred`) is set fresh per the type spec. |
 | `promoted-from`, `promoted-at` | **Dropped.** `git log` + the base `session` + `created` fields already carry provenance; these ad-hoc keys are redundant drift and are never written to project memory. |
 
-Mechanism: the promotion step reads the staging frontmatter, applies the routing modifier (e.g. `mistake-candidate` → `mistakes/`), then writes the destination file through the per-type allowlist — base + extensions only. Any field not on the allowlist for the destination type is dropped. See [`memorization/rules.md` § 2.3](../memorization/rules.md) for the standard and [`memorization/SKILL.md` § Staging-field stripping on promotion](../memorization/SKILL.md#staging-field-stripping-on-promotion) for the reciprocal staging-side documentation.
+Mechanism: the promotion step reads the staging frontmatter, applies the routing modifier (e.g. `mistake-candidate` → `mistakes/`), then writes the destination file through the per-type allowlist — base + extensions only. Any field not on the allowlist for the destination type is dropped. See [`memory/rules.md` § 2.3](../memory/rules.md) for the standard and [`record/SKILL.md` § Staging-field stripping on promotion](../record/SKILL.md#staging-field-stripping-on-promotion) for the reciprocal staging-side documentation.
 
 **Collision policy** when destination file already exists:
 
@@ -306,7 +306,7 @@ Mechanism: the promotion step reads the staging frontmatter, applies the routing
 
 ### Archive typed-subdir routing on terminal-state moves
 
-When a promotion finds the destination file already terminal (incoming `status: shipped|superseded|retired|dropped`, or a supersession collision), Wrap-up stamps archival frontmatter and moves the full file (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` — the **typed** subdir, where `{type}` is the file's ORIGINAL type (`archive/decisions/`, `archive/backlogs/`, …). The moved file **keeps its original `type`** (`archive` is never a `type` value); the directory marks it archived. See [`memorization/templates/archive.md`](../memorization/templates/archive.md) and [`memorization/rules.md` § 2.1](../memorization/rules.md).
+When a promotion finds the destination file already terminal (incoming `status: shipped|superseded|retired|dropped`, or a supersession collision), Wrap-up stamps archival frontmatter and moves the full file (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` — the **typed** subdir, where `{type}` is the file's ORIGINAL type (`archive/decisions/`, `archive/backlogs/`, …). The moved file **keeps its original `type`** (`archive` is never a `type` value); the directory marks it archived. See [`memory/templates/archive.md`](../memory/templates/archive.md) and [`memory/rules.md` § 2.1](../memory/rules.md).
 
 ### Non-standard session-subdir cleanup (going-forward)
 
@@ -368,9 +368,9 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 **Purpose**
 Persist Wrap-up's iteration evidence into session memory and stamp the artifacts directory with the canonical handoff per the Artifact frontmatter schema. MEMORIZATION runs after **every** EVALUATION (whether `PASS`, `REVISE`, or `FAIL`).
 
-Wrap-up's MEMORIZATION is **uniquely permitted** to write to project memory (per the Wrap-up loop exception in [`memorization/SKILL.md` § Memory Access Matrix](../memorization/SKILL.md#memory-access-matrix)) — but in practice, the substantive project-memory writes happen during WORK (Steps 5 and 6 of the procedure above). MEMORIZATION's role is to seal those writes: stamp the handoff artifact with proper frontmatter, finalize the promotion manifest, upsert session.json.
+Wrap-up's MEMORIZATION is **uniquely permitted** to write to project memory (per the Wrap-up loop exception in [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix)) — but in practice, the substantive project-memory writes happen during WORK (Steps 5 and 6 of the procedure above). MEMORIZATION's role is to seal those writes: stamp the handoff artifact with proper frontmatter, finalize the promotion manifest, upsert session.json.
 
-See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md) covers the manager's spawn / collect orchestration.
+See [memorization skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
 
 **Inputs**
 - `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (and any decomposed artifact files) from WORK
@@ -380,7 +380,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 - `sessions/{date}-{session-id}/5-wrap-up/working/discussion-log.md`
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 
-**Procedure** — see [memorization/SKILL.md § MEMORIZATION Phase](../memorization/SKILL.md#memorization-phase) for the canonical step-by-step. Wrap-up-specific notes:
+**Procedure** — see [record/SKILL.md § MEMORIZATION Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Wrap-up-specific notes:
 
 - The substantive WRITE work for Wrap-up happens during WORK (Steps 5-6). MEMORIZATION's WRITE responsibility is limited to (a) sealing the handoff with proper frontmatter, (b) upserting session.json, (c) preserving the transcript.
 - On PASS, mandatory artifact_types: `handoff` (the canonical handoff summary), `memory-reads` (every prior loop's evaluation file consumed by Wrap-up's promotion-routing pass), `resolution-log` (every evaluator finding across all loops with its final disposition).
@@ -453,10 +453,10 @@ The session subdirectory tree at `sessions/{date}-{session-id}/5-wrap-up/{workin
 - **MUST bootstrap feature directory lazily** — create `features/{feature-name}/{sub-dir}/` on first write into that sub-directory, not eagerly.
 - **MUST write the per-session journal entry** at `notes/{date}-{slug}.md` capturing the work-log narrative — one entry per session.
 - **MUST be idempotent** — re-run on the same session produces identical project-memory state; collision policy keyed by stable `finding-id` frontmatter.
-- **MUST never delete** — supersession via `supersedes:` + `superseded_by:` frontmatter pairs; physical deletion is forbidden. When an artifact reaches a terminal state, move it (never delete) to `archive/{type}/` per the move-on-terminal model in [`memorization/templates/archive.md`](../memorization/templates/archive.md).
+- **MUST never delete** — supersession via `supersedes:` + `superseded_by:` frontmatter pairs; physical deletion is forbidden. When an artifact reaches a terminal state, move it (never delete) to `archive/{type}/` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md).
 - **MUST preserve session scratch** — `sessions/{date}-{session-id}/{N}-{loop}/working/`, `staging/`, `evaluation/iter{n}/` remain intact post-Wrap-up.
 - **MUST request user-confirm** for rules promotion, project-wide design promotion, mistake scope (feature vs project), and unrouted staging files — return `NEEDS_CONTEXT` with a `user-question:` block; the manager uses the active runtime's user-decision primitive on your behalf.
 - **MUST cite verifiable artifacts** in `5-wrap-up/outputs/` — every claim backed by a path the next session can follow.
 - **MUST never write to project memory during DISCUSSION** — DISCUSSION is read-only on project memory; WORK Steps 5-6 are the only project-memory write surfaces.
-- **MUST stamp templates** — every promotion uses the appropriate template from [`memorization/templates/`](../memorization/templates/); freeform writes to project memory are forbidden.
+- **MUST stamp templates** — every promotion uses the appropriate template from [`memory/templates/`](../memory/templates/); freeform writes to project memory are forbidden.
 - **MUST emit `workflow.finish`** on the final PASS iteration — after MEMORIZATION completes; the manager closes the session.

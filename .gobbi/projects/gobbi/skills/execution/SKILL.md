@@ -196,7 +196,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 **Purpose**
 Persist every iteration's evidence into session memory and — on the final `PASS` iteration for this task — emit the task's `outputs/` files + cumulative typed-finding stagings. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Project memory is **not** written here; Wrap-up handles session → project promotion.
 
-See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md) covers the manager's spawn / collect orchestration.
+See [memorization skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
 
 **Inputs**
 - `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/draft-iter{n}.md` — executor's notes for this iter
@@ -206,7 +206,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 - WORK-staged artifacts under `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/` (already in place — MEMORIZATION supplements, never replaces)
 
-**Procedure** — see [memorization/SKILL.md § MEMORIZATION Phase](../memorization/SKILL.md#memorization-phase) for the canonical step-by-step. Execution-specific notes:
+**Procedure** — see [record/SKILL.md § MEMORIZATION Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Execution-specific notes:
 
 - The `{loop}` token in the memorization procedure resolves to `4-execution/task-{NN}-{slug}` for Execution — every path is task-scoped under `sessions/.../4-execution/task-{NN}-{slug}/...`. The session.json field is `workflow.execution.iterations[]` keyed by `{task-id, iter}` (per-task iter, not loop-wide).
 - On PASS, the artifacts directory should include at least one file with `artifact_type: change-summary` (what was implemented + verification result), one with `artifact_type: verification-report` (commands run + output), and the mandatory `artifact_type: memory-reads` audit file.
@@ -232,7 +232,7 @@ Every iteration:
 - [ ] No writes to feature memory or project memory
 
 `PASS` iteration additionally:
-- [ ] `4-execution/task-{NN}-{slug}/outputs/` contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema)
+- [ ] `4-execution/task-{NN}-{slug}/outputs/` contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema)
 - [ ] At least one artifact has `artifact_type: change-summary`
 - [ ] At least one artifact has `artifact_type: verification-report`
 - [ ] At least one artifact has `artifact_type: memory-reads`
@@ -261,7 +261,7 @@ All writes during the Execution Loop are **session-scoped** under per-task subdi
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,changelogs,learnings,notes,backlogs/{feature,project}}/{slug}.md` | executor (WORK) or assistant (MEMORIZATION) | per mid-task discovery (executor) or per evaluator finding (assistant) |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (MEMORIZATION) | per iter — copied into the single session-root `transcripts/`, accumulating across loops |
-| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: change-summary`, ≥ 1 with `artifact_type: verification-report`, ≥ 1 with `artifact_type: memory-reads` |
+| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: change-summary`, ≥ 1 with `artifact_type: verification-report`, ≥ 1 with `artifact_type: memory-reads` |
 | `sessions/{date}-{session-id}/session.json` | assistant (MEMORIZATION) | per-task iter completion timestamps, iter, verdict |
 
 The session subdirectory tree at `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/{working,staging,evaluation}/` is bootstrapped by the manager when the Execution Loop enters each new task. WORK and MEMORIZATION assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Execution; Wrap-up creates them as needed during project-memory promotion.

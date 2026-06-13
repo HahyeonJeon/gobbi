@@ -1,6 +1,6 @@
 # Workflow — Planning (Orchestration)
 
-How the **manager** orchestrates the Planning Loop. The `leader` and `assistant` specialists that participate load [`planning/SKILL.md`](../../planning/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`memorization/SKILL.md`](../../memorization/SKILL.md) (assistant's MEMORIZATION procedure).
+How the **manager** orchestrates the Planning Loop. The `leader` and `assistant` specialists that participate load [`planning/SKILL.md`](../../planning/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's MEMORIZATION procedure).
 
 **Planning focuses on Who / When / Where.** Ideation concentrated on What / Why / How; Planning takes the locked idea and decides who implements what, in what order, where in the codebase.
 
@@ -85,7 +85,7 @@ WORK is short by design — the substantive thinking happened in DISCUSSION.
 
 ## MEMORIZATION Phase (delegated to `assistant`)
 
-**Manager's job**: spawn the `assistant` agent. The assistant synthesizes loop's `outputs/` per [`workflow/memorization.md`](memorization.md) and [`memorization/SKILL.md`](../../memorization/SKILL.md). For Planning, the assistant also:
+**Manager's job**: spawn the `assistant` agent. The assistant synthesizes loop's `outputs/` per [`workflow/record.md`](record.md) and [`record/SKILL.md`](../../record/SKILL.md). For Planning, the assistant also:
 
 - On `PASS`: stages the plan at `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` per the plans template; Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`
 - Stages `scenario_gap` / `checklist_gap` discoveries at `sessions/{date}-{session-id}/3-planning/staging/{scenarios,checklists}/{slug}.md`; Wrap-up promotes to `features/{feature-name}/`
@@ -147,7 +147,7 @@ The canonical tree is [`orchestration/templates/session-tree.md`](../templates/s
 - Leader's planning procedure → [`planning/SKILL.md`](../../planning/SKILL.md)
 - Ideation output that becomes Planning's input → [`workflow/ideation.md`](ideation.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
-- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)
 - Delegation prompt fields → [`delegation` § What Every Delegation Prompt Contains](../../delegation/SKILL.md#what-every-delegation-prompt-contains)

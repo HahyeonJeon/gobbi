@@ -10,7 +10,7 @@ Skill for the **Preparation Loop**. Defines what each of the four phases (DISCUS
 
 The Preparation Loop runs **between Ideation and Planning**. Its job is to verify that project memory and the workspace skill set are **ready** for the planning and execution that follow. If Ideation's locked design calls for TypeScript work, does the project's TypeScript-conventions skill exist? If Ideation produced scenarios, did the prior MEMORIZATION actually stage them? Any missing item that would block downstream work is surfaced; the user decides how to close the gap before Planning starts.
 
-The leader's role spans **both** DISCUSSION and WORK — same shape as Ideation. The assistant owns MEMORIZATION (loaded via [`memorization/SKILL.md`](../memorization/SKILL.md)). The evaluator owns EVALUATION (loaded via [`evaluation/SKILL.md`](../evaluation/SKILL.md)).
+The leader's role spans **both** DISCUSSION and WORK — same shape as Ideation. The assistant owns MEMORIZATION (loaded via [`record/SKILL.md`](../record/SKILL.md)). The evaluator owns EVALUATION (loaded via [`evaluation/SKILL.md`](../evaluation/SKILL.md)).
 
 The manager's orchestration of the Preparation Loop (when to spawn each specialist, perspective selection for EVALUATION, MEMORIZATION delegation, ITER/EXIT decision including the `RE-IDEATE` upstream re-entry) is in [`orchestration/workflow/preparation.md`](../orchestration/workflow/preparation.md).
 
@@ -235,7 +235,7 @@ Persist the DISCUSSION outputs into a session draft and execute every `generate-
 **Inputs**
 - DISCUSSION outputs (approved gap-resolution plan + readiness signal list, all captured in the parent transcript)
 - Existing session directory tree at `sessions/{date}-{session-id}/2-preparation/{working,staging,evaluation}/` (bootstrapped by the manager)
-- Stamping templates: [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) (for `generate-now` on skills), [`memorization/templates/`](../memorization/templates/) (for scenarios / checklists / decisions / etc.)
+- Stamping templates: [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) (for `generate-now` on skills), [`memory/templates/`](../memory/templates/) (for scenarios / checklists / decisions / etc.)
 
 **Procedure**
 
@@ -243,7 +243,7 @@ Persist the DISCUSSION outputs into a session draft and execute every `generate-
 |---|---|---|---|---|
 | 1 | Leader | DISCUSSION outputs; required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` |
 | 2 | Leader | `generate-now` decisions where the gap is a missing project-specific skill | For each: stamp the full [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) at `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md`. Wrap-up promotes to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | One staged skill directory per approved generation |
-| 3 | Leader | `generate-now` decisions where the gap is a missed memory promotion (scenario / checklist / decision / etc.) | For each: stamp the matching template from [`memorization/templates/`](../memorization/templates/) at `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md` | One staged file per missed promotion |
+| 3 | Leader | `generate-now` decisions where the gap is a missed memory promotion (scenario / checklist / decision / etc.) | For each: stamp the matching template from [`memory/templates/`](../memory/templates/) at `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md` | One staged file per missed promotion |
 | 4 | Leader | `defer` decisions | Record in the draft's "Out of scope gaps" section with severity + pointer; no staging write | Deferred list captured |
 | 5 | Leader | `skip` decisions | Record in the draft's "Decisions log" section with the user's stated reason; no staging write | Skipped list captured |
 | 6 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section — summarize per-gap resolutions, contradictions discussed, advance confirmation | Populated Decisions Log |
@@ -342,7 +342,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 **Purpose**
 Persist every iteration's evidence into session memory and — on the final `PASS` iteration — emit the loop's `outputs/` files and stage typed-finding artifacts. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Project memory is **not** written here; Wrap-up handles session → project promotion.
 
-See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md) covers the manager's spawn / collect orchestration.
+See [memorization skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
 
 **Inputs**
 - `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` — current iteration's WORK output
@@ -352,7 +352,7 @@ See [memorization skill](../memorization/SKILL.md) for the every-iter / PASS-onl
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 - WORK-staged artifacts under `sessions/{date}-{session-id}/2-preparation/staging/` (already in place — MEMORIZATION supplements, never replaces)
 
-**Procedure** — see [memorization/SKILL.md § MEMORIZATION Phase](../memorization/SKILL.md#memorization-phase) for the canonical step-by-step. Preparation-specific notes:
+**Procedure** — see [record/SKILL.md § MEMORIZATION Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Preparation-specific notes:
 
 - On PASS, the artifact in `sessions/{date}-{session-id}/2-preparation/outputs/` should include at least one file with `artifact_type: handoff` summarizing readiness status (gaps closed, gaps deferred, skills generated, RE-IDEATE escalations if any).
 - The `memory-reads` artifact enumerates every prior-iter evaluation file consumed (Step 6 of the memorization procedure).
@@ -377,7 +377,7 @@ Every iteration:
 - [ ] No writes to feature memory or project memory
 
 `PASS` iteration additionally:
-- [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema)
+- [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema)
 - [ ] At least one artifact has `artifact_type: handoff`
 - [ ] At least one artifact has `artifact_type: memory-reads`
 - [ ] Every evaluator finding across iters `1..n` staged to the correct `staging/` destination per Type + Domain routing
@@ -411,7 +411,7 @@ All writes during the Preparation Loop are **session-scoped**. Wrap-up promotes 
 | `sessions/{date}-{session-id}/2-preparation/staging/backlogs/project/{slug}.md` | assistant (MEMORIZATION) | per `deferred` decision that lands in the project backlog |
 | `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (MEMORIZATION) | per iter — preserved transcript window |
-| `sessions/{date}-{session-id}/2-preparation/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../memorization/SKILL.md#artifact-frontmatter-schema) |
+| `sessions/{date}-{session-id}/2-preparation/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema) |
 | `sessions/{date}-{session-id}/session.json` | assistant (MEMORIZATION) | loop completion timestamps, iter, verdict |
 
 The session directory tree at `sessions/{date}-{session-id}/2-preparation/{working,staging,evaluation}/` is bootstrapped by the manager at Preparation Loop entry. WORK and MEMORIZATION assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Preparation; Wrap-up creates them as needed during project-memory promotion.

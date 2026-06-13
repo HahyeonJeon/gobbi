@@ -78,7 +78,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "user"` in Auto default — manager + user converge on the delegation prompt. Construct per [Delegation skill § What Every Delegation Prompt Needs](../delegation/SKILL.md#what-every-delegation-prompt-contains). | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Collect the leader's draft Idea. | [ideation.md](workflow/ideation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | **Full PASS path** (unmodified base procedure) — stages typed findings per [Routing Findings to MEMORIZATION](workflow/evaluation.md#routing-findings-to-memorization). | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | **Full PASS path** (unmodified base procedure) — stages typed findings per [Routing Findings to MEMORIZATION](workflow/evaluation.md#routing-findings-to-memorization). | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` or `Skipped` → exit. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → exit with abort. | — | manager |
 
 ### Step 3 — Preparation Loop
@@ -96,7 +96,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "user"` — manager + user + leader-spawned scans identify readiness gaps. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Leader writes preparation draft AND executes approved gap fixes. | [preparation.md](workflow/preparation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.preparation.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path. | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Full PASS path. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` or `Skipped` → promote generated skills + exit. `RE-IDEATE` → re-enter Step 2. `REVISE`/`FAIL` with budget → row 1. Budget out → abort. | — | manager |
 
 ### Step 4 — Planning Loop
@@ -114,7 +114,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "agent"` in Auto default — manager constructs delegation prompt without per-step user gate; Always-Ask categories still fire per §3. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
 | 2 | `PLAN_DRAFT` | Spawn `leader` subagent(s). Collect the draft Plan. | [planning.md](workflow/planning.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path. | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Full PASS path. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics as Step 2. | — | manager |
 
 ### Step 5 — Execution Loop
@@ -132,7 +132,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs executor delegation prompt. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
 | 2 | `EXECUTION` | Spawn a fresh `executor` subagent by default. In Claude Code only, the manager may continue the same executor teammate per the bounded rule — shared subsystem, under the saturation cap (`delegation/SKILL.md § Continue vs Fresh`). Native Codex uses fresh executor spawns. Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path. | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Full PASS path. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | Task complete → next task; all tasks complete → advance to Step 6. | — | manager |
 
 ### Step 6 — Wrap-up Loop
@@ -150,7 +150,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs assistant delegation prompt. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
 | 2 | `WRAPUP` | Spawn `assistant` subagent. Consolidate artifacts; archive backlogs; promote mistakes; write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path — write session and project memory for this iteration. | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Full PASS path — write session and project memory for this iteration. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` → session closed. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
 
 ---
@@ -219,7 +219,7 @@ values mean the standard loop contract runs (DISCUSSION → WORK → EVALUATION 
 ITER/EXIT). This is the structural contrast with Chat Mode, where preparation carries
 `skip: true` + `maxIterations: 0` → `state: Skipped` (either signal alone suffices).
 
-**Full per-loop MEMORIZATION.** Auto Mode uses the **unmodified** `memorization/SKILL.md` PASS
+**Full per-loop MEMORIZATION.** Auto Mode uses the **unmodified** `record/SKILL.md` PASS
 path, including Steps 6–7 (typed-finding staging). There is no "narrowed" PASS path in Auto Mode.
 Every loop's MEMORIZATION runs the full base procedure, including mistake-candidate staging at
 moment-of-capture per `mistake/SKILL.md § P2`.
@@ -355,7 +355,7 @@ Scan this at any EVALUATION boundary:
   is the single source of truth.
 - [`planning/SKILL.md § Core Principles § USER CHALLENGE`](../planning/SKILL.md) — 5-field
   escalation card for leader-user disagreement. Referenced in §3.4.
-- [`memorization/SKILL.md`](../memorization/SKILL.md) — the unmodified base MEMORIZATION
+- [`record/SKILL.md`](../record/SKILL.md) — the unmodified base MEMORIZATION
   procedure. Auto Mode runs this base procedure in full (no local override).
 - [`mistake/SKILL.md § P2`](../mistake/SKILL.md) — moment-of-capture discipline for
   mistake-candidates; runs in Auto Mode regardless of loop or discuss.mode setting.

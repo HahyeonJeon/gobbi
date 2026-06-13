@@ -305,8 +305,8 @@ Persist every DISCUSSION decision into durable session artifacts — the working
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Leader | DISCUSSION outputs (in parent transcript); required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/1-ideation/working/draft-iter{n}.md` |
-| 2 | Leader | Reference promotion list (Sub-step C output) | For each external insight, stamp the [`references.md`](../memorization/templates/references.md) template at `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` — fill `title`, `source`, `type`, `accessed`, `session`, `tags`, Insight, Why-it-applies, Source, and Excerpt (if applicable). Skip duplicates with reason in the Decisions Log | One staged reference file per insight |
-| 3 | Leader | Backlog decision list (Sub-step B output) | Stamp the [`backlogs.md`](../memorization/templates/backlogs.md) template at `sessions/{date}-{session-id}/1-ideation/staging/backlogs/feature/{slug}.md` (task backlog) and `sessions/{date}-{session-id}/1-ideation/staging/backlogs/project/{slug}.md` (feature backlog) | Staged backlog files |
+| 2 | Leader | Reference promotion list (Sub-step C output) | For each external insight, stamp the [`references.md`](../memory/templates/references.md) template at `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` — fill `title`, `source`, `type`, `accessed`, `session`, `tags`, Insight, Why-it-applies, Source, and Excerpt (if applicable). Skip duplicates with reason in the Decisions Log | One staged reference file per insight |
+| 3 | Leader | Backlog decision list (Sub-step B output) | Stamp the [`backlogs.md`](../memory/templates/backlogs.md) template at `sessions/{date}-{session-id}/1-ideation/staging/backlogs/feature/{slug}.md` (task backlog) and `sessions/{date}-{session-id}/1-ideation/staging/backlogs/project/{slug}.md` (feature backlog) | Staged backlog files |
 | 4 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section in the working draft — summarize forcing-question answers, scope confirmation, contribution-point answers, scenarios / checklist / design approvals, reference and backlog decisions | Populated Decisions Log |
 | 5 | Leader | Working draft + staged references + staged backlogs | Verify the WORK exit checklist | Completion signal, or gap surfaced to the manager |
 
@@ -399,7 +399,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 **Purpose**
 Persist every iteration's evidence into session memory, and — on the final `PASS` iteration — also emit the loop.s `outputs/` and stage typed-finding artifacts. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `REVISE`, `PASS`, or `FAIL`) so each iteration leaves a durable audit trail before the loop either restarts, completes, or escalates. Project memory is **not** written here; Wrap-up handles session → project promotion after the workflow completes.
 
-See [memorization skill](../memorization/SKILL.md) for template-stamping conventions, and [`orchestration/workflow/memorization.md`](../orchestration/workflow/memorization.md) for the manager's spawn / collect orchestration.
+See [memorization skill](../record/SKILL.md) for template-stamping conventions, and [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) for the manager's spawn / collect orchestration.
 
 **Inputs**
 - `sessions/{date}-{session-id}/1-ideation/working/draft-iter{n}.md` — current iteration's WORK output

@@ -1,6 +1,6 @@
 # Workflow — Memorization (Orchestration)
 
-How the **manager** orchestrates the MEMORIZATION sub-phase that runs at the end of every loop iteration. This document is loaded by the manager — the `assistant` agent that actually performs the synthesis loads [`memorization/SKILL.md`](../../memorization/SKILL.md) and [`memorization/memory-map.md`](../../memorization/memory-map.md) instead.
+How the **manager** orchestrates the MEMORIZATION sub-phase that runs at the end of every loop iteration. This document is loaded by the manager — the `assistant` agent that actually performs the synthesis loads [`record/SKILL.md`](../../record/SKILL.md) and [`memory/memory-map.md`](../../memory/memory-map.md) instead.
 
 The manager's job at MEMORIZATION is to **spawn the assistant, deliver the right inputs, validate the assistant's output mechanically, and advance the loop** — not to do the synthesis itself. MEMORIZATION runs **after every EVALUATION verdict** (`PASS`, `REVISE`, or `FAIL`) and **before** the `ITER / EXIT` decision: every iteration's evidence must be preserved before the loop either re-enters DISCUSSION or exits.
 
@@ -33,9 +33,9 @@ Every MEMORIZATION delegation prompt MUST declare the following — a one-liner 
 | **Loop identity** | `ideation` / `preparation` / `planning` / `execution` / `wrap-up` |
 | **Iter number `n`** | From `session.json.workflow.{loop}.iterations.length + 1` for a fresh run, or the existing iter for a re-run |
 | **Verdict** | `PASS` / `REVISE` / `FAIL` from EVALUATION (the MEMORIZATION procedure branches on this) |
-| **Outputs directory target path** | e.g., `sessions/{date}-{session-id}/1-ideation/outputs/` — only written on `PASS`. Assistant decomposes the loop's output into one or more frontmatter-tagged files inside this directory; filenames and counts are free (see [`memorization/SKILL.md` § Artifact frontmatter schema](../../memorization/SKILL.md#artifact-frontmatter-schema)) |
+| **Outputs directory target path** | e.g., `sessions/{date}-{session-id}/1-ideation/outputs/` — only written on `PASS`. Assistant decomposes the loop's output into one or more frontmatter-tagged files inside this directory; filenames and counts are free (see [`record/SKILL.md` § Artifact frontmatter schema](../../record/SKILL.md#artifact-frontmatter-schema)) |
 | **Type + Domain → staging-subdir routing** | Link to [`evaluation/SKILL.md` § Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) — disposition values, routing table, slug + collision policy are sourced from here, not duplicated |
-| **Memory access matrix** | Link to [`memorization/memory-map.md`](../../memorization/memory-map.md) — every path the assistant may READ + WRITE, plus FORBIDDEN paths |
+| **Memory access matrix** | Link to [`memory/memory-map.md`](../../memory/memory-map.md) — every path the assistant may READ + WRITE, plus FORBIDDEN paths |
 | **READ-ONLY paths to consult** | Prior loops' canonical outputs (for cross-loop synthesis); the discussion log; **all** prior-iter per-perspective evaluation files for `m ∈ 1..n` (cumulative staging requirement) |
 | **FORBIDDEN write surfaces** | `.gobbi/projects/{project-name}/features/**`, `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,decisions,plans,references,reviews,reports,learnings,archive}/**`, other loops' session directories, other systems' evaluation directories. Wrap-up owns project memory; loop MEMORIZATION never touches it |
 | **Discussion-log handling** | Read-only — assistant reads `working/discussion-log.md` at Step 1 (input load) and Step 7 (discussions staging). The **manager** owns appends during DISCUSSION; the assistant never writes to it |
@@ -158,14 +158,14 @@ Validation is split by **staging class**, determined by frontmatter — not by d
 
 **3b. Derivative staging** (any file WITHOUT `finding-id` frontmatter — i.e., assistant-authored domain artifacts such as Ideation-Step-4 scenarios, Planning-Step-2 design decisions, Wrap-up status reports). For each such file produced on `PASS`:
 
-- [ ] Frontmatter parses as YAML and matches the corresponding template's required-frontmatter schema (see [`memorization/templates/{type}.md`](../../memorization/templates/))
+- [ ] Frontmatter parses as YAML and matches the corresponding template's required-frontmatter schema (see [`memory/templates/{type}.md`](../../memory/templates/))
 - [ ] No `Type` / `Domain` / `Disposition` / `finding-id` fields are required — these are domain-specific staging, not finding-routed
 - [ ] Slug is kebab-case ≤ 60 characters; collisions follow `-2` / `-3` suffix rule
 - [ ] If the template declares a `status` enum (e.g., `status: open | acted-on | superseded`), the staged file's `status` is one of those values
 
 **3c. Outputs directory** — files under `outputs/`. For each file:
 
-- [ ] Frontmatter parses as YAML and contains all required fields from the [Artifact frontmatter schema](../../memorization/SKILL.md#artifact-frontmatter-schema): `loop` / `iter` / `artifact_type` / `created_at` / `status`
+- [ ] Frontmatter parses as YAML and contains all required fields from the [Artifact frontmatter schema](../../record/SKILL.md#artifact-frontmatter-schema): `loop` / `iter` / `artifact_type` / `created_at` / `status`
 - [ ] `status` is one of `draft` / `final` / `superseded` (the artifact-frontmatter enum — distinct from template-specific `status` enums in 3b)
 - [ ] `loop` matches the current loop identity
 - [ ] `iter` matches the current or a prior iter number
@@ -176,7 +176,7 @@ A file with `finding-id` lacking Type+Domain+Disposition is a gate 3a failure. A
 
 ### 4. Cumulative staging completeness
 
-`PASS` only — manager verifies the assistant read every prior iter's evaluation files via the **`memory-reads` artifact** the assistant writes into `outputs/` at Step 5 (per [`memorization/SKILL.md`](../../memorization/SKILL.md) procedure):
+`PASS` only — manager verifies the assistant read every prior iter's evaluation files via the **`memory-reads` artifact** the assistant writes into `outputs/` at Step 5 (per [`record/SKILL.md`](../../record/SKILL.md) procedure):
 
 - [ ] `outputs/` contains at least one file whose frontmatter declares `artifact_type: memory-reads`
 - [ ] For every `m ∈ 1..n`, every **system that actually ran evaluation in iter `m`** (one or both of `claude` / `codex`), every perspective: the memory-reads artifact cites `sessions/.../{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md`. Expected path count = `Σ (systems_run_in_iter_m) × 8 (7 perspectives + overall)` for `m ∈ 1..n` (degraded-mode-aware; do not assume a fixed `16n` when single-system evaluation was used for some iters)
@@ -199,7 +199,7 @@ A non-empty assistant write log into forbidden paths is an **immediate stop-the-
 
 ### 6. Templates stamped
 
-Every staging file's frontmatter is compared against its template at [`memorization/templates/{type}.md`](../../memorization/templates/) — required fields present, no `TODO` / `TBD` / `<...>` placeholders. Missing template fields → routing-compliance failure (gate 3).
+Every staging file's frontmatter is compared against its template at [`memory/templates/{type}.md`](../../memory/templates/) — required fields present, no `TODO` / `TBD` / `<...>` placeholders. Missing template fields → routing-compliance failure (gate 3).
 
 ### 7. Discussion-log integrity (read-only invariant)
 
@@ -304,17 +304,17 @@ All MEMORIZATION writes are **session-scoped** plus own-loop fields in `session.
 | `sessions/{date}-{session-id}/{N}-{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/{slug}.md` | assistant | PASS only |
 | `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` | assistant | Planning loop, PASS only |
 
-Path conventions, full path inventory across both tiers, and template-to-directory mappings → [`memorization/memory-map.md`](../../memorization/memory-map.md). The manager treats `memory-map.md` as the canonical reference for what's allowed where.
+Path conventions, full path inventory across both tiers, and template-to-directory mappings → [`memory/memory-map.md`](../../memory/memory-map.md). The manager treats `memory-map.md` as the canonical reference for what's allowed where.
 
 ---
 
 ## Cross-references
 
-- Assistant's full procedure (Steps 1–9, every iter vs PASS-only branches) → [`memorization/SKILL.md`](../../memorization/SKILL.md)
-- Path inventory + tier access matrix + template index → [`memorization/memory-map.md`](../../memorization/memory-map.md)
+- Assistant's full procedure (Steps 1–9, every iter vs PASS-only branches) → [`record/SKILL.md`](../../record/SKILL.md)
+- Path inventory + tier access matrix + template index → [`memory/memory-map.md`](../../memory/memory-map.md)
 - Type + Domain → staging routing, disposition values, slug + collision policy → [`evaluation/SKILL.md` § Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity)
 - Stage 1 inheritance / regression marking / stuck detection (read-once-here, applied-at-every-loop) → [`workflow/evaluation.md` § Iteration Inheritance](evaluation.md#iteration-inheritance-no-ledger--read-prior-iter-directly)
 - Where staging eventually lands (project memory) → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) (sole writer to project memory)
 - Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
-- Staging template inventory → [`memorization/templates/`](../../memorization/templates/)
+- Staging template inventory → [`memory/templates/`](../../memory/templates/)
 - Verdict aggregation in the state machine → [orchestration `SKILL.md` § Verdict aggregation](../SKILL.md#verdict-aggregation)

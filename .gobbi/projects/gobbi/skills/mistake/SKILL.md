@@ -22,7 +22,7 @@ The agent MUST observe these tier boundaries. For working-loop agents, the only 
 | **Feature mistakes** | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` | **READ-ONLY** — load when the task is feature-scoped; never written by working-loop agents (Wrap-up assistant is the sole exception) |
 | **Session staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` with frontmatter `mistake-candidate: true` | **WRITE (PASS only, during MEMORIZATION)** — the only surface agents write to; Wrap-up promotes to project or feature `mistakes/` based on scope confirmed with user |
 
-**Delete semantics**: agents NEVER delete mistake files in any tier. When a mistake is superseded, the new file carries `supersedes: <old-path>` frontmatter; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-path>` added. Physical deletion is forbidden. **Active mistakes never move** — the trap stays live in `mistakes/` where agents load it and where `required-mistakes:` paths point. Only a **superseded** mistake is moved (`git mv`) by Wrap-up to `archive/mistakes/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model in [`memorization/templates/archive.md`](../memorization/templates/archive.md).
+**Delete semantics**: agents NEVER delete mistake files in any tier. When a mistake is superseded, the new file carries `supersedes: <old-path>` frontmatter; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-path>` added. Physical deletion is forbidden. **Active mistakes never move** — the trap stays live in `mistakes/` where agents load it and where `required-mistakes:` paths point. Only a **superseded** mistake is moved (`git mv`) by Wrap-up to `archive/mistakes/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md).
 
 **Promotion**: The Wrap-up assistant promotes staged mistake-candidates to project memory during the Wrap-up phase (no CLI command). Promotion is NOT a context reload — agents do not re-read project mistakes after promotion; they read them at the start of the next session.
 
@@ -77,14 +77,14 @@ When a correction occurs:
 
 1. Stop and acknowledge it — do not silently adjust and continue.
 2. Note it as a mistake-candidate with: what went wrong, why (the mistaken assumption), how to recognize it next time, the corrected approach.
-3. Write the candidate note **immediately** — do not defer to MEMORIZATION. If the session is interrupted before MEMORIZATION runs, deferred notes are lost. This is the moment-of-capture discipline; see [`memorization/SKILL.md` § Core Principles § Moment-of-capture](../memorization/SKILL.md#core-principles) for the rationale and empirical witness.
+3. Write the candidate note **immediately** — do not defer to MEMORIZATION. If the session is interrupted before MEMORIZATION runs, deferred notes are lost. This is the moment-of-capture discipline; see [`record/SKILL.md` § Core Principles § Moment-of-capture](../record/SKILL.md#core-principles) for the rationale and empirical witness.
 
 ### P3 — Stage a mistake-candidate during MEMORIZATION
 
 During MEMORIZATION on PASS:
 
 1. For each correction noted during P2, write a staging file at `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md`.
-2. Stamp the file with the `decisions.md` template from `memorization/templates/decisions.md`.
+2. Stamp the file with the `decisions.md` template from `memory/templates/decisions.md`.
 3. Set frontmatter `mistake-candidate: true`.
 4. Body must contain all four elements: what went wrong / why / how to recognize / corrected approach.
 5. Add a `domain:` frontmatter tag matching the mistake's domain (e.g., `docs-sync`, `process`, `security`, `hooks`).
@@ -95,7 +95,7 @@ The slug is kebab-case derived from the primary symptom — not from "mistake" o
 
 During the Wrap-up phase, the Wrap-up assistant promotes staged mistake-candidates from session staging into `mistakes/`. The next session's P1 load will pick them up. Working-loop agents never perform promotion themselves — staging is their sole write surface during the working loops.
 
-**`mistake-candidate` is a staging-only flag, stripped on promotion.** The `mistake-candidate: true` frontmatter is a **staging-only** routing flag — its sole job is to tell Wrap-up to route a `staging/decisions/{slug}.md` file to `mistakes/` rather than `decisions/`. Once it has routed the file, its job is done: Wrap-up **strips** it when writing the promoted mistake, so a promoted mistake file in `mistakes/` does NOT carry `mistake-candidate`. The promoted file carries only the base + mistakes-type extension frontmatter ([`memorization/rules.md` § 2`](../memorization/rules.md)). This is the reciprocal of the Wrap-up frontmatter-allowlist step (see [`wrap-up/SKILL.md` § Frontmatter allowlist on promotion](../wrap-up/SKILL.md)). A promoted mistake file that still carries `mistake-candidate: true` is a frontmatter-strip miss, not a valid state.
+**`mistake-candidate` is a staging-only flag, stripped on promotion.** The `mistake-candidate: true` frontmatter is a **staging-only** routing flag — its sole job is to tell Wrap-up to route a `staging/decisions/{slug}.md` file to `mistakes/` rather than `decisions/`. Once it has routed the file, its job is done: Wrap-up **strips** it when writing the promoted mistake, so a promoted mistake file in `mistakes/` does NOT carry `mistake-candidate`. The promoted file carries only the base + mistakes-type extension frontmatter ([`memory/rules.md` § 2`](../memory/rules.md)). This is the reciprocal of the Wrap-up frontmatter-allowlist step (see [`wrap-up/SKILL.md` § Frontmatter allowlist on promotion](../wrap-up/SKILL.md)). A promoted mistake file that still carries `mistake-candidate: true` is a frontmatter-strip miss, not a valid state.
 
 ---
 

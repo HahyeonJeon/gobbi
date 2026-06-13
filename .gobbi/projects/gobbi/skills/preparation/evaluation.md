@@ -78,7 +78,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 **Staged memory-promotion files follow the correct staging path conventions**
 - Scenarios at `2-preparation/staging/scenarios/`, checklists at `2-preparation/staging/checklists/`, decisions at `2-preparation/staging/decisions/` — not mixed up
 - Slug names are kebab-case, ≤ 60 characters
-- Each staged file has correct frontmatter per its template (e.g., scenario files follow the [`memorization/templates/scenarios.md`](../memorization/templates/scenarios.md) shape)
+- Each staged file has correct frontmatter per its template (e.g., scenario files follow the [`memory/templates/scenarios.md`](../memory/templates/scenarios.md) shape)
 
 **The generated artifacts are structurally compatible with Wrap-up's promotion routing table (adversarial)**
 - Staged skills are at `2-preparation/staging/skills/{slug}/SKILL.md`, not a flat `.md` file that Wrap-up's routing would misplace

@@ -1,6 +1,6 @@
 # Workflow — Execution
 
-How the **manager** orchestrates the Execution Loop. The leader / executor / evaluator / assistant participants that own the loop's phases load [`execution/SKILL.md`](../../execution/SKILL.md) (executor's WORK lifecycle, per-task memory access, status contract), [`evaluation/SKILL.md`](../../evaluation/SKILL.md) (evaluator's stages), and [`memorization/SKILL.md`](../../memorization/SKILL.md) (assistant's persistence). This document covers the **orchestration choreography** — when to spawn each specialist, REVISE/PASS/FAIL routing, iteration cap, and Plan-cursor advancement. The substantive discipline is in [`principles`](../../principles/SKILL.md).
+How the **manager** orchestrates the Execution Loop. The leader / executor / evaluator / assistant participants that own the loop's phases load [`execution/SKILL.md`](../../execution/SKILL.md) (executor's WORK lifecycle, per-task memory access, status contract), [`evaluation/SKILL.md`](../../evaluation/SKILL.md) (evaluator's stages), and [`record/SKILL.md`](../../record/SKILL.md) (assistant's persistence). This document covers the **orchestration choreography** — when to spawn each specialist, REVISE/PASS/FAIL routing, iteration cap, and Plan-cursor advancement. The substantive discipline is in [`principles`](../../principles/SKILL.md).
 
 The Execution Loop runs once **per planned task** — the loop body is the four-phase iteration shape, and the entire loop body repeats for each task in the Plan.
 
@@ -131,7 +131,7 @@ The canonical tree is [`orchestration/templates/session-tree.md`](../templates/s
 - Execution-phase evaluation seed scenarios → [`execution/evaluation.md`](../../execution/evaluation.md)
 - Executor behavioral discipline → [`principles`](../../principles/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
-- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)
 - Executor delegation template → [`delegation/templates/executor.md`](../../delegation/templates/executor.md)

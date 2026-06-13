@@ -209,7 +209,7 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 **Leader spawn (optional)** — leader runs `git log`, scans `features/` directory if present, and produces a chronological feature / work summary.
 
 **Output domain**:
-- `.gobbi/projects/{project-name}/features/{feature-name}/README.md` — one per identified feature (manager stamps from [`memorization/templates/feature-readme.md`](../memorization/templates/feature-readme.md))
+- `.gobbi/projects/{project-name}/features/{feature-name}/README.md` — one per identified feature (manager stamps from [`memory/templates/feature-readme.md`](../memory/templates/feature-readme.md))
 - `.gobbi/projects/{project-name}/backlogs/{slug}.md` — deferred / planned features
 - `.gobbi/projects/{project-name}/decisions/{date}-roadmap-priority.md`
 
@@ -233,7 +233,7 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 **Leader spawn (optional)** — leader reviews recent bug-fix commits (`git log --grep=fix`) and existing `mistakes/` to surface patterns.
 
 **Output domain**:
-- `.gobbi/projects/{project-name}/mistakes/{slug}.md` (one per surfaced trap, per the [mistakes template](../memorization/templates/mistakes.md))
+- `.gobbi/projects/{project-name}/mistakes/{slug}.md` (one per surfaced trap, per the [mistakes template](../memory/templates/mistakes.md))
 - `.gobbi/projects/{project-name}/references/{slug}.md` (external sources mentioned during interview)
 
 **Wave close**:

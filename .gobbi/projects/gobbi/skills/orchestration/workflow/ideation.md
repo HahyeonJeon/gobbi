@@ -1,6 +1,6 @@
 # Workflow — Ideation (Orchestration)
 
-How the **manager** orchestrates the Ideation Loop. The `leader`, `evaluator`, and `assistant` specialists that participate load [`ideation/SKILL.md`](../../ideation/SKILL.md) for the loop contract, [`research/SKILL.md`](../../research/SKILL.md) when doing Sub-step C research, [`evaluation/SKILL.md`](../../evaluation/SKILL.md) for the per-perspective procedure, and [`memorization/SKILL.md`](../../memorization/SKILL.md) for template-stamping conventions.
+How the **manager** orchestrates the Ideation Loop. The `leader`, `evaluator`, and `assistant` specialists that participate load [`ideation/SKILL.md`](../../ideation/SKILL.md) for the loop contract, [`research/SKILL.md`](../../research/SKILL.md) when doing Sub-step C research, [`evaluation/SKILL.md`](../../evaluation/SKILL.md) for the per-perspective procedure, and [`record/SKILL.md`](../../record/SKILL.md) for template-stamping conventions.
 
 **Ideation focuses on What / Why / How.** Planning concentrates on Who / When / Where; the Ideation Loop's job is to lock the **idea**, not the execution plan.
 
@@ -99,7 +99,7 @@ Verdict is `PASS` or `REVISE`. **Both verdicts advance to MEMORIZATION first** (
 
 ## MEMORIZATION Phase (delegated to `assistant`, runs every iter)
 
-**Manager's job**: spawn the `assistant` agent after every EVALUATION verdict — `PASS` or `REVISE`. The assistant follows [`ideation/SKILL.md` § MEMORIZATION Phase](../../ideation/SKILL.md#memorization-phase) and [`memorization/SKILL.md`](../../memorization/SKILL.md) for template-stamping.
+**Manager's job**: spawn the `assistant` agent after every EVALUATION verdict — `PASS` or `REVISE`. The assistant follows [`ideation/SKILL.md` § MEMORIZATION Phase](../../ideation/SKILL.md#record-phase) and [`record/SKILL.md`](../../record/SKILL.md) for template-stamping.
 
 Every iteration the assistant:
 - Copies each agent's transcript into the single session-root `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` (one immutable per-agent file accumulating across all loops — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)); there is no per-loop `transcripts/` dir
@@ -174,8 +174,8 @@ Plus updates to `sessions/{date}-{session-id}/session.json` — `workflow.ideati
 - Leader's discussion + documentation procedure → [`ideation/SKILL.md`](../../ideation/SKILL.md)
 - Internal + external research procedure → [`research/SKILL.md`](../../research/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
-- Assistant's MEMORIZATION procedure (templates + routing) → [`memorization/SKILL.md`](../../memorization/SKILL.md)
-- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Assistant's MEMORIZATION procedure (templates + routing) → [`record/SKILL.md`](../../record/SKILL.md)
+- Synthesis orchestration → [`workflow/record.md`](record.md)
 - Wrap-up's project-memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Discussion mechanics → [`discussion/SKILL.md`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation/SKILL.md`](../../delegation/SKILL.md)

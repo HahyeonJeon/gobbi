@@ -8,7 +8,7 @@ and the per-task state-transition table.
 
 For the workflow governor and the global 6-step state machine, see
 [`orchestration/SKILL.md`](SKILL.md). For the unmodified base MEMORIZATION procedure that §4
-locally overrides, see [`memorization/SKILL.md`](../memorization/SKILL.md).
+locally overrides, see [`record/SKILL.md`](../record/SKILL.md).
 
 ---
 
@@ -150,7 +150,7 @@ slice's worth of work.
 | 1 | `DISCUSSION` | Forced user-driven per the discuss-first contract (§9) — overrides any per-step `discuss.mode` setting. Manager + user converge on the slice intent. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Leader runs the full 4-substep procedure (Frame → Lock Scope → Research → Design Recommendation) scoped to this one slice. | [ideation.md](workflow/ideation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). Aggregate verdicts per [Workflow State Machine § Verdict aggregation](SKILL.md#verdict-aggregation). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Narrowed PASS path per §4: preserve transcript + session.json upsert + PASS-iter `outputs/`; skip typed-finding staging. Mistake stage moment-of-capture always live. | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Narrowed PASS path per §4: preserve transcript + session.json upsert + PASS-iter `outputs/`; skip typed-finding staging. Mistake stage moment-of-capture always live. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → escalate to user through the active runtime's user-decision primitive. | — | manager |
 
 ### Step 3 — Slice Preparation Loop (Skipped at loop entry)
@@ -180,7 +180,7 @@ slice's worth of work.
 | 1 | `DISCUSSION` | Forced user-driven per §9. Manager + user agree on decomposition shape. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent for light decomposition. Output = ordered sub-step list with success criteria. | [planning.md](workflow/planning.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics as Step 2. | — | manager |
 
 ### Step 5 — Slice Mini Execution Loop (per sub-step)
@@ -198,7 +198,7 @@ slice's worth of work.
 | 1 | `DISCUSSION` | Manager constructs the executor delegation prompt; in Chat, forced user-driven per §9 (override discuss.mode). | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline. In Claude Code only, the executor may be continued per `delegation/SKILL.md § Continue vs Fresh` — shared subsystem, under the saturation cap. Native Codex uses fresh executor spawns. Collect work artifact + verification evidence. | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Narrowed PASS path per §4. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics. Sub-step complete → next sub-step (or slice boundary if last). | — | manager |
 
 ### Slice Boundary — task-record + user review gate
@@ -233,7 +233,7 @@ slice's worth of work.
 | 1 | `DISCUSSION` | Forced user-driven per §9. Manager + user confirm consolidation scope. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn `assistant` subagent. Consolidate: archive backlogs, mine task-records + transcript, promote staged mistakes, write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path — `Wrap-up MEMORIZATION runs the unmodified base procedure` per the §4 base-unmodified clause. This is where typed-finding staging from prior slices is promoted (none under the Chat narrowed contract since per-slice staging was skipped — Wrap-up mines transcripts + task-records instead). | [memorization.md](workflow/memorization.md) | assistant |
+| 4 | `MEMORIZATION` | Full PASS path — `Wrap-up MEMORIZATION runs the unmodified base procedure` per the §4 base-unmodified clause. This is where typed-finding staging from prior slices is promoted (none under the Chat narrowed contract since per-slice staging was skipped — Wrap-up mines transcripts + task-records instead). | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` → close session. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
 
 ---
@@ -245,7 +245,7 @@ all cross-references in §3, §5, and `orchestration/SKILL.md` point here):**
 
 > **In Chat Mode, every loop's MEMORIZATION sub-phase runs after every EVALUATION verdict (PASS /
 > REVISE / FAIL) — it is never skipped.** Locally in this `chat-mode.md`, the PASS path is
-> **narrowed** relative to the base `memorization/SKILL.md` procedure:
+> **narrowed** relative to the base `record/SKILL.md` procedure:
 >
 > - **Steps preserved:** Step 5 (CREATE `outputs/{free-filename}.md`) and Step 8 (UPDATE
 >   `session.json.workflow.{loop}.finishedAt` + `verdict: PASS`). Plus every-iter Step 2 (CREATE
@@ -262,10 +262,10 @@ all cross-references in §3, §5, and `orchestration/SKILL.md` point here):**
 >   `sessions/.../{N}-{loop}/staging/decisions/{slug}.md` with `mistake-candidate: true` per
 >   `mistake/SKILL.md § P2` regardless of Chat's narrowed PASS path. This exception holds because
 >   the moment-of-capture discipline is governed by the `mistake` skill, not by
->   `memorization/SKILL.md`.
-> - **`memorization/SKILL.md` is unmodified.** The narrowed PASS path is a Chat-Mode local
->   override, declared in this `chat-mode.md` and cross-linked to `memorization/SKILL.md` for the
->   unmodified base procedure. A reader of `memorization/SKILL.md` sees the full base; a reader of
+>   `record/SKILL.md`.
+> - **`record/SKILL.md` is unmodified.** The narrowed PASS path is a Chat-Mode local
+>   override, declared in this `chat-mode.md` and cross-linked to `record/SKILL.md` for the
+>   unmodified base procedure. A reader of `record/SKILL.md` sees the full base; a reader of
 >   this `chat-mode.md` sees the base plus the Chat override.
 
 **Wrap-up's input under Chat narrowed staging.** Because Steps 6–7 don't run per-loop in Chat,
@@ -314,7 +314,7 @@ Execution):
   a Chat per-task slice is staged immediately at
   `sessions/.../{N}-{loop}/staging/decisions/{slug}.md` with `mistake-candidate: true`, per
   `mistake/SKILL.md § P2`. This is the explicit exception to §4's "Steps 6–7 skipped" narrowing
-  — the moment-of-capture is governed by the `mistake` skill, not by `memorization/SKILL.md`.
+  — the moment-of-capture is governed by the `mistake` skill, not by `record/SKILL.md`.
 
 ---
 
@@ -329,7 +329,7 @@ mini Execution was skipped); the manager verifies its presence before the user r
 
 **Decision D-A (session-local only):** the task-record is session-scope only. It is NOT a
 project-memory type, NOT a feature-memory entry, and NOT routed to `notes/` (project-level
-`notes/` is a session-journal type per `memorization/rules.md`). It lives under the session tree:
+`notes/` is a session-journal type per `memory/rules.md`). It lives under the session tree:
 
 ```
 sessions/{date}-{session-id}/chat/tasks/{NN}-{slug}/task-record.md
@@ -340,7 +340,7 @@ where:
 - `{date}` — session start date `YYYY-MM-DD`
 - `{session-id}` — session UUID
 - `{NN}` — zero-padded ordinal within the session (chronological aid only)
-- `{slug}` — subject-descriptive kebab-case slug per `memorization/rules.md § 1.3`; names the
+- `{slug}` — subject-descriptive kebab-case slug per `memory/rules.md § 1.3`; names the
   task's deliverable concept, NOT the ordinal (e.g., `03-chat-mode-redesign-idea-doc`, not
   `03-task-3`)
 
@@ -369,14 +369,14 @@ appears with the same 4-slot interior.
 
 **Frontmatter type for `task-record.md` is deferred.** The iter1 ideation draft proposed `type:
 notes` but that collides with the project-level chronological journal convention in
-`memorization/templates/notes.md` (project-only type, one entry per session — see
+`memory/templates/notes.md` (project-only type, one entry per session — see
 `mistakes/prose-reclassification-target-is-project-level-notes.md`). Planning will resolve this
 by choosing one of:
 
 (a) `artifact_type: task-record` aligned to the `outputs/` Artifact frontmatter schema in
-`memorization/SKILL.md § Artifact frontmatter schema`, or
+`record/SKILL.md § Artifact frontmatter schema`, or
 
-(b) a new dedicated `task-record` template under `memorization/templates/task-record.md`.
+(b) a new dedicated `task-record` template under `memory/templates/task-record.md`.
 
 Either way the per-task record is **session-scope only** (D-A). Until Planning makes this choice,
 agents authoring a task-record should use the `outputs/` Artifact frontmatter schema as a default
@@ -551,7 +551,7 @@ Notes on the example:
   `state.json.workflow.chat.tasks[2]` (0-indexed; Task 03 = index 2).
 - Completed prior tasks (01 and 02) are shown in a "Completed tasks" summary row — their
   per-task sub-table is collapsed to one line each to keep the display scannable.
-- Task 03's slug (`chat-mode-spec-draft`) is subject-descriptive per `memorization/rules.md §
+- Task 03's slug (`chat-mode-spec-draft`) is subject-descriptive per `memory/rules.md §
   1.3`.
 
 ---
@@ -576,10 +576,10 @@ DISCUSSION at every Chat loop entry. Documenting at both settings-level (`"user"
   shared loop mechanics (it points here for the Chat gates); `§ Workflow Metadata` for
   the `workflow.chat.tasks[]` array-of-slices schema (R2/R3 lock).
 - [`orchestration/auto-mode.md`](auto-mode.md) — the symmetric Auto-Mode specification.
-- [`memorization/SKILL.md`](../memorization/SKILL.md) — the unmodified base MEMORIZATION
+- [`record/SKILL.md`](../record/SKILL.md) — the unmodified base MEMORIZATION
   procedure that §4 locally overrides (R5 lock). A reader of that SKILL sees the full base; a
   reader of this doc sees the base plus the Chat override.
-- [`memorization/rules.md`](../memorization/rules.md) — slug-naming standard for
+- [`memory/rules.md`](../memory/rules.md) — slug-naming standard for
   `task-record.md` filenames.
 - [`mistake/SKILL.md § P2`](../mistake/SKILL.md) — moment-of-capture discipline preserved in
   Chat regardless of §4's narrowed PASS path.
