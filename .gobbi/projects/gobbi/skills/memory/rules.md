@@ -286,6 +286,6 @@ Frozen `archive/` docs are excluded from this standard, from any retrofit pass, 
 ## Cross-references
 
 - Path-and-type semantics (which directory holds what, who writes it, when, which template stamps it) → [`memory-map.md`](memory-map.md)
-- The assistant's RECORD procedure and memory-tier access matrix → [`SKILL.md`](SKILL.md)
+- The assistant's RECORD procedure and memory-tier access matrix → [`SKILL.md`](../record/SKILL.md)
 - Staging → memory promotion routing (including the frontmatter allowlist on promotion) → [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)
 - Slug + collision policy for staging files → [`evaluation/SKILL.md` § Slug + collision policy](../evaluation/SKILL.md#slug--collision-policy)

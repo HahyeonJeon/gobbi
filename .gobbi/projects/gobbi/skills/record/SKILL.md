@@ -24,7 +24,7 @@ The job of RECORD: **make every iteration's evidence durable, and on PASS make t
 
 Orchestration concerns — spawn, brief, collect, ITER/EXIT advancement — are defined separately in [`orchestration/workflow/record.md`](../orchestration/workflow/record.md).
 
-For the complete inventory of memory paths (every session-record and memory location, description, writer, when written, and matching template), see [`memory-map.md`](memory-map.md). This SKILL.md defines the assistant's procedure; `memory-map.md` is the path / template reference. For the naming convention, the frontmatter base+extension standard, and the structure rules that govern every staged file, see [`rules.md`](rules.md) — the consolidated memory-rules reference. Staging files stamp the same base frontmatter those rules define; the staging-only fields they additionally carry (e.g. `mistake-candidate`) are stripped by Wrap-up on promotion (see § Staging-field stripping on promotion below).
+For the complete inventory of memory paths (every session-record and memory location, description, writer, when written, and matching template), see [`memory-map.md`](../memory/memory-map.md). This SKILL.md defines the assistant's procedure; `memory-map.md` is the path / template reference. For the naming convention, the frontmatter base+extension standard, and the structure rules that govern every staged file, see [`rules.md`](../memory/rules.md) — the consolidated memory-rules reference. Staging files stamp the same base frontmatter those rules define; the staging-only fields they additionally carry (e.g. `mistake-candidate`) are stripped by Wrap-up on promotion (see § Staging-field stripping on promotion below).
 
 ---
 
@@ -86,7 +86,7 @@ Corrections, decisions, and mistake-candidates are staged at the moment they occ
 
 > **Templates over freeform — for staging. Frontmatter over freeform — for artifacts.**
 
-Every staging subdirectory has a template at [`templates/{directory-name}.md`](templates/) — stamping the template ensures the artifact is structured enough for Wrap-up to promote without parsing prose. The `outputs/` directory uses a lighter contract: filenames and content are free; only the frontmatter schema is mandatory (see § Artifact frontmatter schema below).
+Every staging subdirectory has a template at [`templates/{directory-name}.md`](../memory/templates/) — stamping the template ensures the artifact is structured enough for Wrap-up to promote without parsing prose. The `outputs/` directory uses a lighter contract: filenames and content are free; only the frontmatter schema is mandatory (see § Artifact frontmatter schema below).
 
 ---
 
@@ -140,12 +140,12 @@ Field semantics:
 
 ## Staging-field stripping on promotion
 
-Staged files carry the base frontmatter ([`rules.md` § 2.1](rules.md)) plus, when relevant, **staging-only fields** that exist purely to route or annotate the file during the session. These staging-only fields are **stripped by Wrap-up when it promotes the file to memory** — they never persist into durable memory. The assistant stamps them at stage time; the promotion allowlist (one per type) drops them. The mechanism lives in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md):
+Staged files carry the base frontmatter ([`rules.md` § 2.1](../memory/rules.md)) plus, when relevant, **staging-only fields** that exist purely to route or annotate the file during the session. These staging-only fields are **stripped by Wrap-up when it promotes the file to memory** — they never persist into durable memory. The assistant stamps them at stage time; the promotion allowlist (one per type) drops them. The mechanism lives in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md):
 
 - **`mistake-candidate: true`** — the flag that routes a `staging/decisions/{slug}.md` file to `mistakes/`. Its job is done at promotion; Wrap-up strips it from the promoted mistake file.
 - **`finding-id`, `disposition`** (when used purely as eval routing), **`promoted-from`, `promoted-at`** — session-provenance. `git log` + the base `session` field already carry provenance, so the extra keys are dropped on promotion; any durable provenance folds into base `session` + `created`.
 
-The promoted file carries ONLY base + that type's extension fields ([`rules.md` § 2.2](rules.md)). See [`rules.md` § 2.3](rules.md) for the standard and [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the per-type promotion allowlist.
+The promoted file carries ONLY base + that type's extension fields ([`rules.md` § 2.2](../memory/rules.md)). See [`rules.md` § 2.3](../memory/rules.md) for the standard and [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the per-type promotion allowlist.
 
 ---
 
@@ -182,13 +182,13 @@ Persist every iteration's evidence into session record, and — on the final `PA
 | 4 | every iter | Assistant | **GUARD** | This iter's verdict | — | If verdict is `REVISE`: stop here. The loop re-enters DISCUSSION with this iter's evaluator findings as input. Steps 5–8 are skipped because there is no PASS-iter output yet. If verdict is `FAIL`: stop here. The manager will escalate to the user through the active runtime's user-decision primitive (revise / abort / re-frame) after RECORD returns. Steps 5–8 are skipped. If verdict is `PASS`: continue to Step 5 |
 | 5 | PASS only | Assistant | **CREATE** | Rawdata draft + all iters' evaluator findings + discussion log + cross-system divergence (derived by comparing per-system files) | `sessions/{date}-{session-id}/{N}-{loop}/outputs/{free-filename}.md` (one or more files) | Decompose the loop's PASS-iter output into one or more artifact files inside `outputs/`. Filenames are free; every file MUST stamp the [Artifact frontmatter schema](#artifact-frontmatter-schema). Typical content split: framed-problem, scope-contract, design-options for Ideation; task-list, dependencies, agent-assignments for Planning; change-summary, verification-report for Execution; handoff, shipped-summary for Wrap-up. Two artifacts are MANDATORY: (a) one `artifact_type: memory-reads` file enumerating every prior-iter evaluation file path consumed at Step 6 (manager validates at gate 4), and (b) for loops with adversarial evaluator findings, one `artifact_type: resolution-log` file listing each finding's final `disposition:` value. Cross-system divergence summary lives in whichever artifact most relevant (e.g., design-options or handoff). The artifacts collectively are the next loop's briefing source |
 | 6 | PASS only | Assistant | **CREATE** | All typed findings, cumulative across iters `1..n` | `sessions/{date}-{session-id}/{N}-{loop}/staging/{type}/{slug}.md` per the deterministic Type + Domain routing in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) | **Pre-step**: for every iter `m ∈ 1..n`, every system (claude + codex), every perspective (7 + overall), READ `sessions/.../{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md`. Enumerate every finding's `(Type, Domain, Disposition, slug, finding-id)`. For any `disposition: superseded` whose citation points to iter `m < n-1`, also READ that earlier iter's file. Then: stage `open` + `addressed` + `disputed` + `superseded` findings per the routing table; `deferred` findings stage at `staging/decisions/` with frontmatter `disposition: deferred` so Wrap-up can route to backlogs. **No shortcut routing** — every Type + Domain uses the canonical table; `general/general` is a contract violation |
-| 7 | PASS only | Assistant | **CREATE** | Canonical draft's Design section + discussion-log substantive topics + in-loop review activities + in-loop substantive reports | `sessions/{date}-{session-id}/{N}-{loop}/staging/{design,discussions,reviews,reports}/{slug}.md` | One staging file per substantive design topic (`staging/design/`) + per substantive user-decision topic (`staging/discussions/`) + per review/evaluation/audit activity the loop performed (`staging/reviews/` per [`templates/reviews.md`](templates/reviews.md)) + per substantive `status` / `post-mortem` / `analytics` report the loop produced (`staging/reports/` per [`templates/reports.md`](templates/reports.md)). The reviews/reports stagings are loop-conditional — most loops produce none, but when present they MUST be staged for Wrap-up promotion |
+| 7 | PASS only | Assistant | **CREATE** | Canonical draft's Design section + discussion-log substantive topics + in-loop review activities + in-loop substantive reports | `sessions/{date}-{session-id}/{N}-{loop}/staging/{design,discussions,reviews,reports}/{slug}.md` | One staging file per substantive design topic (`staging/design/`) + per substantive user-decision topic (`staging/discussions/`) + per review/evaluation/audit activity the loop performed (`staging/reviews/` per [`templates/reviews.md`](../memory/templates/reviews.md)) + per substantive `status` / `post-mortem` / `analytics` report the loop produced (`staging/reports/` per [`templates/reports.md`](../memory/templates/reports.md)). The reviews/reports stagings are loop-conditional — most loops produce none, but when present they MUST be staged for Wrap-up promotion |
 | 8 | PASS only | Assistant | **UPDATE** | Loop completion | `sessions/{date}-{session-id}/session.json` | Set `workflow.{loop}.finishedAt`; set `workflow.{loop}.verdict: PASS`; preserve `iterations[]` history |
 | 9 | every iter | Assistant | **VERIFY** | All outputs above | — | Each agent transcript copied to the session-root `transcripts/{role}-{agentId}.jsonl`; `session.json` iter entry upserted; no writes to memory (manager validates). PASS additionally: canonical artifact exists; staging directories populated per finding-type routing; loop completion flagged in session.json. Failure of any check is reported to the manager |
 
 **Finding routing** — see [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) for the complete Type + Domain → staging-subdir routing table. RECORD applies the routing table without improvisation; all destinations are session staging (Wrap-up moves them to memory).
 
-**Research working-dir promotion** — if the calling loop loaded the `research` skill, the leader will have written external insights to `working/research/{slug}.md` during WORK. At Step 6 (PASS only), RECORD reads `working/research/` and promotes each file to `staging/references/{slug}.md` per the [references template](templates/references.md). This is separate from the typed-finding routing above — these are WORK-time external references, not evaluation findings.
+**Research working-dir promotion** — if the calling loop loaded the `research` skill, the leader will have written external insights to `working/research/{slug}.md` during WORK. At Step 6 (PASS only), RECORD reads `working/research/` and promotes each file to `staging/references/{slug}.md` per the [references template](../memory/templates/references.md). This is separate from the typed-finding routing above — these are WORK-time external references, not evaluation findings.
 
 **Transcript capture — the single session-root `transcripts/`** — Step 2 above is the only transcript surface. RECORD (not any hook) copies each agent's raw `.jsonl` transcript into the single `sessions/{date}-{session-id}/transcripts/` directory as `{role}-{agentId}.jsonl` (manager = `manager-{sessionId}.jsonl`), one immutable file per agent run, accumulating across all loops by distinct `agentId`. The copy is done in Step 2, NOT in the PostToolUse or SessionEnd hooks — the hooks stay lean to meet the hook-latency gate; bulk transcript copying belongs to RECORD. What is copied: the manager's main transcript (`session.json.transcriptPath`) plus each subagent transcript at `${transcript%.jsonl}/subagents/agent-<agentId>.jsonl`. There is no per-loop or per-iter transcript snapshot — the single session-root `transcripts/` replaces it. See [`orchestration/templates/session-tree.md` § Transcript rules](../orchestration/templates/session-tree.md) for the authoritative shape.
 
@@ -250,7 +250,7 @@ Re-running RECORD on the same iter (after a crash, partial write, or explicit re
 
 ## Output paths
 
-All writes during RECORD are **session-scoped**. Wrap-up promotes the `staging/` directory to memory after the workflow completes — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md). For the full inventory across both tiers (session + project), see [`memory-map.md`](memory-map.md).
+All writes during RECORD are **session-scoped**. Wrap-up promotes the `staging/` directory to memory after the workflow completes — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md). For the full inventory across both tiers (session + project), see [`memory-map.md`](../memory/memory-map.md).
 
 ### Path conventions
 
@@ -292,32 +292,32 @@ The session directory tree at `sessions/{date}-{session-id}/{N}-{loop}/{working,
 
 ## Templates
 
-Staging subdirectory templates live at [`templates/`](templates/). Each template defines required fields, "when to stage" trigger, and frontmatter schema. The assistant MUST stamp the matching template for every staging file — freeform writes are forbidden. For a template-→-directories cross-index (which directories each template stamps), see [`memory-map.md` § Templates index](memory-map.md#templates-index).
+Staging subdirectory templates live at [`templates/`](../memory/templates/). Each template defines required fields, "when to stage" trigger, and frontmatter schema. The assistant MUST stamp the matching template for every staging file — freeform writes are forbidden. For a template-→-directories cross-index (which directories each template stamps), see [`memory-map.md` § Templates index](../memory/memory-map.md#templates-index).
 
 | Staging subdirectory | Template |
 |---|---|
-| `staging/scenarios/` | [`templates/scenarios.md`](templates/scenarios.md) |
-| `staging/checklists/` | [`templates/checklists.md`](templates/checklists.md) |
-| `staging/decisions/` | [`templates/decisions.md`](templates/decisions.md) |
-| `staging/references/` | [`templates/references.md`](templates/references.md) |
-| `staging/design/` | [`templates/design.md`](templates/design.md) |
-| `staging/discussions/` | [`templates/discussions.md`](templates/discussions.md) |
-| `staging/backlogs/feature/` | [`templates/backlogs.md`](templates/backlogs.md) |
-| `staging/backlogs/project/` | [`templates/backlogs.md`](templates/backlogs.md) |
-| `staging/reviews/` | [`templates/reviews.md`](templates/reviews.md) |
-| `staging/reports/` | [`templates/reports.md`](templates/reports.md) |
-| `staging/changelogs/` | [`templates/changelogs.md`](templates/changelogs.md) |
-| `staging/learnings/` | [`templates/learnings.md`](templates/learnings.md) |
-| `staging/notes/` | [`templates/notes.md`](templates/notes.md) |
-| `staging/plans/` (Planning-loop only) | [`templates/plans.md`](templates/plans.md) |
+| `staging/scenarios/` | [`templates/scenarios.md`](../memory/templates/scenarios.md) |
+| `staging/checklists/` | [`templates/checklists.md`](../memory/templates/checklists.md) |
+| `staging/decisions/` | [`templates/decisions.md`](../memory/templates/decisions.md) |
+| `staging/references/` | [`templates/references.md`](../memory/templates/references.md) |
+| `staging/design/` | [`templates/design.md`](../memory/templates/design.md) |
+| `staging/discussions/` | [`templates/discussions.md`](../memory/templates/discussions.md) |
+| `staging/backlogs/feature/` | [`templates/backlogs.md`](../memory/templates/backlogs.md) |
+| `staging/backlogs/project/` | [`templates/backlogs.md`](../memory/templates/backlogs.md) |
+| `staging/reviews/` | [`templates/reviews.md`](../memory/templates/reviews.md) |
+| `staging/reports/` | [`templates/reports.md`](../memory/templates/reports.md) |
+| `staging/changelogs/` | [`templates/changelogs.md`](../memory/templates/changelogs.md) |
+| `staging/learnings/` | [`templates/learnings.md`](../memory/templates/learnings.md) |
+| `staging/notes/` | [`templates/notes.md`](../memory/templates/notes.md) |
+| `staging/plans/` (Planning-loop only) | [`templates/plans.md`](../memory/templates/plans.md) |
 
-Memory directory templates (consumed by Wrap-up, not by loop RECORD) also live under [`templates/`](templates/) — they are the destination schemas Wrap-up stamps when promoting staging content:
+Memory directory templates (consumed by Wrap-up, not by loop RECORD) also live under [`templates/`](../memory/templates/) — they are the destination schemas Wrap-up stamps when promoting staging content:
 
 | Memory directory | Template |
 |---|---|
-| `.gobbi/projects/{project-name}/features/{feature-name}/README.md` | [`templates/feature-readme.md`](templates/feature-readme.md) |
-| `.gobbi/projects/{project-name}/mistakes/` and `features/{feature-name}/mistakes/` | [`templates/mistakes.md`](templates/mistakes.md) |
-| `.gobbi/projects/{project-name}/rules/` | [`templates/rules.md`](templates/rules.md) |
+| `.gobbi/projects/{project-name}/features/{feature-name}/README.md` | [`templates/feature-readme.md`](../memory/templates/feature-readme.md) |
+| `.gobbi/projects/{project-name}/mistakes/` and `features/{feature-name}/mistakes/` | [`templates/mistakes.md`](../memory/templates/mistakes.md) |
+| `.gobbi/projects/{project-name}/rules/` | [`templates/rules.md`](../memory/templates/rules.md) |
 
 Session-level templates: see [`orchestration/templates/`](../orchestration/templates/) for `settings.chat.json` / `settings.auto.json` (per-mode defaults; bootstrap loads the one matching the user-selected mode) and `session.template.json`.
 
@@ -328,7 +328,7 @@ Session-level templates: see [`orchestration/templates/`](../orchestration/templ
 - **MUST run on every EVALUATION verdict** (PASS, REVISE, and FAIL) — REVISE and FAIL iterations still preserve transcript + session.json entry. The FAIL persistence branch is identical to REVISE: every-iter outputs only, no Steps 5–8.
 - **MUST be idempotent** — per the contract above; re-running on the same iter produces identical results.
 - **MUST stage findings cumulatively on PASS** — union across iters `1..n`; no earlier-iter constructive finding silently dropped.
-- **MUST stamp templates** — never write freeform to a staging subdirectory; see [`templates/`](templates/).
+- **MUST stamp templates** — never write freeform to a staging subdirectory; see [`templates/`](../memory/templates/).
 - **MUST preserve all iterations' working data** — earlier iter drafts in `working/` remain alongside the current iter's, and each agent's accumulating `transcripts/{role}-{agentId}.jsonl` is never overwritten with a filtered window.
 - **MUST be read-only against the artifact AND all memory tiers except own write surfaces** — never modify leader / executor drafts; never write to feature memory, memory, prior loops' session dirs, or other systems' evaluation dirs. The ONLY allowed write surfaces are listed in § Memory Access Matrix.
 - **MUST NEVER write to memory when `loop ∈ {preparation, ideation, planning, execution}`** — no `features/{feature-name}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, `references/`, `decisions/`, `plans/`, `reviews/`, `reports/`, `learnings/`, `archive/` writes from those loops' RECORD. Wrap-up's RECORD owns those writes (see Memory Access Matrix § Wrap-up loop exception).

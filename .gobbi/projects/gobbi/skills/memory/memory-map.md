@@ -8,7 +8,7 @@ The assistant in RECORD writes **only** to the session record. Wrap-up — in it
 
 Column legend:
 
-- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](SKILL.md#output-paths)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md))
+- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](../record/SKILL.md#output-paths)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md))
 - **Description** — what lives here and why
 - **Writer** — the role that creates / updates this path during the workflow
 - **When** — the workflow point at which the writer touches it
@@ -37,7 +37,7 @@ The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`,
 
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|
-| `{N}-{loop}/outputs/{free-filename}.md` | Loop's PASS-iter output artifacts. Filenames and counts are free; every file carries the [Artifact frontmatter schema](SKILL.md#artifact-frontmatter-schema). Collectively the next loop's briefing source. Mandatory: ≥ 1 file with `artifact_type: memory-reads` | assistant (RECORD) | `PASS` iteration only | frontmatter schema only (no body template) |
+| `{N}-{loop}/outputs/{free-filename}.md` | Loop's PASS-iter output artifacts. Filenames and counts are free; every file carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Collectively the next loop's briefing source. Mandatory: ≥ 1 file with `artifact_type: memory-reads` | assistant (RECORD) | `PASS` iteration only | frontmatter schema only (no body template) |
 | `{N}-{loop}/working/draft-iter{n}.md` | Leader / executor draft for iter `n` — the WORK output before RECORD synthesizes | leader (Ideation, Planning) or executor (Execution) (WORK) | every iter, during WORK | per-loop draft shape (see loop's `SKILL.md`) |
 | `{N}-{loop}/working/research/{slug}.md` | Pre-staging external references written during WORK when the `research` skill is loaded; promoted to `staging/references/` at RECORD | leader (WORK — research) | per confirmed external insight | [`templates/references.md`](templates/references.md) (on promotion) |
 | `{N}-{loop}/working/discussion-log.md` | Manager-captured user-decision exchanges, appended one section per exchange. Preserved across iters | manager (DISCUSSION live) | every user-decision exchange | — |
@@ -46,7 +46,7 @@ The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`,
 
 ### Per-loop staging — `{N}-{loop}/staging/` (PASS-only writes; Wrap-up promotion source)
 
-Every staging file is stamped to its matching template. See [`SKILL.md` § Templates](SKILL.md#templates) for the mapping.
+Every staging file is stamped to its matching template. See [`SKILL.md` § Templates](../record/SKILL.md#templates) for the mapping.
 
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|
@@ -173,7 +173,7 @@ All templates live under [`templates/`](templates/). The index below lets you ju
 
 ## Cross-references
 
-- Tier access permissions for the assistant role → [`SKILL.md` § Memory Access Matrix](SKILL.md#memory-access-matrix)
+- Tier access permissions for the assistant role → [`SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix)
 - Staging → memory routing table → [`wrap-up/SKILL.md` § Staging → Memory routing](../wrap-up/SKILL.md#staging--memory-routing)
 - Type + Domain → staging-subdir routing → [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity)
 - Slug + collision policy → [`evaluation/SKILL.md` § Slug + collision policy](../evaluation/SKILL.md#slug--collision-policy)
