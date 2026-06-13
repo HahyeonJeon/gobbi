@@ -201,7 +201,7 @@ gobbi's durable capabilities — the things a README "Features" section would li
 
 | Value-feature | What it is | Owns (canonical skill dirs / subsystems) |
 |---|---|---|
-| `workflow` | The Ideation → Planning → Execution → Memorization → Handoff pipeline (6-step state machine) | orchestration + the 5 loop bodies + research + discussion |
+| `workflow` | The 6-step state machine: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (each productive step a DISCUSSION → WORK → EVALUATION → RECORD loop; Wrap-up's RECORD promotes session staging to memory) | orchestration + the 5 loop bodies + research + discussion |
 | `memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | record + memory-map + rules.md + wrap-up's promotion half + the 13 types |
 | `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + delegation/templates + the `agents/*.md` roster |
 | `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives | evaluation + the per-loop `evaluation.md` child docs + codex |

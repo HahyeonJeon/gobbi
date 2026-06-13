@@ -237,10 +237,10 @@ Do not collapse the two registrations into one — the dev registration must use
 The Claude Code manifest remains metadata-only. Claude Code auto-loads components from conventional directories:
 
 - `plugins/gobbi/agents/` — 5 agent files (manager, leader, executor, evaluator, assistant) auto-loaded by convention
-- `plugins/gobbi/skills/` — 19 skill directories auto-loaded by convention; merged with the user's existing skills (ADDS-TO semantics)
+- `plugins/gobbi/skills/` — 20 skill directories auto-loaded by convention; merged with the user's existing skills (ADDS-TO semantics)
 - `plugins/gobbi/hooks/hooks.json` — hook registrations (4 event groups) auto-loaded by convention
 
-Verified on CLI v2.1.159: `claude plugin details gobbi` reports `Skills (19), Agents (5), Hooks (3)` with no Claude manifest component keys. Adding `skills`/`agents`/`hooks` keys to the Claude manifest previously produced `Status: failed to load` and `Agents (0)` — those keys stay out of `plugins/gobbi/.claude-plugin/plugin.json`.
+Verified on CLI v2.1.159: `claude plugin details gobbi` reports `Skills (19), Agents (5), Hooks (3)` (now 20 after the memory/record split — re-verify on next CLI check) with no Claude manifest component keys. Adding `skills`/`agents`/`hooks` keys to the Claude manifest previously produced `Status: failed to load` and `Agents (0)` — those keys stay out of `plugins/gobbi/.claude-plugin/plugin.json`.
 
 The Codex manifest is explicit where Codex needs it:
 
@@ -249,13 +249,13 @@ The Codex manifest is explicit where Codex needs it:
 
 Codex custom agents remain repo-local under `.codex/agents/*.toml`; the plugin package includes `agents/` as a shared distribution snapshot, not as the native Codex custom-agent discovery path.
 
-### Skills shipped by the package (19 total)
+### Skills shipped by the package (20 total)
 
-The package ships all 19 canonical skills:
+The package ships all 20 canonical skills:
 
-`codex`, `delegation`, `discussion`, `evaluation`, `execution`, `git`, `gobbi`, `gobbi-hook-authoring`, `ideation`, `interview`, `memorization`, `mistake`, `orchestration`, `planning`, `preparation`, `principles`, `research`, `wrap-up`, `claude-plugin`
+`claude-plugin`, `codex`, `delegation`, `discussion`, `evaluation`, `execution`, `git`, `gobbi`, `gobbi-hook-authoring`, `ideation`, `interview`, `memory`, `mistake`, `orchestration`, `planning`, `preparation`, `principles`, `record`, `research`, `wrap-up`
 
-The `claude-plugin` skill (this file) is skill 19. The canonical source lives at `.gobbi/projects/gobbi/skills/claude-plugin/SKILL.md`; the workspace-visible mirror is `.claude/skills/claude-plugin/SKILL.md` (a symlink). The package path `plugins/gobbi/skills/claude-plugin/SKILL.md` resolves through the package symlink.
+The `claude-plugin` skill (this file) is one of the 20. The canonical source lives at `.gobbi/projects/gobbi/skills/claude-plugin/SKILL.md`; the workspace-visible mirror is `.claude/skills/claude-plugin/SKILL.md` (a symlink). The package path `plugins/gobbi/skills/claude-plugin/SKILL.md` resolves through the package symlink.
 
 ### Pointer to the claude-plugin skill
 
