@@ -6,16 +6,16 @@ Task decomposition records — the output of the **Planning Loop**. Each plan br
 
 This template covers a file with **two write paths**:
 
-1. **Planning MEMORIZATION only**: stage at `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md`. `plans/` is **Planning-loop-only** — it does NOT appear in other loops' staging trees (ideation / preparation / execution / wrap-up do not produce plans). Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Planning RECORD only**: stage at `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md`. `plans/` is **Planning-loop-only** — it does NOT appear in other loops' staging trees (ideation / preparation / execution / wrap-up do not produce plans). Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
-- During **Planning** MEMORIZATION when the Planning Loop produces a canonical plan: write it here.
+- During **Planning** RECORD when the Planning Loop produces a canonical plan: write it here.
 - Updates to an existing plan (mid-execution refinements) create a new versioned plan document; do not edit in place.
 
 ## Location
@@ -23,7 +23,7 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 - **Feature-level (loop path): `.gobbi/projects/{project-name}/features/{feature}/plans/`** — the loop path writes plans ONLY here.
 - Project-level `.gobbi/projects/{project-name}/plans/` — **maintainer-authored cross-feature roadmaps / release plans ONLY**, never loop-written.
 
-The Planning-loop path is feature-only (per [`rules.md` § 3](../rules.md)). A project-level `plans/` may hold maintainer roadmaps, but no Planning-loop MEMORIZATION or Wrap-up promotion ever targets it.
+The Planning-loop path is feature-only (per [`rules.md` § 3](../rules.md)). A project-level `plans/` may hold maintainer roadmaps, but no Planning-loop RECORD or Wrap-up promotion ever targets it.
 
 ## File naming
 

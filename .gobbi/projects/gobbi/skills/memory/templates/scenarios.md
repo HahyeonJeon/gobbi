@@ -6,16 +6,16 @@
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md`. Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
-- During **Ideation** MEMORIZATION: append new scenarios from Ideation Sub-step D (Design) enumeration.
+- During **Ideation** RECORD: append new scenarios from Ideation Sub-step D (Design) enumeration.
 - During EVALUATION's **`scenario_gap` finding** routing: append the missing scenario surfaced by the evaluator's Stage 1 Frame Build.
 
 This is the **persistent** location. Each session's `sessions/{id}/1-ideation/working/` only holds the diff added in that session.
@@ -78,7 +78,7 @@ The `Coverage` body field (distinct from the base `status` lifecycle field) trac
 - **`partial`** — the design intends to handle this but verification is incomplete
 - **`uncovered`** — surfaced as a scenario gap but no design addresses it yet (the next Ideation iteration must address)
 
-The Execution Loop's MEMORIZATION updates the body `Coverage` from `partial` to `covered` when the corresponding verification ships. Base `status` stays `active` until the scenario is superseded.
+The Execution Loop's RECORD updates the body `Coverage` from `partial` to `covered` when the corresponding verification ships. Base `status` stays `active` until the scenario is superseded.
 
 ## Append-only
 

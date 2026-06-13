@@ -1,17 +1,17 @@
 # Workflow — Planning (Orchestration)
 
-How the **manager** orchestrates the Planning Loop. The `leader` and `assistant` specialists that participate load [`planning/SKILL.md`](../../planning/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's MEMORIZATION procedure).
+How the **manager** orchestrates the Planning Loop. The `leader` and `assistant` specialists that participate load [`planning/SKILL.md`](../../planning/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's RECORD procedure).
 
 **Planning focuses on Who / When / Where.** Ideation concentrated on What / Why / How; Planning takes the locked idea and decides who implements what, in what order, where in the codebase.
 
-The Planning Loop runs the four-phase iteration shape — `DISCUSSION` → `WORK` → `EVALUATION` → `MEMORIZATION` → `ITER / EXIT`.
+The Planning Loop runs the four-phase iteration shape — `DISCUSSION` → `WORK` → `EVALUATION` → `RECORD` → `ITER / EXIT`.
 
 | Phase | Content semantics for Planning |
 |---|---|
 | `DISCUSSION` | Manager + user + leader (research-backed opinion) discuss Who / When / Where. Tasks, dependencies, and agent assignments are decided here. |
 | `WORK` | Leader documents the DISCUSSION outcome into the canonical plan draft. Documentation, not new content. |
 | `EVALUATION` | Dual-system evaluators run the four-stage procedure across all seven perspectives + Overall. |
-| `MEMORIZATION` | Assistant synthesizes loop's `outputs/` into session staging only — project-memory promotion is the sole responsibility of Wrap-up. |
+| `RECORD` | Assistant synthesizes loop's `outputs/` into session staging only — memory promotion is the sole responsibility of Wrap-up. |
 
 ---
 
@@ -26,13 +26,13 @@ Same pattern as Ideation. The leader does not observe the entire user dialogue. 
 ```
 manager → opens DISCUSSION with user (state: "advancing from Ideation to Planning")
 manager → spawns leader: "read 1-ideation/outputs/ and produce a draft file map + task list"
-leader → reads ideation outputs + project memory + codebase → returns proposal
+leader → reads ideation outputs + memory + codebase → returns proposal
 manager → presents leader's proposal → active runtime's user-decision primitive → user refines or approves
 manager → spawns leader for next sub-step (dependency graph, agent assignment, etc.)
 ...
 ```
 
-Multiple leader spawns are normal. MEMORIZATION preserves the leader's record as the audit trail for "what research informed each planning decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **Claude Code leader continuation** (one teammate carried across sub-steps — see [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh)), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage. Native Codex uses fresh leader spawns with full Load Directives.
+Multiple leader spawns are normal. RECORD preserves the leader's record as the audit trail for "what research informed each planning decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **Claude Code leader continuation** (one teammate carried across sub-steps — see [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh)), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage. Native Codex uses fresh leader spawns with full Load Directives.
 
 ### Sub-step orchestration
 
@@ -83,25 +83,25 @@ WORK is short by design — the substantive thinking happened in DISCUSSION.
 
 ---
 
-## MEMORIZATION Phase (delegated to `assistant`)
+## RECORD Phase (delegated to `assistant`)
 
 **Manager's job**: spawn the `assistant` agent. The assistant synthesizes loop's `outputs/` per [`workflow/record.md`](record.md) and [`record/SKILL.md`](../../record/SKILL.md). For Planning, the assistant also:
 
 - On `PASS`: stages the plan at `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` per the plans template; Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`
 - Stages `scenario_gap` / `checklist_gap` discoveries at `sessions/{date}-{session-id}/3-planning/staging/{scenarios,checklists}/{slug}.md`; Wrap-up promotes to `features/{feature-name}/`
-- Does NOT write to project memory directly — all promotion is Wrap-up's responsibility
+- Does NOT write to memory directly — all promotion is Wrap-up's responsibility
 
-### Per-iteration session memory is NOT committed (gitignored)
+### Per-iteration session record is NOT committed (gitignored)
 
-There is **no** per-iteration session-memory commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after MEMORIZATION.
+There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
 
-Iteration boundaries are recorded in `session.json.workflow.planning.iterations[]`, not in git. Durable cross-session memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content (the plan, scenarios, checklists) into tracked `features/`, etc. Only promoted content survives the session.
+Iteration boundaries are recorded in `session.json.workflow.planning.iterations[]`, not in git. Durable memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content (the plan, scenarios, checklists) into tracked `features/`, etc. Only promoted content survives the session.
 
 ---
 
 ## ITER / EXIT Decision
 
-After `MEMORIZATION`, the manager decides based on the reconciled verdict:
+After `RECORD`, the manager decides based on the reconciled verdict:
 
 | Verdict | Action |
 |---|---|
@@ -122,7 +122,7 @@ The canonical tree is [`orchestration/templates/session-tree.md`](../templates/s
 .gobbi/projects/{project}/sessions/{date}-{session-id}/
 ├── transcripts/                       ← single session-root surface; {role}-{agentId}.jsonl per agent, all loops
 └── 3-planning/
-    ├── outputs/             ← PASS-iter output files (assistant, MEMORIZATION, PASS only)
+    ├── outputs/             ← PASS-iter output files (assistant, RECORD, PASS only)
     ├── working/                ← leader drafts (per iter), discussion-log.md, research refs
     ├── evaluation/
     │   └── iter{n}/
@@ -138,7 +138,7 @@ The canonical tree is [`orchestration/templates/session-tree.md`](../templates/s
         └── design/{slug}.md
 ```
 
-**No project-memory writes during Planning.** All `features/{feature-name}/...` and project-tier writes happen at Wrap-up — see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md).
+**No memory writes during Planning.** All `features/{feature-name}/...` and project-tier writes happen at Wrap-up — see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md).
 
 ---
 

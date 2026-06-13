@@ -6,17 +6,17 @@ Time-stamped **decision records** (ADR-style) capturing what was decided, why, a
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md`. Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
-- During **Ideation / Planning** MEMORIZATION when a significant decision was made (technology choice, architecture trade-off, scope inclusion/exclusion).
-- During **Execution** MEMORIZATION when a mid-execution decision changed direction (e.g., chose to defer a sub-task, picked library A over library B, accepted a deferred risk).
+- During **Ideation / Planning** RECORD when a significant decision was made (technology choice, architecture trade-off, scope inclusion/exclusion).
+- During **Execution** RECORD when a mid-execution decision changed direction (e.g., chose to defer a sub-task, picked library A over library B, accepted a deferred risk).
 - When a `design_flaw` or `assumption_risk` finding from EVALUATION received `PASS` despite the finding — record as `decisions/{date}-deferred-risk-{slug}.md` per finding-type routing.
 
 ## Location

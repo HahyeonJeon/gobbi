@@ -254,7 +254,7 @@ All writes during RECORD are **session-scoped**. Wrap-up promotes the `staging/`
 
 ### Path conventions
 
-See also: `evaluation/SKILL.md § Coverage Ownership Matrix § Memorization staging shape + naming` for the cross-cutting evaluation seed that covers staging shape and naming compliance.
+See also: `evaluation/SKILL.md § Coverage Ownership Matrix § RECORD staging shape + naming` for the cross-cutting evaluation seed that covers staging shape and naming compliance.
 
 - `{date}` — session start date in `YYYY-MM-DD`
 - `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.

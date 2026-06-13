@@ -30,15 +30,15 @@ The agent in the evaluator role MUST observe these tier boundaries. The only wri
 
 | Memory tier | Path root | Access from evaluator role |
 |---|---|---|
-| **Session memory — own perspective dir** | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` | **READ + WRITE** — the agent's only writable surface |
-| **Session memory — prior iter** | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{m}/{system}/` (m < n) | **READ-ONLY** — iter (n-1) is the required source for Stage 1 inheritance; iter `m < n-1` is read on-demand when a `disposition: superseded` reference points to a finding in that earlier iter |
-| **Session memory — current loop working + staging** | `sessions/{date}-{session-id}/{N}-{loop}/{working,staging}/` | **READ-ONLY** — the artifact + WORK-staged references / backlogs |
-| **Session memory — prior loops** | `sessions/{date}-{session-id}/{N}-{prior-loop}/` (e.g., Planning evaluator reading Ideation outputs) | **READ-ONLY** — required for cross-loop trace checks |
-| **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — evaluator never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
+| **Session record — own perspective dir** | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` | **READ + WRITE** — the agent's only writable surface |
+| **Session record — prior iter** | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{m}/{system}/` (m < n) | **READ-ONLY** — iter (n-1) is the required source for Stage 1 inheritance; iter `m < n-1` is read on-demand when a `disposition: superseded` reference points to a finding in that earlier iter |
+| **Session record — current loop working + staging** | `sessions/{date}-{session-id}/{N}-{loop}/{working,staging}/` | **READ-ONLY** — the artifact + WORK-staged references / backlogs |
+| **Session record — prior loops** | `sessions/{date}-{session-id}/{N}-{prior-loop}/` (e.g., Planning evaluator reading Ideation outputs) | **READ-ONLY** — required for cross-loop trace checks |
+| **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — evaluator never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — for verification (e.g., checking existing scenarios / decisions / mistakes). Never written; Wrap-up owns feature-memory writes |
-| **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/` | **READ-ONLY** — required for Stage 1 to load applicable mistakes + rules. Never written; Wrap-up owns project-memory writes |
+| **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/` | **READ-ONLY** — required for Stage 1 to load applicable mistakes + rules. Never written; Wrap-up owns memory writes |
 
-**Delete semantics**: the evaluator NEVER deletes any file in any tier. Supersession is recorded via the `disposition: superseded` field on findings (citing the superseding finding's ID). Once a project-memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
+**Delete semantics**: the evaluator NEVER deletes any file in any tier. Supersession is recorded via the `disposition: superseded` field on findings (citing the superseding finding's ID). Once a memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 **Read-only enforcement**: any write attempted outside `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/` is a constraint violation. Code attempting writes to other tiers must be revoked and the evaluator restarted with a corrected scope.
 
@@ -74,7 +74,7 @@ Verification mode follows artifact type. For runnable artifacts (code, tests, co
 
 > **Recurring findings become mistakes.**
 
-A finding the agent has seen variations of before is the highest-value input to the loop's MEMORIZATION phase. Surface it explicitly so the synthesizing assistant can promote it.
+A finding the agent has seen variations of before is the highest-value input to the loop's RECORD phase. Surface it explicitly so the synthesizing assistant can promote it.
 
 ---
 
@@ -95,7 +95,7 @@ Stage 2 applies **seven perspectives** to every artifact (Stage 2), then a final
 
 Every evaluation runs **all seven perspectives + Overall**. No pruning. Inapplicable perspectives are not skipped — they are still walked and may legitimately produce zero findings, which is itself a recorded result.
 
-> **This 7-perspective vocabulary is the single source for evaluation file naming.** The bare perspective names — `project`, `structure`, `performance`, `aesthetics`, `usage`, `consistency`, `risk` (plus `overall`) — are the canonical filenames every per-perspective evaluation output uses: `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md`. **Both systems (Claude + Codex) MUST use these same seven names** so cross-system reconciliation can pair files 1:1. No `pN-` positional prefix, no system-specific perspective vocabulary (e.g. a Codex `scope.md` / `specificity.md` divergent set is non-canonical). If a delegation brief seeds a divergent perspective vocabulary, that is a brief-side defect — the canonical seven here are authoritative. See [`record/SKILL.md` § Per-perspective evaluation file naming](../record/SKILL.md#per-perspective-evaluation-file-naming-the-execution-per-task-quartet) and [`orchestration/SKILL.md` § Workflow Session Memory](../orchestration/SKILL.md#workflow-session-memory).
+> **This 7-perspective vocabulary is the single source for evaluation file naming.** The bare perspective names — `project`, `structure`, `performance`, `aesthetics`, `usage`, `consistency`, `risk` (plus `overall`) — are the canonical filenames every per-perspective evaluation output uses: `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md`. **Both systems (Claude + Codex) MUST use these same seven names** so cross-system reconciliation can pair files 1:1. No `pN-` positional prefix, no system-specific perspective vocabulary (e.g. a Codex `scope.md` / `specificity.md` divergent set is non-canonical). If a delegation brief seeds a divergent perspective vocabulary, that is a brief-side defect — the canonical seven here are authoritative. See [`record/SKILL.md` § Per-perspective evaluation file naming](../record/SKILL.md#per-perspective-evaluation-file-naming-the-execution-per-task-quartet) and [`orchestration/SKILL.md` § Workflow Session Record](../orchestration/SKILL.md#workflow-session-record).
 
 ### Coverage Ownership Matrix
 
@@ -111,7 +111,7 @@ Cross-cutting concerns that have no obvious single owner are assigned to specifi
 | **Observability / telemetry** | Structure + Usage | Log levels, telemetry coverage of hot paths, alert-ability; Usage checks operator can diagnose at 3am from logs alone |
 | **Cost / budget impact** | Performance + Risk | Token / API / infra cost delta named; Risk weighs cost-runaway scenarios |
 | **Error budget impact** | Performance + Risk | SLO impact, alert noise, rollback cost |
-| **Memorization staging shape + naming** | Consistency + Aesthetics | Per-finding `{slug}.md` filename convention (no bulk files); 5-Type vocabulary (`scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` / `general`) in frontmatter; Domain routing matches `evaluation/SKILL.md § Complete Domain → staging destination routing`; Slug+collision policy compliance per `evaluation/SKILL.md:385-393` |
+| **RECORD staging shape + naming** | Consistency + Aesthetics | Per-finding `{slug}.md` filename convention (no bulk files); 5-Type vocabulary (`scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` / `general`) in frontmatter; Domain routing matches `evaluation/SKILL.md § Complete Domain → staging destination routing`; Slug+collision policy compliance per `evaluation/SKILL.md:385-393` |
 
 The owning perspective's seed scenarios in each phase child doc **must** include at least one entry covering each applicable cross-cutting concern (or an explicit `not-applicable: <rationale>` declaration). The manager validates this at Stage 1 exit.
 
@@ -237,7 +237,7 @@ For each perspective, **build the scenario-checklist frame** that Stage 2 will m
 
 **Outputs** (per perspective)
 - Locked Frame — scenarios with attached checklists; used by Stage 2 and Stage 3
-- `scenario_gap` and `checklist_gap` findings — **constructive**: on `PASS`, MEMORIZATION stages them under `staging/scenarios/` and `staging/checklists/` for Wrap-up to promote
+- `scenario_gap` and `checklist_gap` findings — **constructive**: on `PASS`, RECORD stages them under `staging/scenarios/` and `staging/checklists/` for Wrap-up to promote
 
 **Adversarial scenario requirement**
 
@@ -336,7 +336,7 @@ After all seven per-perspective passes, step back and look at the artifact **hol
 
 Every Stage 1 gap, every Stage 2 finding, and every Stage 3 finding carries **five required metadata fields**:
 
-- **Type** (5 values) — finding category; routes MEMORIZATION
+- **Type** (5 values) — finding category; routes RECORD
 - **Domain** (15+ values) — subject area; routes specialized memory promotion
 - **Disposition** (5 values) — iteration lifecycle state (`open` / `addressed` / `disputed` / `deferred` / `superseded`). Iter 1 findings default to `open`. Iter ≥ 2 must judge a fresh disposition for every inherited prior-iter finding (Stage 2 step 3)
 - **Confidence** (0/25/50/75/100)
@@ -346,7 +346,7 @@ The Type + Domain pair determines staging destination on `PASS` (Stage 2 / 3 bel
 
 ### Type (5 values)
 
-| Type | Source | Downstream effect at MEMORIZATION (`PASS` only) |
+| Type | Source | Downstream effect at RECORD (`PASS` only) |
 |---|---|---|
 | **`scenario_gap`** | Stage 1 Create / Update on scenarios, or Stage 2 discovery of a missing scenario | Stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md` |
 | **`checklist_gap`** | Stage 1 Create / Update on checklist, or Stage 2 discovery of a missing check | Stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md`, anchored to its scenario |
@@ -358,7 +358,7 @@ The Type + Domain pair determines staging destination on `PASS` (Stage 2 / 3 bel
 
 ### Complete Domain → staging destination routing (`general` Type)
 
-For Type = `general`, the Domain field selects the staging destination deterministically. This table is the canonical routing — MEMORIZATION does not improvise.
+For Type = `general`, the Domain field selects the staging destination deterministically. This table is the canonical routing — RECORD does not improvise.
 
 | Domain | Staging destination (`PASS` only) |
 |---|---|
@@ -381,7 +381,7 @@ For Type = `general`, the Domain field selects the staging destination determini
 
 For Type = `design_flaw` or `assumption_risk`, the destination is always `staging/decisions/{slug}.md` regardless of Domain (the Domain becomes a frontmatter tag).
 
-**Frontmatter tags vs destination routing**: most Domain-specific frontmatter tags above (`security: true`, `privacy: true`, `cost-impact: <estimate>`, `regression: true`, etc.) are **metadata for downstream filtering and audit**, not routing keys — the destination is determined by the staging directory + slug. The only frontmatter tag that affects Wrap-up's destination routing is `mistake-candidate: true`, which routes `staging/decisions/*` to a feature-scoped or project-scoped `mistakes/` directory (see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../wrap-up/SKILL.md#staging--project-memory-routing)).
+**Frontmatter tags vs destination routing**: most Domain-specific frontmatter tags above (`security: true`, `privacy: true`, `cost-impact: <estimate>`, `regression: true`, etc.) are **metadata for downstream filtering and audit**, not routing keys — the destination is determined by the staging directory + slug. The only frontmatter tag that affects Wrap-up's destination routing is `mistake-candidate: true`, which routes `staging/decisions/*` to a feature-scoped or project-scoped `mistakes/` directory (see [`wrap-up/SKILL.md` § Staging → Memory routing](../wrap-up/SKILL.md#staging--memory-routing)).
 
 For Type = `scenario_gap` / `checklist_gap`, the destination is `staging/scenarios/{slug}.md` / `staging/checklists/{slug}.md` regardless of Domain.
 
@@ -391,13 +391,13 @@ For Type = `scenario_gap` / `checklist_gap`, the destination is `staging/scenari
 - **Stable finding-ID** — every finding carries a stable `finding-id` field (UUID-like or content-hash) in its frontmatter, set on first creation and preserved across iterations. This is the **idempotency key** for re-runs and collisions:
   - **Same finding-id, same destination** → overwrite (re-run on same iter produces identical file)
   - **Same finding-id, different slug** → impossible by construction; if it ever happens it's a bug, escalate
-  - **Different finding-id, same slug at destination** → disambiguate with `-2`, `-3` numeric suffix; record the disambiguation in `working/promotion-manifest.md` (Wrap-up) or per-iter staging notes (loop MEMORIZATION). Never overwrite a distinct finding's file
+  - **Different finding-id, same slug at destination** → disambiguate with `-2`, `-3` numeric suffix; record the disambiguation in `working/promotion-manifest.md` (Wrap-up) or per-iter staging notes (loop RECORD). Never overwrite a distinct finding's file
 - **Cross-loop slug collisions** (e.g., Planning loop and Execution loop both stage a `redis-connection-pool` finding with different finding-ids) use the loop name as suffix: `redis-connection-pool-planning.md` vs `redis-connection-pool-execution.md`
 - **Pre-write check**: before writing staging/{type}/{slug}.md, the writer reads any existing file at that path; if it exists and its frontmatter `finding-id` matches the new finding, overwrite; otherwise apply suffix disambiguation
 
 ### Domain (required when applicable)
 
-Every finding carries a `Domain` tag. The Domain is the subject-area label; combined with Type, it lets MEMORIZATION route specialized findings without lossy reduction to `general`.
+Every finding carries a `Domain` tag. The Domain is the subject-area label; combined with Type, it lets RECORD route specialized findings without lossy reduction to `general`.
 
 | Domain | Examples |
 |---|---|
@@ -553,7 +553,7 @@ Each child doc is structured uniformly: per-perspective seed scenarios → per-p
 
 ## Output paths
 
-All evaluator writes are **session-scoped**. Evaluators never touch project memory.
+All evaluator writes are **session-scoped**. Evaluators never touch memory.
 
 | Path | Written by | Written |
 |---|---|---|
@@ -569,7 +569,7 @@ All evaluator writes are **session-scoped**. Evaluators never touch project memo
 - `{system}` — `claude` or `codex` (the system running this evaluator instance)
 - `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`)
 
-The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` is bootstrapped by the manager before spawning evaluators. Cross-system divergence is **derived at MEMORIZATION** by comparing per-system files; no separate divergence file is written.
+The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` is bootstrapped by the manager before spawning evaluators. Cross-system divergence is **derived at RECORD** by comparing per-system files; no separate divergence file is written.
 
 ---
 
@@ -580,14 +580,14 @@ The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{syste
 - **MUST iterate the seven perspectives in the documented order** at Stage 1 and Stage 2 — Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk. Order is not aesthetic; downstream perspectives sometimes depend on earlier verdicts (e.g., Risk weighs Consistency sync failures).
 - **MUST load the phase child doc at Stage 0** — measuring against an empty seed is frame collapse.
 - **MUST extract and judge the artifact's What / Why / How at Stage 0**, per `principles` Principle 4 — an artifact without clear W / W / H is unevaluable, and the gap is a Critical `general` finding that must be recorded before Stage 1 begins.
-- **MUST tag every finding with a `Type` AND a `Domain`** — untyped or domain-less findings cannot be routed by MEMORIZATION. `general` Type + `general` Domain is a code smell; specialize at least one.
+- **MUST tag every finding with a `Type` AND a `Domain`** — untyped or domain-less findings cannot be routed by RECORD. `general` Type + `general` Domain is a code smell; specialize at least one.
 - **MUST escalate on missing What or Why at Stage 0** — Stage 0 halts and triggers the active runtime's user-decision primitive; missing How proceeds best-effort with Critical `general` (domain: `unevaluable`) finding propagated into aggregation.
 - **MUST escalate on phase-mismatch at Stage 0** — never silently evaluate against a phase tag that contradicts the artifact's identified type.
 - **MUST validate Stage 1 Frames at exit** — every perspective Frame must satisfy the adversarial scenario requirement and the Coverage Ownership Matrix; bounce and re-build any Frame that doesn't.
 - **MUST apply verification preflight before side-effectful tool runs** — DB writes, live network calls, paid APIs, external notifications require explicit user approval; otherwise lower confidence to ≤ 25.
 - **MUST apply the strongest verification the artifact admits** — for runnable artifacts, tool-verified evidence is required for confidence ≥ 75; for text-only artifacts, close-reading + cross-reference + `grep` / file-existence checks fill the same role. Reasoning-only findings cap at 50 unless the reasoning chain is short and unambiguous.
 - **MUST check every finding against the false-positive categories** before assigning confidence ≥ 50.
-- **MUST be read-only against the artifact AND all memory tiers except own write surface** — never modify the artifact; never write to feature memory, project memory, session.json, or other systems' evaluation dirs. The ONLY allowed write surface is `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/*`. See § Three-Tier Memory Access Matrix for the full table.
-- **MUST never delete** — supersession via `disposition: superseded` field; deletion of any file in any tier is forbidden. Terminal project-memory artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
+- **MUST be read-only against the artifact AND all memory tiers except own write surface** — never modify the artifact; never write to feature memory, memory, session.json, or other systems' evaluation dirs. The ONLY allowed write surface is `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/*`. See § Three-Tier Memory Access Matrix for the full table.
+- **MUST never delete** — supersession via `disposition: superseded` field; deletion of any file in any tier is forbidden. Terminal memory artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json`** — the manager owns it. Iter `n` is supplied as a delegation input, not derived by the evaluator.
 - **MUST record memory reads** — every Stage 0 / Stage 1 read of project / feature / prior-iter memory is logged in the per-perspective file's `## Memory reads` register so audit is explicit.

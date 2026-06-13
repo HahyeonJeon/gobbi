@@ -6,18 +6,18 @@ Deferred work — features (project-level) or tasks (feature-level) that came ou
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md`. Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
 - During **Ideation Step 2 Lock Scope** decomposition, every non-chosen candidate writes a backlog entry.
-- During any loop's MEMORIZATION when an evaluator finding has `disposition: deferred` — the finding stages at `staging/decisions/{slug}.md` with `disposition: deferred` frontmatter; Wrap-up reads that flag and promotes the deferred decision into a backlog entry stamped from this template at `features/{feature-name}/backlogs/{slug}.md` or `.gobbi/projects/{project-name}/backlogs/{slug}.md` per the deferred finding's scope.
-- During any loop's MEMORIZATION when scope-violating work surfaces and is deferred rather than absorbed.
+- During any loop's RECORD when an evaluator finding has `disposition: deferred` — the finding stages at `staging/decisions/{slug}.md` with `disposition: deferred` frontmatter; Wrap-up reads that flag and promotes the deferred decision into a backlog entry stamped from this template at `features/{feature-name}/backlogs/{slug}.md` or `.gobbi/projects/{project-name}/backlogs/{slug}.md` per the deferred finding's scope.
+- During any loop's RECORD when scope-violating work surfaces and is deferred rather than absorbed.
 
 ## Location
 

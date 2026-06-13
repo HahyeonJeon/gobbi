@@ -4,7 +4,7 @@ Reference of every memory path the workflow touches. Two tiers: **Session record
 
 For the naming convention, frontmatter standard, and structure rules every memory file obeys, see [`rules.md`](rules.md). For the canonical per-session working-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior, and the single session-root `transcripts/` — see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md), the single source of truth.
 
-The assistant in RECORD writes **only** to the session record. Wrap-up — in its **memorization** stage — is the sole writer to memory: it promotes the session-record staging subtree to memory. Both tiers are plain markdown trees — there is no per-session SQLite (`gobbi.db` was dropped) and no per-project summary JSON (`project.json` was dropped). `session.json` is the only JSON in the session tree, and it is per-session telemetry — not cross-session memory.
+The assistant in RECORD writes **only** to the session record. Wrap-up — in its **memorization** stage — is the sole writer to memory: it promotes the session-record staging subtree to memory. Both tiers are plain markdown trees — there is no per-session SQLite (`gobbi.db` was dropped) and no per-project summary JSON (`project.json` was dropped). `session.json` is the only JSON in the session tree, and it is per-session telemetry — not durable memory.
 
 Column legend:
 
@@ -71,7 +71,7 @@ Every staging file is stamped to its matching template. See [`SKILL.md` § Templ
 
 Root: `.gobbi/projects/{project-name}/`
 
-Persistent, per-project, git-tracked. Cross-session memory. **Wrap-up is the sole writer**; loop RECORD never writes here. The directory shape below matches the canonical memory layout — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the staging → destination routing table.
+Persistent, per-project, git-tracked. Durable memory. **Wrap-up is the sole writer**; loop RECORD never writes here. The directory shape below matches the canonical memory layout — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the staging → destination routing table.
 
 ### Per-type canonical homes (the 13 memory types)
 

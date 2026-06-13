@@ -2,7 +2,7 @@
 
 Sub-document of the `orchestration` skill. Owns the **full** Auto-Mode specification: mode
 posture, the Always-Ask interrupt contract, the per-loop defaults (maxIterations, evaluate.mode,
-discuss.mode, Preparation, MEMORIZATION), the banner-conditioning note, and the maxIterations
+discuss.mode, Preparation, RECORD), the banner-conditioning note, and the maxIterations
 exhaustion silence contract.
 
 For the workflow governor and the global 6-step state machine, see
@@ -19,14 +19,14 @@ from start to finish with minimal user intervention.
 
 **Structural invariant.** Auto Mode's runtime shape is unchanged by this redesign. The 6-step
 state machine runs linearly; all loops run their full contract (DISCUSSION → WORK → EVALUATION →
-MEMORIZATION → ITER/EXIT). Nothing about the sequence, the loop structure, or the phase ordering
+RECORD → ITER/EXIT). Nothing about the sequence, the loop structure, or the phase ordering
 changes in Auto Mode. This document codifies discipline that was implicit; it does not introduce
 new runtime behavior.
 
 **When the manager auto-proceeds.** The manager initiates each step, runs subagents, and proceeds
 through the loop without pausing the user for decisions in the **Auto-decide** class
 (see `discussion/SKILL.md § Decision Classification`). Auto-decide decisions are resolved by the
-codebase, project memory, rules, mistakes, or a clearly recommended approach; they are logged
+codebase, memory, rules, mistakes, or a clearly recommended approach; they are logged
 silently for auditability.
 
 **When the manager MUST interrupt.** The manager pauses and uses the active runtime's user-decision primitive when:
@@ -78,12 +78,12 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "user"` in Auto default — manager + user converge on the delegation prompt. Construct per [Delegation skill § What Every Delegation Prompt Needs](../delegation/SKILL.md#what-every-delegation-prompt-contains). | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Collect the leader's draft Idea. | [ideation.md](workflow/ideation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | **Full PASS path** (unmodified base procedure) — stages typed findings per [Routing Findings to MEMORIZATION](workflow/evaluation.md#routing-findings-to-memorization). | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | **Full PASS path** (unmodified base procedure) — stages typed findings per [Routing Findings to RECORD](workflow/evaluation.md#routing-findings-to-record). | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` or `Skipped` → exit. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → exit with abort. | — | manager |
 
 ### Step 3 — Preparation Loop
 
-**Definition.** Verify that project memory and workspace skills are ready for Planning and Execution. Surface every gap and resolve them per user decision before Planning begins.
+**Definition.** Verify that memory and workspace skills are ready for Planning and Execution. Surface every gap and resolve them per user decision before Planning begins.
 
 **Inputs.** The Idea from Step 2 + the current state of `.gobbi/projects/{project-name}/` and `.gobbi/projects/{project-name}/skills/`.
 
@@ -96,7 +96,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "user"` — manager + user + leader-spawned scans identify readiness gaps. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Leader writes preparation draft AND executes approved gap fixes. | [preparation.md](workflow/preparation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.preparation.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path. | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | Full PASS path. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` or `Skipped` → promote generated skills + exit. `RE-IDEATE` → re-enter Step 2. `REVISE`/`FAIL` with budget → row 1. Budget out → abort. | — | manager |
 
 ### Step 4 — Planning Loop
@@ -114,7 +114,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "agent"` in Auto default — manager constructs delegation prompt without per-step user gate; Always-Ask categories still fire per §3. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
 | 2 | `PLAN_DRAFT` | Spawn `leader` subagent(s). Collect the draft Plan. | [planning.md](workflow/planning.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path. | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | Full PASS path. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics as Step 2. | — | manager |
 
 ### Step 5 — Execution Loop
@@ -132,7 +132,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs executor delegation prompt. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
 | 2 | `EXECUTION` | Spawn a fresh `executor` subagent by default. In Claude Code only, the manager may continue the same executor teammate per the bounded rule — shared subsystem, under the saturation cap (`delegation/SKILL.md § Continue vs Fresh`). Native Codex uses fresh executor spawns. Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path. | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | Full PASS path. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | Task complete → next task; all tasks complete → advance to Step 6. | — | manager |
 
 ### Step 6 — Wrap-up Loop
@@ -141,7 +141,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 **Inputs.** `Idea`, `Plan`, `Results` from prior loops + cumulative session-staging.
 
-**Output.** Doc updates (per Principle 6), session report, project memory updates, handoff summary, opened PR.
+**Output.** Doc updates (per Principle 6), session report, memory updates, handoff summary, opened PR.
 
 **Loop iteration.** 5-row loop; cap from `workflow.wrap-up.maxIterations` (Auto default = 5).
 
@@ -150,7 +150,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs assistant delegation prompt. | [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md) | manager |
 | 2 | `WRAPUP` | Spawn `assistant` subagent. Consolidate artifacts; archive backlogs; promote mistakes; write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `MEMORIZATION` | Full PASS path — write session and project memory for this iteration. | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | Full PASS path — write session and memory for this iteration. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` → session closed. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
 
 ---
@@ -215,13 +215,13 @@ The following defaults are locked for Auto Mode. They apply to every session tha
 | `workflow.wrap-up.discuss.mode` | `"agent"` | Wrap-up DISCUSSION is agent-driven. Always-Ask categories still fire (§3). |
 
 **Preparation runs.** Auto Mode does not skip Preparation. The `skip: false` + `maxIterations: 5`
-values mean the standard loop contract runs (DISCUSSION → WORK → EVALUATION → MEMORIZATION →
+values mean the standard loop contract runs (DISCUSSION → WORK → EVALUATION → RECORD →
 ITER/EXIT). This is the structural contrast with Chat Mode, where preparation carries
 `skip: true` + `maxIterations: 0` → `state: Skipped` (either signal alone suffices).
 
-**Full per-loop MEMORIZATION.** Auto Mode uses the **unmodified** `record/SKILL.md` PASS
+**Full per-loop RECORD.** Auto Mode uses the **unmodified** `record/SKILL.md` PASS
 path, including Steps 6–7 (typed-finding staging). There is no "narrowed" PASS path in Auto Mode.
-Every loop's MEMORIZATION runs the full base procedure, including mistake-candidate staging at
+Every loop's RECORD runs the full base procedure, including mistake-candidate staging at
 moment-of-capture per `mistake/SKILL.md § P2`.
 
 **Single mode question at session start.** The mode question fires once at Configuration (per
@@ -255,7 +255,7 @@ conditioning is a semantic note, not a code change.
 When a loop reaches `maxIterations` without a PASS verdict, the loop exits with `state: Aborted`
 and the `Aborted` verdict is stamped on the loop's record. In Auto Mode this does **not**
 interrupt the user mid-session. The manager notes the abort, continues to the next step (if
-continuing is safe), and the failure surfaces explicitly in the Wrap-up Loop's MEMORIZATION and
+continuing is safe), and the failure surfaces explicitly in the Wrap-up Loop's RECORD and
 the session handoff.
 
 This is by design — per `orchestration/SKILL.md` § Mode-specific gates within a loop contract. The silence is not a bug;
@@ -348,14 +348,14 @@ Scan this at any EVALUATION boundary:
   The maxIterations-exhaustion silence contract lives in this doc's §6.
 - [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock +
   `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) and the narrowed
-  MEMORIZATION PASS path are Chat-only; they do not apply in Auto Mode.
+  RECORD PASS path are Chat-only; they do not apply in Auto Mode.
 - [`discussion/SKILL.md § Decision Classification`](../discussion/SKILL.md) — authoritative
   Always-Ask matrix (Design / Scope / Destructive categories, full table with examples and
   why-always-ask rationale). §3 of this doc references and restates it; `discussion/SKILL.md`
   is the single source of truth.
 - [`planning/SKILL.md § Core Principles § USER CHALLENGE`](../planning/SKILL.md) — 5-field
   escalation card for leader-user disagreement. Referenced in §3.4.
-- [`record/SKILL.md`](../record/SKILL.md) — the unmodified base MEMORIZATION
+- [`record/SKILL.md`](../record/SKILL.md) — the unmodified base RECORD
   procedure. Auto Mode runs this base procedure in full (no local override).
 - [`mistake/SKILL.md § P2`](../mistake/SKILL.md) — moment-of-capture discipline for
   mistake-candidates; runs in Auto Mode regardless of loop or discuss.mode setting.

@@ -6,10 +6,10 @@
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/notes/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/notes/{slug}.md`. Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
@@ -17,8 +17,8 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 
 ## When to write
 
-- **During Wrap-up MEMORIZATION** of every session: the Wrap-up assistant writes one journal entry summarizing the session's work. This is the default — every session gets a notes entry.
-- **During a loop's MEMORIZATION** when the loop's content is substantial enough to warrant its own journal entry separate from the session-level note (rare; most loops fold into the session's single note).
+- **During Wrap-up RECORD** of every session: the Wrap-up assistant writes one journal entry summarizing the session's work. This is the default — every session gets a notes entry.
+- **During a loop's RECORD** when the loop's content is substantial enough to warrant its own journal entry separate from the session-level note (rare; most loops fold into the session's single note).
 
 The journal is **session-paced**: one entry per session is the norm, regardless of how long the session ran or how many loops it contained.
 
@@ -56,7 +56,7 @@ session: {session-id}
 tags: [{tag1}, {tag2}]
 features_touched: [{value-feature slugs this session promoted into}]
 loops_completed: [{ideation, preparation, planning, execution, wrap-up}]
-shipped: [{slugs of artifacts that landed in project memory this session}]
+shipped: [{slugs of artifacts that landed in memory this session}]
 ---
 
 # {Session dominant theme}
@@ -65,7 +65,7 @@ shipped: [{slugs of artifacts that landed in project memory this session}]
 {Chronological narrative of the session. 1–3 paragraphs. What was attempted, in what order, with what outcome. Read this and a future reader knows what the session was about.}
 
 ## What shipped
-{Concrete artifacts that landed in project memory during this session — decisions, plans, mistakes, learnings, reviews, reports. Cite paths. If nothing shipped, state "nothing shipped — session was {discussion-only / blocked / aborted}".}
+{Concrete artifacts that landed in memory during this session — decisions, plans, mistakes, learnings, reviews, reports. Cite paths. If nothing shipped, state "nothing shipped — session was {discussion-only / blocked / aborted}".}
 
 ## What got stuck
 {Threads that didn't resolve. The "I tried X but" moments. Distinct from backlog — backlog is the deferred work; this is the in-flight stuck. Useful for the next session to pick up cleanly.}

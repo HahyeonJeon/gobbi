@@ -48,14 +48,14 @@ Evidence first, opinion second.
 - Read the relevant codebase areas — patterns, types, constraints. The code is the source of truth, not your prior beliefs.
 - Check `mistake` for past pitfalls in this domain.
 - Map dependencies — what does the work touch, what touches it, what would break.
-- Pull from internal sources (codebase, project memory, git log) and external sources (official docs, community consensus, cross-domain prior art) per the `research` skill's surface-specific procedures.
+- Pull from internal sources (codebase, memory, git log) and external sources (official docs, community consensus, cross-domain prior art) per the `research` skill's surface-specific procedures.
 
 ### Plan
 
 Design the investigation before running it.
 
 - For Ideation: list the dimensions of the idea that are vague; decide what needs user clarification vs. codebase exploration vs. web research.
-- For Preparation: enumerate the readiness signals downstream loops need, then plan the scan order across project memory / workspace skills / feature memory.
+- For Preparation: enumerate the readiness signals downstream loops need, then plan the scan order across memory / workspace skills / feature memory.
 - For Research: list the questions the executor needs answered; decide depth-vs-breadth and source priorities.
 - For Planning: identify the natural decomposition seams — by domain, by deliverable, by dependency layer.
 
@@ -70,7 +70,7 @@ Refine, research, or decompose — per the phase brief.
 - Output: working draft + staged references / backlogs at the paths the ideation skill specifies.
 
 **Preparation:**
-- Scan project memory + workspace skills against the locked Ideation output; surface every gap; propose `generate-now` / `defer` / `re-ideate` / `skip` per gap.
+- Scan memory + workspace skills against the locked Ideation output; surface every gap; propose `generate-now` / `defer` / `re-ideate` / `skip` per gap.
 - Output: working draft + staged skills / scenarios / checklists / decisions at the paths the preparation skill specifies.
 
 **Research:**

@@ -87,7 +87,7 @@ each continuation turn re-addresses the right teammate.
 
 | Mode | Shape | Cost | When |
 |---|---|---|---|
-| **1 — Sequential single long-lived teammate** | One persistent teammate per role-chain, continued turn by turn | The token-saving default | The default for the leader chain (Ideation sub-steps), the executor chain (shared subsystem, under cap), and the assistant chain (e.g. MEMORIZATION across loops). The token win holds ONLY here. |
+| **1 — Sequential single long-lived teammate** | One persistent teammate per role-chain, continued turn by turn | The token-saving default | The default for the leader chain (Ideation sub-steps), the executor chain (shared subsystem, under cap), and the assistant chain (e.g. RECORD across loops). The token win holds ONLY here. |
 | **2 — Bounded parallel teammate fan-out (3–5)** | Several teammates exploring in parallel | Explicitly higher — cost scales linearly with teammate count | Only where parallel adversarial value is real (e.g. research breadth). Not the default; the higher cost is accepted knowingly. |
 
 Mode 1 is the default; Mode 2 is opted into for real parallel value, knowing the cost.
@@ -124,7 +124,7 @@ the native capability exists, gobbi disables it by discipline.
 - **No nested teams** — only the manager spawns teammates; a teammate cannot spawn teammates.
 - **Lead is fixed** — the team lead does not change for the team's lifetime.
 - **Teammates do NOT survive `/resume`, `/compact`, or `/rewind`.** After any of those, the manager
-  treats continuation as broken: it **fresh-spawns and re-primes from durable session memory** —
+  treats continuation as broken: it **fresh-spawns and re-primes from durable session record** —
   it never messages a dead teammate.
 - **Lag** — task status can lag the real state, and graceful shutdown can be slow.
 
@@ -157,7 +157,7 @@ rule). Teammate token accounting is recorded per
 - **No nested teams.** Only the manager spawns teammates; a teammate MUST NOT spawn teammates.
 - **Lead is fixed** for the team's lifetime.
 - **After `/compact`, `/clear`, `/resume`, or `/rewind`, teammates are gone.** The manager MUST
-  fresh-spawn and re-prime from durable session memory — NEVER message a dead teammate.
+  fresh-spawn and re-prime from durable session record — NEVER message a dead teammate.
 - **Manager-owned coordination, no teammate cross-talk.** All coordination flows through the
   manager; teammate-to-teammate messaging is disabled by gobbi policy.
 - **Restart required after enabling.** `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is read at session

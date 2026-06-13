@@ -1,19 +1,19 @@
 ---
 name: wrap-up
-description: "MUST load for Wrap-up. Promotes session staging to project memory, writes the handoff, bootstraps feature dirs, and records the journal."
+description: "MUST load for Wrap-up. Promotes session staging to memory, writes the handoff, bootstraps feature dirs, and records the journal."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 
 # Wrap-up
 
-Skill for the **Wrap-up Loop**. Defines what each of the four phases (DISCUSSION → WORK → EVALUATION → MEMORIZATION) does, which agent owns it, what inputs it consumes, and what artifacts it produces. Loaded by every agent participating in the loop — the manager for orchestration context, and each specialist for the procedural contract of the phase it owns.
+Skill for the **Wrap-up Loop**. Defines what each of the four phases (DISCUSSION → WORK → EVALUATION → RECORD) does, which agent owns it, what inputs it consumes, and what artifacts it produces. Loaded by every agent participating in the loop — the manager for orchestration context, and each specialist for the procedural contract of the phase it owns.
 
-The Wrap-up Loop runs **once at the end of every workflow session**. Its job is to close the session cleanly: read accumulated `staging/` directories across all prior loops (Ideation / Preparation / Planning / Execution), promote them deterministically to project memory, write the handoff summary, and emit `workflow.finish`.
+The Wrap-up Loop runs **once at the end of every workflow session**. Its job is to close the session cleanly: read accumulated `staging/` directories across all prior loops (Ideation / Preparation / Planning / Execution), promote them deterministically to memory, write the handoff summary, and emit `workflow.finish`.
 
 Wrap-up differs from the other loops in two ways:
 
 - **DISCUSSION is manager + user only**, not leader-led. The leader's design work is locked across the prior loops' artifacts; Wrap-up's DISCUSSION is just confirming the session is ready to close, and gathering any final deferred items the user wants to log before the handoff.
-- **WORK is the assistant's domain**, and Wrap-up's WORK is the **sole writer to project memory for cross-loop session artifacts**. Every other loop's MEMORIZATION stages typed-finding artifacts into session memory only — Wrap-up reads those staging directories and promotes them. The narrow exception is Preparation's `generate-now` skills, which the manager promotes before Planning starts so in-session consumers can load them.
+- **WORK is the assistant's domain**, and Wrap-up's WORK is the **sole writer to memory for cross-loop session artifacts**. Every other loop's RECORD stages typed-finding artifacts into session record only — Wrap-up reads those staging directories and promotes them. The narrow exception is Preparation's `generate-now` skills, which the manager promotes before Planning starts so in-session consumers can load them.
 
 The manager's orchestration of the Wrap-up Loop (when to spawn, perspective selection for EVALUATION, ITER/EXIT decision, `workflow.finish` emission) is in [`orchestration/workflow/wrap-up.md`](../orchestration/workflow/wrap-up.md). Code-changeset evaluation specifics for Wrap-up's promotions live in [`wrap-up/evaluation.md`](evaluation.md), loaded by the evaluator at Stage 0 when the workflow phase is `wrap-up`.
 
@@ -25,18 +25,18 @@ The agent in the assistant role MUST observe these tier boundaries. Wrap-up's WO
 
 | Memory tier | Path root | Access from assistant role (Wrap-up) |
 |---|---|---|
-| **Session memory — own loop working** | `sessions/{date}-{session-id}/5-wrap-up/working/` | **READ + WRITE** — promotion-manifest, staging-inventory, pre-Wrap-up snapshot, discussion-log |
-| **Session memory — own loop artifacts** | `sessions/{date}-{session-id}/5-wrap-up/outputs/` | **WRITE (PASS only via MEMORIZATION)** — canonical handoff summary; same `Artifact frontmatter schema` as other loops |
-| **Session memory — all prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/{outputs,staging,evaluation,working}/` | **READ-ONLY** — required inputs: every prior loop's artifacts (what shipped), staging (what to promote), evaluation outputs (cross-loop closure audit), discussion logs |
-| **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **READ-ONLY for triplet (`project`, `feature`, `task`); UPSERT for Wrap-up's own `workflow.wrap-up.iterations[]`** — same upsert semantics as other loops' MEMORIZATION |
+| **Session record — own loop working** | `sessions/{date}-{session-id}/5-wrap-up/working/` | **READ + WRITE** — promotion-manifest, staging-inventory, pre-Wrap-up snapshot, discussion-log |
+| **Session record — own loop artifacts** | `sessions/{date}-{session-id}/5-wrap-up/outputs/` | **WRITE (PASS only via RECORD)** — canonical handoff summary; same `Artifact frontmatter schema` as other loops |
+| **Session record — all prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/{outputs,staging,evaluation,working}/` | **READ-ONLY** — required inputs: every prior loop's artifacts (what shipped), staging (what to promote), evaluation outputs (cross-loop closure audit), discussion logs |
+| **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **READ-ONLY for triplet (`project`, `feature`, `task`); UPSERT for Wrap-up's own `workflow.wrap-up.iterations[]`** — same upsert semantics as other loops' RECORD |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs,README.md}/` | **WRITE + UPSERT** — Wrap-up bootstraps the feature directory lazily and promotes staging → feature memory per the routing table |
-| **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **WRITE + UPSERT** — Wrap-up promotes project-scope staging (rules, project-wide design, project-level mistakes, learnings, reports, reviews, journal notes) |
+| **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **WRITE + UPSERT** — Wrap-up promotes project-scope staging (rules, project-wide design, project-level mistakes, learnings, reports, reviews, journal notes) |
 
 **Delete semantics**: Wrap-up NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`supersedes: <old-path>` on the new file; `status: superseded` + `superseded_by: <new-path>` on the old file). Physical deletion is forbidden. When an artifact reaches a terminal state (shipped, superseded, retired, dropped), Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md) — the file is never deleted. See [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix) for the Wrap-up loop exception row.
 
-**Idempotency**: Re-running Wrap-up on the same session produces identical project memory. Promotion targets are deterministic from staging file paths; collision policy uses stable finding-IDs (overwrite same-ID re-runs) + suffix disambiguation (distinct findings) — never silently overwriting distinct content.
+**Idempotency**: Re-running Wrap-up on the same session produces identical memory. Promotion targets are deterministic from staging file paths; collision policy uses stable finding-IDs (overwrite same-ID re-runs) + suffix disambiguation (distinct findings) — never silently overwriting distinct content.
 
-**Write enforcement**: any write attempted outside the WRITE rows above is a constraint violation. Notably, Wrap-up's writes to project memory are bounded by the routing table below — improvised destinations are a violation and must return `NEEDS_CONTEXT` with a `user-question:` block so the manager can resolve the routing through the active runtime's user-decision primitive.
+**Write enforcement**: any write attempted outside the WRITE rows above is a constraint violation. Notably, Wrap-up's writes to memory are bounded by the routing table below — improvised destinations are a violation and must return `NEEDS_CONTEXT` with a `user-question:` block so the manager can resolve the routing through the active runtime's user-decision primitive.
 
 ---
 
@@ -44,11 +44,11 @@ The agent in the assistant role MUST observe these tier boundaries. Wrap-up's WO
 
 Cross-cutting principles for every agent participating in this loop.
 
-> **Sole owner of project-memory writes for cross-loop session artifacts.**
+> **Sole owner of memory writes for cross-loop session artifacts.**
 
-Ideation / Planning / Execution MEMORIZATION write **only** to session memory under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories across all loops and promotes to `.gobbi/projects/{project-name}/...`. No phase other than Preparation's narrow exception and Wrap-up writes to project memory.
+Ideation / Planning / Execution RECORD write **only** to session record under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories across all loops and promotes to `.gobbi/projects/{project-name}/...`. No phase other than Preparation's narrow exception and Wrap-up writes to memory.
 
-**Narrow exception — Preparation's generated skills:** when Preparation's EVALUATION verdicts `PASS` and the loop produced `generate-now` project-specific skills, the manager promotes those skills from `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` **before Planning starts**. This is the only pre-Wrap-up project-memory write in the workflow. Its scope is strictly bounded to skill files generated by Preparation's `generate-now` decision; all other Preparation staging waits for Wrap-up. Wrap-up's project-memory write authority is otherwise exclusive and covers all remaining session artifacts. See `preparation/SKILL.md` § Core Principles for the rationale and mechanics.
+**Narrow exception — Preparation's generated skills:** when Preparation's EVALUATION verdicts `PASS` and the loop produced `generate-now` project-specific skills, the manager promotes those skills from `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` **before Planning starts**. This is the only pre-Wrap-up memory write in the workflow. Its scope is strictly bounded to skill files generated by Preparation's `generate-now` decision; all other Preparation staging waits for Wrap-up. Wrap-up's memory write authority is otherwise exclusive and covers all remaining session artifacts. See `preparation/SKILL.md` § Core Principles for the rationale and mechanics.
 
 > **Layer-2 promotion — generalizable project-mistakes to workspace-level skill storage.**
 
@@ -56,7 +56,7 @@ In addition to Layer-1 promotion (staging → project `mistakes/`), the Wrap-up 
 
 > **Deterministic routing — no improvisation.**
 
-Every staging file has a canonical promotion destination per the [Staging → Project-memory routing](#staging--project-memory-routing) table below. The assistant applies the table mechanically; unroutable items return `NEEDS_CONTEXT` with a `user-question:` block — the manager resolves the routing through the active runtime's user-decision primitive — rather than landing in an invented destination. "I'll just put this in `notes/` because it doesn't fit anywhere else" is a constraint violation.
+Every staging file has a canonical promotion destination per the [Staging → Memory routing](#staging--memory-routing) table below. The assistant applies the table mechanically; unroutable items return `NEEDS_CONTEXT` with a `user-question:` block — the manager resolves the routing through the active runtime's user-decision primitive — rather than landing in an invented destination. "I'll just put this in `notes/` because it doesn't fit anywhere else" is a constraint violation.
 
 > **Account for every staging file — promote OR backlog OR document drop.**
 
@@ -73,7 +73,7 @@ Silent drops are forbidden. The promotion-manifest is the audit trail.
 Wrap-up inventories `staging/` **only** for promotion. The other four session-tree dirs — `transcripts/`, `working/`, `evaluation/`, `outputs/` — are **never** promotion sources. Promoting a transcript (or any non-`staging/` dir) is a constraint violation. The enumerated promotion sources are:
 
 - Every workflow loop's `staging/`: `1-ideation/staging/`, `2-preparation/staging/`, `3-planning/staging/`, `4-execution/staging/` (and each `4-execution/task-{NN}-{slug}/staging/`).
-- **`interview/staging/`** — the interview bootstrap surface keeps its own shape (not swept to the flat-4-slot model), but its `staging/` **remains a valid, enumerated promotion source**. In mature-project reruns the interview writes to its `staging/`, not directly to project memory, and Wrap-up must enumerate it.
+- **`interview/staging/`** — the interview bootstrap surface keeps its own shape (not swept to the flat-4-slot model), but its `staging/` **remains a valid, enumerated promotion source**. In mature-project reruns the interview writes to its `staging/`, not directly to memory, and Wrap-up must enumerate it.
 
 **F-P2 — do not over-narrow.** The exclusion targets `transcripts/`, `working/`, `evaluation/`, and `outputs/` — it does **not** exclude all non-workflow-loop dirs. The rule is "inventory `staging/` only", not "inventory workflow-loop `staging/` only". Narrowing it to drop `interview/staging/` would lose mature-project promotions and is wrong. See [`orchestration/templates/session-tree.md` § Wrap-up promotion-inventory rule](../orchestration/templates/session-tree.md) for the authoritative statement.
 
@@ -83,11 +83,11 @@ Wrap-up inventories `staging/` **only** for promotion. The other four session-tr
 
 > **Supersession and move-on-terminal, never deletion.**
 
-Wrap-up NEVER deletes any project-memory file. When a promotion would supersede an existing file's claim, the new file carries a `supersedes: <old-file-path>` frontmatter field; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-file-path>` added (body preserved). Once the artifact reaches a terminal state (shipped, superseded, retired, dropped), Wrap-up moves the full file (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md`. Active directories show only live work; `archive/` holds the complete moved files. Physical deletion is forbidden at every step — see [`memory/templates/archive.md`](../memory/templates/archive.md) for the move-on-terminal model.
+Wrap-up NEVER deletes any memory file. When a promotion would supersede an existing file's claim, the new file carries a `supersedes: <old-file-path>` frontmatter field; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-file-path>` added (body preserved). Once the artifact reaches a terminal state (shipped, superseded, retired, dropped), Wrap-up moves the full file (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md`. Active directories show only live work; `archive/` holds the complete moved files. Physical deletion is forbidden at every step — see [`memory/templates/archive.md`](../memory/templates/archive.md) for the move-on-terminal model.
 
 > **Idempotent promotions.**
 
-Re-running Wrap-up on the same session produces identical project memory. Promotion targets are deterministic from staging file paths, and collision policy uses suffix disambiguation (never overwrite of distinct findings, write-or-overwrite of same-finding re-runs keyed by stable finding-ID).
+Re-running Wrap-up on the same session produces identical memory. Promotion targets are deterministic from staging file paths, and collision policy uses suffix disambiguation (never overwrite of distinct findings, write-or-overwrite of same-finding re-runs keyed by stable finding-ID).
 
 > **Verification before claim.**
 
@@ -131,14 +131,14 @@ Confirm with the user that the session is ready to wrap up, gather any final def
 ## WORK Phase (delegated to `assistant`)
 
 **Purpose**
-Read accumulated `staging/` directories across all prior loops, promote each file to its routed project-memory destination, write the per-session journal, and produce the canonical handoff summary. This is the substantive work of Wrap-up — the only loop's WORK that writes to project memory.
+Read accumulated `staging/` directories across all prior loops, promote each file to its routed memory destination, write the per-session journal, and produce the canonical handoff summary. This is the substantive work of Wrap-up — the only loop's WORK that writes to memory.
 
 **Inputs**
 - All prior loops' staging trees: `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/staging/`, plus `interview/staging/` when an interview ran this session
 - All prior loops' canonical outputs (for handoff content)
 - All prior loops' evaluation outputs across all iters (for cross-loop closure audit)
 - Discussion logs per loop
-- Existing project memory state — read-only snapshot of `.gobbi/projects/{project-name}/` for collision / supersession detection
+- Existing memory state — read-only snapshot of `.gobbi/projects/{project-name}/` for collision / supersession detection
 - User decisions on contribution points (carried over from DISCUSSION + the active runtime's user-decision primitive during WORK)
 - The Wrap-up delegation prompt's outcome summary + user-added items
 
@@ -147,22 +147,22 @@ Read accumulated `staging/` directories across all prior loops, promote each fil
 | # | Step | Action |
 |---|---|---|
 | 1 | **Snapshot pre-Wrap-up state** | Capture the current `.gobbi/projects/{project-name}/` state as the baseline. Save to `sessions/{date}-{session-id}/5-wrap-up/working/pre-wrap-up-snapshot.txt`. This is what Wrap-up evaluation diffs against |
-| 2 | **Enumerate all staging across all loops** | For each loop directory in `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/` **plus `interview/`** (when an interview ran this session), recursively list `staging/` — and **only** `staging/`; never `transcripts/`, `working/`, `evaluation/`, or `outputs/` (per § Promotion-inventory rule). Build a master inventory at `sessions/{date}-{session-id}/5-wrap-up/working/staging-inventory.md` — every staging file path, sized + frontmatter-extracted. **Step 2.5 runs immediately after this step** — see `### Step 2.5` below for the prior-loop MEMORIZATION compliance scan that must complete before Step 3 |
+| 2 | **Enumerate all staging across all loops** | For each loop directory in `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/` **plus `interview/`** (when an interview ran this session), recursively list `staging/` — and **only** `staging/`; never `transcripts/`, `working/`, `evaluation/`, or `outputs/` (per § Promotion-inventory rule). Build a master inventory at `sessions/{date}-{session-id}/5-wrap-up/working/staging-inventory.md` — every staging file path, sized + frontmatter-extracted. **Step 2.5 runs immediately after this step** — see `### Step 2.5` below for the prior-loop RECORD compliance scan that must complete before Step 3 |
 | 3 | **Determine feature destination** | Read `session.json.feature` for the canonical feature slug `{feature-name}` (set during Ideation Sub-step B Lock Scope). If `.gobbi/projects/{project-name}/features/{feature-name}/` does not exist, plan to bootstrap it lazily at Step 5. If it exists from prior sessions, capture pre-Wrap-up state of each sub-directory for collision detection |
 | 4 | **Apply routing table to each staging file** | For every staging file in the inventory: (a) identify staging type from path; (b) look up destination in the routing table; (c) read frontmatter for `mistake-candidate: true`, `supersedes:`, `project-scope: true`, `disposition: deferred` — these are routing modifiers; (d) resolve final destination per modifiers + collision policy; (e) if user-confirm is required (rules / project-wide design / mistake scope / unrouted file), return `NEEDS_CONTEXT` with a `user-question:` block — the manager uses the active runtime's user-decision primitive on your behalf, then re-delegates with the confirmed routing decision; (f) record routing decision in `working/promotion-manifest.md`. **Unrouted files escalate — never improvise** |
-| 5 | **Bootstrap + write to project memory** | For each routing decision: create the destination's parent directory if missing (lazy bootstrap); write the file at the destination per collision policy; for first write into `features/{feature-name}/`, also create or update `features/{feature-name}/README.md` per [`memory/templates/feature-readme.md`](../memory/templates/feature-readme.md); stamp the appropriate template from [`memory/templates/`](../memory/templates/) for each promotion. **Move-on-terminal**: when a collision resolution or incoming frontmatter (`shipped`, `superseded`, `retired`, `dropped`) indicates the existing destination file has reached a terminal state, stamp archival frontmatter on it and move it (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` before writing the new file — never delete it. Repoint any inbound references to the archive path. See [`memory/templates/archive.md`](../memory/templates/archive.md) for the move procedure |
+| 5 | **Bootstrap + write to memory** | For each routing decision: create the destination's parent directory if missing (lazy bootstrap); write the file at the destination per collision policy; for first write into `features/{feature-name}/`, also create or update `features/{feature-name}/README.md` per [`memory/templates/feature-readme.md`](../memory/templates/feature-readme.md); stamp the appropriate template from [`memory/templates/`](../memory/templates/) for each promotion. **Move-on-terminal**: when a collision resolution or incoming frontmatter (`shipped`, `superseded`, `retired`, `dropped`) indicates the existing destination file has reached a terminal state, stamp archival frontmatter on it and move it (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` before writing the new file — never delete it. Repoint any inbound references to the archive path. See [`memory/templates/archive.md`](../memory/templates/archive.md) for the move procedure |
 | 6 | **Write per-session journal entry** | Synthesize the session's work-log narrative — what the leader investigated, what the executor implemented, what the evaluator flagged, what the user decided. Write a single journal entry at `.gobbi/projects/{project-name}/notes/{date}-{slug}.md` per [`memory/templates/notes.md`](../memory/templates/notes.md). This is the per-session development journal — always one entry per session |
 | 7 | **Synthesize handoff summary** | Write the canonical handoff at `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (and any decomposed artifact files alongside) with required sections: Summary, Shipped, Deferred / Open, Decisions to respect, Pointers, Promotion summary. Each claim cites a verifiable artifact path. The artifact carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema) with `artifact_type: handoff` |
 
 **Outputs**
 
-Session-memory writes:
+Session-record writes:
 - `sessions/{date}-{session-id}/5-wrap-up/working/pre-wrap-up-snapshot.txt` — baseline for evaluation
 - `sessions/{date}-{session-id}/5-wrap-up/working/staging-inventory.md` — master inventory across all loops
 - `sessions/{date}-{session-id}/5-wrap-up/working/promotion-manifest.md` — append-only routing-decision log (1 entry per staging file: promote target / backlog reason / drop rationale)
-- `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` — canonical handoff summary (plus any decomposed artifact files); written at Step 7 of WORK (also persisted at MEMORIZATION per the Artifact frontmatter schema)
+- `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` — canonical handoff summary (plus any decomposed artifact files); written at Step 7 of WORK (also persisted at RECORD per the Artifact frontmatter schema)
 
-Project-memory writes (the substantive work):
+Memory writes (the substantive work):
 - `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs}/{slug}.md` — feature-scoped promotions per routing table
 - `.gobbi/projects/{project-name}/features/{feature-name}/README.md` — feature index + activity log (created or updated)
 - `.gobbi/projects/{project-name}/mistakes/{slug}.md` — project-scoped mistakes (user-confirmed scope)
@@ -192,13 +192,13 @@ Project-memory writes (the substantive work):
 - **No silent drops.** Every staging file is accounted for in the promotion-manifest.
 - **No improvised destinations.** The routing table is the contract; unrouted files escalate.
 - **Cite the discussion.** Every routing decision that required the active runtime's user-decision primitive is traceable to the discussion log entry that authorized it.
-- **Stamp templates.** Every promotion uses the appropriate template from [`memory/templates/`](../memory/templates/) — freeform writes to project memory are forbidden.
+- **Stamp templates.** Every promotion uses the appropriate template from [`memory/templates/`](../memory/templates/) — freeform writes to memory are forbidden.
 
-### Step 2.5 — Prior-loop MEMORIZATION compliance check
+### Step 2.5 — Prior-loop RECORD compliance check
 
 **Purpose** — Before Step 3 reads `session.json.feature`, verify that every prior loop's staging output is structurally sound for promotion. This is a read-only compliance scan: it detects shape violations and type-vocabulary errors, then either auto-backfills mechanical-class findings or escalates judgment-required findings via `NEEDS_CONTEXT`.
 
-**When it runs** — Immediately after Step 2 builds the staging inventory at `working/staging-inventory.md`. No project-memory writes happen until all Step 2.5 findings are resolved.
+**When it runs** — Immediately after Step 2 builds the staging inventory at `working/staging-inventory.md`. No memory writes happen until all Step 2.5 findings are resolved.
 
 **Gap categories**
 
@@ -254,11 +254,11 @@ Before writing any auto-backfill file:
 
 ---
 
-## Staging → Project-memory routing
+## Staging → Memory routing
 
 The canonical promotion routing. The assistant applies this table mechanically. Wrap-up evaluation verifies adherence (see [`evaluation.md`](evaluation.md)).
 
-| Session staging path | Project-memory destination | Trigger condition |
+| Session staging path | Memory destination | Trigger condition |
 |---|---|---|
 | `sessions/.../{N}-{loop}/staging/scenarios/{slug}.md` | `features/{feature-name}/scenarios/{slug}.md` | Always |
 | `sessions/.../{N}-{loop}/staging/checklists/{slug}.md` | `features/{feature-name}/checklists/{slug}.md` | Always |
@@ -284,14 +284,14 @@ All destination paths are relative to `.gobbi/projects/{project-name}/`.
 
 ### Frontmatter allowlist on promotion (strip staging-only fields)
 
-When Wrap-up promotes a staged file, it writes the destination with **ONLY** the base frontmatter + that type's extension fields (the per-type allowlist in [`memory/rules.md` § 2`](../memory/rules.md)). Staging-only fields that existed purely to route or annotate the file during the session are **stripped** — they never persist into project memory:
+When Wrap-up promotes a staged file, it writes the destination with **ONLY** the base frontmatter + that type's extension fields (the per-type allowlist in [`memory/rules.md` § 2`](../memory/rules.md)). Staging-only fields that existed purely to route or annotate the file during the session are **stripped** — they never persist into memory:
 
 | Staging-only field | Disposition on promotion |
 |---|---|
 | `mistake-candidate: true` | **Stripped.** Its presence routed the file to `mistakes/` (see routing table); once routed, its job is done. The promoted mistake file does NOT carry it. (Currently retained on legacy mistake files — a migration target, not a promotion target.) |
 | `finding-id` | **Stripped** when used purely as eval-routing / collision-keying. The base `session` field + `git log` carry provenance. |
 | `disposition` | **Stripped** when used purely as eval routing (e.g. `disposition: deferred` that routed the file to `backlogs/`). The destination type's own lifecycle field (e.g. backlogs `disposition: open|deferred`) is set fresh per the type spec. |
-| `promoted-from`, `promoted-at` | **Dropped.** `git log` + the base `session` + `created` fields already carry provenance; these ad-hoc keys are redundant drift and are never written to project memory. |
+| `promoted-from`, `promoted-at` | **Dropped.** `git log` + the base `session` + `created` fields already carry provenance; these ad-hoc keys are redundant drift and are never written to memory. |
 
 Mechanism: the promotion step reads the staging frontmatter, applies the routing modifier (e.g. `mistake-candidate` → `mistakes/`), then writes the destination file through the per-type allowlist — base + extensions only. Any field not on the allowlist for the destination type is dropped. See [`memory/rules.md` § 2.3](../memory/rules.md) for the standard and [`record/SKILL.md` § Staging-field stripping on promotion](../record/SKILL.md#staging-field-stripping-on-promotion) for the reciprocal staging-side documentation.
 
@@ -344,7 +344,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
 | 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
-| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first**. After MEMORIZATION, `PASS` exits the loop and emits `workflow.finish`; `REVISE` re-enters DISCUSSION (rare — Wrap-up's iteration cap is typically 1); `FAIL` escalates through the active runtime's user-decision primitive | Workflow-state verdict |
+| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to RECORD first**. After RECORD, `PASS` exits the loop and emits `workflow.finish`; `REVISE` re-enters DISCUSSION (rare — Wrap-up's iteration cap is typically 1); `FAIL` escalates through the active runtime's user-decision primitive | Workflow-state verdict |
 
 **Outputs**
 - `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
@@ -359,18 +359,18 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 **Exit checklist**
 - [ ] Both systems produced per-perspective files for every perspective
-- [ ] Verdict aggregated and recorded; `REVISE` increments the iteration counter, `PASS` and `FAIL` advance to MEMORIZATION
+- [ ] Verdict aggregated and recorded; `REVISE` increments the iteration counter, `PASS` and `FAIL` advance to RECORD
 
 ---
 
-## MEMORIZATION Phase
+## RECORD Phase
 
 **Purpose**
-Persist Wrap-up's iteration evidence into session memory and stamp the artifacts directory with the canonical handoff per the Artifact frontmatter schema. MEMORIZATION runs after **every** EVALUATION (whether `PASS`, `REVISE`, or `FAIL`).
+Persist Wrap-up's iteration evidence into session record and stamp the artifacts directory with the canonical handoff per the Artifact frontmatter schema. RECORD runs after **every** EVALUATION (whether `PASS`, `REVISE`, or `FAIL`).
 
-Wrap-up's MEMORIZATION is **uniquely permitted** to write to project memory (per the Wrap-up loop exception in [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix)) — but in practice, the substantive project-memory writes happen during WORK (Steps 5 and 6 of the procedure above). MEMORIZATION's role is to seal those writes: stamp the handoff artifact with proper frontmatter, finalize the promotion manifest, upsert session.json.
+Wrap-up's RECORD is **uniquely permitted** to write to memory (per the Wrap-up loop exception in [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix)) — but in practice, the substantive memory writes happen during WORK (Steps 5 and 6 of the procedure above). RECORD's role is to seal those writes: stamp the handoff artifact with proper frontmatter, finalize the promotion manifest, upsert session.json.
 
-See [memorization skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
+See [record skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
 
 **Inputs**
 - `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (and any decomposed artifact files) from WORK
@@ -380,12 +380,12 @@ See [memorization skill](../record/SKILL.md) for the every-iter / PASS-only proc
 - `sessions/{date}-{session-id}/5-wrap-up/working/discussion-log.md`
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
 
-**Procedure** — see [record/SKILL.md § MEMORIZATION Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Wrap-up-specific notes:
+**Procedure** — see [record/SKILL.md § RECORD Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Wrap-up-specific notes:
 
-- The substantive WRITE work for Wrap-up happens during WORK (Steps 5-6). MEMORIZATION's WRITE responsibility is limited to (a) sealing the handoff with proper frontmatter, (b) upserting session.json, (c) preserving the transcript.
+- The substantive WRITE work for Wrap-up happens during WORK (Steps 5-6). RECORD's WRITE responsibility is limited to (a) sealing the handoff with proper frontmatter, (b) upserting session.json, (c) preserving the transcript.
 - On PASS, mandatory artifact_types: `handoff` (the canonical handoff summary), `memory-reads` (every prior loop's evaluation file consumed by Wrap-up's promotion-routing pass), `resolution-log` (every evaluator finding across all loops with its final disposition).
-- Any evaluator finding from Wrap-up's own EVALUATION that surfaces a new promotable item (mistake, learning, decision) must route through the routing table — MEMORIZATION does **not** improvise destinations. If the finding maps to an existing routing-table row, promote via that row. If it is unroutable, return `NEEDS_CONTEXT` with a `user-question:` block so the manager can confirm the routing through the active runtime's user-decision primitive. There are no ad-hoc write exceptions in MEMORIZATION; the routing table is the sole authority.
-- On PASS, after MEMORIZATION completes, the manager emits `workflow.finish` and closes the session.
+- Any evaluator finding from Wrap-up's own EVALUATION that surfaces a new promotable item (mistake, learning, decision) must route through the routing table — RECORD does **not** improvise destinations. If the finding maps to an existing routing-table row, promote via that row. If it is unroutable, return `NEEDS_CONTEXT` with a `user-question:` block so the manager can confirm the routing through the active runtime's user-decision primitive. There are no ad-hoc write exceptions in RECORD; the routing table is the sole authority.
+- On PASS, after RECORD completes, the manager emits `workflow.finish` and closes the session.
 
 **Outputs**
 
@@ -416,7 +416,7 @@ Every iteration:
 
 ## Output paths
 
-All session-memory writes during the Wrap-up Loop are scoped to `sessions/{date}-{session-id}/5-wrap-up/`. Project-memory writes (the substantive output of WORK) follow the [Staging → Project-memory routing](#staging--project-memory-routing) table above.
+All session-record writes during the Wrap-up Loop are scoped to `sessions/{date}-{session-id}/5-wrap-up/`. Memory writes (the substantive output of WORK) follow the [Staging → Memory routing](#staging--memory-routing) table above.
 
 **Path conventions**
 
@@ -432,31 +432,31 @@ All session-memory writes during the Wrap-up Loop are scoped to `sessions/{date}
 | `sessions/{date}-{session-id}/5-wrap-up/working/pre-wrap-up-snapshot.txt` | assistant (WORK Step 1) | per iteration |
 | `sessions/{date}-{session-id}/5-wrap-up/working/staging-inventory.md` | assistant (WORK Step 2) | per iteration |
 | `sessions/{date}-{session-id}/5-wrap-up/working/promotion-manifest.md` | assistant (WORK Step 4) | per iteration — append-only routing-decision log |
-| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (MEMORIZATION) | per iter — preserved transcript window |
+| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — preserved transcript window |
 | `sessions/{date}-{session-id}/5-wrap-up/working/discussion-log.md` | manager (DISCUSSION) | appended per user-decision exchange |
 | `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
-| `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` | assistant (WORK Step 7; sealed at MEMORIZATION) | PASS only — `artifact_type: handoff` |
-| `sessions/{date}-{session-id}/5-wrap-up/outputs/memory-reads.md` | assistant (MEMORIZATION) | PASS only — `artifact_type: memory-reads` |
-| `sessions/{date}-{session-id}/5-wrap-up/outputs/resolution-log.md` | assistant (MEMORIZATION) | PASS only — `artifact_type: resolution-log` |
-| Project-memory writes per routing table | assistant (WORK Steps 5-6) | per promoted staging file + per-session journal entry |
-| `sessions/{date}-{session-id}/session.json` | assistant (MEMORIZATION) | loop completion timestamps, iter, verdict; `workflow.finish` on final PASS |
+| `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` | assistant (WORK Step 7; sealed at RECORD) | PASS only — `artifact_type: handoff` |
+| `sessions/{date}-{session-id}/5-wrap-up/outputs/memory-reads.md` | assistant (RECORD) | PASS only — `artifact_type: memory-reads` |
+| `sessions/{date}-{session-id}/5-wrap-up/outputs/resolution-log.md` | assistant (RECORD) | PASS only — `artifact_type: resolution-log` |
+| Memory writes per routing table | assistant (WORK Steps 5-6) | per promoted staging file + per-session journal entry |
+| `sessions/{date}-{session-id}/session.json` | assistant (RECORD) | loop completion timestamps, iter, verdict; `workflow.finish` on final PASS |
 
-The session subdirectory tree at `sessions/{date}-{session-id}/5-wrap-up/{working,outputs,evaluation}/` is bootstrapped by the manager at Wrap-up Loop entry. WORK and MEMORIZATION assume the tree exists and surface an error if it does not. Project-memory destinations are bootstrapped lazily by WORK Step 5 as content requires.
+The session subdirectory tree at `sessions/{date}-{session-id}/5-wrap-up/{working,outputs,evaluation}/` is bootstrapped by the manager at Wrap-up Loop entry. WORK and RECORD assume the tree exists and surface an error if it does not. Memory destinations are bootstrapped lazily by WORK Step 5 as content requires.
 
 ---
 
 ## Constraints
 
-- **MUST be the sole writer to project memory for cross-loop session artifacts** — no other loop writes to `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/`. Exception: Preparation-generated skills at `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` are promoted by the manager before Planning starts (see `preparation/SKILL.md` § Core Principles). At Wrap-up, verify the destination is present and record in `promotion-manifest.md`; do not re-promote unless the destination file is missing.
+- **MUST be the sole writer to memory for cross-loop session artifacts** — no other loop writes to `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/`. Exception: Preparation-generated skills at `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` are promoted by the manager before Planning starts (see `preparation/SKILL.md` § Core Principles). At Wrap-up, verify the destination is present and record in `promotion-manifest.md`; do not re-promote unless the destination file is missing.
 - **MUST account for every staging file** — promotion-manifest.md has 1 entry per staging file across all prior loops (promoted / backlogged / dropped with reason).
 - **MUST apply the routing table mechanically** — no improvised destinations; unrouted files return `NEEDS_CONTEXT` with a `user-question:` block so the manager can use the active runtime's user-decision primitive on your behalf.
 - **MUST bootstrap feature directory lazily** — create `features/{feature-name}/{sub-dir}/` on first write into that sub-directory, not eagerly.
 - **MUST write the per-session journal entry** at `notes/{date}-{slug}.md` capturing the work-log narrative — one entry per session.
-- **MUST be idempotent** — re-run on the same session produces identical project-memory state; collision policy keyed by stable `finding-id` frontmatter.
+- **MUST be idempotent** — re-run on the same session produces identical memory state; collision policy keyed by stable `finding-id` frontmatter.
 - **MUST never delete** — supersession via `supersedes:` + `superseded_by:` frontmatter pairs; physical deletion is forbidden. When an artifact reaches a terminal state, move it (never delete) to `archive/{type}/` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md).
 - **MUST preserve session scratch** — `sessions/{date}-{session-id}/{N}-{loop}/working/`, `staging/`, `evaluation/iter{n}/` remain intact post-Wrap-up.
 - **MUST request user-confirm** for rules promotion, project-wide design promotion, mistake scope (feature vs project), and unrouted staging files — return `NEEDS_CONTEXT` with a `user-question:` block; the manager uses the active runtime's user-decision primitive on your behalf.
 - **MUST cite verifiable artifacts** in `5-wrap-up/outputs/` — every claim backed by a path the next session can follow.
-- **MUST never write to project memory during DISCUSSION** — DISCUSSION is read-only on project memory; WORK Steps 5-6 are the only project-memory write surfaces.
-- **MUST stamp templates** — every promotion uses the appropriate template from [`memory/templates/`](../memory/templates/); freeform writes to project memory are forbidden.
-- **MUST emit `workflow.finish`** on the final PASS iteration — after MEMORIZATION completes; the manager closes the session.
+- **MUST never write to memory during DISCUSSION** — DISCUSSION is read-only on memory; WORK Steps 5-6 are the only memory write surfaces.
+- **MUST stamp templates** — every promotion uses the appropriate template from [`memory/templates/`](../memory/templates/); freeform writes to memory are forbidden.
+- **MUST emit `workflow.finish`** on the final PASS iteration — after RECORD completes; the manager closes the session.

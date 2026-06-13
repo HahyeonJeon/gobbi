@@ -6,16 +6,16 @@ Summaries of substantive **DISCUSSION-phase exchanges with the user** that futur
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/discussions/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/discussions/{slug}.md`. Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
-- During **Ideation / Planning / Execution** MEMORIZATION when the loop's DISCUSSION produced decisions worth preserving beyond this session.
+- During **Ideation / Planning / Execution** RECORD when the loop's DISCUSSION produced decisions worth preserving beyond this session.
 - A discussion that only clarified a one-off detail belongs in the canonical artifact's "Decisions and rationale" section, not here. This directory is for discussions whose outcome will affect future sessions.
 
 ## Location

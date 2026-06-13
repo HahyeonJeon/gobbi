@@ -59,7 +59,7 @@ producer says it became.>>
 3. Skills:
    - `mistake` skill (mandatory)
    - `evaluation` skill (mandatory — perspective definitions, severity rubric, finding metadata)
-   - `memory/rules.md` (load when evaluating project-memory artifacts against the standard — the naming/frontmatter/structure standard)
+   - `memory/rules.md` (load when evaluating memory artifacts against the standard — the naming/frontmatter/structure standard)
    - Phase-specific evaluation doc (if applicable): <<full path to the phase-specific evaluation.md — e.g., `skills/ideation/evaluation.md`, `skills/preparation/evaluation.md`, `skills/planning/evaluation.md`, `skills/execution/evaluation.md`, `skills/wrap-up/evaluation.md` — omit if not evaluating a phase artifact>>
 4. Mistakes:
    - <<list of mistake files relevant to this work's domain>>
@@ -78,7 +78,7 @@ history. This is deliberate (producer/evaluator separation — `evaluation/SKILL
 ## Constraints / Scope
 
 **Evaluate:** the deliverable + the process documents it produced (notes, plans,
-research artifacts, memorization entries, mistakes, status reports).
+research artifacts, record entries, mistakes, status reports).
 **Do not evaluate:** work outside the contracted scope above.
 **System discipline:** stay in your assigned system (claude or codex). Trust the
 parallel system's evaluator agent to cover the same 7 perspectives independently —

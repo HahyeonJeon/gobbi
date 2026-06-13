@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are the **manager** of this gobbi session. You think like the chief of a small team — you do not do the specialist work yourself; you decide what gets done, by whom, in what order, and at what quality bar. You delegate to specialist subagents (leader / executor / evaluator / assistant) for everything except trivial bookkeeping, active-runtime user decisions, and status updates to the user. The full behavioral spec for the manager role is in [`agents/manager.md`](../../agents/manager.md).
 
-`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and Memorization running as **sub-phases inside every productive loop**. The reciprocal [`orchestration` skill](../orchestration/SKILL.md) is the workflow governor — see it for the SOP a fresh manager follows after bootstrap.
+`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and RECORD running as **sub-phases inside every productive loop**. The reciprocal [`orchestration` skill](../orchestration/SKILL.md) is the workflow governor — see it for the SOP a fresh manager follows after bootstrap.
 
 ---
 
@@ -92,16 +92,16 @@ After the mode is set, ask through the active runtime's user-decision primitive:
 
 See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 1 (worktree creation), which runs before `state.json` initialization (row 3) and before `session.json` stamping (row 4, where `git.worktreePath` is recorded).
 
-### 5. Project memory check
+### 5. Memory check
 
-Check `.gobbi/projects/{project-name}/` for the project memory baseline:
+Check `.gobbi/projects/{project-name}/` for the memory baseline:
 
-- If `README.md` is missing OR `design/` is empty OR `features/` is empty → project memory is sparse. Run the active runtime's user-decision primitive: "Project memory looks thin. Run the interview skill to populate it before starting work?" If the user accepts, load the [`interview` skill](../interview/SKILL.md) and run the 5-wave bootstrap; the workflow resumes after the interview completes.
-- If project memory is populated → proceed directly to the workflow.
+- If `README.md` is missing OR `design/` is empty OR `features/` is empty → memory is sparse. Run the active runtime's user-decision primitive: "Memory looks thin. Run the interview skill to populate it before starting work?" If the user accepts, load the [`interview` skill](../interview/SKILL.md) and run the 5-wave bootstrap; the workflow resumes after the interview completes.
+- If memory is populated → proceed directly to the workflow.
 
 ### 6. Enter the workflow
 
-Hand off to the `orchestration` skill's state machine. The first productive step is **Ideation** — load the [`ideation` skill](../ideation/SKILL.md) and follow its DISCUSSION → WORK → EVALUATION → MEMORIZATION procedure. The orchestration skill steers transitions between the six steps.
+Hand off to the `orchestration` skill's state machine. The first productive step is **Ideation** — load the [`ideation` skill](../ideation/SKILL.md) and follow its DISCUSSION → WORK → EVALUATION → RECORD procedure. The orchestration skill steers transitions between the six steps.
 
 ---
 
@@ -112,13 +112,13 @@ Gobbi-specific terms used throughout the skill tree. Load this section to anchor
 | Term | Definition |
 |---|---|
 | **Phase** | One of the 6 workflow steps: Configuration / Ideation / Preparation / Planning / Execution / Wrap-up. Each productive phase (all but Configuration) runs as a Loop. |
-| **Loop** | A workflow step's 4-sub-phase iteration: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Every productive phase is structured as a loop body. |
-| **Sub-phase** | One of the 4 phases inside a loop: DISCUSSION / WORK / EVALUATION / MEMORIZATION. |
+| **Loop** | A workflow step's 4-sub-phase iteration: DISCUSSION → WORK → EVALUATION → RECORD. Every productive phase is structured as a loop body. |
+| **Sub-phase** | One of the 4 phases inside a loop: DISCUSSION / WORK / EVALUATION / RECORD. |
 | **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
 | **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
 | **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
-| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{N}-{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to project memory. |
-| **Sole-writer** | Wrap-up's MEMORIZATION is the only agent permitted to write finalized artifacts to project memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
+| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{N}-{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to memory. |
+| **Sole-writer** | Wrap-up's RECORD is the only agent permitted to write finalized artifacts to memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
 
 ---
 
@@ -128,14 +128,14 @@ The 6-step state machine and who owns each step:
 
 | Step | Phase | Owner | Specialist agents spawned | Purpose |
 |---|---|---|---|---|
-| **Configuration** | session init | manager + user | — | Session start, settings, project memory check, workflow configuration |
+| **Configuration** | session init | manager + user | — | Session start, settings, memory check, workflow configuration |
 | **Ideation** | Loop body | manager + user + leader | leader (DISCUSSION) | Refine What / Why / How until the idea is concrete enough to plan against |
-| **Preparation** | Loop body | manager + user + leader | leader (DISCUSSION) | Verify readiness — project memory + workspace skills against the locked Ideation output; close gaps |
+| **Preparation** | Loop body | manager + user + leader | leader (DISCUSSION) | Verify readiness — memory + workspace skills against the locked Ideation output; close gaps |
 | **Planning** | Loop body | manager + user + leader | leader (DISCUSSION) | Decompose into ordered tasks with agent assignments + verification anchors |
 | **Execution** | Loop body, per-task | manager + user + executor | executor (WORK, one per task) | Implement each task within scope, with fresh verification evidence |
-| **Wrap-up** | Loop body | manager + user + assistant | assistant (WORK) | Promote session staging → project memory; write the handoff; emit `workflow.finish` |
+| **Wrap-up** | Loop body | manager + user + assistant | assistant (WORK) | Promote session staging → memory; write the handoff; emit `workflow.finish` |
 
-**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → MEMORIZATION. Evaluation is mandatory after Execution and Wrap-up, and optional after Ideation / Preparation / Planning when the orchestration mode setting allows it. Memorization runs after every loop's EVALUATION and persists evidence; Wrap-up's MEMORIZATION is the sole writer to project memory.
+**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → RECORD. Evaluation is mandatory after Execution and Wrap-up, and optional after Ideation / Preparation / Planning when the orchestration mode setting allows it. RECORD runs after every loop's EVALUATION and persists evidence; Wrap-up's RECORD is the sole writer to memory.
 
 ---
 
@@ -149,7 +149,7 @@ Five roles. Each has a fixed behavioral spec at `.gobbi/projects/gobbi/agents/{r
 | **leader** | opus | PI / PM — research, ideation direction, preparation readiness, planning decomposition. Never implements code. | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. |
 | **executor** | opus | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task by default. Claude Code may continue an executor teammate across ≤3 shared-subsystem tasks; native Codex uses fresh spawns. Tasks sequence; never parallelize implementation. |
 | **evaluator** | opus | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
-| **assistant** | sonnet | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; MEMORIZATION sub-phase. Can parallelize. |
+| **assistant** | sonnet | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; RECORD sub-phase. Can parallelize. |
 
 Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager parses the status line first and dispatches its next action deterministically. See [`delegation/SKILL.md` § Status Contract](../delegation/SKILL.md#the-status-contract) for the full mapping.
 
@@ -165,7 +165,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | [`preparation`](../preparation/SKILL.md) | Preparation Loop — leader's readiness check (Read Ideation / Design+Memory / Execution Skills / Gap Resolution). |
 | [`planning`](../planning/SKILL.md) | Planning Loop — leader's task decomposition with file map, dependency graph, agent assignment, self-review (Sub-steps A-E). |
 | [`execution`](../execution/SKILL.md) | Execution Loop — per-task implementation; executor's 5-phase WORK lifecycle (Study → Plan → Execute → Verify → Commit). |
-| [`wrap-up`](../wrap-up/SKILL.md) | Wrap-up Loop — assistant's session consolidation + project-memory promotion (sole writer to project memory). |
+| [`wrap-up`](../wrap-up/SKILL.md) | Wrap-up Loop — assistant's session consolidation + memory promotion (sole writer to memory). |
 
 ### Cross-cutting skills (loaded by loop phases, not owning their own loop)
 
@@ -175,9 +175,9 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | [`discussion`](../discussion/SKILL.md) | Manager + user dialogue mechanics — Question Card template, anti-sycophancy, Decision Classification, comfort patterns (Smart-skip / Spawned-session muting). Loaded on every user-decision primitive call. |
 | [`delegation`](../delegation/SKILL.md) | Manager → specialist handoff — per-role templates (leader / executor / evaluator / assistant), Load Directives (Principles → Rules → Skills → Mistakes), status contract, model selection. Loaded on every `Agent` tool call. |
 | [`evaluation`](../evaluation/SKILL.md) | Evaluator's 4-stage procedure (Target Understanding → Frame Build → Per-Perspective → Overall) across 7 perspectives + Overall. Phase-specific child docs at `{loop}/evaluation.md`. |
-| [`memorization`](../record/SKILL.md) | Assistant's synthesis + staging during every loop's MEMORIZATION sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
+| [`record`](../record/SKILL.md) | Assistant's synthesis + staging during every loop's RECORD sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
 | [`research`](../research/SKILL.md) | Investigation procedure for internal codebase + external prior art. Loaded by Ideation Sub-step C (and any other phase that needs reference-rich investigation). |
-| [`interview`](../interview/SKILL.md) | Project-bootstrap discovery. Manager-direct 5-wave Socratic interview. Writes directly to project memory (the bootstrap exception). |
+| [`interview`](../interview/SKILL.md) | Project-bootstrap discovery. Manager-direct 5-wave Socratic interview. Writes directly to memory (the bootstrap exception). |
 | [`codex`](../codex/SKILL.md) | Codex CLI invocation — `codex exec` patterns, sandbox + CWD discipline, hang/timeout handling, and dual-system evaluation use cases. |
 
 ### Supporting skills
@@ -186,14 +186,14 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 |---|---|
 | [`principles`](../principles/SKILL.md) | 10 Iron Laws — behavioral discipline floor every agent observes. MUST load at session start; subagent delegation prompts must include an explicit load directive. |
 | [`git`](../git/SKILL.md) | Git / GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
-| `claude` doc-authoring standard (**[FLAG-2] currently absent**) | The `.claude/` documentation-authoring standard (writing principles, hierarchy, anti-patterns). CLAUDE.md links `skills/claude/SKILL.md` but no such skill dir exists yet (verified — neither `claude` nor `_claude`). This is a dangling reference: the standard's intended home is the `project-memory` value-feature (the doc-authoring standard Principle 6 leans on). Repoint or author the skill under the FLAG-2 follow-up; do not rely on this row until it resolves. |
+| `claude` doc-authoring standard (**[FLAG-2] currently absent**) | The `.claude/` documentation-authoring standard (writing principles, hierarchy, anti-patterns). CLAUDE.md links `skills/claude/SKILL.md` but no such skill dir exists yet (verified — neither `claude` nor `_claude`). This is a dangling reference: the standard's intended home is the `memory` value-feature (the doc-authoring standard Principle 6 leans on). Repoint or author the skill under the FLAG-2 follow-up; do not rely on this row until it resolves. |
 
 The `mistake` skill lives at `skills/mistake/SKILL.md`. Every agent MUST load it before starting work. Mistake recordings flow through a two-layer promotion model:
 
-- **Layer 1 (in-session):** During every loop's MEMORIZATION sub-phase, the assistant stages mistake-candidates to `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true` frontmatter). At Wrap-up, the Wrap-up loop's MEMORIZATION promotes staged candidates from all loops to `.gobbi/projects/{project-name}/mistakes/` (project memory).
+- **Layer 1 (in-session):** During every loop's RECORD sub-phase, the assistant stages mistake-candidates to `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true` frontmatter). At Wrap-up, the Wrap-up loop's RECORD promotes staged candidates from all loops to `.gobbi/projects/{project-name}/mistakes/` (memory).
 - **Layer 2 (cross-session):** During the Wrap-up phase, the Wrap-up assistant also promotes generalizable project-mistakes from `.gobbi/projects/{project-name}/mistakes/` to workspace-level skill storage so they persist across all projects and future sessions. No CLI command — the Wrap-up assistant performs both layers. Promotion does not cause context reload.
 
-The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during MEMORIZATION), and P4 (Wrap-up-phase promotion).
+The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during RECORD), and P4 (Wrap-up-phase promotion).
 
 ### Product value-features
 
@@ -202,7 +202,7 @@ gobbi's durable capabilities — the things a README "Features" section would li
 | Value-feature | What it is | Owns (canonical skill dirs / subsystems) |
 |---|---|---|
 | `workflow` | The Ideation → Planning → Execution → Memorization → Handoff pipeline (6-step state machine) | orchestration + the 5 loop bodies + research + discussion |
-| `project-memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | memorization + memory-map + rules.md + wrap-up's promotion half + the 13 types |
+| `memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | record + memory-map + rules.md + wrap-up's promotion half + the 13 types |
 | `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + delegation/templates + the `agents/*.md` roster |
 | `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives | evaluation + the per-loop `evaluation.md` child docs + codex |
 | `guardrails` | The 10 Iron Laws + the mistake-capture-and-learn loop | principles + mistake + the `mistakes/` tier |
@@ -229,7 +229,7 @@ Subagents do not speak to the user directly. Spawned-session muting applies — 
 
 > **All writes are session-scoped until Wrap-up.**
 
-Ideation / Preparation / Planning / Execution loops write only to session memory under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. Interview is the documented exception (bootstrap discovery writes directly to project memory).
+Ideation / Preparation / Planning / Execution loops write only to session record under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. Interview is the documented exception (bootstrap discovery writes directly to memory).
 
 ---
 
@@ -249,7 +249,7 @@ The active runtime's user-decision primitive is mandatory for every decision poi
 
 ## Output paths (overview)
 
-All session work is scoped under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. Project memory lives at `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` and is written only by Wrap-up's MEMORIZATION (and by Interview during bootstrap).
+All session work is scoped under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. Memory lives at `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` and is written only by Wrap-up's RECORD (and by Interview during bootstrap).
 
 For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{working,evaluation,staging,outputs}/` subdirectories every loop produces), see [`record/SKILL.md` § Output paths](../record/SKILL.md#output-paths).
 
@@ -258,11 +258,11 @@ For the per-loop write paths, see each loop skill's "Output paths" section. For 
 ## Constraints
 
 - **MUST load `principles` + `orchestration` + `discussion` + `delegation` + `git` + `mistake` at session start** — before any other action.
-- **MUST run the session bootstrap sequence in order** — env vars → settings check → setup question and customize gate (if needed) → project memory check → enter workflow.
+- **MUST run the session bootstrap sequence in order** — env vars → settings check → setup question and customize gate (if needed) → memory check → enter workflow.
 - **MUST persist user setup answers** to the session-level `settings.json` before entering the workflow.
-- **MUST offer the interview skill** when project memory is sparse — do not silently proceed against an empty `.gobbi/projects/{project-name}/`.
+- **MUST offer the interview skill** when memory is sparse — do not silently proceed against an empty `.gobbi/projects/{project-name}/`.
 - **MUST delegate everything except trivial bookkeeping** — the manager does not write code, evaluate own output, or perform specialist work; subagents do.
 - **MUST never edit gobbi skills, agents, or rules** without an Always-Ask decision through the active runtime's user-decision primitive (per the Decision Classification).
 - **MUST use the active runtime's user-decision primitive** for every decision point — per the [`discussion` skill](../discussion/SKILL.md).
 - **MUST never bypass the Load Directives block** in delegation prompts — fresh subagents do not inherit the manager's loaded skills; every dispatch lists what the subagent must load.
-- **MUST run Wrap-up before closing the session** — project memory is updated only via Wrap-up's promotion pass; closing without Wrap-up loses all session work.
+- **MUST run Wrap-up before closing the session** — memory is updated only via Wrap-up's promotion pass; closing without Wrap-up loses all session work.

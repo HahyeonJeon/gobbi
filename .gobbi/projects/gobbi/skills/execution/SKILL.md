@@ -6,9 +6,9 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 
 # Execution
 
-Skill for the **Execution Loop**. Defines what each of the four phases (DISCUSSION → WORK → EVALUATION → MEMORIZATION) does, which agent owns it, what inputs it consumes, and what artifacts it produces. Loaded by every agent participating in the loop — the manager for orchestration context, and each specialist for the procedural contract of the phase it owns.
+Skill for the **Execution Loop**. Defines what each of the four phases (DISCUSSION → WORK → EVALUATION → RECORD) does, which agent owns it, what inputs it consumes, and what artifacts it produces. Loaded by every agent participating in the loop — the manager for orchestration context, and each specialist for the procedural contract of the phase it owns.
 
-The Execution Loop runs **once per planned task**. The loop body — DISCUSSION → WORK → EVALUATION → MEMORIZATION — repeats for each task in `3-planning/outputs/`. Within a single task, REVISE iterations re-enter that task's DISCUSSION until verdict is `PASS`; `PASS` then advances to the next task in the Plan.
+The Execution Loop runs **once per planned task**. The loop body — DISCUSSION → WORK → EVALUATION → RECORD — repeats for each task in `3-planning/outputs/`. Within a single task, REVISE iterations re-enter that task's DISCUSSION until verdict is `PASS`; `PASS` then advances to the next task in the Plan.
 
 The Execution Loop differs from Ideation / Preparation / Planning in two ways:
 
@@ -27,18 +27,18 @@ The agent in the executor role MUST observe these tier boundaries. The only writ
 |---|---|---|
 | **Workspace codebase (in-scope files)** | Files explicitly listed in the task's `files:` scope | **READ + WRITE** — the executor's primary work surface; constrained to the task's declared scope |
 | **Workspace codebase (out-of-scope files)** | All other files under the repository | **READ-ONLY** — reading is required for context; writing is a scope violation |
-| **Session memory — own task working** | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/` | **READ + WRITE** — executor notes (`draft-iter{n}.md`), discussion-log, research (transcripts live in the session-root `transcripts/`, not here) |
-| **Session memory — own task staging** | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,discussions,changelogs,learnings,notes,backlogs/{feature,project}}/` | **READ + WRITE** — surfacing mid-task discoveries that need promotion (e.g., a mistake learned mid-implementation, a backlog candidate noticed in passing). Wrap-up promotes |
-| **Session memory — prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning}/{outputs,staging}/` | **READ-ONLY** — required inputs: Ideation design, Preparation readiness, Planning task spec |
-| **Session memory — prior tasks** | `sessions/{date}-{session-id}/4-execution/task-{MM}-{slug}/outputs/` | **READ-ONLY** — context for tasks that depend on prior task outputs |
-| **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the executor never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
+| **Session record — own task working** | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/` | **READ + WRITE** — executor notes (`draft-iter{n}.md`), discussion-log, research (transcripts live in the session-root `transcripts/`, not here) |
+| **Session record — own task staging** | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,discussions,changelogs,learnings,notes,backlogs/{feature,project}}/` | **READ + WRITE** — surfacing mid-task discoveries that need promotion (e.g., a mistake learned mid-implementation, a backlog candidate noticed in passing). Wrap-up promotes |
+| **Session record — prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning}/{outputs,staging}/` | **READ-ONLY** — required inputs: Ideation design, Preparation readiness, Planning task spec |
+| **Session record — prior tasks** | `sessions/{date}-{session-id}/4-execution/task-{MM}-{slug}/outputs/` | **READ-ONLY** — context for tasks that depend on prior task outputs |
+| **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the executor never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for mistake / scenario / decision lookup. Never written; Wrap-up owns feature-memory writes |
-| **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for mistake / rule lookup. Never written; Wrap-up owns project-memory writes |
+| **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for mistake / rule lookup. Never written; Wrap-up owns memory writes |
 | **Runtime documentation** | `.claude/`, `.agents/`, `.codex/`, `plugins/gobbi/` | **READ + WRITE only when the task explicitly scopes them** — runtime-doc edits are workspace codebase edits; same in-scope / out-of-scope rule applies. Reading is always permitted |
 
 **Delete semantics**: the executor NEVER deletes any file in any tier except when the task **explicitly** lists a file for deletion in its `files:` scope. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); unexplained physical deletion is forbidden. Once an artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
-**Write enforcement**: any write attempted outside the WRITE rows above is a constraint violation. Writes to project memory, feature memory, or out-of-scope workspace files must be revoked and the executor restarted with a corrected scope or BLOCKED back to the manager for re-planning.
+**Write enforcement**: any write attempted outside the WRITE rows above is a constraint violation. Writes to memory, feature memory, or out-of-scope workspace files must be revoked and the executor restarted with a corrected scope or BLOCKED back to the manager for re-planning.
 
 **Git semantics**: the executor commits to the worktree (one focused commit per subtask, Conventional Commits format) but **never pushes**. The manager owns pushing, PR creation, and merge. See [`git/SKILL.md`](../git/SKILL.md) for the full role boundary.
 
@@ -66,7 +66,7 @@ The task's `files:` scope is binding. Adjacent fixes, opportunistic refactors, a
 
 > **Tell the manager what you discovered.**
 
-If implementation surfaces a mistake worth recording, a backlog candidate, an architectural insight, or a known-pitfall avoided, stage it under `4-execution/task-{NN}-{slug}/staging/` per the routing table. Wrap-up promotes; the executor does not write to project memory directly.
+If implementation surfaces a mistake worth recording, a backlog candidate, an architectural insight, or a known-pitfall avoided, stage it under `4-execution/task-{NN}-{slug}/staging/` per the routing table. Wrap-up promotes; the executor does not write to memory directly.
 
 ---
 
@@ -172,7 +172,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
 | 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
-| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict for THIS task / iter: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to MEMORIZATION first**. After MEMORIZATION, `PASS` exits this task's loop and advances to the next planned task; `REVISE` re-enters THIS task's DISCUSSION (iter increments); `FAIL` escalates through the active runtime's user-decision primitive | Per-task verdict |
+| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict for THIS task / iter: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to RECORD first**. After RECORD, `PASS` exits this task's loop and advances to the next planned task; `REVISE` re-enters THIS task's DISCUSSION (iter increments); `FAIL` escalates through the active runtime's user-decision primitive | Per-task verdict |
 
 **Outputs**
 - `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
@@ -187,16 +187,16 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 **Exit checklist**
 - [ ] Both systems produced per-perspective files for every perspective
-- [ ] Verdict aggregated and recorded; `REVISE` increments THIS task's iteration counter; `PASS` advances the Plan cursor after MEMORIZATION
+- [ ] Verdict aggregated and recorded; `REVISE` increments THIS task's iteration counter; `PASS` advances the Plan cursor after RECORD
 
 ---
 
-## MEMORIZATION Phase
+## RECORD Phase
 
 **Purpose**
-Persist every iteration's evidence into session memory and — on the final `PASS` iteration for this task — emit the task's `outputs/` files + cumulative typed-finding stagings. MEMORIZATION runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Project memory is **not** written here; Wrap-up handles session → project promotion.
+Persist every iteration's evidence into session record and — on the final `PASS` iteration for this task — emit the task's `outputs/` files + cumulative typed-finding stagings. RECORD runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Memory is **not** written here; Wrap-up handles session → project promotion.
 
-See [memorization skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
+See [record skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
 
 **Inputs**
 - `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/draft-iter{n}.md` — executor's notes for this iter
@@ -204,14 +204,14 @@ See [memorization skill](../record/SKILL.md) for the every-iter / PASS-only proc
 - `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
 - `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/discussion-log.md` — manager-captured user-decision exchanges (contribution points, divergence decisions)
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
-- WORK-staged artifacts under `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/` (already in place — MEMORIZATION supplements, never replaces)
+- WORK-staged artifacts under `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/` (already in place — RECORD supplements, never replaces)
 
-**Procedure** — see [record/SKILL.md § MEMORIZATION Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Execution-specific notes:
+**Procedure** — see [record/SKILL.md § RECORD Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Execution-specific notes:
 
-- The `{loop}` token in the memorization procedure resolves to `4-execution/task-{NN}-{slug}` for Execution — every path is task-scoped under `sessions/.../4-execution/task-{NN}-{slug}/...`. The session.json field is `workflow.execution.iterations[]` keyed by `{task-id, iter}` (per-task iter, not loop-wide).
+- The `{loop}` token in the RECORD procedure resolves to `4-execution/task-{NN}-{slug}` for Execution — every path is task-scoped under `sessions/.../4-execution/task-{NN}-{slug}/...`. The session.json field is `workflow.execution.iterations[]` keyed by `{task-id, iter}` (per-task iter, not loop-wide).
 - On PASS, the artifacts directory should include at least one file with `artifact_type: change-summary` (what was implemented + verification result), one with `artifact_type: verification-report` (commands run + output), and the mandatory `artifact_type: memory-reads` audit file.
 - Cumulative finding staging on PASS: per the routing table in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity). Execution-specific findings frequently land at `staging/changelogs/` (shipped change records) and `staging/learnings/` (durable cross-cutting insights surfaced mid-task).
-- Mid-task `staging/` files written by the executor during WORK are **preserved as-is**; MEMORIZATION supplements with evaluator-finding-driven staging on top.
+- Mid-task `staging/` files written by the executor during WORK are **preserved as-is**; RECORD supplements with evaluator-finding-driven staging on top.
 
 **Outputs**
 
@@ -229,7 +229,7 @@ Only the `PASS` iteration also produces:
 Every iteration:
 - [ ] Each agent transcript copied to session-root `transcripts/{role}-{agentId}.jsonl` (no per-task transcripts/)
 - [ ] `session.json.workflow.execution.iterations[]` includes this iter's `{task-id, iter, verdict, finishedAt, evaluation_dir: "4-execution/task-{NN}-{slug}/evaluation/iter{n}/"}`
-- [ ] No writes to feature memory or project memory
+- [ ] No writes to feature memory or memory
 
 `PASS` iteration additionally:
 - [ ] `4-execution/task-{NN}-{slug}/outputs/` contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema)
@@ -243,14 +243,14 @@ Every iteration:
 
 ## Output paths
 
-All writes during the Execution Loop are **session-scoped** under per-task subdirectories. Wrap-up promotes the `staging/` directory to project memory after the workflow completes — see [wrap-up skill](../wrap-up/SKILL.md). Code changes go to the workspace codebase directly (and are committed to the worktree when git is active).
+All writes during the Execution Loop are **session-scoped** under per-task subdirectories. Wrap-up promotes the `staging/` directory to memory after the workflow completes — see [wrap-up skill](../wrap-up/SKILL.md). Code changes go to the workspace codebase directly (and are committed to the worktree when git is active).
 
 **Path conventions**
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
 - `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
 - `{task-id}` — the Task ID assigned by Planning (e.g., `01-add-cache-layer`)
-- `{feature-name}` — feature slug (only used by Wrap-up when promoting to project memory; not used inside session paths)
+- `{feature-name}` — feature slug (only used by Wrap-up when promoting to memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time
 - `{n}` — iter number for THIS task, supplied by the manager
 
@@ -258,13 +258,13 @@ All writes during the Execution Loop are **session-scoped** under per-task subdi
 |---|---|---|
 | Workspace files in task `files:` scope | executor (WORK) | committed per task (when git is active) |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/draft-iter{n}.md` | executor (WORK) / manager-captured | every iteration |
-| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,changelogs,learnings,notes,backlogs/{feature,project}}/{slug}.md` | executor (WORK) or assistant (MEMORIZATION) | per mid-task discovery (executor) or per evaluator finding (assistant) |
+| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,changelogs,learnings,notes,backlogs/{feature,project}}/{slug}.md` | executor (WORK) or assistant (RECORD) | per mid-task discovery (executor) or per evaluator finding (assistant) |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
-| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (MEMORIZATION) | per iter — copied into the single session-root `transcripts/`, accumulating across loops |
-| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/outputs/{free-filename}.md` | assistant (MEMORIZATION) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: change-summary`, ≥ 1 with `artifact_type: verification-report`, ≥ 1 with `artifact_type: memory-reads` |
-| `sessions/{date}-{session-id}/session.json` | assistant (MEMORIZATION) | per-task iter completion timestamps, iter, verdict |
+| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — copied into the single session-root `transcripts/`, accumulating across loops |
+| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/outputs/{free-filename}.md` | assistant (RECORD) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: change-summary`, ≥ 1 with `artifact_type: verification-report`, ≥ 1 with `artifact_type: memory-reads` |
+| `sessions/{date}-{session-id}/session.json` | assistant (RECORD) | per-task iter completion timestamps, iter, verdict |
 
-The session subdirectory tree at `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/{working,staging,evaluation}/` is bootstrapped by the manager when the Execution Loop enters each new task. WORK and MEMORIZATION assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Execution; Wrap-up creates them as needed during project-memory promotion.
+The session subdirectory tree at `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/{working,staging,evaluation}/` is bootstrapped by the manager when the Execution Loop enters each new task. WORK and RECORD assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Execution; Wrap-up creates them as needed during memory promotion.
 
 ---
 
@@ -276,7 +276,7 @@ The session subdirectory tree at `sessions/{date}-{session-id}/4-execution/task-
 - **MUST report with the 4-state status enum** — `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED` — supported by evidence; never silently produce work the executor is unsure about.
 - **MUST commit but never push** — when git is active, commit to the worktree per `git/SKILL.md`; the manager owns pushing and PR creation.
 - **MUST never write outside the task's `files:` scope** — out-of-scope code edits are a constraint violation; revert and re-emit status.
-- **MUST never write to project memory or feature memory during the Execution Loop** — mid-task discoveries stage at `4-execution/task-{NN}-{slug}/staging/...`. Wrap-up promotes.
+- **MUST never write to memory or feature memory during the Execution Loop** — mid-task discoveries stage at `4-execution/task-{NN}-{slug}/staging/...`. Wrap-up promotes.
 - **MUST never delete** unless the task explicitly lists the file for deletion in `files:` — supersession via frontmatter; physical deletion otherwise is forbidden. Terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json`** from the executor role — the manager owns it; iter is supplied as an input.
 - **MUST not embed test-writing as a separate task** — verification is anchored by Planning; the executor runs the specified verification commands, doesn't author the test framework itself unless the task explicitly scopes test creation.

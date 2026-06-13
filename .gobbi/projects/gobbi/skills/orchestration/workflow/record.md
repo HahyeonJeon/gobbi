@@ -1,20 +1,20 @@
-# Workflow — Memorization (Orchestration)
+# Workflow — Record (Orchestration)
 
-How the **manager** orchestrates the MEMORIZATION sub-phase that runs at the end of every loop iteration. This document is loaded by the manager — the `assistant` agent that actually performs the synthesis loads [`record/SKILL.md`](../../record/SKILL.md) and [`memory/memory-map.md`](../../memory/memory-map.md) instead.
+How the **manager** orchestrates the RECORD sub-phase that runs at the end of every loop iteration. This document is loaded by the manager — the `assistant` agent that actually performs the synthesis loads [`record/SKILL.md`](../../record/SKILL.md) and [`memory/memory-map.md`](../../memory/memory-map.md) instead.
 
-The manager's job at MEMORIZATION is to **spawn the assistant, deliver the right inputs, validate the assistant's output mechanically, and advance the loop** — not to do the synthesis itself. MEMORIZATION runs **after every EVALUATION verdict** (`PASS`, `REVISE`, or `FAIL`) and **before** the `ITER / EXIT` decision: every iteration's evidence must be preserved before the loop either re-enters DISCUSSION or exits.
+The manager's job at RECORD is to **spawn the assistant, deliver the right inputs, validate the assistant's output mechanically, and advance the loop** — not to do the synthesis itself. RECORD runs **after every EVALUATION verdict** (`PASS`, `REVISE`, or `FAIL`) and **before** the `ITER / EXIT` decision: every iteration's evidence must be preserved before the loop either re-enters DISCUSSION or exits.
 
-All assistant writes are **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/...` plus own-loop fields in `session.json`. The assistant **never** writes to project memory; Wrap-up is the sole writer there. The manager validates this invariant via post-write snapshot diff. For the canonical session-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md), the single source of truth.
+All assistant writes are **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/...` plus own-loop fields in `session.json`. The assistant **never** writes to memory; Wrap-up is the sole writer there. The manager validates this invariant via post-write snapshot diff. For the canonical session-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md), the single source of truth.
 
 ---
 
-## Why every-iter MEMORIZATION is mandatory
+## Why every-iter RECORD is mandatory
 
-Skipping MEMORIZATION on `REVISE` iterations is a tempting "optimization" — the canonical artifact isn't written yet, so why preserve anything? The answer is **audit completeness**:
+Skipping RECORD on `REVISE` iterations is a tempting "optimization" — the canonical artifact isn't written yet, so why preserve anything? The answer is **audit completeness**:
 
-1. **Stage 1 inheritance** at iter `n` requires reading iter `(n-1)` per-perspective files directly. Those files are written by evaluators, not by MEMORIZATION — but MEMORIZATION is what preserves the transcript and the `session.json.workflow.{loop}.iterations[]` entry that makes "what happened at iter (n-1)" reconstructable for the user, for review, and for evidence-of-process when a session is paused and resumed days later.
-2. **Crash recovery** depends on every iter having a written `iterations[]` entry. A REVISE iter that skipped MEMORIZATION leaves a hole — the next session-start cannot know whether iter (n-1) actually completed or partially crashed.
-3. **Cumulative staging on PASS** sources from iter 1..n's evaluation files. The PASS-iter MEMORIZATION reads prior iters as inputs; if prior iters skipped persistence, the union is incomplete.
+1. **Stage 1 inheritance** at iter `n` requires reading iter `(n-1)` per-perspective files directly. Those files are written by evaluators, not by RECORD — but RECORD is what preserves the transcript and the `session.json.workflow.{loop}.iterations[]` entry that makes "what happened at iter (n-1)" reconstructable for the user, for review, and for evidence-of-process when a session is paused and resumed days later.
+2. **Crash recovery** depends on every iter having a written `iterations[]` entry. A REVISE iter that skipped RECORD leaves a hole — the next session-start cannot know whether iter (n-1) actually completed or partially crashed.
+3. **Cumulative staging on PASS** sources from iter 1..n's evaluation files. The PASS-iter RECORD reads prior iters as inputs; if prior iters skipped persistence, the union is incomplete.
 
 The cost (writing one jsonl + upserting one JSON entry) is trivial; the audit and recovery guarantees from running on every verdict are not.
 
@@ -22,22 +22,22 @@ The cost (writing one jsonl + upserting one JSON entry) is trivial; the audit an
 
 ## Spawning the Assistant
 
-The manager spawns **one** `assistant` agent per MEMORIZATION run — there is no dual-system parallelism here (memorization is deterministic synthesis, not adversarial review). The assistant runs once per loop iteration.
+The manager spawns **one** `assistant` agent per RECORD run — there is no dual-system parallelism here (RECORD is deterministic synthesis, not adversarial review). The assistant runs once per loop iteration.
 
 ### Delegation prompt fields
 
-Every MEMORIZATION delegation prompt MUST declare the following — a one-liner or missing field forces the assistant to guess, and a guessing assistant guesses wrong:
+Every RECORD delegation prompt MUST declare the following — a one-liner or missing field forces the assistant to guess, and a guessing assistant guesses wrong:
 
 | Field | Value |
 |---|---|
 | **Loop identity** | `ideation` / `preparation` / `planning` / `execution` / `wrap-up` |
 | **Iter number `n`** | From `session.json.workflow.{loop}.iterations.length + 1` for a fresh run, or the existing iter for a re-run |
-| **Verdict** | `PASS` / `REVISE` / `FAIL` from EVALUATION (the MEMORIZATION procedure branches on this) |
+| **Verdict** | `PASS` / `REVISE` / `FAIL` from EVALUATION (the RECORD procedure branches on this) |
 | **Outputs directory target path** | e.g., `sessions/{date}-{session-id}/1-ideation/outputs/` — only written on `PASS`. Assistant decomposes the loop's output into one or more frontmatter-tagged files inside this directory; filenames and counts are free (see [`record/SKILL.md` § Artifact frontmatter schema](../../record/SKILL.md#artifact-frontmatter-schema)) |
 | **Type + Domain → staging-subdir routing** | Link to [`evaluation/SKILL.md` § Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) — disposition values, routing table, slug + collision policy are sourced from here, not duplicated |
 | **Memory access matrix** | Link to [`memory/memory-map.md`](../../memory/memory-map.md) — every path the assistant may READ + WRITE, plus FORBIDDEN paths |
 | **READ-ONLY paths to consult** | Prior loops' canonical outputs (for cross-loop synthesis); the discussion log; **all** prior-iter per-perspective evaluation files for `m ∈ 1..n` (cumulative staging requirement) |
-| **FORBIDDEN write surfaces** | `.gobbi/projects/{project-name}/features/**`, `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,decisions,plans,references,reviews,reports,learnings,archive}/**`, other loops' session directories, other systems' evaluation directories. Wrap-up owns project memory; loop MEMORIZATION never touches it |
+| **FORBIDDEN write surfaces** | `.gobbi/projects/{project-name}/features/**`, `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,decisions,plans,references,reviews,reports,learnings,archive}/**`, other loops' session directories, other systems' evaluation directories. Wrap-up owns memory; loop RECORD never touches it |
 | **Discussion-log handling** | Read-only — assistant reads `working/discussion-log.md` at Step 1 (input load) and Step 7 (discussions staging). The **manager** owns appends during DISCUSSION; the assistant never writes to it |
 
 ### Pre-spawn checks
@@ -90,7 +90,7 @@ sessions/{date}-{session-id}/{N}-{loop}/
     └── notes/{slug}.md            ← per loop-scope journal entry (loop-conditional; the per-session note is written at Wrap-up)
 ```
 
-Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the plan artifact Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`); `plans/` is **Planning-only** and does not appear in other loops' staging trees. Wrap-up loop's MEMORIZATION is structurally different — see [`workflow/wrap-up.md`](wrap-up.md).
+Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the plan artifact Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`); `plans/` is **Planning-only** and does not appear in other loops' staging trees. Wrap-up loop's RECORD is structurally different — see [`workflow/wrap-up.md`](wrap-up.md).
 
 ### Per-loop summary table
 
@@ -99,7 +99,7 @@ Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the pl
 | Ideation | `1-ideation/outputs/` (typical files: framed-problem, scope-contract, design-options, memory-reads, resolution-log) | `1-ideation/working/` | `1-ideation/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
 | Planning | `3-planning/outputs/` (typical files: task-list, dependency-graph, agent-assignments, memory-reads) | `3-planning/working/` | `3-planning/staging/{plans,scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
 | Execution | `4-execution/outputs/` (typical files: change-summary, verification-report, memory-reads) | `4-execution/working/` | `4-execution/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
-| Wrap-up | `5-wrap-up/outputs/` (typical files: handoff, shipped-summary, next-session-pointers, memory-reads) | `5-wrap-up/working/` | Wrap-up does not stage — it writes directly to project memory per [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) |
+| Wrap-up | `5-wrap-up/outputs/` (typical files: handoff, shipped-summary, next-session-pointers, memory-reads) | `5-wrap-up/working/` | Wrap-up does not stage — it writes directly to memory per [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) |
 
 ---
 
@@ -129,7 +129,7 @@ Every iter:
 - [ ] `workflow.{loop}.iterations[]` contains an entry whose `iter` equals the current iter number
 - [ ] No duplicate `iter` keys in `iterations[]` (UPSERT idempotency)
 - [ ] Each entry has the full schema: `{iter, verdict, finishedAt, evaluation_dir}` — no field missing, `evaluation_dir` matches `evaluation/iter{n}/`
-- [ ] `project`, `feature`, `task` fields preserved verbatim (not overwritten by MEMORIZATION)
+- [ ] `project`, `feature`, `task` fields preserved verbatim (not overwritten by RECORD)
 - [ ] All other top-level fields preserved verbatim
 
 `PASS` additionally:
@@ -170,7 +170,7 @@ Validation is split by **staging class**, determined by frontmatter — not by d
 - [ ] `loop` matches the current loop identity
 - [ ] `iter` matches the current or a prior iter number
 
-**Why frontmatter-based not directory-based**: an Ideation MEMORIZATION run produces both finding-routed scenarios (from `scenario_gap` evaluator findings — these carry `finding-id`) AND derivative scenarios (the leader's Step-4 enumeration — these do NOT carry `finding-id`). Both live in `staging/scenarios/`. A directory-based gate would force the derivative scenarios to carry finding metadata they don't have, blocking a valid PASS. The frontmatter discriminator lets both coexist.
+**Why frontmatter-based not directory-based**: an Ideation RECORD run produces both finding-routed scenarios (from `scenario_gap` evaluator findings — these carry `finding-id`) AND derivative scenarios (the leader's Step-4 enumeration — these do NOT carry `finding-id`). Both live in `staging/scenarios/`. A directory-based gate would force the derivative scenarios to carry finding metadata they don't have, blocking a valid PASS. The frontmatter discriminator lets both coexist.
 
 A file with `finding-id` lacking Type+Domain+Disposition is a gate 3a failure. A file without `finding-id` using Type/Domain frontmatter where the template doesn't declare it is a gate 3b failure (frontmatter contract violation).
 
@@ -184,18 +184,18 @@ A file with `finding-id` lacking Type+Domain+Disposition is a gate 3a failure. A
 - [ ] Every prior-iter `disposition: open` finding is reflected somewhere — either staged (Type-routed), or staged with `disposition: addressed`, or staged with `disposition: superseded`, or referenced in an `artifact_type: resolution-log` file. A prior-iter `open` finding that vanishes silently is a Stage-1-inheritance failure (also caught at EVALUATION; this is the second gate)
 - [ ] No constructive finding (`scenario_gap` / `checklist_gap`) from any prior iter is missing from the cumulative staging union
 
-### 5. Project-memory untouched (system-wide invariant — applies only when `loop ∈ {preparation, ideation, planning, execution}`)
+### 5. Memory untouched (system-wide invariant — applies only when `loop ∈ {preparation, ideation, planning, execution}`)
 
 When `loop ∈ {preparation, ideation, planning, execution}` — the manager checks for unauthorized writes under `.gobbi/projects/{project-name}/` outside `sessions/`. **Scoped diff to avoid false positives** from concurrent git/worktree activity:
 
-- [ ] List of paths the assistant **wrote** during MEMORIZATION (collected from the manager's spawn-time tool log, not from a raw filesystem snapshot) contains zero paths under `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,decisions,plans,references,reviews,reports,learnings,archive}/`
-- [ ] As a corroborating check: `git diff --name-only` (worktree-only, excluding `sessions/`) shows no path under those project-memory subdirectories that wasn't already modified at MEMORIZATION-start (compare against the pre-spawn `git status` snapshot the manager captures)
+- [ ] List of paths the assistant **wrote** during RECORD (collected from the manager's spawn-time tool log, not from a raw filesystem snapshot) contains zero paths under `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,decisions,plans,references,reviews,reports,learnings,archive}/`
+- [ ] As a corroborating check: `git diff --name-only` (worktree-only, excluding `sessions/`) shows no path under those memory subdirectories that wasn't already modified at RECORD-start (compare against the pre-spawn `git status` snapshot the manager captures)
 
-The dual-check (write-log + git-diff) eliminates the false-positive class where unrelated filesystem activity (IDE auto-save, git worktree operations) coincides with MEMORIZATION runtime. Only the assistant's actual write log is the authoritative signal; the git diff is corroboration.
+The dual-check (write-log + git-diff) eliminates the false-positive class where unrelated filesystem activity (IDE auto-save, git worktree operations) coincides with RECORD runtime. Only the assistant's actual write log is the authoritative signal; the git diff is corroboration.
 
 A non-empty assistant write log into forbidden paths is an **immediate stop-the-line** — the assistant violated the staging→Wrap-up boundary; the loop halts and the manager escalates to user through the active runtime's user-decision primitive before any further progress.
 
-**Wrap-up loop exemption**: when `loop = wrap-up`, this gate is **inverted**. The assistant IS expected to write to project memory (Wrap-up is the sole writer there). The manager validates Wrap-up's writes against [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing) instead — each write must trace back to a staged source per the routing table.
+**Wrap-up loop exemption**: when `loop = wrap-up`, this gate is **inverted**. The assistant IS expected to write to memory (Wrap-up is the sole writer there). The manager validates Wrap-up's writes against [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing) instead — each write must trace back to a staged source per the routing table.
 
 ### 6. Templates stamped
 
@@ -203,19 +203,19 @@ Every staging file's frontmatter is compared against its template at [`memory/te
 
 ### 7. Discussion-log integrity (read-only invariant)
 
-- [ ] `working/discussion-log.md`'s mtime is unchanged after MEMORIZATION (assistant must not write to it; only the manager appends during DISCUSSION)
+- [ ] `working/discussion-log.md`'s mtime is unchanged after RECORD (assistant must not write to it; only the manager appends during DISCUSSION)
 
 ---
 
 ## Failure Handling
 
-Same shape as [`workflow/evaluation.md` § Dual-system failure handling](evaluation.md#dual-system-failure-handling). The memorization assistant is single-system, but the validation-and-retry discipline is identical.
+Same shape as [`workflow/evaluation.md` § Dual-system failure handling](evaluation.md#dual-system-failure-handling). The RECORD assistant is single-system, but the validation-and-retry discipline is identical.
 
 ### Retry policy
 
 - **One retry** on: transient error / wall-clock exhaustion before first file written / malformed output rejected at any validation gate
-- **No retry** on: validation passed but content review revealed semantic problems (the assistant did the mechanical work right; semantics are a DISCUSSION concern, not a MEMORIZATION concern)
-- **No retry** on: project-memory boundary violation (gate 5) — this is a contract violation, not a transient failure; the assistant is restarted with a corrected scope, not silently re-run
+- **No retry** on: validation passed but content review revealed semantic problems (the assistant did the mechanical work right; semantics are a DISCUSSION concern, not a RECORD concern)
+- **No retry** on: memory boundary violation (gate 5) — this is a contract violation, not a transient failure; the assistant is restarted with a corrected scope, not silently re-run
 - Retries inherit the same prompt + inputs; no parameter tuning between attempts
 
 ### Degraded-mode policy
@@ -224,10 +224,10 @@ If after retry the assistant still fails:
 
 | Scenario | Manager action |
 |---|---|
-| Validation fails at gates 1–4 or 6–7 (mechanical or routing) | **Stop-the-line — fail-closed**: active runtime user decision — "MEMORIZATION assistant failed validation gate X (details). Options: (a) manual repair + re-validate (assistant or user writes the minimal transcript + session.json iter entry by hand, then gate re-runs), (b) halt the loop and re-enter DISCUSSION. There is no skip-MEMORIZATION option — every iter must persist an audit trail per § Why every-iter MEMORIZATION is mandatory." User decides between (a) and (b) |
-| Project-memory boundary violation (gate 5) | **Immediate stop-the-line**: active runtime user decision — "MEMORIZATION wrote to project memory (details). This violates the staging→Wrap-up invariant. Diff shown. Options: (a) revert the unauthorized write + retry MEMORIZATION, (b) halt the loop for investigation." No fallback "accept the write" option — Wrap-up's sole-writer guarantee is non-negotiable |
+| Validation fails at gates 1–4 or 6–7 (mechanical or routing) | **Stop-the-line — fail-closed**: active runtime user decision — "RECORD assistant failed validation gate X (details). Options: (a) manual repair + re-validate (assistant or user writes the minimal transcript + session.json iter entry by hand, then gate re-runs), (b) halt the loop and re-enter DISCUSSION. There is no skip-RECORD option — every iter must persist an audit trail per § Why every-iter RECORD is mandatory." User decides between (a) and (b) |
+| Memory boundary violation (gate 5) | **Immediate stop-the-line**: active runtime user decision — "RECORD wrote to memory (details). This violates the staging→Wrap-up invariant. Diff shown. Options: (a) revert the unauthorized write + retry RECORD, (b) halt the loop for investigation." No fallback "accept the write" option — Wrap-up's sole-writer guarantee is non-negotiable |
 
-The staging→Wrap-up boundary is the system-wide invariant; a silent acceptance of any violation would corrupt project memory ownership. Explicit stop-the-line preserves auditability.
+The staging→Wrap-up boundary is the system-wide invariant; a silent acceptance of any violation would corrupt memory ownership. Explicit stop-the-line preserves auditability.
 
 ---
 
@@ -243,7 +243,7 @@ The assistant's procedure branches on verdict, and the manager validates the rig
 
 ### Cumulative staging on PASS — the contract
 
-When iter `n` reaches `PASS`, MEMORIZATION stages the **union** of:
+When iter `n` reaches `PASS`, RECORD stages the **union** of:
 
 - (a) Every `disposition: open` and `disposition: addressed` finding from this iter
 - (b) Every `disposition: open` and `disposition: addressed` finding **carried forward from iter 1..n-1**, sourced by reading the prior iter per-perspective files directly
@@ -255,7 +255,7 @@ This guarantees no earlier-iter constructive finding silently disappears at PASS
 
 ### REVISE → PASS arc
 
-On a multi-iter `REVISE` → ... → `PASS` arc, the PASS iter's MEMORIZATION sources cumulatively from `evaluation/iter1/...` through `evaluation/iter{n}/...`. The assistant reads all prior per-perspective files at Step 6 pre-step; the manager validates the read register at gate 4.
+On a multi-iter `REVISE` → ... → `PASS` arc, the PASS iter's RECORD sources cumulatively from `evaluation/iter1/...` through `evaluation/iter{n}/...`. The assistant reads all prior per-perspective files at Step 6 pre-step; the manager validates the read register at gate 4.
 
 ---
 
@@ -272,7 +272,7 @@ This document does not duplicate those tables; it cites them. The manager applie
 
 ## Idempotency
 
-Re-running MEMORIZATION on the same iter (after a crash, partial write, or explicit re-invocation) MUST produce identical results — the manager validates idempotency by re-running on the same iter (crash recovery) without inserting duplicates.
+Re-running RECORD on the same iter (after a crash, partial write, or explicit re-invocation) MUST produce identical results — the manager validates idempotency by re-running on the same iter (crash recovery) without inserting duplicates.
 
 | Operation | Idempotent because |
 |---|---|
@@ -286,15 +286,15 @@ Re-running MEMORIZATION on the same iter (after a crash, partial write, or expli
 
 ## Iteration Caps
 
-MEMORIZATION itself has no separate iteration cap — it runs once per EVALUATION verdict, and the loop's iteration cap (`workflow.{loop}.maxIterations`, default 5) is enforced by EVALUATION's ITER / EXIT decision.
+RECORD itself has no separate iteration cap — it runs once per EVALUATION verdict, and the loop's iteration cap (`workflow.{loop}.maxIterations`, default 5) is enforced by EVALUATION's ITER / EXIT decision.
 
-The MEMORIZATION-level cap that matters is **retry**: one retry per iter on validation failure. After retry exhaustion the manager stops-the-line — there is no "iter 3 of memorization" concept.
+The RECORD-level cap that matters is **retry**: one retry per iter on validation failure. After retry exhaustion the manager stops-the-line — there is no "iter 3 of RECORD" concept.
 
 ---
 
 ## Output paths
 
-All MEMORIZATION writes are **session-scoped** plus own-loop fields in `session.json`. Assistant never touches project memory.
+All RECORD writes are **session-scoped** plus own-loop fields in `session.json`. Assistant never touches memory.
 
 | Path | Written by | When |
 |---|---|---|
@@ -314,7 +314,7 @@ Path conventions, full path inventory across both tiers, and template-to-directo
 - Path inventory + tier access matrix + template index → [`memory/memory-map.md`](../../memory/memory-map.md)
 - Type + Domain → staging routing, disposition values, slug + collision policy → [`evaluation/SKILL.md` § Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity)
 - Stage 1 inheritance / regression marking / stuck detection (read-once-here, applied-at-every-loop) → [`workflow/evaluation.md` § Iteration Inheritance](evaluation.md#iteration-inheritance-no-ledger--read-prior-iter-directly)
-- Where staging eventually lands (project memory) → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) (sole writer to project memory)
+- Where staging eventually lands (memory) → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) (sole writer to memory)
 - Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
 - Staging template inventory → [`memory/templates/`](../../memory/templates/)
 - Verdict aggregation in the state machine → [orchestration `SKILL.md` § Verdict aggregation](../SKILL.md#verdict-aggregation)

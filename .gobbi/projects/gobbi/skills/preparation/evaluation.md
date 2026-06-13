@@ -202,7 +202,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 | Tool | Use for |
 |---|---|
-| Read `wrap-up/SKILL.md § Staging → Project-memory routing` | Confirm every staged file's path is handled by the routing table |
+| Read `wrap-up/SKILL.md § Staging → Memory routing` | Confirm every staged file's path is handled by the routing table |
 | Read one staged skill as if you are an executor who has never seen the DISCUSSION | Identify what context is missing without the leader's session |
 
 ### Perspective-specific anti-patterns
@@ -262,9 +262,9 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 ### Seed scenarios with attached checklists
 
-**No Preparation write went directly to project memory (Wrap-up sole-writer contract)**
-- All `generate-now` outputs are staged under `sessions/{date}-{session-id}/2-preparation/staging/`, not written directly to `.gobbi/projects/{project-name}/skills/`, `features/`, or other project-memory paths
-- The Decisions log does not reference a direct project-memory write
+**No Preparation write went directly to memory (Wrap-up sole-writer contract)**
+- All `generate-now` outputs are staged under `sessions/{date}-{session-id}/2-preparation/staging/`, not written directly to `.gobbi/projects/{project-name}/skills/`, `features/`, or other memory paths
+- The Decisions log does not reference a direct memory write
 - `2-preparation/staging/` exists; `features/...` was not touched during Preparation
 
 **Every RE-IDEATE trigger was either caught and escalated or explicitly ruled out**
@@ -292,7 +292,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 | Tool | Use for |
 |---|---|
-| `find .gobbi/projects/{project-name}/skills/ -name "*.md"` | Check for any direct project-memory writes that bypassed staging |
+| `find .gobbi/projects/{project-name}/skills/ -name "*.md"` | Check for any direct memory writes that bypassed staging |
 | Check `2-preparation/staging/skills/` slugs against existing skills | Detect slug collisions before Wrap-up promotion |
 | Grep "RE-IDEATE" in preparation working draft | Confirm RE-IDEATE assessment is explicitly recorded, not silently skipped |
 
@@ -300,7 +300,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 | Anti-pattern | Correction |
 |---|---|
-| **Wrap-up sole-writer contract assumed without checking** | The sole-writer contract is a hard constraint. A `generate-now` decision that wrote directly to project memory is a constraint violation — flag `design_flaw` (Critical) |
+| **Wrap-up sole-writer contract assumed without checking** | The sole-writer contract is a hard constraint. A `generate-now` decision that wrote directly to memory is a constraint violation — flag `design_flaw` (Critical) |
 | **"No RE-IDEATE needed" without checking the Ideation design for unworkable premises** | RE-IDEATE classification requires comparing each gap's root cause against the Ideation design. A blanket "no RE-IDEATE" without that check is overconfident |
 
 ---

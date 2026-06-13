@@ -2,7 +2,7 @@
 
 Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `wrap-up`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for a Wrap-up Loop's session handoff.
 
-The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id}/5-wrap-up/outputs/` files (the handoff summary, shipped-summary, next-session-pointers, and any other artifact the Wrap-up assistant produced) **plus** the full set of project-memory promotions Wrap-up made. Wrap-up promotion targets span the entire project-memory surface (not only features/ + mistakes/):
+The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id}/5-wrap-up/outputs/` files (the handoff summary, shipped-summary, next-session-pointers, and any other artifact the Wrap-up assistant produced) **plus** the full set of memory promotions Wrap-up made. Wrap-up promotion targets span the entire memory surface (not only features/ + mistakes/):
 
 - `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans}/` — feature-scoped promotions
 - `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` — feature-scoped mistakes
@@ -38,7 +38,7 @@ Wrap-up evaluation is **non-skippable**. A wrap-up that consolidates incorrectly
 - No phantom claims — the wrap-up does not say "shipped X" when X was deferred
 
 **Every staging artifact from earlier loops is accounted for**
-- Each staging artifact is promoted to project memory OR explicitly marked "promoted to backlog instead"
+- Each staging artifact is promoted to memory OR explicitly marked "promoted to backlog instead"
 - `ls` on every loop's `staging/` directory matches the promotion record
 
 **No claim in the wrap-up is unsupported by a session artifact**
@@ -70,7 +70,7 @@ Wrap-up evaluation is **non-skippable**. A wrap-up that consolidates incorrectly
 
 ## Structure
 
-**Lens**: Is the **promoted memory** well-structured? Does it slot into existing project memory without breaking conventions?
+**Lens**: Is the **promoted memory** well-structured? Does it slot into existing memory without breaking conventions?
 
 ### Seed scenarios with attached checklists
 
@@ -102,9 +102,9 @@ Wrap-up evaluation is **non-skippable**. A wrap-up that consolidates incorrectly
 - The Type + Domain → destination routing (per `evaluation/SKILL.md` § Finding Metadata) was followed without improvisation
 - No staging file landed at a destination not in the routing table
 
-### Staging → project-memory routing (deterministic; Wrap-up MUST follow)
+### Staging → memory routing (deterministic; Wrap-up MUST follow)
 
-See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging--project-memory-routing) for the authoritative routing table. The evaluator's job here is to verify that every staging file's actual destination matches the table — not to maintain a separate copy. For each entry in `working/promotion-manifest.md`, cross-reference the destination against the SKILL.md routing table and flag any deviation.
+See [`wrap-up/SKILL.md` § Staging → Memory routing](SKILL.md#staging--memory-routing) for the authoritative routing table. The evaluator's job here is to verify that every staging file's actual destination matches the table — not to maintain a separate copy. For each entry in `working/promotion-manifest.md`, cross-reference the destination against the SKILL.md routing table and flag any deviation.
 
 ### Recommended verifications
 
@@ -255,7 +255,7 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 
 **Every staging artifact is promoted or explicitly backlogged**
 - Staging contents are diff-checked against promotion record
-- No silent drops between staging and project memory
+- No silent drops between staging and memory
 
 **Promoted memory does not contradict existing memory silently**
 - Promoted files that update / supersede existing memory have an explicit `supersedes:` reference (or equivalent project convention)
@@ -284,7 +284,7 @@ See [`wrap-up/SKILL.md` § Staging → Project-memory routing](SKILL.md#staging-
 - Stuck findings escalated to the user mid-session (recorded in the discussion log and the next iter's `disposition:` field) are accounted for explicitly
 - Regression findings (introduced by REVISE) are tagged in the disposition record
 
-**Recurring findings are promoted to project memory**
+**Recurring findings are promoted to memory**
 - Any finding that recurred (stuck) across iterations becomes a `mistakes/` candidate
 - Recurring patterns across loops (same symptom in Planning + Execution) become `features/{feature-name}/decisions/` or project-level rule candidates
 

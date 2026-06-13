@@ -52,7 +52,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 - "Success" criteria are observation-level, not vibe-level — they survive being checked by an outsider
 
 **Prior-art search was real, not nominal**
-- Search ran across project memory, codebase, adjacent libraries, and the broader community (not just "we did this differently before")
+- Search ran across memory, codebase, adjacent libraries, and the broader community (not just "we did this differently before")
 - Negative results are recorded (what was searched, what wasn't found) so absence of citation is auditable
 - Top 3 closest prior arts are characterized: why each isn't a fit / where each is borrowed-from
 
@@ -61,7 +61,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 | Tool | Use for |
 |---|---|
 | `git log` / file existence | Confirm "prior attempts" claims (commits / branches / PRs the artifact cites) actually exist |
-| Grep into existing project memory | Confirm the framed problem is not already solved or already deferred |
+| Grep into existing memory | Confirm the framed problem is not already solved or already deferred |
 | Read Scope Contract against project's `features/{feature-name}/` | Detect contract overlap with active features |
 
 ### Perspective-specific anti-patterns

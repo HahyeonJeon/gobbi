@@ -43,9 +43,9 @@ Every delegation prompt contains a numbered Load Directives block. The subagent 
 
 Every spawned agent reports with an explicit status enum at the end of its response. The enum is the last thing the subagent reads in the prompt before producing output (recency bias). The manager parses the status line first and dispatches deterministically.
 
-> **Any delegation prompt for a MEMORIZATION sub-phase MUST include `record/SKILL.md` in tier 3 (Skills) of the Load Directives block.**
+> **Any delegation prompt for a RECORD sub-phase MUST include `record/SKILL.md` in tier 3 (Skills) of the Load Directives block.**
 
-MEMORIZATION is a specialized sub-phase with its own memory-tier boundaries, staging rules, and idempotency contract. A fresh subagent dispatched to run MEMORIZATION cannot operate correctly without loading `record/SKILL.md`. This is a hard gate: a delegation prompt that omits `record/SKILL.md` from the Skills tier when the sub-phase is MEMORIZATION is a malformed prompt — the manager must add it before dispatching.
+RECORD is a specialized sub-phase with its own memory-tier boundaries, staging rules, and idempotency contract. A fresh subagent dispatched to run RECORD cannot operate correctly without loading `record/SKILL.md`. This is a hard gate: a delegation prompt that omits `record/SKILL.md` from the Skills tier when the sub-phase is RECORD is a malformed prompt — the manager must add it before dispatching.
 
 ---
 
@@ -113,11 +113,11 @@ Mandatory in every delegation prompt, ordered top-to-bottom:
 
 **No inheritance — on a FRESH spawn.** Even if the manager already loaded `principles` minutes earlier, every fresh subagent must load it again. There is no session inheritance. This holds for every first spawn. A **continuation** is the one exception: a continued teammate already loaded the full stack on its first turn and carries it forward, so a continuation turn sends a delta-brief, not the full Load Directives block again — see [§ Continue vs Fresh](#continue-vs-fresh).
 
-**MEMORIZATION hard gate.** When the delegated phase is MEMORIZATION (or includes a MEMORIZATION sub-phase), `record/SKILL.md` MUST appear in tier 3 (Skills). The memorization skill defines the memory-tier access matrix, staging rules, idempotency contract, and exit checklist that the sub-phase agent must follow. Omitting it produces an agent that cannot operate the sub-phase correctly. Per-role templates for `assistant`, `leader`, and `executor` include a placeholder for this entry; see the templates in [`templates/`](templates/).
+**RECORD hard gate.** When the delegated phase is RECORD (or includes a RECORD sub-phase), `record/SKILL.md` MUST appear in tier 3 (Skills). The record skill defines the memory-tier access matrix, staging rules, idempotency contract, and exit checklist that the sub-phase agent must follow. Omitting it produces an agent that cannot operate the sub-phase correctly. Per-role templates for `assistant`, `leader`, and `executor` include a placeholder for this entry; see the templates in [`templates/`](templates/).
 
-**Project-memory standard gate.** Any delegation that **writes or evaluates project memory** MUST load `memory/rules.md` in tier 3 (Skills) alongside `record/SKILL.md`. `memory/rules.md` is the naming / frontmatter / structure standard — the rules a memory file's name, frontmatter, and scope must obey; without it the standard is advisory-only and structural drift recurs. The `leader`, `executor`, and `assistant` templates carry the `memory/rules.md` line right after their `record/SKILL.md` line; the `evaluator` template carries it in tier 3 for delegations that judge project-memory artifacts against the standard (the evaluator has no `record/SKILL.md` line).
+**Memory standard gate.** Any delegation that **writes or evaluates memory** MUST load `memory/rules.md` in tier 3 (Skills) alongside `record/SKILL.md`. `memory/rules.md` is the naming / frontmatter / structure standard — the rules a memory file's name, frontmatter, and scope must obey; without it the standard is advisory-only and structural drift recurs. The `leader`, `executor`, and `assistant` templates carry the `memory/rules.md` line right after their `record/SKILL.md` line; the `evaluator` template carries it in tier 3 for delegations that judge memory artifacts against the standard (the evaluator has no `record/SKILL.md` line).
 
-**Session-write path discipline.** When a subagent's task involves session writes (notes, staging files, project memory drafts), the delegation prompt must remind the subagent to follow the qualified write-path rule: use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. See [`git/SKILL.md` § Memory Access Matrix](../git/SKILL.md#memory-access-matrix) for the full qualified rule.
+**Session-write path discipline.** When a subagent's task involves session writes (notes, staging files, memory drafts), the delegation prompt must remind the subagent to follow the qualified write-path rule: use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. See [`git/SKILL.md` § Memory Access Matrix](../git/SKILL.md#memory-access-matrix) for the full qualified rule.
 
 ---
 
@@ -125,7 +125,7 @@ Mandatory in every delegation prompt, ordered top-to-bottom:
 
 A subagent does not have to be fresh every time. The manager may **continue** the same agent across steps instead of re-spawning it — re-sending a small delta-brief to an agent that already holds the problem context. This cuts the redundant re-loading and re-reading a fresh spawn pays on every dispatch.
 
-**Mechanism — Claude Code Agent Teams.** A continued agent is a *teammate*: a persistent, independent Claude Code session re-addressed by name via `SendMessage`, with its own context preserved across messages. Agent Teams is experimental and off by default — the manager confirms `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (Claude Code v2.1.32+) before continuing. Continuation is **preferred-where-safe, with a fresh-spawn fallback**: if the flag is unset, or the teammate has died, the manager fresh-spawns with a full brief. Teammates cost more in general — token cost scales linearly with teammate count — so the token win holds **only** in the sequential single-persistent-teammate pattern, not in parallel fan-out. Teammates do NOT survive `/compact`, `/clear`, or resume: at any of those, the in-process teammate is gone and the manager must fresh-spawn and re-prime from durable session memory.
+**Mechanism — Claude Code Agent Teams.** A continued agent is a *teammate*: a persistent, independent Claude Code session re-addressed by name via `SendMessage`, with its own context preserved across messages. Agent Teams is experimental and off by default — the manager confirms `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (Claude Code v2.1.32+) before continuing. Continuation is **preferred-where-safe, with a fresh-spawn fallback**: if the flag is unset, or the teammate has died, the manager fresh-spawns with a full brief. Teammates cost more in general — token cost scales linearly with teammate count — so the token win holds **only** in the sequential single-persistent-teammate pattern, not in parallel fan-out. Teammates do NOT survive `/compact`, `/clear`, or resume: at any of those, the in-process teammate is gone and the manager must fresh-spawn and re-prime from durable session record.
 
 **Native Codex default.** Codex does not currently expose this Claude Code Agent Teams `SendMessage` continuation surface in Gobbi's native contract. In native Codex, leader / executor / assistant dispatches are fresh specialist spawns unless the user explicitly authorizes a future Codex continuation mechanism. Fresh Codex specialists always receive the full Load Directives stack.
 
@@ -139,7 +139,7 @@ A subagent does not have to be fresh every time. The manager may **continue** th
 | **leader** — Ideation→Preparation→Planning (across loops) | **Claude Code: CONTINUE best-effort** while team + session stay live; degrades to FRESH after `/compact`/`/clear`/resume. **Codex: FRESH** | Cross-loop continuation is live-session-only and not a Codex readiness assumption. |
 | **executor** — task NN→NN+1, **shared subsystem**, under the saturation cap | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | Avoids re-learning in Claude Code; native Codex uses full re-prime. (F1 predicate below applies only to Claude Code continuation.) |
 | **executor** — task NN→NN+1, **disjoint subsystem OR cap reached** | **FRESH** (default) | Bounds context-rot; the fresh fallback is cheap because state is carried via files. |
-| **assistant** — MEMORIZATION across loops, or multi-step exploration | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | Claude Code can carry session-synthesis context as a teammate; native Codex uses fresh assistant support with full context. |
+| **assistant** — RECORD across loops, or multi-step exploration | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | Claude Code can carry session-synthesis context as a teammate; native Codex uses fresh assistant support with full context. |
 | **evaluator** — any reuse / share / teammate | **FORBIDDEN to continue, share, or be made a teammate** | Producer/evaluator separation + dual-system anti-groupthink independence is non-negotiable. A continued evaluator carries its own prior verdict → confirmation bias; a teammate-evaluator is reachable in the team mailbox → contamination. The evaluator is the SOLE fresh, never-teammate, report-back subagent — kept OUT of the team. |
 
 ### F1 — the executor continue predicate
@@ -270,11 +270,11 @@ The hook reads four headers via case-insensitive line-anchored regex `^Your (pha
 | Header | Value shape | Required | Purpose |
 |---|---|---|---|
 | `Your phase:` | `ideation` \| `preparation` \| `planning` \| `execution` \| `wrap-up` (evaluator suffixes `-eval`; research uses `research`) | yes | Routes the entry into `session.json.agents[].phase` and the matching workflow step. |
-| `Your iteration:` | positive integer (the loop iter inside the step; `1` for first pass) | yes | Stamps `agents[].iter`; powers per-iter session-memory commit cadence. |
+| `Your iteration:` | positive integer (the loop iter inside the step; `1` for first pass) | yes | Stamps `agents[].iter`; powers per-iter session-record commit cadence. |
 | `Your sub-step:` | slug or letter (e.g., `evaluation-claude`, `A`, `B`, `claude-iter1-clean-1of3`) | when more than one spawn shares the same `(step, phase, iter)` | Disambiguates parallel spawns in the same iteration (e.g., dual-system evaluators, batched executors). |
 | `Your step:` | step number `1`–`6` matching the canonical state machine | optional | Manager may include for self-documentation; hook prefers `phase` when both are present. |
 
-These four headers are the **only** machine-readable contract between the delegation prompt and the hook. Everything else in the prompt (Identity line, Task Description, Context, Load Directives, etc.) is for the subagent. Per-role templates ship the headers pre-filled with `<<slot>>` markers; the manager fills them at dispatch time as part of the same template-filling pass that resolves every other slot. The manager (or the hook, when it can resolve the `session.json`) records `agents[]` entries; omitting the headers does not break the subagent, but it leaves those entries with `phase` / `iter` / `sub-step` set to `null`, which downstream session-memory queries treat as missing data.
+These four headers are the **only** machine-readable contract between the delegation prompt and the hook. Everything else in the prompt (Identity line, Task Description, Context, Load Directives, etc.) is for the subagent. Per-role templates ship the headers pre-filled with `<<slot>>` markers; the manager fills them at dispatch time as part of the same template-filling pass that resolves every other slot. The manager (or the hook, when it can resolve the `session.json`) records `agents[]` entries; omitting the headers does not break the subagent, but it leaves those entries with `phase` / `iter` / `sub-step` set to `null`, which downstream session-record queries treat as missing data.
 
 ### Serialization safety — `flock -x` on session.json
 
@@ -367,7 +367,7 @@ If a specific Claude Code task calls for a model different from the role's defau
 
 ## Agent Roster
 
-Canonical phase list: `AGENTS.md` plus `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`. All agent + skill docs align to Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (Evaluation and Memorization are sub-phases that run inside each loop). Drift from this list is a bug.
+Canonical phase list: `AGENTS.md` plus `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`. All agent + skill docs align to Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (Evaluation and RECORD are sub-phases that run inside each loop). Drift from this list is a bug.
 
 The manager delegates to these agent types. Each has a distinct role — understanding boundaries prevents misrouting. Definitions live at `.gobbi/projects/gobbi/agents/{role}.md`. Runtime wrappers point back to those canonical prompts: `.claude/agents/{role}.md` for Claude Code, `.codex/agents/{role}.toml` for Codex.
 
@@ -383,4 +383,4 @@ The manager delegates to these agent types. Each has a distinct role — underst
 
 ## Subtask Records
 
-After each subagent returns, the manager extracts the delegation prompt and final result from the JSONL transcript and records them in session memory. Subagents do not need subtask doc instructions in their delegation prompt — their final response is the record.
+After each subagent returns, the manager extracts the delegation prompt and final result from the JSONL transcript and records them in session record. Subagents do not need subtask doc instructions in their delegation prompt — their final response is the record.

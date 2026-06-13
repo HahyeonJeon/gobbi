@@ -2,9 +2,9 @@
 
 How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead.
 
-**The manager MUST NOT evaluate. It spawns exactly two evaluator subagents (one per system), collects their per-perspective outputs, reconciles the two systems, and emits a verdict** — it never does the evaluation itself (reinforced at § Spawning the Evaluators: "spawns exactly two evaluator agents in parallel"). Writing findings or stamping a verdict without two evaluator outputs is a workflow breach (see `mistakes/manager-skipped-dual-system-eval.md`). The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `MEMORIZATION` runs; `MEMORIZATION` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § MEMORIZATION Phase](ideation.md#record-phase-delegated-to-assistant-runs-every-iter)).
+**The manager MUST NOT evaluate. It spawns exactly two evaluator subagents (one per system), collects their per-perspective outputs, reconciles the two systems, and emits a verdict** — it never does the evaluation itself (reinforced at § Spawning the Evaluators: "spawns exactly two evaluator agents in parallel"). Writing findings or stamping a verdict without two evaluator outputs is a workflow breach (see `mistakes/manager-skipped-dual-system-eval.md`). The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `RECORD` runs; `RECORD` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § RECORD Phase](ideation.md#record-phase-delegated-to-assistant-runs-every-iter)).
 
-All evaluator output is **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/evaluation/`. Evaluators never write to project memory.
+All evaluator output is **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/evaluation/`. Evaluators never write to memory.
 
 ---
 
@@ -117,14 +117,14 @@ Not all divergences are equal:
 
 | Divergence | Example | Manager action |
 |---|---|---|
-| **Minor** | `PASS` ↔ `REVISE` | Auto-proceed with pessimistic union; the divergence summary is captured at MEMORIZATION in the canonical artifact's Evaluation summary section |
-| **Major** | `PASS` ↔ `FAIL`, `REVISE` ↔ `FAIL` | **Stop-the-line**: surface divergence to user through the active runtime's user-decision primitive before any further loop progress; user decides which verdict to honor. The user's decision is captured in the manager's user-decision transcript and in the canonical Evaluation summary at MEMORIZATION |
+| **Minor** | `PASS` ↔ `REVISE` | Auto-proceed with pessimistic union; the divergence summary is captured at RECORD in the canonical artifact's Evaluation summary section |
+| **Major** | `PASS` ↔ `FAIL`, `REVISE` ↔ `FAIL` | **Stop-the-line**: surface divergence to user through the active runtime's user-decision primitive before any further loop progress; user decides which verdict to honor. The user's decision is captured in the manager's user-decision transcript and in the canonical Evaluation summary at RECORD |
 
 Major divergences mean the two systems disagree on whether the artifact is acceptable at all. That is exactly the signal the dual-system mandate exists to surface. Major divergence is a **safety gate — it interrupts in BOTH modes (NOT mode-split)**; contrast the routine-triage sites (§ Iteration Caps / § Stuck detection / § Regression marking). The Minor (`PASS` ↔ `REVISE`) row keeps auto-proceeding.
 
 ### Where divergence is recorded
 
-Per-system per-perspective files already capture each system's findings and verdict — **no separate `divergence.md` is written**. The cross-system reconciliation summary (which perspective verdicts diverged, how the pessimistic union resolved, and the user's decision in major-divergence cases) is written into the canonical artifact's **Evaluation summary** section by the `assistant` during `MEMORIZATION` (PASS only). The user's decision in major-divergence cases is also captured in the manager's user-decision transcript, which is preserved at MEMORIZATION via the per-iter transcript jsonl.
+Per-system per-perspective files already capture each system's findings and verdict — **no separate `divergence.md` is written**. The cross-system reconciliation summary (which perspective verdicts diverged, how the pessimistic union resolved, and the user's decision in major-divergence cases) is written into the canonical artifact's **Evaluation summary** section by the `assistant` during `RECORD` (PASS only). The user's decision in major-divergence cases is also captured in the manager's user-decision transcript, which is preserved at RECORD via the per-iter transcript jsonl.
 
 ---
 
@@ -132,7 +132,7 @@ Per-system per-perspective files already capture each system's findings and verd
 
 After per-perspective reconciliation across the seven perspectives **and Stage 3 (Overall)**, the manager aggregates across all eight verdicts (7 perspectives + Overall) to produce the loop's verdict:
 
-| Across all eight | Loop verdict | Post-MEMORIZATION transition |
+| Across all eight | Loop verdict | Post-RECORD transition |
 |---|---|---|
 | All `PASS` | `PASS` | Exit the loop; advance to the next step |
 | Otherwise (any `REVISE`, no `FAIL`) | `REVISE` | Re-enter `DISCUSSION` with findings as new input; iter increments |
@@ -142,13 +142,13 @@ The any-`FAIL` escalation is a **safety gate — it interrupts in BOTH modes (NO
 
 Overall (Stage 3) is given equal weight in aggregation — a `REVISE` from Overall is a `REVISE` for the loop, even if all seven per-perspective verdicts pass. Cross-cutting issues that only emerge holistically are exactly what Stage 3 is designed to surface.
 
-**Every verdict — `PASS`, `REVISE`, or `FAIL` — advances to MEMORIZATION first.** MEMORIZATION preserves the iteration's transcript and updates `session.json.workflow.{loop}.iterations[]` regardless of outcome; only on `PASS` does it additionally write the canonical artifact and staging directories. The `Post-MEMORIZATION transition` column above describes what happens **after** MEMORIZATION runs.
+**Every verdict — `PASS`, `REVISE`, or `FAIL` — advances to RECORD first.** RECORD preserves the iteration's transcript and updates `session.json.workflow.{loop}.iterations[]` regardless of outcome; only on `PASS` does it additionally write the canonical artifact and staging directories. The `Post-RECORD transition` column above describes what happens **after** RECORD runs.
 
 ---
 
-## Routing Findings to MEMORIZATION
+## Routing Findings to RECORD
 
-The manager passes all evaluator findings to the `assistant` agent in the next `MEMORIZATION` phase. Per the [Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) defined in the evaluator skill, the assistant routes on `PASS` to session staging:
+The manager passes all evaluator findings to the `assistant` agent in the next `RECORD` phase. Per the [Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) defined in the evaluator skill, the assistant routes on `PASS` to session staging:
 
 | Finding type | Session staging destination (`PASS` only) |
 |---|---|
@@ -157,9 +157,9 @@ The manager passes all evaluator findings to the `assistant` agent in the next `
 | `design_flaw`, `assumption_risk` | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` |
 | `general` with citable external pattern | `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` |
 
-On `REVISE`, MEMORIZATION preserves the transcript + iter entry in `session.json` but does **not** stage findings — those wait for the eventual `PASS` iteration's MEMORIZATION run. On `FAIL`, the loop halts before staging.
+On `REVISE`, RECORD preserves the transcript + iter entry in `session.json` but does **not** stage findings — those wait for the eventual `PASS` iteration's RECORD run. On `FAIL`, the loop halts before staging.
 
-Wrap-up later promotes the `staging/` directory to project memory at `features/{feature-name}/...`. The manager never writes directly to project memory.
+Wrap-up later promotes the `staging/` directory to memory at `features/{feature-name}/...`. The manager never writes directly to memory.
 
 ---
 
@@ -267,7 +267,7 @@ When the cap is reached without `PASS`, the manager's response is mode-specific 
 
 ## Output paths
 
-All evaluator writes are **session-scoped**. Evaluators never touch project memory.
+All evaluator writes are **session-scoped**. Evaluators never touch memory.
 
 | Path | Written by | Written |
 |---|---|---|
@@ -300,7 +300,7 @@ sessions/{date}-{session-id}/{N}-{loop}/evaluation/
 - `{system}` — `claude` or `codex` (the system running this evaluator instance)
 - `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`); the holistic Stage 3 output uses the fixed filename `overall.md`
 
-The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` is bootstrapped by the manager before spawning evaluators. Cross-system divergence is **derived at MEMORIZATION** by comparing per-system files; no separate divergence file is written.
+The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` is bootstrapped by the manager before spawning evaluators. Cross-system divergence is **derived at RECORD** by comparing per-system files; no separate divergence file is written.
 
 ---
 
@@ -308,7 +308,7 @@ The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{syste
 
 - Evaluator agent procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) → [`evaluation/SKILL.md`](../../evaluation/SKILL.md)
 - Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
-- Memorization synthesis → [`workflow/record.md`](record.md), [`record/SKILL.md`](../../record/SKILL.md)
-- Wrap-up's project-memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
+- RECORD synthesis → [`workflow/record.md`](record.md), [`record/SKILL.md`](../../record/SKILL.md)
+- Wrap-up's memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Verdict aggregation rules in the state machine → [orchestration `SKILL.md` § Verdict aggregation](../SKILL.md#verdict-aggregation)
 - Auto-Mode evaluation discipline (manager-never-asks / manager-never-evaluates / auto-iterate-no-routine-triage / safety-gate carve-out) → [`auto-mode.md` § Evaluation discipline (§7)](../auto-mode.md)

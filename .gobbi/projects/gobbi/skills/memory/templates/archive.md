@@ -1,12 +1,12 @@
 # `archive/`
 
-**Holding area for terminal artifacts moved here in full** — shipped backlogs, superseded designs, retired features, superseded mistakes, and other project-memory files that have reached a terminal state. Active files stay in their active directories until they reach a terminal state; this directory holds the actual moved files (frontmatter + body intact). Each file in `archive/` is a complete artifact, not a stub or pointer.
+**Holding area for terminal artifacts moved here in full** — shipped backlogs, superseded designs, retired features, superseded mistakes, and other memory files that have reached a terminal state. Active files stay in their active directories until they reach a terminal state; this directory holds the actual moved files (frontmatter + body intact). Each file in `archive/` is a complete artifact, not a stub or pointer.
 
 ## Lifecycle (Wrap-up direct write)
 
-This template is written **directly by Wrap-up's MEMORIZATION** to its project-memory destination — there is no loop-MEMORIZATION staging path. Wrap-up performs the move when a session-level event triggers archival (a backlog ships, a design is superseded, a feature retires) and stamps the archival frontmatter additions described below.
+This template is written **directly by Wrap-up's RECORD** to its memory destination — there is no loop-RECORD staging path. Wrap-up performs the move when a session-level event triggers archival (a backlog ships, a design is superseded, a feature retires) and stamps the archival frontmatter additions described below.
 
-Wrap-up is the sole writer; loop MEMORIZATION (Ideation / Planning / Execution) never writes to this destination.
+Wrap-up is the sole writer; loop RECORD (Ideation / Planning / Execution) never writes to this destination.
 
 ---
 

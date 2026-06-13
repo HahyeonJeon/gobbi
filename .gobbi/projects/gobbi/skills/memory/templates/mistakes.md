@@ -6,17 +6,17 @@
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` **with frontmatter `mistake-candidate: true`**. (Mistakes are routed through `staging/decisions/` with a frontmatter flag rather than a dedicated subdirectory; the flag tells Wrap-up to promote to `mistakes/` instead of `decisions/`.) Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` **with frontmatter `mistake-candidate: true`**. (Mistakes are routed through `staging/decisions/` with a frontmatter flag rather than a dedicated subdirectory; the flag tells Wrap-up to promote to `mistakes/` instead of `decisions/`.) Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
-- Immediately during any loop's MEMORIZATION when the user corrected an approach or the loop discovered a non-obvious failure mode.
-- During **Wrap-up** MEMORIZATION when cross-loop patterns reveal a recurring trap.
+- Immediately during any loop's RECORD when the user corrected an approach or the loop discovered a non-obvious failure mode.
+- During **Wrap-up** RECORD when cross-loop patterns reveal a recurring trap.
 
 A correction not recorded is a correction repeated across sessions. Mistakes are the highest-value persistent memory in the system.
 
@@ -25,7 +25,7 @@ A correction not recorded is a correction repeated across sessions. Mistakes are
 - **Project-level (default):** `.gobbi/projects/{project-name}/mistakes/` — for traps that transcend any single feature (the common case; `scope: project`, `feature: null`).
 - **Feature-level:** `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` — when the trap is specific to one value-feature (`scope: feature`, `feature: {feature-name}`).
 
-Mistakes are a **Both**-scope type (design §2.5, [`rules.md` § 3](../rules.md)). A feature-specific trap lives in that feature's own `mistakes/` subdir — NOT in the project `mistakes/` with a `feature:` tag. Wrap-up routes a `mistake-candidate: true` staging file to `features/{feature-name}/mistakes/` (feature-scope) or `mistakes/` (project-scope) per the user-confirmed scope (see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing)).
+Mistakes are a **Both**-scope type (design §2.5, [`rules.md` § 3](../rules.md)). A feature-specific trap lives in that feature's own `mistakes/` subdir — NOT in the project `mistakes/` with a `feature:` tag. Wrap-up routes a `mistake-candidate: true` staging file to `features/{feature-name}/mistakes/` (feature-scope) or `mistakes/` (project-scope) per the user-confirmed scope (see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
 ## File naming
 
@@ -86,4 +86,4 @@ The agent loading this skill reads `critical` and `high` mistakes before startin
 
 ## Promotion from corrections
 
-When the user corrects an approach during DISCUSSION, the manager flags it as a candidate mistake. The assistant in MEMORIZATION decides whether the correction generalizes (mistake-worthy) or was a one-off (record in `notes/` or the canonical artifact only). Mistakes are for patterns that will recur; not every correction needs to graduate.
+When the user corrects an approach during DISCUSSION, the manager flags it as a candidate mistake. The assistant in RECORD decides whether the correction generalizes (mistake-worthy) or was a one-off (record in `notes/` or the canonical artifact only). Mistakes are for patterns that will recur; not every correction needs to graduate.

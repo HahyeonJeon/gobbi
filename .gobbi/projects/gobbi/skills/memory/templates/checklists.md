@@ -6,18 +6,18 @@
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md`. Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
-- During **Ideation** MEMORIZATION: append new checklist items from Ideation Sub-step D (Design) enumeration.
+- During **Ideation** RECORD: append new checklist items from Ideation Sub-step D (Design) enumeration.
 - During EVALUATION's **`checklist_gap` finding** routing: append the missing item surfaced by the evaluator Stage 1 Frame Build.
-- During **Execution** MEMORIZATION: update checklist item status from `pending` → `implemented` when the corresponding work ships.
+- During **Execution** RECORD: update checklist item status from `pending` → `implemented` when the corresponding work ships.
 
 ## Location
 
@@ -105,7 +105,7 @@ implemented_in: {changelog path} | null
 
 ## Anchor discipline
 
-Every checklist item must have an anchor — either a reference insight slug from `references/` or the literal string `novel`. Items without anchors are unanchored and become noise. The Step 4 of Ideation enforces this; the assistant carries it through MEMORIZATION.
+Every checklist item must have an anchor — either a reference insight slug from `references/` or the literal string `novel`. Items without anchors are unanchored and become noise. The Step 4 of Ideation enforces this; the assistant carries it through RECORD.
 
 ## Item-status lifecycle
 

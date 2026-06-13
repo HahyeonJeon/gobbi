@@ -24,7 +24,7 @@ sessions/{date}-{session-id}/                  ← session root
 │   └── {role}-{agentId}.jsonl          one immutable file per agent run,
 │                                        accumulating across ALL loops by distinct
 │                                        agentId, never overwritten.
-│                                   Copied by the assistant at MEMORIZATION.
+│                                   Copied by the assistant at RECORD.
 │                                   Session-scoped, gitignored, never promoted,
 │                                   removed at worktree cleanup. NO per-loop transcripts/.
 └── {N}-{loop}/                   number-prefixed loop dir (one per workflow loop):
@@ -112,7 +112,7 @@ slots.
 | `working/` | Mutable scratch: `draft-iter{n}.md` (WORK draft), `discussion-log.md` (append-only AskUserQuestion journal), `research/{slug}.md` (pre-staging external refs) | executor / leader (drafts, research); manager (discussion-log) | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
 | `evaluation/` | `iter{n}/{claude,codex}/{perspective}.md` + `overall.md` — per-iter dual-system evaluation output | evaluator | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
 | `staging/` | Typed-finding stagings — the **only** Wrap-up promotion source | executor / leader / assistant | At loop/task entry | Session-scoped, gitignored; **promoted** by Wrap-up into tracked project/feature memory |
-| `outputs/` | PASS-only loop output; `{free-filename}.md` carrying the Artifact frontmatter schema | assistant (MEMORIZATION, PASS only) | On PASS (`--pass`) | Session-scoped, gitignored, never promoted, removed at cleanup |
+| `outputs/` | PASS-only loop output; `{free-filename}.md` carrying the Artifact frontmatter schema | assistant (RECORD, PASS only) | On PASS (`--pass`) | Session-scoped, gitignored, never promoted, removed at cleanup |
 
 `working/research/` is created together with `working/` at every loop/task entry.
 `outputs/` is created only on a PASS iteration (the scaffold script's `--pass`
@@ -150,7 +150,7 @@ verified against.
   manager's file is `manager-{sessionId}.jsonl` (its id is the session id).
 - Each agent's transcript **accumulates across all loops** by its distinct
   `agentId`; it is never overwritten.
-- The assistant **copies** transcripts into `transcripts/` at MEMORIZATION.
+- The assistant **copies** transcripts into `transcripts/` at RECORD.
 - Transcripts are **gitignored, session-scoped, never promoted, and removed at
   worktree cleanup**. Promoting a transcript is a constraint violation.
 - The scaffold script **never** creates `transcripts/`. The manager creates it in
@@ -182,10 +182,10 @@ verified against.
 
 - `sessions/` is gitignored (`.gitignore:21`), worktree-local, and removed at
   worktree cleanup. Nothing under `sessions/` survives the session by itself.
-- The per-iter "commit session memory" cadence commits **no** session content,
+- The per-iter "commit session record" cadence commits **no** session content,
   because the tree is gitignored. Iteration boundaries are recorded in
   `session.json.workflow.{loop}.iterations[]`, not in git.
-- Durable cross-session memory exists **only** via Wrap-up promotion: Wrap-up
+- Durable memory exists **only** via Wrap-up promotion: Wrap-up
   copies promotable `staging/` content into tracked `features/`, `mistakes/`,
   `rules/`, `design/`, `notes/`, `backlogs/`, etc. Only promoted content survives.
 
@@ -199,7 +199,7 @@ verified against.
 - **F-P2**: the exclusion targets `transcripts/` (and `working/`, `evaluation/`,
   `outputs/`) — it does **not** exclude all non-loop dirs. `interview/staging/`
   remains a **valid** promotion source: in mature-project reruns the interview
-  writes to its `staging/`, not directly to project memory, and Wrap-up must
+  writes to its `staging/`, not directly to memory, and Wrap-up must
   enumerate it. Do NOT over-narrow the rule to "workflow-loop `staging/` only" in a
   way that drops `interview/staging/`.
 

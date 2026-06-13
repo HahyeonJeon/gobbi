@@ -1,48 +1,48 @@
 ---
 name: interview
-description: MUST load for `/gobbi interview` or sparse project memory. Runs bootstrap interview and creates project memory and skills.
+description: MUST load for `/gobbi interview` or sparse memory. Runs bootstrap interview and creates memory and skills.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 ---
 
 # Interview
 
-Skill for the **manager** conducting a structured Socratic interview with the user (the project's client) to concretize project understanding, populate project memory, and generate project-specific skills.
+Skill for the **manager** conducting a structured Socratic interview with the user (the project's client) to concretize project understanding, populate memory, and generate project-specific skills.
 
 The Interview skill is **manager-direct** — the manager owns user-facing exchanges through the active runtime's user-decision primitive. The `leader` is spawned occasionally during waves for codebase / git / reference research, but the dialogue itself is between manager and user.
 
 **Goals**:
 1. Concretize what the project and its features actually are (not what the user claims they are)
-2. Generate project memory artifacts under `.gobbi/projects/{project-name}/` (README, design, decisions, features, mistakes, references)
+2. Generate memory artifacts under `.gobbi/projects/{project-name}/` (README, design, decisions, features, mistakes, references)
 3. Generate project-specific skills under `.gobbi/projects/{project-name}/skills/{skill-name}/SKILL.md` that codify the conventions, quality bars, and patterns surfaced during the interview
 
-The Interview skill is **not** part of the standard 6-step workflow (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up). It runs alongside as a discovery / bootstrap pass — once or repeatedly across a project's lifetime — to keep project memory rich enough that downstream workflows can operate on solid context.
+The Interview skill is **not** part of the standard 6-step workflow (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up). It runs alongside as a discovery / bootstrap pass — once or repeatedly across a project's lifetime — to keep memory rich enough that downstream workflows can operate on solid context.
 
 ---
 
 ## Memory Access Matrix
 
-The agent in the manager role conducting the interview MUST observe these tier boundaries. The access mode depends on whether the project is in **bootstrap mode** (project memory empty) or **mature mode** (project memory already exists).
+The agent in the manager role conducting the interview MUST observe these tier boundaries. The access mode depends on whether the project is in **bootstrap mode** (memory empty) or **mature mode** (memory already exists).
 
-**Bootstrap detection** (3-tier — mirrors the project-memory baseline check in `gobbi/SKILL.md` § session bootstrap):
+**Bootstrap detection** (3-tier — mirrors the memory baseline check in `gobbi/SKILL.md` § session bootstrap):
 
 | Tier | Condition | Interview mode |
 |---|---|---|
-| **Empty** | No `README.md`, no `design/`, no `features/` directory with content | Bootstrap mode — direct project-memory writes apply |
+| **Empty** | No `README.md`, no `design/`, no `features/` directory with content | Bootstrap mode — direct memory writes apply |
 | **Sparse** | Has `README.md` OR a skeleton `design/`, but no `features/` directory with content | Bootstrap mode — treat as empty for write-access purposes; direct writes apply |
 | **Mature** | Has `features/` directory with content | Mature mode — staging-only writes; Wrap-up promotes |
 
 | Memory tier | Path root | Bootstrap mode | Mature mode |
 |---|---|---|---|
-| **Session memory — interview rawdata** | `sessions/{date}-{session-id}/interview/rawdata/` | **READ + WRITE** | **READ + WRITE** |
-| **Session memory — interview staging** | `sessions/{date}-{session-id}/interview/staging/` | **WRITE** (not used — bootstrap writes direct) | **WRITE** — mature-mode wave outputs staged here for Wrap-up promotion |
-| **Session memory — interview artifacts** | `sessions/{date}-{session-id}/interview/` | **WRITE** — final session summary | **WRITE** — final session summary |
-| **Project memory — bootstrap targets** | `.gobbi/projects/{project-name}/{README.md,design/,decisions/,features/{feature-name}/,mistakes/,references/,backlogs/}` | **WRITE** — direct write to project memory; bootstrap exception to Wrap-up sole-writer rule | **FORBIDDEN** — mature reruns write to session staging only; Wrap-up promotes |
-| **Project memory — skills** | `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | **WRITE** — skills generated at wave close when user approves | **FORBIDDEN** — skill updates stage at `sessions/{date}-{session-id}/interview/staging/skills/{slug}/SKILL.md`; Wrap-up promotes |
+| **Session record — interview rawdata** | `sessions/{date}-{session-id}/interview/rawdata/` | **READ + WRITE** | **READ + WRITE** |
+| **Session record — interview staging** | `sessions/{date}-{session-id}/interview/staging/` | **WRITE** (not used — bootstrap writes direct) | **WRITE** — mature-mode wave outputs staged here for Wrap-up promotion |
+| **Session record — interview artifacts** | `sessions/{date}-{session-id}/interview/` | **WRITE** — final session summary | **WRITE** — final session summary |
+| **Memory — bootstrap targets** | `.gobbi/projects/{project-name}/{README.md,design/,decisions/,features/{feature-name}/,mistakes/,references/,backlogs/}` | **WRITE** — direct write to memory; bootstrap exception to Wrap-up sole-writer rule | **FORBIDDEN** — mature reruns write to session staging only; Wrap-up promotes |
+| **Memory — skills** | `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | **WRITE** — skills generated at wave close when user approves | **FORBIDDEN** — skill updates stage at `sessions/{date}-{session-id}/interview/staging/skills/{slug}/SKILL.md`; Wrap-up promotes |
 | **Workspace codebase** | The repository under analysis | **READ-ONLY** | **READ-ONLY** |
 
-**Why bootstrap mode can write project memory directly**: the standard workflow's staging → Wrap-up promotion model exists because Ideation / Planning / Execution loops write speculatively and may be reverted by REVISE. Bootstrap interview is different — it captures user-confirmed facts through active-runtime user-decision exchanges. Each output is gated by user confirmation at the wave's intermediate summary. There is no REVISE loop to invalidate the writes. Mature mode does not share this property — existing project memory may already be referenced by ongoing workflows, so speculative writes would create divergence.
+**Why bootstrap mode can write memory directly**: the standard workflow's staging → Wrap-up promotion model exists because Ideation / Planning / Execution loops write speculatively and may be reverted by REVISE. Bootstrap interview is different — it captures user-confirmed facts through active-runtime user-decision exchanges. Each output is gated by user confirmation at the wave's intermediate summary. There is no REVISE loop to invalidate the writes. Mature mode does not share this property — existing memory may already be referenced by ongoing workflows, so speculative writes would create divergence.
 
-**Delete semantics**: the interview NEVER deletes any file. Supersession (when re-running surfaces newer information) is recorded via `supersedes:` frontmatter on the new file; the old file has its `status:` flipped to `superseded` + `superseded_by:` added. Once a project-memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
+**Delete semantics**: the interview NEVER deletes any file. Supersession (when re-running surfaces newer information) is recorded via `supersedes:` frontmatter on the new file; the old file has its `status:` flipped to `superseded` + `superseded_by:` added. Once a memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 ---
 
@@ -50,15 +50,15 @@ The agent in the manager role conducting the interview MUST observe these tier b
 
 When interview runs on a project whose memory already exists (mature mode), the manager:
 
-1. **Reads existing project memory** at `.gobbi/projects/{project-name}/` at session start — notes what is already covered.
+1. **Reads existing memory** at `.gobbi/projects/{project-name}/` at session start — notes what is already covered.
 2. **Runs all 5 waves** — waves whose content is already captured are run as validation passes, not rewrite passes.
-3. **Writes wave outputs to session staging**, not directly to project memory:
+3. **Writes wave outputs to session staging**, not directly to memory:
    - New or updated project facts → `sessions/{date}-{session-id}/interview/staging/decisions/{slug}.md`
    - New or updated feature entries → `sessions/{date}-{session-id}/interview/staging/features/{feature-name}/README.md`
    - New or updated mistakes → `sessions/{date}-{session-id}/interview/staging/mistakes/{slug}.md`
    - New or updated skills (user-approved) → `sessions/{date}-{session-id}/interview/staging/skills/{slug}/SKILL.md`
-4. **Marks superseded items** in staging frontmatter: `supersedes: [<path-to-existing-project-memory-file>]`
-5. **Defers project-memory promotion to Wrap-up** — the normal staging → Wrap-up promotion route applies, same as any other workflow loop.
+4. **Marks superseded items** in staging frontmatter: `supersedes: [<path-to-existing-memory-file>]`
+5. **Defers memory promotion to Wrap-up** — the normal staging → Wrap-up promotion route applies, same as any other workflow loop.
 
 The staging path for mature-mode interview outputs is `sessions/{date}-{session-id}/interview/staging/`. Wrap-up reads this at promotion time via the standard routing table in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
 
@@ -69,7 +69,7 @@ The staging path for mature-mode interview outputs is `sessions/{date}-{session-
 The Interview skill activates two ways:
 
 1. **Explicit invocation** — the user runs `/gobbi interview` (or asks "let's do a project interview"). Always honored.
-2. **Auto-recommendation from Configuration** — during the workflow's Configuration step, the manager applies the 3-tier detection from the project-memory baseline check in `gobbi/SKILL.md` § session bootstrap. **Empty tier** (no `README.md`, no `design/`, no `features/` with content): ask through the active runtime's user-decision primitive, "Project memory is empty — run a project interview before starting work?" **Sparse tier** (has `README.md` or skeleton `design/` but no `features/` with content): ask through the active runtime's user-decision primitive, "Your project memory looks sparse. Run `/gobbi interview` to flesh out the basics, or continue to Ideation?" **Mature tier**: no auto-recommendation. The user decides; if accepted, the interview runs to completion before Configuration resumes.
+2. **Auto-recommendation from Configuration** — during the workflow's Configuration step, the manager applies the 3-tier detection from the memory baseline check in `gobbi/SKILL.md` § session bootstrap. **Empty tier** (no `README.md`, no `design/`, no `features/` with content): ask through the active runtime's user-decision primitive, "Memory is empty — run a project interview before starting work?" **Sparse tier** (has `README.md` or skeleton `design/` but no `features/` with content): ask through the active runtime's user-decision primitive, "Your memory looks sparse. Run `/gobbi interview` to flesh out the basics, or continue to Ideation?" **Mature tier**: no auto-recommendation. The user decides; if accepted, the interview runs to completion before Configuration resumes.
 
 The Interview skill always runs **Full mode** — all 5 waves. The user can halt mid-flight, but there are no short modes. If a wave's content is already captured (re-running on a mature project), the manager confirms with the user and skips wave-specific Output writes for already-covered items while still validating coverage.
 
@@ -276,7 +276,7 @@ When all 5 waves complete, the manager writes a **session summary** to `.gobbi/p
 {date} / {session-id}
 
 ### Project state at start
-{terse — was project memory empty? partial?}
+{terse — was memory empty? partial?}
 
 ### Artifacts produced
 - {list of every file the interview created or substantially updated}
@@ -316,7 +316,7 @@ The new skill is then loadable by downstream workflows (Ideation / Preparation /
 
 ## Output paths
 
-The interview writes both session-scoped audit files and project-scoped baseline files. The project-scoped writes are the exception to "only Wrap-up writes to project memory" — see § Memory Access Matrix.
+The interview writes both session-scoped audit files and project-scoped baseline files. The project-scoped writes are the exception to "only Wrap-up writes to memory" — see § Memory Access Matrix.
 
 **Path conventions**
 
@@ -346,7 +346,7 @@ The interview writes both session-scoped audit files and project-scoped baseline
 ## Constraints
 
 - **MUST never accept the first answer when the user hedges** — push twice. First answers are polished; real answers come after additional probing.
-- **MUST never write code or implementation artifacts during the interview** — output is project memory + skills only.
+- **MUST never write code or implementation artifacts during the interview** — output is memory + skills only.
 - **MUST never skip waves**. If a wave's content is already partially captured, the manager validates coverage but still runs the wave.
 - **MUST vary analytical lenses** across questions within a wave — strictly using one lens for all questions in a wave dilutes coverage.
 - **MUST stamp the full skill template** when the user approves a skill codification — never leave skeleton files with TODOs.
@@ -354,4 +354,4 @@ The interview writes both session-scoped audit files and project-scoped baseline
 - **MUST record "don't know" as an open question** in `decisions/{date}-unknowns.md` rather than fabricating an answer.
 - **MUST halt the interview if the user requests it** — the user can drop out mid-flight; the manager records the wave reached and the open items.
 - **MUST follow the `discussion` skill's anti-sycophancy and Question Card discipline** on every user-decision primitive call.
-- **MUST never delete project-memory files** — supersession via frontmatter only; terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
+- **MUST never delete memory files** — supersession via frontmatter only; terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.

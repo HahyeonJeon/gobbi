@@ -6,23 +6,23 @@
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md`. Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
 - During **Ideation Sub-step C (Research)** when the leader surfaces a useful external source.
-- During any loop's MEMORIZATION when an evaluator's `general` finding contains a citable external pattern.
+- During any loop's RECORD when an evaluator's `general` finding contains a citable external pattern.
 
 The bar is **applicability**, not novelty: a reference belongs here if it informed a design decision, anchored a checklist item, or settled a discussion.
 
 ## Location
 
-- **Feature-level (default):** `.gobbi/projects/{project-name}/features/{feature-name}/references/` — research happens inside a feature's Ideation, so a reference defaults to that feature (`scope: feature`, `feature: {feature-name}`). Wrap-up routes staging references here (see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing)).
+- **Feature-level (default):** `.gobbi/projects/{project-name}/features/{feature-name}/references/` — research happens inside a feature's Ideation, so a reference defaults to that feature (`scope: feature`, `feature: {feature-name}`). Wrap-up routes staging references here (see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 - **Project-level (promote-up, rare):** `.gobbi/projects/{project-name}/references/` — for cross-feature prior art (`scope: project`, `feature: null`); user-confirmed at Wrap-up.
 
 References are a **Both**-scope type (design §2.9, [`rules.md` § 3](../rules.md)), defaulting feature-level and promoting up only for cross-feature relevance.

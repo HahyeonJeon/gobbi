@@ -6,17 +6,17 @@ Time-stamped records of **what shipped**. Each entry summarizes the outcome of a
 
 This template covers a file with **two write paths**:
 
-1. **Loop MEMORIZATION** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/changelogs/{slug}.md`. Loop MEMORIZATION **never** writes directly to project memory.
-2. **Wrap-up's MEMORIZATION**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to project memory; this template's Location section shows what the *promoted* file looks like.
+1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/changelogs/{slug}.md`. Loop RECORD **never** writes directly to memory.
+2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Project-memory routing](../../wrap-up/SKILL.md#staging--project-memory-routing).
+For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
 
 ## When to write
 
-- During **Execution** MEMORIZATION at the end of each task: write a feature-level changelog entry describing what shipped for that task.
-- During **Wrap-up** MEMORIZATION at session close: append a feature-level changelog entry to each value-feature the session touched (the session roll-up itself is the per-session journal entry Wrap-up writes to `notes/`, not a changelog — there is no project-level `changelogs/`).
+- During **Execution** RECORD at the end of each task: write a feature-level changelog entry describing what shipped for that task.
+- During **Wrap-up** RECORD at session close: append a feature-level changelog entry to each value-feature the session touched (the session roll-up itself is the per-session journal entry Wrap-up writes to `notes/`, not a changelog — there is no project-level `changelogs/`).
 
 ## Location
 
