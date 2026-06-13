@@ -15,7 +15,9 @@ The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id
 
 The promotion is part of the wrap-up artifact — evaluation must verify it across every destination, not assume it.
 
-Wrap-up evaluation is **non-skippable**. A wrap-up that consolidates incorrectly poisons every future session. The cost of catching a bad wrap-up is paid once; the cost of missing it compounds. Scenarios include adversarial cases (phantom completion claims, silent supersession, missed mistakes) so Stage 2 walks each Frame once without a separate adversarial pass.
+**This evaluation IS pipeline stage 3 — memory validation.** In the wrap-up 5-stage pipeline (see [`wrap-up/SKILL.md` § The 5-stage pipeline](SKILL.md#the-5-stage-pipeline)), the Wrap-up loop's dual-system EVALUATION and stage-3 memory validation are the same gate (D11). Stage 2 (memorization) is the promotion under evaluation here; this evaluation validates it. The verdict gates the irreversible **stage 5 — git finalization** (commit / push / merge / worktree cleanup): only a stage-3 `PASS` lets git run. `REVISE` re-runs the stage-2 promotion; `FAIL` escalates to the user. Neither lets git run.
+
+Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting — and no other settings path — can remove it. A wrap-up that consolidates incorrectly poisons every future session. The cost of catching a bad wrap-up is paid once; the cost of missing it compounds. Because stage 3 always gates the irreversible git stage 5, skipping it is never permitted. Scenarios include adversarial cases (phantom completion claims, silent supersession, missed mistakes) so Stage 2 walks each Frame once without a separate adversarial pass.
 
 ---
 

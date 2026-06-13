@@ -133,6 +133,26 @@ Confirm with the user that the session is ready to wrap up, gather any final def
 **Purpose**
 Read accumulated `staging/` directories across all prior loops, promote each file to its routed memory destination, write the per-session journal, and produce the canonical handoff summary. This is the substantive work of Wrap-up — the only loop's WORK that writes to memory.
 
+### The 5-stage pipeline
+
+Wrap-up is a **five-stage gated pipeline**. The five stages run in fixed order, span three owners, and carry two validation gates. The session record stays worktree-local until the final stage; the irreversible git action is **last** (D8).
+
+| # | Stage | Owner | Failure semantics |
+|---|---|---|---|
+| 1 | **Session-record validation** | assistant (WORK) | gap detected → auto-backfill (mechanical-class) or `NEEDS_CONTEXT` (judgment-class); **BLOCKS stage 2** until resolved |
+| 2 | **Memorization** (promotion: session record → memory) | assistant (WORK) | unroutable file → `NEEDS_CONTEXT`; never improvise a destination |
+| 3 | **Memory validation** (= the Wrap-up loop's dual-system EVALUATION; **NON-SKIPPABLE**) | dual-system EVALUATION | `REVISE` → re-run the promotion (stage 2); `FAIL` → escalate to the user; **BLOCKS stage 5** |
+| 4 | **Handoff** (file written + shown to the session) | assistant writes `5-wrap-up/outputs/handoff.md`; manager shows it to the session | missing required section → `REVISE` |
+| 5 | **Git finalization** | **manager** (git skill) | runs **only after stage 3 PASS**; **NEVER run by the assistant** |
+
+**What WORK owns**: stages 1 + 2, plus authoring the stage-4 handoff file. Stage 3 is the loop's EVALUATION phase (a separate phase below). Stage 5 — and the act of *showing* the stage-4 handoff to the session — are the manager's, after EVALUATION passes. The detailed step table below covers WORK's stages (1, 2, and the handoff-authoring half of 4).
+
+> **D13 — stage 3 is NON-SKIPPABLE.** Stage-3 memory validation IS the Wrap-up loop's dual-system EVALUATION (D11). No `evaluate.mode: skip` setting — and no other settings path — can remove it. It always runs, and it always gates the irreversible git stage 5. A wrap-up that consolidates wrong memory poisons every future session; the gate is paid once, the miss compounds. See § EVALUATION Phase for the gate's mechanics.
+
+> **D8 — git is stage 5, the last stage, manager-owned.** The manager runs git finalization (commit the promotion writes, push, open / merge the PR, clean up the worktree) only after stage 3 returns `PASS`. The procedure is not duplicated here — it is [`git/SKILL.md` § P4 (Push and open PR)](../git/SKILL.md) + [§ P5 (Land PR)](../git/SKILL.md), driven by [`orchestration/workflow/wrap-up.md` § What Wrap-up commits](../orchestration/workflow/wrap-up.md). The assistant NEVER pushes, merges, or cleans up the worktree (see § Constraints). The whole `sessions/` tree is gitignored and worktree-local; it is the **memory promotion writes** (stage 2's output under `features/`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, …) that stage 5 commits and the PR absorbs.
+
+> **"Memorization" names stage 2, not the per-loop RECORD sub-phase (D7).** Stage 2 is literally the **Memorization** stage — the promotion of session record → memory. The word "memorization" in gobbi now names THIS wrap-up stage. The per-loop capture sub-phase is **RECORD** (see [`record/SKILL.md`](../record/SKILL.md)); it stages findings only and never writes memory. Per-loop sub-phase = RECORD; wrap-up promotion stage = memorization. Do not conflate the two.
+
 **Inputs**
 - All prior loops' staging trees: `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/staging/`, plus `interview/staging/` when an interview ran this session
 - All prior loops' canonical outputs (for handoff content)
@@ -142,17 +162,17 @@ Read accumulated `staging/` directories across all prior loops, promote each fil
 - User decisions on contribution points (carried over from DISCUSSION + the active runtime's user-decision primitive during WORK)
 - The Wrap-up delegation prompt's outcome summary + user-added items
 
-**Procedure** — seven sequential steps. The assistant runs them in order; idempotency contract holds across re-runs.
+**Procedure** — seven sequential steps, grouped under pipeline stages 1, 2, and the handoff-authoring half of stage 4. The assistant runs them in order; idempotency contract holds across re-runs. The **Stage** column maps each step to its pipeline stage.
 
-| # | Step | Action |
-|---|---|---|
-| 1 | **Snapshot pre-Wrap-up state** | Capture the current `.gobbi/projects/{project-name}/` state as the baseline. Save to `sessions/{date}-{session-id}/5-wrap-up/working/pre-wrap-up-snapshot.txt`. This is what Wrap-up evaluation diffs against |
-| 2 | **Enumerate all staging across all loops** | For each loop directory in `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/` **plus `interview/`** (when an interview ran this session), recursively list `staging/` — and **only** `staging/`; never `transcripts/`, `working/`, `evaluation/`, or `outputs/` (per § Promotion-inventory rule). Build a master inventory at `sessions/{date}-{session-id}/5-wrap-up/working/staging-inventory.md` — every staging file path, sized + frontmatter-extracted. **Step 2.5 runs immediately after this step** — see `### Step 2.5` below for the prior-loop RECORD compliance scan that must complete before Step 3 |
-| 3 | **Determine feature destination** | Read `session.json.feature` for the canonical feature slug `{feature-name}` (set during Ideation Sub-step B Lock Scope). If `.gobbi/projects/{project-name}/features/{feature-name}/` does not exist, plan to bootstrap it lazily at Step 5. If it exists from prior sessions, capture pre-Wrap-up state of each sub-directory for collision detection |
-| 4 | **Apply routing table to each staging file** | For every staging file in the inventory: (a) identify staging type from path; (b) look up destination in the routing table; (c) read frontmatter for `mistake-candidate: true`, `supersedes:`, `project-scope: true`, `disposition: deferred` — these are routing modifiers; (d) resolve final destination per modifiers + collision policy; (e) if user-confirm is required (rules / project-wide design / mistake scope / unrouted file), return `NEEDS_CONTEXT` with a `user-question:` block — the manager uses the active runtime's user-decision primitive on your behalf, then re-delegates with the confirmed routing decision; (f) record routing decision in `working/promotion-manifest.md`. **Unrouted files escalate — never improvise** |
-| 5 | **Bootstrap + write to memory** | For each routing decision: create the destination's parent directory if missing (lazy bootstrap); write the file at the destination per collision policy; for first write into `features/{feature-name}/`, also create or update `features/{feature-name}/README.md` per [`memory/templates/feature-readme.md`](../memory/templates/feature-readme.md); stamp the appropriate template from [`memory/templates/`](../memory/templates/) for each promotion. **Move-on-terminal**: when a collision resolution or incoming frontmatter (`shipped`, `superseded`, `retired`, `dropped`) indicates the existing destination file has reached a terminal state, stamp archival frontmatter on it and move it (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` before writing the new file — never delete it. Repoint any inbound references to the archive path. See [`memory/templates/archive.md`](../memory/templates/archive.md) for the move procedure |
-| 6 | **Write per-session journal entry** | Synthesize the session's work-log narrative — what the leader investigated, what the executor implemented, what the evaluator flagged, what the user decided. Write a single journal entry at `.gobbi/projects/{project-name}/notes/{date}-{slug}.md` per [`memory/templates/notes.md`](../memory/templates/notes.md). This is the per-session development journal — always one entry per session |
-| 7 | **Synthesize handoff summary** | Write the canonical handoff at `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (and any decomposed artifact files alongside) with required sections: Summary, Shipped, Deferred / Open, Decisions to respect, Pointers, Promotion summary. Each claim cites a verifiable artifact path. The artifact carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema) with `artifact_type: handoff` |
+| # | Stage | Step | Action |
+|---|---|---|---|
+| 1 | **1 — validation** | **Snapshot pre-Wrap-up state** | Capture the current `.gobbi/projects/{project-name}/` state as the baseline. Save to `sessions/{date}-{session-id}/5-wrap-up/working/pre-wrap-up-snapshot.txt`. This is what stage-3 memory validation diffs against |
+| 2 | **1 — validation** | **Enumerate all staging across all loops** | For each loop directory in `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/` **plus `interview/`** (when an interview ran this session), recursively list `staging/` — and **only** `staging/`; never `transcripts/`, `working/`, `evaluation/`, or `outputs/` (per § Promotion-inventory rule). Build a master inventory at `sessions/{date}-{session-id}/5-wrap-up/working/staging-inventory.md` — every staging file path, sized + frontmatter-extracted. **Step 2.5 runs immediately after this step** — see `### Step 2.5` below for the prior-loop RECORD compliance scan that completes stage 1 and must finish (gap → auto-backfill or `NEEDS_CONTEXT`) before stage 2 begins |
+| 3 | **2 — memorization** | **Determine feature destination** | Read `session.json.feature` for the canonical feature slug `{feature-name}` (set during Ideation Sub-step B Lock Scope). If `.gobbi/projects/{project-name}/features/{feature-name}/` does not exist, plan to bootstrap it lazily at Step 5. If it exists from prior sessions, capture pre-Wrap-up state of each sub-directory for collision detection |
+| 4 | **2 — memorization** | **Apply routing table to each staging file** | For every staging file in the inventory: (a) identify staging type from path; (b) look up destination in the routing table; (c) read frontmatter for `mistake-candidate: true`, `supersedes:`, `project-scope: true`, `disposition: deferred` — these are routing modifiers; (d) resolve final destination per modifiers + collision policy; (e) if user-confirm is required (rules / project-wide design / mistake scope / unrouted file), return `NEEDS_CONTEXT` with a `user-question:` block — the manager uses the active runtime's user-decision primitive on your behalf, then re-delegates with the confirmed routing decision; (f) record routing decision in `working/promotion-manifest.md`. **Unrouted files escalate — never improvise** |
+| 5 | **2 — memorization** | **Bootstrap + write to memory** | For each routing decision: create the destination's parent directory if missing (lazy bootstrap); write the file at the destination per collision policy; for first write into `features/{feature-name}/`, also create or update `features/{feature-name}/README.md` per [`memory/templates/feature-readme.md`](../memory/templates/feature-readme.md); stamp the appropriate template from [`memory/templates/`](../memory/templates/) for each promotion. **Move-on-terminal**: when a collision resolution or incoming frontmatter (`shipped`, `superseded`, `retired`, `dropped`) indicates the existing destination file has reached a terminal state, stamp archival frontmatter on it and move it (`git mv`) to `archive/{type}/{YYYY-MM-DD}-{slug}.md` before writing the new file — never delete it. Repoint any inbound references to the archive path. See [`memory/templates/archive.md`](../memory/templates/archive.md) for the move procedure |
+| 6 | **2 — memorization** | **Write per-session journal entry** | Synthesize the session's work-log narrative — what the leader investigated, what the executor implemented, what the evaluator flagged, what the user decided. Write a single journal entry at `.gobbi/projects/{project-name}/notes/{date}-{slug}.md` per [`memory/templates/notes.md`](../memory/templates/notes.md). This is the per-session development journal — always one entry per session. It is the durable cross-session handoff (the stage-4 `handoff.md` is session-scoped and dies with the worktree; this journal entry survives in memory) |
+| 7 | **4 — handoff** | **Synthesize handoff summary** | Write the canonical handoff at `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (and any decomposed artifact files alongside) with required sections: Summary, Shipped, Deferred / Open, Decisions to respect, Pointers, Promotion summary. Each claim cites a verifiable artifact path. The artifact carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema) with `artifact_type: handoff`. This step authors the file; the manager **shows it to the session** as the final message before `workflow.finish` (see § Stage 4 — Handoff below) — and only after stage-3 memory validation has passed |
 
 **Outputs**
 
@@ -256,7 +276,7 @@ Before writing any auto-backfill file:
 
 ## Staging → Memory routing
 
-The canonical promotion routing. The assistant applies this table mechanically. Wrap-up evaluation verifies adherence (see [`evaluation.md`](evaluation.md)).
+The canonical promotion routing — this table is the contract for **pipeline stage 2 (memorization)**. The assistant applies it mechanically. Wrap-up evaluation (stage 3) verifies adherence (see [`evaluation.md`](evaluation.md)).
 
 | Session staging path | Memory destination | Trigger condition |
 |---|---|---|
@@ -320,7 +340,30 @@ This cleanup is **going-forward + opportunistic only** — Wrap-up normalizes th
 
 ---
 
+## Stage 4 — Handoff (file written + shown to the session)
+
+Stage 4 has two parts with two owners:
+
+1. **Author the file (assistant, WORK Step 7).** The assistant writes `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (`artifact_type: handoff`, session-scoped, gitignored) with the required sections: Summary, Shipped, Deferred / Open, Decisions to respect, Pointers, Promotion summary. Every claim cites a verifiable artifact path. A missing required section is a stage-4 `REVISE` finding at EVALUATION.
+2. **Show it to the session (manager).** After stage-3 memory validation returns `PASS`, the manager **reads `outputs/handoff.md` back to the session as the final message** before emitting `workflow.finish`. This "shown to the session" step is what closes the loop with the user — the handoff is not just filed, it is surfaced.
+
+**Two handoffs, two lifetimes.** `outputs/handoff.md` is session-scoped: it lives in the gitignored `sessions/` tree and is removed with the worktree at stage 5 cleanup. The **durable cross-session handoff** is the per-session journal entry at `notes/{date}-{slug}.md` (WORK Step 6) — promoted to memory, it survives for the next session to read. Both are written; the file is shown now, the journal carries forward.
+
+---
+
+## Stage 5 — Git finalization (manager-owned; runs LAST)
+
+Stage 5 is the manager's, and it runs **only after stage-3 memory validation returns `PASS`** (D13). The assistant NEVER performs any stage-5 action.
+
+- **What it commits.** The session record (`sessions/...`) is gitignored and worktree-local, so it is never committed. Stage 5 commits the **stage-2 memory promotion writes** — the tracked files under `features/`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc. — using the canonical `AI-Provenance-Record:` trailer.
+- **The procedure is not duplicated here.** Push and PR follow [`git/SKILL.md` § P4 (Push and open PR)](../git/SKILL.md); merge and worktree cleanup follow [`git/SKILL.md` § P5 (Land PR)](../git/SKILL.md). The manager's commit-vs-session-record split is governed by [`orchestration/workflow/wrap-up.md` § What Wrap-up commits](../orchestration/workflow/wrap-up.md).
+- **Order is the safety property.** Git is the irreversible action (push / merge / worktree removal), so it is last — after the memory it would publish has been validated by the non-skippable stage-3 gate. A `REVISE` or `FAIL` at stage 3 means stage 5 does not run.
+
+---
+
 ## EVALUATION Phase
+
+**This phase IS pipeline stage 3 — memory validation.** The Wrap-up loop's dual-system EVALUATION and stage-3 memory validation are the same gate (D11). It is **NON-SKIPPABLE** (D13): no `evaluate.mode: skip` setting can remove it, and it always gates the irreversible git stage 5. `REVISE` re-runs the promotion (stage 2); `FAIL` escalates to the user; neither lets stage 5 run.
 
 **Purpose**
 Find the promotion gaps WORK missed. Two independent systems (Claude Code + Codex) evaluate the Wrap-up artifact + promotions across all seven perspectives + Overall; the manager reconciles their findings and produces a single `PASS` / `REVISE` / `FAIL` verdict. Wrap-up evaluation is **non-skippable** — see [`wrap-up/evaluation.md`](evaluation.md).
@@ -344,7 +387,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
 | 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
-| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to RECORD first**. After RECORD, `PASS` exits the loop and emits `workflow.finish`; `REVISE` re-enters DISCUSSION (rare — Wrap-up's iteration cap is typically 1); `FAIL` escalates through the active runtime's user-decision primitive | Workflow-state verdict |
+| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to RECORD first**. As pipeline stage 3, this verdict gates the irreversible git stage 5: after RECORD, `PASS` unblocks stage 5 (manager runs git finalization, then emits `workflow.finish`); `REVISE` re-enters DISCUSSION (rare — Wrap-up's iteration cap is typically 1) and re-runs the stage-2 promotion — stage 5 does NOT run; `FAIL` escalates through the active runtime's user-decision primitive — stage 5 does NOT run | Workflow-state verdict |
 
 **Outputs**
 - `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
