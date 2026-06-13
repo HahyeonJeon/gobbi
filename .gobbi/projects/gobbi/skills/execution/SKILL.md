@@ -193,6 +193,8 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 ## RECORD Phase
 
+> **Canonical procedure: [`record/SKILL.md`](../record/SKILL.md).** RECORD is the per-loop capture sub-phase. Its mechanics — transcript copy, `session.json` iter upsert, PASS-only `outputs/` + typed-finding staging, cumulative-staging, idempotency — are defined once in [`record/SKILL.md`](../record/SKILL.md). This section states only what is specific to the Execution loop (per-task scoping); do not re-derive the shared procedure here.
+
 **Purpose**
 Persist every iteration's evidence into session record and — on the final `PASS` iteration for this task — emit the task's `outputs/` files + cumulative typed-finding stagings. RECORD runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Memory is **not** written here; Wrap-up handles session → project promotion.
 

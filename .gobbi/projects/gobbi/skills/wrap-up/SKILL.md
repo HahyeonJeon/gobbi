@@ -365,6 +365,8 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 ## RECORD Phase
 
+> **Canonical procedure: [`record/SKILL.md`](../record/SKILL.md).** RECORD is the per-loop capture sub-phase. Its mechanics — transcript copy, `session.json` iter upsert, PASS-only `outputs/` staging, cumulative-staging, idempotency — are defined once in [`record/SKILL.md`](../record/SKILL.md). This section states only what is specific to the Wrap-up loop: RECORD seals the handoff and the promotions that WORK already wrote (Wrap-up is the one loop whose RECORD may touch memory — see [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix)). Do not confuse the per-loop **RECORD** sub-phase with the wrap-up **memorization** stage (stage 2 of the WORK pipeline below) — they are different things.
+
 **Purpose**
 Persist Wrap-up's iteration evidence into session record and stamp the artifacts directory with the canonical handoff per the Artifact frontmatter schema. RECORD runs after **every** EVALUATION (whether `PASS`, `REVISE`, or `FAIL`).
 
