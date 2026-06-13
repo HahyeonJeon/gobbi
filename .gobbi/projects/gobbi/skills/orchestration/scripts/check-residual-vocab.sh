@@ -119,6 +119,17 @@ is_excluded_path() {
 #   4. delegation/templates/{leader,executor,assistant}.md — "...Verify -> Memorize
 #      lifecycle": the same generic lifecycle-verb reference in the delegation
 #      template body.
+#   5. wrap-up/SKILL.md — the Wrap-up "Memorization" STAGE 2 name introduced by
+#      task 09 (D7: "memorization" = the wrap-up stage-2 promotion stage). Five
+#      legit phrasings tie the word to stage 2: the stage-table row 2 cell
+#      ("Memorization** (promotion:"), the D7 defining statement
+#      ('"Memorization" names stage 2'), the step-table Stage column
+#      ("**2 — memorization**", 4 rows), the routing-table contract line
+#      ("stage 2 (memorization)"), and the RECORD-vs-stage disambiguation
+#      ("memorization** stage (stage 2 of the WORK"). Each binds the word to
+#      stage 2, so a genuinely-stale bare "memorization" still fails the match.
+#   6. wrap-up/evaluation.md — the same stage-2 name in the eval intro
+#      ("Stage 2 (memorization) is the promotion under evaluation").
 # ---------------------------------------------------------------------------
 is_allowlisted() {
     local file="$1" line="$2"
@@ -131,6 +142,14 @@ is_allowlisted() {
             [[ "$line" == '### Memorize'* ]] && return 0 ;;
         */skills/delegation/templates/leader.md|*/skills/delegation/templates/executor.md|*/skills/delegation/templates/assistant.md)
             [[ "$line" == *'Memorize lifecycle'* ]] && return 0 ;;
+        */skills/wrap-up/SKILL.md)
+            [[ "$line" == *'Memorization** (promotion:'*       \
+            || "$line" == *'"Memorization" names stage 2'*     \
+            || "$line" == *'**2 — memorization**'*             \
+            || "$line" == *'stage 2 (memorization)'*           \
+            || "$line" == *'memorization** stage (stage 2 of the WORK'* ]] && return 0 ;;
+        */skills/wrap-up/evaluation.md)
+            [[ "$line" == *'Stage 2 (memorization)'* ]] && return 0 ;;
     esac
     return 1
 }
