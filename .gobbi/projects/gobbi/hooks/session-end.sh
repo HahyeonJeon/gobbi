@@ -7,7 +7,7 @@
 # (post-tool-use-agents.sh) is only a best-effort SEED; this hook reconciles
 # every agents[] entry from the complete transcripts.
 #
-# What it does (LEAN — no transcript copy here; that is task 07's memorization step):
+# What it does (LEAN — no transcript copy here; the RECORD sub-phase does that):
 #   1. Read the SessionEnd payload defensively (jq '.field // empty').
 #   2. Resolve the WORKTREE session.json deterministically from session_id + cwd
 #      (same resolver shape as post-tool-use-agents.sh).

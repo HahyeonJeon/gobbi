@@ -14,25 +14,25 @@ Internal and external research surfaces are managed **independently** — each m
 
 ## Memory Access Matrix
 
-The agent in the leader role (or any role that loads this skill) MUST observe these tier boundaries. Research writes only to the calling loop's session memory.
+The agent in the leader role (or any role that loads this skill) MUST observe these tier boundaries. Research writes only to the calling loop's session record.
 
 | Memory tier | Path root | Access from research |
 |---|---|---|
-| **Session memory — calling loop's working** | `sessions/{date}-{session-id}/{N}-{loop}/working/` | **READ + WRITE** — internal insights integrated into `working/draft-iter{n}.md`; per-external-reference files written to `working/research/{slug}.md` |
-| **Session memory — calling loop's staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/` | **READ-ONLY during WORK** — the assistant (MEMORIZATION) promotes working/research/ to `staging/references/` on PASS; the leader does not write to staging directly |
+| **Session record — calling loop's working** | `sessions/{date}-{session-id}/{N}-{loop}/working/` | **READ + WRITE** — internal insights integrated into `working/draft-iter{n}.md`; per-external-reference files written to `working/research/{slug}.md` |
+| **Session record — calling loop's staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/` | **READ-ONLY during WORK** — the assistant (RECORD) promotes working/research/ to `staging/references/` on PASS; the leader does not write to staging directly |
 | **Workspace codebase** | The repository under analysis | **READ-ONLY** — internal research reads files, types, tests, git history; never modifies code |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — mistakes, decisions, design, scenarios, checklists provide internal context |
-| **Project memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for project-wide internal context. Never written; Wrap-up owns project-memory writes |
+| **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for project-wide internal context. Never written; Wrap-up owns memory writes |
 | **External sources** | URLs / documentation / RFC / blog posts / open-source repositories | **READ-ONLY (via WebSearch / WebFetch)** — external research surfaces; cite stable anchors |
-| **Session memory — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — research never reads or writes session.json; the manager owns it |
+| **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — research never reads or writes session.json; the manager owns it |
 
 **Write surface in practice (two-step model)**:
 1. **During WORK** — the leader integrates internal insights into `working/draft-iter{n}.md` (under a `Research Insights` section) and writes each confirmed external insight as a separate file at `working/research/{slug}.md` using the Insight format below. The leader does NOT write to `staging/references/` during WORK.
-2. **On PASS** — the assistant (MEMORIZATION phase) reads `working/research/*.md`, extracts confirmed external insights, and stages them at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` per the calling loop's procedure. This keeps **research's external-reference staging** (`staging/references/`) as an assistant-owned, PASS-only surface. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — see `ideation/SKILL.md`, `preparation/SKILL.md`, `planning/SKILL.md`, `execution/SKILL.md` Memory Access Matrix sections.
+2. **On PASS** — the assistant (RECORD phase) reads `working/research/*.md`, extracts confirmed external insights, and stages them at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` per the calling loop's procedure. This keeps **research's external-reference staging** (`staging/references/`) as an assistant-owned, PASS-only surface. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — see `ideation/SKILL.md`, `preparation/SKILL.md`, `planning/SKILL.md`, `execution/SKILL.md` Memory Access Matrix sections.
 
 Research does not own its own session subdirectory — it lives inside the loop that invoked it.
 
-**Delete semantics**: research never deletes any file in any tier. Supersession via frontmatter is handled by the calling loop's MEMORIZATION. Once a project-memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
+**Delete semantics**: research never deletes any file in any tier. Supersession via frontmatter is handled by the calling loop's RECORD. Once a memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
 ---
 
@@ -63,7 +63,7 @@ Even high-quality findings that don't apply to the current Scope Contract are dr
 ## Internal Research
 
 **Purpose**
-Investigate the project's own codebase, project memory, tests, and history to extract insights that inform design. Internal research grounds design in what already exists — the patterns, conventions, mistakes, and decisions the project carries — so new work doesn't accidentally diverge from or duplicate existing solutions.
+Investigate the project's own codebase, memory, tests, and history to extract insights that inform design. Internal research grounds design in what already exists — the patterns, conventions, mistakes, and decisions the project carries — so new work doesn't accidentally diverge from or duplicate existing solutions.
 
 **Inputs**
 - Locked Scope Contract (defines what's in scope) — schema canonical at `evaluation/SKILL.md` § Scope Contract Schema
@@ -74,7 +74,7 @@ Investigate the project's own codebase, project memory, tests, and history to ex
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Leader | Scope Contract; codebase | **Grep / Glob the codebase** for patterns related to the Scope Contract's `Feature` and `Task` — similar features, related modules, recurring patterns. Note specific file paths + line numbers | Codebase pattern findings |
-| 2 | Leader | Scope Contract; `.gobbi/projects/{project-name}/` | **Read project memory** — mistakes, decisions, design docs, prior discussions in `.gobbi/projects/{project-name}/` and `features/{feature-name}/` | Project memory findings |
+| 2 | Leader | Scope Contract; `.gobbi/projects/{project-name}/` | **Read memory** — mistakes, decisions, design docs, prior discussions in `.gobbi/projects/{project-name}/` and `features/{feature-name}/` | Memory findings |
 | 3 | Leader | Scope Contract; existing tests | **Grep test files** for behaviors / scenarios similar to the task — what is already verified and how | Existing test findings |
 | 4 | Leader | Scope Contract; git log | **Grep git log** for the area being touched — prior attempts, refactors, reverts, what was tried and what worked | Git history findings |
 | 5 | Leader | All step-1–4 findings | **Extract internal insights** using the Insight format below — drop out-of-scope; bare links and file lists are not insights | Internal insights |
@@ -85,7 +85,7 @@ Investigate the project's own codebase, project memory, tests, and history to ex
 
 Insight format (one block per insight):
 
-- **Source** — codebase path (with line numbers) / git ref / project memory path
+- **Source** — codebase path (with line numbers) / git ref / memory path
 - **Insight** — the specific lesson that applies HERE (one or two sentences)
 - **Why** — in one sentence, why the insight applies given the Scope Contract
 
@@ -137,7 +137,7 @@ What to investigate during Internal and External research. The list is a **check
 
 ## Output paths
 
-Research does not own its own session subdirectory — it writes into the calling loop's session memory. The calling loop's MEMORIZATION (and Wrap-up) handles promotion to project memory.
+Research does not own its own session subdirectory — it writes into the calling loop's session record. The calling loop's RECORD (and Wrap-up) handles promotion to memory.
 
 **Path conventions**
 
@@ -151,9 +151,9 @@ Research does not own its own session subdirectory — it writes into the callin
 |---|---|---|
 | `sessions/{date}-{session-id}/{N}-{loop}/working/draft-iter{n}.md` (Research Insights section) | leader (calling loop's WORK) | Internal + external insights integrated into the loop's working draft |
 | `sessions/{date}-{session-id}/{N}-{loop}/working/research/{slug}.md` | leader (calling loop's WORK) | One file per confirmed external insight — raw capture in Insight format, pre-staging. Written during WORK. |
-| `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` | assistant (MEMORIZATION, PASS only) | Promoted from `working/research/{slug}.md` by MEMORIZATION on PASS; Wrap-up promotes to `features/{feature-name}/references/` |
+| `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` | assistant (RECORD, PASS only) | Promoted from `working/research/{slug}.md` by RECORD on PASS; Wrap-up promotes to `features/{feature-name}/references/` |
 
-Internal insights do not stage as separate reference files — they live inline in the working draft's Decisions Log and design rationale. Only confirmed external insights with citable URLs produce working/research/ files that MEMORIZATION later stages.
+Internal insights do not stage as separate reference files — they live inline in the working draft's Decisions Log and design rationale. Only confirmed external insights with citable URLs produce working/research/ files that RECORD later stages.
 
 ---
 
@@ -165,6 +165,6 @@ Internal insights do not stage as separate reference files — they live inline 
 - **MUST never stockpile out-of-scope findings** — drop them or log a backlog hint.
 - **MUST read the relevant codebase** before extracting external insights — internal context shapes which external patterns apply.
 - **MUST cite the specific source** — file path + line numbers, URL + section anchor, git ref + commit hash — not the project / repo at large.
-- **MUST write every confirmed external insight to `working/research/{slug}.md`** during WORK — the leader does not stage to `staging/references/` directly. MEMORIZATION (PASS only) promotes working/research/ to staging. Silent drops of citable externals are forbidden.
-- **MUST never write to `staging/references/` during WORK** — research's external-reference staging is an assistant-owned, PASS-only surface. The leader writes external insights to `working/research/{slug}.md` only; MEMORIZATION promotes to `staging/references/` on PASS. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — this constraint applies only to research's reference surface, not to staging at large.
-- **MUST never write to project memory or feature memory** — Wrap-up owns those writes; research lives in session memory only.
+- **MUST write every confirmed external insight to `working/research/{slug}.md`** during WORK — the leader does not stage to `staging/references/` directly. RECORD (PASS only) promotes working/research/ to staging. Silent drops of citable externals are forbidden.
+- **MUST never write to `staging/references/` during WORK** — research's external-reference staging is an assistant-owned, PASS-only surface. The leader writes external insights to `working/research/{slug}.md` only; RECORD promotes to `staging/references/` on PASS. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — this constraint applies only to research's reference surface, not to staging at large.
+- **MUST never write to memory or feature memory** — Wrap-up owns those writes; research lives in session record only.

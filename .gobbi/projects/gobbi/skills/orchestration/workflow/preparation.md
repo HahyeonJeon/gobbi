@@ -1,21 +1,21 @@
 # Workflow — Preparation (Orchestration)
 
-How the **manager** orchestrates the Preparation Loop. The `leader` and `assistant` specialists that participate load [`preparation/SKILL.md`](../../preparation/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`memorization/SKILL.md`](../../memorization/SKILL.md) (assistant's MEMORIZATION procedure).
+How the **manager** orchestrates the Preparation Loop. The `leader` and `assistant` specialists that participate load [`preparation/SKILL.md`](../../preparation/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's RECORD procedure).
 
-The Preparation Loop runs **between Ideation and Planning**. Its job is to verify that the **project memory** and the **workspace skills** are ready for the planning and execution that follow. If something is missing that downstream work would need, Preparation surfaces it and the user decides how to resolve.
+The Preparation Loop runs **between Ideation and Planning**. Its job is to verify that the **memory** and the **workspace skills** are ready for the planning and execution that follow. If something is missing that downstream work would need, Preparation surfaces it and the user decides how to resolve.
 
 | Phase | Content semantics for Preparation |
 |---|---|
 | `DISCUSSION` | Manager + user + leader (research-backed scan) identify readiness gaps and decide resolution per gap. |
-| `WORK` | Leader documents the readiness assessment AND stages approved gap fixes (new skills, missed memory promotions) at `sessions/{date}-{session-id}/2-preparation/staging/`; Wrap-up promotes to project memory. |
+| `WORK` | Leader documents the readiness assessment AND stages approved gap fixes (new skills, missed memory promotions) at `sessions/{date}-{session-id}/2-preparation/staging/`; Wrap-up promotes to memory. |
 | `EVALUATION` | Dual-system evaluators apply the leader's plan-evaluation criteria + perspective lenses. |
-| `MEMORIZATION` | Assistant synthesizes canonical `preparation.md` into session staging only — project-memory promotion is the sole responsibility of Wrap-up. |
+| `RECORD` | Assistant synthesizes canonical `preparation.md` into session staging only — memory promotion is the sole responsibility of Wrap-up. |
 
 ---
 
 ## DISCUSSION Phase (manager + user + leader)
 
-**Manager's job**: orchestrate the readiness review with the user, spawning the `leader` to scan project memory + workspace skills, then present found gaps for user resolution. Detailed sub-step content lives in [`preparation/SKILL.md`](../../preparation/SKILL.md); this section covers the **orchestration choreography**.
+**Manager's job**: orchestrate the readiness review with the user, spawning the `leader` to scan memory + workspace skills, then present found gaps for user resolution. Detailed sub-step content lives in [`preparation/SKILL.md`](../../preparation/SKILL.md); this section covers the **orchestration choreography**.
 
 ### Leader spawn pattern
 
@@ -61,7 +61,7 @@ This is **not** a Preparation `REVISE` — it's an upstream loop re-entry. Prepa
 
 ## WORK Phase (leader documents + executes approved gap fixes)
 
-**Manager's job**: spawn the leader for documentation. The leader writes the draft at `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` AND stages the approved gap fixes at `sessions/{date}-{session-id}/2-preparation/staging/`. Wrap-up is the sole promoter of staged artifacts to project memory — with one narrow exception: generated skills are promoted before Planning starts (see below).
+**Manager's job**: spawn the leader for documentation. The leader writes the draft at `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` AND stages the approved gap fixes at `sessions/{date}-{session-id}/2-preparation/staging/`. Wrap-up is the sole promoter of staged artifacts to memory — with one narrow exception: generated skills are promoted before Planning starts (see below).
 
 Manager-side responsibilities:
 - Confirm the draft contains every required section (Scope reference / Readiness summary / per-category readiness / Generated this loop / Deferred / Decisions log)
@@ -84,20 +84,20 @@ WORK execution is more than documentation here, because Preparation's purpose is
 
 ---
 
-## MEMORIZATION Phase (delegated to `assistant`)
+## RECORD Phase (delegated to `assistant`)
 
-**Manager's job**: spawn the `assistant` agent. The assistant synthesizes canonical `preparation.md` per [`workflow/memorization.md`](memorization.md) and [`memorization/SKILL.md`](../../memorization/SKILL.md). For Preparation, the assistant also stages Wrap-up routing candidates:
+**Manager's job**: spawn the `assistant` agent. The assistant synthesizes canonical `preparation.md` per [`workflow/record.md`](record.md) and [`record/SKILL.md`](../../record/SKILL.md). For Preparation, the assistant also stages Wrap-up routing candidates:
 
 - New project-specific skills from this loop → `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md`
 - `scenario_gap` / `checklist_gap` findings → `sessions/{date}-{session-id}/2-preparation/staging/{scenarios,checklists}/{slug}.md`
 
 Wrap-up reads these staging directories and routes them to `features/{feature-name}/README.md`, `features/{feature-name}/scenarios/`, and `features/{feature-name}/checklists/` per its promotion routing table.
 
-### Per-iteration session memory is NOT committed (gitignored)
+### Per-iteration session record is NOT committed (gitignored)
 
-There is **no** per-iteration session-memory commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or the canonical `preparation.md` captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after MEMORIZATION.
+There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or the canonical `preparation.md` captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
 
-Iteration boundaries are recorded in `session.json.workflow.preparation.iterations[]`, not in git. Durable cross-session memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content into tracked `features/`, `mistakes/`, `rules/`, etc. Only promoted content survives the session.
+Iteration boundaries are recorded in `session.json.workflow.preparation.iterations[]`, not in git. Durable memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content into tracked `features/`, `mistakes/`, `rules/`, etc. Only promoted content survives the session.
 
 The narrow-exception `chore(skills): promote {slug}` generate-now commit documented in [`preparation/SKILL.md`](../../preparation/SKILL.md) is **different**: it commits a generated skill into the **tracked** `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` path (not under gitignored `sessions/`) on EVALUATION PASS, so in-session consumers have the skill available during Planning and Execution. That commit is real because its target is tracked.
 
@@ -105,7 +105,7 @@ The narrow-exception `chore(skills): promote {slug}` generate-now commit documen
 
 ## ITER / EXIT Decision
 
-After `MEMORIZATION`, the manager decides based on the reconciled verdict:
+After `RECORD`, the manager decides based on the reconciled verdict:
 
 | Verdict | Action |
 |---|---|
@@ -113,7 +113,7 @@ After `MEMORIZATION`, the manager decides based on the reconciled verdict:
 | `REVISE` | Re-enter `DISCUSSION` with evaluator findings as new input |
 | `FAIL` | Escalate through the active runtime's user-decision primitive; user decides revise / re-enter Ideation / abort |
 | `RE-IDEATE` | Special verdict — at least one gap is unworkable without re-Ideation. Manager re-enters the Ideation Loop, then re-runs Preparation. |
-| `SKIPPED` | Exit the loop (Preparation was skipped per settings — only valid when project memory is mature and the manager is confident no gaps exist) |
+| `SKIPPED` | Exit the loop (Preparation was skipped per settings — only valid when memory is mature and the manager is confident no gaps exist) |
 
 Iteration cap: `workflow.preparation.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.
 
@@ -127,18 +127,18 @@ The canonical tree is [`orchestration/templates/session-tree.md`](../templates/s
 .gobbi/projects/{project}/sessions/{date}-{session-id}/
 ├── transcripts/                       ← single session-root surface; {role}-{agentId}.jsonl per agent, all loops
 └── 2-preparation/
-    ├── outputs/                ← canonical synthesized preparation.md (assistant, MEMORIZATION, PASS only)
+    ├── outputs/                ← canonical synthesized preparation.md (assistant, RECORD, PASS only)
     ├── working/                ← leader drafts (per iteration), discussion log, research refs
     ├── evaluation/
     │   └── iter{n}/
     │       ├── claude/{perspective}.md
     │       └── codex/{perspective}.md
-    └── staging/                ← session-staged artifacts (incl. skills/), promoted to project memory by Wrap-up
+    └── staging/                ← session-staged artifacts (incl. skills/), promoted to memory by Wrap-up
 ```
 
-Plus session-staged outputs by the leader during WORK — routed to project memory by Wrap-up only:
+Plus session-staged outputs by the leader during WORK — routed to memory by Wrap-up only:
 - New project-specific skills → `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md`
-- Missed memory promotion candidates → `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md` (Wrap-up promotes these to project memory at session close)
+- Missed memory promotion candidates → `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md` (Wrap-up promotes these to memory at session close)
 
 ---
 
@@ -148,7 +148,7 @@ Plus session-staged outputs by the leader during WORK — routed to project memo
 - Ideation output that becomes Preparation's input → [`workflow/ideation.md`](ideation.md)
 - Planning that follows Preparation → [`workflow/planning.md`](planning.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
-- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)
 - Project-specific skill template (for "Generate now" decisions) → [`interview/templates/project-skill.md`](../../interview/templates/project-skill.md)

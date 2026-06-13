@@ -30,7 +30,7 @@ The agent in any role (manager or subagent) MUST observe these tier boundaries.
 | **Git config (`~/.gitconfig`, `.git/config`)** | both | **never modified by either** — user config only |
 | **Session notes / mistakes** | both | both — use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. Worktree-relative path construction via `git -C "$worktreePath" rev-parse --show-toplevel` for symlink + commit operations. Transcript path (`session.json.transcriptPath`) lives in user home (`~/.claude/projects/`) — not under either tree. |
 
-**Critical rule — write paths**: session writes (notes, mistakes, project memory drafts) MUST use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/...` and are outside both trees — never attempt to redirect them. The manager passes the worktree path in every delegation prompt when git is active. A subagent constructing a path relative to its current working directory rather than reading `session.json.git.worktreePath` risks writing to the wrong tree.
+**Critical rule — write paths**: session writes (notes, mistakes, memory drafts) MUST use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/...` and are outside both trees — never attempt to redirect them. The manager passes the worktree path in every delegation prompt when git is active. A subagent constructing a path relative to its current working directory rather than reading `session.json.git.worktreePath` risks writing to the wrong tree.
 
 **Delete semantics**: this skill never deletes git history (no `branch -D` on un-merged branches without user confirmation; no `git reset --hard` outside Forbidden Operations exceptions). Worktrees are removed during cleanup (Procedure P5), but the local commits on the squash-merged branch are preserved in the reflog.
 
@@ -243,7 +243,7 @@ Common failures and their recovery paths.
 
 ## Output paths
 
-Git operations don't write to session memory directly (writes happen via session note / mistake files, which root at `session.json.git.worktreePath` — always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal). The main "outputs" of the git skill are git objects: commits, branches, PRs, issues.
+Git operations don't write to session record directly (writes happen via session note / mistake files, which root at `session.json.git.worktreePath` — always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal). The main "outputs" of the git skill are git objects: commits, branches, PRs, issues.
 
 **Path conventions**
 

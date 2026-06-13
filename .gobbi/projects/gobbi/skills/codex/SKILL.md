@@ -65,7 +65,7 @@ Codex supports project custom agents from `.codex/agents`. When Gobbi asks for s
 - Use `leader` for ideation, preparation, research, and planning.
 - Use `executor` for implementation.
 - Use `evaluator` for adversarial review; keep it read-only.
-- Use `assistant` for narrow lookup and memorization support.
+- Use `assistant` for narrow lookup and RECORD support.
 
 Fresh Codex subagents still need explicit load directives. They do not inherit skills the manager already read.
 
@@ -368,7 +368,7 @@ Codex and Claude consume tokens at different rates and from different budget poo
 
 | Situation | Preferred tool |
 |---|---|
-| Primary implementation or planning work where session memory continuity matters | Claude (executor / leader) |
+| Primary implementation or planning work where session record continuity matters | Claude (executor / leader) |
 | Adversarial review, fresh-perspective evaluation, "second opinion" on Claude's output | Codex — independent context, different confirmation bias surface |
 | Claude looping or self-confirming without progress | Codex-rescue for unstick attempt |
 

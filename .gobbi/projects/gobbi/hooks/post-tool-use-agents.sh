@@ -205,7 +205,7 @@ esac
 # ---------------------------------------------------------------------------
 # Cumulative tokens summed from the agent's OWN transcript (NOT final-turn
 # toolUseResult.usage). Reuse the orchestration unit script so the figure
-# matches the MEMORIZATION/Wrap-up reconciler exactly.
+# matches the RECORD/Wrap-up reconciler exactly.
 # ---------------------------------------------------------------------------
 agent_transcript="${transcript_path%.jsonl}/subagents/agent-${agent_id}.jsonl"
 unit_script="$cwd/.gobbi/projects/gobbi/skills/orchestration/scripts/agent-token-usage.sh"

@@ -84,7 +84,7 @@ Domain-specific code quality details (language idioms, type-system patterns, fra
 - Time / random / external-service dependencies are mocked or pinned (no `Date.now()` / `Math.random()` without seeded substitute)
 
 **Dependency surface is controlled (supply-chain)**
-- No new dependencies (or new deps explicitly justified — see project memory's "verify deps before recommending" feedback)
+- No new dependencies (or new deps explicitly justified — see memory's "verify deps before recommending" feedback)
 - New deps listed in `package.json` (no implicit installs)
 - New deps have known license + license matches project policy
 - New deps have no known critical CVEs (check vulnerability database)

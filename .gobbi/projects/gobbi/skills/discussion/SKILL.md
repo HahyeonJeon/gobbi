@@ -128,7 +128,7 @@ Every decision the manager faces falls into one of three classes. The class dete
 
 ### Auto-decide (proceed silently, log the decision)
 
-A decision the manager can make without user input. Resolved by the codebase, project memory, rules, mistakes, or a clearly recommended approach. The manager picks the best option, proceeds, and records the decision in the session's discussion log so it is auditable.
+A decision the manager can make without user input. Resolved by the codebase, memory, rules, mistakes, or a clearly recommended approach. The manager picks the best option, proceeds, and records the decision in the session's discussion log so it is auditable.
 
 Examples:
 - "Run the test suite before declaring DONE" — auto-decide; the rule is unambiguous.

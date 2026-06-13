@@ -2,7 +2,7 @@
 # reconcile-session-metadata.sh — bulk-reconcile agents[] + usage in session.json.
 #
 # Purpose:
-#   The MEMORIZATION / Wrap-up safety net (orchestration/SKILL.md § Recording workflow
+#   The RECORD / Wrap-up safety net (orchestration/SKILL.md § Recording workflow
 #   metadata, "bulk reconcile" row). Enumerates every spawn from the main transcript,
 #   computes each agent's cumulative tokensUsed from its OWN transcript, computes the
 #   manager's tokensUsed from the main transcript, upserts every agents[] entry by `id`

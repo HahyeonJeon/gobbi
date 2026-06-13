@@ -2,7 +2,7 @@
 # verify-session-tree.sh — drift gate for the session-tree spec-to-script binding.
 #
 # Purpose:
-#   The runnable --check gate for the session-memory tree. Scaffolds throwaway
+#   The runnable --check gate for the session-record tree. Scaffolds throwaway
 #   step-dirs with scaffold-session-dir.sh, then diffs ONLY the script-created
 #   loop/task subtree against the tree declared in
 #   orchestration/templates/session-tree.md. Also runs the scaffold script's

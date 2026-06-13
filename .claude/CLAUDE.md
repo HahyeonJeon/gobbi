@@ -8,19 +8,21 @@ MUST load this at session start, resume, `/clear`, and compaction. MUST follow t
 
 ## Core Principles
 
-> **The logic of good work: Ideation → Planning → Execution → Memorization → Handoff.**
+> **The logic of good work: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up.**
 
-Every non-trivial task follows these 5 productive steps. Evaluation runs as a sub-phase inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The 6-step state machine (Configuration plus the 5 productive steps) is governed by the `orchestration` skill and its per-step `workflow/` sub-documents — markdown-driven, no CLI. Per-session telemetry lives in `<sessionDir>/session.json` (one file per session, generated at Memorization STEP_EXIT). Cross-session memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.) — no per-project database or summary JSON.
+Every session runs this 6-step state machine — Configuration plus five productive steps — governed by the `orchestration` skill and its per-step `workflow/` sub-documents (markdown-driven, no CLI). Each productive step runs as a 4-sub-phase **loop**: DISCUSSION → WORK → EVALUATION → **RECORD**. RECORD is the per-loop capture sub-phase — it stages findings, decisions, and mistake-candidates to the worktree-local session record; it never writes durable memory. Durable promotion happens in **Wrap-up**, whose 5-stage pipeline includes the **promotion** stage (stage 2 — promote the session record into memory) and the **handoff** stage (stage 4 — the next-session summary). The canonical loop / sub-phase / stage vocabulary — including the stage names — lives in one place: the [gobbi skill Glossary](skills/gobbi/SKILL.md). This top-block defers to it rather than restating the enum. Per-session telemetry lives in `<sessionDir>/session.json` (one file per session). Cross-session durable memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.) — no per-project database or summary JSON.
+
+**Configuration** — Session start: settings, memory check, workflow configuration. Not a loop.
 
 **Ideation** — Explore what to do. PI agents (innovative + best stances) investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
 
+**Preparation** — Verify readiness: memory + workspace skills against the locked Ideation output; close gaps before planning. Optional evaluation.
+
 **Planning** — Decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Optional evaluation.
 
-**Execution** — Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Optional evaluation.
+**Execution** — Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Mandatory evaluation.
 
-**Memorization** — Read the conversation log, extract decisions, state, open questions, and mistakes. Write them where the next session can find them. Without Memorization, every session restarts from zero.
-
-**Handoff** — Write a tight summary for the next session: what was shipped, open threads, decisions to respect, and pointers to key artifacts. Emits `workflow.finish` and closes the session.
+**Wrap-up** — Consolidate the session through a 5-stage pipeline: session-record validation, **promotion** (write the session record into memory), memory validation (the dual-system evaluation gate), **handoff** (the next-session summary), then git finalization. Emits `workflow.finish` and closes the session. Mandatory evaluation. (The [Glossary](skills/gobbi/SKILL.md) holds the canonical name for each stage; this top-block uses plain descriptive words and defers to the Glossary.)
 
 > **Evaluation is a mandatory sub-phase in the gobbi workflow.**
 
@@ -45,7 +47,7 @@ The 10 principles below are the enforceable behavioral discipline for every agen
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
-Every agent MUST load the `mistake` skill before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes staged candidates to project memory (`.gobbi/projects/{name}/mistakes/`) — Layer 1. The Wrap-up assistant also performs Layer-2 promotion: moving generalizable project-mistakes to workspace-level skill storage so they persist across all projects and future sessions. Promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Mistakes are the highest-value knowledge in this system.
+Every agent MUST load the `mistake` skill before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes staged candidates to project mistakes (`.gobbi/projects/{name}/mistakes/`) — Layer 1. The Wrap-up assistant also performs Layer-2 promotion: moving generalizable project-mistakes to workspace-level skill storage so they persist across all projects and future sessions. Promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Mistakes are the highest-value knowledge in this system.
 
 ---
 

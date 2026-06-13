@@ -34,15 +34,15 @@ The manager:
 
 ---
 
-## MEMORIZATION Phase (delegated to `assistant`)
+## RECORD Phase (delegated to `assistant`)
 
-**Manager's job**: spawn the `assistant` agent for synthesis per [`workflow/memorization.md`](memorization.md). For Wrap-up, the canonical artifact is the handoff summary itself plus any final updates to project memory.
+**Manager's job**: spawn the `assistant` agent for synthesis per [`workflow/record.md`](record.md). For Wrap-up, the canonical artifact is the handoff summary itself plus any final updates to memory.
 
-### What Wrap-up commits — promotion writes, not session memory
+### What Wrap-up commits — promotion writes, not session record
 
 The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). So the iteration's `working/`, `evaluation/iter{n}/`, and `outputs/` (including the handoff summary) capture **nothing** in git: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. There is **no** `chore(session): record ...` commit. Iteration boundaries are recorded in `session.json.workflow.wrap-up.iterations[]`, not in git.
 
-What Wrap-up **does** commit is its **promotion writes**: copying promotable `staging/` content into **tracked** project memory — `features/`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc. Those targets are NOT under gitignored `sessions/`, so the commit is real. This is the only durable output of the session; it lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Use the canonical `AI-Provenance-Record:` trailer per `git/conventions.md:116-119`. Wrap-up usually runs a single iteration (`workflow.wrap-up.maxIterations` default 5), so it typically produces one promotion commit before the manager emits `workflow.finish` and closes the session.
+What Wrap-up **does** commit is its **promotion writes**: copying promotable `staging/` content into **tracked** memory — `features/`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc. Those targets are NOT under gitignored `sessions/`, so the commit is real. This is the only durable output of the session; it lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Use the canonical `AI-Provenance-Record:` trailer per `git/conventions.md:116-119`. Wrap-up usually runs a single iteration (`workflow.wrap-up.maxIterations` default 5), so it typically produces one promotion commit before the manager emits `workflow.finish` and closes the session.
 
 ---
 
@@ -69,7 +69,7 @@ The canonical tree is [`orchestration/templates/session-tree.md`](../templates/s
             └── codex/{perspective}.md
 ```
 
-Plus any new mistake entries and project-memory updates under `.gobbi/projects/{project-name}/`.
+Plus any new mistake entries and memory updates under `.gobbi/projects/{project-name}/`.
 
 ---
 
@@ -77,5 +77,5 @@ Plus any new mistake entries and project-memory updates under `.gobbi/projects/{
 
 - Assistant's wrap-up procedure → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
-- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
-- Memory promotion → [`memorization/SKILL.md`](../../memorization/SKILL.md)
+- Synthesis orchestration → [`workflow/record.md`](record.md)
+- Memory promotion → [`record/SKILL.md`](../../record/SKILL.md)

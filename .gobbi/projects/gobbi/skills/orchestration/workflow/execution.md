@@ -1,6 +1,6 @@
 # Workflow — Execution
 
-How the **manager** orchestrates the Execution Loop. The leader / executor / evaluator / assistant participants that own the loop's phases load [`execution/SKILL.md`](../../execution/SKILL.md) (executor's WORK lifecycle, per-task memory access, status contract), [`evaluation/SKILL.md`](../../evaluation/SKILL.md) (evaluator's stages), and [`memorization/SKILL.md`](../../memorization/SKILL.md) (assistant's persistence). This document covers the **orchestration choreography** — when to spawn each specialist, REVISE/PASS/FAIL routing, iteration cap, and Plan-cursor advancement. The substantive discipline is in [`principles`](../../principles/SKILL.md).
+How the **manager** orchestrates the Execution Loop. The leader / executor / evaluator / assistant participants that own the loop's phases load [`execution/SKILL.md`](../../execution/SKILL.md) (executor's WORK lifecycle, per-task memory access, status contract), [`evaluation/SKILL.md`](../../evaluation/SKILL.md) (evaluator's stages), and [`record/SKILL.md`](../../record/SKILL.md) (assistant's persistence). This document covers the **orchestration choreography** — when to spawn each specialist, REVISE/PASS/FAIL routing, iteration cap, and Plan-cursor advancement. The substantive discipline is in [`principles`](../../principles/SKILL.md).
 
 The Execution Loop runs once **per planned task** — the loop body is the four-phase iteration shape, and the entire loop body repeats for each task in the Plan.
 
@@ -45,7 +45,7 @@ When either test fails, the manager **fresh-spawns** the next executor with a fu
 
 **Continuation write-discipline.** Each continuation turn that writes MUST use the absolute worktree path on every Write/Edit and `git -C <worktree-abs>` for all git ops — a re-`cd` does not persist across tool boundaries. After each continuation turn that writes, the manager runs a post-turn tree-check to confirm the write landed on the worktree branch, not the main tree. Full discipline: [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh) and the executor agent spec.
 
-**Compaction kills the teammate.** After `/compact`, `/clear`, or resume, the in-process teammate is gone. The manager MUST spawn a FRESH executor and re-prime it from durable session memory (the task's `outputs/`, prior `working/`, `state.json`) — never message a dead teammate.
+**Compaction kills the teammate.** After `/compact`, `/clear`, or resume, the in-process teammate is gone. The manager MUST spawn a FRESH executor and re-prime it from durable session record (the task's `outputs/`, prior `working/`, `state.json`) — never message a dead teammate.
 
 ### Executor lifecycle
 
@@ -74,17 +74,17 @@ The final response the executor returns is captured as the work artifact: what w
 
 ---
 
-## MEMORIZATION Phase (delegated to `assistant`)
+## RECORD Phase (delegated to `assistant`)
 
 **Manager's job**: spawn the `assistant` agent. For Execution, the assistant integrates the executor's work artifact, both systems' evaluator findings, and the discussion log into the task's `4-execution/task-{NN}-{slug}/outputs/` files. The Execution Loop iterates per-task — each task produces its own `outputs/` directory under its task subdirectory.
 
-### Per-iteration session memory is NOT committed (gitignored)
+### Per-iteration session record is NOT committed (gitignored)
 
-There is **no** per-iteration session-memory commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the task's `working/`, `evaluation/iter{n}/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after MEMORIZATION.
+There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the task's `working/`, `evaluation/iter{n}/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
 
-Per-task iteration boundaries are recorded in `session.json.workflow.execution.iterations[]` (keyed by `{task-id, iter}`), not in git. Durable cross-session memory exists **only** via Wrap-up promotion of `staging/` content into tracked `features/`, `mistakes/`, etc.
+Per-task iteration boundaries are recorded in `session.json.workflow.execution.iterations[]` (keyed by `{task-id, iter}`), not in git. Durable memory exists **only** via Wrap-up promotion of `staging/` content into tracked `features/`, `mistakes/`, etc.
 
-This is separate from the executor's own task-implementation commit (the "Commit" lifecycle phase above). That commit **is real**: it ships the code/doc change per the task's contract into **tracked** workspace files (not under gitignored `sessions/`), and it is absorbed into the PR at merge. Only the session-memory audit-trail commit is the no-op; the implementation commit always stands.
+This is separate from the executor's own task-implementation commit (the "Commit" lifecycle phase above). That commit **is real**: it ships the code/doc change per the task's contract into **tracked** workspace files (not under gitignored `sessions/`), and it is absorbed into the PR at merge. Only the session-record audit-trail commit is the no-op; the implementation commit always stands.
 
 ---
 
@@ -131,7 +131,7 @@ The canonical tree is [`orchestration/templates/session-tree.md`](../templates/s
 - Execution-phase evaluation seed scenarios → [`execution/evaluation.md`](../../execution/evaluation.md)
 - Executor behavioral discipline → [`principles`](../../principles/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
-- Synthesis orchestration → [`workflow/memorization.md`](memorization.md)
+- Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)
 - Executor delegation template → [`delegation/templates/executor.md`](../../delegation/templates/executor.md)
