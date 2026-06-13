@@ -8,7 +8,7 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 >
 > - **`memorization/rules.md`** (this file) is a **SKILL doc** documenting *how memory works* — the naming convention, the frontmatter standard, and the structure rules.
 > - **`memorization/templates/rules.md`** is a **TYPE TEMPLATE** — the authoring template for files of the `rules/` memory type.
-> - **`.gobbi/projects/{project-name}/rules/`** is the **project-memory `rules/` TYPE** — the directory that holds behavioral / structural invariants every agent must follow.
+> - **`.gobbi/projects/{project-name}/rules/`** is the **memory `rules/` TYPE** — the directory that holds behavioral / structural invariants every agent must follow.
 >
 > Three distinct things, two of them sharing the filename `rules.md` at different paths. `memorization/rules.md` (this how-memory-works reference) ≠ `memorization/templates/rules.md` (the rules-type template) ≠ `rules/` (the behavioral-invariant memory type).
 
@@ -122,7 +122,7 @@ tags: [{...}]
 
 ### 2.3 Staging-field stripping on promotion
 
-Staging-only fields exist during the session and MUST be stripped when Wrap-up promotes a staged file to project memory:
+Staging-only fields exist during the session and MUST be stripped when Wrap-up promotes a staged file to memory:
 
 - **`mistake-candidate: true`** — stripped on promotion; its *presence* is what routes the file to `mistakes/`, after which it has done its job.
 - **`finding-id`, `disposition`** (when used purely as eval routing), **`promoted-from`, `promoted-at`** — session-provenance. `git log` + the base `session` field already carry provenance; the extra keys are redundant ad-hoc drift. Fold any durable provenance into base `session` + `created`; strip the rest.
@@ -286,6 +286,6 @@ Frozen `archive/` docs are excluded from this standard, from any retrofit pass, 
 ## Cross-references
 
 - Path-and-type semantics (which directory holds what, who writes it, when, which template stamps it) → [`memory-map.md`](memory-map.md)
-- The assistant's MEMORIZATION procedure and memory-tier access matrix → [`SKILL.md`](SKILL.md)
-- Staging → project-memory promotion routing (including the frontmatter allowlist on promotion) → [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)
+- The assistant's RECORD procedure and memory-tier access matrix → [`SKILL.md`](SKILL.md)
+- Staging → memory promotion routing (including the frontmatter allowlist on promotion) → [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)
 - Slug + collision policy for staging files → [`evaluation/SKILL.md` § Slug + collision policy](../evaluation/SKILL.md#slug--collision-policy)
