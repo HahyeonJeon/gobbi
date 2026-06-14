@@ -20,6 +20,7 @@ sessions/{date}-{session-id}/                  ← session root
 ├── state.json                    metadata — workflow state machine (manager)
 ├── settings.json                 metadata — resolved config (cascade)
 ├── session.json.lock             metadata — advisory write-lock
+├── README.md                     index stub — human-readable map (init-record-map.sh)
 ├── transcripts/                  SINGLE transcript surface — every agent, whole session:
 │   ├── manager-{sessionId}.jsonl       manager transcript (id = session id)
 │   └── {role}-{agentId}.jsonl          one immutable file per agent run,
@@ -154,8 +155,8 @@ verified against.
 - The assistant **copies** transcripts into `transcripts/` at RECORD.
 - Transcripts are **gitignored, session-scoped, never promoted, and removed at
   worktree cleanup**. Promoting a transcript is a constraint violation.
-- The scaffold script **never** creates `transcripts/`. The manager creates it in
-  Configuration alongside the root JSON files.
+- The scaffold script **never** creates `transcripts/`. [`init-record-map.sh`](scripts/init-record-map.sh)
+  creates it (with the root metadata stubs) at Configuration; the manager then stamps the stubs.
 
 ---
 
@@ -171,11 +172,33 @@ verified against.
   declared here. Drift is **caught by the check**, never silently tolerated.
 - **COD-STRUCTURE-2 narrowing**: the verify diff covers **only** the
   script-created loop/task subtree (the `{N}-{loop}/` or `task-{NN}-{slug}/`
-  interior). It does **not** diff the manager-created session-root invariants —
-  `transcripts/`, `session.json`, `state.json`, `settings.json`,
-  `session.json.lock`. Those are created by the manager, never by the scaffold
-  script, so diffing them against the script's output would always fail. The
-  script's verify target is the `<step-dir>` subtree only.
+  interior). It does **not** diff the session-root invariants — `transcripts/`,
+  `session.json`, `state.json`, `settings.json`, `session.json.lock`. Those are
+  created by `init-record-map.sh` (invoked by the manager in Configuration), never
+  by the scaffold script, so diffing them against the script's output would always
+  fail. The script's verify target is the `<step-dir>` subtree only.
+
+---
+
+## Initialization (`init-record-map.sh`)
+
+The full skeleton is bootstrapped in one call by
+[`init-record-map.sh`](scripts/init-record-map.sh), which the manager runs **first**
+in Configuration (after worktree creation), then stamps the metadata stubs with real
+values.
+
+- Creates the **session-root invariants** — `transcripts/` plus create-if-absent
+  metadata stubs (`session.json`, `state.json`, `settings.json`, `session.json.lock`)
+  copied from `orchestration/templates/`, and a `README.md` index stub.
+- Creates all **five loop dirs** (`1-ideation` … `5-wrap-up`) by **delegating** each
+  loop interior to [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh),
+  the single dir-materializer, so the per-loop dir + staging vocabulary stays defined
+  in exactly one place. Execution task dirs (`task-{NN}-{slug}`) stay lazy (names
+  unknown at init); `interview/` is out of scope (bootstrap exception).
+- **Idempotent + create-if-absent**: dirs use `mkdir -p`; metadata + README stubs are
+  never overwritten, so re-running on a resumed / cleared / compacted session preserves
+  the manager's stamped values. Args: `<session-root>` (absolute) and `<mode>`
+  (`chat|auto`, selects the settings template). Fail-closed on bad args.
 
 ---
 
