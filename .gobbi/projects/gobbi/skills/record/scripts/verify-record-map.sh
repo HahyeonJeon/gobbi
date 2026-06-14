@@ -25,8 +25,8 @@ set -euo pipefail
 
 SELF="verify-record-map.sh"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-scaffold="$script_dir/scaffold-session-dir.sh"
-spec_doc="$script_dir/../../record/record-map.md"
+scaffold="$script_dir/../../orchestration/scripts/scaffold-session-dir.sh"
+spec_doc="$script_dir/../record-map.md"
 
 log() { printf '%s: %s\n' "$SELF" "$*" >&2; }
 

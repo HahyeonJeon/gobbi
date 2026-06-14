@@ -200,7 +200,7 @@ The script creates the 4-slot interior (`working/`, `working/research/`, `evalua
 
 **The session-root `transcripts/` dir is the manager's, not the script's.** The manager creates the single session-root `transcripts/` in Configuration alongside the root JSON files; the scaffold script **never** creates a `transcripts/` dir (there is no per-loop or per-task `transcripts/`).
 
-**Drift gate.** [`verify-record-map.sh --check`](scripts/verify-record-map.sh) is the manual gate that scaffolds throwaway step-dirs and diffs the script's output against `record-map.md`, plus runs the path-validation negative cases. Run it after editing either the scaffold script or the spec doc; it fails on any drift between the two. The diff is narrowed (COD-STRUCTURE-2) to the script-created `<step-dir>` subtree only — never the manager-created session-root invariants (`transcripts/`, the JSON files).
+**Drift gate.** [`verify-record-map.sh --check`](../record/scripts/verify-record-map.sh) is the manual gate that scaffolds throwaway step-dirs and diffs the script's output against `record-map.md`, plus runs the path-validation negative cases. Run it after editing either the scaffold script or the spec doc; it fails on any drift between the two. The diff is narrowed (COD-STRUCTURE-2) to the script-created `<step-dir>` subtree only — never the manager-created session-root invariants (`transcripts/`, the JSON files).
 
 ### Per-task Execution layout (the quartet)
 
