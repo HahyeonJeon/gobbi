@@ -2,7 +2,7 @@
 
 ## What a feature directory is
 
-A feature directory is a **durable-capability directory** — one per gobbi value-feature, not a project-scoped or feature-tagged content type like the rest of memory (see [`rules.md` § 3](../rules.md), where `features` is its own tier). Its `README.md` is the feature's **identity document**: a lightweight overview that points into the feature's typed subdirectories without duplicating them. Each subdirectory holds one memory type scoped to this feature (`design/`, `decisions/`, `scenarios/`, …), populated by Wrap-up promoting session staging.
+A feature directory is a **durable-capability directory** — one per gobbi value-feature, not a project-scoped or feature-tagged content type like the rest of memory (see [`rules.md` § 3](../rules.md#3-structure-rules), where `features` is its own tier). Its `README.md` is the feature's **identity document**: a lightweight overview that points into the feature's typed subdirectories without duplicating them. Each subdirectory holds one memory type scoped to this feature (`design/`, `decisions/`, `scenarios/`, …), populated by Wrap-up promoting session staging.
 
 This doc has two halves: the **map of a feature directory** (the per-feature subdir layout — what each part is for) and the **feature README spec** (how the identity doc is stamped and maintained).
 
@@ -140,6 +140,6 @@ The manager updates `status` through the active runtime's user-decision primitiv
 ## Cross-references
 
 - Tier-wide path index (session-staging rows, cross-tier routing, the Templates index) → [`memory-map.md`](../memory-map.md). This doc owns the per-feature subdir spec (what each holds, when/who writes, lazy bootstrapping); `memory-map.md` owns the tier-wide path index.
-- Naming convention, frontmatter standard, structure rules — including `features` as its own tier → [`rules.md` § 3](../rules.md)
+- Naming convention, frontmatter standard, structure rules — including `features` as its own tier → [`rules.md` § 3](../rules.md#3-structure-rules)
 - Wrap-up's promotion + README stamp/update procedure → [`../../wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Move-on-terminal procedure for a retired feature directory → [`archive.md`](archive.md)

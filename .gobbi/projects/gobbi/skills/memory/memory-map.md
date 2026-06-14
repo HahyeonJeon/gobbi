@@ -108,19 +108,19 @@ The per-feature subdir **spec** — what each subdir holds, when/who writes it, 
 
 Each feature directory is bootstrapped lazily by Wrap-up on first promotion to that feature (`features/{feature-name}/` is **not** created at Lock Scope or earlier).
 
-| Path | Description | Writer | When | Template |
-|---|---|---|---|---|
-| `features/{feature-name}/README.md` | Feature overview, status, subdirectory pointers, recent activity table (cap 20 entries) | Wrap-up | first promotion to this feature; subsequent activity updates | [`templates/feature.md`](templates/feature.md) |
-| `features/{feature-name}/scenarios/{slug}.md` | Feature scenarios promoted from session staging | Wrap-up | per promotion | [`templates/scenarios.md`](templates/scenarios.md) |
-| `features/{feature-name}/checklists/{slug}.md` | Feature implementation checklist items | Wrap-up | per promotion | [`templates/checklists.md`](templates/checklists.md) |
-| `features/{feature-name}/decisions/{slug}.md` | Feature-scope decisions (design choices, dispute rationales, deferred risks) | Wrap-up | per promotion | [`templates/decisions.md`](templates/decisions.md) |
-| `features/{feature-name}/design/{slug}.md` | Feature-scope design topics. Project-wide design escalates to `.gobbi/projects/{project-name}/design/` through the active runtime's user-decision primitive | Wrap-up | per promotion | [`templates/design.md`](templates/design.md) |
-| `features/{feature-name}/discussions/{slug}.md` | Substantive user-decision topics scoped to the feature | Wrap-up | per promotion | [`templates/discussions.md`](templates/discussions.md) |
-| `features/{feature-name}/references/{slug}.md` | External insight references confirmed during Ideation Sub-step C | Wrap-up | per promotion | [`templates/references.md`](templates/references.md) |
-| `features/{feature-name}/plans/{date}-{slug}.md` | Plan artifacts produced by Planning loop (date-prefixed for chronological ordering) | Wrap-up | per Planning `PASS` | [`templates/plans.md`](templates/plans.md) |
-| `features/{feature-name}/backlogs/{slug}.md` | Feature-scope deferred tasks | Wrap-up | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
-| `features/{feature-name}/changelogs/{slug}.md` | Feature-scope changelog entries — what shipped, when | Wrap-up | per ship | [`templates/changelogs.md`](templates/changelogs.md) |
-| `features/{feature-name}/mistakes/{slug}.md` | Feature-scope mistakes — corrections that apply only within this feature | Wrap-up | per `mistake-candidate: true` (user-scoped feature) | [`templates/mistakes.md`](templates/mistakes.md) |
+| Path | Writer | When | Template |
+|---|---|---|---|
+| `features/{feature-name}/README.md` | Wrap-up | first promotion to this feature; subsequent activity updates | [`templates/feature.md`](templates/feature.md) |
+| `features/{feature-name}/scenarios/{slug}.md` | Wrap-up | per promotion | [`templates/scenarios.md`](templates/scenarios.md) |
+| `features/{feature-name}/checklists/{slug}.md` | Wrap-up | per promotion | [`templates/checklists.md`](templates/checklists.md) |
+| `features/{feature-name}/decisions/{slug}.md` | Wrap-up | per promotion | [`templates/decisions.md`](templates/decisions.md) |
+| `features/{feature-name}/design/{slug}.md` | Wrap-up | per promotion | [`templates/design.md`](templates/design.md) |
+| `features/{feature-name}/discussions/{slug}.md` | Wrap-up | per promotion | [`templates/discussions.md`](templates/discussions.md) |
+| `features/{feature-name}/references/{slug}.md` | Wrap-up | per promotion | [`templates/references.md`](templates/references.md) |
+| `features/{feature-name}/plans/{date}-{slug}.md` | Wrap-up | per Planning `PASS` | [`templates/plans.md`](templates/plans.md) |
+| `features/{feature-name}/backlogs/{slug}.md` | Wrap-up | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
+| `features/{feature-name}/changelogs/{slug}.md` | Wrap-up | per ship | [`templates/changelogs.md`](templates/changelogs.md) |
+| `features/{feature-name}/mistakes/{slug}.md` | Wrap-up | per `mistake-candidate: true` (user-scoped feature) | [`templates/mistakes.md`](templates/mistakes.md) |
 
 ### Project-wide tiers
 
