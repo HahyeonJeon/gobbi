@@ -285,6 +285,20 @@ If a merge conflict surfaces during the fix loop (the branch falls behind base a
 
 ---
 
+## Worktree CWD discipline
+
+How current working directory (CWD) and paths behave inside a worktree. A subagent runs git ops and session writes from a worktree, but the CWD it can rely on is not stable. This section states the rules that keep both surfaces anchored to the worktree.
+
+**CWD resets between turns.** In Claude Code, each Bash tool call resets the CWD to the session start directory. A relative path resolves against that directory, not against where a prior command left off. A `cd` does not persist across tool boundaries. So every git op and every session-record write MUST use an explicit absolute path — never a relative or `pwd`-derived one.
+
+**Absolute-worktree-path mandate.** Session writes (notes, staging, memory drafts) root at the absolute `session.json.git.worktreePath`. A `null` `worktreePath` is a malformed or partial `session.json` — surface it as an error, never treat it as a main-tree write signal. This is the write-path rule in the [Memory Access Matrix](#memory-access-matrix); follow it there.
+
+**`git -C <worktree-abs>` for all git ops.** Never a bare `git` that resolves against the reset CWD — after a reset it commits to the main tree's branch instead of the worktree branch. Always pass `git -C <worktree-abs>`. This is the established pattern in the executor and leader role prompts (`agents/executor.md:99-101`, `agents/leader.md:112`) — both carry the `git -C` discipline (INT-6).
+
+**Codex CWD inheritance.** `codex exec` inherits the CWD from the calling shell, and codex auto-detects the git project root — which may be the worktree root. When session paths live outside the detected root, `--cd <root>` anchors codex and `--add-dir` extends the writable set. This is the git consequence; the full `codex exec` CWD detail is owned by [`codex` skill § Operational discipline](../codex/SKILL.md#operational-discipline) — see it there, do not duplicate.
+
+---
+
 ## Failure Modes and Recovery
 
 Common failures and their recovery paths. The **Runtime** column marks which runtimes a failure applies to (`claude` / `codex` / `both`). Runtime-specific rows trace back to the per-runtime posture in [Runtime git environment](#runtime-git-environment); `both` rows are runtime-neutral.
