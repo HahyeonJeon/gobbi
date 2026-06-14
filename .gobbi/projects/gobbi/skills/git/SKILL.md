@@ -102,7 +102,28 @@ Before the git workflow can function, certain conditions must hold. These divide
 | `gh` CLI authenticated to the remote | API access required for issue / PR / CI |
 | Repository has a configured `origin` remote | Pushing and PR creation require a remote target |
 
-These prerequisites gate the **PR lifecycle only**. The worktree and its branch are always created with local git — no `gh` is required for them. **No-`gh` resilience**: if the user cannot install `gh`, cannot authenticate, or no remote is available, the session still creates the worktree and commits on the branch; the manager DEFERS the PR and surfaces a "PR deferred — push/open when `gh` is available" notice. The session never falls back to working in the main tree.
+These prerequisites gate the **PR lifecycle only**. The worktree and its branch are always created with local git — no `gh` is required for them.
+
+**PR-deferred resilience — five triggers.** The manager DEFERS the PR (creates the worktree and commits on the branch, then surfaces a "PR deferred — push/open when the blocker clears" notice) on ANY of these five triggers. The deferral mechanism is the same for all five; only the trigger differs:
+
+1. **`gh` missing** — the CLI is not installed or not on `PATH`.
+2. **`gh` unauthenticated** — `gh auth status` fails; no API access.
+3. **No remote** — the repo has no configured `origin`.
+4. **Network-blocked** — the sandbox has network off (default Codex `workspace-write`; Claude Code with the push domain not in `allowedDomains`), so `git push` / `gh` cannot reach the remote. Detected by the git posture probe at P1.
+5. **Approval-not-granted** — on Codex `on-request` the user declined the push/`gh` escalation, or the session is on `never` (no escalation is offered). The networked op cannot proceed autonomously.
+
+The session never falls back to working in the main tree. See [Runtime git environment](#runtime-git-environment) for the per-runtime posture behind triggers 4–5.
+
+**Remediation menu — OFFERED before deferral, never auto-applied (Always-Ask).** Before deferring on trigger 4 or 5, the manager OFFERS a runtime-specific remediation the user may accept or decline. This is an Always-Ask decision per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification) (it modifies sandbox / config state). The manager NEVER auto-edits `.codex/config.toml` or Claude Code settings, and gobbi ships NO default network enablement. If the user declines, the op defers.
+
+| Runtime | Offered remediation |
+|---|---|
+| Claude Code | Add `github.com` (and `api.github.com`) to `allowedDomains`; add `gh` to `excludedCommands` to fix the Seatbelt TLS failure. |
+| Codex | Opt into `[sandbox_workspace_write] network_access = true`, OR approve the `on-request` escalation for the specific push/`gh` op. |
+
+The menu is **OFFERED only** — the manager surfaces it through the active runtime's user-decision primitive and applies nothing on its own. A declined remediation routes to the PR-deferred path above.
+
+**Read-only Codex policy (OQ-5).** A `read-only` Codex session cannot commit or `git worktree add`, so the worktree-commit model cannot run at all — this is not a per-op deferral but a session-level blocker. The manager detects read-only via the git posture probe at Configuration and surfaces: "gobbi needs at least `workspace-write`." It then OFFERS two options — (i) re-launch the session with `workspace-write`, or (ii) run an explicit read-only **plan/chat-only** mode (no commits, no Execution). It does NOT fall back to per-op approval escalation and does NOT fail silently.
 
 **Warning — inform the user, continue:**
 
@@ -172,13 +193,14 @@ Numbered procedures the manager runs during a git-active session. Subagents exec
 
 At session start when the user selects "Git workflow (worktree + PR)":
 
-1. Run `gh --version` to confirm CLI availability.
-2. Run `gh auth status` to confirm authentication.
-3. Run `git remote get-url origin` to confirm the remote is configured.
-4. Run `git ls-remote --heads origin <base-branch>` to confirm the base branch exists on the remote.
-5. Run `git check-ignore -q .gobbi/projects/<name>/worktrees/` to confirm the worktree directory is gitignored.
+1. **Read the runtime git posture FIRST** — run [`skills/git/scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) to learn the runtime / network / sandbox-mode / approval-policy BEFORE assuming the PR lifecycle (push / `gh`) can run. The probe is read-only; it never mutates state. A field reported as `unknown` (sandbox-mode and approval-policy are not introspectable) means "ask before assuming push works" — do not treat `unknown` as "enabled". If the probe reports `read-only` Codex, apply the read-only policy in [Prerequisites](#prerequisites) before continuing.
+2. Run `gh --version` to confirm CLI availability.
+3. Run `gh auth status` to confirm authentication.
+4. Run `git remote get-url origin` to confirm the remote is configured.
+5. Run `git ls-remote --heads origin <base-branch>` to confirm the base branch exists on the remote.
+6. Run `git check-ignore -q .gobbi/projects/<name>/worktrees/` to confirm the worktree directory is gitignored.
 
-If any **Critical** prerequisite fails, worktree creation still proceeds (local git); the manager defers the PR and surfaces the "PR deferred" notice rather than aborting the session. If any **Warning** prerequisite fails, inform the user and continue (or remediate per their choice).
+If any **Critical** prerequisite fails — or the posture probe shows network-blocked / approval-not-granted — worktree creation still proceeds (local git); the manager defers the PR and surfaces the "PR deferred" notice rather than aborting the session (the five-trigger deferral in [Prerequisites](#prerequisites)). If any **Warning** prerequisite fails, inform the user and continue (or remediate per their choice).
 
 ### P2 — Create worktree
 
@@ -189,7 +211,7 @@ Steps (run once at Configuration row 1; not re-invoked per task entering Executi
 1. **Sync the base branch** — `git checkout <base-branch> && git pull --ff-only` to ensure the worktree branches from the up-to-date base.
 2. **Re-verify base branch on remote** — `git ls-remote --heads origin <base-branch>` (the base may have been deleted between session start and now).
 3. **Create the worktree** — `git worktree add -b <branch-name> .gobbi/projects/<name>/worktrees/<branch-name> <base-branch>`. Branch name follows the regex in [`conventions.md` § Branch Naming](conventions.md#branch-naming).
-4. **Install dependencies in the worktree** — each worktree has its own working directory; package managers, virtual environments, and build caches are not shared. Run the project's install command (e.g., `bun install`, `npm ci`) before delegating.
+4. **Install dependencies in the worktree** — each worktree has its own working directory; package managers, virtual environments, and build caches are not shared. Run the project's install command (e.g., `bun install`, `npm ci`) before delegating. **This step needs network**: under a sandbox with network off (default Codex `workspace-write`; Claude Code with no matching `allowedDomains`) it may be blocked or escalate to approval. The install is NOT guaranteed under sandbox — if it is blocked, handle it via the remediation menu, then the PR-deferred path, in [Prerequisites](#prerequisites). Do not assume the install always succeeds.
 5. **Pass the absolute worktree path** to every delegation prompt that operates on this task.
 
 ### P3 — Delegate within worktree (subagent procedure)
