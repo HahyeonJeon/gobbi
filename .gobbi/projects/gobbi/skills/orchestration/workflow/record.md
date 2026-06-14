@@ -4,7 +4,7 @@ How the **manager** orchestrates the RECORD sub-phase that runs at the end of ev
 
 The manager's job at RECORD is to **spawn the assistant, deliver the right inputs, validate the assistant's output mechanically, and advance the loop** — not to do the synthesis itself. RECORD runs **after every EVALUATION verdict** (`PASS`, `REVISE`, or `FAIL`) and **before** the `ITER / EXIT` decision: every iteration's evidence must be preserved before the loop either re-enters DISCUSSION or exits.
 
-All assistant writes are **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/...` plus own-loop fields in `session.json`. The assistant **never** writes to memory; Wrap-up is the sole writer there. The manager validates this invariant via post-write snapshot diff. For the canonical session-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md), the single source of truth.
+All assistant writes are **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/...` plus own-loop fields in `session.json`. The assistant **never** writes to memory; Wrap-up is the sole writer there. The manager validates this invariant via post-write snapshot diff. For the canonical session-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`record/record-map.md`](../../record/record-map.md), the single source of truth.
 
 ---
 

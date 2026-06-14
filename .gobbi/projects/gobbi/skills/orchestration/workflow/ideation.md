@@ -55,7 +55,7 @@ The manager runs the user through four sub-steps in order. Each is gated by the 
 | C | Research | Present leader's internal + external insights to user **separately**; let user push back / refine | Load [`research/SKILL.md`](../../research/SKILL.md); run Internal Research and External Research deeply; extract insights using the Insight format. Internal and external insights are managed independently |
 | D | Design | Present leader's scenarios + checklist + directional design decisions + validation strategy to user; iterate until satisfied | Propose scenarios (golden / edge / failure / adversarial); anchored implementation checklist; **directional design decisions** (library / framework / design pattern / API shape / etc.) with rationale anchored to insights. Detailed mechanism deferred to Execution |
 
-After Sub-step B, the manager stamps `project`, `feature`, `task` into `session.json` (top-level fields) and bootstraps the **session loop directory** at `sessions/{date}-{session-id}/1-ideation/{working,staging,evaluation,outputs}/` (the 4-slot interior per [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). The manager does **not** touch `features/{feature-name}/...` during Ideation; that path is owned by Wrap-up's memory promotion.
+After Sub-step B, the manager stamps `project`, `feature`, `task` into `session.json` (top-level fields) and bootstraps the **session loop directory** at `sessions/{date}-{session-id}/1-ideation/{working,staging,evaluation,outputs}/` (the 4-slot interior per [`record/record-map.md`](../../record/record-map.md)). The manager does **not** touch `features/{feature-name}/...` during Ideation; that path is owned by Wrap-up's memory promotion.
 
 ### When to escalate to user
 
@@ -102,7 +102,7 @@ Verdict is `PASS` or `REVISE`. **Both verdicts advance to RECORD first** (so eac
 **Manager's job**: spawn the `assistant` agent after every EVALUATION verdict — `PASS` or `REVISE`. The assistant follows [`ideation/SKILL.md` § RECORD Phase](../../ideation/SKILL.md#record-phase) and [`record/SKILL.md`](../../record/SKILL.md) for template-stamping.
 
 Every iteration the assistant:
-- Copies each agent's transcript into the single session-root `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` (one immutable per-agent file accumulating across all loops — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)); there is no per-loop `transcripts/` dir
+- Copies each agent's transcript into the single session-root `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` (one immutable per-agent file accumulating across all loops — see [`record/record-map.md`](../../record/record-map.md)); there is no per-loop `transcripts/` dir
 - Appends `{iter: n, verdict, finishedAt}` to `session.json.workflow.ideation.iterations[]`
 
 Only on `PASS` the assistant additionally:
@@ -114,7 +114,7 @@ Only on `PASS` the assistant additionally:
 
 ### Per-iteration session record is NOT committed (gitignored)
 
-There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
+There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`record/record-map.md`](../../record/record-map.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
 
 Iteration boundaries are recorded in `session.json.workflow.ideation.iterations[]`, not in git. Durable memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content into tracked `features/`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc. Only promoted content survives the session.
 
@@ -137,7 +137,7 @@ Iteration cap: `workflow.ideation.maxIterations` (default 5). When the cap is re
 
 ## Output
 
-The canonical tree is [`orchestration/templates/session-tree.md`](../templates/session-tree.md); Ideation's loop dir is `1-ideation/`.
+The canonical tree is [`record/record-map.md`](../../record/record-map.md); Ideation's loop dir is `1-ideation/`.
 
 ```
 .gobbi/projects/{project}/sessions/{date}-{session-id}/

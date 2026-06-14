@@ -296,7 +296,7 @@ sessions/{date}-{session-id}/{N}-{loop}/evaluation/
 
 - `{date}` — session start date in `YYYY-MM-DD`
 - `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.
-- `{N}-{loop}` — the number-prefixed on-disk loop dir being evaluated (`1-ideation` / `2-preparation` / `3-planning` / `4-execution` / `5-wrap-up`). The `workflow.{loop}` JSON keys stay **bare** (no `{N}-` prefix) — see [`orchestration/templates/session-tree.md` § SEAM-3](../templates/session-tree.md)
+- `{N}-{loop}` — the number-prefixed on-disk loop dir being evaluated (`1-ideation` / `2-preparation` / `3-planning` / `4-execution` / `5-wrap-up`). The `workflow.{loop}` JSON keys stay **bare** (no `{N}-` prefix) — see [`record/record-map.md` § SEAM-3](../../record/record-map.md)
 - `{system}` — `claude` or `codex` (the system running this evaluator instance)
 - `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`); the holistic Stage 3 output uses the fixed filename `overall.md`
 

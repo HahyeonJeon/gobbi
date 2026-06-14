@@ -75,7 +75,7 @@ Wrap-up inventories `staging/` **only** for promotion. The other four session-tr
 - Every workflow loop's `staging/`: `1-ideation/staging/`, `2-preparation/staging/`, `3-planning/staging/`, `4-execution/staging/` (and each `4-execution/task-{NN}-{slug}/staging/`).
 - **`interview/staging/`** — the interview bootstrap surface keeps its own shape (not swept to the flat-4-slot model), but its `staging/` **remains a valid, enumerated promotion source**. In mature-project reruns the interview writes to its `staging/`, not directly to memory, and Wrap-up must enumerate it.
 
-**F-P2 — do not over-narrow.** The exclusion targets `transcripts/`, `working/`, `evaluation/`, and `outputs/` — it does **not** exclude all non-workflow-loop dirs. The rule is "inventory `staging/` only", not "inventory workflow-loop `staging/` only". Narrowing it to drop `interview/staging/` would lose mature-project promotions and is wrong. See [`orchestration/templates/session-tree.md` § Wrap-up promotion-inventory rule](../orchestration/templates/session-tree.md) for the authoritative statement.
+**F-P2 — do not over-narrow.** The exclusion targets `transcripts/`, `working/`, `evaluation/`, and `outputs/` — it does **not** exclude all non-workflow-loop dirs. The rule is "inventory `staging/` only", not "inventory workflow-loop `staging/` only". Narrowing it to drop `interview/staging/` would lose mature-project promotions and is wrong. See [`record/record-map.md` § Wrap-up promotion-inventory rule](../record/record-map.md) for the authoritative statement.
 
 > **Bootstrap feature directory on-demand.**
 

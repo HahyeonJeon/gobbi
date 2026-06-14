@@ -60,8 +60,8 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/persist-sessi
 
 ## Related
 
-- `orchestration/templates/session-tree.md` — single source of truth for the session tree shape.
+- `record/record-map.md` — single source of truth for the session record tree shape.
 - `orchestration/scripts/scaffold-session-dir.sh` — the idempotent materializer.
-- `orchestration/scripts/verify-session-tree.sh` — the sync-check gate.
+- `record/scripts/verify-record-map.sh` — the sync-check gate.
 - `orchestration/scripts/check-markdown-links.sh` — link-resolution guard (added session `7e00f98e`).
 - `orchestration/scripts/check-residual-vocab.sh` — multi-class vocabulary residual guard (added session `7e00f98e`).
