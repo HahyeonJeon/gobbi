@@ -152,6 +152,10 @@ The menu is **OFFERED only** — the manager surfaces it through the active runt
 
 The manager passes the worktree's absolute path in every delegation prompt. The subagent's first action is to `cd` to that path. From that point, the subagent follows the standard Study, Plan, Execute, Verify, Commit lifecycle.
 
+**The split maps onto each runtime's sandbox boundary.** `git commit` writes inside the workspace `.git`, so it runs **in-boundary** on BOTH runtimes — a subagent can always commit its verified work without escalation. `git push` and `gh` need network, so they are **out-of-boundary** (they prompt for approval or fail by default) — which is exactly why the manager owns them and the subagent never pushes. The split is not only a gobbi convention; it lines up with what each sandbox allows. See [Runtime git environment](#runtime-git-environment) for the per-runtime posture.
+
+**`.git/hooks` and `.git/config` writes are OS-denied.** Commit-in-worktree works on both runtimes because the sandbox grants writes to the shared `.git` (refs + index). It does NOT grant writes to `.git/hooks/` or `.git/config` — those are denied by the OS sandbox, not only by the gobbi rule in the [Memory Access Matrix](#memory-access-matrix). The "never modify `.git/config`" rule is an OS-enforced reality: an agent that tries cannot succeed regardless of intent.
+
 ---
 
 ## Forbidden Operations
@@ -245,6 +249,8 @@ After all subtasks for the issue are complete and verified:
 
 If any precondition fails, do not merge — surface the failing item to the user.
 
+**Merge-conflict recovery (runtime-neutral).** A base-sync `git pull --ff-only` (P2 step 1 or the post-merge sync below) or a PR-branch conflict against the base must not be resolved silently. Recovery path: **detect** the conflict (the `--ff-only` pull aborts, or the PR shows merge conflicts) → **surface to the manager** → the manager delegates resolution to the executor, who **resolves it in the worktree** (the in-boundary commit model applies) → **re-verify** (run the task's verification commands again on the resolved tree) → **continue** the merge sequence. Forbidden Operations still apply: no force-push and no `git reset --hard` without an explicit Always-Ask approval. This split — manager detects/owns the merge, executor resolves in the worktree — follows the same boundary as commit-vs-push.
+
 **Merge sequence** (all preconditions pass):
 
 1. `gh pr merge <num> --squash --delete-branch` — atomic squash merge + remote branch deletion.
@@ -275,21 +281,27 @@ When a PR's CI fails:
 5. **Push the fix** — `git push` (CI re-runs automatically against the updated branch).
 6. **Monitor** — `gh pr checks <num> --watch` until pass or the user decides to defer.
 
+If a merge conflict surfaces during the fix loop (the branch falls behind base and a re-sync conflicts), apply the same recovery as P5: detect → surface to the manager → executor resolves in the worktree → re-verify → re-push. No force-push without an explicit Always-Ask approval.
+
 ---
 
 ## Failure Modes and Recovery
 
-Common failures and their recovery paths.
+Common failures and their recovery paths. The **Runtime** column marks which runtimes a failure applies to (`claude` / `codex` / `both`). Runtime-specific rows trace back to the per-runtime posture in [Runtime git environment](#runtime-git-environment); `both` rows are runtime-neutral.
 
-| Failure | Recovery |
-|---|---|
-| Worktree creation fails — branch already exists | Branch may be in use by another session or left over. Report to user; offer to reuse the existing worktree (Procedure P6) or rename the branch. |
-| `gh` CLI not authenticated | Covered by Procedure P1 — verified at session setup. |
-| Orphaned worktrees from crashed session | Procedure P6 (Recover orphaned worktree). |
-| CI failure on the PR | Procedure P7 (Handle CI failure). |
-| Cleanup failure when removing a worktree | Normal removal fails when the worktree has uncommitted files or locked refs. Run `git status` inside the worktree first — if unclean, commit or discard explicitly before retrying removal. `--force` / `-f` is Forbidden without explicit user approval through the active runtime's user-decision primitive (it silently discards uncommitted work). After successful removal, prune (`git worktree prune`) and clean empty parent dirs. |
-| Stash content lost during worktree removal | Stash is per-worktree and lost with the worktree. **Do not use stash inside worktrees** (Forbidden Operations table). For context switches, create a temporary linked worktree per the safe-alternative rule. |
-| Base branch deleted on remote between session start and worktree creation | Procedure P2 step 2 (re-verification) catches this. Surface to user; switch base or recreate. |
+| Failure | Runtime | Recovery |
+|---|---|---|
+| Worktree creation fails — branch already exists | both | Branch may be in use by another session or left over. Report to user; offer to reuse the existing worktree (Procedure P6) or rename the branch. |
+| `gh` CLI not authenticated | both | Covered by Procedure P1 — verified at session setup. |
+| Orphaned worktrees from crashed session | both | Procedure P6 (Recover orphaned worktree). |
+| CI failure on the PR | both | Procedure P7 (Handle CI failure). |
+| Merge conflict on base sync or PR branch | both | Detect → surface to the manager → executor resolves in the worktree → re-verify → continue (P5 Merge-conflict recovery; P7 step 6). No force-push without Always-Ask. |
+| Write to `.git/hooks` or `.git/config` attempted from inside the worktree | both | OS-denied by the sandbox (not only the gobbi rule) — the write cannot succeed. Commit (refs + index) is unaffected. See [Role Boundaries](#role-boundaries). |
+| `git push` / `gh` blocked — network off or approval not granted | codex | Default `workspace-write` keeps network OFF; `on-request` raises an approval prompt and `never` offers none. The manager OFFERS the remediation menu, then DEFERS the PR (triggers 4–5 in [Prerequisites](#prerequisites)). |
+| `git push` / `gh` blocked — domain not allowed or `gh` TLS fails under Seatbelt | claude | No domains pre-allowed (needs `allowedDomains`); `gh` may fail TLS under macOS Seatbelt (needs `excludedCommands`). The manager OFFERS the remediation menu, then DEFERS the PR (triggers 4–5 in [Prerequisites](#prerequisites)). |
+| Cleanup failure when removing a worktree | both | Normal removal fails when the worktree has uncommitted files or locked refs. Run `git status` inside the worktree first — if unclean, commit or discard explicitly before retrying removal. `--force` / `-f` is Forbidden without explicit user approval through the active runtime's user-decision primitive (it silently discards uncommitted work). After successful removal, prune (`git worktree prune`) and clean empty parent dirs. |
+| Stash content lost during worktree removal | both | Stash is per-worktree and lost with the worktree. **Do not use stash inside worktrees** (Forbidden Operations table). For context switches, create a temporary linked worktree per the safe-alternative rule. |
+| Base branch deleted on remote between session start and worktree creation | both | Procedure P2 step 2 (re-verification) catches this. Surface to user; switch base or recreate. |
 
 ---
 
