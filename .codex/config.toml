@@ -1,3 +1,13 @@
+# Codex runtime git posture is configured here: sandbox_mode, approval_policy,
+# and the workspace-write network toggle. Gobbi ships NONE of these by default
+# (D2 safe-by-default) — no network-enable key, no sandbox-loosening key. The
+# runtime's own default posture applies: workspace-write + on-request, network
+# OFF. git commit runs in-boundary; git push / gh escalate or are blocked. To
+# enable a networked push the user opts in via the remediation menu (Always-Ask)
+# — gobbi never sets it here automatically. See the git skill:
+# skills/git/SKILL.md § Runtime git environment and skills/git/conventions.md
+# § Runtime git posture — where it is configured.
+
 [agents]
 max_threads = 6
 max_depth = 1
