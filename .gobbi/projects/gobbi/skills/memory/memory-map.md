@@ -104,11 +104,13 @@ The four feature-subdir-only template types (`changelogs`, `discussions`, `scena
 
 ### Feature-scoped — `features/{feature-name}/`
 
+The per-feature subdir **spec** — what each subdir holds, when/who writes it, lazy bootstrapping — lives in [`templates/feature.md`](templates/feature.md). The table below is this tier's **path index** (canonical home + which template stamps each path); for the descriptive per-subdir reference, see `feature.md`.
+
 Each feature directory is bootstrapped lazily by Wrap-up on first promotion to that feature (`features/{feature-name}/` is **not** created at Lock Scope or earlier).
 
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|
-| `features/{feature-name}/README.md` | Feature overview, status, subdirectory pointers, recent activity table (cap 20 entries) | Wrap-up | first promotion to this feature; subsequent activity updates | [`templates/feature-readme.md`](templates/feature-readme.md) |
+| `features/{feature-name}/README.md` | Feature overview, status, subdirectory pointers, recent activity table (cap 20 entries) | Wrap-up | first promotion to this feature; subsequent activity updates | [`templates/feature.md`](templates/feature.md) |
 | `features/{feature-name}/scenarios/{slug}.md` | Feature scenarios promoted from session staging | Wrap-up | per promotion | [`templates/scenarios.md`](templates/scenarios.md) |
 | `features/{feature-name}/checklists/{slug}.md` | Feature implementation checklist items | Wrap-up | per promotion | [`templates/checklists.md`](templates/checklists.md) |
 | `features/{feature-name}/decisions/{slug}.md` | Feature-scope decisions (design choices, dispute rationales, deferred risks) | Wrap-up | per promotion | [`templates/decisions.md`](templates/decisions.md) |
@@ -159,7 +161,7 @@ All templates live under [`templates/`](templates/). The index below lets you ju
 | [`discussions.md`](templates/discussions.md) | `{N}-{loop}/staging/discussions/`, `features/{feature-name}/discussions/` |
 | [`backlogs.md`](templates/backlogs.md) | `{N}-{loop}/staging/backlogs/{feature,project}/`, `features/{feature-name}/backlogs/`, `.gobbi/projects/{project-name}/backlogs/` |
 | [`plans.md`](templates/plans.md) | `3-planning/staging/plans/`, `features/{feature-name}/plans/`, `.gobbi/projects/{project-name}/plans/` |
-| [`feature-readme.md`](templates/feature-readme.md) | `features/{feature-name}/README.md` |
+| [`feature.md`](templates/feature.md) | `features/{feature-name}/README.md` |
 | [`mistakes.md`](templates/mistakes.md) | `features/{feature-name}/mistakes/`, `.gobbi/projects/{project-name}/mistakes/` |
 | [`rules.md`](templates/rules.md) | `.gobbi/projects/{project-name}/rules/` |
 | [`notes.md`](templates/notes.md) | `{N}-{loop}/staging/notes/`, `.gobbi/projects/{project-name}/notes/` |

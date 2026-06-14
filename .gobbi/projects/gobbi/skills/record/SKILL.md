@@ -315,7 +315,7 @@ Memory directory templates (consumed by Wrap-up, not by loop RECORD) also live u
 
 | Memory directory | Template |
 |---|---|
-| `.gobbi/projects/{project-name}/features/{feature-name}/README.md` | [`templates/feature-readme.md`](../memory/templates/feature-readme.md) |
+| `.gobbi/projects/{project-name}/features/{feature-name}/README.md` | [`templates/feature.md`](../memory/templates/feature.md) |
 | `.gobbi/projects/{project-name}/mistakes/` and `features/{feature-name}/mistakes/` | [`templates/mistakes.md`](../memory/templates/mistakes.md) |
 | `.gobbi/projects/{project-name}/rules/` | [`templates/rules.md`](../memory/templates/rules.md) |
 
