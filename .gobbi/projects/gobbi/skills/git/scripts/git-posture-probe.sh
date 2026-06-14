@@ -62,13 +62,18 @@ for arg in "$@"; do
 done
 
 # --- Detect runtime (read-only) ----------------------------------------------
-# Claude Code: CLAUDE_CODE_SESSION_ID or CLAUDECODE set.
 # Codex:       CODEX_THREAD_ID set.
+# Claude Code: CLAUDE_CODE_SESSION_ID or CLAUDECODE set.
 # Otherwise:   unknown — do not guess.
-if [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] || [ -n "${CLAUDECODE:-}" ]; then
-    runtime="claude-code"
-elif [ -n "${CODEX_THREAD_ID:-}" ]; then
+# Check CODEX_THREAD_ID FIRST: gobbi runs Codex agents via `codex exec` launched
+# from a Claude Code session, so BOTH marker sets can be present at once. An
+# active Codex process is under Codex's sandbox even when launched from Claude
+# Code, so the Codex marker takes precedence — otherwise the probe would label a
+# Codex-sandboxed task `claude-code` and misroute the runtime remediation menu.
+if [ -n "${CODEX_THREAD_ID:-}" ]; then
     runtime="codex"
+elif [ -n "${CLAUDE_CODE_SESSION_ID:-}" ] || [ -n "${CLAUDECODE:-}" ]; then
+    runtime="claude-code"
 else
     runtime="unknown"
 fi

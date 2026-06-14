@@ -40,7 +40,7 @@ The agent in any role (manager or subagent) MUST observe these tier boundaries.
 
 Git runs under a runtime sandbox. The sandbox decides which git operations run on their own, which prompt for approval, and which are blocked outright. The split is the same on both runtimes: `git commit` writes inside the workspace and runs in-boundary; `git push` and `gh` need network and are out-of-boundary, so they prompt or fail by default. This is the *runtime git posture* — read it before attempting a push or a PR, not after the wall is hit.
 
-This section states only the **git consequences** of each runtime's posture. `codex/SKILL.md` is the canonical owner of the Codex sandbox and approval vocabulary — see [`codex` skill § Models and Sandbox](../codex/SKILL.md#models-and-sandbox) and the [Runtime Matrix](../codex/SKILL.md#runtime-matrix). Do not re-derive that model here.
+This section is the home of the **git-relevant** runtime sandbox model — the sandbox modes, approval policies, and network behavior that decide whether `git commit` / `git push` / `gh` run, prompt, or block. For the **operational usage** of these Codex sandbox modes (how `codex exec` is launched with `--sandbox workspace-write` / `read-only` for bridge and evaluator work), see [`codex` skill § codex exec](../codex/SKILL.md#codex-exec). For the per-runtime env-var surface (session id, network signal), see the [Runtime Matrix](../codex/SKILL.md#runtime-matrix).
 
 ### Claude Code
 
@@ -55,7 +55,7 @@ Source anchor: https://code.claude.com/docs/en/sandboxing
 
 ### Codex
 
-Codex has three sandbox modes (`read-only` / `workspace-write` / `danger-full-access`) and three approval policies (`untrusted` / `on-request` / `never`). In a git repo the default is `workspace-write` + `on-request`. For the full model, see [`codex` skill § Models and Sandbox](../codex/SKILL.md#models-and-sandbox); the git consequences are:
+Codex has three sandbox modes (`read-only` / `workspace-write` / `danger-full-access`) and a set of approval policies (e.g., `untrusted` / `on-request` / `never`, plus a granular policy object — see the config-reference URL below for the current full set). In a git repo the default is `workspace-write` + `on-request`. The git consequences are:
 
 - **`workspace-write` keeps network OFF by default.** Enable it explicitly via `[sandbox_workspace_write] network_access = true` (default `false`). Gobbi does not ship this enabled.
 - **`git commit` runs in-boundary** under `workspace-write` — it writes inside the workspace `.git`, so no escalation.
@@ -123,7 +123,7 @@ The session never falls back to working in the main tree. See [Runtime git envir
 
 The menu is **OFFERED only** — the manager surfaces it through the active runtime's user-decision primitive and applies nothing on its own. A declined remediation routes to the PR-deferred path above.
 
-**Read-only Codex policy (OQ-5).** A `read-only` Codex session cannot commit or `git worktree add`, so the worktree-commit model cannot run at all — this is not a per-op deferral but a session-level blocker. The manager detects read-only via the git posture probe at Configuration and surfaces: "gobbi needs at least `workspace-write`." It then OFFERS two options — (i) re-launch the session with `workspace-write`, or (ii) run an explicit read-only **plan/chat-only** mode (no commits, no Execution). It does NOT fall back to per-op approval escalation and does NOT fail silently.
+**Read-only Codex policy (OQ-5).** A `read-only` Codex session cannot commit or `git worktree add`, so the worktree-commit model cannot run at all — this is not a per-op deferral but a session-level blocker. Read-only is detected **behaviorally**, not from a probe field: the posture probe honestly reports `sandbox_mode: unknown` (it is not introspectable), so read-only surfaces when the first write op — `git worktree add` (Procedure P2) or the first `git commit` — is blocked or demands approval. On that block the manager surfaces: "gobbi needs at least `workspace-write`." It then OFFERS two options — (i) re-launch the session with `workspace-write`, or (ii) run an explicit read-only **plan/chat-only** mode (no commits, no Execution). It does NOT fall back to per-op approval escalation and does NOT fail silently.
 
 **Warning — inform the user, continue:**
 
@@ -197,7 +197,7 @@ Numbered procedures the manager runs during a git-active session. Subagents exec
 
 At session start when the user selects "Git workflow (worktree + PR)":
 
-1. **Read the runtime git posture FIRST** — run [`skills/git/scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) to learn the runtime / network / sandbox-mode / approval-policy BEFORE assuming the PR lifecycle (push / `gh`) can run. The probe is read-only; it never mutates state. A field reported as `unknown` (sandbox-mode and approval-policy are not introspectable) means "ask before assuming push works" — do not treat `unknown` as "enabled". If the probe reports `read-only` Codex, apply the read-only policy in [Prerequisites](#prerequisites) before continuing.
+1. **Read the runtime git posture FIRST** — run [`skills/git/scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) to learn the runtime / network / sandbox-mode / approval-policy BEFORE assuming the PR lifecycle (push / `gh`) can run. The probe is read-only; it never mutates state. A field reported as `unknown` (sandbox-mode and approval-policy are not introspectable) means "ask before assuming push works" — do not treat `unknown` as "enabled". The probe does NOT detect read-only Codex (`sandbox_mode` is always `unknown`); read-only surfaces behaviorally when `git worktree add` (Procedure P2) or the first `git commit` is blocked — at that point apply the read-only policy in [Prerequisites](#prerequisites).
 2. Run `gh --version` to confirm CLI availability.
 3. Run `gh auth status` to confirm authentication.
 4. Run `git remote get-url origin` to confirm the remote is configured.
