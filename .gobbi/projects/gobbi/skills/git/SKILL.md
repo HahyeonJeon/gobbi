@@ -204,7 +204,7 @@ At session start when the user selects "Git workflow (worktree + PR)":
 5. Run `git ls-remote --heads origin <base-branch>` to confirm the base branch exists on the remote.
 6. Run `git check-ignore -q .gobbi/projects/<name>/worktrees/` to confirm the worktree directory is gitignored.
 
-If any **Critical** prerequisite fails — or the posture probe shows network-blocked / approval-not-granted — worktree creation still proceeds (local git); the manager defers the PR and surfaces the "PR deferred" notice rather than aborting the session (the five-trigger deferral in [Prerequisites](#prerequisites)). If any **Warning** prerequisite fails, inform the user and continue (or remediate per their choice).
+If any **Critical** prerequisite fails — or the posture probe shows the network blocked, or a push/`gh` approval is declined or unavailable (`approval-not-granted`, surfaced behaviorally when the user declines the `on-request` escalation or the session is on `never`) — worktree creation still proceeds (local git); the manager defers the PR and surfaces the "PR deferred" notice rather than aborting the session (the five-trigger deferral in [Prerequisites](#prerequisites)). If any **Warning** prerequisite fails, inform the user and continue (or remediate per their choice).
 
 ### P2 — Create worktree
 
