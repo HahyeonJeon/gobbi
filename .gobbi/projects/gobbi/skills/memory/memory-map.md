@@ -2,13 +2,13 @@
 
 Reference of every memory path the workflow touches. Two tiers: **Session record** (volatile, per-session) and **Memory** (persistent, per-project). Use this doc as the single source of truth when deciding where a staging file goes, which template stamps a destination, or whether a path is the assistant's or Wrap-up's to write.
 
-For the naming convention, frontmatter standard, and structure rules every memory file obeys, see [`rules.md`](rules.md). For the canonical per-session working-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior, and the single session-root `transcripts/` — see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md), the single source of truth.
+For the naming convention, frontmatter standard, and structure rules every memory file obeys, see [`rules.md`](rules.md). For the canonical per-session working-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior, and the single session-root `transcripts/` — see [`../record/record-map.md`](../record/record-map.md), the single source of truth.
 
 The assistant in RECORD writes **only** to the session record. Wrap-up — in its **memorization** stage — is the sole writer to memory: it promotes the session-record staging subtree to memory. Both tiers are plain markdown trees — there is no per-session SQLite (`gobbi.db` was dropped) and no per-project summary JSON (`project.json` was dropped). `session.json` is the only JSON in the session tree, and it is per-session telemetry — not durable memory.
 
 Column legend:
 
-- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](../record/SKILL.md#output-paths)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md))
+- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](../record/SKILL.md#output-paths)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../record/record-map.md`](../record/record-map.md))
 - **Description** — what lives here and why
 - **Writer** — the role that creates / updates this path during the workflow
 - **When** — the workflow point at which the writer touches it
@@ -33,7 +33,7 @@ Volatile per-session storage. Wrap-up promotes the `staging/` subtree to memory 
 
 ### Per-loop subtree — `{N}-{loop}/` (loop ∈ ideation / preparation / planning / execution / wrap-up; on-disk dirs carry the `{N}-` ordinal prefix — `1-ideation` … `5-wrap-up`)
 
-The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`, `outputs/`. There is no per-loop `transcripts/`; every agent's transcript lives in the single session-root `transcripts/` (see the Session-root table above). For the authoritative shape see [`../orchestration/templates/session-tree.md`](../orchestration/templates/session-tree.md).
+The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`, `outputs/`. There is no per-loop `transcripts/`; every agent's transcript lives in the single session-root `transcripts/` (see the Session-root table above). For the authoritative shape see [`../record/record-map.md`](../record/record-map.md).
 
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|

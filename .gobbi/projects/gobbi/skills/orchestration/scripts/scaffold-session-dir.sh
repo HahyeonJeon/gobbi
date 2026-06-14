@@ -6,8 +6,8 @@
 #   loop (or execution-task) step-dir's 4-slot interior — working/, evaluation/,
 #   staging/ (with the loop's typed staging subdirs), and, only with --pass,
 #   outputs/. This is the script half of the spec-to-script binding; the
-#   human-readable source of truth is orchestration/templates/session-tree.md.
-#   The verify script (verify-session-tree.sh) diffs this script's output against
+#   human-readable source of truth is record/record-map.md.
+#   The verify script (verify-record-map.sh) diffs this script's output against
 #   that doc and fails on drift.
 #
 # Args:
@@ -113,7 +113,7 @@ case "$step_dir" in
         ;;
 esac
 
-# --- Per-loop staging-subdir manifest (mirrors session-tree.md) --------------
+# --- Per-loop staging-subdir manifest (mirrors record-map.md) --------------
 # Base vocabulary shared by every loop; two loops add one extra subdir each.
 base_staging=(
     scenarios checklists decisions references design discussions

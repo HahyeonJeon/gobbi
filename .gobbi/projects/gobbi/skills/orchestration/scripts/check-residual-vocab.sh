@@ -96,6 +96,7 @@ is_excluded_path() {
         */mistakes/sweep-grep-literal-*)              return 0 ;;  # the originating sweep mistake (quotes old vocab)
         */skills/mistake/layer2-sweep-grep-form-specific-*) return 0 ;;  # layer2 copy (quotes old vocab)
         */skills/mistake/layer2-verify-state-from-authoritative-*) return 0 ;;  # layer2 copy (quotes old vocab)
+        */skills/mistake/layer2-file-move-needs-link-resolution-*) return 0 ;;  # layer2 copy (quotes old vocab)
         */CHANGELOG.md)                               return 0 ;;  # changelog records the rename as history
         */skills/orchestration/scripts/check-residual-vocab.sh) return 0 ;;  # this gate's own source quotes the vocab it hunts
     esac

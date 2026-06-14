@@ -40,7 +40,7 @@ The manager:
 
 ### What Wrap-up commits — promotion writes, not session record
 
-The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`orchestration/templates/session-tree.md`](../templates/session-tree.md)). So the iteration's `working/`, `evaluation/iter{n}/`, and `outputs/` (including the handoff summary) capture **nothing** in git: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. There is **no** `chore(session): record ...` commit. Iteration boundaries are recorded in `session.json.workflow.wrap-up.iterations[]`, not in git.
+The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`record/record-map.md`](../../record/record-map.md)). So the iteration's `working/`, `evaluation/iter{n}/`, and `outputs/` (including the handoff summary) capture **nothing** in git: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. There is **no** `chore(session): record ...` commit. Iteration boundaries are recorded in `session.json.workflow.wrap-up.iterations[]`, not in git.
 
 What Wrap-up **does** commit is its **promotion writes**: copying promotable `staging/` content into **tracked** memory — `features/`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc. Those targets are NOT under gitignored `sessions/`, so the commit is real. This is the only durable output of the session; it lands on the worktree branch (per `orchestration/SKILL.md § Configuration Step 1` row 1 (Create Worktree)) and is absorbed into the PR at merge. Use the canonical `AI-Provenance-Record:` trailer per `git/conventions.md:116-119`. Wrap-up usually runs a single iteration (`workflow.wrap-up.maxIterations` default 5), so it typically produces one promotion commit before the manager emits `workflow.finish` and closes the session.
 
@@ -54,7 +54,7 @@ Iteration cap is `workflow.wrap-up.maxIterations` (default 5) — wrap-up rarely
 
 ## Output
 
-The canonical tree is [`orchestration/templates/session-tree.md`](../templates/session-tree.md); Wrap-up's loop dir is `5-wrap-up/`.
+The canonical tree is [`record/record-map.md`](../../record/record-map.md); Wrap-up's loop dir is `5-wrap-up/`.
 
 ```
 .gobbi/projects/{project}/sessions/{date}-{session-id}/

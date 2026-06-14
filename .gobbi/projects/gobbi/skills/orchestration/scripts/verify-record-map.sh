@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# verify-session-tree.sh — drift gate for the session-tree spec-to-script binding.
+# verify-record-map.sh — drift gate for the record-map spec-to-script binding.
 #
 # Purpose:
 #   The runnable --check gate for the session-record tree. Scaffolds throwaway
 #   step-dirs with scaffold-session-dir.sh, then diffs ONLY the script-created
 #   loop/task subtree against the tree declared in
-#   orchestration/templates/session-tree.md. Also runs the scaffold script's
+#   record/record-map.md. Also runs the scaffold script's
 #   path-validation negative cases and asserts each exits non-zero and creates
 #   nothing. Mirrors the scripts/sync-plugin-package.sh --check precedent.
 #
@@ -23,17 +23,17 @@
 
 set -euo pipefail
 
-SELF="verify-session-tree.sh"
+SELF="verify-record-map.sh"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 scaffold="$script_dir/scaffold-session-dir.sh"
-spec_doc="$script_dir/../templates/session-tree.md"
+spec_doc="$script_dir/../../record/record-map.md"
 
 log() { printf '%s: %s\n' "$SELF" "$*" >&2; }
 
 usage() {
     cat >&2 <<'EOF'
-usage: verify-session-tree.sh --check
-  Diffs scaffold-session-dir.sh output against orchestration/templates/session-tree.md
+usage: verify-record-map.sh --check
+  Diffs scaffold-session-dir.sh output against record/record-map.md
   for the script-created step-dir subtree only (COD-STRUCTURE-2 narrowing), and runs
   the path-validation negative cases. Exit 0 = pass, 1 = drift, 2 = bad args.
 EOF
@@ -53,7 +53,7 @@ fi
 [ -f "$spec_doc" ] || { log "spec doc not found: $spec_doc"; exit 1; }
 
 # --- Expected step-dir subtree (baseline) ------------------------------------
-# Baseline derives from session-tree.md: the 4-slot interior + the per-loop
+# Baseline derives from record-map.md: the 4-slot interior + the per-loop
 # staging vocabulary. We assert the doc still declares each staging subdir so a
 # silent edit to the doc that drops a subdir is caught here, then diff the
 # scaffold output against the baseline the doc describes.
@@ -79,12 +79,12 @@ grep -qF "skills (2-preparation only)" "$spec_doc" || doc_missing+=("skills(prep
 grep -qF "plans (3-planning only)" "$spec_doc" || doc_missing+=("plans(planning)")
 if [ "${#doc_missing[@]}" -gt 0 ]; then
     log "spec doc no longer declares: ${doc_missing[*]}"
-    log "session-tree.md drifted from the scaffold manifest"
+    log "record-map.md drifted from the scaffold manifest"
     exit 1
 fi
 
 # expected_subtree <step-dir> <pass:0|1> — emit the sorted relative dir list the
-# scaffold script must produce for this step-dir, per session-tree.md.
+# scaffold script must produce for this step-dir, per record-map.md.
 expected_subtree() {
     local step="$1" pass="$2"
     local loop="$step"
@@ -123,7 +123,7 @@ check_step() {
     local expected
     expected="$(expected_subtree "$step" "$pass")"
     if ! diff <(printf '%s\n' "$expected") <(printf '%s\n' "$actual") >&2; then
-        log "DRIFT: scaffold output for '$step' (pass=$pass) does not match session-tree.md"
+        log "DRIFT: scaffold output for '$step' (pass=$pass) does not match record-map.md"
         drift=1
     fi
 }
@@ -178,9 +178,9 @@ if [ "$rel_root_rc" -eq 0 ]; then
 fi
 
 if [ "$drift" -ne 0 ]; then
-    log "session-tree verification FAILED"
+    log "record-map verification FAILED"
     exit 1
 fi
 
-printf 'session-tree.md and scaffold-session-dir.sh are in sync\n'
+printf 'record-map.md and scaffold-session-dir.sh are in sync\n'
 exit 0

@@ -1,11 +1,12 @@
-# Session-tree spec
+# Record Map
 
-The single source of truth for the per-session working tree at
+The single source of truth for the on-disk shape of the **session record** — the
+per-session working tree at
 `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`.
 
 Every skill doc that names a session path points here. The scaffold script
-[`scaffold-session-dir.sh`](../scripts/scaffold-session-dir.sh) materializes this
-tree; the verify script [`verify-session-tree.sh`](../scripts/verify-session-tree.sh)
+[`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh) materializes this
+tree; the verify script [`verify-record-map.sh`](../orchestration/scripts/verify-record-map.sh)
 diffs the script's output against this doc and fails on drift. This doc — not the
 prose scattered across the skills — defines the shape.
 
@@ -160,12 +161,12 @@ verified against.
 
 ## Spec-to-script binding
 
-- The scaffold script [`scaffold-session-dir.sh`](../scripts/scaffold-session-dir.sh)
+- The scaffold script [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh)
   **embeds** the per-loop dir manifest (the 4 slots + the per-loop staging
   vocabulary) in a `case "$step_loop" in` block.
 - This doc is the **human-readable single source of truth**. When the manifest and
   this doc disagree, this doc is correct and the script is the drift.
-- The verify script [`verify-session-tree.sh`](../scripts/verify-session-tree.sh)
+- The verify script [`verify-record-map.sh`](../orchestration/scripts/verify-record-map.sh)
   scaffolds a throwaway step-dir and diffs the script's output against the tree
   declared here. Drift is **caught by the check**, never silently tolerated.
 - **COD-STRUCTURE-2 narrowing**: the verify diff covers **only** the
