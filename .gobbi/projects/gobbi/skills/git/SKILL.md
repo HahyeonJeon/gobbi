@@ -36,6 +36,36 @@ The agent in any role (manager or subagent) MUST observe these tier boundaries.
 
 ---
 
+## Runtime git environment
+
+Git runs under a runtime sandbox. The sandbox decides which git operations run on their own, which prompt for approval, and which are blocked outright. The split is the same on both runtimes: `git commit` writes inside the workspace and runs in-boundary; `git push` and `gh` need network and are out-of-boundary, so they prompt or fail by default. This is the *runtime git posture* — read it before attempting a push or a PR, not after the wall is hit.
+
+This section states only the **git consequences** of each runtime's posture. `codex/SKILL.md` is the canonical owner of the Codex sandbox and approval vocabulary — see [`codex` skill § Models and Sandbox](../codex/SKILL.md#models-and-sandbox) and the [Runtime Matrix](../codex/SKILL.md#runtime-matrix). Do not re-derive that model here.
+
+### Claude Code
+
+The agent runs under an OS sandbox.
+
+- **No network domains are pre-allowed.** Reaching `github.com` / `api.github.com` for `git push` or `gh` prompts for approval on first use, unless `allowedDomains` lists the domain. If `allowManagedDomainsOnly` is set in managed settings, non-allowed domains are blocked outright instead of prompting.
+- **`gh` may fail TLS verification under the macOS Seatbelt sandbox.** `gh` is a Go CLI, and Go's TLS path is blocked under Seatbelt. The remedy is listing `gh` in `excludedCommands` so it runs outside the sandbox. A passing `gh --version` / `gh auth status` check (Procedure P1) does not guarantee `gh pr create` (Procedure P4) succeeds under the sandbox.
+- **`Bash(git push *)` ask-rules force a prompt** even when the command would otherwise auto-run sandboxed. A sandbox-failed command may retry outside the sandbox via `dangerouslyDisableSandbox` — unless Strict mode (`allowUnsandboxedCommands: false`) removes that escape hatch.
+- **Commit works in the worktree without extra config**; the sandbox grants writes to the shared `.git` so `git commit` updates refs and the index, but writes to `.git/hooks/` and `.git/config` stay denied.
+
+Source anchor: https://code.claude.com/docs/en/sandboxing
+
+### Codex
+
+Codex has three sandbox modes (`read-only` / `workspace-write` / `danger-full-access`) and three approval policies (`untrusted` / `on-request` / `never`). In a git repo the default is `workspace-write` + `on-request`. For the full model, see [`codex` skill § Models and Sandbox](../codex/SKILL.md#models-and-sandbox); the git consequences are:
+
+- **`workspace-write` keeps network OFF by default.** Enable it explicitly via `[sandbox_workspace_write] network_access = true` (default `false`). Gobbi does not ship this enabled.
+- **`git commit` runs in-boundary** under `workspace-write` — it writes inside the workspace `.git`, so no escalation.
+- **`git push` and `gh` need network and escalate.** Under `on-request` they raise an approval prompt; if approved they run within sandbox constraints. Under `never` no prompt is offered, so a network-needing command cannot proceed autonomously.
+- **`read-only` mode forbids edits AND command execution without approval.** A read-only Codex session cannot run the worktree-commit model — `git commit` itself is blocked, not only push.
+
+Source anchors: https://developers.openai.com/codex/concepts/sandboxing, https://developers.openai.com/codex/agent-approvals-security, https://developers.openai.com/codex/config-reference
+
+---
+
 ## Core Principles
 
 > **Every task gets its own worktree.**
