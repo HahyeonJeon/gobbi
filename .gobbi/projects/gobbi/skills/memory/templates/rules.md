@@ -17,9 +17,12 @@ Wrap-up is the sole writer; loop RECORD (Ideation / Planning / Execution) never 
 
 ## Location
 
-- Project-level: `.gobbi/projects/{project-name}/rules/`
+- Project-wide rule: `.gobbi/projects/{project-name}/rules/`
+- Feature-specific rule: `.gobbi/projects/{project-name}/features/{feature-name}/rules/`
 
-Rules are project-wide by definition. There is no feature-scoped rules tier — feature-scoped rules belong in `features/{feature-name}/decisions/` with a `precedent: true` marker.
+A rule binds either the whole project or one feature. A project-wide rule lives in `rules/`; a rule that binds only within one feature lives in `features/{feature-name}/rules/`. Both tiers are rare and load-bearing, and both require explicit user confirmation at Wrap-up.
+
+`features/{feature-name}/rules/` is the canonical home for feature-specific rules. The earlier workaround — putting a feature-scoped rule in `features/{feature-name}/decisions/` with a `precedent: true` marker — is **retired / superseded** by this subdir; do not use it.
 
 ## File naming
 

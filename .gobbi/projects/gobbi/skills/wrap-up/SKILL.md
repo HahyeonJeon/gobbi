@@ -29,7 +29,7 @@ The agent in the assistant role MUST observe these tier boundaries. Wrap-up's WO
 | **Session record — own loop artifacts** | `sessions/{date}-{session-id}/5-wrap-up/outputs/` | **WRITE (PASS only via RECORD)** — canonical handoff summary; same `Artifact frontmatter schema` as other loops |
 | **Session record — all prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/{outputs,staging,evaluation,working}/` | **READ-ONLY** — required inputs: every prior loop's artifacts (what shipped), staging (what to promote), evaluation outputs (cross-loop closure audit), discussion logs |
 | **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **READ-ONLY for triplet (`project`, `feature`, `task`); UPSERT for Wrap-up's own `workflow.wrap-up.iterations[]`** — same upsert semantics as other loops' RECORD |
-| **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs,README.md}/` | **WRITE + UPSERT** — Wrap-up bootstraps the feature directory lazily and promotes staging → feature memory per the routing table |
+| **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs,rules,learnings,reviews,reports,README.md}/` | **WRITE + UPSERT** — Wrap-up bootstraps the feature directory lazily and promotes staging → feature memory per the routing table |
 | **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **WRITE + UPSERT** — Wrap-up promotes project-scope staging (rules, project-wide design, project-level mistakes, learnings, reports, reviews, journal notes) |
 
 **Delete semantics**: Wrap-up NEVER deletes any file in any tier. Supersession is recorded via frontmatter (`supersedes: <old-path>` on the new file; `status: superseded` + `superseded_by: <new-path>` on the old file). Physical deletion is forbidden. When an artifact reaches a terminal state (shipped, superseded, retired, dropped), Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md) — the file is never deleted. See [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix) for the Wrap-up loop exception row.
@@ -79,7 +79,7 @@ Wrap-up inventories `staging/` **only** for promotion. The other four session-tr
 
 > **Bootstrap feature directory on-demand.**
 
-`.gobbi/projects/{project-name}/features/{feature-name}/` and its sub-directories are created **on first write per sub-directory** during Wrap-up promotion — not eagerly, not earlier. Pre-Wrap-up phases assume the feature directory may not exist (or contains only prior sessions' content). Wrap-up creates `features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs}/` lazily as content requires.
+`.gobbi/projects/{project-name}/features/{feature-name}/` and its sub-directories are created **on first write per sub-directory** during Wrap-up promotion — not eagerly, not earlier. Pre-Wrap-up phases assume the feature directory may not exist (or contains only prior sessions' content). Wrap-up creates `features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs,rules,learnings,reviews,reports}/` lazily as content requires.
 
 > **Supersession and move-on-terminal, never deletion.**
 
@@ -183,14 +183,14 @@ Session-record writes:
 - `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` — canonical handoff summary (plus any decomposed artifact files); written at Step 7 of WORK (also persisted at RECORD per the Artifact frontmatter schema)
 
 Memory writes (the substantive work):
-- `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs}/{slug}.md` — feature-scoped promotions per routing table
+- `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs,rules,learnings,reviews,reports}/{slug}.md` — feature-scoped promotions per routing table
 - `.gobbi/projects/{project-name}/features/{feature-name}/README.md` — feature index + activity log (created or updated)
 - `.gobbi/projects/{project-name}/mistakes/{slug}.md` — project-scoped mistakes (user-confirmed scope)
 - `.gobbi/projects/{project-name}/rules/{slug}.md` — project rules (rare; user-confirmed)
 - `.gobbi/projects/{project-name}/design/{slug}.md` — project-wide design docs (rare; user-confirmed)
 - `.gobbi/projects/{project-name}/notes/{date}-{slug}.md` — per-session journal entry (always written at Step 6)
 - `.gobbi/projects/{project-name}/backlogs/{slug}.md` — project-level deferrals
-- `.gobbi/projects/{project-name}/learnings/{slug}.md` — project-level learnings (cross-feature by definition)
+- `.gobbi/projects/{project-name}/learnings/{slug}.md` — project-level learnings (cross-feature; feature-scoped learnings go to `features/{feature-name}/learnings/`)
 - `.gobbi/projects/{project-name}/reviews/{date}-{slug}.md` — review activity result documents
 - `.gobbi/projects/{project-name}/reports/{date}-{slug}.md` — status / post-mortem / analytics reports
 - `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` — project-specific skills from Preparation `generate-now` staging
@@ -290,14 +290,14 @@ The canonical promotion routing — this table is the contract for **pipeline st
 | `sessions/.../{N}-{loop}/staging/discussions/{slug}.md` | `features/{feature-name}/discussions/{slug}.md` | Always |
 | `sessions/.../{N}-{loop}/staging/backlogs/feature/{slug}.md` | `features/{feature-name}/backlogs/{slug}.md` | Always |
 | `sessions/.../{N}-{loop}/staging/backlogs/project/{slug}.md` | `backlogs/{slug}.md` | Always |
-| `sessions/.../{N}-{loop}/staging/reviews/{slug}.md` | `reviews/{date}-{slug}.md` | Always — review / evaluation / audit activity result documents (project-level only; no feature-scope variant) |
-| `sessions/.../{N}-{loop}/staging/reports/{slug}.md` | `reports/{date}-{slug}.md` | Always — `status` / `post-mortem` / `analytics` reports (project-level only; no feature-scope variant). `{date}` is the session start date |
+| `sessions/.../{N}-{loop}/staging/reviews/{slug}.md` | `features/{feature-name}/reviews/{date}-{slug}.md` (default) OR `reviews/{date}-{slug}.md` (project-wide; cross-feature) | Default feature-scope; if cross-feature / repo-wide, return `NEEDS_CONTEXT`; manager confirms through the active runtime's user-decision primitive |
+| `sessions/.../{N}-{loop}/staging/reports/{slug}.md` | `features/{feature-name}/reports/{date}-{slug}.md` (default) OR `reports/{date}-{slug}.md` (project-wide; cross-feature) | Default feature-scope; if cross-feature, return `NEEDS_CONTEXT`; manager confirms through the active runtime's user-decision primitive. `{date}` is the session start date |
 | `sessions/.../{N}-{loop}/staging/changelogs/{slug}.md` | `features/{feature-name}/changelogs/{slug}.md` | Always — feature-scope shipped-work changelog entries (Execution-loop typical) |
-| `sessions/.../{N}-{loop}/staging/learnings/{slug}.md` | `learnings/{slug}.md` | Always — project-level learnings (cross-feature by definition) |
+| `sessions/.../{N}-{loop}/staging/learnings/{slug}.md` | `features/{feature-name}/learnings/{slug}.md` (default) OR `learnings/{slug}.md` (project-wide; cross-feature) | Default feature-scope; if cross-feature, return `NEEDS_CONTEXT`; manager confirms through the active runtime's user-decision primitive |
 | `sessions/.../{N}-{loop}/staging/notes/{slug}.md` | `notes/{date}-{slug}.md` | Always — loop-scope journal entry (rare; per-session journal is Wrap-up's direct Step 6 write) |
 | `sessions/.../3-planning/staging/plans/{slug}.md` | `features/{feature-name}/plans/{date}-{slug}.md` | Always — Planning-loop output |
 | `sessions/.../2-preparation/staging/skills/{slug}/SKILL.md` | `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | Already-promoted (manifest-only) — the manager promotes these before Planning starts (see `preparation/SKILL.md` § Core Principles and `orchestration/workflow/preparation.md` § WORK Phase); Wrap-up verifies presence and records in `promotion-manifest.md` but does not re-promote unless the destination is missing |
-| Rules surfaced during session (assistant identifies from session content; not from a staging file) | `rules/{slug}.md` | Return `NEEDS_CONTEXT`; manager confirms through the active runtime's user-decision primitive — rules are rare and load-bearing |
+| Rules surfaced during session (assistant identifies from session content; not from a staging file) | `rules/{slug}.md` (project-wide) OR `features/{feature-name}/rules/{slug}.md` (feature-specific) | Return `NEEDS_CONTEXT`; manager confirms scope through the active runtime's user-decision primitive — rules are rare and load-bearing, and the tier (project-wide vs feature-specific) is user-confirmed |
 | Per-session development journal entry (Wrap-up authors at session close — not from staging) | `notes/{date}-{slug}.md` | Always — one journal entry per session capturing the work-log narrative |
 
 All destination paths are relative to `.gobbi/projects/{project-name}/`.

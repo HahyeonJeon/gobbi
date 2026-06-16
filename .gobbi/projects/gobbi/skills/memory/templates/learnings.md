@@ -23,9 +23,10 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 
 ## Location
 
-- Project-level only: `.gobbi/projects/{project-name}/learnings/`
+- Feature-level (default): `.gobbi/projects/{project-name}/features/{feature-name}/learnings/`
+- Project-level: `.gobbi/projects/{project-name}/learnings/`
 
-Learnings are cross-cutting by definition. Feature-specific insights belong in that feature's `design/` or `decisions/`, not here.
+Learnings are **default-feature**: an insight whose transferable lesson applies within one feature lives in `features/{feature-name}/learnings/`. Promote a learning up to project `learnings/` when it is cross-cutting — the insight applies across features or sessions.
 
 ## File naming
 

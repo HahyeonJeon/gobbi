@@ -84,13 +84,13 @@ Each memory type has a single canonical home directory and a per-type spec (purp
 | `decisions` | `decisions/` | Both (default feature-level; promote-up to project) |
 | `design` | `design/` | Both (default feature-level; promote-up to project) |
 | `mistakes` | `mistakes/` | Both (default project-level; feature-scope when trap is feature-specific) |
-| `rules` | `rules/` | Project-only |
-| `learnings` | `learnings/` | Project-only |
+| `rules` | `rules/` | Both (project-wide → `rules/`; feature-specific → `features/{f}/rules/`; rare, user-confirmed) |
+| `learnings` | `learnings/` | Both (default feature-level; promote-up to project when cross-feature) |
 | `backlogs` | `backlogs/` | Both (feature tasks vs project-scope deferrals) |
 | `references` | `references/` | Both (default feature-level; promote-up rare) |
 | `plans` | `features/{feature-name}/plans/` (loop path); project `plans/` is maintainer-authored only, NOT loop-written | Feature-only for the loop path |
-| `reviews` | `reviews/` | Project-only |
-| `reports` | `reports/` | Project-only |
+| `reviews` | `reviews/` | Both (default feature-level; promote-up to project when cross-feature) |
+| `reports` | `reports/` | Both (default feature-level; promote-up to project when cross-feature) |
 | `archive` (destination, not a type) | `archive/{type}/` (typed subdirs; original `type` preserved) | Project-only |
 
 The four feature-subdir-only template types (`changelogs`, `discussions`, `scenarios`, `checklists`) are not independent memory types — they exist only as `features/{feature-name}/` subdirs (see [`rules.md` § 3](rules.md) and the per-row entries below).
@@ -121,6 +121,10 @@ Each feature directory is bootstrapped lazily by Wrap-up on first promotion to t
 | `features/{feature-name}/backlogs/{slug}.md` | Wrap-up | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
 | `features/{feature-name}/changelogs/{slug}.md` | Wrap-up | per ship | [`templates/changelogs.md`](templates/changelogs.md) |
 | `features/{feature-name}/mistakes/{slug}.md` | Wrap-up | per `mistake-candidate: true` (user-scoped feature) | [`templates/mistakes.md`](templates/mistakes.md) |
+| `features/{feature-name}/rules/{slug}.md` | Wrap-up | per promotion (feature-specific rule; user-confirmed) | [`templates/rules.md`](templates/rules.md) |
+| `features/{feature-name}/learnings/{slug}.md` | Wrap-up | per promotion (feature-local insight) | [`templates/learnings.md`](templates/learnings.md) |
+| `features/{feature-name}/reviews/{date}-{slug}.md` | Wrap-up | per promotion (feature-scope review activity) | [`templates/reviews.md`](templates/reviews.md) |
+| `features/{feature-name}/reports/{date}-{slug}.md` | Wrap-up | per promotion (feature-scope report) | [`templates/reports.md`](templates/reports.md) |
 
 ### Project-wide tiers
 
@@ -163,12 +167,12 @@ All templates live under [`templates/`](templates/). The index below lets you ju
 | [`plans.md`](templates/plans.md) | `3-planning/staging/plans/`, `features/{feature-name}/plans/`, `.gobbi/projects/{project-name}/plans/` |
 | [`feature.md`](templates/feature.md) | `features/{feature-name}/README.md` |
 | [`mistakes.md`](templates/mistakes.md) | `features/{feature-name}/mistakes/`, `.gobbi/projects/{project-name}/mistakes/` |
-| [`rules.md`](templates/rules.md) | `.gobbi/projects/{project-name}/rules/` |
+| [`rules.md`](templates/rules.md) | `features/{feature-name}/rules/`, `.gobbi/projects/{project-name}/rules/` |
 | [`notes.md`](templates/notes.md) | `{N}-{loop}/staging/notes/`, `.gobbi/projects/{project-name}/notes/` |
 | [`changelogs.md`](templates/changelogs.md) | `{N}-{loop}/staging/changelogs/`, `features/{feature-name}/changelogs/` |
-| [`reviews.md`](templates/reviews.md) | `{N}-{loop}/staging/reviews/`, `.gobbi/projects/{project-name}/reviews/` |
-| [`reports.md`](templates/reports.md) | `{N}-{loop}/staging/reports/`, `.gobbi/projects/{project-name}/reports/` |
-| [`learnings.md`](templates/learnings.md) | `{N}-{loop}/staging/learnings/`, `.gobbi/projects/{project-name}/learnings/` |
+| [`reviews.md`](templates/reviews.md) | `{N}-{loop}/staging/reviews/`, `features/{feature-name}/reviews/`, `.gobbi/projects/{project-name}/reviews/` |
+| [`reports.md`](templates/reports.md) | `{N}-{loop}/staging/reports/`, `features/{feature-name}/reports/`, `.gobbi/projects/{project-name}/reports/` |
+| [`learnings.md`](templates/learnings.md) | `{N}-{loop}/staging/learnings/`, `features/{feature-name}/learnings/`, `.gobbi/projects/{project-name}/learnings/` |
 | [`archive.md`](templates/archive.md) | `.gobbi/projects/{project-name}/archive/` |
 
 ---

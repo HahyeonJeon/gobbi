@@ -22,10 +22,14 @@ features/{feature-name}/
 ├── plans/             # plan artifacts (date-prefixed)
 ├── backlogs/          # feature-scope deferred tasks
 ├── changelogs/        # feature-scope changelog entries   ← created lazily
-└── mistakes/          # feature-scope mistakes            ← created lazily
+├── mistakes/          # feature-scope mistakes            ← created lazily
+├── rules/             # feature-specific rules            ← created lazily
+├── learnings/         # feature-local insights            ← created lazily
+├── reviews/           # feature-scope review activity     ← created lazily
+└── reports/           # feature-scope reports             ← created lazily
 ```
 
-The set is **README.md + 10 subdirectories**. Two of them — `changelogs/` and `mistakes/` — are created lazily and do not appear until the feature's first changelog or feature-scope mistake is promoted (e.g., `features/workflow/` currently has 8 subdirs + README, missing those two).
+The set is **README.md + 14 subdirectories**. Six of them — `changelogs/`, `mistakes/`, `rules/`, `learnings/`, `reviews/`, and `reports/` — are created lazily and do not appear until the feature's first matching promotion (e.g., `features/workflow/` currently has 8 subdirs + README, missing those that have not yet received content).
 
 ### Per-subdir reference
 
@@ -44,6 +48,10 @@ The writer is uniform: **Wrap-up, on promotion** — loop RECORD never writes th
 | `backlogs/` | Feature-scope deferred tasks | [`backlogs.md`](backlogs.md) |
 | `changelogs/` | Feature-scope changelog entries — what shipped, when | [`changelogs.md`](changelogs.md) |
 | `mistakes/` | Feature-scope mistakes — corrections that apply only within this feature | [`mistakes.md`](mistakes.md) |
+| `rules/` | Feature-specific rules — enforceable conventions that bind only within this feature | [`rules.md`](rules.md) |
+| `learnings/` | Feature-local insights — transferable lessons scoped to this feature; promote up to project `learnings/` when cross-feature | [`learnings.md`](learnings.md) |
+| `reviews/` | Feature-scope review activity — review / audit result documents whose subject is this feature | [`reviews.md`](reviews.md) |
+| `reports/` | Feature-scope reports — status / post-mortem / analytics documents scoped to this feature | [`reports.md`](reports.md) |
 
 ### Lazy bootstrapping
 
@@ -109,6 +117,10 @@ subsystems: [{skill / path this value-feature owns}]
 - `backlogs/` — {summary}
 - `changelogs/` — {summary}
 - `mistakes/` — {summary}
+- `rules/` — {summary}
+- `learnings/` — {summary}
+- `reviews/` — {summary}
+- `reports/` — {summary}
 
 ## Recent activity
 

@@ -31,9 +31,10 @@ A security audit goes to `reviews/` (it's an audit activity). A post-mortem of a
 
 ## Location
 
-- Project-level only: `.gobbi/projects/{project-name}/reviews/`
+- Feature-level (default): `.gobbi/projects/{project-name}/features/{feature-name}/reviews/`
+- Project-level: `.gobbi/projects/{project-name}/reviews/`
 
-Review activities are cross-cutting by definition. Feature-specific review outcomes can be cited from `features/{feature-name}/README.md`'s Recent activity table, but the review document itself stays at the project level.
+Reviews are **default-feature**: a review / audit whose subject is one feature lives in `features/{feature-name}/reviews/`. Promote a review up to project `reviews/` when its subject is cross-feature or repo-wide.
 
 ## File naming
 
@@ -51,7 +52,7 @@ Date is the **review activity date**, not the date the document was written (if 
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reviews-type extensions (`verdict`, `review_kind`, `subject`). Reviews are project-only and append-only (base `status` stays `active`).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reviews-type extensions (`verdict`, `review_kind`, `subject`). Reviews are append-only (base `status` stays `active`). A feature-scoped review sets `scope: feature` + `feature:`; a project-scoped one sets `scope: project`.
 
 ```markdown
 ---

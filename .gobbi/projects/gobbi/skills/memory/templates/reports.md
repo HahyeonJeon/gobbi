@@ -37,9 +37,10 @@ Reports are **not** a place for routine artifacts. A short observation belongs i
 
 ## Location
 
-- Project-level only: `.gobbi/projects/{project-name}/reports/`
+- Feature-level (default): `.gobbi/projects/{project-name}/features/{feature-name}/reports/`
+- Project-level: `.gobbi/projects/{project-name}/reports/`
 
-Reports are cross-cutting by definition. Feature-specific deep-dives belong in that feature's `design/` or `decisions/`, not here.
+Reports are **default-feature**: a status / post-mortem / analytics report scoped to one feature lives in `features/{feature-name}/reports/`. Promote a report up to project `reports/` when it aggregates across features or is otherwise cross-feature.
 
 ## File naming
 
@@ -54,7 +55,7 @@ Date is the **generation date**, not the date of events reported on. A weekly-st
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reports-type extensions (`report_type`, `related_reports`). Reports are project-only and append-only (base `status` stays `active`).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reports-type extensions (`report_type`, `related_reports`). Reports are append-only (base `status` stays `active`). A feature-scoped report sets `scope: feature` + `feature:`; a project-scoped one sets `scope: project`.
 
 ```markdown
 ---
