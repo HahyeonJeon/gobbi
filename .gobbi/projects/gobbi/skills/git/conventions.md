@@ -360,3 +360,18 @@ The base branch — what feature branches are created from and what PRs target �
 | Trunk-based development | `main` (or `master` on older repos) |
 | GitFlow | `develop` for features; `main` for releases |
 | Custom branching | Project-specified (e.g., `next`, `staging`) |
+
+---
+
+## Runtime git posture — where it is configured
+
+The *runtime git posture* — which git ops run on their own, which prompt for approval, and which are blocked — is described in [`SKILL.md` § Runtime git environment](SKILL.md#runtime-git-environment). This note is the canonical pointer to **where** that posture is set per runtime. It does not restate the model; read the SKILL.md section for the behavior.
+
+| Surface | Sets | Notes |
+|---|---|---|
+| `.codex/config.toml` | Codex sandbox mode, approval policy, and network access | Worktree HEAD ships **no** sandbox-loosening default — no `network_access = true`, no broad allow-list (D2 safe-by-default). The default Codex posture (`workspace-write` + `on-request`, network off) is the runtime's own default, not a gobbi override. |
+| `.codex/agents/*.toml` | Per-runtime git discipline for each Codex custom agent | Thin wrappers that point at the canonical `agents/{role}.md` role prompt; they carry the role's git posture pointer, not a copy of the model. |
+| `agents/manager.md`, `agents/executor.md` (role prompts) | Per-role git posture (manager remediation-vs-defer; executor commit-only, manager-handles-push) | The role prompts are the canonical role contract on both runtimes; the `.codex/agents/*.toml` wrappers point back to them. |
+| Claude Code settings (`allowedDomains`, `excludedCommands`) | Claude Code network + sandbox posture | Same safe-by-default rule: gobbi ships no network enablement; the remediation menu OFFERS it, the user decides. |
+
+**Hooks are NOT a git-posture surface (INT-4).** The gobbi hooks (`hooks/session-end.sh`, `hooks/post-tool-use-agents.sh`) are **token reconcilers**, not git-metadata or git-lifecycle hooks. A change to runtime git posture is a change to `.codex/config.toml` / `.codex/agents/*.toml` / the role prompts — never to the hooks.

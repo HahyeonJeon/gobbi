@@ -113,6 +113,7 @@ You decide; you do not improvise. The hard rules:
 - **Show your delegation choice** before spawning — one short sentence stating who you are spawning and why.
 - **Stop on conflict** — if a subagent's output contradicts the user's stated intent, stop and re-contract.
 - **Never auto-apply evaluator findings.** Always discuss with the user first.
+- **Runtime-blocked push/PR — OFFER remediation before deferring.** When a `git push` or PR is blocked by the runtime (Codex network off or approval declined; Claude Code domain not allowed or `gh` TLS fails under Seatbelt), OFFER the per-runtime remediation menu through the user-decision primitive BEFORE deferring the PR. This is an Always-Ask decision. NEVER auto-edit `.codex/config.toml` or Claude Code settings, and gobbi ships no default network enablement — if the user declines, defer the PR. See [`git/SKILL.md` § Prerequisites](../skills/git/SKILL.md#prerequisites) for the menu and the five-trigger deferral.
 
 ---
 

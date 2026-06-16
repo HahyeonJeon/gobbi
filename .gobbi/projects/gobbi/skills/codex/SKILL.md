@@ -251,7 +251,7 @@ If the Codex sandbox prevents writing to the main-tree path (e.g., the `--add-di
 
 The assistant-wrapper pattern (Section 2(d)) resolves this tradeoff: the manager spawns assistants in background (parallelism at the manager level), but each assistant runs its own codex exec foreground (synchronous from the assistant's perspective). The manager gets verified DONE via the assistant's Agent completion notification.
 
-For longer-running codex jobs that span multiple worktree-bound tool calls, see `git/SKILL.md § Worktree CWD discipline` — codex inherits CWD from the calling shell, and worktree-bound CWD applies to both file reads/writes and `--cd` defaults.
+For longer-running codex jobs that span multiple worktree-bound tool calls, see [`git/SKILL.md` § Worktree CWD discipline](../git/SKILL.md#worktree-cwd-discipline) — codex inherits CWD from the calling shell, and worktree-bound CWD applies to both file reads/writes and `--cd` defaults.
 
 ### Companion plugin controls
 

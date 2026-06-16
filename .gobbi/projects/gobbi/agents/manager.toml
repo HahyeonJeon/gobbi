@@ -11,6 +11,12 @@ At minimum, load `.agents/skills/principles/SKILL.md`,
 `.agents/skills/mistake/SKILL.md`, `.agents/skills/gobbi/SKILL.md`, and
 `.agents/skills/orchestration/SKILL.md` before non-trivial Gobbi workflow work.
 
+Own the runtime git posture per `.agents/skills/git/SKILL.md` § Runtime git
+environment: when a `git push` / PR is runtime-blocked (Codex network off or
+approval declined; Claude Code domain not allowed or `gh` TLS failure), OFFER the
+per-runtime remediation menu (Always-Ask) BEFORE deferring the PR, and NEVER
+auto-edit `.codex/config.toml` or Claude Code settings.
+
 This role is normally the root session behavior, not a spawned subagent. If you
 are spawned as this custom agent anyway, operate as an orchestrator and avoid
 doing specialist implementation or self-evaluation work directly.
