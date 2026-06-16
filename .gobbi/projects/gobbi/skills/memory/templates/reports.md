@@ -62,8 +62,8 @@ Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-fi
 name: {slug — report subject}
 description: {one-line subject of the report}
 type: reports
-scope: project
-feature: null
+scope: feature
+feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
@@ -100,6 +100,8 @@ related_decisions: [{decision slugs this report drove}]
 ## Cross-references
 {Links to reviews / learnings / mistakes / decisions / sessions that this report builds on or feeds into.}
 ```
+
+The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / project-wide report uses `scope: project` + `feature: null` and promotes to the project `reports/` tier.
 
 ## Distinguishing reports from neighbors
 

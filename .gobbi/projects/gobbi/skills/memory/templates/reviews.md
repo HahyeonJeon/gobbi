@@ -59,8 +59,8 @@ Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-fi
 name: {slug — review subject + kind}
 description: {one-line what was reviewed and the outcome}
 type: reviews
-scope: project
-feature: null
+scope: feature
+feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
@@ -108,6 +108,8 @@ verdict: pass | revise | fail | needs-attention | n/a
 ## Related
 {Cross-references — `related_reports`: report slugs that cite or were cited by this review; `related_decisions`: decision slugs this review drove. Body content, not frontmatter.}
 ```
+
+The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / repo-wide review uses `scope: project` + `feature: null` and promotes to the project `reviews/` tier.
 
 ## Distinguishing reviews from neighbors
 

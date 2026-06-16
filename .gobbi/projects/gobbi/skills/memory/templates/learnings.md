@@ -1,6 +1,6 @@
 # `learnings/`
 
-**Cross-cutting insights** the project picked up that apply beyond any single feature or task. Distinct from `mistakes/` (failures to avoid) and `references/` (external sources): learnings are **what we now know how to do better** based on direct experience.
+**Transferable insights** the project picked up — what we now know how to do better, based on direct experience. A learning is **feature-local by default** (a technique or insight scoped to one feature); a learning that applies across features promotes up to the project `learnings/` tier. Distinct from `mistakes/` (failures to avoid) and `references/` (external sources).
 
 ## Lifecycle (staging → promotion)
 
@@ -43,8 +43,8 @@ Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-fi
 name: {slug — the insight, named}
 description: {one-line what we now know how to do better}
 type: learnings
-scope: project
-feature: null
+scope: feature
+feature: {feature-name}
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
@@ -74,6 +74,8 @@ related: [{related learning slugs}]
 ## Related
 {Links to mistakes / references / decisions that share context with this learning.}
 ```
+
+The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / project-wide learning uses `scope: project` + `feature: null` and promotes to the project `learnings/` tier.
 
 ## Distinguishing learnings from mistakes
 

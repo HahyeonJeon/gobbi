@@ -183,7 +183,8 @@ Session-record writes:
 - `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` — canonical handoff summary (plus any decomposed artifact files); written at Step 7 of WORK (also persisted at RECORD per the Artifact frontmatter schema)
 
 Memory writes (the substantive work):
-- `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans,mistakes,changelogs,rules,learnings,reviews,reports}/{slug}.md` — feature-scoped promotions per routing table
+- `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,mistakes,changelogs,rules,learnings}/{slug}.md` — feature-scoped promotions per routing table (bare-slug types)
+- `.gobbi/projects/{project-name}/features/{feature-name}/{plans,reviews,reports}/{date}-{slug}.md` — feature-scoped promotions per routing table (date-prefixed types)
 - `.gobbi/projects/{project-name}/features/{feature-name}/README.md` — feature index + activity log (created or updated)
 - `.gobbi/projects/{project-name}/mistakes/{slug}.md` — project-scoped mistakes (user-confirmed scope)
 - `.gobbi/projects/{project-name}/rules/{slug}.md` — project rules (rare; user-confirmed)

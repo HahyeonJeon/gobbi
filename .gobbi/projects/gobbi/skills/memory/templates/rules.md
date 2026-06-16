@@ -1,6 +1,6 @@
 # `rules/`
 
-**Project-wide behavioral rules** — load-bearing constraints that every agent working on this project must follow. Rules are stronger than mistakes: a mistake records "this approach fails reliably", while a rule records "this is how it must be done, period". Rules are referenced by skills, agent definitions, and CLAUDE.md, and they should be rare — every rule increases the project's surface area for new contributors.
+**Behavioral rules** — load-bearing constraints every agent must follow. A rule is **project-wide by default** (`scope: project`, lives in `rules/`); a rule that binds only within one feature is feature-specific (`scope: feature`, lives in `features/{feature-name}/rules/`). Rules are stronger than mistakes: a mistake records "this approach fails reliably", while a rule records "this is how it must be done, period". Rules are referenced by skills, agent definitions, and CLAUDE.md, and they should be rare — every rule increases the project's surface area for new contributors.
 
 ## Lifecycle (Wrap-up direct write)
 
