@@ -147,7 +147,7 @@ The menu is **OFFERED only** — the manager surfaces it through the active runt
 | Branch | Names and creates locally | Commits to it |
 | Push to remote | Pushes after all subtasks are complete | **Never pushes** |
 | PR | Creates, monitors CI | **Never creates** |
-| Merge | `gh pr merge --squash --delete-branch`; pulls into local base | **Never merges** |
+| Merge | `gh pr merge --squash` (no `--delete-branch`); pulls into local base, then removes the worktree before deleting the remote + local branch (P5 sequence) | **Never merges** |
 | Cleanup | Worktree remove + prune + empty parent dir cleanup | Never |
 
 The manager passes the worktree's absolute path in every delegation prompt. The subagent's first action is to `cd` to that path. From that point, the subagent follows the standard Study, Plan, Execute, Verify, Commit lifecycle.
@@ -169,7 +169,7 @@ These commands are forbidden without **explicit user request** through the activ
 | `git checkout .` / `git restore .` | Mass discard of unstaged changes | Commit-then-discard individual files |
 | `git commit --amend` after push | Rewrites pushed history | New commit (`fix: <description>`) or revert |
 | `git rebase -i` on pushed history | Rewrites pushed history | New commits |
-| `git branch -D` on unmerged branches | Discards branch tip irreversibly | `git branch -d` (only succeeds if merged) |
+| `git branch -D` on unmerged branches | Discards branch tip irreversibly | `git branch -d` (only succeeds if merged). **Sanctioned exception:** `git branch -D` IS allowed — no Always-Ask — WHEN the branch is confirmed merged-by-squash via PR-association (a merged PR whose head was this branch). This is the ONLY safe `-D` use: a squash-merge produces a new commit with no history overlap, so `git branch -d` cannot recognize the branch as merged and force-delete is the only path. See Procedure P5 step 5 for the procedure. The ban above stands for genuinely unmerged branches (no merged-PR association). |
 | `git stash` inside a worktree | Stash is per-worktree but easy to forget / lose if worktree is force-removed — never use stash to defer work across delegation boundaries | Create a temporary linked worktree (`git worktree add -b emergency-fix <path> <base>`), do the work, commit, then remove the temp worktree. Per `git-scm.com/docs/git-worktree`. |
 | `gh pr close` without merge | Discards reviewed work | Either merge or convert to draft |
 | `gh issue delete` | GitHub does not support undelete | `gh issue close` + comment explaining |
@@ -233,8 +233,8 @@ After all subtasks for the issue are complete and verified:
 
 1. `cd` to the worktree path.
 2. **Push the branch** — `git push -u origin <branch-name>`.
-3. **Open the PR** with `gh pr create` — title and body follow [`conventions.md` § Pull Request Format](conventions.md#pull-request-format).
-4. **Apply type label** — `gh pr edit <num> --add-label <type>` per [`conventions.md` § Label Registry](conventions.md#label-registry).
+3. **Open the PR — or reuse the open one (idempotent).** Before creating, check whether a PR for this branch already exists: `gh pr list --head <branch-name> --json number,state`. If an open PR is found (e.g. Execution already opened it and Wrap-up is now adding promotion commits), do NOT create a duplicate — step 2 has already pushed the new commits to the same branch, so the existing PR now carries them; reuse its number and continue. Only if no open PR exists, create one with `gh pr create` — title and body follow [`conventions.md` § Pull Request Format](conventions.md#pull-request-format).
+4. **Apply type label** — `gh pr edit <num> --add-label <type>` per [`conventions.md` § Label Registry](conventions.md#label-registry). Skip if the label is already applied (reused PR).
 5. **Monitor CI** — `gh pr checks <num> --watch` (or equivalent for external CI).
 
 ### P5 — Land PR
@@ -253,12 +253,14 @@ If any precondition fails, do not merge — surface the failing item to the user
 
 **Merge sequence** (all preconditions pass):
 
-1. `gh pr merge <num> --squash --delete-branch` — atomic squash merge + remote branch deletion.
-2. `git checkout <base-branch> && git pull --ff-only` — sync the local base branch with the merge.
-3. Before removing the worktree: run `git status` inside it to confirm a clean working tree AND that the branch is merged into base. Then `git worktree remove .gobbi/projects/<name>/worktrees/<branch-name>`. **Never use `--force` / `-f` without explicit user approval through the active runtime's user-decision primitive** — force-remove silently discards any uncommitted work inside the worktree (Forbidden Operations). If the status is unclean, commit or discard explicitly before removal.
-4. `git worktree prune` — clean stale references.
-5. **Clean up empty parent directories** — nested branch names like `feat/42-x` create `worktrees/feat/` parent dirs; `git worktree remove` only removes the leaf. Run `find .gobbi/projects/<name>/worktrees/ -type d -empty -delete`.
-6. **If non-default-branch PR**: close linked issues — `gh issue close <num> -c "Closed by PR #<pr-num>"` for each.
+The order is deliberate: the worktree must be removed BEFORE either branch is deleted, because a branch held by a worktree cannot be deleted (remote or local). Do NOT pass `--delete-branch` to `gh pr merge` — it runs while the worktree still holds the branch and the delete fails ("branch used by worktree").
+
+1. **Merge the PR** — `gh pr merge <num> --squash`. Squash-merge only; do NOT add `--delete-branch` (it cannot delete a worktree-held branch).
+2. **Sync the local base** — `git checkout <base-branch> && git pull --ff-only` to bring the local base to the merge commit.
+3. **Remove the worktree** — run `git status` inside it first to confirm a clean working tree AND that the branch is merged into base. Then `git worktree remove .gobbi/projects/<name>/worktrees/<branch-name>`, followed by `git worktree prune` (clean stale references) and the empty-parent cleanup (`find .gobbi/projects/<name>/worktrees/ -type d -empty -delete` — nested branch names like `feat/42-x` create `worktrees/feat/` parent dirs that `git worktree remove` leaves behind). **Never use `--force` / `-f` without explicit user approval through the active runtime's user-decision primitive** — force-remove silently discards any uncommitted work inside the worktree (Forbidden Operations). If the status is unclean, commit or discard explicitly before removal.
+4. **Delete the REMOTE branch** — `git push origin --delete <branch-name>`. The worktree no longer holds the branch, so the delete now succeeds (this is why `--delete-branch` at step 1 fails and is dropped).
+5. **Delete the LOCAL branch** — first confirm the squash-merge landed via PR-association: `gh pr view <num> --json state,mergedAt` shows `MERGED` with a non-null `mergedAt`, or `gh api repos/{owner}/{repo}/commits/<base-branch>/pulls` associates the branch's PR as merged. Then run `git branch -D <branch-name>` as the SANCTIONED exception (Forbidden Operations § `-D` carve-out): a squash-merge defeats `git branch -d`, so force-delete is the only path AFTER merge is confirmed. The tip stays in the reflog. If PR-association does NOT confirm the merge (PR deferred, merge not yet on base), do NOT delete — surface it through the active runtime's user-decision primitive instead.
+6. **Close issues with done-detection** — for a non-default-branch PR, closing keywords never auto-fire, so close each issue manually: `gh issue close <num> -c "Closed by PR #<pr-num>"`. Close issues by PR-association — the issues referenced by the merged PR, per object. Keep the existing linked-issue close (`Closes #` links) and additionally detect finished-but-unlinked issues that the merged PR resolves, then close them. Closing stays manual because the non-default base makes closing keywords inert.
 
 ### P6 — Recover orphaned worktree
 
@@ -333,7 +335,7 @@ Git operations don't write to session record directly (writes happen via session
 |---|---|---|
 | Worktree directory | manager (P2 create, P5 remove) | `.gobbi/projects/<name>/worktrees/<branch-name>/` |
 | Local branch | manager (P2 create) / subagent (P3 commit) | local `.git/refs/heads/<branch-name>` |
-| Remote branch | manager (P4 push, P5 merge+delete) | `origin/<branch-name>` |
+| Remote branch | manager (P4 push, P5 `git push origin --delete` after worktree removal) | `origin/<branch-name>` |
 | GitHub issue | manager (P1/orchestration) | GitHub repository issues |
 | GitHub PR | manager (P4 create, P5 merge) | GitHub repository PRs |
 | Session notes / mistakes | manager + subagent | `.gobbi/projects/<name>/sessions/.../`, `.gobbi/projects/<name>/mistakes/` — rooted at `session.json.git.worktreePath` (always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal). Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees. |
@@ -355,7 +357,7 @@ Git operations don't write to session record directly (writes happen via session
 - **MUST close linked issues manually** when the PR targets a non-default branch (closing keywords don't auto-fire — Procedure P5 step 6).
 - **MUST root session notes and mistakes at `session.json.git.worktreePath`** — always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees and never redirected.
 - **MUST never modify `~/.gitconfig` or `.git/config`** — user config only.
-- **MUST never `git branch -D` an unmerged branch** without user confirmation.
+- **MUST never `git branch -D` an unmerged branch** without user confirmation — EXCEPT the sanctioned post-squash-merge delete (P5 step 5 / Forbidden Ops carve-out), which is ask-free only when PR-association confirms the branch is merged-by-squash.
 - **MUST never `git reset --hard` outside Forbidden Operations exceptions** without user confirmation.
 - **Base branch is project-specific** — never hardcoded; ask the user at session setup and store as session-level configuration.
 - **GitHub + the `gh` CLI are required only for the PR lifecycle** — worktree creation and commits work without them; when `gh`, auth, or the remote is unavailable the PR is deferred (push/open when `gh` is available) and the session never falls back to the main tree.
