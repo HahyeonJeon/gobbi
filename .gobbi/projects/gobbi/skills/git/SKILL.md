@@ -131,7 +131,7 @@ The menu is **OFFERED only** — the manager surfaces it through the active runt
 |---|---|
 | Configured base branch exists on the remote | Worktree creation will fail later; user may intend to create it |
 | `.gobbi/projects/<name>/worktrees/` in `.gitignore` | Worktree contents appear in the main repo's `git status` |
-| No orphaned worktrees from crashed sessions | Offer cleanup or recovery (see Procedure P6) |
+| No orphaned worktrees from crashed sessions | Offer cleanup or recovery. For a SINGLE orphan mid-session, use Procedure P6. When MORE THAN ONE orphan is detected, offer the Procedure P8 bulk sweep (audited, liveness-protected). |
 | Worktree directory ignored — verified via `git check-ignore -q .gobbi/projects/<name>/worktrees/` | Pre-creation safety check |
 
 **Re-verification principle**: base branch existence and the `.gitignore` check should be re-verified at the point of use (Procedure P2), not only at session start. Early checks catch problems early; late re-checks catch changes that occurred between setup and execution.
@@ -285,6 +285,33 @@ When a PR's CI fails:
 
 If a merge conflict surfaces during the fix loop (the branch falls behind base and a re-sync conflicts), apply the same recovery as P5: detect → surface to the manager → executor resolves in the worktree → re-verify → re-push. No force-push without an explicit Always-Ask approval.
 
+### P8 — Retro / bulk cleanup
+
+P8 is the BULK companion to P6. P6 recovers a SINGLE orphaned worktree mid-session; P8 sweeps ACCUMULATED cruft across all four object classes (worktrees, remote branches, local branches, open issues) in one audited, confirmed pass. Modeled on the `gh poi` audit + dry-run + protect-list algorithm (use the algorithm, not the tool — no external CLI-extension dependency). Run the stages in this fixed order; every delete and close is an `[ASK]` destructive operation (Always-Ask per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification)).
+
+**1. AUDIT (read-only).** Enumerate every object and record baseline counts: worktrees (`git worktree list`), remote branches (`git branch -r`), local branches (`git branch`), open issues (`gh issue list`). No mutation in this stage. The counts seed the durable record (stage 8).
+
+**2. PROTECT (the data-loss guard).** Build the exclude set BEFORE classifying for deletion: the base branch, the current session branch, and any branch checked out in a **LIVE** worktree, plus any user-named protect-list entry. A worktree is **LIVE** if EITHER a held-flock probe shows the lock is held — `flock -n <session-root>/session.json.lock true` FAILS to acquire ⇒ the lock is held ⇒ a live session owns it — OR an active session process holds the worktree (process probe). A branch-tip commit younger than a freshness window (recommend 24h) is a CORROBORATING signal only, never the sole criterion. **NEVER classify a worktree LIVE or orphan from bare `session.json.lock` existence** — the lock is a PERSISTENT advisory marker (`record/scripts/init-record-map.sh` creates it create-if-absent), so a crashed session leaves the file behind; its mere presence proves nothing. A worktree is a CRASHED-ORPHAN only when ALL hold: `flock -n ... true` SUCCEEDS (lock not held, or no lock), no active process, and the tip commit is older than the freshness window. When a worktree is LIVE, PROTECT the worktree AND the branch it holds — never touch either.
+
+**3. CLASSIFY (PR-association only — DQ4).** Classify each non-protected object by PR-association, NOT by reading acceptance-criteria bodies:
+   - **Per branch** — merged-detection via `gh api repos/{owner}/{repo}/commits/<sha-or-branch>/pulls` or `gh pr view <branch> --json state,mergedAt` → `{merged-squash, merged-normal, unmerged, active-worktree}`. Cross with stage-2 liveness: a branch held by a LIVE worktree is `active-worktree` and protected.
+   - **Per issue** — PR-association → `{resolved-by-merged-PR, open-genuine}`. Because gobbi targets a non-default base, closing keywords never auto-fire, so all closing is manual. No acceptance-body reading.
+
+**4. DRY-RUN (preview before any confirm).** Present the FULL classified plan — each object with its classification and the proposed action (keep vs delete/close) and the reason — WITHOUT acting (the `gh poi --dry-run` model). The user reviews the whole set before any confirmation round.
+
+**5. CONFIRM `[ASK]` (destructive).** Nothing acts without confirmation (default-safe). After the dry-run review: **confirm-per-CLASS** for the bulk merged objects (the user approves "delete these N merged-squash branches / close these N resolved issues" as a reviewed batch per class); **per-OBJECT confirm** for any unmerged or ambiguous object (a tip near the freshness window, an inconclusive flock probe). An **unmerged-branch delete requires an EXTRA explicit per-object confirm** — unmerged means unique work at risk (S-07). Authority: [`discussion` skill](../discussion/SKILL.md#decision-classification).
+
+**6. TOCTOU re-check.** IMMEDIATELY before acting on each object, RE-VERIFY its merged-state and worktree-liveness (re-run the held-flock / process probe and the PR-association check). State can change between the dry-run and the act — a concurrent session may have started, a branch may have been pushed. If the re-check disagrees with the dry-run classification, SKIP that object and record the skip; do not act on stale classification.
+
+**7. ACT (per-object, idempotent, resumable).** Act only on confirmed, TOCTOU-revalidated objects:
+   - **Worktrees** — `git status` clean check first (no `--force`/`-f` without Always-Ask), then `git worktree remove <path>` + `git worktree prune` + empty-parent cleanup (`find ... -type d -empty -delete`).
+   - **Branches** — `git push origin --delete <branch>` (remote) + the sanctioned `git branch -D <branch>` (local) per the P5 step 5 / Forbidden Operations `-D` carve-out (only after PR-association confirms the squash-merge).
+   - **Issues** — `gh issue close <num> -c "<reason>"`. NEVER `gh issue delete` (Forbidden Operations — GitHub has no undelete).
+
+   Each object action is idempotent: an already-deleted object that re-appears as "not found" is treated as done, not an error. If the sweep aborts midway (network drop, approval declined), the durable record (stage 8) holds the per-object status; a resume re-runs AUDIT + the TOCTOU re-check and acts only on objects not yet marked done.
+
+**8. DURABLE RECORD.** Write the sweep result — the audit baseline counts, the full classification, the confirmed set, and the acted / skipped / failed status per object with reasons — to the PROJECT-ROOT reports tier: `.gobbi/projects/<name>/reports/{date}-retro-sweep.md`. `reports` is a project-only memory type (it has NO `features/{f}/` tier), and the path lives OUTSIDE the gitignored `sessions/` tree so the record survives worktree removal; it is committed. This record is what makes a partial sweep resumable (stage 7).
+
 ---
 
 ## Worktree CWD discipline
@@ -309,7 +336,7 @@ Common failures and their recovery paths. The **Runtime** column marks which run
 |---|---|---|
 | Worktree creation fails — branch already exists | both | Branch may be in use by another session or left over. Report to user; offer to reuse the existing worktree (Procedure P6) or rename the branch. |
 | `gh` CLI not authenticated | both | Covered by Procedure P1 — verified at session setup. |
-| Orphaned worktrees from crashed session | both | Procedure P6 (Recover orphaned worktree). |
+| Orphaned worktrees from crashed session | both | Procedure P6 (Recover orphaned worktree) for a single orphan; Procedure P8 (Retro / bulk cleanup) when more than one has accumulated. |
 | CI failure on the PR | both | Procedure P7 (Handle CI failure). |
 | Merge conflict on base sync or PR branch | both | Detect → surface to the manager → executor resolves in the worktree → re-verify → continue (P5 Merge-conflict recovery; P7 step 6). No force-push without Always-Ask. |
 | Write to `.git/hooks` or `.git/config` attempted from inside the worktree | both | OS-denied by the sandbox (not only the gobbi rule) — the write cannot succeed. Commit (refs + index) is unaffected. See [Role Boundaries](#role-boundaries). |
