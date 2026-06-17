@@ -131,7 +131,7 @@ The menu is **OFFERED only** — the manager surfaces it through the active runt
 |---|---|
 | Configured base branch exists on the remote | Worktree creation will fail later; user may intend to create it |
 | `.gobbi/projects/<name>/worktrees/` in `.gitignore` | Worktree contents appear in the main repo's `git status` |
-| No orphaned worktrees from crashed sessions | Offer cleanup or recovery (see Procedure P6) |
+| No orphaned worktrees from crashed sessions | Offer cleanup or recovery. For a SINGLE orphan mid-session, use Procedure P6. When MORE THAN ONE orphan is detected, offer the Procedure P8 bulk sweep (audited, liveness-protected). |
 | Worktree directory ignored — verified via `git check-ignore -q .gobbi/projects/<name>/worktrees/` | Pre-creation safety check |
 
 **Re-verification principle**: base branch existence and the `.gitignore` check should be re-verified at the point of use (Procedure P2), not only at session start. Early checks catch problems early; late re-checks catch changes that occurred between setup and execution.
@@ -147,7 +147,7 @@ The menu is **OFFERED only** — the manager surfaces it through the active runt
 | Branch | Names and creates locally | Commits to it |
 | Push to remote | Pushes after all subtasks are complete | **Never pushes** |
 | PR | Creates, monitors CI | **Never creates** |
-| Merge | `gh pr merge --squash --delete-branch`; pulls into local base | **Never merges** |
+| Merge | `gh pr merge --squash` (no `--delete-branch`); pulls into local base, then removes the worktree before deleting the remote + local branch (P5 sequence) | **Never merges** |
 | Cleanup | Worktree remove + prune + empty parent dir cleanup | Never |
 
 The manager passes the worktree's absolute path in every delegation prompt. The subagent's first action is to `cd` to that path. From that point, the subagent follows the standard Study, Plan, Execute, Verify, Commit lifecycle.
@@ -169,11 +169,11 @@ These commands are forbidden without **explicit user request** through the activ
 | `git checkout .` / `git restore .` | Mass discard of unstaged changes | Commit-then-discard individual files |
 | `git commit --amend` after push | Rewrites pushed history | New commit (`fix: <description>`) or revert |
 | `git rebase -i` on pushed history | Rewrites pushed history | New commits |
-| `git branch -D` on unmerged branches | Discards branch tip irreversibly | `git branch -d` (only succeeds if merged) |
+| `git branch -D` on unmerged branches | Discards branch tip irreversibly | `git branch -d` (only succeeds if merged). **Sanctioned exception:** `git branch -D` IS allowed — no Always-Ask — WHEN the branch is confirmed merged-by-squash via PR-association (a merged PR whose head was this branch). This is the ONLY safe `-D` use: a squash-merge produces a new commit with no history overlap, so `git branch -d` cannot recognize the branch as merged and force-delete is the only path. See Procedure P5 step 5 for the procedure. The ban above stands for genuinely unmerged branches (no merged-PR association). |
 | `git stash` inside a worktree | Stash is per-worktree but easy to forget / lose if worktree is force-removed — never use stash to defer work across delegation boundaries | Create a temporary linked worktree (`git worktree add -b emergency-fix <path> <base>`), do the work, commit, then remove the temp worktree. Per `git-scm.com/docs/git-worktree`. |
 | `gh pr close` without merge | Discards reviewed work | Either merge or convert to draft |
 | `gh issue delete` | GitHub does not support undelete | `gh issue close` + comment explaining |
-| `git worktree remove --force <path>` / `git worktree remove -f <path>` | Discards any uncommitted changes inside the worktree without review; work staged in the worktree (notes, edits, partial commits) is permanently lost | Run `git status` inside the worktree first to confirm a clean tree AND that the branch is merged into base; then use standard `git worktree remove <path>` (no `--force`). If unclean: commit, discard, or escalate to user through the active runtime's user-decision primitive before removal. |
+| `git worktree remove --force <path>` / `git worktree remove -f <path>` | Discards any uncommitted changes inside the worktree without review; work staged in the worktree (notes, edits, partial commits) is permanently lost | Run `git status` inside the worktree first to confirm a clean tree AND that the branch is merged into base by PR-association (P5 step 3's `gh pr view <num> --json state,mergedAt` MERGED check — NOT `git branch --merged`, which a squash false-negatives); then use standard `git worktree remove <path>` (no `--force`). If unclean: commit, discard, or escalate to user through the active runtime's user-decision primitive before removal. |
 | Subagent: `git push` / `gh pr *` / `gh issue *` | Bypasses manager's integration authority | Subagent reports `DONE`; manager handles |
 
 **Cross-layer drift is not yet detected automatically.** Until issue #258 lands, every PR that touches multiple layers (e.g., agent docs + runtime specs + plugin agents) must be hand-reviewed for drift via adversarial review per `evaluation/SKILL.md`. See issue #258 for the planned validator.
@@ -233,8 +233,8 @@ After all subtasks for the issue are complete and verified:
 
 1. `cd` to the worktree path.
 2. **Push the branch** — `git push -u origin <branch-name>`.
-3. **Open the PR** with `gh pr create` — title and body follow [`conventions.md` § Pull Request Format](conventions.md#pull-request-format).
-4. **Apply type label** — `gh pr edit <num> --add-label <type>` per [`conventions.md` § Label Registry](conventions.md#label-registry).
+3. **Open the PR — or reuse the open one (idempotent).** Before creating, check whether a PR for this branch already exists: `gh pr list --head <branch-name> --json number,state`. If an open PR is found (e.g. Execution already opened it and Wrap-up is now adding promotion commits), do NOT create a duplicate — step 2 has already pushed the new commits to the same branch, so the existing PR now carries them; reuse its number and continue. Only if no open PR exists, create one with `gh pr create` — title and body follow [`conventions.md` § Pull Request Format](conventions.md#pull-request-format).
+4. **Apply type label** — `gh pr edit <num> --add-label <type>` per [`conventions.md` § Label Registry](conventions.md#label-registry). Skip if the label is already applied (reused PR).
 5. **Monitor CI** — `gh pr checks <num> --watch` (or equivalent for external CI).
 
 ### P5 — Land PR
@@ -253,12 +253,14 @@ If any precondition fails, do not merge — surface the failing item to the user
 
 **Merge sequence** (all preconditions pass):
 
-1. `gh pr merge <num> --squash --delete-branch` — atomic squash merge + remote branch deletion.
-2. `git checkout <base-branch> && git pull --ff-only` — sync the local base branch with the merge.
-3. Before removing the worktree: run `git status` inside it to confirm a clean working tree AND that the branch is merged into base. Then `git worktree remove .gobbi/projects/<name>/worktrees/<branch-name>`. **Never use `--force` / `-f` without explicit user approval through the active runtime's user-decision primitive** — force-remove silently discards any uncommitted work inside the worktree (Forbidden Operations). If the status is unclean, commit or discard explicitly before removal.
-4. `git worktree prune` — clean stale references.
-5. **Clean up empty parent directories** — nested branch names like `feat/42-x` create `worktrees/feat/` parent dirs; `git worktree remove` only removes the leaf. Run `find .gobbi/projects/<name>/worktrees/ -type d -empty -delete`.
-6. **If non-default-branch PR**: close linked issues — `gh issue close <num> -c "Closed by PR #<pr-num>"` for each.
+The order is deliberate: the worktree must be removed BEFORE either branch is deleted, because a branch held by a worktree cannot be deleted (remote or local). Do NOT pass `--delete-branch` to `gh pr merge` — it runs while the worktree still holds the branch and the delete fails ("branch used by worktree").
+
+1. **Merge the PR** — `gh pr merge <num> --squash`. Squash-merge only; do NOT add `--delete-branch` (it cannot delete a worktree-held branch).
+2. **Sync the local base** — `git checkout <base-branch> && git pull --ff-only` to bring the local base to the merge commit.
+3. **Remove the worktree** — run `git status` inside it first to confirm a clean working tree. Confirm the branch is merged into base by PR-association — `gh pr view <num> --json state,mergedAt` shows `MERGED` with a non-null `mergedAt` (the SAME method as step 5) — NOT `git branch --merged` / `git branch -d` recognition, which a squash-merge false-negatives (a squash produces a new commit with no history overlap). Then `git worktree remove .gobbi/projects/<name>/worktrees/<branch-name>`, followed by `git worktree prune` (clean stale references) and the empty-parent cleanup (`find .gobbi/projects/<name>/worktrees/ -type d -empty -delete` — nested branch names like `feat/42-x` create `worktrees/feat/` parent dirs that `git worktree remove` leaves behind). **Never use `--force` / `-f` without explicit user approval through the active runtime's user-decision primitive** — force-remove silently discards any uncommitted work inside the worktree (Forbidden Operations). If the status is unclean, commit or discard explicitly before removal.
+4. **Delete the REMOTE branch** — `git push origin --delete <branch-name>`. The worktree no longer holds the branch, so the delete now succeeds (this is why `--delete-branch` at step 1 fails and is dropped).
+5. **Delete the LOCAL branch** — first confirm the squash-merge landed via PR-association: `gh pr view <num> --json state,mergedAt` shows `MERGED` with a non-null `mergedAt`, or `gh api repos/{owner}/{repo}/commits/<base-branch>/pulls` associates the branch's PR as merged. Then run `git branch -D <branch-name>` as the SANCTIONED exception (Forbidden Operations § `-D` carve-out): a squash-merge defeats `git branch -d`, so force-delete is the only path AFTER merge is confirmed. The tip stays in the reflog. If PR-association does NOT confirm the merge (PR deferred, merge not yet on base), do NOT delete — surface it through the active runtime's user-decision primitive instead.
+6. **Close issues with done-detection** — for a non-default-branch PR, closing keywords never auto-fire, so close each issue manually: `gh issue close <num> -c "Closed by PR #<pr-num>"`. Detect issues to close by PR-association, from two concrete sources: (a) keyword-LINKED issues — `gh pr view <num> --json closingIssuesReferences` (the issues a `Closes #` / `Fixes #` keyword links); (b) MENTIONED-but-unlinked issues — the timeline / cross-reference API: `gh api repos/{owner}/{repo}/issues/<n>/timeline` (or the PR's cross-reference events) surfaces issues the PR or its commits reference WITHOUT a closing keyword. Confirm-and-close each detected issue per object. **Honest boundary:** PR-association only finds issues the PR REFERENCES (linked OR mentioned). A done issue the PR NEVER references cannot be auto-detected — SURFACE the open-issue list to the user at this manual close step so they can identify any such issue; never auto-close one that PR-association did not associate. Closing stays manual because the non-default base makes closing keywords inert.
 
 ### P6 — Recover orphaned worktree
 
@@ -282,6 +284,33 @@ When a PR's CI fails:
 6. **Monitor** — `gh pr checks <num> --watch` until pass or the user decides to defer.
 
 If a merge conflict surfaces during the fix loop (the branch falls behind base and a re-sync conflicts), apply the same recovery as P5: detect → surface to the manager → executor resolves in the worktree → re-verify → re-push. No force-push without an explicit Always-Ask approval.
+
+### P8 — Retro / bulk cleanup
+
+P8 is the BULK companion to P6. P6 recovers a SINGLE orphaned worktree mid-session; P8 sweeps ACCUMULATED cruft across all four object classes (worktrees, remote branches, local branches, open issues) in one audited, confirmed pass. Modeled on the `gh poi` audit + dry-run + protect-list algorithm (use the algorithm, not the tool — no external CLI-extension dependency). Run the stages in this fixed order; every delete and close is an `[ASK]` destructive operation (Always-Ask per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification)).
+
+**1. AUDIT (read-only).** Enumerate every object and record baseline counts: worktrees (`git worktree list`), remote branches (`git branch -r`), local branches (`git branch`), open issues (`gh issue list`). No mutation in this stage. The counts seed the durable record (stage 8).
+
+**2. PROTECT (the data-loss guard).** Build the exclude set BEFORE classifying for deletion: the base branch, the current session branch, and any branch checked out in a **LIVE** worktree, plus any user-named protect-list entry. A worktree is **LIVE** if EITHER a held-flock probe shows the lock is held — `flock -n <session-root>/session.json.lock true` FAILS to acquire ⇒ the lock is held ⇒ a live session owns it — OR an active session process holds the worktree (process probe). A branch-tip commit younger than a freshness window (recommend 24h) is a CORROBORATING signal only, never the sole criterion. **NEVER classify a worktree LIVE or orphan from bare `session.json.lock` existence** — the lock is a PERSISTENT advisory marker (`record/scripts/init-record-map.sh` creates it create-if-absent), so a crashed session leaves the file behind; its mere presence proves nothing. A worktree is a CRASHED-ORPHAN only when ALL hold: `flock -n ... true` SUCCEEDS (lock not held, or no lock), no active process, and the tip commit is older than the freshness window. When a worktree is LIVE, PROTECT the worktree AND the branch it holds — never touch either.
+
+**3. CLASSIFY (PR-association only — DQ4).** Classify each non-protected object by PR-association, NOT by reading acceptance-criteria bodies:
+   - **Per branch** — merged-detection via `gh api repos/{owner}/{repo}/commits/<sha-or-branch>/pulls` or `gh pr view <branch> --json state,mergedAt` → `{merged-squash, merged-normal, unmerged, active-worktree}`. Cross with stage-2 liveness: a branch held by a LIVE worktree is `active-worktree` and protected.
+   - **Per issue** — PR-association via two concrete sources: keyword-LINKED issues from `gh pr view <num> --json closingIssuesReferences`, and MENTIONED-but-unlinked issues from the timeline / cross-reference API (`gh api repos/{owner}/{repo}/issues/<n>/timeline` or the PR cross-reference events) → `{resolved-by-merged-PR, open-genuine}`. Because gobbi targets a non-default base, closing keywords never auto-fire, so all closing is manual. No acceptance-body reading (DQ4). A done issue that NO merged PR references cannot be classified `resolved-by-merged-PR` — it is SURFACED at the per-object `[ASK]` confirm (stage 5) for the user to identify, never auto-closed; P8 close is destructive, so an unreferenced issue is never swept silently.
+
+**4. DRY-RUN (preview before any confirm).** Present the FULL classified plan — each object with its classification and the proposed action (keep vs delete/close) and the reason — WITHOUT acting (the `gh poi --dry-run` model). The user reviews the whole set before any confirmation round.
+
+**5. CONFIRM `[ASK]` (destructive).** Nothing acts without confirmation (default-safe). After the dry-run review: **confirm-per-CLASS** for the bulk merged objects (the user approves "delete these N merged-squash branches / close these N resolved issues" as a reviewed batch per class); **per-OBJECT confirm** for any unmerged or ambiguous object (a tip near the freshness window, an inconclusive flock probe). An **unmerged-branch delete requires an EXTRA explicit per-object confirm** — unmerged means unique work at risk (S-07). Authority: [`discussion` skill](../discussion/SKILL.md#decision-classification).
+
+**6. TOCTOU re-check.** IMMEDIATELY before acting on each object, RE-VERIFY its merged-state and worktree-liveness (re-run the held-flock / process probe and the PR-association check). State can change between the dry-run and the act — a concurrent session may have started, a branch may have been pushed. If the re-check disagrees with the dry-run classification, SKIP that object and record the skip; do not act on stale classification.
+
+**7. ACT (per-object, idempotent, resumable).** Act only on confirmed, TOCTOU-revalidated objects:
+   - **Worktrees** — `git status` clean check first (no `--force`/`-f` without Always-Ask), then `git worktree remove <path>` + `git worktree prune` + empty-parent cleanup (`find ... -type d -empty -delete`).
+   - **Branches** — `git push origin --delete <branch>` (remote) + the sanctioned `git branch -D <branch>` (local) per the P5 step 5 / Forbidden Operations `-D` carve-out (only after PR-association confirms the squash-merge).
+   - **Issues** — `gh issue close <num> -c "<reason>"`. NEVER `gh issue delete` (Forbidden Operations — GitHub has no undelete).
+
+   Each object action is idempotent: an already-deleted object that re-appears as "not found" is treated as done, not an error. If the sweep aborts midway (network drop, approval declined), the durable record (stage 8) holds the per-object status; a resume re-runs AUDIT + the TOCTOU re-check and acts only on objects not yet marked done.
+
+**8. DURABLE RECORD.** Write the sweep result — the audit baseline counts, the full classification, the confirmed set, and the acted / skipped / failed status per object with reasons — to the PROJECT-ROOT reports tier: `.gobbi/projects/<name>/reports/{date}-retro-sweep.md`. `reports` is a project-only memory type (it has NO `features/{f}/` tier), and the path lives OUTSIDE the gitignored `sessions/` tree so the record survives worktree removal; it is committed. This record is what makes a partial sweep resumable (stage 7).
 
 ---
 
@@ -307,7 +336,7 @@ Common failures and their recovery paths. The **Runtime** column marks which run
 |---|---|---|
 | Worktree creation fails — branch already exists | both | Branch may be in use by another session or left over. Report to user; offer to reuse the existing worktree (Procedure P6) or rename the branch. |
 | `gh` CLI not authenticated | both | Covered by Procedure P1 — verified at session setup. |
-| Orphaned worktrees from crashed session | both | Procedure P6 (Recover orphaned worktree). |
+| Orphaned worktrees from crashed session | both | Procedure P6 (Recover orphaned worktree) for a single orphan; Procedure P8 (Retro / bulk cleanup) when more than one has accumulated. |
 | CI failure on the PR | both | Procedure P7 (Handle CI failure). |
 | Merge conflict on base sync or PR branch | both | Detect → surface to the manager → executor resolves in the worktree → re-verify → continue (P5 Merge-conflict recovery; P7 step 6). No force-push without Always-Ask. |
 | Write to `.git/hooks` or `.git/config` attempted from inside the worktree | both | OS-denied by the sandbox (not only the gobbi rule) — the write cannot succeed. Commit (refs + index) is unaffected. See [Role Boundaries](#role-boundaries). |
@@ -333,7 +362,7 @@ Git operations don't write to session record directly (writes happen via session
 |---|---|---|
 | Worktree directory | manager (P2 create, P5 remove) | `.gobbi/projects/<name>/worktrees/<branch-name>/` |
 | Local branch | manager (P2 create) / subagent (P3 commit) | local `.git/refs/heads/<branch-name>` |
-| Remote branch | manager (P4 push, P5 merge+delete) | `origin/<branch-name>` |
+| Remote branch | manager (P4 push, P5 `git push origin --delete` after worktree removal) | `origin/<branch-name>` |
 | GitHub issue | manager (P1/orchestration) | GitHub repository issues |
 | GitHub PR | manager (P4 create, P5 merge) | GitHub repository PRs |
 | Session notes / mistakes | manager + subagent | `.gobbi/projects/<name>/sessions/.../`, `.gobbi/projects/<name>/mistakes/` — rooted at `session.json.git.worktreePath` (always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal). Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees. |
@@ -355,7 +384,7 @@ Git operations don't write to session record directly (writes happen via session
 - **MUST close linked issues manually** when the PR targets a non-default branch (closing keywords don't auto-fire — Procedure P5 step 6).
 - **MUST root session notes and mistakes at `session.json.git.worktreePath`** — always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. Transcript paths (`session.json.transcriptPath`) live in `~/.claude/projects/` — outside both trees and never redirected.
 - **MUST never modify `~/.gitconfig` or `.git/config`** — user config only.
-- **MUST never `git branch -D` an unmerged branch** without user confirmation.
+- **MUST never `git branch -D` an unmerged branch** without user confirmation — EXCEPT the sanctioned post-squash-merge delete (P5 step 5 / Forbidden Ops carve-out), which is ask-free only when PR-association confirms the branch is merged-by-squash.
 - **MUST never `git reset --hard` outside Forbidden Operations exceptions** without user confirmation.
 - **Base branch is project-specific** — never hardcoded; ask the user at session setup and store as session-level configuration.
 - **GitHub + the `gh` CLI are required only for the PR lifecycle** — worktree creation and commits work without them; when `gh`, auth, or the remote is unavailable the PR is deferred (push/open when `gh` is available) and the session never falls back to the main tree.

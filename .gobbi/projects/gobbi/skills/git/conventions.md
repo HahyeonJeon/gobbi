@@ -223,13 +223,17 @@ This is a GitHub platform behavior, not a configuration option.
 
 ### Merge strategy
 
-**Squash merge with branch deletion** is the only merge strategy:
+**Squash merge** is the only merge strategy:
 
 ```bash
-gh pr merge <num> --squash --delete-branch
+gh pr merge <num> --squash
 ```
 
-All PR commits collapse into one commit on the target branch (preserving the linear history of the base), and the source branch is deleted to prevent stale branch accumulation. The squashed commit's subject is the PR title; the squashed commit's body is the PR body's `## Summary` section.
+All PR commits collapse into one commit on the target branch (preserving the linear history of the base). The squashed commit's subject is the PR title; the squashed commit's body is the PR body's `## Summary` section.
+
+Branch deletion is NOT part of the merge command. Do not pass `--delete-branch` — it runs while the worktree still holds the branch and the delete fails ("branch used by worktree"). Branch cleanup happens in the reordered finalization sequence: the worktree is removed first, then `git push origin --delete <branch>` deletes the remote branch and the sanctioned `git branch -D <branch>` deletes the local branch after PR-association confirms the squash-merge. See [`git/SKILL.md` § P5 — Land PR](SKILL.md#p5--land-pr) for the full sequence; do not duplicate it here.
+
+A squash merge produces a NEW commit with no history overlap with the source branch, so `git branch -d` will NOT recognize the source branch as merged. The local branch must be force-deleted via the sanctioned `-D` path (P5 step 5 / the Forbidden Operations `-D` carve-out in `git/SKILL.md`), conditioned on PR-association merge-confirmation — never left to `git branch -d`, which fails on a squash-merged branch.
 
 ---
 
