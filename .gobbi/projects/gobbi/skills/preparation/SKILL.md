@@ -64,7 +64,7 @@ All gap fixes that execute during WORK write to session staging at `sessions/{da
 **Commit-on-branch (worktree sessions only):** after the copy step, the manager (or proxied executor) runs:
 
 1. `git -C "$worktreePath" add <relative-paths>` — stage the skill body and both symlinks.
-2. Commit with the subject + required `AI-Provenance-Record:` trailer (per `git/conventions.md:118`) in a single invocation using a heredoc so the trailer actually lands in the commit body:
+2. Commit with the subject + required `AI-Provenance-Record:` trailer (per [`git/conventions.md` § Commit Trailers](../git/conventions.md#commit-trailers)) in a single invocation using a heredoc so the trailer actually lands in the commit body:
 
    ```
    git -C "$worktreePath" commit -m "$(cat <<'EOF'
