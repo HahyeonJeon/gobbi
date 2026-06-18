@@ -55,7 +55,7 @@ Date is the **generation date**, not the date of events reported on. A weekly-st
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reports-type extensions (`report_type`, `related_reports`). Reports are append-only (base `status` stays `active`). A feature-scoped report sets `scope: feature` + `feature:`; a project-scoped one sets `scope: project`.
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reports-type extensions — `reports/` keeps the **richer set**: `report_type`, `related_reports`, plus `generated_by`, `subject`, `related_reviews`, and `related_decisions` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). Reports are append-only (base `status` stays `active`). A feature-scoped report sets `scope: feature` + `feature:`; a project-scoped one sets `scope: project`. The `related_*` lists are **plain slugs** (no path, no `[[ ]]`); navigable `[[slug]]` links live in the `## Related` body section ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -67,13 +67,13 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [process, evaluation]          # controlled vocabulary (§2.5)
 report_type: status | post-mortem | analytics
-related_reports: [{report slugs that this builds on or supersedes}]
+related_reports: [{report slugs that this builds on or supersedes}]   # plain slugs
 generated_by: {tool name / agent identity / human author}
 subject: {one-line subject of the report}
-related_reviews: [{review slugs derived from or feeding into this report}]
-related_decisions: [{decision slugs this report drove}]
+related_reviews: [{review slugs derived from or feeding into this report}]   # plain slugs
+related_decisions: [{decision slugs this report drove}]                      # plain slugs
 ---
 
 # {Report title}
@@ -99,6 +99,12 @@ related_decisions: [{decision slugs this report drove}]
 
 ## Cross-references
 {Links to reviews / learnings / mistakes / decisions / sessions that this report builds on or feeds into.}
+
+## Related
+{Navigable `[[slug]]` links to the reviews / decisions / reports this one builds on or feeds into ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Mirrors the `related_*` frontmatter in navigable form.}
+
+- [[2026-05-11-ultrareview-orchestration-redesign]] — the review feeding this report
+- [[2026-05-11-use-redis-not-memcached]] — a decision this report drove
 ```
 
 The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / project-wide report uses `scope: project` + `feature: null` and promotes to the project `reports/` tier.
@@ -124,4 +130,4 @@ A report cites its inputs by path (sessions, evaluation files, prior reports). R
 
 ## Lifecycle
 
-Reports are **append-only history**. Supersession via frontmatter `status: superseded` + `related_reports: [{newer-slug}]`; do not delete or rewrite historical reports. Status updates from `open` → `acted-on` / `archived` are routine — they reflect outcome resolution, not content edits.
+Reports are **append-only history** — a report's `status` is always `active` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)); you never mutate it. There is no `superseded` or `archived` report status: a newer report is **appended** as a separate file that links back via `related_reports: [{newer-slug}]`, not a status flip on the old one. Do not delete or rewrite historical reports. A terminal report is archived by being moved under `archive/reports/`; the move marks it, not a `status` value.

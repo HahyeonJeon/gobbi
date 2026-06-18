@@ -20,7 +20,7 @@ The **What**. Durable memory is a set of typed markdown trees under `.gobbi/proj
 Each type is project-only, feature-scoped, or both — which type sits in which bucket is owned by [`rules.md` § 3](rules.md#3-structure-rules) and the per-type homes in [`memory-map.md`](memory-map.md), not restated here. This is the conceptual shape; the enumeration is not here.
 
 - For which type lives where, who writes it, and when → [`memory-map.md`](memory-map.md). It owns the path inventory and the per-type canonical homes — this doc never restates the path table.
-- For the promotable content types vs the feature-subdir-only types and the `type`-enum rules → [`rules.md` § 2.1](rules.md#21-shared-base-every-memory-file) and [`rules.md` § 3](rules.md#3-structure-rules).
+- For the complete 16-type `type` enum (one flat enum — all types are first-class; placement is a `scope`/directory constraint, not an enum split) → [`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types); for which type lives at which tier → [`rules.md` § 3](rules.md#3-structure-rules).
 - For the feature dir's internal shape (the README + 14 subdirs) → [`templates/feature.md`](templates/feature.md). This doc never restates the 14 subdirs.
 
 ---
@@ -49,7 +49,7 @@ The **How**, part 1. When an agent has something worth remembering, the write fl
 2. **Stamp** the matching type template so the file is structured enough to promote — [`templates/{type}.md`](templates/).
 3. At Wrap-up, **Wrap-up reads** the accumulated staging across all loops — [`wrap-up/SKILL.md` § The 5-stage pipeline](../wrap-up/SKILL.md#the-5-stage-pipeline).
 4. Wrap-up **routes** each file deterministically to its memory destination — [`wrap-up/SKILL.md` § Staging → Memory routing](../wrap-up/SKILL.md#staging--memory-routing).
-5. Wrap-up **strips** the staging-only fields, then writes through the per-type allowlist — [`wrap-up/SKILL.md` § Frontmatter allowlist on promotion](../wrap-up/SKILL.md#frontmatter-allowlist-on-promotion-strip-staging-only-fields) and [`rules.md` § 2.3](rules.md#23-staging-field-stripping-on-promotion).
+5. Wrap-up **strips** the staging-only fields, then writes through the per-type allowlist — [`wrap-up/SKILL.md` § Frontmatter allowlist on promotion](../wrap-up/SKILL.md#frontmatter-allowlist-on-promotion-strip-staging-only-fields) and [`rules.md` § 2.6](rules.md#26-staging-field-stripping-on-promotion).
 
 This doc does **not** contain the routing table — [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) owns it.
 
@@ -145,7 +145,7 @@ The anti-duplication contract. Each row names the single source of truth for one
 |---|---|---|
 | [`memory/SKILL.md`](SKILL.md) (this doc) | The **memorize procedure** — the What/When/How and the entry point | it points OUT; nothing points to it for detail |
 | [`memory/memory-map.md`](memory-map.md) | The **path inventory** — every session-record + memory path, its writer, when, which template; per-type canonical homes; the Templates index | which path holds what / who writes it / when — never restate the path tables |
-| [`memory/rules.md`](rules.md) | The **standard** — naming (§1), frontmatter (§2), structure (§3), dev-doc quality (§4), staging-field stripping (§2.3) | how to name / what frontmatter / what structure / the zero-context bar — never restate the rules |
+| [`memory/rules.md`](rules.md) | The **standard** — naming (§1), frontmatter (§2), structure (§3), dev-doc quality (§4), staging-field stripping (§2.6) | how to name / what frontmatter / what structure / the zero-context bar — never restate the rules |
 | [`memory/templates/{type}.md`](templates/) | The **per-type schema** — required fields, when-to-write, frontmatter + body contract per type | the schema each memorized file stamps — never restate a template's fields |
 | [`memory/templates/feature.md`](templates/feature.md) | The **per-feature subdir map** (README + 14 subdirs) + the feature-README identity spec | the feature dir's internal shape — never restate the 14 subdirs |
 | [`record/SKILL.md`](../record/SKILL.md) | The **capture / staging side** — the RECORD sub-phase procedure, staging mechanics, cumulative staging, idempotency, the assistant-role access matrix | how a finding is staged in-loop — never restate the RECORD step-table |

@@ -32,7 +32,7 @@ Example: `2026-05-11-cache-vs-index.md`, `2026-05-11-feature-decomposition.md`.
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file); `scope: feature` always (feature-subdir-only). The base `session` field anchors the discussion to its session.
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the discussions-type extension (`outcome`); `scope: feature` always (feature-subdir-only). The base `session` field anchors the discussion to its session — the old `loop:` field is removed (it is staging-only session-routing residue stripped on promotion, [`rules.md` § 2.6](../rules.md#26-staging-field-stripping-on-promotion)). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -44,8 +44,7 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
-loop: ideation | preparation | planning | execution | wrap-up
+tags: [ideation, process]            # controlled vocabulary (§2.5)
 outcome: {one-line summary of what was decided}
 ---
 
@@ -67,7 +66,10 @@ outcome: {one-line summary of what was decided}
 {What this decision means for the design, the plan, or future work. Note any deferred risks or contribution points that surfaced.}
 
 ## Related
-{Links to design / decision / plan documents this discussion shaped.}
+{Navigable `[[slug]]` links to the design / decision / plan documents this discussion shaped ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[cache-invalidation]] — the design this discussion shaped
+- [[2026-05-11-use-redis-not-memcached]] — the decision it produced
 ```
 
 ## Granularity

@@ -30,7 +30,7 @@ Example (feature-level, per-task): `2026-05-11-login-ui-shipped.md`.
 
 ## Item template — feature-level (per-task)
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the changelogs extension (`shipped_in`); `scope: feature` always (feature-subdir-only).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the changelogs extension (`shipped_in`); `scope: feature` always (feature-subdir-only). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -42,7 +42,7 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [execution, docs-sync]         # controlled vocabulary (§2.5)
 shipped_in: {PR / commit / plan path}
 ---
 
@@ -63,7 +63,10 @@ shipped_in: {PR / commit / plan path}
 {Items that were in the plan but did not ship this iteration, and where they went (backlog entry slug, next workflow note, etc).}
 
 ## Related
-{Links to design, plan, decisions, mistakes, evaluator findings that informed this work.}
+{Navigable `[[slug]]` links to the design, plan, decisions, or mistakes that informed this work ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[cache-invalidation]] — the design this work implements
+- [[2026-05-11-cache-layer-plan]] — the plan task it shipped
 ```
 
 ## Granularity

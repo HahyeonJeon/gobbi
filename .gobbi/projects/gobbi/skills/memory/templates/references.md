@@ -35,7 +35,7 @@ Example: `redis-ttl-eviction.md` (not `redis-docs-chapter-7.md`), `karpathy-soft
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the references-type extensions (`title`, `source`, `accessed`, `ref_type`). Note: base `type: references` is the memory type; the source genre (docs / blog / paper / …) is the `ref_type` extension, NOT the base `type`.
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the references-type extensions (`title`, `source`, `accessed`, `ref_type`). Note: base `type: references` is the memory type; the source genre (docs / blog / paper / …) is the `ref_type` extension, NOT the base `type` — its enum is `docs` | `blog` | `paper` | `rfc` | `code` | `book` | `other` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -47,7 +47,7 @@ feature: {feature-name} | null
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [memory, design]               # controlled vocabulary (§2.5)
 title: {Short topic title}
 source: {URL or path}
 accessed: YYYY-MM-DD
@@ -58,9 +58,6 @@ ref_type: docs | blog | paper | rfc | code | book | other
 
 ## Insight
 {One or two sentences: the specific lesson this source contributes. NOT a summary of the source — the takeaway.}
-
-## Related
-{Related learning / mistake / decision slugs this reference connects to. Body content, not frontmatter — the base+`title`/`source`/`accessed`/`ref_type` allowlist is the only frontmatter references carry.}
 
 ## Why it applies
 {In one or two sentences, why this insight matters for this project. The condition under which the insight should be invoked.}
@@ -77,6 +74,12 @@ ref_type: docs | blog | paper | rfc | code | book | other
 | Date | Session | Used for |
 |---|---|---|
 | YYYY-MM-DD | {session_id} | {what design / decision / checklist item used this} |
+
+## Related
+{Navigable `[[slug]]` links to the learning / mistake / decision this reference connects to ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Body content, not frontmatter — the base + `title`/`source`/`accessed`/`ref_type` allowlist is the only frontmatter references carry.}
+
+- [[redis-ttl-eviction-learning]] — the learning this source anchored
+- [[2026-05-11-use-redis-not-memcached]] — the decision it informed
 ```
 
 ## Insight vs link

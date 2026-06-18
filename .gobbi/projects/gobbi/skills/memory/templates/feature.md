@@ -80,11 +80,11 @@ Wrap-up is the sole writer; loop RECORD (Ideation / Planning / Execution) never 
 
 ### Template
 
-The README carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the features-type extensions (`value_proposition`, `subsystems`). A feature README is the feature's **identity document**, so it is self-referential: `scope: feature` and `feature: {own-slug}` name the feature itself. The sprint-only keys (`pr`, `commit`, `head-commit`, `first-session`, `last-session`) are NOT on the README — per-ship metadata belongs in `changelogs/` entries, not the value-feature identity.
+The README carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the features-type extensions (`value_proposition`, `subsystems`). A feature README is the feature's **identity document**. Its `name` is the fixed literal `README` (the filename stem of `README.md`), NOT the feature slug — every feature README shares `name: README`, so the validator exempts `README.md` from the cross-tree slug-uniqueness check ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). The feature's identity slug lives in `feature: {own-slug}` + the directory name. The README is self-referential through `scope: feature` and `feature: {own-slug}` — those name the feature itself, while `name` names the file. The sprint-only keys (`pr`, `commit`, `head-commit`, `first-session`, `last-session`) are NOT on the README — per-ship metadata belongs in `changelogs/` entries, not the value-feature identity. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
-name: {feature-name}
+name: README                # fixed literal — the filename stem, NOT the feature slug
 description: {one-line what this feature is}
 type: features
 scope: feature
@@ -92,7 +92,7 @@ feature: {feature-name}   # self-reference — the README names its own feature
 status: active | retired
 created: YYYY-MM-DD
 session: {session-id of first promotion to this feature}
-tags: [{tag1}, {tag2}]
+tags: [memory, process]              # controlled vocabulary (§2.5)
 value_proposition: {the one-liner — "what gobbi does for me"}
 subsystems: [{skill / path this value-feature owns}]
 ---
@@ -133,7 +133,10 @@ subsystems: [{skill / path this value-feature owns}]
 {Bulleted list of currently-deferred items pointing to backlog entries.}
 
 ## Related
-{Pointers to project-level design / decision / plan documents that touch this feature.}
+{Navigable `[[slug]]` links to project-level design / decision / plan documents that touch this feature ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[prompt-cascade]] — a project-level design this feature touches
+- [[2026-05-11-orch-workflow-improvements]] — a cross-feature plan it relates to
 ```
 
 ### Update discipline

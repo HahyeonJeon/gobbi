@@ -80,65 +80,160 @@ This carve-out is a direct consequence of the **Scope boundary** at the top of t
 
 Every memory file carries base frontmatter; richer types add a small set of declared extension fields. The base is the cross-type-uniform surface tools read; extensions are the per-type refinements.
 
+> **This file is the canonical machine-readable spec.** `rules.md §2` IS the frontmatter standard — there is no separate JSON-Schema file. The bash validator at [`skills/memory/scripts/validate-frontmatter.sh`](scripts/validate-frontmatter.sh) (built separately) enforces §2: required fields, the `type` enum (§2.3), per-type `status` enums (§2.2), the controlled `tags` vocabulary (§2.5), the `feature`-by-`scope` conditional (§2.1), and the no-stray-keys check (§2.6). When §2 and the validator disagree, §2 is the spec and the validator is the bug.
+
 ### 2.1 Shared base (every memory file)
+
+Nine required fields, plus four optional fields any type may carry: the escape-hatch `keywords` and the three slug-link fields (`supersedes`, `superseded_by`, `related`):
 
 ```yaml
 ---
-name: {slug or short title}
-description: {one-line what-this-is}
-type: features|notes|decisions|design|mistakes|rules|learnings|backlogs|references|plans|reviews|reports
+name: {stable slug — the filename without `.md` and without any `YYYY-MM-DD-` prefix}
+description: {one line, ≤ ~120 chars}
+type: features|notes|decisions|design|mistakes|rules|learnings|backlogs|references|plans|reviews|reports|changelogs|discussions|scenarios|checklists
 scope: project | feature
-feature: {value-feature slug — required when scope=feature (a feature README self-references its own slug); null when scope=project and not feature-bound}
-status: {type-appropriate lifecycle value — see §2.2}
+feature: {feature slug when scope=feature (a feature README self-references its own slug); null when scope=project}
+status: {the type's allowed status value — see §2.2}
 created: YYYY-MM-DD
 session: {session-id that created this}
-tags: [{...}]
+tags: [{...}]         # each tag ∈ the controlled vocabulary (§2.5); may be empty []
+keywords: [{...}]      # OPTIONAL — freeform, uncontrolled escape-hatch tags; absent or [] is fine
+supersedes: {slug | null}      # OPTIONAL (global) — the slug this file supersedes; §2.4
+superseded_by: {slug | null}   # OPTIONAL (global) — the slug that supersedes this file; §2.4
+related: [{slug}]              # OPTIONAL (global) — related slugs; absent or [] is fine; §2.4
 ---
 ```
 
-**The `type` enum lists the 12 promotable content types.** `archive` is NOT in the enum — it is a lifecycle destination, not a type enum value. An archived file keeps its original `type` value (e.g., `type: decisions`) and lives under `archive/decisions/`; the directory — not the `type` field — marks it archived.
+| Field | YAML type | Required | Value domain |
+|---|---|---|---|
+| `name` | string | yes | the file's stable slug (= filename without `.md` and without any `YYYY-MM-DD-` prefix) |
+| `description` | string | yes | one line, ≤ ~120 chars |
+| `type` | enum | yes | one of the 16 types (§2.3) |
+| `scope` | enum | yes | `project` \| `feature` |
+| `feature` | string \| null | yes | feature slug when `scope: feature`; `null` when `scope: project` |
+| `status` | enum | yes | the type's allowed status set (§2.2) |
+| `created` | date `YYYY-MM-DD` | yes | creation date |
+| `session` | string | yes | session-id that created it |
+| `tags` | list[string] | yes | each tag ∈ the controlled vocabulary (§2.5); may be empty `[]` |
+| `keywords` | list[string] | **no (optional)** | freeform, uncontrolled escape-hatch tags; absent or `[]` is fine |
+| `supersedes` | string \| null | **no (optional, global)** | plain slug this file supersedes; `null` / absent when none (§2.4) |
+| `superseded_by` | string \| null | **no (optional, global)** | plain slug that supersedes this file; `null` / absent when none (§2.4) |
+| `related` | list[slug] | **no (optional, global)** | plain slugs of related files; absent or `[]` is fine (§2.4) |
 
-**Feature-subdir-only types — documented EXCEPTION to the enum.** Beyond the 12 promotable content types in the enum, four feature-subdir-only types exist as `features/{f}/` subdirs (`changelogs` / `discussions` / `scenarios` / `checklists`). These are a *documented exception*: they reuse the base frontmatter but set `type` to their **own name** (`type: changelogs`, `type: discussions`, `type: scenarios`, or `type: checklists`) — values that are intentionally **outside** the 12-value enum — and always carry `scope: feature`. The enum line above stays the 12 promotable types; these four are the only `type` values permitted outside it, and only on feature-subdir files.
+**`feature` is conditionally required by `scope`.** `scope: feature` ⇒ `feature` is a non-null slug. `scope: project` ⇒ `feature: null`. The validator (§2.6) enforces this conditional.
+
+**Slug-link fields are global-optional.** `supersedes`, `superseded_by`, and `related` are **global optional base fields** — any type may carry them, because supersession and relation are universal lifecycle concepts (a mistake supersedes a mistake, a design supersedes a design, a note may relate to a decision). They are documented once here, NOT repeated as per-type extensions in §2.2. Their value form (plain slugs, never paths or `[[ ]]`) is defined in §2.4.
 
 ### 2.2 Per-type extension fields + the status model
 
-**Status model — one model, documented.** Base `status` is the **authoritative generic lifecycle field** present on every file. Where a type needs richer lifecycle vocabulary, the type-specific field (`decision_status` for decisions, `disposition` for backlogs) is a **documented refinement that mirrors and narrows the base `status`** for that type — not a competing lifecycle. The base `status` always carries the coarse state (`active` / `superseded` / `archived` / `shipped` …); the type-specific field, when present, is the fine-grained value the type's CRUD references. They never disagree: the type-specific field is the one the type's lifecycle text cites, and base `status` is the cross-type-uniform field tools read.
+**One `status` field per type — one unified lifecycle.** Every file carries exactly ONE `status` field. There is no second lifecycle field: the old `decision_status` (decisions) and `disposition` (backlogs) are **removed** — their meaning folds into `status`. A backlog's `open`/`deferred` distinction is now a `status` value; a decision's `proposed`/`accepted` distinction is now a `status` value. The coarse `archived` status value is **dropped**: a file is archived by living under `archive/` (the directory marks it, per the rule at §2.3 below and the archive note further down), never by a `status: archived` value.
 
-| Type | base `status` values | Extensions on top of base |
+The `status` enum is per-type — each type allows only the values in its row. The **Extensions** column lists each type's NON-link extension fields only; the three slug-link fields (`supersedes`, `superseded_by`, `related`) are **global-optional base fields (§2.1)** that any type may carry, so they are NOT repeated here. A type with no non-link extension shows `(none)` but may still carry the global slug-links.
+
+**Required vs optional extensions.** An extension marked **(required)** below MUST be present on a file of that type — the validator FAILS a file of that type that omits it. Unmarked extensions are optional. Required: `mistakes` → `priority` + `domain`; `backlogs` → `priority` + `project-scope`; `references` → `title` + `source` + `ref_type`.
+
+| Type | `status` enum (unified) | Extensions on top of base (non-link only) |
 |---|---|---|
-| features (README) | `active`, `retired` | `value_proposition`, `subsystems` |
-| notes | `active` (immutable) | `features_touched` |
-| decisions | `active`, `superseded` | `supersedes`, `superseded_by`, `decision_status: proposed\|accepted\|superseded` |
-| design | `active`, `superseded` | `supersedes`, `superseded_by`, `related` |
-| mistakes | `active`, `superseded` | `priority`, `domain`, `supersedes`, `superseded_by` |
-| rules | `active`, `superseded` | `priority`, `established`, `supersedes` |
-| learnings | `active`, `superseded` | `supersedes`, `superseded_by` |
-| backlogs | `active`, `closed` | `priority`, `disposition: open\|deferred`, `project-scope`, `shipped_in` |
-| references | `active`, `superseded` | `title`, `source`, `accessed`, `ref_type` |
-| plans | `active`, `superseded` | `supersedes`, `superseded_by`, `task_count` |
-| reviews | `active` (append-only) | `verdict`, `review_kind`, `subject` |
-| reports | `active` (append-only) | `report_type`, `related_reports` |
-| archive (destination, not a type) | terminal `status` of the original type | original type's fields + `archived_at`, `archive_reason` |
+| features (README) | `active` \| `retired` | `value_proposition`, `subsystems` (list) |
+| notes | `active` | `features_touched` (list) (plus `loops_completed`, `shipped` — see note) |
+| decisions | `proposed` \| `accepted` \| `superseded` | (none) |
+| design | `active` \| `superseded` | (none) |
+| mistakes | `active` \| `superseded` | `priority` **(required)**, `domain` **(required)** |
+| rules | `active` \| `superseded` | `priority`, `established` (date) |
+| learnings | `active` \| `superseded` | (none) |
+| backlogs | `open` \| `deferred` \| `closed` | `priority` **(required)**, `project-scope` (bool) **(required)**, `shipped_in` (slug\|null) |
+| references | `active` \| `superseded` | `title` **(required)**, `source` **(required)**, `accessed` (date), `ref_type` **(required)** |
+| plans | `active` \| `superseded` | `task`, `task_count` (number) |
+| reviews | `active` | `review_kind`, `subject`, `verdict` |
+| reports | `active` | `report_type`, `related_reports` (list[slug]) (plus `generated_by`, `subject`, `related_reviews`, `related_decisions`) |
+| changelogs | `active` | `shipped_in` (slug) |
+| discussions | `active` | `outcome` |
+| scenarios | `active` | (none) |
+| checklists | `active` | `scenario` (slug), `item_status` (enum), `anchor` (slug \| `novel`), `implemented_in` (slug \| null) |
 
-### 2.3 Staging-field stripping on promotion
+> **Note — `notes` and `reports` keep the richer extension set.** `notes` keeps `loops_completed` and `shipped` alongside `features_touched` — they are useful session → memory links. `reports` keeps `generated_by`, `subject`, `related_reviews`, and `related_decisions` alongside `report_type` and `related_reports`. The validator's per-type allowlist must include these. (`reports`'s `related_reports` / `related_reviews` / `related_decisions` are distinct per-type fields, NOT the global `related` slug-link.)
+
+**Extension-field enums:**
+
+- `priority` = `critical` \| `high` \| `medium` \| `low`
+- `ref_type` = `docs` \| `blog` \| `paper` \| `rfc` \| `code` \| `book` \| `other`
+- `review_kind` = `adversarial-review` \| `ultrareview` \| `code-review` \| `retrospective` \| `security-audit` \| `license-audit` \| `dep-audit` \| `other`
+- `verdict` = `pass` \| `revise` \| `fail` \| `needs-attention` \| `n/a`
+- `report_type` = `status` \| `post-mortem` \| `analytics`
+- `item_status` = `pending` \| `implemented` \| `deferred`
+
+### 2.3 The complete `type` enum — 16 first-class types
+
+There is ONE complete `type` enum. All 16 types are equal, first-class members — the 12 former "promotable" types plus the 4 former "feature-subdir-only" types (`changelogs`, `discussions`, `scenarios`, `checklists`), which are no longer an exception:
+
+```
+features | notes | decisions | design | mistakes | rules | learnings | backlogs |
+references | plans | reviews | reports | changelogs | discussions | scenarios | checklists
+```
+
+**`archive` is NOT a `type`.** It is a directory destination, not an enum value. An archived file keeps its original `type` (e.g., `type: decisions`) and lives under `archive/decisions/`; the directory — not the `type` field — marks it archived.
+
+**Placement is a `scope`/path constraint, NOT an enum split.** Which type may live where is a directory rule, not a separate enum:
+
+- `scenarios` / `checklists` / `changelogs` / `discussions` live **only** under `features/{f}/` (always `scope: feature`).
+- `notes` is **project-only**.
+- `plans` is **feature-level on the loop path** (a project-level `plans/` may exist for maintainer roadmaps, but is never loop-written).
+- The rest (`features`, `decisions`, `design`, `mistakes`, `backlogs`, `references`, `learnings`, `reviews`, `reports`, `rules`) live at **both** levels, defaulting to feature-level and promoting up to project when the content is cross-feature.
+
+The enum says only WHAT a file is; `scope` and the directory say WHERE it lives. (See §3 for the full per-scope placement rules.)
+
+### 2.4 Cross-references and the doc graph
+
+Memory files link to each other in two distinct ways. Keep them separate.
+
+**Lifecycle pointers in frontmatter = plain slugs.** The frontmatter fields `supersedes`, `superseded_by`, and `related` carry **plain slugs** — the target file's `name` (= filename stem), with no path and no `[[ ]]`. Plain slugs are rename-robust and machine-queryable; a path would break on a move, and Obsidian does not rename-update links inside YAML. Example: `supersedes: planning-asserted-skill-without-verifying`, `superseded_by: null`. A `related:` field is a `list[slug]`.
+
+**Navigable graph links in the body = `[[slug]]`.** Human- and graph-navigable links live in the BODY, in a `## Related` section near the doc's end — one bullet per link in `[[slug]]` identifier-link form. Foam / Obsidian derive the graph and backlinks from these. Format:
+
+```markdown
+## Related
+
+- [[some-other-slug]] — why it relates (one line)
+- [[file-move-needs-link-resolution-check]] — why it relates
+```
+
+**Identity = the slug.** A file's identity is its slug (= `name` = filename stem). There is NO `id` / UUID field — the slug is the only identifier, in frontmatter and in `[[slug]]` body links alike.
+
+**Feature-README exception — `name: README`.** A feature directory's `README.md` is a **fixed identity doc**, not a unique wikilink-addressed slug. Its `name` is the literal `README` (the stem of `README.md`), NOT the feature slug — the feature's identity slug lives in `feature: {own-slug}` + the directory name. Because every feature README shares `name: README`, the slug-uniqueness check **exempts `README.md` files**: a shared fixed identity name is not a collision. The `name == filename-stem` check still applies and passes (`README` == `README`). See [`templates/feature.md`](templates/feature.md) for the README frontmatter.
+
+### 2.5 Controlled `tags` vocabulary
+
+`tags` is a **closed** controlled vocabulary. A tag outside this list is a validation failure until the list is extended. The initial set:
+
+```
+process · planning · execution · evaluation · wrap-up · ideation · preparation
+docs-sync · refactor · rename-sweep · verification · vocabulary-sweep
+hooks · codex · security · git · memory · frontmatter · schema · validation · links · design
+```
+
+When a tag outside this set is genuinely needed, use the optional `keywords` field (§2.1) — the uncontrolled escape-hatch — or extend this list. `tags` stays controlled so it can be queried with confidence; `keywords` absorbs the freeform long tail.
+
+### 2.6 Staging-field stripping on promotion
 
 Staging-only fields exist during the session and MUST be stripped when Wrap-up promotes a staged file to memory:
 
 - **`mistake-candidate: true`** — stripped on promotion; its *presence* is what routes the file to `mistakes/`, after which it has done its job.
-- **`finding-id`, `disposition`** (when used purely as eval routing), **`promoted-from`, `promoted-at`** — session-provenance. `git log` + the base `session` field already carry provenance; the extra keys are redundant ad-hoc drift. Fold any durable provenance into base `session` + `created`; strip the rest.
+- **`finding-id`, eval-routing `disposition`, `promoted-from`, `promoted-at`** — session-routing and session-provenance. `git log` + the base `session` field already carry provenance; the extra keys are redundant ad-hoc drift. Fold any durable provenance into base `session` + `created`; strip the rest.
 
-**Mechanism.** Wrap-up's promotion step reads the staging frontmatter, applies the routing modifier, then writes the destination file with ONLY base + that type's extension fields (a frontmatter allowlist per type). See [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the promotion routing.
+**Mechanism.** Wrap-up's promotion step reads the staging frontmatter, applies the routing modifier, then writes the destination file with ONLY base + that type's extension fields (a per-type frontmatter allowlist). See [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the promotion routing.
+
+**Enforcement.** A promoted file carrying a stray staging-only key is caught by the bash validator's **no-stray-keys** check (§2 lead note) — the validator's per-type allowlist is exactly base (§2.1) + that type's extensions (§2.2), so any key outside it is reported.
 
 ---
 
 ## 3. Structure rules
 
-The structure rules thread through the 13 per-type specs in [`memory-map.md`](memory-map.md); they are the conventions every type obeys.
+The structure rules thread through the 16 per-type specs in [`memory-map.md`](memory-map.md); they are the conventions every type obeys.
 
 - **Directory-as-category.** The type directory is the controlled-vocabulary facet (§1.1 rule 1). The directory name carries the type; the filename carries the concept. A record's *type* is never re-encoded in its slug.
 - **One record, one concept (atomicity).** Every file holds exactly one concept — one decision, one mistake, one design topic. Bundle files (`ideation-decisions.md`, `iter1-user-redirects.md`) are forbidden because supersede / archive / promotion then operate at the wrong granularity. Split bundles into one file per concept.
 - **Declared scope + promote-up.** Each type declares its scope:
-  - **`features/` is its own tier.** A `features/{slug}/` directory is a durable capability dir — not a project-scoped nor feature-tagged content type like the rest of this list. Its `README.md` is the feature's identity document: it carries base frontmatter with `scope: feature` + `feature: {own-slug}` (self-referential — the README names itself). New feature dirs are created only by user-ratified value-feature addition, never by a sprint.
+  - **`features/` is its own tier.** A `features/{slug}/` directory is a durable capability dir — not a project-scoped nor feature-tagged content type like the rest of this list. Its `README.md` is the feature's identity document: it carries base frontmatter with `name: README` (the fixed filename stem, NOT the feature slug — §2.4), `scope: feature`, and `feature: {own-slug}` (the `feature` field is self-referential — it names the README's own feature). New feature dirs are created only by user-ratified value-feature addition, never by a sprint.
   - **Project-only** types: `notes` (and `archive` as a destination). These live only at the project root; there is no `features/{f}/` tier for them.
   - **Feature-only (loop path)** types: `plans` — the loop path writes plans only to `features/{f}/plans/`. (A project-level `plans/` may exist for maintainer-authored cross-feature roadmaps, but it is never loop-written.)
   - **Both** types: `decisions`, `design`, `mistakes`, `backlogs`, `references`, `learnings`, `reviews`, `reports`, `rules`. Most default to feature-level and **promote up** to the project root only when the content sets a project-wide convention / cross-feature architecture (user-confirmed through the active runtime's user-decision primitive at Wrap-up). `learnings` / `reviews` / `reports` are **default-feature** like `decisions` / `design`: a feature-scoped one lives in `features/{f}/{type}/`, promoting up to project when cross-feature. `rules` are rare and load-bearing: a project-wide rule lives in `rules/`, a feature-specific rule in `features/{f}/rules/`; either tier is user-confirmed at Wrap-up.
@@ -164,7 +259,7 @@ Name the standard by what it *delivers*, not only by what it forbids. A good dev
 - **Obeys its type's section contract.** A decision reads like a decision (ADR shape); a mistake reads like a mistake; a learning reads like a learning. See §4.2.
 - **Does one type's job.** Type-purity (§4.1.1) — one doc, one type. A doc that is half-decision, half-journal helps neither reader.
 
-**Type-purity (4.1.1) — one doc, one type's job.** Borrowed from [Diátaxis](diataxis.fr): documentation types serve different reader needs, and mixing them in one doc serves none well. Gobbi keeps its 13 memory types (§1.2, [`memory-map.md`](memory-map.md)); this is a *prose* rule, not a re-home — each doc commits to its declared `type`'s job. A `decisions/` file states a conclusion and its rationale; it does not also narrate the session's blow-by-blow (that is a `notes/` job). A `learnings/` file teaches a transferable technique; it does not also log what shipped (that is `notes/`). When a draft tries to do two type-jobs, split it into one file per type and cross-link (§3 atomicity).
+**Type-purity (4.1.1) — one doc, one type's job.** Borrowed from [Diátaxis](diataxis.fr): documentation types serve different reader needs, and mixing them in one doc serves none well. Gobbi keeps its 16 memory types (§1.2, [`memory-map.md`](memory-map.md)); this is a *prose* rule, not a re-home — each doc commits to its declared `type`'s job. A `decisions/` file states a conclusion and its rationale; it does not also narrate the session's blow-by-blow (that is a `notes/` job). A `learnings/` file teaches a transferable technique; it does not also log what shipped (that is `notes/`). When a draft tries to do two type-jobs, split it into one file per type and cross-link (§3 atomicity).
 
 **Real before/after (from this tree).** The same positive-vs-trapped distinction §1.3 applies to slugs applies to bodies:
 
@@ -202,9 +297,9 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
   -l 2>/dev/null | grep -vE '/(archive|sessions|skills|agents|tmp)/'
 ```
 
-### 4.4 Frontmatter conformance — the type-aware allowlist (FIX-1)
+### 4.4 Frontmatter conformance — the validator's per-type no-stray-keys check
 
-§2.3 says staging-routing fields are stripped on promotion. §4.4 makes that checkable: a promoted doc carries **only** base + its type's declared extensions (§2.1, §2.2). Any leftover **staging-routing key** is a conformance leak. The strip is a **type-aware allowlist**, never a blanket grep — it must never strip a key that is legitimate for that doc's type/dir (the **safety invariant**).
+§2.6 says staging-routing fields are stripped on promotion. §4.4 makes that checkable: a promoted doc carries **only** base + its type's declared extensions (§2.1, §2.2). Any leftover **staging-routing key** is a conformance leak. The check is the **validator's per-type no-stray-keys check** (`skills/memory/scripts/validate-frontmatter.sh`, §4.5), never a blanket grep — its per-type allowlist is exactly base (§2.1) + that type's extensions (§2.2), so it never strips a key that is legitimate for that doc's type/dir (the **safety invariant**). The key-sets below document *what* staging-routing residue looks like; the validator is the mechanism that enforces it.
 
 **Illegitimate staging-routing key-set S** — enumerated in BOTH hyphen and underscore spellings, because both spellings have appeared in real staged frontmatter and both must be caught:
 
@@ -219,13 +314,11 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 | promotion provenance (time) | `promoted-at` | `promoted_at` |
 | finding-disposition provenance | `addressed-by` | `addressed_by` |
 
-**Session-routing residue** — session-internal coordinates that identify a file's position within a session (which task, loop iteration, or evaluation round produced it). These coordinates have no meaning to a future reader; provenance is already carried by `session` + `created` in base frontmatter and by `git log`. Both spellings must be caught:
+**Session-routing residue** — session-internal coordinates that identify a file's position within a session (which loop iteration or evaluation round produced it). These coordinates have no meaning to a future reader; provenance is already carried by `session` + `created` in base frontmatter and by `git log`. Both spellings must be caught:
 
 | Concept | Hyphen spelling | Underscore spelling |
 |---|---|---|
-| task code / task id | `task` | `task` (same) |
 | workflow loop phase | `loop` | `loop` (same) |
-| scenario identifier | `scenario` | `scenario` (same) |
 | iteration counter | `iter` | `iter` (same) |
 | slug duplicate | `slug` | `slug` (same) |
 | finding source label | `finding-source` | `finding_source` |
@@ -234,36 +327,43 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 | sub-step coordinate | `sub-step` | `sub_step` |
 | session-id (redundant with base `session`) | `session-id` | `session_id` |
 
-**KEEP list — keys that must NEVER be stripped during conformance.** These keys carry durable cross-reference, provenance, supersession, per-type lifecycle, or content-tag meaning. They are legitimate type extensions (§2.2) or cross-linking fields — they are NOT members of S. Stripping any of them violates the safety invariant.
+> **`task` and `scenario` are NOT residue — they are §2.2 type extensions.** `task` is a `plans` extension and `scenario` is a `checklists` extension (§2.2), so on those types they are legitimate keys, not session-routing residue. They are deliberately absent from the residue table above. The validator's per-type allowlist is the authority: it accepts `task` on `plans/` and `scenario` on `checklists/`, and reports either as a stray key on any OTHER type. Listing them as residue here (or in the §4.5 advisory grep) would wrongly flag every live `plans/` / `checklists/` file that uses its own extension.
 
-| Category | Keys |
-|---|---|
-| Base (9 keys — always) | `name`, `description`, `type`, `scope`, `feature`, `status`, `created`, `session`, `tags` |
-| Cross-reference / linking | `related`, `supersedes`, `superseded_by` |
-| Provenance / source | `source`, `design-id` |
-| Per-type lifecycle / routing | `domain`, `priority`, `ref_type`, `title`, `accessed`, `verdict`, `review_kind`, `subject`, `decision_status`, `shipped_in`, `value_proposition`, `discussion-id`, `topic`, `outcome`, `category`, `subsystems`, `project`, `last_updated` |
-| Backlog-specific | `project-scope`, `plan`, `artifact_ref`, `disposition` (on `backlogs/` only — see conditional rule below) |
+**The KEEP set IS the validator's per-type allowlist — no separate hand-maintained list.** A key is kept (never reported stray) **iff** it is on the file type's allowlist, which is exactly:
 
-**When in doubt, KEEP.** If a key is not explicitly listed in S (the illegitimate staging-routing key-set above), it must be treated as KEEP — preserved without question. The S-set is a closed, enumerated list of eval-routing and session-routing residue; any key absent from S is by definition not a conformance leak.
+> **base (§2.1, the 9 required + `keywords` + the 3 global slug-links `supersedes` / `superseded_by` / `related`) ∪ that type's §2.2 declared extensions.**
 
-**Conditional member — `disposition`.** `disposition` is in S (a leak, must be stripped) **ONLY when the file is NOT under a `backlogs/` directory.** On `backlogs/`, `disposition: open\|deferred` is a **legitimate type extension** (§2.2 line 110) and MUST be preserved — stripping it there violates the safety invariant.
+There is no second, broader keep-list. The old pre-standard keep-list enumerated keys that are NOT §2.2 extensions — `design-id`, `discussion-id`, `topic`, `category`, `project`, `last_updated`, `plan`, `artifact_ref`, and a generic `source` — as if they were always-legitimate. Under the §2.2 model they are NOT: a key is legitimate only on the type(s) whose §2.2 row declares it (e.g. `source` is a `references` extension, legitimate on `references/` and stray elsewhere). The validator enforces exactly the per-type allowlist above, so any key outside it — every key in S, every session-routing residue key, every stale ad-hoc key, and the removed `decision_status` / `disposition` — is a stray key.
 
-**File-selection predicate P (where the conformance rule operates):**
+> **Removed from the model.** `decision_status` (decisions) and `disposition` (backlogs) no longer exist — §2.2 folded both into the single `status` field (a decision's `proposed`/`accepted` and a backlog's `open`/`deferred` are now `status` values). They are NOT on any type's allowlist: a live file still carrying `decision_status`, or `disposition` anywhere (including `backlogs/`), fails the validator's no-stray-keys check as a stray key. The legacy-data normalization that removes them from existing files is a separate, deferred task.
 
-> Operate on files in `P_live`: NOT under `archive/` (frozen, §4.6), NOT under `sessions/` / `skills/` / `agents/` / `tmp/` (non-memory surfaces). For each file F:
-> - strip every key in `S \ {disposition}` (both spellings) unconditionally;
-> - strip `disposition` from F only if F is NOT under a `backlogs/` directory.
+**When in doubt, KEEP.** If a key is base (§2.1, including the global slug-links) or one of the doc type's declared §2.2 extensions, it is preserved without question. Any key outside that per-type allowlist — every key in S, every session-routing residue key, every stale ad-hoc key (`design-id`, `topic`, `category`, …), and the removed `decision_status` / `disposition` — is a stray key the validator reports.
 
-**Safety invariant (locked):** never strip a key that is legitimate for that doc's type/dir. Base keys (`name` / `description` / `type` / `scope` / `feature` / `status` / `created` / `session` / `tags`) and the per-type extensions in §2.2 (`disposition` on `backlogs/`, `verdict` / `review_kind` / `subject` on `reviews/`, `priority` / `domain` on `mistakes/`, etc.) are always preserved. The cross-ref/provenance/content-tag keys listed in KEEP above are equally protected.
+**File-selection predicate P (where the conformance check operates):**
 
-### 4.5 The archive-safe, underscore-aware grep-gate
+> Operate on files in `P_live`: NOT under `archive/` (frozen, §4.6), NOT under `sessions/` / `skills/` / `agents/` / `tmp/` (non-memory surfaces). For each file F, the validator reports any frontmatter key that is not in `base (§2.1) ∪ F-type-extensions (§2.2)` as a stray key. The allowlist is per-type, so a key legitimate for one type (e.g. `verdict` on `reviews/`) is correctly reported as stray on another.
 
-The mechanical conformance gate scans `P_live` for any illegitimate-key leak and lists offending files. It MUST be **archive-safe** (`-not -path '*/archive/*'` — frozen archive docs are out of scope, §4.6) and **underscore-aware** (catch both hyphen and underscore spellings of every key in S):
+**Safety invariant (locked):** never report a key that is legitimate for that doc's type/dir as stray. Base keys (`name` / `description` / `type` / `scope` / `feature` / `status` / `created` / `session` / `tags`), the optional base fields (`keywords` + the three global slug-links `supersedes` / `superseded_by` / `related`), and the per-type extensions in §2.2 (`verdict` / `review_kind` / `subject` on `reviews/`, `priority` / `domain` on `mistakes/`, `title` / `source` / `ref_type` on `references/`, etc.) are always preserved — that per-type allowlist IS the protected set.
+
+### 4.5 The conformance gate — the bash validator
+
+The canonical conformance gate is the bash validator at [`skills/memory/scripts/validate-frontmatter.sh`](scripts/validate-frontmatter.sh). It is a **strict superset** of the old `find | xargs grep` leak-scan: rather than matching a hand-maintained list of leak keys, it validates every frontmatter key against the per-type allowlist (base §2.1 + that type's extensions §2.2) and also checks required fields, the 16-type enum (§2.3), the per-type `status` enum (§2.2), `scope` + the `feature` conditional (§2.1), extension enums, `name == filename stem`, and slug uniqueness. The no-stray-keys check subsumes the old leak-scan: any key outside the per-type allowlist — including session-routing residue and the removed `decision_status` / `disposition` — is reported. The validator is **archive-safe** by construction: its `P_live` prune excludes `archive/` / `sessions/` / `skills/` / `agents/` / `tmp/` / `worktrees/` (the §4.6 archive-exclusion), so a sweep never touches frozen history.
+
+Run it over the whole live tree, or pass paths to scope it:
 
 ```bash
-# Lists every live memory file carrying an illegitimate staging-routing key.
-# Archive-safe (skips frozen archive/) and underscore-aware (both spellings).
-# Includes session-routing residue keys (task/loop/scenario/iter/slug/finding-source/phase/loop-iter/sub-step/session-id).
+# Validate the whole P_live tree (default):
+skills/memory/scripts/validate-frontmatter.sh
+
+# Validate specific files:
+skills/memory/scripts/validate-frontmatter.sh path/to/file.md ...
+```
+
+**Fast advisory pre-check (optional).** The old one-liner below is no longer the gate — the validator is authoritative — but it remains a quick, archive-safe, underscore-aware scan for the most common staging-routing leaks when the full validator is not at hand:
+
+```bash
+# Advisory only — lists live memory files carrying a common staging-routing key.
+# The validator (above) is the authoritative gate; this is a fast pre-check.
 find .gobbi/projects/gobbi -name '*.md' \
   -not -path '*/archive/*' \
   -not -path '*/sessions/*' \
@@ -271,11 +371,15 @@ find .gobbi/projects/gobbi -name '*.md' \
   -not -path '*/agents/*' \
   -not -path '*/tmp/*' \
   -print0 \
-| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|task|loop|scenario|iter|slug|finding[-_]source|phase|loop[-_]iter|sub[-_]step|session[-_]id):' \
+# NOTE: `task` and `scenario` are intentionally NOT in this regex — they are §2.2
+# type extensions (plans / checklists), not residue; matching them here would
+# false-positive on every live plans/ / checklists/ file. The authoritative gate
+# (the validator) accepts them per-type; this advisory scan must not contradict it.
+| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|loop|iter|slug|finding[-_]source|phase|loop[-_]iter|sub[-_]step|session[-_]id|decision_status):' \
   2>/dev/null
 ```
 
-`disposition` is intentionally **omitted** from the gate regex above: it is legitimate on `backlogs/` and only a leak elsewhere, so a blanket `disposition`-match would false-positive on every legitimate backlog file (the safety invariant, §4.4). To check the conditional `disposition` leak separately, run the same `find` and grep for `^disposition:`, then exclude `*/backlogs/*` from the path filter. A clean gate prints nothing (zero leak files); any printed path is a doc to normalize via the type-aware allowlist (§4.4).
+A clean validator run reports no violations; any reported file is a doc to normalize so it carries only base + its type's extensions (§4.4). Note: `disposition` is no longer a backlogs extension — it folded into `status` (§2.2) — so it is now a stray key wherever it appears; the validator flags it like any other.
 
 ### 4.6 Scope edge — `archive/` is excluded
 

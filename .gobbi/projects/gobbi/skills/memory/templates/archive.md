@@ -65,20 +65,21 @@ When an artifact reaches a terminal state, Wrap-up performs these steps:
 
 1. **Stamp archival frontmatter** onto the file: add `archived_at: {YYYY-MM-DD}` and `archive_reason: shipped|closed|addressed|superseded|retired|dropped|abandoned`, and ensure the existing terminal `status:` + (`superseded_by:` | `shipped_in:`) are present. The body is preserved verbatim — no content is altered.
 2. **Move** the file: `git mv {active-path} .gobbi/projects/{project-name}/archive/{type}/{YYYY-MM-DD}-{slug}.md`. Using `git mv` preserves history. `{YYYY-MM-DD}` is the archive date (when the transition happened, not the file's creation date).
-3. **Repoint inbound references**: any `[[slug]]` link, `required-mistakes:` path, `supersedes:`/`superseded_by:` pointer, or prose path that pointed at the old active path is updated to point at the new archive path. For mistakes: since only superseded mistakes move, active `required-mistakes:` citations are unaffected; a `superseded_by:` chain that crosses the move is repointed.
+3. **Repoint inbound PATH references**: any `required-mistakes:` path or prose path that pointed at the old active path is updated to point at the new archive path. The `supersedes:`/`superseded_by:` slug-links and `[[slug]]` body links are **plain slugs** (§2.4) — rename-robust by design, so they do NOT need repointing on a move: the superseding artifact's slug is the same whether it lives in the active dir or `archive/`. For mistakes: since only superseded mistakes move, active `required-mistakes:` citations are unaffected.
 4. **Never delete** — the move preserves the file in `archive/`; it is never removed.
 
 ## Archival frontmatter additions
 
-The moved file keeps its original body and its original frontmatter fields — crucially, it **retains its ORIGINAL `type`** (`type: decisions`, `type: backlogs`, `type: design`, …). `archive` is **NOT a `type` value** ([`rules.md` § 2.1](../rules.md)): there is never a `type: archive` line. The directory — the typed subdir `archive/{type}/` — is what marks the file archived, not the `type` field. Wrap-up stamps only the following additional frontmatter fields onto the file before moving it:
+The moved file keeps its original body and its original frontmatter fields — crucially, it **retains its ORIGINAL `type`** (`type: decisions`, `type: backlogs`, `type: design`, …). `archive` is **NOT a `type` value** ([`rules.md` § 2.3](../rules.md#23-the-complete-type-enum--16-first-class-types)): there is never a `type: archive` line. The directory — the typed subdir `archive/{type}/` — is what marks the file archived, not the `type` field. Likewise there is no `status: archived` value — the coarse `archived` status was dropped ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)); the directory marks the file archived, while base `status` keeps the type's terminal value (`superseded` / `closed` / `retired`). Wrap-up stamps only the following additional frontmatter fields onto the file before moving it:
 
 ```yaml
 archived_at: YYYY-MM-DD
 archive_reason: shipped | closed | addressed | superseded | retired | dropped | abandoned
 # The terminal status and cross-reference fields below should already be present
-# on the original file; Wrap-up adds them here if they are missing:
-status: shipped | superseded | retired | dropped | archived
-superseded_by: {path in archive/ to the superseding artifact} | null
+# on the original file; Wrap-up adds them here if they are missing.
+# `status` keeps the type's own terminal enum value — there is NO `status: archived`:
+status: closed | superseded | retired
+superseded_by: {superseding-artifact-slug} | null   # plain slug, never a path (§2.4)
 shipped_in: {changelog path} | null
 ```
 

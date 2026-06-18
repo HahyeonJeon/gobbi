@@ -35,7 +35,7 @@ Example: `parallel-docs-cleanup-drift.md`, `bun-write-no-append.md`, `sessionsta
 
 ## Item template
 
-The **promoted** mistake carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the mistakes-type extensions (`priority`, `domain`, `supersedes`, `superseded_by`). The staging-only `mistake-candidate: true` flag (which routed the file to `mistakes/`) is **stripped on promotion** ([`rules.md` § 2.3](../rules.md)) — it never appears on a promoted mistake file.
+The **promoted** mistake carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the mistakes-type extensions (`priority`, `domain`). The staging-only `mistake-candidate: true` flag (which routed the file to `mistakes/`) is **stripped on promotion** ([`rules.md` § 2.6](../rules.md#26-staging-field-stripping-on-promotion)) — it never appears on a promoted mistake file. `supersedes` / `superseded_by` are **global plain-slug base fields** any type may carry (§2.1) — not mistakes-type extensions; their value is a plain slug (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -47,11 +47,11 @@ feature: {feature-name} | null
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [process, verification]        # controlled vocabulary (§2.5)
 priority: critical | high | medium | low
 domain: {e.g. process, hooks, docs-sync}
-supersedes: {prior mistake slug} | null
-superseded_by: {newer mistake slug} | null
+supersedes: {prior mistake slug} | null      # plain slug, not a path
+superseded_by: {newer mistake slug} | null    # plain slug, not a path
 ---
 
 # {Title}
@@ -72,7 +72,10 @@ superseded_by: {newer mistake slug} | null
 {Signs that you are about to hit this trap. Helps an agent spot the situation early.}
 
 ## Related
-{Links to learnings, decisions, or other mistakes with shared context.}
+{Navigable `[[slug]]` links to learnings, decisions, or other mistakes with shared context ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[file-move-needs-link-resolution-check]] — a related verification trap
+- [[markdown-link-relativization]] — the learning that pairs with this trap
 ```
 
 ## Priority levels

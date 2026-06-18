@@ -33,7 +33,7 @@ Example: `2026-05-11-login-ui-shipping.md`, `2026-05-11-auth-middleware.md`.
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the plans-type extensions (`supersedes`, `superseded_by`, `task_count`).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the plans-type extensions (`task`, `task_count`). `supersedes` / `superseded_by` are **global plain-slug base fields** any type may carry (§2.1) — not plans-type extensions; their value is a plain slug (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -45,10 +45,10 @@ feature: {feature-name}
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [planning, execution]          # controlled vocabulary (§2.5)
 task: {task name from Scope Contract}
-supersedes: {prior-plan-slug} | null
-superseded_by: {new-plan-slug} | null
+supersedes: {prior-plan-slug} | null         # plain slug, not a path
+superseded_by: {new-plan-slug} | null          # plain slug, not a path
 task_count: {number of sub-tasks in this plan}
 ---
 
@@ -76,6 +76,12 @@ task_count: {number of sub-tasks in this plan}
 
 ## Open issues
 {`design_flaw` / `assumption_risk` findings from Planning's EVALUATION that did not block the plan.}
+
+## Related
+{Navigable `[[slug]]` links to the design this plan implements and the decisions it follows ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[cache-invalidation]] — the design this plan decomposes
+- [[2026-05-11-use-redis-not-memcached]] — the decision it follows
 ```
 
 ## Updates

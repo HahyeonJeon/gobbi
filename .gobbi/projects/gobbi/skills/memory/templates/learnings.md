@@ -36,7 +36,7 @@ Example: `parallel-spawn-rate-limit.md`, `markdown-link-relativization.md`, `bun
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the learnings-type extensions (`supersedes`, `superseded_by`). The discovery date folds into base `created`; the originating session into base `session` — the ad-hoc `discovered` / `promoted-from` / `promoted-at` keys are dropped (`git log` + base `session` carry provenance, [`rules.md` § 2.3](../rules.md)).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file). `learnings` has no non-link type extension. The discovery date folds into base `created`; the originating session into base `session` — the ad-hoc `discovered` / `promoted-from` / `promoted-at` keys are dropped (`git log` + base `session` carry provenance, [`rules.md` § 2.6](../rules.md#26-staging-field-stripping-on-promotion)). `supersedes` / `superseded_by` / `related` are **global plain-slug base fields** any type may carry (§2.1) — not learnings-type extensions: `supersedes` / `superseded_by` are plain slugs and `related` is a **`list[slug]`** (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -48,10 +48,10 @@ feature: {feature-name}
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
-supersedes: {prior learning slug} | null
-superseded_by: {newer learning slug} | null
-related: [{related learning slugs}]
+tags: [process, verification]        # controlled vocabulary (§2.5)
+supersedes: {prior learning slug} | null      # plain slug, not a path
+superseded_by: {newer learning slug} | null    # plain slug, not a path
+related: [{related learning slugs}]            # list[slug] — plain slugs, not paths
 ---
 
 # {Title}
@@ -72,7 +72,10 @@ related: [{related learning slugs}]
 {When this insight does NOT apply. Important — most insights have boundaries.}
 
 ## Related
-{Links to mistakes / references / decisions that share context with this learning.}
+{Navigable `[[slug]]` links to mistakes / references / decisions that share context with this learning ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[file-move-needs-link-resolution-check]] — the trap this insight avoids
+- [[redis-ttl-eviction]] — the reference this learning draws on
 ```
 
 The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / project-wide learning uses `scope: project` + `feature: null` and promotes to the project `learnings/` tier.

@@ -73,11 +73,11 @@ Root: `.gobbi/projects/{project-name}/`
 
 Persistent, per-project, git-tracked. Durable memory. **Wrap-up is the sole writer**; loop RECORD never writes here. The directory shape below matches the canonical memory layout — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the staging → destination routing table.
 
-### Per-type canonical homes (the 13 memory types)
+### Per-type canonical homes (the 16 memory types)
 
-Each memory type has a single canonical home directory and a per-type spec (purpose / hard boundary / scope / naming / frontmatter / CRUD) in [`rules.md`](rules.md) and the design-of-record. The table below is the path index; for the full per-type semantics see [`rules.md`](rules.md):
+Each memory type has a single canonical home directory and a per-type spec (purpose / hard boundary / scope / naming / frontmatter / CRUD) in [`rules.md`](rules.md) and the design-of-record. The table below is the path index covering all 16 first-class types from the one `type` enum ([`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types)); for the full per-type semantics see [`rules.md`](rules.md). **Placement** (which tier a type may live on) is a `scope`/path constraint, not an enum split — it is shown here as a column:
 
-| Type | Canonical home | Also feature-scoped? |
+| Type | Canonical home | Placement |
 |---|---|---|
 | `features` | `features/{feature-name}/` (the dir is its own tier; README is the identity doc) | n/a — `features/` IS the feature tier |
 | `notes` | `notes/` | Project-only |
@@ -91,9 +91,12 @@ Each memory type has a single canonical home directory and a per-type spec (purp
 | `plans` | `features/{feature-name}/plans/` (loop path); project `plans/` is maintainer-authored only, NOT loop-written | Feature-only for the loop path |
 | `reviews` | `reviews/` | Both (default feature-level; promote-up to project when cross-feature) |
 | `reports` | `reports/` | Both (default feature-level; promote-up to project when cross-feature) |
-| `archive` (destination, not a type) | `archive/{type}/` (typed subdirs; original `type` preserved) | Project-only |
+| `changelogs` | `features/{feature-name}/changelogs/` | Feature-only |
+| `discussions` | `features/{feature-name}/discussions/` | Feature-only |
+| `scenarios` | `features/{feature-name}/scenarios/` | Feature-only |
+| `checklists` | `features/{feature-name}/checklists/` | Feature-only |
 
-The four feature-subdir-only template types (`changelogs`, `discussions`, `scenarios`, `checklists`) are not independent memory types — they exist only as `features/{feature-name}/` subdirs (see [`rules.md` § 3](rules.md) and the per-row entries below).
+`changelogs` / `discussions` / `scenarios` / `checklists` are first-class types that are **feature-only** by placement — they exist only as `features/{feature-name}/` subdirs (see [`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types) and [`rules.md` § 3](rules.md), and the per-row entries below). `archive` is **not** a `type` — it is a directory destination (`archive/{type}/`, typed subdirs, original `type` preserved); see the `archive/{type}/` row under Project-wide tiers below.
 
 ### Project root
 

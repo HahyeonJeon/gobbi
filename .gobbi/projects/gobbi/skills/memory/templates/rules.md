@@ -32,9 +32,11 @@ Examples: `docs-cleanup-parallelism.md`, `evaluator-read-only-boundary.md`.
 
 ## Frontmatter
 
-Every rule file carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the rules-type extensions (`priority`, `established`, `supersedes`). **Frontmatter is mandatory on every memory file, the `rules/` type included** — the older "the project uses plain markdown, frontmatter is forbidden" prohibition is rescoped to **stub-redirect TARGET docs only** (the published `.claude/` redirect stubs), NOT to memory files.
+Every rule file carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the rules-type extensions (`priority`, `established`). `supersedes` is a **global plain-slug base field** any type may carry (§2.1), not a rules-type extension. **Frontmatter is mandatory on every memory file, the `rules/` type included** — the older "the project uses plain markdown, frontmatter is forbidden" prohibition is rescoped to **stub-redirect TARGET docs only** (the published `.claude/` redirect stubs), NOT to memory files.
 
 ## Item template
+
+The example uses the controlled `tags` vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)); `supersedes` is a **plain slug** (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).
 
 ```markdown
 ---
@@ -46,10 +48,10 @@ feature: null
 status: active
 created: YYYY-MM-DD
 session: {session-id that established the rule}
-tags: [{tag1}, {tag2}]
+tags: [process, docs-sync]           # controlled vocabulary (§2.5)
 priority: critical | high | medium | low
 established: YYYY-MM-DD
-supersedes: {prior rule slug if this replaces an existing rule} | null
+supersedes: {prior rule slug if this replaces an existing rule} | null   # plain slug, not a path
 ---
 
 # {Rule title}
@@ -80,7 +82,10 @@ supersedes: {prior rule slug if this replaces an existing rule} | null
 
 ## Related
 
-{Cross-references to mistakes, decisions, design docs, or other rules that interact with this one. Each entry: `[link](path) — one-line relevance note`.}
+{Navigable `[[slug]]` links to mistakes, decisions, design docs, or other rules that interact with this one — one bullet per link ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[evaluator-read-only-boundary]] — a related rule it interacts with
+- [[file-move-needs-link-resolution-check]] — the mistake this rule prevents
 ```
 
 ## Promotion contract
