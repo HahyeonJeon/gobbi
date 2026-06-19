@@ -4,9 +4,9 @@
 
 ## Core principle
 
-> **A review is an adversarial assessment of an artifact across perspectives, ending in a verdict.**
+> **Assess an artifact adversarially across perspectives, then reach a verdict.**
 
-The substrate that mistakes, learnings, and decisions are later extracted from.
+A review is the substrate that mistakes, learnings, and decisions are extracted from.
 
 ## Write it
 

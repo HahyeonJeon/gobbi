@@ -4,9 +4,9 @@
 
 ## Core principle
 
-> **A report records an investigation's findings and action items.**
+> **Record an investigation's findings and its action items.**
 
-The long-form evidence chain a decision or learning is later extracted from.
+A report is the long-form evidence chain a decision or learning is later extracted from.
 
 ## Three report kinds
 
