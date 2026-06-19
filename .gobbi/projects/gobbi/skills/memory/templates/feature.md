@@ -1,10 +1,13 @@
 # `features/{feature-name}/` — the feature directory
 
-## What a feature directory is
+> A durable-capability directory — one per gobbi value-feature, with a README identity doc plus one subdir per memory type scoped to this feature.
 
-A feature directory is a **durable-capability directory** — one per gobbi value-feature, not a project-scoped or feature-tagged content type like the rest of memory (see [`rules.md` § 3](../rules.md#3-structure-rules), where `features` is its own tier). Its `README.md` is the feature's **identity document**: a lightweight overview that points into the feature's typed subdirectories without duplicating them. Each subdirectory holds one memory type scoped to this feature (`design/`, `decisions/`, `scenarios/`, …), populated by Wrap-up promoting session staging.
+## Core principle
+A feature directory is the durable-memory home for one value-feature — so each feature's design, decisions, and history live in one place.
 
-This doc has two halves: the **map of a feature directory** (the per-feature subdir layout — what each part is for) and the **feature README spec** (how the identity doc is stamped and maintained).
+A feature directory is its **own tier**, not a project-scoped or feature-tagged content type ([`rules.md` § 3](../rules.md#3-structure-rules)). Its `README.md` is the **identity document**: a lightweight overview that points into the typed subdirs without duplicating them. Each subdir holds one memory type scoped to this feature (`design/`, `decisions/`, `scenarios/`, …), populated by Wrap-up promoting session staging.
+
+This doc has two parts: the **map of a feature directory** (the per-feature subdir layout) and the **feature README spec** (how the identity doc is stamped and maintained).
 
 ## Map of a feature directory
 
@@ -29,58 +32,51 @@ features/{feature-name}/
 └── reports/           # feature-scope reports             ← created lazily
 ```
 
-The set is **README.md + 14 subdirectories**. Six of them — `changelogs/`, `mistakes/`, `rules/`, `learnings/`, `reviews/`, and `reports/` — are created lazily and do not appear until the feature's first matching promotion (e.g., `features/workflow/` currently has 8 subdirs + README, missing those that have not yet received content).
+The set is **README.md + 14 subdirectories**. Six — `changelogs/`, `mistakes/`, `rules/`, `learnings/`, `reviews/`, `reports/` — are created lazily and do not appear until the feature's first matching promotion (e.g. `features/workflow/` currently has 8 subdirs + README, missing those not yet fed).
 
 ### Per-subdir reference
 
-The writer is uniform: **Wrap-up, on promotion** — loop RECORD never writes the feature tree. Wrap-up promotes the session `staging/` subtree into these subdirs and stamps each file with the matching template under [`templates/`](.). For the authoritative naming, frontmatter, and structure rules every file here obeys, see [`rules.md`](../rules.md); for the tier-wide path index (session-staging rows + cross-tier routing), see [`memory-map.md`](../memory-map.md).
+The writer is uniform: **Wrap-up, on promotion** — loop RECORD never writes the feature tree. Wrap-up promotes the session `staging/` subtree into these subdirs and stamps each file with the matching template under [`templates/`](.). For the naming / frontmatter / structure rules every file obeys → [`rules.md`](../rules.md); for the tier-wide path index → [`memory-map.md`](../memory-map.md).
 
 | Subdir | What it holds | Template |
 |---|---|---|
-| `README.md` | Feature overview, status, subdirectory pointers, recent-activity table (cap 20 entries) | this doc (§ The feature README) |
+| `README.md` | Feature overview, status, subdir pointers, recent-activity table (cap 20) | this doc (§ The feature README) |
 | `scenarios/` | Feature scenarios promoted from session staging | [`scenarios.md`](scenarios.md) |
 | `checklists/` | Feature implementation checklist items | [`checklists.md`](checklists.md) |
 | `decisions/` | Feature-scope decisions (design choices, dispute rationales, deferred risks) | [`decisions.md`](decisions.md) |
 | `design/` | Feature-scope design topics (project-wide design escalates to `.gobbi/projects/{project-name}/design/`) | [`design.md`](design.md) |
 | `discussions/` | Substantive user-decision topics scoped to the feature | [`discussions.md`](discussions.md) |
 | `references/` | External-insight references confirmed during Ideation Sub-step C | [`references.md`](references.md) |
-| `plans/` | Plan artifacts produced by the Planning loop (date-prefixed for chronological ordering) | [`plans.md`](plans.md) |
+| `plans/` | Plan artifacts from the Planning loop (date-prefixed) | [`plans.md`](plans.md) |
 | `backlogs/` | Feature-scope deferred tasks | [`backlogs.md`](backlogs.md) |
 | `changelogs/` | Feature-scope changelog entries — what shipped, when | [`changelogs.md`](changelogs.md) |
 | `mistakes/` | Feature-scope mistakes — corrections that apply only within this feature | [`mistakes.md`](mistakes.md) |
-| `rules/` | Feature-specific rules — enforceable conventions that bind only within this feature | [`rules.md`](rules.md) |
+| `rules/` | Feature-specific rules — conventions that bind only within this feature | [`rules.md`](rules.md) |
 | `learnings/` | Feature-local insights — transferable lessons scoped to this feature; promote up to project `learnings/` when cross-feature | [`learnings.md`](learnings.md) |
-| `reviews/` | Feature-scope review activity — review / audit result documents whose subject is this feature | [`reviews.md`](reviews.md) |
-| `reports/` | Feature-scope reports — status / post-mortem / analytics documents scoped to this feature | [`reports.md`](reports.md) |
+| `reviews/` | Feature-scope review activity — review / audit results whose subject is this feature | [`reviews.md`](reviews.md) |
+| `reports/` | Feature-scope reports — status / post-mortem / analytics docs scoped to this feature | [`reports.md`](reports.md) |
 
 ### Lazy bootstrapping
 
-The feature directory is created on **first promotion** to that feature — not at Ideation Lock Scope or earlier. Each subdirectory is then created on its **first write**: Wrap-up creates the destination's parent directory only when it has a file to promote into it. Subdirs that have received no content yet do not exist on disk. `changelogs/` and `mistakes/` typically appear later than the rest, because a feature usually accrues design and decisions before it first ships a changelog entry or records a feature-scope mistake.
+The feature directory is created on **first promotion** to that feature — not at Ideation Lock Scope or earlier. Each subdir is then created on its **first write**: Wrap-up creates the destination's parent dir only when it has a file to promote into it. Subdirs with no content yet do not exist on disk. `changelogs/` and `mistakes/` typically appear later than the rest, because a feature usually accrues design and decisions before it first ships a changelog entry or records a feature-scope mistake.
 
 ## The feature README (`README.md`) — identity-doc spec
 
 ### Purpose
 
-Each feature directory has a `README.md` that gives a **high-level overview** of the feature, its current state, and pointers into the feature's subdirectories. The README is **lightweight** — it points to the artifacts but does not duplicate them. A reader scanning `features/` directory listings reads the READMEs to understand each feature without opening every subdirectory.
+The `README.md` gives a **high-level overview** of the feature, its current state, and pointers into the subdirs. It is **lightweight** — it points to the artifacts, never duplicates them. A reader scanning `features/` directory listings reads the READMEs to understand each feature without opening every subdir.
 
-### Lifecycle (Wrap-up direct write)
+### Write it
 
-This template is written **directly by Wrap-up's RECORD** to its memory destination — there is no loop-RECORD staging path. Wrap-up authors the content (e.g., on first promotion to a new feature, on supersession, or from cross-session synthesis) and stamps this template.
+| Field | Value |
+|---|---|
+| Written by | Wrap-up RECORD (direct write — no staging; loop RECORD never writes here) |
+| When | At first promotion to a new feature (stamp a fresh README); and on subsequent sessions, update the `Status` + `Recent activity` sections to reflect the latest design / plan / changelog promoted |
+| Location | `.gobbi/projects/{project-name}/features/{feature-name}/README.md` |
 
-Wrap-up is the sole writer; loop RECORD (Ideation / Planning / Execution) never writes to this destination.
+### Frontmatter + body
 
-### When to write
-
-- **At first promotion to a new feature** (Wrap-up RECORD): Wrap-up stamps a fresh README from this template when creating a new `features/{feature-name}/` directory as part of promoting session staging.
-- **During Wrap-up RECORD on subsequent sessions**: Wrap-up updates the README's "Status" and "Recent activity" sections to reflect the latest design, plan, or changelog promoted from session staging. Loop RECORD (Ideation / Planning / Execution) NEVER writes to this README — it stages content in `sessions/.../{N}-{loop}/staging/...` and Wrap-up promotes + updates the README in one step.
-
-### Location
-
-- `.gobbi/projects/{project-name}/features/{feature-name}/README.md`
-
-### Template
-
-The README carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the features-type extensions (`value_proposition`, `subsystems`). A feature README is the feature's **identity document**. Its `name` is the fixed literal `README` (the filename stem of `README.md`), NOT the feature slug — every feature README shares `name: README`, so the validator exempts `README.md` from the cross-tree slug-uniqueness check ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). The feature's identity slug lives in `feature: {own-slug}` + the directory name. The README is self-referential through `scope: feature` and `feature: {own-slug}` — those name the feature itself, while `name` names the file. The sprint-only keys (`pr`, `commit`, `head-commit`, `first-session`, `last-session`) are NOT on the README — per-ship metadata belongs in `changelogs/` entries, not the value-feature identity. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+The README carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the features extensions (`value_proposition`, `subsystems`). Its `name` is the fixed literal `README` (the filename stem), NOT the feature slug — every feature README shares `name: README`, so the validator exempts `README.md` from the cross-tree slug-uniqueness check ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). The feature's identity slug lives in `feature: {own-slug}` + the dir name. The sprint-only keys (`pr`, `commit`, `head-commit`, `first-session`, `last-session`) are NOT on the README — per-ship metadata belongs in `changelogs/` entries. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -141,22 +137,15 @@ subsystems: [{skill / path this value-feature owns}]
 - [[2026-05-11-orch-workflow-improvements]] — a cross-feature plan it relates to
 ```
 
-### Update discipline
+## Notes
 
-The "Recent activity" table grows over time. Cap it at the **20 most recent entries** — older activity is recoverable from the changelogs and decisions directories. The assistant prunes oldest entries when the table exceeds the cap.
-
-### When status changes
-
-A value-feature is a durable capability, so its base `status` is coarse — `active` while the capability is live, `retired` once it is removed. The fine-grained progress of work within the feature (planned / in-progress / shipped per task) lives in `changelogs/` entries and the Recent-activity table, not in the README `status` field.
-
-- **`active`** — the feature is a live gobbi capability (the default for every promoted feature)
-- **`retired`** — the feature is removed or superseded; at Wrap-up the entire feature directory is moved (`git mv`) to `archive/features/{feature-name}/` per the move-on-terminal model (never deleted; the active `features/` shows only live features)
-
-The manager updates `status` through the active runtime's user-decision primitive when retiring a feature. Per-task / per-session progress is recorded in `changelogs/` and the Recent-activity table, not by flipping the README `status`.
+- **Recent-activity cap 20.** The table grows over time; cap it at the 20 most recent entries — older activity is recoverable from `changelogs/` and `decisions/`. Prune oldest when it exceeds the cap.
+- **Coarse status only.** A value-feature is a durable capability, so base `status` is coarse: `active` while live, `retired` once removed. Fine-grained per-task progress lives in `changelogs/` and the Recent-activity table, not the README `status`. The manager flips `status` through the active runtime's user-decision primitive when retiring.
+- **Retired → moved, never deleted.** On retirement the entire feature directory is `git mv`'d to `archive/features/{feature-name}/` per move-on-terminal ([`archive.md`](archive.md)); the active `features/` shows only live features.
 
 ## Cross-references
 
-- Tier-wide path index (session-staging rows, cross-tier routing, the Templates index) → [`memory-map.md`](../memory-map.md). This doc owns the per-feature subdir spec (what each holds, when/who writes, lazy bootstrapping); `memory-map.md` owns the tier-wide path index.
-- Naming convention, frontmatter standard, structure rules — including `features` as its own tier → [`rules.md` § 3](../rules.md#3-structure-rules)
+- Tier-wide path index (session-staging rows, cross-tier routing, the Templates index) → [`memory-map.md`](../memory-map.md). This doc owns the per-feature subdir spec; `memory-map.md` owns the tier-wide path index.
+- Naming, frontmatter, structure rules — including `features` as its own tier → [`rules.md` § 3](../rules.md#3-structure-rules)
 - Wrap-up's promotion + README stamp/update procedure → [`../../wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Move-on-terminal procedure for a retired feature directory → [`archive.md`](archive.md)
