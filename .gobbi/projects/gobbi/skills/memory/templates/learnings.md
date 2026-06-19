@@ -10,7 +10,7 @@ Capture the technique that worked and why — so the next agent reuses the win i
 | Field | Value |
 |---|---|
 | When | A loop's RECORD when the loop produced a durable insight — a pattern that worked better than expected, a technique that should become a convention, a platform/library behavior discovered through use; or Wrap-up RECORD when a cross-loop pattern surfaces only at session close. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/learnings/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/learnings/{slug}.md` |
 | Promotes to | `features/{f}/learnings/` (default) · `learnings/` (project, cross-cutting) |
 | Filename | `{slug}.md` — bare-slug, ≤6 words (`markdown-link-relativization.md`); no date or finding-ID prefix |
 

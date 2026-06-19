@@ -10,7 +10,7 @@ Keep the insight, not just the link — a reference exists to save the next agen
 | Field | Value |
 |---|---|
 | When | Ideation Sub-step C (Research); or a loop's RECORD on a citable `general` finding. Bar = applicability, not novelty. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/references/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` |
 | Promotes to | `features/{f}/references/` (default) · `references/` (project, cross-feature) |
 | Filename | `{slug}.md` — bare-slug; name the topic, not the source (`redis-ttl-eviction.md`, not `redis-docs-ch7.md`) |
 

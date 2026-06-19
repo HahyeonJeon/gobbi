@@ -10,7 +10,7 @@ Capture deferred-but-not-forgotten work with enough context to pick it up later 
 | Field | Value |
 |---|---|
 | When | Ideation Step 2 Lock Scope — every non-chosen candidate; or a loop's RECORD when a deferred eval finding or deferred scope-violating work surfaces. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md` |
 | Promotes to | `features/{f}/backlogs/` (deferred task) · `backlogs/` (project, deferred feature) |
 | Filename | `{slug}.md` — bare-slug, ≤6 words, no date prefix (evergreen-until-closed); no positional prefix (`password-reset-flow.md`, `search-system.md`) |
 

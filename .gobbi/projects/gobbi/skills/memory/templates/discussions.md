@@ -10,7 +10,7 @@ Record the question, the options weighed, and the user's decision — so the cho
 | Field | Value |
 |---|---|
 | When | A loop's RECORD (`ideation` / `planning` / `execution`) when the DISCUSSION produced decisions worth preserving beyond this session. A one-off clarification belongs in the canonical artifact's "Decisions and rationale" section, not here. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/discussions/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/discussions/{slug}.md` |
 | Promotes to | `features/{f}/discussions/` (feature-only — discussions are always bounded to a feature) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (tied to the session that held it); short descriptive slug (`2026-05-11-cache-vs-index.md`) |
 

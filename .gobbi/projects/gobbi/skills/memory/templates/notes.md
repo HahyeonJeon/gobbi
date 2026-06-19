@@ -10,7 +10,7 @@ Record what happened and what to pick up next — so the next session continues 
 | Field | Value |
 |---|---|
 | When | Wrap-up RECORD of every session writes one journal entry — the default. A loop's RECORD writes its own entry only when the loop's content warrants one separate from the session-level note (rare). |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/notes/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/notes/{slug}.md` |
 | Promotes to | `notes/` (project-only — no `features/{f}/notes/` tier) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date prefix; slug answers "what did this session do?" in 3–6 words (`2026-05-11-mistakes-rename-sweep.md`) |
 

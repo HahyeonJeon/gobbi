@@ -10,7 +10,7 @@ Capture an input → expected-behavior case — so the feature's behavior is ver
 | Field | Value |
 |---|---|
 | When | Ideation RECORD (append new scenarios from Sub-step D enumeration); or EVALUATION's `scenario_gap` finding routing (append the missing scenario the evaluator surfaced). This is the persistent set; each session's `1-ideation/working/` holds only that session's diff. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/scenarios/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md` |
 | Promotes to | `features/{f}/scenarios/` (feature-only — scenarios are always bounded to a feature; cross-feature scenarios belong in project `design/`) |
 | Filename | `{scenario-slug}.md` — bare-slug (evergreen; date lives in frontmatter); one file per scenario, short and action-oriented (`cold-start-cache-miss.md`) |
 

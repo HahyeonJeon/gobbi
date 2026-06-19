@@ -10,7 +10,7 @@ Record what shipped per task with its verification — so the project keeps a tr
 | Field | Value |
 |---|---|
 | When | Execution RECORD at the end of each task; and Wrap-up RECORD appends a feature-level entry to each value-feature the session touched. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/changelogs/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/changelogs/{slug}.md` |
 | Promotes to | `features/{f}/changelogs/` — feature-subdir-only; there is NO project-level `changelogs/` (design §2.14; [rules §3](../rules.md)) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (time-indexed); slug describes the shipped unit (`2026-05-11-login-ui-shipped.md`) |
 

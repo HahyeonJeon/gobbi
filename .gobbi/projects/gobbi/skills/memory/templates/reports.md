@@ -22,7 +22,7 @@ A report is **exactly one** `report_type`. A multi-facet artifact picks the domi
 | Field | Value |
 |---|---|
 | When | A loop's RECORD on an in-session deep-dive worth preserving (`post-mortem`); or Wrap-up RECORD at a periodic boundary (`status`, direct write); or an out-of-band CLI run (`analytics`). Bar = scale + durability, not a routine observation. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/reports/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md` |
 | Promotes to | `features/{f}/reports/` (default) · `reports/` (project, cross-feature) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (generation date, not the reported-on period); slug names the subject (`2026-05-11-iter-cap-exhaustion-investigation.md`) |
 

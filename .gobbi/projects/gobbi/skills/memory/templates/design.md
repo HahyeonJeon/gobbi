@@ -10,7 +10,7 @@ Capture the chosen approach and its trade-offs for a feature or component — so
 | Field | Value |
 |---|---|
 | When | Ideation RECORD when the leader produces a new design (Step 5 output); or Planning RECORD when a design substantially evolves (append a follow-on anchored to the original). |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/design/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/design/{slug}.md` |
 | Promotes to | `features/{f}/design/` (bounded to one feature, typical) · `design/` (project, cross-cutting) |
 | Filename | `{slug}.md` — bare-slug, hyphenated, descriptive, no date prefix (durable/evergreen; use `decisions/` for time-stamped records) (`cache-invalidation.md`, `auth-middleware.md`) |
 

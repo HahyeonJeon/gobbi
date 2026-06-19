@@ -10,7 +10,7 @@ Track per-item verification status against a scenario or spec — so the design'
 | Field | Value |
 |---|---|
 | When | Ideation RECORD (Sub-step D Design enumeration); EVALUATION's `checklist_gap` finding (append the missing item); Execution RECORD (flip item status `pending` → `implemented` when the work ships). |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/checklists/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md` |
 | Promotes to | `features/{f}/checklists/` — feature-subdir-only ([rules §3](../rules.md)) |
 | Filename | Bare-slug, evergreen. Per-scenario file: `{scenario-slug}.md` (mirrors `scenarios/{scenario-slug}.md`; recommended default). Per-checklist file: `{checklist-slug}.md` (one file per item; use for heavyweight items). |
 

@@ -10,7 +10,7 @@ Decompose the approach into ordered, verifiable sub-tasks — so a single execut
 | Field | Value |
 |---|---|
 | When | Planning RECORD when the loop produces a canonical plan. `plans/` is **Planning-loop-only** — ideation / preparation / execution / wrap-up do not produce plans. A mid-execution refinement creates a new versioned plan, never an in-place edit. |
-| Stage to | `sessions/{date}-{id}/3-planning/staging/plans/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` |
 | Promotes to | `features/{f}/plans/` (loop path — feature-only). Project-level `plans/` holds maintainer cross-feature roadmaps ONLY; no loop RECORD or Wrap-up promotion targets it. |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (tied to the session that produced it); slug describes the plan in ≤6 words (`2026-05-11-auth-middleware.md`) |
 

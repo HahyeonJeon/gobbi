@@ -10,7 +10,7 @@ A review is an adversarial assessment of an artifact across perspectives, ending
 | Field | Value |
 |---|---|
 | When | A loop's RECORD when the loop's own work *was* a review activity; or Wrap-up RECORD when a session ran a review / audit / evaluation worth preserving. Bar = activity-shaped + durability, not curated highlights. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/reviews/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/reviews/{slug}.md` |
 | Promotes to | `features/{f}/reviews/` (default) · `reviews/` (project, cross-feature) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (review activity date); slug names the subject + kind (`2026-05-11-ultrareview-orchestration-redesign.md`, `2026-05-11-code-review-pr-257.md`) |
 

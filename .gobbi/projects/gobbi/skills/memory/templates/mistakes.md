@@ -10,7 +10,7 @@ Name the trap and the correct approach — a correction not recorded is a correc
 | Field | Value |
 |---|---|
 | When | Immediately during any loop's RECORD when the user corrected an approach or the loop hit a non-obvious failure mode; or during Wrap-up RECORD when cross-loop patterns reveal a recurring trap. |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/decisions/{slug}.md` **with `mistake-candidate: true`** — mistakes route through `staging/decisions/` with the flag, not a dedicated subdir; the flag tells Wrap-up to promote to `mistakes/` instead of `decisions/`. |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` **with `mistake-candidate: true`** — mistakes route through `staging/decisions/` with the flag, not a dedicated subdir; the flag tells Wrap-up to promote to `mistakes/` instead of `decisions/`. |
 | Promotes to | `features/{f}/mistakes/` (feature-specific trap) · `mistakes/` (project, the common case) |
 | Filename | `{slug}.md` — bare-slug, names the trap in ≤6 words (`bun-write-no-append.md`); no date or finding-ID prefix |
 

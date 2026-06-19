@@ -10,7 +10,7 @@ Record the conclusion and why the alternatives lost — so a future reader under
 | Field | Value |
 |---|---|
 | When | A loop's RECORD (`ideation` / `planning` / `execution`) when a significant decision was made — technology choice, architecture trade-off, scope inclusion/exclusion, or a `design_flaw` / `assumption_risk` finding that received `PASS` (a deferred risk). |
-| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/decisions/{slug}.md` |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` |
 | Promotes to | `features/{f}/decisions/` (default) · `decisions/` (project, cross-feature) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (decisions are time-indexed); slug names the decision in ≤6 words (`2026-05-11-use-redis-not-memcached.md`) |
 
