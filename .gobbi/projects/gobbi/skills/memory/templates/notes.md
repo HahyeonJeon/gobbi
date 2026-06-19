@@ -1,47 +1,24 @@
 # `notes/`
 
-**Development journal entries** — the running narrative of what was worked on in each session, akin to a developer's daily diary. One entry per session captures the session's work-log: what was attempted, what shipped, what got stuck, what shifted, what to pick up next time.
+> Development journal entries — the running narrative of each session, like a developer's daily diary. One entry per session: what was attempted, what shipped, what got stuck, what shifted, what to pick up next.
 
-## Lifecycle (staging → promotion)
+## Core principle
+Record what happened and what to pick up next — so the next session continues the work instead of reconstructing it.
 
-This template covers a file with **two write paths**:
+## Write it
 
-1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/notes/{slug}.md`. Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
+| Field | Value |
+|---|---|
+| When | Wrap-up RECORD of every session writes one journal entry — the default. A loop's RECORD writes its own entry only when the loop's content warrants one separate from the session-level note (rare). |
+| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/notes/{slug}.md` |
+| Promotes to | `notes/` (project-only — no `features/{f}/notes/` tier) |
+| Filename | `{YYYY-MM-DD}-{slug}.md` — date prefix; slug answers "what did this session do?" in 3–6 words (`2026-05-11-mistakes-rename-sweep.md`) |
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
----
+## Frontmatter + body
 
-`notes/` is **not** a soft-landing zone for unstructured observations (that role belonged to a prior interpretation that has been retired). It is the **chronological work log** of the project. A reader scanning `notes/` chronologically reconstructs the day-by-day / session-by-session history of how the project actually progressed.
-
-## When to write
-
-- **During Wrap-up RECORD** of every session: the Wrap-up assistant writes one journal entry summarizing the session's work. This is the default — every session gets a notes entry.
-- **During a loop's RECORD** when the loop's content is substantial enough to warrant its own journal entry separate from the session-level note (rare; most loops fold into the session's single note).
-
-The journal is **session-paced**: one entry per session is the norm, regardless of how long the session ran or how many loops it contained.
-
-## Location
-
-- Project-level only: `.gobbi/projects/{project-name}/notes/`
-
-`notes/` is the project's timeline. Feature-specific journal content is summarized in the session note and cross-linked from `features/{feature-name}/README.md`'s Recent activity table — there is no `features/{feature-name}/notes/` tier.
-
-## File naming
-
-`{YYYY-MM-DD}-{slug}.md` — date prefix; slug describes the session's dominant theme.
-
-Examples:
-- `2026-05-11-memorization-skill-refactor.md`
-- `2026-05-11-orchestration-redesign-day-3.md`
-- `2026-05-11-mistakes-rename-sweep.md`
-
-When multiple sessions occur on the same date, the slug differentiates them. The journal slug should answer "what did this session do?" in 3–6 words.
-
-## Item template
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the notes-type extensions — `notes/` keeps the **richer set**: `features_touched` (the value-feature slugs this session promoted into, the L2 session→feature link), plus `loops_completed` and `shipped`, all useful session→memory links ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `notes/` is project-only and append-only, so base `status` stays `active`. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+Base frontmatter plus the notes extensions — `notes/` keeps the **richer set**: `features_touched` (the value-feature slugs this session promoted into), plus `loops_completed` and `shipped` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `notes/` is project-only, so `status` stays `active`.
 
 ```markdown
 ---
@@ -67,41 +44,35 @@ shipped: [{slugs of artifacts that landed in memory this session}]
 {Chronological narrative of the session. 1–3 paragraphs. What was attempted, in what order, with what outcome. Read this and a future reader knows what the session was about.}
 
 ## What shipped
-{Concrete artifacts that landed in memory during this session — decisions, plans, mistakes, learnings, reviews, reports. Cite paths. If nothing shipped, state "nothing shipped — session was {discussion-only / blocked / aborted}".}
+{Concrete artifacts that landed in memory this session — decisions, plans, mistakes, learnings, reviews, reports. Cite paths. If nothing shipped, state "nothing shipped — session was {discussion-only / blocked / aborted}".}
 
 ## What got stuck
-{Threads that didn't resolve. The "I tried X but" moments. Distinct from backlog — backlog is the deferred work; this is the in-flight stuck. Useful for the next session to pick up cleanly.}
+{Threads that didn't resolve. The "I tried X but" moments. Distinct from backlog (the deferred work); this is the in-flight stuck — useful for the next session to pick up cleanly.}
 
 ## What shifted
-{Direction changes during the session — decisions that were reconsidered, plans that were rescoped, assumptions that broke. The journal captures *motion*, not just outcomes.}
+{Direction changes during the session — decisions reconsidered, plans rescoped, assumptions that broke. The journal captures *motion*, not just outcomes.}
 
 ## Decisions to respect
-{The standing decisions a future session must not silently re-litigate — locks the user ratified, constraints accepted, directions chosen. Distinct from `decisions/` (the durable ADR records): this is the handoff shortlist that says "these are settled; build on them, do not reopen them without cause." Cite the `decisions/` slug where one exists.}
+{The standing decisions a future session must not silently re-litigate — locks the user ratified, constraints accepted, directions chosen. The handoff shortlist: "these are settled; build on them, do not reopen them without cause." Cite the `decisions/` slug where one exists.}
 
 ## Next session
-{Pointer to what the next session should pick up. Could be "continue {feature}", "evaluate {plan}", "react to {finding}". Keep terse — detail belongs in backlogs / handoff summary.}
+{Pointer to what the next session should pick up — "continue {feature}", "evaluate {plan}", "react to {finding}". Keep terse; detail belongs in backlogs / handoff summary.}
 
 ## Related
-{Navigable `[[slug]]` links to the artifacts this session produced or built on — the journal's index ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Mirrors the `shipped` frontmatter in navigable form.}
+{Navigable `[[slug]]` links to the artifacts this session produced or built on — the journal's index, mirroring the `shipped` frontmatter ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
 - [[2026-05-11-use-redis-not-memcached]] — decision shipped this session
-- [[markdown-link-relativization]] — learning extracted this session
 ```
 
-## Distinguishing notes from neighbors
+## Notes
 
-- **`notes/` vs `decisions/`**: a decision is the *conclusion* — "we chose X". A note is the *narrative* — "during this session we considered X / Y / Z and ended up choosing X". The decision lives durably as a load-bearing artifact; the note is the surrounding story.
-- **`notes/` vs `learnings/`**: a learning is the *takeaway* extracted from one or many sessions ("do this in future"). A note is the *raw experience* of one session. Many notes might produce one learning.
-- **`notes/` vs `discussions/`**: a discussion is one user-decision topic with the user's answer. A note is the session-level narrative that may *reference* multiple discussions.
-- **`notes/` vs `design/`**: design is the architecture / intent. Notes is what actually happened while building toward / away from that intent.
-- **`notes/` vs handoff summary in `5-wrap-up/outputs/`**: the handoff is forward-looking ("what the next session needs to know to continue"). The note is backward-looking ("what this session did"). Both can exist for the same session; they serve different consumers.
+- **Append-only history.** Journal entries are never edited after the session closes — even if a later session reveals the understanding was wrong, the journal preserves what was thought at the time. The correction is captured in the *new* session's note.
+- **Vs other types.** A note carries the session narrative; the durable artifacts it references live in their own types:
 
-## Lifecycle
-
-Journal entries are **append-only history**. They are never edited after the session closes — even if a later session reveals the session's understanding was wrong, the journal preserves what was thought at the time. The correction is captured in the *new* session's note ("we learned that the 2026-05-11 approach was wrong; here is the revised model").
-
-## Cross-references
-
-- Session canonical artifacts: a note may cite paths in `sessions/{date}-{session-id}/{N}-{loop}/outputs/` for readers who want full detail.
-- Feature READMEs: `features/{feature-name}/README.md`'s Recent activity table includes a row per relevant note for cross-navigation.
-- Decisions / plans / mistakes / learnings produced this session are listed in the `shipped` frontmatter so the journal is a navigable index of the session's outputs.
+  | Type | Holds | The note holds |
+  |---|---|---|
+  | `decisions/` | the conclusion ("we chose X") | the surrounding story ("we considered X/Y/Z, chose X") |
+  | `learnings/` | the takeaway ("do this in future") | the raw experience that produced it |
+  | `discussions/` | one user-decision topic + answer | the session narrative that references many discussions |
+  | `design/` | the architecture / intent | what actually happened building toward it |
+  | handoff (`5-wrap-up/outputs/`) | forward-looking ("what the next session needs") | backward-looking ("what this session did") |
