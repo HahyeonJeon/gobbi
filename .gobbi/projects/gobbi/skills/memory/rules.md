@@ -251,7 +251,7 @@ For the authoritative per-type purpose / hard-boundary / scope / CRUD detail, se
 
 ## 4. Dev-document quality standard
 
-§1-3 govern a file's *address* (naming), its *machine-readable header* (frontmatter), and its *placement* (structure). §4 governs the **prose quality of the body itself** — what a memory doc must read like to be worth keeping. A file can pass §1-3 (correct slug, valid frontmatter, right directory) and still be a bad memory doc if its body only makes sense to someone who sat in the session that wrote it. §4 is the positive bar that closes that gap.
+§1-3 govern a file's *address* (naming), its *machine-readable header* (frontmatter), and its *placement* (structure). §4 governs the **prose quality of the body itself** — what a memory doc must read like to be worth keeping. A file can pass §1-3 (correct slug, valid frontmatter, right directory) and still be a bad memory doc if its body only makes sense to someone who sat in the session that wrote it. §4 is the positive bar that closes that gap. Memory-template bodies additionally follow [`memory/SKILL.md` § Authoring style](SKILL.md#authoring-style).
 
 ### 4.1 What a good dev-doc looks like (the positive bar)
 
