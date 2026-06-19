@@ -1,40 +1,26 @@
 # `checklists/`
 
-**Feature-level implementation checklists** — concrete points the design must address for each scenario. Each checklist item is anchored to a scenario and either to a reference insight or marked `novel`. Accumulated across sessions like scenarios.
+> Feature-level implementation checklists — concrete points the design must address for each scenario. Each item is anchored to a scenario and to a reference insight or marked `novel`. Accumulated across sessions like scenarios.
 
-## Lifecycle (staging → promotion)
+## Core principle
+Track per-item verification status against a scenario or spec — so the design's coverage of each scenario is visible and checkable, not assumed.
 
-This template covers a file with **two write paths**:
+## Write it
 
-1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md`. Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
+| Field | Value |
+|---|---|
+| When | Ideation RECORD (Sub-step D Design enumeration); EVALUATION's `checklist_gap` finding (append the missing item); Execution RECORD (flip item status `pending` → `implemented` when the work ships). |
+| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/checklists/{slug}.md` |
+| Promotes to | `features/{f}/checklists/` — feature-subdir-only ([rules §3](../rules.md)) |
+| Filename | Bare-slug, evergreen. Per-scenario file: `{scenario-slug}.md` (mirrors `scenarios/{scenario-slug}.md`; recommended default). Per-checklist file: `{checklist-slug}.md` (one file per item; use for heavyweight items). |
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
----
+## Frontmatter + body
 
-## When to write
+Two valid shapes — choose one per feature. Both carry base frontmatter + the checklists extension (`scenario`); `scope: feature` always. `tags` come from the controlled vocabulary ([rules §2.5](../rules.md#25-controlled-tags-vocabulary)). The per-checklist shape adds `item_status` (per-item progress, distinct from base `status`), `anchor`, and `implemented_in`.
 
-- During **Ideation** RECORD: append new checklist items from Ideation Sub-step D (Design) enumeration.
-- During EVALUATION's **`checklist_gap` finding** routing: append the missing item surfaced by the evaluator Stage 1 Frame Build.
-- During **Execution** RECORD: update checklist item status from `pending` → `implemented` when the corresponding work ships.
-
-## Location
-
-- **Feature-level only**: `.gobbi/projects/{project-name}/features/{feature}/checklists/`
-
-## File naming
-
-Bare-slug (evergreen — the date lives in frontmatter). See [`rules.md` § 1](../rules.md). `checklists/` is a **feature-subdir-only** type ([`rules.md` § 3](../rules.md)). Two valid patterns — choose one per feature:
-
-- **Per-scenario file**: `{scenario-slug}.md` (mirrors `scenarios/{scenario-slug}.md`) — checklist items for that scenario in one file
-- **Per-checklist file**: `{checklist-slug}.md` — one file per checklist item
-
-Per-scenario file is the recommended default; per-checklist file makes sense when individual items are heavyweight (e.g., security-sensitive code requiring extensive justification).
-
-## Item template — per-scenario file
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the checklists-type extension (`scenario`); `scope: feature` always (feature-subdir-only). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+### Per-scenario file
 
 ```markdown
 ---
@@ -72,12 +58,9 @@ scenario: {scenario-slug}
 {Navigable `[[slug]]` links to the scenario this checklist implements and any reference insights its items anchor to ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
 - [[cold-start-cache-miss]] — the scenario this checklist implements
-- [[redis-ttl-eviction]] — the reference an item anchors to
 ```
 
-## Item template — per-checklist file
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the checklists-type extension (`scenario`); `scope: feature` always. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)). The per-item progress lives in the `item_status` field (distinct from base `status`), with `anchor` and `implemented_in` recording the item's reference anchor and shipping changelog.
+### Per-checklist file
 
 ```markdown
 ---
@@ -116,17 +99,9 @@ implemented_in: {changelog path} | null
 {Navigable `[[slug]]` links to the scenario this item implements and the reference it anchors to ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
 - [[cold-start-cache-miss]] — the scenario this item implements
-- [[redis-ttl-eviction]] — the reference it anchors to
 ```
 
-## Anchor discipline
+## Notes
 
-Every checklist item must have an anchor — either a reference insight slug from `references/` or the literal string `novel`. Items without anchors are unanchored and become noise. The Step 4 of Ideation enforces this; the assistant carries it through RECORD.
-
-## Item-status lifecycle
-
-The `item_status` extension field (distinct from base `status`, which stays `active`) tracks each item's implementation progress:
-
-- **`pending`** — added but not yet implemented; the Execution Loop is expected to address it
-- **`implemented`** — the corresponding work shipped; cross-reference the changelog
-- **`deferred`** — intentionally not implemented this round; cross-reference the backlog entry or decision record explaining why
+- **Every item needs an anchor.** Either a reference insight slug from `references/` or the literal string `novel`. Unanchored items become noise; Ideation Step 4 enforces this, and the assistant carries it through RECORD.
+- **`item_status` (per-checklist file) tracks per-item progress** — distinct from base `status`, which stays `active`: `pending` (added, not yet implemented; Execution is expected to address it) · `implemented` (work shipped; cross-reference the changelog) · `deferred` (intentionally skipped this round; cross-reference the backlog entry or decision explaining why).
