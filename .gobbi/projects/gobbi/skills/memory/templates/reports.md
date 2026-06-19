@@ -3,7 +3,10 @@
 > Long-form durable evidence — status summaries, post-mortems, and analytics outputs. Preserves the full content and reasoning trail, where `decisions/` keeps only the conclusion.
 
 ## Core principle
-A report records an investigation's findings and action items — the long-form evidence chain a decision or learning is later extracted from.
+
+> **A report records an investigation's findings and action items.**
+
+The long-form evidence chain a decision or learning is later extracted from.
 
 ## Three report kinds
 

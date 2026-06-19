@@ -147,6 +147,10 @@ The staging→promotion lifecycle, supersede-not-delete, and move-on-terminal ar
 
 Fold type-specific guidance under a single `## Notes` list rather than a separate H2 per tip. Fewer sections, same content.
 
+> **Core principle is a blockquote + body.**
+
+A template's `## Core principle` is a bold one-line directive in a blockquote, then a one-sentence rationale below — not a single run-on line.
+
 ---
 
 ## Constraints

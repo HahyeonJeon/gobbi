@@ -3,7 +3,10 @@
 > Task-decomposition records — the output of the Planning Loop. Each plan breaks a locked task into narrow, ordered sub-tasks the Execution Loop can run one at a time.
 
 ## Core principle
-Decompose the approach into ordered, verifiable sub-tasks — so a single executor can run each one unambiguously.
+
+> **Decompose the approach into ordered, verifiable sub-tasks.**
+
+A single executor can run each one unambiguously.
 
 ## Write it
 

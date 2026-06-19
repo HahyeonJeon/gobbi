@@ -3,7 +3,10 @@
 > Recurring failure patterns — things that look like they should work but reliably break. Each records the failure mode plus the correct approach so future sessions skip past it without re-failing.
 
 ## Core principle
-Name the trap and the correct approach — a correction not recorded is a correction repeated across sessions.
+
+> **Name the trap and the correct approach.**
+
+A correction not recorded is a correction repeated across sessions.
 
 ## Write it
 

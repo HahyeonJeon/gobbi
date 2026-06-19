@@ -3,7 +3,10 @@
 > Time-stamped records of what shipped. Each entry summarizes the outcome of an Execution Loop's task, so a future reader can find when a specific capability landed.
 
 ## Core principle
-Record what shipped per task with its verification — so the project keeps a traceable history of when each capability landed.
+
+> **Record what shipped per task with its verification.**
+
+The project keeps a traceable history of when each capability landed.
 
 ## Write it
 

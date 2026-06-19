@@ -3,7 +3,10 @@
 > Transferable insights the project picked up — what we now know how to do better, from direct experience. A learning is feature-local by default; a cross-feature one promotes up to the project tier.
 
 ## Core principle
-Capture the technique that worked and why — so the next agent reuses the win instead of rediscovering it.
+
+> **Capture the technique that worked and why.**
+
+The next agent reuses the win instead of rediscovering it.
 
 ## Write it
 

@@ -3,7 +3,10 @@
 > Deferred work — features (project-level) or tasks (feature-level) that came out of decomposition but were not picked up. A future session can pick up an entry, frame it as its own problem, and run a fresh Ideation Loop on it.
 
 ## Core principle
-Capture deferred-but-not-forgotten work with enough context to pick it up later — so a future session resumes it without re-deriving the framing.
+
+> **Capture deferred-but-not-forgotten work with enough context to pick it up later.**
+
+A future session resumes it without re-deriving the framing.
 
 ## Write it
 

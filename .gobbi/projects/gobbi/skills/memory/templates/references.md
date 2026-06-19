@@ -3,7 +3,10 @@
 > External sources with an extracted insight — docs, blogs, papers, RFCs, code that informed the project. Each carries the takeaway, not just the link.
 
 ## Core principle
-Keep the insight, not just the link — a reference exists to save the next agent the re-search.
+
+> **Keep the insight, not just the link.**
+
+A reference exists to save the next agent the re-search.
 
 ## Write it
 

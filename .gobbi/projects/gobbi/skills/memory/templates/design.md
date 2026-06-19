@@ -3,7 +3,10 @@
 > Long-form design documents — what is being built and why, concrete enough to plan against and abstract enough to outlive a single execution session.
 
 ## Core principle
-Capture the chosen approach and its trade-offs for a feature or component — so the next session plans against the design instead of re-deriving it.
+
+> **Capture the chosen approach and its trade-offs for a feature or component.**
+
+The next session plans against the design instead of re-deriving it.
 
 ## Write it
 

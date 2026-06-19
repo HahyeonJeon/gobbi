@@ -3,7 +3,10 @@
 > Summaries of substantive DISCUSSION-phase exchanges with the user that future sessions need to recall — exchanges that resolved an ambiguity, set a constraint, or shifted direction.
 
 ## Core principle
-Record the question, the options weighed, and the user's decision — so the choice is not re-litigated.
+
+> **Record the question, the options weighed, and the user's decision.**
+
+The choice is not re-litigated.
 
 ## Write it
 

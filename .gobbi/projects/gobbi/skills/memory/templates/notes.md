@@ -3,7 +3,10 @@
 > Development journal entries — the running narrative of each session, like a developer's daily diary. One entry per session: what was attempted, what shipped, what got stuck, what shifted, what to pick up next.
 
 ## Core principle
-Record what happened and what to pick up next — so the next session continues the work instead of reconstructing it.
+
+> **Record what happened and what to pick up next.**
+
+The next session continues the work instead of reconstructing it.
 
 ## Write it
 
