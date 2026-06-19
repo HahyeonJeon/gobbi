@@ -46,10 +46,10 @@ related: [{related learning slugs}]            # list[slug] — plain slugs, not
 ## Context
 {The situation that produced this learning. What was being attempted, what was discovered.}
 
-## Why it matters
+## Reason
 {The cost the project would pay if this knowledge were lost. Convince a future reader to keep this.}
 
-## How to apply
+## How
 {Concrete guidance: when to use this insight, where it applies, what to watch for.}
 
 ## Counter-cases

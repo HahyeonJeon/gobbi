@@ -283,7 +283,7 @@ A promoted doc obeys the same section contract its staging template (`memory/tem
 |---|---|
 | `decisions`, `design` | ADR-shaped: `## Context` → `## Decision` (or `## Approach`) → `## Rationale` → `## Alternatives considered` → `## Consequences`. State the conclusion and why the alternatives lost. |
 | `mistakes` | `## What happened` → `## Why it happens` (the mistaken assumption) → `## Correct approach` → `## How to detect` (trigger signals before repeating). |
-| `learnings` | `## Insight` → `## Context` → `## Why it matters` → `## How to apply` → `## Counter-cases` (where the insight does NOT hold). |
+| `learnings` | `## Insight` → `## Context` → `## Reason` → `## How` → `## Counter-cases` (where the insight does NOT hold). |
 | `notes` | `## What happened` → `## What shipped` → `## What got stuck` → `## What shifted` → `## Decisions to respect` → `## Next session`. The session journal + handoff — the home for narrative, the in-flight stuck, the standing decisions a future session must not re-litigate, and the next-session pointer. |
 
 Other types (`features`, `rules`, `references`, `plans`, `reviews`, `reports`, `backlogs`, and the four feature-subdir types) follow their own template's section shape in [`memory/templates/`](templates/). The principle is uniform: **the promoted body matches its type's template contract**, so a reader of any doc of a given type meets a predictable shape.
