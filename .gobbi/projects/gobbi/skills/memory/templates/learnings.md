@@ -1,6 +1,6 @@
 # `learnings/`
 
-**Cross-cutting insights** the project picked up that apply beyond any single feature or task. Distinct from `mistakes/` (failures to avoid) and `references/` (external sources): learnings are **what we now know how to do better** based on direct experience.
+**Transferable insights** the project picked up — what we now know how to do better, based on direct experience. A learning is **feature-local by default** (a technique or insight scoped to one feature); a learning that applies across features promotes up to the project `learnings/` tier. Distinct from `mistakes/` (failures to avoid) and `references/` (external sources).
 
 ## Lifecycle (staging → promotion)
 
@@ -23,9 +23,10 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 
 ## Location
 
-- Project-level only: `.gobbi/projects/{project-name}/learnings/`
+- Feature-level (default): `.gobbi/projects/{project-name}/features/{feature-name}/learnings/`
+- Project-level: `.gobbi/projects/{project-name}/learnings/`
 
-Learnings are cross-cutting by definition. Feature-specific insights belong in that feature's `design/` or `decisions/`, not here.
+Learnings are **default-feature**: an insight whose transferable lesson applies within one feature lives in `features/{feature-name}/learnings/`. Promote a learning up to project `learnings/` when it is cross-cutting — the insight applies across features or sessions.
 
 ## File naming
 
@@ -35,22 +36,24 @@ Example: `parallel-spawn-rate-limit.md`, `markdown-link-relativization.md`, `bun
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the learnings-type extensions (`supersedes`, `superseded_by`). The discovery date folds into base `created`; the originating session into base `session` — the ad-hoc `discovered` / `promoted-from` / `promoted-at` keys are dropped (`git log` + base `session` carry provenance, [`rules.md` § 2.3](../rules.md)).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file). `learnings` has no non-link type extension. The discovery date folds into base `created`; the originating session into base `session` — the ad-hoc `discovered` / `promoted-from` / `promoted-at` keys are dropped (`git log` + base `session` carry provenance, [`rules.md` § 2.6](../rules.md#26-staging-field-stripping-on-promotion)). `supersedes` / `superseded_by` / `related` are **global plain-slug base fields** any type may carry (§2.1) — not learnings-type extensions: `supersedes` / `superseded_by` are plain slugs and `related` is a **`list[slug]`** (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
 name: {slug — the insight, named}
 description: {one-line what we now know how to do better}
 type: learnings
-scope: project
-feature: null
+scope: feature
+feature: {feature-name}
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
-supersedes: {prior learning slug} | null
-superseded_by: {newer learning slug} | null
-related: [{related learning slugs}]
+tags: [process, verification]        # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
+supersedes: {prior learning slug} | null      # plain slug, not a path
+superseded_by: {newer learning slug} | null    # plain slug, not a path
+related: [{related learning slugs}]            # list[slug] — plain slugs, not paths
 ---
 
 # {Title}
@@ -71,8 +74,13 @@ related: [{related learning slugs}]
 {When this insight does NOT apply. Important — most insights have boundaries.}
 
 ## Related
-{Links to mistakes / references / decisions that share context with this learning.}
+{Navigable `[[slug]]` links to mistakes / references / decisions that share context with this learning ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[file-move-needs-link-resolution-check]] — the trap this insight avoids
+- [[redis-ttl-eviction]] — the reference this learning draws on
 ```
+
+The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / project-wide learning uses `scope: project` + `feature: null` and promotes to the project `learnings/` tier.
 
 ## Distinguishing learnings from mistakes
 

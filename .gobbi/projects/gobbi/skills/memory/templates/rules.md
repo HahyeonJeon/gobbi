@@ -1,6 +1,6 @@
 # `rules/`
 
-**Project-wide behavioral rules** — load-bearing constraints that every agent working on this project must follow. Rules are stronger than mistakes: a mistake records "this approach fails reliably", while a rule records "this is how it must be done, period". Rules are referenced by skills, agent definitions, and CLAUDE.md, and they should be rare — every rule increases the project's surface area for new contributors.
+**Behavioral rules** — load-bearing constraints every agent must follow. A rule is **project-wide by default** (`scope: project`, lives in `rules/`); a rule that binds only within one feature is feature-specific (`scope: feature`, lives in `features/{feature-name}/rules/`). Rules are stronger than mistakes: a mistake records "this approach fails reliably", while a rule records "this is how it must be done, period". Rules are referenced by skills, agent definitions, and CLAUDE.md, and they should be rare — every rule increases the project's surface area for new contributors.
 
 ## Lifecycle (Wrap-up direct write)
 
@@ -17,9 +17,12 @@ Wrap-up is the sole writer; loop RECORD (Ideation / Planning / Execution) never 
 
 ## Location
 
-- Project-level: `.gobbi/projects/{project-name}/rules/`
+- Project-wide rule: `.gobbi/projects/{project-name}/rules/`
+- Feature-specific rule: `.gobbi/projects/{project-name}/features/{feature-name}/rules/`
 
-Rules are project-wide by definition. There is no feature-scoped rules tier — feature-scoped rules belong in `features/{feature-name}/decisions/` with a `precedent: true` marker.
+A rule binds either the whole project or one feature. A project-wide rule lives in `rules/`; a rule that binds only within one feature lives in `features/{feature-name}/rules/`. Both tiers are rare and load-bearing, and both require explicit user confirmation at Wrap-up.
+
+`features/{feature-name}/rules/` is the canonical home for feature-specific rules. The earlier workaround — putting a feature-scoped rule in `features/{feature-name}/decisions/` with a `precedent: true` marker — is **retired / superseded** by this subdir; do not use it.
 
 ## File naming
 
@@ -29,9 +32,11 @@ Examples: `docs-cleanup-parallelism.md`, `evaluator-read-only-boundary.md`.
 
 ## Frontmatter
 
-Every rule file carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the rules-type extensions (`priority`, `established`, `supersedes`). **Frontmatter is mandatory on every memory file, the `rules/` type included** — the older "the project uses plain markdown, frontmatter is forbidden" prohibition is rescoped to **stub-redirect TARGET docs only** (the published `.claude/` redirect stubs), NOT to memory files.
+Every rule file carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the rules-type extensions (`priority`, `established`). `supersedes` is a **global plain-slug base field** any type may carry (§2.1), not a rules-type extension. **Frontmatter is mandatory on every memory file, the `rules/` type included** — the older "the project uses plain markdown, frontmatter is forbidden" prohibition is rescoped to **stub-redirect TARGET docs only** (the published `.claude/` redirect stubs), NOT to memory files.
 
 ## Item template
+
+The example uses the controlled `tags` vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)); `supersedes` is a **plain slug** (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).
 
 ```markdown
 ---
@@ -43,10 +48,12 @@ feature: null
 status: active
 created: YYYY-MM-DD
 session: {session-id that established the rule}
-tags: [{tag1}, {tag2}]
+tags: [process, docs-sync]           # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
 established: YYYY-MM-DD
-supersedes: {prior rule slug if this replaces an existing rule} | null
+supersedes: {prior rule slug if this replaces an existing rule} | null   # plain slug, not a path
 ---
 
 # {Rule title}
@@ -77,7 +84,10 @@ supersedes: {prior rule slug if this replaces an existing rule} | null
 
 ## Related
 
-{Cross-references to mistakes, decisions, design docs, or other rules that interact with this one. Each entry: `[link](path) — one-line relevance note`.}
+{Navigable `[[slug]]` links to mistakes, decisions, design docs, or other rules that interact with this one — one bullet per link ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[evaluator-read-only-boundary]] — a related rule it interacts with
+- [[file-move-needs-link-resolution-check]] — the mistake this rule prevents
 ```
 
 ## Promotion contract

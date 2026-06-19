@@ -33,7 +33,7 @@ Example: `cache-invalidation.md`, `auth-middleware.md`, `prompt-cascade.md`.
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the design-type extensions (`supersedes`, `superseded_by`, `related`).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file). `design` has no non-link type extension. `supersedes` / `superseded_by` / `related` are **global plain-slug base fields** any type may carry (§2.1) — not design-type extensions: `supersedes` / `superseded_by` are plain slugs and `related` is a **`list[slug]`** (the target's `name`, no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -45,10 +45,12 @@ feature: {feature-name} | null
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
-supersedes: {prior-design-slug} | null
-superseded_by: {new-design-slug} | null
-related: [decisions/{slug}, plans/{slug}, changelogs/{slug}]
+tags: [design, schema]               # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
+supersedes: {prior-design-slug} | null     # plain slug, not a path
+superseded_by: {new-design-slug} | null     # plain slug, not a path
+related: [cache-invalidation, 2026-05-11-use-redis-not-memcached]   # list[slug] — plain slugs, not paths
 ---
 
 # {Title}
@@ -73,6 +75,12 @@ related: [decisions/{slug}, plans/{slug}, changelogs/{slug}]
 
 ## Open issues
 {Unresolved `design_flaw` / `assumption_risk` findings carried forward.}
+
+## Related
+{Navigable `[[slug]]` links to the decisions / plans / other designs this one builds on or feeds ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Mirrors the `related` frontmatter in navigable form.}
+
+- [[2026-05-11-use-redis-not-memcached]] — the decision this design implements
+- [[2026-05-11-cache-layer-plan]] — the plan that decomposes it
 ```
 
 ## Supersedence

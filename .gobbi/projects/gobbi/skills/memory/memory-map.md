@@ -61,7 +61,7 @@ Every staging file is stamped to its matching template. See [`SKILL.md` § Templ
 | `{N}-{loop}/staging/reviews/{slug}.md` | Review / evaluation / audit activity result document staged in-session for Wrap-up promotion | assistant (RECORD) | `PASS` only when the loop included a review activity | [`templates/reviews.md`](templates/reviews.md) |
 | `{N}-{loop}/staging/reports/{slug}.md` | `status` / `post-mortem` / `analytics` report staged in-session for Wrap-up promotion | assistant (RECORD) | `PASS` only when the loop produced a substantive report | [`templates/reports.md`](templates/reports.md) |
 | `{N}-{loop}/staging/changelogs/{slug}.md` | Shipped-work changelog entry staged in-session for Wrap-up promotion (Execution loop typical; tracks what shipped per task) | assistant (RECORD) | `PASS` only when shipped-work occurred | [`templates/changelogs.md`](templates/changelogs.md) |
-| `{N}-{loop}/staging/learnings/{slug}.md` | Durable cross-cutting insight staged in-session for Wrap-up promotion | assistant (RECORD) | `PASS` only when the loop produced an actionable learning | [`templates/learnings.md`](templates/learnings.md) |
+| `{N}-{loop}/staging/learnings/{slug}.md` | Durable learning staged in-session for Wrap-up promotion | assistant (RECORD) | `PASS` only when the loop produced an actionable learning | [`templates/learnings.md`](templates/learnings.md) |
 | `{N}-{loop}/staging/notes/{slug}.md` | Loop-scope journal entry staged in-session for Wrap-up promotion. The per-session journal entry is written directly by Wrap-up; loop-scope staging here is the rare case of a substantial mid-loop work-log entry | assistant (RECORD) | `PASS` only when the loop produced a substantial work-log entry separate from the session note | [`templates/notes.md`](templates/notes.md) |
 | `3-planning/staging/plans/{slug}.md` | Plan artifact for Wrap-up to promote to `features/{feature-name}/plans/{date}-{slug}.md`. **Planning loop only** — `plans/` does not appear in other loops' staging trees | assistant (Planning RECORD) | `PASS` only, Planning loop only | [`templates/plans.md`](templates/plans.md) |
 
@@ -73,27 +73,30 @@ Root: `.gobbi/projects/{project-name}/`
 
 Persistent, per-project, git-tracked. Durable memory. **Wrap-up is the sole writer**; loop RECORD never writes here. The directory shape below matches the canonical memory layout — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the staging → destination routing table.
 
-### Per-type canonical homes (the 13 memory types)
+### Per-type canonical homes (the 16 memory types)
 
-Each memory type has a single canonical home directory and a per-type spec (purpose / hard boundary / scope / naming / frontmatter / CRUD) in [`rules.md`](rules.md) and the design-of-record. The table below is the path index; for the full per-type semantics see [`rules.md`](rules.md):
+Each memory type has a single canonical home directory and a per-type spec (purpose / hard boundary / scope / naming / frontmatter / CRUD) in [`rules.md`](rules.md) and the design-of-record. The table below is the path index covering all 16 first-class types from the one `type` enum ([`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types)); for the full per-type semantics see [`rules.md`](rules.md). **Placement** (which tier a type may live on) is a `scope`/path constraint, not an enum split — it is shown here as a column:
 
-| Type | Canonical home | Also feature-scoped? |
+| Type | Canonical home | Placement |
 |---|---|---|
 | `features` | `features/{feature-name}/` (the dir is its own tier; README is the identity doc) | n/a — `features/` IS the feature tier |
 | `notes` | `notes/` | Project-only |
 | `decisions` | `decisions/` | Both (default feature-level; promote-up to project) |
 | `design` | `design/` | Both (default feature-level; promote-up to project) |
 | `mistakes` | `mistakes/` | Both (default project-level; feature-scope when trap is feature-specific) |
-| `rules` | `rules/` | Project-only |
-| `learnings` | `learnings/` | Project-only |
+| `rules` | `rules/` | Both (project-wide → `rules/`; feature-specific → `features/{f}/rules/`; rare, user-confirmed) |
+| `learnings` | `learnings/` | Both (default feature-level; promote-up to project when cross-feature) |
 | `backlogs` | `backlogs/` | Both (feature tasks vs project-scope deferrals) |
 | `references` | `references/` | Both (default feature-level; promote-up rare) |
 | `plans` | `features/{feature-name}/plans/` (loop path); project `plans/` is maintainer-authored only, NOT loop-written | Feature-only for the loop path |
-| `reviews` | `reviews/` | Project-only |
-| `reports` | `reports/` | Project-only |
-| `archive` (destination, not a type) | `archive/{type}/` (typed subdirs; original `type` preserved) | Project-only |
+| `reviews` | `reviews/` | Both (default feature-level; promote-up to project when cross-feature) |
+| `reports` | `reports/` | Both (default feature-level; promote-up to project when cross-feature) |
+| `changelogs` | `features/{feature-name}/changelogs/` | Feature-only |
+| `discussions` | `features/{feature-name}/discussions/` | Feature-only |
+| `scenarios` | `features/{feature-name}/scenarios/` | Feature-only |
+| `checklists` | `features/{feature-name}/checklists/` | Feature-only |
 
-The four feature-subdir-only template types (`changelogs`, `discussions`, `scenarios`, `checklists`) are not independent memory types — they exist only as `features/{feature-name}/` subdirs (see [`rules.md` § 3](rules.md) and the per-row entries below).
+`changelogs` / `discussions` / `scenarios` / `checklists` are first-class types that are **feature-only** by placement — they exist only as `features/{feature-name}/` subdirs (see [`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types) and [`rules.md` § 3](rules.md), and the per-row entries below). `archive` is **not** a `type` — it is a directory destination (`archive/{type}/`, typed subdirs, original `type` preserved); see the `archive/{type}/` row under Project-wide tiers below.
 
 ### Project root
 
@@ -104,21 +107,27 @@ The four feature-subdir-only template types (`changelogs`, `discussions`, `scena
 
 ### Feature-scoped — `features/{feature-name}/`
 
+The per-feature subdir **spec** — what each subdir holds, when/who writes it, lazy bootstrapping — lives in [`templates/feature.md`](templates/feature.md). The table below is this tier's **path index** (canonical home + which template stamps each path); for the descriptive per-subdir reference, see `feature.md`.
+
 Each feature directory is bootstrapped lazily by Wrap-up on first promotion to that feature (`features/{feature-name}/` is **not** created at Lock Scope or earlier).
 
-| Path | Description | Writer | When | Template |
-|---|---|---|---|---|
-| `features/{feature-name}/README.md` | Feature overview, status, subdirectory pointers, recent activity table (cap 20 entries) | Wrap-up | first promotion to this feature; subsequent activity updates | [`templates/feature-readme.md`](templates/feature-readme.md) |
-| `features/{feature-name}/scenarios/{slug}.md` | Feature scenarios promoted from session staging | Wrap-up | per promotion | [`templates/scenarios.md`](templates/scenarios.md) |
-| `features/{feature-name}/checklists/{slug}.md` | Feature implementation checklist items | Wrap-up | per promotion | [`templates/checklists.md`](templates/checklists.md) |
-| `features/{feature-name}/decisions/{slug}.md` | Feature-scope decisions (design choices, dispute rationales, deferred risks) | Wrap-up | per promotion | [`templates/decisions.md`](templates/decisions.md) |
-| `features/{feature-name}/design/{slug}.md` | Feature-scope design topics. Project-wide design escalates to `.gobbi/projects/{project-name}/design/` through the active runtime's user-decision primitive | Wrap-up | per promotion | [`templates/design.md`](templates/design.md) |
-| `features/{feature-name}/discussions/{slug}.md` | Substantive user-decision topics scoped to the feature | Wrap-up | per promotion | [`templates/discussions.md`](templates/discussions.md) |
-| `features/{feature-name}/references/{slug}.md` | External insight references confirmed during Ideation Sub-step C | Wrap-up | per promotion | [`templates/references.md`](templates/references.md) |
-| `features/{feature-name}/plans/{date}-{slug}.md` | Plan artifacts produced by Planning loop (date-prefixed for chronological ordering) | Wrap-up | per Planning `PASS` | [`templates/plans.md`](templates/plans.md) |
-| `features/{feature-name}/backlogs/{slug}.md` | Feature-scope deferred tasks | Wrap-up | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
-| `features/{feature-name}/changelogs/{slug}.md` | Feature-scope changelog entries — what shipped, when | Wrap-up | per ship | [`templates/changelogs.md`](templates/changelogs.md) |
-| `features/{feature-name}/mistakes/{slug}.md` | Feature-scope mistakes — corrections that apply only within this feature | Wrap-up | per `mistake-candidate: true` (user-scoped feature) | [`templates/mistakes.md`](templates/mistakes.md) |
+| Path | Writer | When | Template |
+|---|---|---|---|
+| `features/{feature-name}/README.md` | Wrap-up | first promotion to this feature; subsequent activity updates | [`templates/feature.md`](templates/feature.md) |
+| `features/{feature-name}/scenarios/{slug}.md` | Wrap-up | per promotion | [`templates/scenarios.md`](templates/scenarios.md) |
+| `features/{feature-name}/checklists/{slug}.md` | Wrap-up | per promotion | [`templates/checklists.md`](templates/checklists.md) |
+| `features/{feature-name}/decisions/{slug}.md` | Wrap-up | per promotion | [`templates/decisions.md`](templates/decisions.md) |
+| `features/{feature-name}/design/{slug}.md` | Wrap-up | per promotion | [`templates/design.md`](templates/design.md) |
+| `features/{feature-name}/discussions/{slug}.md` | Wrap-up | per promotion | [`templates/discussions.md`](templates/discussions.md) |
+| `features/{feature-name}/references/{slug}.md` | Wrap-up | per promotion | [`templates/references.md`](templates/references.md) |
+| `features/{feature-name}/plans/{date}-{slug}.md` | Wrap-up | per Planning `PASS` | [`templates/plans.md`](templates/plans.md) |
+| `features/{feature-name}/backlogs/{slug}.md` | Wrap-up | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
+| `features/{feature-name}/changelogs/{slug}.md` | Wrap-up | per ship | [`templates/changelogs.md`](templates/changelogs.md) |
+| `features/{feature-name}/mistakes/{slug}.md` | Wrap-up | per `mistake-candidate: true` (user-scoped feature) | [`templates/mistakes.md`](templates/mistakes.md) |
+| `features/{feature-name}/rules/{slug}.md` | Wrap-up | per promotion (feature-specific rule; user-confirmed) | [`templates/rules.md`](templates/rules.md) |
+| `features/{feature-name}/learnings/{slug}.md` | Wrap-up | per promotion (feature-local insight) | [`templates/learnings.md`](templates/learnings.md) |
+| `features/{feature-name}/reviews/{date}-{slug}.md` | Wrap-up | per promotion (feature-scope review activity) | [`templates/reviews.md`](templates/reviews.md) |
+| `features/{feature-name}/reports/{date}-{slug}.md` | Wrap-up | per promotion (feature-scope report) | [`templates/reports.md`](templates/reports.md) |
 
 ### Project-wide tiers
 
@@ -159,14 +168,14 @@ All templates live under [`templates/`](templates/). The index below lets you ju
 | [`discussions.md`](templates/discussions.md) | `{N}-{loop}/staging/discussions/`, `features/{feature-name}/discussions/` |
 | [`backlogs.md`](templates/backlogs.md) | `{N}-{loop}/staging/backlogs/{feature,project}/`, `features/{feature-name}/backlogs/`, `.gobbi/projects/{project-name}/backlogs/` |
 | [`plans.md`](templates/plans.md) | `3-planning/staging/plans/`, `features/{feature-name}/plans/`, `.gobbi/projects/{project-name}/plans/` |
-| [`feature-readme.md`](templates/feature-readme.md) | `features/{feature-name}/README.md` |
+| [`feature.md`](templates/feature.md) | `features/{feature-name}/README.md` |
 | [`mistakes.md`](templates/mistakes.md) | `features/{feature-name}/mistakes/`, `.gobbi/projects/{project-name}/mistakes/` |
-| [`rules.md`](templates/rules.md) | `.gobbi/projects/{project-name}/rules/` |
+| [`rules.md`](templates/rules.md) | `features/{feature-name}/rules/`, `.gobbi/projects/{project-name}/rules/` |
 | [`notes.md`](templates/notes.md) | `{N}-{loop}/staging/notes/`, `.gobbi/projects/{project-name}/notes/` |
 | [`changelogs.md`](templates/changelogs.md) | `{N}-{loop}/staging/changelogs/`, `features/{feature-name}/changelogs/` |
-| [`reviews.md`](templates/reviews.md) | `{N}-{loop}/staging/reviews/`, `.gobbi/projects/{project-name}/reviews/` |
-| [`reports.md`](templates/reports.md) | `{N}-{loop}/staging/reports/`, `.gobbi/projects/{project-name}/reports/` |
-| [`learnings.md`](templates/learnings.md) | `{N}-{loop}/staging/learnings/`, `.gobbi/projects/{project-name}/learnings/` |
+| [`reviews.md`](templates/reviews.md) | `{N}-{loop}/staging/reviews/`, `features/{feature-name}/reviews/`, `.gobbi/projects/{project-name}/reviews/` |
+| [`reports.md`](templates/reports.md) | `{N}-{loop}/staging/reports/`, `features/{feature-name}/reports/`, `.gobbi/projects/{project-name}/reports/` |
+| [`learnings.md`](templates/learnings.md) | `{N}-{loop}/staging/learnings/`, `features/{feature-name}/learnings/`, `.gobbi/projects/{project-name}/learnings/` |
 | [`archive.md`](templates/archive.md) | `.gobbi/projects/{project-name}/archive/` |
 
 ---

@@ -34,7 +34,7 @@ Example: `cold-start-cache-miss.md`, `password-reset-with-expired-token.md`, `co
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) ONLY; `scope: feature` always (feature-subdir-only). Scenarios carry **base frontmatter only** (design §2.14, [`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model) — no scenarios extension row). The scenario `category` and `coverage` state live in the **body** (below), not frontmatter, so Wrap-up's allowlist strip cannot drop them; base `status` stays `active`.
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) ONLY; `scope: feature` always (feature-subdir-only). Scenarios carry **base frontmatter only** (design §2.14, [`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model) — no scenarios extension row); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)). The scenario `category` and `coverage` state live in the **body** (below), not frontmatter, so Wrap-up's allowlist strip cannot drop them; base `status` stays `active`.
 
 ```markdown
 ---
@@ -46,7 +46,9 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [execution, verification]      # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 ---
 
 # {Scenario title}
@@ -67,7 +69,10 @@ tags: [{tag1}, {tag2}]
 {How we will know the design handles this scenario correctly. Reference test names, manual checks, or metrics.}
 
 ## Related
-{Pointer to the design doc and any checklist items that implement this scenario.}
+{Navigable `[[slug]]` links to the design doc and the checklist items that implement this scenario ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[cache-invalidation]] — the design covering this scenario
+- [[cold-start-cache-miss-checklist]] — the checklist that implements it
 ```
 
 ## Coverage field

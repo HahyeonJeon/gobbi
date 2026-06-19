@@ -31,9 +31,10 @@ A security audit goes to `reviews/` (it's an audit activity). A post-mortem of a
 
 ## Location
 
-- Project-level only: `.gobbi/projects/{project-name}/reviews/`
+- Feature-level (default): `.gobbi/projects/{project-name}/features/{feature-name}/reviews/`
+- Project-level: `.gobbi/projects/{project-name}/reviews/`
 
-Review activities are cross-cutting by definition. Feature-specific review outcomes can be cited from `features/{feature-name}/README.md`'s Recent activity table, but the review document itself stays at the project level.
+Reviews are **default-feature**: a review / audit whose subject is one feature lives in `features/{feature-name}/reviews/`. Promote a review up to project `reviews/` when its subject is cross-feature or repo-wide.
 
 ## File naming
 
@@ -51,19 +52,21 @@ Date is the **review activity date**, not the date the document was written (if 
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reviews-type extensions (`verdict`, `review_kind`, `subject`). Reviews are project-only and append-only (base `status` stays `active`).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reviews-type extensions (`verdict`, `review_kind`, `subject`) — `review_kind` and `verdict` are closed enums ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). Reviews are append-only (base `status` stays `active`). A feature-scoped review sets `scope: feature` + `feature:`; a project-scoped one sets `scope: project`. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
 name: {slug — review subject + kind}
 description: {one-line what was reviewed and the outcome}
 type: reviews
-scope: project
-feature: null
+scope: feature
+feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [evaluation, security]         # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 review_kind: adversarial-review | ultrareview | code-review | retrospective | security-audit | license-audit | dep-audit | other
 subject: {path / branch / PR / system being reviewed}
 verdict: pass | revise | fail | needs-attention | n/a
@@ -105,8 +108,13 @@ verdict: pass | revise | fail | needs-attention | n/a
 {Findings still unresolved at time of writing. Pointers to backlog entries or future sessions where they will be addressed.}
 
 ## Related
-{Cross-references — `related_reports`: report slugs that cite or were cited by this review; `related_decisions`: decision slugs this review drove. Body content, not frontmatter.}
+{Navigable `[[slug]]` links — the report slugs that cite or were cited by this review and the decision slugs this review drove ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Body content, not frontmatter.}
+
+- [[2026-05-11-weekly-status]] — a report citing this review
+- [[2026-05-11-use-redis-not-memcached]] — a decision this review drove
 ```
+
+The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / repo-wide review uses `scope: project` + `feature: null` and promotes to the project `reviews/` tier.
 
 ## Distinguishing reviews from neighbors
 
@@ -119,9 +127,9 @@ The review document is the **substrate**; mistakes / learnings / decisions / rep
 
 ## Lifecycle
 
-Reviews are **append-only history**. Status updates from `open` → `acted-on` / `archived` / `superseded` are routine — they reflect outcome resolution, not content edits. Supersession via frontmatter `status: superseded` + a `## Related` body `related_decisions` pointer at the supersession; the original review is preserved.
+Reviews are **append-only history** — a review's `status` is always `active` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)); you never mutate it. There is no `superseded` or `archived` review status: a newer review of the same artifact is **appended** as a separate file, not a status flip on the old one. Outcome resolution (was the review acted on, disputed, deferred) is recorded in the body — the per-finding `Disposition` line and the `## Outcome` section — never as a `status` value. A terminal review is archived by being moved under `archive/reviews/`; the move marks it, not a `status` value.
 
-When a later review of the same artifact produces different findings, both reviews stay in `reviews/` with chronological dates; the later one references the earlier in its `## Related` body `related_reports` list (and the earlier's `status` may flip to `superseded` if the new review fully replaces it).
+When a later review of the same artifact produces different findings, both reviews stay in `reviews/` with chronological dates; the later one references the earlier in its `## Related` body links (and notes in its body that it supersedes the earlier). The earlier review's `status` stays `active` and its body is preserved.
 
 ## Linking back
 

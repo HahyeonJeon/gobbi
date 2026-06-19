@@ -41,7 +41,7 @@ When multiple sessions occur on the same date, the slug differentiates them. The
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the notes-type extension (`features_touched` — the value-feature slugs this session promoted into, the L2 session→feature link). `notes/` is project-only and immutable, so base `status` stays `active`.
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the notes-type extensions — `notes/` keeps the **richer set**: `features_touched` (the value-feature slugs this session promoted into, the L2 session→feature link), plus `loops_completed` and `shipped`, all useful session→memory links ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `notes/` is project-only and append-only, so base `status` stays `active`. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -53,7 +53,9 @@ feature: null
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [refactor, docs-sync]          # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 features_touched: [{value-feature slugs this session promoted into}]
 loops_completed: [{ideation, preparation, planning, execution, wrap-up}]
 shipped: [{slugs of artifacts that landed in memory this session}]
@@ -78,6 +80,12 @@ shipped: [{slugs of artifacts that landed in memory this session}]
 
 ## Next session
 {Pointer to what the next session should pick up. Could be "continue {feature}", "evaluate {plan}", "react to {finding}". Keep terse — detail belongs in backlogs / handoff summary.}
+
+## Related
+{Navigable `[[slug]]` links to the artifacts this session produced or built on — the journal's index ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Mirrors the `shipped` frontmatter in navigable form.}
+
+- [[2026-05-11-use-redis-not-memcached]] — decision shipped this session
+- [[markdown-link-relativization]] — learning extracted this session
 ```
 
 ## Distinguishing notes from neighbors

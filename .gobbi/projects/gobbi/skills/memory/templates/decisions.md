@@ -34,7 +34,7 @@ Example: `2026-05-11-use-redis-not-memcached.md`, `2026-05-11-defer-password-res
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the decisions-type extensions (`supersedes`, `superseded_by`, `decision_status`). Base `status` is the coarse lifecycle field; `decision_status` is the documented per-type refinement that mirrors it ([`rules.md` § 2.2](../rules.md)).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file). `decisions` has no non-link type extension. One unified `status` field carries the decision lifecycle (`proposed` | `accepted` | `superseded`) — the old `decision_status` is removed; its meaning folds into base `status` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `supersedes` / `superseded_by` are **global plain-slug base fields** any type may carry (§2.1) — not decisions-type extensions; their value is a plain slug (the target file's `name`, no path, no `[[ ]]`) — see [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)); use the optional `keywords` field for any freeform tag outside it.
 
 ```markdown
 ---
@@ -43,13 +43,14 @@ description: {one-line what was decided}
 type: decisions
 scope: project | feature
 feature: {feature-name} | null
-status: active | superseded
+status: proposed | accepted | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
-supersedes: {prior-decision-slug} | null
-superseded_by: {new-decision-slug} | null
-decision_status: proposed | accepted | superseded
+tags: [process, design]              # controlled vocabulary (§2.5)
+keywords: [cache-layer]              # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
+supersedes: {prior-decision-slug} | null     # plain slug, not a path
+superseded_by: {new-decision-slug} | null     # plain slug, not a path
 ---
 
 # {Decision title — imperative form, e.g., "Use Redis, not Memcached, for the cache layer"}
@@ -70,7 +71,10 @@ decision_status: proposed | accepted | superseded
 {What this decision now obligates. Migrations needed, code patterns to follow, capabilities gained or lost.}
 
 ## Related
-{Links to the discussion / design / plan documents that informed or follow from this decision.}
+{Navigable `[[slug]]` links to the discussion / design / plan documents that informed or follow from this decision — one bullet per link ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[cache-invalidation]] — the design this decision constrains
+- [[2026-05-11-cache-vs-index]] — the discussion that produced it
 ```
 
 ## Supersedence
@@ -79,7 +83,7 @@ When a decision is reversed or refined, create a new decision record with `super
 
 ## Deferred risks
 
-When a `design_flaw` or `assumption_risk` finding receives `PASS` instead of `REVISE`, the assistant writes a decision record with `status: deferred` documenting:
+When a `design_flaw` or `assumption_risk` finding receives `PASS` instead of `REVISE`, the assistant writes a decision record with `status: accepted` (the team accepted the risk) documenting:
 - The risk
 - Why the team accepted it for now
 - The condition under which the decision would flip

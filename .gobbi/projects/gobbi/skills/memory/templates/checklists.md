@@ -34,7 +34,7 @@ Per-scenario file is the recommended default; per-checklist file makes sense whe
 
 ## Item template — per-scenario file
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file); `scope: feature` always (feature-subdir-only).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the checklists-type extension (`scenario`); `scope: feature` always (feature-subdir-only). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -46,7 +46,9 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [execution, verification]      # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 scenario: {scenario-slug}
 ---
 
@@ -65,11 +67,17 @@ scenario: {scenario-slug}
 **Anchor reasoning**: {one sentence explaining why this reference applies, or why this is novel.}
 
 **Verification approach**: {if more detail than the table allows.}
+
+## Related
+{Navigable `[[slug]]` links to the scenario this checklist implements and any reference insights its items anchor to ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[cold-start-cache-miss]] — the scenario this checklist implements
+- [[redis-ttl-eviction]] — the reference an item anchors to
 ```
 
 ## Item template — per-checklist file
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file); `scope: feature` always. The per-item progress lives in the `item_status` extension (distinct from base `status`).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the checklists-type extension (`scenario`); `scope: feature` always. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)). The per-item progress lives in the `item_status` field (distinct from base `status`), with `anchor` and `implemented_in` recording the item's reference anchor and shipping changelog.
 
 ```markdown
 ---
@@ -81,7 +89,9 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [{tag1}, {tag2}]
+tags: [execution, verification]      # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 scenario: {scenario-slug}
 item_status: pending | implemented | deferred
 anchor: {reference-slug or `novel`}
@@ -101,6 +111,12 @@ implemented_in: {changelog path} | null
 
 ## Status notes
 {Free-form: blockers, decisions deferred to user, current state.}
+
+## Related
+{Navigable `[[slug]]` links to the scenario this item implements and the reference it anchors to ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[cold-start-cache-miss]] — the scenario this item implements
+- [[redis-ttl-eviction]] — the reference it anchors to
 ```
 
 ## Anchor discipline

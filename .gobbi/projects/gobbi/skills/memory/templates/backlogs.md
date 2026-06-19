@@ -16,7 +16,7 @@ For the canonical authority on staging → destination routing, see [`wrap-up/SK
 ## When to write
 
 - During **Ideation Step 2 Lock Scope** decomposition, every non-chosen candidate writes a backlog entry.
-- During any loop's RECORD when an evaluator finding has `disposition: deferred` — the finding stages at `staging/decisions/{slug}.md` with `disposition: deferred` frontmatter; Wrap-up reads that flag and promotes the deferred decision into a backlog entry stamped from this template at `features/{feature-name}/backlogs/{slug}.md` or `.gobbi/projects/{project-name}/backlogs/{slug}.md` per the deferred finding's scope.
+- During any loop's RECORD when an evaluator finding is deferred — the finding stages at `staging/decisions/{slug}.md` with a deferred eval-routing flag; Wrap-up reads that flag and promotes the deferred decision into a backlog entry stamped from this template at `features/{feature-name}/backlogs/{slug}.md` or `.gobbi/projects/{project-name}/backlogs/{slug}.md` per the deferred finding's scope. (The eval-routing flag is staging-only and is stripped on promotion, [`rules.md` § 2.6](../rules.md#26-staging-field-stripping-on-promotion); the promoted backlog records the deferral via its own `status: deferred`.)
 - During any loop's RECORD when scope-violating work surfaces and is deferred rather than absorbed.
 
 ## Location
@@ -37,7 +37,7 @@ Example (feature-level): `search-system.md`, `admin-dashboard.md`.
 
 ## Item template
 
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the backlogs-type extensions (`priority`, `disposition`, `project-scope`, `shipped_in`). `scope` distinguishes a deferred **task** (`scope: feature`) from a deferred **feature** (`scope: project`); `disposition` is the documented per-type refinement of base `status` ([`rules.md` § 2.2](../rules.md)).
+Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the backlogs-type extensions (`priority`, `project-scope`, `shipped_in`). One unified `status` field carries the backlog lifecycle (`open` | `deferred` | `closed`) — the old `disposition` is removed; its `open`/`deferred` distinction folds into base `status` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `scope` distinguishes a deferred **task** (`scope: feature`) from a deferred **feature** (`scope: project`). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)); use `keywords` for any freeform tag outside it.
 
 ```markdown
 ---
@@ -46,12 +46,13 @@ description: {one-line what is deferred}
 type: backlogs
 scope: project | feature
 feature: {feature-name} | null   # null when this is a deferred feature itself
-status: active | closed
+status: open | deferred | closed
 created: YYYY-MM-DD
 session: {session-id where this was decomposed}
-tags: [{tag1}, {tag2}]
+tags: [planning, process]            # controlled vocabulary (§2.5)
+keywords: [search-system]            # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
-disposition: open | deferred
 project-scope: true | false
 shipped_in: {changelog / PR / commit on close} | null
 ---
@@ -72,6 +73,12 @@ shipped_in: {changelog / PR / commit on close} | null
 
 ## Originating session
 {Path to the session that produced this backlog: `.gobbi/projects/{project-name}/sessions/{anchor_session}/`}
+
+## Related
+{Navigable `[[slug]]` links to the design / decision / plan documents this deferred item depends on ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+
+- [[search-index-design]] — the design this deferred feature builds on
+- [[2026-05-11-defer-search-system]] — the decision that deferred it
 ```
 
 ## Lifecycle

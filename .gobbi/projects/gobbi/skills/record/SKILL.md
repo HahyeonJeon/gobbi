@@ -145,7 +145,7 @@ Staged files carry the base frontmatter ([`rules.md` § 2.1](../memory/rules.md)
 - **`mistake-candidate: true`** — the flag that routes a `staging/decisions/{slug}.md` file to `mistakes/`. Its job is done at promotion; Wrap-up strips it from the promoted mistake file.
 - **`finding-id`, `disposition`** (when used purely as eval routing), **`promoted-from`, `promoted-at`** — session-provenance. `git log` + the base `session` field already carry provenance, so the extra keys are dropped on promotion; any durable provenance folds into base `session` + `created`.
 
-The promoted file carries ONLY base + that type's extension fields ([`rules.md` § 2.2](../memory/rules.md)). See [`rules.md` § 2.3](../memory/rules.md) for the standard and [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the per-type promotion allowlist.
+The promoted file carries ONLY base + that type's extension fields ([`rules.md` § 2.2](../memory/rules.md)). See [`rules.md` § 2.6](../memory/rules.md#26-staging-field-stripping-on-promotion) for the standard and [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the per-type promotion allowlist.
 
 ---
 
@@ -315,7 +315,7 @@ Memory directory templates (consumed by Wrap-up, not by loop RECORD) also live u
 
 | Memory directory | Template |
 |---|---|
-| `.gobbi/projects/{project-name}/features/{feature-name}/README.md` | [`templates/feature-readme.md`](../memory/templates/feature-readme.md) |
+| `.gobbi/projects/{project-name}/features/{feature-name}/README.md` | [`templates/feature.md`](../memory/templates/feature.md) |
 | `.gobbi/projects/{project-name}/mistakes/` and `features/{feature-name}/mistakes/` | [`templates/mistakes.md`](../memory/templates/mistakes.md) |
 | `.gobbi/projects/{project-name}/rules/` | [`templates/rules.md`](../memory/templates/rules.md) |
 
