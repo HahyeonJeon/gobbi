@@ -50,7 +50,8 @@ status: open | deferred | closed
 created: YYYY-MM-DD
 session: {session-id where this was decomposed}
 tags: [planning, process]            # controlled vocabulary (§2.5)
-keywords: [search-system]            # OPTIONAL — freeform escape-hatch tags
+keywords: [search-system]            # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
 project-scope: true | false
 shipped_in: {changelog / PR / commit on close} | null

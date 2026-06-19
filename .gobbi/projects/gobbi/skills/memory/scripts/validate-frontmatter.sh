@@ -8,11 +8,14 @@
 #   a strict superset: the no-stray-keys check below subsumes the old staging-key leak scan.
 #
 #   For each live memory .md file it checks:
-#     - all 9 required base fields present (§2.1); keywords optional
+#     - all 11 required base fields present (§2.1): name description type scope feature
+#       status created session tags keywords author (keywords + author now required)
 #     - type ∈ the 16-type enum (§2.3)
 #     - status ∈ the per-type status enum (§2.2)
 #     - scope ∈ {project, feature}; feature conditional on scope (§2.1)
 #     - tags ⊆ the controlled vocabulary (§2.5); empty [] allowed
+#     - keywords present (list; empty [] allowed) — REQUIRED escape-hatch overflow (§2.1)
+#     - author ∈ {claude, codex, user} — REQUIRED coarse provider tag (§2.1)
 #     - created matches YYYY-MM-DD
 #     - extension enums valid where present: priority / ref_type / review_kind / verdict /
 #       report_type (§2.2)
@@ -24,9 +27,10 @@
 #     - slug-link value-shape (§2.1/§2.4): supersedes / superseded_by (scalar, null ok)
 #       and each item of related[] must be a PLAIN SLUG (kebab-case), never a path
 #       (no '/', no '.md', no spaces, no [[ ]])
-#     - no-stray-keys: every frontmatter key ∈ base + that type's declared §2.2 extensions
-#       + keywords + the global-optional slug-link fields (supersedes / superseded_by /
+#     - no-stray-keys: every frontmatter key ∈ base (the 11 required, incl. keywords +
+#       author) + the global-optional slug-link fields (supersedes / superseded_by /
 #       related, §2.1/§2.4 — global, NOT per-type extensions, so never double-counted)
+#       + that type's declared §2.2 extensions
 #     - slug uniqueness: no two live files share a name: — EXCEPT README.md files, which
 #       carry the fixed identity name `README` (§2.4) and are exempt from uniqueness
 #
@@ -100,8 +104,11 @@ VERDICT_ENUM="pass revise fail needs-attention n/a"
 REPORT_TYPE_ENUM="status post-mortem analytics"
 ITEM_STATUS_ENUM="pending implemented deferred"
 
-# Base fields (§2.1) — 9 required + keywords optional.
-BASE_REQUIRED="name description type scope feature status created session tags"
+# §2.1 — author enum (coarse provider tag, stable across model versions).
+AUTHOR_ENUM="claude codex user"
+
+# Base fields (§2.1) — 11 required (keywords + author are now required base fields).
+BASE_REQUIRED="name description type scope feature status created session tags keywords author"
 # Slug-link fields (§2.1/§2.4) — GLOBAL optional base fields, allowed on EVERY type.
 # They are NOT per-type extensions (ext_fields_for never lists them), so they are
 # counted exactly once — as global-optional — and never double-counted per type.
@@ -373,6 +380,14 @@ for f in "${files[@]}"; do
         report "$f" "keywords" "must be a flow list [..] (got '$kw_raw') (§2.1)"
     fi
 
+    # --- author ∈ {claude, codex, user} (§2.1) -------------------------------
+    # author is a REQUIRED base field (presence checked above); its value must be
+    # one of the three coarse provider tags. Empty is already reported as missing.
+    fauthor="$(fm_value "$f" author)"
+    if [ -n "$fauthor" ] && ! in_set "$fauthor" "$AUTHOR_ENUM"; then
+        report "$f" "author" "'$fauthor' not in {${AUTHOR_ENUM// /, }} (§2.1)"
+    fi
+
     # --- extension enums where present ---------------------------------------
     v="$(fm_value "$f" priority)"
     if [ -n "$v" ] && ! in_set "$v" "$PRIORITY_ENUM"; then
@@ -442,9 +457,9 @@ for f in "${files[@]}"; do
     fi
 
     # --- no-stray-keys --------------------------------------------------------
-    # Allowed set = base(9) + keywords + slug-link(3) + that type's §2.2 extensions.
+    # Allowed set = base(11, incl. keywords + author) + slug-link(3) + §2.2 extensions.
     if [ -n "$ftype" ] && in_set "$ftype" "$TYPES"; then
-        allowed="$BASE_REQUIRED keywords $SLUG_LINK_FIELDS $(ext_fields_for "$ftype")"
+        allowed="$BASE_REQUIRED $SLUG_LINK_FIELDS $(ext_fields_for "$ftype")"
         while IFS= read -r k; do
             [ -z "$k" ] && continue
             if ! in_set "$k" "$allowed"; then

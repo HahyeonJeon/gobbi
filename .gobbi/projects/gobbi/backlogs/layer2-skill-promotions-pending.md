@@ -9,6 +9,7 @@ created: 2026-06-18
 session: 8129f657-4591-48b3-b83c-3aa9bc759ca6
 tags: [process, codex, evaluation]
 keywords: [layer-2, skill-promotion, dual-system, worktree-path, delegation, always-ask]
+author: claude
 priority: medium
 project-scope: true
 shipped_in: null

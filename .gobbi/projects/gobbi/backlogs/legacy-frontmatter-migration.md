@@ -9,6 +9,7 @@ created: 2026-06-18
 session: 8129f657-4591-48b3-b83c-3aa9bc759ca6
 tags: [memory, frontmatter, schema, refactor, rename-sweep]
 keywords: [legacy-data, migration, tags-split, status-enum, stray-keys, type-fix, slug-shape]
+author: claude
 priority: medium
 project-scope: true
 shipped_in: null

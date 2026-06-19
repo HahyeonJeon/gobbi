@@ -49,6 +49,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id that established the rule}
 tags: [process, docs-sync]           # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
 established: YYYY-MM-DD
 supersedes: {prior rule slug if this replaces an existing rule} | null   # plain slug, not a path

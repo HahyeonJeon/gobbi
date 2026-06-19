@@ -54,6 +54,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [refactor, docs-sync]          # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 features_touched: [{value-feature slugs this session promoted into}]
 loops_completed: [{ideation, preparation, planning, execution, wrap-up}]
 shipped: [{slugs of artifacts that landed in memory this session}]

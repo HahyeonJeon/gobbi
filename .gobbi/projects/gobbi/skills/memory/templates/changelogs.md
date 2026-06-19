@@ -43,6 +43,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [execution, docs-sync]         # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 shipped_in: {PR / commit / plan path}
 ---
 

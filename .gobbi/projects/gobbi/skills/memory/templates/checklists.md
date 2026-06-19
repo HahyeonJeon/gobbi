@@ -47,6 +47,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [execution, verification]      # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 scenario: {scenario-slug}
 ---
 
@@ -88,6 +90,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [execution, verification]      # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 scenario: {scenario-slug}
 item_status: pending | implemented | deferred
 anchor: {reference-slug or `novel`}

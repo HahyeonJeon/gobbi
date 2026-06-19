@@ -9,6 +9,7 @@ created: 2026-06-18
 session: 8129f657-4591-48b3-b83c-3aa9bc759ca6
 tags: [memory, frontmatter, schema, validation, evaluation]
 keywords: [feature-dir, feature-scoped-types, slug-links, validator, dual-system, chat-mode]
+author: claude
 features_touched: []
 loops_completed: [execution, wrap-up]
 shipped: [executor-wrote-to-main-tree-not-worktree, codex-side-assistant-faked-eval-on-codex-timeout, legacy-frontmatter-migration, slug-shape-mismatch-decisions-discussions-changelogs, layer2-skill-promotions-pending, preexisting-broken-markdown-links]

@@ -65,6 +65,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [evaluation, security]         # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 review_kind: adversarial-review | ultrareview | code-review | retrospective | security-audit | license-audit | dep-audit | other
 subject: {path / branch / PR / system being reviewed}
 verdict: pass | revise | fail | needs-attention | n/a

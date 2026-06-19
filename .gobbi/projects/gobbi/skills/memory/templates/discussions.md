@@ -45,6 +45,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [ideation, process]            # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 outcome: {one-line summary of what was decided}
 ---
 

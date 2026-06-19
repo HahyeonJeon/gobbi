@@ -47,6 +47,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [execution, verification]      # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 ---
 
 # {Scenario title}

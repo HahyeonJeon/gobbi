@@ -9,6 +9,7 @@ created: 2026-06-16
 session: 8129f657-4591-48b3-b83c-3aa9bc759ca6
 tags: [memory, docs-sync]
 keywords: [slug-shape, consistency, temporal-split, decisions, discussions, changelogs]
+author: claude
 priority: low
 project-scope: true
 shipped_in: null

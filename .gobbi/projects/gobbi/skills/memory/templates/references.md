@@ -48,6 +48,8 @@ status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
 tags: [memory, design]               # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 title: {Short topic title}
 source: {URL or path}
 accessed: YYYY-MM-DD

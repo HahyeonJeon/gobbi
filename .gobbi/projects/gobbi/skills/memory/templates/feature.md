@@ -93,6 +93,8 @@ status: active | retired
 created: YYYY-MM-DD
 session: {session-id of first promotion to this feature}
 tags: [memory, process]              # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 value_proposition: {the one-liner — "what gobbi does for me"}
 subsystems: [{skill / path this value-feature owns}]
 ---

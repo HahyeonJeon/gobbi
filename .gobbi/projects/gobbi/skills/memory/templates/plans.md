@@ -46,6 +46,8 @@ status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
 tags: [planning, execution]          # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 task: {task name from Scope Contract}
 supersedes: {prior-plan-slug} | null         # plain slug, not a path
 superseded_by: {new-plan-slug} | null          # plain slug, not a path

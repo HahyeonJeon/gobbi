@@ -68,6 +68,8 @@ status: active
 created: YYYY-MM-DD
 session: {session-id}
 tags: [process, evaluation]          # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 report_type: status | post-mortem | analytics
 related_reports: [{report slugs that this builds on or supersedes}]   # plain slugs
 generated_by: {tool name / agent identity / human author}

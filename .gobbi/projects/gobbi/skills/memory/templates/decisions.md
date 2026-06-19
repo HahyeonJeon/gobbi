@@ -47,7 +47,8 @@ status: proposed | accepted | superseded
 created: YYYY-MM-DD
 session: {session-id}
 tags: [process, design]              # controlled vocabulary (§2.5)
-keywords: [cache-layer]              # OPTIONAL — freeform escape-hatch tags
+keywords: [cache-layer]              # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 supersedes: {prior-decision-slug} | null     # plain slug, not a path
 superseded_by: {new-decision-slug} | null     # plain slug, not a path
 ---

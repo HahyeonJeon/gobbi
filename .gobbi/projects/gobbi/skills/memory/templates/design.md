@@ -46,6 +46,8 @@ status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
 tags: [design, schema]               # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 supersedes: {prior-design-slug} | null     # plain slug, not a path
 superseded_by: {new-design-slug} | null     # plain slug, not a path
 related: [cache-invalidation, 2026-05-11-use-redis-not-memcached]   # list[slug] — plain slugs, not paths

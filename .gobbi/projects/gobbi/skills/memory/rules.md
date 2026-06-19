@@ -84,7 +84,7 @@ Every memory file carries base frontmatter; richer types add a small set of decl
 
 ### 2.1 Shared base (every memory file)
 
-Nine required fields, plus four optional fields any type may carry: the escape-hatch `keywords` and the three slug-link fields (`supersedes`, `superseded_by`, `related`):
+Eleven required fields, plus three optional slug-link fields any type may carry (`supersedes`, `superseded_by`, `related`):
 
 ```yaml
 ---
@@ -97,7 +97,8 @@ status: {the type's allowed status value — see §2.2}
 created: YYYY-MM-DD
 session: {session-id that created this}
 tags: [{...}]         # each tag ∈ the controlled vocabulary (§2.5); may be empty []
-keywords: [{...}]      # OPTIONAL — freeform, uncontrolled escape-hatch tags; absent or [] is fine
+keywords: [{...}]      # REQUIRED — freeform, uncontrolled escape-hatch tags; may be empty []
+author: claude | codex | user   # REQUIRED — coarse provider tag (the runtime that authored the file)
 supersedes: {slug | null}      # OPTIONAL (global) — the slug this file supersedes; §2.4
 superseded_by: {slug | null}   # OPTIONAL (global) — the slug that supersedes this file; §2.4
 related: [{slug}]              # OPTIONAL (global) — related slugs; absent or [] is fine; §2.4
@@ -115,10 +116,15 @@ related: [{slug}]              # OPTIONAL (global) — related slugs; absent or 
 | `created` | date `YYYY-MM-DD` | yes | creation date |
 | `session` | string | yes | session-id that created it |
 | `tags` | list[string] | yes | each tag ∈ the controlled vocabulary (§2.5); may be empty `[]` |
-| `keywords` | list[string] | **no (optional)** | freeform, uncontrolled escape-hatch tags; absent or `[]` is fine |
+| `keywords` | list[string] | yes | freeform, uncontrolled escape-hatch tags; may be empty `[]` |
+| `author` | enum | yes | `claude` \| `codex` \| `user` — the runtime/system that authored the file |
 | `supersedes` | string \| null | **no (optional, global)** | plain slug this file supersedes; `null` / absent when none (§2.4) |
 | `superseded_by` | string \| null | **no (optional, global)** | plain slug that supersedes this file; `null` / absent when none (§2.4) |
 | `related` | list[slug] | **no (optional, global)** | plain slugs of related files; absent or `[]` is fine (§2.4) |
+
+**`keywords` is required-may-be-empty.** Parallel to `tags`: the field must be present, but `[]` is a valid value. It is the freeform overflow for tags outside the §2.5 controlled vocabulary.
+
+**`author` is a coarse provider tag.** It names the runtime/system that authored the file, stable across model versions: `claude` for Claude Code agents, `codex` for Codex agents, `user` for a human who directly authored or edited it. Wrap-up auto-stamps it at promotion from `session.json.system` (`claude-code` → `claude`, `codex` → `codex`); a human hand-edit sets `author: user`.
 
 **`feature` is conditionally required by `scope`.** `scope: feature` ⇒ `feature` is a non-null slug. `scope: project` ⇒ `feature: null`. The validator (§2.6) enforces this conditional.
 
@@ -211,7 +217,7 @@ docs-sync · refactor · rename-sweep · verification · vocabulary-sweep
 hooks · codex · security · git · memory · frontmatter · schema · validation · links · design
 ```
 
-When a tag outside this set is genuinely needed, use the optional `keywords` field (§2.1) — the uncontrolled escape-hatch — or extend this list. `tags` stays controlled so it can be queried with confidence; `keywords` absorbs the freeform long tail.
+When a tag outside this set is genuinely needed, use the required-may-be-empty `keywords` field (§2.1) — the uncontrolled escape-hatch — or extend this list. `tags` stays controlled so it can be queried with confidence; `keywords` absorbs the freeform long tail.
 
 ### 2.6 Staging-field stripping on promotion
 
@@ -331,7 +337,7 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 
 **The KEEP set IS the validator's per-type allowlist — no separate hand-maintained list.** A key is kept (never reported stray) **iff** it is on the file type's allowlist, which is exactly:
 
-> **base (§2.1, the 9 required + `keywords` + the 3 global slug-links `supersedes` / `superseded_by` / `related`) ∪ that type's §2.2 declared extensions.**
+> **base (§2.1, the 11 required — including `keywords` and `author` — + the 3 global slug-links `supersedes` / `superseded_by` / `related`) ∪ that type's §2.2 declared extensions.**
 
 There is no second, broader keep-list. The old pre-standard keep-list enumerated keys that are NOT §2.2 extensions — `design-id`, `discussion-id`, `topic`, `category`, `project`, `last_updated`, `plan`, `artifact_ref`, and a generic `source` — as if they were always-legitimate. Under the §2.2 model they are NOT: a key is legitimate only on the type(s) whose §2.2 row declares it (e.g. `source` is a `references` extension, legitimate on `references/` and stray elsewhere). The validator enforces exactly the per-type allowlist above, so any key outside it — every key in S, every session-routing residue key, every stale ad-hoc key, and the removed `decision_status` / `disposition` — is a stray key.
 
@@ -343,7 +349,7 @@ There is no second, broader keep-list. The old pre-standard keep-list enumerated
 
 > Operate on files in `P_live`: NOT under `archive/` (frozen, §4.6), NOT under `sessions/` / `skills/` / `agents/` / `tmp/` (non-memory surfaces). For each file F, the validator reports any frontmatter key that is not in `base (§2.1) ∪ F-type-extensions (§2.2)` as a stray key. The allowlist is per-type, so a key legitimate for one type (e.g. `verdict` on `reviews/`) is correctly reported as stray on another.
 
-**Safety invariant (locked):** never report a key that is legitimate for that doc's type/dir as stray. Base keys (`name` / `description` / `type` / `scope` / `feature` / `status` / `created` / `session` / `tags`), the optional base fields (`keywords` + the three global slug-links `supersedes` / `superseded_by` / `related`), and the per-type extensions in §2.2 (`verdict` / `review_kind` / `subject` on `reviews/`, `priority` / `domain` on `mistakes/`, `title` / `source` / `ref_type` on `references/`, etc.) are always preserved — that per-type allowlist IS the protected set.
+**Safety invariant (locked):** never report a key that is legitimate for that doc's type/dir as stray. Base keys (`name` / `description` / `type` / `scope` / `feature` / `status` / `created` / `session` / `tags` / `keywords` / `author`), the three global slug-link base fields (`supersedes` / `superseded_by` / `related`), and the per-type extensions in §2.2 (`verdict` / `review_kind` / `subject` on `reviews/`, `priority` / `domain` on `mistakes/`, `title` / `source` / `ref_type` on `references/`, etc.) are always preserved — that per-type allowlist IS the protected set.
 
 ### 4.5 The conformance gate — the bash validator
 

@@ -9,6 +9,7 @@ created: 2026-06-18
 session: 8129f657-4591-48b3-b83c-3aa9bc759ca6
 tags: [process, codex, evaluation]
 keywords: [dual-system, codex-exec, timeout, manager-proxy-fallback, anti-groupthink, blocked]
+author: claude
 priority: high
 domain: process
 supersedes: null

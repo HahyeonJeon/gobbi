@@ -9,6 +9,7 @@ created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
 tags: [docs-sync, links]
 keywords: [broken-links, maintenance, rules-md, chat-mode, diataxis, dangling-reference]
+author: claude
 priority: low
 project-scope: true
 shipped_in: null

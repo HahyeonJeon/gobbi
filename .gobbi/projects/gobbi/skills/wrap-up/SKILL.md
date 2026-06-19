@@ -316,6 +316,11 @@ When Wrap-up promotes a staged file, it writes the destination with **ONLY** the
 
 Mechanism: the promotion step reads the staging frontmatter, applies the routing modifier (e.g. `mistake-candidate` → `mistakes/`), then writes the destination file through the per-type allowlist — base + extensions only. Any field not on the allowlist for the destination type is dropped. See [`memory/rules.md` § 2.6](../memory/rules.md#26-staging-field-stripping-on-promotion) for the standard and [`record/SKILL.md` § Staging-field stripping on promotion](../record/SKILL.md#staging-field-stripping-on-promotion) for the reciprocal staging-side documentation.
 
+**Auto-stamp the `author` + `keywords` base fields on promotion.** `author` and `keywords` are **required durable base fields** (§2.1) — NOT staging-only, so they are never stripped. When Wrap-up writes a promoted file it stamps:
+
+- **`author`** — from `session.json.system`: `claude-code` → `author: claude`, `codex` → `author: codex`. A human hand-edit of a memory file sets `author: user`. The tag is coarse (provider, not model version), so it stays stable across model upgrades.
+- **`keywords`** — default `keywords: []` when the staged file carries none; a non-empty staged `keywords` list is preserved as-is. It is the required-may-be-empty overflow for tags outside the §2.5 controlled vocabulary.
+
 **Collision policy** when destination file already exists:
 
 | Scenario | Action |

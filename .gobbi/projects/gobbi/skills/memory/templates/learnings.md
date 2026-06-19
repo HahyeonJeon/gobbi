@@ -49,6 +49,8 @@ status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
 tags: [process, verification]        # controlled vocabulary (§2.5)
+keywords: []                         # freeform escape-hatch tags (required; may be [])
+author: claude                       # claude | codex | user — the runtime that authored it
 supersedes: {prior learning slug} | null      # plain slug, not a path
 superseded_by: {newer learning slug} | null    # plain slug, not a path
 related: [{related learning slugs}]            # list[slug] — plain slugs, not paths
