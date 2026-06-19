@@ -1,41 +1,24 @@
 # `references/`
 
-**External resources with extracted insights** — links to docs, blog posts, papers, RFCs, open-source code that informed this project's design. Each reference carries the **insight** (one or two sentences of what was learned) plus the source, so future agents skip the re-search work.
+> External sources with an extracted insight — docs, blogs, papers, RFCs, code that informed the project. Each carries the takeaway, not just the link.
 
-## Lifecycle (staging → promotion)
+## Core principle
+Keep the insight, not just the link — a reference exists to save the next agent the re-search.
 
-This template covers a file with **two write paths**:
+## Write it
 
-1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md`. Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
+| Field | Value |
+|---|---|
+| When | Ideation Sub-step C (Research); or a loop's RECORD on a citable `general` finding. Bar = applicability, not novelty. |
+| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/references/{slug}.md` |
+| Promotes to | `features/{f}/references/` (default) · `references/` (project, cross-feature) |
+| Filename | `{slug}.md` — bare-slug; name the topic, not the source (`redis-ttl-eviction.md`, not `redis-docs-ch7.md`) |
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
----
+## Frontmatter + body
 
-## When to write
-
-- During **Ideation Sub-step C (Research)** when the leader surfaces a useful external source.
-- During any loop's RECORD when an evaluator's `general` finding contains a citable external pattern.
-
-The bar is **applicability**, not novelty: a reference belongs here if it informed a design decision, anchored a checklist item, or settled a discussion.
-
-## Location
-
-- **Feature-level (default):** `.gobbi/projects/{project-name}/features/{feature-name}/references/` — research happens inside a feature's Ideation, so a reference defaults to that feature (`scope: feature`, `feature: {feature-name}`). Wrap-up routes staging references here (see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing)).
-- **Project-level (promote-up, rare):** `.gobbi/projects/{project-name}/references/` — for cross-feature prior art (`scope: project`, `feature: null`); user-confirmed at Wrap-up.
-
-References are a **Both**-scope type (design §2.9, [`rules.md` § 3](../rules.md)), defaulting feature-level and promoting up only for cross-feature relevance.
-
-## File naming
-
-`{slug}.md` — bare-slug, short, descriptive. Slug describes the topic, not the source. No date prefix (evergreen). See [`rules.md` § 1](../rules.md).
-
-Example: `redis-ttl-eviction.md` (not `redis-docs-chapter-7.md`), `karpathy-software-3.md`, `superpowers-brainstorming.md`.
-
-## Item template
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the references-type extensions (`title`, `source`, `accessed`, `ref_type`). Note: base `type: references` is the memory type; the source genre (docs / blog / paper / …) is the `ref_type` extension, NOT the base `type` — its enum is `docs` | `blog` | `paper` | `rfc` | `code` | `book` | `other` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+Base frontmatter + references extensions (`title`, `source`, `accessed`, `ref_type`). `ref_type` is the source genre (`docs`|`blog`|`paper`|`rfc`|`code`|`book`|`other`), distinct from base `type: references` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)).
 
 ```markdown
 ---
@@ -61,7 +44,7 @@ ref_type: docs | blog | paper | rfc | code | book | other
 ## Insight
 {One or two sentences: the specific lesson this source contributes. NOT a summary of the source — the takeaway.}
 
-## Why it applies
+## Reason
 {In one or two sentences, why this insight matters for this project. The condition under which the insight should be invoked.}
 
 ## Source
@@ -81,17 +64,10 @@ ref_type: docs | blog | paper | rfc | code | book | other
 {Navigable `[[slug]]` links to the learning / mistake / decision this reference connects to ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Body content, not frontmatter — the base + `title`/`source`/`accessed`/`ref_type` allowlist is the only frontmatter references carry.}
 
 - [[redis-ttl-eviction-learning]] — the learning this source anchored
-- [[2026-05-11-use-redis-not-memcached]] — the decision it informed
 ```
 
-## Insight vs link
+## Notes
 
-A bare link is not a reference. The **insight** field is mandatory; references without insights are dropped at evaluation. The format `{url}\n\n{insight}` versus `{url}: {insight}` does not matter; the insight does.
-
-## Multiple insights from one source
-
-If one source contributes multiple insights to the project, write one reference file per insight, each with a different slug, all citing the same source. The slug names the insight, not the source.
-
-## Usage history
-
-The `Usage history` table grows over time as designs / decisions / checklist items cite this reference. Cap at 20 entries; older usage is recoverable from the cited artifacts.
+- **Insight is mandatory.** A bare link is not a reference; references without an insight are dropped at evaluation.
+- **One insight per file.** If a source gives several insights, write one file per insight, each with its own slug, all citing the same source.
+- **Usage history cap 20.** Older usage is recoverable from the cited artifacts.
