@@ -1,61 +1,36 @@
 # `reports/`
 
-**Long-form report documents** the project keeps as durable evidence — status summaries aggregating across sessions, incident post-mortems and investigations, and analytics / measurement outputs. Reports preserve the **full content and reasoning trail** of their respective genre. They are the long-form companion to `decisions/` (which captures the conclusion) and `notes/` (which captures short-form ad-hoc observations).
+> Long-form durable evidence — status summaries, post-mortems, and analytics outputs. Preserves the full content and reasoning trail, where `decisions/` keeps only the conclusion.
 
-## Lifecycle (staging → promotion)
+## Core principle
+A report records an investigation's findings and action items — the long-form evidence chain a decision or learning is later extracted from.
 
-This template covers a file with **two write paths**:
+## Three report kinds
 
-1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md`. Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
-
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
-
----
-
-Review / audit / evaluation activity documents do **not** live here — those go to [`reviews/`](reviews.md). The two directories partition the long-form-document space: review activity → `reviews/`; everything else long-form → `reports/`.
-
-## Three report kinds (all live here)
-
-A single `reports/` directory holds three different report kinds, differentiated by the `report_type` frontmatter field. The directory is unified because all three share the same lifecycle (generated at a specific moment, preserved indefinitely, cited by other artifacts) — splitting them into separate directories would fragment the audit surface without value.
+One `reports/` directory holds three kinds, set by the `report_type` frontmatter field. They share one lifecycle (generated at a moment, preserved indefinitely, cited by other artifacts), so one directory keeps the audit surface whole.
 
 | `report_type` | What goes here | Examples |
 |---|---|---|
-| **`status`** | Periodic or event-driven status summary aggregating across sessions | Weekly status, sprint summary, release report, milestone report, monthly project health |
-| **`post-mortem`** | Incident post-mortem, deep-dive investigation, root-cause analysis | Production incident write-up, "why did iter cap exhaust without convergence?" investigation, design-decision retrospective |
-| **`analytics`** | Numerical / measurement output for trend tracking | Session-count statistics, iteration-distribution analysis, cost / token tracking, performance benchmark results, dashboard data exports |
+| **`status`** | Periodic / event-driven summary aggregating across sessions | Weekly status, sprint summary, release report, milestone health |
+| **`post-mortem`** | Incident write-up, deep-dive investigation, root-cause analysis | Production incident, "why did iter cap exhaust without convergence?", design retrospective |
+| **`analytics`** | Numerical / measurement output for trend tracking | Session-count stats, iteration-distribution, cost / token tracking, benchmark results |
 
-A single report belongs to **exactly one** `report_type`. If an artifact spans multiple types (e.g., a post-mortem that includes performance benchmark results), it picks the dominant type and links to companion reports for the other facets via `related_reports` frontmatter.
+A report is **exactly one** `report_type`. A multi-facet artifact picks the dominant type and links companions via `related_reports`.
 
-## When to write
+## Write it
 
-- **During any loop's RECORD**: when the loop produced an in-session deep-dive worth preserving (`post-mortem`) — stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md`; Wrap-up promotes.
-- **During Wrap-up RECORD**: when the session's close coincides with a periodic boundary (week, sprint, milestone, release) — Wrap-up produces the `status` report and writes it directly to memory.
-- **Out-of-band, by CLI**: when an analytics / measurement command runs outside a session — the resulting `analytics` report drops into a session's `staging/reports/` for the next Wrap-up, OR (for fully session-independent runs) is staged via a synthetic "ops" session — exact mechanism TBD.
+| Field | Value |
+|---|---|
+| When | A loop's RECORD on an in-session deep-dive worth preserving (`post-mortem`); or Wrap-up RECORD at a periodic boundary (`status`, direct write); or an out-of-band CLI run (`analytics`). Bar = scale + durability, not a routine observation. |
+| Stage to | `sessions/{date}-{id}/{N}-{loop}/staging/reports/{slug}.md` |
+| Promotes to | `features/{f}/reports/` (default) · `reports/` (project, cross-feature) |
+| Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (generation date, not the reported-on period); slug names the subject (`2026-05-11-iter-cap-exhaustion-investigation.md`) |
 
-Reports are **not** a place for routine artifacts. A short observation belongs in `notes/`. A single decision belongs in `decisions/`. A review activity result belongs in `reviews/`. The bar for `reports/` is **scale + durability**: enough content to merit a standalone date-prefixed document, and enough lasting value to keep beyond the originating session.
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
-## Location
+## Frontmatter + body
 
-- Feature-level (default): `.gobbi/projects/{project-name}/features/{feature-name}/reports/`
-- Project-level: `.gobbi/projects/{project-name}/reports/`
-
-Reports are **default-feature**: a status / post-mortem / analytics report scoped to one feature lives in `features/{feature-name}/reports/`. Promote a report up to project `reports/` when it aggregates across features or is otherwise cross-feature.
-
-## File naming
-
-`{YYYY-MM-DD}-{slug}.md` — date prefix; slug describes the report subject.
-
-Examples:
-- `2026-05-11-weekly-status.md` (status)
-- `2026-05-11-iter-cap-exhaustion-investigation.md` (post-mortem)
-- `2026-05-11-session-cost-q2.md` (analytics)
-
-Date is the **generation date**, not the date of events reported on. A weekly-status report for the week ending 2026-05-11 generated 2026-05-12 uses `2026-05-12-` as prefix; the reporting period is named in the body's `Inputs` section.
-
-## Item template
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reports-type extensions — `reports/` keeps the **richer set**: `report_type`, `related_reports`, plus `generated_by`, `subject`, `related_reviews`, and `related_decisions` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). Reports are append-only (base `status` stays `active`). A feature-scoped report sets `scope: feature` + `feature:`; a project-scoped one sets `scope: project`. The `related_*` lists are **plain slugs** (no path, no `[[ ]]`); navigable `[[slug]]` links live in the `## Related` body section ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+Base frontmatter + the **richer** reports extensions — `report_type`, `related_reports`, plus `generated_by`, `subject`, `related_reviews`, `related_decisions` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). The `related_*` lists are **plain slugs** (no path, no `[[ ]]`); navigable `[[slug]]` links live in the `## Related` body section ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).
 
 ```markdown
 ---
@@ -87,9 +62,8 @@ related_decisions: [{decision slugs this report drove}]                      # p
 {The sources / data / runs that fed this report. For `status`: the period covered and sessions scanned. For `post-mortem`: the incident timeline and artifacts examined. For `analytics`: the metric definitions and data window.}
 
 ## Body
-{The full content. This is what makes a report a report — long-form, complete reasoning, not just bullets. Subsections appropriate to `report_type`:
-
-- **`status`**: What shipped / What's in flight / What's blocked / What's deferred. Per-feature breakdown.
+{The full content — long-form, complete reasoning, not just bullets. Subsections by `report_type`:
+- **`status`**: What shipped / in flight / blocked / deferred. Per-feature breakdown.
 - **`post-mortem`**: Timeline → Root cause → Contributing factors → What worked → What didn't → Action items.
 - **`analytics`**: Metric definitions → Numbers → Trends → Anomalies → Interpretation.}
 
@@ -97,39 +71,26 @@ related_decisions: [{decision slugs this report drove}]                      # p
 {The interpretive layer atop the raw body. For `status`: risks and asks. For `post-mortem`: the 3-5 most important takeaways. For `analytics`: what the numbers actually mean.}
 
 ## Action items
-{Concrete follow-ups. Each item should link to a backlog entry, a decision, or a future session task. Reports without action items are evidence-only; explicit `(none — evidence preserved for future reference)` is acceptable.}
-
-## Cross-references
-{Links to reviews / learnings / mistakes / decisions / sessions that this report builds on or feeds into.}
+{Concrete follow-ups, each linking a backlog / decision / future task. Evidence-only reports use `(none — evidence preserved for future reference)`.}
 
 ## Related
-{Navigable `[[slug]]` links to the reviews / decisions / reports this one builds on or feeds into ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Mirrors the `related_*` frontmatter in navigable form.}
+{Navigable `[[slug]]` links to the reviews / decisions / reports this builds on or feeds into ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)). Mirrors the `related_*` frontmatter in navigable form.}
 
 - [[2026-05-11-ultrareview-orchestration-redesign]] — the review feeding this report
-- [[2026-05-11-use-redis-not-memcached]] — a decision this report drove
 ```
 
-The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / project-wide report uses `scope: project` + `feature: null` and promotes to the project `reports/` tier.
+The example shows the **default-feature** case. A cross-feature report uses `scope: project` + `feature: null` and promotes to the project `reports/` tier.
 
-## Distinguishing reports from neighbors
+## Notes
 
-- **`reports/` vs `reviews/`**: A review document captures a **review / evaluation / audit activity** — what was reviewed, by whom, against which criteria, and the activity's outcome. A report captures **status, post-mortem, or analytics** — content that is not itself a review activity, even if it may cite review findings. Rule of thumb: did the artifact come from a review/evaluation/audit task? → `reviews/`. Otherwise → `reports/`.
-- **`reports/` vs `learnings/`**: A learning is an actionable transferable insight ("do this"). A report is the source material — the analytics that revealed the insight, the post-mortem that named the failure mode. The learning is extracted from the report.
-- **`reports/` vs `mistakes/`**: A mistake is the rule ("don't do X"). A post-mortem report is the case study that produced the rule. The mistake is the takeaway; the report is the evidence chain.
-- **`reports/` vs `notes/`**: Notes are short-form ad-hoc observations. Reports are long-form structured documents generated at an explicit trigger point (period close / incident / measurement window).
-- **`reports/` vs `decisions/`**: Decisions capture the conclusion ("we chose X because Y"). Reports capture the supporting body — the investigation that led to the choice. One report can drive multiple decisions; one decision typically cites the report it grew from.
+- **Vs other types.** `reports/` is the long-form evidence; the others are the distilled output extracted from it.
 
-When a single observation could be either a note or a report, default to a **note**. Reports require enough substance to merit a date-prefixed durable file.
+  | vs | This is a report when… | Else it goes to |
+  |---|---|---|
+  | `reviews/` | it is status / post-mortem / analytics, not a review activity | `reviews/` — any review / audit / evaluation activity |
+  | `learnings/` | it is the source material that revealed an insight | `learnings/` — the actionable "do this" insight |
+  | `mistakes/` | it is the case study (the post-mortem evidence chain) | `mistakes/` — the rule "don't do X" |
+  | `notes/` | it is a long-form doc at an explicit trigger | `notes/` — a short-form ad-hoc observation |
+  | `decisions/` | it is the investigation behind a choice | `decisions/` — the conclusion "we chose X because Y" |
 
-## Promotion source
-
-- **Loop RECORD → staging**: assistant stages at `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md` per the [`reports.md`](reports.md) template. Type is encoded in frontmatter `report_type`. Wrap-up promotes to `.gobbi/projects/{project-name}/reports/{YYYY-MM-DD}-{slug}.md` (rewriting filename to date-prefixed form during promotion).
-- **Wrap-up RECORD → direct write**: Wrap-up may produce its own reports (typically `status` at session close) and write directly to the memory destination without going through staging — Wrap-up is the memory sole writer and is not constrained by the staging boundary.
-
-## Linking back
-
-A report cites its inputs by path (sessions, evaluation files, prior reports). Reviews and learnings derived from a report cite the report's slug in their `related_reports` frontmatter. This produces a navigable evidence graph: review / learning → report → source artifacts.
-
-## Lifecycle
-
-Reports are **append-only history** — a report's `status` is always `active` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)); you never mutate it. There is no `superseded` or `archived` report status: a newer report is **appended** as a separate file that links back via `related_reports: [{newer-slug}]`, not a status flip on the old one. Do not delete or rewrite historical reports. A terminal report is archived by being moved under `archive/reports/`; the move marks it, not a `status` value.
+- **Append-only.** A report's `status` stays `active` — never mutated. A newer report is a separate file linking back via `related_reports`; it does not flip the old one's status. Do not delete or rewrite historical reports.
