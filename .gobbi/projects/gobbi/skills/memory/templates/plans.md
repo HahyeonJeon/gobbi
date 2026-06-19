@@ -1,39 +1,24 @@
 # `plans/`
 
-Task decomposition records — the output of the **Planning Loop**. Each plan breaks a locked task into narrow, ordered sub-tasks the Execution Loop can run one at a time.
+> Task-decomposition records — the output of the Planning Loop. Each plan breaks a locked task into narrow, ordered sub-tasks the Execution Loop can run one at a time.
 
-## Lifecycle (staging → promotion)
+## Core principle
+Decompose the approach into ordered, verifiable sub-tasks — so a single executor can run each one unambiguously.
 
-This template covers a file with **two write paths**:
+## Write it
 
-1. **Planning RECORD only**: stage at `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md`. `plans/` is **Planning-loop-only** — it does NOT appear in other loops' staging trees (ideation / preparation / execution / wrap-up do not produce plans). Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
+| Field | Value |
+|---|---|
+| When | Planning RECORD when the loop produces a canonical plan. `plans/` is **Planning-loop-only** — ideation / preparation / execution / wrap-up do not produce plans. A mid-execution refinement creates a new versioned plan, never an in-place edit. |
+| Stage to | `sessions/{date}-{id}/3-planning/staging/plans/{slug}.md` |
+| Promotes to | `features/{f}/plans/` (loop path — feature-only). Project-level `plans/` holds maintainer cross-feature roadmaps ONLY; no loop RECORD or Wrap-up promotion targets it. |
+| Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (tied to the session that produced it); slug describes the plan in ≤6 words (`2026-05-11-auth-middleware.md`) |
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
----
+## Frontmatter + body
 
-## When to write
-
-- During **Planning** RECORD when the Planning Loop produces a canonical plan: write it here.
-- Updates to an existing plan (mid-execution refinements) create a new versioned plan document; do not edit in place.
-
-## Location
-
-- **Feature-level (loop path): `.gobbi/projects/{project-name}/features/{feature}/plans/`** — the loop path writes plans ONLY here.
-- Project-level `.gobbi/projects/{project-name}/plans/` — **maintainer-authored cross-feature roadmaps / release plans ONLY**, never loop-written.
-
-The Planning-loop path is feature-only (per [`rules.md` § 3](../rules.md)). A project-level `plans/` may hold maintainer roadmaps, but no Planning-loop RECORD or Wrap-up promotion ever targets it.
-
-## File naming
-
-`{YYYY-MM-DD}-{slug}.md` — date-prefixed (a plan is tied to the session that produced it); slug describes the plan in ≤6 words. See [`rules.md` § 1](../rules.md).
-
-Example: `2026-05-11-login-ui-shipping.md`, `2026-05-11-auth-middleware.md`.
-
-## Item template
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the plans-type extensions (`task`, `task_count`). `supersedes` / `superseded_by` are **global plain-slug base fields** any type may carry (§2.1) — not plans-type extensions; their value is a plain slug (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+Base frontmatter plus the plans extensions (`task`, `task_count`). `supersedes` / `superseded_by` are **global plain-slug base fields** (§2.1), not plans extensions — a plain slug, no path, no `[[ ]]` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)).
 
 ```markdown
 ---
@@ -83,13 +68,9 @@ task_count: {number of sub-tasks in this plan}
 {Navigable `[[slug]]` links to the design this plan implements and the decisions it follows ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
 - [[cache-invalidation]] — the design this plan decomposes
-- [[2026-05-11-use-redis-not-memcached]] — the decision it follows
 ```
 
-## Updates
+## Notes
 
-When execution surfaces a need to change the plan (a sub-task was harder than expected, an ordering needed to flip), the assistant writes a new plan document at `{new-date}-{slug}.md` with `supersedes: {old-slug}` rather than editing in place — the version lives in frontmatter, never in the slug (no `-v2` suffix; [`rules.md` § 1.3](../rules.md) anti-pattern #6). The superseded plan is never deleted — at Wrap-up, it is moved (`git mv`) to `archive/plans/{date}-{slug}.md` per the move-on-terminal model. The active `plans/` directory then shows only live plans.
-
-## Sub-task granularity
-
-Sub-tasks must be narrow enough that scope is unambiguous to a single executor agent. If a sub-task description starts with "and then" or "while doing this also", split it.
+- **Update by supersede, never edit in place.** When execution surfaces a plan change (a sub-task was harder, an ordering flipped), write a new `{new-date}-{slug}.md` with `supersedes: {old-slug}`. The version lives in frontmatter, never the slug (no `-v2`; [`rules.md` § 1.3](../rules.md) anti-pattern #6). The superseded plan is moved (`git mv`) to `archive/plans/{date}-{slug}.md` at Wrap-up, never deleted.
+- **Sub-task granularity.** Each sub-task must be narrow enough that scope is unambiguous to one executor. If a description starts with "and then" or "while doing this also", split it.
