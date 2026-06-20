@@ -8,9 +8,9 @@
 
 A report is the evidence a decision or learning is later extracted from; if the finding is buried in narrative the reader re-derives it, and if the evidence is distilled away the report collapses into a decisions entry.
 
-> **Record the action items the evidence demands, each pointing to a concrete follow-up.**
+> **Record the action items the evidence demands, or mark the report evidence-only.**
 
-Without owned, tracked action items a write-up is a historical record, not a mechanism for change.
+A report that buries its follow-ups stalls; one with no actions to track says so explicitly instead of inventing them.
 
 ## Three report kinds
 

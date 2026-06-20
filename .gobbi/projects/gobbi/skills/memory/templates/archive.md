@@ -4,13 +4,9 @@
 
 ## Core principles
 
-> **Preserve a terminal artifact by moving the whole file — body and frontmatter intact — never deleting or summarizing it.**
+> **Keep the archived record whole — the complete original file, marked with why and when it was retired.**
 
-A future reader auditing history finds the complete original record, not a stub that lost the evidence.
-
-> **Stamp why and when it was retired, and repoint every inbound reference to the new location.**
-
-The reader knows the artifact is terminal and still reaches it by following a link that no longer dead-ends.
+A reader auditing history finds the full artifact and the reason it is terminal, not a stub or an unexplained move.
 
 ## Write it
 
