@@ -77,6 +77,34 @@ mistakes this session. Once codex ran correctly it returned a real REVISE.
   purpose.
 - **`design.md` has no `## Notes` by design** — there was nothing to fold into it; its
   absence is intentional, not an omission.
+- **A memory-type's core principle is a documentation discipline, never an action
+  principle.** It states what the doc must capture so a future reader is served — not how
+  to do the activity the type is about. See the mistake
+  `[[core-principle-framed-as-action-not-documentation]]`.
+
+## Addendum — 2026-06-20: core-principle iteration on PR #306
+
+After the initial wrap, the `## Core principle` work was iterated:
+
+- **Reshaped to a directive blockquote.** The section moved to a `> **directive.**`
+  blockquote + body, matching the shape used in `record/SKILL.md`.
+- **Reframed action → documentation.** After the user's correction, every principle was
+  rewritten from a principle for the underlying *activity* to a principle for the
+  *documentation* of that type (see the new mistake below).
+- **Deepened via a 5-leader parallel research pass.** Prior art surveyed: ADRs, blameless
+  postmortems, keepachangelog, Gherkin / INVEST, lessons-learned registers, and archival
+  integrity practice.
+
+**Final state:**
+
+- Section renamed `## Core principle` → `## Core principles` (plural).
+- 24 documentation principles across 17 templates — 9 types ×1 and 7 types ×2 (design,
+  references, learnings, reviews, reports, notes, archive).
+- `SKILL.md` `## Authoring style` rule updated to require the documentation framing.
+- Commits `15d87060` / `e2d1105a` / `27434c06` on PR #306.
+
+The action-vs-documentation correction is recorded durably as the mistake
+`[[core-principle-framed-as-action-not-documentation]]`.
 
 ## Next session
 
@@ -94,3 +122,5 @@ the `references.md` `author:` comment as a PR #305 follow-up, frontmatter being 
 - [[label-rename-missed-in-fence-and-cross-doc]] — docs-sync trap recorded this session
 - [[feature-md-mark-skeleton-exception]] — backlog filed this session
 - [[references-author-comment-inconsistency]] — backlog filed this session
+- [[core-principle-framed-as-action-not-documentation]] — mistake recorded for the
+  PR #306 core-principle iteration
