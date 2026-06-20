@@ -2,11 +2,15 @@
 
 > Transferable insights the project picked up — what we now know how to do better, from direct experience. A learning is feature-local by default; a cross-feature one promotes up to the project tier.
 
-## Core principle
+## Core principles
 
-> **Capture the technique that worked and why.**
+> **Write the technique as a reusable action, not a session story.**
 
-The next agent reuses the win instead of rediscovering it.
+The next agent reuses the win only if the doc names a concrete, transferable technique; a narrative of what happened this session teaches nothing a different task can lift.
+
+> **State the counter-cases where the technique does not hold.**
+
+A technique with no stated boundary gets over-generalized and applied where it backfires; the limit is what keeps the reuse safe.
 
 ## Write it
 

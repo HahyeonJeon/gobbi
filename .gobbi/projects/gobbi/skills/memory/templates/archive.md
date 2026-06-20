@@ -2,11 +2,15 @@
 
 > Holding area for terminal artifacts moved here in full — shipped backlogs, superseded designs, retired features, superseded mistakes. Each file is the complete moved artifact (frontmatter + body intact), not a stub or pointer.
 
-## Core principle
+## Core principles
 
-> **Preserve a terminal artifact by MOVING it, never deleting.**
+> **Preserve a terminal artifact by moving the whole file — body and frontmatter intact — never deleting or summarizing it.**
 
-History stays recoverable and active dirs show only live work.
+A future reader auditing history finds the complete original record, not a stub that lost the evidence.
+
+> **Stamp why and when it was retired, and repoint every inbound reference to the new location.**
+
+The reader knows the artifact is terminal and still reaches it by following a link that no longer dead-ends.
 
 ## Write it
 

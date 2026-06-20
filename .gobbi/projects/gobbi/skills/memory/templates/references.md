@@ -2,11 +2,15 @@
 
 > External sources with an extracted insight — docs, blogs, papers, RFCs, code that informed the project. Each carries the takeaway, not just the link.
 
-## Core principle
+## Core principles
 
-> **Keep the insight, not just the link.**
+> **Keep the extracted insight, not the link or a summary.**
 
-A reference exists to save the next agent the re-search.
+A reference exists to save the next agent the re-read; the takeaway for this project is the value, not a link or a source summary.
+
+> **State the condition that makes the insight apply.**
+
+An insight with no condition-of-applicability gets invoked in the wrong situation and misleads the reader instead of guiding them.
 
 ## Write it
 

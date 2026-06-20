@@ -147,9 +147,9 @@ The staging→promotion lifecycle, supersede-not-delete, and move-on-terminal ar
 
 Fold type-specific guidance under a single `## Notes` list rather than a separate H2 per tip. Fewer sections, same content.
 
-> **Core principle is a blockquote + body.**
+> **Core principles are a documentation discipline, shaped as a blockquote + body.**
 
-A template's `## Core principle` is a bold one-line directive in a blockquote, then a one-sentence rationale below — not a single run-on line.
+A template's `## Core principles` section states what the `{type}/` doc must capture and how to write it so a future reader is served — never how to perform the underlying activity (write "record the conclusion", not "make the decision"). Each principle is a bold one-line `Record / Write / Capture / Keep / State [what the doc holds]` directive in a blockquote, then a one-sentence `so [a reader gets X without redoing the work]` rationale below. A type carries 1-3 such principles — only as many as guard a real reader-failure mode.
 
 ---
 

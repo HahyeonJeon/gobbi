@@ -2,11 +2,11 @@
 
 > Feature-level implementation checklists — concrete points the design must address for each scenario. Each item is anchored to a scenario and to a reference insight or marked `novel`. Accumulated across sessions like scenarios.
 
-## Core principle
+## Core principles
 
-> **Track per-item verification status against a scenario or spec.**
+> **Write each item anchored to its scenario and to a reference (or `novel`), with a verification that shows — not asserts — its status.**
 
-The design's coverage of each scenario is visible and checkable, not assumed.
+An unanchored item, or a status with no verification behind it, makes the design's coverage unprovable rather than visible.
 
 ## Write it
 

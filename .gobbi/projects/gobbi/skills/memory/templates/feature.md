@@ -2,11 +2,11 @@
 
 > A durable-capability directory — one per gobbi value-feature, with a README identity doc plus one subdir per memory type scoped to this feature.
 
-## Core principle
+## Core principles
 
-> **A feature directory is the durable-memory home for one value-feature.**
+> **Keep the README a current, lightweight index — point into the subdirs, never duplicate them, and update status and recent activity each session.**
 
-Each feature's design, decisions, and history live in one place.
+A reader scanning `features/` finds the feature's state and its memory without opening every subdir or trusting a stale page.
 
 A feature directory is its **own tier**, not a project-scoped or feature-tagged content type ([`rules.md` § 3](../rules.md#3-structure-rules)). Its `README.md` is the **identity document**: a lightweight overview that points into the typed subdirs without duplicating them. Each subdir holds one memory type scoped to this feature (`design/`, `decisions/`, `scenarios/`, …), populated by Wrap-up promoting session staging.
 

@@ -2,11 +2,15 @@
 
 > Long-form design documents — what is being built and why, concrete enough to plan against and abstract enough to outlive a single execution session.
 
-## Core principle
+## Core principles
 
-> **Capture the chosen approach and its trade-offs for a feature or component.**
+> **Capture the chosen approach and the trade-offs it accepts.**
 
-The next session plans against the design instead of re-deriving it.
+The next session plans against the design instead of re-deriving the approach and re-weighing what it gave up.
+
+> **Write it evergreen — the architecture, not the session that produced it.**
+
+A reader opening it cold next session gets the durable design, not a work-log they must decode.
 
 ## Write it
 

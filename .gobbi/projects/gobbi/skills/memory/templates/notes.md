@@ -2,11 +2,15 @@
 
 > Development journal entries — the running narrative of each session, like a developer's daily diary. One entry per session: what was attempted, what shipped, what got stuck, what shifted, what to pick up next.
 
-## Core principle
+## Core principles
 
-> **Record what happened and what to pick up next.**
+> **Record what happened and what to pick up next, in prose a future session can read cold.**
 
-The next session continues the work instead of reconstructing it.
+The next session continues the work instead of reconstructing it from a vanished session's context.
+
+> **Carry the standing decisions forward so a future session builds on them instead of re-opening them.**
+
+A settled lock that is not written down is a lock the next session silently re-litigates.
 
 ## Write it
 

@@ -2,11 +2,11 @@
 
 > Feature-level enumeration of situations the feature must handle — golden paths, edge cases, failure modes, adversarial scenarios. Accumulated across sessions, one file per scenario.
 
-## Core principle
+## Core principles
 
-> **Capture an input → expected-behavior case.**
+> **State the situation, its inputs, and the expected behavior explicitly — the contract the system must meet, not the steps it takes.**
 
-The feature's behavior is verifiable.
+An expected behavior that is implied, or written as implementation steps, is a scenario no reader can verify against.
 
 ## Write it
 

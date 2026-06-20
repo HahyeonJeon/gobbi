@@ -2,11 +2,11 @@
 
 > Time-stamped records of what shipped. Each entry summarizes the outcome of an Execution Loop's task, so a future reader can find when a specific capability landed.
 
-## Core principle
+## Core principles
 
-> **Record what shipped per task with its verification.**
+> **Record one shipped task per entry — what concretely changed and the verification result that proved it, not a vague roll-up.**
 
-The project keeps a traceable history of when each capability landed.
+A changelog a reader cannot trace to a concrete artifact and an actual verification result is a press release, not a history.
 
 ## Write it
 

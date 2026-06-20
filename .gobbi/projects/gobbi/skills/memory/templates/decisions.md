@@ -2,11 +2,11 @@
 
 > Time-stamped decision records (ADR-style) — what was decided, why, and what alternatives were considered. A future reader learns why the project looks the way it does without re-running the discussion.
 
-## Core principle
+## Core principles
 
-> **Record the conclusion and why the alternatives lost.**
+> **Record the conclusion and why each alternative lost.**
 
-A future reader understands the choice without re-running the debate.
+A future reader applies the decision without re-opening the debate.
 
 ## Write it
 

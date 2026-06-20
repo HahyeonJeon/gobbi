@@ -2,11 +2,15 @@
 
 > The output of a review work activity — adversarial review, ultrareview, code review, retrospective, security / license / dep audit. Captures what was reviewed, by whom, against what criteria, with what verdict.
 
-## Core principle
+## Core principles
 
-> **Assess an artifact adversarially across perspectives, then reach a verdict.**
+> **Record what was reviewed, by whom, against what criteria, with what verdict.**
 
-A review is the substrate that mistakes, learnings, and decisions are extracted from.
+A verdict is only trustworthy when its scope and bar are on the page; a bare PASS/FAIL forces the reader to re-review to learn what it covered.
+
+> **Record each finding with its evidence and proposed remediation.**
+
+A review is the substrate other memory types are extracted from; a finding without evidence or remediation gives the extractor nothing to pull and the disputer nothing to argue against.
 
 ## Write it
 

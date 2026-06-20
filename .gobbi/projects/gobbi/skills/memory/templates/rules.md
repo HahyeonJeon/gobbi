@@ -2,11 +2,11 @@
 
 > Load-bearing behavioral constraints every agent must follow. Stronger than a mistake: a mistake records "this approach fails reliably"; a rule records "this is how it must be done, period". Rules are rare — every rule increases the project's surface area.
 
-## Core principle
+## Core principles
 
-> **State an always-active constraint with its rationale and scope.**
+> **State the constraint, its rationale, and its scope.**
 
-Every agent knows the bound and why it binds.
+A rule without its reason is obeyed blindly or discarded; a rule without its scope is over- or under-applied.
 
 ## Write it
 
