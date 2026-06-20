@@ -115,6 +115,44 @@ A memory doc must be understandable by a zero-context reader — a future agent 
 
 ---
 
+## Authoring style
+
+How every memory doc and every template body is written. The bar is a dev-doc a zero-context reader scans fast — not an essay.
+
+> **Lists and tables over prose.**
+
+If the content is a set of fixed fields, options, or steps, use a table or a bullet list — not sentences. Prose is for the one idea a list cannot hold.
+
+> **Short dev-vibe labels.**
+
+Section and field labels are short nouns a developer would use. Rename narrative labels to their plain form:
+
+| Avoid | Use |
+|---|---|
+| Why it applies / Why it matters | Reason |
+| How to apply | How |
+| When to write / Location / File naming / Lifecycle | Write it (one table) |
+| Distinguishing X from neighbors | Vs other types |
+| Item template | Frontmatter + body |
+
+> **Plain, short words.**
+
+"use" not "utilize"; "fix" not "implement a solution for". One idea per sentence. Cut filler ("just", "really", "in order to", "it's worth noting"). Principle 7.
+
+> **Do not restate a global rule.**
+
+The staging→promotion lifecycle, supersede-not-delete, and move-on-terminal are owned by `rules.md` / `wrap-up/SKILL.md` / `archive.md`. Link them; do not re-explain them in a template. A template carries only what is specific to its type.
+
+> **One section per job.**
+
+Fold type-specific guidance under a single `## Notes` list rather than a separate H2 per tip. Fewer sections, same content.
+
+> **Core principles are a documentation discipline, shaped as a blockquote + body.**
+
+A template's `## Core principles` section states what the `{type}/` doc must capture and how to write it so a future reader is served — never how to perform the underlying activity (write "record the conclusion", not "make the decision"). Each principle is a bold one-line directive in a blockquote — a verb that names producing or maintaining the doc (`Record`, `Write`, `Capture`, `Keep`, `State`, `Preserve`, `Carry`, …), never the underlying activity (not `Decompose` / `Assess` / `Decide`) — then a one-sentence `so [a reader gets X without redoing the work]` rationale below. A type carries 1-3 such principles — only as many as guard a real reader-failure mode.
+
+---
+
 ## Constraints
 
 - **MUST stage under the correct type** — the type determines the destination; pick it from [`memory-map.md`](memory-map.md) + [`rules.md` § 3](rules.md#3-structure-rules).

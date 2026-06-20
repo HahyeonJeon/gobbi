@@ -1,58 +1,31 @@
 # `reviews/`
 
-**Review / evaluation / audit activity result documents** — the artifacts that represent the *output of a review work activity*. When the project runs a review-shaped task (an adversarial review, an ultrareview campaign, a code review, a retrospective, a security audit, a license audit, a dep audit), the document that captures *what was reviewed, by whom, against what criteria, and with what outcome* lives here.
+> The output of a review work activity — adversarial review, ultrareview, code review, retrospective, security / license / dep audit. Captures what was reviewed, by whom, against what criteria, with what verdict.
 
-## Lifecycle (staging → promotion)
+## Core principles
 
-This template covers a file with **two write paths**:
+> **Record what was reviewed, by whom, against what criteria, with what verdict.**
 
-1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/reviews/{slug}.md`. Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
+A verdict is only trustworthy when its scope and bar are on the page; a bare PASS/FAIL forces the reader to re-review to learn what it covered.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
+> **Record each finding with its evidence and proposed remediation.**
 
----
+A review is the substrate other memory types are extracted from; a finding without evidence or remediation gives the extractor nothing to pull and the disputer nothing to argue against.
 
-`reviews/` is **not** a place for excerpted evaluator findings or curated highlights. The bar is **activity-shaped**: a review/audit/evaluation took place, and `reviews/` holds the document representing that activity.
+## Write it
 
-## When to write
+| Field | Value |
+|---|---|
+| When | A loop's RECORD when the loop's own work *was* a review activity; or Wrap-up RECORD when a session ran a review / audit / evaluation worth preserving. Bar = activity-shaped + durability, not curated highlights. |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/reviews/{slug}.md` |
+| Promotes to | `features/{f}/reviews/` (default) · `reviews/` (project, cross-feature) |
+| Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (review activity date); slug names the subject + kind (`2026-05-11-ultrareview-orchestration-redesign.md`, `2026-05-11-code-review-pr-257.md`) |
 
-- **During Wrap-up RECORD** when a review/audit/evaluation activity was performed during the session and produced a result document worth preserving long-term.
-- **During a loop's RECORD** when the loop's own work *was* a review activity (e.g., the Execution loop ran a code review of an external artifact; the loop's output IS the review document). Stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/reviews/{slug}.md`; Wrap-up promotes.
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
-The bar is **activity-shaped + durability**: a review activity took place, and its result document is worth keeping beyond the originating session.
+## Frontmatter + body
 
-## Distinction from `reports/`
-
-- **`reviews/`** = documents from review / evaluation / audit *activities*. Did someone do a review? → `reviews/`.
-- **`reports/`** = `status` summaries / `post-mortem` investigations / `analytics` outputs that are not themselves review activities.
-
-A security audit goes to `reviews/` (it's an audit activity). A post-mortem of a security incident goes to `reports/` (it's an investigation, not a review activity). A weekly status that *cites* review outcomes goes to `reports/` (it's a status summary). An ultrareview campaign result goes to `reviews/` (the activity was a review).
-
-## Location
-
-- Feature-level (default): `.gobbi/projects/{project-name}/features/{feature-name}/reviews/`
-- Project-level: `.gobbi/projects/{project-name}/reviews/`
-
-Reviews are **default-feature**: a review / audit whose subject is one feature lives in `features/{feature-name}/reviews/`. Promote a review up to project `reviews/` when its subject is cross-feature or repo-wide.
-
-## File naming
-
-`{YYYY-MM-DD}-{slug}.md` — date prefix; slug describes the review subject and review kind.
-
-Examples:
-- `2026-05-11-ultrareview-orchestration-redesign.md`
-- `2026-05-11-adversarial-review-evaluation-skill.md`
-- `2026-05-11-code-review-pr-257.md`
-- `2026-05-11-retrospective-phase-2-completion.md`
-- `2026-05-11-security-audit-q2.md`
-- `2026-05-11-dep-audit-bun-1.2-upgrade.md`
-
-Date is the **review activity date**, not the date the document was written (if the two differ, prefer the activity date; record the document-written date in frontmatter).
-
-## Item template
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the reviews-type extensions (`verdict`, `review_kind`, `subject`) — `review_kind` and `verdict` are closed enums ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). Reviews are append-only (base `status` stays `active`). A feature-scoped review sets `scope: feature` + `feature:`; a project-scoped one sets `scope: project`. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+Base frontmatter + reviews extensions (`verdict`, `review_kind`, `subject`) — `review_kind` and `verdict` are closed enums ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). Reviews carry **base + `verdict` / `review_kind` / `subject` only**; the reviewer identity, perspective set, and cross-references live in the **body** sections, not frontmatter, so Wrap-up's allowlist strip cannot drop them.
 
 ```markdown
 ---
@@ -73,8 +46,6 @@ verdict: pass | revise | fail | needs-attention | n/a
 ---
 
 # {Review title}
-
-> Reviews carry **base + `verdict` / `review_kind` / `subject` only** (design §2.11, [`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). The reviewer identity, perspective set, and cross-references live in the **body** sections below — not frontmatter — so Wrap-up's allowlist strip cannot drop them.
 
 ## Subject
 {What was reviewed — design doc / plan / changelog / code branch / PR / dependency tree / etc., with path.}
@@ -108,29 +79,22 @@ verdict: pass | revise | fail | needs-attention | n/a
 {Findings still unresolved at time of writing. Pointers to backlog entries or future sessions where they will be addressed.}
 
 ## Related
-{Navigable `[[slug]]` links — the report slugs that cite or were cited by this review and the decision slugs this review drove ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Body content, not frontmatter.}
+{Navigable `[[slug]]` links — the report slugs that cite or were cited by this review and the decision slugs this review drove ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)). Body content, not frontmatter.}
 
 - [[2026-05-11-weekly-status]] — a report citing this review
-- [[2026-05-11-use-redis-not-memcached]] — a decision this review drove
 ```
 
-The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / repo-wide review uses `scope: project` + `feature: null` and promotes to the project `reviews/` tier.
+The example shows the **default-feature** case. A cross-feature review uses `scope: project` + `feature: null` and promotes to the project `reviews/` tier.
 
-## Distinguishing reviews from neighbors
+## Notes
 
-- **`reviews/` vs `reports/`**: see § Distinction from `reports/` above. Activity-shape is the test.
-- **`reviews/` vs `decisions/`**: a decision is the conclusion ("we chose X"). A review is the activity that may inform a decision. One review can drive multiple decisions; each decision cites the review it derived from.
-- **`reviews/` vs `mistakes/`**: a mistake is a rule extracted from experience ("don't do X"). A review may *surface* a mistake-worthy finding, which is then recorded separately in `mistakes/` with a cross-reference to the originating review.
-- **`reviews/` vs `learnings/`**: a learning is a transferable insight ("do this in future"). A review may surface learnings, which are recorded separately in `learnings/` with cross-references.
+- **Vs other types.** A review is the **activity substrate**; the records below are extracted from it.
 
-The review document is the **substrate**; mistakes / learnings / decisions / reports derived from a review are the **extracted artifacts**. Both layers coexist — the review preserves the full reasoning chain, the extracted artifacts capture the actionable distillation.
+  | vs | This is a review when… | Else it goes to |
+  |---|---|---|
+  | `reports/` | a review / evaluation / audit activity took place (a security audit, an ultrareview) | `reports/` — a `status` / `post-mortem` / `analytics` output, even one that cites review findings |
+  | `decisions/` | it is the assessment activity that may inform a choice | `decisions/` — the conclusion "we chose X" |
+  | `mistakes/` | it surfaces a mistake-worthy finding (recorded separately, cross-referenced) | `mistakes/` — the rule "don't do X" |
+  | `learnings/` | it surfaces a transferable insight (recorded separately, cross-referenced) | `learnings/` — the actionable "do this" |
 
-## Lifecycle
-
-Reviews are **append-only history** — a review's `status` is always `active` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)); you never mutate it. There is no `superseded` or `archived` review status: a newer review of the same artifact is **appended** as a separate file, not a status flip on the old one. Outcome resolution (was the review acted on, disputed, deferred) is recorded in the body — the per-finding `Disposition` line and the `## Outcome` section — never as a `status` value. A terminal review is archived by being moved under `archive/reviews/`; the move marks it, not a `status` value.
-
-When a later review of the same artifact produces different findings, both reviews stay in `reviews/` with chronological dates; the later one references the earlier in its `## Related` body links (and notes in its body that it supersedes the earlier). The earlier review's `status` stays `active` and its body is preserved.
-
-## Linking back
-
-Each review file points back to the originating session's full session directory so a curious reader can see the entire context. Reviews are activity result documents — they cite their evidence by path / version / commit-hash, not by inlining everything.
+- **Append-only.** A review's `status` stays `active` — never mutated. A later review of the same artifact is a separate dated file referencing the earlier in its `## Related` body links; the earlier review's body is preserved. Outcome resolution lives in the per-finding `Disposition` line and `## Outcome`, never as a `status` value.

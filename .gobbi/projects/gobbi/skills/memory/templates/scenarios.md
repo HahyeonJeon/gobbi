@@ -1,40 +1,27 @@
 # `scenarios/`
 
-**Feature-level enumeration of situations the feature must handle** — golden paths, edge cases, failure modes, adversarial scenarios. Accumulated across sessions: each Ideation Loop appends new scenarios discovered during Step 4 or in EVALUATION's `scenario_gap` findings.
+> Feature-level enumeration of situations the feature must handle — golden paths, edge cases, failure modes, adversarial scenarios. Accumulated across sessions, one file per scenario.
 
-## Lifecycle (staging → promotion)
+## Core principles
 
-This template covers a file with **two write paths**:
+> **State the situation, its inputs, and the expected behavior explicitly — the contract the system must meet, not the steps it takes.**
 
-1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md`. Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
+An expected behavior that is implied, or written as implementation steps, is a scenario no reader can verify against.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
+## Write it
 
----
+| Field | Value |
+|---|---|
+| When | Ideation RECORD (append new scenarios from Sub-step D enumeration); or EVALUATION's `scenario_gap` finding routing (append the missing scenario the evaluator surfaced). This is the persistent set; each session's `1-ideation/working/` holds only that session's diff. |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md` |
+| Promotes to | `features/{f}/scenarios/` (feature-only — scenarios are always bounded to a feature; cross-feature scenarios belong in project `design/`) |
+| Filename | `{scenario-slug}.md` — bare-slug (evergreen; date lives in frontmatter); one file per scenario, short and action-oriented (`cold-start-cache-miss.md`) |
 
-## When to write
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
-- During **Ideation** RECORD: append new scenarios from Ideation Sub-step D (Design) enumeration.
-- During EVALUATION's **`scenario_gap` finding** routing: append the missing scenario surfaced by the evaluator's Stage 1 Frame Build.
+## Frontmatter + body
 
-This is the **persistent** location. Each session's `sessions/{id}/1-ideation/working/` only holds the diff added in that session.
-
-## Location
-
-- **Feature-level only**: `.gobbi/projects/{project-name}/features/{feature}/scenarios/`
-
-Scenarios are always bounded to a feature. Cross-feature scenarios belong in project-level `design/`, not here.
-
-## File naming
-
-`{scenario-slug}.md` — bare-slug (evergreen — the scenario set is durable; the date lives in frontmatter), one file per scenario, short and action-oriented. See [`rules.md` § 1](../rules.md). `scenarios/` is a **feature-subdir-only** type ([`rules.md` § 3](../rules.md)).
-
-Example: `cold-start-cache-miss.md`, `password-reset-with-expired-token.md`, `concurrent-login-attempts.md`.
-
-## Item template
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) ONLY; `scope: feature` always (feature-subdir-only). Scenarios carry **base frontmatter only** (design §2.14, [`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model) — no scenarios extension row); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)). The scenario `category` and `coverage` state live in the **body** (below), not frontmatter, so Wrap-up's allowlist strip cannot drop them; base `status` stays `active`.
+Base frontmatter ONLY (no scenarios extension row); `scope: feature` always (feature-subdir-only). The scenario `Category` and `Coverage` state live in the **body** (below), not frontmatter, so Wrap-up's allowlist strip cannot drop them; base `status` stays `active` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)).
 
 ```markdown
 ---
@@ -72,19 +59,9 @@ author: claude                       # claude | codex | user — the runtime tha
 {Navigable `[[slug]]` links to the design doc and the checklist items that implement this scenario ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
 - [[cache-invalidation]] — the design covering this scenario
-- [[cold-start-cache-miss-checklist]] — the checklist that implements it
 ```
 
-## Coverage field
+## Notes
 
-The `Coverage` body field (distinct from the base `status` lifecycle field) tracks how well the scenario is handled:
-
-- **`covered`** — the current design and implementation handle this scenario; verified by a test or check
-- **`partial`** — the design intends to handle this but verification is incomplete
-- **`uncovered`** — surfaced as a scenario gap but no design addresses it yet (the next Ideation iteration must address)
-
-The Execution Loop's RECORD updates the body `Coverage` from `partial` to `covered` when the corresponding verification ships. Base `status` stays `active` until the scenario is superseded.
-
-## Append-only
-
-Scenarios accumulate across sessions. Do not delete a scenario when the feature evolves — instead, set status to `uncovered` and document why in the body, or supersede with a more accurate scenario file. Deletion would lose the history of what the feature has been expected to handle. When a scenario is superseded, at Wrap-up it is moved (`git mv`) to `archive/scenarios/{date}-{slug}.md` per the move-on-terminal model (never deleted; full content preserved).
+- **`Coverage` enum semantics.** The body `Coverage` field (distinct from the base `status` lifecycle field) tracks how well the scenario is handled: **`covered`** = current design + implementation handle it, verified by a test or check; **`partial`** = the design intends to handle it but verification is incomplete; **`uncovered`** = surfaced as a gap with no design yet (the next Ideation iteration must address). Execution RECORD flips `partial` → `covered` when the verification ships.
+- **Append, do not delete.** When the feature evolves, do not delete a stale scenario — set its `Coverage` to `uncovered` with a body note, or supersede it with a more accurate file. Deletion would lose the history of what the feature has been expected to handle.

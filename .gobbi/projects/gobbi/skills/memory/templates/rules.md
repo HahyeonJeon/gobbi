@@ -1,42 +1,27 @@
 # `rules/`
 
-**Behavioral rules** — load-bearing constraints every agent must follow. A rule is **project-wide by default** (`scope: project`, lives in `rules/`); a rule that binds only within one feature is feature-specific (`scope: feature`, lives in `features/{feature-name}/rules/`). Rules are stronger than mistakes: a mistake records "this approach fails reliably", while a rule records "this is how it must be done, period". Rules are referenced by skills, agent definitions, and CLAUDE.md, and they should be rare — every rule increases the project's surface area for new contributors.
+> Load-bearing behavioral constraints every agent must follow. Stronger than a mistake: a mistake records "this approach fails reliably"; a rule records "this is how it must be done, period". Rules are rare — every rule increases the project's surface area.
 
-## Lifecycle (Wrap-up direct write)
+## Core principles
 
-This template is written **directly by Wrap-up's RECORD** to its memory destination — there is no loop-RECORD staging path. Wrap-up authors the content (e.g., on first promotion to a new feature, on supersession, or from cross-session synthesis) and stamps this template.
+> **State the constraint, its rationale, and its scope.**
 
-Wrap-up is the sole writer; loop RECORD (Ideation / Planning / Execution) never writes to this destination.
+A rule without its reason is obeyed blindly or discarded; a rule without its scope is over- or under-applied.
 
----
+## Write it
 
-## When to write
+| Field | Value |
+|---|---|
+| When | Wrap-up identifies an invariant the team wants enforced going forward (naming conventions, layering constraints, banned patterns). Promotion **requires explicit user confirmation** through the active runtime's user-decision primitive — Wrap-up never promotes a rule unilaterally. |
+| Written by | Wrap-up RECORD (direct write — no staging). There is no `staging/rules/` subdir and no `rule-candidate:` upstream flag; loop RECORD never writes here. |
+| Promotes to | `rules/` (project-wide) · `features/{f}/rules/` (feature-specific — the canonical home; the retired `decisions/` + `precedent: true` workaround is superseded) |
+| Filename | `{slug}.md` — bare-slug (evergreen, no date prefix); short, imperative, names the rule (`evaluator-read-only-boundary.md`) |
 
-- Wrap-up identifies a candidate rule when the session's discussion produced an invariant the team wants enforced going forward (e.g., naming conventions, layering constraints, banned patterns). Rules are authored directly by Wrap-up + maintainer; there is no `staging/rules/` subdirectory and no `rule-candidate: true` upstream flag.
-- Rule promotion **requires explicit user confirmation** through the active runtime's user-decision primitive during Wrap-up — Wrap-up never promotes a rule unilaterally.
+Wrap-up writes directly to memory ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
-## Location
+## Frontmatter + body
 
-- Project-wide rule: `.gobbi/projects/{project-name}/rules/`
-- Feature-specific rule: `.gobbi/projects/{project-name}/features/{feature-name}/rules/`
-
-A rule binds either the whole project or one feature. A project-wide rule lives in `rules/`; a rule that binds only within one feature lives in `features/{feature-name}/rules/`. Both tiers are rare and load-bearing, and both require explicit user confirmation at Wrap-up.
-
-`features/{feature-name}/rules/` is the canonical home for feature-specific rules. The earlier workaround — putting a feature-scoped rule in `features/{feature-name}/decisions/` with a `precedent: true` marker — is **retired / superseded** by this subdir; do not use it.
-
-## File naming
-
-`{slug}.md` — short, imperative, names the rule. No date prefix (bare-slug; evergreen). See [`rules.md` § 1 naming standard](../rules.md).
-
-Examples: `docs-cleanup-parallelism.md`, `evaluator-read-only-boundary.md`.
-
-## Frontmatter
-
-Every rule file carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the rules-type extensions (`priority`, `established`). `supersedes` is a **global plain-slug base field** any type may carry (§2.1), not a rules-type extension. **Frontmatter is mandatory on every memory file, the `rules/` type included** — the older "the project uses plain markdown, frontmatter is forbidden" prohibition is rescoped to **stub-redirect TARGET docs only** (the published `.claude/` redirect stubs), NOT to memory files.
-
-## Item template
-
-The example uses the controlled `tags` vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)); `supersedes` is a **plain slug** (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).
+Base frontmatter plus the rules extensions (`priority`, `established`). `supersedes` is a **global plain-slug base field** (§2.1), not a rules extension. Frontmatter is mandatory on every memory file, `rules/` included — the older "plain markdown, frontmatter forbidden" prohibition is rescoped to stub-redirect TARGET docs only, NOT memory files ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)).
 
 ```markdown
 ---
@@ -62,37 +47,22 @@ supersedes: {prior rule slug if this replaces an existing rule} | null   # plain
 
 {Two-to-four-sentence elaboration: the principle behind the rule.}
 
----
-
-## Why
-
+## Reason
 {The motivation. What concrete failure or cost does this rule prevent?}
 
----
-
 ## When to apply
-
 {Conditions under which the rule binds. Be specific — under-scoping makes rules dead letters, over-scoping makes them inflexible.}
 
----
-
 ## When NOT to apply
-
 {Counter-conditions. Genuine exceptions, not weasel words. If there are no exceptions, state "always applies" explicitly.}
 
----
-
 ## Related
-
-{Navigable `[[slug]]` links to mistakes, decisions, design docs, or other rules that interact with this one — one bullet per link ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+{Navigable `[[slug]]` links to mistakes, decisions, design docs, or other rules that interact with this one ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
 - [[evaluator-read-only-boundary]] — a related rule it interacts with
-- [[file-move-needs-link-resolution-check]] — the mistake this rule prevents
 ```
 
-## Promotion contract
+## Notes
 
-- Wrap-up is the **only** writer to `rules/` — no loop RECORD writes directly
-- New rules require user confirmation through the active runtime's user-decision primitive ("Promote this session's recurring invariant to project rules as `{slug}`?")
-- Updating an existing rule uses the `supersedes:` frontmatter field; the prior rule file is preserved for audit
-- Never delete a rule file; supersession + frontmatter is the lifecycle mechanism. When the superseded rule reaches a terminal state (`status: superseded`), Wrap-up moves the full file (`git mv`) to `archive/rules/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model — never deleted, just relocated out of the active `rules/` directory.
+- **Promotion contract.** Wrap-up is the only writer to `rules/` — no loop RECORD writes directly. New rules require user confirmation through the active runtime's user-decision primitive ("Promote this session's recurring invariant to project rules as `{slug}`?").
+- **Update by supersede, never delete.** Updating an existing rule uses the `supersedes:` frontmatter field; the prior file is preserved for audit. When the superseded rule reaches a terminal state (`status: superseded`), Wrap-up moves the full file (`git mv`) to `archive/rules/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model — never deleted.

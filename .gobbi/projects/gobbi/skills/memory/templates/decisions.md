@@ -1,40 +1,27 @@
 # `decisions/`
 
-Time-stamped **decision records** (ADR-style) capturing what was decided, why, and what alternatives were considered. Future agents read these to understand *why the project looks the way it does* without re-running the original discussion.
+> Time-stamped decision records (ADR-style) — what was decided, why, and what alternatives were considered. A future reader learns why the project looks the way it does without re-running the discussion.
 
-## Lifecycle (staging → promotion)
+## Core principles
 
-This template covers a file with **two write paths**:
+> **Record the conclusion and why each alternative lost.**
 
-1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md`. Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
+A future reader applies the decision without re-opening the debate.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
+## Write it
 
----
+| Field | Value |
+|---|---|
+| When | A loop's RECORD (`ideation` / `planning` / `execution`) when a significant decision was made — technology choice, architecture trade-off, scope inclusion/exclusion, or a `design_flaw` / `assumption_risk` finding that received `PASS` (a deferred risk). |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` |
+| Promotes to | `features/{f}/decisions/` (default) · `decisions/` (project, cross-feature) |
+| Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (decisions are time-indexed); slug names the decision in ≤6 words (`2026-05-11-use-redis-not-memcached.md`) |
 
-## When to write
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
-- During **Ideation / Planning** RECORD when a significant decision was made (technology choice, architecture trade-off, scope inclusion/exclusion).
-- During **Execution** RECORD when a mid-execution decision changed direction (e.g., chose to defer a sub-task, picked library A over library B, accepted a deferred risk).
-- When a `design_flaw` or `assumption_risk` finding from EVALUATION received `PASS` despite the finding — record as `decisions/{date}-deferred-risk-{slug}.md` per finding-type routing.
+## Frontmatter + body
 
-## Location
-
-- Project-level: `.gobbi/projects/{project-name}/decisions/`
-- Feature-level: `.gobbi/projects/{project-name}/features/{feature}/decisions/`
-
-Project-level for decisions that span features or affect project conventions. Feature-level when scoped to one feature.
-
-## File naming
-
-`{YYYY-MM-DD}-{slug}.md` — date-prefixed (decisions are time-indexed); slug describes the decision in ≤6 words, one decision per file (atomicity — no bundle files). See [`rules.md` § 1](../rules.md).
-
-Example: `2026-05-11-use-redis-not-memcached.md`, `2026-05-11-defer-password-reset.md`.
-
-## Item template
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file). `decisions` has no non-link type extension. One unified `status` field carries the decision lifecycle (`proposed` | `accepted` | `superseded`) — the old `decision_status` is removed; its meaning folds into base `status` ([`rules.md` § 2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `supersedes` / `superseded_by` are **global plain-slug base fields** any type may carry (§2.1) — not decisions-type extensions; their value is a plain slug (the target file's `name`, no path, no `[[ ]]`) — see [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph). `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)); use the optional `keywords` field for any freeform tag outside it.
+Base frontmatter only — `decisions` has no non-link type extension. One unified `status` carries the decision lifecycle (`proposed` | `accepted` | `superseded`); the old `decision_status` is removed, its meaning folded into `status` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)).
 
 ```markdown
 ---
@@ -71,19 +58,11 @@ superseded_by: {new-decision-slug} | null     # plain slug, not a path
 {What this decision now obligates. Migrations needed, code patterns to follow, capabilities gained or lost.}
 
 ## Related
-{Navigable `[[slug]]` links to the discussion / design / plan documents that informed or follow from this decision — one bullet per link ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+{Navigable `[[slug]]` links to the discussion / design / plan documents that informed or follow from this decision — one bullet per link ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
 - [[cache-invalidation]] — the design this decision constrains
-- [[2026-05-11-cache-vs-index]] — the discussion that produced it
 ```
 
-## Supersedence
+## Notes
 
-When a decision is reversed or refined, create a new decision record with `supersedes: {old-slug}` and flip the old one's `status: superseded` + `superseded_by: {new-slug}`. Never delete a decision — the chain is the history. At session Wrap-up, the superseded decision is moved (`git mv`) to `archive/decisions/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model; the active `decisions/` directory shows only live decisions.
-
-## Deferred risks
-
-When a `design_flaw` or `assumption_risk` finding receives `PASS` instead of `REVISE`, the assistant writes a decision record with `status: accepted` (the team accepted the risk) documenting:
-- The risk
-- Why the team accepted it for now
-- The condition under which the decision would flip
+- **Deferred risks are `status: accepted` decisions.** When a `design_flaw` or `assumption_risk` finding receives `PASS` instead of `REVISE`, write a decision documenting the risk, why the team accepted it for now, and the condition under which the decision would flip.

@@ -1,42 +1,31 @@
 # `learnings/`
 
-**Transferable insights** the project picked up — what we now know how to do better, based on direct experience. A learning is **feature-local by default** (a technique or insight scoped to one feature); a learning that applies across features promotes up to the project `learnings/` tier. Distinct from `mistakes/` (failures to avoid) and `references/` (external sources).
+> Transferable insights the project picked up — what we now know how to do better, from direct experience. A learning is feature-local by default; a cross-feature one promotes up to the project tier.
 
-## Lifecycle (staging → promotion)
+## Core principles
 
-This template covers a file with **two write paths**:
+> **Write the technique as a reusable action, not a session story.**
 
-1. **Loop RECORD** (`ideation` / `planning` / `execution`): stage at `sessions/{date}-{session-id}/{N}-{loop}/staging/learnings/{slug}.md`. Loop RECORD **never** writes directly to memory.
-2. **Wrap-up's RECORD**: promotes the staged file to the destination listed under § Location below. Wrap-up is the sole writer to memory; this template's Location section shows what the *promoted* file looks like.
+The next agent reuses the win only if the doc names a concrete, transferable technique; a narrative of what happened this session teaches nothing a different task can lift.
 
-For the canonical authority on staging → destination routing, see [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing).
+> **State the counter-cases where the technique does not hold.**
 
----
+A technique with no stated boundary gets over-generalized and applied where it backfires; the limit is what keeps the reuse safe.
 
-## When to write
+## Write it
 
-- During any loop's RECORD when the loop produced an insight worth preserving:
-  - A pattern that worked better than expected
-  - A technique that should become a project convention
-  - A platform / library behavior the project discovered through use
-- During **Wrap-up** RECORD when cross-loop patterns become visible only at session close.
+| Field | Value |
+|---|---|
+| When | A loop's RECORD when the loop produced a durable insight — a pattern that worked better than expected, a technique that should become a convention, a platform/library behavior discovered through use; or Wrap-up RECORD when a cross-loop pattern surfaces only at session close. |
+| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/learnings/{slug}.md` |
+| Promotes to | `features/{f}/learnings/` (default) · `learnings/` (project, cross-cutting) |
+| Filename | `{slug}.md` — bare-slug, ≤6 words (`markdown-link-relativization.md`); no date or finding-ID prefix |
 
-## Location
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
-- Feature-level (default): `.gobbi/projects/{project-name}/features/{feature-name}/learnings/`
-- Project-level: `.gobbi/projects/{project-name}/learnings/`
+## Frontmatter + body
 
-Learnings are **default-feature**: an insight whose transferable lesson applies within one feature lives in `features/{feature-name}/learnings/`. Promote a learning up to project `learnings/` when it is cross-cutting — the insight applies across features or sessions.
-
-## File naming
-
-`{slug}.md` — bare-slug, short, descriptive, ≤6 words. No date prefix (learnings are timeless once recorded); no finding-ID prefix. See [`rules.md` § 1](../rules.md).
-
-Example: `parallel-spawn-rate-limit.md`, `markdown-link-relativization.md`, `bun-sqlite-strict-mode.md`.
-
-## Item template
-
-Carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file). `learnings` has no non-link type extension. The discovery date folds into base `created`; the originating session into base `session` — the ad-hoc `discovered` / `promoted-from` / `promoted-at` keys are dropped (`git log` + base `session` carry provenance, [`rules.md` § 2.6](../rules.md#26-staging-field-stripping-on-promotion)). `supersedes` / `superseded_by` / `related` are **global plain-slug base fields** any type may carry (§2.1) — not learnings-type extensions: `supersedes` / `superseded_by` are plain slugs and `related` is a **`list[slug]`** (no path, no `[[ ]]`, [`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)); `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+Base frontmatter only — `learnings` has no non-link type extension. The example shows the **default-feature** case (`scope: feature` + a `feature` slug); a cross-feature learning uses `scope: project` + `feature: null`. `related` is a `list[slug]` ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).
 
 ```markdown
 ---
@@ -64,31 +53,21 @@ related: [{related learning slugs}]            # list[slug] — plain slugs, not
 ## Context
 {The situation that produced this learning. What was being attempted, what was discovered.}
 
-## Why it matters
+## Reason
 {The cost the project would pay if this knowledge were lost. Convince a future reader to keep this.}
 
-## How to apply
+## How
 {Concrete guidance: when to use this insight, where it applies, what to watch for.}
 
 ## Counter-cases
 {When this insight does NOT apply. Important — most insights have boundaries.}
 
 ## Related
-{Navigable `[[slug]]` links to mistakes / references / decisions that share context with this learning ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+{Navigable `[[slug]]` links to mistakes / references / decisions that share context with this learning ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
 - [[file-move-needs-link-resolution-check]] — the trap this insight avoids
-- [[redis-ttl-eviction]] — the reference this learning draws on
 ```
 
-The example shows the **default-feature** case (`scope: feature` + `feature: {feature-name}`). A cross-feature / project-wide learning uses `scope: project` + `feature: null` and promotes to the project `learnings/` tier.
+## Notes
 
-## Distinguishing learnings from mistakes
-
-- **Learning** = "do this; here's the better way"
-- **Mistake** = "do not do that; here's the trap"
-
-When a finding has both shapes, write a mistake for the trap and a learning for the better way, cross-referencing each other.
-
-## Promotion source
-
-Many learnings start as evaluator findings (`general` type) or as observations in `notes/`. They are promoted to `learnings/` when the assistant judges them durable and actionable. Mere observations stay in `notes/`; actionable transferable insights graduate.
+- **Vs other types.** A learning is "do this — here's the better way"; a mistake is "do not do that — here's the trap". When a finding has both shapes, write a mistake for the trap and a learning for the better way, cross-referencing each other.
