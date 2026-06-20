@@ -74,7 +74,7 @@ The `README.md` gives a **high-level overview** of the feature, its current stat
 | Field | Value |
 |---|---|
 | Written by | Wrap-up RECORD (direct write — no staging; loop RECORD never writes here) |
-| When | At first promotion to a new feature (stamp a fresh README); and on subsequent sessions, update the `Status` + `Recent activity` sections to reflect the latest design / plan / changelog promoted |
+| When | At first promotion to a new feature (stamp a fresh README); and on subsequent activity (a later session promotes new design / plan / changelog), update the `Status` + `Recent activity` sections |
 | Location | `.gobbi/projects/{project-name}/features/{feature-name}/README.md` |
 
 ### Frontmatter + body
