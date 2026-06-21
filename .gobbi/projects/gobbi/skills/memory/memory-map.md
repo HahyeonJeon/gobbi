@@ -8,7 +8,7 @@ The assistant in RECORD writes **only** to the session record. Wrap-up — in it
 
 Column legend:
 
-- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](../record/SKILL.md#output-paths)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../record/record-map.md`](../record/record-map.md))
+- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{area}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](../record/SKILL.md#output-paths)). `{area}` is the area sub-dir under a by-area type, resolved by the §1.5 selection rule ([`rules.md` § 1.5](rules.md#15-area-namespace-the-second-category-axis-under-each-type)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../record/record-map.md`](../record/record-map.md))
 - **Description** — what lives here and why
 - **Writer** — the role that creates / updates this path during the workflow
 - **When** — the workflow point at which the writer touches it
@@ -75,26 +75,26 @@ Persistent, per-project, git-tracked. Durable memory. **Wrap-up is the sole writ
 
 ### Per-type canonical homes (the 16 memory types)
 
-Each memory type has a single canonical home directory and a per-type spec (purpose / hard boundary / scope / naming / frontmatter / CRUD) in [`rules.md`](rules.md) and the design-of-record. The table below is the path index covering all 16 first-class types from the one `type` enum ([`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types)); for the full per-type semantics see [`rules.md`](rules.md). **Placement** (which tier a type may live on) is a `scope`/path constraint, not an enum split — it is shown here as a column:
+Each memory type has a single canonical home directory and a per-type spec (purpose / hard boundary / scope / naming / frontmatter / CRUD) in [`rules.md`](rules.md) and the design-of-record. The table below is the path index covering all 16 first-class types from the one `type` enum ([`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types)); for the full per-type semantics see [`rules.md`](rules.md). **Placement** (which tier a type may live on) is a `scope`/path constraint, not an enum split — it is shown here as a column. Every by-area home carries a `{area}/` sub-dir — the area is resolved by the §1.5 selection rule ([`rules.md` § 1.5](rules.md#15-area-namespace-the-second-category-axis-under-each-type)); `features/` is the sole structural exception:
 
 | Type | Canonical home | Placement |
 |---|---|---|
 | `features` | `features/{feature-name}/` (the dir is its own tier; README is the identity doc) | n/a — `features/` IS the feature tier |
-| `notes` | `notes/` | Project-only |
-| `decisions` | `decisions/` | Both (default feature-level; promote-up to project) |
-| `design` | `design/` | Both (default feature-level; promote-up to project) |
-| `mistakes` | `mistakes/` | Both (default project-level; feature-scope when trap is feature-specific) |
-| `rules` | `rules/` | Both (project-wide → `rules/`; feature-specific → `features/{f}/rules/`; rare, user-confirmed) |
-| `learnings` | `learnings/` | Both (default feature-level; promote-up to project when cross-feature) |
-| `backlogs` | `backlogs/` | Both (feature tasks vs project-scope deferrals) |
-| `references` | `references/` | Both (default feature-level; promote-up rare) |
-| `plans` | `features/{feature-name}/plans/` (loop path); project `plans/` is maintainer-authored only, NOT loop-written | Feature-only for the loop path |
-| `reviews` | `reviews/` | Both (default feature-level; promote-up to project when cross-feature) |
-| `reports` | `reports/` | Both (default feature-level; promote-up to project when cross-feature) |
-| `changelogs` | `features/{feature-name}/changelogs/` | Feature-only |
-| `discussions` | `features/{feature-name}/discussions/` | Feature-only |
-| `scenarios` | `features/{feature-name}/scenarios/` | Feature-only |
-| `checklists` | `features/{feature-name}/checklists/` | Feature-only |
+| `notes` | `notes/{area}/` | Project-only |
+| `decisions` | `decisions/{area}/` | Both (default feature-level; promote-up to project) |
+| `design` | `design/{area}/` | Both (default feature-level; promote-up to project) |
+| `mistakes` | `mistakes/{area}/` | Both (default project-level; feature-scope when trap is feature-specific) |
+| `rules` | `rules/{area}/` | Both (project-wide → `rules/{area}/`; feature-specific → `features/{f}/rules/{area}/`; rare, user-confirmed) |
+| `learnings` | `learnings/{area}/` | Both (default feature-level; promote-up to project when cross-feature) |
+| `backlogs` | `backlogs/{area}/` | Both (feature tasks vs project-scope deferrals) |
+| `references` | `references/{area}/` | Both (default feature-level; promote-up rare) |
+| `plans` | `features/{feature-name}/plans/{area}/` (loop path); project `plans/` is maintainer-authored only, NOT loop-written | Feature-only for the loop path |
+| `reviews` | `reviews/{area}/` | Both (default feature-level; promote-up to project when cross-feature) |
+| `reports` | `reports/{area}/` | Both (default feature-level; promote-up to project when cross-feature) |
+| `changelogs` | `features/{feature-name}/changelogs/{area}/` | Feature-only |
+| `discussions` | `features/{feature-name}/discussions/{area}/` | Feature-only |
+| `scenarios` | `features/{feature-name}/scenarios/{area}/` | Feature-only |
+| `checklists` | `features/{feature-name}/checklists/{area}/` | Feature-only |
 
 `changelogs` / `discussions` / `scenarios` / `checklists` are first-class types that are **feature-only** by placement — they exist only as `features/{feature-name}/` subdirs (see [`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types) and [`rules.md` § 3](rules.md), and the per-row entries below). `archive` is **not** a `type` — it is a directory destination (`archive/{type}/`, typed subdirs, original `type` preserved); see the `archive/{type}/` row under Project-wide tiers below.
 
@@ -114,20 +114,20 @@ Each feature directory is bootstrapped lazily by Wrap-up on first promotion to t
 | Path | Writer | When | Template |
 |---|---|---|---|
 | `features/{feature-name}/README.md` | Wrap-up | first promotion to this feature; subsequent activity updates | [`templates/feature.md`](templates/feature.md) |
-| `features/{feature-name}/scenarios/{slug}.md` | Wrap-up | per promotion | [`templates/scenarios.md`](templates/scenarios.md) |
-| `features/{feature-name}/checklists/{slug}.md` | Wrap-up | per promotion | [`templates/checklists.md`](templates/checklists.md) |
-| `features/{feature-name}/decisions/{slug}.md` | Wrap-up | per promotion | [`templates/decisions.md`](templates/decisions.md) |
-| `features/{feature-name}/design/{slug}.md` | Wrap-up | per promotion | [`templates/design.md`](templates/design.md) |
-| `features/{feature-name}/discussions/{slug}.md` | Wrap-up | per promotion | [`templates/discussions.md`](templates/discussions.md) |
-| `features/{feature-name}/references/{slug}.md` | Wrap-up | per promotion | [`templates/references.md`](templates/references.md) |
-| `features/{feature-name}/plans/{date}-{slug}.md` | Wrap-up | per Planning `PASS` | [`templates/plans.md`](templates/plans.md) |
-| `features/{feature-name}/backlogs/{slug}.md` | Wrap-up | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
-| `features/{feature-name}/changelogs/{slug}.md` | Wrap-up | per ship | [`templates/changelogs.md`](templates/changelogs.md) |
-| `features/{feature-name}/mistakes/{slug}.md` | Wrap-up | per `mistake-candidate: true` (user-scoped feature) | [`templates/mistakes.md`](templates/mistakes.md) |
-| `features/{feature-name}/rules/{slug}.md` | Wrap-up | per promotion (feature-specific rule; user-confirmed) | [`templates/rules.md`](templates/rules.md) |
-| `features/{feature-name}/learnings/{slug}.md` | Wrap-up | per promotion (feature-local insight) | [`templates/learnings.md`](templates/learnings.md) |
-| `features/{feature-name}/reviews/{date}-{slug}.md` | Wrap-up | per promotion (feature-scope review activity) | [`templates/reviews.md`](templates/reviews.md) |
-| `features/{feature-name}/reports/{date}-{slug}.md` | Wrap-up | per promotion (feature-scope report) | [`templates/reports.md`](templates/reports.md) |
+| `features/{feature-name}/scenarios/{area}/{slug}.md` | Wrap-up | per promotion | [`templates/scenarios.md`](templates/scenarios.md) |
+| `features/{feature-name}/checklists/{area}/{slug}.md` | Wrap-up | per promotion | [`templates/checklists.md`](templates/checklists.md) |
+| `features/{feature-name}/decisions/{area}/{date}-{slug}.md` | Wrap-up | per promotion | [`templates/decisions.md`](templates/decisions.md) |
+| `features/{feature-name}/design/{area}/{slug}.md` | Wrap-up | per promotion | [`templates/design.md`](templates/design.md) |
+| `features/{feature-name}/discussions/{area}/{slug}.md` | Wrap-up | per promotion | [`templates/discussions.md`](templates/discussions.md) |
+| `features/{feature-name}/references/{area}/{slug}.md` | Wrap-up | per promotion | [`templates/references.md`](templates/references.md) |
+| `features/{feature-name}/plans/{area}/{date}-{slug}.md` | Wrap-up | per Planning `PASS` | [`templates/plans.md`](templates/plans.md) |
+| `features/{feature-name}/backlogs/{area}/{slug}.md` | Wrap-up | per deferral | [`templates/backlogs.md`](templates/backlogs.md) |
+| `features/{feature-name}/changelogs/{area}/{slug}.md` | Wrap-up | per ship | [`templates/changelogs.md`](templates/changelogs.md) |
+| `features/{feature-name}/mistakes/{area}/{slug}.md` | Wrap-up | per `mistake-candidate: true` (user-scoped feature) | [`templates/mistakes.md`](templates/mistakes.md) |
+| `features/{feature-name}/rules/{area}/{slug}.md` | Wrap-up | per promotion (feature-specific rule; user-confirmed) | [`templates/rules.md`](templates/rules.md) |
+| `features/{feature-name}/learnings/{area}/{slug}.md` | Wrap-up | per promotion (feature-local insight) | [`templates/learnings.md`](templates/learnings.md) |
+| `features/{feature-name}/reviews/{area}/{date}-{slug}.md` | Wrap-up | per promotion (feature-scope review activity) | [`templates/reviews.md`](templates/reviews.md) |
+| `features/{feature-name}/reports/{area}/{date}-{slug}.md` | Wrap-up | per promotion (feature-scope report) | [`templates/reports.md`](templates/reports.md) |
 
 ### Project-wide tiers
 
@@ -135,18 +135,18 @@ These directories hold knowledge that crosses features or is intentionally proje
 
 | Path | Description | Writer | When | Template |
 |---|---|---|---|---|
-| `mistakes/{slug}.md` | Project-wide mistakes — corrections that apply across features. Highest-value knowledge in the system | Wrap-up | per `mistake-candidate: true` (user-scoped project) | [`templates/mistakes.md`](templates/mistakes.md) |
-| `rules/{slug}.md` | Project rules — enforceable behavioral / structural conventions. Rare and load-bearing; user-confirm through the active runtime's user-decision primitive | Wrap-up | per session if a rule surfaced; user-confirmed | [`templates/rules.md`](templates/rules.md) |
-| `design/{slug}.md` | Project-wide design documents. Feature-wide design lives under `features/{feature-name}/design/`; this tier is for cross-feature architecture | Wrap-up + maintainer | per promotion (user-confirmed) or manual authorship | [`templates/design.md`](templates/design.md) |
-| `notes/{slug}.md` | Development journal entries — work-log records of what was done in a given session / day, akin to a dev diary. Distinct from `decisions/` (the conclusion) and `design/` (the architecture) — `notes/` captures the *running narrative of work* | Wrap-up | per session (typically one journal entry per session-close) | [`templates/notes.md`](templates/notes.md) |
-| `backlogs/{slug}.md` | Project-wide deferred work (deferred features, project-scope tasks) | Wrap-up | per project-scope deferral | [`templates/backlogs.md`](templates/backlogs.md) |
-| `references/{slug}.md` | Project-wide external references (cross-feature prior art) | Wrap-up | rare — user-confirmed cross-feature relevance | [`templates/references.md`](templates/references.md) |
-| `decisions/{slug}.md` | Project-wide decisions (architectural choices, repo-level policies) | Wrap-up + maintainer | per project-scope decision | [`templates/decisions.md`](templates/decisions.md) |
-| `plans/{YYYY-MM-DD}-{slug}.md` | **Maintainer-authored cross-feature roadmaps / release plans ONLY** — this tier is authored directly by the maintainer and is **NOT loop-written**. No Planning-loop RECORD or Wrap-up promotion ever targets project `plans/`; the loop path writes plans only to `features/{feature-name}/plans/`. If this maintainer surface is judged unnecessary it may be dropped entirely — the loop contract does not depend on it | maintainer (direct) | per maintainer-authored roadmap | [`templates/plans.md`](templates/plans.md) |
-| `reviews/{YYYY-MM-DD}-{slug}.md` | Review / evaluation / audit activity result documents (adversarial-review, ultrareview, code review, retrospective, audit reports) | Wrap-up + maintainer | per review / audit activity completed | [`templates/reviews.md`](templates/reviews.md) |
-| `reports/{YYYY-MM-DD}-{slug}.md` | Long-form report documents — `status` (periodic summaries), `post-mortem` (incident investigations), `analytics` (measurement outputs). Three types via `report_type` frontmatter | Wrap-up + maintainer | per status period close / post-mortem trigger / analytics run | [`templates/reports.md`](templates/reports.md) |
-| `learnings/{slug}.md` | Project-level learnings — insights that emerge across features or sessions | Wrap-up + maintainer | per substantive learning | [`templates/learnings.md`](templates/learnings.md) |
-| `archive/{type}/{YYYY-MM-DD}-{slug}.md` | Retired / superseded content moved here in full when it reaches a terminal state. Organized by **typed subdirs** — `archive/{type}/` mirrors the originating content type (`archive/decisions/`, `archive/backlogs/`, `archive/notes/`, …); the archived file keeps its ORIGINAL `type` in frontmatter (`archive` is not a `type` value) and gains `archived_at` / `archive_reason`. The directory — not the `type` field — marks it archived | Wrap-up + maintainer | per supersession / terminal-state move (`git mv`; preserves the file rather than deleting) | [`templates/archive.md`](templates/archive.md) |
+| `mistakes/{area}/{slug}.md` | Project-wide mistakes — corrections that apply across features. Highest-value knowledge in the system | Wrap-up | per `mistake-candidate: true` (user-scoped project) | [`templates/mistakes.md`](templates/mistakes.md) |
+| `rules/{area}/{slug}.md` | Project rules — enforceable behavioral / structural conventions. Rare and load-bearing; user-confirm through the active runtime's user-decision primitive | Wrap-up | per session if a rule surfaced; user-confirmed | [`templates/rules.md`](templates/rules.md) |
+| `design/{area}/{slug}.md` | Project-wide design documents. Feature-wide design lives under `features/{feature-name}/design/`; this tier is for cross-feature architecture | Wrap-up + maintainer | per promotion (user-confirmed) or manual authorship | [`templates/design.md`](templates/design.md) |
+| `notes/{area}/{slug}.md` | Development journal entries — work-log records of what was done in a given session / day, akin to a dev diary. Distinct from `decisions/` (the conclusion) and `design/` (the architecture) — `notes/` captures the *running narrative of work* | Wrap-up | per session (typically one journal entry per session-close) | [`templates/notes.md`](templates/notes.md) |
+| `backlogs/{area}/{slug}.md` | Project-wide deferred work (deferred features, project-scope tasks) | Wrap-up | per project-scope deferral | [`templates/backlogs.md`](templates/backlogs.md) |
+| `references/{area}/{slug}.md` | Project-wide external references (cross-feature prior art) | Wrap-up | rare — user-confirmed cross-feature relevance | [`templates/references.md`](templates/references.md) |
+| `decisions/{area}/{slug}.md` | Project-wide decisions (architectural choices, repo-level policies) | Wrap-up + maintainer | per project-scope decision | [`templates/decisions.md`](templates/decisions.md) |
+| `plans/{area}/{YYYY-MM-DD}-{slug}.md` | **Maintainer-authored cross-feature roadmaps / release plans ONLY** — this tier is authored directly by the maintainer and is **NOT loop-written**. No Planning-loop RECORD or Wrap-up promotion ever targets project `plans/`; the loop path writes plans only to `features/{feature-name}/plans/`. If this maintainer surface is judged unnecessary it may be dropped entirely — the loop contract does not depend on it | maintainer (direct) | per maintainer-authored roadmap | [`templates/plans.md`](templates/plans.md) |
+| `reviews/{area}/{YYYY-MM-DD}-{slug}.md` | Review / evaluation / audit activity result documents (adversarial-review, ultrareview, code review, retrospective, audit reports) | Wrap-up + maintainer | per review / audit activity completed | [`templates/reviews.md`](templates/reviews.md) |
+| `reports/{area}/{YYYY-MM-DD}-{slug}.md` | Long-form report documents — `status` (periodic summaries), `post-mortem` (incident investigations), `analytics` (measurement outputs). Three types via `report_type` frontmatter | Wrap-up + maintainer | per status period close / post-mortem trigger / analytics run | [`templates/reports.md`](templates/reports.md) |
+| `learnings/{area}/{slug}.md` | Project-level learnings — insights that emerge across features or sessions | Wrap-up + maintainer | per substantive learning | [`templates/learnings.md`](templates/learnings.md) |
+| `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md` | Retired / superseded content moved here in full when it reaches a terminal state. Organized by **typed subdirs** then the area sub-dir — `archive/{type}/{area}/` mirrors the originating content type AND its resolved area (`archive/decisions/memory/`, `archive/backlogs/wrap-up/`, `archive/notes/workflow/`, …); the archived file keeps its ORIGINAL `type` in frontmatter (`archive` is not a `type` value) and gains `archived_at` / `archive_reason`. The directory — not the `type` field — marks it archived | Wrap-up + maintainer | per supersession / terminal-state move (`git mv`; preserves the file rather than deleting) | [`templates/archive.md`](templates/archive.md) |
 
 Project-specific skill / agent overrides live under runtime static-knowledge paths: `.claude/skills/{skill-name}/` and `.claude/agents/{agent-name}.md` in Claude Code, `.agents/skills/{skill-name}/` and `.codex/agents/{agent-name}.toml` in Codex. These are static-knowledge paths, **not memory** in this skill's sense. The memory-map only covers paths under `.gobbi/projects/{project-name}/`; runtime overrides are authored manually by the maintainer and are out of RECORD's scope.
 
@@ -156,7 +156,7 @@ Project-specific skill / agent overrides live under runtime static-knowledge pat
 
 ## Templates index
 
-All templates live under [`templates/`](templates/). The index below lets you jump from a directory name (session or project) to its template, and from a template to the directories it stamps.
+All templates live under [`templates/`](templates/). The index below lets you jump from a directory name (session or project) to its template, and from a template to the directories it stamps. The index lists type-dir prefixes, not full paths; every by-area memory destination also carries the `{area}/` segment per §1.5 (session-staging dirs stay flat — Wrap-up resolves the area at promotion).
 
 | Template | Stamps these directories |
 |---|---|
