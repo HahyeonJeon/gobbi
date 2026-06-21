@@ -18,7 +18,7 @@ A technique with no stated boundary gets over-generalized and applied where it b
 |---|---|
 | When | A loop's RECORD when the loop produced a durable insight — a pattern that worked better than expected, a technique that should become a convention, a platform/library behavior discovered through use; or Wrap-up RECORD when a cross-loop pattern surfaces only at session close. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/learnings/{slug}.md` |
-| Promotes to | `features/{f}/learnings/` (default) · `learnings/` (project, cross-cutting) |
+| Promotes to | `features/{f}/learnings/{area}/` (default) · `learnings/{area}/` (project, cross-cutting) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, ≤6 words (`markdown-link-relativization.md`); no date or finding-ID prefix |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).

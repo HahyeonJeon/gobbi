@@ -14,7 +14,7 @@ An expected behavior that is implied, or written as implementation steps, is a s
 |---|---|
 | When | Ideation RECORD (append new scenarios from Sub-step D enumeration); or EVALUATION's `scenario_gap` finding routing (append the missing scenario the evaluator surfaced). This is the persistent set; each session's `1-ideation/working/` holds only that session's diff. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md` |
-| Promotes to | `features/{f}/scenarios/` (feature-only — scenarios are always bounded to a feature; cross-feature scenarios belong in project `design/`) |
+| Promotes to | `features/{f}/scenarios/{area}/` (feature-only — scenarios are always bounded to a feature; cross-feature scenarios belong in project `design/`) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{scenario-slug}.md` — bare-slug (evergreen; date lives in frontmatter); one file per scenario, short and action-oriented (`cold-start-cache-miss.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).

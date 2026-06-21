@@ -14,7 +14,7 @@ An item a future reader cannot resume without re-deriving why it was deferred is
 |---|---|
 | When | Ideation Step 2 Lock Scope — every non-chosen candidate; or a loop's RECORD when a deferred eval finding or deferred scope-violating work surfaces. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md` |
-| Promotes to | `features/{f}/backlogs/` (deferred task) · `backlogs/` (project, deferred feature) |
+| Promotes to | `features/{f}/backlogs/{area}/` (deferred task) · `backlogs/{area}/` (project, deferred feature) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, ≤6 words, no date prefix (evergreen-until-closed); no positional prefix (`password-reset-flow.md`, `search-system.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -66,5 +66,5 @@ shipped_in: {changelog / PR / commit on close} | null
 
 ## Notes
 
-- **Lifecycle:** **created** at Lock Scope decomposition; **picked up** when a future session sets it as that session's `task`/`feature` in `session.json`; **closed** when the work ships — the file moves to `archive/backlogs/{date}-{slug}.md` ([`archive.md`](archive.md)) and a changelog records the completion.
-- **Prune stale entries at Wrap-up.** A backlog not picked up in months with no clear "when to pick up" trigger is dead weight; flag it to the user — keep, archive, or drop (move to `archive/backlogs/` with `archive_reason: dropped`). Deletion is never an option — no-delete is a hard invariant.
+- **Lifecycle:** **created** at Lock Scope decomposition; **picked up** when a future session sets it as that session's `task`/`feature` in `session.json`; **closed** when the work ships — the file moves to `archive/backlogs/{area}/{date}-{slug}.md` ([`archive.md`](archive.md)) and a changelog records the completion.
+- **Prune stale entries at Wrap-up.** A backlog not picked up in months with no clear "when to pick up" trigger is dead weight; flag it to the user — keep, archive, or drop (move to `archive/backlogs/{area}/` with `archive_reason: dropped`). Deletion is never an option — no-delete is a hard invariant.

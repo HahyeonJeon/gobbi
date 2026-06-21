@@ -14,7 +14,7 @@ A sub-task whose scope or check the executor must reconstruct from the planning 
 |---|---|
 | When | Planning RECORD when the loop produces a canonical plan. `plans/` is **Planning-loop-only** — ideation / preparation / execution / wrap-up do not produce plans. A mid-execution refinement creates a new versioned plan, never an in-place edit. |
 | Stage to | `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` |
-| Promotes to | `features/{f}/plans/` (loop path — feature-only). Project-level `plans/` holds maintainer cross-feature roadmaps ONLY; no loop RECORD or Wrap-up promotion targets it. |
+| Promotes to | `features/{f}/plans/{area}/` (loop path — feature-only) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`). Project-level `plans/` holds maintainer cross-feature roadmaps ONLY; no loop RECORD or Wrap-up promotion targets it. |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (tied to the session that produced it); slug describes the plan in ≤6 words (`2026-05-11-auth-middleware.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -45,7 +45,7 @@ task_count: {number of sub-tasks in this plan}
 # {Plan title}
 
 ## Idea anchor
-{Link to the `features/{feature-name}/design/{slug}.md` document this plan implements.}
+{Link to the `features/{feature-name}/design/{area}/{slug}.md` document this plan implements.}
 
 ## Scope Contract reference
 {Link to the locked Scope Contract (typically in the Ideation canonical artifact).}
@@ -75,5 +75,5 @@ task_count: {number of sub-tasks in this plan}
 
 ## Notes
 
-- **Update by supersede, never edit in place.** When execution surfaces a plan change (a sub-task was harder, an ordering flipped), write a new `{new-date}-{slug}.md` with `supersedes: {old-slug}`. The version lives in frontmatter, never the slug (no `-v2`; [`rules.md` § 1.3](../rules.md) anti-pattern #6). The superseded plan is moved (`git mv`) to `archive/plans/{date}-{slug}.md` at Wrap-up, never deleted.
+- **Update by supersede, never edit in place.** When execution surfaces a plan change (a sub-task was harder, an ordering flipped), write a new `{new-date}-{slug}.md` with `supersedes: {old-slug}`. The version lives in frontmatter, never the slug (no `-v2`; [`rules.md` § 1.3](../rules.md) anti-pattern #6). The superseded plan is moved (`git mv`) to `archive/plans/{area}/{date}-{slug}.md` at Wrap-up, never deleted.
 - **Sub-task granularity.** Each sub-task must be narrow enough that scope is unambiguous to one executor. If a description starts with "and then" or "while doing this also", split it.

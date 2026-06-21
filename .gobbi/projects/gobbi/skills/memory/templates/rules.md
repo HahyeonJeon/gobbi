@@ -14,7 +14,7 @@ A rule without its reason is obeyed blindly or discarded; a rule without its sco
 |---|---|
 | When | Wrap-up identifies an invariant the team wants enforced going forward (naming conventions, layering constraints, banned patterns). Promotion **requires explicit user confirmation** through the active runtime's user-decision primitive — Wrap-up never promotes a rule unilaterally. |
 | Written by | Wrap-up RECORD (direct write — no staging). There is no `staging/rules/` subdir and no `rule-candidate:` upstream flag; loop RECORD never writes here. |
-| Promotes to | `rules/` (project-wide) · `features/{f}/rules/` (feature-specific — the canonical home; the retired `decisions/` + `precedent: true` workaround is superseded) |
+| Promotes to | `rules/{area}/` (project-wide) · `features/{f}/rules/{area}/` (feature-specific — the canonical home; the retired `decisions/` + `precedent: true` workaround is superseded) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug (evergreen, no date prefix); short, imperative, names the rule (`evaluator-read-only-boundary.md`) |
 
 Wrap-up writes directly to memory ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -65,4 +65,4 @@ supersedes: {prior rule slug if this replaces an existing rule} | null   # plain
 ## Notes
 
 - **Promotion contract.** Wrap-up is the only writer to `rules/` — no loop RECORD writes directly. New rules require user confirmation through the active runtime's user-decision primitive ("Promote this session's recurring invariant to project rules as `{slug}`?").
-- **Update by supersede, never delete.** Updating an existing rule uses the `supersedes:` frontmatter field; the prior file is preserved for audit. When the superseded rule reaches a terminal state (`status: superseded`), Wrap-up moves the full file (`git mv`) to `archive/rules/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model — never deleted.
+- **Update by supersede, never delete.** Updating an existing rule uses the `supersedes:` frontmatter field; the prior file is preserved for audit. When the superseded rule reaches a terminal state (`status: superseded`), Wrap-up moves the full file (`git mv`) to `archive/rules/{area}/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model — never deleted.
