@@ -31,6 +31,15 @@
 #       author) + the global-optional slug-link fields (supersedes / superseded_by /
 #       related, §2.1/§2.4 — global, NOT per-type extensions, so never double-counted)
 #       + that type's declared §2.2 extensions
+#     - required-area (§1.5): a by-area file MUST live at {type}/{area}/{slug}.md
+#       (project tier) or features/{f}/{type}/{area}/{slug}.md (feature tier). The area
+#       is the path segment between the type dir and the filename — derived from the
+#       PATH, NOT a frontmatter field (`area:` is staging-only, stripped on promotion,
+#       Branch B). A by-area file at a flat {type}/{slug}.md (no area dir) FAILS.
+#       README.md and the `features` type are exempt (the feature dir is the area axis).
+#     - off-allowlist-area (§1.5): the derived area MUST be in the type's closed area
+#       allowlist (mistakes -> trap-class set; the spine types -> the shared spine).
+#       An area outside the list (e.g. mistakes/banana/) FAILS.
 #     - slug uniqueness: no two live files share a name: — EXCEPT README.md files, which
 #       carry the fixed identity name `README` (§2.4) and are exempt from uniqueness
 #
@@ -191,6 +200,34 @@ required_ext_for() {
         references)  echo "title source ref_type" ;;
         *)           echo "" ;;
     esac
+}
+
+# §1.5 — per-type AREA allowlist (closed controlled vocabulary, like §2.5 tags).
+# The cross-type SPINE is shared by every spine type; `mistakes` uses a curated
+# trap-class set instead (the `process` bucket is DISSOLVED into trap-classes, so
+# `process` is NOT a mistakes area). `features` is the SOLE structural exception —
+# the feature dir is itself the area axis and README.md is exempt, so it is not
+# by-area (echoes empty; the area checks skip it). Source of truth: rules.md §1.5.
+AREA_SPINE="memory git workflow wrap-up evaluation codex process _shared"
+AREA_MISTAKES="verification rename-sweep tooling git codex docs-sync memory _shared"
+
+# area_allowlist_for <type>  -> echoes the type's allowed area set (§1.5), or empty
+# for the structural exception (`features`) and any non-type input.
+area_allowlist_for() {
+    case "$1" in
+        mistakes)
+            echo "$AREA_MISTAKES" ;;
+        decisions|design|backlogs|notes|references|learnings|reviews|reports|rules|plans|changelogs|discussions|scenarios|checklists)
+            echo "$AREA_SPINE" ;;
+        *)
+            echo "" ;;   # features (structural exception) + non-types: not by-area
+    esac
+}
+
+# is_by_area <type>  -> exit 0 if the type is a by-area type (has a non-empty area
+# allowlist), 1 otherwise. `features` is the sole by-area-exempt type (§1.5).
+is_by_area() {
+    [ -n "$(area_allowlist_for "$1")" ]
 }
 
 # =============================================================================
@@ -466,6 +503,39 @@ for f in "${files[@]}"; do
                 report "$f" "$k" "stray key — not allowed for type '$ftype' (§2.2/§2.6)"
             fi
         done <<< "$keys"
+    fi
+
+    # --- area-segment checks (§1.5, Branch B: area derived from PATH) ----------
+    # A by-area file lives at {type}/{area}/{slug}.md (project tier) or
+    # features/{f}/{type}/{area}/{slug}.md (feature tier). The area is the path
+    # segment between the type dir and the filename — derived from the PATH, never
+    # from a frontmatter field (`area:` is staging-only, stripped on promotion).
+    # Two checks: (a) required-area — a by-area file at a FLAT {type}/{slug}.md
+    # (no area segment) FAILS; (b) off-allowlist — the derived area must be in the
+    # type's §1.5 allowlist. README.md and the `features` type are exempt (the
+    # feature dir is itself the area axis). Both checks run only for by-area types.
+    if [ -n "$ftype" ] && in_set "$ftype" "$TYPES" \
+       && [ "$(basename "$f")" != "README.md" ] && is_by_area "$ftype"; then
+        rel="${f#"$project_root"/}"
+        # Isolate the remainder after the LAST '/{type}/' marker: {area}/{file}
+        # (nested) or {file} (flat). Anchor with a leading '/' so the marker
+        # '/{type}/' matches even when the type dir is the first path segment.
+        after="/$rel"
+        after="${after##*"/$ftype/"}"
+        if [ "$after" = "/$rel" ]; then
+            # The '/{type}/' marker was not found at all — the type dir is not in
+            # the path. This is a placement anomaly, not an area question; the
+            # required-area check below cannot derive an area, so report it as such.
+            report "$f" "area" "by-area type '$ftype' but no '$ftype/' dir in path (§1.5)"
+        elif [ "$after" = "${after%/*}" ]; then
+            # No '/' left in the remainder => flat {type}/{slug}.md, no area dir.
+            report "$f" "area" "by-area type '$ftype' missing required area segment — file is at flat '$ftype/$(basename "$f")', expected '$ftype/{area}/' (§1.5)"
+        else
+            farea="${after%%/*}"
+            if ! in_set "$farea" "$(area_allowlist_for "$ftype")"; then
+                report "$f" "area" "'$farea' not in $ftype area allowlist {$(area_allowlist_for "$ftype" | sed 's/ /, /g')} (§1.5)"
+            fi
+        fi
     fi
 
     # --- slug uniqueness accumulation ----------------------------------------
