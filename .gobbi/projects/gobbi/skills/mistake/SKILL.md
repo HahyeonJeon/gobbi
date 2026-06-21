@@ -62,8 +62,8 @@ When a new mistake supersedes an older one (new understanding overrides the prio
 
 At the start of any task:
 
-1. Read `.gobbi/projects/{project-name}/mistakes/*.md` — all project-level mistake files.
-2. If the task is feature-scoped: read `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/*.md`.
+1. Read `.gobbi/projects/{project-name}/mistakes/**/*.md` — all project-level mistake files. The glob MUST be recursive (`**/*.md`, or `find .../mistakes -name '*.md'`): mistakes nest one area level under the type dir (`mistakes/{area}/{slug}.md`), so a single-level `mistakes/*.md` glob silently misses every by-area file and the agent loads mistake-blind.
+2. If the task is feature-scoped: read `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/**/*.md` — recursively, for the same reason (feature mistakes also nest under `{area}/`).
 3. Filter by domain relevance — load mistakes whose domain tag matches the task's domain (e.g., `docs-sync`, `process`, `security`, `hooks`).
 4. Note any applicable mistakes explicitly in the Study phase before making any decision in that domain.
 

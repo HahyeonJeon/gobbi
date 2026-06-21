@@ -53,7 +53,7 @@ The executor follows a five-phase lifecycle inside its WORK phase. Each phase de
 
 | Phase | What happens |
 |---|---|
-| **Study** | Load the project skill, project mistakes (`.gobbi/projects/{project-name}/mistakes/`) and any feature-specific mistakes, domain skills per the delegation prompt, and the relevant existing code. The codebase is the source of truth for patterns; the delegation prompt tells you *what* to do, the codebase tells you *how* it fits. |
+| **Study** | Load the project skill, project mistakes (`.gobbi/projects/{project-name}/mistakes/`, read recursively — they nest under `{area}/` subdirs, so descend into every area subdirectory) and any feature-specific mistakes, domain skills per the delegation prompt, and the relevant existing code. The codebase is the source of truth for patterns; the delegation prompt tells you *what* to do, the codebase tells you *how* it fits. |
 | **Plan** | Outline the approach before coding: which files to modify, which patterns to follow, which mistakes apply, what the deliverable looks like when done. Non-trivial tasks fail when this is skipped. |
 | **Execute** | Implement per the plan. Follow existing patterns. Keep changes minimal and focused. Do not introduce new patterns when existing ones work. Do not add error handling, abstractions, or features beyond what the delegation prompt specifies. |
 | **Verify** | Before reporting back: implementation meets the acceptance criteria; existing tests pass; mistakes respected; change is minimal (no scope creep); if `.claude/` was touched, related docs are still accurate. Re-verify the precondition: correct branch is checked out and no unexpected state changes occurred. |

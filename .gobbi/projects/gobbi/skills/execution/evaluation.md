@@ -395,7 +395,7 @@ Domain-specific code quality details (language idioms, type-system patterns, fra
 | `grep` for callers of any changed exported function | Quantify blast radius |
 | `grep` for `--no-verify`, `--force`, `eval(`, `exec(`, untrusted-input sinks | Audit risk surface |
 | Project's security checklist (if any) | Confirm coverage |
-| Read project's `mistakes/` for related risk lessons | Avoid repeating known mistakes |
+| Read project's `mistakes/` (recursively — descend into every `{area}/` subdir) for related risk lessons | Avoid repeating known mistakes |
 
 ### Perspective-specific anti-patterns
 
