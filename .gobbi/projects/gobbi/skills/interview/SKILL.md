@@ -156,9 +156,9 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 **Leader spawn (optional)** — the manager spawns a leader to read `package.json`, `tsconfig.json`, `pyproject.toml`, etc., and the top-level directory structure, then return a fact sheet. The manager presents this to the user to confirm or refute.
 
 **Output domain**:
-- `.gobbi/projects/{project-name}/design/architecture.md` (high-level module map + responsibility per directory)
-- `.gobbi/projects/{project-name}/decisions/{date}-tech-stack.md`
-- `.gobbi/projects/{project-name}/decisions/{date}-conventions.md`
+- `.gobbi/projects/{project-name}/design/{area}/architecture.md` (high-level module map + responsibility per directory)
+- `.gobbi/projects/{project-name}/decisions/{area}/{date}-tech-stack.md`
+- `.gobbi/projects/{project-name}/decisions/{area}/{date}-conventions.md`
 
 **Wave close**:
 - Intermediate summary
@@ -211,7 +211,7 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 **Output domain**:
 - `.gobbi/projects/{project-name}/features/{feature-name}/README.md` — one per identified feature (manager stamps from [`memory/templates/feature.md`](../memory/templates/feature.md))
 - `.gobbi/projects/{project-name}/backlogs/{area}/{slug}.md` — deferred / planned features
-- `.gobbi/projects/{project-name}/decisions/{date}-roadmap-priority.md`
+- `.gobbi/projects/{project-name}/decisions/{area}/{date}-roadmap-priority.md`
 
 **Wave close**:
 - Intermediate summary
@@ -230,7 +230,7 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 - What's the most expensive bug in project history? What was the root cause?
 - What hides in places no one looks?
 
-**Leader spawn (optional)** — leader reviews recent bug-fix commits (`git log --grep=fix`) and existing `mistakes/` to surface patterns.
+**Leader spawn (optional)** — leader reviews recent bug-fix commits (`git log --grep=fix`) and existing `mistakes/` (read recursively — all area subdirs) to surface patterns.
 
 **Output domain**:
 - `.gobbi/projects/{project-name}/mistakes/{area}/{slug}.md` (one per surfaced trap, per the [mistakes template](../memory/templates/mistakes.md))
