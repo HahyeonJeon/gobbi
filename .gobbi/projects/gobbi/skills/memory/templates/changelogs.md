@@ -64,4 +64,4 @@ shipped_in: {PR / commit / plan path}
 ## Notes
 
 - **One changelog per task at feature level.** Do not combine multiple tasks into one entry — granularity lets a future reader find when a specific capability shipped.
-- **A session-wide roll-up is NOT a changelog.** It is the per-session development-journal entry Wrap-up writes to `notes/{date}-{slug}.md` (see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)).
+- **A session-wide roll-up is NOT a changelog.** It is the per-session development-journal entry Wrap-up writes to `notes/{area}/{date}-{slug}.md` (see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)).
