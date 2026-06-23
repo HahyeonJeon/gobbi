@@ -59,7 +59,7 @@ Used by the write-time agent AND Wrap-up routing. Returns exactly one area per r
 
 **Step 1 — explicit `area:` frontmatter wins.** If the staged file carries `area: {x}` in the type's allowlist, use `{x}`.
 
-**Step 2 — scan a fixed PRIORITY-ORDERED tag→area map; FIRST match wins.** The project now declares this map in [`memory-vocabulary.json`](../../../../memory-vocabulary.json) `.tagAreaMap` (the validator + Wrap-up routing read it via jq); the values below are gobbi's declared instance of the design.
+**Step 2 — scan a fixed PRIORITY-ORDERED tag→area map; FIRST match wins.** The project now declares this map in [`memory-vocabulary.json`](../../../../memory-vocabulary.json) `.tagAreaMap` (the Wrap-up agent reads it for area resolution following the prose spec; the validator does not read `.tagAreaMap` — it enforces the resolved area against `.effective.areas.*`); the values below are gobbi's declared instance of the design.
 
 - **mistakes** priority order (first match wins):
   1. `rename-sweep` ← tags {`rename-sweep`, `rename`, `vocabulary-sweep`}
