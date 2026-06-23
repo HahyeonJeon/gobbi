@@ -14,7 +14,7 @@ A changelog a reader cannot trace to a concrete artifact and an actual verificat
 |---|---|
 | When | Execution RECORD at the end of each task; and Wrap-up RECORD appends a feature-level entry to each value-feature the session touched. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/changelogs/{slug}.md` |
-| Promotes to | `features/{f}/changelogs/` — feature-subdir-only; there is NO project-level `changelogs/` (design §2.14; [rules §3](../rules.md)) |
+| Promotes to | `features/{f}/changelogs/{area}/` — feature-subdir-only; there is NO project-level `changelogs/` (design §2.14; [rules §3](../rules.md)) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (time-indexed); slug describes the shipped unit (`2026-05-11-login-ui-shipped.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -64,4 +64,4 @@ shipped_in: {PR / commit / plan path}
 ## Notes
 
 - **One changelog per task at feature level.** Do not combine multiple tasks into one entry — granularity lets a future reader find when a specific capability shipped.
-- **A session-wide roll-up is NOT a changelog.** It is the per-session development-journal entry Wrap-up writes to `notes/{date}-{slug}.md` (see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)).
+- **A session-wide roll-up is NOT a changelog.** It is the per-session development-journal entry Wrap-up writes to `notes/{area}/{date}-{slug}.md` (see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)).

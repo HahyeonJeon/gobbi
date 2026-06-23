@@ -310,7 +310,7 @@ P8 is the BULK companion to P6. P6 recovers a SINGLE orphaned worktree mid-sessi
 
    Each object action is idempotent: an already-deleted object that re-appears as "not found" is treated as done, not an error. If the sweep aborts midway (network drop, approval declined), the durable record (stage 8) holds the per-object status; a resume re-runs AUDIT + the TOCTOU re-check and acts only on objects not yet marked done.
 
-**8. DURABLE RECORD.** Write the sweep result — the audit baseline counts, the full classification, the confirmed set, and the acted / skipped / failed status per object with reasons — to the PROJECT-ROOT reports tier: `.gobbi/projects/<name>/reports/{date}-retro-sweep.md`. `reports` is a project-only memory type (it has NO `features/{f}/` tier), and the path lives OUTSIDE the gitignored `sessions/` tree so the record survives worktree removal; it is committed. This record is what makes a partial sweep resumable (stage 7).
+**8. DURABLE RECORD.** Write the sweep result — the audit baseline counts, the full classification, the confirmed set, and the acted / skipped / failed status per object with reasons — to the PROJECT-ROOT reports tier: `.gobbi/projects/<name>/reports/{area}/{date}-retro-sweep.md` (the retro-sweep is a git-workflow report, so `{area}` = `git`). `reports` is a project-only memory type (it has NO `features/{f}/` tier), and the path lives OUTSIDE the gitignored `sessions/` tree so the record survives worktree removal; it is committed. This record is what makes a partial sweep resumable (stage 7).
 
 ---
 

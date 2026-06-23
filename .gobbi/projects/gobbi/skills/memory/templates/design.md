@@ -18,7 +18,7 @@ A reader opening it cold next session gets the durable design, not a work-log th
 |---|---|
 | When | Ideation RECORD when the leader produces a new design (Step 5 output); or Planning RECORD when a design substantially evolves (append a follow-on anchored to the original). |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/design/{slug}.md` |
-| Promotes to | `features/{f}/design/` (bounded to one feature, typical) · `design/` (project, cross-cutting) |
+| Promotes to | `features/{f}/design/{area}/` (bounded to one feature, typical) · `design/{area}/` (project, cross-cutting) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, hyphenated, descriptive, no date prefix (durable/evergreen; use `decisions/` for time-stamped records) (`cache-invalidation.md`, `auth-middleware.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -57,7 +57,7 @@ related: [cache-invalidation, 2026-05-11-use-redis-not-memcached]   # list[slug]
 {The design — bottom-up baseline, layers, mechanisms, interfaces.}
 
 ## Scenarios
-{Key scenarios this design must handle. Cross-reference `features/{feature-name}/scenarios/` for the full enumeration.}
+{Key scenarios this design must handle. Cross-reference `features/{feature-name}/scenarios/{area}/` for the full enumeration.}
 
 ## Validation
 {Per design decision, how it will be validated — test / manual / metric / user demo.}

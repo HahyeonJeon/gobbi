@@ -14,7 +14,7 @@ A mistake missing the early-warning signal records history instead of preventing
 |---|---|
 | When | Immediately during any loop's RECORD when the user corrected an approach or the loop hit a non-obvious failure mode; or during Wrap-up RECORD when cross-loop patterns reveal a recurring trap. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` **with `mistake-candidate: true`** — mistakes route through `staging/decisions/` with the flag, not a dedicated subdir; the flag tells Wrap-up to promote to `mistakes/` instead of `decisions/`. |
-| Promotes to | `features/{f}/mistakes/` (feature-specific trap) · `mistakes/` (project, the common case) |
+| Promotes to | `features/{f}/mistakes/{area}/` (feature-specific trap) · `mistakes/{area}/` (project, the common case) — `{area}` from the curated trap-class allowlist, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, names the trap in ≤6 words (`bun-write-no-append.md`); no date or finding-ID prefix |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).

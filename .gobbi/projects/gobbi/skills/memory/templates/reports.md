@@ -30,7 +30,7 @@ A report is **exactly one** `report_type`. A multi-facet artifact picks the domi
 |---|---|
 | When | A loop's RECORD on an in-session deep-dive worth preserving (`post-mortem`); or Wrap-up RECORD at a periodic boundary (`status`, direct write); or an out-of-band CLI run (`analytics`). Bar = scale + durability, not a routine observation. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md` |
-| Promotes to | `features/{f}/reports/` (default) · `reports/` (project, cross-feature) |
+| Promotes to | `features/{f}/reports/{area}/` (default) · `reports/{area}/` (project, cross-feature) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (generation date, not the reported-on period); slug names the subject (`2026-05-11-iter-cap-exhaustion-investigation.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).

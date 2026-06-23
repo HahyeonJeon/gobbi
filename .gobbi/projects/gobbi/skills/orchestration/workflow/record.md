@@ -90,7 +90,7 @@ sessions/{date}-{session-id}/{N}-{loop}/
     └── notes/{slug}.md            ← per loop-scope journal entry (loop-conditional; the per-session note is written at Wrap-up)
 ```
 
-Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the plan artifact Wrap-up promotes to `features/{feature-name}/plans/{date}-{slug}.md`); `plans/` is **Planning-only** and does not appear in other loops' staging trees. Wrap-up loop's RECORD is structurally different — see [`workflow/wrap-up.md`](wrap-up.md).
+Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the plan artifact Wrap-up promotes to `features/{feature-name}/plans/{area}/{date}-{slug}.md`); `plans/` is **Planning-only** and does not appear in other loops' staging trees. Wrap-up loop's RECORD is structurally different — see [`workflow/wrap-up.md`](wrap-up.md).
 
 ### Per-loop summary table
 

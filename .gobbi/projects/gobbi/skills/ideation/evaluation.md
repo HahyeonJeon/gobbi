@@ -110,7 +110,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 |---|---|
 | Grep into project for the proposed library/pattern | Confirm it's not already in use in a way that would conflict |
 | Read project's existing module boundaries | Detect cross-cutting concerns the new decomposition would violate |
-| Check project's `mistakes/` for related structural lessons | Avoid repeating known structural mistakes |
+| Check project's `mistakes/` (recursively — descend into every `{area}/` subdir) for related structural lessons | Avoid repeating known structural mistakes |
 
 ### Perspective-specific anti-patterns
 
@@ -350,7 +350,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 | Tool | Use for |
 |---|---|
 | Grep for callers of any function / module the design will change | Quantify blast radius |
-| Read project's `mistakes/` for related risk lessons | Avoid repeating a known risk pattern |
+| Read project's `mistakes/` (recursively — descend into every `{area}/` subdir) for related risk lessons | Avoid repeating a known risk pattern |
 | Diff the Scope Contract against the Design section | Detect scope drift directly |
 
 ### Perspective-specific anti-patterns

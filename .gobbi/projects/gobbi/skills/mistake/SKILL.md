@@ -22,7 +22,9 @@ The agent MUST observe these tier boundaries. For working-loop agents, the only 
 | **Feature mistakes** | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` | **READ-ONLY** — load when the task is feature-scoped; never written by working-loop agents (Wrap-up assistant is the sole exception) |
 | **Session staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` with frontmatter `mistake-candidate: true` | **WRITE (PASS only, during RECORD)** — the only surface agents write to; Wrap-up promotes to project or feature `mistakes/` based on scope confirmed with user |
 
-**Delete semantics**: agents NEVER delete mistake files in any tier. When a mistake is superseded, the new file carries `supersedes: <old-path>` frontmatter; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-path>` added. Physical deletion is forbidden. **Active mistakes never move** — the trap stays live in `mistakes/` where agents load it and where `required-mistakes:` paths point. Only a **superseded** mistake is moved (`git mv`) by Wrap-up to `archive/mistakes/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md).
+**Delete semantics**: agents NEVER delete mistake files in any tier. When a mistake is superseded, the new file carries `supersedes: <old-path>` frontmatter; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-path>` added. Physical deletion is forbidden. **Active mistakes never move** — the trap stays live in `mistakes/` where agents load it and where `required-mistakes:` paths point. Only a **superseded** mistake is moved (`git mv`) by Wrap-up to `archive/mistakes/{area}/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md).
+
+> **Namespace-refactor carve-out (USER-APPROVED 2026-06-21):** the "never move" rule governs NORMAL operation — only a supersession (→ `archive/`) moves a file. A deliberate **namespace refactor is a distinct, sanctioned operation** that MAY move active mistakes between areas while preserving slug identity: the mistake's own `name` slug, body `[[slug]]` links, and `supersedes`/`superseded_by`/`related` frontmatter are plain slugs (rename-robust — they survive the move untouched). What does NOT survive: inbound **`required-mistakes:` references are PATH refs, not slugs**, so they break on the move and MUST be repointed — the refactor procedure repoints every inbound `required-mistakes:` path ref and runs both guards (`check-markdown-links.sh` + `check-residual-vocab.sh`) to zero.
 
 **Promotion**: The Wrap-up assistant promotes staged mistake-candidates to memory during the Wrap-up phase (no CLI command). Promotion is NOT a context reload — agents do not re-read project mistakes after promotion; they read them at the start of the next session.
 
@@ -46,9 +48,11 @@ A mistake without its cause and recovery pattern is unactionable. Every mistake 
 
 The Wrap-up assistant promotes staged mistake-candidates from session staging to memory (`mistakes/`) during the Wrap-up phase. Working-loop agents write to session staging only and never write directly to `mistakes/`. The Wrap-up phase is the sole documented exception to the staging boundary.
 
-> **Supersede, never delete. Active mistakes never move.**
+> **Supersede, never delete. Active mistakes never move (except a sanctioned namespace refactor).**
 
-When a new mistake supersedes an older one (new understanding overrides the prior correction), write the new mistake with a `supersedes:` frontmatter pointer, and flip the older file's frontmatter in place (`status: superseded`, `superseded_by: <new-path>`). Physical deletion is forbidden. The in-place flip is step 1 of two: at session Wrap-up, the now-superseded mistake is moved (`git mv`) to `archive/mistakes/{YYYY-MM-DD}-{slug}.md` — it is never deleted, never left in `mistakes/` once superseded. **Active** mistakes never move — the trap must remain live in `mistakes/` where agents load it and where `required-mistakes:` paths point.
+When a new mistake supersedes an older one (new understanding overrides the prior correction), write the new mistake with a `supersedes:` frontmatter pointer, and flip the older file's frontmatter in place (`status: superseded`, `superseded_by: <new-path>`). Physical deletion is forbidden. The in-place flip is step 1 of two: at session Wrap-up, the now-superseded mistake is moved (`git mv`) to `archive/mistakes/{area}/{YYYY-MM-DD}-{slug}.md` — it is never deleted, never left in `mistakes/` once superseded. **Active** mistakes never move — the trap must remain live in `mistakes/` where agents load it and where `required-mistakes:` paths point.
+
+> **Namespace-refactor carve-out (USER-APPROVED 2026-06-21):** the "never move" rule governs NORMAL operation — only a supersession (→ `archive/`) moves a file. A deliberate **namespace refactor is a distinct, sanctioned operation** that MAY move active mistakes between areas while preserving slug identity: the mistake's own `name` slug, body `[[slug]]` links, and `supersedes`/`superseded_by`/`related` frontmatter are plain slugs (rename-robust — they survive the move untouched). What does NOT survive: inbound **`required-mistakes:` references are PATH refs, not slugs**, so they break on the move and MUST be repointed — the refactor procedure repoints every inbound `required-mistakes:` path ref and runs both guards (`check-markdown-links.sh` + `check-residual-vocab.sh`) to zero.
 
 ---
 
@@ -58,8 +62,8 @@ When a new mistake supersedes an older one (new understanding overrides the prio
 
 At the start of any task:
 
-1. Read `.gobbi/projects/{project-name}/mistakes/*.md` — all project-level mistake files.
-2. If the task is feature-scoped: read `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/*.md`.
+1. Read `.gobbi/projects/{project-name}/mistakes/**/*.md` — all project-level mistake files. The glob MUST be recursive (`**/*.md`, or `find .../mistakes -name '*.md'`): mistakes nest one area level under the type dir (`mistakes/{area}/{slug}.md`), so a single-level `mistakes/*.md` glob silently misses every by-area file and the agent loads mistake-blind.
+2. If the task is feature-scoped: read `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/**/*.md` — recursively, for the same reason (feature mistakes also nest under `{area}/`).
 3. Filter by domain relevance — load mistakes whose domain tag matches the task's domain (e.g., `docs-sync`, `process`, `security`, `hooks`).
 4. Note any applicable mistakes explicitly in the Study phase before making any decision in that domain.
 
@@ -122,8 +126,8 @@ Wrap-up reads these staging files and promotes to the destination based on user-
 
 | Scope (user-confirmed) | Destination |
 |---|---|
-| Feature-scoped mistake | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/{slug}.md` |
-| Project-scoped mistake | `.gobbi/projects/{project-name}/mistakes/{slug}.md` |
+| Feature-scoped mistake | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/{area}/{slug}.md` |
+| Project-scoped mistake | `.gobbi/projects/{project-name}/mistakes/{area}/{slug}.md` |
 
 **Path conventions**
 

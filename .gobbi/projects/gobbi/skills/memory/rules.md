@@ -16,11 +16,11 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 
 ## 1. Naming standard
 
-The naming convention keeps every memory file at a **stable, atomic, controlled-vocabulary address** so supersede / archive / promotion operate at the right granularity and agents can find a record without grep guesswork.
+The naming convention keeps every memory file at a **stable, atomic, controlled-vocabulary address** so supersede / archive / promotion operate at the right granularity and agents can find a record without grep guesswork. The address has two category facets: the type directory (§1.1) and the area sub-dir under it (§1.5).
 
 ### 1.1 Naming rules
 
-1. **Directory = category.** The type directory IS the controlled-vocabulary facet. Never repeat the dir / type in the filename (e.g., a file in `decisions/` is not named `decision-...`).
+1. **Directory = category.** The type directory IS the first controlled-vocabulary facet, and a second one nests under it: every by-area type adds an **area sub-dir** (`{type}/{area}/` — see §1.5). So "directory = category" is two levels, not one: type, then area. Never repeat either facet in the filename (e.g., a file in `decisions/` is not named `decision-...`).
 2. **Filename = atomic concept slug.** kebab-case, lowercase, hyphens only, **≤6 words, ≤~35 chars**. ONE record = ONE concept — no bundle files.
 3. **Length proportional to sibling count, inverse to path specificity** — a narrow directory tolerates a shorter slug.
 4. **Status / lifecycle never in the filename** — it lives in frontmatter, so a transition never forces a rename.
@@ -73,6 +73,86 @@ The fix is never "delete the date" or "delete a content word" — it is "replace
 The no-positional-index rule (§1.3) governs **memory file slugs**. It does **NOT** apply to the **session step-dir names** under `sessions/{date}-{session-id}/` — `1-ideation`, `2-preparation`, `3-planning`, `4-execution`, `5-wrap-up`, and the per-task `task-{NN}-{slug}` dirs. The leading `{N}-` ordinal on these dirs is a **carve-out**, the directory analog of the date-prefix exemption in §1.2: the number is the loop's fixed, meaningful position in the workflow (`1`=ideation … `5`=wrap-up), not a non-descriptive index into a vanished session. It orders the on-disk loop dirs so a reader sees the workflow sequence at a glance.
 
 This carve-out is a direct consequence of the **Scope boundary** at the top of this doc: this standard governs **memory files**, not the `sessions/` runtime tree. The session step-dirs are runtime working dirs whose shape is owned by [`../record/record-map.md`](../record/record-map.md) (the single source of truth), not by §1.3. The `{N}-` prefix is mandatory on disk and must never be read as a §1.3 positional-index smell. (Note SEAM-3: the prefix lives on the **dir** only; the `workflow.{loop}` keys in `session.json` stay **bare**.)
+
+---
+
+### 1.5 Area namespace (the second category axis under each type)
+
+§1.1 rule 1 establishes the type directory as the first category axis. §1.5 adds a **second axis under it: the AREA sub-dir.** Every **by-area** memory record lives one area level below its type dir, so a growing type stays scannable instead of accreting into one flat list.
+
+**Path shape — one real subdir level.** The area is a real directory, not a filename prefix:
+
+- **Bare-slug types** (§1.2): `{type}/{area}/{slug}.md`
+- **Date-prefixed types** (§1.2): `{type}/{area}/{YYYY-MM-DD}-{slug}.md` — the date stays inside the area, after it.
+
+Examples: `mistakes/verification/executor-git-stash-in-worktree-during-verify.md`, `decisions/memory/2026-06-21-{slug}.md`, `notes/workflow/2026-06-21-{slug}.md`.
+
+**Eager + both-tiers-symmetric.** Every by-area record is namespaced from file 1 — there is no "flat until N files, then split" threshold. The feature tier uses the identical shape: `features/{f}/{type}/{area}/{slug}.md`. One rule, two tiers.
+
+**`_shared/` is the cross-cutting bucket.** Every by-area type carries a `_shared/` area for genuinely cross-cutting or unclassifiable records. `_shared` is the no-match destination of the selection rule below — never invent a new area to avoid it.
+
+**Structural exception — `features/{f}/README.md`.** A feature directory's `README.md` is the feature identity doc; the feature dir is itself the area axis, so the README is **NOT** by-area and is exempt. It is the SOLE structural exception.
+
+#### Per-type area allowlist (controlled, like the §2.5 tag vocabulary)
+
+The per-type area allowlist is a **closed** controlled vocabulary, parallel to the §2.5 `tags` vocabulary — an area outside a type's list is a validation failure until the list is extended (extend deliberately, the same discipline as §2.5). The cross-type **spine** is shared by every spine type:
+
+```
+spine: memory · git · workflow · wrap-up · evaluation · codex · process · _shared
+```
+
+`mistakes` uses a curated **trap-class** allowlist instead of the spine (the trap CLASS — how it fails — is the area, not the subsystem; the `process` bucket is DISSOLVED into trap-classes, so `process` is NOT a mistakes area):
+
+```
+mistakes: verification · rename-sweep · tooling · git · codex · docs-sync · memory · _shared
+```
+
+| Type | Area allowlist |
+|---|---|
+| `mistakes` | the curated trap-class set above (`process` dissolved) |
+| `decisions` · `design` · `backlogs` · `notes` · `references` · `learnings` · `reviews` · `reports` · `rules` · `plans` | the spine |
+| `changelogs` · `discussions` · `scenarios` · `checklists` | the spine (within the feature) |
+| `features` | n/a — STRUCTURAL EXCEPTION; `features/` IS the area axis, `README.md` exempt |
+
+#### TOTAL deterministic area-selection rule
+
+The write-time agent AND Wrap-up routing both apply this rule. It is **total** (every record resolves to exactly one area) and **deterministic** (priority-ordered first-match — never a tie).
+
+1. **Explicit `area:` wins.** If the staged file carries `area: {x}` where `{x}` is in the type's allowlist, use `{x}`. (`area:` is a staging-only field — §2.6.)
+2. **Else scan the fixed PRIORITY-ORDERED tag→area map; the FIRST area whose any mapped tag is present wins.** The order is fixed per type, so a multi-tag record still resolves to exactly one area.
+   - **mistakes** (priority high → low; first match wins):
+     1. `rename-sweep` ← {`rename-sweep`, `rename`, `vocabulary-sweep`}
+     2. `verification` ← {`verification`, `grep`, `research`}
+     3. `tooling` ← {`tooling`, `persistence`, `write-safety`, `api-overload`}
+     4. `git` ← {`git`}
+     5. `codex` ← {`codex`}
+     6. `docs-sync` ← {`docs-sync`, `links`}
+     7. `memory` ← {`memory`, `frontmatter`, `schema`}
+
+     Rationale: the trap CLASS (how it fails) outranks the subsystem (where). `domain:` is advisory/fallback input only, never the raw area key.
+   - **spine types** (priority high → low; first match wins): `wrap-up` > `git` > `evaluation` > `workflow` > `codex` > `memory` > `process`.
+     - `wrap-up` ← {`wrap-up`}; `git` ← {`git`}; `evaluation` ← {`evaluation`}; `workflow` ← {`workflow`, `orchestration`, `session-memory`, `lifecycle`, `preparation`, `ideation`, `planning`}; `codex` ← {`codex`}; `memory` ← {`memory`, `frontmatter`, `schema`, `docs-sync`, `links`, `rules`, `plans`}; `process` ← {`process`}.
+     - Rationale: a specific subsystem (`wrap-up`/`git`/`evaluation`) outranks the generic `memory`/`process` bucket.
+3. **`_shared/` ONLY when NO area matched in steps 1-2.** Never invent a new area to avoid `_shared` (the adversarial-proliferation guard).
+
+**Feature-dir normalization.** When the selector input is a feature-dir name (a spine record promoted up from a feature), normalize it to a spine area FIRST: `git-workflow → git` · `workflow → workflow` (a future `memory-system → memory`). The normalized value is then a step-2 signal — this stops the dir name `git-workflow` from failing to match the `git` area.
+
+#### Refactor procedure — split / merge / rename an area
+
+An area is split / merged / renamed by `git mv`-ing the files and running this procedure. A move changes a file's PATH, so every inbound PATH reference must be repointed. Enumerate ALL reference classes up front — the same discipline as [`../../mistakes/plan-rename-must-enumerate-all-ref-classes.md`](../../mistakes/plan-rename-must-enumerate-all-ref-classes.md) and [`../../mistakes/label-rename-missed-in-fence-and-cross-doc.md`](../../mistakes/label-rename-missed-in-fence-and-cross-doc.md):
+
+1. **Path refs** — the old path inside a markdown link target and relative-import forms.
+2. **Prose refs** — the area / path named in running text.
+3. **Skill-name refs** — `required-skills`, `Load Directives`, `Skill()` permission arrays.
+4. **Inventory / list refs** — manifests, capability lists, feature-value tables.
+5. **Wrapper-description refs** — agent prompt blocks that name the area / path.
+6. **Pipeline-label refs** — hook scripts, sub-phase labels, comment strings.
+
+PLUS the two label-rename classes — **in-fence example paths** (paths inside ```` ```markdown ```` example blocks) and **cross-doc** mentions — AND the inbound **`required-mistakes:` PATH refs** (a path-ref sub-class; these are PATH references, NOT plain slugs — §2.4's plain-slug set is only `supersedes` / `superseded_by` / `related` — so they DO break on a move and must be repointed). A moved record's OWN slug identity (`name`, body `[[slug]]` links, the `supersedes` / `superseded_by` / `related` slug-link fields) is rename-robust and needs no repointing.
+
+Run both guards to zero before declaring the refactor done: [`../orchestration/scripts/check-markdown-links.sh`](../orchestration/scripts/check-markdown-links.sh) (zero new broken links) + [`../orchestration/scripts/check-residual-vocab.sh`](../orchestration/scripts/check-residual-vocab.sh) (zero residual old paths).
+
+**Active-mistake-move carve-out (USER-APPROVED 2026-06-21).** [`../mistake/SKILL.md`](../mistake/SKILL.md) states "active mistakes never move" — that rule governs NORMAL operation (only a supersession moves a file, to `archive/`). A **namespace refactor is a distinct, sanctioned operation class** that MAY move an active mistake between areas, BECAUSE: (a) the mistake's OWN slug identity is preserved (still findable by slug and by the recursive consumer read-glob); (b) the move is procedured — it runs the full reference-repoint sweep above INCLUDING the inbound `required-mistakes:` PATH refs, so no inbound citation is left dangling; (c) both guards run to zero.
 
 ---
 
@@ -224,6 +304,7 @@ When a tag outside this set is genuinely needed, use the required-may-be-empty `
 Staging-only fields exist during the session and MUST be stripped when Wrap-up promotes a staged file to memory:
 
 - **`mistake-candidate: true`** — stripped on promotion; its *presence* is what routes the file to `mistakes/`, after which it has done its job.
+- **`area:`** — an optional write/stage-time override input that selects the destination area (§1.5 selection rule, step 1). Stripped on promotion: once the file lands under `{type}/{area}/`, the directory encodes the resolved area, so a promoted file carries NO `area:`. Because `area:` never reaches a promoted file, it is NOT a §2.2 type extension and the validator's area checks derive the area from the PATH, not from frontmatter.
 - **`finding-id`, eval-routing `disposition`, `promoted-from`, `promoted-at`** — session-routing and session-provenance. `git log` + the base `session` field already carry provenance; the extra keys are redundant ad-hoc drift. Fold any durable provenance into base `session` + `created`; strip the rest.
 
 **Mechanism.** Wrap-up's promotion step reads the staging frontmatter, applies the routing modifier, then writes the destination file with ONLY base + that type's extension fields (a per-type frontmatter allowlist). See [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the promotion routing.
@@ -236,7 +317,8 @@ Staging-only fields exist during the session and MUST be stripped when Wrap-up p
 
 The structure rules thread through the 16 per-type specs in [`memory-map.md`](memory-map.md); they are the conventions every type obeys.
 
-- **Directory-as-category.** The type directory is the controlled-vocabulary facet (§1.1 rule 1). The directory name carries the type; the filename carries the concept. A record's *type* is never re-encoded in its slug.
+- **Directory-as-category.** The type directory is the first controlled-vocabulary facet (§1.1 rule 1). The directory name carries the type; the filename carries the concept. A record's *type* is never re-encoded in its slug.
+- **Area sub-namespace.** Every by-area type nests one area level under the type dir (`{type}/{area}/`); the area is resolved by the §1.5 selection rule (explicit `area:` > priority-ordered tag→area map > `_shared` on no-match), eager and symmetric on both tiers. `features/{f}/README.md` is the sole structural exception — the feature dir is itself the area axis, so the README is not by-area.
 - **One record, one concept (atomicity).** Every file holds exactly one concept — one decision, one mistake, one design topic. Bundle files (`ideation-decisions.md`, `iter1-user-redirects.md`) are forbidden because supersede / archive / promotion then operate at the wrong granularity. Split bundles into one file per concept.
 - **Declared scope + promote-up.** Each type declares its scope:
   - **`features/` is its own tier.** A `features/{slug}/` directory is a durable capability dir — not a project-scoped nor feature-tagged content type like the rest of this list. Its `README.md` is the feature's identity document: it carries base frontmatter with `name: README` (the fixed filename stem, NOT the feature slug — §2.4), `scope: feature`, and `feature: {own-slug}` (the `feature` field is self-referential — it names the README's own feature). New feature dirs are created only by user-ratified value-feature addition, never by a sprint.

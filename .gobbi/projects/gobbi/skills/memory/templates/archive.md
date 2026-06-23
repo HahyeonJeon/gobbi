@@ -13,10 +13,10 @@ A reader auditing history finds the full artifact and the reason it is terminal,
 | Field | Value |
 |---|---|
 | Written by | Wrap-up RECORD (direct write — no staging; loop RECORD never writes here) |
-| Location | Project-level only: `.gobbi/projects/{project-name}/archive/{type}/{YYYY-MM-DD}-{slug}.md` |
+| Location | Project-level only: `.gobbi/projects/{project-name}/archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md` — the archive preserves the source area (`{area}` from the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type)) under the typed subdir |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date is the **archive date** (when the terminal transition happened), not the creation date |
 
-The model is **no-delete + move-on-terminal**: when an artifact terminates, its full file is `git mv`'d out of the active dir into `archive/{type}/`. The move IS the archival.
+The model is **no-delete + move-on-terminal**: when an artifact terminates, its full file is `git mv`'d out of the active dir into `archive/{type}/{area}/`. The move IS the archival.
 
 ## When to move
 
@@ -37,20 +37,20 @@ Move a file when it reaches one of these terminal states:
 
 `reviews/` + `reports/` are append-only history — supersede via `status:`, move only if the maintainer wants the active dir trimmed. Any artifact not yet terminal **never** moves.
 
-The archive mirrors the project tree's categories as subdirs holding the **full moved files** (not index stubs):
+The archive mirrors the project tree's categories — the typed subdir **and** the source area sub-dir under it (`archive/{type}/{area}/`) — holding the **full moved files** (not index stubs). `sessions/` and `features/` are not by-area types, so they carry no area level:
 
 ```
 archive/
-├── sessions/{YYYY-MM-DD}-{session-id}.md   ← full moved session file (opt-in)
-├── backlogs/{YYYY-MM-DD}-{slug}.md         ← full moved backlog entry
-├── design/{YYYY-MM-DD}-{slug}.md           ← full moved design doc
-├── decisions/{YYYY-MM-DD}-{slug}.md        ← full moved decision doc
-├── plans/{YYYY-MM-DD}-{slug}.md            ← full moved plan doc
-├── references/{YYYY-MM-DD}-{slug}.md       ← full moved reference doc
-├── rules/{YYYY-MM-DD}-{slug}.md            ← full moved rule doc
-├── mistakes/{YYYY-MM-DD}-{slug}.md         ← full moved mistake (superseded only)
-├── learnings/{YYYY-MM-DD}-{slug}.md        ← full moved learning (superseded only)
-└── features/{YYYY-MM-DD}-{feature-name}.md ← full moved feature README (retired)
+├── sessions/{YYYY-MM-DD}-{session-id}.md          ← full moved session file (opt-in)
+├── backlogs/{area}/{YYYY-MM-DD}-{slug}.md         ← full moved backlog entry
+├── design/{area}/{YYYY-MM-DD}-{slug}.md           ← full moved design doc
+├── decisions/{area}/{YYYY-MM-DD}-{slug}.md        ← full moved decision doc
+├── plans/{area}/{YYYY-MM-DD}-{slug}.md            ← full moved plan doc
+├── references/{area}/{YYYY-MM-DD}-{slug}.md       ← full moved reference doc
+├── rules/{area}/{YYYY-MM-DD}-{slug}.md            ← full moved rule doc
+├── mistakes/{area}/{YYYY-MM-DD}-{slug}.md         ← full moved mistake (superseded only)
+├── learnings/{area}/{YYYY-MM-DD}-{slug}.md        ← full moved learning (superseded only)
+└── features/{YYYY-MM-DD}-{feature-name}.md        ← full moved feature README (retired)
 ```
 
 ## Move procedure
@@ -58,7 +58,7 @@ archive/
 When an artifact reaches a terminal state, Wrap-up runs these steps:
 
 1. **Stamp archival frontmatter** — add `archived_at: {YYYY-MM-DD}` and `archive_reason: shipped|closed|addressed|superseded|retired|dropped|abandoned`, and ensure the terminal `status:` + (`superseded_by:` | `shipped_in:`) are present. The body is preserved verbatim.
-2. **Move** — `git mv {active-path} .gobbi/projects/{project-name}/archive/{type}/{YYYY-MM-DD}-{slug}.md`. `git mv` preserves history; `{YYYY-MM-DD}` is the archive date.
+2. **Move** — `git mv {active-path} .gobbi/projects/{project-name}/archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`. `git mv` preserves history; `{area}` is the file's resolved area (preserved from its active path); `{YYYY-MM-DD}` is the archive date.
 3. **Repoint inbound PATH references** — any `required-mistakes:` path or prose path pointing at the old active path is updated to the archive path. `supersedes:`/`superseded_by:` slug-links and `[[slug]]` body links are **plain slugs** (§2.4) — rename-robust, so they do NOT need repointing on a move. For mistakes: since only superseded ones move, active `required-mistakes:` citations are unaffected.
 4. **Never delete** — the move preserves the file in `archive/`; it is never removed.
 
@@ -89,7 +89,7 @@ shipped_in: {changelog path} | null
 
 Reactivating an archived artifact is **explicit and user-confirmed**:
 
-1. `git mv archive/{type}/{YYYY-MM-DD}-{slug}.md {original-active-path}` — move it back.
+1. `git mv archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md {original-active-path}` — move it back.
 2. Flip `status:` back to `active` / `accepted` / `open` (as appropriate).
 3. Remove the `archived_at` and `archive_reason` fields.
 4. Repoint any references updated during archival back to the active path.

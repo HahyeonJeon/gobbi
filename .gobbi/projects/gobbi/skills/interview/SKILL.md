@@ -99,7 +99,7 @@ Every wave's intermediate summary distinguishes confirmed facts from working ass
 
 > **Never invent inputs.**
 
-If a user cannot answer a question or the answer is "I don't know," the manager records this in `decisions/{date}-unknowns.md` as an explicit gap. The manager does not fabricate plausible answers to keep the interview flowing.
+If a user cannot answer a question or the answer is "I don't know," the manager records this in `decisions/{area}/{date}-unknowns.md` as an explicit gap. The manager does not fabricate plausible answers to keep the interview flowing.
 
 ---
 
@@ -156,9 +156,9 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 **Leader spawn (optional)** — the manager spawns a leader to read `package.json`, `tsconfig.json`, `pyproject.toml`, etc., and the top-level directory structure, then return a fact sheet. The manager presents this to the user to confirm or refute.
 
 **Output domain**:
-- `.gobbi/projects/{project-name}/design/architecture.md` (high-level module map + responsibility per directory)
-- `.gobbi/projects/{project-name}/decisions/{date}-tech-stack.md`
-- `.gobbi/projects/{project-name}/decisions/{date}-conventions.md`
+- `.gobbi/projects/{project-name}/design/{area}/architecture.md` (high-level module map + responsibility per directory)
+- `.gobbi/projects/{project-name}/decisions/{area}/{date}-tech-stack.md`
+- `.gobbi/projects/{project-name}/decisions/{area}/{date}-conventions.md`
 
 **Wave close**:
 - Intermediate summary
@@ -185,7 +185,7 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 **Leader spawn (optional)** — leader inspects CI config, test config, security-related files for current state.
 
 **Output domain**:
-- `.gobbi/projects/{project-name}/decisions/{date}-{slug}.md` (one decision record per substantive constraint)
+- `.gobbi/projects/{project-name}/decisions/{area}/{date}-{slug}.md` (one decision record per substantive constraint)
 
 **Wave close**:
 - Intermediate summary
@@ -210,8 +210,8 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 
 **Output domain**:
 - `.gobbi/projects/{project-name}/features/{feature-name}/README.md` — one per identified feature (manager stamps from [`memory/templates/feature.md`](../memory/templates/feature.md))
-- `.gobbi/projects/{project-name}/backlogs/{slug}.md` — deferred / planned features
-- `.gobbi/projects/{project-name}/decisions/{date}-roadmap-priority.md`
+- `.gobbi/projects/{project-name}/backlogs/{area}/{slug}.md` — deferred / planned features
+- `.gobbi/projects/{project-name}/decisions/{area}/{date}-roadmap-priority.md`
 
 **Wave close**:
 - Intermediate summary
@@ -230,17 +230,17 @@ The manager runs the user through five waves in order. Each wave has a focus, ta
 - What's the most expensive bug in project history? What was the root cause?
 - What hides in places no one looks?
 
-**Leader spawn (optional)** — leader reviews recent bug-fix commits (`git log --grep=fix`) and existing `mistakes/` to surface patterns.
+**Leader spawn (optional)** — leader reviews recent bug-fix commits (`git log --grep=fix`) and existing `mistakes/` (read recursively — all area subdirs) to surface patterns.
 
 **Output domain**:
-- `.gobbi/projects/{project-name}/mistakes/{slug}.md` (one per surfaced trap, per the [mistakes template](../memory/templates/mistakes.md))
-- `.gobbi/projects/{project-name}/references/{slug}.md` (external sources mentioned during interview)
+- `.gobbi/projects/{project-name}/mistakes/{area}/{slug}.md` (one per surfaced trap, per the [mistakes template](../memory/templates/mistakes.md))
+- `.gobbi/projects/{project-name}/references/{area}/{slug}.md` (external sources mentioned during interview)
 
 **Wave close**:
 - Intermediate summary
 - Skill-codification offer — typical candidates:
   - `{project-name}-idioms` (project-specific patterns)
-  - `{project-name}-mistakes` (only if the mistakes are dense enough to warrant a separate skill beyond individual `mistakes/{slug}.md` files)
+  - `{project-name}-mistakes` (only if the mistakes are dense enough to warrant a separate skill beyond individual `mistakes/{area}/{slug}.md` files)
 
 ---
 
@@ -332,13 +332,13 @@ The interview writes both session-scoped audit files and project-scoped baseline
 | `sessions/{date}-{session-id}/interview/rawdata/wave-{n}-summary.md` | manager | per wave intermediate summary (5 files) |
 | `sessions/{date}-{session-id}/interview/interview.md` | manager | final session summary |
 | `.gobbi/projects/{project-name}/README.md` | manager (Wave 1) | project overview |
-| `.gobbi/projects/{project-name}/design/architecture.md` | manager (Wave 2) | high-level module map |
-| `.gobbi/projects/{project-name}/decisions/{date}-{slug}.md` | manager (Waves 2-4) | per decision record |
-| `.gobbi/projects/{project-name}/decisions/{date}-unknowns.md` | manager (any wave) | explicit gaps where the user could not answer |
+| `.gobbi/projects/{project-name}/design/{area}/architecture.md` | manager (Wave 2) | high-level module map |
+| `.gobbi/projects/{project-name}/decisions/{area}/{date}-{slug}.md` | manager (Waves 2-4) | per decision record |
+| `.gobbi/projects/{project-name}/decisions/{area}/{date}-unknowns.md` | manager (any wave) | explicit gaps where the user could not answer |
 | `.gobbi/projects/{project-name}/features/{feature-name}/README.md` | manager (Wave 4) | one per identified feature |
-| `.gobbi/projects/{project-name}/backlogs/{slug}.md` | manager (Wave 4) | deferred / planned features |
-| `.gobbi/projects/{project-name}/mistakes/{slug}.md` | manager (Wave 5) | one per surfaced trap |
-| `.gobbi/projects/{project-name}/references/{slug}.md` | manager (Wave 5) | external sources mentioned during interview |
+| `.gobbi/projects/{project-name}/backlogs/{area}/{slug}.md` | manager (Wave 4) | deferred / planned features |
+| `.gobbi/projects/{project-name}/mistakes/{area}/{slug}.md` | manager (Wave 5) | one per surfaced trap |
+| `.gobbi/projects/{project-name}/references/{area}/{slug}.md` | manager (Wave 5) | external sources mentioned during interview |
 | `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | manager (any wave close) | per approved skill-codification offer |
 
 ---
@@ -351,7 +351,7 @@ The interview writes both session-scoped audit files and project-scoped baseline
 - **MUST vary analytical lenses** across questions within a wave — strictly using one lens for all questions in a wave dilutes coverage.
 - **MUST stamp the full skill template** when the user approves a skill codification — never leave skeleton files with TODOs.
 - **MUST present intermediate summaries** to the user through the active runtime's user-decision primitive at each wave close, using the Question Card template.
-- **MUST record "don't know" as an open question** in `decisions/{date}-unknowns.md` rather than fabricating an answer.
+- **MUST record "don't know" as an open question** in `decisions/{area}/{date}-unknowns.md` rather than fabricating an answer.
 - **MUST halt the interview if the user requests it** — the user can drop out mid-flight; the manager records the wave reached and the open items.
 - **MUST follow the `discussion` skill's anti-sycophancy and Question Card discipline** on every user-decision primitive call.
 - **MUST never delete memory files** — supersession via frontmatter only; terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.

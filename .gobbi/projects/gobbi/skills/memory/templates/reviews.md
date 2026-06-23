@@ -18,7 +18,7 @@ A review is the substrate other memory types are extracted from; a finding witho
 |---|---|
 | When | A loop's RECORD when the loop's own work *was* a review activity; or Wrap-up RECORD when a session ran a review / audit / evaluation worth preserving. Bar = activity-shaped + durability, not curated highlights. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/reviews/{slug}.md` |
-| Promotes to | `features/{f}/reviews/` (default) · `reviews/` (project, cross-feature) |
+| Promotes to | `features/{f}/reviews/{area}/` (default) · `reviews/{area}/` (project, cross-feature) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (review activity date); slug names the subject + kind (`2026-05-11-ultrareview-orchestration-redesign.md`, `2026-05-11-code-review-pr-257.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).

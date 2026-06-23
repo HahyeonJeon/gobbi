@@ -36,7 +36,7 @@ The manager runs the user through five sub-steps in order. Each is gated by the 
 | # | Sub-step | Manager's role | Leader's contribution |
 |---|---|---|---|
 | A | Read Ideation Output | Confirm Ideation output is complete; user signals readiness to advance | Read `1-ideation/outputs/` + accumulated feature memory; output a readiness signal list (files / domains / perspectives the downstream work will need) |
-| B | Design + Memory Readiness Check | Present found gaps; user decides per gap | Scan `features/{feature-name}/design/`, `scenarios/`, `checklists/`, `decisions/`, `mistakes/` against the readiness signal list; propose resolution per missing item |
+| B | Design + Memory Readiness Check | Present found gaps; user decides per gap | Scan `features/{feature-name}/design/`, `scenarios/`, `checklists/`, `decisions/`, `mistakes/` (each by-area type nests under `{area}/` subdirs — scan recursively, descending into every area subdir) against the readiness signal list; propose resolution per missing item |
 | C | Execution Skills Readiness Check | Approve skill generation per gap through the active runtime's user-decision primitive | Identify missing project-specific skills (e.g., `{project}-typescript-conventions`); propose generate / defer / re-Ideate |
 | D | Gap Resolution Plan | Run the active runtime's user-decision primitive per gap to lock the resolution table | Present the consolidated gap table (category / severity / proposal); record user decisions |
 

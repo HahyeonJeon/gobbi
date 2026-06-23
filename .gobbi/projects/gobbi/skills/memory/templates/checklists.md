@@ -14,7 +14,7 @@ An unanchored item, or a status with no verification behind it, makes the design
 |---|---|
 | When | Ideation RECORD (Sub-step D Design enumeration); EVALUATION's `checklist_gap` finding (append the missing item); Execution RECORD (flip item status `pending` → `implemented` when the work ships). |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md` |
-| Promotes to | `features/{f}/checklists/` — feature-subdir-only ([rules §3](../rules.md)) |
+| Promotes to | `features/{f}/checklists/{area}/` — feature-subdir-only ([rules §3](../rules.md)) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | Bare-slug, evergreen. Per-scenario file: `{scenario-slug}.md` (mirrors `scenarios/{scenario-slug}.md`; recommended default). Per-checklist file: `{checklist-slug}.md` (one file per item; use for heavyweight items). |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
