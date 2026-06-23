@@ -4,7 +4,7 @@ description: The git skill's P5/P8 empty-parent sweep uses find -type d -empty -
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 created: 2026-06-23
 session: 2026-06-23-d0185dba
 tags: [git, process]
@@ -12,7 +12,7 @@ keywords: [find-empty-delete, worktree-cleanup, scaffold-dirs, over-broad-sweep]
 author: claude
 priority: medium
 project-scope: true
-shipped_in: null
+shipped_in: "branch claude-2026-06-23-d0185dba (this session PR)"
 ---
 
 # git skill find -type d -empty -delete is too broad
@@ -32,6 +32,12 @@ Scope the empty-dir sweep to the REMOVED worktree's own parent path only — nev
 ## Originating session
 `.gobbi/projects/gobbi/sessions/2026-06-23-d0185dba-cd9b-45ad-93f6-7814c4f0ef4a/`
 
-## Related
+## Resolution
+Fixed in this session's PR (the same session that originated this backlog and hit the bug). All 3 sites were repointed from the whole-`worktrees/` `find -type d -empty -delete` to a scoped `rmdir -p "$(dirname …/worktrees/<branch-name>)" 2>/dev/null || true` (removes only the removed worktree's own leftover parent chain, stops at the first non-empty dir):
+- `skills/git/SKILL.md:260` (P5 step 3)
+- `skills/git/SKILL.md:307` (P8 stage 7)
+- `skills/git/conventions.md:343`
+The unsafe whole-tree form now survives only as a documented "NEVER do this" anti-pattern. See `mistakes/git/worktree-empty-dir-sweep-deletes-live-session-scaffold.md`.
 
-- (none yet)
+## Related
+- [[worktree-empty-dir-sweep-deletes-live-session-scaffold]] — the mistake this backlog fixes

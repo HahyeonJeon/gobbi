@@ -340,7 +340,9 @@ Git enforces that a branch can only be checked out in one worktree at a time. If
 Nested branch names that use slashes (e.g., `feat/42-oauth-login`) create intermediate directories under `worktrees/`. `git worktree remove` only removes the leaf directory. Run this after worktree removal:
 
 ```bash
-find .gobbi/projects/<project-name>/worktrees/ -type d -empty -delete
+# Scope to the REMOVED worktree's own parent chain — NEVER `find worktrees/ ...` over the
+# shared root, which deletes a concurrent live session's just-scaffolded empty dirs.
+rmdir -p "$(dirname .gobbi/projects/<project-name>/worktrees/<branch-name>)" 2>/dev/null || true
 ```
 
 ---
