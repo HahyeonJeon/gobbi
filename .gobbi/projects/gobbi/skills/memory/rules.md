@@ -128,7 +128,7 @@ reports: status · post-mortem · analytics · other
 | `features` | n/a — STRUCTURAL EXCEPTION; `features/` IS the area axis, `README.md` exempt |
 | `archive` | n/a — no config key; an archived file mirrors its source type's area |
 
-#### TOTAL deterministic area-selection rule
+#### Deterministic area-selection rule
 
 The write-time agent AND Wrap-up routing both apply this rule. It is **deterministic** (priority-ordered first-match — never a tie). It is NOT total: a record may match no area, in which case step 3 routes it to a user-decision rather than a fallback.
 
