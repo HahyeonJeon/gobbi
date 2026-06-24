@@ -12,15 +12,16 @@ A report is the evidence a decision or learning is later extracted from; if the 
 
 A report that buries its follow-ups stalls; one with no actions to track says so explicitly instead of inventing them.
 
-## Three report kinds
+## Report kinds
 
-One `reports/` directory holds three kinds, set by the `report_type` frontmatter field. They share one lifecycle (generated at a moment, preserved indefinitely, cited by other artifacts), so one directory keeps the audit surface whole.
+One `reports/` directory holds these kinds, set by the `report_type` frontmatter field. They share one lifecycle (generated at a moment, preserved indefinitely, cited by other artifacts), so one directory keeps the audit surface whole.
 
 | `report_type` | What goes here | Examples |
 |---|---|---|
 | **`status`** | Periodic / event-driven summary aggregating across sessions | Weekly status, sprint summary, release report, milestone health |
 | **`post-mortem`** | Incident write-up, deep-dive investigation, root-cause analysis | Production incident, "why did iter cap exhaust without convergence?", design retrospective |
 | **`analytics`** | Numerical / measurement output for trend tracking | Session-count stats, iteration-distribution, cost / token tracking, benchmark results |
+| **`other`** | The kind catch-all — a durable report that fits none of the above | Use sparingly; prefer a named kind when one fits |
 
 A report is **exactly one** `report_type`. A multi-facet artifact picks the dominant type and links companions via `related_reports`.
 
@@ -30,14 +31,14 @@ A report is **exactly one** `report_type`. A multi-facet artifact picks the domi
 |---|---|
 | When | A loop's RECORD on an in-session deep-dive worth preserving (`post-mortem`); or Wrap-up RECORD at a periodic boundary (`status`, direct write); or an out-of-band CLI run (`analytics`). Bar = scale + durability, not a routine observation. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md` |
-| Promotes to | `features/{f}/reports/{area}/` (default) · `reports/{area}/` (project, cross-feature) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
+| Promotes to | `features/{f}/reports/{area}/` (default) · `reports/{area}/` (project, cross-feature) — `{area}` is the **kind axis**: it resolves directly from the REQUIRED `report_type` value (the area set == the kind enum), per the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) step 1 (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (generation date, not the reported-on period); slug names the subject (`2026-05-11-iter-cap-exhaustion-investigation.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
-Base frontmatter + the **richer** reports extensions — `report_type`, `related_reports`, plus `generated_by`, `subject`, `related_reviews`, `related_decisions` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). The `related_*` lists are **plain slugs** (no path, no `[[ ]]`); navigable `[[slug]]` links live in the `## Related` body section ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).
+Base frontmatter + the **richer** reports extensions — `report_type`, `related_reports`, plus `generated_by`, `subject`, `related_reviews`, `related_decisions` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). **`report_type` is REQUIRED** (L16): it is the kind axis, so the area resolves directly from it (`reports/{report_type}/`) — it is never optional and never tag-derived; `other` is the kind catch-all (L7/L8). The `related_*` lists are **plain slugs** (no path, no `[[ ]]`); navigable `[[slug]]` links live in the `## Related` body section ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).
 
 ```markdown
 ---
@@ -49,10 +50,10 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [process, evaluation]          # controlled vocabulary (§2.5)
+tags: [process, evaluation]          # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
-report_type: status | post-mortem | analytics
+report_type: status | post-mortem | analytics | other   # REQUIRED — the kind axis; resolves the area
 related_reports: [{report slugs that this builds on or supersedes}]   # plain slugs
 generated_by: {tool name / agent identity / human author}
 subject: {one-line subject of the report}

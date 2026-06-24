@@ -22,11 +22,93 @@ task_count: 8
 
 Implements [`features/memory/design/memory/memory-namespace-schema.md`](../../../../../features/memory/design/memory/memory-namespace-schema.md) (the #307 area-namespace schema, Option A — schema + conventions; this manifest is the deferred migration's execution spec). The area allowlists + the tag→area map are now project-owned data in [`memory-vocabulary.json`](../../../../../memory-vocabulary.json) (shipped this session, commits `4557c78c` + `ed435550`).
 
+> **RE-DERIVED 2026-06-24 (per-type vocab redesign, session `84e9570c`).** The resolution MODEL below
+> was re-derived against the FLAT per-type `memory-vocabulary.json` (L1–L18 of
+> `1-ideation/outputs/per-type-vocab-design.md`). The retired 2-table (`spine` / `mistakes`) keying is
+> replaced by per-type `.tagAreaMap.{type}`; the `_shared` catch-all is removed (L13); area no-match is
+> now a user-decision (L14), not a `_shared` landing. The historical narrative below (which mentions the
+> old `_shared` model as past context) is preserved deliberately — it is the record of the prior design,
+> not a live instruction. See [§ Re-derived resolution model (2026-06-24)](#re-derived-resolution-model-2026-06-24).
+
 ## Scope Contract reference
 
-This is the **plan-only** output of Execution task T07 (session `d0185dba-cd9b-45ad-93f6-7814c4f0ef4a`). It does NOT move any file. The bulk move is the deferred backlog [`backlogs/memory/memory-namespace-migration.md`](../../../../../backlogs/memory/memory-namespace-migration.md); this manifest is its row-level execution spec. The deferred-move session consumes this doc, performs the `git mv`s + ref repoints, and runs the guards.
+This is the **plan-only** output of Execution task T07 (session `d0185dba-cd9b-45ad-93f6-7814c4f0ef4a`), re-derived in session `84e9570c`. It does NOT move any file. The bulk move is the deferred backlog [`backlogs/memory/memory-namespace-migration.md`](../../../../../backlogs/memory/memory-namespace-migration.md); this manifest is its row-level execution spec. The deferred-move session consumes this doc, performs the `git mv`s + ref repoints, and runs the guards.
 
-> **PLAN ONLY.** No file is moved by this artifact. No skill/doc/memory edit. The resolution below was scripted against each file's actual frontmatter + `memory-vocabulary.json` — not hand-guessed.
+> **PLAN ONLY.** No file is moved by this artifact. No skill/doc/memory edit. The resolution below was
+> scripted against each file's actual frontmatter + `memory-vocabulary.json` — not hand-guessed. The
+> 2026-06-24 re-derivation updates the resolution MODEL and the category-level distribution; the
+> authoritative per-file recompute of all 114 rows is the deferred migration's step 1 (see the appendix
+> note), because it requires reading each file's live frontmatter under the new per-type pools.
+
+## Re-derived resolution model (2026-06-24)
+
+The resolution model changed with the per-type vocab redesign. The new model:
+
+1. **Per-type map, not 2-table.** Area resolution now uses the per-type `.tagAreaMap.{type}` (one
+   priority-ordered map per by-area type) — NOT the retired `.tagAreaMap.spine` /
+   `.tagAreaMap.mistakes` 2-table. The selection rule is otherwise unchanged: explicit `area:` field
+   (none present in the corpus) > priority-ordered first-match in `.tagAreaMap.{type}` (controlled pool
+   tags only; `featureDirNormalization` applied first) > **no-match terminal**.
+
+2. **No `_shared` landings — the terminal is a user-decision (L13/L14).** `_shared` is dropped from
+   every type's area list. A record whose controlled tags route to no area no longer falls to `_shared`;
+   it is **flagged-for-user-decision** (the write/move agent emits `NEEDS_CONTEXT`; the manager asks the
+   user to pick an existing area or create one as an Always-Ask edit). The prior 17 `_shared` records
+   re-resolve: MOST route to a real area via the accepted generic-tag routing (design §4a/L12 —
+   `design`→`memory`, `hooks`→`codex`, `security`/`refactor`/`rename-sweep`/`vocabulary-sweep`/
+   `verification`/`validation`/`docs-sync`→`process`, etc.); the genuine remainder is flagged.
+
+3. **reviews / reports resolve to KIND areas (L5/L6/L16).** `review_kind` (reviews) and `report_type`
+   (reports) are now REQUIRED extension fields; the area resolves DIRECTLY from the kind value, not from
+   tags. There is no `.tagAreaMap` entry for these two types. The 1 report file
+   (`reports/2026-06-16-retro-sweep.md`, `report_type: status`) therefore resolves to the KIND area
+   `reports/status/` — NOT the old tag-derived `reports/git/`.
+
+4. **Routing is on controlled pool tags only.** The new per-type model rejects off-vocabulary tags
+   (they live in `keywords`, not `tags`). Many legacy records carry off-vocab tags (e.g. `probe`,
+   `scope`, `directory-structure`, `mistake-discipline`). Those off-vocab tags do NOT participate in
+   routing under the new model; only a record's controlled pool tags do. The legacy off-vocab `tags`
+   are a SEPARATE data-fix tracked by [`backlogs/memory/legacy-frontmatter-migration.md`](../../../../../backlogs/memory/legacy-frontmatter-migration.md);
+   the deferred migration's authoritative per-file recompute (step 1) applies the legacy-tag fix first,
+   then resolves the area — so a record flagged-for-user-decision here may home cleanly once its tags
+   are corrected.
+
+5. **archive unchanged (L9).** Archived files mirror the source type's resolved area; the find-prune
+   already excludes `archive/`. No `_shared` involved.
+
+### Formerly-`_shared` re-resolution (the 17 records, model re-derivation)
+
+Re-derived against the new per-type `.tagAreaMap.{type}` using each record's CONTROLLED pool tags
+(priority first-match). 11 of 17 route to a real area; 6 are genuine no-match → flagged-for-user-decision.
+
+| # | Formerly-`_shared` record | Type | New resolution | Basis (controlled tag → area) |
+|---|---|---|---|---|
+| 1 | `mistakes/staging-a-mistake-candidate-does-not-fix-the-artifact.md` | mistakes | **FLAG-FOR-USER** | only controlled tag `process` is an intentional no-match for mistakes (a trap-class is required; a "where" tag must not auto-route) |
+| 2 | `features/git-workflow/decisions/probe-data-source-reliability.md` | decisions | **FLAG-FOR-USER** | no controlled pool tag (all off-vocab); legacy-tag fix needed first |
+| 3 | `features/git-workflow/discussions/2026-06-14-post-research-design-decisions.md` | discussions | `codex` | `hooks` → codex |
+| 4 | `features/git-workflow/checklists/remediation-must-be-ask-only.md` | checklists | `process` | `security` → process |
+| 5 | `features/workflow/decisions/2026-06-08-gap1-verify-session-tree-check.md` | decisions | **FLAG-FOR-USER** | no controlled pool tag (all off-vocab); legacy-tag fix needed first |
+| 6 | `features/workflow/decisions/2026-06-08-script-hook-layer-verify-no-change.md` | decisions | `codex` | `hooks` → codex |
+| 7 | `features/workflow/decisions/2026-06-13-vocabulary-rename-blast-radius.md` | decisions | `process` | `vocabulary-sweep` → process |
+| 8 | `features/workflow/design/claude-md-agents-md-6step-reconcile.md` | design | `memory` | `design` → memory |
+| 9 | `features/workflow/design/sweep-manifest-command-derived.md` | design | `memory` | `design` → memory (priority over `vocabulary-sweep`→process / `verification`→process) |
+| 10 | `features/workflow/references/agent-trace-tree-scaffolding.md` | references | **FLAG-FOR-USER** | no controlled pool tag (all off-vocab); legacy-tag fix needed first |
+| 11 | `features/workflow/references/build-tool-deterministic-output.md` | references | **FLAG-FOR-USER** | no controlled pool tag (all off-vocab); legacy-tag fix needed first |
+| 12 | `features/workflow/references/git-layout-mutability-split.md` | references | **FLAG-FOR-USER** | no controlled pool tag (all off-vocab); legacy-tag fix needed first |
+| 13 | `features/workflow/discussions/2026-06-13-scope-lock-d12-workflow-feature.md` | discussions | `memory` | `design` → memory |
+| 14 | `features/workflow/discussions/2026-06-13-two-skill-hybrid-d10.md` | discussions | `memory` | `design` → memory |
+| 15 | `features/workflow/discussions/2026-06-13-vocabulary-d5-d6-d7-lock.md` | discussions | `memory` | `design` → memory |
+| 16 | `features/workflow/scenarios/workflow-memorization-doc-rename-scope.md` | scenarios | `process` | `vocabulary-sweep` → process |
+| 17 | `features/workflow/checklists/sweep-executor-verification-steps.md` | checklists | `process` | `vocabulary-sweep` → process (priority over `verification`→process; same area) |
+
+Re-route summary: `memory` +5 · `process` +4 · `codex` +2 · **flagged-for-user-decision +6**. Zero
+`_shared`.
+
+> The 6 flagged-for-user records all lack a routing-eligible controlled tag under the new model. Five of
+> them carry only off-vocabulary tags (rows 2/5/10/11/12) and will likely home cleanly after the
+> `legacy-frontmatter-migration` tag fix; row 1 is the structural no-match (a process-only mistake with
+> no trap-class). The deferred migration's step 1 (authoritative per-file recompute) re-checks all six
+> after the legacy-tag fix and routes whatever still has no area through the L14 user-decision.
 
 ## Live count reconciliation (count authority = a fresh `find`)
 
@@ -42,24 +124,35 @@ This matches the briefed expectation (34 / 80 / 114).
 
 **Validator-vs-filesystem discrepancy (resolved).** The validator's `missing required area segment` reports number **110**, not 114. The 4-file gap is the four type-mismatch files below: they live physically under `mistakes/` but declare `type: decisions`, so the validator emits a *different* area message (`by-area type 'decisions' but no 'decisions/' dir in path`) that a `missing required area segment` grep does not catch. The filesystem count (114) is the authority; all 4 are in the manifest, flagged NEEDS-DECISION.
 
-## Resolved-area distribution (all 114)
+## Resolved-area distribution (all 114) — re-derived 2026-06-24 (ZERO `_shared`)
 
-| Area | Files |
-|---|---|
-| `git` | 24 |
-| `memory` | 20 |
-| `workflow` | 19 |
-| `_shared` | 17 |
-| `wrap-up` | 13 |
-| `evaluation` | 7 |
-| `codex` | 6 |
-| `verification` | 3 |
-| `refactor` | 2 |
-| `process` | 1 |
-| `tooling` | 1 |
-| `docs-sync` | 1 |
+Under the new per-type model. The `_shared` row is GONE; its 17 records re-route per the table above,
+and a new **`flagged-for-user-decision`** category holds the genuine no-match remainder.
 
-`_shared` = 17 (legitimate no-tag-match fallbacks — flagged in the row tables, NOT forced into a home). Resolution method: §1.5 selection rule applied per file — explicit `area:` field (none present) > priority-ordered `tagAreaMap` from `memory-vocabulary.json` (mistakes map for `type: mistakes`, spine map otherwise; feature-dir normalization applied first) > `_shared`.
+| Area | Files | Delta vs prior (`_shared` model) |
+|---|---|---|
+| `memory` | 25 | +5 (formerly-`_shared` design/discussions records via `design`→memory) |
+| `git` | 23 | −1 (the 1 report leaves `git` for its `reports/status/` kind area) |
+| `workflow` | 19 | — |
+| `wrap-up` | 13 | — |
+| `codex` | 8 | +2 (formerly-`_shared` records via `hooks`→codex) |
+| `evaluation` | 7 | — |
+| **`flagged-for-user-decision`** | **6** | **NEW — replaces the silent `_shared` catch-all (L13/L14)** |
+| `process` | 5 | +4 (formerly-`_shared` records via generic-tag routing) |
+| `verification` | 3 | — |
+| `refactor` | 2 | — |
+| `docs-sync` | 1 | — |
+| `reports/status` (kind) | 1 | +1 (the 1 report; kind-resolved from REQUIRED `report_type: status`, L16) |
+| `tooling` | 1 | — |
+| **Total** | **114** | |
+
+> **`flagged-for-user-decision` replaces `_shared`.** The prior model showed `_shared = 17` "legitimate
+> no-tag-match fallbacks." Under L13/L14 there is no `_shared`: 11 of those 17 now route to a real area
+> via L12 generic-tag routing, and the remaining 6 are flagged for a per-file user area-decision in the
+> deferred migration — NEVER auto-`_shared`. Resolution method: §1.5 selection rule applied per file —
+> explicit `area:` field (none present) > priority-ordered per-type `.tagAreaMap.{type}` from
+> `memory-vocabulary.json` (`featureDirNormalization` applied first) > flagged-for-user-decision (L14).
+> reviews/reports resolve from their REQUIRED kind value (L16), not from tags.
 
 ## NEEDS-DECISION items (do not move blindly)
 
@@ -74,7 +167,7 @@ These four files sit in `mistakes/` but carry `type: decisions` (a legacy frontm
 | `mistakes/plan-rename-must-enumerate-all-ref-classes.md` | decisions | `mistakes/{area}/` | `decisions/workflow/` |
 | `mistakes/planning-asserted-skill-without-verifying.md` | decisions | `mistakes/{area}/` | `decisions/workflow/` |
 
-The mistakes-area re-resolution (option A) must be re-run under the **mistakes** tag→area map (these files' current tags include off-vocab values like `rename`, `required-skills`, `assistant-wrapper` that also need the legacy-tag fix). Decide the type FIRST, then resolve the area.
+The mistakes-area re-resolution (option A) must be re-run under the **mistakes** tag→area map (these files' current tags include off-vocab values like `rename`, `required-skills`, `assistant-wrapper` that also need the legacy-tag fix). Decide the type FIRST, then resolve the area. (Note: under the new per-type model these off-vocab tags do not route; the `legacy-frontmatter-migration` tag fix precedes the area resolution — see the re-derived model item 4.)
 
 ### 2. Two cross-tier slug collisions (informational — not a blocker)
 
@@ -123,7 +216,7 @@ The brief's three confirmed flat mistakes that ARE live `layer2-source:` targets
 | Guard | How to run | "Pass" means |
 |---|---|---|
 | `check-markdown-links.sh` | `bash skills/orchestration/scripts/check-markdown-links.sh <changed docs>` (or whole tree) | zero NEW broken links vs the pre-move baseline. KNOWN pre-existing broken links (`diataxis.fr` external typo in `rules.md`; the `design-literal-retire-instruction-without-replacement` link) are NOT regressions |
-| `check-residual-vocab.sh` | `bash skills/orchestration/scripts/check-residual-vocab.sh` | zero residual OLD flat-path references to any moved file |
+| `check-residual-vocab.sh` | `bash skills/orchestration/scripts/check-residual-vocab.sh` | zero residual OLD flat-path references to any moved file. NOTE: this guard's `VOCAB` pattern does NOT cover the redesign forms (`_shared`, `.effective.*`, `.tagAreaMap.spine\|mistakes`) — the OF-1 backlog tracks extending it; until then the move sweep also needs explicit per-form `grep -c` |
 | **NEW** `layer2-source:` resolution check | a dedicated scan: for every `layer2-source:` PATH field across `skills/` (and the tree), assert the target path EXISTS on disk. The three existing guards do NOT inspect this YAML field (verified) | every `layer2-source:` target resolves to an existing file (zero dangling) |
 | `validate-frontmatter.sh` | `bash skills/memory/scripts/validate-frontmatter.sh` | see the expected-vs-regression criterion below |
 
@@ -133,15 +226,20 @@ The brief's three confirmed flat mistakes that ARE live `layer2-source:` targets
 
 Pre-move baseline: **685 violations / 133 files** (area-flat 114, tags 280) — the documented legacy expected-RED, tracked by `backlogs/legacy-frontmatter-migration.md`.
 
+> **Baseline note (re-derived 2026-06-24).** Under the new per-type vocab the `_shared/` dirs are no
+> longer a listed area, so any residual `_shared/` path now FAILS the area check (fail-closed, L15) —
+> the same direction as before (area-flat is RED until migrated), so the baseline classification holds.
+> The 17 `_shared` rows are NOT pre-created on disk; they re-resolve at move time per the model above.
+
 | Outcome | Classification |
 |---|---|
 | Each moved file clears its `area` violation (`missing required area segment` / `no '{type}/' dir`) | EXPECTED IMPROVEMENT — the area-flat violation count should drop toward ~0 for migrated files |
-| The ~280 legacy `tags` violations (off-vocab tags on records) remain | EXPECTED RED — out of THIS migration's scope; tracked by `legacy-frontmatter-migration` (the tag fix is a separate data-fix) |
+| The ~280 legacy `tags` violations (off-vocab tags on records) remain | EXPECTED RED — out of THIS migration's scope; tracked by `legacy-frontmatter-migration` (the tag fix is a separate data-fix; it ALSO unblocks the 6 flagged-for-user records — see the model item 4) |
 | The 4 type-mismatch files' OTHER violations (status enum, stray `decision_status`, missing `keywords`/`author`) remain unless option (A) also fixes them | EXPECTED RED unless the type-fix is bundled — note in the move PR |
 | Any NEW area or tag violation appears | **REGRESSION** — fail |
 | Any inbound path ref, `required-mistakes:`, or `layer2-source:` left dangling | **REGRESSION** — fail (caught by the guards) |
 
-**Pass = zero regressions AND the area-flat violation count drops to ~0 for the migrated files** (residual area-RED only for files intentionally left, e.g. a type-mismatch deferred to option B).
+**Pass = zero regressions AND the area-flat violation count drops to ~0 for the migrated files** (residual area-RED only for files intentionally left, e.g. a type-mismatch deferred to option B, or a file held pending its flagged-for-user area-decision).
 
 ## Write-safety reminder for the deferred-move session
 
@@ -154,10 +252,10 @@ Pre-move baseline: **685 violations / 133 files** (area-flat 114, tags 280) — 
 
 | # | Sub-task | Depends on | Verification | Owner type |
 |---|---|---|---|---|
-| 1 | Resolve the 4 type-mismatch files' type (option A/B) with the user | — | user decision recorded | manager |
-| 2 | `git mv` the 80 feature-tier files into `features/{f}/{type}/{area}/` per the row tables | #1 | `find` shows zero flat feature-tier by-area files | executor |
-| 3 | `git mv` the 34 project-tier files into `{type}/{area}/` per the row tables | #1 | `find` shows zero flat project-tier by-area files | executor |
-| 4 | Repoint all inbound path / prose / in-fence refs (classes 1-8) | #2,#3 | `check-markdown-links.sh` + `check-residual-vocab.sh` zero | executor |
+| 1 | Authoritative per-file recompute of all 114 rows under the new per-type vocab (apply the `legacy-frontmatter-migration` tag fix first, then resolve area via `.tagAreaMap.{type}`); resolve the 4 type-mismatch files' type (option A/B) + route the 6 flagged-for-user records with the user | — | every row has a real area OR a recorded user area-decision; zero `_shared` | manager + executor |
+| 2 | `git mv` the 80 feature-tier files into `features/{f}/{type}/{area}/` per the recomputed row tables | #1 | `find` shows zero flat feature-tier by-area files | executor |
+| 3 | `git mv` the 34 project-tier files into `{type}/{area}/` per the recomputed row tables | #1 | `find` shows zero flat project-tier by-area files | executor |
+| 4 | Repoint all inbound path / prose / in-fence refs (classes 1-8) | #2,#3 | `check-markdown-links.sh` + explicit per-form `grep -c` zero | executor |
 | 5 | Repoint the 3 moving `layer2-source:` refs; fix/drop the 4 dangling ones | #2,#3 | NEW layer2-source check: zero dangling | executor |
 | 6 | Re-scan + repoint any populated `required-mistakes:` field (expected zero) | #2,#3 | grep zero stale `required-mistakes:` paths | executor |
 | 7 | Run `validate-frontmatter.sh`; confirm area-flat drops to ~0, no new violations | #4,#5,#6 | before/after counts vs the 685/133 baseline | executor |
@@ -165,26 +263,39 @@ Pre-move baseline: **685 violations / 133 files** (area-flat 114, tags 280) — 
 
 ## Dependency graph
 
-`#1 (type decision)` gates the two move waves `#2 (feature)` + `#3 (project)`. Ref-repoints `#4/#5/#6` depend on the moves. `#7 (validate)` is the gate; `#8 (PR)` closes. Waves #2 and #3 are independent and may run in parallel.
+`#1 (per-file recompute + type/flag decisions)` gates the two move waves `#2 (feature)` + `#3 (project)`. Ref-repoints `#4/#5/#6` depend on the moves. `#7 (validate)` is the gate; `#8 (PR)` closes. Waves #2 and #3 are independent and may run in parallel.
 
 ## Verification strategy summary
 
-The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo any option-B type-mismatch deferral); (b) all four guards pass (`check-markdown-links.sh`, `check-residual-vocab.sh`, the NEW `layer2-source:` check, `validate-frontmatter.sh`); (c) the validator's area-flat violation count drops to ~0 for migrated files with NO new area/tag violations; (d) the only remaining RED is the documented legacy-tag expected-RED tracked by `legacy-frontmatter-migration`.
+The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo any option-B type-mismatch deferral or a file held pending its flagged-for-user area-decision); (b) all four guards pass (`check-markdown-links.sh`, `check-residual-vocab.sh` + explicit per-form greps, the NEW `layer2-source:` check, `validate-frontmatter.sh`); (c) the validator's area-flat violation count drops to ~0 for migrated files with NO new area/tag violations; (d) the only remaining RED is the documented legacy-tag expected-RED tracked by `legacy-frontmatter-migration`; (e) ZERO `_shared` landings — every record has a real area or a recorded user area-decision.
 
 ## Open issues
 
 - The 4 type-mismatch files (NEEDS-DECISION #1) need a user/manager type ruling before their rows are final.
-- 17 `_shared` resolutions are legitimate no-match fallbacks; if the deferred session wants tighter homing it would require extending the tag→area map in `memory-vocabulary.json` (deliberate, like extending §2.5) — out of this manifest's scope.
+- The 6 flagged-for-user-decision records (re-derived model) need a per-file user area-decision (L14) — most are expected to home cleanly after the `legacy-frontmatter-migration` tag fix; only `mistakes/staging-a-mistake-candidate-does-not-fix-the-artifact.md` is a structural no-match (process-only mistake, no trap-class).
+- Tighter homing for a flagged record (beyond what the legacy-tag fix achieves) would require either correcting the record's tags or extending the per-type `.tagAreaMap.{type}` / area list in `memory-vocabulary.json` (an Always-Ask edit, like extending §1.5/§2.5) — a deliberate vocabulary change, out of this manifest's scope.
 
 ## Related
 
 - [[memory-namespace-schema]] — the design this migration implements
 - [[memory-namespace-migration]] — the parent deferred backlog this manifest is the execution spec for
-- [[legacy-frontmatter-migration]] — the legacy-tag expected-RED tracker (separate data-fix)
+- [[legacy-frontmatter-migration]] — the legacy-tag expected-RED tracker (separate data-fix; also unblocks the 6 flagged-for-user records)
+- [[no-match-user-decision-supersedes-shared-resolution]] — the decision (L13/L14) that removed `_shared` and made no-match a user-decision; superseded the prior `_shared`-resolution expectation
 - [[plan-rename-must-enumerate-all-ref-classes]] — the reference-class enumeration discipline
 - [[namespace-sweep-needs-write-vs-ref-enumeration-not-pattern-grep]] — grep-every-form, classify-every-hit
 
 ## Appendix — row-level manifest (all 114 files)
+
+> **APPENDIX STATUS (2026-06-24 re-derivation).** The per-file row tables BELOW are the ORIGINAL
+> `_shared`-model resolution, PRESERVED as historical context (they record the prior design's per-file
+> output). They are NOT the live target: the `_shared` destination column in these rows is SUPERSEDED by
+> the re-derived model above (§ Re-derived resolution model + the formerly-`_shared` re-resolution
+> table). **The authoritative per-file recompute of all 114 rows under the new per-type vocab is the
+> deferred migration's step 1** (sub-task #1) — it requires reading each file's live frontmatter after
+> the `legacy-frontmatter-migration` tag fix. Read the rows below for the non-`_shared` destinations
+> (unchanged in area, only the resolution MECHANISM moved from the 2-table to per-type
+> `.tagAreaMap.{type}`); for any row whose old destination was a `_shared/` path, use the re-resolution
+> table above instead.
 
 ## Project-tier manifest (34 files)
 
@@ -206,7 +317,7 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | 12 | `mistakes/pkill-f-pattern-matches-own-shell.md` | mistakes | `codex` | `mistakes/codex/pkill-f-pattern-matches-own-shell.md` | tag 'codex' -> codex | — |
 | 13 | `mistakes/plan-rename-must-enumerate-all-ref-classes.md` | decisions | `workflow` | `decisions/workflow/plan-rename-must-enumerate-all-ref-classes.md` | tag 'planning' -> workflow | TYPE-MISMATCH (physical `mistakes/`, declared `decisions`) — NEEDS-DECISION |
 | 14 | `mistakes/planning-asserted-skill-without-verifying.md` | decisions | `workflow` | `decisions/workflow/planning-asserted-skill-without-verifying.md` | tag 'planning' -> workflow | TYPE-MISMATCH (physical `mistakes/`, declared `decisions`) — NEEDS-DECISION |
-| 15 | `mistakes/staging-a-mistake-candidate-does-not-fix-the-artifact.md` | mistakes | `_shared` | `mistakes/_shared/staging-a-mistake-candidate-does-not-fix-the-artifact.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 15 | `mistakes/staging-a-mistake-candidate-does-not-fix-the-artifact.md` | mistakes | **FLAG-FOR-USER** (was `_shared`) | (held pending L14 user area-decision) | controlled tag `process` is intentional-no-match for mistakes | RE-DERIVED — flagged-for-user-decision (no `_shared`) |
 | 16 | `mistakes/sweep-grep-literal-loop-name-blindspot.md` | mistakes | `refactor` | `mistakes/refactor/sweep-grep-literal-loop-name-blindspot.md` | tag 'rename-sweep' -> refactor | — |
 
 ### Project · `backlogs/` — 11 files
@@ -240,7 +351,7 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 
 | # | Source (flat) | Declared type | Resolved area | Destination | Area basis | Flags |
 |---|---|---|---|---|---|---|
-| 1 | `reports/2026-06-16-retro-sweep.md` | reports | `git` | `reports/git/2026-06-16-retro-sweep.md` | tag 'git' -> git | — |
+| 1 | `reports/2026-06-16-retro-sweep.md` | reports | `status` (KIND) | `reports/status/2026-06-16-retro-sweep.md` | KIND from REQUIRED `report_type: status` (L16) | RE-DERIVED — kind area (was tag 'git' -> git) |
 
 ## Feature-tier manifest (80 files)
 
@@ -253,7 +364,7 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | 1 | `features/git-workflow/decisions/codex-skill-prior-art-not-engaged.md` | decisions | `memory` | `features/git-workflow/decisions/memory/codex-skill-prior-art-not-engaged.md` | tag 'docs-sync' -> memory | — |
 | 2 | `features/git-workflow/decisions/git-completeness-ideation-decisions.md` | decisions | `wrap-up` | `features/git-workflow/decisions/wrap-up/git-completeness-ideation-decisions.md` | tag 'wrap-up' -> wrap-up | — |
 | 3 | `features/git-workflow/decisions/leader-md-git-discipline-claim-wrong.md` | decisions | `process` | `features/git-workflow/decisions/process/leader-md-git-discipline-claim-wrong.md` | tag 'process' -> process | — |
-| 4 | `features/git-workflow/decisions/probe-data-source-reliability.md` | decisions | `_shared` | `features/git-workflow/decisions/_shared/probe-data-source-reliability.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 4 | `features/git-workflow/decisions/probe-data-source-reliability.md` | decisions | **FLAG-FOR-USER** (was `_shared`) | (held pending L14 user area-decision) | no controlled pool tag (off-vocab); legacy-tag fix first | RE-DERIVED — flagged-for-user-decision (no `_shared`) |
 
 ### `features/git-workflow/design/` — 7 files
 
@@ -304,7 +415,7 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | # | Source (flat) | Declared type | Resolved area | Destination | Area basis | Flags |
 |---|---|---|---|---|---|---|
 | 1 | `features/git-workflow/discussions/2026-06-14-codex-first-class-scope.md` | discussions | `codex` | `features/git-workflow/discussions/codex/2026-06-14-codex-first-class-scope.md` | tag 'codex' -> codex | — |
-| 2 | `features/git-workflow/discussions/2026-06-14-post-research-design-decisions.md` | discussions | `_shared` | `features/git-workflow/discussions/_shared/2026-06-14-post-research-design-decisions.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 2 | `features/git-workflow/discussions/2026-06-14-post-research-design-decisions.md` | discussions | `codex` (was `_shared`) | `features/git-workflow/discussions/codex/2026-06-14-post-research-design-decisions.md` | tag 'hooks' -> codex (L12) | RE-DERIVED — re-routed from `_shared` |
 
 ### `features/git-workflow/scenarios/` — 2 files
 
@@ -318,7 +429,7 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | # | Source (flat) | Declared type | Resolved area | Destination | Area basis | Flags |
 |---|---|---|---|---|---|---|
 | 1 | `features/git-workflow/checklists/git-operation-checklists.md` | checklists | `git` | `features/git-workflow/checklists/git/git-operation-checklists.md` | tag 'git' -> git | — |
-| 2 | `features/git-workflow/checklists/remediation-must-be-ask-only.md` | checklists | `_shared` | `features/git-workflow/checklists/_shared/remediation-must-be-ask-only.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 2 | `features/git-workflow/checklists/remediation-must-be-ask-only.md` | checklists | `process` (was `_shared`) | `features/git-workflow/checklists/process/remediation-must-be-ask-only.md` | tag 'security' -> process (L12) | RE-DERIVED — re-routed from `_shared` |
 
 ### Feature `workflow` (51 files)
 
@@ -327,11 +438,11 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | # | Source (flat) | Declared type | Resolved area | Destination | Area basis | Flags |
 |---|---|---|---|---|---|---|
 | 1 | `features/workflow/decisions/2026-06-08-flat-granular-loop-interior.md` | decisions | `workflow` | `features/workflow/decisions/workflow/2026-06-08-flat-granular-loop-interior.md` | tag 'session-memory' -> workflow | — |
-| 2 | `features/workflow/decisions/2026-06-08-gap1-verify-session-tree-check.md` | decisions | `_shared` | `features/workflow/decisions/_shared/2026-06-08-gap1-verify-session-tree-check.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 2 | `features/workflow/decisions/2026-06-08-gap1-verify-session-tree-check.md` | decisions | **FLAG-FOR-USER** (was `_shared`) | (held pending L14 user area-decision) | no controlled pool tag (off-vocab); legacy-tag fix first | RE-DERIVED — flagged-for-user-decision (no `_shared`) |
 | 3 | `features/workflow/decisions/2026-06-08-interview-bootstrap-exception.md` | decisions | `workflow` | `features/workflow/decisions/workflow/2026-06-08-interview-bootstrap-exception.md` | tag 'session-memory' -> workflow | — |
 | 4 | `features/workflow/decisions/2026-06-08-number-prefixed-loop-dirs.md` | decisions | `workflow` | `features/workflow/decisions/workflow/2026-06-08-number-prefixed-loop-dirs.md` | tag 'session-memory' -> workflow | — |
 | 5 | `features/workflow/decisions/2026-06-08-scaffold-script-mechanism.md` | decisions | `workflow` | `features/workflow/decisions/workflow/2026-06-08-scaffold-script-mechanism.md` | tag 'session-memory' -> workflow | — |
-| 6 | `features/workflow/decisions/2026-06-08-script-hook-layer-verify-no-change.md` | decisions | `_shared` | `features/workflow/decisions/_shared/2026-06-08-script-hook-layer-verify-no-change.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 6 | `features/workflow/decisions/2026-06-08-script-hook-layer-verify-no-change.md` | decisions | `codex` (was `_shared`) | `features/workflow/decisions/codex/2026-06-08-script-hook-layer-verify-no-change.md` | tag 'hooks' -> codex (L12) | RE-DERIVED — re-routed from `_shared` |
 | 7 | `features/workflow/decisions/2026-06-08-session-tree-spec-doc.md` | decisions | `workflow` | `features/workflow/decisions/workflow/2026-06-08-session-tree-spec-doc.md` | tag 'session-memory' -> workflow | — |
 | 8 | `features/workflow/decisions/2026-06-08-single-root-transcripts.md` | decisions | `workflow` | `features/workflow/decisions/workflow/2026-06-08-single-root-transcripts.md` | tag 'session-memory' -> workflow | — |
 | 9 | `features/workflow/decisions/2026-06-13-exclude-filter-over-excludes-layer2.md` | decisions | `workflow` | `features/workflow/decisions/workflow/2026-06-13-exclude-filter-over-excludes-layer2.md` | tag 'planning' -> workflow | — |
@@ -343,17 +454,17 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | 15 | `features/workflow/decisions/2026-06-13-stage3-memory-validation-nonskippable.md` | decisions | `wrap-up` | `features/workflow/decisions/wrap-up/2026-06-13-stage3-memory-validation-nonskippable.md` | tag 'wrap-up' -> wrap-up | — |
 | 16 | `features/workflow/decisions/2026-06-13-task-09-surfaces-verify-false-pass.md` | decisions | `wrap-up` | `features/workflow/decisions/wrap-up/2026-06-13-task-09-surfaces-verify-false-pass.md` | tag 'wrap-up' -> wrap-up | — |
 | 17 | `features/workflow/decisions/2026-06-13-three-surface-loader-fixup.md` | decisions | `codex` | `features/workflow/decisions/codex/2026-06-13-three-surface-loader-fixup.md` | tag 'codex' -> codex | — |
-| 18 | `features/workflow/decisions/2026-06-13-vocabulary-rename-blast-radius.md` | decisions | `_shared` | `features/workflow/decisions/_shared/2026-06-13-vocabulary-rename-blast-radius.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 18 | `features/workflow/decisions/2026-06-13-vocabulary-rename-blast-radius.md` | decisions | `process` (was `_shared`) | `features/workflow/decisions/process/2026-06-13-vocabulary-rename-blast-radius.md` | tag 'vocabulary-sweep' -> process (L12) | RE-DERIVED — re-routed from `_shared` |
 | 19 | `features/workflow/decisions/2026-06-13-workflow-memorization-doc-filename-rename.md` | decisions | `memory` | `features/workflow/decisions/memory/2026-06-13-workflow-memorization-doc-filename-rename.md` | tag 'docs-sync' -> memory | — |
 
 ### `features/workflow/design/` — 7 files
 
 | # | Source (flat) | Declared type | Resolved area | Destination | Area basis | Flags |
 |---|---|---|---|---|---|---|
-| 1 | `features/workflow/design/claude-md-agents-md-6step-reconcile.md` | design | `_shared` | `features/workflow/design/_shared/claude-md-agents-md-6step-reconcile.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 1 | `features/workflow/design/claude-md-agents-md-6step-reconcile.md` | design | `memory` (was `_shared`) | `features/workflow/design/memory/claude-md-agents-md-6step-reconcile.md` | tag 'design' -> memory (L12) | RE-DERIVED — re-routed from `_shared` |
 | 2 | `features/workflow/design/handoff-artifact-spec.md` | design | `wrap-up` | `features/workflow/design/wrap-up/handoff-artifact-spec.md` | tag 'wrap-up' -> wrap-up | — |
 | 3 | `features/workflow/design/session-memory-tree.md` | design | `workflow` | `features/workflow/design/workflow/session-memory-tree.md` | tag 'workflow' -> workflow | — |
-| 4 | `features/workflow/design/sweep-manifest-command-derived.md` | design | `_shared` | `features/workflow/design/_shared/sweep-manifest-command-derived.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 4 | `features/workflow/design/sweep-manifest-command-derived.md` | design | `memory` (was `_shared`) | `features/workflow/design/memory/sweep-manifest-command-derived.md` | tag 'design' -> memory (L12) | RE-DERIVED — re-routed from `_shared` |
 | 5 | `features/workflow/design/two-skill-restructure-memory-record.md` | design | `memory` | `features/workflow/design/memory/two-skill-restructure-memory-record.md` | tag 'memory' -> memory | — |
 | 6 | `features/workflow/design/vocabulary-rename-record-memory-split.md` | design | `memory` | `features/workflow/design/memory/vocabulary-rename-record-memory-split.md` | tag 'memory' -> memory | — |
 | 7 | `features/workflow/design/wrap-up-5-stage-pipeline.md` | design | `wrap-up` | `features/workflow/design/wrap-up/wrap-up-5-stage-pipeline.md` | tag 'wrap-up' -> wrap-up | — |
@@ -368,10 +479,10 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 
 | # | Source (flat) | Declared type | Resolved area | Destination | Area basis | Flags |
 |---|---|---|---|---|---|---|
-| 1 | `features/workflow/references/agent-trace-tree-scaffolding.md` | references | `_shared` | `features/workflow/references/_shared/agent-trace-tree-scaffolding.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 1 | `features/workflow/references/agent-trace-tree-scaffolding.md` | references | **FLAG-FOR-USER** (was `_shared`) | (held pending L14 user area-decision) | no controlled pool tag (off-vocab); legacy-tag fix first | RE-DERIVED — flagged-for-user-decision (no `_shared`) |
 | 2 | `features/workflow/references/audit-log-vs-trail-naming.md` | references | `memory` | `features/workflow/references/memory/audit-log-vs-trail-naming.md` | tag 'memory' -> memory | — |
-| 3 | `features/workflow/references/build-tool-deterministic-output.md` | references | `_shared` | `features/workflow/references/_shared/build-tool-deterministic-output.md` | no tag matched (fallback) | _shared (no tag matched) |
-| 4 | `features/workflow/references/git-layout-mutability-split.md` | references | `_shared` | `features/workflow/references/_shared/git-layout-mutability-split.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 3 | `features/workflow/references/build-tool-deterministic-output.md` | references | **FLAG-FOR-USER** (was `_shared`) | (held pending L14 user area-decision) | no controlled pool tag (off-vocab); legacy-tag fix first | RE-DERIVED — flagged-for-user-decision (no `_shared`) |
+| 4 | `features/workflow/references/git-layout-mutability-split.md` | references | **FLAG-FOR-USER** (was `_shared`) | (held pending L14 user area-decision) | no controlled pool tag (off-vocab); legacy-tag fix first | RE-DERIVED — flagged-for-user-decision (no `_shared`) |
 | 5 | `features/workflow/references/memory-consolidation-end-of-session-stage.md` | references | `memory` | `features/workflow/references/memory/memory-consolidation-end-of-session-stage.md` | tag 'memory' -> memory | — |
 | 6 | `features/workflow/references/pre-post-gate-different-artifacts.md` | references | `wrap-up` | `features/workflow/references/wrap-up/pre-post-gate-different-artifacts.md` | tag 'wrap-up' -> wrap-up | — |
 | 7 | `features/workflow/references/release-pipeline-gates-deploy-last.md` | references | `wrap-up` | `features/workflow/references/wrap-up/release-pipeline-gates-deploy-last.md` | tag 'wrap-up' -> wrap-up | — |
@@ -392,16 +503,16 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | 2 | `features/workflow/discussions/2026-06-13-pipeline-order-d8-git-last.md` | discussions | `wrap-up` | `features/workflow/discussions/wrap-up/2026-06-13-pipeline-order-d8-git-last.md` | tag 'wrap-up' -> wrap-up | — |
 | 3 | `features/workflow/discussions/2026-06-13-planning-iter1-fail-disposition.md` | discussions | `evaluation` | `features/workflow/discussions/evaluation/2026-06-13-planning-iter1-fail-disposition.md` | tag 'evaluation' -> evaluation | — |
 | 4 | `features/workflow/discussions/2026-06-13-planning-iter2-revise-quick-patch-close.md` | discussions | `evaluation` | `features/workflow/discussions/evaluation/2026-06-13-planning-iter2-revise-quick-patch-close.md` | tag 'evaluation' -> evaluation | — |
-| 5 | `features/workflow/discussions/2026-06-13-scope-lock-d12-workflow-feature.md` | discussions | `_shared` | `features/workflow/discussions/_shared/2026-06-13-scope-lock-d12-workflow-feature.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 5 | `features/workflow/discussions/2026-06-13-scope-lock-d12-workflow-feature.md` | discussions | `memory` (was `_shared`) | `features/workflow/discussions/memory/2026-06-13-scope-lock-d12-workflow-feature.md` | tag 'design' -> memory (L12) | RE-DERIVED — re-routed from `_shared` |
 | 6 | `features/workflow/discussions/2026-06-13-stage3-nonskippable-d11-d13.md` | discussions | `wrap-up` | `features/workflow/discussions/wrap-up/2026-06-13-stage3-nonskippable-d11-d13.md` | tag 'wrap-up' -> wrap-up | — |
-| 7 | `features/workflow/discussions/2026-06-13-two-skill-hybrid-d10.md` | discussions | `_shared` | `features/workflow/discussions/_shared/2026-06-13-two-skill-hybrid-d10.md` | no tag matched (fallback) | _shared (no tag matched) |
-| 8 | `features/workflow/discussions/2026-06-13-vocabulary-d5-d6-d7-lock.md` | discussions | `_shared` | `features/workflow/discussions/_shared/2026-06-13-vocabulary-d5-d6-d7-lock.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 7 | `features/workflow/discussions/2026-06-13-two-skill-hybrid-d10.md` | discussions | `memory` (was `_shared`) | `features/workflow/discussions/memory/2026-06-13-two-skill-hybrid-d10.md` | tag 'design' -> memory (L12) | RE-DERIVED — re-routed from `_shared` |
+| 8 | `features/workflow/discussions/2026-06-13-vocabulary-d5-d6-d7-lock.md` | discussions | `memory` (was `_shared`) | `features/workflow/discussions/memory/2026-06-13-vocabulary-d5-d6-d7-lock.md` | tag 'design' -> memory (L12) | RE-DERIVED — re-routed from `_shared` |
 
 ### `features/workflow/scenarios/` — 1 files
 
 | # | Source (flat) | Declared type | Resolved area | Destination | Area basis | Flags |
 |---|---|---|---|---|---|---|
-| 1 | `features/workflow/scenarios/workflow-memorization-doc-rename-scope.md` | scenarios | `_shared` | `features/workflow/scenarios/_shared/workflow-memorization-doc-rename-scope.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 1 | `features/workflow/scenarios/workflow-memorization-doc-rename-scope.md` | scenarios | `process` (was `_shared`) | `features/workflow/scenarios/process/workflow-memorization-doc-rename-scope.md` | tag 'vocabulary-sweep' -> process (L12) | RE-DERIVED — re-routed from `_shared` |
 
 ### `features/workflow/checklists/` — 5 files
 
@@ -410,6 +521,5 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | 1 | `features/workflow/checklists/insight-headlines-factual-not-self-graded.md` | checklists | `memory` | `features/workflow/checklists/memory/insight-headlines-factual-not-self-graded.md` | tag 'docs-sync' -> memory | — |
 | 2 | `features/workflow/checklists/manifest-verbatim-rerun-reproducibility.md` | checklists | `memory` | `features/workflow/checklists/memory/manifest-verbatim-rerun-reproducibility.md` | tag 'docs-sync' -> memory | — |
 | 3 | `features/workflow/checklists/post-split-gate-both-required.md` | checklists | `codex` | `features/workflow/checklists/codex/post-split-gate-both-required.md` | tag 'codex' -> codex | — |
-| 4 | `features/workflow/checklists/sweep-executor-verification-steps.md` | checklists | `_shared` | `features/workflow/checklists/_shared/sweep-executor-verification-steps.md` | no tag matched (fallback) | _shared (no tag matched) |
+| 4 | `features/workflow/checklists/sweep-executor-verification-steps.md` | checklists | `process` (was `_shared`) | `features/workflow/checklists/process/sweep-executor-verification-steps.md` | tag 'vocabulary-sweep' -> process (L12) | RE-DERIVED — re-routed from `_shared` |
 | 5 | `features/workflow/checklists/task-09-evaluation-md-verify.md` | checklists | `wrap-up` | `features/workflow/checklists/wrap-up/task-09-evaluation-md-verify.md` | tag 'wrap-up' -> wrap-up | — |
-

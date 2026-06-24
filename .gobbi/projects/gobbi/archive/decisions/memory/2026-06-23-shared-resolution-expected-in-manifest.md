@@ -4,14 +4,16 @@ description: Q5 claim "no obvious-home file forced to _shared" is optimistic; on
 type: decisions
 scope: feature
 feature: memory
-status: accepted
+status: superseded
 created: 2026-06-23
 session: d0185dba-cd9b-45ad-93f6-7814c4f0ef4a
 tags: [memory, ideation]
 keywords: [_shared, Q5-validation, manifest, process-dissolved]
 author: claude
 supersedes: null
-superseded_by: null
+superseded_by: no-match-user-decision-supersedes-shared-resolution
+archived_at: 2026-06-24
+archive_reason: superseded
 ---
 
 # _shared resolution expected in manifest (F-C3/F-R3)

@@ -89,7 +89,7 @@ Examples: `mistakes/verification/executor-git-stash-in-worktree-during-verify.md
 
 **Eager + both-tiers-symmetric.** Every by-area record is namespaced from file 1 — there is no "flat until N files, then split" threshold. The feature tier uses the identical shape: `features/{f}/{type}/{area}/{slug}.md`. One rule, two tiers.
 
-**`_shared/` is the cross-cutting bucket.** Every by-area type carries a `_shared/` area for genuinely cross-cutting or unclassifiable records. `_shared` is the no-match destination of the selection rule below — never invent a new area to avoid it.
+**No catch-all area — a no-match is a user-decision.** There is no cross-cutting bucket. Every area a record lands in is a real, listed area for its type. When a record matches no area (the selection rule below resolves nothing), the write-time agent does NOT stamp a fallback area — it surfaces a user-decision (step 3 below). Never invent a new area to dodge the decision.
 
 **Structural exception — `features/{f}/README.md`.** A feature directory's `README.md` is the feature identity doc; the feature dir is itself the area axis, so the README is **NOT** by-area and is exempt. It is the SOLE structural exception.
 
@@ -97,36 +97,48 @@ Examples: `mistakes/verification/executor-git-stash-in-worktree-during-verify.md
 
 The per-type area allowlist is a **closed** controlled vocabulary, parallel to the §2.5 `tags` vocabulary — an area outside a type's list is a validation failure until the list is extended (extend deliberately, the same discipline as §2.5).
 
-**The project declares the allowlist values in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — the `.effective.areas.spine` and `.effective.areas.mistakes` arrays. This rule is the prose spec; the config holds the values. The validator reads `.effective.areas.*` via jq to enforce the allowlist; the Wrap-up agent follows this prose spec (which cites the config for gobbi's instance values). A non-gobbi project ships its own copy. The cross-type **spine** is shared by every spine type; gobbi's instance is:
+**The model is flat and per-type.** Each type owns ONE independent area list. There is no cross-type shared list and no catch-all area. **The project declares each type's list in [`memory-vocabulary.json`](../../memory-vocabulary.json)** under `.types.{type}.areas`. This rule is the prose spec; the config holds the values. The validator reads `.types.{type}.areas` via jq to enforce the allowlist; the Wrap-up agent follows this prose spec (which cites the config for gobbi's instance values). A non-gobbi project ships its own copy.
+
+The **subsystem types** (the 12 types in the table below other than `mistakes`) each declare the subsystem set; gobbi's instance is:
 
 ```
-spine: memory · git · workflow · wrap-up · evaluation · codex · process · _shared · docs · tooling · tests
+subsystem: memory · git · workflow · wrap-up · evaluation · codex · process · docs · tooling · tests
 ```
 
-`mistakes` uses a curated **trap-class** allowlist instead of the spine (the trap CLASS — how it fails — is the area, not the subsystem; the `process` bucket is DISSOLVED into trap-classes, so `process` is NOT a mistakes area); gobbi's instance is:
+`mistakes` uses a curated **trap-class** allowlist instead (the trap CLASS — how it fails — is the area, not the subsystem; the `process` bucket is DISSOLVED into trap-classes, so `process` is NOT a mistakes area); gobbi's instance is:
 
 ```
-mistakes: verification · refactor · tooling · git · codex · docs-sync · memory · _shared · assumption
+mistakes: verification · refactor · tooling · assumption · git · codex · docs-sync · memory
+```
+
+`reviews` and `reports` use a **kind axis**: the area set == the kind enum, and the area resolves directly from the REQUIRED `review_kind` / `report_type` extension (§2.2, L16) — not from tags. So a valid kind value is a valid area by construction. gobbi's instances are:
+
+```
+reviews: adversarial-review · ultrareview · code-review · retrospective · security-audit · license-audit · dep-audit · other
+reports: status · post-mortem · analytics · other
 ```
 
 | Type | Area allowlist |
 |---|---|
 | `mistakes` | the curated trap-class set above (`process` dissolved) |
-| `decisions` · `design` · `backlogs` · `notes` · `references` · `learnings` · `reviews` · `reports` · `rules` · `plans` | the spine |
-| `changelogs` · `discussions` · `scenarios` · `checklists` | the spine (within the feature) |
+| `reviews` | the `review_kind` enum (kind axis — area from the REQUIRED kind value) |
+| `reports` | the `report_type` enum (kind axis — area from the REQUIRED kind value) |
+| `decisions` · `design` · `backlogs` · `notes` · `references` · `learnings` · `rules` · `plans` | the subsystem set |
+| `changelogs` · `discussions` · `scenarios` · `checklists` | the subsystem set (within the feature) |
 | `features` | n/a — STRUCTURAL EXCEPTION; `features/` IS the area axis, `README.md` exempt |
+| `archive` | n/a — no config key; an archived file mirrors its source type's area |
 
-#### TOTAL deterministic area-selection rule
+#### Deterministic area-selection rule
 
-The write-time agent AND Wrap-up routing both apply this rule. It is **total** (every record resolves to exactly one area) and **deterministic** (priority-ordered first-match — never a tie).
+The write-time agent AND Wrap-up routing both apply this rule. It is **deterministic** (priority-ordered first-match — never a tie). It is NOT total: a record may match no area, in which case step 3 routes it to a user-decision rather than a fallback.
 
-1. **Explicit `area:` wins.** If the staged file carries `area: {x}` where `{x}` is in the type's allowlist, use `{x}`. (`area:` is a staging-only field — §2.6.)
-2. **Else scan the fixed PRIORITY-ORDERED tag→area map; the FIRST area whose any mapped tag is present wins.** The order is fixed per type, so a multi-tag record still resolves to exactly one area. **The project declares the map in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — `.tagAreaMap.mistakes` and `.tagAreaMap.spine` (each an ordered list of `{area, tags}` entries, high → low priority). The Wrap-up agent reads `.tagAreaMap` for area RESOLUTION following this prose spec; the validator does NOT read it (it enforces the resolved area against `.effective.areas.*`). A non-gobbi project ships its own. This rule fixes the priority semantics; the config holds gobbi's tag→area entries.
-   - **mistakes** — `.tagAreaMap.mistakes`, priority high → low (`refactor` > `verification` > `tooling` > `git` > `codex` > `docs-sync` > `memory`). Rationale: the trap CLASS (how it fails) outranks the subsystem (where). `domain:` is advisory/fallback input only, never the raw area key.
-   - **spine types** — `.tagAreaMap.spine`, priority high → low (`wrap-up` > `git` > `evaluation` > `workflow` > `codex` > `memory` > `process`). Rationale: a specific subsystem (`wrap-up`/`git`/`evaluation`) outranks the generic `memory`/`process` bucket.
-3. **`_shared/` ONLY when NO area matched in steps 1-2.** Never invent a new area to avoid `_shared` (the adversarial-proliferation guard).
+1. **Explicit `area:` wins.** If the staged file carries `area: {x}` where `{x}` is in the type's allowlist, use `{x}`. (`area:` is a staging-only field — §2.6.) For `reviews` / `reports`, the REQUIRED `review_kind` / `report_type` value IS the area input here (the kind axis, §2.2/L16) — the kind always provides a valid area, so reviews/reports never reach steps 2-3.
+2. **Else scan the type's fixed PRIORITY-ORDERED tag→area map; the FIRST area whose any mapped tag is present wins.** The order is fixed per type, so a multi-tag record still resolves to exactly one area. **The project declares one map PER TYPE in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — `.tagAreaMap.{type}` (each an ordered list of `{area, tags}` entries, high → low priority). The Wrap-up agent reads `.tagAreaMap.{type}` for area RESOLUTION following this prose spec; the validator does NOT read it (it enforces the resolved area against `.types.{type}.areas`). `reviews` / `reports` have NO `.tagAreaMap` entry — they are kind-axis, resolved in step 1. A non-gobbi project ships its own. This rule fixes the priority semantics; the config holds gobbi's per-type tag→area entries.
+   - **subsystem types** — `.tagAreaMap.{type}`, a specific subsystem (`wrap-up` / `git` / `evaluation`) outranks the generic `memory` / `process` bucket. Each subsystem type declares its own copy; the values coincide.
+   - **mistakes** — its own `.tagAreaMap.{type}` entry, where the trap CLASS (how it fails) outranks the subsystem (where): `refactor` > `verification` > `tooling` > `git` > `codex` > `docs-sync` > `memory` > `assumption`. `domain:` is advisory/fallback input only, never the raw area key. A mistakes record carrying only a "where" tag (`process` / `planning` / `evaluation` / `execution`) matches no trap-class and correctly reaches step 3.
+3. **No area matched → user-decision (NOT a fallback area).** When steps 1-2 resolve nothing, the write-time agent emits `NEEDS_CONTEXT` instead of stamping any area. The manager runs a user-decision: the user picks an existing area for that type OR creates a new one. Creating an area is an **Always-Ask edit** to [`memory-vocabulary.json`](../../memory-vocabulary.json) (append to `.types.{type}.areas`, plus a `.tagAreaMap.{type}` entry if it needs tag routing); the answer becomes the record's area. Never invent a new area silently to avoid the decision (the adversarial-proliferation guard).
 
-**Feature-dir normalization.** When the selector input is a feature-dir name (a spine record promoted up from a feature), normalize it to a spine area FIRST, then match in step 2. **The project declares the normalization map in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — `.tagAreaMap.featureDirNormalization` (the Wrap-up agent reads it for area resolution following this prose spec; the validator does not read it); gobbi's entries are `git-workflow → git` and `workflow → workflow`. This stops the dir name `git-workflow` from failing to match the `git` area.
+**Feature-dir normalization.** When the selector input is a feature-dir name (a record promoted up from a feature), normalize it to an area FIRST, then match in step 2. **The project declares the normalization map in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — `.tagAreaMap.featureDirNormalization` (the Wrap-up agent reads it for area resolution following this prose spec; the validator does not read it); gobbi's entries are `git-workflow → git` and `workflow → workflow`. This stops the dir name `git-workflow` from failing to match the `git` area.
 
 #### Refactor procedure — split / merge / rename an area
 
@@ -207,7 +219,7 @@ related: [{slug}]              # OPTIONAL (global) — related slugs; absent or 
 
 The `status` enum is per-type — each type allows only the values in its row. The **Extensions** column lists each type's NON-link extension fields only; the three slug-link fields (`supersedes`, `superseded_by`, `related`) are **global-optional base fields (§2.1)** that any type may carry, so they are NOT repeated here. A type with no non-link extension shows `(none)` but may still carry the global slug-links.
 
-**Required vs optional extensions.** An extension marked **(required)** below MUST be present on a file of that type — the validator FAILS a file of that type that omits it. Unmarked extensions are optional. Required: `mistakes` → `priority` + `domain`; `backlogs` → `priority` + `project-scope`; `references` → `title` + `source` + `ref_type`.
+**Required vs optional extensions.** An extension marked **(required)** below MUST be present on a file of that type — the validator FAILS a file of that type that omits it. Unmarked extensions are optional. Required: `mistakes` → `priority` + `domain`; `backlogs` → `priority` + `project-scope`; `references` → `title` + `source` + `ref_type`; `reviews` → `review_kind`; `reports` → `report_type`. The `review_kind` / `report_type` requirement is the kind axis (L16): the area resolves directly from the kind value (§1.5 step 1), so the kind must always be present.
 
 | Type | `status` enum (unified) | Extensions on top of base (non-link only) |
 |---|---|---|
@@ -221,8 +233,8 @@ The `status` enum is per-type — each type allows only the values in its row. T
 | backlogs | `open` \| `deferred` \| `closed` | `priority` **(required)**, `project-scope` (bool) **(required)**, `shipped_in` (slug\|null) |
 | references | `active` \| `superseded` | `title` **(required)**, `source` **(required)**, `accessed` (date), `ref_type` **(required)** |
 | plans | `active` \| `superseded` | `task`, `task_count` (number) |
-| reviews | `active` | `review_kind`, `subject`, `verdict` |
-| reports | `active` | `report_type`, `related_reports` (list[slug]) (plus `generated_by`, `subject`, `related_reviews`, `related_decisions`) |
+| reviews | `active` | `review_kind` **(required)**, `subject`, `verdict` |
+| reports | `active` | `report_type` **(required)**, `related_reports` (list[slug]) (plus `generated_by`, `subject`, `related_reviews`, `related_decisions`) |
 | changelogs | `active` | `shipped_in` (slug) |
 | discussions | `active` | `outcome` |
 | scenarios | `active` | (none) |
@@ -236,7 +248,7 @@ The `status` enum is per-type — each type allows only the values in its row. T
 - `ref_type` = `docs` \| `blog` \| `paper` \| `rfc` \| `code` \| `book` \| `other`
 - `review_kind` = `adversarial-review` \| `ultrareview` \| `code-review` \| `retrospective` \| `security-audit` \| `license-audit` \| `dep-audit` \| `other`
 - `verdict` = `pass` \| `revise` \| `fail` \| `needs-attention` \| `n/a`
-- `report_type` = `status` \| `post-mortem` \| `analytics`
+- `report_type` = `status` \| `post-mortem` \| `analytics` \| `other`
 - `item_status` = `pending` \| `implemented` \| `deferred`
 
 ### 2.3 The complete `type` enum — 16 first-class types
@@ -280,17 +292,11 @@ Memory files link to each other in two distinct ways. Keep them separate.
 
 ### 2.5 Controlled `tags` vocabulary
 
-`tags` is a **closed** controlled vocabulary. A tag outside this list is a validation failure until the list is extended.
+`tags` is a **closed** controlled vocabulary, declared **per type** — each type owns ONE independent tag pool. A tag outside its type's pool is a validation failure until that pool is extended. There is no single cross-type tag list: a tag valid for one type may be absent from another's pool (e.g. `tooling` and `assumption` live in the mistakes pool but not the decisions pool).
 
-**The project declares the tag vocabulary in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — the `.effective.tags` array (the validator reads it via jq; a non-gobbi project ships its own). This rule is the prose spec; the config holds the values. gobbi's instance is:
+**The project declares each type's pool in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — `.types.{type}.tags`. This rule is the prose spec; the config holds the values. The validator reads `.types.{type}.tags` via jq and checks every tag on a file against ITS type's pool. A non-gobbi project ships its own copy.
 
-```
-process · planning · execution · evaluation · wrap-up · ideation · preparation
-docs-sync · refactor · rename-sweep · verification · vocabulary-sweep
-hooks · codex · security · git · memory · frontmatter · schema · validation · links · design
-```
-
-When a tag outside this set is genuinely needed, use the required-may-be-empty `keywords` field (§2.1) — the uncontrolled escape-hatch — or extend this list. `tags` stays controlled so it can be queried with confidence; `keywords` absorbs the freeform long tail.
+When a tag outside its type's pool is genuinely needed, use the required-may-be-empty `keywords` field (§2.1) — the uncontrolled escape-hatch — or extend that type's pool. `tags` stays controlled so it can be queried with confidence; `keywords` absorbs the freeform long tail. Extending a pool is the same deliberate discipline as extending an area list (§1.5).
 
 ### 2.6 Staging-field stripping on promotion
 
@@ -311,7 +317,7 @@ Staging-only fields exist during the session and MUST be stripped when Wrap-up p
 The structure rules thread through the 16 per-type specs in [`memory-map.md`](memory-map.md); they are the conventions every type obeys.
 
 - **Directory-as-category.** The type directory is the first controlled-vocabulary facet (§1.1 rule 1). The directory name carries the type; the filename carries the concept. A record's *type* is never re-encoded in its slug.
-- **Area sub-namespace.** Every by-area type nests one area level under the type dir (`{type}/{area}/`); the area is resolved by the §1.5 selection rule (explicit `area:` > priority-ordered tag→area map > `_shared` on no-match), eager and symmetric on both tiers. `features/{f}/README.md` is the sole structural exception — the feature dir is itself the area axis, so the README is not by-area.
+- **Area sub-namespace.** Every by-area type nests one area level under the type dir (`{type}/{area}/`); the area is resolved by the §1.5 selection rule (explicit `area:` > priority-ordered tag→area map > user-decision on no-match), eager and symmetric on both tiers. `features/{f}/README.md` is the sole structural exception — the feature dir is itself the area axis, so the README is not by-area.
 - **One record, one concept (atomicity).** Every file holds exactly one concept — one decision, one mistake, one design topic. Bundle files (`ideation-decisions.md`, `iter1-user-redirects.md`) are forbidden because supersede / archive / promotion then operate at the wrong granularity. Split bundles into one file per concept.
 - **Declared scope + promote-up.** Each type declares its scope:
   - **`features/` is its own tier.** A `features/{slug}/` directory is a durable capability dir — not a project-scoped nor feature-tagged content type like the rest of this list. Its `README.md` is the feature's identity document: it carries base frontmatter with `name: README` (the fixed filename stem, NOT the feature slug — §2.4), `scope: feature`, and `feature: {own-slug}` (the `feature` field is self-referential — it names the README's own feature). New feature dirs are created only by user-ratified value-feature addition, never by a sprint.
