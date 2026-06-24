@@ -34,7 +34,7 @@ Universal area base:
 - `docs`, `tooling`, `tests` — ratified as genuinely domain-agnostic (a CLI tool, a web app, and gobbi all use these); now part of the universal base (new additions, not previously in rules.md).
 
 Universal mistakes trap-class core (Q3):
-- `verification`, `rename-sweep`, `tooling`, `assumption` — how the failure happens, independent of project subsystem. `assumption` is a new ratified addition (not currently in `rules.md:107`).
+- `verification`, `refactor`, `tooling`, `assumption` — how the failure happens, independent of project subsystem. `assumption` is a new ratified addition (not currently in `rules.md:107`).
 
 For gobbi specifically, the project-specific additions to the spine are: `memory`, `git`, `workflow`, `wrap-up`, `evaluation`, `codex`, `process`. The mistakes subsystem additions are: `git`, `codex`, `docs-sync`, `memory` (on top of the universal trap core).
 

@@ -4,7 +4,7 @@
     "$note": "The cross-project-generic baseline — areas and tags any software project's memory would plausibly use. A fresh non-gobbi project starts from this base and adds its own project-specific vocabulary. The universal areas include the ratified additions docs/tooling/tests (spine) and the assumption trap-class (mistakes); the universal _shared bucket is the cross-cutting no-match destination.",
     "areas": {
       "spine": ["_shared", "docs", "tooling", "tests"],
-      "mistakes": ["_shared", "verification", "tooling", "assumption"]
+      "mistakes": ["_shared", "verification", "tooling", "assumption", "refactor"]
     },
     "tags": ["process", "refactor", "verification", "security", "git", "docs-sync", "schema", "validation", "links", "design", "frontmatter"]
   },
@@ -12,7 +12,7 @@
     "$note": "gobbi-specific vocabulary layered on top of the universal base. These name gobbi's own workflow steps (ideation/preparation/planning/execution/wrap-up/evaluation), runtimes (codex/hooks), subsystems (memory/workflow/wrap-up), and idioms (rename-sweep/vocabulary-sweep). A non-gobbi project replaces this whole block with its own.",
     "areas": {
       "spine": ["memory", "git", "workflow", "wrap-up", "evaluation", "codex", "process"],
-      "mistakes": ["rename-sweep", "git", "codex", "docs-sync", "memory"]
+      "mistakes": ["git", "codex", "docs-sync", "memory"]
     },
     "tags": ["planning", "execution", "evaluation", "wrap-up", "ideation", "preparation", "rename-sweep", "vocabulary-sweep", "hooks", "codex", "memory"]
   },
@@ -20,14 +20,14 @@
     "$note": "The materialized vocabulary the validator enforces = universal ∪ project. These are the closed allowlists. Round-trip guarantee: gobbi's effective lists are a SUPERSET of gobbi's pre-de-hardcoding values (validate-frontmatter.sh AREA_SPINE/AREA_MISTAKES/TAG_VOCAB at develop@7ef21bf5), so NO currently-valid file becomes invalid. The validator reads ONLY these three arrays.",
     "areas": {
       "spine": ["memory", "git", "workflow", "wrap-up", "evaluation", "codex", "process", "_shared", "docs", "tooling", "tests"],
-      "mistakes": ["verification", "rename-sweep", "tooling", "git", "codex", "docs-sync", "memory", "_shared", "assumption"]
+      "mistakes": ["verification", "refactor", "tooling", "git", "codex", "docs-sync", "memory", "_shared", "assumption"]
     },
     "tags": ["process", "planning", "execution", "evaluation", "wrap-up", "ideation", "preparation", "docs-sync", "refactor", "rename-sweep", "verification", "vocabulary-sweep", "hooks", "codex", "security", "git", "memory", "frontmatter", "schema", "validation", "links", "design"]
   },
   "tagAreaMap": {
     "$note": "The TOTAL deterministic tag→area selection map (rules.md §1.5). Priority-ordered: the FIRST entry whose any 'tags' is present on the record wins. 'area' is the resolved area; 'tags' are the trigger tags. Used by both the write-time agent and Wrap-up routing. _shared is the no-match fallback (never listed here). Feature-dir inputs are normalized via featureDirNormalization FIRST.",
     "mistakes": [
-      { "area": "rename-sweep", "tags": ["rename-sweep", "rename", "vocabulary-sweep"] },
+      { "area": "refactor", "tags": ["refactor", "rename-sweep", "rename", "vocabulary-sweep"] },
       { "area": "verification", "tags": ["verification", "grep", "research"] },
       { "area": "tooling", "tags": ["tooling", "persistence", "write-safety", "api-overload"] },
       { "area": "git", "tags": ["git"] },

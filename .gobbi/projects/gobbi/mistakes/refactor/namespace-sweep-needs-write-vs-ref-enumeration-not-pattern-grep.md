@@ -11,7 +11,7 @@ tags: [rename-sweep, verification, docs-sync]
 keywords: [namespace-sweep, pattern-grep-blind, write-vs-ref, residual-enumeration, bootstrap-surface]
 author: claude
 priority: high
-domain: rename-sweep
+domain: refactor
 supersedes: null
 superseded_by: null
 related: [cited-process-mistake-not-applied-to-own-artifact, plan-rename-must-enumerate-all-ref-classes, sweep-grep-literal-loop-name-blindspot]

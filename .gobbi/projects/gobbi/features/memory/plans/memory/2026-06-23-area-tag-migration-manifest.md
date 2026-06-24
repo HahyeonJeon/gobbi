@@ -54,7 +54,7 @@ This matches the briefed expectation (34 / 80 / 114).
 | `evaluation` | 7 |
 | `codex` | 6 |
 | `verification` | 3 |
-| `rename-sweep` | 2 |
+| `refactor` | 2 |
 | `process` | 1 |
 | `tooling` | 1 |
 | `docs-sync` | 1 |
@@ -202,12 +202,12 @@ The move is done when: (a) a fresh `find` shows zero flat by-area files (modulo 
 | 8 | `mistakes/executor-wrote-to-main-tree-not-worktree.md` | mistakes | `git` | `mistakes/git/executor-wrote-to-main-tree-not-worktree.md` | tag 'git' -> git | — |
 | 9 | `mistakes/file-move-needs-link-resolution-check.md` | decisions | `memory` | `decisions/memory/file-move-needs-link-resolution-check.md` | tag 'links' -> memory | TYPE-MISMATCH (physical `mistakes/`, declared `decisions`) — NEEDS-DECISION |
 | 10 | `mistakes/grep-absence-claim-needs-exact-pattern.md` | mistakes | `verification` | `mistakes/verification/grep-absence-claim-needs-exact-pattern.md` | tag 'verification' -> verification | — |
-| 11 | `mistakes/label-rename-missed-in-fence-and-cross-doc.md` | mistakes | `rename-sweep` | `mistakes/rename-sweep/label-rename-missed-in-fence-and-cross-doc.md` | tag 'rename-sweep' -> rename-sweep | — |
+| 11 | `mistakes/label-rename-missed-in-fence-and-cross-doc.md` | mistakes | `refactor` | `mistakes/refactor/label-rename-missed-in-fence-and-cross-doc.md` | tag 'rename-sweep' -> refactor | — |
 | 12 | `mistakes/pkill-f-pattern-matches-own-shell.md` | mistakes | `codex` | `mistakes/codex/pkill-f-pattern-matches-own-shell.md` | tag 'codex' -> codex | — |
 | 13 | `mistakes/plan-rename-must-enumerate-all-ref-classes.md` | decisions | `workflow` | `decisions/workflow/plan-rename-must-enumerate-all-ref-classes.md` | tag 'planning' -> workflow | TYPE-MISMATCH (physical `mistakes/`, declared `decisions`) — NEEDS-DECISION |
 | 14 | `mistakes/planning-asserted-skill-without-verifying.md` | decisions | `workflow` | `decisions/workflow/planning-asserted-skill-without-verifying.md` | tag 'planning' -> workflow | TYPE-MISMATCH (physical `mistakes/`, declared `decisions`) — NEEDS-DECISION |
 | 15 | `mistakes/staging-a-mistake-candidate-does-not-fix-the-artifact.md` | mistakes | `_shared` | `mistakes/_shared/staging-a-mistake-candidate-does-not-fix-the-artifact.md` | no tag matched (fallback) | _shared (no tag matched) |
-| 16 | `mistakes/sweep-grep-literal-loop-name-blindspot.md` | mistakes | `rename-sweep` | `mistakes/rename-sweep/sweep-grep-literal-loop-name-blindspot.md` | tag 'rename-sweep' -> rename-sweep | — |
+| 16 | `mistakes/sweep-grep-literal-loop-name-blindspot.md` | mistakes | `refactor` | `mistakes/refactor/sweep-grep-literal-loop-name-blindspot.md` | tag 'rename-sweep' -> refactor | — |
 
 ### Project · `backlogs/` — 11 files
 

@@ -28,7 +28,7 @@ task_count: 7
 
 | # | Sub-task | Depends on | Verification | Owner type |
 |---|---|---|---|---|
-| 1 | Create `memory-areas.json` — gobbi's per-type AREA lists + TAG list + tag→area map + universal base (`_shared`/`docs`/`tooling`/`tests`; mistakes core `verification`/`rename-sweep`/`tooling`/`assumption`) | — | `jq -e .` valid; `jq` reads gobbi's declared areas/tags incl. universal additions | executor |
+| 1 | Create `memory-areas.json` — gobbi's per-type AREA lists + TAG list + tag→area map + universal base (`_shared`/`docs`/`tooling`/`tests`; mistakes core `verification`/`refactor`/`tooling`/`assumption`) | — | `jq -e .` valid; `jq` reads gobbi's declared areas/tags incl. universal additions | executor |
 | 2 | Validator reads config via jq — replace `AREA_SPINE`/`AREA_MISTAKES` (:211-212) + `TAG_VOCAB` (:106); keep dispatch/parser structure; update line-57 comment | #1 | `bash validate-frontmatter.sh` area+tag checks pass reading the config; line-57 states jq dep | executor |
 | 3 | Re-author `rules.md` §1.5 area lists (:101,107) + §2.5 tag list (:292-300) + tag→area map (:122-138) — prose stays, values→config pointer | #1 | no literal gobbi vocab list in §1.5/§2.5; map documented as project-declared; links resolve | executor |
 | 4 | Repoint `wrap-up/SKILL.md` restatement (:314) + area-resolution map (:308-312) to config/§1.5 | #1, #3 | :314 no longer restates the literal allowlist; links resolve | executor |

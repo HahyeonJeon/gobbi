@@ -106,7 +106,7 @@ spine: memory · git · workflow · wrap-up · evaluation · codex · process ·
 `mistakes` uses a curated **trap-class** allowlist instead of the spine (the trap CLASS — how it fails — is the area, not the subsystem; the `process` bucket is DISSOLVED into trap-classes, so `process` is NOT a mistakes area); gobbi's instance is:
 
 ```
-mistakes: verification · rename-sweep · tooling · git · codex · docs-sync · memory · _shared · assumption
+mistakes: verification · refactor · tooling · git · codex · docs-sync · memory · _shared · assumption
 ```
 
 | Type | Area allowlist |
@@ -122,7 +122,7 @@ The write-time agent AND Wrap-up routing both apply this rule. It is **total** (
 
 1. **Explicit `area:` wins.** If the staged file carries `area: {x}` where `{x}` is in the type's allowlist, use `{x}`. (`area:` is a staging-only field — §2.6.)
 2. **Else scan the fixed PRIORITY-ORDERED tag→area map; the FIRST area whose any mapped tag is present wins.** The order is fixed per type, so a multi-tag record still resolves to exactly one area. **The project declares the map in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — `.tagAreaMap.mistakes` and `.tagAreaMap.spine` (each an ordered list of `{area, tags}` entries, high → low priority). The Wrap-up agent reads `.tagAreaMap` for area RESOLUTION following this prose spec; the validator does NOT read it (it enforces the resolved area against `.effective.areas.*`). A non-gobbi project ships its own. This rule fixes the priority semantics; the config holds gobbi's tag→area entries.
-   - **mistakes** — `.tagAreaMap.mistakes`, priority high → low (`rename-sweep` > `verification` > `tooling` > `git` > `codex` > `docs-sync` > `memory`). Rationale: the trap CLASS (how it fails) outranks the subsystem (where). `domain:` is advisory/fallback input only, never the raw area key.
+   - **mistakes** — `.tagAreaMap.mistakes`, priority high → low (`refactor` > `verification` > `tooling` > `git` > `codex` > `docs-sync` > `memory`). Rationale: the trap CLASS (how it fails) outranks the subsystem (where). `domain:` is advisory/fallback input only, never the raw area key.
    - **spine types** — `.tagAreaMap.spine`, priority high → low (`wrap-up` > `git` > `evaluation` > `workflow` > `codex` > `memory` > `process`). Rationale: a specific subsystem (`wrap-up`/`git`/`evaluation`) outranks the generic `memory`/`process` bucket.
 3. **`_shared/` ONLY when NO area matched in steps 1-2.** Never invent a new area to avoid `_shared` (the adversarial-proliferation guard).
 

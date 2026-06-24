@@ -39,7 +39,7 @@ gobbi's memory standard (`rules.md` §1.1 rule 1) defines "directory = category"
 
 | Type | Exact area allowlist |
 |---|---|
-| `mistakes` | gobbi instance: `verification · rename-sweep · tooling · git · codex · docs-sync · memory · _shared · assumption` (`process` DISSOLVED into trap-classes; NOT a mistakes area; declared in the config's `.effective.areas.mistakes`) |
+| `mistakes` | gobbi instance: `verification · refactor · tooling · git · codex · docs-sync · memory · _shared · assumption` (`process` DISSOLVED into trap-classes; NOT a mistakes area; declared in the config's `.effective.areas.mistakes`) |
 | `decisions` | spine |
 | `design` | spine |
 | `backlogs` | spine |
@@ -62,7 +62,7 @@ Used by the write-time agent AND Wrap-up routing. Returns exactly one area per r
 **Step 2 — scan a fixed PRIORITY-ORDERED tag→area map; FIRST match wins.** The project now declares this map in [`memory-vocabulary.json`](../../../../memory-vocabulary.json) `.tagAreaMap` (the Wrap-up agent reads it for area resolution following the prose spec; the validator does not read `.tagAreaMap` — it enforces the resolved area against `.effective.areas.*`); the values below are gobbi's declared instance of the design.
 
 - **mistakes** priority order (first match wins):
-  1. `rename-sweep` ← tags {`rename-sweep`, `rename`, `vocabulary-sweep`}
+  1. `refactor` ← tags {`refactor`, `rename-sweep`, `rename`, `vocabulary-sweep`}
   2. `verification` ← {`verification`, `grep`, `research`}
   3. `tooling` ← {`tooling`, `persistence`, `write-safety`, `api-overload`}
   4. `git` ← {`git`}
