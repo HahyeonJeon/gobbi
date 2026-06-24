@@ -79,7 +79,7 @@ The `README.md` gives a **high-level overview** of the feature, its current stat
 
 ### Frontmatter + body
 
-The README carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the features extensions (`value_proposition`, `subsystems`). Its `name` is the fixed literal `README` (the filename stem), NOT the feature slug — every feature README shares `name: README`, so the validator exempts `README.md` from the cross-tree slug-uniqueness check ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). The feature's identity slug lives in `feature: {own-slug}` + the dir name. The sprint-only keys (`pr`, `commit`, `head-commit`, `first-session`, `last-session`) are NOT on the README — per-ship metadata belongs in `changelogs/` entries. `tags` come from the controlled vocabulary ([`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary)).
+The README carries the [shared base frontmatter](../rules.md#21-shared-base-every-memory-file) plus the features extensions (`value_proposition`, `subsystems`). Its `name` is the fixed literal `README` (the filename stem), NOT the feature slug — every feature README shares `name: README`, so the validator exempts `README.md` from the cross-tree slug-uniqueness check ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). The feature's identity slug lives in `feature: {own-slug}` + the dir name. The sprint-only keys (`pr`, `commit`, `head-commit`, `first-session`, `last-session`) are NOT on the README — per-ship metadata belongs in `changelogs/` entries. `tags` are declared per type — see [`rules.md` § 2.5](../rules.md#25-controlled-tags-vocabulary) for each type's controlled pool.
 
 ```markdown
 ---
@@ -91,7 +91,7 @@ feature: {feature-name}   # self-reference — the README names its own feature
 status: active | retired
 created: YYYY-MM-DD
 session: {session-id of first promotion to this feature}
-tags: [memory, process]              # controlled vocabulary (§2.5)
+tags: [memory, process]              # tags declared per type (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 value_proposition: {the one-liner — "what gobbi does for me"}

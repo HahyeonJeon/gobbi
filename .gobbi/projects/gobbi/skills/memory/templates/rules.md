@@ -14,7 +14,7 @@ A rule without its reason is obeyed blindly or discarded; a rule without its sco
 |---|---|
 | When | Wrap-up identifies an invariant the team wants enforced going forward (naming conventions, layering constraints, banned patterns). Promotion **requires explicit user confirmation** through the active runtime's user-decision primitive — Wrap-up never promotes a rule unilaterally. |
 | Written by | Wrap-up RECORD (direct write — no staging). There is no `staging/rules/` subdir and no `rule-candidate:` upstream flag; loop RECORD never writes here. |
-| Promotes to | `rules/{area}/` (project-wide) · `features/{f}/rules/{area}/` (feature-specific — the canonical home; the retired `decisions/` + `precedent: true` workaround is superseded) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
+| Promotes to | `rules/{area}/` (project-wide) · `features/{f}/rules/{area}/` (feature-specific — the canonical home; the retired `decisions/` + `precedent: true` workaround is superseded) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug (evergreen, no date prefix); short, imperative, names the rule (`evaluator-read-only-boundary.md`) |
 
 Wrap-up writes directly to memory ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -33,7 +33,7 @@ feature: null
 status: active
 created: YYYY-MM-DD
 session: {session-id that established the rule}
-tags: [process, docs-sync]           # controlled vocabulary (§2.5)
+tags: [process, docs-sync]           # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low

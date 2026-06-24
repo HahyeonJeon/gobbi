@@ -18,7 +18,7 @@ An insight with no condition-of-applicability gets invoked in the wrong situatio
 |---|---|
 | When | Ideation Sub-step C (Research); or a loop's RECORD on a citable `general` finding. Bar = applicability, not novelty. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` |
-| Promotes to | `features/{f}/references/{area}/` (default) · `references/{area}/` (project, cross-feature) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
+| Promotes to | `features/{f}/references/{area}/` (default) · `references/{area}/` (project, cross-feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug; name the topic, not the source (`redis-ttl-eviction.md`, not `redis-docs-ch7.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -37,7 +37,7 @@ feature: {feature-name} | null
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [memory, design]               # controlled vocabulary (§2.5)
+tags: [memory, design]               # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 title: {Short topic title}

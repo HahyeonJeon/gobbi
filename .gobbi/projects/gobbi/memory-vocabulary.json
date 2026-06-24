@@ -1,53 +1,81 @@
 {
-  "$schema-note": "memory-vocabulary.json — the project-owned AREA + TAG vocabulary for gobbi's memory standard (skills/memory/rules.md §1.5 area allowlists + §2.5 tag vocabulary). De-hardcoded out of skills/memory/scripts/validate-frontmatter.sh so the harness is project-general: a non-gobbi project ships its own copy of this file and the same validator reads it via jq. The validator reads the materialized 'effective.*' lists; 'universal' and 'project' document how each effective list is composed (universal base ∪ project additions). Source of the gobbi values: validate-frontmatter.sh (AREA_SPINE/AREA_MISTAKES/TAG_VOCAB) + rules.md §1.5/§2.5 at develop@7ef21bf5. GAP-1 decision: jq is an accepted repo dependency (precedent: hooks/session-end.sh reads session.json via jq).",
-  "universal": {
-    "$note": "The cross-project-generic baseline — areas and tags any software project's memory would plausibly use. A fresh non-gobbi project starts from this base and adds its own project-specific vocabulary. The universal areas include the ratified additions docs/tooling/tests (spine) and the assumption trap-class (mistakes); the universal _shared bucket is the cross-cutting no-match destination.",
-    "areas": {
-      "spine": ["_shared", "docs", "tooling", "tests"],
-      "mistakes": ["_shared", "verification", "tooling", "assumption", "refactor"]
+  "$schema-note": "Per-type AREA + TAG vocabulary for gobbi memory (rules.md §1.5 areas + §2.5 tags). FLAT model: top-level types.{type}.{areas,tags} — one independent area list + one independent tag pool per by-area type (15 active type keys; archive has no key — it mirrors its source type's area). NO universal/project/effective layers. NO `_shared` catch-all area: on area no-match, resolution surfaces a user-decision (pick or create an area; adding an area is an Always-Ask edit) instead of defaulting to a catch-all. The validator reads .types.{type}.areas + .types.{type}.tags via jq and stays fail-closed (a resolved area must be a real listed area). wrap-up reads .tagAreaMap.{type} for area resolution; on no-match it returns NEEDS_CONTEXT for the user-decision. Mechanism (jq, fail-closed, priority first-match) unchanged from #309 EXCEPT the no-match terminal (was `_shared`, now user-decision). reviews/reports use a kind axis: review_kind/report_type are REQUIRED extensions and the area resolves directly from the kind value (no tagAreaMap entry for these two types); `other` is the kind catch-all. archive has no entry (mirrors source type's area; enforced by find-prune exclusion). A non-gobbi project ships its own copy.",
+  "types": {
+    "decisions": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","ideation","planning","preparation","execution","refactor","rename-sweep","vocabulary-sweep","verification","validation","docs-sync","schema","frontmatter","links","design","hooks","security"]
     },
-    "tags": ["process", "refactor", "verification", "security", "git", "docs-sync", "schema", "validation", "links", "design", "frontmatter"]
-  },
-  "project": {
-    "$note": "gobbi-specific vocabulary layered on top of the universal base. These name gobbi's own workflow steps (ideation/preparation/planning/execution/wrap-up/evaluation), runtimes (codex/hooks), subsystems (memory/workflow/wrap-up), and idioms (rename-sweep/vocabulary-sweep). A non-gobbi project replaces this whole block with its own.",
-    "areas": {
-      "spine": ["memory", "git", "workflow", "wrap-up", "evaluation", "codex", "process"],
-      "mistakes": ["git", "codex", "docs-sync", "memory"]
+    "design": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","refactor","rename-sweep","vocabulary-sweep","verification","validation","docs-sync","schema","frontmatter","links","design","hooks","security"]
     },
-    "tags": ["planning", "execution", "evaluation", "wrap-up", "ideation", "preparation", "rename-sweep", "vocabulary-sweep", "hooks", "codex", "memory"]
-  },
-  "effective": {
-    "$note": "The materialized vocabulary the validator enforces = universal ∪ project. These are the closed allowlists. Round-trip guarantee: gobbi's effective lists are a SUPERSET of gobbi's pre-de-hardcoding values (validate-frontmatter.sh AREA_SPINE/AREA_MISTAKES/TAG_VOCAB at develop@7ef21bf5), so NO currently-valid file becomes invalid. The validator reads ONLY these three arrays.",
-    "areas": {
-      "spine": ["memory", "git", "workflow", "wrap-up", "evaluation", "codex", "process", "_shared", "docs", "tooling", "tests"],
-      "mistakes": ["verification", "refactor", "tooling", "git", "codex", "docs-sync", "memory", "_shared", "assumption"]
+    "references": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","refactor","docs-sync","schema","validation","links","design","security"]
     },
-    "tags": ["process", "planning", "execution", "evaluation", "wrap-up", "ideation", "preparation", "docs-sync", "refactor", "rename-sweep", "verification", "vocabulary-sweep", "hooks", "codex", "security", "git", "memory", "frontmatter", "schema", "validation", "links", "design"]
+    "plans": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","planning","refactor","rename-sweep","vocabulary-sweep","verification","docs-sync","schema"]
+    },
+    "notes": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","refactor","rename-sweep","verification","validation","docs-sync","schema","frontmatter","links","design"]
+    },
+    "backlogs": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","preparation","refactor","rename-sweep","verification","validation","docs-sync","schema","frontmatter","links","design","hooks"]
+    },
+    "changelogs": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","refactor","rename-sweep","vocabulary-sweep","docs-sync","schema","design"]
+    },
+    "discussions": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","ideation","planning","preparation","design","hooks"]
+    },
+    "scenarios": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","preparation","vocabulary-sweep","verification"]
+    },
+    "checklists": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","planning","vocabulary-sweep","verification","validation","docs-sync","security"]
+    },
+    "rules": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","docs-sync","schema","frontmatter","validation","links","design"]
+    },
+    "learnings": {
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","refactor","verification","validation","docs-sync","design"]
+    },
+    "mistakes": {
+      "areas": ["verification","refactor","tooling","assumption","git","codex","docs-sync","memory"],
+      "tags": ["process","verification","refactor","rename-sweep","vocabulary-sweep","tooling","git","codex","docs-sync","memory","evaluation","planning","execution","links","frontmatter","schema","assumption"]
+    },
+    "reviews": {
+      "areas": ["adversarial-review","ultrareview","code-review","retrospective","security-audit","license-audit","dep-audit","other"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation","security","verification","docs-sync","links","design"]
+    },
+    "reports": {
+      "areas": ["status","post-mortem","analytics","other"],
+      "tags": ["process","git","memory","codex","wrap-up","evaluation"]
+    }
   },
   "tagAreaMap": {
-    "$note": "The TOTAL deterministic tag→area selection map (rules.md §1.5). Priority-ordered: the FIRST entry whose any 'tags' is present on the record wins. 'area' is the resolved area; 'tags' are the trigger tags. Used by both the write-time agent and Wrap-up routing. _shared is the no-match fallback (never listed here). Feature-dir inputs are normalized via featureDirNormalization FIRST.",
-    "mistakes": [
-      { "area": "refactor", "tags": ["refactor", "rename-sweep", "rename", "vocabulary-sweep"] },
-      { "area": "verification", "tags": ["verification", "grep", "research"] },
-      { "area": "tooling", "tags": ["tooling", "persistence", "write-safety", "api-overload"] },
-      { "area": "git", "tags": ["git"] },
-      { "area": "codex", "tags": ["codex"] },
-      { "area": "docs-sync", "tags": ["docs-sync", "links"] },
-      { "area": "memory", "tags": ["memory", "frontmatter", "schema"] }
-    ],
-    "spine": [
-      { "area": "wrap-up", "tags": ["wrap-up"] },
-      { "area": "git", "tags": ["git"] },
-      { "area": "evaluation", "tags": ["evaluation"] },
-      { "area": "workflow", "tags": ["workflow", "orchestration", "session-memory", "lifecycle", "preparation", "ideation", "planning"] },
-      { "area": "codex", "tags": ["codex"] },
-      { "area": "memory", "tags": ["memory", "frontmatter", "schema", "docs-sync", "links", "rules", "plans"] },
-      { "area": "process", "tags": ["process"] }
-    ],
-    "featureDirNormalization": {
-      "$note": "When the selector input is a feature-dir name (a spine record promoted up from a feature), normalize it to a spine area FIRST, then match in the spine map.",
-      "git-workflow": "git",
-      "workflow": "workflow"
-    }
+    "decisions":   [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex","hooks"]}, {"area":"memory","tags":["memory","frontmatter","schema","links","design"]}, {"area":"workflow","tags":["ideation","planning","preparation","execution"]}, {"area":"process","tags":["process","refactor","rename-sweep","vocabulary-sweep","verification","validation","docs-sync","security"]} ],
+    "design":      [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex","hooks"]}, {"area":"memory","tags":["memory","frontmatter","schema","links","design"]}, {"area":"process","tags":["process","refactor","rename-sweep","vocabulary-sweep","verification","validation","docs-sync","security"]} ],
+    "references":  [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"memory","tags":["memory","schema","links","design"]}, {"area":"process","tags":["process","refactor","validation","docs-sync","security"]} ],
+    "plans":       [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"memory","tags":["memory","schema"]}, {"area":"workflow","tags":["planning"]}, {"area":"process","tags":["process","refactor","rename-sweep","vocabulary-sweep","verification","docs-sync"]} ],
+    "notes":       [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"memory","tags":["memory","frontmatter","schema","links","design"]}, {"area":"process","tags":["process","refactor","rename-sweep","verification","validation","docs-sync"]} ],
+    "backlogs":    [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex","hooks"]}, {"area":"memory","tags":["memory","frontmatter","schema","links","design"]}, {"area":"workflow","tags":["preparation"]}, {"area":"process","tags":["process","refactor","rename-sweep","verification","validation","docs-sync"]} ],
+    "changelogs":  [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"memory","tags":["memory","schema","design"]}, {"area":"process","tags":["process","refactor","rename-sweep","vocabulary-sweep","docs-sync"]} ],
+    "discussions": [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex","hooks"]}, {"area":"memory","tags":["memory","design"]}, {"area":"workflow","tags":["ideation","planning","preparation"]}, {"area":"process","tags":["process"]} ],
+    "scenarios":   [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"memory","tags":["memory"]}, {"area":"workflow","tags":["preparation"]}, {"area":"process","tags":["process","vocabulary-sweep","verification"]} ],
+    "checklists":  [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"memory","tags":["memory"]}, {"area":"workflow","tags":["planning"]}, {"area":"process","tags":["process","vocabulary-sweep","verification","validation","docs-sync","security"]} ],
+    "rules":       [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"memory","tags":["memory","frontmatter","schema","links","design"]}, {"area":"process","tags":["process","validation","docs-sync"]} ],
+    "learnings":   [ {"area":"wrap-up","tags":["wrap-up"]}, {"area":"evaluation","tags":["evaluation"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"memory","tags":["memory","design"]}, {"area":"process","tags":["process","refactor","verification","validation","docs-sync"]} ],
+    "mistakes":    [ {"area":"refactor","tags":["refactor","rename-sweep","vocabulary-sweep"]}, {"area":"verification","tags":["verification"]}, {"area":"tooling","tags":["tooling"]}, {"area":"git","tags":["git"]}, {"area":"codex","tags":["codex"]}, {"area":"docs-sync","tags":["docs-sync","links"]}, {"area":"memory","tags":["memory","frontmatter","schema"]}, {"area":"assumption","tags":["assumption"]} ],
+    "featureDirNormalization": { "git-workflow": "git", "workflow": "workflow" }
   }
 }
