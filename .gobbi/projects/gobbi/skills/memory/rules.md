@@ -142,7 +142,7 @@ The write-time agent AND Wrap-up routing both apply this rule. It is **determini
 
 #### Refactor procedure — split / merge / rename an area
 
-An area is split / merged / renamed by `git mv`-ing the files and running this procedure. A move changes a file's PATH, so every inbound PATH reference must be repointed. Enumerate ALL reference classes up front — the same discipline as [`../../mistakes/plan-rename-must-enumerate-all-ref-classes.md`](../../mistakes/plan-rename-must-enumerate-all-ref-classes.md) and [`../../mistakes/label-rename-missed-in-fence-and-cross-doc.md`](../../mistakes/label-rename-missed-in-fence-and-cross-doc.md):
+An area is split / merged / renamed by `git mv`-ing the files and running this procedure. A move changes a file's PATH, so every inbound PATH reference must be repointed. Enumerate ALL reference classes up front — the same discipline as [`../../mistakes/refactor/plan-rename-must-enumerate-all-ref-classes.md`](../../mistakes/refactor/plan-rename-must-enumerate-all-ref-classes.md) and [`../../mistakes/refactor/label-rename-missed-in-fence-and-cross-doc.md`](../../mistakes/refactor/label-rename-missed-in-fence-and-cross-doc.md):
 
 1. **Path refs** — the old path inside a markdown link target and relative-import forms.
 2. **Prose refs** — the area / path named in running text.

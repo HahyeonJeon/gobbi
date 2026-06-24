@@ -28,14 +28,14 @@ this session. This backlog is the tracking record so the promotion is not lost.
 The two candidates:
 
 1. **codex-timeout ⇒ BLOCKED, never self-authored substitute.** From
-   `mistakes/codex-side-assistant-faked-eval-on-codex-timeout.md`. The one-line rule —
+   `mistakes/codex/codex-side-assistant-faked-eval-on-codex-timeout.md`. The one-line rule —
    "if `codex exec` produces NO output, the wrapper reports BLOCKED and never authors
    the evaluation itself; the manager-proxy write fallback applies ONLY when codex
    produced stdout it could not write" — belongs in `codex/SKILL.md § Dual-System
    Evaluation` (and the assistant-wrapper sketch).
 
 2. **Absolute-worktree-path-in-briefs discipline.** From
-   `mistakes/executor-wrote-to-main-tree-not-worktree.md`. The discipline — every
+   `mistakes/git/executor-wrote-to-main-tree-not-worktree.md`. The discipline — every
    `Write` / `Edit` path is built from the session worktree absolute root and must
    contain `/worktrees/<branch>/`; never rely on a prior `cd`; use `git -C <worktree>`
    for git ops; verify the write landed after the first edit — belongs in `delegation`

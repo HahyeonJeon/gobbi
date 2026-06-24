@@ -34,4 +34,4 @@ Git finalization is always the last stage. It runs ONLY after stage 3 (memory va
 ## Related
 - Discussion log D8 (2026-06-12 session)
 - Design § D-c (5-stage pipeline table)
-- `features/workflow/discussions/2026-06-13-stage3-nonskippable-d11-d13.md`
+- `features/workflow/discussions/wrap-up/2026-06-13-stage3-nonskippable-d11-d13.md`

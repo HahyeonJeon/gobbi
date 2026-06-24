@@ -16,7 +16,7 @@ shipped_in: 9d522168..ab25dce0 (9 commits; HEAD ab25dce0)
 # Dual-runtime git skill shipped (Claude Code + Codex)
 
 **Task:** Improve the git skill to fully cover git/GitHub operations across Claude Code and Codex
-runtimes — 7-task plan (`features/git-workflow/plans/2026-06-14-dual-runtime-git-skill.md`),
+runtimes — 7-task plan (`features/git-workflow/plans/git/2026-06-14-dual-runtime-git-skill.md`),
 executed bottom-up, both Execution evaluators PASS.
 
 ## Summary
@@ -61,11 +61,11 @@ Both Execution iter2 evaluators returned **PASS** (no Critical/High open):
 
 - DD-6 hook edits (git-lifecycle telemetry in `session-end.sh` / `post-tool-use-agents.sh`) —
   deferred at Planning by user decision. See
-  `features/git-workflow/backlogs/git-lifecycle-telemetry-in-hooks.md`.
+  `features/git-workflow/backlogs/git/git-lifecycle-telemetry-in-hooks.md`.
 
 ## Related
 
-- Plan: `features/git-workflow/plans/2026-06-14-dual-runtime-git-skill.md`
+- Plan: `features/git-workflow/plans/git/2026-06-14-dual-runtime-git-skill.md`
 - Design: `features/git-workflow/design/` (DD-1 … DD-7)
 - Decisions: `features/git-workflow/decisions/{codex-skill-prior-art-not-engaged,probe-data-source-reliability,leader-md-git-discipline-claim-wrong}.md`
 - Session journal: `notes/2026-06-14-dual-runtime-git-skill.md`

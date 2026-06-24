@@ -66,7 +66,7 @@ this to the manager — it means WORK was incomplete.
 
 ## Related
 
-- `mistakes/grep-absence-claim-needs-exact-pattern.md` — the specific mistake staged
+- `mistakes/verification/grep-absence-claim-needs-exact-pattern.md` — the specific mistake staged
   without correcting the artifact in iter1
 - `skills/mistake/SKILL.md § P2` — moment-of-capture discipline
 - Claude evaluator `1-ideation/evaluation/iter1/claude/overall.md` — "The artifact's own staged

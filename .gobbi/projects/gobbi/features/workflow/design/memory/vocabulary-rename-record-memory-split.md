@@ -53,4 +53,4 @@ The sweep uses the exhaustive-vocabulary alternation grep (not a form-specific s
 Large surface (71 files) for a clarity gain. Risk mitigated by command-derived manifest + exhaustive alternation + form-blindness mistake awareness.
 
 ## Open issues
-The printed grep commands in the D-e manifest use BRE `\|` under `grep -E` (returns 0 on verbatim re-run). Fix the dialect before Execution's verification step. See `features/workflow/decisions/2026-06-13-manifest-command-grep-dialect-bug.md`.
+The printed grep commands in the D-e manifest use BRE `\|` under `grep -E` (returns 0 on verbatim re-run). Fix the dialect before Execution's verification step. See `features/workflow/decisions/process/2026-06-13-manifest-command-grep-dialect-bug.md`.

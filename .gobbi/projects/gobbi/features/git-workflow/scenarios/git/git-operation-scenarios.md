@@ -136,7 +136,7 @@ runtime-neutral because the commit-vs-push boundary lines up with BOTH sandboxes
 
 ## Related
 
-- `features/git-workflow/checklists/git-operation-checklists.md` — the actionable per-phase checklists derived from these scenarios
+- `features/git-workflow/checklists/git/git-operation-checklists.md` — the actionable per-phase checklists derived from these scenarios
 - `skills/git/SKILL.md` — owns every procedure (P1-P8) referenced here
 - `skills/git/conventions.md` — branch / commit / trailer / merge-strategy rules
 - `skills/wrap-up/SKILL.md` § Stage 5 — git finalization wiring (W-01, W-12, W-13)

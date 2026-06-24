@@ -11,7 +11,7 @@ tags: [process, docs-sync, rename-sweep, grep-scope]
 priority: high
 domain: process
 layer: 2
-layer2-source: .gobbi/projects/gobbi/mistakes/sweep-grep-literal-loop-name-blindspot.md
+layer2-source: .gobbi/projects/gobbi/mistakes/refactor/sweep-grep-literal-loop-name-blindspot.md
 layer2-rationale: Generalizable across all projects — any rename/refactor sweep that verifies completeness with a form-specific grep is structurally blind to the same stale vocabulary in other syntactic forms.
 supersedes: null
 superseded_by: null
@@ -21,7 +21,7 @@ superseded_by: null
 
 ## Layer-2 note
 
-This is a Layer-2 copy of `mistakes/sweep-grep-literal-loop-name-blindspot.md`. It lives in `skills/mistake/` so it persists and loads across all projects and future sessions. The canonical record is at the project mistakes path above; this copy exists only for cross-project recall.
+This is a Layer-2 copy of `mistakes/refactor/sweep-grep-literal-loop-name-blindspot.md`. It lives in `skills/mistake/` so it persists and loads across all projects and future sessions. The canonical record is at the project mistakes path above; this copy exists only for cross-project recall.
 
 ---
 

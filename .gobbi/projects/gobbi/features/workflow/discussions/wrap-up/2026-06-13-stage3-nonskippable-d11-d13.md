@@ -36,4 +36,4 @@ D11: **stage 3 = the wrap-up loop's dual-system EVALUATION**. Stage 1 is a mecha
 ## Related
 - Discussion log D13 (2026-06-13 post-iter1-evaluation round)
 - Design § D-c (5-stage pipeline)
-- `features/workflow/decisions/2026-06-13-stage3-memory-validation-nonskippable.md`
+- `features/workflow/decisions/wrap-up/2026-06-13-stage3-memory-validation-nonskippable.md`

@@ -53,5 +53,5 @@ A hook (Mech-2) was rejected: SessionStart fires on startup/resume/clear/compact
 
 ## Related
 
-- design/session-memory-tree.md
-- decisions/2026-06-08-session-tree-spec-doc.md
+- design/workflow/session-memory-tree.md
+- decisions/workflow/2026-06-08-session-tree-spec-doc.md

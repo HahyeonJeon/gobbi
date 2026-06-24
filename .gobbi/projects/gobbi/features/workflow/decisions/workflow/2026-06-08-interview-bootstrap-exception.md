@@ -47,4 +47,4 @@ Transcript interaction: if interview spawns sub-agents whose transcripts should 
 
 ## Related
 
-- design/session-memory-tree.md
+- design/workflow/session-memory-tree.md

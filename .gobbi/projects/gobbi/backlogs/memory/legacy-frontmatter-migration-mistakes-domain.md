@@ -21,7 +21,7 @@ shipped_in: null
 
 Two project-tier mistakes carry no `domain:` field, which is a REQUIRED `mistakes` extension per `rules.md` §2.2: `codex-wrapper-file-persistence-failure.md` and `planning-asserted-skill-without-verifying.md`. The validator's per-type required-extension check should already flag these. This was surfaced while sampling `domain:` keys during the namespace ideation (the skew analysis: 11/16 `process`, 2 with no `domain`).
 
-> NOTE: A project backlog named `legacy-frontmatter-migration` ALREADY EXISTS in the durable tree (`backlogs/legacy-frontmatter-migration.md`). This staged file uses a distinct slug (`legacy-frontmatter-migration-mistakes-domain`) to avoid a slug collision; at promotion, Wrap-up should reconcile — fold this into the existing backlog or keep it as the narrower mistakes-domain-specific entry. Do NOT create a duplicate flat slug.
+> NOTE: A project backlog named `legacy-frontmatter-migration` ALREADY EXISTS in the durable tree (`backlogs/memory/legacy-frontmatter-migration.md`). This staged file uses a distinct slug (`legacy-frontmatter-migration-mistakes-domain`) to avoid a slug collision; at promotion, Wrap-up should reconcile — fold this into the existing backlog or keep it as the narrower mistakes-domain-specific entry. Do NOT create a duplicate flat slug.
 
 ## Why deferred
 

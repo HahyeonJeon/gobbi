@@ -67,10 +67,10 @@ Three items carried forward to Planning: (a) D7 git-verb (verify exact git behav
 
 ## Related
 
-- design/session-memory-tree.md
-- decisions/2026-06-08-flat-granular-loop-interior.md
-- decisions/2026-06-08-single-root-transcripts.md
-- decisions/2026-06-08-number-prefixed-loop-dirs.md
-- decisions/2026-06-08-scaffold-script-mechanism.md
-- decisions/2026-06-08-session-tree-spec-doc.md
-- decisions/2026-06-08-interview-bootstrap-exception.md
+- design/workflow/session-memory-tree.md
+- decisions/workflow/2026-06-08-flat-granular-loop-interior.md
+- decisions/workflow/2026-06-08-single-root-transcripts.md
+- decisions/workflow/2026-06-08-number-prefixed-loop-dirs.md
+- decisions/workflow/2026-06-08-scaffold-script-mechanism.md
+- decisions/workflow/2026-06-08-session-tree-spec-doc.md
+- decisions/workflow/2026-06-08-interview-bootstrap-exception.md

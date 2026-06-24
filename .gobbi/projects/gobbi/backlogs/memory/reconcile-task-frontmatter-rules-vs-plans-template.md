@@ -58,4 +58,4 @@ similar carve-outs needed.
 `.gobbi/projects/gobbi/sessions/2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d/`
 Surfaced by the Codex stage-3 evaluator (CONS-1) during Wrap-up of the dual-runtime git skill
 session. The affected promoted plan is at
-`features/git-workflow/plans/2026-06-14-dual-runtime-git-skill.md`.
+`features/git-workflow/plans/git/2026-06-14-dual-runtime-git-skill.md`.

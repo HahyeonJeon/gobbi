@@ -10,7 +10,7 @@
 #   G1-G5). This guard keys verification to the renamed VOCABULARY (every form),
 #   not to the form the editor happened to touch.
 #
-#   It is the lesson of mistakes/sweep-grep-literal-loop-name-blindspot.md baked
+#   It is the lesson of mistakes/refactor/sweep-grep-literal-loop-name-blindspot.md baked
 #   into a reusable gate: grep the WHOLE vocabulary, then trust an explicit
 #   allowlist of known-legitimate retentions instead of a form-specific grep.
 #

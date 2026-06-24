@@ -44,5 +44,5 @@ No new dependency, no new tooling. Ships in the same PR. User confirmed Option A
 
 ## Related
 
-- design/session-memory-tree.md
-- decisions/2026-06-08-scaffold-script-mechanism.md
+- design/workflow/session-memory-tree.md
+- decisions/workflow/2026-06-08-scaffold-script-mechanism.md

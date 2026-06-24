@@ -15,7 +15,7 @@ author: claude
 # Per-Phase Git Checklists
 
 Actionable git checklists per lifecycle point, derived from
-`features/git-workflow/scenarios/git-operation-scenarios.md`. Each item names the scenario id(s)
+`features/git-workflow/scenarios/git/git-operation-scenarios.md`. Each item names the scenario id(s)
 it covers and the owning skill / procedure. `[ASK]` marks a destructive operation that requires
 the active runtime's user-decision primitive (Always-Ask per `discussion/SKILL.md`
 § Decision Classification).
@@ -95,7 +95,7 @@ Every delete and close is an `[ASK]` destructive operation.
 
 ## Related
 
-- `features/git-workflow/scenarios/git-operation-scenarios.md` — the scenario baseline these checklists derive from
+- `features/git-workflow/scenarios/git/git-operation-scenarios.md` — the scenario baseline these checklists derive from
 - `skills/git/SKILL.md` — P1-P8 procedures
 - `skills/git/conventions.md` — branch / commit / trailer / merge-strategy rules
 - `skills/wrap-up/SKILL.md` § Stage 5 — git finalization wiring

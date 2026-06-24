@@ -47,7 +47,7 @@ Loader surface fixups (per-surface granularity):
 - Native Codex load: `.agents/skills/memory` and `.agents/skills/record` exist as dir-level symlinks; no broken references.
 
 ## Validation
-- Both post-split gates pass (see `features/workflow/checklists/post-split-gate-both-required.md`).
+- Both post-split gates pass (see `features/workflow/checklists/codex/post-split-gate-both-required.md`).
 - ~190 cross-ref links to `memorization/` updated to their new homes.
 - `wrap-up/SKILL.md` cites `memory/templates/` + `memory/rules.md`; per-loop RECORD reference points at `record/SKILL.md`.
 

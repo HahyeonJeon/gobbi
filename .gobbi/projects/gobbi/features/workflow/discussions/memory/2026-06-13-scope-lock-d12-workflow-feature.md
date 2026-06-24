@@ -33,4 +33,4 @@ The scope is fixed. Any in-session discovery that touches an out-of-scope item g
 
 ## Related
 - Discussion log D12 (2026-06-13 post-leader-findings round)
-- `features/workflow/backlogs/task-record-template-and-dangling-ref.md`
+- `features/workflow/backlogs/process/task-record-template-and-dangling-ref.md`

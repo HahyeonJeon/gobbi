@@ -20,7 +20,7 @@ task_count: 10
 
 ## Idea anchor
 
-`features/workflow/design/session-memory-tree.md` — the design this plan implements.
+`features/workflow/design/workflow/session-memory-tree.md` — the design this plan implements.
 
 ## Scope Contract reference
 

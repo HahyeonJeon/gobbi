@@ -49,5 +49,5 @@ The `memorization/rules.md` smell rule targets memory-file slugs; session step-d
 
 ## Related
 
-- design/session-memory-tree.md
-- decisions/2026-06-08-flat-granular-loop-interior.md
+- design/workflow/session-memory-tree.md
+- decisions/workflow/2026-06-08-flat-granular-loop-interior.md

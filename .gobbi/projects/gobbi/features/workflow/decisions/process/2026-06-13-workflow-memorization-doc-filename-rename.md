@@ -32,5 +32,5 @@ INT-3: the file was verified EXISTS; 15 live inbound refs confirmed by `grep -rl
 Adds an additional rename target to the sweep: 1 file rename + 15 ref repoints + 1 `.claude/skills` per-file symlink deletion + 1 new symlink creation. Documented in D-b mapping table row 5 and Implementation Checklist item 2.
 
 ## Related
-- `features/workflow/decisions/2026-06-13-three-surface-loader-fixup.md`
+- `features/workflow/decisions/codex/2026-06-13-three-surface-loader-fixup.md`
 - `evaluation/iter1/claude/structure.md` (struct-dbmapping-omits-workflow-memorization-doc)

@@ -52,4 +52,4 @@ No alternative was applicable — this is an empirical finding from the grep, no
 
 ## Related
 
-- design/session-memory-tree.md
+- design/workflow/session-memory-tree.md

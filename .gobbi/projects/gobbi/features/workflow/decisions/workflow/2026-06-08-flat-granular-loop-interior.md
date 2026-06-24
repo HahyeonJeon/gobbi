@@ -43,5 +43,5 @@ The user's exact words: "more specified directories like outputs/ transcripts/ e
 
 ## Related
 
-- design/session-memory-tree.md
-- decisions/2026-06-08-single-root-transcripts.md
+- design/workflow/session-memory-tree.md
+- decisions/workflow/2026-06-08-single-root-transcripts.md

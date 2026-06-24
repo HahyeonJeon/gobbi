@@ -24,9 +24,9 @@ Mature agent frameworks model a run as a trace-to-spans hierarchy that mirrors t
 
 ## Related
 
-- decisions/2026-06-08-number-prefixed-loop-dirs.md
-- decisions/2026-06-08-scaffold-script-mechanism.md
-- design/session-memory-tree.md
+- decisions/workflow/2026-06-08-number-prefixed-loop-dirs.md
+- decisions/workflow/2026-06-08-scaffold-script-mechanism.md
+- design/workflow/session-memory-tree.md
 
 ## Why it applies
 

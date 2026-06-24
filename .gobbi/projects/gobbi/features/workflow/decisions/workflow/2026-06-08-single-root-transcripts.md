@@ -51,5 +51,5 @@ Removing per-loop `transcripts/` dirs simplifies the loop interior (4 slots not 
 
 ## Related
 
-- design/session-memory-tree.md
-- decisions/2026-06-08-flat-granular-loop-interior.md
+- design/workflow/session-memory-tree.md
+- decisions/workflow/2026-06-08-flat-granular-loop-interior.md

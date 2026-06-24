@@ -35,7 +35,7 @@ Out of scope for the git-operation-completeness session (scope contract was the 
 
 ## When to pick up
 
-No prerequisites. Can run any time — it is a single-line edit. Best folded into a docs-link maintenance pass alongside the broader `backlogs/preexisting-broken-markdown-links.md` (which covers ~12 pre-existing broken links from session 7e00f98e; this entry is the specific wrap-up.md:17 case).
+No prerequisites. Can run any time — it is a single-line edit. Best folded into a docs-link maintenance pass alongside the broader `backlogs/memory/preexisting-broken-markdown-links.md` (which covers ~12 pre-existing broken links from session 7e00f98e; this entry is the specific wrap-up.md:17 case).
 
 ## Suggested approach
 

@@ -23,7 +23,7 @@ The vocabulary rename (MEMORIZATION → RECORD, session memory → session recor
 Acknowledge and document the full blast radius. The 71-file prose sweep is a vocabulary-only rename (no JSON enum, no hook regex change). The runtime-break risk is mitigated by: (1) the command-derived manifest (D-e) making every file countable and regenerable; (2) the exhaustive-vocabulary grep covering all forms (not just `MEMORIZATION`); (3) the two post-split gates (no-broken-symlink + presence). Proceed per the counter-evidence in Framed Problem § Counterfactual.
 
 ## Rationale
-The rename is a clarity/maintenance improvement with a well-bounded risk surface. The form-blindness mistake (`mistakes/sweep-grep-literal-loop-name-blindspot.md`) is the risk; the command-derived manifest is its direct mitigation.
+The rename is a clarity/maintenance improvement with a well-bounded risk surface. The form-blindness mistake (`mistakes/refactor/sweep-grep-literal-loop-name-blindspot.md`) is the risk; the command-derived manifest is its direct mitigation.
 
 ## Alternatives considered
 - Narrow scope to reduce blast radius (rejected: D12 locks the full scope including CLAUDE.md/AGENTS.md and the skill-dir split; partial rename leaves ambiguity intact).
@@ -33,5 +33,5 @@ Planning must sequence the tasks to do the skill-dir split + mirror fixup as an 
 
 ## Related
 - Design § D-e (command-derived manifest)
-- `features/workflow/decisions/2026-06-13-three-surface-loader-fixup.md`
+- `features/workflow/decisions/codex/2026-06-13-three-surface-loader-fixup.md`
 - `evaluation/iter1/claude/risk.md` (risk-blast-radius-omits-workflow-memorization-referrers)

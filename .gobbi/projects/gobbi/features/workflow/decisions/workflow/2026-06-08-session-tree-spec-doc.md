@@ -46,5 +46,5 @@ Having ~16 prose definitions was the root cause of drift. Collapsing them into o
 
 ## Related
 
-- design/session-memory-tree.md
-- decisions/2026-06-08-scaffold-script-mechanism.md
+- design/workflow/session-memory-tree.md
+- decisions/workflow/2026-06-08-scaffold-script-mechanism.md

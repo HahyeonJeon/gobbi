@@ -33,4 +33,4 @@ After rename: `test -f skills/orchestration/workflow/record.md` → exists; `tes
 
 ## Related
 - Design § D-b (mapping table row 5)
-- `features/workflow/decisions/2026-06-13-workflow-memorization-doc-filename-rename.md`
+- `features/workflow/decisions/process/2026-06-13-workflow-memorization-doc-filename-rename.md`

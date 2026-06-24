@@ -63,9 +63,9 @@ and a "Worktree CWD discipline" section. Deferred: DD-6 git-lifecycle hook telem
 
 ## Open items
 
-- DD-6 git-lifecycle telemetry in hooks — deferred at Planning, user-confirmation gated. See `backlogs/git-lifecycle-telemetry-in-hooks.md`.
+- DD-6 git-lifecycle telemetry in hooks — deferred at Planning, user-confirmation gated. See `backlogs/git/git-lifecycle-telemetry-in-hooks.md`.
 - OQ-5 read-only Codex policy + the F5 plan-nit are noted in the session journal `notes/2026-06-14-dual-runtime-git-skill.md`.
-- Layer-2 (workspace) promotion of the 2 process write-safety mistakes (`mistakes/absolute-path-typo-on-write-evades-cwd-guard.md`, `mistakes/edit-write-tool-success-without-disk-persistence.md`) — deferred this session per user decision.
+- Layer-2 (workspace) promotion of the 2 process write-safety mistakes (`mistakes/tooling/absolute-path-typo-on-write-evades-cwd-guard.md`, `mistakes/verification/edit-write-tool-success-without-disk-persistence.md`) — deferred this session per user decision.
 
 ## Related
 
