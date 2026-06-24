@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, dual-runtime, codex, claude-code, probe, sandbox]
+tags: [git, codex]
+keywords: [dual-runtime, claude-code, probe, sandbox]
+author: claude
 features_touched: [git-workflow]
 loops_completed: [ideation, planning, execution, wrap-up]
 shipped: [features/git-workflow/plans/2026-06-14-dual-runtime-git-skill.md, features/git-workflow/changelogs/2026-06-14-dual-runtime-git-skill-shipped.md, mistakes/grep-absence-claim-needs-exact-pattern.md, mistakes/staging-a-mistake-candidate-does-not-fix-the-artifact.md]

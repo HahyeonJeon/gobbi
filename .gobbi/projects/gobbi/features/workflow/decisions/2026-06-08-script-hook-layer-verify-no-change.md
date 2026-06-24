@@ -4,13 +4,14 @@ description: The session-memory redesign requires no edits to any script or hook
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [scripts, hooks, session-tree, scope]
+tags: [hooks]
+keywords: [scripts, session-tree, scope]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Script/hook layer needs no edits for the session-memory redesign

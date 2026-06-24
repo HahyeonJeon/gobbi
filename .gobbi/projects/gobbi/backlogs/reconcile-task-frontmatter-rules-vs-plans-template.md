@@ -4,12 +4,13 @@ description: memory/rules.md lists task as forbidden session-routing residue; me
 type: backlogs
 scope: project
 feature: null
-status: active
+status: open
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [docs, memory, frontmatter, rules, plans]
+tags: [memory, frontmatter]
+keywords: [docs, rules, plans]
+author: claude
 priority: low
-disposition: open
 project-scope: true
 shipped_in: null
 ---

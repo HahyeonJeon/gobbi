@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [docs-sync, aesthetics, insight-writing]
+tags: [docs-sync]
+keywords: [aesthetics, insight-writing]
+author: claude
 ---
 
 # Insight headlines: factual form, not self-grading — implementation checklist

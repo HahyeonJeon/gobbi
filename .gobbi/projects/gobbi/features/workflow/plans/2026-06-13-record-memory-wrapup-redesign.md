@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [workflow, vocabulary-rename, wrap-up-pipeline, skill-split]
+tags: []
+keywords: [workflow, vocabulary-rename, wrap-up-pipeline, skill-split]
+author: claude
 supersedes: null
 superseded_by: null
 task_count: 11

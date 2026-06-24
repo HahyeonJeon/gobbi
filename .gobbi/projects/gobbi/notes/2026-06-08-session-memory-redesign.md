@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [session-memory, workflow, doc-sweep, scaffold]
+tags: []
+keywords: [session-memory, workflow, doc-sweep, scaffold]
+author: claude
 features_touched: [workflow]
 loops_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [features/workflow/design/session-memory-tree.md, features/workflow/decisions/2026-06-08-flat-granular-loop-interior.md, features/workflow/decisions/2026-06-08-single-root-transcripts.md, features/workflow/decisions/2026-06-08-number-prefixed-loop-dirs.md, features/workflow/decisions/2026-06-08-scaffold-script-mechanism.md, features/workflow/decisions/2026-06-08-session-tree-spec-doc.md, features/workflow/decisions/2026-06-08-interview-bootstrap-exception.md, features/workflow/decisions/2026-06-08-gap1-verify-session-tree-check.md, features/workflow/decisions/2026-06-08-script-hook-layer-verify-no-change.md, features/workflow/plans/2026-06-08-session-memory-redesign.md, mistakes/sweep-grep-literal-loop-name-blindspot.md]

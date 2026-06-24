@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [pipeline, validation-gate, fail-fast, wrap-up]
+tags: [wrap-up]
+keywords: [pipeline, validation-gate, fail-fast]
+author: claude
 title: Release pipeline gates with irreversible action last
 source: https://learn.microsoft.com/en-us/azure/devops/pipelines/release/approvals/gates
 accessed: 2026-06-13

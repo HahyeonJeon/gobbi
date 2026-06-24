@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, dual-runtime, codex, claude-code, probe, sandbox]
+tags: [git, codex]
+keywords: [dual-runtime, claude-code, probe, sandbox]
+author: claude
 shipped_in: 9d522168..ab25dce0 (9 commits; HEAD ab25dce0)
 ---
 

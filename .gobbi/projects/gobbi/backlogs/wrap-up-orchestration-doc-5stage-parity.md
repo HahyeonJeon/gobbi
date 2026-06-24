@@ -4,12 +4,13 @@ description: orchestration/workflow/wrap-up.md could adopt the explicit 5-stage 
 type: backlogs
 scope: project
 feature: null
-status: active
+status: open
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [docs-sync, wrap-up, orchestration]
+tags: [docs-sync, wrap-up]
+keywords: [orchestration]
+author: claude
 priority: low
-disposition: open
 project-scope: true
 shipped_in: null
 ---

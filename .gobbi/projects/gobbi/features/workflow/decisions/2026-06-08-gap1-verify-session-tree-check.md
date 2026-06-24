@@ -4,13 +4,14 @@ description: Create verify-session-tree.sh as a runnable --check script (Option 
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [tooling, test-harness, session-tree, scaffold]
+tags: []
+keywords: [tooling, test-harness, session-tree, scaffold]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Create verify-session-tree.sh --check (Option A) for sync-check and path-validation

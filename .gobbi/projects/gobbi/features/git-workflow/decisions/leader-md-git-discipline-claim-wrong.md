@@ -4,13 +4,14 @@ description: The artifact claimed leader.md lacked git -C discipline; it already
 type: decisions
 scope: feature
 feature: git-workflow
-status: active
+status: accepted
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [process, research, verification, role-prompts]
+tags: [process, verification]
+keywords: [research, role-prompts]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Verify role-prompt content before asserting it lacks a given discipline block

@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [vocabulary, design, locked]
+tags: [design]
+keywords: [vocabulary, locked]
+author: claude
 outcome: D5 RECORD sub-phase / session record; D6 memory; D7 memorization = wrap-up promotion stage
 ---
 

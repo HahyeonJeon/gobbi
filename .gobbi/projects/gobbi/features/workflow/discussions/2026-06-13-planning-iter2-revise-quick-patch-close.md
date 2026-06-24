@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [planning, evaluation, revise-disposition, quick-patch]
+tags: [planning, evaluation]
+keywords: [revise-disposition, quick-patch]
+author: claude
 outcome: Quick-patch + accepted (loop closed as PASS-accepted; no iter3)
 ---
 

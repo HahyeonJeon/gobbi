@@ -4,13 +4,14 @@ description: All agent transcripts accumulate in one session-root transcripts/ d
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [session-memory, transcripts, agents]
+tags: []
+keywords: [session-memory, transcripts, agents]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Single session-root transcripts/ for all agent transcripts (R1)

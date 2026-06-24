@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [security, sandbox, remediation, always-ask]
+tags: [security]
+keywords: [sandbox, remediation, always-ask]
+author: claude
 ---
 
 # Checklist — Remediation offered to the user must be an explicit Always-Ask; never auto-applied

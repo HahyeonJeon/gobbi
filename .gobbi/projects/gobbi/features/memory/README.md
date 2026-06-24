@@ -7,8 +7,8 @@ feature: memory
 status: active
 created: 2026-06-21
 session: c3ac1c53-6741-49cf-8856-cdb3fcd6bec0
-tags: [memory, schema, validation]
-keywords: [area-namespace, frontmatter, rules, templates, validator]
+tags: []
+keywords: [area-namespace, frontmatter, rules, templates, validator, memory, schema, validation]
 author: claude
 value_proposition: A stable, scannable, refactorable memory store every session reads and writes without grep guesswork.
 subsystems: [skills/memory, skills/memory/templates, skills/memory/scripts/validate-frontmatter.sh]

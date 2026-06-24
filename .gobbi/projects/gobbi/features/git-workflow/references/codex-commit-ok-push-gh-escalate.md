@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, codex, sandbox, commit, push, gh-cli, approval, runtime]
+tags: [git, codex]
+keywords: [sandbox, commit, push, gh-cli, approval, runtime]
+author: claude
 title: Codex — git commit runs under workspace-write (writes inside workspace .git); git push and gh escalate to an approval prompt because they need network
 source: https://developers.openai.com/codex/agent-approvals-security
 accessed: 2026-06-14

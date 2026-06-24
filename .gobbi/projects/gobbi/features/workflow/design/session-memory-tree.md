@@ -7,10 +7,12 @@ feature: workflow
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [session-memory, directory-structure, scaffold, workflow]
+tags: []
+keywords: [session-memory, directory-structure, scaffold, workflow]
+author: claude
 supersedes: null
 superseded_by: null
-related: [decisions/2026-06-08-flat-granular-loop-interior.md, decisions/2026-06-08-number-prefixed-loop-dirs.md, decisions/2026-06-08-single-root-transcripts.md, decisions/2026-06-08-scaffold-script-mechanism.md, decisions/2026-06-08-session-tree-spec-doc.md, decisions/2026-06-08-interview-bootstrap-exception.md]
+related: [flat-granular-loop-interior, number-prefixed-loop-dirs, single-root-transcripts, scaffold-script-mechanism, session-tree-spec-doc, interview-bootstrap-exception]
 ---
 
 # Session-memory directory structure

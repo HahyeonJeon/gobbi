@@ -4,11 +4,12 @@ description: Task-09 verifies clause uses 'surfaces' which pre-exists in wrap-up
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
 tags: [planning, verification, docs-sync, wrap-up]
-decision_status: accepted
+keywords: []
+author: claude
 supersedes: null
 superseded_by: null
 ---

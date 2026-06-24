@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, claude-code, sandbox, gh-cli, tls, runtime]
+tags: [git]
+keywords: [claude-code, sandbox, gh-cli, tls, runtime]
+author: claude
 title: Claude Code — gh / Go-based CLIs may fail TLS verification under the macOS Seatbelt sandbox; need excludedCommands
 source: https://code.claude.com/docs/en/sandboxing#troubleshooting
 accessed: 2026-06-14

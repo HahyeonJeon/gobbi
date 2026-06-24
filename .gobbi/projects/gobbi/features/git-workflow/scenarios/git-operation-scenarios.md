@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-16
 session: 2026-06-16-3596d7f1-ee88-4055-8e66-a67f977812ad
-tags: [git, lifecycle, worktree, pr, cleanup, dual-runtime]
+tags: [git]
+keywords: [lifecycle, worktree, pr, cleanup, dual-runtime]
+author: claude
 ---
 
 # Git-Operation Scenarios — session lifecycle baseline

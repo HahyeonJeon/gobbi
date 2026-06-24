@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [process, docs-sync, rename-sweep, grep-scope]
+tags: [process, docs-sync, rename-sweep]
+keywords: [grep-scope]
+author: claude
 priority: high
 domain: process
 supersedes: null

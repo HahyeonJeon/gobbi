@@ -4,11 +4,12 @@ description: The MEMORIZATION caps-token spread was understated at 12 prose site
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [vocabulary-sweep, docs-sync, count-correction]
-decision_status: accepted
+tags: [vocabulary-sweep, docs-sync]
+keywords: [count-correction]
+author: claude
 supersedes: null
 superseded_by: null
 ---

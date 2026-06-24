@@ -7,12 +7,12 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [vocabulary-sweep, manifest, verification, design]
+tags: [vocabulary-sweep, verification, design]
+keywords: [manifest]
+author: claude
 supersedes: null
 superseded_by: null
-related:
-  - features/workflow/decisions/2026-06-13-manifest-command-grep-dialect-bug.md
-  - features/workflow/checklists/manifest-verbatim-rerun-reproducibility.md
+related: [manifest-command-grep-dialect-bug, manifest-verbatim-rerun-reproducibility]
 ---
 
 # Sweep manifest: command-derived counts (D-e)

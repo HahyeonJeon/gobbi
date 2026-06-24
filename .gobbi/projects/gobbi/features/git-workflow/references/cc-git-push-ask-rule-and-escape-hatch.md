@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, claude-code, sandbox, approval, escape-hatch, runtime]
+tags: [git]
+keywords: [claude-code, sandbox, approval, escape-hatch, runtime]
+author: claude
 title: Claude Code — Bash(git push *) ask-rules force a prompt even in auto-allow; sandbox-failed commands can retry unsandboxed via dangerouslyDisableSandbox
 source: https://code.claude.com/docs/en/sandboxing#sandbox-modes
 accessed: 2026-06-14

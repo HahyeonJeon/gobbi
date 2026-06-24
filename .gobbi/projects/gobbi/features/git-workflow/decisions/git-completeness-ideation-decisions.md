@@ -4,13 +4,14 @@ description: Four locked design decisions from the git-completeness Ideation loo
 type: decisions
 scope: feature
 feature: git-workflow
-status: active
+status: accepted
 created: 2026-06-16
 session: 3596d7f1-ee88-4055-8e66-a67f977812ad
-tags: [git, wrap-up, bulk-sweep, design]
+tags: [git, wrap-up, design]
+keywords: [bulk-sweep]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Git-completeness Ideation — Locked Decisions (DQ1–DQ4)

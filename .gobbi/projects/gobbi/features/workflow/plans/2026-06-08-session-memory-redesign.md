@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [session-memory, scaffold, doc-sweep, workflow]
+tags: []
+keywords: [session-memory, scaffold, doc-sweep, workflow]
+author: claude
 task: redesign the per-session working-memory directory structure
 supersedes: null
 superseded_by: null

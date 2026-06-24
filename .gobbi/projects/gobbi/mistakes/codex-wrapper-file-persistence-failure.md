@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [process, codex, evaluation, assistant-wrapper]
+tags: [process, codex, evaluation]
+keywords: [assistant-wrapper]
+author: claude
 priority: high
 domain: process
 ---

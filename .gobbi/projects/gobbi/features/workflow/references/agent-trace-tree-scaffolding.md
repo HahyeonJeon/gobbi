@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [agent-observability, scaffolding, directory-structure, debuggability]
+tags: []
+keywords: [agent-observability, scaffolding, directory-structure, debuggability]
+author: claude
 title: Agent trace/span trees and scaffolding-generator idempotency
 source: https://www.braintrust.dev/articles/agent-observability-complete-guide-2026
 accessed: 2026-06-08

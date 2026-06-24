@@ -4,13 +4,14 @@ description: The runtime-posture probe assumption that sandbox-mode and approval
 type: decisions
 scope: feature
 feature: git-workflow
-status: active
+status: accepted
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [codex-runtime, probe, reliability, planning-prerequisite]
+tags: []
+keywords: [codex-runtime, probe, reliability, planning-prerequisite]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Probe script must report sandbox-mode and approval-policy as best-effort with explicit "unknown" states

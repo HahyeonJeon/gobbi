@@ -4,11 +4,12 @@ description: skills/orchestration/workflow/memorization.md filename is itself re
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [vocabulary-sweep, docs-sync, skill-restructure]
-decision_status: accepted
+tags: [vocabulary-sweep, docs-sync]
+keywords: [skill-restructure]
+author: claude
 supersedes: null
 superseded_by: null
 ---

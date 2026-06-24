@@ -4,12 +4,13 @@ description: Evaluate adding git-lifecycle telemetry (branch/PR/merge events) to
 type: backlogs
 scope: feature
 feature: git-workflow
-status: active
+status: deferred
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, hooks, telemetry, deferred, dd-6]
+tags: [git, hooks]
+keywords: [telemetry, deferred, dd-6]
+author: claude
 priority: low
-disposition: deferred
 project-scope: false
 shipped_in: null
 ---

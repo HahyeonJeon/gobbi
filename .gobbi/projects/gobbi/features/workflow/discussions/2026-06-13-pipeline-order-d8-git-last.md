@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [wrap-up, pipeline, git, locked]
+tags: [wrap-up, git]
+keywords: [pipeline, locked]
+author: claude
 outcome: D8 session record stays worktree-local; wrap-up = 5 stages; git finalization is stage 5 (LAST)
 ---
 

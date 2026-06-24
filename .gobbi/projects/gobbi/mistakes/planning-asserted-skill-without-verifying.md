@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [process, planning, required-skills, verification]
+tags: [process, planning, verification]
+keywords: [required-skills]
+author: claude
 priority: high
 domain: process
 ---

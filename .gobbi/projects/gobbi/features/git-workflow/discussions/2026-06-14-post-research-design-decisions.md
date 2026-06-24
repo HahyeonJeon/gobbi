@@ -1,5 +1,5 @@
 ---
-name: 2026-06-14-post-research-design-decisions
+name: post-research-design-decisions
 description: Post-research D1-D4 scope/design locks + REVISE handling decision (iter1 dual-system REVISE; iter2 manager-verified PASS)
 type: discussions
 scope: feature
@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [scope, design, revise-handling, dual-runtime, hooks, probe-script, merge-conflict]
+tags: [design, hooks]
+keywords: [scope, revise-handling, dual-runtime, probe-script, merge-conflict]
+author: claude
 outcome: D1-D4 locked; REVISE via iter2 leader remediation + manager spot-verify; no 2nd full eval
 ---
 

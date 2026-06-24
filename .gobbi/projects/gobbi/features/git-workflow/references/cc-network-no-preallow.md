@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, claude-code, sandbox, network, runtime]
+tags: [git]
+keywords: [claude-code, sandbox, network, runtime]
+author: claude
 title: Claude Code sandbox pre-allows NO network domains; first reach to a new domain prompts; git push/gh need github.com allowlisted
 source: https://code.claude.com/docs/en/sandboxing#network-isolation
 accessed: 2026-06-14

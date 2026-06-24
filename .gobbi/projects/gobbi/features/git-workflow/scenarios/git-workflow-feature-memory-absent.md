@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [process, feature-memory, preparation, readiness]
+tags: [process, preparation]
+keywords: [feature-memory, readiness]
+author: claude
 ---
 
 # Scenario — Confirm or bootstrap features/git-workflow/ before Planning uses feature-scoped memory

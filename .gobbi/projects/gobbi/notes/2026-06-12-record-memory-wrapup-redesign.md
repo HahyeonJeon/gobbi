@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [workflow, vocabulary-rename, wrap-up-pipeline, skill-split, record, memory, memorization]
+tags: [memory]
+keywords: [workflow, vocabulary-rename, wrap-up-pipeline, skill-split, record, memorization]
+author: claude
 features_touched: [workflow]
 loops_completed: [ideation, planning, execution, wrap-up]
 shipped: [vocabulary-rename-record-memory-split, wrap-up-5-stage-pipeline, two-skill-restructure-memory-record, sweep-manifest-command-derived, handoff-artifact-spec, claude-md-agents-md-6step-reconcile, 2026-06-13-vocabulary-d5-d6-d7-lock, 2026-06-13-two-skill-hybrid-d10, 2026-06-13-stage3-nonskippable-d11-d13, 2026-06-13-pipeline-order-d8-git-last, 2026-06-13-scope-lock-d12-workflow-feature, 2026-06-13-planning-iter1-fail-disposition, 2026-06-13-planning-iter2-revise-quick-patch-close, 2026-06-13-vocabulary-rename-blast-radius, 2026-06-13-memory-map-split-seam-decision, 2026-06-13-stage3-memory-validation-nonskippable, 2026-06-13-three-surface-loader-fixup, 2026-06-13-workflow-memorization-doc-filename-rename, 2026-06-13-manifest-command-grep-dialect-bug, 2026-06-13-memorization-spread-count-corrected, 2026-06-13-int3-case-sensitivity-note, 2026-06-13-exclude-filter-over-excludes-layer2, 2026-06-13-load-broken-window-task01-to-04, 2026-06-13-task-09-surfaces-verify-false-pass, 2026-06-13-record-memory-wrapup-redesign, workflow-memorization-doc-rename-scope, codex-wrapper-file-persistence-failure, planning-asserted-skill-without-verifying, file-move-needs-link-resolution-check, plan-rename-must-enumerate-all-ref-classes, task-record-template-and-dangling-ref, insight-headlines-factual-not-self-graded, manifest-verbatim-rerun-reproducibility, post-split-gate-both-required, sweep-executor-verification-steps, task-09-evaluation-md-verify]

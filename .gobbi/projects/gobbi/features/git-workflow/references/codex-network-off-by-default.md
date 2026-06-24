@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, codex, sandbox, network, config, runtime]
+tags: [git, codex]
+keywords: [sandbox, network, config, runtime]
+author: claude
 title: Codex workspace-write sandbox keeps network access OFF by default; enable with [sandbox_workspace_write] network_access = true
 source: https://developers.openai.com/codex/concepts/sandboxing
 accessed: 2026-06-14

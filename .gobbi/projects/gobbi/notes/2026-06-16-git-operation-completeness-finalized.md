@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-16
 session: 3596d7f1-ee88-4055-8e66-a67f977812ad
-tags: [git, wrap-up, retro-sweep, p5, p8, lifecycle]
+tags: [git, wrap-up]
+keywords: [retro-sweep, p5, p8, lifecycle]
+author: claude
 features_touched: [git-workflow]
 ---
 

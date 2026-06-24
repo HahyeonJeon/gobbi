@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [session-memory, directory-structure, user-decisions]
+tags: []
+keywords: [session-memory, directory-structure, user-decisions]
+author: claude
 outcome: Flat 4-slot loop interior + number-prefixed dirs + single root transcripts/ + manager-invoked scaffold script + dedicated spec doc + interview bootstrap exception.
 ---
 

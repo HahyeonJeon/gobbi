@@ -4,12 +4,13 @@ description: Author the task-record template and fix the dangling memorization/t
 type: backlogs
 scope: feature
 feature: workflow
-status: active
+status: open
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [chat-mode, templates, docs-sync]
+tags: [docs-sync]
+keywords: [chat-mode, templates]
+author: claude
 priority: medium
-disposition: open
 project-scope: false
 shipped_in: null
 ---

@@ -4,12 +4,13 @@ description: orchestration/workflow/wrap-up.md:17 has a broken relative link to 
 type: backlogs
 scope: project
 feature: null
-status: active
+status: open
 created: 2026-06-16
 session: 3596d7f1-ee88-4055-8e66-a67f977812ad
-tags: [docs-sync, broken-links, maintenance]
+tags: [docs-sync]
+keywords: [broken-links, maintenance]
+author: claude
 priority: low
-disposition: open
 project-scope: true
 shipped_in: null
 ---

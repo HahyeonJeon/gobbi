@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [scope, design, locked]
+tags: [design]
+keywords: [scope, locked]
+author: claude
 outcome: D12 Scope Contract locked; feature = workflow; 71-file sweep + 2-skill restructure + 5-stage pipeline + handoff + enum updates + CLAUDE.md in scope
 ---
 

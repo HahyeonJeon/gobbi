@@ -4,12 +4,13 @@ description: Retain session working memory after worktree cleanup for post-sessi
 type: backlogs
 scope: project
 feature: null
-status: active
+status: open
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [session-memory, debuggability, workflow, lifecycle]
+tags: []
+keywords: [session-memory, debuggability, workflow, lifecycle]
+author: claude
 priority: medium
-disposition: open
 project-scope: true
 shipped_in: null
 ---

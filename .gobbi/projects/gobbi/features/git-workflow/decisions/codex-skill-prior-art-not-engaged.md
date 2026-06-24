@@ -4,13 +4,14 @@ description: The draft did not engage skills/codex/SKILL.md before asserting zer
 type: decisions
 scope: feature
 feature: git-workflow
-status: active
+status: accepted
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [docs-sync, research, prior-art, alignment]
+tags: [docs-sync]
+keywords: [research, prior-art, alignment]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Engage skills/codex/SKILL.md as internal prior art before asserting sandbox-term absence across skills/

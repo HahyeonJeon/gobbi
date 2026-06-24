@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-16
 session: 3596d7f1-ee88-4055-8e66-a67f977812ad
-tags: [process, tooling, persistence, api-overload, verification]
+tags: [process, tooling, verification]
+keywords: [persistence, api-overload]
+author: claude
 priority: high
 domain: process
 supersedes: null

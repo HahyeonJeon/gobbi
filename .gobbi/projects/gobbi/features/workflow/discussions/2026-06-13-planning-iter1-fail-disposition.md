@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [planning, evaluation, fail-disposition, revise]
+tags: [planning, evaluation]
+keywords: [fail-disposition, revise]
+author: claude
 outcome: Revise (iter2) — decomposition/DAG preserved; only verifies + gates + skill-audit fixed
 ---
 

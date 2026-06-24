@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, cwd-discipline, worktree, codex, dangling-link]
+tags: [git, codex]
+keywords: [cwd-discipline, worktree, dangling-link]
+author: claude
 supersedes: null
 superseded_by: null
 related: []

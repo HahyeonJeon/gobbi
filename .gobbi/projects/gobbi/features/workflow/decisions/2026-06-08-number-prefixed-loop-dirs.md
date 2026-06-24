@@ -4,13 +4,14 @@ description: Prefix loop dirs with a fixed ordinal (1-ideation ... 5-wrap-up) so
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [session-memory, directory-naming, loop-dirs]
+tags: []
+keywords: [session-memory, directory-naming, loop-dirs]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Number-prefix loop dirs; task dirs include a slug

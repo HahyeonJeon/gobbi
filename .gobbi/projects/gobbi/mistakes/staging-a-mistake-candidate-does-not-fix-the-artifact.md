@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [process, mistake-discipline, artifact-correction]
+tags: [process]
+keywords: [mistake-discipline, artifact-correction]
+author: claude
 priority: high
 domain: process
 supersedes: null

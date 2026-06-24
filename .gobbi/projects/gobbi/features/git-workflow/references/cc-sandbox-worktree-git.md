@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, claude-code, sandbox, worktree, runtime]
+tags: [git]
+keywords: [claude-code, sandbox, worktree, runtime]
+author: claude
 title: Claude Code sandbox allows commit inside a linked worktree but denies .git/hooks and .git/config writes
 source: https://code.claude.com/docs/en/sandboxing#filesystem-isolation
 accessed: 2026-06-14

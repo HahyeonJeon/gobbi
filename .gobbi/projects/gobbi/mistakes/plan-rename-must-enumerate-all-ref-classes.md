@@ -7,7 +7,9 @@ feature: null
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [process, planning, rename, vocabulary-sweep]
+tags: [process, planning, vocabulary-sweep]
+keywords: [rename]
+author: claude
 priority: high
 domain: process
 supersedes: null

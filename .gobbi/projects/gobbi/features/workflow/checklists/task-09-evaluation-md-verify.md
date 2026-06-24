@@ -8,6 +8,8 @@ status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
 tags: [planning, verification, docs-sync, wrap-up, evaluation]
+keywords: []
+author: claude
 ---
 
 # Task-09: verify that wrap-up/evaluation.md was actually edited

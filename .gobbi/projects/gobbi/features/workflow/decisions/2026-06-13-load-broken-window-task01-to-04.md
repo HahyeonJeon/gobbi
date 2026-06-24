@@ -4,11 +4,12 @@ description: Pausing execution between task-01 (git mv) and tasks 04/05/06 (mirr
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [planning, execution-risk, skill-loading, interruption]
-decision_status: accepted
+tags: [planning]
+keywords: [execution-risk, skill-loading, interruption]
+author: claude
 supersedes: null
 superseded_by: null
 ---

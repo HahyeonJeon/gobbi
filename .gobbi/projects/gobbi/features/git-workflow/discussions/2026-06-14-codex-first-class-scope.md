@@ -1,5 +1,5 @@
 ---
-name: 2026-06-14-codex-first-class-scope
+name: codex-first-class-scope
 description: User locked Codex as first-class equal coverage target; scope = git docs + runtime wiring + new helper scripts if justified
 type: discussions
 scope: feature
@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [scope, codex, dual-runtime]
+tags: [codex]
+keywords: [scope, dual-runtime]
+author: claude
 outcome: Codex first-class; scope = git skill docs + .codex/ + agents + hooks (additively) + scripts
 ---
 

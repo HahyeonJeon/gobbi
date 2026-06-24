@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [directory-structure, debuggability, mutability-split]
+tags: []
+keywords: [directory-structure, debuggability, mutability-split]
+author: claude
 title: git internal layout — mutability split and reflog audit trail
 source: https://git-scm.com/docs/gitrepository-layout
 accessed: 2026-06-08

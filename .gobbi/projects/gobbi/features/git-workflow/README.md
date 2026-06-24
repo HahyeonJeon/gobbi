@@ -1,5 +1,5 @@
 ---
-name: git-workflow
+name: README
 description: Worktree-isolated sessions plus the dual-runtime branch / PR / issue git lifecycle across Claude Code and Codex
 type: features
 scope: feature
@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, dual-runtime, codex, claude-code, worktree, pr-lifecycle]
+tags: []
+keywords: [git, dual-runtime, codex, claude-code, worktree, pr-lifecycle]
+author: claude
 value_proposition: Every gobbi session runs git/GitHub operations safely across both agent runtimes, with each runtime's sandbox and approval model handled correctly by default.
 subsystems: [skills/git, skills/git/scripts/git-posture-probe.sh, skills/codex/SKILL.md, .codex/config.toml, .codex/agents]
 ---

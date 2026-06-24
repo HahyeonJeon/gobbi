@@ -4,11 +4,12 @@ description: Wrap-up stage 3 (memory validation = wrap-up EVALUATION) is NON-SKI
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [wrap-up, evaluation, pipeline, non-skippable]
-decision_status: accepted
+tags: [wrap-up, evaluation]
+keywords: [pipeline, non-skippable]
+author: claude
 supersedes: null
 superseded_by: null
 ---

@@ -7,12 +7,12 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [claude-md, agents-md, 6-step, vocabulary, design]
+tags: [design]
+keywords: [claude-md, agents-md, 6-step, vocabulary]
+author: claude
 supersedes: null
 superseded_by: null
-related:
-  - features/workflow/design/vocabulary-rename-record-memory-split.md
-  - features/workflow/design/wrap-up-5-stage-pipeline.md
+related: [vocabulary-rename-record-memory-split, wrap-up-5-stage-pipeline]
 ---
 
 # CLAUDE.md + AGENTS.md top-block reconcile to 6-step machine (D-f)

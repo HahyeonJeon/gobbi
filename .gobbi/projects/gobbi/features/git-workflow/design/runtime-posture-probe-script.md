@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, probe, runtime-posture, network, sandbox]
+tags: [git]
+keywords: [probe, runtime-posture, network, sandbox]
+author: claude
 supersedes: null
 superseded_by: null
 related: []

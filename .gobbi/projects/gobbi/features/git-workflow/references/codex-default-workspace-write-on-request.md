@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, codex, sandbox, approval, defaults, runtime]
+tags: [git, codex]
+keywords: [sandbox, approval, defaults, runtime]
+author: claude
 title: Codex CLI default in a version-controlled folder is "Auto" = workspace-write sandbox + on-request approvals
 source: https://developers.openai.com/codex/agent-approvals-security
 accessed: 2026-06-14

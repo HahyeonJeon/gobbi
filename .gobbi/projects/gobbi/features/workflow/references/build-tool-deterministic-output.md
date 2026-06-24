@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [determinism, scaffold, directory-structure]
+tags: []
+keywords: [determinism, scaffold, directory-structure]
+author: claude
 title: Build/test tool output trees and reproducible-build determinism
 source: https://maven.apache.org/surefire/maven-surefire-plugin/examples/logging.html
 accessed: 2026-06-08

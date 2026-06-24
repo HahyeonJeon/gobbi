@@ -9,7 +9,9 @@ status: active
 created: 2026-06-16
 session: 2026-06-16-3596d7f1-ee88-4055-8e66-a67f977812ad
 related_reports: []
-tags: [git, retro-sweep, cleanup, p8, audit]
+tags: [git]
+keywords: [retro-sweep, cleanup, p8, audit]
+author: claude
 ---
 
 # P8 Retro-sweep audit record — 2026-06-16

@@ -7,12 +7,12 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [vocabulary, record, memory, rename, design]
+tags: [memory, design]
+keywords: [vocabulary, record, rename]
+author: claude
 supersedes: null
 superseded_by: null
-related:
-  - features/workflow/decisions/2026-06-13-memorization-spread-count-corrected.md
-  - features/workflow/design/wrap-up-5-stage-pipeline.md
+related: [memorization-spread-count-corrected, wrap-up-5-stage-pipeline]
 ---
 
 # Vocabulary rename: RECORD / memory split (D-a + D-e)

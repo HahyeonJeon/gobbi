@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [skill-restructure, design, locked]
+tags: [design]
+keywords: [skill-restructure, locked]
+author: claude
 outcome: D10 two skills — skills/memory/ (durable tier) + skills/record/ (capture procedure) + thin RECORD sections in loop skills
 ---
 

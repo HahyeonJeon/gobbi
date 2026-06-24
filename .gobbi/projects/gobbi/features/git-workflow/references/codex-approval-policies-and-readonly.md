@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, codex, approval-policy, read-only, runtime]
+tags: [git, codex]
+keywords: [approval-policy, read-only, runtime]
+author: claude
 title: Codex approval policies (untrusted / on-request / never) and read-only mode determine when git ops pause or are blocked
 source: https://developers.openai.com/codex/config-reference
 accessed: 2026-06-14

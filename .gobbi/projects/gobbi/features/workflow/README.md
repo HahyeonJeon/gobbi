@@ -1,5 +1,5 @@
 ---
-name: workflow
+name: README
 description: The gobbi workflow engine — the 6-step state machine that governs every session, its per-session working-memory tree, and the orchestration skills that drive it.
 type: features
 scope: feature
@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [workflow, session-memory, orchestration, scaffold, vocabulary-rename, wrap-up-pipeline]
+tags: []
+keywords: [workflow, session-memory, orchestration, scaffold, vocabulary-rename, wrap-up-pipeline]
+author: claude
 value_proposition: Deterministic, auditable session execution — every session runs the same 6-step machine against a spec-defined, script-materialized working-memory tree, with a vocabulary that unambiguously names per-loop capture (RECORD) separately from durable promotion (memorization in the 5-stage Wrap-up pipeline).
 subsystems: [skills/orchestration, skills/record, skills/memory, skills/ideation, skills/preparation, skills/planning, skills/execution, skills/wrap-up]
 ---

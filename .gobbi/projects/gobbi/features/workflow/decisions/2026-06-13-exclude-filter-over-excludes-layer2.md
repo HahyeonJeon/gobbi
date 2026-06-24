@@ -4,11 +4,12 @@ description: Tasks 03/07 verifies exclude all 4 layer2 mistake files but the bri
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [planning, verification, scope-discipline, layer2-mistakes]
-decision_status: accepted
+tags: [planning, verification]
+keywords: [scope-discipline, layer2-mistakes]
+author: claude
 supersedes: null
 superseded_by: null
 ---

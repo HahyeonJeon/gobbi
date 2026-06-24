@@ -4,11 +4,12 @@ description: INT-3's 46 vocab-hit line count inside workflow/memorization.md is 
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [docs-sync, count-derivation, vocabulary-sweep]
-decision_status: accepted
+tags: [docs-sync, vocabulary-sweep]
+keywords: [count-derivation]
+author: claude
 supersedes: null
 superseded_by: null
 ---

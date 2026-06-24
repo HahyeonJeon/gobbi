@@ -7,12 +7,12 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [wrap-up, pipeline, evaluation, git, design]
+tags: [wrap-up, evaluation, git, design]
+keywords: [pipeline]
+author: claude
 supersedes: null
 superseded_by: null
-related:
-  - features/workflow/decisions/2026-06-13-stage3-memory-validation-nonskippable.md
-  - features/workflow/design/handoff-artifact-spec.md
+related: [stage3-memory-validation-nonskippable, handoff-artifact-spec]
 ---
 
 # Wrap-up 5-stage pipeline (D-c + D8 + D13)

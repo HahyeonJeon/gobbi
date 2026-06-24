@@ -4,13 +4,14 @@ description: Use a flat, explicitly-named 4-slot per-loop interior (working/eval
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [session-memory, directory-structure, loop-interior]
+tags: []
+keywords: [session-memory, directory-structure, loop-interior]
+author: claude
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Use a flat, granular 4-slot loop interior

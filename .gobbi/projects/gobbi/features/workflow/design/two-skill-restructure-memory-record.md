@@ -7,13 +7,12 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [skill-restructure, memory, record, symlinks, design]
+tags: [memory, design]
+keywords: [skill-restructure, record, symlinks]
+author: claude
 supersedes: null
 superseded_by: null
-related:
-  - features/workflow/decisions/2026-06-13-three-surface-loader-fixup.md
-  - features/workflow/decisions/2026-06-13-workflow-memorization-doc-filename-rename.md
-  - features/workflow/decisions/2026-06-13-memory-map-split-seam-decision.md
+related: [three-surface-loader-fixup, workflow-memorization-doc-filename-rename, memory-map-split-seam-decision]
 ---
 
 # Two-skill restructure: skills/memory/ + skills/record/ (D-b + D10)

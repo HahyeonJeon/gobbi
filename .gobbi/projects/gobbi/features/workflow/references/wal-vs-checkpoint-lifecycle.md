@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [naming, memory, lifecycle, event-sourcing]
+tags: [memory]
+keywords: [naming, lifecycle, event-sourcing]
+author: claude
 title: Write-ahead log vs checkpoint/snapshot lifecycle
 source: https://arxiv.org/pdf/2507.13062
 accessed: 2026-06-13

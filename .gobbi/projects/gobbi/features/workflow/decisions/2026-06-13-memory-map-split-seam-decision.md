@@ -4,11 +4,12 @@ description: memory-map.md spans both tiers; primary home is skills/memory/ with
 type: decisions
 scope: feature
 feature: workflow
-status: active
+status: accepted
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [skill-restructure, memory-map, docs-sync]
-decision_status: accepted
+tags: [docs-sync]
+keywords: [skill-restructure, memory-map]
+author: claude
 supersedes: null
 superseded_by: null
 ---
