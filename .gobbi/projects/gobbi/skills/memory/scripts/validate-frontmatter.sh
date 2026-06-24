@@ -54,9 +54,13 @@
 # Output: one line per violation — FILE:FIELD: message. A summary count on stderr.
 #   Exit non-zero if any violation; exit 0 + "OK: N files validated" if clean.
 #
-# Self-contained bash — no Python, no node, no dependency. Frontmatter is flat YAML
-# (key: value, flow lists [a, b]); block lists (key: then '  - item' lines) are tolerated
-# (their continuation lines are not top-level keys, so key-collection skips them).
+# Bash + jq. jq is an accepted repo dependency (GAP-1 decision) — the AREA + TAG
+# vocabularies are de-hardcoded into the project-owned memory-vocabulary.json (one
+# file per project), and this validator reads them via jq so the harness is
+# project-general. Precedent: hooks/session-end.sh (:54) reads session.json via jq.
+# Frontmatter parsing stays self-contained bash: flat YAML (key: value, flow lists
+# [a, b]); block lists (key: then '  - item' lines) are tolerated (their
+# continuation lines are not top-level keys, so key-collection skips them).
 #
 # SPEC NOTE — `decision_status` and `disposition` are REMOVED (§2.2):
 #   §2.2 is the authoritative per-type extension table and it REMOVED both fields
@@ -94,6 +98,24 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 project_root="$(cd "$script_dir/../../.." && pwd)"   # .gobbi/projects/gobbi
 [ -d "$project_root" ] || { log "project root not found: $project_root"; exit 2; }
 
+# --- Resolve the project AREA + TAG vocabulary config (relative to project_root) -
+# The AREA + TAG vocabularies are de-hardcoded into memory-vocabulary.json at the
+# project root, so this validator is project-general (a non-gobbi project ships its
+# own copy). Read via jq (GAP-1: jq is an accepted repo dependency). The config
+# path is derived from the script location, NOT from CWD, so the validator finds it
+# regardless of where it is invoked from.
+vocab_config="$project_root/memory-vocabulary.json"
+[ -f "$vocab_config" ] || { log "vocabulary config not found: $vocab_config"; exit 2; }
+command -v jq >/dev/null 2>&1 || { log "jq not found — required to read $vocab_config"; exit 2; }
+jq -e . "$vocab_config" >/dev/null 2>&1 || { log "invalid JSON in $vocab_config"; exit 2; }
+
+# vocab_list <jq-filter>  -> echoes a space-separated list read from the config.
+# The config holds materialized closed allowlists under .effective.* (= universal
+# base ∪ project additions); this validator enforces ONLY those .effective lists.
+vocab_list() {
+    jq -r "$1"' | join(" ")' "$vocab_config"
+}
+
 # =============================================================================
 # Controlled vocabularies (source of truth: memory/rules.md §2.3 / §2.5).
 # If §2 changes, update these lists; §2 is the spec, this is its mirror.
@@ -102,8 +124,10 @@ project_root="$(cd "$script_dir/../../.." && pwd)"   # .gobbi/projects/gobbi
 # §2.3 — the 16 first-class types.
 TYPES="features notes decisions design mistakes rules learnings backlogs references plans reviews reports changelogs discussions scenarios checklists"
 
-# §2.5 — the closed controlled tags vocabulary.
-TAG_VOCAB="process planning execution evaluation wrap-up ideation preparation docs-sync refactor rename-sweep verification vocabulary-sweep hooks codex security git memory frontmatter schema validation links design"
+# §2.5 — the closed controlled tags vocabulary. Read from the project config
+# (memory-vocabulary.json .effective.tags) instead of a literal, so the harness is
+# project-general. rules.md §2.5 is the prose spec; the config holds the values.
+TAG_VOCAB="$(vocab_list '.effective.tags')"
 
 # §2.2 — extension enums.
 PRIORITY_ENUM="critical high medium low"
@@ -207,9 +231,12 @@ required_ext_for() {
 # trap-class set instead (the `process` bucket is DISSOLVED into trap-classes, so
 # `process` is NOT a mistakes area). `features` is the SOLE structural exception —
 # the feature dir is itself the area axis and README.md is exempt, so it is not
-# by-area (echoes empty; the area checks skip it). Source of truth: rules.md §1.5.
-AREA_SPINE="memory git workflow wrap-up evaluation codex process _shared"
-AREA_MISTAKES="verification rename-sweep tooling git codex docs-sync memory _shared"
+# by-area (echoes empty; the area checks skip it). The area values are read from the
+# project config (memory-vocabulary.json .effective.areas.{spine,mistakes}) instead
+# of literals, so the harness is project-general. rules.md §1.5 is the prose spec;
+# the config holds the values.
+AREA_SPINE="$(vocab_list '.effective.areas.spine')"
+AREA_MISTAKES="$(vocab_list '.effective.areas.mistakes')"
 
 # area_allowlist_for <type>  -> echoes the type's allowed area set (§1.5), or empty
 # for the structural exception (`features`) and any non-type input.

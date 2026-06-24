@@ -28,7 +28,7 @@ The session gave gobbi memory a git-branch-style namespacing convention: a secon
 - `features/memory/references/memory/*.md` — the 5 prior-art references.
 - `mistakes/verification/cited-process-mistake-not-applied-to-own-artifact.md` — apply a cited process-mistake's checklist to the design's OWN artifact, not only to the future work.
 - `mistakes/tooling/edit-tool-silent-write-failure-on-worktree.md` — Edit reported success but writes evaporated on the worktree; verify on disk, switch to `perl -i`/`python3`.
-- `mistakes/rename-sweep/namespace-sweep-needs-write-vs-ref-enumeration-not-pattern-grep.md` — a namespace sweep needs write-vs-ref enumeration across all surfaces, not pattern-grep.
+- `mistakes/refactor/namespace-sweep-needs-write-vs-ref-enumeration-not-pattern-grep.md` — a namespace sweep needs write-vs-ref enumeration across all surfaces, not pattern-grep.
 - `backlogs/memory/{memory-namespace-migration, memory-renamespace-helper, legacy-frontmatter-migration-mistakes-domain, date-prefix-inconsistency-changelogs-discussions, stale-layer2-source-refs}.md` — the deferred arc + 2 newly-surfaced defects.
 - `features/memory/README.md` — feature directory bootstrapped this session.
 

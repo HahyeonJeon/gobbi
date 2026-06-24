@@ -35,11 +35,11 @@ gobbi's memory standard (`rules.md` §1.1 rule 1) defines "directory = category"
 
 ### Per-type AREA ALLOWLIST (exact, finite — codeable by the validator)
 
-Cross-type **spine** = `memory · git · workflow · wrap-up · evaluation · codex · process · _shared`.
+**The project declares the allowlist values in [`memory-vocabulary.json`](../../../../memory-vocabulary.json)** — `.effective.areas.spine` and `.effective.areas.mistakes`, the SAME arrays the validator reads via jq (a non-gobbi project ships its own copy). This doc fixes the schema; the config holds the values. gobbi's spine instance is `memory · git · workflow · wrap-up · evaluation · codex · process · _shared · docs · tooling · tests`.
 
 | Type | Exact area allowlist |
 |---|---|
-| `mistakes` | `verification · rename-sweep · tooling · git · codex · docs-sync · memory · _shared` (`process` DISSOLVED into trap-classes; NOT a mistakes area) |
+| `mistakes` | gobbi instance: `verification · refactor · tooling · git · codex · docs-sync · memory · _shared · assumption` (`process` DISSOLVED into trap-classes; NOT a mistakes area; declared in the config's `.effective.areas.mistakes`) |
 | `decisions` | spine |
 | `design` | spine |
 | `backlogs` | spine |
@@ -59,10 +59,10 @@ Used by the write-time agent AND Wrap-up routing. Returns exactly one area per r
 
 **Step 1 — explicit `area:` frontmatter wins.** If the staged file carries `area: {x}` in the type's allowlist, use `{x}`.
 
-**Step 2 — scan a fixed PRIORITY-ORDERED tag→area map; FIRST match wins.**
+**Step 2 — scan a fixed PRIORITY-ORDERED tag→area map; FIRST match wins.** The project now declares this map in [`memory-vocabulary.json`](../../../../memory-vocabulary.json) `.tagAreaMap` (the Wrap-up agent reads it for area resolution following the prose spec; the validator does not read `.tagAreaMap` — it enforces the resolved area against `.effective.areas.*`); the values below are gobbi's declared instance of the design.
 
 - **mistakes** priority order (first match wins):
-  1. `rename-sweep` ← tags {`rename-sweep`, `rename`, `vocabulary-sweep`}
+  1. `refactor` ← tags {`refactor`, `rename-sweep`, `rename`, `vocabulary-sweep`}
   2. `verification` ← {`verification`, `grep`, `research`}
   3. `tooling` ← {`tooling`, `persistence`, `write-safety`, `api-overload`}
   4. `git` ← {`git`}
@@ -75,7 +75,7 @@ Used by the write-time agent AND Wrap-up routing. Returns exactly one area per r
 
 **Step 3 — `_shared/` ONLY when NO area matched in Steps 1-2.** Never invent a new area to avoid `_shared`.
 
-**Feature-dir normalization.** Normalize a feature-dir name to a spine area before applying Step 2: `git-workflow → git` · `workflow → workflow`.
+**Feature-dir normalization.** Normalize a feature-dir name to a spine area before applying Step 2 (gobbi instance, declared in the config's `.tagAreaMap.featureDirNormalization`): `git-workflow → git` · `workflow → workflow`.
 
 ### Categorize-on-write principle (wording for `rules/` entry)
 

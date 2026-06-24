@@ -1,0 +1,53 @@
+{
+  "$schema-note": "memory-vocabulary.json — the project-owned AREA + TAG vocabulary for gobbi's memory standard (skills/memory/rules.md §1.5 area allowlists + §2.5 tag vocabulary). De-hardcoded out of skills/memory/scripts/validate-frontmatter.sh so the harness is project-general: a non-gobbi project ships its own copy of this file and the same validator reads it via jq. The validator reads the materialized 'effective.*' lists; 'universal' and 'project' document how each effective list is composed (universal base ∪ project additions). Source of the gobbi values: validate-frontmatter.sh (AREA_SPINE/AREA_MISTAKES/TAG_VOCAB) + rules.md §1.5/§2.5 at develop@7ef21bf5. GAP-1 decision: jq is an accepted repo dependency (precedent: hooks/session-end.sh reads session.json via jq).",
+  "universal": {
+    "$note": "The cross-project-generic baseline — areas and tags any software project's memory would plausibly use. A fresh non-gobbi project starts from this base and adds its own project-specific vocabulary. The universal areas include the ratified additions docs/tooling/tests (spine) and the assumption trap-class (mistakes); the universal _shared bucket is the cross-cutting no-match destination.",
+    "areas": {
+      "spine": ["_shared", "docs", "tooling", "tests"],
+      "mistakes": ["_shared", "verification", "tooling", "assumption", "refactor"]
+    },
+    "tags": ["process", "refactor", "verification", "security", "git", "docs-sync", "schema", "validation", "links", "design", "frontmatter"]
+  },
+  "project": {
+    "$note": "gobbi-specific vocabulary layered on top of the universal base. These name gobbi's own workflow steps (ideation/preparation/planning/execution/wrap-up/evaluation), runtimes (codex/hooks), subsystems (memory/workflow/wrap-up), and idioms (rename-sweep/vocabulary-sweep). A non-gobbi project replaces this whole block with its own.",
+    "areas": {
+      "spine": ["memory", "git", "workflow", "wrap-up", "evaluation", "codex", "process"],
+      "mistakes": ["git", "codex", "docs-sync", "memory"]
+    },
+    "tags": ["planning", "execution", "evaluation", "wrap-up", "ideation", "preparation", "rename-sweep", "vocabulary-sweep", "hooks", "codex", "memory"]
+  },
+  "effective": {
+    "$note": "The materialized vocabulary the validator enforces = universal ∪ project. These are the closed allowlists. Round-trip guarantee: gobbi's effective lists are a SUPERSET of gobbi's pre-de-hardcoding values (validate-frontmatter.sh AREA_SPINE/AREA_MISTAKES/TAG_VOCAB at develop@7ef21bf5), so NO currently-valid file becomes invalid. The validator reads ONLY these three arrays.",
+    "areas": {
+      "spine": ["memory", "git", "workflow", "wrap-up", "evaluation", "codex", "process", "_shared", "docs", "tooling", "tests"],
+      "mistakes": ["verification", "refactor", "tooling", "git", "codex", "docs-sync", "memory", "_shared", "assumption"]
+    },
+    "tags": ["process", "planning", "execution", "evaluation", "wrap-up", "ideation", "preparation", "docs-sync", "refactor", "rename-sweep", "verification", "vocabulary-sweep", "hooks", "codex", "security", "git", "memory", "frontmatter", "schema", "validation", "links", "design"]
+  },
+  "tagAreaMap": {
+    "$note": "The TOTAL deterministic tag→area selection map (rules.md §1.5). Priority-ordered: the FIRST entry whose any 'tags' is present on the record wins. 'area' is the resolved area; 'tags' are the trigger tags. Used by both the write-time agent and Wrap-up routing. _shared is the no-match fallback (never listed here). Feature-dir inputs are normalized via featureDirNormalization FIRST.",
+    "mistakes": [
+      { "area": "refactor", "tags": ["refactor", "rename-sweep", "rename", "vocabulary-sweep"] },
+      { "area": "verification", "tags": ["verification", "grep", "research"] },
+      { "area": "tooling", "tags": ["tooling", "persistence", "write-safety", "api-overload"] },
+      { "area": "git", "tags": ["git"] },
+      { "area": "codex", "tags": ["codex"] },
+      { "area": "docs-sync", "tags": ["docs-sync", "links"] },
+      { "area": "memory", "tags": ["memory", "frontmatter", "schema"] }
+    ],
+    "spine": [
+      { "area": "wrap-up", "tags": ["wrap-up"] },
+      { "area": "git", "tags": ["git"] },
+      { "area": "evaluation", "tags": ["evaluation"] },
+      { "area": "workflow", "tags": ["workflow", "orchestration", "session-memory", "lifecycle", "preparation", "ideation", "planning"] },
+      { "area": "codex", "tags": ["codex"] },
+      { "area": "memory", "tags": ["memory", "frontmatter", "schema", "docs-sync", "links", "rules", "plans"] },
+      { "area": "process", "tags": ["process"] }
+    ],
+    "featureDirNormalization": {
+      "$note": "When the selector input is a feature-dir name (a spine record promoted up from a feature), normalize it to a spine area FIRST, then match in the spine map.",
+      "git-workflow": "git",
+      "workflow": "workflow"
+    }
+  }
+}

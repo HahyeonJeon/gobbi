@@ -95,16 +95,18 @@ Examples: `mistakes/verification/executor-git-stash-in-worktree-during-verify.md
 
 #### Per-type area allowlist (controlled, like the §2.5 tag vocabulary)
 
-The per-type area allowlist is a **closed** controlled vocabulary, parallel to the §2.5 `tags` vocabulary — an area outside a type's list is a validation failure until the list is extended (extend deliberately, the same discipline as §2.5). The cross-type **spine** is shared by every spine type:
+The per-type area allowlist is a **closed** controlled vocabulary, parallel to the §2.5 `tags` vocabulary — an area outside a type's list is a validation failure until the list is extended (extend deliberately, the same discipline as §2.5).
+
+**The project declares the allowlist values in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — the `.effective.areas.spine` and `.effective.areas.mistakes` arrays. This rule is the prose spec; the config holds the values. The validator reads `.effective.areas.*` via jq to enforce the allowlist; the Wrap-up agent follows this prose spec (which cites the config for gobbi's instance values). A non-gobbi project ships its own copy. The cross-type **spine** is shared by every spine type; gobbi's instance is:
 
 ```
-spine: memory · git · workflow · wrap-up · evaluation · codex · process · _shared
+spine: memory · git · workflow · wrap-up · evaluation · codex · process · _shared · docs · tooling · tests
 ```
 
-`mistakes` uses a curated **trap-class** allowlist instead of the spine (the trap CLASS — how it fails — is the area, not the subsystem; the `process` bucket is DISSOLVED into trap-classes, so `process` is NOT a mistakes area):
+`mistakes` uses a curated **trap-class** allowlist instead of the spine (the trap CLASS — how it fails — is the area, not the subsystem; the `process` bucket is DISSOLVED into trap-classes, so `process` is NOT a mistakes area); gobbi's instance is:
 
 ```
-mistakes: verification · rename-sweep · tooling · git · codex · docs-sync · memory · _shared
+mistakes: verification · refactor · tooling · git · codex · docs-sync · memory · _shared · assumption
 ```
 
 | Type | Area allowlist |
@@ -119,23 +121,12 @@ mistakes: verification · rename-sweep · tooling · git · codex · docs-sync �
 The write-time agent AND Wrap-up routing both apply this rule. It is **total** (every record resolves to exactly one area) and **deterministic** (priority-ordered first-match — never a tie).
 
 1. **Explicit `area:` wins.** If the staged file carries `area: {x}` where `{x}` is in the type's allowlist, use `{x}`. (`area:` is a staging-only field — §2.6.)
-2. **Else scan the fixed PRIORITY-ORDERED tag→area map; the FIRST area whose any mapped tag is present wins.** The order is fixed per type, so a multi-tag record still resolves to exactly one area.
-   - **mistakes** (priority high → low; first match wins):
-     1. `rename-sweep` ← {`rename-sweep`, `rename`, `vocabulary-sweep`}
-     2. `verification` ← {`verification`, `grep`, `research`}
-     3. `tooling` ← {`tooling`, `persistence`, `write-safety`, `api-overload`}
-     4. `git` ← {`git`}
-     5. `codex` ← {`codex`}
-     6. `docs-sync` ← {`docs-sync`, `links`}
-     7. `memory` ← {`memory`, `frontmatter`, `schema`}
-
-     Rationale: the trap CLASS (how it fails) outranks the subsystem (where). `domain:` is advisory/fallback input only, never the raw area key.
-   - **spine types** (priority high → low; first match wins): `wrap-up` > `git` > `evaluation` > `workflow` > `codex` > `memory` > `process`.
-     - `wrap-up` ← {`wrap-up`}; `git` ← {`git`}; `evaluation` ← {`evaluation`}; `workflow` ← {`workflow`, `orchestration`, `session-memory`, `lifecycle`, `preparation`, `ideation`, `planning`}; `codex` ← {`codex`}; `memory` ← {`memory`, `frontmatter`, `schema`, `docs-sync`, `links`, `rules`, `plans`}; `process` ← {`process`}.
-     - Rationale: a specific subsystem (`wrap-up`/`git`/`evaluation`) outranks the generic `memory`/`process` bucket.
+2. **Else scan the fixed PRIORITY-ORDERED tag→area map; the FIRST area whose any mapped tag is present wins.** The order is fixed per type, so a multi-tag record still resolves to exactly one area. **The project declares the map in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — `.tagAreaMap.mistakes` and `.tagAreaMap.spine` (each an ordered list of `{area, tags}` entries, high → low priority). The Wrap-up agent reads `.tagAreaMap` for area RESOLUTION following this prose spec; the validator does NOT read it (it enforces the resolved area against `.effective.areas.*`). A non-gobbi project ships its own. This rule fixes the priority semantics; the config holds gobbi's tag→area entries.
+   - **mistakes** — `.tagAreaMap.mistakes`, priority high → low (`refactor` > `verification` > `tooling` > `git` > `codex` > `docs-sync` > `memory`). Rationale: the trap CLASS (how it fails) outranks the subsystem (where). `domain:` is advisory/fallback input only, never the raw area key.
+   - **spine types** — `.tagAreaMap.spine`, priority high → low (`wrap-up` > `git` > `evaluation` > `workflow` > `codex` > `memory` > `process`). Rationale: a specific subsystem (`wrap-up`/`git`/`evaluation`) outranks the generic `memory`/`process` bucket.
 3. **`_shared/` ONLY when NO area matched in steps 1-2.** Never invent a new area to avoid `_shared` (the adversarial-proliferation guard).
 
-**Feature-dir normalization.** When the selector input is a feature-dir name (a spine record promoted up from a feature), normalize it to a spine area FIRST: `git-workflow → git` · `workflow → workflow` (a future `memory-system → memory`). The normalized value is then a step-2 signal — this stops the dir name `git-workflow` from failing to match the `git` area.
+**Feature-dir normalization.** When the selector input is a feature-dir name (a spine record promoted up from a feature), normalize it to a spine area FIRST, then match in step 2. **The project declares the normalization map in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — `.tagAreaMap.featureDirNormalization` (the Wrap-up agent reads it for area resolution following this prose spec; the validator does not read it); gobbi's entries are `git-workflow → git` and `workflow → workflow`. This stops the dir name `git-workflow` from failing to match the `git` area.
 
 #### Refactor procedure — split / merge / rename an area
 
@@ -289,7 +280,9 @@ Memory files link to each other in two distinct ways. Keep them separate.
 
 ### 2.5 Controlled `tags` vocabulary
 
-`tags` is a **closed** controlled vocabulary. A tag outside this list is a validation failure until the list is extended. The initial set:
+`tags` is a **closed** controlled vocabulary. A tag outside this list is a validation failure until the list is extended.
+
+**The project declares the tag vocabulary in [`memory-vocabulary.json`](../../memory-vocabulary.json)** — the `.effective.tags` array (the validator reads it via jq; a non-gobbi project ships its own). This rule is the prose spec; the config holds the values. gobbi's instance is:
 
 ```
 process · planning · execution · evaluation · wrap-up · ideation · preparation
