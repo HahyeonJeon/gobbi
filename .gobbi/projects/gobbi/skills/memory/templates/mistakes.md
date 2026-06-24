@@ -33,7 +33,7 @@ feature: {feature-name} | null
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [process, verification]        # controlled vocabulary (§2.5)
+tags: [process, verification]        # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low

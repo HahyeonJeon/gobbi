@@ -13,7 +13,7 @@
 #     - type ∈ the 16-type enum (§2.3)
 #     - status ∈ the per-type status enum (§2.2)
 #     - scope ∈ {project, feature}; feature conditional on scope (§2.1)
-#     - tags ⊆ the controlled vocabulary (§2.5); empty [] allowed
+#     - tags ⊆ the type's controlled tag pool (§2.5, .types.{type}.tags); empty [] allowed
 #     - keywords present (list; empty [] allowed) — REQUIRED escape-hatch overflow (§2.1)
 #     - author ∈ {claude, codex, user} — REQUIRED coarse provider tag (§2.1)
 #     - created matches YYYY-MM-DD
@@ -21,7 +21,8 @@
 #       report_type (§2.2)
 #     - name == filename stem (filename minus .md and any leading YYYY-MM-DD-)
 #     - required per-type extensions present (§2.2): mistakes -> priority + domain;
-#       backlogs -> priority + project-scope; references -> title + source + ref_type
+#       backlogs -> priority + project-scope; references -> title + source + ref_type;
+#       reviews -> review_kind; reports -> report_type (kind axis REQUIRED, L16)
 #     - tags is an inline flow list [a, b] (§2.5); a block-style list (key: then '  - item')
 #       is REJECTED with a clear message (gobbi convention is inline flow lists)
 #     - slug-link value-shape (§2.1/§2.4): supersedes / superseded_by (scalar, null ok)
@@ -38,8 +39,9 @@
 #       Branch B). A by-area file at a flat {type}/{slug}.md (no area dir) FAILS.
 #       README.md and the `features` type are exempt (the feature dir is the area axis).
 #     - off-allowlist-area (§1.5): the derived area MUST be in the type's closed area
-#       allowlist (mistakes -> trap-class set; the spine types -> the shared spine).
-#       An area outside the list (e.g. mistakes/banana/) FAILS.
+#       allowlist (.types.{type}.areas — mistakes -> trap-class set; subsystem types ->
+#       the subsystem set; reviews/reports -> the kind enum). There is no catch-all
+#       area: any area outside the type's list (e.g. mistakes/banana/) FAILS.
 #     - slug uniqueness: no two live files share a name: — EXCEPT README.md files, which
 #       carry the fixed identity name `README` (§2.4) and are exempt from uniqueness
 #
@@ -61,6 +63,16 @@
 # Frontmatter parsing stays self-contained bash: flat YAML (key: value, flow lists
 # [a, b]); block lists (key: then '  - item' lines) are tolerated (their
 # continuation lines are not top-level keys, so key-collection skips them).
+#
+# SPEC NOTE — flat per-type vocabulary (memory-vocabulary.json §8):
+#   The AREA + TAG vocabulary is read PER-TYPE from memory-vocabulary.json via jq:
+#   .types.{type}.areas (the type's closed area allowlist, §1.5) and .types.{type}.tags
+#   (the type's independent tag pool, §2.5). Each type owns one area list + one tag pool
+#   directly (a flat model — no cross-type layering, no catch-all area). On area
+#   no-match, resolution is a user-decision (handled by wrap-up), not an automatic
+#   landing — this validator stays fail-closed: a resolved area that is not in the type's
+#   listed areas FAILS. reviews/reports use a kind axis: the area set == the kind enum,
+#   so a valid review_kind/report_type is a valid area by construction.
 #
 # SPEC NOTE — `decision_status` and `disposition` are REMOVED (§2.2):
 #   §2.2 is the authoritative per-type extension table and it REMOVED both fields
@@ -109,11 +121,17 @@ vocab_config="$project_root/memory-vocabulary.json"
 command -v jq >/dev/null 2>&1 || { log "jq not found — required to read $vocab_config"; exit 2; }
 jq -e . "$vocab_config" >/dev/null 2>&1 || { log "invalid JSON in $vocab_config"; exit 2; }
 
-# vocab_list <jq-filter>  -> echoes a space-separated list read from the config.
-# The config holds materialized closed allowlists under .effective.* (= universal
-# base ∪ project additions); this validator enforces ONLY those .effective lists.
-vocab_list() {
-    jq -r "$1"' | join(" ")' "$vocab_config"
+# type_areas_for <type>  -> echoes the type's space-separated AREA allowlist, read
+# from memory-vocabulary.json .types.{type}.areas (§1.5). Empty for an unknown type.
+type_areas_for() {
+    jq -r --arg t "$1" '.types[$t].areas // [] | join(" ")' "$vocab_config"
+}
+
+# tag_vocab_for <type>  -> echoes the type's space-separated TAG pool, read from
+# memory-vocabulary.json .types.{type}.tags (§2.5). Empty for an unknown type.
+# Each type owns one independent tag pool — there is no single cross-type tag list.
+tag_vocab_for() {
+    jq -r --arg t "$1" '.types[$t].tags // [] | join(" ")' "$vocab_config"
 }
 
 # =============================================================================
@@ -124,17 +142,17 @@ vocab_list() {
 # §2.3 — the 16 first-class types.
 TYPES="features notes decisions design mistakes rules learnings backlogs references plans reviews reports changelogs discussions scenarios checklists"
 
-# §2.5 — the closed controlled tags vocabulary. Read from the project config
-# (memory-vocabulary.json .effective.tags) instead of a literal, so the harness is
-# project-general. rules.md §2.5 is the prose spec; the config holds the values.
-TAG_VOCAB="$(vocab_list '.effective.tags')"
+# §2.5 — the controlled tags vocabulary is PER-TYPE: each type owns one independent
+# tag pool read on demand via tag_vocab_for <type> (memory-vocabulary.json
+# .types.{type}.tags). There is no single cross-type tag list (flat per-type model).
+# rules.md §2.5 is the prose spec; the config holds the values.
 
 # §2.2 — extension enums.
 PRIORITY_ENUM="critical high medium low"
 REF_TYPE_ENUM="docs blog paper rfc code book other"
 REVIEW_KIND_ENUM="adversarial-review ultrareview code-review retrospective security-audit license-audit dep-audit other"
 VERDICT_ENUM="pass revise fail needs-attention n/a"
-REPORT_TYPE_ENUM="status post-mortem analytics"
+REPORT_TYPE_ENUM="status post-mortem analytics other"
 ITEM_STATUS_ENUM="pending implemented deferred"
 
 # §2.1 — author enum (coarse provider tag, stable across model versions).
@@ -216,43 +234,41 @@ ext_fields_for() {
 # required_ext_for <type>  -> echoes the type's REQUIRED §2.2 extension fields.
 # A file of that type missing any of these FAILS. Optional extensions are not listed.
 # (§2.2 "Required vs optional extensions": mistakes -> priority + domain;
-#  backlogs -> priority + project-scope; references -> title + source + ref_type.)
+#  backlogs -> priority + project-scope; references -> title + source + ref_type;
+#  reviews -> review_kind; reports -> report_type — the kind axis is REQUIRED (L16),
+#  so the area always resolves from the kind value.)
 required_ext_for() {
     case "$1" in
         mistakes)    echo "priority domain" ;;
         backlogs)    echo "priority project-scope" ;;
         references)  echo "title source ref_type" ;;
+        reviews)     echo "review_kind" ;;
+        reports)     echo "report_type" ;;
         *)           echo "" ;;
     esac
 }
 
 # §1.5 — per-type AREA allowlist (closed controlled vocabulary, like §2.5 tags).
-# The cross-type SPINE is shared by every spine type; `mistakes` uses a curated
-# trap-class set instead (the `process` bucket is DISSOLVED into trap-classes, so
-# `process` is NOT a mistakes area). `features` is the SOLE structural exception —
-# the feature dir is itself the area axis and README.md is exempt, so it is not
-# by-area (echoes empty; the area checks skip it). The area values are read from the
-# project config (memory-vocabulary.json .effective.areas.{spine,mistakes}) instead
-# of literals, so the harness is project-general. rules.md §1.5 is the prose spec;
-# the config holds the values.
-AREA_SPINE="$(vocab_list '.effective.areas.spine')"
-AREA_MISTAKES="$(vocab_list '.effective.areas.mistakes')"
+# Each type owns ONE independent area list, read per-type from the project config
+# (memory-vocabulary.json .types.{type}.areas). There is no cross-type shared list and
+# no catch-all area: `mistakes` lists trap-classes, the subsystem types each list
+# the subsystem set, and reviews/reports list the kind enum (the area set == the kind
+# enum, so a valid review_kind/report_type is a valid area). `features` has NO config
+# key (the feature dir is itself the area axis, README.md exempt), so its allowlist
+# is empty and the area checks skip it — the SOLE structural exception. `archive` has
+# no key either (it mirrors its source type's area; the find-prune already excludes it).
+# rules.md §1.5 is the prose spec; the config holds the values.
 
-# area_allowlist_for <type>  -> echoes the type's allowed area set (§1.5), or empty
-# for the structural exception (`features`) and any non-type input.
+# area_allowlist_for <type>  -> echoes the type's allowed area set (§1.5) from the
+# config (.types.{type}.areas), or empty for the structural exception (`features`),
+# `archive`, and any non-type input (no config key -> empty).
 area_allowlist_for() {
-    case "$1" in
-        mistakes)
-            echo "$AREA_MISTAKES" ;;
-        decisions|design|backlogs|notes|references|learnings|reviews|reports|rules|plans|changelogs|discussions|scenarios|checklists)
-            echo "$AREA_SPINE" ;;
-        *)
-            echo "" ;;   # features (structural exception) + non-types: not by-area
-    esac
+    type_areas_for "$1"
 }
 
 # is_by_area <type>  -> exit 0 if the type is a by-area type (has a non-empty area
-# allowlist), 1 otherwise. `features` is the sole by-area-exempt type (§1.5).
+# allowlist), 1 otherwise. `features` is the sole by-area-exempt type (§1.5) — it has
+# no config key, so its allowlist is empty.
 is_by_area() {
     [ -n "$(area_allowlist_for "$1")" ]
 }
@@ -412,20 +428,27 @@ for f in "${files[@]}"; do
         report "$f" "name" "'$fname' != filename stem '$stem' (§2.1)"
     fi
 
-    # --- tags ⊆ controlled vocabulary ----------------------------------------
+    # --- tags ⊆ the type's controlled vocabulary (§2.5, per-type pool) ---------
     # tags MUST be an inline flow list [a, b, c] (or [] empty) — gobbi convention.
     # A block-style list (bare 'tags:' then '  - item' lines) is REJECTED so its
     # items are not skipped unvalidated (a bare 'tags:' yields an empty fm_value).
+    # Each tag must be in THIS type's tag pool (.types.{type}.tags) — there is no
+    # single global vocabulary anymore. The pool is resolved only for a valid type;
+    # an invalid type is already reported by the type-enum check above.
     tags_raw="$(fm_value "$f" tags)"
     if printf '%s' "$tags_raw" | grep -qE '^\[.*\]$'; then
         body="$(printf '%s' "$tags_raw" | sed -E 's/^\[//; s/\]$//')"
+        type_tag_pool=""
+        if [ -n "$ftype" ] && in_set "$ftype" "$TYPES"; then
+            type_tag_pool="$(tag_vocab_for "$ftype")"
+        fi
         # split on commas; trim each.
         IFS=',' read -r -a tag_arr <<< "$body"
         for t in "${tag_arr[@]}"; do
             t="$(printf '%s' "$t" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//; s/^["'\'']//; s/["'\'']$//')"
             [ -z "$t" ] && continue
-            if ! in_set "$t" "$TAG_VOCAB"; then
-                report "$f" "tags" "'$t' not in controlled vocabulary (§2.5)"
+            if [ -n "$ftype" ] && in_set "$ftype" "$TYPES" && ! in_set "$t" "$type_tag_pool"; then
+                report "$f" "tags" "'$t' not in $ftype tag pool (§2.5)"
             fi
         done
     elif [ -z "$tags_raw" ] && fm_is_block_list "$f" tags; then

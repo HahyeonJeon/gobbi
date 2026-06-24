@@ -14,14 +14,14 @@ A changelog a reader cannot trace to a concrete artifact and an actual verificat
 |---|---|
 | When | Execution RECORD at the end of each task; and Wrap-up RECORD appends a feature-level entry to each value-feature the session touched. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/changelogs/{slug}.md` |
-| Promotes to | `features/{f}/changelogs/{area}/` — feature-subdir-only; there is NO project-level `changelogs/` (design §2.14; [rules §3](../rules.md)) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
+| Promotes to | `features/{f}/changelogs/{area}/` — feature-subdir-only; there is NO project-level `changelogs/` (design §2.14; [rules §3](../rules.md)) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (time-indexed); slug describes the shipped unit (`2026-05-11-login-ui-shipped.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
-Base frontmatter + changelogs extension (`shipped_in`); `scope: feature` always (feature-subdir-only). `tags` come from the controlled vocabulary ([rules §2.5](../rules.md#25-controlled-tags-vocabulary)).
+Base frontmatter + changelogs extension (`shipped_in`); `scope: feature` always (feature-subdir-only). `tags` come from this type's controlled pool ([rules §2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -33,7 +33,7 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [execution, docs-sync]         # controlled vocabulary (§2.5)
+tags: [execution, docs-sync]         # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 shipped_in: {PR / commit / plan path}

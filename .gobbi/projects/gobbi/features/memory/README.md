@@ -22,7 +22,7 @@ The memory subsystem is gobbi's cross-session durable store under `.gobbi/projec
 
 ## Status
 
-The memory AREA + TAG vocabulary was de-hardcoded into a project-owned `memory-vocabulary.json` config on 2026-06-23 (commits 4557c78c / ed435550 / 9c171908; dual-system PASS): the validator reads the closed allowlists via `jq`, so the harness is project-general (a non-gobbi project ships its own config). The bulk 114-file MOVE into namespaced paths stays DEFERRED (backlog `execute-area-tag-migration-114-files`) so the final vocabulary locks before the one-time move.
+The memory AREA + TAG vocabulary was REDESIGNED to a FLAT per-type model on 2026-06-24 (session 84e9570c; both Execution evaluators PASS): `memory-vocabulary.json` now carries `types.{type}.{areas, tags}` at the top level — one independent area list + one tag pool per by-area type (15 active type keys) — replacing the layered universal/project/`effective` model with its shared `spine`/`mistakes` axes. `_shared` is dropped from every area list; area no-match now surfaces a user-decision (`NEEDS_CONTEXT`), never a silent catch-all. `review_kind`/`report_type` are now REQUIRED and the area resolves from the kind value (no `tagAreaMap` entry for reviews/reports). Merge-ordering A: the SCHEMA ships now; the 114-file MIGRATION is DEFERRED to a next session, so the live tree intentionally FAILS whole-tree validation until then (expected debt, not a defect). This refines the prior config-as-data ship (2026-06-23, commits 4557c78c / ed435550 / 9c171908): the validator still reads closed allowlists via `jq`, project-general by design.
 
 The area-namespace schema shipped 2026-06-21 (9 commits on top of develop@7ef21bf5): the `{type}/{area}/{slug}.md` convention, per-type area allowlists, the TOTAL deterministic area-selection rule, the validator's required-area + off-allowlist-area checks, the Wrap-up routing area-resolution, the active-mistake-move carve-out, and the consumer read-glob recursion. File MIGRATION of the existing flat stacks is DEFERRED — tracked by the `memory-namespace-migration` backlog. Until the migration runs, the validator is red on the pre-existing flat files (expected debt).
 
@@ -41,6 +41,7 @@ The area-namespace schema shipped 2026-06-21 (9 commits on top of develop@7ef21b
 |---|---|---|
 | 2026-06-21 | c3ac1c53-6741-49cf-8856-cdb3fcd6bec0 | Area-namespace schema designed + shipped; migration deferred |
 | 2026-06-23 | d0185dba-cd9b-45ad-93f6-7814c4f0ef4a | Area+tag vocab de-hardcoded into project config (config-as-data, JSON+jq); 114-file migration manifest produced; bulk move deferred |
+| 2026-06-24 | 84e9570c-bf2b-42b0-af5c-1c181d182e1b | Vocab REDESIGNED to flat per-type model; `_shared` dropped + no-match→user-decision; `review_kind`/`report_type` REQUIRED (kind=area); migration manifest re-derived (zero `_shared`); 114-file move still deferred (merge-ordering A) |
 
 ## Open items
 
@@ -48,6 +49,7 @@ The area-namespace schema shipped 2026-06-21 (9 commits on top of develop@7ef21b
 - [[memory-renamespace-helper]] — atomic move + reference-repoint tool
 - [[legacy-frontmatter-migration-mistakes-domain]] — two mistakes missing required `domain:`
 - [[execute-area-tag-migration-114-files]] — the deferred bulk move of all 114 flat by-area files into namespaced paths
+- [[extend-residual-vocab-guard-for-per-type-sweep]] — extend `check-residual-vocab.sh` to detect the redesign's retired forms before the migration sweep relies on it
 
 ## Related
 
