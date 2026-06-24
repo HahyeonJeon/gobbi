@@ -1,14 +1,15 @@
 ---
 name: codex-wrapper-file-persistence-failure
 description: The codex-wrapper assistant pattern fails to persist evaluation files because it backgrounds codex exec instead of blocking foreground
-type: decisions
+type: mistakes
 scope: project
 feature: null
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
 tags: [process, codex, evaluation, assistant-wrapper]
-decision_status: accepted
+priority: high
+domain: process
 ---
 
 # Codex-wrapper assistant pattern fails to persist evaluation files

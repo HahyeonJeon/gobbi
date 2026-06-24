@@ -1,14 +1,15 @@
 ---
 name: planning-asserted-skill-without-verifying
 description: Planning leader added required-skill assignments without verifying each skill path exists, injecting a dead load-path into the Execution briefing
-type: decisions
+type: mistakes
 scope: project
 feature: null
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
 tags: [process, planning, required-skills, verification]
-decision_status: accepted
+priority: high
+domain: process
 ---
 
 # Planning leader asserted required-skill assignments without verifying skill paths exist

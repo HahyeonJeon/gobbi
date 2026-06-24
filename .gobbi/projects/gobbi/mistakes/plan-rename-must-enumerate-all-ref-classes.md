@@ -1,17 +1,17 @@
 ---
 name: plan-rename-must-enumerate-all-ref-classes
 description: A rename plan that enumerates only path-refs and prose misses skill-name references, wrapper descriptions, inventory rows, and pipeline labels, leaving stale refs the plan never scoped.
-type: decisions
+type: mistakes
 scope: project
 feature: null
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
 tags: [process, planning, rename, vocabulary-sweep]
+priority: high
 domain: process
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # Rename planning must enumerate all reference classes, not just paths and prose

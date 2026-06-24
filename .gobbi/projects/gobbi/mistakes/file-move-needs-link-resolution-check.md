@@ -1,17 +1,17 @@
 ---
 name: file-move-needs-link-resolution-check
 description: A file-MOVE refactor breaks relative links that do not carry the renamed token, so a renamed-token residual grep returns green while links silently break.
-type: decisions
+type: mistakes
 scope: project
 feature: null
 status: active
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
 tags: [process, refactor, verification, links]
+priority: high
 domain: process
 supersedes: null
 superseded_by: null
-decision_status: accepted
 ---
 
 # File-move refactors require a link-resolution check, not only a token-residual grep
