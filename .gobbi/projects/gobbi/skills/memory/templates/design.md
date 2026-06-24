@@ -18,14 +18,14 @@ A reader opening it cold next session gets the durable design, not a work-log th
 |---|---|
 | When | Ideation RECORD when the leader produces a new design (Step 5 output); or Planning RECORD when a design substantially evolves (append a follow-on anchored to the original). |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/design/{slug}.md` |
-| Promotes to | `features/{f}/design/{area}/` (bounded to one feature, typical) · `design/{area}/` (project, cross-cutting) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
+| Promotes to | `features/{f}/design/{area}/` (bounded to one feature, typical) · `design/{area}/` (project, cross-cutting) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, hyphenated, descriptive, no date prefix (durable/evergreen; use `decisions/` for time-stamped records) (`cache-invalidation.md`, `auth-middleware.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
-Base frontmatter only — `design` has no non-link type extension. `supersedes` / `superseded_by` are plain slugs and `related` is a `list[slug]` (the target's `name`, no path, no `[[ ]]`) — all are global base fields any type may carry (§2.1), not design-type extensions ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)). `tags` come from the controlled vocabulary ([rules §2.5](../rules.md#25-controlled-tags-vocabulary)).
+Base frontmatter only — `design` has no non-link type extension. `supersedes` / `superseded_by` are plain slugs and `related` is a `list[slug]` (the target's `name`, no path, no `[[ ]]`) — all are global base fields any type may carry (§2.1), not design-type extensions ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)). `tags` come from this type's controlled pool ([rules §2.5](../rules.md#25-controlled-tags-vocabulary)).
 
 ```markdown
 ---
@@ -37,7 +37,7 @@ feature: {feature-name} | null
 status: active | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [design, schema]               # controlled vocabulary (§2.5)
+tags: [design, schema]               # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 supersedes: {prior-design-slug} | null     # plain slug, not a path

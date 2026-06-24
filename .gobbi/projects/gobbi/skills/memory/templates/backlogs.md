@@ -14,7 +14,7 @@ An item a future reader cannot resume without re-deriving why it was deferred is
 |---|---|
 | When | Ideation Step 2 Lock Scope — every non-chosen candidate; or a loop's RECORD when a deferred eval finding or deferred scope-violating work surfaces. |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md` |
-| Promotes to | `features/{f}/backlogs/{area}/` (deferred task) · `backlogs/{area}/` (project, deferred feature) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
+| Promotes to | `features/{f}/backlogs/{area}/` (deferred task) · `backlogs/{area}/` (project, deferred feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, ≤6 words, no date prefix (evergreen-until-closed); no positional prefix (`password-reset-flow.md`, `search-system.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -33,7 +33,7 @@ feature: {feature-name} | null   # null when this is a deferred feature itself
 status: open | deferred | closed
 created: YYYY-MM-DD
 session: {session-id where this was decomposed}
-tags: [planning, process]            # controlled vocabulary (§2.5)
+tags: [planning, process]            # this type's controlled pool (§2.5)
 keywords: [search-system]            # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low

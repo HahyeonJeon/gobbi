@@ -14,14 +14,14 @@ An unanchored item, or a status with no verification behind it, makes the design
 |---|---|
 | When | Ideation RECORD (Sub-step D Design enumeration); EVALUATION's `checklist_gap` finding (append the missing item); Execution RECORD (flip item status `pending` → `implemented` when the work ships). |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md` |
-| Promotes to | `features/{f}/checklists/{area}/` — feature-subdir-only ([rules §3](../rules.md)) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
+| Promotes to | `features/{f}/checklists/{area}/` — feature-subdir-only ([rules §3](../rules.md)) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | Bare-slug, evergreen. Per-scenario file: `{scenario-slug}.md` (mirrors `scenarios/{scenario-slug}.md`; recommended default). Per-checklist file: `{checklist-slug}.md` (one file per item; use for heavyweight items). |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
-Two valid shapes — choose one per feature. Both carry base frontmatter + the checklists extension (`scenario`); `scope: feature` always. `tags` come from the controlled vocabulary ([rules §2.5](../rules.md#25-controlled-tags-vocabulary)). The per-checklist shape adds `item_status` (per-item progress, distinct from base `status`), `anchor`, and `implemented_in`.
+Two valid shapes — choose one per feature. Both carry base frontmatter + the checklists extension (`scenario`); `scope: feature` always. `tags` come from this type's controlled pool ([rules §2.5](../rules.md#25-controlled-tags-vocabulary)). The per-checklist shape adds `item_status` (per-item progress, distinct from base `status`), `anchor`, and `implemented_in`.
 
 ### Per-scenario file
 
@@ -35,7 +35,7 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [execution, verification]      # controlled vocabulary (§2.5)
+tags: [execution, verification]      # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 scenario: {scenario-slug}
@@ -75,7 +75,7 @@ feature: {feature-name}
 status: active
 created: YYYY-MM-DD
 session: {session-id}
-tags: [execution, verification]      # controlled vocabulary (§2.5)
+tags: [execution, verification]      # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 scenario: {scenario-slug}

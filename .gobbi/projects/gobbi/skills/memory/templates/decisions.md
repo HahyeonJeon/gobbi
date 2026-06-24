@@ -14,7 +14,7 @@ A future reader applies the decision without re-opening the debate.
 |---|---|
 | When | A loop's RECORD (`ideation` / `planning` / `execution`) when a significant decision was made — technology choice, architecture trade-off, scope inclusion/exclusion, or a `design_flaw` / `assumption_risk` finding that received `PASS` (a deferred risk). |
 | Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` |
-| Promotes to | `features/{f}/decisions/{area}/` (default) · `decisions/{area}/` (project, cross-feature) — `{area}` from the spine, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
+| Promotes to | `features/{f}/decisions/{area}/` (default) · `decisions/{area}/` (project, cross-feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (decisions are time-indexed); slug names the decision in ≤6 words (`2026-05-11-use-redis-not-memcached.md`) |
 
 Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
@@ -33,7 +33,7 @@ feature: {feature-name} | null
 status: proposed | accepted | superseded
 created: YYYY-MM-DD
 session: {session-id}
-tags: [process, design]              # controlled vocabulary (§2.5)
+tags: [process, design]              # this type's controlled pool (§2.5)
 keywords: [cache-layer]              # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 supersedes: {prior-decision-slug} | null     # plain slug, not a path
