@@ -44,7 +44,7 @@
 #     (its existing default roots) with the D7-LEGIT line-keyed allowlist.
 #   - Family B (`--family-b <path> ...`): THIS migration's retired forms
 #     (`_shared` / `.effective` / `.tagAreaMap.spine|mistakes`), scanned ONLY over
-#     the memory-tree paths passed as args, with the 19-carrier allowlist.
+#     the memory-tree paths passed as args, with the 26-carrier allowlist.
 # Each triple (vocab, scan-surface, allowlist) is internally consistent and
 # reaches 0 independently. Conflating them floods one surface with the other's
 # legitimate concept-mentions (the false-pass the segmentation prevents).
@@ -78,7 +78,7 @@ usage:
       Family B. Greps THIS migration's retired forms (_shared / .effective /
       .tagAreaMap.spine|mistakes) over the memory-tree paths passed as args
       (mistakes/ notes/ features/ backlogs/ reports/ ...). archive/ is pruned;
-      the 19 measured legitimate carriers are allowlisted. At least one path arg
+      the 26 measured legitimate carriers are allowlisted. At least one path arg
       is required (the scan surface is never defaulted for Family B).
 
   Both modes report every NON-allowlisted hit as "RESIDUAL: <file>:<line>: <match>"
@@ -122,7 +122,7 @@ VOCAB='memorization|session[- ]memory|project[- ]memory'
 # find-pruned (frozen history; rules.md sec.4.6).
 #
 # The allowlist is FILE-PLUS-LINE keyed (mirrors Family A's is_allowlisted): a
-# retired-form hit is allowlisted only when its file is one of the 19 MEASURED
+# retired-form hit is allowlisted only when its file is one of the 26 MEASURED
 # legitimate carriers AND its exact line content is in that file's derived
 # baseline of legitimate retired-form lines. A NEW retired-form line added INSIDE
 # an allowlisted carrier (novel content) is NOT in the baseline, so it still
@@ -135,17 +135,23 @@ VOCAB='memorization|session[- ]memory|project[- ]memory'
 #       mistakes notes features backlogs reports | grep -v /archive/ \
 #     | while IFS= read -r h; do f="${h%%:*}"; r="${h#*:}"; c="${r#*:}"; \
 #         printf '%s\t%s\n' "$(basename "$f")" "$c"; done | sort -u
-#   → 130 legitimate lines across the 19 carriers (the FAMILY_B_BASELINE block).
-# The 19 carriers (count must equal the distinct basenames in the baseline):
+#   → 147 legitimate lines across the 26 carriers (the FAMILY_B_BASELINE block).
+# The 26 carriers (count must equal the distinct basenames in the baseline):
 #   (a) 14 features/memory/ redesign docs (design record of the retired model);
 #   (b) 2 campaign-cited mistakes (consumer-spec-cites-process-not-sites,
 #       guard-cited-as-runtozero-without-matching-vocab);
 #   (c) 3 project-tier records (2 notes/memory journals + the guard-extension
 #       backlog that names the retired forms it must catch).
+#   (d) 7 this-session (1cd48095) promotions that DOCUMENT the retirement: the
+#       2 guard-scope mistakes (guard-revises-twice-means-scope-model-wrong,
+#       whole-file-allowlist-false-passes-same-file-residual), the migration
+#       plan + the campaign design doc + the recurring-guard-root-closure
+#       decision, the reconcile-_shared backlog, and the namespace-migration
+#       journal. All reference the retired forms as history, not live use.
 # ---------------------------------------------------------------------------
 VOCAB_B='_shared|\.effective|\.tagAreaMap\.(spine|mistakes)'
 
-# The 19 carrier basenames — the file-level gate. A retired-form hit in a file
+# The 26 carrier basenames — the file-level gate. A retired-form hit in a file
 # whose basename is NOT here fails immediately (it is not a known carrier).
 FAMILY_B_CARRIERS='
 memory-namespace-schema.md
@@ -167,14 +173,21 @@ guard-cited-as-runtozero-without-matching-vocab.md
 2026-06-23-area-tag-vocab-dehardcoded.md
 2026-06-24-per-type-vocab-redesign.md
 extend-residual-vocab-guard-for-per-type-sweep.md
+guard-revises-twice-means-scope-model-wrong.md
+whole-file-allowlist-false-passes-same-file-residual.md
+2026-06-24-migration-execution-plan.md
+memory-migration-curation-campaign.md
+2026-06-24-recurring-guard-root-closure-criterion.md
+reconcile-shared-described-as-current-in-active-carriers.md
+2026-06-24-memory-namespace-migration-and-curation.md
 '
 
 # ---------------------------------------------------------------------------
-# FAMILY_B_BASELINE — the 130 MEASURED legitimate retired-form lines, one per
+# FAMILY_B_BASELINE — the 147 MEASURED legitimate retired-form lines, one per
 # line as "<basename>\t<exact raw line content>". Loaded into the ALLOW_B set at
 # startup; membership is the line-level allowlist. DERIVED FROM A FRESH RUN (see
 # the regeneration command above) — NOT hand-written. README.md disambiguates by
-# basename (it is unique among the 19 carriers).
+# basename (it is unique among the 26 carriers).
 # ---------------------------------------------------------------------------
 declare -A ALLOW_B=()
 load_family_b_baseline() {
@@ -313,6 +326,23 @@ tag-area-map-combined-config.md	The tag→area map currently in `rules.md:122-13
 universal-base-layer.md	keywords: [universal-areas, universal-tags, two-tier-vocabulary, _shared]
 universal-base-layer.md	- `_shared` — mandatory terminal (no-match destination); universal, cannot be removed by any project.
 universal-base-layer.md	When de-hardcoding the vocabulary to project-defined, some areas and tags are genuinely domain-agnostic and belong in every project without re-declaration. A project that must re-declare `_shared` or `docs` gains nothing. The question is which items are truly universal vs gobbi-specific.
+2026-06-24-memory-namespace-migration-and-curation.md	The tasks ran strictly in order. **T01** (`594d1a45`) segmented `check-residual-vocab.sh` into two independent vocab-family triples — Family A (`memorization`, scan-surface `skills/`) and Family B (the migration's retired forms `_shared|.effective|.tagAreaMap.(spine|mistakes)`, scan-surface the memory tree, allowlist = 19 carriers measured from a fresh run) — and added the `layer2-source:` resolution check. This closed the recurring guard-false-PASS root that had REVISE'd the Ideation three times. **T02** (`c65872d8`) corrected 4 type-mismatch mistakes (`type: decisions` → `type: mistakes`) and recorded the one structural area no-match decision (`verification`, user-locked). **T03** (`affad3dc`) cleared 572 legacy frontmatter / tag / status violations while the files were still flat. T04 recomputed each file's area via `.tagAreaMap.{type}`. **T05** (`812c9091`) `git mv`-relocated 108 normal-move files into `{type}/{area}/` namespaces (history-preserving). **T06** (`6fc5cf97`) repointed all inbound reference classes — path, prose, in-fence links, the 3 live `layer2-source:` carriers, and `required-mistakes:` paths. **T07** (`7e1a1f4d`) dropped the 4 dangling `layer2-source:` refs, resolved the dup-backlog pair, and archived (never deleted) the 6 spent journals to `archive/notes/{area}/`. T08 drove the whole tree to green.
+2026-06-24-migration-execution-plan.md	| 1 | Segment `check-residual-vocab.sh` into two (vocab, scan-surface, allowlist) triples — Family A (memorization / `skills/`, allowlist covers existing + the 2 skills-side carriers) + Family B (retired forms / memory tree / 19-carrier allowlist from a fresh run); create the `layer2-source:` resolution check | — | `check-residual-vocab.sh` → exit 0 (was exit 1 / 4 residuals / 2 files); Family-B over the memory tree → exit 0; planted `_shared` → exit 1; `check-layer2-source.sh <WT>` runs (baseline 3 LIVE + 4 DANGLING) | executor |
+2026-06-24-migration-execution-plan.md	| 4 | Recompute the 108 normal-move files' area via `.tagAreaMap.{type}` (featureDirNormalization first), AFTER the tag-fix; confirm the 5 tag-driven no-matches resolve; reads `memory-vocabulary.json` (does NOT modify it) | #3 | the map covers exactly 108 files, each a real area; zero `_shared`; zero unresolved no-match (Always-Ask via NEEDS_CONTEXT if any residual) | executor |
+2026-06-24-recurring-guard-root-closure-criterion.md	2. **Derivation from fresh run:** each family's allowlist was MEASURED, not guessed. Family B: `grep -rlE '_shared|\.effective|tagAreaMap\.(spine|mistakes)' --include='*.md' mistakes notes features backlogs reports | grep -v /archive/` → 19 files. The allowlist equals the measured output; a re-run yields the same 19.
+2026-06-24-recurring-guard-root-closure-criterion.md	4. **Fresh-verified by both systems:** Claude ran `check-residual-vocab.sh mistakes notes features backlogs reports` → 243 residual / 49 files / exit 1 (ALL Family-A `memorization`-family, ZERO Family-B — proves the conflation). Codex ran `rg -l "_shared|\.effective|tagAreaMap\.(spine|mistakes)" ...` → 19 live files + 1 archive. Both verified the same 19-file set and the same zero-by-construction property.
+guard-revises-twice-means-scope-model-wrong.md	Applied in iter4: Family A (`memorization|session[- ]memory|project[- ]memory`, scan-surface = `skills/`, existing allowlist) and Family B (`_shared|\.effective|\.tagAreaMap\.(spine|mistakes)`, scan-surface = the memory tree, allowlist = the 19 measured legitimate carriers from a fresh `grep -rlE` run). Family B allowlist derivation: `grep -rlE '_shared|\.effective|tagAreaMap\.(spine|mistakes)' --include='*.md' mistakes notes features backlogs reports | grep -v /archive/` → 19 files. Post-allowlist result: 0 non-allowlisted residual by construction; a re-run yields the same 19 carriers and the same zero.
+guard-revises-twice-means-scope-model-wrong.md	The guard conflated two independent vocabularies with different scopes: the prior `memorization` rename, scoped to `skills/`; and this migration's retired forms (`_shared`, `.effective`, `.tagAreaMap.spine|mistakes`), living in the memory tree. Both were forced through a SINGLE `(vocab, scan-surface, allowlist)` triple. Each facet-patch guessed a residual count against the wrong surface. The counts the draft committed to were never measured against the actual command run — they were inferred from the prior state. A count derived by inference rather than measurement is always refutable by the evaluator running the real command.
+guard-revises-twice-means-scope-model-wrong.md	The memory-migration-curation-campaign Ideation cited `check-residual-vocab.sh` as a run-to-zero completion gate for the migration (retiring `_shared`, `.effective`, `.tagAreaMap.spine|mistakes`). The guard REVISE'd THREE consecutive iterations (iter1, iter2, iter3) — each fixing a different facet of the SAME underlying root: iter1 patched the VOCAB pattern; iter2 patched the scan-surface roots; iter3 would have patched the allowlist count again. Each fix guessed a residual count the next evaluator refuted by running the actual command. No single-facet patch ever closed the gate; the next evaluator always found the gap had relocated one layer deeper. iter4 stopped patching and fixed the root instead.
+memory-migration-curation-campaign.md	- **D1 — Guard-extension = TWO independent vocab-family triples, derived from a fresh run, Task 1 first.** This Ideation REVISE'd 3× on the same root — the guard cited as a run-to-zero gate while its real coverage didn't match (iter1 VOCAB gap → iter2 scan-surface gap → iter3 allowlist undersized). The structural root is that the guard CONFLATES two independent vocabularies with different scopes; the fix is to SEGMENT it, not re-patch the count. **Family A** — vocab `memorization|session[- ]memory|project[- ]memory`, scan-surface = its existing `skills/ agents/ hooks/ .claude/ .codex/ plugins/` roots, allowlist = the existing legitimate `memorization` carriers. **Family B** — vocab `_shared|\.effective|\.tagAreaMap\.(spine|mistakes)`, scan-surface = the MEMORY TREE (`mistakes/ notes/ features/ backlogs/ reports/` + the other by-area type dirs as they exist), allowlist = the 19 MEASURED legitimate carriers from a fresh run (14 `features/memory/` redesign docs + 2 campaign-cited mistakes + 3 project-tier redesign records; the `archive/` carrier is find-pruned), each with a per-entry reason. The fresh run proved the conflation: the current single vocab over the memory tree returns 243 hits, ALL Family-A `memorization`-family, ZERO Family-B. The exhaustive per-path allowlist is the Task-1 Execution deliverable; this design carries the method (segment + derive-from-run) + the measured set. *Validation:* PROPERTY — Family A over `skills/` → 0 non-allowlisted residual; Family B over the memory tree → 0 non-allowlisted residual (allowlist = the measured 19); a planted retired-form in a non-allowlisted memory file fails; re-running the same grep yields the same 19 carriers and the same zero.
+reconcile-shared-described-as-current-in-active-carriers.md	2. Find sections that describe `_shared` as the current resolution model.
+reconcile-shared-described-as-current-in-active-carriers.md	3. Reframe to past tense: "The prior model used `_shared`…"; add a pointer to the per-type vocab config that replaced it.
+reconcile-shared-described-as-current-in-active-carriers.md	After the migration campaign PR is merged and validator + both guard families reach zero. At that point the two files' `status: active` is correct but their `_shared`-as-current prose is a docs-sync gap. A focused docs-sync pass (read the merged config, update the two files' framing to "the prior model was…") closes this. No blocking dependency — can run in any session after the migration campaign PR lands.
+reconcile-shared-described-as-current-in-active-carriers.md	Both files were allowlisted correctly (they are the design record of the model being retired and their content is load-bearing historical documentation). But their framing describes `_shared` as-if-current, contradicting the merged config.
+reconcile-shared-described-as-current-in-active-carriers.md	description: 2 active Family-B allowlist carriers describe _shared as the current model, contradicting the merged config that dropped it.
+reconcile-shared-described-as-current-in-active-carriers.md	# Reconcile _shared described as current in two active design docs
+reconcile-shared-described-as-current-in-active-carriers.md	The per-type areas+tags vocabulary redesign (#310/#312, `ef54f990`) dropped `_shared` as a concept — the new model uses per-type area namespaces with no cross-type shared layer. During the memory-migration-curation-campaign Ideation (session `1cd48095-d745-4868-a5ac-f48326eb447f`), the Family-B legitimate-carrier derivation enumerated 19 memory-tree files that reference `_shared`/`.effective`/`.tagAreaMap.*` as legitimate carriers. 2 of those 19 files carry `status: active` and describe `_shared` as a CURRENT concept rather than a retired / historical one:
+whole-file-allowlist-false-passes-same-file-residual.md	A residual-vocab guard's allowlist whitelisted entire FILES (the 19 legitimate historical carriers) rather than the specific legitimate LINES. A NEW retired-form token added inside one of those allowlisted files false-passed — the guard returned "NO RESIDUAL" / exit 0. The executor's self-check verified the NON-allowlisted-file case (which worked) but not the same-file case; the Codex evaluator's adversarial probe (append a new `_shared` line to an allowlisted carrier) exposed it.
 FAMILY_B_BASELINE
 }
 
