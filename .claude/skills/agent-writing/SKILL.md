@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/agent-writing/SKILL.md
