@@ -11,7 +11,6 @@ tags: [process, docs-sync, evaluation, co-touch, grep-scope]
 priority: high
 domain: process
 layer: 2
-layer2-source: .gobbi/projects/gobbi/mistakes/cotouch-enumeration-must-cover-semantic-equivalents.md
 layer2-rationale: Generalizable across all projects — any redesign that changes a cross-cutting rule must enumerate co-touch sites by concept/phrase-family, not one string token.
 supersedes: null
 superseded_by: null
