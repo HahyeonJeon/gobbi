@@ -211,6 +211,8 @@ gobbi's durable capabilities — the things a README "Features" section would li
 
 **Install / runtime is documented, not a skill.** `install-runtime` owns no `gobbi-install` *skill* dir — channel-split install, the `.claude/`↔project mirror-sync, and the session-runtime contract (env-var persistence, the SessionStart hook, `session.json` / `settings.json` lifecycle, subagent-metadata capture) are documented in this `gobbi/SKILL.md` + the install dir, not in a created skill. The only skill dirs `install-runtime` owns are `interview` and the canonical-only `gobbi-hook-authoring`.
 
+**Authoring a new skill or agent is a reference skill, not a table row.** `skill-writing` teaches how to author a new gobbi skill (frontmatter schema, the four discoverability axes, the section skeleton, and the script-owned vs hand-owned wiring); `agent-writing` teaches how to author a new gobbi agent (the `.md`/`.toml` canonical pair, agent frontmatter, the five-role taxonomy, and the hand-created runtime mirrors). Both are standalone, self-contained meta/authoring references — they depend on no other doc-authoring standard — and are mirrored to both runtimes (`.claude/skills/` + `.agents/skills/`). Like the other meta skills, they carry NO Loop / Cross-cutting / Supporting Skill-Map row; this paragraph is their home.
+
 ---
 
 ## Core Principles
